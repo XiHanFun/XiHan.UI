@@ -790,6 +790,23 @@ describe('connectTable 属性输出', () => {
     expect(a.row.getAttribute('data-state')).toBe('open')
   })
 
+  it('树形表的父行展开的是子行、没有详情行，只报 aria-expanded，不写 aria-controls', () => {
+    const h = mount({
+      rows: [
+        { id: 'p' },
+        { id: 'p-1', parentId: 'p' },
+        { id: 'r', expandable: true },
+      ],
+      defaultExpandedValue: ['p'],
+    })
+    const p = h.row('p').row
+    expect([p.getAttribute('aria-expanded'), p.hasAttribute('aria-controls')]).toEqual(['true', false])
+    h.api().collapseRow('p')
+    expect([p.getAttribute('aria-expanded'), p.hasAttribute('aria-controls')]).toEqual(['false', false])
+    // 同一张表里没有子行、标了 expandable 的行仍指向自己的详情行
+    expect(h.row('r').row.getAttribute('aria-controls')).toBe(h.row('r').expandedRow.id)
+  })
+
   it('详情行常挂：收起时只翻 data-state，不卸载作者节点', () => {
     const h = mount()
     const a = h.row('a')

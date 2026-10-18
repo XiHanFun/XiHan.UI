@@ -244,6 +244,8 @@ export function connectTable<T extends PropTypes>(
   const dataRows = visibleRows.filter(row => row.kind === 'data')
   /** 行表头：列标的是函数时按行问，入参是行定义与它在可见数据行里的序号；表尾格子不问、按行表头处理。 */
   const rowDefById = new Map(rows.map(row => [row.id, row]))
+  /** 有子行的行：展开的是子行，不产出详情行。父行不存在的子行按根行处理，不算。 */
+  const parentRows = new Set(rows.flatMap(row => row.parentId != null && rowDefById.has(row.parentId) ? [row.parentId] : []))
   const dataRowOrder = new Map(dataRows.map((row, index) => [row.id, index]))
   const isRowHeader = (def: TableColumnDef | undefined, rowId: string | undefined, footer: boolean): boolean => {
     const flag = def?.rowHeader
@@ -1058,7 +1060,8 @@ export function connectTable<T extends PropTypes>(
         'aria-selected': selectable ? (isSelected(row.value) ? 'true' : 'false') : undefined,
         // 不可展开的行不报 aria-expanded，那是能展开却没展开的意思
         'aria-expanded': meta?.expandable ? (meta.expanded ? 'true' : 'false') : undefined,
-        'aria-controls': meta?.expandable ? detailId(row.value) : undefined,
+        // aria-controls 只指向详情行：树形表的父行展开出的是子行，没有可指的那一行
+        'aria-controls': meta?.expandable && !parentRows.has(row.value) ? detailId(row.value) : undefined,
         // treegrid 的层级不体现在 DOM 嵌套上，只能逐行报出来：数据行都在第一层
         'aria-level': hierarchical ? (metaIndex.get(row.value)?.level ?? 1) : undefined,
         // 层级三件套按摊平结果给：写死 1 的话树形表格所有行都报第一层
