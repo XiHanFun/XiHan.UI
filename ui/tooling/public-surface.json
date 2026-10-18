@@ -5638,7 +5638,9 @@
     "@xihan-ui/tokens": [
       "BASELINE_THEME",
       "BASELINE_VISUAL_ENVIRONMENT",
+      "BRAND_PRESETS",
       "BrandId",
+      "BrandPreset",
       "BrandScale",
       "BrandStep",
       "CONTRAST_MIN",

@@ -264,6 +264,121 @@
     --xh-ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
   }
 
+  /* 预设品牌：[data-brand='<id>'] 换一套品牌原语，各档按缺省品牌的相对亮度派生（brand.presets.json）。
+     语义令牌在主题边界上声明，data-brand 与 data-theme 写在同一个元素上才在那里换品牌，
+     createVisualEnvironmentController 的根就是这样；registerBrand 注入的同名取值块不在层里，压过这里 */
+  :where([data-brand='blue']) {
+    --xh-color-brand-50: oklch(0.97 0.014 237);
+    --xh-color-brand-100: oklch(0.934 0.032 237);
+    --xh-color-brand-200: oklch(0.881 0.062 237);
+    --xh-color-brand-300: oklch(0.802 0.105 237);
+    --xh-color-brand-400: oklch(0.687 0.165 237);
+    --xh-color-brand-500: oklch(0.598 0.167 237);
+    --xh-color-brand-600: oklch(0.522 0.163 237);
+    --xh-color-brand-700: oklch(0.462 0.165 237);
+    --xh-color-brand-800: oklch(0.398 0.164 237);
+    --xh-color-brand-900: oklch(0.359 0.132 237);
+    --xh-color-brand-950: oklch(0.27 0.089 237);
+  }
+
+  :where([data-brand='cyan']) {
+    --xh-color-brand-50: oklch(0.97 0.014 215);
+    --xh-color-brand-100: oklch(0.933 0.032 215);
+    --xh-color-brand-200: oklch(0.879 0.062 215);
+    --xh-color-brand-300: oklch(0.798 0.105 215);
+    --xh-color-brand-400: oklch(0.678 0.141 215);
+    --xh-color-brand-500: oklch(0.592 0.132 215);
+    --xh-color-brand-600: oklch(0.516 0.128 215);
+    --xh-color-brand-700: oklch(0.456 0.129 215);
+    --xh-color-brand-800: oklch(0.386 0.139 215);
+    --xh-color-brand-900: oklch(0.344 0.132 215);
+    --xh-color-brand-950: oklch(0.259 0.089 215);
+  }
+
+  :where([data-brand='teal']) {
+    --xh-color-brand-50: oklch(0.969 0.014 180);
+    --xh-color-brand-100: oklch(0.932 0.032 180);
+    --xh-color-brand-200: oklch(0.877 0.062 180);
+    --xh-color-brand-300: oklch(0.794 0.105 180);
+    --xh-color-brand-400: oklch(0.672 0.143 180);
+    --xh-color-brand-500: oklch(0.587 0.134 180);
+    --xh-color-brand-600: oklch(0.511 0.13 180);
+    --xh-color-brand-700: oklch(0.45 0.13 180);
+    --xh-color-brand-800: oklch(0.38 0.139 180);
+    --xh-color-brand-900: oklch(0.338 0.132 180);
+    --xh-color-brand-950: oklch(0.256 0.089 180);
+  }
+
+  :where([data-brand='green']) {
+    --xh-color-brand-50: oklch(0.97 0.014 149);
+    --xh-color-brand-100: oklch(0.932 0.032 149);
+    --xh-color-brand-200: oklch(0.877 0.062 149);
+    --xh-color-brand-300: oklch(0.795 0.105 149);
+    --xh-color-brand-400: oklch(0.68 0.165 149);
+    --xh-color-brand-500: oklch(0.582 0.209 149);
+    --xh-color-brand-600: oklch(0.506 0.203 149);
+    --xh-color-brand-700: oklch(0.447 0.196 149);
+    --xh-color-brand-800: oklch(0.391 0.164 149);
+    --xh-color-brand-900: oklch(0.354 0.132 149);
+    --xh-color-brand-950: oklch(0.267 0.089 149);
+  }
+
+  :where([data-brand='orange']) {
+    --xh-color-brand-50: oklch(0.972 0.014 50);
+    --xh-color-brand-100: oklch(0.939 0.032 50);
+    --xh-color-brand-200: oklch(0.889 0.062 50);
+    --xh-color-brand-300: oklch(0.816 0.105 50);
+    --xh-color-brand-400: oklch(0.712 0.165 50);
+    --xh-color-brand-500: oklch(0.631 0.214 50);
+    --xh-color-brand-600: oklch(0.557 0.216 50);
+    --xh-color-brand-700: oklch(0.498 0.196 50);
+    --xh-color-brand-800: oklch(0.432 0.164 50);
+    --xh-color-brand-900: oklch(0.386 0.132 50);
+    --xh-color-brand-950: oklch(0.287 0.089 50);
+  }
+
+  :where([data-brand='red']) {
+    --xh-color-brand-50: oklch(0.973 0.014 25);
+    --xh-color-brand-100: oklch(0.941 0.032 25);
+    --xh-color-brand-200: oklch(0.895 0.062 25);
+    --xh-color-brand-300: oklch(0.822 0.105 25);
+    --xh-color-brand-400: oklch(0.717 0.165 25);
+    --xh-color-brand-500: oklch(0.639 0.214 25);
+    --xh-color-brand-600: oklch(0.566 0.216 25);
+    --xh-color-brand-700: oklch(0.506 0.196 25);
+    --xh-color-brand-800: oklch(0.439 0.164 25);
+    --xh-color-brand-900: oklch(0.391 0.132 25);
+    --xh-color-brand-950: oklch(0.29 0.089 25);
+  }
+
+  :where([data-brand='pink']) {
+    --xh-color-brand-50: oklch(0.973 0.014 345);
+    --xh-color-brand-100: oklch(0.94 0.032 345);
+    --xh-color-brand-200: oklch(0.892 0.062 345);
+    --xh-color-brand-300: oklch(0.821 0.105 345);
+    --xh-color-brand-400: oklch(0.719 0.165 345);
+    --xh-color-brand-500: oklch(0.642 0.214 345);
+    --xh-color-brand-600: oklch(0.568 0.216 345);
+    --xh-color-brand-700: oklch(0.508 0.196 345);
+    --xh-color-brand-800: oklch(0.44 0.164 345);
+    --xh-color-brand-900: oklch(0.392 0.132 345);
+    --xh-color-brand-950: oklch(0.291 0.089 345);
+  }
+
+  :where([data-brand='purple']) {
+    --xh-color-brand-50: oklch(0.972 0.014 302);
+    --xh-color-brand-100: oklch(0.939 0.032 302);
+    --xh-color-brand-200: oklch(0.89 0.062 302);
+    --xh-color-brand-300: oklch(0.816 0.105 302);
+    --xh-color-brand-400: oklch(0.714 0.165 302);
+    --xh-color-brand-500: oklch(0.637 0.214 302);
+    --xh-color-brand-600: oklch(0.565 0.216 302);
+    --xh-color-brand-700: oklch(0.505 0.196 302);
+    --xh-color-brand-800: oklch(0.438 0.164 302);
+    --xh-color-brand-900: oklch(0.39 0.132 302);
+    --xh-color-brand-950: oklch(0.289 0.089 302);
+  }
+
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
     --xh-control-h-sm: 28px;
