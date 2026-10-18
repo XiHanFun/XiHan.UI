@@ -471,7 +471,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `controls` | 新的编辑方式，键是属性描述里的 `control.kind`，不能与内建的重名；`checkProperties` 的 `controls` 用合并后的这张表 |
 | `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
-| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, placement?, shortcut?, enabled?, checked?, tone?, run }`；`shortcut` 的写法同 `xh-kbd` 的 `keys`，破坏性命令的 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
+| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, icon?, placement?, shortcut?, enabled?, checked?, tone?, run }`；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`，会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
 | `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
 | `setup` | 装上时调用，返回卸下时的清理 |
 
