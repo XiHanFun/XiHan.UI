@@ -153,7 +153,7 @@ export const wcDialogSuite: ConformanceSuite = {
     {
       name: 'alertdialog 打开：焦点落在 content 容器本身',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/' },
-      props: { role: 'alertdialog' },
+      props: { dialogRole: 'alertdialog' },
       steps: [
         { kind: 'click', part: 'trigger' },
         {

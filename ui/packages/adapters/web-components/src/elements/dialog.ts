@@ -31,7 +31,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
  * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
- * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
+ * @attr {'dialog'|'alertdialog'} dialog-role - 语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了对话框，连同里面的触发钮
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
@@ -60,10 +60,10 @@ export class XhDialogElement extends XhPortalHostElement {
 
   static override partContract = { anatomy: dialogAnatomy, meta: dialogMeta }
 
-  // role 不声明为响应式属性，复用 HTMLElement 原生反射，在 machineProps 里经 getAttribute 读取。
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
+    dialogRole: { converter: STRING_CONVERTER, attribute: 'dialog-role' },
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
@@ -79,6 +79,7 @@ export class XhDialogElement extends XhPortalHostElement {
 
   declare open?: boolean
   declare defaultOpen?: boolean
+  declare dialogRole?: DialogSchema['props']['role']
   declare modal?: boolean
   declare closeOnEscape?: boolean
   declare restoreFocus?: boolean
@@ -125,7 +126,7 @@ export class XhDialogElement extends XhPortalHostElement {
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       modal: this.modal,
-      role: (this.getAttribute('role') as DialogSchema['props']['role']) ?? undefined,
+      role: this.dialogRole,
       closeOnEscape: this.closeOnEscape,
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,

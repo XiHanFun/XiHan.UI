@@ -23212,6 +23212,15 @@
             },
             {
               "kind": "field",
+              "name": "dialogRole",
+              "privacy": "public",
+              "type": {
+                "text": "DialogSchema['props']['role'] | undefined"
+              },
+              "attribute": "dialog-role"
+            },
+            {
+              "kind": "field",
               "name": "modal",
               "privacy": "public",
               "type": {
@@ -23502,10 +23511,11 @@
             },
             {
               "type": {
-                "text": "'dialog'|'alertdialog'"
+                "text": "DialogSchema['props']['role'] | undefined"
               },
-              "description": "语义角色，默认 dialog",
-              "name": "role"
+              "description": "语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了对话框，连同里面的触发钮",
+              "name": "dialog-role",
+              "fieldName": "dialogRole"
             },
             {
               "type": {
@@ -24676,6 +24686,15 @@
             },
             {
               "kind": "field",
+              "name": "dialogRole",
+              "privacy": "public",
+              "type": {
+                "text": "DrawerSchema['props']['role'] | undefined"
+              },
+              "attribute": "dialog-role"
+            },
+            {
+              "kind": "field",
               "name": "modal",
               "privacy": "public",
               "type": {
@@ -25042,10 +25061,11 @@
             },
             {
               "type": {
-                "text": "'dialog'|'alertdialog'"
+                "text": "DrawerSchema['props']['role'] | undefined"
               },
-              "description": "语义角色，默认 dialog",
-              "name": "role"
+              "description": "语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了抽屉，连同里面的触发钮",
+              "name": "dialog-role",
+              "fieldName": "dialogRole"
             },
             {
               "type": {
