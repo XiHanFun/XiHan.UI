@@ -49,6 +49,12 @@ export interface FieldArrayColumn {
   label?: string
   /** 列宽：数字按 px，字符串原样作轨道宽（fr、%、rem…），不写按 1fr。 */
   width?: string | number
+  /**
+   * 列的最小宽度：数字按 px，字符串原样（rem、%…）。给了之后这一列不再随容器压窄到它以下，轨道写成
+   * minmax(minWidth, width)，width 是一条 minmax 时把下限写进它里面、不写这一项。各列下限之和超过容器时，
+   * 表格区横向滚动，表头与各行一起滚，行头与把手钉在两侧。
+   */
+  minWidth?: string | number
 }
 
 /** 表头的一格：value 是列 id。 */
@@ -156,6 +162,11 @@ export interface FieldArraySchema extends MachineSchema {
     pressed: FieldArrayPressedKey | null
     /** 列表动效已经接到根节点上；接上之前根节点带 data-instant，首帧的行一律不播进场。 */
     listTracked: boolean
+    /**
+     * 表格排布横向滚动离两端：atStart 贴着起始端、atEnd 贴着末端；不滚动或列表排布时两端都贴着。
+     * 钉在两侧的行头与把手只在确有内容被压住时画分隔线。
+     */
+    scrollEdges: { atStart: boolean, atEnd: boolean }
   }
   computed: Record<string, never>
   refs: {
@@ -194,7 +205,7 @@ export interface FieldArraySchema extends MachineSchema {
   tag: never
   guard: 'canAdd' | 'canRemove' | 'canMove' | 'canPress'
   action: 'setValue' | 'addItem' | 'removeItem' | 'moveItem' | 'syncKeys' | 'resetToDefault' | 'startPress' | 'endPress' | 'releasePress' | 'releaseWhenInert' | 'markListTracked'
-  effect: 'trackListMotion'
+  effect: 'trackListMotion' | 'trackScrollEdges'
 }
 
 export interface FieldArrayApi<T extends PropTypes = PropTypes> {

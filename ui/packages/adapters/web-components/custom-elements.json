@@ -27875,6 +27875,15 @@
               "name": "--xh-field-array-content-gap"
             },
             {
+              "name": "--xh-field-array-frozen-bg"
+            },
+            {
+              "name": "--xh-field-array-frozen-edge"
+            },
+            {
+              "name": "--xh-field-array-frozen-header-bg"
+            },
+            {
               "name": "--xh-field-array-gap"
             },
             {
@@ -27903,6 +27912,12 @@
             },
             {
               "name": "--xh-field-array-row-divider"
+            },
+            {
+              "name": "--xh-field-array-sticky-column-layer"
+            },
+            {
+              "name": "--xh-field-array-table-bg"
             },
             {
               "name": "--xh-field-array-table-border"

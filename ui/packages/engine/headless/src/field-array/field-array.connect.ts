@@ -6,7 +6,7 @@
 // 提供 field array 相关实现。
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
 import { formArrayItemPath } from '../form'
 import { FIELD_ARRAY_EN_US } from '../locale/en-US'
@@ -52,10 +52,14 @@ export function connectFieldArray<T extends PropTypes>(
   const layout = prop('layout') === 'table' ? 'table' : 'list'
   const table = layout === 'table'
   const columns = prop('columns') ?? []
-  // 轨道：行头一条、每列一条、把手一条；表头与各行共用，行头与把手按内容取宽
-  const columnTrack = (width: string | number | undefined): string =>
-    typeof width === 'number' ? `${width}px` : width ?? FLEX_TRACK
-  const columnTracks = columns.map(column => columnTrack(column.width)).join(' ')
+  // 轨道：行头一条、每列一条、把手一条；表头与各行共用，行头与把手按内容取宽。
+  // 给了 minWidth 的列写成 minmax(下限, 列宽)，不写列宽时上限是 1fr
+  const length = (value: string | number): string => typeof value === 'number' ? `${value}px` : value
+  const columnTrack = (column: FieldArrayColumn): string => column.minWidth === undefined
+    ? (column.width === undefined ? FLEX_TRACK : length(column.width))
+    : `minmax(${length(column.minWidth)}, ${column.width === undefined ? '1fr' : length(column.width)})`
+  const columnTracks = columns.map(columnTrack).join(' ')
+  const scrollEdges = context.get('scrollEdges')
   // 列 id 到第几条轨道：第 1 条给行头，列从第 2 条起
   const columnLine = (id: string): string | undefined => {
     const at = columns.findIndex(column => column.id === id)
@@ -210,6 +214,9 @@ export function connectFieldArray<T extends PropTypes>(
       'data-layout': layout,
       // 没给列时不写，皮肤按一条弹性轨道兜底
       'style': { '--xh-_field-array-cols': table ? columnTracks : '' },
+      // 表格本体是横向滚动容器：报它离两端的远近，钉在两侧的行头与把手据此画分隔线
+      'data-at-min-horizontal': dataAttr(table && scrollEdges.atStart),
+      'data-at-max-horizontal': dataAttr(table && scrollEdges.atEnd),
     }),
 
     getHeaderProps: () => normalize.element({

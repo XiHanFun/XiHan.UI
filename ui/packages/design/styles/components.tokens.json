@@ -35105,6 +35105,72 @@
       "description": "field-array 的 item-content 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-field-array-frozen-bg",
+      "component": "field-array",
+      "part": [
+        "item-action",
+        "item-label"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-field-array-table-bg"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-action、item-label 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-frozen-edge",
+      "component": "field-array",
+      "part": [
+        "header",
+        "item",
+        "item-action",
+        "item-label",
+        "table"
+      ],
+      "property": [
+        "border-inline-end-color",
+        "border-inline-start-color"
+      ],
+      "state": [
+        "at-max-horizontal",
+        "at-min-horizontal",
+        "is([data-part='item'], [data-part='header'])",
+        "layout=table",
+        "not([data-at-max-horizontal])",
+        "not([data-at-min-horizontal])"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header、item、item-action、item-label、table 部件 border-inline-end-color、border-inline-start-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-frozen-header-bg",
+      "component": "field-array",
+      "part": [
+        "header"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-opaque"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-field-array-gap",
       "component": "field-array",
       "part": [
@@ -35294,6 +35360,48 @@
       ],
       "visibility": "public",
       "description": "field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-sticky-column-layer",
+      "component": "field-array",
+      "part": [
+        "header",
+        "item-action",
+        "item-label"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "is([data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 header、item-action、item-label 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-table-bg",
+      "component": "field-array",
+      "part": [
+        "item-action",
+        "item-label",
+        "table"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is([data-part='item-label'], [data-part='item-action'])",
+        "layout=table"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-action、item-label、table 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-field-array-table-border",

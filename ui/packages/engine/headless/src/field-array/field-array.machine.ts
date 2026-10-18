@@ -117,6 +117,32 @@ function restoreFocus(params: Params<FieldArraySchema>, target: FieldArrayFocusT
  * 行条目：库写的部件属性；Web Components 里作者刚插进来的行只带 data-xh-part，
  * 下一轮接线才写上部件属性，到达得在插入的那一刻认出来。后者只认根节点的直接子节点，行里嵌的别的组件不算。
  */
+const FIELD_ARRAY_TABLE_SELECTOR = '[data-scope="field-array"][data-part="table"]'
+const FIELD_ARRAY_ROOT_SELECTOR = '[data-scope="field-array"][data-part="root"]'
+
+/** 滚动位置离一端不到这么多像素就算贴着这一端：小数缩放下 scrollLeft 到不了整数端点。 */
+const EDGE_EPSILON = 1
+
+type ScrollEdges = FieldArraySchema['context']['scrollEdges']
+
+const sameEdges = (a: ScrollEdges, b: ScrollEdges | undefined): boolean => !!b && a.atStart === b.atStart && a.atEnd === b.atEnd
+
+/** 滚动容器横向离两端的远近；RTL 下 scrollLeft 从 0 往负数走，按绝对值算。 */
+function scrollEdgesOf(el: HTMLElement, rtl: boolean): ScrollEdges {
+  const offset = rtl ? Math.abs(el.scrollLeft) : el.scrollLeft
+  const max = el.scrollWidth - el.clientWidth
+  return { atStart: offset <= EDGE_EPSILON, atEnd: offset >= max - EDGE_EPSILON }
+}
+
+/** 根节点自己的表格本体：嵌套的另一个字段数组里的表格不算。 */
+function ownTable(root: HTMLElement): HTMLElement | null {
+  for (const el of root.querySelectorAll<HTMLElement>(FIELD_ARRAY_TABLE_SELECTOR)) {
+    if (el.closest(FIELD_ARRAY_ROOT_SELECTOR) === root)
+      return el
+  }
+  return null
+}
+
 const FIELD_ARRAY_ITEM_SELECTOR = '[data-scope="field-array"][data-part="item"], [data-scope="field-array"][data-part="root"] > [data-xh-part="item"]'
 
 /**
@@ -147,10 +173,11 @@ export const fieldArrayMachine = createMachine({
       // 按压通道：被 Space / Enter 或触屏按住的那一个把手（新增 / 逐行删除 / 上移 / 下移），按 key 记
       pressed: cell<FieldArrayPressedKey | null>(() => ({ defaultValue: null })),
       listTracked: cell<boolean>(() => ({ defaultValue: false })),
+      scrollEdges: cell<ScrollEdges>(() => ({ defaultValue: { atStart: true, atEnd: true }, isEqual: sameEdges })),
     }
   },
   initialState: () => 'idle',
-  effects: ['trackListMotion'],
+  effects: ['trackListMotion', 'trackScrollEdges'],
   // 适配器会在挂载前把最近 Form 接进 refs；首个 entry 统一把行号对到 Form 真源。
   entry: ['syncKeys'],
   watch: ({ track, prop, context, action }) => {
@@ -207,6 +234,58 @@ export const fieldArrayMachine = createMachine({
               return
             stop = trackListMotion(root, { item: FIELD_ARRAY_ITEM_SELECTOR })
             send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+      /**
+       * 表格排布横向滚动离两端还有多远，给钉在两侧的行头与把手画分隔线用。滚动容器是表格本体；
+       * 滚动与尺寸变化时现量，根节点子树换了节点（生成结构、增删行）时重新找表格本体并挂上。
+       */
+      trackScrollEdges: ({ refs, prop, context, scope, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          queueMicrotask(() => {
+            const root = refs.get('getRootEl')()
+            if (disposed || !root)
+              return
+            const win = scope.getWin()
+            let table: HTMLElement | null = null
+            const read = (): void => {
+              if (!table || prop('layout') !== 'table') {
+                context.set('scrollEdges', { atStart: true, atEnd: true })
+                return
+              }
+              context.set('scrollEdges', scrollEdgesOf(table, win.getComputedStyle(table).direction === 'rtl'))
+            }
+            const resize = typeof win.ResizeObserver === 'function' ? new win.ResizeObserver(read) : null
+            const attach = (): void => {
+              const next = ownTable(root)
+              if (next !== table) {
+                table?.removeEventListener('scroll', read)
+                table = next
+                table?.addEventListener('scroll', read, { passive: true })
+              }
+              resize?.disconnect()
+              if (table) {
+                resize?.observe(table)
+                for (const child of table.children)
+                  resize?.observe(child)
+              }
+              read()
+            }
+            const mutations = typeof win.MutationObserver === 'function' ? new win.MutationObserver(attach) : null
+            mutations?.observe(root, { childList: true, subtree: true })
+            attach()
+            stop = () => {
+              table?.removeEventListener('scroll', read)
+              resize?.disconnect()
+              mutations?.disconnect()
+            }
           })
         })
         return () => {

@@ -321,6 +321,12 @@
       "gutter": false,
       "why": "导览步骤的说明文案区，长文案时在气泡内滚：气泡是 aria-modal 的模态面，滚到头不带动页面；内容高度不动态变化，不写 gutter"
     },
+    "field-array:table": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "表格排布列多时横滚，表头与各行一起滚"
+    },
     "heatmap:root": {
       "mode": "native",
       "overscroll": false,
