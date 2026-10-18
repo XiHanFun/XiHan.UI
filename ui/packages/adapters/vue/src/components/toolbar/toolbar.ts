@@ -74,6 +74,8 @@ export const XhToolbarItem = defineComponent({
   props: {
     value: { type: String, required: true },
     disabled: Boolean,
+    /** 只放图标、没有看得见的文字：按方钮画，宽等于高；名字由 aria-label 给。 */
+    iconOnly: Boolean,
     /** 条目渲染为哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 */
     as: { type: String, default: 'button' },
   },
@@ -101,7 +103,7 @@ export const XhToolbarItem = defineComponent({
     })
     return () => h(
       props.as,
-      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled, iconOnly: props.iconOnly }) as Record<string, unknown>, ref: itemEl },
       slots.default?.(),
     )
   },

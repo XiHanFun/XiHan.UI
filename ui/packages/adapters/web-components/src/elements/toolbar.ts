@@ -29,7 +29,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * role=separator 这套 ARIA，以及放不下时把条目按次序收进「更多」菜单。条目自身是按钮、
  * 切换按钮还是下拉触发器，各自的角色、按下态与点击行为一律归条目自身：元素不覆盖条目的 role，
  * 也不接管条目的 click。条目身份取写在条目上的 value 属性；禁用由条目声明 aria-disabled
- * （集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）。
+ * （集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）；只放图标的条目写 data-icon-only，按方钮画。
  * 位于 form 中的按钮式条目需自行写 type="button"，否则回车会直接提交表单。
  *
  * 「更多」菜单的定位层、列表与条目由元素自己建（与每页条数下拉、自绘滚动条同一条路）：
@@ -47,7 +47,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响条目间距与整条内边距，条目自身的大小归条目
  * @csspart root - role=toolbar 的容器（键盘在此收口，也是 roving tabindex 的兜底位）
  * @csspart group - role=group 的小分组，放置一组相关控件
- * @csspart item - 工具条条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
+ * @csspart item - 工具条条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"；只放图标时写 data-icon-only，宽等于高
  * @csspart separator - role=separator 分隔线，朝向恒与主轴垂直
  * @csspart overflow-trigger - 行尾的「更多」钮，写一个空 `<button>` 放在 root 末尾即可；放不下的条目收进它弹出的菜单，全部放得下时收着
  */
@@ -143,7 +143,7 @@ export class XhToolbarElement extends XhPortalHostElement {
   }
 
   private itemProps(el: HTMLElement): ToolbarItemProps {
-    return { value: el.getAttribute('value') ?? '', disabled: this.declaredDisabled.read(el) ?? false }
+    return { value: el.getAttribute('value') ?? '', disabled: this.declaredDisabled.read(el) ?? false, iconOnly: el.hasAttribute('data-icon-only') }
   }
 
   protected wire(): void {

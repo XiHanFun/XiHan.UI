@@ -143,10 +143,14 @@ function createCommandButton(doc: Document, id: string): CommandButton {
   return { item, icon, label, texts: { label: '', short: '', icon: false } }
 }
 
-/** 按显示方式写按钮上看得见的文字：叠放时、只显示图标而这颗按钮没有图标时是短文字，其余是全名。 */
+/**
+ * 按显示方式写按钮上看得见的文字：叠放时、只显示图标而这颗按钮没有图标时是短文字，其余是全名。
+ * 只显示图标、这颗按钮又有图标时标上 data-icon-only，工具条按方钮画。
+ */
 function paintText(button: CommandButton, display: CommandToolbarDisplay): void {
   const short = display === 'stacked' || (display === 'icon' && !button.texts.icon)
   setText(button.label, short ? button.texts.short : button.texts.label)
+  setAttributes(button.item, { 'data-icon-only': display === 'icon' && button.texts.icon })
 }
 
 /** 开发期核对短文字在不在名字里（不分大小写）：不在就报一条告警，一条命令只报一次。 */

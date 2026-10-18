@@ -15,6 +15,8 @@ import type { ControlVariant, Direction, IconRecord, MachineSchema, Orientation,
 export interface ToolbarItemProps {
   value: string
   disabled?: boolean
+  /** 条目只放图标、没有看得见的文字：按方钮画，宽等于高；名字由作者用 aria-label 给。 */
+  iconOnly?: boolean
 }
 
 /**

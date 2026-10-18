@@ -53,7 +53,7 @@ function touchesParts(record: MutationRecord): boolean {
  * 角色节点上属于作者的声明（与状态机写入的状态分属两侧），改变即等于更换了一个条目，必须重新接线。
  * 只观察这几个而不是所有属性：wire() 每帧都向角色节点写 aria- 与 data-，全量观察等于自己触发自己。
  */
-const AUTHORED_ATTRS = ['value', 'name', 'data-path', 'disabled', 'aria-disabled'] as const
+const AUTHORED_ATTRS = ['value', 'name', 'data-path', 'disabled', 'aria-disabled', 'data-icon-only'] as const
 
 function rewritesDeclaration(record: MutationRecord): boolean {
   if (record.type !== 'attributes' || !record.attributeName)

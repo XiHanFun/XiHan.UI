@@ -88580,17 +88580,20 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
+        "icon-only",
+        "orientation=vertical",
         "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "toolbar 的 item 部件 block-size、inline-size 覆盖槽。"
+      "description": "toolbar 的 item 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-px",
