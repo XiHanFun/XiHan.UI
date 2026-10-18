@@ -1,5 +1,5 @@
 // 命令工具栏在真实布局与真实指针下：一个委托提示管整条工具栏，悬停按钮显示命令的文字与快捷键，
-// macOS 与其余平台的快捷键写法不同；禁用的按钮悬停照出提示；三种显示方式切换不重铺按钮，放不下的条目跟着重新收放；
+// macOS 与其余平台的快捷键写法不同；禁用的按钮悬停照出提示；只显示图标时有图标的按钮是方钮；三种显示方式切换不重铺按钮，放不下的条目跟着重新收放；
 // 开关式命令只有图标时按下态看得出来。
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -107,6 +107,33 @@ describe('命令工具栏（Chromium）', () => {
     expect(button('undo').getAttribute('aria-label')).toBe('Undo')
     expect(getComputedStyle(label('plain')).display).not.toBe('none')
     expect(getComputedStyle(icon('plain')).display).toBe('none')
+  })
+
+  it('只显示图标时有图标的按钮是方钮，宽等于高；没有图标的、图标加文字与只显示文字的不是；换显示方式时同一颗按钮跟着换', async () => {
+    const bar = mount({}, '960px')
+    await settle()
+    const box = (id: string): DOMRect => button(id).getBoundingClientRect()
+    const square = (id: string): boolean => Math.abs(box(id).width - box(id).height) < 0.5
+    for (const id of ['undo', 'redo', 'grid', 'snap']) {
+      expect(button(id).hasAttribute('data-icon-only')).toBe(true)
+      expect(square(id)).toBe(true)
+      expect(Math.abs(box(id).height - box('plain').height)).toBeLessThan(0.5)
+    }
+    expect(button('plain').hasAttribute('data-icon-only')).toBe(false)
+    expect(box('plain').width).toBeGreaterThan(box('plain').height)
+    const first = button('undo')
+    for (const display of ['both', 'text'] as const) {
+      bar.setDisplay(display)
+      await settle()
+      expect(button('undo')).toBe(first)
+      for (const id of ['undo', 'grid', 'plain']) {
+        expect(button(id).hasAttribute('data-icon-only')).toBe(false)
+        expect(box(id).width).toBeGreaterThan(box(id).height)
+      }
+    }
+    bar.setDisplay('icon')
+    await settle()
+    expect(square('undo')).toBe(true)
   })
 
   it('换显示方式不重铺按钮，放不下的条目按新宽度重新收放', async () => {

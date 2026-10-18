@@ -55,6 +55,7 @@ function toggle(value: string) {
           :key="format.value"
           :value="format.value"
           type="button"
+          icon-only
           :aria-label="format.label"
           :aria-pressed="pressed.has(format.value)"
           @click="toggle(format.value)"
@@ -69,6 +70,7 @@ function toggle(value: string) {
           :key="item.value"
           :value="item.value"
           type="button"
+          icon-only
           :aria-label="item.label"
           :aria-pressed="align === item.value"
           @click="align = item.value"
@@ -82,6 +84,7 @@ function toggle(value: string) {
         :key="item.value"
         :value="item.value"
         type="button"
+        icon-only
         :aria-label="item.label"
       >
         <XhIcon :icon="item.icon" />

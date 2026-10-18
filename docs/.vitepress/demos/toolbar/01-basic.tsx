@@ -34,6 +34,7 @@ export default function Demo(): ReactNode {
             <XhToolbarItem
               value={format.value}
               type="button"
+              iconOnly
               aria-label={format.label}
               aria-pressed={selected.has(format.value)}
               onClick={() => toggle(format.value)}
@@ -45,11 +46,11 @@ export default function Demo(): ReactNode {
       </XhToolbarGroup>
       <XhToolbarSeparator />
       <XhToolbarGroup>
-        <XhToolbarItem value="copy" type="button" aria-label="复制">
+        <XhToolbarItem value="copy" type="button" iconOnly aria-label="复制">
           <XhIcon icon={CopyIcon} />
         </XhToolbarItem>
         <XhToolbarSeparator />
-        <XhToolbarItem value="paste" type="button" aria-label="粘贴">
+        <XhToolbarItem value="paste" type="button" iconOnly aria-label="粘贴">
           <XhIcon icon={ClipboardIcon} />
         </XhToolbarItem>
       </XhToolbarGroup>

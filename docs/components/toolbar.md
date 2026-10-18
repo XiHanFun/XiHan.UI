@@ -66,6 +66,7 @@
 - `outline` 形态提供带内距、描边与背景的附着式工具面；`subtle` 为淡底。
 - `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
 - 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
+- 条目只放图标时声明 `iconOnly`（Web Components 在条目上写 `data-icon-only`）：条目按方钮画，宽等于高，三种尺寸都一样。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
 - 放了 `overflow-trigger` 时不折行：宽度不够时，放不下的条目按次序收进行尾的「更多」按钮，点开是一张菜单，选中其中一项即触发该条目自己的点击；宽度够时「更多」按钮收起。容器变宽变窄、条目增减或改写后自动重新计算。
@@ -79,7 +80,7 @@
 
 ### 最佳实践
 
-- 仅图标条目必须提供 `aria-label`：它也是条目收进菜单后显示的文字。
+- 仅图标条目声明 `iconOnly`，并且必须提供 `aria-label`：它也是条目收进菜单后显示的文字。
 - 使用 `aria-pressed` 表示可切换工具的当前状态。
 - 常用的操作排在前面：收纳从尾部开始，排在最后的最先收进菜单。
 
@@ -130,6 +131,7 @@
 | --- | --- | --- | --- | --- |
 | `XhToolbarItem` | `value` | `string` | 是 |  |
 | `XhToolbarItem` | `disabled` | `boolean` |  |  |
+| `XhToolbarItem` | `iconOnly` | `boolean` |  | 只放图标、没有看得见的文字：按方钮画，宽等于高；名字由 aria-label 给。 |
 | `XhToolbarItem` | `as` | `ElementType` |  | 条目渲染为哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 |
 | `XhToolbarRoot` | `children` | `SlotChildren<ToolbarRootSlotProps>` |  |  |
 
@@ -215,10 +217,11 @@
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-orientation` | props.orientation |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-icon-only` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
-| `item` | `data-xh-action-profile` | 'text' |
+| `item` | `data-xh-action-profile` | 'icon' \| 'text' |
 | `item` | `data-xh-action-size` | props.size |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
@@ -255,7 +258,7 @@
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-_action-profile-gap` | toolbar 的 item 部件 gap 覆盖槽。 |
-| `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`icon-only`<br>`orientation=vertical`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden])`<br>`not([hidden])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |

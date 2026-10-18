@@ -32,6 +32,7 @@ function toggle(value: string) {
         <XhToolbarItem
           :value="format.value"
           type="button"
+          icon-only
           :aria-label="format.label"
           :aria-pressed="selected.has(format.value)"
           @click="toggle(format.value)"
@@ -42,11 +43,11 @@ function toggle(value: string) {
     </XhToolbarGroup>
     <XhToolbarSeparator />
     <XhToolbarGroup>
-      <XhToolbarItem value="copy" type="button" aria-label="复制">
+      <XhToolbarItem value="copy" type="button" icon-only aria-label="复制">
         <XhIcon :icon="CopyIcon" />
       </XhToolbarItem>
       <XhToolbarSeparator />
-      <XhToolbarItem value="paste" type="button" aria-label="粘贴">
+      <XhToolbarItem value="paste" type="button" icon-only aria-label="粘贴">
         <XhIcon :icon="ClipboardIcon" />
       </XhToolbarItem>
     </XhToolbarGroup>

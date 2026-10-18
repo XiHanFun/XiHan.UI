@@ -113,6 +113,19 @@ describe('connectToolbar ARIA', () => {
     expect(itemProps(makeService({ size: 'sm' }).service, { value: 'bold' })['data-xh-action-size']).toBe('sm')
   })
 
+  it('声明 iconOnly 的条目接 icon 档并写 data-icon-only；没声明的照旧 text 档、不写', () => {
+    const { service } = makeService({ size: 'lg' })
+    expect(itemProps(service, { value: 'bold', iconOnly: true })).toMatchObject({
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-size': 'lg',
+      'data-icon-only': '',
+    })
+    const plain = itemProps(service, { value: 'bold', iconOnly: false })
+    expect(plain['data-xh-action-profile']).toBe('text')
+    expect(plain['data-icon-only']).toBeUndefined()
+    expect(itemProps(service, { value: 'bold' })['data-icon-only']).toBeUndefined()
+  })
+
   it('整条禁用时容器退出 Tab 序列：进去了方向键也不响应，那就是个死停靠点', () => {
     expect(rootProps(makeService({ disabled: true }).service).tabindex).toBeUndefined()
     // 没禁用时照旧兜底

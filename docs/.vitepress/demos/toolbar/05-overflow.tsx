@@ -56,6 +56,7 @@ export default function Demo(): ReactNode {
               key={format.value}
               value={format.value}
               type="button"
+              iconOnly
               aria-label={format.label}
               aria-pressed={pressed.has(format.value)}
               onClick={() => toggle(format.value)}
@@ -71,6 +72,7 @@ export default function Demo(): ReactNode {
               key={item.value}
               value={item.value}
               type="button"
+              iconOnly
               aria-label={item.label}
               aria-pressed={align === item.value}
               onClick={() => setAlign(item.value)}
@@ -81,7 +83,7 @@ export default function Demo(): ReactNode {
         </XhToolbarGroup>
         <XhToolbarSeparator />
         {inserts.map(item => (
-          <XhToolbarItem key={item.value} value={item.value} type="button" aria-label={item.label}>
+          <XhToolbarItem key={item.value} value={item.value} type="button" iconOnly aria-label={item.label}>
             <XhIcon icon={item.icon} />
           </XhToolbarItem>
         ))}

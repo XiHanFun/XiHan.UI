@@ -92,16 +92,18 @@ export function XhToolbarSeparator({ ...rest }: XhToolbarSeparatorProps): ReactN
 export interface XhToolbarItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
   disabled?: boolean
+  /** 只放图标、没有看得见的文字：按方钮画，宽等于高；名字由 aria-label 给。 */
+  iconOnly?: boolean
   /** 条目渲染为哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 */
   as?: ElementType
 }
-export function XhToolbarItem({ value, disabled, as = 'button', children, ...rest }: XhToolbarItemProps): ReactNode {
+export function XhToolbarItem({ value, disabled, iconOnly, as = 'button', children, ...rest }: XhToolbarItemProps): ReactNode {
   const ctx = useToolbarContext()
   const itemEl = useRef<HTMLElement | null>(null)
   const previous = useRef(value)
   // 条目的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps({ value, disabled }) as Record<string, unknown>,
+    ctx.api.getItemProps({ value, disabled, iconOnly }) as Record<string, unknown>,
     ['onFocus'],
   )
 
