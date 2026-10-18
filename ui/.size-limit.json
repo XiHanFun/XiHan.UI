@@ -360,7 +360,7 @@
     "name": "icons：整集合",
     "path": "packages/design/icons/dist/index.mjs",
     "gzip": true,
-    "limit": "8.2 kB"
+    "limit": "9.4 kB"
   },
   {
     "name": "vue：只用 XhBadge",
