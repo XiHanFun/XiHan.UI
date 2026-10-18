@@ -50,6 +50,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `${label} schließen`,
     panelHelp: label => `Hilfe zu ${label}`,
   },
+  'xh-designer-settings': {
+    title: 'Einstellungen',
+    sections: 'Einstellungsbereiche',
+    locked: 'Von der Host-Anwendung verwaltet',
+    general: 'Allgemein',
+    theme: 'Design',
+    themeHint: 'Gilt nur für diesen Designer, nicht für den Rest der Seite.',
+    themeFollow: 'Wie Seite',
+    themeSystem: 'Wie System',
+    themeLight: 'Hell',
+    themeDark: 'Dunkel',
+    brand: 'Akzentfarbe',
+    brandHint: 'Die Farbe von Schaltflächen, Auswahl und Hervorhebungen in diesem Designer.',
+    statusBar: 'Statusleiste',
+    statusBarHint: 'Statusleiste unten im Designer anzeigen.',
+    language: 'Sprache',
+    languageHint: 'Leer lassen, um der Seite zu folgen.',
+  },
 }
 
 /** 德语。 */

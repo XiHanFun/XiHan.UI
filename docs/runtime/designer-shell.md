@@ -1,6 +1,6 @@
 # 设计器零件
 
-`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
+`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图、外框与设置对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
 
 ```ts
 import { defineDesignerShell } from "@xihan-ui/designer-shell";
@@ -433,9 +433,109 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 `parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
 
+## 设置
+
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
+
+```ts
+import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
+import { registerBrand } from "@xihan-ui/tokens";
+
+const brands = [{ value: "blue", color: "#1677ff", label: "蓝" }];
+const host = createDesignerSettingsHost({
+  root: designerRoot,
+  brands,
+  registerBrand,
+  storageKey: "flow-designer:settings",
+  onStorageError: detail => console.warn(detail),
+});
+
+const dialog = document.createElement("xh-designer-settings");
+dialog.general = { brands, customBrand: true };
+dialog.sections = collectSettingsSections([productSettings, ...extensions]);
+dialog.settings = host.load();
+host.apply(dialog.settings);
+dialog.addEventListener("settings-change", (event) => {
+  host.apply(event.detail.settings);
+  host.save(event.detail.settings, dialog.sections);
+});
+designerRoot.append(dialog);
+dialog.show();
+```
+
+### 分区与条目
+
+- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0，各款从 100 起，扩展从 200 起，同值按登记顺序。
+- 条目就是 `@xihan-ui/designer-kit` 的属性描述：`path` 只写一段条目 id，`label` 是标签，`default` 是缺省值，说明写在 `meta.description`。
+- 值是扁平的键值：键是 `<分区 id>.<条目 id>`，没写的键取条目的 `default`。
+- 内建编辑方式与属性面板同一套字段；别的种类交给对话框的 `editors`，被编辑的对象是整份设置。
+
+| 函数 | 说明 |
+| --- | --- |
+| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general` 留给内建 |
+| `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
+| `settingKey(section, item)` | 条目的键 |
+| `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
+| `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
+| `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
+
+### 「基础」分区
+
+| 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
+| --- | --- | --- | --- | --- |
+| 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
+| 主题色 | `general.brand` | 色板 | 不写即跟随页面 | 给了 `brands` 或 `customBrand` |
+| 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
+| 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
+
+键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `panels` 里去掉 `status`，语言换成对应的产品语言包。
+
+### 设置对话框
+
+`<xh-designer-settings>` 里是 `<xh-dialog>`，左边竖排的分区页，右边按正文行宽逐条列出条目；分区页定高，换页时对话框不跳。宿主元素不占盒。
+
+| 属性 | 说明 |
+| --- | --- |
+| `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
+| `general` | 「基础」分区的选项 `{ brands?, customBrand?, languages? }`；`false` 不要这一页。文案随对话框的语言 |
+| `settings` | 设置的值 |
+| `policy` | 宿主的管控：键是条目键或分区 id，值 `hidden` 不显示、`locked` 只读并把说明换成文案 `locked` |
+| `editors` | 内建编辑方式之外的条目按 `control.kind` 用这里的编辑器；没登记的只显示值 |
+| `open` | 对话框打开。同名 attribute |
+| `section` | 当前显示的分区 id；不写或那一页不显示时显示第一页。同名 attribute |
+| `translations` | 元素自己的文案，压在全局配置之上 |
+
+| 方法 | 说明 |
+| --- | --- |
+| `show(section?)` | 打开对话框，给了分区 id 就显示那一页 |
+
+| 事件 | 说明 |
+| --- | --- |
+| `settings-change` | `{ key, value, settings }`：改了一条，`value` 为 `undefined` 表示删掉这个键、回到缺省值；`settings` 是改过之后的整份值，元素已经换成它 |
+| `open-change` | `{ open }`：按 Esc、点遮罩或关闭钮时对话框要关上，元素已经换成这个状态 |
+
+对话框打开时内容搬到浮层根：主题、主题色等视觉轴经视觉桥跟着设计器根走；字段的文案由对话框在原位解析好交给字段，跟着设计器所在位置的配置。
+
+### 落到设计器上
+
+`createDesignerSettingsHost(options)` 返回 `{ load, save, apply, dispose }`：
+
+| 选项 | 说明 |
+| --- | --- |
+| `root` | 设计器根：主题写成它的 `data-theme`，主题色写成它的 `data-brand`，只作用于设计器 |
+| `brands` | 预设的主题色，与「基础」分区给的同一份 |
+| `registerBrand` | 注册自定义主题色，形状与 `@xihan-ui/tokens` 的 `registerBrand` 相同；不给时不是预设的颜色不生效 |
+| `storageKey` | 设置存在根所在窗口 localStorage 的哪个键下；不给就不读写 |
+| `onStorageError` | 读写失败（无痕窗口、配额满、内容不是对象）时回调 `{ operation, key, error }`，设置留在内存里。给了 `storageKey` 就必须给，否则抛 `TypeError` |
+
+- `apply(settings)`：主题跟随页面时把根的 `data-theme` 还原成接手前的值，跟随系统时按 `prefers-color-scheme` 写、系统改了跟着改；主题色是预设就写它的 `value`，否则经 `registerBrand` 注册成这台设计器自己的品牌，换走时撤销。
+- `save(settings, sections?)`：`sections` 里标了 `secret` 的文本条目不存。
+- `load()`：没给存储键、没存过或读不出时是空对象。
+- `dispose()`：撤掉跟随系统的监听与注册的主题色，根上的两个属性还原成接手前的样子。
+
 ## 扩展的面板与命令
 
-设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的三样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源。
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框。
 
 ### 面板
 
@@ -477,6 +577,10 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `commandLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；此刻能否执行 |
 
 两个铺法用到的 `<xh-toolbar>` 与 `<xh-context-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
+
+### 设置分区
+
+扩展的 `settings` 是若干设置分区，形状见上文「设置」。用 `collectSettingsSections` 把各款自己的分区与扩展的合起来交给设置对话框；分区 id 与内建的 `general` 或别的扩展重名时抛 `DesignerExtensionError`（名字空间 `settings-section`）。
 
 ### 导入来源
 

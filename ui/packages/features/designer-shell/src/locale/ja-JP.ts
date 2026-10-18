@@ -50,6 +50,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `「${label}」を閉じる`,
     panelHelp: label => `「${label}」について`,
   },
+  'xh-designer-settings': {
+    title: '設定',
+    sections: '設定のセクション',
+    locked: 'ホストアプリケーションで管理されています',
+    general: '基本',
+    theme: 'テーマ',
+    themeHint: 'このデザイナーにのみ適用され、ページの他の部分には影響しません。',
+    themeFollow: 'ページに合わせる',
+    themeSystem: 'システムに合わせる',
+    themeLight: 'ライト',
+    themeDark: 'ダーク',
+    brand: 'アクセントカラー',
+    brandHint: 'このデザイナーのボタン、選択、ハイライトの色です。',
+    statusBar: 'ステータスバー',
+    statusBarHint: 'デザイナーの下部にステータスバーを表示します。',
+    language: '言語',
+    languageHint: '空欄の場合はページに合わせます。',
+  },
 }
 
 /** 日语。 */

@@ -87,6 +87,42 @@ export interface DesignerFrameTranslations {
   readonly panelHelp: (label: string) => string
 }
 
+/** 设置对话框的文案。 */
+export interface DesignerSettingsTranslations {
+  /** 对话框标题。 */
+  readonly title: string
+  /** 左边分区导航的无障碍名称。 */
+  readonly sections: string
+  /** 宿主锁定的条目下方的说明。 */
+  readonly locked: string
+  /** 内建「基础」分区的名字。 */
+  readonly general: string
+  /** 主题条目的标签。 */
+  readonly theme: string
+  /** 主题条目的说明。 */
+  readonly themeHint: string
+  /** 主题：跟随所在页面。 */
+  readonly themeFollow: string
+  /** 主题：跟随系统。 */
+  readonly themeSystem: string
+  /** 主题：亮色。 */
+  readonly themeLight: string
+  /** 主题：暗色。 */
+  readonly themeDark: string
+  /** 主题色条目的标签。 */
+  readonly brand: string
+  /** 主题色条目的说明。 */
+  readonly brandHint: string
+  /** 状态栏条目的标签。 */
+  readonly statusBar: string
+  /** 状态栏条目的说明。 */
+  readonly statusBarHint: string
+  /** 语言条目的标签。 */
+  readonly language: string
+  /** 语言条目的说明。 */
+  readonly languageHint: string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
@@ -94,5 +130,6 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
     'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
+    'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
   }
 }

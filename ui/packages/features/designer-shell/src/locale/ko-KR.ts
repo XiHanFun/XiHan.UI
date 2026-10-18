@@ -50,6 +50,24 @@ const translations: DesignerShellLocaleTranslations = {
     closePanel: label => `${label} 닫기`,
     panelHelp: label => `${label} 도움말`,
   },
+  'xh-designer-settings': {
+    title: '설정',
+    sections: '설정 섹션',
+    locked: '호스트 애플리케이션에서 관리합니다',
+    general: '일반',
+    theme: '테마',
+    themeHint: '이 디자이너에만 적용되며 페이지의 다른 부분에는 영향을 주지 않습니다.',
+    themeFollow: '페이지 따르기',
+    themeSystem: '시스템 따르기',
+    themeLight: '라이트',
+    themeDark: '다크',
+    brand: '강조 색상',
+    brandHint: '이 디자이너의 버튼, 선택, 강조 표시 색상입니다.',
+    statusBar: '상태 표시줄',
+    statusBarHint: '디자이너 하단에 상태 표시줄을 표시합니다.',
+    language: '언어',
+    languageHint: '비워 두면 페이지를 따릅니다.',
+  },
 }
 
 /** 韩语。 */

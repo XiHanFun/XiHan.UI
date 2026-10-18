@@ -122,7 +122,7 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 | `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
 | `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
 | `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id，见[设计器内核](/runtime/designer-kit) |
-| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框，见[设计器零件](/runtime/designer-shell) |
+| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图、外框与设置对话框，见[设计器零件](/runtime/designer-shell) |
 | `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：带类型的单元格、数字与日期格式、合并单元格与冻结窗格，见[表格导出](/runtime/xlsx) |
 
 **开发工具**

@@ -8,6 +8,7 @@
 import type { DesignerExtensionBase } from '@xihan-ui/designer-kit'
 import type { PropertyEditor } from '@xihan-ui/designer-kit/properties'
 import type { DesignerFrameRegion, XhDesignerFrameElement } from '../frame/frame-element'
+import type { DesignerSettingsSection } from '../settings/model'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { DESIGNER_FRAME_REGIONS } from '../frame/frame-element'
 
@@ -33,6 +34,8 @@ export interface DesignerPanel<Ctx = unknown> {
 export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown> extends DesignerExtensionBase<Ctx, Editor, Doc, RuleCtx> {
   /** 面板：各占外框的一个命名区，同一位置按扩展顺序上下排。 */
   readonly panels?: readonly DesignerPanel<Ctx>[]
+  /** 设置分区：放进设置对话框，分区 id 不能与内置的 general 或别的扩展的重名，见 collectSettingsSections。 */
+  readonly settings?: readonly DesignerSettingsSection[]
 }
 
 /** 管一台外框上扩展登记的面板。 */

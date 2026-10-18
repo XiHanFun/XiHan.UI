@@ -54,12 +54,32 @@ export const DESIGNER_FRAME_EN_US: DesignerShellLocaleTranslations['xh-designer-
   panelHelp: label => `About ${label}`,
 }
 
+export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-designer-settings'] = {
+  title: 'Settings',
+  sections: 'Settings sections',
+  locked: 'Managed by the host application',
+  general: 'General',
+  theme: 'Theme',
+  themeHint: 'Applies to this designer only, not the rest of the page.',
+  themeFollow: 'Follow page',
+  themeSystem: 'Follow system',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+  brand: 'Accent color',
+  brandHint: 'The color of buttons, selection and highlights in this designer.',
+  statusBar: 'Status bar',
+  statusBarHint: 'Show the status bar at the bottom of the designer.',
+  language: 'Language',
+  languageHint: 'Leave empty to follow the page.',
+}
+
 const translations: DesignerShellLocaleTranslations = {
   'xh-designer-properties': DESIGNER_PROPERTIES_EN_US,
   'xh-designer-issues': DESIGNER_ISSUES_EN_US,
   'xh-designer-palette': DESIGNER_PALETTE_EN_US,
   'xh-designer-ruler': DESIGNER_RULER_EN_US,
   'xh-designer-frame': DESIGNER_FRAME_EN_US,
+  'xh-designer-settings': DESIGNER_SETTINGS_EN_US,
 }
 
 /** 英文。 */

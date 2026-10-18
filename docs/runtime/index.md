@@ -12,7 +12,7 @@
 | [富文本模型](./rich-text) | 结构化的富文本 JSON：HTML 白名单解析、结构检查、转义写出与按模型生成 DOM | `@xihan-ui/core` |
 | [SVG 导出](./svg-export) | 把页面上的 SVG 克隆成能单独打开的一份、序列化，并按倍率与底色栅格化成 PNG | `@xihan-ui/core` |
 | [设计器内核](./designer-kit) | 撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id | `@xihan-ui/designer-kit` |
-| [设计器零件](./designer-shell) | 属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框，只出 Web Components | `@xihan-ui/designer-shell` |
+| [设计器零件](./designer-shell) | 属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图、外框与设置对话框，只出 Web Components | `@xihan-ui/designer-shell` |
 | [表格导出](./xlsx) | 带类型的单元格、数字与日期格式、合并单元格与冻结窗格，零依赖写成 xlsx | `@xihan-ui/xlsx` |
 
 ## 不在组件册中的原因
