@@ -146,7 +146,7 @@ describe('tabs 默认视觉', () => {
     expect(segment.active.offsetWidth).toBe(segment.inactive.offsetWidth)
   })
 
-  it('line 保持透明标签带与底部基线：当前页透明面 + 品牌字色 + medium，未选中 muted + regular，悬停走白底承载 100 + default 字', async () => {
+  it('line 保持透明标签带与底部基线：当前页透明面 + 品牌字色 + medium，未选中 muted + regular，悬停走白底承载 100 + default 字，当前页悬停字深一档', async () => {
     const line = mount('line')
     freezeMotion()
     const style = getComputedStyle(line.list)
@@ -173,10 +173,10 @@ describe('tabs 默认视觉', () => {
     await userEvent.hover(line.inactive)
     expect(getComputedStyle(line.inactive).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
     expect(getComputedStyle(line.inactive).color).toBe(resolveColor('--xh-fg-default', line.list))
-    // 当前页叠悬停：保留品牌字色，面走 100
+    // 当前页叠悬停：面走 100，字深一档到 fg-brand-strong，叠了淡底仍够正文对比度
     await userEvent.hover(line.active)
     expect(getComputedStyle(line.active).backgroundColor).toBe(resolveColor('--xh-bg-subtle', line.list))
-    expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand', line.list))
+    expect(getComputedStyle(line.active).color).toBe(resolveColor('--xh-fg-brand-strong', line.list))
   })
 
   it('card 只保留选中标签的卡片面', () => {
