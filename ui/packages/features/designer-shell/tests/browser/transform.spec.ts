@@ -140,4 +140,52 @@ describe('<xh-designer-transform>（Chromium）', () => {
     pointer(document, 'pointerup', 400, 200)
     expect(seen.at(-1)!.phase).toBe('end')
   })
+
+  it('上下文工具条落在选中框上方居中、让开旋转柄，贴顶时翻到下方，左右不出覆盖层；接指针；移动中收起、松手再出现', async () => {
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.style.cssText = 'display:flex'
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = 'Bold'
+    let clicks = 0
+    button.addEventListener('click', () => clicks++)
+    bar.append(button)
+    overlay.append(bar)
+    overlay.items = [{ id: 'a', rect: { x: 100, y: 80, width: 100, height: 50 }, rotatable: true }]
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!
+    const frame = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    let box = toolbar.getBoundingClientRect()
+    const rotate = handle('rotate').getBoundingClientRect()
+    expect(toolbar.dataset.placement).toBe('top')
+    expect(box.bottom).toBeLessThanOrEqual(rotate.top + 1)
+    expect(Math.abs((box.left + box.right) / 2 - (frame.left + frame.right) / 2)).toBeLessThanOrEqual(1)
+    expect(getComputedStyle(toolbar).pointerEvents).toBe('auto')
+    button.click()
+    expect(clicks).toBe(1)
+
+    overlay.items = [{ id: 'a', rect: { x: -20, y: -15, width: 60, height: 30 } }]
+    await overlay.updateComplete
+    const near = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    box = toolbar.getBoundingClientRect()
+    const host = overlay.getBoundingClientRect()
+    expect(toolbar.dataset.placement).toBe('bottom')
+    expect(box.top).toBeGreaterThanOrEqual(near.bottom)
+    expect(box.left).toBeGreaterThanOrEqual(host.left)
+
+    const center = { x: (near.left + near.right) / 2, y: (near.top + near.bottom) / 2 }
+    const start = new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, isPrimary: true, pointerType: 'mouse', button: 0, clientX: center.x, clientY: center.y })
+    overlay.startMove(start)
+    pointer(document, 'pointermove', center.x + 30, center.y + 30)
+    await frames(2)
+    await overlay.updateComplete
+    expect(toolbar.hidden).toBe(true)
+    pointer(document, 'pointerup', center.x + 30, center.y + 30)
+    await overlay.updateComplete
+    overlay.items = [{ id: 'a', rect: { x: 100, y: 80, width: 60, height: 30 } }]
+    await overlay.updateComplete
+    expect(toolbar.hidden).toBe(false)
+  })
 })
