@@ -382,6 +382,13 @@ export function applyDefaults<T extends JsonValue>(target: T, descriptors: reado
   return result
 }
 
+/** 落在一个属性里的问题：path 相对这个属性，恰好落在属性上的是 []。 */
+export interface PropertyIssue {
+  readonly path: JsonPath
+  /** 显示给用户的文字，由设计器换好。 */
+  readonly message: string
+}
+
 /** 交给自定义编辑器的上下文；D 是属性描述，T 是被编辑的对象（如节点、元素、字段）。 */
 export interface PropertyEditorContext<D = unknown, T = unknown> {
   /** 属性的当前值，未设置时为 undefined。 */
@@ -396,6 +403,11 @@ export interface PropertyEditorContext<D = unknown, T = unknown> {
   readonly setValue: (value: JsonValue | undefined) => void
   /** 一次编辑结束（如失焦）：此后的写入另起一步撤销。 */
   readonly commit: () => void
+  /**
+   * 落在这个属性及其里层的问题，按路径排、同一路径只留一条，没有时是空数组。
+   * 复合编辑器（选项表、四边、列配置）据此把里层的问题标到对应的子项上。
+   */
+  readonly issues: readonly PropertyIssue[]
 }
 
 /** 编辑器实例：设计器把 element 放进属性面板，值或只读状态变化时调用 update，移除前调用 destroy。 */
@@ -406,6 +418,8 @@ export interface PropertyEditorInstance<D = unknown, T = unknown> {
   readonly update?: (context: PropertyEditorContext<D, T>) => void
   /** 从属性面板撤掉前调用。 */
   readonly destroy?: () => void
+  /** 编辑器自己把里层的问题标到子项上：只有里层问题时，设计器不在这一行下面重复显示它们。 */
+  readonly nestedIssues?: boolean
 }
 
 /** 自定义属性编辑器：按上下文创建一个编辑器实例。 */

@@ -8,7 +8,7 @@
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { DataField } from '@xihan-ui/designer-kit'
-import type { PropertyControl, PropertyOption } from '@xihan-ui/designer-kit/properties'
+import type { PropertyControl, PropertyIssue, PropertyOption } from '@xihan-ui/designer-kit/properties'
 import type { DesignerPropertiesTranslations } from '../translations'
 import type { FieldContext, FieldInstance } from './editors'
 import { createCounterIdGenerator } from '@xihan-ui/core'
@@ -70,6 +70,8 @@ export interface PropertyFieldState {
   readonly hint?: string
   /** 外面给的错误（如校验问题的文案）；控件自己发现的错误（如数字越界）优先显示。 */
   readonly error?: string
+  /** 落在这个字段值里层的问题，路径相对字段的值；四边这类有子项的编辑方式按它标出对应的一项。行下的文字仍取 error。 */
+  readonly issues?: readonly PropertyIssue[]
 }
 
 /** 一个独立的属性字段。 */
@@ -111,6 +113,7 @@ export function createPropertyField(options: PropertyFieldOptions, initial: Prop
     value: state.mixed ? undefined : state.value,
     descriptor,
     target: undefined,
+    issues: state.issues ?? [],
     readonly: state.readonly === true,
     mixed: state.mixed === true,
     translations: translations(),

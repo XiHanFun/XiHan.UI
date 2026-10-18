@@ -679,3 +679,112 @@ describe('<xh-designer-properties>', () => {
     expect(panel.focusField(['missing'])).toBe(false)
   })
 })
+
+describe('<xh-designer-properties> 里层的问题', () => {
+  const sheet: DesignerPropertyTarget = {
+    kind: 'form',
+    id: 'f1',
+    value: { options: [{ value: 'a' }, { value: 'b' }, { value: '' }], optionsExtra: 'x', style: { color: 'red', border: { width: 0 } } },
+    descriptors: [
+      { path: ['options'], control: { kind: 'option-table' }, label: '选项' },
+      { path: ['optionsExtra'], control: { kind: 'text' }, label: '附加' },
+      { path: ['style'], control: { kind: 'style' }, label: '样式' },
+      { path: ['style', 'color'], control: { kind: 'text' }, label: '颜色' },
+    ],
+  }
+  const at = (id: string, path: (string | number)[], message: string): { target: { kind: string, id: string }, path: (string | number)[], message: string } => ({ target: { kind: 'form', id }, path, message })
+  const errorText = (panel: Element, path: string): string | undefined => {
+    const element = row(panel, path).querySelector<HTMLElement>('[data-xh-part="error-text"], [data-part="property-error"]')
+    return element && !element.hidden && element.textContent ? element.textContent : undefined
+  }
+
+  /** 两个宿主编辑器：选项表自己标子项（nestedIssues），样式编辑器不标。记下每次拿到的 issues。 */
+  function editors(): { seen: Record<string, unknown[]>, table: Record<string, DesignerPropertyEditor> } {
+    const seen: Record<string, unknown[]> = { 'option-table': [], 'style': [] }
+    const make = (kind: string, nestedIssues: boolean): DesignerPropertyEditor => (context) => {
+      seen[kind]!.push(context.issues)
+      return { element: document.createElement('div'), nestedIssues, update: next => void seen[kind]!.push(next.issues) }
+    }
+    return { seen, table: { 'option-table': make('option-table', true), 'style': make('style', false) } }
+  }
+
+  it('按路径段归到最长前缀那一行：options 不吃 optionsExtra 的问题，嵌套描述归更具体的那一行；编辑器拿到相对属性的 issues', async () => {
+    const { seen, table } = editors()
+    const panel = await mount((element) => {
+      element.editors = { byControl: table }
+      element.targets = [sheet]
+      element.errors = [
+        at('f1', ['options', 2, 'value'], '第 3 行的值不能为空'),
+        at('f1', ['options'], '至少两个选项'),
+        at('f1', ['optionsExtra'], '附加不对'),
+        at('f1', ['style', 'color'], '颜色不对'),
+        at('f1', ['style', 'border', 'width'], '线宽要大于 0'),
+        at('f1', ['unknown'], '哪一行都不沾'),
+        at('f2', ['options', 0, 'value'], '别的对象'),
+      ]
+    })
+    expect(seen['option-table']!.at(-1)).toEqual([{ path: [], message: '至少两个选项' }, { path: [2, 'value'], message: '第 3 行的值不能为空' }])
+    expect(seen.style!.at(-1)).toEqual([{ path: ['border', 'width'], message: '线宽要大于 0' }])
+    expect([errorText(panel, 'options'), errorText(panel, 'optionsExtra'), errorText(panel, 'style.color')]).toEqual(['至少两个选项', '附加不对', '颜色不对'])
+
+    // 只有 optionsExtra 的问题时 options 那一行与它的编辑器都不沾
+    panel.errors = [at('f1', ['optionsExtra'], '附加不对')]
+    await panel.updateComplete
+    expect([seen['option-table']!.at(-1), errorText(panel, 'options'), errorText(panel, 'optionsExtra')]).toEqual([[], undefined, '附加不对'])
+  })
+
+  it('只有里层问题时：编辑器写了 nestedIssues 的行下不重复，没写的行下显示第一条里层问题；问题清掉后编辑器拿到空数组', async () => {
+    const { seen, table } = editors()
+    const panel = await mount((element) => {
+      element.editors = { byControl: table }
+      element.targets = [sheet]
+      element.errors = [at('f1', ['options', 2, 'value'], '第 3 行的值不能为空'), at('f1', ['style', 'border', 'width'], '线宽要大于 0')]
+    })
+    expect([errorText(panel, 'options'), errorText(panel, 'style')]).toEqual([undefined, '线宽要大于 0'])
+    expect(row(panel, 'style').hasAttribute('data-invalid') || row(panel, 'style').querySelector('[aria-invalid="true"], [invalid]') !== null).toBe(true)
+    panel.errors = []
+    await panel.updateComplete
+    expect([seen['option-table']!.at(-1), seen.style!.at(-1), errorText(panel, 'style')]).toEqual([[], [], undefined])
+  })
+
+  it('多选时合并各对象的问题，按路径排、同一路径只留第一条', async () => {
+    const { seen, table } = editors()
+    await mount((element) => {
+      element.editors = { byControl: table }
+      element.targets = [sheet, { ...sheet, id: 'f2' }]
+      element.errors = [
+        at('f2', ['options', 1, 'value'], '第 2 行（f2）'),
+        at('f1', ['options', 0, 'value'], '第 1 行（f1）'),
+        at('f2', ['options', 0, 'value'], '第 1 行（f2）'),
+        at('f1', ['options', 10, 'value'], '第 11 行'),
+      ]
+    })
+    expect(seen['option-table']!.at(-1)).toEqual([
+      { path: [0, 'value'], message: '第 1 行（f1）' },
+      { path: [1, 'value'], message: '第 2 行（f2）' },
+      { path: [10, 'value'], message: '第 11 行' },
+    ])
+  })
+
+  it('四边按里层路径把问题标到对应那一边，行下显示问题文字；四边相同时标在那一个框上', async () => {
+    const margin = (value: JsonValue): DesignerPropertyTarget => ({
+      kind: 'page',
+      id: 'p1',
+      value: { margin: value },
+      descriptors: [{ path: ['margin'], control: { kind: 'sides', min: 0, unit: 'mm' }, label: '页边距' }],
+    })
+    const panel = await mount((element) => {
+      element.targets = [margin({ top: 1, right: 2, bottom: 3, left: 4 })]
+      element.errors = [{ target: { kind: 'page', id: 'p1' }, path: ['margin', 'right'], message: '右边太窄' }]
+    })
+    const group = row(panel, 'margin')
+    const invalid = (): boolean[] => Array.from(group.querySelectorAll('xh-number-field'), box => box.hasAttribute('invalid'))
+    expect([invalid(), group.querySelector('[data-part="property-error"]')!.textContent]).toEqual([[false, true, false, false], '右边太窄'])
+    panel.targets = [margin({ top: 5, right: 5, bottom: 5, left: 5 })]
+    await panel.updateComplete
+    expect(invalid()).toEqual([true])
+    panel.errors = []
+    await panel.updateComplete
+    expect(invalid()).toEqual([false])
+  })
+})
