@@ -11,6 +11,7 @@ import {
   extensionControls,
   extensionEditors,
   extensionIssuePrefix,
+  findImporter,
   formatShortcut,
   getExtensionData,
   mergeExtensions,
@@ -89,6 +90,24 @@ describe('合并后的登记表', () => {
     expect(extensionControls([{ controls: { assignees: { check } } }, {}, { controls: { cron: {} } }])).toEqual({ assignees: { check }, cron: {} })
     const commands = extensionCommands<{ readonly n: number }>([{ commands: [command('undo'), command('redo')] }, { commands: [command('a.run')] }])
     expect([...commands.keys()]).toEqual(['undo', 'redo', 'a.run'])
+  })
+
+  it('findImporter：来源按先后、导入器按先后问，第一个接下的连同来源返回；都不接时为 undefined', () => {
+    const asked: string[] = []
+    const importer = (id: string, mime: string) => ({
+      id,
+      accepts: (source: { readonly mime?: string }): boolean => {
+        asked.push(`${id}:${source.mime}`)
+        return source.mime === mime
+      },
+    })
+    const image = importer('image', 'image/png')
+    const html = importer('html', 'text/html')
+    const sources = [{ kind: 'drop', mime: 'text/plain', text: 'a' }, { kind: 'drop', mime: 'text/html', text: '<b>a</b>' }] as const
+    expect(findImporter([image, html], sources)).toEqual({ importer: html, source: sources[1] })
+    expect(asked).toEqual(['image:text/plain', 'html:text/plain', 'image:text/html', 'html:text/html'])
+    expect(findImporter([image], sources)).toBeUndefined()
+    expect(findImporter([], sources)).toBeUndefined()
   })
 })
 

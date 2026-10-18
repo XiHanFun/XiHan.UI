@@ -165,6 +165,22 @@ export function extensionCommands<Ctx>(extensions: readonly Pick<DesignerExtensi
   return new Map(extensions.flatMap(extension => (extension.commands ?? []).map(command => [command.id, command] as const)))
 }
 
+/**
+ * 挑出接下导入的导入器：来源按先后，每个来源按导入器的先后问 accepts，第一个接下的连同那个来源一起返回；
+ * 都不接时返回 undefined。导入器按扩展顺序排好再传进来，粘贴、拖放与打开文件共用。
+ */
+export function findImporter<I extends Pick<DesignerImporter<never, unknown>, 'accepts'>>(
+  importers: readonly I[],
+  sources: readonly DesignerImportSource[],
+): { readonly importer: I, readonly source: DesignerImportSource } | undefined {
+  for (const source of sources) {
+    const importer = importers.find(item => item.accepts(source))
+    if (importer !== undefined)
+      return { importer, source }
+  }
+  return undefined
+}
+
 /** 扩展问题码的前缀：扩展 id 的末段，@xihan-flow-pro/simulation 是 simulation。 */
 export function extensionIssuePrefix(id: string): string {
   return id.slice(id.lastIndexOf('/') + 1)

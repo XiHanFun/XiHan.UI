@@ -495,6 +495,7 @@ host.dispose(); // 元素离开文档时调用
 | `extensionEditors(base, extensions)` | 编辑器表：`base` 是设计器内建的那层 |
 | `extensionControls(extensions)` | 编辑方式合成一张表 |
 | `extensionCommands(extensions)` | 命令按登记顺序排成 `Map`，键是命令 id |
+| `findImporter(importers, sources)` | 挑出接下导入的导入器：来源按先后，每个来源按导入器的先后问 `accepts`，返回第一个接下的与那个来源；都不接时为 `undefined`。粘贴与拖放的数据由 designer-shell 的 `importSources` 列成来源 |
 | `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
 | `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
 | `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用的命令；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
