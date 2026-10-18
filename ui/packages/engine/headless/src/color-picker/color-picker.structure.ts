@@ -18,6 +18,7 @@ export const COLOR_PICKER_STRUCTURE_PARTS = [
   'control',
   'tag-list',
   'trigger',
+  'clear-trigger',
   'value-text',
   'swatch',
   'positioner',
@@ -163,6 +164,9 @@ export function colorPickerStructure(model: ColorPickerStructureModel, options: 
         { key: 'value-text', tag: 'span', part: 'value-text' },
       ],
     })
+    // 单选才有清空钮：多选的值在标签里一枚枚删
+    if (!multiple)
+      control.push({ key: 'clear-trigger', tag: 'button', part: 'clear-trigger' })
     nodes.push({ key: 'control', tag: 'div', part: 'control', children: control })
   }
   else {

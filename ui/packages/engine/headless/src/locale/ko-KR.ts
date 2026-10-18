@@ -229,6 +229,8 @@ const translations = {
     recentSwatchGroup: '최근 사용한 색상',
     eyeDropperTrigger: '화면에서 색상 선택',
     confirmTrigger: '추가',
+    placeholder: '색상 없음',
+    clearTrigger: '지우기',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

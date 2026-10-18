@@ -54,6 +54,7 @@ const PSEUDO = {
 /** 通道 ②：`[data-placeholder]` 属性钩子，组件 → 承载占位文字的部件。 */
 const ATTR = {
   'cascader': 'value-text',
+  'color-picker': 'value-text',
   'date-field': 'segment',
   'editable': 'preview',
   'select': 'value-text',

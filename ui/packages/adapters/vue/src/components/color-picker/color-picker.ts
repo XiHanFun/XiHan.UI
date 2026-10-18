@@ -73,6 +73,8 @@ export const XhColorPickerRoot = defineComponent({
     defaultRecentColors: { type: Array as PropType<string[]> },
     maxRecentColors: { type: Number },
     name: { type: String },
+    /** 单选未选（值为空数组）时值文字显示的提示；缺省取 translations.placeholder。 */
+    placeholder: { type: String },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<ControlVariant> },
     dir: { type: String as PropType<Direction> },
@@ -89,6 +91,8 @@ export const XhColorPickerRoot = defineComponent({
     'update:open': (_open: PayloadOf<ColorPickerProps, 'onOpenChange'>['open']) => true,
     'recent-colors-change': (_details: PayloadOf<ColorPickerProps, 'onRecentColorsChange'>) => true,
     'update:recentColors': (_recentColors: PayloadOf<ColorPickerProps, 'onRecentColorsChange'>['recentColors']) => true,
+    // 用户按清空钮清掉了值：先发值变化，再发它
+    'clear': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: ColorPickerRootSlotProps) => VNode[]
@@ -113,6 +117,7 @@ export const XhColorPickerRoot = defineComponent({
       onOpenChange: notifyOpen,
       onColorError: notifyColorError,
       onRecentColorsChange: notifyRecent,
+      onClear: () => emit('clear'),
     })
     provideColorPicker(ctx)
     return () => {
@@ -180,15 +185,24 @@ export const XhColorPickerTrigger = defineComponent({
   },
 })
 
+export const XhColorPickerClearTrigger = defineComponent({
+  name: 'XhColorPickerClearTrigger',
+  setup(_, { slots }) {
+    const ctx = useColorPickerContext()
+    // 触发钮的兄弟节点：单选有值时才显示，按下清回未选
+    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhColorPickerValueText = defineComponent({
   name: 'XhColorPickerValueText',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    // 有插槽用插槽，否则显示工作色的值串
+    // 有插槽用插槽，否则显示工作色的值串；单选未选时是占位提示
     return () => h(
       'span',
       ctx.api.value.getValueTextProps() as Record<string, unknown>,
-      slots.default?.() ?? ctx.api.value.color,
+      slots.default?.() ?? ctx.api.value.valueText,
     )
   },
 })
@@ -442,6 +456,7 @@ const COLOR_PICKER_PARTS = {
   'control': XhColorPickerControl,
   'tag-list': XhColorPickerTagList,
   'trigger': XhColorPickerTrigger,
+  'clear-trigger': XhColorPickerClearTrigger,
   'value-text': XhColorPickerValueText,
   'swatch': XhColorPickerSwatch,
   'positioner': XhColorPickerPositioner,

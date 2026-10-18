@@ -229,6 +229,8 @@ const translations = {
     recentSwatchGroup: 'Colores recientes',
     eyeDropperTrigger: 'Seleccionar un color de la pantalla',
     confirmTrigger: 'Añadir',
+    placeholder: 'Sin color',
+    clearTrigger: 'Borrar',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

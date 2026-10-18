@@ -62,7 +62,7 @@ export interface ColorPickerContext {
 
 export function useColorPicker(
   props: ColorPickerSchema['props'],
-  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError' | 'onRecentColorsChange'> = {},
+  handlers: Pick<ColorPickerSchema['props'], 'onValueChange' | 'onOpenChange' | 'onColorError' | 'onRecentColorsChange' | 'onClear'> = {},
 ): ColorPickerContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)

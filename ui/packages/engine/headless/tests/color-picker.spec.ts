@@ -1280,3 +1280,84 @@ describe('connectColorPicker 无效与必填', () => {
     expect(input.value).toBe('#ff0000')
   })
 })
+
+describe('单选的未选与清空钮', () => {
+  function click(props: Dict): void {
+    const target = document.createElement('button')
+    ;(props.onClick as (event: MouseEvent) => void)({ currentTarget: target } as unknown as MouseEvent)
+  }
+
+  it('value 给空数组是未选：值为空、值文字是缺省提示、色块不画颜色、表单影子是空串、清空钮收起', () => {
+    const s = makeService({ value: [], name: 'tint' })
+    const a = api(s)
+    expect([a.empty, a.value, a.valueText]).toEqual([true, [], 'No color'])
+    const valueText = a.getValueTextProps() as Dict
+    expect(valueText['data-placeholder']).toBe('')
+    const swatch = a.getSwatchProps() as Dict
+    expect(swatch['data-empty']).toBe('')
+    expect(swatch['data-value']).toBeUndefined()
+    expect((swatch.style as Dict)['--xh-_swatch-color']).toBe('')
+    expect((a.getHiddenInputProps() as Dict).value).toBe('')
+    expect((a.getClearTriggerProps() as Dict).hidden).toBe(true)
+    // 取色面仍从 #000000 起调
+    expect(a.color).toBe('#000000')
+  })
+
+  it('作者的 placeholder 盖过缺省提示，translations 也能改；不给值时照旧从 #000000 起、算作已选', () => {
+    expect(api(makeService({ value: [], placeholder: '跟随主题色' })).valueText).toBe('跟随主题色')
+    expect(api(makeService({ defaultValue: [], translations: { placeholder: '未选颜色' } })).valueText).toBe('未选颜色')
+    const plain = api(makeService())
+    expect([plain.empty, plain.value, plain.valueText]).toEqual([false, ['#000000'], '#000000'])
+  })
+
+  it('有值时清空钮出现；按下清回未选，先发 value 为空数组的值变化，再发 onClear', () => {
+    const calls: string[] = []
+    const s = makeService({
+      defaultValue: '#3b82f6',
+      onValueChange: ({ value }) => calls.push(`value:${JSON.stringify(value)}`),
+      onClear: () => calls.push('clear'),
+    })
+    const clear = api(s).getClearTriggerProps() as Dict
+    expect([clear.hidden, clear.tabindex, clear['aria-label'], clear['data-xh-action-has-value']]).toEqual([undefined, -1, 'Clear', ''])
+    click(clear)
+    expect(calls).toEqual(['value:[]', 'clear'])
+    expect([api(s).empty, api(s).value]).toEqual([true, []])
+    expect((api(s).getClearTriggerProps() as Dict).hidden).toBe(true)
+  })
+
+  it('未选时选定一个颜色就离开未选；与起调色相同的 #000000 也照样通知', () => {
+    const onValueChange = vi.fn()
+    const s = makeService({ defaultValue: [], onValueChange })
+    s.send({ type: 'VALUE.SET', value: '#000000', source: 'swatch' })
+    expect(onValueChange).toHaveBeenCalledWith({ value: ['#000000'] })
+    expect([api(s).empty, api(s).value]).toEqual([false, ['#000000']])
+  })
+
+  it('受控：按清空钮只发意图，宿主写回空数组才进入未选；api.setValue([]) 清回未选、不发 onClear', () => {
+    const props: Props = { value: ['#3b82f6'], onValueChange: vi.fn(), onClear: vi.fn() }
+    const s = makeService(props)
+    click(api(s).getClearTriggerProps() as Dict)
+    expect(props.onValueChange).toHaveBeenCalledWith({ value: [] })
+    expect(api(s).empty).toBe(false)
+    props.value = []
+    expect(api(s).empty).toBe(true)
+
+    const onClear = vi.fn()
+    const free = makeService({ defaultValue: '#3b82f6', onClear })
+    api(free).setValue([])
+    expect([api(free).empty, onClear.mock.calls.length]).toEqual([true, 0])
+  })
+
+  it('禁用、只读、多选与常驻形态都没有清空钮', () => {
+    for (const props of [{ disabled: true }, { readOnly: true }, { selectionMode: 'multiple' as const }, { inline: true }])
+      expect((api(makeService({ defaultValue: '#3b82f6', ...props })).getClearTriggerProps() as Dict).hidden).toBe(true)
+  })
+
+  it('表单重置回到 defaultValue 声明的未选', () => {
+    const s = makeService({ defaultValue: [] })
+    s.send({ type: 'VALUE.SET', value: '#3b82f6' })
+    expect(api(s).empty).toBe(false)
+    s.send({ type: 'FORM.RESET' })
+    expect(api(s).empty).toBe(true)
+  })
+})

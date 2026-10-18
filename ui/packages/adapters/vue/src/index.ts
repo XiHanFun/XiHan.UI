@@ -236,6 +236,7 @@ export {
   XhColorPickerAlphaSlider,
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
+  XhColorPickerClearTrigger,
   XhColorPickerConfirmTrigger,
   XhColorPickerContent,
   XhColorPickerControl,
