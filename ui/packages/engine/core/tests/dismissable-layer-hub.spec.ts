@@ -836,10 +836,14 @@ describe('dismissableLayer Document Hub', () => {
     const firstRegistry = createLayerRegistry(document)
     const secondRegistry = createLayerRegistry(document)
     let planning = false
+    let registering = false
     let disposeExtra: (() => void) | null = null
+    const readSecondNode = vi.fn((node: HTMLElement) => node)
     participant(firstRegistry, 'first', {
       nodeGetter: (node) => {
-        if (planning && !disposeExtra) {
+        // 登记那一层时注册表会回读各层节点（判断嵌套），重入这里时不再登记第二层
+        if (planning && !disposeExtra && !registering) {
+          registering = true
           const extra = document.createElement('div')
           document.body.append(extra)
           const registration = secondRegistry.register({
@@ -849,6 +853,8 @@ describe('dismissableLayer Document Hub', () => {
             isModal: () => false,
             surfaces: () => [],
           })
+          // 登记时注册表为判断嵌套会读已登记层的节点，这不算 Hub 的读取
+          readSecondNode.mockClear()
           disposeExtra = () => {
             registration.dispose()
             extra.remove()
@@ -857,7 +863,6 @@ describe('dismissableLayer Document Hub', () => {
         return node
       },
     })
-    const readSecondNode = vi.fn((node: HTMLElement) => node)
     const second = participant(secondRegistry, 'second', { nodeGetter: readSecondNode })
     cleanups.push(() => disposeExtra?.())
     await arm()
@@ -875,10 +880,13 @@ describe('dismissableLayer Document Hub', () => {
     const readLowerNode = vi.fn((node: HTMLElement) => node)
     const lower = participant(registry, 'lower', { nodeGetter: readLowerNode })
     let planning = false
+    let registering = false
     let disposeExtra: (() => void) | null = null
     const top = participant(registry, 'top', {
       nodeGetter: (node) => {
-        if (planning && !disposeExtra) {
+        // 登记那一层时注册表会回读各层节点（判断嵌套），重入这里时不再登记第二层
+        if (planning && !disposeExtra && !registering) {
+          registering = true
           const extra = document.createElement('div')
           document.body.append(extra)
           const registration = registry.register({
@@ -888,6 +896,8 @@ describe('dismissableLayer Document Hub', () => {
             isModal: () => false,
             surfaces: () => [],
           })
+          // 登记时注册表为判断嵌套会读已登记层的节点，这不算 Hub 的读取
+          readLowerNode.mockClear()
           disposeExtra = () => {
             registration.dispose()
             extra.remove()

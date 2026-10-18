@@ -105,6 +105,8 @@ export interface LayerRegistry {
 
 默认情况下同一 Document 共用一个注册表，Vue、React 与 Web Components 的浮层都登记在这里；注册表挂在 Document 上，页面上同时装了几份 `@xihan-ui/core`（应用与设计器各自打包、或装了两个版本）时取到的也是同一个。Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数同样是每个 Document 一份。自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
 
+栈的先后缺省按登记先后排；新登记的层如果开在另一层的内容里（它的根节点或某个分支，比如触发器、输入框，落在那一层的根节点之内），就排在那一层之上，不管谁先登记：对话框和里面缺省展开的下拉同一刻打开、下拉先登记时，下拉照样在上，Esc 先关它。
+
 视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
 `visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
 权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的

@@ -233,7 +233,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "813 kB",
+    "limit": "814 kB",
     "ignore": [
       "vue"
     ]
@@ -322,7 +322,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "811 kB"
+    "limit": "812 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
@@ -341,7 +341,7 @@
     "name": "web-components/services",
     "path": "packages/adapters/web-components/dist/services.js",
     "gzip": true,
-    "limit": "67 kB"
+    "limit": "68 kB"
   },
   {
     "name": "styles",

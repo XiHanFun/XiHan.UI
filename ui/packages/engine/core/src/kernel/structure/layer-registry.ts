@@ -51,7 +51,7 @@ export interface LayerRegistry {
   /** 该层栈唯一归属的 Document。 */
   readonly ownerDocument: Document
   register: (layer: Omit<Layer, 'id'>) => { layer: Layer, dispose: Cleanup }
-  /** 按创建序返回冻结快照；索引即层级。 */
+  /** 返回冻结快照，索引即层级：按登记先后排，开在另一层内容里的层排在那一层之上。 */
   list: () => readonly Layer[]
   top: () => Layer | undefined
   indexOf: (layer: Layer) => number
@@ -65,6 +65,34 @@ export interface LayerRegistry {
   elementsAbove: (layer: Layer) => Element[]
   /** 订阅栈变化；回调参数是冻结快照。 */
   subscribe: (fn: (layers: readonly Layer[]) => void) => Cleanup
+}
+
+/** 层留在原处的节点：没搬走时的根节点，加上触发器、输入框这类分支。 */
+function originsOf(layer: Layer): Element[] {
+  const node = layer.node()
+  return node ? [node, ...layer.branches()] : layer.branches()
+}
+
+/** inner 是不是开在 outer 的内容里：inner 的根节点或某个分支落在 outer 的根节点之内。 */
+function opensInside(inner: Layer, outer: Layer): boolean {
+  const content = outer.node()
+  if (!content)
+    return false
+  return originsOf(inner).some(el => el !== content && contains(content, el))
+}
+
+/**
+ * 新层插在栈里的位置：缺省排在最上面；开在哪几层的内容里就排在它们之上；
+ * 已有的层开在新层的内容里时，新层排到其中最低那层之下，不管谁先登记。
+ */
+function insertionIndex(existing: readonly Layer[], layer: Layer): number {
+  let floor = 0
+  existing.forEach((other, index) => {
+    if (opensInside(layer, other))
+      floor = index + 1
+  })
+  const firstChild = existing.findIndex((other, index) => index >= floor && opensInside(other, layer))
+  return firstChild === -1 ? existing.length : firstChild
 }
 
 export function createLayerRegistry(doc: Document): LayerRegistry {
@@ -146,7 +174,8 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
   const register: LayerRegistry['register'] = input => runChange(() => {
     const id = `layer-${++seq}`
     const layer: Layer = Object.freeze({ ...input, id })
-    publishRegistration(frozenSnapshot([...layers, layer]))
+    const at = insertionIndex(layers, layer)
+    publishRegistration(frozenSnapshot([...layers.slice(0, at), layer, ...layers.slice(at)]))
 
     let disposed = false
     const dispose: Cleanup = () => {
