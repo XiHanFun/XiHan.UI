@@ -40,4 +40,18 @@ describe('零件宿主的 hidden（Chromium）', () => {
     expect(hidden.length).toBeGreaterThan(0)
     expect(hidden.filter(element => getComputedStyle(element).display !== 'none').map(element => element.dataset.part)).toEqual([])
   })
+
+  // 放进外框卡片时零件写 headless，标题交给面板头，零件自己的头部或标题收起
+  it.each(['xh-designer-properties', 'xh-designer-palette', 'xh-designer-issues'])('%s 写 headless 后收起的部件都不显示，也不占高度', async (tag) => {
+    const host = document.createElement(tag) as HTMLElement & { headless?: boolean, updateComplete?: Promise<unknown> }
+    host.headless = true
+    if (tag === 'xh-designer-issues')
+      Object.assign(host, { items: [{ issue: { code: 'required', path: [] }, message: 'Required' }] })
+    hosts.push(host)
+    document.body.append(host)
+    await host.updateComplete
+    const hidden = Array.from(host.querySelectorAll<HTMLElement>('[hidden]'))
+    expect(hidden.length).toBeGreaterThan(0)
+    expect(hidden.filter(element => getComputedStyle(element).display !== 'none' || element.getBoundingClientRect().height > 0).map(element => element.dataset.part)).toEqual([])
+  })
 })
