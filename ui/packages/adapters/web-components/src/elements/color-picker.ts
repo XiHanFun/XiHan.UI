@@ -91,8 +91,8 @@ const STRING_LIST_CONVERTER = {
  *
  * @customElement xh-color-picker
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
- * @attr {string} value - 受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property
- * @attr {string} default-value - 非受控初值，默认 #000000；多选的数组只走 property
+ * @attr {string} value - 受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property；单选给空数组（property）是未选：色块不画颜色，value-text 显示 placeholder
+ * @attr {string} default-value - 非受控初值，默认 #000000；多选的数组与单选的未选（空数组）只走 property
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签
  * @attr {number} max-selected - multiple 下最多选几个颜色
  * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
@@ -115,10 +115,12 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {string} name - 表单字段名；提供后 hidden-input 才带 name 并参与提交
+ * @attr {string} placeholder - 单选未选时 value-text 显示的提示；缺省取 translations.placeholder
  * @fires value-change - 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
  * @fires recent-colors-change - 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }`
+ * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。
  * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
@@ -128,7 +130,8 @@ const STRING_LIST_CONVERTER = {
  * @csspart item-delete-trigger - 标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦；可及名使用 translations.deleteItem
  * @csspart overflow-tag - 折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N；没有折叠的标签时带 hidden
  * @csspart trigger - 触发按钮，须是原生 button；同时是浮层的定位锚点。多选时按退格摘掉最后一个选中颜色
- * @csspart value-text - 工作色值串的显示位；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden
+ * @csspart clear-trigger - 清空按钮，须是原生 button，放在 control 里、trigger 之后；不占 Tab 位，可及名使用 translations.clearTrigger；单选有值时才显示，多选与未选时带 hidden
+ * @csspart value-text - 工作色值串的显示位，单选未选时是 placeholder；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden
  * @csspart swatch - 工作色的色块（aria-hidden，背景由连接层写为内联样式）
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden；常驻形态下是 role=group 的取色面
@@ -195,6 +198,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     defaultRecentColors: { converter: STRING_LIST_CONVERTER, attribute: 'default-recent-colors' },
     maxRecentColors: { converter: NUMBER_CONVERTER, attribute: 'max-recent-colors' },
     name: { converter: STRING_CONVERTER },
+    placeholder: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -224,6 +228,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare defaultRecentColors?: string[]
   declare maxRecentColors?: number
   declare name?: string
+  declare placeholder?: string
   declare size?: Size
   declare variant?: ControlVariant
   declare direction?: Direction
@@ -259,6 +264,10 @@ export class XhColorPickerElement extends XhPortalHostElement {
 
   private readonly notifyRecent = (details: ColorPickerRecentColorsChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('recent-colors-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyClear = (): void => {
+    this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<ColorPickerSchema>(
@@ -367,6 +376,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       defaultRecentColors: this.defaultRecentColors,
       maxRecentColors: this.maxRecentColors,
       name: this.name,
+      placeholder: this.placeholder,
       size: this.size,
       variant: this.variant,
       dir: this.direction,
@@ -377,6 +387,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       onOpenChange: this.notifyOpen,
       onColorError: this.notifyColorError,
       onRecentColorsChange: this.notifyRecent,
+      onClear: this.notifyClear,
     }
   }
 
@@ -656,6 +667,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       }
     }
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('swatch', api.getSwatchProps() as Record<string, unknown>)
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
@@ -670,11 +682,11 @@ export class XhColorPickerElement extends XhPortalHostElement {
       ? api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>)
       : [api.getHiddenInputProps() as Record<string, unknown>])
 
-    // 工作色值串的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
+    // 工作色值串（单选未选时是占位提示）的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
     const valueText = this.ownPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
-      this.fillValueText(valueText, api.color)
+      this.fillValueText(valueText, api.valueText)
     }
 
     // 两条内嵌颜色滑块

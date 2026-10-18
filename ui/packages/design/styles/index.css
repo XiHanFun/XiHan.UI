@@ -24792,6 +24792,8 @@
 
   /* 标签一行、盒一行的两行堆叠 */
   .xh-scope-color-picker[data-part='root'] {
+    /* 作者塞进清空钮的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-color-picker-icon-size, var(--xh-glyph-size-md));
     /* 盒的度量走私有槽中转，与同族的下拉选择一处对一处 */
     --xh-_color-picker-h: var(--xh-control-h-md);
     --xh-_color-picker-px: var(--xh-control-px-md);
@@ -24812,12 +24814,14 @@
   /* 缺省档写在上面的基础规则里。浮层那一侧也要挂：positioner 被搬到 portal 落点，
      继承不到根上的私有槽，所以两个部件一起收 */
   .xh-scope-color-picker:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
+    --xh-icon-size: var(--xh-color-picker-icon-size, var(--xh-glyph-size-sm));
     --xh-_color-picker-h: var(--xh-control-h-sm);
     --xh-_color-picker-px: var(--xh-control-px-sm);
     --xh-_color-picker-gap: var(--xh-control-gap-sm);
   }
 
   .xh-scope-color-picker:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
+    --xh-icon-size: var(--xh-color-picker-icon-size, var(--xh-glyph-size-lg));
     --xh-_color-picker-h: var(--xh-control-h-lg);
     --xh-_color-picker-px: var(--xh-control-px-lg);
     --xh-_color-picker-gap: var(--xh-control-gap-lg);
@@ -24942,6 +24946,72 @@
     text-align: start;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  /* 单选未选：值文字显示的是占位提示，画淡一档 */
+  .xh-scope-color-picker[data-part='value-text'][data-placeholder] {
+    color: var(--xh-color-picker-placeholder-fg, var(--xh-fg-subtle));
+  }
+
+  /* 单选未选：色块不画颜色层，在承载面上画一道对角斜线表示「无」，与半透明色下的棋盘格分得开 */
+  .xh-scope-color-picker[data-part='swatch'][data-empty] {
+    background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - var(--xh-stroke-thin) / 2),
+      var(--xh-color-picker-swatch-empty-stroke, var(--xh-border-control)) calc(50% - var(--xh-stroke-thin) / 2),
+      var(--xh-color-picker-swatch-empty-stroke, var(--xh-border-control)) calc(50% + var(--xh-stroke-thin) / 2),
+      transparent calc(50% + var(--xh-stroke-thin) / 2)
+    );
+  }
+
+  /* 清空钮：触发钮的兄弟节点，单选有值时才露面。悬停 100 / 按下 200、粗指针热区、禁用面与 :focus-visible 关环
+     （盒的 :focus-within 已画了一圈）全由 Action Control 的 field-inset ghost 档给，组件只映射覆盖槽 */
+  .xh-scope-color-picker[data-part='clear-trigger'] {
+    --xh-action-visual-size: var(--xh-color-picker-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-color-picker-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-color-picker-action-radius, var(--xh-shape-inset));
+    /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+    --xh-action-bg-rest: var(--xh-color-picker-action-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-color-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-color-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    /* 字号钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
+    --xh-action-font-size: var(--xh-color-picker-action-font-size, var(--xh-text-secondary-size));
+    /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+    border-width: 0;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */
+  .xh-scope-color-picker[data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+  @media (forced-colors: active) {
+    /* 兜底字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失。
+       字形退出强制换色、直接写系统色：按钮面上取 ButtonText，悬停与按下时家族把按钮涂成 Highlight、字形换 HighlightText */
+    .xh-scope-color-picker[data-part='clear-trigger']:empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    .xh-scope-color-picker[data-part='clear-trigger']:is(:hover, :active, [data-pressed]):empty::before {
+      background-color: HighlightText;
+    }
   }
 
   /* 坐标由定位引擎写进 style（inset-inline-start / inset-block-start），这里只定位模式与层级 */
@@ -25344,6 +25414,7 @@
      content 的收起交给 presence：退场结束后由适配器写内联 display:none，避免截断动画。 */
   .xh-scope-color-picker[data-part='root'][hidden],
   .xh-scope-color-picker[data-part='trigger'][hidden],
+  .xh-scope-color-picker[data-part='clear-trigger'][hidden],
   .xh-scope-color-picker[data-part='saturation-area'][hidden],
   .xh-scope-color-picker[data-part='area-thumb'][hidden],
   .xh-scope-color-picker[data-part='hue-slider'][hidden],

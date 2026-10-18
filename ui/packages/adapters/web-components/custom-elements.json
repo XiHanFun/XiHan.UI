@@ -12792,7 +12792,11 @@
               "name": "trigger"
             },
             {
-              "description": "工作色值串的显示位；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden",
+              "description": "清空按钮，须是原生 button，放在 control 里、trigger 之后；不占 Tab 位，可及名使用 translations.clearTrigger；单选有值时才显示，多选与未选时带 hidden",
+              "name": "clear-trigger"
+            },
+            {
+              "description": "工作色值串的显示位，单选未选时是 placeholder；留空即由元素填入，作者写了内容则由作者负责。多选时带 hidden",
               "name": "value-text"
             },
             {
@@ -13082,6 +13086,15 @@
             },
             {
               "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -13203,6 +13216,12 @@
             {
               "kind": "field",
               "name": "notifyRecent",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyClear",
               "privacy": "private",
               "readonly": true
             },
@@ -13800,6 +13819,10 @@
               "type": {
                 "text": "ColorPickerRecentColorsChangeDetails"
               }
+            },
+            {
+              "description": "用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。",
+              "name": "clear"
             }
           ],
           "attributes": [
@@ -13815,7 +13838,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property",
+              "description": "受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property；单选给空数组（property）是未选：色块不画颜色，value-text 显示 placeholder",
               "name": "value",
               "fieldName": "value"
             },
@@ -13823,7 +13846,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "非受控初值，默认 #000000；多选的数组只走 property",
+              "description": "非受控初值，默认 #000000；多选的数组与单选的未选（空数组）只走 property",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -14002,6 +14025,14 @@
               "description": "表单字段名；提供后 hidden-input 才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "单选未选时 value-text 显示的提示；缺省取 translations.placeholder",
+              "name": "placeholder",
+              "fieldName": "placeholder"
             }
           ],
           "superclass": {
@@ -14150,6 +14181,9 @@
               "name": "--xh-color-picker-hue-slider-gap"
             },
             {
+              "name": "--xh-color-picker-icon-size"
+            },
+            {
               "name": "--xh-color-picker-input-bg"
             },
             {
@@ -14204,6 +14238,9 @@
               "name": "--xh-color-picker-max-h"
             },
             {
+              "name": "--xh-color-picker-placeholder-fg"
+            },
+            {
               "name": "--xh-color-picker-saturation-area-h"
             },
             {
@@ -14226,6 +14263,9 @@
             },
             {
               "name": "--xh-color-picker-swatch-cell"
+            },
+            {
+              "name": "--xh-color-picker-swatch-empty-stroke"
             },
             {
               "name": "--xh-color-picker-swatch-gap"

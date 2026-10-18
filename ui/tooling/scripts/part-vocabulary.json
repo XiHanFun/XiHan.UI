@@ -216,6 +216,7 @@
     "clear-trigger": [
       "cascader",
       "color-field",
+      "color-picker",
       "combobox",
       "date-field",
       "date-picker",

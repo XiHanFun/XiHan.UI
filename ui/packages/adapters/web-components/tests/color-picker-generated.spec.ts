@@ -49,14 +49,15 @@ function partsOf(parent: Element): string[] {
 }
 
 describe('xh-color-picker 生成结构', () => {
-  it('什么都不写：生成标题、盒里的触发钮（色块与值串）与浮层里的取色面，内嵌滑块带自己的 scope', async () => {
+  it('什么都不写：生成标题、盒里的触发钮（色块与值串）与清空钮、浮层里的取色面，内嵌滑块带自己的 scope', async () => {
     const records: DiagnosticRecord[] = []
     stops.push(onDiagnostic(record => records.push(record)))
     const el = mount({ label: '品牌色', defaultValue: '#3b82f6' })
     await settle(el)
 
     expect(partsOf(part(el, 'root')!)).toEqual(['label', 'control', 'positioner'])
-    expect(partsOf(part(el, 'control')!)).toEqual(['trigger'])
+    expect(partsOf(part(el, 'control')!)).toEqual(['trigger', 'clear-trigger'])
+    expect(part(el, 'clear-trigger')!.hasAttribute('hidden')).toBe(false)
     const trigger = part(el, 'trigger')!
     expect(partsOf(trigger)).toEqual(['swatch', 'value-text'])
     expect(part(el, 'value-text')!.textContent).toBe('#3b82f6')

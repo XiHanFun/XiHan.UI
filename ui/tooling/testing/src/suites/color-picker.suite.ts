@@ -238,7 +238,7 @@ export const colorPickerSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { label: '品牌色', defaultValue: '#3b82f6', swatches: ['#ff0000', '#00ff00'], name: 'theme' },
       initial: {
-        order: ['root', 'label', 'control', 'trigger', 'swatch', 'value-text', 'hidden-input', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'swatch-picker', 'recent-swatch-picker'],
+        order: ['root', 'label', 'control', 'trigger', 'swatch', 'value-text', 'clear-trigger', 'hidden-input', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'swatch-picker', 'recent-swatch-picker'],
         parts: {
           'trigger': { 'aria-haspopup': 'dialog', 'aria-expanded': 'false' },
           'content': { hidden: '' },
@@ -247,6 +247,62 @@ export const colorPickerSuite: ConformanceSuite = {
       },
       steps: [
         { kind: 'click', part: 'trigger', expect: { parts: { content: { hidden: null } } } },
+      ],
+    },
+    {
+      name: '单选未选：值给空数组时色块不画颜色、值文字显示占位提示，不显示 #000000，清空钮收起',
+      spec: { apg: APG_DIALOG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultValue: [], placeholder: '未选颜色' },
+      initial: {
+        order: ['root', 'control', 'trigger', 'swatch', 'value-text', 'clear-trigger', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'recent-swatch-picker'],
+        parts: {
+          'clear-trigger': { hidden: '' },
+          'value-text': { 'data-placeholder': '' },
+          'swatch': { 'data-empty': '', 'data-value': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'value-text 的文字进不了归一化快照',
+          run: ({ doc }) => {
+            const text = findPart(doc, 'value-text').textContent
+            if (text !== '未选颜色')
+              throw new Error(`未选时 value-text 应显示占位提示，实际 ${text}`)
+          },
+        },
+      ],
+    },
+    {
+      name: '单选有值时清空钮露面、不占 Tab 位；按下清回未选，先派 value-change（空数组）再派 clear',
+      spec: { apg: APG_DIALOG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultValue: '#3b82f6' },
+      initial: {
+        parts: {
+          'clear-trigger': { 'hidden': null, 'tabindex': '-1', 'aria-label': 'Clear', 'data-xh-action-display': 'has-value', 'data-xh-action-has-value': '' },
+          'value-text': { 'data-placeholder': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'clear-trigger',
+          expect: {
+            parts: { 'clear-trigger': { hidden: '' }, 'value-text': { 'data-placeholder': '' }, 'swatch': { 'data-empty': '' } },
+            events: [{ type: 'value-change', detail: { value: [] } }, { type: 'clear', detail: null }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: 'value-text 的文字进不了归一化快照',
+          run: ({ doc }) => {
+            const text = findPart(doc, 'value-text').textContent
+            if (text !== 'No color')
+              throw new Error(`清空后 value-text 应显示缺省占位提示，实际 ${text}`)
+          },
+        },
       ],
     },
     {

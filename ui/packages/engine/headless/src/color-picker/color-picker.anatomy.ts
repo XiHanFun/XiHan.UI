@@ -19,6 +19,7 @@ export const colorPickerAnatomy = createAnatomy('color-picker', [
   'control',
   'tag-list',
   'trigger',
+  'clear-trigger',
   'value-text',
   'swatch',
   'positioner',

@@ -16,7 +16,7 @@ import { contains, dataAttr, isComposingEvent, mergeProps } from '@xihan-ui/core
 import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
 import { COLOR_PICKER_EN_US } from '../locale/en-US'
-import { COLOR_FALLBACK, colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
+import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { pressHandlers } from '../shared/press'
 import { connectSelectionTags } from '../shared/selection-tags'
@@ -64,8 +64,10 @@ export function connectColorPicker<T extends PropTypes>(
   const value = context.get('value')
   const multiple = prop('selectionMode') === 'multiple'
   const selected = context.get('selected')
-  /** 对外的选中值：单选恒为一项，多选按加入先后。 */
-  const values = multiple ? selected : [value]
+  // 单选还没选颜色：色块不画颜色、值文字显示占位提示；取色面仍从工作色起调
+  const blank = !multiple && context.get('blank')
+  /** 对外的选中值：单选是一项、未选时为空，多选按加入先后。 */
+  const values = multiple ? selected : blank ? [] : [value]
   const draft = context.get('draft')
   const dragTarget = context.get('dragTarget')
   const eyeDropperSupported = context.get('eyeDropperSupported')
@@ -88,6 +90,9 @@ export function connectColorPicker<T extends PropTypes>(
   const label = resolveTranslations(COLOR_PICKER_EN_US, prop('translations'))
   // 只读与禁用都不改值；区别在于浮层还开不开得了、控件还聚不聚得上焦
   const interactive = !disabled && !readOnly
+  const valueText = blank ? (prop('placeholder') ?? label.placeholder) : value
+  // 清空钮：单选有值、改得动时才显示；常驻形态没有盒，不铺它
+  const canClear = !multiple && !inline && interactive && !blank
   const maxSelected = resolveColorPickerMaxSelected(prop('maxSelected'))
   // 「添加」：工作色解析得出、还没选过、没到上限
   const canAdd = multiple && interactive && colorParse(value) != null && !colorPickerIncludes(selected, value)
@@ -167,6 +172,8 @@ export function connectColorPicker<T extends PropTypes>(
     value: values,
     selectionMode: multiple ? 'multiple' : 'single',
     color: value,
+    empty: blank,
+    valueText,
     canAdd,
     tags: selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label })),
     translations: label,
@@ -196,9 +203,10 @@ export function connectColorPicker<T extends PropTypes>(
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
     },
+    // 单选给空数组即清回未选，与按清空钮同一条路，只是不发 onClear
     setValue: next => send(multiple
       ? { type: 'SELECTED.SET', value: next }
-      : { type: 'VALUE.SET', value: next[0] ?? COLOR_FALLBACK, source: 'api' }),
+      : next.length === 0 ? { type: 'VALUE.CLEAR' } : { type: 'VALUE.SET', value: next[0]!, source: 'api' }),
     add: () => send({ type: 'VALUE.ADD' }),
     deselect: v => send({ type: 'VALUE.REMOVE', value: v }),
     clearError: () => send({ type: 'ERROR.CLEAR' }),
@@ -301,12 +309,45 @@ export function connectColorPicker<T extends PropTypes>(
       },
     }),
 
-    // 多选时收起：选中值在标签里念，触发钮只剩一颗显示工作色的色块
+    // 清空钮是触发钮的兄弟节点（按钮不能套按钮），点按只清值、不碰开合；
+    // 走 Action Control 的 field-inset ghost 档，按 has-value 显隐，与下拉、日期选择器的清空钮同一套
+    getClearTriggerProps: () => normalize.button({
+      ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
+      'type': 'button',
+      // 整个控件只占一个 Tab 位（触发钮）：清空钮不进 Tab 序，但仍对读屏可见
+      'tabindex': -1,
+      'aria-label': label.clearTrigger,
+      // 清不了就整个收起，不灰留位
+      'hidden': !canClear || undefined,
+      // 拦掉默认聚焦，否则焦点会从触发钮挪到这个按钮上
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        if (!canClear)
+          return
+        send({ type: 'VALUE.CLEAR' })
+        prop('onClear')?.()
+        // 键盘或程序化激活这一路没走 pointerdown，主动把焦点送回触发钮
+        const doc = (event.currentTarget as HTMLElement | null)?.ownerDocument
+        doc?.getElementById(ids.trigger)?.focus()
+      },
+    }),
+
+    // 多选时收起：选中值在标签里念，触发钮只剩一颗显示工作色的色块；单选未选时显示的是占位提示，画淡一档
     getValueTextProps: () => normalize.element({
       ...parts['value-text'].attrs,
       ...stateAttrs(),
-      id: ids['value-text'],
-      hidden: multiple || undefined,
+      'id': ids['value-text'],
+      'hidden': multiple || undefined,
+      'data-placeholder': dataAttr(blank),
     }),
 
     // 触发钮里的当前色块：面、棋盘格与描边由 Swatch 家族画，这里只投影颜色；解析不出的串不画颜色层
@@ -315,10 +356,12 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       // 纯装饰：颜色已由 value-text 念出
       'aria-hidden': true,
-      'data-value': value,
+      'data-value': blank ? undefined : value,
       'data-xh-swatch': '',
       'data-xh-swatch-size': prop('size'),
-      'style': { '--xh-_swatch-color': colorParse(value) ? colorCss(rgba) : '' },
+      // 未选时不画颜色层，皮肤画一道斜线表示「无」
+      'data-empty': dataAttr(blank),
+      'style': { '--xh-_swatch-color': !blank && colorParse(value) ? colorCss(rgba) : '' },
     }),
 
     getPositionerProps: () => normalize.element({

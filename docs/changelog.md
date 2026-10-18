@@ -21,6 +21,7 @@
 - **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
 - **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
 - **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
+- **ColorPicker**：单选给空数组改为未选（色块画斜线、值文字显示 `placeholder`、`value` 为空数组），不再按 `#000000` 显示；要黑色的改写 `['#000000']`
 :::
 
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
@@ -29,6 +30,7 @@
 - **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
 - **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
 - **新增** FileUpload 远程附件的文件名铺成链接（部件 `item-link`，打开方式 `linkTarget`），地址不安全时退回纯文字
+- **新增** ColorPicker 单选的未选状态（`placeholder`）与清空钮 `clear-trigger`（`clear` 事件）
 - **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可
 - **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
 - **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`；日历翻页钮带上按视图的缺省读屏名

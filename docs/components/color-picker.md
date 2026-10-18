@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="color-picker"`：`root` · `label` · `control` · `tag-list` · `trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `confirm-trigger` · `hidden-input`
+`data-scope="color-picker"`：`root` · `label` · `control` · `tag-list` · `trigger` · `clear-trigger` · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `hue-slider` · `alpha-slider` · `channel-input` · `eye-dropper-trigger` · `swatch-picker` · `recent-swatch-picker` · `confirm-trigger` · `hidden-input`
 
 ## 示例
 
@@ -97,7 +97,9 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 - 数值框输入只保留草稿，可解析时立即取值；不可解析时保留原文并报输入错误，回车同时拦截表单提交。
 - 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
 - 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
-- 值恒为颜色串数组：单选恒为一项（取色器总有一个颜色），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 值恒为颜色串数组：单选是一项，宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
+- 单选给空数组是未选：色块不画颜色、画一道斜线，值文字显示 `placeholder`（缺省取 `translations.placeholder`），表单影子是空串，`required` 据此拦下；打开浮层从 `#000000` 起调，选定一个颜色才有值。`value` 与 `defaultValue` 都不给时照旧从 `#000000` 起、算作已选。
+- 单选有值时盒里露出清空钮（`clear-trigger`）：按下清回未选，先发 `onValueChange`（`value` 为空数组）再发 `onClear`，不碰开合；未选、多选、禁用、只读与常驻形态时收起。`setValue([])` 同样清回未选，不发 `onClear`。
 - 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交选中的值串。
 - 多选（`selectionMode="multiple"`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
@@ -130,7 +132,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-color-picker>` |
-| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerConfirmTrigger` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerItemDeleteTrigger` `XhColorPickerLabel` `XhColorPickerOverflowTag` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTag` `XhColorPickerTagLabel` `XhColorPickerTagList` `XhColorPickerTrigger` `XhColorPickerValueText` |
+| Vue 组件 | `XhColorPickerAlphaSlider` `XhColorPickerAreaThumb` `XhColorPickerChannelInput` `XhColorPickerClearTrigger` `XhColorPickerConfirmTrigger` `XhColorPickerContent` `XhColorPickerControl` `XhColorPickerEyeDropperTrigger` `XhColorPickerHiddenInput` `XhColorPickerHueSlider` `XhColorPickerItemDeleteTrigger` `XhColorPickerLabel` `XhColorPickerOverflowTag` `XhColorPickerPositioner` `XhColorPickerRecentSwatchPicker` `XhColorPickerRoot` `XhColorPickerSaturationArea` `XhColorPickerSwatch` `XhColorPickerSwatchPicker` `XhColorPickerTag` `XhColorPickerTagLabel` `XhColorPickerTagList` `XhColorPickerTrigger` `XhColorPickerValueText` |
 | 组合式函数 | `useColorPicker` |
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
@@ -141,7 +143,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。 |
+| `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时是未选：色块不画颜色、值文字显示 placeholder， 取色面从 #000000 起调，选定一个颜色才有值。value 与 defaultValue 都不给时从 #000000 起、算作已选。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ColorPickerSelectionMode` |  | 选择模式，默认 single。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
@@ -159,6 +161,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `defaultRecentColors` | `string[]` |  |  |
 | `maxRecentColors` | `number` |  | 最近使用色最多留几个，默认 8；写 0 即不记。 |
 | `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
+| `placeholder` | `string` |  | 单选未选时值文字显示的提示；缺省取 translations.placeholder。 |
 | `alpha` | `boolean` |  | 带透明度，默认关闭。关闭时值串恒为不透明，透明度滑杆与输入框整条禁用。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `variant` | `ControlVariant` |  | 盒的形态：outline / subtle / ghost，默认 outline，与同族字段同一套字段外壳。 |
@@ -167,6 +170,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `offset` | `number` |  |  |
 | `translations` | `Partial<ColorPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onClear` | `() => void` |  | 用户按清空钮清掉了值：先发 onValueChange（value 为空数组），再发它。程序化的 setValue 不发。 |
 | `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onRecentColorsChange` | `(details: ColorPickerRecentColorsChangeDetails) => void` |  | 最近使用色变化意图回调；受控时是唯一出口。 |
 | `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value / open 事件独立。 |
@@ -181,6 +185,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 | `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
+| `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。 |
 
 ### 插槽
 
@@ -226,7 +231,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
-**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `SELECTED.SET` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
+**事件**：`OPEN` · `TOGGLE` · `CLOSE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `VALUE.SET` · `SELECTED.SET` · `VALUE.CLEAR` · `VALUE.ADD` · `VALUE.REMOVE` · `VALUE.TOGGLE` · `TAG_LIST.TRACKED` · `AREA.SET` · `AREA.STEP` · `AREA.TO_EDGE` · `HSVA.SET` · `INPUT.CHANGE` · `INPUT.COMMIT` · `DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `EYE_DROPPER.OPEN` · `EYE_DROPPER.RESULT` · `EYE_DROPPER.CANCEL` · `EYE_DROPPER.ERROR` · `ERROR.CLEAR` · `SESSION.END` · `RECENT.CLEAR` · `INLINE.SYNC` · `INLINE.CLOSE` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick` · `isInline`
 
@@ -237,9 +242,11 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string[]` | 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选恒为一项，多选按加入先后。 |
+| `value` | `string[]` | 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选是一项、未选时为空，多选按加入先后。 |
 | `selectionMode` | `ColorPickerSelectionMode` |  |
-| `color` | `string` | 工作色的值串：触发钮里的色块与值文字显示它；单选时就是选中值，多选时是浮层里调着的草稿。 |
+| `color` | `string` | 工作色的值串：取色面从它调起；单选时就是选中值，多选时是浮层里调着的草稿。单选未选时是取色面的起调色 #000000。 |
+| `empty` | `boolean` | 单选还没选颜色：色块不画颜色，值文字显示 placeholder，清空钮收起。 |
+| `valueText` | `string` | 值文字显示的内容：工作色的值串；单选未选时是 placeholder。 |
 | `rgba` | `ColorRgba` |  |
 | `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读取的都是它。 |
 | `format` | `ColorFormat` |  |
@@ -266,7 +273,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `recentSwatchPicker` | `ColorSwatchPickerApi<T>` | 最近使用色那台色块选择器的 api。 |
 | `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string[]) => void` | 改选中值：单选取首项改工作色，多选整份替换。 |
+| `setValue` | `(next: string[]) => void` | 改选中值：单选取首项改工作色、给空数组清回未选（不发 onClear），多选整份替换。 |
 | `add` | `() => void` | 多选：把工作色收进值（与按「添加」同一条路）。 |
 | `deselect` | `(value: string) => void` | 多选：摘掉一个选中值。 |
 | `clearError` | `() => void` | 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 |
@@ -280,6 +287,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
 | `getItemDeleteTriggerProps` | `(props: ColorPickerTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 |
 | `getTriggerProps` | `() => T['button']` |  |
+| `getClearTriggerProps` | `() => T['button']` | 清空钮：触发钮的兄弟节点（按钮不能套按钮），单选有值时才显示，按下清回未选、不碰开合； 不占 Tab 位，可及名使用 translations.clearTrigger。多选与未选时 hidden。 |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getSwatchProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -324,6 +332,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
 | `trigger` | `aria-label` | props.ariaLabel |
 | `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
+| `clear-trigger` | `aria-label` | label.clearTrigger |
 | `swatch` | `aria-hidden` | 'true' |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-label` | props.ariaLabel |
@@ -342,7 +351,8 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
 | `hidden-input` | `aria-hidden` | 'true' |
 
-- 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
+- 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成，未选时念占位提示；浮层是非模态 `role="dialog"`。
+- 清空钮不占 Tab 位（整个控件只占触发钮一个 Tab 位），可及名取 `translations.clearTrigger`；按下后焦点回到触发钮。
 - 多选标签上的删除钮不占 Tab 位，可及名取 `translations.deleteItem`；键盘从触发钮上按退格摘掉最后一个。色点只是辅助，标签文字就是值串，颜色不是唯一的信息通道。
 - 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
 - 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
@@ -393,17 +403,25 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-required` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'has-value' |
+| `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-profile` | 'field-inset' |
+| `clear-trigger` | `data-xh-action-size` | props.size |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-invalid` | ''（条件成立时才出现） |
+| `value-text` | `data-placeholder` | ''（条件成立时才出现） |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-required` | ''（条件成立时才出现） |
 | `value-text` | `data-state` | 'open' \| 'closed' |
 | `swatch` | `data-disabled` | ''（条件成立时才出现） |
+| `swatch` | `data-empty` | ''（条件成立时才出现） |
 | `swatch` | `data-invalid` | ''（条件成立时才出现） |
 | `swatch` | `data-readonly` | ''（条件成立时才出现） |
 | `swatch` | `data-required` | ''（条件成立时才出现） |
 | `swatch` | `data-state` | 'open' \| 'closed' |
-| `swatch` | `data-value` | context.get('value') |
+| `swatch` | `data-value` | undefined \| context.get('value') |
 | `swatch` | `data-xh-swatch` | '' |
 | `swatch` | `data-xh-swatch-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
@@ -463,22 +481,22 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-color-picker-action-bg` | `eye-dropper-trigger` | `background` | `default` | `transparent` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
-| `--xh-color-picker-action-bg-active` | `eye-dropper-trigger` | `background` | `is(:active, [data-pressed])`<br>`not(:disabled)`<br>`pressed`<br>`state=picking` | `--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
-| `--xh-color-picker-action-bg-hover` | `eye-dropper-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle` | color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。 |
+| `--xh-color-picker-action-bg` | `clear-trigger`<br>`eye-dropper-trigger` | `--xh-ink-surface`<br>`background`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest`<br>`transparent` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 --xh-ink-surface、background、background-color 覆盖槽。 |
+| `--xh-color-picker-action-bg-active` | `clear-trigger`<br>`eye-dropper-trigger` | `background`<br>`background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=picking` | `--xh-_action-variant-bg-pressed`<br>`--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。 |
+| `--xh-color-picker-action-bg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `background`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover`<br>`--xh-bg-subtle` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-color-picker-action-border` | `eye-dropper-trigger` | `border` | `default` | `--xh-border-control` | color-picker 的 eye-dropper-trigger 部件 border 覆盖槽。 |
 | `--xh-color-picker-action-border-active` | `eye-dropper-trigger` | `border-color` | `state=picking` | `--xh-bg-brand` | color-picker 的 eye-dropper-trigger 部件 border-color 覆盖槽。 |
-| `--xh-color-picker-action-fg` | `eye-dropper-trigger` | `color` | `default` | `--xh-fg-muted` | color-picker 的 eye-dropper-trigger 部件 color 覆盖槽。 |
-| `--xh-color-picker-action-fg-hover` | `eye-dropper-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | color-picker 的 eye-dropper-trigger 部件 color 覆盖槽。 |
-| `--xh-color-picker-action-font-size` | `eye-dropper-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | color-picker 的 eye-dropper-trigger 部件 font-size 覆盖槽。 |
-| `--xh-color-picker-action-radius` | `eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 eye-dropper-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-color-picker-action-size` | `eye-dropper-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | color-picker 的 eye-dropper-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-color-picker-action-fg` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `default` | `--xh-fg-muted` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。 |
+| `--xh-color-picker-action-fg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。 |
+| `--xh-color-picker-action-font-size` | `clear-trigger`<br>`eye-dropper-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 font-size 覆盖槽。 |
+| `--xh-color-picker-action-radius` | `clear-trigger`<br>`eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-action-size` | `clear-trigger`<br>`eye-dropper-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-alpha-slider-gap` | `alpha-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 alpha-slider 部件 gap 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-fg` | `confirm-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | color-picker 的 confirm-trigger 部件 color 覆盖槽。 |
-| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size` | `default` | `--xh-control-action-size` | color-picker 的 confirm-trigger 部件 block-size 覆盖槽。 |
+| `--xh-color-picker-confirm-trigger-h` | `confirm-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-control-action-size` | color-picker 的 confirm-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-px` | `confirm-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | color-picker 的 confirm-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-radius` | `confirm-trigger` | `border-radius` | `default` | `--xh-shape-control` | color-picker 的 confirm-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-shadow` | `confirm-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | color-picker 的 confirm-trigger 部件 box-shadow 覆盖槽。 |
@@ -509,6 +527,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | color-picker 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | color-picker 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-color-picker-hue-slider-gap` | `hue-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 hue-slider 部件 gap 覆盖槽。 |
+| `--xh-color-picker-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-picker 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-picker-input-bg` | `channel-input` | `background` | `default` | `--xh-bg-field` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-disabled` | `channel-input` | `background` | `disabled` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-focus` | `channel-input` | `background` | `focus` | `--xh-bg-surface` | color-picker 的 channel-input 部件 background 覆盖槽。 |
@@ -527,6 +546,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | color-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-color-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | color-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-color-picker-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | color-picker 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-color-picker-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | color-picker 的 value-text 部件 color 覆盖槽。 |
 | `--xh-color-picker-saturation-area-h` | `saturation-area` | `block-size` | `default` | `--xh-overlay-color-area-h` | color-picker 的 saturation-area 部件 block-size 覆盖槽。 |
 | `--xh-color-picker-saturation-area-radius` | `content`<br>`saturation-area` | `border-radius` | `default`<br>`first-child` | `--xh-shape-control`<br>`0` | color-picker 的 content、saturation-area 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-separator` | `content`<br>`recent-swatch-picker`<br>`swatch-picker` | `border-block-start` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])`<br>`not(:is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-material-solid-border` | color-picker 的 content、recent-swatch-picker、swatch-picker 部件 border-block-start 覆盖槽。 |
@@ -535,6 +555,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-slider-track-thickness` | `alpha-slider`<br>`hue-slider` | `--xh-_track-thickness` | `default` | `--xh-space-3` | color-picker 的 alpha-slider、hue-slider 部件 --xh-_track-thickness 覆盖槽。 |
 | `--xh-color-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-picker-swatch-cell` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-_color-swatch-picker-cell` | `@media (pointer: coarse)`<br>`is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-control-h-sm`<br>`--xh-glyph-size-sm` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。 |
+| `--xh-color-picker-swatch-empty-stroke` | `swatch` | `background-image` | `empty` | `--xh-border-control` | color-picker 的 swatch 部件 background-image 覆盖槽。 |
 | `--xh-color-picker-swatch-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-space-2` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |
 | `--xh-color-picker-swatch-icon-size` | `recent-swatch-picker`<br>`swatch-picker` | `--xh-icon-size` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-mark` | color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-picker-swatch-picker-gap` | `recent-swatch-picker`<br>`swatch-picker` | `gap` | `is([data-part='swatch-picker'], [data-part='recent-swatch-picker'])` | `--xh-_color-swatch-picker-gap` | color-picker 的 recent-swatch-picker、swatch-picker 部件 gap 覆盖槽。 |

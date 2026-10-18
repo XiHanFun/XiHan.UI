@@ -228,6 +228,8 @@ const translations = {
     recentSwatchGroup: '最近使用的颜色',
     eyeDropperTrigger: '从屏幕取色',
     confirmTrigger: '添加',
+    placeholder: '未选颜色',
+    clearTrigger: '清空',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

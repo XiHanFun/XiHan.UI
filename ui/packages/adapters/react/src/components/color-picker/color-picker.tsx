@@ -87,6 +87,8 @@ export interface XhColorPickerRootProps extends RootElementProps {
   maxRecentColors?: number
   /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
+  /** 单选未选（值为空数组）时值文字显示的提示；缺省取 translations.placeholder。 */
+  placeholder?: string
   size?: Size
   /** 盒的形态：outline / subtle / ghost，默认 outline。 */
   variant?: ControlVariant
@@ -99,6 +101,8 @@ export interface XhColorPickerRootProps extends RootElementProps {
   onOpenChange?: ColorPickerProps['onOpenChange']
   onColorError?: ColorPickerProps['onColorError']
   onRecentColorsChange?: ColorPickerProps['onRecentColorsChange']
+  /** 用户按清空钮清掉了值：先发 onValueChange，再发它。 */
+  onClear?: ColorPickerProps['onClear']
   children?: SlotChildren<ColorPickerRootSlotProps>
 }
 
@@ -124,6 +128,7 @@ export function XhColorPickerRoot({
   defaultRecentColors,
   maxRecentColors,
   name,
+  placeholder,
   size,
   variant,
   dir,
@@ -134,6 +139,7 @@ export function XhColorPickerRoot({
   onOpenChange,
   onColorError,
   onRecentColorsChange,
+  onClear,
   children,
   ...rest
 }: XhColorPickerRootProps): ReactNode {
@@ -158,6 +164,7 @@ export function XhColorPickerRoot({
     defaultRecentColors,
     maxRecentColors,
     name,
+    placeholder,
     size,
     variant,
     dir,
@@ -168,6 +175,7 @@ export function XhColorPickerRoot({
     onOpenChange,
     onColorError,
     onRecentColorsChange,
+    onClear,
   })) as ColorPickerProps)
   const api = ctx.api
 
@@ -205,7 +213,7 @@ export function XhColorPickerRoot({
   )
 }
 
-XhColorPickerRoot.xhEvents = ['value-change', 'open-change', 'color-error', 'recent-colors-change'] as const
+XhColorPickerRoot.xhEvents = ['clear', 'value-change', 'open-change', 'color-error', 'recent-colors-change'] as const
 
 export interface XhColorPickerLabelProps extends ComponentPropsWithRef<'label'> {}
 
@@ -256,14 +264,26 @@ export function XhColorPickerTrigger({ children, ...rest }: XhColorPickerTrigger
   )
 }
 
+export interface XhColorPickerClearTriggerProps extends ComponentPropsWithRef<'button'> {}
+
+/** 触发钮的兄弟节点：单选有值时才显示，按下清回未选。 */
+export function XhColorPickerClearTrigger({ children, ...rest }: XhColorPickerClearTriggerProps): ReactNode {
+  const ctx = useColorPickerContext()
+  return (
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </button>
+  )
+}
+
 export interface XhColorPickerValueTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 未提供内容时显示当前值串。 */
+/** 未提供内容时显示当前值串；单选未选时是占位提示。 */
 export function XhColorPickerValueText({ children, ...rest }: XhColorPickerValueTextProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
     <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? ctx.api.color}
+      {children ?? ctx.api.valueText}
     </span>
   )
 }
@@ -584,6 +604,7 @@ const COLOR_PICKER_PARTS = {
   'control': XhColorPickerControl,
   'tag-list': XhColorPickerTagList,
   'trigger': XhColorPickerTrigger,
+  'clear-trigger': XhColorPickerClearTrigger,
   'value-text': XhColorPickerValueText,
   'swatch': XhColorPickerSwatch,
   'positioner': XhColorPickerPositioner,

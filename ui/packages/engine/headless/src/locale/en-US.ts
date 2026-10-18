@@ -239,6 +239,8 @@ export const COLOR_PICKER_EN_US: XhLocaleBucket<'color-picker'> = {
   recentSwatchGroup: 'Recent colors',
   eyeDropperTrigger: 'Pick a color from the screen',
   confirmTrigger: 'Add',
+  placeholder: 'No color',
+  clearTrigger: 'Clear',
 }
 
 export const COLOR_SLIDER_EN_US: XhLocaleBucket<'color-slider'> = {

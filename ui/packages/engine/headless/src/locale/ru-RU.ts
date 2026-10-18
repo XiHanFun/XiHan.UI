@@ -243,6 +243,8 @@ const translations = {
     recentSwatchGroup: 'Недавние цвета',
     eyeDropperTrigger: 'Выбрать цвет на экране',
     confirmTrigger: 'Добавить',
+    placeholder: 'Цвет не выбран',
+    clearTrigger: 'Очистить',
   },
   'color-slider': {
     label: channel => COLOR_CHANNEL[channel],

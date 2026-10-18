@@ -181,6 +181,12 @@ function applyHsva(params: MachineParams, next: ColorHsva, fromApi = false): voi
   // 一轮取色从用户第一次改色算起，记下改之前的值；作者经 api 改值不算用户取色
   if (!fromApi && context.get('sessionValue') == null)
     context.set('sessionValue', context.get('value'))
+  // 单选未选时选定一个颜色：先离开未选再写值；值串与起调色相同时值本身没变，照样通知一次
+  if (!isMultiple(params) && context.get('blank')) {
+    context.set('blank', false)
+    if (context.get('value') === value)
+      prop('onValueChange')?.({ value: [value] })
+  }
   context.set('anchor', { value, hsva })
   context.set('value', value)
 }
@@ -286,8 +292,8 @@ function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readon
   const multiple = prop('selectionMode') === 'multiple'
   return {
     swatches: swatches.map(value => ({ value })),
-    // 多选时色板只是切换的入口：选中的那一组在输入行的标签里，色板本身不再标一格
-    value: multiple ? null : context.get('value'),
+    // 多选时色板只是切换的入口：选中的那一组在输入行的标签里，色板本身不再标一格；单选未选时也不标
+    value: multiple || context.get('blank') ? null : context.get('value'),
     disabled: !!prop('disabled'),
     readOnly: !!prop('readOnly'),
     dir: prop('dir'),
@@ -372,6 +378,16 @@ export const colorPickerMachine = createMachine({
         },
       }
     }),
+    // 单选的未选：value / defaultValue 给空数组、或按了清空钮；受控时直读 prop，多选恒为 false
+    blank: cell<boolean>(() => {
+      if (prop('selectionMode') === 'multiple')
+        return { defaultValue: false }
+      const controlled = toColorPickerValues(prop('value'))
+      return {
+        value: controlled === undefined ? undefined : controlled.length === 0,
+        defaultValue: toColorPickerValues(prop('defaultValue'))?.length === 0,
+      }
+    }),
     tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
     anchor: cell<ColorPickerSchema['context']['anchor']>(() => ({ defaultValue: null })),
     position: cell<ColorPickerSchema['context']['position']>(() => ({ defaultValue: null })),
@@ -419,6 +435,7 @@ export const colorPickerMachine = createMachine({
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canInteract', actions: ['setValue'] },
     'SELECTED.SET': { guard: 'canInteract', actions: ['setSelected'] },
+    'VALUE.CLEAR': { guard: 'canInteract', actions: ['clearValue'] },
     'VALUE.ADD': { guard: 'canInteract', actions: ['addValue'] },
     'VALUE.REMOVE': { guard: 'canInteract', actions: ['removeValue'] },
     'VALUE.TOGGLE': { guard: 'canInteract', actions: ['toggleValue'] },
@@ -531,6 +548,14 @@ export const colorPickerMachine = createMachine({
         params.context.set('selected', next)
       },
 
+      /** 单选清回未选：工作色留着，下回打开从它接着调；值变化照常通知，送出空数组。 */
+      clearValue: (params) => {
+        if (isMultiple(params) || params.context.get('blank'))
+          return
+        params.context.set('blank', true)
+        params.prop('onValueChange')?.({ value: [] })
+      },
+
       /** 把工作色收进选中值：还没选过、没到上限才收；收完工作色留着，接着调就能添下一个。 */
       addValue: (params) => {
         if (!isMultiple(params))
@@ -571,6 +596,8 @@ export const colorPickerMachine = createMachine({
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         if (isMultiple(params))
           resetDeclaredValue(params, 'selected', 'value', 'defaultValue')
+        else
+          resetDeclaredValue(params, 'blank', 'value', 'defaultValue')
         params.context.reset('draft')
         params.context.reset('sessionValue')
         clearAllErrors(params)

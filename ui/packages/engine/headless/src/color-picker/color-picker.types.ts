@@ -69,6 +69,10 @@ export interface ColorPickerTranslations {
   eyeDropperTrigger: string
   /** 多选时「添加」按钮的文字：标准结构里铺这颗按钮时写进去。 */
   confirmTrigger: string
+  /** 单选还没选颜色时值文字显示的提示，也是触发钮念出的值；作者给了 placeholder 时用作者的。 */
+  placeholder: string
+  /** 清空钮的可及名。 */
+  clearTrigger: string
   /** 多选标签删除按钮的可及名，接收标签文本；默认 `Delete <label>`。 */
   deleteItem: (label: string) => string
   /** 被折叠的标签（+N）显示的文字，接收折叠的个数；默认 +N。 */
@@ -183,7 +187,8 @@ export interface ColorPickerSchema extends MachineSchema {
     ariaLabel?: string
     /**
      * 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。
-     * 单选可写裸串，内部一律归一为数组；单选给空数组时按缺省色 #000000。
+     * 单选可写裸串，内部一律归一为数组；单选给空数组时是未选：色块不画颜色、值文字显示 placeholder，
+     * 取色面从 #000000 起调，选定一个颜色才有值。value 与 defaultValue 都不给时从 #000000 起、算作已选。
      */
     value?: string | string[]
     defaultValue?: string | string[]
@@ -224,6 +229,8 @@ export interface ColorPickerSchema extends MachineSchema {
     maxRecentColors?: number
     /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
     name?: string
+    /** 单选未选时值文字显示的提示；缺省取 translations.placeholder。 */
+    placeholder?: string
     /** 带透明度，默认关闭。关闭时值串恒为不透明，透明度滑杆与输入框整条禁用。 */
     alpha?: boolean
     /** 尺寸：sm / md / lg。 */
@@ -237,6 +244,8 @@ export interface ColorPickerSchema extends MachineSchema {
     translations?: Partial<ColorPickerTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: ColorPickerValueChangeDetails) => void
+    /** 用户按清空钮清掉了值：先发 onValueChange（value 为空数组），再发它。程序化的 setValue 不发。 */
+    onClear?: () => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ColorPickerOpenChangeDetails) => void
     /** 最近使用色变化意图回调；受控时是唯一出口。 */
@@ -257,6 +266,8 @@ export interface ColorPickerSchema extends MachineSchema {
     value: string
     /** 多选的选中颜色，按加入先后。受控（value 提供）时直读 prop；单选不用它。 */
     selected: string[]
+    /** 单选还没选颜色（value 或 defaultValue 是空数组、或按了清空钮）。受控时直读 prop；多选恒为 false。 */
+    blank: boolean
     /** 标签行的列表动效接上了：此前首帧就在的标签直接呈现，之后到达的才播进场。 */
     tagListTracked: boolean
     /** 工作色的锚：上一次由内部操作产出的 HSVA 与对应的串，灰度处的色相依靠它保留。 */
@@ -295,6 +306,8 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'VALUE.SET', value: string, source?: 'api' | 'swatch' }
     /** 多选：整份替换选中的那一组（外部 setValue）。 */
     | { type: 'SELECTED.SET', value: string[] }
+    /** 单选：清回未选（清空钮）。 */
+    | { type: 'VALUE.CLEAR' }
     /** 多选：把工作色收进选中值。 */
     | { type: 'VALUE.ADD' }
     /** 多选：摘掉一个选中值（标签的删除钮、触发钮上的退格）。 */
@@ -370,6 +383,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'syncInline'
     | 'clearOpenedAtMount'
     | 'setSelected'
+    | 'clearValue'
     | 'addValue'
     | 'removeValue'
     | 'toggleValue'
@@ -379,11 +393,15 @@ export interface ColorPickerSchema extends MachineSchema {
 
 export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /** 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选恒为一项，多选按加入先后。 */
+  /** 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选是一项、未选时为空，多选按加入先后。 */
   value: string[]
   selectionMode: ColorPickerSelectionMode
-  /** 工作色的值串：触发钮里的色块与值文字显示它；单选时就是选中值，多选时是浮层里调着的草稿。 */
+  /** 工作色的值串：取色面从它调起；单选时就是选中值，多选时是浮层里调着的草稿。单选未选时是取色面的起调色 #000000。 */
   color: string
+  /** 单选还没选颜色：色块不画颜色，值文字显示 placeholder，清空钮收起。 */
+  empty: boolean
+  /** 值文字显示的内容：工作色的值串；单选未选时是 placeholder。 */
+  valueText: string
   rgba: ColorRgba
   /** 工作色。取色区与色相滑杆读取的都是它。 */
   hsva: ColorHsva
@@ -427,7 +445,7 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   /** 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 */
   inputText: (channel: ColorPickerInputChannel) => string
   setOpen: (next: boolean) => void
-  /** 改选中值：单选取首项改工作色，多选整份替换。 */
+  /** 改选中值：单选取首项改工作色、给空数组清回未选（不发 onClear），多选整份替换。 */
   setValue: (next: string[]) => void
   /** 多选：把工作色收进值（与按「添加」同一条路）。 */
   add: () => void
@@ -451,6 +469,11 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   /** 标签删除按钮：即所在标签那份 tag 的 close-trigger，可及名使用 translations.deleteItem；不占 Tab 位、按下不夺焦。 */
   getItemDeleteTriggerProps: (props: ColorPickerTagProps) => T['button']
   getTriggerProps: () => T['button']
+  /**
+   * 清空钮：触发钮的兄弟节点（按钮不能套按钮），单选有值时才显示，按下清回未选、不碰开合；
+   * 不占 Tab 位，可及名使用 translations.clearTrigger。多选与未选时 hidden。
+   */
+  getClearTriggerProps: () => T['button']
   getValueTextProps: () => T['element']
   getSwatchProps: () => T['element']
   getPositionerProps: () => T['element']

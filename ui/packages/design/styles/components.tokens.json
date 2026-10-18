@@ -16560,60 +16560,79 @@
       "name": "--xh-color-picker-action-bg",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
-        "background"
+        "--xh-ink-surface",
+        "background",
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-ink-surface"
       ],
       "defaultToken": [
+        "--xh-_action-variant-bg-rest",
         "transparent"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 --xh-ink-surface、background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-bg-active",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
+        "disabled",
         "is(:active, [data-pressed])",
+        "loading",
         "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-loading])",
         "pressed",
         "state=picking"
       ],
       "defaultToken": [
+        "--xh-_action-variant-bg-pressed",
         "--xh-bg-subtle-active",
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-bg-hover",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
+        "--xh-_action-variant-bg-hover",
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 background 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-border",
@@ -16655,6 +16674,7 @@
       "name": "--xh-color-picker-action-fg",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
@@ -16667,31 +16687,37 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 color 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-fg-hover",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not(:disabled)",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 color 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-font-size",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
@@ -16704,12 +16730,13 @@
         "--xh-text-secondary-size"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 font-size 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-radius",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
@@ -16719,29 +16746,34 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "--xh-shape-inset"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 border-radius 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-action-size",
       "component": "color-picker",
       "part": [
+        "clear-trigger",
         "eye-dropper-trigger"
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "color-picker 的 eye-dropper-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-alpha-slider-gap",
@@ -16860,16 +16892,18 @@
         "confirm-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
         "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "color-picker 的 confirm-trigger 部件 block-size 覆盖槽。"
+      "description": "color-picker 的 confirm-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-confirm-trigger-px",
@@ -17476,6 +17510,30 @@
       "description": "color-picker 的 hue-slider 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-icon-size",
+      "component": "color-picker",
+      "part": [
+        "positioner",
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "is([data-part='root'], [data-part='positioner'])",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-input-bg",
       "component": "color-picker",
       "part": [
@@ -17803,6 +17861,24 @@
       "description": "color-picker 的 content 部件 max-block-size 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-placeholder-fg",
+      "component": "color-picker",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 value-text 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-saturation-area-h",
       "component": "color-picker",
       "part": [
@@ -17958,6 +18034,24 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 recent-swatch-picker、swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-swatch-empty-stroke",
+      "component": "color-picker",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "empty"
+      ],
+      "defaultToken": [
+        "--xh-border-control"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 swatch 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-swatch-gap",
