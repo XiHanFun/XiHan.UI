@@ -4,10 +4,12 @@
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { createCommandToolbar } from '../../src'
+import { createCommandToolbar, defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
+
+defineDesignerShell()
 
 const LINE = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
 
@@ -153,5 +155,127 @@ describe('命令工具栏（Chromium）', () => {
     const rest = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--xh-control-h-sm'))
     expect(item.getBoundingClientRect().height).toBeGreaterThan(rest)
     expect(Math.abs(button('add-gateway').getBoundingClientRect().height - item.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
+  })
+})
+
+const POPUP_COMMANDS = new Map<string, DesignerCommand<null>>([
+  ...COMMANDS,
+  ['page-setup', { id: 'page-setup', label: 'Page setup', icon: LINE, panel: () => {
+    const element = document.createElement('div')
+    element.style.cssText = 'inline-size: 160px; block-size: 80px'
+    element.innerHTML = '<button type="button">Paper</button>'
+    return { element }
+  } }],
+  ['page-menu', { id: 'page-menu', label: 'Page 1 of 2', icon: LINE, menu: () => [
+    { value: '0', label: 'Cover', checked: true, group: 'page' },
+    { value: '1', label: 'Details', checked: false, group: 'page' },
+  ] }],
+])
+
+function mountPopups(options: Parameters<typeof createCommandToolbar>[1], style: string, groups: string[][]): ReturnType<typeof createCommandToolbar<null>> {
+  host = document.createElement('div')
+  host.style.cssText = style
+  const bar = createCommandToolbar<null>(document, options)
+  host.append(bar.element)
+  document.body.append(host)
+  bar.update(groups, POPUP_COMMANDS, null, 'Designer actions')
+  return bar
+}
+
+function positioner(scope: string): HTMLElement | null {
+  return document.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="positioner"][data-positioned]`)
+}
+
+function overflowTrigger(): HTMLButtonElement {
+  return host!.querySelector<HTMLButtonElement>('button[data-xh-part="overflow-trigger"]')!
+}
+
+describe('弹层命令、菜单命令与竖排（Chromium）', () => {
+  it('竖排：按钮上下排，提示在左边弹出；高度不够时放不下的收进「更多」', async () => {
+    mountPopups({ orientation: 'vertical', platform: 'other' }, 'block-size: 150px; inline-size: 48px; margin-inline-start: 320px; margin-block-start: 48px; display: flex', [['undo', 'redo'], ['grid', 'snap', 'plain']])
+    await settle()
+    const undo = button('undo').getBoundingClientRect()
+    const redo = button('redo').getBoundingClientRect()
+    expect([redo.top >= undo.bottom - 1, Math.abs(redo.left - undo.left) <= 1]).toEqual([true, true])
+    await until(() => host!.querySelectorAll('button[data-xh-part="item"][hidden]').length > 0)
+    expect(overflowTrigger().hidden).toBe(false)
+    await userEvent.hover(button('undo'))
+    await until(() => content().dataset.state === 'open')
+    const tip = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="positioner"]')!.getBoundingClientRect()
+    expect(tip.right).toBeLessThanOrEqual(button('undo').getBoundingClientRect().left + 1)
+  })
+
+  it('弹层命令贴着按钮下边弹出；工具栏变窄把它收进「更多」时弹层挪到「更多」下面；Escape 收起后焦点回到「更多」', async () => {
+    const bar = mountPopups({ platform: 'other' }, 'inline-size: 640px; padding: 48px', [['undo', 'redo'], ['grid', 'snap', 'plain', 'page-setup']])
+    await settle()
+    await userEvent.click(button('page-setup'))
+    await until(() => positioner('popover') !== null)
+    expect(bar.opened()).toBe('page-setup')
+    const anchor = button('page-setup').getBoundingClientRect()
+    const panel = positioner('popover')!.getBoundingClientRect()
+    expect([panel.top >= anchor.bottom, panel.top - anchor.bottom <= 12, Math.abs(panel.left - anchor.left) <= 1]).toEqual([true, true, true])
+    expect(button('page-setup').getAttribute('aria-expanded')).toBe('true')
+
+    host!.style.inlineSize = '150px'
+    await until(() => button('page-setup').hidden === true)
+    await until(() => Math.abs(positioner('popover')!.getBoundingClientRect().left - overflowTrigger().getBoundingClientRect().left) <= 1)
+    expect([bar.opened(), overflowTrigger().getAttribute('aria-controls')]).toEqual(['page-setup', document.querySelector('[data-scope="popover"][data-part="content"]')!.id])
+
+    document.querySelector<HTMLElement>('[data-scope="popover"][data-part="content"] button')!.focus()
+    await userEvent.keyboard('{Escape}')
+    await until(() => bar.opened() === undefined)
+    await until(() => document.activeElement === overflowTrigger())
+  })
+
+  it('收在「更多」里的菜单命令：从「更多」菜单里点它，打开同一份菜单、锚在「更多」上，焦点落进菜单', async () => {
+    const bar = mountPopups({ platform: 'other' }, 'inline-size: 150px; padding: 48px', [['undo', 'redo'], ['grid', 'snap', 'plain', 'page-menu']])
+    await settle()
+    await until(() => button('page-menu').hidden === true)
+    await userEvent.click(overflowTrigger())
+    const entry = (): HTMLElement | null => document.querySelector<HTMLElement>('[data-scope="menu"][data-part="item"][data-value="page-menu"]')
+    await until(() => entry() !== null && entry()!.getBoundingClientRect().width > 0)
+    await userEvent.click(entry()!)
+    await until(() => bar.opened() === 'page-menu')
+    const item = (): HTMLElement | null => document.querySelector<HTMLElement>('[data-scope="menu"][data-part="item"][data-value="item:0"]')
+    await until(() => item() !== null && document.activeElement === item())
+    expect(item()!.getAttribute('aria-checked')).toBe('true')
+    const menu = item()!.closest<HTMLElement>('[data-scope="menu"][data-part="positioner"]')!.getBoundingClientRect()
+    expect(menu.top).toBeGreaterThanOrEqual(overflowTrigger().getBoundingClientRect().bottom)
+  })
+
+  it('从右往左写时，竖排的提示与弹层在右边', async () => {
+    const bar = mountPopups({ orientation: 'vertical', platform: 'other' }, 'block-size: 320px; inline-size: 48px; margin-inline-start: 320px; margin-block-start: 48px; display: flex', [['undo'], ['page-setup']])
+    host!.dir = 'rtl'
+    bar.update([['undo'], ['page-setup']], POPUP_COMMANDS, null, 'Designer actions')
+    await settle()
+    expect(bar.element.getAttribute('placement')).toBe('right')
+    await userEvent.click(button('page-setup'))
+    await until(() => positioner('popover') !== null)
+    expect(positioner('popover')!.getBoundingClientRect().left).toBeGreaterThanOrEqual(button('page-setup').getBoundingClientRect().right)
+    bar.close()
+  })
+
+  it('画布右侧中间的竖条不超出画布区：里面竖排的命令工具栏放不下时按高度收进「更多」', async () => {
+    const frame = document.createElement('xh-designer-frame')
+    frame.style.cssText = 'position:fixed;left:20px;top:20px;width:800px;height:200px'
+    frame.append(document.createElement('div'))
+    document.body.append(frame)
+    await frame.updateComplete
+    const line = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    const commands = new Map(ids.map(id => [id, { id, label: id, icon: line, run: () => {} }]))
+    const bar = createCommandToolbar<null>(document, { orientation: 'vertical' })
+    bar.element.slot = 'canvas-end'
+    frame.append(bar.element)
+    bar.update([ids.slice(0, 5), ids.slice(5)], commands, null, 'Pages')
+    const hidden = (): number => bar.element.querySelectorAll('button[data-xh-part="item"][hidden]').length
+    const start = performance.now()
+    while (hidden() === 0 && performance.now() - start < 2000)
+      await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(hidden()).toBeGreaterThan(0)
+    const canvas = frame.querySelector('[data-part="region"][data-region="canvas"]')!.getBoundingClientRect()
+    const strip = frame.querySelector('[data-part="overlay"][data-overlay="end"]')!.getBoundingClientRect()
+    expect([strip.top >= canvas.top, strip.bottom <= canvas.bottom]).toEqual([true, true])
+    frame.remove()
   })
 })

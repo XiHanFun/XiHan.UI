@@ -17,8 +17,10 @@ import {
   XhFilterBuilderElement,
   XhFormatInputElement,
   XhIconElement,
+  XhMenuElement,
   XhNumberFieldElement,
   XhPasswordInputElement,
+  XhPopoverElement,
   XhSelectElement,
   XhSplitterElement,
   XhSwitchElement,
@@ -84,9 +86,11 @@ export function defineSettingsElements(): void {
   definePropertyFieldElements()
 }
 
-/** 命令工具栏与命令菜单用到的元素。 */
+/** 命令工具栏与命令菜单用到的元素，弹层命令的弹层与菜单命令的菜单也在内。 */
 export function defineCommandElements(): void {
   defineXhElement('xh-toolbar', XhToolbarElement)
+  defineXhElement('xh-popover', XhPopoverElement)
+  defineXhElement('xh-menu', XhMenuElement)
   defineXhElement('xh-context-menu', XhContextMenuElement)
   defineXhElement('xh-tooltip', XhTooltipElement)
   defineXhElement('xh-icon', XhIconElement)

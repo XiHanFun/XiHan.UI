@@ -25,7 +25,50 @@ export type SchemaRule<Doc = unknown, RuleCtx = unknown> = (document: Doc, conte
  */
 export type DesignerCommandPlacement = 'toolbar' | 'header' | `menu:${string}`
 
-/** 一条命令：工具栏按钮、右键菜单项与快捷键共用。 */
+/**
+ * 弹层命令点开的面板：element 放进锚在命令按钮上的弹层；弹层开着时设计器状态变了调 update，弹层关掉后调 destroy。
+ * 每次打开都重新建一份。
+ */
+export interface DesignerCommandPanel<Ctx = unknown> {
+  /** 面板的根元素，放进弹层。 */
+  readonly element: HTMLElement
+  /** 弹层开着时设计器状态变了调用，面板按新状态刷新。 */
+  readonly update?: (context: Ctx) => void
+  /** 弹层关掉后调用。 */
+  readonly destroy?: () => void
+}
+
+/** 菜单命令的一个条目。 */
+export interface DesignerCommandMenuItem {
+  /** 条目身份，选中时交给命令的 select。 */
+  readonly value: string
+  /** 条目文字。 */
+  readonly label: string
+  /** 文字前的图标。 */
+  readonly icon?: IconRecord
+  /**
+   * 给了就是可勾选的条目，true 时打勾：没写 group 是复选（menuitemcheckbox），选中后菜单不收起；
+   * 写了 group 是同组单选（menuitemradio），选中后菜单收起。
+   */
+  readonly checked?: boolean
+  /** 单选组的名字：同组的条目至多一个 checked。 */
+  readonly group?: string
+  readonly disabled?: boolean
+  /** 语气：破坏性的条目写 danger。 */
+  readonly tone?: Tone
+}
+
+/**
+ * 菜单命令的一项：条目；另一条命令的 id，按那条命令的文字、图标、可用与语气铺，选中即执行它；
+ * 或者 'separator'，一条分隔线。
+ */
+export type DesignerCommandMenuEntry = DesignerCommandMenuItem | string
+
+/**
+ * 一条命令：工具栏按钮、右键菜单项与快捷键共用。
+ * 给了 panel 是弹层命令，给了 menu 是菜单命令，在工具栏上点它分别打开锚在按钮上的弹层与菜单，两者只能给一个；
+ * 两者都没给的普通命令必须有 run。登记时（mergeExtensions）不合这两条就抛 TypeError。
+ */
 export interface DesignerCommand<Ctx = unknown> {
   /** 全局唯一；扩展的命令用扩展 id 加点加名字，如 @xihan-flow-pro/simulation.run。 */
   readonly id: string
@@ -45,8 +88,30 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly checked?: (context: Ctx) => boolean
   /** 语气：按钮与菜单项按这族色显示，破坏性命令写 danger。不给即不带语气。 */
   readonly tone?: Tone
-  /** 执行命令；按钮、菜单项与快捷键都只在命令此刻可用时调用它。 */
-  readonly run: (context: Ctx) => void
+  /**
+   * 执行命令；按钮、菜单项与快捷键都只在命令此刻可用时调用它。弹层命令与菜单命令可以不给：
+   * 工具栏上点它们是打开弹层或菜单，不调 run；给了 run，快捷键按下时调它（通常调工具栏的 open 打开同一份）。
+   */
+  readonly run?: (context: Ctx) => void
+  /** 弹层命令：每次打开时建出放进弹层的面板。 */
+  readonly panel?: (context: Ctx) => DesignerCommandPanel<Ctx>
+  /** 菜单命令：每次刷新时现算菜单的各项。 */
+  readonly menu?: (context: Ctx) => readonly DesignerCommandMenuEntry[]
+  /** 菜单命令的条目被选中时调用，value 是条目的 value；写成命令 id 的项选中时执行那条命令，不调它。 */
+  readonly select?: (value: string, context: Ctx) => void
+}
+
+/** 菜单命令的一项是不是分隔线。 */
+export function isCommandMenuSeparator(entry: DesignerCommandMenuEntry): entry is 'separator' {
+  return entry === 'separator'
+}
+
+/** 查一条命令的形状：panel 与 menu 只能给一个，两者都没给就必须有 run。不合时抛 TypeError。 */
+export function assertCommandShape(command: Pick<DesignerCommand<never>, 'id' | 'run' | 'panel' | 'menu'>): void {
+  if (command.panel !== undefined && command.menu !== undefined)
+    throw new TypeError(`[xh] 命令 ${command.id} 同时给了 panel 与 menu，一条命令只能是弹层命令或菜单命令之一`)
+  if (command.panel === undefined && command.menu === undefined && command.run === undefined)
+    throw new TypeError(`[xh] 命令 ${command.id} 没有 run：普通命令必须给 run，弹层命令给 panel，菜单命令给 menu`)
 }
 
 /** 导入的来源：粘贴、拖放与打开文件三处共用。 */
@@ -146,6 +211,7 @@ const BASE_SPACES: ExtensionKeySpaces<AnyExtension> = {
 /**
  * 合并内置扩展与传入的扩展：内置在前、传入的按数组顺序在后。扩展 id、命令 id、快捷键、编辑方式（含内建的那几种）、
  * 导入导出 id，以及 spaces 里各款的名字，有一个重名就抛 DesignerExtensionError，报出名字与两个扩展的 id。
+ * 命令的形状不合（见 assertCommandShape）抛 TypeError。
  */
 export function mergeExtensions<E extends { readonly id: string }>(
   builtins: readonly E[],
@@ -160,8 +226,11 @@ export function mergeExtensions<E extends { readonly id: string }>(
     owners.set(key, id)
   }
   const ids = new Map<string, string>()
-  for (const extension of list)
+  for (const extension of list) {
     claim(ids, 'extension', extension.id, extension.id)
+    for (const command of (extension as AnyExtension).commands ?? [])
+      assertCommandShape(command)
+  }
   const all: ExtensionKeySpaces<E> = { ...BASE_SPACES as ExtensionKeySpaces<E>, ...spaces }
   for (const [space, keysOf] of Object.entries(all)) {
     const owners = new Map<string, string>(space === 'control' ? BUILTIN_CONTROL_KINDS.map(kind => [kind, 'builtin']) : [])
@@ -312,16 +381,19 @@ export function formatShortcut(keys: readonly string[], platform: KbdPlatform): 
   return formatHotkeyLabel(keys, platform)
 }
 
-/** 找出这次按键命中的命令：快捷键恰好命中、此刻可用的那一条；没有时为 undefined。platform 由调用方测出（detectKbdPlatform）。 */
+/**
+ * 找出这次按键命中的命令：快捷键恰好命中、此刻可用、并且有 run 的那一条；没有时为 undefined。platform 由调用方测出（detectKbdPlatform）。
+ * 没给 run 的弹层命令与菜单命令不由快捷键触发。
+ */
 export function commandForShortcut<Ctx>(
   commands: Iterable<DesignerCommand<Ctx>>,
   event: HotkeyEvent,
   context: Ctx,
   platform: KbdPlatform,
-): DesignerCommand<Ctx> | undefined {
+): (DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }) | undefined {
   for (const command of commands) {
-    if (command.shortcut !== undefined && matchesHotkey(event, command.shortcut, platform) && (command.enabled?.(context) ?? true))
-      return command
+    if (command.run !== undefined && command.shortcut !== undefined && matchesHotkey(event, command.shortcut, platform) && (command.enabled?.(context) ?? true))
+      return command as DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }
   }
   return undefined
 }

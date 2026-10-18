@@ -134,6 +134,23 @@ describe('<xh-designer-frame>', () => {
     close.click()
     await frame.updateComplete
     expect([changes, frame.panels, region('palette')]).toEqual([['toolbar properties issues'], 'toolbar properties issues', null])
+
+    // 「面板」菜单的数据：左右与下方没写 closable: false 的区，名字取标题；togglePanel 与关闭钮同一条路
+    expect(frame.panelEntries()).toEqual([{ name: 'palette', label: '物料', shown: false }, { name: 'issues', label: '问题', shown: true }])
+    frame.togglePanel('palette')
+    await frame.updateComplete
+    frame.togglePanel('issues')
+    await frame.updateComplete
+    expect(changes.slice(1)).toEqual(['toolbar palette properties issues', 'toolbar palette properties'])
+    expect([frame.panels, region('palette') !== null, region('issues')]).toEqual(['toolbar palette properties', true, null])
+  })
+
+  it('没写 panels 时全部显示，togglePanel 收起一块就把其余的列出来', async () => {
+    await mount()
+    expect(frame.panelEntries().map(entry => [entry.name, entry.label, entry.shown])).toEqual([['palette', 'palette', true], ['properties', 'properties', true], ['issues', 'issues', true]])
+    frame.togglePanel('properties')
+    await frame.updateComplete
+    expect(frame.panels).toBe('header toolbar palette issues status')
   })
 
   it('区后来加了标题就换成卡片，已经搬进去的内容挪进正文；画布区的作者内容可以放进四角与右侧的浮动条', async () => {

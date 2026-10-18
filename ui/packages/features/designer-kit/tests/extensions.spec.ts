@@ -70,6 +70,18 @@ describe('mergeExtensions', () => {
     }))
     expect([kind.space, kind.key, kind.extensions]).toEqual(['node-type', 'task', ['builtin', 'a']])
   })
+
+  it('命令的形状在登记时查：panel 与 menu 同时给、普通命令没有 run 都抛 TypeError', () => {
+    const element = {} as HTMLElement
+    const both: DesignerCommand<{ readonly n: number }> = { id: 'page', label: 'page', panel: () => ({ element }), menu: () => [] }
+    expect(() => mergeExtensions<Ext>([], [{ id: 'a', commands: [both] }])).toThrow(/page 同时给了 panel 与 menu/)
+    const bare: DesignerCommand<{ readonly n: number }> = { id: 'noop', label: 'noop' }
+    expect(() => mergeExtensions<Ext>([{ id: 'a', commands: [bare] }], [])).toThrow(/noop 没有 run/)
+    // 弹层命令与菜单命令可以不给 run
+    const panel: DesignerCommand<{ readonly n: number }> = { id: 'setup', label: 'setup', panel: () => ({ element }) }
+    const menu: DesignerCommand<{ readonly n: number }> = { id: 'pages', label: 'pages', menu: () => ['separator'], select: () => {} }
+    expect(mergeExtensions<Ext>([], [{ id: 'a', commands: [panel, menu] }])).toHaveLength(1)
+  })
 })
 
 describe('合并后的登记表', () => {
@@ -174,6 +186,11 @@ describe('快捷键', () => {
     expect(commandForShortcut([save, locked], key({ key: 's', metaKey: true }), { n: 0 }, 'mac')).toBe(save)
     expect(commandForShortcut([save, locked], key({ key: 's', ctrlKey: true }), { n: 0 }, 'mac')).toBeUndefined()
     expect(commandForShortcut([save, locked], key({ key: 'l', ctrlKey: true }), { n: 0 }, 'other')).toBeUndefined()
+    // 没有 run 的弹层命令不由快捷键触发
+    const setup: DesignerCommand<{ readonly n: number }> = { id: 'setup', label: 'setup', shortcut: ['Mod', 'P'], panel: () => ({ element: {} as HTMLElement }) }
+    expect(commandForShortcut([setup], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBeUndefined()
+    const opener = { ...setup, run: () => {} }
+    expect(commandForShortcut([opener], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBe(opener)
   })
 })
 

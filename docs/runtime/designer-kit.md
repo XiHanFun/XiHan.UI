@@ -471,7 +471,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `controls` | 新的编辑方式，键是属性描述里的 `control.kind`，不能与内建的重名；`checkProperties` 的 `controls` 用合并后的这张表 |
 | `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
-| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run }`；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）或 `menu:<主体>`，`shortLabel` 是顶栏按钮图标下的短文字，不给用 `label`；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`，会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
+| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）或 `menu:<主体>`，`shortLabel` 是顶栏按钮图标下的短文字，不给用 `label`；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`，会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
 | `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
 | `setup` | 装上时调用，返回卸下时的清理 |
 
@@ -492,6 +492,7 @@ host.dispose(); // 元素离开文档时调用
 ```
 
 - 顺序：内置在前，传入的按数组顺序在后。物料分组、追加的属性、规则执行、命令的缺省排列、面板的上下次序都按这个顺序。
+- 命令的形状也在这一刻查：`panel` 与 `menu` 同时给、或两者都没给又没有 `run`，抛 `TypeError`（`assertCommandShape`）。
 - 冲突在给 `extensions` 赋值、合并登记表的那一刻抛 `DesignerExtensionError`（`code` 为 `designer.extension-conflict`），报出名字空间、名字与先后登记它的两个扩展的 id，设计器保持赋值前的状态。查的名字有：扩展 id、命令 id、快捷键（Mod 按 Ctrl 算，`Mod+S` 与 `Ctrl+S` 算同一个）、编辑方式（含内建的那几种）、导入导出 id，以及 `spaces` 里各款的名字（种类、面板区名等）。不支持后登记的就地覆盖先登记的：要换掉内置行为，用自己的 id 另登记一项，再用命令排列或 `panels` 把内置那项去掉。
 - 编辑器表例外：本来就是层叠模型，按顺序合并，后面的压前面的。
 - 装卸按扩展 id 与对象引用比对：去掉的调它 `setup` 返回的清理，新加的调 `setup`；id 没变但换了一个对象，当作卸下再装上。所以宿主要保持扩展对象的引用稳定，不要每次渲染都新建一个同 id 的对象。
@@ -506,7 +507,32 @@ host.dispose(); // 元素离开文档时调用
 | `findImporter(importers, sources)` | 挑出接下导入的导入器：来源按先后，每个来源按导入器的先后问 `accepts`，返回第一个接下的与那个来源；都不接时为 `undefined`。粘贴与拖放的数据由 designer-shell 的 `importSources` 列成来源 |
 | `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
 | `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
-| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用的命令；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
+| `assertCommandShape(command)` / `isCommandMenuSeparator(entry)` | 查一条命令的形状，不合时抛 `TypeError`（合并时已经查过）；菜单命令的一项是不是分隔线 |
+| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用并且有 `run` 的命令（没给 `run` 的弹层命令与菜单命令不由快捷键触发）；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
+
+### 弹层命令与菜单命令
+
+命令除了直接执行，还可以在工具栏上点开一块锚在按钮上的面板或一张菜单，两者只能给一个：
+
+- **弹层命令**给 `panel(context) => { element, update?, destroy? }`：每次打开建一份，`element` 放进锚在按钮上的弹层，弹层开着时设计器状态变了调 `update`，关掉后调 `destroy`。打印的「页面设置」就这样做。
+- **菜单命令**给 `menu(context)` 与 `select(value, context)`：`menu` 每次刷新现算各项，一项是条目 `{ value, label, icon?, checked?, group?, disabled?, tone? }`、另一条命令的 id（按那条命令的文字、图标、可用与语气铺，选中即执行它），或 `'separator'`。条目选中时调 `select`。给了 `checked` 是可勾选的条目：写了 `group` 是同组单选，选中后菜单收起；没写是复选，选中后菜单不收起。
+- 这两类命令可以不给 `run`：工具栏上点它们是打开弹层或菜单，不调 `run`。要让快捷键也能打开，给一个 `run`，在里面调命令工具栏的 `open(id)`。
+- 收进「更多」时，点了打开同一块面板或同一张菜单，锚在「更多」钮上。界面的部分见 designer-shell 那一页的「命令」。
+
+```ts
+const pageMenu: DesignerCommand<PrintContext> = {
+  id: "page-menu",
+  label: ctx => ctx.t.pagePosition(ctx.page, ctx.pages.length),
+  placement: ["toolbar"],
+  menu: ctx => [
+    ...ctx.pages.map((page, index) => ({ value: page.id, label: page.name, checked: index === ctx.page, group: "page" })),
+    "separator",
+    "move-page-up",
+    "move-page-down",
+  ],
+  select: (value, ctx) => ctx.designer.showPage(value),
+};
+```
 
 ### 模板里的扩展数据
 

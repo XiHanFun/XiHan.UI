@@ -12,6 +12,7 @@ export type { ClipboardDecodeError, ClipboardDecodeResult, ClipboardEnvelope } f
 export { DATA_FIELD_CONTENTS, DATA_FIELD_KINDS, findDataField, listDataFields, listFilterFields } from './data-fields'
 export type { DataField, DataFieldContent, DataFieldEntry, DataFieldKind, ListDataFieldsOptions } from './data-fields'
 export {
+  assertCommandShape,
   checkExtensionData,
   commandForShortcut,
   createExtensionHost,
@@ -25,6 +26,7 @@ export {
   findImporter,
   formatShortcut,
   getExtensionData,
+  isCommandMenuSeparator,
   mergeExtensions,
   runExtensionRules,
   setExtensionData,
@@ -32,6 +34,9 @@ export {
 } from './extensions'
 export type {
   DesignerCommand,
+  DesignerCommandMenuEntry,
+  DesignerCommandMenuItem,
+  DesignerCommandPanel,
   DesignerCommandPlacement,
   DesignerExporter,
   DesignerExtensionBase,

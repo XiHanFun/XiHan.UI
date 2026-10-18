@@ -461,11 +461,33 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     setAttributes(card.close, { 'aria-label': t.closePanel(title) })
   }
 
+  /**
+   * 「面板」菜单里能开关的面板：start、end、bottom 三个位置上没写 closable: false 的区，按登记顺序；
+   * label 依次取 title、label、name，shown 是它此刻是否列在 panels 里。
+   */
+  panelEntries(): readonly { readonly name: string, readonly label: string, readonly shown: boolean }[] {
+    const shown = parseDesignerPanels(this.panels)
+    return this.#regionList()
+      .filter(region => CARD_POSITIONS.has(region.position) && region.closable !== false)
+      .map(region => ({ name: region.name, label: region.title ?? region.label ?? region.name, shown: shown === undefined || shown.has(region.name) }))
+  }
+
+  /** 开关一块面板：列在 panels 里就去掉、否则加上，与面板头的关闭钮一样派发 panels-change。 */
+  togglePanel(name: string): void {
+    const shown = parseDesignerPanels(this.panels)
+    this.#setPanel(name, shown !== undefined && !shown.has(name))
+  }
+
   /** 收起一块面板：从 panels 里去掉它，派发 panels-change。 */
   #closePanel(name: string): void {
+    this.#setPanel(name, false)
+  }
+
+  /** 把一块面板列进或移出 panels，派发 panels-change；没写 panels 时先当作全部列着。 */
+  #setPanel(name: string, on: boolean): void {
     const shown = parseDesignerPanels(this.panels)
     const visible = this.#regionList()
-      .filter(region => region.position !== 'center' && region.name !== name && (shown === undefined || shown.has(region.name)))
+      .filter(region => region.position !== 'center' && (region.name === name ? on : shown === undefined || shown.has(region.name)))
       .map(region => region.name)
     const panels = visible.join(' ')
     this.panels = panels
