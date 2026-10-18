@@ -814,3 +814,9 @@ export const tokens = {
 } as const
 
 export type TokenName = keyof typeof tokens
+
+/** 预设品牌的 id：写在 data-brand 上换一套品牌原语，与 data-theme 同在一个元素上生效。 */
+export const BRAND_PRESETS = ["blue","cyan","teal","green","orange","red","pink","purple"] as const
+
+/** 预设品牌的 id。 */
+export type BrandPreset = (typeof BRAND_PRESETS)[number]

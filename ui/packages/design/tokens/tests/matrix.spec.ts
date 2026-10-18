@@ -75,6 +75,14 @@ function isChartPaletteBranch(selector: string): boolean {
   return /\[data-xh-chart-palette=/.test(selector)
 }
 
+/**
+ * 预设品牌不是这 32 格的轴：矩阵模拟的是没写 data-brand 的文档，品牌原语取 :root 那一支。
+ * 写给预设品牌的分支在矩阵里永不命中，各档取值由语气对比度门禁与 contrast.spec 对账。
+ */
+function isBrandPresetBranch(selector: string): boolean {
+  return /\[data-brand=/.test(selector)
+}
+
 function combinations(): Combination[] {
   const out: Combination[] = []
   for (const theme of AXES.theme) {
@@ -134,7 +142,7 @@ function toMatcher(selector: string): Partial<Record<Axis, string>> {
   return req
 }
 
-interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[], directionSelectors: string[], chartPaletteSelectors: string[] }
+interface Parsed { blocks: Block[], mediaConditions: string[], supportsConditions: string[], surfaceSelectors: string[], directionSelectors: string[], chartPaletteSelectors: string[], brandPresetSelectors: string[] }
 
 /**
  * 逐行扫 tokens.css。产物的形状是固定的：一行一条声明，选择器与开花括号同行，
@@ -150,6 +158,7 @@ function parse(source: string): Parsed {
   const surfaceSelectors: string[] = []
   const directionSelectors: string[] = []
   const chartPaletteSelectors: string[] = []
+  const brandPresetSelectors: string[] = []
   let inComment = false
   let inMedia = 0
   let depth = 0
@@ -210,7 +219,8 @@ function parse(source: string): Parsed {
       const branches = selector.split(',').map(s => s.trim())
       const chartPalette = branches.filter(isChartPaletteBranch)
       chartPaletteSelectors.push(...chartPalette)
-      const environment = branches.filter(branch => !isChartPaletteBranch(branch) && !isSurfaceBranch(branch) && !isDirectionBranch(branch))
+      brandPresetSelectors.push(...branches.filter(isBrandPresetBranch))
+      const environment = branches.filter(branch => !isChartPaletteBranch(branch) && !isBrandPresetBranch(branch) && !isSurfaceBranch(branch) && !isDirectionBranch(branch))
       surfaceSelectors.push(...branches.filter(branch => !isChartPaletteBranch(branch) && isSurfaceBranch(branch)))
       directionSelectors.push(...branches.filter(isDirectionBranch))
       if (environment.length === 0) {
@@ -243,10 +253,10 @@ function parse(source: string): Parsed {
   }
 
   // @media 里那些块占了 index -1，不参与层叠
-  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors }
+  return { blocks: blocks.filter(b => b.index > 0), mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors, brandPresetSelectors }
 }
 
-const { blocks, mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors } = parse(css)
+const { blocks, mediaConditions, supportsConditions, surfaceSelectors, directionSelectors, chartPaletteSelectors, brandPresetSelectors } = parse(css)
 
 /* ---------- 层叠 ---------- */
 
@@ -491,6 +501,12 @@ describe('快照的前提', () => {
       `:where([data-xh-chart-palette='${scheme}'] [data-xh-ink])`,
       `:where([data-xh-chart-palette='${scheme}'] [data-xh-ink-surface] > *)`,
     ]).sort())
+  })
+
+  it('预设品牌每档一个取值块，只写自身一支', () => {
+    // 预设品牌按写在主题边界上的 data-brand 生效，不是这 32 格的轴：新的预设或新的分支冒出来时这里判红
+    const presets = Object.keys(JSON.parse(readFileSync(join(TOKENS_DIR, 'brand.presets.json'), 'utf8')) as object).filter(key => !key.startsWith('$'))
+    expect(brandPresetSelectors.sort()).toEqual(presets.map(id => `:where([data-brand='${id}'])`).sort())
   })
 
   it('不带 data-theme 的默认档与浅色档逐条同名同值', () => {

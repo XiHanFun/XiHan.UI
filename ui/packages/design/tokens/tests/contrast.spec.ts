@@ -469,6 +469,44 @@ describe('常规聚焦环', () => {
   }
 })
 
+/* ---------- 预设品牌 ---------- */
+
+// 预设品牌只换品牌原语：每档换上自己的那一套，品牌参与的每一对语义配对在浅色、深色与两档高对比里再验一遍。
+const BRAND_PRESETS_SOURCE = loadJson('primitive.brand-presets.json') as { brandPresets: Record<string, Record<string, unknown>> }
+const BRAND_PRESET_PAIRS: ReadonlyArray<[keyof typeof themes, string, string, number]> = [
+  ...TEXT_PAIRS.filter(([, fg, bg]) => fg.includes('brand') || bg.includes('brand')).map(([theme, fg, bg]) => [theme, fg, bg, 4.5] as [keyof typeof themes, string, string, number]),
+  ...BRAND_SUBTLE_GRAPHIC_PAIRS.map(([theme, fg, bg]) => [theme, fg, bg, 3] as [keyof typeof themes, string, string, number]),
+  ...(['light', 'dark', 'light-more', 'dark-more'] as const).flatMap(theme => [
+    [theme, 'ring.focus', 'bg.canvas', 3],
+    [theme, 'ring.focus', 'bg.surface', 3],
+  ] as [keyof typeof themes, string, string, number][]),
+]
+
+describe('预设品牌：品牌参与的配对逐档成立', () => {
+  const presets = Object.entries(BRAND_PRESETS_SOURCE.brandPresets)
+
+  it('有预设，且每档 11 级齐全', () => {
+    expect(presets.length).toBeGreaterThan(0)
+    for (const [id, scale] of presets)
+      expect(Object.keys(scale).filter(step => !step.startsWith('$')), id).toHaveLength(11)
+  })
+
+  for (const [id, scale] of presets) {
+    it(id, () => {
+      const color = primitive.color as Record<string, unknown>
+      const original = color.brand
+      color.brand = scale
+      try {
+        for (const [theme, fg, bg, min] of BRAND_PRESET_PAIRS)
+          expect(round(contrast(theme, fg, bg)), `${theme} ${fg} / ${bg}`).toBeGreaterThanOrEqual(min)
+      }
+      finally {
+        color.brand = original
+      }
+    })
+  }
+})
+
 // 三轴里的 tone 不改聚焦环，是因为 success / warning / info 对白底够不着对比度；
 // invalid 只有 danger 一种，那条理由在它身上不成立，所以两件事分开定。
 describe('校验失败的聚焦环', () => {

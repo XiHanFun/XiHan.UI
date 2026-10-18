@@ -114,6 +114,14 @@ async function main() {
     primitiveSource.color[name] = palette.color[name]
   }
   const primitive = flatten(primitiveSource)
+  // 预设品牌由 emit-brand-presets.mjs 派生：每档一个 [data-brand] 取值块，只换品牌原语
+  const brandPresets = Object.entries((await load('primitive.brand-presets.json')).brandPresets)
+  const brandPresetBlocks = brandPresets.map(([id, scale]) => {
+    const lines = Object.entries(scale)
+      .filter(([step]) => !step.startsWith('$'))
+      .map(([step, token]) => `    --xh-color-brand-${step}: ${token.$value};`)
+    return `  :where([data-brand='${id}']) {\n${lines.join('\n')}\n  }`
+  })
   const base = flatten(await load('semantic.base.json', materials.fragments['semantic.base.json']))
   const compact = flatten(await load('semantic.compact.json'))
   const rtl = flatten(await load('semantic.rtl.json'))
@@ -299,6 +307,11 @@ ${LAYER_ORDER}
 ${await declarations(primitive)}
   }
 
+  /* 预设品牌：[data-brand='<id>'] 换一套品牌原语，各档按缺省品牌的相对亮度派生（brand.presets.json）。
+     语义令牌在主题边界上声明，data-brand 与 data-theme 写在同一个元素上才在那里换品牌，
+     createVisualEnvironmentController 的根就是这样；registerBrand 注入的同名取值块不在层里，压过这里 */
+${brandPresetBlocks.join('\n\n')}
+
   /* 非模式语义（密度等轴的基线合并写法） */
   :where(:root), :where([data-density='comfortable']) {
 ${await declarations(basePlain)}
@@ -437,6 +450,12 @@ ${await declarations(print, '      ')}
 export const tokens = ${JSON.stringify(flatMap, null, 2)} as const
 
 export type TokenName = keyof typeof tokens
+
+/** 预设品牌的 id：写在 data-brand 上换一套品牌原语，与 data-theme 同在一个元素上生效。 */
+export const BRAND_PRESETS = ${JSON.stringify(brandPresets.map(([id]) => id))} as const
+
+/** 预设品牌的 id。 */
+export type BrandPreset = (typeof BRAND_PRESETS)[number]
 `
 
   await writeFile(join(ROOT, 'tokens.css'), applyFileHeader(join(ROOT, 'tokens.css'), css))

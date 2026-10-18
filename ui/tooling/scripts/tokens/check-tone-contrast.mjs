@@ -9,7 +9,8 @@
 //   淡底   --xh-_tone-subtle  vs 淡底上的字   --xh-_tone-fg   ≥ 4.5（AA 正文）
 //   装饰档 --xh-_tone-soft    vs 画布         --xh-bg-canvas  ≥ 3  （非文字图形）
 //   聚焦环 --xh-ring-focus    vs 画布         --xh-bg-canvas  ≥ 3  （非文字 UI 部件）
-// 浅色与深色两档各算一遍，六族语气逐族算。
+// 浅色与深色两档各算一遍，六族语气逐族算；tokens.css 里的预设品牌（[data-brand] 取值块）逐档换上自己的品牌原语，
+// brand 一族与聚焦环再验一遍。
 //
 // 颜色全部由 tokens.css 的 oklch(...) 字面量算出：这里自己实现 oklch → oklab → 线性 sRGB →
 // 相对亮度 → 对比度，以及 color-mix(in oklab, A p%, B) 的插值，不引第三方。
@@ -88,7 +89,13 @@ function loadThemes(blocks) {
   const root = new Map()
   const light = new Map()
   const dark = new Map()
+  const presets = new Map()
   for (const { selector, decls } of blocks) {
+    const preset = selector.match(/^:where\(\[data-brand='([a-z][a-z0-9-]*)'\]\)$/)
+    if (preset) {
+      presets.set(preset[1], decls)
+      continue
+    }
     const selectors = selector.split(',').map(part => part.trim())
     const targets = [
       selectors.includes(':where(:root)') ? root : null,
@@ -102,9 +109,12 @@ function loadThemes(blocks) {
         target.set(k, v)
     }
   }
+  if (presets.size === 0)
+    throw new Error('tokens.css 里没有找到预设品牌的 [data-brand] 取值块')
   return {
     light: new Map([...root, ...light]),
     dark: new Map([...root, ...dark]),
+    presets,
   }
 }
 
@@ -344,12 +354,16 @@ function assert(key, label, fg, bg, min) {
   failures.push(line)
 }
 
-for (const theme of THEMES) {
-  const tokens = themes[theme]
+/**
+ * 一套主题取值上逐族断言。brand 是预设品牌时 label 带上 @<id>，只验 brand 一族与聚焦环：
+ * 预设只换品牌原语，其余五族与它无关。
+ */
+function checkTheme(theme, tokens, tonesToCheck, label = '') {
   const canvas = evaluate('var(--xh-bg-canvas)', [tokens])
-  assert(`${theme}/ring-focus`, '聚焦环 vs 画布', evaluate('var(--xh-ring-focus)', [tokens]), canvas, 3)
+  assert(`${theme}${label}/ring-focus`, '聚焦环 vs 画布', evaluate('var(--xh-ring-focus)', [tokens]), canvas, 3)
 
-  for (const tone of TONES) {
+  for (const tone of tonesToCheck) {
+    const key = `${theme}/${tone}${label}`
     const scope = [
       ...(theme === 'dark' ? [tones.darkOverride.get(tone)] : []),
       tones.perTone.get(tone),
@@ -359,25 +373,34 @@ for (const theme of THEMES) {
     const at = name => evaluate(`var(${name})`, scope)
     // 现推那一档压在兜底档之上，两档各验一遍：够得着新特性与够不着的引擎都要成立
     const atDerived = name => evaluate(`var(${name})`, [derived, ...scope])
-    assert(`${theme}/${tone}/solid`, '实心底 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone'), 4.5)
-    assert(`${theme}/${tone}/solid-fallback`, '实心底 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone'), 4.5)
-    assert(`${theme}/${tone}/subtle`, '淡底 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle'), 4.5)
+    assert(`${key}/solid`, '实心底 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone'), 4.5)
+    assert(`${key}/solid-fallback`, '实心底 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone'), 4.5)
+    assert(`${key}/subtle`, '淡底 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle'), 4.5)
     // 淡底的两个交互态跟静态档同样要读得清：悬停与按下时字色不变，底却更深一档
-    assert(`${theme}/${tone}/subtle-hover`, '淡底悬停 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-hover'), 4.5)
-    assert(`${theme}/${tone}/subtle-active`, '淡底按下 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-active'), 4.5)
+    assert(`${key}/subtle-hover`, '淡底悬停 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-hover'), 4.5)
+    assert(`${key}/subtle-active`, '淡底按下 vs fg 字', at('--xh-_tone-fg'), at('--xh-_tone-subtle-active'), 4.5)
     // 语气文字也常常直接压在面上（alert 的说明、通知的字形、表格里的状态列）
-    assert(`${theme}/${tone}/on-surface`, '面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface)', scope), 4.5)
-    assert(`${theme}/${tone}/on-raised`, '抬起的面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface-raised)', scope), 4.5)
+    assert(`${key}/on-surface`, '面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface)', scope), 4.5)
+    assert(`${key}/on-raised`, '抬起的面 vs fg 字', at('--xh-_tone-fg'), evaluate('var(--xh-bg-surface-raised)', scope), 4.5)
     // 实心底的两个交互态：底更深，on 字不变
-    assert(`${theme}/${tone}/solid-hover`, '实心底悬停 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
-    assert(`${theme}/${tone}/solid-active`, '实心底按下 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
-    assert(`${theme}/${tone}/solid-hover-fallback`, '实心底悬停 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
-    assert(`${theme}/${tone}/solid-active-fallback`, '实心底按下 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
+    assert(`${key}/solid-hover`, '实心底悬停 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
+    assert(`${key}/solid-active`, '实心底按下 vs on 字（现推）', atDerived('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
+    assert(`${key}/solid-hover-fallback`, '实心底悬停 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-hover'), 4.5)
+    assert(`${key}/solid-active-fallback`, '实心底按下 vs on 字（兜底）', at('--xh-_tone-on'), at('--xh-_tone-active'), 4.5)
     // 可操作区的边界要 3:1，这一档是专门为它兜过底的
-    assert(`${theme}/${tone}/border-control`, '控件边界 vs 面', at('--xh-_tone-border-control'), evaluate('var(--xh-bg-surface)', scope), 3)
+    assert(`${key}/border-control`, '控件边界 vs 面', at('--xh-_tone-border-control'), evaluate('var(--xh-bg-surface)', scope), 3)
     // 装饰档画的是色条、指示条这类非文字图形，压在画布上同样要 3:1
-    assert(`${theme}/${tone}/soft`, '装饰档 vs 画布', at('--xh-_tone-soft'), canvas, 3)
+    assert(`${key}/soft`, '装饰档 vs 画布', at('--xh-_tone-soft'), canvas, 3)
   }
+}
+
+for (const theme of THEMES)
+  checkTheme(theme, themes[theme], TONES)
+
+// 预设品牌：换上各档自己的品牌原语，brand 一族与聚焦环在浅色、深色两档逐档再验一遍
+for (const [preset, primitives] of themes.presets) {
+  for (const theme of THEMES)
+    checkTheme(theme, new Map([...themes[theme], ...primitives]), ['brand'], `@${preset}`)
 }
 
 for (const key of KNOWN.keys()) {
@@ -400,4 +423,4 @@ if (failures.length || stale.length) {
   process.exit(1)
 }
 
-console.log(`[check-tone-contrast] 通过：${THEMES.length} 档主题 × ${TONES.length} 族语气，${checked} 组配对全部达标（已知例外 ${knownSeen.size} 组）`)
+console.log(`[check-tone-contrast] 通过：${THEMES.length} 档主题 × ${TONES.length} 族语气，另 ${themes.presets.size} 档预设品牌，${checked} 组配对全部达标（已知例外 ${knownSeen.size} 组）`)

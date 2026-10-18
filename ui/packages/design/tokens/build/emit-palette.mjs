@@ -13,15 +13,15 @@ const TOKENS_DIR = join(ROOT, 'tokens')
 const SEEDS = join(TOKENS_DIR, 'palette.seeds.json')
 const OUT = join(TOKENS_DIR, 'primitive.palette.json')
 
-const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+export const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
 
 /* 基线品牌曲线，与 src/runtime/brand.ts 逐值一致。 */
-const BASE_L = { 50: 0.971, 100: 0.936, 200: 0.885, 300: 0.809, 400: 0.702, 500: 0.623, 600: 0.546, 700: 0.488, 800: 0.424, 900: 0.379, 950: 0.282 }
-const BASE_C = { 50: 0.014, 100: 0.032, 200: 0.062, 300: 0.105, 400: 0.165, 500: 0.214, 600: 0.216, 700: 0.196, 800: 0.164, 900: 0.132, 950: 0.089 }
+export const BASE_L = { 50: 0.971, 100: 0.936, 200: 0.885, 300: 0.809, 400: 0.702, 500: 0.623, 600: 0.546, 700: 0.488, 800: 0.424, 900: 0.379, 950: 0.282 }
+export const BASE_C = { 50: 0.014, 100: 0.032, 200: 0.062, 300: 0.105, 400: 0.165, 500: 0.214, 600: 0.216, 700: 0.196, 800: 0.164, 900: 0.132, 950: 0.089 }
 const GAMUT_EPS = 0.05
 
 /** OKLCH → 线性 sRGB，不截断（CSS Color 4 / Ottosson 矩阵）。 */
-function oklchToLinearRgb(l, c, h) {
+export function oklchToLinearRgb(l, c, h) {
   const hr = (h * Math.PI) / 180
   const a = c * Math.cos(hr)
   const b = c * Math.sin(hr)
@@ -35,12 +35,12 @@ function oklchToLinearRgb(l, c, h) {
   ]
 }
 
-function inSrgbGamut(l, c, h) {
+export function inSrgbGamut(l, c, h) {
   return oklchToLinearRgb(l, c, h).every(v => v >= -GAMUT_EPS && v <= 1 + GAMUT_EPS)
 }
 
 /** 固定 L 与 H，把 C 收到 sRGB 色域内的最大可用值；与运行时 clampChroma 同一二分。 */
-function clampChroma(l, c, h) {
+export function clampChroma(l, c, h) {
   if (inSrgbGamut(l, c, h))
     return c
   let lo = 0
@@ -54,9 +54,9 @@ function clampChroma(l, c, h) {
   return lo
 }
 
-const fmt = (n, digits) => String(Number(n.toFixed(digits)))
+export const fmt = (n, digits) => String(Number(n.toFixed(digits)))
 /** 彩度只往小了取整：二分找到的是色域内的最大值，四舍五入往上一跳就出界。 */
-const fmtChroma = c => String(Math.floor(c * 1000 + 1e-9) / 1000)
+export const fmtChroma = c => String(Math.floor(c * 1000 + 1e-9) / 1000)
 
 /**
  * 一个色相的 11 档：明度与彩度逐档取基线，彩度再按该档明度、该色相收进 sRGB 色域。
@@ -91,7 +91,7 @@ async function main() {
   console.log(`[emit-palette] ${Object.keys(color).length} 个色相 × ${STEPS.length} 档 → primitive.palette.json`)
 }
 
-// 被 tests/palette.spec.ts 当模块引时只取 derivePalette，不落盘；直接跑才写文件。
+// 被 tests/palette.spec.ts 与 emit-brand-presets.mjs 当模块引时只取派生与色域函数，不落盘；直接跑才写文件。
 // 不 await：与 emit-tokens.mjs 同一写法，main 拒绝即未处理拒绝、进程按非零码退出，构建照样判红
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1])
   main()
