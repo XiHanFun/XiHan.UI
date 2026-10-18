@@ -1,7 +1,7 @@
-// 可绑定数据的字段树：按路径找字段、列出可直接读到的字段（进入对象、不进入数组）、按种类筛选、以数组为起点列元素字段，以及非法字段树的报错。
+// 可绑定数据的字段树：按路径找字段、列出可直接读到的字段（进入对象、不进入数组）、按种类筛选、以数组为起点列元素字段、内容种类，以及非法字段树的报错。
 import type { DataField } from '../src'
 import { describe, expect, it } from 'vitest'
-import { findDataField, listDataFields, listFilterFields } from '../src'
+import { DATA_FIELD_CONTENTS, findDataField, listDataFields, listFilterFields } from '../src'
 
 const fields: readonly DataField[] = [
   { name: 'order', label: '订单', kind: 'object', children: [
@@ -72,10 +72,19 @@ describe('findDataField', () => {
   })
 })
 
+describe('内容种类', () => {
+  it('value 字段可以写 content，列出的条目原样带着；四种取值都认', () => {
+    const contents: readonly DataField[] = DATA_FIELD_CONTENTS.map(content => ({ name: content, kind: 'value', content }))
+    expect(listDataFields(contents).map(entry => entry.field.content)).toEqual(['text', 'image', 'barcode', 'qrcode'])
+    expect(findDataField([{ name: 'logo', kind: 'value', type: 'string', content: 'image' }], ['logo'])?.content).toBe('image')
+  })
+})
+
 describe('非法字段树', () => {
-  it('同级重名、名字为空、种类未知时抛 RangeError', () => {
+  it('同级重名、名字为空、种类或内容未知时抛 RangeError', () => {
     expect(() => listDataFields([{ name: 'a', kind: 'value' }, { name: 'a', kind: 'value' }])).toThrow(RangeError)
     expect(() => listDataFields([{ name: '', kind: 'value' }])).toThrow(RangeError)
     expect(() => findDataField([{ name: 'a', kind: 'map' as never }], ['a'])).toThrow(RangeError)
+    expect(() => listDataFields([{ name: 'a', kind: 'value', content: 'html' as never }])).toThrow(RangeError)
   })
 })
