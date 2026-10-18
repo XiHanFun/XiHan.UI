@@ -1,6 +1,8 @@
 // 文件上传的标准结构：点标题只把焦点交给投放区、不弹选择框；投放区是唯一的打开入口，axe 不报重复入口与嵌套交互；
-// 删掉中间那一行时替身留在原处淡出；禁用时投放区退出 Tab 序列，只读时留在序列里，两者都不收拖放、都报不可用。
+// 删掉中间那一行时替身留在原处淡出；禁用时投放区退出 Tab 序列，只读时留在序列里，两者都不收拖放、都报不可用；
+// 只读时已有附件照样能 Tab 走到、读得出，删除钮报不可用，作者写在行里的链接照常可用。
 // 焦点去处、Tab 顺序、替身的落位与 axe 只有真实浏览器量得出。
+import type { FileUploadRemoteFile } from '@xihan-ui/headless'
 import type { XhFileUploadElement } from '../../src/elements/file-upload'
 import { runAxe } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -106,5 +108,48 @@ describe('文件上传的标准结构', () => {
     expect(opened).toBe(0)
     expect(dragOver(part('dropzone'))).toBe(false)
     expect(part('root').hasAttribute('data-dragging')).toBe(false)
+  })
+
+  it('只读时已有附件照样能 Tab 走到、读得出：文件名与大小在场，删除钮报不可用、点了不删；作者写在行里的链接照常可用', async () => {
+    const remote: FileUploadRemoteFile[] = [{ id: 'r1', name: '合同.pdf', size: 2048, url: '/files/r1' }, { id: 'r2', name: '报价.pdf', size: 4096 }]
+    await mount({ readOnly: true, defaultRemoteFiles: remote })
+    const rows = [...host!.querySelectorAll<HTMLElement>(ITEM)]
+    expect(rows.map(row => row.querySelector(`[data-part='item-name']`)!.textContent)).toEqual(['合同.pdf', '报价.pdf'])
+    expect(rows.map(row => row.querySelector(`[data-part='item-size-text']`)!.textContent)).toEqual(['2 KB', '4 KB'])
+    const deletes = rows.map(row => row.querySelector<HTMLElement>(`[data-part='item-delete-trigger']`)!)
+    expect(deletes.map(el => [el.getAttribute('aria-disabled'), el.getAttribute('aria-label')])).toEqual([['true', 'Delete 合同.pdf'], ['true', 'Delete 报价.pdf']])
+    wrap!.querySelector<HTMLElement>('#before')!.focus()
+    const stops: (Element | null)[] = []
+    for (let i = 0; i < 4; i++) {
+      await userEvent.keyboard('{Tab}')
+      stops.push(document.activeElement)
+    }
+    expect(stops).toEqual([part('dropzone'), deletes[0], deletes[1], wrap!.querySelector('#after')])
+    // 报不可用的按钮 Playwright 不肯点，直接派一次点击
+    deletes[0]!.click()
+    await settle()
+    expect(host!.querySelectorAll(ITEM)).toHaveLength(2)
+    wrap!.remove()
+
+    wrap = document.createElement('div')
+    wrap.innerHTML = `
+      <xh-file-upload read-only>
+        <div data-xh-part="root">
+          <div data-xh-part="list">
+            <div data-xh-part="item"><span data-xh-part="item-name"></span><a id="link-0" href="/files/r1">打开</a><button data-xh-part="item-delete-trigger"></button></div>
+            <div data-xh-part="item"><span data-xh-part="item-name"></span><button data-xh-part="item-delete-trigger"></button></div>
+          </div>
+          <input data-xh-part="hidden-input">
+        </div>
+      </xh-file-upload>`
+    host = wrap.querySelector<XhFileUploadElement>('xh-file-upload')!
+    host.defaultRemoteFiles = remote
+    document.body.append(wrap)
+    await settle()
+    const link = wrap.querySelector<HTMLAnchorElement>('#link-0')!
+    link.focus()
+    expect(document.activeElement).toBe(link)
+    expect(link.getAttribute('href')).toBe('/files/r1')
+    expect(link.closest('[inert]')).toBeNull()
   })
 })
