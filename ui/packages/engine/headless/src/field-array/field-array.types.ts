@@ -82,6 +82,8 @@ export interface FieldArrayItem {
   canRemove: boolean
   canMoveUp: boolean
   canMoveDown: boolean
+  /** 这一行能用拖动把手拖动换序：开了 movable、没禁用没只读。 */
+  canDrag: boolean
 }
 
 /** 删除与换序之后焦点应落到的把手。 */
@@ -117,7 +119,10 @@ export interface FieldArraySchema extends MachineSchema {
     max?: number
     /** 新增一行时创建一个空项。未提供时插入 null。 */
     createItem?: () => unknown
-    /** 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 */
+    /**
+     * 是否显示换序把手。关闭（默认）时上移、下移与拖动三个把手一律收起。
+     * 拖动把手只接指针（键盘与读屏用上移、下移），由适配器接上 sortable 的机器（见 fieldArrayDragProps）。
+     */
     movable?: boolean
     /**
      * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。
@@ -178,6 +183,11 @@ export interface FieldArraySchema extends MachineSchema {
     pending: FieldArrayPendingKeys | null
     /** 最近祖先 Form 的服务，仅由三端适配器接线，不是公开 prop。 */
     form: Service<FormSchema> | null
+    /**
+     * 最近一次结构改动是拖动放下的换序：放下后各行滑进新位置归拖动那一套（sortable 的归位与换位），
+     * 列表动效这一批不再补偿换位，免得同一段位移播两遍。
+     */
+    dropped: boolean
   }
   state: 'idle'
   event:
@@ -190,8 +200,11 @@ export interface FieldArraySchema extends MachineSchema {
     | { type: 'ITEM.ADD', index?: number, item?: { value: unknown } }
     /** 删除某一行；restoreFocus 为真时把焦点移到接位的行上。 */
     | { type: 'ITEM.REMOVE', index: number, restoreFocus?: boolean }
-    /** 把某一行移到另一个位置；restoreFocus 为真时焦点随该行移动。 */
-    | { type: 'ITEM.MOVE', from: number, to: number, restoreFocus?: boolean }
+    /**
+     * 把某一行移到另一个位置；restoreFocus 为真时焦点随该行移动。drag 为真时是拖动放下：
+     * 各行滑进新位置由拖动那一套负责，列表动效这一次不补偿换位。
+     */
+    | { type: 'ITEM.MOVE', from: number, to: number, restoreFocus?: boolean, drag?: boolean }
     | { type: 'FORM.RESET' }
     /**
      * 按压通道（shared/press）：某个把手被 Space / Enter 或触屏按住，key 说的是哪一个；
@@ -218,6 +231,8 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   invalid: boolean
   movable: boolean
+  /** 正有一行被拖动把手拖着（接了拖动时才可能为真）。 */
+  dragging: boolean
   layout: FieldArrayLayout
   /** 表格排布的各列，原样取自 columns；没给时为空数组。 */
   columns: FieldArrayColumn[]
@@ -262,4 +277,9 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   getItemDeleteTriggerProps: (item: FieldArrayItemProps) => T['button']
   getMoveUpTriggerProps: (item: FieldArrayItemProps) => T['button']
   getMoveDownTriggerProps: (item: FieldArrayItemProps) => T['button']
+  /**
+   * 拖动把手：按住拖这一行换位，只接指针，不占 Tab 位、对读屏隐藏（键盘与读屏用上移、下移）。
+   * 不换序时与上移、下移一起收起。适配器没接拖动时它只是一颗收起的空把手。
+   */
+  getItemDragTriggerProps: (item: FieldArrayItemProps) => T['button']
 }

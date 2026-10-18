@@ -5,9 +5,10 @@ import type { StructureChild, StructureNode } from '../src/shared/structure'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectFieldArray, fieldArrayMachine, fieldArrayStructure, fieldArrayTriggerId } from '../src/field-array'
+import { connectFieldArray, fieldArrayDragProps, fieldArrayMachine, fieldArrayStructure, fieldArrayTriggerId } from '../src/field-array'
 import { atRowMax, atRowMin, fieldArrayInsertIndex, moveRow, rowBound, sameRows } from '../src/field-array/field-array.machine'
 import { connectForm, createFormPathRecord, formMachine, formPathKey, getFormPathValue } from '../src/form'
+import { sortableMachine } from '../src/sortable'
 
 type Props = FieldArraySchema['props']
 
@@ -861,9 +862,9 @@ describe('fieldArrayStructure', () => {
     expect(parts((row.children![2] as StructureNode).children!)).toEqual(['item-delete-trigger'])
   })
 
-  it('开了 movable 时把手是上移、下移、删除', () => {
+  it('开了 movable 时把手是拖动、上移、下移、删除', () => {
     const nodes = fieldArrayStructure(api(makeService({ defaultValue: ['甲'], movable: true }))) as StructureNode[]
-    expect(parts((nodes[0]!.children![2] as StructureNode).children!)).toEqual(['move-up-trigger', 'move-down-trigger', 'item-delete-trigger'])
+    expect(parts((nodes[0]!.children![2] as StructureNode).children!)).toEqual(['item-drag-trigger', 'move-up-trigger', 'move-down-trigger', 'item-delete-trigger'])
   })
 
   it('表格排布：表格本体里是表头（每列一个列头）与各行，行里每列一格，插槽 key 是「行 key:列 id」', () => {
@@ -876,5 +877,53 @@ describe('fieldArrayStructure', () => {
     const cells = table[1]!.children! as StructureNode[]
     expect(parts(cells)).toEqual(['item-label', 'item-cell', 'item-cell', 'item-action'])
     expect(cells[2]).toMatchObject({ attrs: { value: 'amount' }, slot: { name: 'item-cell', key: `${a.items[0]!.key}:amount` }, data: { item: a.items[0], column: { id: 'amount' } } })
+  })
+})
+
+describe('拖动把手', () => {
+  /** 字段数组加一台按 fieldArrayDragProps 跑的 sortable 机器，与适配器的接法一样。 */
+  function withDrag(props: Props) {
+    const service = makeService(props)
+    const runtime = createVanillaRuntime()
+    const drag = createService(sortableMachine, { props: () => fieldArrayDragProps(service), runtime })
+    runtime.start()
+    return { service, drag }
+  }
+
+  it('只接指针：不占 Tab 位、对读屏隐藏；不换序时收起；没接拖动时只是一颗按不动的空把手', () => {
+    const plain = api(makeService({ defaultValue: ['甲', '乙'], movable: true }))
+    expect(plain.getItemDragTriggerProps({ index: 0 })).toMatchObject({
+      'data-scope': 'field-array',
+      'data-part': 'item-drag-trigger',
+      'type': 'button',
+      'tabindex': -1,
+      'aria-hidden': true,
+      'data-disabled': '',
+      'data-xh-action-profile': 'icon',
+    })
+    expect(plain.getItemDragTriggerProps({ index: 0 }).hidden).toBeUndefined()
+    expect(api(makeService({ defaultValue: ['甲'] })).getItemDragTriggerProps({ index: 0 }).hidden).toBe(true)
+  })
+
+  it('sortable 的项是各行：标识取行 key，不换序、禁用或只读时拖不动', () => {
+    const { service } = withDrag({ defaultValue: ['甲', '乙', '丙'], movable: true })
+    expect(fieldArrayDragProps(service)).toMatchObject({ ids: keys(service), orientation: 'vertical', disabled: false })
+    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'] })).disabled).toBe(true)
+    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], movable: true, readOnly: true })).disabled).toBe(true)
+    expect(fieldArrayDragProps(makeService({ defaultValue: ['甲'], movable: true, disabled: true })).disabled).toBe(true)
+  })
+
+  it('接了拖动：行带上 sortable 认的项标识，把手接上指针；放下按 move 换位，号跟着行走', () => {
+    const changes: unknown[] = []
+    const { service, drag } = withDrag({ defaultValue: ['甲', '乙', '丙'], movable: true, onValueChange: details => changes.push(details) })
+    const a = connectFieldArray(service, normalizeProps, drag)
+    const before = keys(service)
+    expect(a.getItemProps({ index: 1 })['data-value']).toBe(before[1])
+    const grip = a.getItemDragTriggerProps({ index: 1 })
+    expect([grip['data-disabled'], typeof grip.onPointerDown, grip.style]).toEqual([undefined, 'function', { touchAction: 'none' }])
+    expect(a.dragging).toBe(false)
+    fieldArrayDragProps(service).onSort!({ from: 0, to: 2, id: before[0]!, ids: [before[1]!, before[2]!, before[0]!] })
+    expect(changes.at(-1)).toEqual({ value: ['乙', '丙', '甲'], mutation: { type: 'move', from: 0, to: 2 } })
+    expect(keys(service)).toEqual([before[1], before[2], before[0]])
   })
 })

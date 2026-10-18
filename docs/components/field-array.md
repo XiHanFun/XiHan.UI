@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="field-array"`：**`root`** · `table` · `header` · `column-header` · `item` · `item-label` · `item-content` · `item-cell` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
+`data-scope="field-array"`：**`root`** · `table` · `header` · `column-header` · `item` · `item-label` · `item-content` · `item-cell` · `item-action` · `add-trigger` · `item-delete-trigger` · `item-drag-trigger` · `move-up-trigger` · `move-down-trigger`
 
 ## 示例
 
@@ -32,7 +32,7 @@
 
 ### 排序
 
-上移或下移字段
+按住把手拖动，或上移、下移字段
 
 <XhDemo src="field-array/03-movable" />
 
@@ -74,13 +74,13 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 ### 特性
 
 - `min` 与 `max` 限制行数。
-- `movable` 启用上移和下移操作。
+- `movable` 启用换序：每行有拖动把手（`item-drag-trigger`）与上移、下移两个把手。按住拖动把手把这一行拖到别处，其余各行实时让位，松手后它从松手处收进新位置，值按 `{ type: 'move', from, to }` 换位。拖动把手只接指针，不占 Tab 位、对读屏隐藏，键盘与读屏用上移、下移；拖动由 [排序](./sortable) 的状态机驱动，与它同一套让位、自动滚动与放下归位。删掉的行在原处淡出时照常拖别的行，淡出的替身不算一项。
 - `onValueChange`（事件名 `value-change`）的载荷带上这次是哪一种行变更：`mutation` 为 `{ type: 'insert', index }`、`{ type: 'remove', index }`、`{ type: 'move', from, to }` 或整份写值的 `{ type: 'replace', length }`（类型 `FormArrayMutation`）。值存在外部 store 的宿主据此迁移行级状态（强制设定、选项、校验进度），不必整份替换后丢掉。
 - `createItem` 设置新增行的初始值。
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
 - `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。列上写 `minWidth` 给出下限，这一列不再随容器压窄到它以下；各列下限之和超过容器时，表格本体横向滚动，表头与各行一起滚，行号（`item-label`）钉在起始侧、把手（`item-action`）钉在末端侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线，与表格的冻结列一致。窄的属性面板里放多列时给文字列写上 `minWidth`。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：列表排布下每行是行号（`item-label`，第几行）、内容格与把手（开了 `movable` 时先是上移与下移，再是删除），表格排布下是表格本体里的表头（每列一个列头）与各行、行里每列一格；最后是新增把手，文字取 `translations.addTrigger`。每行的内容归作者：Vue 写 `item-content` 插槽（载荷 `{ item }`），表格排布写 `item-cell` 插槽（载荷 `{ item, column }`）；React 给 `renderItemContent(item)` / `renderItemCell(item, column)`；Web Components 在宿主的直接子节点上写 `slot="item-content:<行 key>"`，表格排布写 `slot="item-cell:<行 key>:<列 id>"`，元素把它挪进对应的格子，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：列表排布下每行是行号（`item-label`，第几行）、内容格与把手（开了 `movable` 时先是拖动、上移与下移，再是删除），表格排布下是表格本体里的表头（每列一个列头）与各行、行里每列一格；最后是新增把手，文字取 `translations.addTrigger`。每行的内容归作者：Vue 写 `item-content` 插槽（载荷 `{ item }`），表格排布写 `item-cell` 插槽（载荷 `{ item, column }`）；React 给 `renderItemContent(item)` / `renderItemCell(item, column)`；Web Components 在宿主的直接子节点上写 `slot="item-content:<行 key>"`，表格排布写 `slot="item-cell:<行 key>:<列 id>"`，元素把它挪进对应的格子，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
 - Web Components 里行 key 从元素只读的 `items` 读（每项的 `key`，由组件分配、跟着这一行走）。`value-change` 同步派发、早于结构重铺，在它的处理函数里（受控时先写回 `value`）按 `items` 补上新行的内容，新行在同一帧就带上内容。删掉的行的内容先别删：原处淡出的替身克隆的是离场的那一行，内容要还在行里才带得上；行离场后它回到宿主、成为宿主的直接子节点，下一帧再把对不上 `items` 的删掉，不删会留在根的后面。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
 - 行的增删与移动有进退场：首次渲染时已有的行直接呈现，新增的行淡入，删掉的行在原处淡出，上移、下移与增删带来的换位滑到新位置。行照常按 `items` 渲染，删掉即卸载。
@@ -88,7 +88,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 ### 组合
 
 - 每一行放[表单字段](./field)，行内多个字段用行布局排列；整组挂在[表单](./form)下由它迁移值、规则与错误。
-- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 自带上移、下移两个把手，跳到任意位置用 `move(from, to)` 接作者自己的按钮或拖放。
+- `movable` 自带拖动、上移、下移三个把手；跳到任意位置用 `move(from, to)` 接作者自己的按钮。
 
 ### 最佳实践
 
@@ -108,7 +108,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-field-array>` |
-| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayColumnHeader` `XhFieldArrayHeader` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemCell` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayItemLabel` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` `XhFieldArrayTable` |
+| Vue 组件 | `XhFieldArrayAddTrigger` `XhFieldArrayColumnHeader` `XhFieldArrayHeader` `XhFieldArrayItem` `XhFieldArrayItemAction` `XhFieldArrayItemCell` `XhFieldArrayItemContent` `XhFieldArrayItemDeleteTrigger` `XhFieldArrayItemDragTrigger` `XhFieldArrayItemLabel` `XhFieldArrayMoveDownTrigger` `XhFieldArrayMoveUpTrigger` `XhFieldArrayRoot` `XhFieldArrayTable` |
 | 组合式函数 | `useFieldArray` |
 | 状态机 | `fieldArrayMachine` |
 | 皮肤 | `@xihan-ui/styles/field-array.css` |
@@ -122,7 +122,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `min` | `number` |  | 最少行数。到达该数值时删除把手不可按下。默认 0。 |
 | `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
 | `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
-| `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 |
+| `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时上移、下移与拖动三个把手一律收起。 拖动把手只接指针（键盘与读屏用上移、下移），由适配器接上 sortable 的机器（见 fieldArrayDragProps）。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
 | `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
@@ -199,6 +199,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
+| `dragging` | `boolean` | 正有一行被拖动把手拖着（接了拖动时才可能为真）。 |
 | `layout` | `FieldArrayLayout` |  |
 | `columns` | `FieldArrayColumn[]` | 表格排布的各列，原样取自 columns；没给时为空数组。 |
 | `atMin` | `boolean` | 已到下限：再删除会少于 min。 |
@@ -225,6 +226,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `getItemDeleteTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 | `getMoveUpTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 | `getMoveDownTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
+| `getItemDragTriggerProps` | `(item: FieldArrayItemProps) => T['button']` | 拖动把手：按住拖这一行换位，只接指针，不占 Tab 位、对读屏隐藏（键盘与读屏用上移、下移）。 不换序时与上移、下移一起收起。适配器没接拖动时它只是一颗收起的空把手。 |
 
 ## 无障碍
 
@@ -256,6 +258,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `add-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
+| `item-drag-trigger` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -274,6 +277,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `root` | `data-at-max` | ''（条件成立时才出现） |
 | `root` | `data-at-min` | ''（条件成立时才出现） |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
@@ -286,9 +290,11 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `header` | `data-layout` | 'table' \| 'list' |
 | `column-header` | `data-layout` | 'table' \| 'list' |
 | `column-header` | `data-value` | column.value |
+| `item` | `data-animating` | dragged['data-animating'] |
 | `item` | `data-at-max` | ''（条件成立时才出现） |
 | `item` | `data-at-min` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-dragging` | dragged['data-dragging'] |
 | `item` | `data-first` | ''（条件成立时才出现） |
 | `item` | `data-index` | String(item.index) |
 | `item` | `data-invalid` | ''（条件成立时才出现） |
@@ -344,6 +350,20 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-delete-trigger` | `data-xh-action-profile` | 'icon' |
 | `item-delete-trigger` | `data-xh-action-size` | 'xs' |
 | `item-delete-trigger` | `data-xh-action-variant` | 'ghost' |
+| `item-drag-trigger` | `data-at-max` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-at-min` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-dragging` | grip['data-dragging'] |
+| `item-drag-trigger` | `data-index` | String(item.index) |
+| `item-drag-trigger` | `data-invalid` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-layout` | 'table' \| 'list' |
+| `item-drag-trigger` | `data-pressed` | grip['data-pressed'] |
+| `item-drag-trigger` | `data-readonly` | ''（条件成立时才出现） |
+| `item-drag-trigger` | `data-xh-action-control` | '' |
+| `item-drag-trigger` | `data-xh-action-display` | 'always' |
+| `item-drag-trigger` | `data-xh-action-profile` | 'icon' |
+| `item-drag-trigger` | `data-xh-action-size` | 'xs' |
+| `item-drag-trigger` | `data-xh-action-variant` | 'ghost' |
 | `move-up-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `move-up-trigger` | `data-xh-action-control` | '' |
 | `move-up-trigger` | `data-xh-action-display` | 'always' |
@@ -382,36 +402,40 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-column-header-fg` | `column-header` | `color` | `layout=table` | `--xh-fg-default` | field-array 的 column-header 部件 color 覆盖槽。 |
 | `--xh-field-array-column-header-font-weight` | `column-header` | `font-weight` | `layout=table` | `--xh-font-weight-medium` | field-array 的 column-header 部件 font-weight 覆盖槽。 |
 | `--xh-field-array-content-gap` | `item-content` | `gap` | `default` | `--xh-space-2` | field-array 的 item-content 部件 gap 覆盖槽。 |
+| `--xh-field-array-drag-grip-h` | `item-drag-trigger` | `block-size` | `empty` | `--xh-space-3` | field-array 的 item-drag-trigger 部件 block-size 覆盖槽。 |
+| `--xh-field-array-drag-grip-w` | `item-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | field-array 的 item-drag-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-field-array-frozen-bg` | `item-action`<br>`item-label` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-field-array-table-bg` | field-array 的 item-action、item-label 部件 background 覆盖槽。 |
 | `--xh-field-array-frozen-edge` | `header`<br>`item`<br>`item-action`<br>`item-label`<br>`table` | `border-inline-end-color`<br>`border-inline-start-color` | `at-max-horizontal`<br>`at-min-horizontal`<br>`is([data-part='item'], [data-part='header'])`<br>`layout=table`<br>`not([data-at-max-horizontal])`<br>`not([data-at-min-horizontal])` | `--xh-border-default` | field-array 的 header、item、item-action、item-label、table 部件 border-inline-end-color、border-inline-start-color 覆盖槽。 |
 | `--xh-field-array-frozen-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle-opaque` | field-array 的 header 部件 background 覆盖槽。 |
 | `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
 | `--xh-field-array-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle` | field-array 的 header 部件 background 覆盖槽。 |
-| `--xh-field-array-icon-size` | `add-trigger`<br>`item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-field-array-icon-size` | `add-trigger`<br>`item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | field-array 的 add-trigger、item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-field-array-item-bg-dragging` | `item` | `background` | `dragging` | `--xh-bg-surface` | field-array 的 item 部件 background 覆盖槽。 |
 | `--xh-field-array-item-delete-fg-hover` | `item-delete-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-danger-hover` | field-array 的 item-delete-trigger 部件 color 覆盖槽。 |
 | `--xh-field-array-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | field-array 的 item 部件 gap 覆盖槽。 |
 | `--xh-field-array-item-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-label 部件 color 覆盖槽。 |
 | `--xh-field-array-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-field-array-item-padding` | `item` | `padding` | `default` | `--xh-space-0` | field-array 的 item 部件 padding 覆盖槽。 |
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | field-array 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-field-array-row-divider` | `header`<br>`item` | `border-block-end`<br>`border-block-start` | `layout=table` | `--xh-border-subtle` | field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-field-array-sticky-column-layer` | `header`<br>`item-action`<br>`item-label` | `z-index` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `1` | field-array 的 header、item-action、item-label 部件 z-index 覆盖槽。 |
 | `--xh-field-array-table-bg` | `item-action`<br>`item-label`<br>`table` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-bg-surface` | field-array 的 item-action、item-label、table 部件 background 覆盖槽。 |
 | `--xh-field-array-table-border` | `table` | `border` | `layout=table` | `--xh-border-default` | field-array 的 table 部件 border 覆盖槽。 |
 | `--xh-field-array-table-radius` | `header`<br>`table` | `border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `layout=table` | `--xh-shape-surface` | field-array 的 header、table 部件 border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
-| `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
-| `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
-| `--xh-field-array-trigger-fg-hover` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
-| `--xh-field-array-trigger-font-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。 |
-| `--xh-field-array-trigger-radius` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-field-array-trigger-bg` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg-active` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-bg-hover` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。 |
+| `--xh-field-array-trigger-fg` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `default` | `--xh-fg-muted` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-trigger-fg-hover` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。 |
+| `--xh-field-array-trigger-font-size` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。 |
+| `--xh-field-array-trigger-radius` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `border-radius` | `default` | `--xh-shape-control` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`item-drag-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

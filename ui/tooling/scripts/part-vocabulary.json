@@ -938,6 +938,7 @@
       "tree-select"
     ],
     "item-drag-trigger": [
+      "field-array",
       "sortable"
     ],
     "item-icon": [

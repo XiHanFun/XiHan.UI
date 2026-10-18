@@ -6,11 +6,13 @@
 // 提供 field array 相关实现。
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
+import type { SortableSchema } from '../sortable/sortable.types'
 import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
-import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
+import { contains, createPressTracker, dataAttr, ITEM_VALUE_ATTR, normalizeProps } from '@xihan-ui/core'
 import { formArrayItemPath } from '../form'
 import { FIELD_ARRAY_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
+import { connectSortable } from '../sortable/sortable.connect'
 import { fieldArrayAnatomy, fieldArrayTriggerId } from './field-array.anatomy'
 import { atRowMax, atRowMin, fieldArrayValue, rowBound, sameRows } from './field-array.machine'
 
@@ -24,11 +26,18 @@ function fallbackKey(index: number): string {
   return `row@${index}`
 }
 
+/**
+ * 连接字段数组。drag 是适配器为拖动换序建的 sortable 机器（props 取 fieldArrayDragProps）：给了它，
+ * 行带上拖动中的位移与状态，拖动把手接上指针；不给时拖动把手只是一颗收起的空把手。
+ */
 export function connectFieldArray<T extends PropTypes>(
   service: Service<FieldArraySchema>,
   normalize: NormalizeProps<T>,
+  drag?: Service<SortableSchema>,
 ): FieldArrayApi<T> {
   const { context, prop, refs, scope, send } = service
+  // 拖动换序的那一份：原样取 sortable 的属性，下面挑出行与把手要的几样并进字段数组自己的部件
+  const sortable = drag ? connectSortable(drag, normalizeProps) : undefined
 
   const value = fieldArrayValue(service)
   // 增删换序刚写了值、号还搁在 pending 里时（value-change 正是这一刻派发），直接用它算好的号：
@@ -75,6 +84,7 @@ export function connectFieldArray<T extends PropTypes>(
   const canRemove = (index: number): boolean => editable && !atMin && inRange(index)
   const canMoveUp = (index: number): boolean => editable && movable && inRange(index) && index > 0
   const canMoveDown = (index: number): boolean => editable && movable && inRange(index) && index + 1 < count
+  const canDrag = (index: number): boolean => editable && movable && inRange(index)
   // 行内把手按行序号记按压：行换位后号跟着行走，按 index 记会在换序那一下认错把手
   const rowKey = (index: number): string => keys[index] ?? fallbackKey(index)
 
@@ -119,6 +129,7 @@ export function connectFieldArray<T extends PropTypes>(
     canRemove: canRemove(index),
     canMoveUp: canMoveUp(index),
     canMoveDown: canMoveDown(index),
+    canDrag: canDrag(index),
   }))
 
   // 行下标落到行内每个部件上，皮肤与测试据此认出这是第几行
@@ -174,6 +185,7 @@ export function connectFieldArray<T extends PropTypes>(
     readOnly,
     invalid,
     movable,
+    dragging: !!sortable?.dragging,
     layout,
     columns,
     atMin,
@@ -198,6 +210,8 @@ export function connectFieldArray<T extends PropTypes>(
       'data-at-min': dataAttr(atMin),
       'data-at-max': dataAttr(atMax),
       'data-movable': dataAttr(movable),
+      // 正有一行被拖着：皮肤据此关掉选中、让其余各行的让位走过渡
+      'data-dragging': dataAttr(!!sortable?.dragging),
       'data-layout': layout,
       // 列表动效接上之前的这一帧（含服务端渲染）里的行都属于首帧，不播进场
       'data-instant': dataAttr(!context.get('listTracked')),
@@ -236,15 +250,27 @@ export function connectFieldArray<T extends PropTypes>(
       'hidden': !table || undefined,
     }),
 
-    getItemProps: item => normalize.element({
-      ...parts.item.attrs,
-      ...itemAttrs(item),
-      'role': table ? 'row' : undefined,
-      // 表头算第 1 行，数据行从第 2 行起
-      'aria-rowindex': table ? item.index + 2 : undefined,
-      'data-first': dataAttr(item.index === 0),
-      'data-last': dataAttr(item.index + 1 === count),
-    }),
+    getItemProps: (item) => {
+      // 拖动换序：行 key 写成 sortable 认的项标识，拖动中的位移、层级与状态照它给的写；整行不是拖动源，只有把手是
+      const dragged = sortable?.getItemProps({ id: rowKey(item.index), disabled: !canDrag(item.index) })
+      return normalize.element({
+        ...parts.item.attrs,
+        ...itemAttrs(item),
+        'role': table ? 'row' : undefined,
+        // 表头算第 1 行，数据行从第 2 行起
+        'aria-rowindex': table ? item.index + 2 : undefined,
+        'data-first': dataAttr(item.index === 0),
+        'data-last': dataAttr(item.index + 1 === count),
+        ...(dragged
+          ? {
+              [ITEM_VALUE_ATTR]: dragged[ITEM_VALUE_ATTR],
+              'data-dragging': dragged['data-dragging'],
+              'data-animating': dragged['data-animating'],
+              'style': dragged.style,
+            }
+          : {}),
+      })
+    },
 
     // 行前的行号或名目。纯标注：与行里的控件不建 for 关联，那一层的名字归作者；表格排布下是这一行的行头
     getItemLabelProps: item => normalize.element({
@@ -328,6 +354,37 @@ export function connectFieldArray<T extends PropTypes>(
         })
       },
     }),
+
+    // 拖动把手只接指针：按下起拖、走够距离才拖起来；键盘与读屏用上移、下移，它不占 Tab 位、对读屏隐藏。
+    // 按下即 preventDefault（sortable 给的处理），把手不会抢走焦点
+    getItemDragTriggerProps: (item) => {
+      const enabled = canDrag(item.index)
+      const grip = sortable?.getItemDragTriggerProps({ id: rowKey(item.index), disabled: !enabled })
+      return normalize.button({
+        ...parts['item-drag-trigger'].attrs,
+        ...itemAttrs(item),
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'icon',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'xs',
+        'type': 'button',
+        'tabindex': -1,
+        'aria-hidden': true,
+        'hidden': movable ? undefined : true,
+        'data-disabled': dataAttr(!enabled || !grip),
+        ...(grip
+          ? {
+              'data-dragging': grip['data-dragging'],
+              'data-pressed': grip['data-pressed'],
+              'style': grip.style,
+              'onPointerDown': grip.onPointerDown,
+              'onPointerUp': grip.onPointerUp,
+              'onPointerCancel': grip.onPointerCancel,
+            }
+          : {}),
+      })
+    },
 
     // 两颗换序把手的按压也各自记：Enter 在 keydown 即换位，把手随行挪走后由机器松开
     getMoveUpTriggerProps: item => moveTriggerProps(item, -1, {

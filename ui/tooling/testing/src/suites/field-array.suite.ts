@@ -192,6 +192,42 @@ export const fieldArraySuite: ConformanceSuite = {
       },
     },
     {
+      name: 'movable：拖动把手只接指针，不占 Tab 位、对读屏隐藏；行带上拖动换序认的项标识（行 key）；不换序时收起',
+      spec: { apg: APG },
+      props: { defaultValue: ['甲', '乙', '丙'], movable: true },
+      fixture: base => ({
+        ...base,
+        children: [
+          ...Array.from({ length: ROWS }, (_, i) => ({
+            ...row(i),
+            children: [
+              { part: 'item-content', text: `第 ${i + 1} 行` },
+              { part: 'item-action', children: [{ part: 'item-drag-trigger', tag: 'button' }, { part: 'item-delete-trigger', tag: 'button' }] },
+            ],
+          })),
+          addTrigger,
+        ],
+      }),
+      initial: {
+        parts: {
+          'root': { 'data-dragging': null },
+          'item[0]': { 'data-value': 'row-0', 'data-dragging': null },
+          'item[2]': { 'data-value': 'row-2' },
+          'item-drag-trigger[0]': {
+            'hidden': null,
+            'tabindex': '-1',
+            'aria-hidden': 'true',
+            'type': 'button',
+            'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-size': 'xs',
+          },
+        },
+      },
+    },
+    {
       name: '点新增：末尾多出一行，对外报一次值变化',
       spec: { apg: APG },
       props: { defaultValue: ['甲', '乙', '丙'], createItem: () => '丁' },
@@ -532,6 +568,7 @@ export const fieldArraySuite: ConformanceSuite = {
             `item-label[${i}]`,
             `item-content[${i}]`,
             `item-action[${i}]`,
+            `item-drag-trigger[${i}]`,
             `move-up-trigger[${i}]`,
             `move-down-trigger[${i}]`,
             `item-delete-trigger[${i}]`,

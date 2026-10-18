@@ -35106,6 +35106,42 @@
       "description": "field-array 的 item-content 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-field-array-drag-grip-h",
+      "component": "field-array",
+      "part": [
+        "item-drag-trigger"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "empty"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-drag-trigger 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-drag-grip-w",
+      "component": "field-array",
+      "part": [
+        "item-drag-trigger"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "empty"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item-drag-trigger 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-field-array-frozen-bg",
       "component": "field-array",
       "part": [
@@ -35213,6 +35249,7 @@
       "part": [
         "add-trigger",
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35226,7 +35263,25 @@
         "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。"
+      "description": "field-array 的 add-trigger、item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-array-item-bg-dragging",
+      "component": "field-array",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "dragging"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-field-array-item-delete-fg-hover",
@@ -35343,6 +35398,24 @@
       "description": "field-array 的 item 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-field-array-item-shadow-dragging",
+      "component": "field-array",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "dragging"
+      ],
+      "defaultToken": [
+        "--xh-elevation-lifted"
+      ],
+      "visibility": "public",
+      "description": "field-array 的 item 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-field-array-row-divider",
       "component": "field-array",
       "part": [
@@ -35448,6 +35521,7 @@
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35463,13 +35537,14 @@
         "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg-active",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35488,13 +35563,14 @@
         "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg-hover",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35512,13 +35588,14 @@
         "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-fg",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35532,13 +35609,14 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-fg-hover",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35558,13 +35636,14 @@
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-font-size",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35578,13 +35657,14 @@
         "--xh-text-secondary-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-radius",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35598,13 +35678,14 @@
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-size",
       "component": "field-array",
       "part": [
         "item-delete-trigger",
+        "item-drag-trigger",
         "move-down-trigger",
         "move-up-trigger"
       ],
@@ -35621,7 +35702,7 @@
         "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、item-drag-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-fieldset-actions-gap",

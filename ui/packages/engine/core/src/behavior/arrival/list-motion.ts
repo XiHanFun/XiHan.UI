@@ -200,8 +200,10 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
   /**
    * 留下来的条目换位时补不补偿（缺省补）。条目的位置另有一套测量自己排、自己过渡的集合（通知叠成的一摞：
    * 层深位移与收拢比例由叠摞测量写进私有槽）传 false：此时只做到达与离场替身，两套位移不会叠在一起打架。
+   * 给函数时每批变更现问一次：这一批的换位另有别处负责（拖动排序放下后由它把各项滑进新位置）时返回 false，
+   * 这一批不补偿，到达与离场照常。
    */
-  reflow?: boolean
+  reflow?: boolean | (() => boolean)
   /**
    * 条目外面包着作者节点、宿主删的是外壳时传 true（Web Components 的卡片元素：作者摘掉的是
    * `<xh-notification-item>`，条目是它里面的部件）：被删节点里面的条目同样放离场替身，替身放在外壳原来的位置；
@@ -226,7 +228,8 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
 export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
   const { item } = options
   const placeholders = options.depart ?? true
-  const compensate = options.reflow ?? true
+  const reflowOption = options.reflow ?? true
+  const compensate = (): boolean => (typeof reflowOption === 'function' ? reflowOption() : reflowOption)
   const wrapped = options.wrapped ?? false
   const channel = options.channel ?? 'translate'
   const win = container.ownerDocument.defaultView
@@ -374,7 +377,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
 
     // 换位：留下来的已知条目（位置另有测量负责的集合不补偿）
     const moved = new Set<HTMLElement>()
-    for (const [el, from] of compensate ? slots : []) {
+    for (const [el, from] of compensate() ? slots : []) {
       if (el.isConnected && !departing.has(el) && container.contains(el) && reflow(el, from))
         moved.add(el)
     }

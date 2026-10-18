@@ -6,9 +6,10 @@
 // 提供 field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema, SortableSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
+import { connectFieldArray, fieldArrayAnatomy, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, resolveFormControlState, sortableMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -37,7 +38,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * 元素运行 field-array 状态机并把 connect 产出接上。
  *
  * 值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。
- * 不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有上移与下移，
+ * 不写部件（或只写 root）时元素按标准结构生成：列表排布下每行是行号、作者内容与把手（开了 movable 时有拖动、上移与下移，
  * 再是删除），表格排布下是表格本体里的表头与各行、行里每列一格；最后是新增把手（文字取 translations.addTrigger）。
  * 每行的作者内容写在宿主的直接子节点上：列表排布 `slot="item-content:<行 key>"`，表格排布 `slot="item-cell:<行 key>:<列 id>"`，
  * 元素把它挪进对应的格子；行 key 从只读的 `items` 上读，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
@@ -53,7 +54,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @customElement xh-field-array
  * @attr {number} min - 最少行数；到达后删除把手不可按下
  * @attr {number} max - 最多行数；到达后新增把手不可按下
- * @attr {boolean} movable - 是否显示换序把手；关闭时两个换序把手一律收起
+ * @attr {boolean} movable - 是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
  * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
  * @attr {boolean} invalid - 校验失败标注；写在根与每一行上
@@ -72,6 +73,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart item-action - 一行中放置把手的位置
  * @csspart add-trigger - 新增把手，须是原生 `<button>`；到上限时为 aria-disabled 但仍可聚焦；名字取自身内容
  * @csspart item-delete-trigger - 删除把手，须是原生 `<button>`；到下限时为 aria-disabled；自带 aria-label
+ * @csspart item-drag-trigger - 拖动把手，须是原生 `<button>`；按住拖这一行换位，只接指针，不占 Tab 位、对读屏隐藏（键盘用上移、下移）
  * @csspart move-up-trigger - 上移把手，须是原生 `<button>`；首行为 aria-disabled；自带 aria-label
  * @csspart move-down-trigger - 下移把手，须是原生 `<button>`；末行为 aria-disabled；自带 aria-label
  */
@@ -82,7 +84,7 @@ export class XhFieldArrayElement extends XhElement {
 
   /** 作者没写结构时按标准结构生成：各行（或表格本体里的表头与各行）与新增把手。 */
   static override structure: ElementStructure<XhFieldArrayElement> = {
-    build: host => host.ctrl.service ? fieldArrayStructure(connectFieldArray(host.ctrl.service, wcNormalize)) : undefined,
+    build: host => host.ctrl.service ? fieldArrayStructure(connectFieldArray(host.ctrl.service, wcNormalize, host.drag.service)) : undefined,
   }
 
   // 列表排布下表格部件不带角色，不承接字段的名字与说明
@@ -133,6 +135,21 @@ export class XhFieldArrayElement extends XhElement {
     // 列表动效经它取行所在的根节点
     onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')),
   })
+
+  // 拖动换序：第二台机器跑 sortable，项是这个字段数组自己的行，容器是表格本体（表格排布）或根节点。
+  // props 现取字段数组的行 key 与换序开关，放下即发换位
+  private readonly drag = new MachineController<SortableSchema>(
+    this,
+    sortableMachine,
+    () => (this.ctrl.service ? fieldArrayDragProps(this.ctrl.service) : { ids: [], disabled: true }),
+    {
+      scope: createScope(null, createCounterIdGenerator()),
+      onBuilt: (svc) => {
+        svc.refs.set('getRootEl', () => fieldArrayDragContainer(this.getPart('root')))
+        svc.refs.set('getItemEls', () => fieldArrayDragItems(this.getPart('root')))
+      },
+    },
+  )
 
   private inheritedControl: FormControlState | undefined
 
@@ -238,7 +255,7 @@ export class XhFieldArrayElement extends XhElement {
   protected wire(): void {
     const form = this.closest('xh-form') as FormHost | null
     this.ctrl.service.refs.set('form', form?.[FORM_SERVICE] ?? null)
-    const api = connectFieldArray(this.ctrl.service, wcNormalize)
+    const api = connectFieldArray(this.ctrl.service, wcNormalize, this.drag.service)
 
     const put = (name: string, props: Record<string, unknown>): void => {
       const el = this.getPart(name)
@@ -274,6 +291,10 @@ export class XhFieldArrayElement extends XhElement {
         this.spreader.spread(action, api.getItemActionProps(item) as Record<string, unknown>)
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))
         this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
+      for (const trigger of this.partsIn(el, 'item-drag-trigger')) {
+        this.spreader.spread(trigger, api.getItemDragTriggerProps(item) as Record<string, unknown>)
+        this.setPartHidden(trigger, !api.movable)
+      }
       // 不换序时把这对把手收起。只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条
       // display 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
       for (const trigger of this.partsIn(el, 'move-up-trigger')) {

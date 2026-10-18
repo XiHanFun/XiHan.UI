@@ -1,4 +1,4 @@
-<!-- 排序 | 上移或下移字段 -->
+<!-- 排序 | 按住把手拖动，或上移、下移字段 -->
 <xh-field-array id="field-array-movable" movable>
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加一步</button>
@@ -18,6 +18,7 @@
       </xh-text-field>
     </div>
     <div data-xh-part="item-action">
+      <button data-xh-part="item-drag-trigger"></button>
       <button data-xh-part="move-up-trigger"></button>
       <button data-xh-part="move-down-trigger"></button>
       <button data-xh-part="item-delete-trigger"></button>

@@ -5,8 +5,9 @@
 
 // 提供 field array 相关实现。
 
-import type { Params, RefsFacade } from '@xihan-ui/core'
+import type { Params, RefsFacade, Service } from '@xihan-ui/core'
 import type { FormArrayMutation } from '../form'
+import type { SortableSchema } from '../sortable/sortable.types'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArrayPressedKey, FieldArraySchema } from './field-array.types'
 import { focusSafely, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { getFormPathValue } from '../form'
@@ -91,8 +92,10 @@ function commit(
   params: Params<FieldArraySchema>,
   next: FieldArrayPendingKeys,
   mutation: { type: 'insert', index: number } | { type: 'remove', index: number } | { type: 'move', from: number, to: number },
+  dropped = false,
 ): void {
   params.refs.set('pending', next)
+  params.refs.set('dropped', dropped)
   const form = params.refs.get('form')
   const name = params.prop('name')
   if (form && name !== undefined) {
@@ -143,6 +146,37 @@ function ownTable(root: HTMLElement): HTMLElement | null {
   return null
 }
 
+const FIELD_ARRAY_ROW_SELECTOR = '[data-scope="field-array"][data-part="item"]'
+
+/**
+ * 拖动换序用的 sortable 机器的 props：项是各行，标识取行 key，顺序就是行序；不换序、禁用或只读时拖不动。
+ * 放下即按 from / to 换位，与上移、下移同一条路径（同受 movable 与禁用约束），各行滑进新位置由 sortable 负责。
+ * 拖动把手只接指针，sortable 的读屏播报用不上，不必给文案。
+ */
+export function fieldArrayDragProps(service: Pick<Service<FieldArraySchema>, 'context' | 'refs' | 'prop' | 'send'>): Partial<SortableSchema['props']> {
+  const value = fieldArrayValue(service)
+  const pending = service.refs.get('pending')
+  const keys = pending && sameRows(pending.value, value) ? pending.keys : service.context.get('keys')
+  return {
+    ids: keys,
+    orientation: 'vertical',
+    disabled: !service.prop('movable') || !!service.prop('disabled') || !!service.prop('readOnly'),
+    onSort: ({ from, to }) => service.send({ type: 'ITEM.MOVE', from, to, drag: true }),
+  }
+}
+
+/** 拖动换序的容器：表格排布是表格本体（行在它里面，横向滚动也在它上面），列表排布是根节点。 */
+export function fieldArrayDragContainer(root: HTMLElement | null): HTMLElement | null {
+  return root ? ownTable(root) ?? root : null
+}
+
+/** 拖动换序的项：这个字段数组自己的行，按文档序；嵌在行里的另一个字段数组的行不算。 */
+export function fieldArrayDragItems(root: HTMLElement | null): HTMLElement[] {
+  if (!root)
+    return []
+  return [...root.querySelectorAll<HTMLElement>(FIELD_ARRAY_ROW_SELECTOR)].filter(el => el.closest(FIELD_ARRAY_ROOT_SELECTOR) === root)
+}
+
 const FIELD_ARRAY_ITEM_SELECTOR = '[data-scope="field-array"][data-part="item"], [data-scope="field-array"][data-part="root"] > [data-xh-part="item"]'
 
 /**
@@ -157,6 +191,7 @@ export const fieldArrayMachine = createMachine({
     keySeq: (prop('value') ?? prop('defaultValue') ?? []).length,
     pending: null,
     form: null,
+    dropped: false,
   }),
   context: ({ prop, cell }) => {
     const seed = prop('value') ?? prop('defaultValue') ?? []
@@ -232,7 +267,15 @@ export const fieldArrayMachine = createMachine({
             const root = refs.get('getRootEl')()
             if (disposed || !root)
               return
-            stop = trackListMotion(root, { item: FIELD_ARRAY_ITEM_SELECTOR })
+            stop = trackListMotion(root, {
+              item: FIELD_ARRAY_ITEM_SELECTOR,
+              // 拖动放下的那一批换位由拖动那一套滑过去，这里不再补偿；问过即撤，下一批照常
+              reflow: () => {
+                const dropped = refs.get('dropped')
+                refs.set('dropped', false)
+                return !dropped
+              },
+            })
             send({ type: 'LIST.TRACKED' })
           })
         })
@@ -349,6 +392,7 @@ export const fieldArrayMachine = createMachine({
         }
         const next = [...e.value]
         pendingMutations.set(next, { type: 'replace', length: next.length })
+        params.refs.set('dropped', false)
         context.set('value', next)
       },
 
@@ -405,7 +449,7 @@ export const fieldArrayMachine = createMachine({
         commit(params, {
           value: moveRow(value, e.from, e.to),
           keys: moveRow(context.get('keys'), e.from, e.to),
-        }, { type: 'move', from: e.from, to: e.to })
+        }, { type: 'move', from: e.from, to: e.to }, e.drag === true)
         params.action(['releasePress'])
         if (!e.restoreFocus)
           return

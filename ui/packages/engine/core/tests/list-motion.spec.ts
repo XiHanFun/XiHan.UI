@@ -255,6 +255,37 @@ describe('离场', () => {
     expect(writes).toEqual([])
   })
 
+  it('reflow 给函数时每批变更现问一次：返回 false 的那一批不补偿，下一批照常补', async () => {
+    const container = list(2)
+    let reflow = false
+    let asked = 0
+    stops.push(trackListMotion(container, { item: '[data-part="item"]', reflow: () => {
+      asked++
+      return reflow
+    } }))
+    const first = container.children[0] as HTMLElement & { moveTo: (next: number) => void }
+    const second = container.children[1] as HTMLElement & { moveTo: (next: number) => void }
+    const writes: string[] = []
+    const setProperty = first.style.setProperty.bind(first.style)
+    vi.spyOn(first.style, 'setProperty').mockImplementation((name, value, priority) => {
+      if (name === 'translate')
+        writes.push(String(value))
+      setProperty(name, value, priority)
+    })
+    container.append(first)
+    first.moveTo(40)
+    second.moveTo(0)
+    await flush()
+    expect([asked, writes]).toEqual([1, []])
+    reflow = true
+    container.append(second)
+    second.moveTo(40)
+    first.moveTo(0)
+    await flush()
+    expect(asked).toBe(2)
+    expect(writes).toContain('0px 40px')
+  })
+
   it('wrapped: true 时删掉包着条目的外壳，里面的条目在外壳原处留替身；缺省不认', async () => {
     for (const wrapped of [true, false]) {
       const container = document.createElement('div')
