@@ -5,6 +5,7 @@ import {
   applyPathOperation,
   checkExtensionData,
   commandForShortcut,
+  commandShortcuts,
   createExtensionHost,
   DesignerExtensionError,
   extensionCommands,
@@ -191,6 +192,29 @@ describe('快捷键', () => {
     expect(commandForShortcut([setup], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBeUndefined()
     const opener = { ...setup, run: () => {} }
     expect(commandForShortcut([opener], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBe(opener)
+  })
+
+  it('第二快捷键：按下任一组都命中，快捷键表按先后列出全部', () => {
+    const redo: DesignerCommand<{ readonly n: number }> = { ...command('redo', ['Mod', 'Shift', 'Z']), alternateShortcuts: [['Ctrl', 'Y']] }
+    expect(commandForShortcut([redo], key({ key: 'z', ctrlKey: true, shiftKey: true }), { n: 0 }, 'other')).toBe(redo)
+    expect(commandForShortcut([redo], key({ key: 'y', ctrlKey: true }), { n: 0 }, 'other')).toBe(redo)
+    expect(commandForShortcut([redo], key({ key: 'y', ctrlKey: true }), { n: 0 }, 'mac')).toBe(redo)
+    expect(commandForShortcut([redo], key({ key: 'y', metaKey: true }), { n: 0 }, 'mac')).toBeUndefined()
+    expect(commandShortcuts(redo)).toEqual([['Mod', 'Shift', 'Z'], ['Ctrl', 'Y']])
+    expect(commandShortcuts(command('save', ['Mod', 'S']))).toEqual([['Mod', 'S']])
+    expect(commandShortcuts(command('plain'))).toEqual([])
+    // 只写第二快捷键时同样命中
+    const alt: DesignerCommand<{ readonly n: number }> = { ...command('alt'), alternateShortcuts: [['F2']] }
+    expect([commandForShortcut([alt], key({ key: 'F2' }), { n: 0 }, 'other'), commandShortcuts(alt)]).toEqual([alt, [['F2']]])
+  })
+
+  it('第二快捷键一样查重：与别的命令的快捷键或第二快捷键重名都抛错', () => {
+    const redo: DesignerCommand<{ readonly n: number }> = { ...command('redo', ['Mod', 'Shift', 'Z']), alternateShortcuts: [['Ctrl', 'Y']] }
+    const primary = conflictOf(() => mergeExtensions<Ext>([{ id: 'a', commands: [redo] }], [{ id: 'b', commands: [command('yank', ['Mod', 'Y'])] }]))
+    expect([primary.space, primary.key, primary.extensions]).toEqual(['shortcut', 'Control+y', ['a', 'b']])
+    const alternate = conflictOf(() => mergeExtensions<Ext>([{ id: 'a', commands: [redo] }], [{ id: 'b', commands: [{ ...command('again'), alternateShortcuts: [['Mod', 'Shift', 'Z']] }] }]))
+    expect([alternate.space, alternate.key]).toEqual(['shortcut', 'Control+Shift+z'])
+    expect(mergeExtensions<Ext>([{ id: 'a', commands: [redo] }], [{ id: 'b', commands: [command('save', ['Mod', 'S'])] }])).toHaveLength(2)
   })
 })
 

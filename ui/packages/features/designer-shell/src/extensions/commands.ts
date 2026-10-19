@@ -12,7 +12,7 @@ import type { DesignerCommand, DesignerCommandMenuEntry, DesignerCommandPanel, D
 import type { XhMenuElement, XhPopoverElement } from '@xihan-ui/web-components/define'
 import { DIAGNOSTIC_WARN, isDev, reportDiagnostic } from '@xihan-ui/core'
 import { ariaKeyshortcut, detectKbdPlatform, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
-import { formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
+import { commandShortcuts, formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
 import { defineCommandElements } from '../internal/ui-elements'
 
@@ -117,6 +117,12 @@ export interface CommandToolbar<Ctx> {
   readonly close: () => void
   /** 开着的那条弹层命令或菜单命令的 id；都没开时为 undefined。 */
   readonly opened: () => string | undefined
+}
+
+/** 命令的全部快捷键写成 aria-keyshortcuts：shortcut 在前（委托提示只显示第一条），第二快捷键依次在后；一条都写不出时为 undefined。 */
+function commandKeyshortcuts(command: Pick<DesignerCommand<never>, 'shortcut' | 'alternateShortcuts'>, platform: KbdPlatform): string | undefined {
+  const value = commandShortcuts(command).map(keys => ariaKeyshortcut(keys, platform)).filter(Boolean).join(' ')
+  return value === '' ? undefined : value
 }
 
 /** 工具栏按钮的选择器：委托提示认它作锚点，点击也按它找命令。 */
@@ -495,7 +501,7 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
         // 名字写在按钮上：只显示图标时文字收起，名字照样在
         setAttributes(button.item, {
           'aria-label': text,
-          'aria-keyshortcuts': command.shortcut ? ariaKeyshortcut(command.shortcut, platform) : undefined,
+          'aria-keyshortcuts': commandKeyshortcuts(command, platform),
           'aria-pressed': command.checked ? String(command.checked(context)) : undefined,
           'data-tone': command.tone,
           'data-icon': command.icon !== undefined,
@@ -568,7 +574,7 @@ export function renderCommandMenu<Ctx>(
         'data-xh-part': 'item',
         'value': id,
         'aria-disabled': commandEnabled(command, context) ? undefined : 'true',
-        'aria-keyshortcuts': command.shortcut ? ariaKeyshortcut(command.shortcut, platform) : undefined,
+        'aria-keyshortcuts': commandKeyshortcuts(command, platform),
         'data-tone': command.tone,
       }, parts))
     }

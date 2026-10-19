@@ -15,6 +15,7 @@ export {
   assertCommandShape,
   checkExtensionData,
   commandForShortcut,
+  commandShortcuts,
   createExtensionHost,
   DesignerExtensionError,
   EXTENSION_DATA_KEY,
@@ -65,8 +66,8 @@ export {
 export type { Point, Rect, Size } from './geometry'
 export { clampToGrid, compactLayout, gridCollides, placeGridItem, removeGridItem, setGridItemRect } from './grid'
 export type { GridItem, GridOptions, GridPlacement, GridRect } from './grid'
-export { applyInSequence, createHistory } from './history'
-export type { ApplyOperation, ExecuteOptions, History, HistoryChange, HistoryChangeKind, HistoryOptions, OperationResult } from './history'
+export { applyInSequence, createHistory, HISTORY_NUDGE_MERGE_WITHIN, nudgeMergeKey, snapshotHistory } from './history'
+export type { ApplyOperation, ExecuteOptions, History, HistoryChange, HistoryChangeKind, HistoryEntry, HistoryLabel, HistoryOptions, HistorySnapshot, OperationResult } from './history'
 export { createIdAllocator, nextFreeId, remapIds } from './ids'
 export type { IdAllocator } from './ids'
 export { marqueeModeFromDrag, marqueeRect, selectInMarquee } from './marquee'
