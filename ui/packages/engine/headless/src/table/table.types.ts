@@ -455,6 +455,12 @@ export interface TableSchema extends MachineSchema {
      * 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。
      */
     cascade?: boolean
+    /**
+     * 声明这是一棵树，不必等某一行带上 parentId：根节点报 treegrid、行写 aria-level，
+     * Alt + 左右键改层级归表格，任何一行都能接受「放进去」（仍经 allowRowDrop 把关），
+     * 叶子行不写 aria-expanded。缺省 false：按行有没有 parentId 推断。
+     */
+    tree?: boolean
     /** 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 */
     checkedStrategy?: CascadeStrategy
     /**

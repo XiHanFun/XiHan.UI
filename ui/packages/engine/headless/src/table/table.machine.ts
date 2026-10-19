@@ -528,11 +528,12 @@ export const tableMachine = createMachine({
         const drift = snapshotDrift(session.source, session.rects, session.rowId, 'y')
         const rects = refs.get('rowDrag')?.rects ?? []
         const point = e.clientY - drift
-        // 树形表多一档「落进去」：能收孩子的行才给这一档，平表只有前后两档
+        // 树形表多一档「落进去」：能收孩子的行才给这一档，声明了 tree 时每一行都给；平表只有前后两档
         const rows = prop('rows') ?? []
-        const nested = rows.some((row: TableRowDef) => row.parentId != null)
+        const tree = !!prop('tree')
+        const nested = tree || rows.some((row: TableRowDef) => row.parentId != null)
         const hit = nested
-          ? hitAlongNested(rects, point, value => canOwnChildren(rows, value))
+          ? hitAlongNested(rects, point, value => tree || canOwnChildren(rows, value))
           : hitAlong(rects, point)
         // 落不下去的地方不该出现指示线：落在自己身上、落进自己的后代、
         // 算下来还是原位、以及作者的 allowRowDrop 说了不行

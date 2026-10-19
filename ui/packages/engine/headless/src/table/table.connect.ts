@@ -242,8 +242,8 @@ export function connectTable<T extends PropTypes>(
   const loop = prop('loop') ?? false
   const ids = scope.ids('table', 'caption')
 
-  // 有 parentId 即树形：子行与详情行是两套互斥的展开语义
-  const nested = rows.some(row => row.parentId != null)
+  // 声明了 tree，或有行带 parentId，就是树形：子行与详情行是两套互斥的展开语义
+  const nested = !!prop('tree') || rows.some(row => row.parentId != null)
 
   // 摊平与索引都是 (rows, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
   const visibleRows = flattenTableRows(rows, expandedValue)

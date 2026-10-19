@@ -1089,3 +1089,79 @@ describe('树形行 · 端到端换父', () => {
     })
   })
 })
+
+// ——— 声明树形：tree 开着时平铺的行也按树处理 ———
+
+describe('声明树形 tree', () => {
+  function altKey(h: Harness, key: string): { prevented: boolean } {
+    let prevented = false
+    const body = h.api().getBodyProps() as Dict
+    ;(body.onKeyDown as (e: KeyboardEvent) => void)({
+      key,
+      altKey: true,
+      preventDefault: () => { prevented = true },
+      currentTarget: document.createElement('div'),
+    } as unknown as KeyboardEvent)
+    return { prevented }
+  }
+
+  it('一行 parentId 都没有：根节点照样报 treegrid、行写 aria-level，叶子行不写 aria-expanded', () => {
+    const h = mount({ tree: true })
+    expect((h.api().getRootProps() as Dict).role).toBe('treegrid')
+    const row = h.api().getRowProps({ value: 'b' }) as Dict
+    expect(row['aria-level']).toBe(1)
+    expect(row['aria-expanded']).toBeUndefined()
+  })
+
+  it('不开 tree 的平表照旧：根节点报 grid，行不写 aria-level', () => {
+    const h = mount()
+    expect((h.api().getRootProps() as Dict).role).toBe('grid')
+    expect((h.api().getRowProps({ value: 'b' }) as Dict)['aria-level']).toBeUndefined()
+  })
+
+  it('平铺时 Alt + 右键把这一行缩进到上一行下面，Alt + 左右键都归表格', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ tree: true, onRowMove })
+    h.service.send({ type: 'ROW.FOCUS', value: 'b' })
+    expect(altKey(h, 'ArrowRight').prevented).toBe(true)
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'b', parent: 'a', index: 0, ids: ['a', 'b', 'c', 'd'] })
+    // 根层的行没有外层可退，键照样被表格接住
+    expect(altKey(h, 'ArrowLeft').prevented).toBe(true)
+    expect(onRowMove).toHaveBeenCalledTimes(1)
+  })
+
+  it('不开 tree 的平表：Alt + 左右键放行给页面', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ onRowMove })
+    h.service.send({ type: 'ROW.FOCUS', value: 'b' })
+    expect(altKey(h, 'ArrowRight').prevented).toBe(false)
+    expect(onRowMove).not.toHaveBeenCalled()
+  })
+
+  it('指针拖到叶子行的中段是「放进去」，松手报给宿主；不开 tree 时中段只有前后两档', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ tree: true, onRowMove })
+    press(h, 'a', 20)
+    // c 占 80-120，中段落在它里面
+    move(100)
+    expect(h.api().dropTarget).toEqual({ targetValue: 'c', position: 'inside' })
+    release()
+    expect(onRowMove).toHaveBeenCalledWith({ id: 'a', parent: 'c', index: 0, ids: ['b', 'c', 'a', 'd'] })
+
+    const flat = mount()
+    press(flat, 'a', 20)
+    move(100)
+    expect(flat.api().dropTarget?.position).not.toBe('inside')
+    release()
+  })
+
+  it('放进去照旧经 allowRowDrop 把关', () => {
+    const onRowMove = vi.fn()
+    const h = mount({ tree: true, onRowMove, allowRowDrop: move => move.parent !== 'c' })
+    press(h, 'a', 20)
+    move(100)
+    expect(h.api().dropTarget).toBeNull()
+    release()
+    expect(onRowMove).not.toHaveBeenCalled()
+  })
+})

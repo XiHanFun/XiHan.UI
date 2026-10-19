@@ -939,6 +939,32 @@ export const tableSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '声明树形 tree：平铺的行也报 treegrid、写 aria-level，叶子行不写 aria-expanded；Alt + 右键缩进到上一行下面',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/' },
+      props: props({ rows: REORDERABLE_ROWS, rowReorderable: true, tree: true }),
+      initial: {
+        parts: {
+          'root': { role: 'treegrid' },
+          'row[1]': { 'aria-level': '1', 'aria-expanded': null },
+          'row[2]': { 'aria-level': '1', 'aria-expanded': null },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'row[2]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            activeElement: { part: 'row[2]', exact: true },
+            // b 认上一个兄弟 a 当爹，落在 a 下面第 1 位；行序不变
+            events: [{ type: 'row-move', detail: { id: 'b', parent: 'a', index: 0, ids: ['a', 'b', 'c', 'd'] } }],
+          },
+        },
+      ],
+    },
+    {
       name: '行换位：Alt + 上下键一次挪一位，只报事件不动 DOM；到头不回绕，裸方向键仍是导航',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['table.kbd.row-move'],

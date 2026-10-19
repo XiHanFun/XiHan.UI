@@ -67617,6 +67617,15 @@
             },
             {
               "kind": "field",
+              "name": "tree",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "tree"
+            },
+            {
+              "kind": "field",
               "name": "allowRowDrop",
               "privacy": "public",
               "type": {
@@ -68173,6 +68182,14 @@
               "description": "行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手",
               "name": "row-reorderable",
               "fieldName": "rowReorderable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "声明这是一棵树：一行 parentId 都没有时也报 treegrid、Alt + 左右键改层级、任何行都能接受「放进去」",
+              "name": "tree",
+              "fieldName": "tree"
             },
             {
               "type": {

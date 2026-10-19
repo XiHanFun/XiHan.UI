@@ -165,6 +165,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     stickyFooter: Boolean,
     /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
     rowReorderable: Boolean,
+    /** 声明这是一棵树：一行 parentId 都没有时也报 treegrid、Alt + 左右键改层级、任何行都能接受「放进去」。 */
+    tree: Boolean,
     /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
     allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']> },
     loop: { type: Boolean, default: undefined },
