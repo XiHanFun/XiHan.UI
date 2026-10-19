@@ -12,10 +12,10 @@ import type { FormatSpec } from '@xihan-ui/expression'
 import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DataField, DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
-import { PlainDate, PlainDateTime } from '@xihan-ui/core/date'
 import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
 import { findOptionViolation } from '@xihan-ui/core/options'
 import { checkFormatSpec } from '@xihan-ui/expression'
+import { isIsoText } from './iso-text'
 
 /** 选择类编辑方式的一项。 */
 export interface PropertyOption {
@@ -309,22 +309,6 @@ const OPTION_VALUE_CHECKS: Readonly<Record<PropertyOptionValueType, (value: unkn
   boolean: value => typeof value === 'boolean',
   date: value => typeof value === 'string',
   datetime: value => typeof value === 'string',
-}
-
-/** date、datetime 的写法对不对：按 core/date 的 PlainDate / PlainDateTime 严格解析，datetime 还要带时刻。 */
-function isIsoText(type: 'date' | 'datetime', text: string): boolean {
-  if (type === 'datetime' && !/[T ]/i.test(text))
-    return false
-  try {
-    if (type === 'date')
-      PlainDate.from(text)
-    else
-      PlainDateTime.from(text)
-    return true
-  }
-  catch {
-    return false
-  }
 }
 
 /** JSON Pointer 的一段换回键名：~1 是 /，~0 是 ~。 */

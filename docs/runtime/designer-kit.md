@@ -235,6 +235,80 @@ listDataFields(fields, { base: ["order", "items"] }); // qty，相对数组的�
 
 两项互不相干：商品图片地址是 `{ type: "string", content: "image" }`，条码号可以是 `{ type: "number", content: "barcode" }`。`content` 写了不认识的值时抛 `RangeError`。
 
+### 推断字段树
+
+子入口 `@xihan-ui/designer-kit/field-inference` 从一份 JSON 样例或一份 JSON Schema 推断字段树，再把导入的字段并进现有字段。都是纯函数，不联网；设计器的导入字段对话框用的就是它们。
+
+```ts
+import { inferDataFields } from "@xihan-ui/designer-kit/field-inference";
+
+const { fields, notes } = inferDataFields({
+  no: "SO-001",
+  date: "2026-10-19",
+  items: [{ sku: "A", qty: 2 }, { sku: "B", qty: 1, note: "加急" }],
+});
+// no: value / string，date: value / date，items: list，子字段 sku、qty、note
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `inferDataFields(sample, options?)` | 从 JSON 样例推断：对象 → `object`；对象数组 → `list`，子字段取各项键的并集，键按首次出现的顺序；标量 → `value` 并带 `type`；标量数组 → 没有子字段的 `list`，`type` 是元素类型。根是数组时包成一个名为 `rootName`（缺省 `"items"`）的列表字段。不推断显示名 |
+| `dataFieldsFromJsonSchema(schema, options?)` | 从 JSON Schema（draft 2020-12 与 draft-07 的常用子集）推断：`properties` 按书写顺序成为子字段，`array` 的 `items` 成为列表；`title` 是显示名。根是数组时同样包成列表字段 |
+| `mergeDataFields(current, incoming)` | 同级按 `name` 对齐，现有的显示名、类型与内容优先，缺的取导入的；导入里新出现的字段追加在同级末尾；种类不同的保留现有的，记进 `conflicts` |
+
+推断的选项：
+
+| 选项 | 缺省 | 说明 |
+| --- | --- | --- |
+| `rootName` | `"items"` | 根是数组时，包住它的那个列表字段的名字 |
+| `sampleLimit` | `100` | 样例里每个数组最多看几项 |
+| `maxDepth` | `8` | 字段树最多几层，超出的对象不再展开 |
+| `detectDates` | `true` | 样例里全是 ISO 日期的记 `"date"`；全是日期或日期时间、且至少一个带时刻的记 `"datetime"`（末尾的 `Z` 或 `±hh:mm` 也认） |
+| `detectImages` | `false` | 样例里全是 `data:image/…` 或以图片扩展名结尾的 http(s) 地址时，标 `content: "image"` |
+
+类型怎么来：
+
+| 样例 | JSON Schema | 字段 |
+| --- | --- | --- |
+| 字符串 | `type: "string"`；`format: "date"` / `"date-time"` 是日期 / 日期时间 | `"string"` / `"date"` / `"datetime"` |
+| 数字 | `"integer"`、`"number"` | `"number"` |
+| 布尔 | `"boolean"` | `"boolean"` |
+| 只见到 `null` | `type: "null"` | `"string"`，标可空 |
+| — | `contentMediaType: "image/…"` | `content: "image"` |
+| — | 没写 `type`：按 `properties`、`items`、`enum` / `const` 推 | 同上 |
+
+JSON Schema 的其余规则：
+
+- `$ref` 只认本文档内的 `#` 与 `#/…`（含 `$defs`、`definitions`），外部引用按文本并记一条说明；循环引用在第二次出现时截断。
+- `allOf` 合并各支，后者覆盖同名属性。
+- `oneOf` / `anyOf`：只差一支 `null` 的取另一支并标可空；全是对象的取属性并集；其余取第一支。
+- `type` 写成数组时去掉 `null` 并标可空，还剩几种就按文本。
+- 只有 `additionalProperties` / `patternProperties` 的对象不展开；按位置给出元素的数组（`prefixItems`，或 draft-07 的 `items` 数组）取第一项。
+
+结果是 `{ fields, notes, annotations }`：
+
+- `notes` 是值得告诉用户的情况，按字段树的先后排列，每条 `{ code, path, params? }`，文案由界面按 `code` 生成。`path` 是字段名组成的路径，不含列表下标。
+
+  | `code` | 什么时候 |
+  | --- | --- |
+  | `invalid-root` | 根是标量，或 Schema 的根不是对象或数组 |
+  | `invalid-name` | 空键名，已跳过 |
+  | `mixed-type` | 同一路径有几种标量（`params.types`），按文本 |
+  | `all-null` | 只见到 `null`，按文本 |
+  | `mixed-shape` | 同一路径既有对象又有标量或数组，取对象 |
+  | `empty-list` | 数组里没有可推断的项 |
+  | `scalar-list` | 标量数组 |
+  | `nested-list` | 数组的数组，只取外层 |
+  | `depth-limit` | 超出层数，这个对象没有展开 |
+  | `sample-limit` | 数组项超出上限（`params.limit`、`params.count`） |
+  | `unresolved-ref` | 外部或找不到的 `$ref` |
+  | `circular-ref` | 循环引用 |
+  | `union` | `oneOf` / `anyOf` 合并了几支（`params.count`） |
+  | `dictionary` | 字典形状的对象，没有展开 |
+  | `tuple` | 按位置给出元素的数组，取了第一项 |
+
+- `annotations` 是 `DataField` 放不下的信息，键是字段路径的 `formatJsonPath` 写法，值可含 `description`、`required`、`enum`（含 `const`）、`default`、`format`（没有映射成字段类型的格式，如 `email`）与 `nullable`。报表参数、流程启动变量这类要必填与候选值的地方从这里取。
+
 ## 视口
 
 视口是 `{ x, y, zoom }`：屏幕坐标 = 世界坐标 × `zoom` + (`x`, `y`)。

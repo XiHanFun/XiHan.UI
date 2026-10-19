@@ -176,6 +176,12 @@
     "limit": "14.1 kB"
   },
   {
+    "name": "designer-kit/field-inference",
+    "path": "packages/features/designer-kit/dist/field-inference.js",
+    "gzip": true,
+    "limit": "9.5 kB"
+  },
+  {
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,

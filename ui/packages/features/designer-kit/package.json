@@ -30,6 +30,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./field-inference": {
+      "types": "./dist/field-inference.d.ts",
+      "import": "./dist/field-inference.js"
+    },
     "./properties": {
       "types": "./dist/properties.d.ts",
       "import": "./dist/properties.js"
