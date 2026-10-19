@@ -67592,6 +67592,15 @@
             },
             {
               "kind": "field",
+              "name": "navigation",
+              "privacy": "public",
+              "type": {
+                "text": "TableNavigation | undefined"
+              },
+              "attribute": "navigation"
+            },
+            {
+              "kind": "field",
               "name": "direction",
               "privacy": "public",
               "type": {
@@ -68129,6 +68138,14 @@
               "description": "上下键到达首尾回绕，默认关闭；写 loop=\"true\" 开启",
               "name": "loop",
               "fieldName": "loop"
+            },
+            {
+              "type": {
+                "text": "TableNavigation | undefined"
+              },
+              "description": "表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子",
+              "name": "navigation",
+              "fieldName": "navigation"
             },
             {
               "type": {

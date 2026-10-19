@@ -11,6 +11,7 @@ import type {
   TableColumnDef,
   TableColumnKind,
   TableColumnPreference,
+  TableNavigation,
   TableRowDef,
   TableSchema,
   TableSelection,
@@ -181,6 +182,8 @@ export interface XhTableRootProps extends RootElementProps {
   /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
   allowRowDrop?: TableProps['allowRowDrop']
   loop?: boolean
+  /** 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑。 */
+  navigation?: TableNavigation
   dir?: Direction
   size?: Size
   translations?: TableProps['translations']
@@ -231,6 +234,7 @@ export function XhTableRoot({
   rowReorderable,
   allowRowDrop,
   loop,
+  navigation,
   dir,
   size,
   translations,
@@ -275,6 +279,7 @@ export function XhTableRoot({
     rowReorderable,
     allowRowDrop,
     loop,
+    navigation,
     dir,
     size,
     translations,

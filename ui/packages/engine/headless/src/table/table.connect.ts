@@ -14,6 +14,8 @@ import {
   createPressTracker,
   dataAttr,
   focusItem,
+  focusSafely,
+  getTabbables,
   isComposingEvent,
   isDev,
   isItemDisabled,
@@ -212,6 +214,10 @@ export function connectTable<T extends PropTypes>(
   const selection = context.get('selection')
   const expandedValue = context.get('expandedValue')
   const focusedRow = context.get('focusedRow')
+  const focusedColumn = context.get('focusedColumn')
+  // 单元格级导航：格子也是焦点落点，锚点是一行或一格
+  const navigation = prop('navigation') === 'cell' ? 'cell' : 'row'
+  const cellMode = navigation === 'cell'
   const mode = tableSelectionMode(prop('selectionMode'))
   const loading = !!prop('loading')
   const stickyHeader = !!prop('stickyHeader')
@@ -652,6 +658,173 @@ export function connectTable<T extends PropTypes>(
     focusValue(rowElOf(el))
   }
 
+  /** 一行里能落焦的格子，按 DOM 序：被合并掉、藏起来的不算，嵌套表格里的格子不算。 */
+  const cellEls = (rowEl: HTMLElement): HTMLElement[] =>
+    [...rowEl.querySelectorAll<HTMLElement>(parts.cell.selector)]
+      .filter(el => el.closest(parts.row.selector) === rowEl && !el.hidden && !el.hasAttribute('data-covered'))
+
+  /** 某一列的格子选择器：虚拟滚动把行滚进窗口后，按它在那一行里找落点。 */
+  const cellSelector = (column: string): string => `${parts.cell.selector}[${ITEM_VALUE_ATTR}=${JSON.stringify(column)}]`
+
+  /**
+   * 格子上的上下键与 Ctrl + Home / End：在可见数据行上走（禁用行跳过），落到同一列。
+   * 目标行里这一列没有能落焦的格子（被合并掉了）时落到那一行上。
+   */
+  const focusColumnBy = (body: HTMLElement, from: string, column: string, intent: NavIntent): void => {
+    if (virtualizer) {
+      const target = virtualCollectionTarget(dataRows, from, intent, { value: row => row.id, disabled: row => row.disabled, loop })
+      if (!target)
+        return
+      send({ type: 'CELL.FOCUS', row: target.value, column })
+      virtualizer.focusIndex(target.index, { align: 'auto', selector: cellSelector(column) })
+      return
+    }
+    const rowEl = navigateItems(rowEls(body), from, intent, { loop })
+    if (!rowEl)
+      return
+    const cell = cellEls(rowEl).find(el => el.getAttribute(ITEM_VALUE_ATTR) === column)
+    if (cell)
+      focusItem(cell)
+    else
+      focusValue(rowEl)
+  }
+
+  /** 焦点交给某一行：虚拟滚动下先让它滚进窗口。 */
+  const focusRowById = (body: HTMLElement, id: string): void => {
+    if (virtualizer) {
+      const index = dataRows.findIndex(row => row.id === id)
+      if (index < 0)
+        return
+      send({ type: 'ROW.FOCUS', value: id })
+      virtualizer.focusIndex(index, { align: 'auto', selector: itemQuerySelector(tableRowQuery) })
+      return
+    }
+    focusValue(rowEls(body).find(el => itemValue(el) === id) ?? null)
+  }
+
+  /**
+   * navigation 为 cell 时先过这一道。返回 true 表示这次按键已有着落，表体的行级处理不再接手。
+   *
+   * - 焦点在格内控件上（格内编辑）：按键都归控件，只认 Esc 与 F2，退回格子；
+   * - 焦点在格子上：左右键在格子之间走（首格再按左键回到行），上下键走同一列，Home / End 到本行首末格，
+   *   Ctrl + Home / End 到本列首末行；Enter 或 F2 进到格内第一个可聚焦的控件，没有控件时 Enter 触发行主操作；
+   * - 焦点在行上：已展开或不可展开时右键进到首格、左键回到父行，Ctrl + Home / End 到首末行，展开 / 收起照旧。
+   * 选中（Space）、Alt + 方向键换位与改层级、Ctrl + A 不在这里，照旧由行级处理接手。
+   */
+  const cellKeyDown = (event: KeyboardEvent): boolean => {
+    const body = event.currentTarget as HTMLElement
+    const target = event.target as HTMLElement | null
+    const rowEl = target?.closest<HTMLElement>(parts.row.selector) ?? null
+    if (!rowEl || !contains(body, rowEl))
+      return false
+    const rowId = itemValue(rowEl)
+    const row = rowId != null ? metaOf(rowId) : undefined
+    if (rowId == null || !row)
+      return false
+    const cellEl = target!.closest<HTMLElement>(parts.cell.selector)
+    const onCell = cellEl != null && cellEl.closest(parts.row.selector) === rowEl
+    const command = event.ctrlKey || event.metaKey
+    const bare = !command && !event.altKey && !event.shiftKey
+
+    if (onCell && target !== cellEl) {
+      // 格内控件自己用掉了 Esc（比如收起它的下拉）就不退出编辑
+      if ((event.key === 'Escape' || event.key === 'F2') && bare && !event.defaultPrevented) {
+        event.preventDefault()
+        focusItem(cellEl)
+      }
+      return true
+    }
+
+    // rtl 下左右键整体对调：往里去的方向恒是「下一格 / 展开」
+    const forward = dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
+    const backward = dir === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
+    const edge = event.key === 'Home' ? 'first' : event.key === 'End' ? 'last' : null
+
+    if (!onCell) {
+      if (target !== rowEl)
+        return false
+      if (edge && command && !event.altKey && !event.shiftKey) {
+        event.preventDefault()
+        focusBy(body, edge)
+        return true
+      }
+      if (!bare)
+        return false
+      if (event.key === forward && !(row.expandable && !row.expanded && !row.disabled)) {
+        const first = cellEls(rowEl)[0]
+        if (!first)
+          return false
+        event.preventDefault()
+        focusItem(first)
+        return true
+      }
+      if (event.key === backward && !(row.expandable && row.expanded && !row.disabled)) {
+        const parent = row.parentId
+        if (parent == null || !metaOf(parent))
+          return false
+        event.preventDefault()
+        focusRowById(body, parent)
+        return true
+      }
+      return false
+    }
+
+    const column = cellEl.getAttribute(ITEM_VALUE_ATTR)
+    if (column == null)
+      return false
+    if (edge && command && !event.altKey && !event.shiftKey) {
+      event.preventDefault()
+      focusColumnBy(body, rowId, column, edge)
+      return true
+    }
+    if (!bare)
+      return false
+    const cells = cellEls(rowEl)
+    const at = cells.indexOf(cellEl)
+    switch (event.key) {
+      case forward:
+        // 已在末格就停住，键照样吞掉：不然页面会横向滚一截
+        event.preventDefault()
+        focusItem(cells[at + 1] ?? null)
+        return true
+      case backward:
+        event.preventDefault()
+        if (at > 0)
+          focusItem(cells[at - 1]!)
+        else
+          focusValue(rowEl)
+        return true
+      case 'ArrowDown':
+      case 'ArrowUp':
+        event.preventDefault()
+        focusColumnBy(body, rowId, column, event.key === 'ArrowDown' ? 'next' : 'prev')
+        return true
+      case 'Home':
+      case 'End':
+        event.preventDefault()
+        focusItem((event.key === 'Home' ? cells[0] : cells.at(-1)) ?? null)
+        return true
+      case 'Enter':
+      case 'F2': {
+        const widget = getTabbables(cellEl).find(el => el !== cellEl)
+        if (widget) {
+          event.preventDefault()
+          focusSafely(widget)
+          return true
+        }
+        // 格内没有控件：Enter 是这一格的行主操作，F2 无事可做
+        if (event.key === 'Enter' && !row.disabled) {
+          event.preventDefault()
+          if (!event.repeat)
+            prop('onAction')?.({ value: rowId, column })
+        }
+        return true
+      }
+      default:
+        return false
+    }
+  }
+
   // 按压通道：七个可按部件共用一个机器，真源是 context 里「正被按住的那一个」（按部件键记），各自合成一份
   // 跟踪器；Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
   // 部件自身的禁用（行禁用、列不可排序、全选无基数）只有 connect 知道，随 PRESS.START 带给机器的 canPress 守卫
@@ -739,6 +912,8 @@ export function connectTable<T extends PropTypes>(
     selectionMode: mode,
     expandedValue,
     focusedRow,
+    focusedColumn: cellMode ? focusedColumn : null,
+    navigation,
     loading,
     empty: isEmpty,
     rowCount,
@@ -877,9 +1052,13 @@ export function connectTable<T extends PropTypes>(
       'tabindex': focusedRow == null ? 0 : -1,
       'data-empty': dataAttr(isEmpty),
       'onKeyDown': (event: KeyboardEvent) => {
-        // 输入法组合中的按键是给候选框的，不是给表格的；
+        // 输入法组合中的按键是给候选框的，不是给表格的
+        if (isComposingEvent(event))
+          return
+        if (cellMode && cellKeyDown(event))
+          return
         // 落在可编辑控件上的按键归那个控件
-        if (isComposingEvent(event) || isEditableTarget(event.target))
+        if (isEditableTarget(event.target))
           return
         const body = event.currentTarget as HTMLElement
         const command = event.ctrlKey || event.metaKey
@@ -1069,14 +1248,19 @@ export function connectTable<T extends PropTypes>(
         'aria-setsize': hierarchical ? (metaIndex.get(row.value)?.setSize ?? rowSetSize) : undefined,
         // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
         'aria-disabled': isRowDisabled(row.value) ? 'true' : 'false',
-        // 行级 roving tabindex：整张表只有锚点行留在 Tab 序列内
-        'tabindex': anchor === row.value ? 0 : -1,
+        // roving tabindex：整张表只有锚点留在 Tab 序列内；单元格级导航时锚点落在格子上，行就退出
+        'tabindex': anchor === row.value && !(cellMode && focusedColumn != null) ? 0 : -1,
         'data-section': 'body',
         'data-dragging': dataAttr(draggingRow === row.value),
         'data-drop': rowDropSide(row.value),
         'data-draggable': dataAttr(rowReorderable && rowBlocked == null && !isRowDisabled(row.value)),
-        // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步
-        'onFocus': () => send({ type: 'ROW.FOCUS', value: row.value }),
+        // 焦点是事实不是许可：禁用行被点到也记锚点，方向键才知道从哪儿起步。
+        // 单元格级导航时只认落在行自己身上的焦点：React 的 onFocus 会冒泡，格子落焦不能把锚点拉回行
+        'onFocus': (event: FocusEvent) => {
+          if (cellMode && event.target !== event.currentTarget)
+            return
+          send({ type: 'ROW.FOCUS', value: row.value })
+        },
         // 行主操作：点中的那一格给出列 id。行内控件与把手各有自己的点击，拖动松手的那一次不算
         'onClick': onRowItself((event: MouseEvent) => {
           if (service.refs.get('swallowClick')) {
@@ -1252,6 +1436,16 @@ export function connectTable<T extends PropTypes>(
         // 表头与脚注的格子不给 row，也就没有选中/禁用可言
         'data-selected': cell.row != null ? dataAttr(isSelected(cell.row)) : undefined,
         'data-disabled': cell.row != null ? dataAttr(isRowDisabled(cell.row)) : undefined,
+        // 单元格级导航：表体格子是焦点落点，roving 只留锚点格在 Tab 序列内。格内控件落焦也记成这一格
+        ...(cellMode && cell.row != null && cell.footer == null
+          ? {
+              tabindex: focusedRow === cell.row && focusedColumn === cell.value ? 0 : -1,
+              onFocusIn: () => {
+                if (context.get('focusedRow') !== cell.row || context.get('focusedColumn') !== cell.value)
+                  send({ type: 'CELL.FOCUS', row: cell.row!, column: cell.value })
+              },
+            }
+          : {}),
         // 与表头格同发：指示线要贯穿整张表，只画在列头上会看不出落到哪儿
         'data-dragging': dataAttr(draggingColumn === cell.value),
         'data-drop': dropSide(cell.value),
