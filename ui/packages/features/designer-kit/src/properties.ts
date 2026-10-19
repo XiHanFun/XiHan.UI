@@ -82,6 +82,9 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  *   allowDisabled 为 false 时选项没有禁用这回事：每项不能带 disabled，编辑器也不显示禁用那一列。
  *   valueType 是 value 的类型（缺省 string）：number 是有限数字，boolean 是 true / false，date 是 ISO 日期（如 2026-10-19），
  *   datetime 是带时刻的 ISO 日期时间（如 2026-10-19T08:30），都按 core/date 严格解析；编辑器按它换值格的控件，boolean 固定 true、false 两行。
+ * - treeOptions：选项树（树选择、级联这类组件吃的形状），每项是 { value, label?, disabled?, tone?, description?, children?, hasChildren? }，
+ *   value 是不为空的字符串，children 是下一层的选项，hasChildren 为 true 表示有子项但还没给出。按 findOptionViolation 严格检查，
+ *   同一层里 value 不重复，最多 32 层；requireLabel 与 allowDisabled 同 options。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string, readonly secret?: boolean }
@@ -108,6 +111,7 @@ export type PropertyControl
     }
     | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
     | { readonly kind: 'options', readonly requireLabel?: boolean, readonly allowDisabled?: boolean, readonly valueType?: PropertyOptionValueType }
+    | { readonly kind: 'treeOptions', readonly requireLabel?: boolean, readonly allowDisabled?: boolean }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
@@ -328,48 +332,90 @@ function pointerToken(token: string): string {
   return token.replaceAll('~1', '/').replaceAll('~0', '~')
 }
 
+/** 选项列表与选项树里一项怎么查。 */
+interface OptionRules {
+  readonly requireLabel: boolean
+  readonly allowDisabled: boolean
+  readonly valueType: PropertyOptionValueType
+  /** 选项树：多认 children 与 hasChildren 两个键，children 不在单项里查。 */
+  readonly tree: boolean
+}
+
+/** 选项树的层数上限，顶层为第 1 层，与 findOptionViolation 的缺省一致。 */
+const TREE_OPTION_MAX_DEPTH = 32
+
 /**
- * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对（value 按 valueType 判类型），
- * 不许禁用时带了 disabled，value 是空串，date / datetime 的写法不对，要求 label 时 label 为空，或 value 与前面的项重复
- * （按值相等判，数字按数值）。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
+ * 一项的第一处问题：不是对象，有别的键或某个键的取值不对（value 按 valueType 判类型），不许禁用时带了 disabled，
+ * value 是空串，date / datetime 的写法不对，要求 label 时 label 为空，或 value 与同一列表里前面的项重复
+ * （按值相等判，数字按数值）。问题落在 at 下这一项的那个键上，这一项不是对象时落在 at 上。
  */
+function optionIssue(item: JsonValue, at: JsonPath, rules: OptionRules, seen: Set<JsonPrimitive>): PropertyValueIssue | undefined {
+  if (!isPlainObject(item))
+    return { code: 'invalid-type', path: at }
+  const { children: _children, ...own } = item
+  const found = findOptionViolation([rules.tree ? own : item], { strict: true, tree: rules.tree, requireLabel: rules.requireLabel, isValue: OPTION_VALUE_CHECKS[rules.valueType] })
+  if (found !== undefined) {
+    const key = found.pointer.split('/')[2]
+    return { code: optionCode(found, item), path: key === undefined ? at : [...at, pointerToken(key)] }
+  }
+  if (!rules.allowDisabled && Object.hasOwn(item, 'disabled'))
+    return { code: 'unknown-key', path: [...at, 'disabled'] }
+  const option = item as { readonly value: JsonPrimitive, readonly label?: string }
+  if (option.value === '')
+    return { code: 'required', path: [...at, 'value'] }
+  if ((rules.valueType === 'date' || rules.valueType === 'datetime') && !isIsoText(rules.valueType, option.value as string))
+    return { code: 'invalid-value', path: [...at, 'value'] }
+  if (rules.requireLabel && option.label === '')
+    return { code: 'required', path: [...at, 'label'] }
+  if (seen.has(option.value))
+    return { code: 'duplicate-value', path: [...at, 'value'] }
+  seen.add(option.value)
+  return undefined
+}
+
+/** 选项列表里按先后的第一处问题，见 optionIssue。 */
 function optionsIssue(control: Extract<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssue | undefined {
   if (!Array.isArray(value))
     return { code: 'invalid-type', path: [] }
-  const requireLabel = control.requireLabel === true
-  const valueType = control.valueType ?? 'string'
+  const rules: OptionRules = { requireLabel: control.requireLabel === true, allowDisabled: control.allowDisabled !== false, valueType: control.valueType ?? 'string', tree: false }
   const seen = new Set<JsonPrimitive>()
   for (const [index, item] of value.entries()) {
-    if (!isPlainObject(item))
-      return { code: 'invalid-type', path: [index] }
-    const found = findOptionViolation([item], { strict: true, requireLabel, isValue: OPTION_VALUE_CHECKS[valueType] })
-    if (found !== undefined) {
-      const key = found.pointer.split('/')[2]
-      return { code: optionCode(found, item), path: key === undefined ? [index] : [index, pointerToken(key)] }
-    }
-    if (control.allowDisabled === false && Object.hasOwn(item, 'disabled'))
-      return { code: 'unknown-key', path: [index, 'disabled'] }
-    const option = item as { readonly value: JsonPrimitive, readonly label?: string }
-    if (option.value === '')
-      return { code: 'required', path: [index, 'value'] }
-    if ((valueType === 'date' || valueType === 'datetime') && !isIsoText(valueType, option.value as string))
-      return { code: 'invalid-value', path: [index, 'value'] }
-    if (requireLabel && option.label === '')
-      return { code: 'required', path: [index, 'label'] }
-    if (seen.has(option.value))
-      return { code: 'duplicate-value', path: [index, 'value'] }
-    seen.add(option.value)
+    const found = optionIssue(item, [index], rules, seen)
+    if (found !== undefined)
+      return found
+  }
+  return undefined
+}
+
+/**
+ * 选项树里按先序的第一处问题：一项先查自己（见 optionIssue，重复按同一层判），再查它的 children。
+ * children 或整棵树不是数组报 invalid-type，层数超过 32 报 invalid-value，落在那一层的列表上。
+ */
+function treeOptionsIssue(list: JsonValue, at: JsonPath, rules: OptionRules, depth: number): PropertyValueIssue | undefined {
+  if (!Array.isArray(list))
+    return { code: 'invalid-type', path: at }
+  if (depth > TREE_OPTION_MAX_DEPTH)
+    return { code: 'invalid-value', path: at }
+  const seen = new Set<JsonPrimitive>()
+  for (const [index, item] of list.entries()) {
+    const found = optionIssue(item, [...at, index], rules, seen)
+      ?? ((item as JsonObject).children === undefined ? undefined : treeOptionsIssue((item as JsonObject).children!, [...at, index, 'children'], rules, depth + 1))
+    if (found !== undefined)
+      return found
   }
   return undefined
 }
 
 /**
  * 找出值里第一处不符合内建编辑方式约束的地方；符合时为 undefined。问题落在值本身时 path 是 []，
- * options 的问题落在那一项的那个键上（如 [2, "value"]）。各种类的问题码见 checkPropertyValue。
+ * options 的问题落在那一项的那个键上（如 [2, "value"]），treeOptions 的落在那一层那一项的那个键上（如 [0, "children", 2, "value"]）。
+ * 各种类的问题码见 checkPropertyValue。
  */
 export function findPropertyValueIssue(control: PropertyControl, value: JsonValue): PropertyValueIssue | undefined {
   if (control.kind === 'options')
     return optionsIssue(control, value)
+  if (control.kind === 'treeOptions')
+    return treeOptionsIssue(value, [], { requireLabel: control.requireLabel === true, allowDisabled: control.allowDisabled !== false, valueType: 'string', tree: true }, 1)
   const code = valueCode(control, value)
   return code === undefined ? undefined : { code, path: [] }
 }
@@ -380,13 +426,14 @@ export function findPropertyValueIssue(control: PropertyControl, value: JsonValu
  * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value；
  * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option；
  * options 不是数组或某项、某个键的类型不对（value 按 valueType 判）报 invalid-type，date / datetime 写法不对报 invalid-value，有别的键（allowDisabled 为 false 时含 disabled）报 unknown-key，tone 不是色调名报 invalid-option，
- * value 为空或缺了要求的 label 报 required，value 重复报 duplicate-value。问题落在值里哪一处用 findPropertyValueIssue。
+ * value 为空或缺了要求的 label 报 required，value 重复报 duplicate-value；treeOptions 同 options（value 只收字符串，重复按同一层判），
+ * children 不是数组也报 invalid-type，hasChildren 不是布尔报 invalid-type，超过 32 层报 invalid-value。问题落在值里哪一处用 findPropertyValueIssue。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {
   return findPropertyValueIssue(control, value)?.code
 }
 
-function valueCode(control: Exclude<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssueCode | undefined {
+function valueCode(control: Exclude<PropertyControl, { kind: 'options' | 'treeOptions' }>, value: JsonValue): PropertyValueIssueCode | undefined {
   switch (control.kind) {
     case 'text':
       return typeof value === 'string' ? undefined : 'invalid-type'
@@ -443,7 +490,7 @@ function valueCode(control: Exclude<PropertyControl, { kind: 'options' }>, value
 }
 
 /** 内建编辑方式的种类名；登记的新编辑方式不能与它们重名。 */
-export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter', 'swatch', 'options']
+export const BUILTIN_CONTROL_KINDS: readonly PropertyControlKind[] = ['text', 'number', 'boolean', 'select', 'tags', 'color', 'json', 'dataField', 'sides', 'format', 'filter', 'swatch', 'options', 'treeOptions']
 
 /** 新的编辑方式：属性描述里 control.kind 等于登记的键时，checkProperties 用它校验取值。 */
 export interface ControlKind {

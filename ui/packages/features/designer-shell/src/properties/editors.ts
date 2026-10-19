@@ -107,6 +107,7 @@ const EDITORS: Readonly<Record<PropertyControl['kind'], FieldEditor>> = {
   filter: filterEditor,
   swatch: swatchEditor,
   options: optionsEditor,
+  treeOptions: treeOptionsEditor,
 }
 
 /** 按编辑方式取内建编辑器；不是内建种类时为 undefined。 */
@@ -1340,6 +1341,390 @@ function optionsEditor(initial: FieldContext): FieldInstance {
   }
   update(initial)
   return { element: array, update, nestedIssues: true }
+}
+
+/** 选项树的四列：值（带缩进与展开把手）、文字、禁用与操作；不许禁用时没有禁用这一列。 */
+const TREE_OPTION_COLUMNS = ['value', 'label', 'disabled', 'actions'] as const
+
+type TreeOptionColumn = (typeof TREE_OPTION_COLUMNS)[number]
+
+/** 一层缩进：展开把手的方盒加格内间距。值列的宽按它算，皮肤里值格的缩进是同一个式子。 */
+const TREE_OPTION_INDENT = 'calc(var(--xh-table-trigger-size, var(--xh-control-indicator-size)) + var(--xh-table-cell-gap, var(--xh-control-gap-md)))'
+
+/** 选项树的一项：id 是表格的行 id；item 是这一项除 children 之外的部分，不是对象时原样留着。 */
+interface TreeOptionNode {
+  readonly id: string
+  item: JsonValue
+  children: TreeOptionNode[]
+  /** 写回时带 children 键：取值里本来写着，或这一项有下一层；下一层在这里删空时去掉。 */
+  list: boolean
+}
+
+/** 选项树按先序摊平的一项。 */
+interface TreeOptionEntry {
+  readonly node: TreeOptionNode
+  readonly parent: TreeOptionNode | null
+  readonly level: number
+  /** 大纲号：各层的第几项（从 1 数）用点连起来，如 1.2。 */
+  readonly outline: string
+  /** 这一项在取值里的路径，如 [0, 'children', 1]。 */
+  readonly path: readonly (string | number)[]
+  /** 上级都展开着，这一项在表体里。 */
+  readonly shown: boolean
+}
+
+/** 选项树一项的一行：各格、格里的字段与控件，值格里的缩进头，加子项与删除两颗钮。 */
+interface TreeOptionRow {
+  readonly element: HTMLElement
+  readonly cells: Readonly<Partial<Record<TreeOptionColumn, HTMLElement>>>
+  readonly head: HTMLElement
+  readonly fields: Readonly<Partial<Record<OptionColumn, FieldHost>>>
+  readonly controls: Readonly<Partial<Record<OptionColumn, ControlElement>>>
+  readonly addChild: HTMLElement
+  readonly remove: HTMLElement
+}
+
+/** 表格上受控的行、列、展开集合、换位与文案。 */
+interface TableControl extends HTMLElement {
+  rows?: readonly { readonly id: string, readonly parentId?: string }[]
+  columns?: readonly { readonly id: string, readonly width?: string, readonly sticky?: 'end' }[]
+  expandedValue?: string[]
+  rowReorderable?: boolean
+  translations?: Readonly<Record<string, unknown>>
+}
+
+/** 把选项列表换成选项树的各项：按位置沿用 previous 里同一处的 id，表格的行与格子因此留着。 */
+function treeOptionNodes(list: JsonValue | undefined, previous: readonly TreeOptionNode[], nextId: () => string): TreeOptionNode[] {
+  return (Array.isArray(list) ? list : []).map((raw, index) => {
+    const reuse = previous[index]
+    const id = reuse?.id ?? nextId()
+    if (isPlainObject(raw) && Array.isArray(raw.children)) {
+      const { children, ...item } = raw as JsonObject
+      return { id, item, children: treeOptionNodes(children, reuse?.children ?? [], nextId), list: true }
+    }
+    return { id, item: raw, children: [], list: false }
+  })
+}
+
+/** 选项树的各项换回取值。 */
+function treeOptionValue(nodes: readonly TreeOptionNode[]): JsonValue[] {
+  return nodes.map(node => (node.list || node.children.length > 0
+    ? { ...(isPlainObject(node.item) ? node.item : {}), children: treeOptionValue(node.children) }
+    : node.item))
+}
+
+/** 按先序摊平：父在子前，同一层按先后；收起的项下面的都不在表体里。 */
+function treeOptionEntries(nodes: readonly TreeOptionNode[], collapsed: ReadonlySet<string>): TreeOptionEntry[] {
+  const out: TreeOptionEntry[] = []
+  const walk = (list: readonly TreeOptionNode[], parent: TreeOptionNode | null, level: number, outline: string, path: readonly (string | number)[], shown: boolean): void => {
+    list.forEach((node, index) => {
+      const here = outline === '' ? String(index + 1) : `${outline}.${index + 1}`
+      const at = parent === null ? [index] : [...path, 'children', index]
+      out.push({ node, parent, level, outline: here, path: at, shown })
+      walk(node.children, node, level + 1, here, at, shown && !collapsed.has(node.id))
+    })
+  }
+  walk(nodes, null, 1, '', [], true)
+  return out
+}
+
+/** 一项的问题落在哪一格：path 是相对这一项的剩余路径；落在更里层某一项上的不归这一项，为 undefined。 */
+function treeOptionColumnOf(rest: readonly (string | number)[], columns: readonly TreeOptionColumn[]): OptionColumn | undefined {
+  if (rest[0] === 'children' && rest.length > 1)
+    return undefined
+  const key = rest[0]
+  return (key === 'label' || key === 'disabled') && columns.includes(key) ? key : 'value'
+}
+
+/**
+ * 选项树：库内 xh-table 的树形表（treegrid），navigation 为 cell，一项一行，四格依次是值、文字、禁用与操作
+ * （allowDisabled 为 false 时没有禁用这一列；操作列钉在行尾，表格横向滚动时留在原处）。值格按层缩进，有下一层的项带展开把手；操作格里是加子项与删除两颗钮，
+ * 表格下面是在顶层末尾新增一项的钮。方向键在格子之间走，Enter / F2 进格内编辑、Esc 退回格子，左右键收起与展开；
+ * 行可以拖动，Alt + 上下键在同一层换序，Alt + 左右键改一层缩进，写回整棵树，焦点留在原来那一格。
+ * 每格是一个字段，控件以「列名 + 大纲号」为名（如第 1.2 项的值）。值与文字边输入边写入、失焦封口；勾选禁用，
+ * 以及加子项、新增、删除与换位，各是一步。新的一项只有空的 value，加好后焦点落到它的值上；文字为空、不禁用时不写这两个键，
+ * 别的键（tone、description、hasChildren）原样留着；删掉一项连同它的下一层，删掉最后一项即清除。
+ * 里层的问题按路径标到格上：[0, "children", 1, "value"] 落在第 1.2 项值那一格的字段上，
+ * 落在这一项别的键上或这一项本身的标在它的值上。多个对象取值不同时没有行，新增的一项整体写给这几个对象。
+ */
+function treeOptionsEditor(initial: FieldContext): FieldInstance {
+  const doc = initial.ownerDocument
+  const control = controlOf<'treeOptions'>(initial)
+  const columns: readonly TreeOptionColumn[] = control.allowDisabled === false ? ['value', 'label', 'actions'] : TREE_OPTION_COLUMNS
+  const fieldColumns = columns.filter((column): column is OptionColumn => column !== 'actions')
+  let context = initial
+  /** 最近一次读到或写出的取值。 */
+  let options: JsonValue | undefined
+  let nodes: TreeOptionNode[] = []
+  let entries: TreeOptionEntry[] = []
+  const collapsed = new Set<string>()
+  const rows = new Map<string, TreeOptionRow>()
+  let counter = 0
+  const nextId = (): string => `option-${++counter}`
+
+  const headers = Object.fromEntries(columns.map(column => [column, createAuthoredElement(doc, 'span', { 'data-xh-part': 'column-label' })])) as Record<TreeOptionColumn, HTMLElement>
+  const body = createAuthoredElement(doc, 'div', { 'data-xh-part': 'body' })
+  const table: TableControl = createAuthoredElement(doc, 'xh-table', { 'navigation': 'cell', 'size': 'sm', 'row-reorderable': true }, [
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'row' }, columns.map(column => createAuthoredElement(doc, 'div', { 'data-xh-part': 'column-header', 'value': column }, [headers[column]]))),
+      ]),
+      body,
+    ]),
+    createAuthoredElement(doc, 'div', { 'data-xh-part': 'live-region' }),
+  ])
+  // 面板窄：格子用表格的紧凑内衬
+  table.style.setProperty('--xh-table-cell-px', 'var(--xh-table-cell-px-sm)')
+  table.translations = { item: (id: string) => {
+    const node = entries.find(entry => entry.node.id === id)?.node
+    return node === undefined ? id : (optionText(node.item, 'label') || optionText(node.item, 'value'))
+  } }
+  const addLabel = createAuthoredElement(doc, 'span', {})
+  const add = treeOptionButton(doc, 'add', [addLabel])
+  const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'tree-options' }, [table, add])
+
+  const write = (): void => {
+    const next = treeOptionValue(nodes)
+    options = next
+    context.setValue(next.length === 0 ? undefined : next)
+  }
+  const locate = (id: string): TreeOptionEntry | undefined => entries.find(entry => entry.node.id === id)
+  const siblingsOf = (parent: TreeOptionNode | null): TreeOptionNode[] => (parent === null ? nodes : parent.children)
+  const detach = (entry: TreeOptionEntry): void => {
+    const list = siblingsOf(entry.parent)
+    list.splice(list.indexOf(entry.node), 1)
+    if (entry.parent !== null && entry.parent.children.length === 0)
+      entry.parent.list = false
+  }
+  const edit = (id: string, key: OptionColumn, value: string | boolean): void => {
+    const node = locate(id)?.node
+    if (node === undefined)
+      return
+    node.item = withOptionKey(node.item, key, value)
+    write()
+  }
+  /** 新的一项写进 list 末尾、放进表体，焦点交给它的值。 */
+  const append = (parent: TreeOptionNode | null): void => {
+    const node: TreeOptionNode = { id: nextId(), item: { value: '' }, children: [], list: false }
+    if (parent === null) {
+      nodes.push(node)
+    }
+    else {
+      parent.children.push(node)
+      parent.list = true
+      collapsed.delete(parent.id)
+    }
+    write()
+    render()
+    context.commit()
+    const input = rows.get(node.id)!.controls.value!
+    void Promise.resolve((input as { updateComplete?: Promise<unknown> }).updateComplete).then(() => input.querySelector<HTMLElement>('input')?.focus())
+  }
+  /** 删掉一项连同它的下一层；焦点落到表体里同一处的操作格，没有了就落到上一行的、再没有就落到新增钮上。 */
+  const remove = (id: string): void => {
+    const entry = locate(id)
+    if (entry === undefined)
+      return
+    const at = entries.filter(item => item.shown).indexOf(entry)
+    detach(entry)
+    write()
+    render()
+    context.commit()
+    const shown = entries.filter(item => item.shown)
+    const next = shown[Math.min(at, shown.length - 1)]
+    const target = next === undefined ? add.querySelector<HTMLElement>('button') : rows.get(next.node.id)!.cells.actions!
+    target?.focus()
+  }
+
+  const createRow = (id: string): TreeOptionRow => {
+    const head = createAuthoredElement(doc, 'span', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'tree-option-head' })
+    const fields: Partial<Record<OptionColumn, FieldHost>> = {}
+    const controls: Partial<Record<OptionColumn, ControlElement>> = {}
+    for (const column of fieldColumns) {
+      const field: ControlElement = createAuthoredElement(doc, column === 'disabled' ? 'xh-checkbox' : 'xh-text-field', { slot: 'control', size: 'sm' })
+      if (column === 'disabled') {
+        field.addEventListener('checked-change', (event) => {
+          event.stopPropagation()
+          const { checked } = (event as CustomEvent<{ checked: boolean }>).detail
+          field.checked = checked
+          edit(id, column, checked)
+          context.commit()
+        })
+      }
+      else {
+        field.addEventListener('value-change', (event) => {
+          event.stopPropagation()
+          const { value } = (event as ValueChange<string>).detail
+          field.value = value
+          edit(id, column, value)
+        })
+        field.addEventListener('focusout', () => context.commit())
+      }
+      controls[column] = field
+      fields[column] = createAuthoredElement(doc, 'xh-field', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'tree-option-field' }, [field])
+      fields[column]!.errorText = ''
+    }
+    const addChild = treeOptionButton(doc, 'add-child', [])
+    addChild.addEventListener('click', () => append(locate(id)?.node ?? null))
+    const removeButton = treeOptionButton(doc, 'remove', [])
+    removeButton.addEventListener('click', () => remove(id))
+    const cells = Object.fromEntries(columns.map(column => [column, createAuthoredElement(doc, 'div', { 'data-xh-part': 'cell', 'value': column }, column === 'value'
+      ? [head, fields.value!]
+      : column === 'actions' ? [addChild, removeButton] : [fields[column]!])])) as Partial<Record<TreeOptionColumn, HTMLElement>>
+    const element = createAuthoredElement(doc, 'div', { 'data-xh-part': 'row', 'value': id }, columns.map(column => cells[column]!))
+    return { element, cells, head, fields, controls, addChild, remove: removeButton }
+  }
+
+  /** 按这一项与这一轮的上下文刷新一行：缩进与展开把手、格里的值、控件与两颗钮的名字、只读，以及落在这一项的问题。 */
+  const paint = (row: TreeOptionRow, entry: TreeOptionEntry): void => {
+    const t = context.translations
+    const { node, outline } = entry
+    row.head.style.setProperty('--xh-_designer-tree-option-level', String(entry.level - 1))
+    const expandable = node.children.length > 0
+    const twisty = row.head.firstElementChild
+    if (twisty === null || (twisty.getAttribute('data-xh-part') === 'expand-trigger') !== expandable) {
+      // 有没有下一层变了就换一个新节点：表格只在部件节点进出时重新认它
+      row.head.replaceChildren(expandable
+        ? createAuthoredElement(doc, 'span', { 'data-xh-part': 'expand-trigger' })
+        : createAuthoredElement(doc, 'span', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'tree-option-spacer', 'aria-hidden': 'true' }))
+    }
+    const issues = context.issues.flatMap((issue) => {
+      const path = issue.path
+      if (path.length < entry.path.length || entry.path.some((step, index) => path[index] !== step))
+        return []
+      const column = treeOptionColumnOf(path.slice(entry.path.length), columns)
+      return column === undefined ? [] : [{ column, message: issue.message }]
+    })
+    for (const column of fieldColumns) {
+      const field = row.controls[column]!
+      setAttributes(field, { 'aria-label': t.optionTreeCell(t.optionColumns[column], outline) })
+      field.toggleAttribute('read-only', context.readonly)
+      const message = issues.find(issue => issue.column === column)?.message
+      const host = row.fields[column]!
+      if (host.errorText !== (message ?? ''))
+        host.errorText = message ?? ''
+      if (host.invalid !== (message !== undefined))
+        host.invalid = message !== undefined
+    }
+    setAttributes(row.addChild.querySelector('button')!, { 'aria-label': t.optionAddChild(outline) })
+    setAttributes(row.remove.querySelector('button')!, { 'aria-label': t.optionRemove(outline) })
+    row.addChild.toggleAttribute('disabled', context.readonly)
+    row.remove.toggleAttribute('disabled', context.readonly)
+    const checkbox = row.controls.disabled
+    const checked = isPlainObject(node.item) && node.item.disabled === true
+    if (checkbox && checkbox.checked !== checked)
+      checkbox.checked = checked
+    for (const key of ['value', 'label'] as const) {
+      const text = optionText(node.item, key)
+      if (row.controls[key]!.value !== text)
+        row.controls[key]!.value = text
+    }
+  }
+
+  /** 按各项铺表格：整份行与展开集合交给表格，表体只留展开着的行，按先序排；离开树的项连行一起丢掉。 */
+  function render(): void {
+    entries = treeOptionEntries(nodes, collapsed)
+    const alive = new Set(entries.map(entry => entry.node.id))
+    for (const id of collapsed) {
+      if (!alive.has(id))
+        collapsed.delete(id)
+    }
+    for (const [id, row] of rows) {
+      if (alive.has(id))
+        continue
+      row.element.remove()
+      rows.delete(id)
+    }
+    const depth = Math.max(1, ...entries.map(entry => entry.level))
+    if (table.columns?.[0]?.width !== treeOptionWidth(depth))
+      table.columns = columns.map(id => (id === 'actions' ? { id, width: 'max-content', sticky: 'end' } : { id, width: id === 'value' ? treeOptionWidth(depth) : id === 'label' ? OPTION_TEXT_MIN_WIDTH : 'max-content' }))
+    table.rows = entries.map(entry => (entry.parent === null ? { id: entry.node.id } : { id: entry.node.id, parentId: entry.parent.id }))
+    table.expandedValue = entries.filter(entry => entry.node.children.length > 0 && !collapsed.has(entry.node.id)).map(entry => entry.node.id)
+    const shown = entries.filter(entry => entry.shown)
+    const wanted = new Set(shown.map(entry => entry.node.id))
+    for (const node of [...body.children]) {
+      if (!wanted.has(node.getAttribute('value') ?? ''))
+        node.remove()
+    }
+    shown.forEach((entry, index) => {
+      let row = rows.get(entry.node.id)
+      if (row === undefined) {
+        row = createRow(entry.node.id)
+        rows.set(entry.node.id, row)
+      }
+      // 只在次序不对时挪：挪动持有焦点的行会丢焦点（表格换位后会把焦点交回原来那一格）
+      if (body.children[index] !== row.element)
+        body.insertBefore(row.element, body.children[index] ?? null)
+      paint(row, entry)
+    })
+  }
+
+  table.addEventListener('expanded-value-change', (event) => {
+    event.stopPropagation()
+    const open = new Set((event as CustomEvent<{ value: string[] }>).detail.value)
+    collapsed.clear()
+    for (const entry of entries) {
+      if (entry.node.children.length > 0 && !open.has(entry.node.id))
+        collapsed.add(entry.node.id)
+    }
+    render()
+  })
+  table.addEventListener('row-move', (event) => {
+    event.stopPropagation()
+    const { id, parent, index } = (event as CustomEvent<{ id: string, parent: string | null, index: number }>).detail
+    const entry = locate(id)
+    const owner = parent === null ? null : locate(parent)?.node
+    if (entry === undefined || owner === undefined)
+      return
+    detach(entry)
+    const list = siblingsOf(owner)
+    list.splice(Math.min(index, list.length), 0, entry.node)
+    if (owner !== null) {
+      owner.list = true
+      collapsed.delete(owner.id)
+    }
+    write()
+    render()
+    context.commit()
+  })
+  add.addEventListener('click', () => append(null))
+  // 表格的名字是这一行属性的标题：编辑器按组放好之后才知道标题的 id
+  queueMicrotask(() => {
+    const labelled = element.closest('[role="group"]')?.getAttribute('aria-labelledby')
+    if (labelled)
+      table.setAttribute('aria-labelledby', labelled)
+  })
+
+  const update = (next: FieldContext): void => {
+    context = next
+    const t = next.translations
+    for (const column of columns)
+      setText(headers[column], column === 'actions' ? t.optionActions : t.optionColumns[column])
+    setText(addLabel, t.optionAdd)
+    add.toggleAttribute('disabled', next.readonly)
+    table.rowReorderable = !next.readonly
+    const value = next.mixed ? undefined : next.value
+    if (options === undefined || !jsonEquals(value ?? null, options ?? null)) {
+      options = value
+      nodes = treeOptionNodes(value, nodes, nextId)
+    }
+    render()
+  }
+  update(initial)
+  return { element, update, group: true, nestedIssues: true }
+}
+
+/** 值列的宽：文字列的宽加上最深那一层的缩进与展开把手。 */
+function treeOptionWidth(depth: number): string {
+  return `calc(${OPTION_TEXT_MIN_WIDTH} + ${depth} * ${TREE_OPTION_INDENT})`
+}
+
+/** 选项树的钮：ghost 的小号按钮，图形由皮肤按 data-part 画；add 带文字，另两颗只有图形，名字另给。 */
+function treeOptionButton(doc: Document, part: 'add' | 'add-child' | 'remove', label: HTMLElement[]): HTMLElement {
+  const glyph = createAuthoredElement(doc, 'span', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'tree-option-glyph', 'data-glyph': part === 'remove' ? 'remove' : 'add' })
+  return createAuthoredElement(doc, 'xh-button', { 'variant': 'ghost', 'size': 'sm', 'icon-only': label.length === 0, 'data-scope': PROPERTIES_SCOPE, 'data-part': `tree-option-${part}` }, [
+    createAuthoredElement(doc, 'button', { 'data-xh-part': 'root', 'type': 'button' }, [glyph, ...label]),
+  ])
 }
 
 /** 字段数组一次增删换序的载荷。 */

@@ -39,6 +39,16 @@ export interface DesignerPropertiesTranslations {
   readonly optionCell: (column: string, row: number) => string
   /** 布尔选项值格里显示的文字。 */
   readonly optionBoolean: Readonly<{ true: string, false: string }>
+  /** 选项树一格里控件的名字：column 是这一列的列名，outline 是这一项的大纲号（如 1.2）。 */
+  readonly optionTreeCell: (column: string, outline: string) => string
+  /** 选项树操作那一列的列名。 */
+  readonly optionActions: string
+  /** 选项树里给一项加子项那颗钮的名字。 */
+  readonly optionAddChild: (outline: string) => string
+  /** 选项树里删除一项那颗钮的名字。 */
+  readonly optionRemove: (outline: string) => string
+  /** 选项树下面在顶层末尾新增一项的钮。 */
+  readonly optionAdd: string
 }
 
 /** 问题列表的文案。 */

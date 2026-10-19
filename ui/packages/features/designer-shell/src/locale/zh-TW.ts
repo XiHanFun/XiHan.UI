@@ -26,6 +26,11 @@ const translations: DesignerShellLocaleTranslations = {
     optionColumns: { value: '值', label: '文字', disabled: '停用' },
     optionCell: (column, row) => `第 ${row} 項的${column}`,
     optionBoolean: { true: '是', false: '否' },
+    optionTreeCell: (column, outline) => `第 ${outline} 項的${column}`,
+    optionActions: '操作',
+    optionAddChild: outline => `為第 ${outline} 項新增子項`,
+    optionRemove: outline => `刪除第 ${outline} 項`,
+    optionAdd: '新增一項',
   },
   'xh-designer-issues': {
     title: '問題',

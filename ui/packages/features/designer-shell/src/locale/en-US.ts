@@ -25,6 +25,11 @@ export const DESIGNER_PROPERTIES_EN_US: DesignerShellLocaleTranslations['xh-desi
   optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
   optionCell: (column, row) => `${column}, option ${row}`,
   optionBoolean: { true: 'Yes', false: 'No' },
+  optionTreeCell: (column, outline) => `${column}, option ${outline}`,
+  optionActions: 'Actions',
+  optionAddChild: outline => `Add a child to option ${outline}`,
+  optionRemove: outline => `Remove option ${outline}`,
+  optionAdd: 'Add option',
 }
 
 export const DESIGNER_ISSUES_EN_US: DesignerShellLocaleTranslations['xh-designer-issues'] = {

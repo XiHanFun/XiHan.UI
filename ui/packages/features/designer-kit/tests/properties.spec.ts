@@ -179,6 +179,17 @@ describe('checkPropertyValue', () => {
     [{ kind: 'options', valueType: 'datetime' }, [{ value: '+002026-10-19' }], 'invalid-value'],
     [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-10-19 08:30:15' }], undefined],
     [{ kind: 'options', valueType: 'datetime' }, [{ value: 20261019 }], 'invalid-type'],
+    [{ kind: 'treeOptions' }, [{ value: 'east', label: '华东', children: [{ value: 'sh', label: '上海' }, { value: 'hz', hasChildren: true }] }, { value: 'west' }], undefined],
+    [{ kind: 'treeOptions' }, [], undefined],
+    [{ kind: 'treeOptions' }, [{ value: 'a', children: [{ value: 'a' }] }], undefined],
+    [{ kind: 'treeOptions' }, [{ value: 'a', children: [{ value: 'b' }, { value: 'b' }] }], 'duplicate-value'],
+    [{ kind: 'treeOptions' }, [{ value: 'a', children: { value: 'b' } }], 'invalid-type'],
+    [{ kind: 'treeOptions' }, [{ value: 'a', hasChildren: 'yes' }], 'invalid-type'],
+    [{ kind: 'treeOptions' }, [{ value: 1 }], 'invalid-type'],
+    [{ kind: 'treeOptions' }, [{ value: 'a', children: [{ value: '' }] }], 'required'],
+    [{ kind: 'treeOptions', requireLabel: true }, [{ value: 'a', label: '甲', children: [{ value: 'b' }] }], 'required'],
+    [{ kind: 'treeOptions', allowDisabled: false }, [{ value: 'a', children: [{ value: 'b', disabled: true }] }], 'unknown-key'],
+    [{ kind: 'treeOptions' }, [{ value: 'a', note: 'x' }], 'unknown-key'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)
@@ -199,6 +210,22 @@ describe('findPropertyValueIssue', () => {
     expect(findPropertyValueIssue({ kind: 'options', allowDisabled: false }, [{ value: 'a' }, { value: 'b', disabled: true }])).toEqual({ code: 'unknown-key', path: [1, 'disabled'] })
     expect(findPropertyValueIssue({ kind: 'options', valueType: 'number' }, [{ value: 1 }, { value: 2 }, { value: 1 }])).toEqual({ code: 'duplicate-value', path: [2, 'value'] })
     expect(findPropertyValueIssue({ kind: 'options', valueType: 'date' }, [{ value: '2026-10-19' }, { value: '10/19' }])).toEqual({ code: 'invalid-value', path: [1, 'value'] })
+  })
+
+  it('选项树的问题落在那一层那一项的那个键上，按先序报第一处；超过 32 层落在那一层的列表上', () => {
+    const tree: JsonValue = [{ value: 'a', children: [{ value: 'a1' }, { value: 'a2', children: [{ value: 'x', label: 1 }] }] }, { value: 'a' }]
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, tree)).toEqual({ code: 'invalid-type', path: [0, 'children', 1, 'children', 0, 'label'] })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, [{ value: 'a', children: [{ value: 'b' }] }, { value: 'a' }])).toEqual({ code: 'duplicate-value', path: [1, 'value'] })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, [{ value: 'a', children: [{ value: 'b' }, { value: 'c' }, { value: 'b' }] }])).toEqual({ code: 'duplicate-value', path: [0, 'children', 2, 'value'] })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, [{ value: 'a', children: ['b'] }])).toEqual({ code: 'invalid-type', path: [0, 'children', 0] })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, [{ value: 'a', children: 'b' }])).toEqual({ code: 'invalid-type', path: [0, 'children'] })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, { value: 'a' })).toEqual({ code: 'invalid-type', path: [] })
+    let deep: JsonValue[] = [{ value: 'leaf' }]
+    for (let depth = 0; depth < 32; depth++)
+      deep = [{ value: 'n', children: deep }]
+    const path = Array.from({ length: 32 }, () => [0, 'children']).flat()
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, deep)).toEqual({ code: 'invalid-value', path })
+    expect(findPropertyValueIssue({ kind: 'treeOptions' }, (deep[0] as { children: JsonValue[] }).children)).toBeUndefined()
   })
 
   it('别的编辑方式的问题落在值本身', () => {

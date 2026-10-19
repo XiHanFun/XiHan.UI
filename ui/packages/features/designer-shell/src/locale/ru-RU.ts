@@ -37,6 +37,11 @@ const translations: DesignerShellLocaleTranslations = {
     optionColumns: { value: 'Значение', label: 'Подпись', disabled: 'Отключено' },
     optionCell: (column, row) => `${column}, вариант ${row}`,
     optionBoolean: { true: 'Да', false: 'Нет' },
+    optionTreeCell: (column, outline) => `${column}, вариант ${outline}`,
+    optionActions: 'Действия',
+    optionAddChild: outline => `Добавить вложенный вариант к варианту ${outline}`,
+    optionRemove: outline => `Удалить вариант ${outline}`,
+    optionAdd: 'Добавить вариант',
   },
   'xh-designer-issues': {
     title: 'Проблемы',

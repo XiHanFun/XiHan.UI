@@ -28,6 +28,7 @@ import {
   XhSelectElement,
   XhSplitterElement,
   XhSwitchElement,
+  XhTableElement,
   XhTabsElement,
   XhTagElement,
   XhTagsInputElement,
@@ -59,6 +60,8 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-checkbox', XhCheckboxElement)
   defineXhElement('xh-date-field', XhDateFieldElement)
   defineXhElement('xh-accordion', XhAccordionElement)
+  defineXhElement('xh-table', XhTableElement)
+  defineXhElement('xh-button', XhButtonElement)
 }
 
 /** 物料面板的搜索框、折叠分组、带下级的树与图标用到的元素。 */
