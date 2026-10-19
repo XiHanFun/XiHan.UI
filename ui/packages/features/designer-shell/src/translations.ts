@@ -152,8 +152,14 @@ export interface DesignerRulerTranslations {
 export interface DesignerFrameTranslations {
   /** 分隔条所在布局的无障碍名称。 */
   readonly layout: string
-  /** 分隔条的无障碍名称，入参是它调整的那个区的名称。 */
+  /** 一栏里两块面板之间那条分隔条的无障碍名称，入参是它上面那个区的名称。 */
   readonly resize: (label: string) => string
+  /** 左栏与画布之间那条分隔条的无障碍名称（按看到的左右，从右往左书写时是开头那一栏）。 */
+  readonly resizeLeft: string
+  /** 右栏与画布之间那条分隔条的无障碍名称。 */
+  readonly resizeRight: string
+  /** 下栏与画布之间那条分隔条的无障碍名称。 */
+  readonly resizeBottom: string
   /** 面板头关闭钮的名字，入参是面板标题。 */
   readonly closePanel: (label: string) => string
   /** 面板头帮助钮的名字，入参是面板标题。 */

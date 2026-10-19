@@ -254,7 +254,7 @@ describe('<xh-designer-frame>', () => {
     expect(region('properties')!.isConnected).toBe(true)
   })
 
-  it('产品登记自己的区：同一栏的多块面板按顺序上下排列，分隔条按那一栏第一块面板命名', async () => {
+  it('产品登记自己的区：同一栏的多块面板按顺序上下排列；栏宽的分隔条按栏命名', async () => {
     await mount((element) => {
       element.regions = [
         { name: 'toolbar', position: 'top' },
@@ -263,14 +263,39 @@ describe('<xh-designer-frame>', () => {
         { name: 'properties', position: 'end', size: 30, label: '属性' },
         { name: 'minimap', position: 'end' },
       ]
-      element.translations = { layout: '布局', resize: label => `调整「${label}」` }
+      element.translations = { layout: '布局', resize: label => `调整「${label}」`, resizeRight: '调整右栏的宽度' }
     })
     expect(Array.from(frame.querySelectorAll('[data-part="top"] > [data-region]'), node => node.getAttribute('data-region'))).toEqual(['toolbar', 'pages'])
     const end = frame.querySelector('[data-part="stack"][data-position="end"]')!
     expect(Array.from(end.querySelectorAll('[data-part="region"]'), node => node.getAttribute('data-region'))).toEqual(['properties', 'minimap'])
     expect(splitter('horizontal')!.getAttribute('default-sizes')).toBe('70,30')
-    expect(frame.querySelector('[data-xh-part="resize-trigger"], [data-part="resize-trigger"]')!.getAttribute('aria-label')).toBe('调整「属性」')
+    expect(frame.querySelector('[data-xh-part="resize-trigger"], [data-part="resize-trigger"]')!.getAttribute('aria-label')).toBe('调整右栏的宽度')
     expect(region('palette')).toBeNull()
+  })
+
+  it('面板标题的 id 全页唯一：同一页两个外框，各自的区按自己的标题命名', async () => {
+    const regions = [
+      { name: 'canvas', position: 'center' as const },
+      { name: 'palette', position: 'start' as const, title: '物料' },
+      { name: 'outline', position: 'start' as const, title: '结构' },
+    ]
+    const frames = [document.createElement('xh-designer-frame'), document.createElement('xh-designer-frame')]
+    for (const element of frames) {
+      element.regions = regions
+      document.body.append(element)
+    }
+    await Promise.all(frames.map(element => element.updateComplete))
+    try {
+      const ids = frames.flatMap(element => Array.from(element.querySelectorAll('[data-part="region"][aria-labelledby]'), node => node.getAttribute('aria-labelledby')!))
+      expect(ids).toHaveLength(4)
+      expect(new Set(ids).size).toBe(4)
+      const title = document.getElementById(frames[1]!.querySelector('[data-region="outline"]')!.getAttribute('aria-labelledby')!)!
+      expect([title.textContent, frames[1]!.contains(title)]).toEqual(['结构', true])
+    }
+    finally {
+      for (const element of frames)
+        element.remove()
+    }
   })
 
   it('同一栏堆叠的面板之间有分隔条：缺省等分，layout.sizes.panels 恢复，隐藏其中一块后其余按比例重分，拖动松手后派发 layout-change', async () => {

@@ -657,7 +657,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 - `position` 取 `header`、`top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
 - `size` 是那一栏的缺省大小：左右两栏占中间一行的宽度，下栏占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取那一栏第一块面板的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
-- `label` 是分隔条无障碍名称里的区名，缺省用 `title`，再缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
+- `label` 是一栏里两块面板之间那条分隔条名称里的区名，缺省用 `title`，再缺省用 `name`，名称取文案 `resize`；左右两栏与画布之间、下栏与画布之间的分隔条按栏命名，取文案 `resizeLeft`、`resizeRight`、`resizeBottom`（左右按看到的方向，从右往左书写时开头那一栏在右边）；分隔条所在的布局取文案 `layout`。
 - `icon` 是面板菜单与浮出小窗标题栏里的图标。`defaultHidden` 的面板缺省不显示。`closable`、`movable`、`floatable`、`minimizable` 缺省都是 `true`，写 `false` 就不出对应的钮与菜单项；没给 `title` 的区没有面板头，只能显示或隐藏。
 - 隐藏的面板移出文档，内容保留，再显示时原样放回。
 - 区的结构变了（比如换了一份不带标题的区表，卡片变回普通区）时，已经搬进去的作者内容跟着挪到新结构里；新结构里没有对应位置的（面板头操作区里的内容），回到外框下面、不占版面，等结构里再有这个位置时自动放回。从 `regions` 里去掉的区，里面的作者内容同样回到外框下面。带 `slot` 而外框没有对应位置的作者内容留在外框下面，不显示。

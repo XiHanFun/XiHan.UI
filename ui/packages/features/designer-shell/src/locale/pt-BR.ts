@@ -81,6 +81,9 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: 'Layout do designer',
     resize: label => `Redimensionar ${label}`,
+    resizeLeft: 'Redimensionar a coluna esquerda',
+    resizeRight: 'Redimensionar a coluna direita',
+    resizeBottom: 'Redimensionar a área inferior',
     closePanel: label => `Fechar ${label}`,
     panelHelp: label => `Sobre ${label}`,
     minimizePanel: label => `Recolher ${label}`,

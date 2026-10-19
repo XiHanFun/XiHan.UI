@@ -81,6 +81,9 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: '디자이너 레이아웃',
     resize: label => `${label} 크기 조정`,
+    resizeLeft: '왼쪽 열 너비 조정',
+    resizeRight: '오른쪽 열 너비 조정',
+    resizeBottom: '아래쪽 영역 높이 조정',
     closePanel: label => `${label} 닫기`,
     panelHelp: label => `${label} 도움말`,
     minimizePanel: label => `${label} 접기`,
