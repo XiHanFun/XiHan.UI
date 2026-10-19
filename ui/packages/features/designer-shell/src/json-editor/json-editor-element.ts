@@ -13,6 +13,7 @@ import type { SchemaIssue } from '@xihan-ui/designer-kit/schema'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerIssueItem } from '../issues/issues-element'
 import type { DesignerJsonEditorTranslations } from '../translations'
+import { writeToClipboard } from '@xihan-ui/core/clipboard'
 import { jsonEquals, locateJsonPath, parseJsonText } from '@xihan-ui/core/json'
 import { issueSeverity } from '@xihan-ui/designer-kit/schema'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, registerElement, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
@@ -198,14 +199,19 @@ export class XhDesignerJsonEditorElement extends XhReactiveElement {
         ]),
       ]),
     ])
-    // 对话框落焦时会把输入框里的字全选，整份文档被选中时一敲键就没了：打开后第一次获焦，等全选做完，选中的是整段时把光标放回开头
+    // 打开后第一次获焦把光标放回开头、滚到顶：写进文字后光标落在末尾，整段被选中时一敲键就没了；用户自己点进中间的不动
     area.addEventListener('focus', () => {
       if (!this.#caretPending)
         return
       this.#caretPending = false
       queueMicrotask(() => {
-        if (area.value !== '' && area.selectionStart === 0 && area.selectionEnd === area.value.length)
+        const length = area.value.length
+        const atEnd = area.selectionStart === length && area.selectionEnd === length
+        const whole = area.selectionStart === 0 && area.selectionEnd === length
+        if (length > 0 && (atEnd || whole)) {
           area.setSelectionRange(0, 0)
+          area.scrollTop = 0
+        }
       })
     })
     // 里面的控件也派发 open-change、value-change 并冒泡上来，只认对话框与编辑框自己的
@@ -306,10 +312,10 @@ export class XhDesignerJsonEditorElement extends XhReactiveElement {
   async #copy(): Promise<void> {
     const text = this.#text
     try {
-      const clipboard = this.ownerDocument.defaultView?.navigator.clipboard
-      if (typeof clipboard?.writeText !== 'function')
-        throw new Error('[xh] 当前环境不提供 navigator.clipboard.writeText')
-      await clipboard.writeText(text)
+      const win = this.ownerDocument.defaultView
+      if (!win)
+        throw new Error('[xh] 编辑框不在窗口里，写不了剪贴板')
+      await writeToClipboard(win, text)
       this.#copied = 'done'
     }
     catch {

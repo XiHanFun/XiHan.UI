@@ -1058,8 +1058,8 @@ editor.show();
 
 - 文字一变就重新解析（core/json 的 `parseJsonText`）并交给 `validate`。解析失败时编辑框标成 invalid，写出第几行第几列与原因，后面一颗「转到出错处」把光标放过去。
 - 点问题列表的一条，光标选中那个路径在文字里的值（core/json 的 `locateJsonPath`，见下），编辑框滚到那一行；路径在文字里没有时退到最近的上级。整块的对象或数组只选它起头的那一行。
-- 打开时落焦在编辑框，光标在开头，不全选。
-- 复制把编辑框里的文字写进剪贴板（`navigator.clipboard.writeText`，要安全上下文），钮旁写一句「已复制」或「复制失败」，再改文字时清掉。
+- 打开时落焦在编辑框，光标在开头、滚到顶，不全选。
+- 复制把编辑框里的文字写进剪贴板（core/clipboard 的 `writeToClipboard`，要安全上下文），钮旁写一句「已复制」或「复制失败」，再改文字时清掉。
 - 每次打开都从 `value` 重新写起，没应用的改动丢掉。
 - 文案键 `xh-designer-json-editor`，英文表 `DESIGNER_JSON_EDITOR_EN_US`。
 
