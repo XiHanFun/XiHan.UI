@@ -380,8 +380,9 @@ const builtin = { id: "my-designer", panels: [outline] };
 | `region` | 面板登记里要换的项，如 `position`、`icon`、`defaultHidden`；缺省区名 `outline`、停在左栏 |
 | `searchable` | 显示搜索框，缺省 `true` |
 | `readonly(context)` | 返回 `true` 时只读：能选、能标出，不能删、不能挪 |
+| `translations()` | 这块面板自己的文案，压在零件文案之上：标题、帮助与零件里的搜索框、空状态都用它，没给的项照旧取零件文案；读的时候现取。同一页面放几款设计器时，各款经它换掉自己那块的说法，不改全局的那一桶 |
 
-- 面板的标题与帮助取零件文案 `xh-designer-outline` 的 `title`、`help`，读的时候按全局配置现取：设计器每次把区交给外框时跟着语言变。
+- 面板的标题与帮助取零件文案 `xh-designer-outline` 的 `title`、`help`（给了 `translations` 时它压在上面），读的时候按全局配置现取：设计器每次把区交给外框时跟着语言变。
 - 每次 `update(context)` 重取树与选中的行，内容没变时不重设，树的展开与焦点不受影响；树上的事件转给适配器，用的是最近一次刷新的上下文。
 - 同一行不重复调 `highlight`；面板撤掉时撤掉标出。
 - 一个面板对象可以放进各款共用的内置扩展：每个设计器实例各建一份零件，互不相干。
