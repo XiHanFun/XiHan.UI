@@ -81,7 +81,7 @@ async function mountTree(leafOrientation?: 'horizontal' | 'vertical') {
         {
           collection,
           leafOrientation,
-          multiple: true,
+          selectionMode: 'multiple',
           defaultExpandedValue: ['system', 'user'],
         },
         () => [h(XhTreeTree, null, () => renderNodes(collection))],

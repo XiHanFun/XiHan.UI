@@ -21,6 +21,12 @@ import type { CollectionVirtualizer } from '../virtualizer'
 export type TreeFocusModel = 'roving-tabindex'
 
 /**
+ * 选择模式。single 单选；multiple 点击与确认键切换；
+ * extended 裸点击与确认键换成这一项，按住 Ctrl/Cmd 点击或 Ctrl/Cmd+Space 切换这一项，按住 Shift 点击选锚点到这一项那一段。
+ */
+export type TreeSelectionMode = 'single' | 'multiple' | 'extended'
+
+/**
  * 作者提供的树数据，是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
  * 连接层据此产出 aria-level / aria-posinset / aria-setsize，作者的标记只负责外观。
  * value 必须全树唯一：它同时是 DOM 身份（data-value）、选中 / 展开集合的元素与查找节点的键。
@@ -184,11 +190,11 @@ export interface TreeSchema extends MachineSchema {
     /** 选中集合。提供即受控，语义同上。 */
     selection?: string[]
     defaultSelection?: string[]
-    /** 复选：点击与确认键都是切换，tree 带 aria-multiselectable=true。默认 false（单选）。 */
-    multiple?: boolean
+    /** 选择模式，默认 single；multiple 与 extended 下 tree 带 aria-multiselectable=true。 */
+    selectionMode?: TreeSelectionMode
     /**
-     * multiple 下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选，
-     * 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。
+     * selectionMode 为 multiple 时父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选，
+     * 禁用子树整棵冻结。默认 false（朴素切换）；single 与 extended 下无效。
      */
     cascade?: boolean
     /** 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 */
@@ -266,8 +272,11 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'BRANCH.TOGGLE', value: string }
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: string[] }
-    /** 单选替换、复选切换，由 multiple 决定。 */
-    | { type: 'NODE.SELECT', value: string, extend?: boolean }
+    /**
+     * 选中一个节点，语义由 selectionMode 决定：single 换成这一项；multiple 切换，extend 并进锚点到这一项那一段；
+     * extended 换成这一项，additive 切换，extend 选锚点到这一项那一段（同时 additive 则并进）。
+     */
+    | { type: 'NODE.SELECT', value: string, extend?: boolean, additive?: boolean }
     | { type: 'NODE.FOCUS', value: string }
     /** 焦点离开树，或持有焦点的节点被移出 DOM（浏览器此时不派发 focusout，由适配器如实上报）。 */
     | { type: 'TREE.BLUR' }
@@ -327,8 +336,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   selection: string[]
   /** 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 */
   focusedValue: string | null
-  /** 生效的是否为复选。 */
-  multiple: boolean
+  /** 生效的选择模式。 */
+  selectionMode: TreeSelectionMode
   disabled: boolean
   isExpanded: (value: string) => boolean
   isSelected: (value: string) => boolean
@@ -338,9 +347,11 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   setSelection: (next: string[]) => void
   expand: (value: string) => void
   collapse: (value: string) => void
-  /** 单选替换、复选切换，与点击同一语义。 */
-  /** 选中某个节点。extend 为真时选中锚点到该节点的范围（仅复选、且非级联）。 */
-  select: (value: string, options?: { extend?: boolean }) => void
+  /**
+   * 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认），
+   * additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。
+   */
+  select: (value: string, options?: { extend?: boolean, additive?: boolean }) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getTreeProps: () => T['element']

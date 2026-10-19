@@ -1,4 +1,4 @@
-<!-- 多选 | multiple 关闭时是单选，开启后点击与确认键都变为切换，选中集合形状不变仍是数组 -->
+<!-- 多选 | 选择模式缺省是单选，写 multiple 后点击与确认键都变为切换，选中集合形状不变仍是数组 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -44,7 +44,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['cn', 'north']"
-      multiple
+      selection-mode="multiple"
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>

@@ -340,7 +340,7 @@ describe('treeMachine 展开与选中', () => {
   })
 
   it('复选：select 切换增删，setSelection 去重', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.api().select('docs')
     h.api().select('license')
     expect(h.selected()).toEqual(['docs', 'license'])
@@ -367,7 +367,7 @@ describe('treeMachine 展开与选中', () => {
 
   it('同一份集合重复写入不重复通知：数组按元素比，不看引用', () => {
     const onSelectionChange = vi.fn()
-    const h = mount({ multiple: true, defaultSelection: ['docs'], onSelectionChange })
+    const h = mount({ selectionMode: 'multiple', defaultSelection: ['docs'], onSelectionChange })
     h.api().setSelection(['docs'])
     expect(onSelectionChange).not.toHaveBeenCalled()
     h.api().setSelection(['docs', 'license'])
@@ -383,7 +383,7 @@ describe('connectTree 属性输出', () => {
     expect(h.treeEl.getAttribute('aria-multiselectable')).toBe('false')
     expect(h.treeEl.getAttribute('aria-disabled')).toBe('false')
     expect(h.treeEl.getAttribute('aria-labelledby')).toBe(h.label.id)
-    expect(mount({ multiple: true }).treeEl.getAttribute('aria-multiselectable')).toBe('true')
+    expect(mount({ selectionMode: 'multiple' }).treeEl.getAttribute('aria-multiselectable')).toBe('true')
   })
 
   it('没渲染 label 时 tree 不写 aria-labelledby', () => {
@@ -870,7 +870,7 @@ describe('确认键与点击', () => {
   })
 
   it('复选：确认键切换而不是替换', () => {
-    const h = mount({ multiple: true, defaultExpandedValue: ['src'] })
+    const h = mount({ selectionMode: 'multiple', defaultExpandedValue: ['src'] })
     h.item('index').item.focus()
     press(active(), 'Enter')
     press(active(), 'ArrowDown')
@@ -1015,7 +1015,7 @@ describe('连打检索', () => {
 
 describe('范围选', () => {
   it('按住 Shift 选中锚点到这一节点那一段，按屏幕上的可见序取', () => {
-    const h = mount({ multiple: true, defaultExpandedValue: ['src'] })
+    const h = mount({ selectionMode: 'multiple', defaultExpandedValue: ['src'] })
     // 可见序：src / index / utils / readme / docs / license
     h.api().select('index')
     h.api().select('docs', { extend: true })
@@ -1024,7 +1024,7 @@ describe('范围选', () => {
   })
 
   it('折叠起来的子节点不在可见序里，一段选不到它们', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     // 全折叠时可见序只有三个根
     h.api().select('src')
     h.api().select('license', { extend: true })
@@ -1032,7 +1032,7 @@ describe('范围选', () => {
   })
 
   it('锚点不动、且能收缩——每一下都从基线重算', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.api().select('src')
     h.api().select('license', { extend: true })
     expect(h.selected()).toEqual(['src', 'docs', 'license'])
@@ -1041,7 +1041,7 @@ describe('范围选', () => {
   })
 
   it('那一段并进先前勾的，不清掉它们', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.api().select('license')
     h.api().select('src')
     h.api().select('docs', { extend: true })
@@ -1056,7 +1056,7 @@ describe('范围选', () => {
   })
 
   it('级联那一路不接范围选：勾一个本来就带一片，再叠一段会难以预料', () => {
-    const h = mount({ multiple: true, cascade: true, defaultExpandedValue: ['src'] })
+    const h = mount({ selectionMode: 'multiple', cascade: true, defaultExpandedValue: ['src'] })
     h.api().select('index')
     const before = h.selected()
     h.api().select('docs', { extend: true })
@@ -1065,9 +1065,122 @@ describe('范围选', () => {
   })
 
   it('还没有锚点时退化成普通的切换', () => {
-    const h = mount({ multiple: true })
+    const h = mount({ selectionMode: 'multiple' })
     h.api().select('docs', { extend: true })
     expect(h.selected()).toEqual(['docs'])
+  })
+})
+
+describe('选择模式 extended', () => {
+  it('裸点击换成这一项，Ctrl 或 Cmd 点击切换这一项；tree 报 aria-multiselectable', () => {
+    const h = mount({ selectionMode: 'extended', defaultExpandedValue: ['src'] })
+    expect(h.treeEl.getAttribute('aria-multiselectable')).toBe('true')
+    click(h.item('index').item)
+    click(h.item('license').item, { ctrlKey: true })
+    click(h.branch('docs').control, { metaKey: true })
+    expect(h.selected()).toEqual(['index', 'license', 'docs'])
+    click(h.item('license').item, { ctrlKey: true })
+    expect(h.selected()).toEqual(['index', 'docs'])
+    click(h.item('license').item)
+    expect(h.selected()).toEqual(['license'])
+  })
+
+  it('按住 Shift 点击选锚点到这一项那一段，整份替换；锚点不动，往回点选区收回来', () => {
+    const h = mount({ selectionMode: 'extended' })
+    // 全折叠时可见序：src / docs / license
+    click(h.branch('docs').control)
+    click(h.item('license').item, { ctrlKey: true })
+    click(h.branch('src').control, { shiftKey: true })
+    expect(h.selected()).toEqual(['src', 'docs', 'license'])
+    click(h.branch('docs').control, { shiftKey: true })
+    expect(h.selected()).toEqual(['docs', 'license'])
+  })
+
+  it('同时按住 Ctrl 与 Shift 点击把那一段并进 Shift 之前的选中，往回点也从同一份基线重算', () => {
+    const h = mount({ selectionMode: 'extended', defaultExpandedValue: ['src'] })
+    // 可见序：src / index / utils / readme / docs / license
+    click(h.item('index').item)
+    click(h.item('license').item, { ctrlKey: true })
+    click(h.branch('docs').control, { ctrlKey: true, shiftKey: true })
+    expect(h.selected()).toEqual(['index', 'license', 'docs'])
+    click(h.item('license').item, { ctrlKey: true, shiftKey: true })
+    expect(h.selected()).toEqual(['index', 'license'])
+  })
+
+  it('还没有锚点时 Shift 点击退化成裸点击', () => {
+    const h = mount({ selectionMode: 'extended' })
+    click(h.item('license').item, { shiftKey: true })
+    expect(h.selected()).toEqual(['license'])
+  })
+
+  it('确认键换成这一项；Ctrl+Space 只切换焦点节点，不顺带展开', () => {
+    const h = mount({ selectionMode: 'extended', expandOnClick: true })
+    h.treeEl.focus()
+    press(active(), 'Enter')
+    expect([h.selected(), h.expanded()]).toEqual([['src'], ['src']])
+    press(active(), 'ArrowDown')
+    press(active(), 'ArrowDown')
+    expect(focused()).toBe('utils')
+    const event = press(active(), ' ', { ctrlKey: true })
+    expect(event.defaultPrevented).toBe(true)
+    expect([h.selected(), h.expanded()]).toEqual([['src', 'utils'], ['src']])
+    press(active(), ' ', { metaKey: true })
+    expect(h.selected()).toEqual(['src'])
+    press(active(), 'Enter')
+    expect([h.selected(), h.expanded()]).toEqual([['utils'], ['src', 'utils']])
+  })
+
+  it('禁用节点上按 Ctrl+Space 不认', () => {
+    const h = mount({ selectionMode: 'extended', defaultExpandedValue: ['src'] })
+    h.node('readme').focus()
+    const event = press(active(), ' ', { ctrlKey: true })
+    expect([event.defaultPrevented, h.selected()]).toEqual([false, []])
+  })
+
+  it('不接级联：写了 cascade 也只选被点的那一个', () => {
+    const h = mount({ selectionMode: 'extended', cascade: true, defaultExpandedValue: ['src'] })
+    click(h.branch('src').control)
+    expect(h.selected()).toEqual(['src'])
+    expect(h.item('index').item.getAttribute('aria-selected')).toBe('false')
+  })
+
+  it('api.select 与点击同一语义：additive 切换，extend 选一段', () => {
+    const h = mount({ selectionMode: 'extended' })
+    h.api().select('src')
+    h.api().select('license', { additive: true })
+    expect(h.selected()).toEqual(['src', 'license'])
+    h.api().select('docs', { extend: true })
+    expect(h.selected()).toEqual(['docs', 'license'])
+    h.api().select('src')
+    expect(h.selected()).toEqual(['src'])
+    expect(h.api().selectionMode).toBe('extended')
+  })
+
+  it('setSelection 去重，不截成一项', () => {
+    const h = mount({ selectionMode: 'extended' })
+    h.api().setSelection(['docs', 'docs', 'license'])
+    expect(h.selected()).toEqual(['docs', 'license'])
+  })
+})
+
+describe('另两种模式下的 Ctrl+Space', () => {
+  it('multiple 下同样只切换焦点节点', () => {
+    const h = mount({ selectionMode: 'multiple', defaultSelection: ['license'] })
+    h.treeEl.focus()
+    // 焦点进树落在已选的 license 上
+    press(active(), 'ArrowUp')
+    expect(focused()).toBe('docs')
+    press(active(), ' ', { ctrlKey: true })
+    expect(h.selected()).toEqual(['license', 'docs'])
+    press(active(), ' ', { ctrlKey: true })
+    expect(h.selected()).toEqual(['license'])
+  })
+
+  it('single 下不归树管：不选中，也不拦默认行为', () => {
+    const h = mount()
+    h.treeEl.focus()
+    const event = press(active(), ' ', { ctrlKey: true })
+    expect([event.defaultPrevented, h.selected()]).toEqual([false, []])
   })
 })
 
@@ -1168,7 +1281,7 @@ describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，叶�
   })
 
   it('另一个节点的 keyup 不把正按着的松开；同一个值按住分支行时叶子不亮', () => {
-    const h = mount({ defaultExpandedValue: ['src'], multiple: true })
+    const h = mount({ defaultExpandedValue: ['src'], selectionMode: 'multiple' })
     const index = h.item('index').item
     index.focus()
     press(index, ' ')

@@ -74,7 +74,7 @@ async function mountTree(marks: 'indicator' | 'none') {
         XhTreeRoot,
         {
           collection,
-          multiple: true,
+          selectionMode: 'multiple',
           defaultExpandedValue: ['l1', 'l2'],
         },
         () => [

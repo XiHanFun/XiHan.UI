@@ -84,7 +84,8 @@ export function connectTree<T extends PropTypes>(
   const typeaheadOn = prop('typeahead') ?? true
   // 展开与选中分开：点行只选中，展开归箭头与左右方向键；作者显式打开才让点行顺带切换展开态
   const expandOnClick = prop('expandOnClick') ?? false
-  const multiselectable = !!prop('multiple')
+  const selectionMode = prop('selectionMode') ?? 'single'
+  const multiselectable = selectionMode !== 'single'
   const ids = scope.ids('tree', 'label', 'tree')
 
   // 摊平与索引都是 (collection, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
@@ -120,7 +121,7 @@ export function connectTree<T extends PropTypes>(
     dropTarget?.targetValue === value ? dropTarget.position : undefined
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
   // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
-  const cascade = multiselectable && !!prop('cascade')
+  const cascade = selectionMode === 'multiple' && !!prop('cascade')
   const cascaded = cascade ? cascadeState(collection, selection) : null
   const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selection.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
@@ -367,7 +368,7 @@ export function connectTree<T extends PropTypes>(
     expandedValue,
     selection,
     focusedValue,
-    multiple: multiselectable,
+    selectionMode,
     disabled: treeDisabled,
     isExpanded,
     isSelected,
@@ -376,7 +377,7 @@ export function connectTree<T extends PropTypes>(
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
-    select: (value, options) => send({ type: 'NODE.SELECT', value, extend: options?.extend }),
+    select: (value, options) => send({ type: 'NODE.SELECT', value, extend: options?.extend, additive: options?.additive }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -510,7 +511,17 @@ export function connectTree<T extends PropTypes>(
           }
         }
 
-        // 带 Ctrl/Cmd/Alt 的组合一律不归树管（Ctrl+Home 之类归浏览器与读屏），也不进连打检索
+        // Ctrl/Cmd + Space：可多选时只切换焦点节点，不动其余选中，也不顺带展开
+        if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && key === ' ' && multiselectable) {
+          const row = focusedValue != null ? visible.get(focusedValue) : undefined
+          if (!row || row.disabled || treeDisabled)
+            return
+          event.preventDefault()
+          send({ type: 'NODE.SELECT', value: row.value, additive: true })
+          return
+        }
+
+        // 其余带 Ctrl/Cmd/Alt 的组合一律不归树管（Ctrl+Home 之类归浏览器与读屏），也不进连打检索
         if (event.ctrlKey || event.metaKey || event.altKey)
           return
 
@@ -662,7 +673,7 @@ export function connectTree<T extends PropTypes>(
             return
           // 点击即把焦点交给这一行：叶子本身就是 treeitem，直接认 currentTarget
           focusValue(event.currentTarget as HTMLElement)
-          send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
+          send({ type: 'NODE.SELECT', value: node.value, extend: event.shiftKey, additive: event.ctrlKey || event.metaKey })
         },
         // 焦点是事实不是许可：禁用节点被点到也记锚点，方向键才知道从哪儿起步
         'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
@@ -757,7 +768,7 @@ export function connectTree<T extends PropTypes>(
           const branchEl = branchElOf(event.currentTarget as HTMLElement)
           if (branchEl)
             focusValue(branchEl)
-          send({ type: 'NODE.SELECT', value: node.value, extend: (event as { shiftKey?: boolean }).shiftKey })
+          send({ type: 'NODE.SELECT', value: node.value, extend: event.shiftKey, additive: event.ctrlKey || event.metaKey })
           if (expandOnClick)
             send({ type: 'BRANCH.TOGGLE', value: node.value })
         },

@@ -37,6 +37,7 @@
 - **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
 - **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
 - **ColorPicker**：单选给空数组改为未选（色块画斜线、值文字显示 `placeholder`、`value` 为空数组），不再按 `#000000` 显示；要黑色的改写 `['#000000']`
+- **树**：`multiple` 改为选择模式 `selectionMode`（Web Components 为 `selection-mode`），`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变
 :::
 
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
@@ -53,6 +54,7 @@
 - **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
 - **新增** Tree 节点数据的 `draggable: false`：这一个节点拖不起来，照常能选、能展开、能当落点
+- **新增** Tree 的选择模式 `extended`：照文件管理器，点击换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 加选与取消，按住 Shift 点击选一段；两种多选模式下 Ctrl / Cmd + Space 都只切换焦点节点
 - **新增** `@xihan-ui/core` 的页面级礼貌播报器 `announce(message)`：整页一个播报区挂在 `body` 末尾，同一句话连播也会再读，模态浮层打开时照旧可读；不属于某一个组件的播报用它，设计器外框的 `announce` 改经它；视觉隐藏的内联样式 `VISUALLY_HIDDEN_STYLE` 也从 core 导出
 - **新增** Table 的 `tree`：声明这是一棵树，一行 `parentId` 都没有时也报 treegrid、Alt + 左右键改层级、任何一行都能接受「放进去」，叶子行不写 `aria-expanded`
 - **新增** FloatingPanel 的拖动起止事件 `onDragStart` / `onDragEnd`（Web Components 为 `drag-start` / `drag-end`），带指针位置与是否取消

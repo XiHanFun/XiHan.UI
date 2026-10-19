@@ -50,7 +50,7 @@ export default function Demo(): ReactNode {
         onSelectionChange={details => setSelected(details.value)}
         collection={collection}
         defaultExpandedValue={["cn", "north"]}
-        multiple
+        selectionMode="multiple"
       >
         <XhTreeLabel>投放城市</XhTreeLabel>
         <XhTreeTree>

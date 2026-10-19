@@ -44,7 +44,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['east', 'north']"
-      multiple
+      selection-mode="multiple"
       cascade
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
