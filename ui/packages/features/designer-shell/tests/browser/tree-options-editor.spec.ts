@@ -7,7 +7,7 @@ import { mergeXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
 import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
-import { page, userEvent } from 'vitest/browser'
+import { cdp, page, userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
 import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
@@ -91,6 +91,41 @@ function row(panel: HTMLElement, value: string): HTMLElement {
 function description(element: Element): string {
   return (element.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean).map(id => document.getElementById(id)?.textContent?.trim() ?? '').filter(Boolean).join(' ')
 }
+
+/** 真实鼠标的坐标换算：页面坐标除以它就是 CDP 要的坐标。 */
+async function mouseScale(): Promise<number> {
+  const seen = new Promise<number>(resolve => document.addEventListener('pointermove', event => resolve(event.clientX / 20), { once: true }))
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 20, y: 20 })
+  return seen
+}
+
+/** 真实鼠标按住 from、分十步拖到 to 再松开，每步隔一帧。 */
+async function drag(from: { x: number, y: number }, to: { x: number, y: number }): Promise<void> {
+  const scale = await mouseScale()
+  const at = (x: number, y: number) => ({ x: x / scale, y: y / scale })
+  const frame = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => resolve()))
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(from.x, from.y) })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(from.x, from.y) })
+  for (let i = 1; i <= 10; i++) {
+    await frame()
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(from.x + ((to.x - from.x) * i) / 10, from.y + ((to.y - from.y) * i) / 10) })
+  }
+  await frame()
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(to.x, to.y) })
+}
+
+/** 一项值格行首的缩进占位（叶子项）的中心：按住它拖的是整行，不进输入框。 */
+function grip(panel: HTMLElement, value: string): { x: number, y: number } {
+  const spacer = cell(panel, value, 'value').querySelector<HTMLElement>('[data-part="tree-option-spacer"]')!
+  const box = spacer.getBoundingClientRect()
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+}
+
+const flat: JsonValue = [
+  { value: 'a', label: 'A' },
+  { value: 'b', label: 'B' },
+  { value: 'c', label: 'C' },
+]
 
 const sample: JsonValue = [
   { value: 'east', label: 'East', children: [{ value: 'sh', label: 'Shanghai' }, { value: 'hz', label: 'Hangzhou' }] },
@@ -225,6 +260,34 @@ describe('属性面板的选项树', () => {
     expect(written.at(-1)).toEqual(sample)
     await until(() => row(panel, 'north').getAttribute('aria-level') === '1', '层级退回')
     expect(document.activeElement).toBe(cell(panel, 'north', 'value'))
+  })
+
+  it('平铺的各项也是树：表格报 treegrid、各行报第 1 层，叶子项不带 aria-expanded；Alt + 右键把第 2、3 项依次缩进到第 1 项下面', async () => {
+    const { panel, written } = await mount(flat)
+    expect(panel.querySelector('[data-scope="table"][data-part="root"]')!.getAttribute('role')).toBe('treegrid')
+    expect(['a', 'b', 'c'].map(value => [row(panel, value).getAttribute('aria-level'), row(panel, value).hasAttribute('aria-expanded')])).toEqual([['1', false], ['1', false], ['1', false]])
+    cell(panel, 'b', 'value').focus()
+    await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}')
+    await until(() => written.length > 0, '写回')
+    expect(written.at(-1)).toEqual([{ value: 'a', label: 'A', children: [{ value: 'b', label: 'B' }] }, { value: 'c', label: 'C' }])
+    await until(() => row(panel, 'b').getAttribute('aria-level') === '2', 'b 到第 2 层')
+    expect(document.activeElement).toBe(cell(panel, 'b', 'value'))
+    expect(row(panel, 'a').getAttribute('aria-expanded')).toBe('true')
+    cell(panel, 'c', 'value').focus()
+    await userEvent.keyboard('{Alt>}{ArrowRight}{/Alt}')
+    await until(() => written.length > 1, '再写回')
+    expect(written.at(-1)).toEqual([{ value: 'a', label: 'A', children: [{ value: 'b', label: 'B' }, { value: 'c', label: 'C' }] }])
+    await until(() => row(panel, 'c').getAttribute('aria-level') === '2', 'c 到第 2 层')
+    expect(['b', 'c'].map(value => row(panel, value).hasAttribute('aria-expanded'))).toEqual([false, false])
+  })
+
+  it('真实鼠标把一项拖到叶子项的中段就放进它下面，写回整棵树', async () => {
+    const { panel, written } = await mount(flat)
+    const target = row(panel, 'a').getBoundingClientRect()
+    await drag(grip(panel, 'c'), { x: grip(panel, 'a').x, y: target.top + target.height / 2 })
+    await until(() => written.length > 0, '写回')
+    expect(written.at(-1)).toEqual([{ value: 'a', label: 'A', children: [{ value: 'c', label: 'C' }] }, { value: 'b', label: 'B' }])
+    await until(() => row(panel, 'c').getAttribute('aria-level') === '2', 'c 到第 2 层')
   })
 
   it('加子项在这一项的下级末尾加一项、焦点落到它的值上；新增在顶层末尾加一项；删除连同下级一起删掉', async () => {
