@@ -59,6 +59,8 @@ const TIMING_CONSTANTS = {
   'core/src/behavior/hover-intent/track-hover-intent.ts:HOVER_INTENT_OPEN_DELAY': '停留：悬停意图从进触发器到报开的等待，选项 openDelay 的缺省值，也是 Menu hoverOpenDelay 的缺省值；SideNav 折叠态的悬停弹出同取它',
   'core/src/behavior/hover-intent/track-hover-intent.ts:HOVER_INTENT_CLOSE_DELAY': '停留：离开到报关的等待与安全三角的停滞上限，选项 closeDelay 的缺省值，也是 Menu hoverCloseDelay 的缺省值；SideNav 弹出面板的离开收起同取它',
   'core/src/behavior/collection/typeahead.ts:RESET_AFTER': '停留：首字母检索在最后一次按键后多久清空前缀，集合共用的内部取值',
+  'core/src/kernel/capability/a11y/announcer.ts:REWRITE_DELAY': '判定：页面级播报先清空、隔多久再写入，内部取值：读屏要看到内容变了才会把同一句话再读一遍',
+  'core/src/kernel/capability/a11y/announcer.ts:CLEAR_DELAY': '停留：页面级播报写下后多久清空，内部取值：读屏的浏览模式翻到页尾时读不到过时的话',
   'headless/src/timestamp/timestamp.format.ts:MAX_TIMER_DELAY': '上限：setTimeout 能表达的最长延时（有符号 32 位整数毫秒），相对时间的刷新延时夹在它之内；不是给人看的时长',
 }
 

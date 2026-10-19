@@ -2,7 +2,7 @@
 // 门禁：视觉隐藏配方只有一份真源。
 //
 // 皮肤侧的真源是 visually-hidden.css 的 .xh-visually-hidden 块；
-// headless 侧的真源是 shared/visually-hidden.ts 的 VISUALLY_HIDDEN_STYLE。
+// 脚本侧的真源是 core 的 kernel/capability/a11y/visually-hidden.ts 的 VISUALLY_HIDDEN_STYLE（headless 从 core 转出）。
 // 两边的配方逐条同值，各皮肤为自己的隐藏输入 / 活动区域带一份时，也必须与真源逐条一致：
 // 少一条（比如漏 white-space: nowrap）1px 宽的盒会把文本挤成竖排，撑高布局；
 // 值不同（比如 clip 改 clip-path 以外的写法）在某些引擎上会露出一角。
@@ -15,7 +15,7 @@ import { join } from 'node:path'
 
 const STYLES_DIR = 'packages/design/styles/css'
 const SOURCE_CSS = join(STYLES_DIR, 'visually-hidden.css')
-const SOURCE_TS = 'packages/engine/headless/src/shared/visually-hidden.ts'
+const SOURCE_TS = 'packages/engine/core/src/kernel/capability/a11y/visually-hidden.ts'
 const HEADLESS_SRC = 'packages/engine/headless/src'
 const MARKER = /clip-path\s*:\s*inset\(50%\)/
 const INLINE_MARKER = /clipPath\s*:\s*['"]inset\(50%\)['"]/

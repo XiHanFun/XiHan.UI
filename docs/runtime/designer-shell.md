@@ -641,7 +641,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `toggleAllPanels()` | 有面板显示着就全部隐藏，否则放回全部隐藏前的那一组；不动工具栏与状态栏 |
 | `restorePanels()` | 各面板的显隐回到缺省，位置与大小不动 |
 | `resetLayout()` | 整份布局回到缺省：显隐、停靠、先后、大小、收起、浮出一起复原 |
-| `announce(message)` | 经外框的礼貌级播报读一句；外框自己在挪动、浮出、停靠、收起与隐藏之后各读一句 |
+| `announce(message)` | 礼貌级地读一句，经 core 的页面级播报器（[`announce`](../guide/behavior#页面级播报)）；外框自己在挪动、浮出、停靠、收起与隐藏之后各读一句 |
 
 宿主锁定了整份布局或某块面板时，改那块面板的方法什么都不做。
 
