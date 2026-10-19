@@ -1,6 +1,6 @@
 // 外框的分隔条双击折叠：左边那条收起物料、右边那条收起属性、下方那条收起问题，再双击放回折叠前的大小；
-// 收起期间外框重排（换了显示的面板、外框变宽变窄）后仍收着，再双击放回的还是折叠前的大小；sizes-change 记的是折叠前的大小。
-import type { DesignerFrameEventMap, DesignerFrameSizes, XhDesignerFrameElement } from '../../src'
+// 收起期间外框重排（换了显示的面板、外框变宽变窄）后仍收着，再双击放回的还是折叠前的大小；layout-change 记的是折叠前的大小。
+import type { DesignerFrameEventMap, ResolvedDesignerLayout, XhDesignerFrameElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
@@ -11,7 +11,7 @@ import '../../style.css'
 defineDesignerShell()
 
 let frame: XhDesignerFrameElement
-let seen: DesignerFrameSizes[]
+let seen: ResolvedDesignerLayout[]
 
 async function settle(): Promise<void> {
   for (let round = 0; round < 3; round++) {
@@ -34,7 +34,7 @@ beforeEach(async () => {
   }
   frame.append(document.createElement('div'))
   seen = []
-  frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail.sizes))
+  frame.addEventListener('layout-change', event => seen.push((event as DesignerFrameEventMap['layout-change']).detail.layout))
   document.body.prepend(frame)
   await settle()
 })
@@ -55,7 +55,7 @@ function trigger(orientation: 'horizontal' | 'vertical', index: number): HTMLEle
 
 /** 三处都比各自的下限宽：放回的大小要与下限分得开。 */
 async function widen(): Promise<void> {
-  frame.sizes = { start: 30, end: 32, bottom: 45 }
+  frame.layout = { version: 1, sizes: { start: 30, end: 32, bottom: 45 } }
   await settle()
   seen.length = 0
 }
@@ -80,15 +80,15 @@ describe('<xh-designer-frame> 双击分隔条（Chromium）', () => {
     }
   })
 
-  it('收起期间换了显示的面板、外框变宽变窄后仍收着，再双击放回折叠前的大小；sizes-change 记的是折叠前的大小', async () => {
+  it('收起期间换了显示的面板、外框变宽变窄后仍收着，再双击放回折叠前的大小；layout-change 记的是折叠前的大小', async () => {
     await widen()
     const width = extent('palette').width
     await dblclick(trigger('horizontal', 0))
     expect(extent('palette').width).toBeCloseTo(0, 0)
     const recorded = seen.at(-1)!
-    expect(recorded.start).toBeCloseTo(30, 0)
+    expect([recorded.sizes.start, recorded.collapsed]).toEqual([expect.closeTo(30, 0), ['start']])
 
-    frame.panels = 'toolbar palette properties'
+    frame.layout = { ...frame.resolvedLayout, hidden: ['issues'] }
     await settle()
     expect(extent('palette').width).toBeCloseTo(0, 0)
     frame.style.width = '1000px'
@@ -121,13 +121,13 @@ describe('<xh-designer-frame> 双击分隔条（Chromium）', () => {
     expect([Math.round(extent('properties').width), document.activeElement]).toEqual([Math.round(width), trigger('horizontal', 1)])
   })
 
-  it('「面板」菜单里收起的面板不打勾，勾上就按原来的大小放回，panels 不变', async () => {
+  it('「面板」菜单里收起的面板不打勾，勾上就按原来的大小放回，显隐不变', async () => {
     await widen()
     const height = extent('issues').height
     await dblclick(trigger('vertical', 0))
     expect(frame.panelEntries().find(entry => entry.name === 'issues')!.shown).toBe(false)
     frame.togglePanel('issues')
     await settle()
-    expect([Math.round(extent('issues').height), frame.panelEntries().find(entry => entry.name === 'issues')!.shown, frame.panels]).toEqual([Math.round(height), true, undefined])
+    expect([Math.round(extent('issues').height), frame.panelEntries().find(entry => entry.name === 'issues')!.shown, frame.resolvedLayout.hidden, frame.resolvedLayout.collapsed]).toEqual([Math.round(height), true, [], []])
   })
 })

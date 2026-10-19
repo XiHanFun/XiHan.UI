@@ -1437,7 +1437,7 @@
   }
 
   /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底 */
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame'][data-part='panel-close']) {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -1454,23 +1454,23 @@
     transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame'][data-part='panel-close']):hover {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):hover {
     background: var(--xh-bg-subtle);
     color: var(--xh-fg-default);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame'][data-part='panel-close']):active {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):active {
     background: var(--xh-bg-subtle-hover);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame'][data-part='panel-close']):focus-visible {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame'][data-part='panel-close'])::before {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock']))::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-glyph-size-text);
@@ -1483,6 +1483,147 @@
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button::before {
     -webkit-mask-image: var(--xh-glyph-mark-info);
     mask-image: var(--xh-glyph-mark-info);
+  }
+
+  /* 收起：展开着时朝上，收成标题条以后朝下 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='panel-minimize']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-up);
+    mask-image: var(--xh-glyph-mark-chevron-up);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='panel-minimize'][data-state='closed']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-down);
+    mask-image: var(--xh-glyph-mark-chevron-down);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='panel-menu-trigger']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-ellipsis);
+    mask-image: var(--xh-glyph-mark-ellipsis);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='float-dock']::before {
+    -webkit-mask-image: var(--xh-glyph-mark-restore);
+    mask-image: var(--xh-glyph-mark-restore);
+  }
+
+  /* 能挪的面板：面板头是拖动的把手，窄屏时不拖 */
+  xh-designer-frame:not([data-narrow]) [data-scope='designer-frame'][data-part='region'][data-movable]:not([data-floating]) > [data-scope='designer-frame'][data-part='panel-header'] {
+    cursor: grab;
+    user-select: none;
+  }
+
+  /* 收成标题条：只剩面板头，不随所在栏伸长 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-minimized] {
+    flex: none;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-minimized] > [data-scope='designer-frame'][data-part='panel-body'] {
+    display: none;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-minimized] > [data-scope='designer-frame'][data-part='panel-header'] {
+    border-block-end: 0;
+  }
+
+  /* 一栏里的面板全都收成了标题条：几条面板头贴着栏顶 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='stack'][data-folded] {
+    justify-content: flex-start;
+  }
+
+  /* 浮出的面板：卡片铺满小窗的正文，不再画自己的间距、描边与圆角；标题在小窗的标题栏上 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-floating] {
+    flex: 1 1 auto;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-floating] > [data-scope='designer-frame'][data-part='panel-header'] > [data-scope='designer-frame'][data-part='panel-heading'] > [data-scope='designer-frame'][data-part='panel-title'] {
+    display: none;
+  }
+
+  xh-designer-frame > [data-scope='designer-frame'][data-part='floats'] {
+    display: contents;
+  }
+
+  xh-floating-panel[data-scope='designer-frame'][data-part='float'] > [data-scope='floating-panel'][data-part='root'] > [data-scope='floating-panel'][data-part='positioner'] > [data-scope='floating-panel'][data-part='content'] > [data-scope='floating-panel'][data-part='body'] {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  xh-floating-panel[data-scope='designer-frame'][data-part='float'] [data-scope='designer-frame'][data-part='float-icon'] {
+    flex: none;
+    color: var(--xh-fg-muted);
+  }
+
+  /* 拖面板时盖在三栏与画布上的落点层：左、右、下三条停靠条，栏内的插入线，画布上浮出的落位框 */
+  xh-designer-frame > [data-scope='designer-frame'][data-part='drop'] {
+    position: absolute;
+    z-index: 2;
+    display: none;
+    inset-inline: 0;
+  }
+
+  xh-designer-frame[data-panel-drag] > [data-scope='designer-frame'][data-part='drop'] {
+    display: block;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge'] {
+    position: absolute;
+    border-radius: var(--xh-shape-control);
+    transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge']:is([data-dock='start'], [data-dock='end']) {
+    inset-block: 0;
+    inline-size: var(--xh-space-8);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge'][data-dock='start'] {
+    inset-inline-start: 0;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge'][data-dock='end'] {
+    inset-inline-end: 0;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge'][data-dock='bottom'] {
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: var(--xh-space-8);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-edge'][data-active] {
+    background: var(--xh-bg-brand-subtle);
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(-1 * var(--xh-ring-width));
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-line'] {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-line'][data-kind='dock'] {
+    border-block-start: var(--xh-ring-width) solid var(--xh-ring-focus);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='drop-line'][data-kind='float'] {
+    border: var(--xh-ring-width) dashed var(--xh-ring-focus);
+    border-radius: var(--xh-shape-overlay);
+  }
+
+  /* 礼貌级播报：读屏读得到，看不见 */
+  xh-designer-frame > [data-scope='designer-frame'][data-part='live'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] {

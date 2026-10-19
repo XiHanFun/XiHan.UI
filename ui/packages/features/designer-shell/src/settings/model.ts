@@ -40,13 +40,15 @@ export const DESIGNER_GENERAL_SETTINGS = 'general'
 /** 「基础」分区里主题的取值：follow 跟随所在页面，system 跟随系统，light、dark 固定。 */
 export type DesignerThemeSetting = 'follow' | 'system' | 'light' | 'dark'
 
-/** 「基础」分区各条目的键。 */
+/** 「基础」分区各条目的键，以及外框存布局的键。 */
 export const DESIGNER_SETTING_KEYS = {
   theme: 'general.theme',
   brand: 'general.brand',
   toolbarDisplay: 'general.toolbarDisplay',
   statusBar: 'general.statusBar',
   language: 'general.language',
+  /** 面板布局，值是 DesignerLayout；宿主用 settingsPolicy 的 layout.panels 锁整份、layout.panels.<面板 id> 管一块面板。 */
+  layout: 'layout.panels',
 } as const
 
 /** 设置条目的键：分区 id 加条目的 path。 */

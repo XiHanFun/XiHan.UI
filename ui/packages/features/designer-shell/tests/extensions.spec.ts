@@ -103,6 +103,30 @@ describe('createPanelHost', () => {
     expect(log).toEqual([])
     expect(frame.regions).toBeUndefined()
   })
+
+  it('面板给了 headerCommands：按命令表铺成只显示图标的一小条，放进面板头的操作区，随上下文刷新，撤掉面板时一起撤', async () => {
+    const frame = await mountFrame()
+    const log: string[] = []
+    const clear: DesignerCommand<Ctx> = { id: 'clear-history', label: '清空历史', icon: GLYPH, enabled: context => context.selected > 0, run: () => void log.push('clear') }
+    const commands = new Map([[clear.id, clear]])
+    const history: DesignerPanel<Ctx> = { ...panel('history', log), region: { name: 'history', position: 'end', title: '历史' }, headerCommands: ['clear-history', 'ghost'] }
+    const host = createPanelHost<Ctx>(frame, { commands: () => commands, actionsLabel: (_context, title) => `${title}操作` })
+    host.assign([{ id: 'a', panels: [history] }], { selected: 0 })
+    await new Promise(resolve => setTimeout(resolve))
+    await frame.updateComplete
+    const actions = frame.querySelector<HTMLElement>('[data-region="history"] [data-part="panel-actions"]')!
+    const button = actions.querySelector<HTMLButtonElement>('button[value="clear-history"]')!
+    expect([actions.hidden, button.getAttribute('aria-label'), button.disabled]).toEqual([false, '清空历史', true])
+    expect(actions.querySelector('xh-toolbar [data-xh-part="root"]')!.getAttribute('aria-label')).toBe('历史操作')
+    host.update({ selected: 1 })
+    await frame.updateComplete
+    expect(button.disabled).toBe(false)
+    button.click()
+    expect(log.at(-1)).toBe('clear')
+    host.dispose()
+    await frame.updateComplete
+    expect(frame.querySelector('button[value="clear-history"]')).toBeNull()
+  })
 })
 
 describe('命令', () => {

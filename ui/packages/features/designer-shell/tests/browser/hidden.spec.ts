@@ -29,8 +29,6 @@ describe('零件宿主的 hidden（Chromium）', () => {
   // 小地图没有会收起的部件
   it.each(Object.keys(DESIGNER_SHELL_ELEMENTS).filter(tag => tag !== 'xh-designer-minimap'))('%s 里零件自己收起的部件都不显示', async (tag) => {
     const host = document.createElement(tag)
-    if (tag === 'xh-designer-frame')
-      host.setAttribute('panels', '')
     if (tag === 'xh-designer-issues')
       Object.assign(host, { items: [{ issue: { code: 'required', path: [] }, message: 'Required' }] })
     hosts.push(host)

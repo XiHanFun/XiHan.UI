@@ -19,6 +19,7 @@ import {
   XhFieldArrayElement,
   XhFieldElement,
   XhFilterBuilderElement,
+  XhFloatingPanelElement,
   XhFormatInputElement,
   XhIconElement,
   XhMenuElement,
@@ -79,11 +80,14 @@ export function defineOutlineElements(): void {
   defineXhElement('xh-icon', XhIconElement)
 }
 
-/** 外框的分隔条、面板头的帮助与窄屏抽屉用到的元素。 */
+/** 外框的分隔条、面板头的帮助与「更多」菜单、窄屏抽屉与浮出的小窗用到的元素。 */
 export function defineFrameElements(): void {
   defineXhElement('xh-splitter', XhSplitterElement)
   defineXhElement('xh-drawer', XhDrawerElement)
   defineXhElement('xh-tooltip', XhTooltipElement)
+  defineXhElement('xh-menu', XhMenuElement)
+  defineXhElement('xh-floating-panel', XhFloatingPanelElement)
+  defineXhElement('xh-icon', XhIconElement)
 }
 
 /** 问题列表的过滤开关与来源标签用到的元素。 */

@@ -476,60 +476,110 @@ ruler.addEventListener("guides-change", event => setGuides(event.detail.guides))
 
 ## 外框
 
-`<xh-designer-frame>` 是设计器的整体版式：最上一条顶栏，下面一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一块，最下一条状态栏。版式按命名区排，缺省登记顶栏 `header`、工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 七个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。区与区之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
+`<xh-designer-frame>` 是设计器的整体版式：最上一条顶栏，下面一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一栏，最下一条状态栏。版式按命名区排，缺省登记顶栏 `header`、工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 七个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。
+
+左、右、下三栏里的区是面板：停在哪一栏、先后、显隐、收成标题条、浮出成小窗，都记在一份布局 `layout` 里。外框改了布局就换成改完的整份，并派发 `layout-change`；设计器把它存进设置的 `layout.panels`。栏与栏、同一栏的面板之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
 
 ```ts
+import { DESIGNER_SETTING_KEYS } from "@xihan-ui/designer-shell";
+
 const frame = document.createElement("xh-designer-frame");
 frame.append(toolbar, palette, canvas, properties, issues); // 各自写好 slot="toolbar" 等
-frame.panels = "toolbar palette properties";
-frame.sizes = saved.sizes;
-frame.addEventListener("sizes-change", event => save(event.detail.sizes));
+frame.layout = settings[DESIGNER_SETTING_KEYS.layout]; // 上次存下的布局，没有就用缺省布局
+frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layout, event.detail.layout));
 ```
 
 | 属性 | 说明 |
 | --- | --- |
-| `panels` | 要显示的区，空格分隔；不写即全部显示，写空串则只留中间区。中间区总是显示，顶栏有内容就显示，状态栏按 `panels` 且有内容才显示。同名 attribute |
 | `regions` | 产品登记的命名区，缺省为 `DESIGNER_FRAME_REGIONS` |
-| `sizes` | `{ start, end, bottom, regions }`：各处的大小（百分比），用来恢复上次的布局。`start`、`end`、`bottom` 是位置的大小，不给的用区的缺省大小；`regions` 是同一位置堆叠的区各自占该位置高度的百分比，键为区名，不给的等分 |
-| `narrow` | 只读：视口窄于断点、左右两侧收进抽屉时为 `true`，见下文「窄屏」 |
+| `layout` | 面板布局 `DesignerLayout`，见下文「面板布局」；不给即缺省布局 |
+| `defaultLayout` | 宿主的缺省布局：用户没存过布局时用它，「恢复默认布局」也回到它；写了的字段整项覆盖内置缺省 |
+| `layoutPolicy` | 宿主对布局的管控 `{ locked?, panels? }`，通常由 `designerLayoutPolicy(settingsPolicy)` 换算得来 |
+| `resolvedLayout` | 只读：此刻的整份布局，每个字段都在 |
+| `narrow` | 只读：视口窄于断点、左右两栏收进抽屉时为 `true`，见下文「窄屏」 |
 
 | 方法 | 说明 |
 | --- | --- |
-| `showsPanel(name)` | 这个区是否显示：中间区总是显示，顶栏看有没有内容，状态栏看 `panels` 与有没有内容，其余按 `panels`，没登记的区为否 |
-| `panelEntries()` | 能开关的面板：`start`、`end`、`bottom` 三个位置上没写 `closable: false` 的区，按登记顺序，每项 `{ name, label, shown }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻是否列在 `panels` 里；所在位置在分隔条上收起着时为 `false`，窄屏时左右两侧的区还要它所在的抽屉开着。内置的「面板」命令用它铺菜单 |
-| `togglePanel(name)` | 开关一块面板：列在 `panels` 里就去掉、否则加上，与面板头的关闭钮一样派发 `panels-change`。所在位置在分隔条上收起着时是按收起前的大小放回，`panels` 不变（没列上的先列上）；窄屏时左右两侧的区是开关它所在那一侧的抽屉 |
+| `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，顶栏、状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
+| `panelEntries()` | 面板菜单的数据：能停靠的面板与画布浮动件，按登记顺序，`closable: false` 的不列。每项 `{ name, label, icon?, shown, dock?, minimized, floating, locked }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻看得见：没隐藏，所在栏没在分隔条上收起，窄屏时左右两栏的面板还要它所在的抽屉开着 |
+| `togglePanel(name)` | 开关一块面板：显示着就隐藏、隐藏着就显示。所在栏在分隔条上收起着时是把那一栏放回收起前的大小；窄屏时左右两栏的面板是开关它所在那一侧的抽屉 |
+| `setPanelVisible(name, visible)` | 显示或隐藏一块面板 |
+| `movePanel(name, dock, index?)` | 停到某一栏的第 `index` 位（按布局里那一栏的先后算，含隐藏的；缺省末尾），浮着的一并吸回 |
+| `setPanelMinimized(name, minimized)` | 收成标题条或展开 |
+| `floatPanel(name, rect?)` | 浮出成小窗；`rect` 是相对外框左上角的像素位置与大小，不给时按卡片此刻的大小放在中间一行的中央 |
+| `dockPanel(name)` | 把小窗吸回原来的栏与位置 |
+| `revealPanel(name)` | 把显示着的面板亮出来：收在窄屏抽屉里的打开抽屉，所在栏在分隔条上收起的放回，收成标题条的展开；面板隐藏着时返回 `false`。引导与问题定位用 |
+| `toggleAllPanels()` | 有面板显示着就全部隐藏，否则放回全部隐藏前的那一组；不动工具栏与状态栏 |
+| `restorePanels()` | 各面板的显隐回到缺省，位置与大小不动 |
+| `resetLayout()` | 整份布局回到缺省：显隐、停靠、先后、大小、收起、浮出一起复原 |
+| `announce(message)` | 经外框的礼貌级播报读一句；外框自己在挪动、浮出、停靠、收起与隐藏之后各读一句 |
+
+宿主锁定了整份布局或某块面板时，改那块面板的方法什么都不做。
 
 | 事件 | detail |
 | --- | --- |
-| `sizes-change` | `{ sizes }`：拖动或用键盘调整后的大小，形状同 `sizes`；拖动途中连续发出 |
-| `panels-change` | `{ panels }`：点了面板头的关闭钮或调了 `togglePanel`，外框已经收起或展开这块面板；`panels` 是收起之后要显示的区（空格分隔），设计器据此同步自己的 `panels` |
+| `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；小窗挪动、改尺停 300 毫秒后派发 |
 
-命名区是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, closable? }`：
+命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
 
-- `position` 取 `header`、`top`、`start`、`center`、`end`、`bottom`、`status`。同一位置的多个区按登记顺序上下排列，共用一个大小；除 `top` 外，区与区之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。
-- `size` 是位置的缺省大小：`start`、`end` 占中间一行的宽度，`bottom` 占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取该位置第一个区的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
+- `position` 取 `header`、`top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
+- `size` 是那一栏的缺省大小：左右两栏占中间一行的宽度，下栏占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取那一栏第一块面板的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
 - `label` 是分隔条无障碍名称里的区名，缺省用 `title`，再缺省用 `name`；名称取文案 `resize`，分隔条所在的布局取文案 `layout`。
-- 收起的区移出文档，内容保留，再展开时原样放回。
-- 区的结构变了（比如换了一份不带标题的区表，卡片变回普通区）时，已经搬进去的作者内容跟着挪到新结构里；新结构里没有对应位置的（面板头操作区里的内容），回到外框下面、不占版面，等结构里再有这个位置时自动放回。带 `slot` 而外框没有对应位置的作者内容同样留在外框下面，不显示。
-- 外框自己生成的结构（上方条、中间行、位置、分隔条与区容器）都带 `data-scope="designer-frame"`，区容器另带 `data-region`（区名）与 `data-position`（所在位置）。外框的样式只认这个 scope，区里的作者内容即使也用了 `data-part="region"` 之类的部件名，也不受外框样式影响。
+- `icon` 是面板菜单与浮出小窗标题栏里的图标。`defaultHidden` 的面板缺省不显示。`closable`、`movable`、`floatable`、`minimizable` 缺省都是 `true`，写 `false` 就不出对应的钮与菜单项；没给 `title` 的区没有面板头，只能显示或隐藏。
+- 隐藏的面板移出文档，内容保留，再显示时原样放回。
+- 区的结构变了（比如换了一份不带标题的区表，卡片变回普通区）时，已经搬进去的作者内容跟着挪到新结构里；新结构里没有对应位置的（面板头操作区里的内容），回到外框下面、不占版面，等结构里再有这个位置时自动放回。从 `regions` 里去掉的区，里面的作者内容同样回到外框下面。带 `slot` 而外框没有对应位置的作者内容留在外框下面，不显示。
+- 外框自己生成的结构（上方条、中间行、栏、分隔条、区容器、小窗与落点层）都带 `data-scope="designer-frame"`，区容器另带 `data-region`（区名）与 `data-position`（所在的栏或位置，浮出的写 `float`）。外框的样式只认这个 scope，区里的作者内容即使也用了 `data-part="region"` 之类的部件名，也不受外框样式影响。
 
-堆叠区的大小记在 `sizes.regions`：
+### 面板布局
 
-- 值是该区占所在位置高度的百分比，键为区名。同一位置当前显示的区按这些值的比例分高度，合计不必是 100，外框按比例归一；没有记录的区按等分值（100 ÷ 区数）补上，都没有记录时即等分。
-- 每个区至少占 10%（区多到放不下时取等分）；归一后低于下限的区定在下限，其余区按比例分剩下的高度。
-- 收起其中一个区时，其余区按各自的比例分掉它的高度；记录仍在，再展开时恢复拖过的比例。
-- 回填的 `sizes` 里有已不存在的区名、或不是正数的值，一律忽略；`sizes-change` 只带当前登记着的区。
+`DesignerLayout` 是一份 JSON，除 `version` 外都可以不写：
+
+| 字段 | 说明 |
+| --- | --- |
+| `version` | 恒为 `1`（`DESIGNER_LAYOUT_VERSION`）；读到别的版本按缺省布局 |
+| `docks` | `{ start?, end?, bottom? }`：三栏里各面板 id 的先后。浮出的面板也留在原来的栏里，记着吸回去的位置；没列到的面板按缺省位置排在那一栏的后面 |
+| `hidden` | 隐藏的面板与画布浮动件 |
+| `minimized` | 收成标题条的面板 |
+| `floating` | 面板 id → `{ x, y, width, height }`：浮出的小窗相对外框左上角的像素位置与大小 |
+| `sizes` | `{ start?, end?, bottom?, panels? }`：三栏的大小（百分比），以及同一栏里各面板分到的份额（百分比，键为面板 id） |
+| `collapsed` | 在分隔条上收起的栏 |
+
+- 写了的字段整项覆盖缺省布局，没写的取缺省：缺省布局是宿主的 `defaultLayout`，再缺省是各面板按登记顺序停在 `position` 那一栏、`defaultHidden` 的隐藏。
+- 认不得的面板 id、不合法的值去掉，不报错：存下的布局里可能有已经卸掉的扩展面板。不能挪的面板只认它缺省的那一栏。登记了却没出现在布局里的面板（后装的扩展）按缺省位置放。
+- 同一栏当前显示的面板按 `sizes.panels` 的比例分高度，合计不必是 100，外框按比例归一；没有记录的面板按等分值（100 ÷ 面板数）补上，都没有记录时即等分。每块至少占 10%（面板多到放不下时取等分），归一后低于下限的定在下限，其余按比例分剩下的。隐藏其中一块时，其余按各自的比例分掉它的高度；记录仍在，再显示时恢复。
+- 外框派发的 `layout` 总是整份、只含登记着的面板，同一份布局派发出去又赋回来不会重排。
+
+宿主的管控：
+
+| `layoutPolicy` | 效果 |
+| --- | --- |
+| `{ locked: true }` | 整份布局只读：面板头不出收起、更多与关闭钮，不能拖，面板菜单里的面板不可点，改布局的方法什么都不做 |
+| `{ panels: { <id>: "hidden" } }` | 这块面板不存在：不显示、不进面板菜单，布局里写了也不认 |
+| `{ panels: { <id>: "locked" } }` | 这块面板固定：不能隐藏、挪动、浮出、收起，别的面板照常 |
+
+`designerLayoutPolicy(settingsPolicy)` 从设置的管控换算：`layout.panels`（或整个 `layout` 分区）被藏或锁时整份锁定，`layout.panels.<面板 id>` 管一块面板。
+
+布局的纯函数不碰 DOM，设计器或宿主改布局、读布局时可以直接用：
+
+| 函数 | 说明 |
+| --- | --- |
+| `resolveDesignerLayout(regions, layout?, defaults?, policy?)` | 合成此刻的整份布局 |
+| `defaultDesignerLayout(regions, defaults?, policy?)` | 缺省布局 |
+| `designerLayoutEquals(a, b)` | 两份布局是不是同一份 |
+| `designerPanelAbilities(region, policy?)` | 一块面板此刻能做的事：`{ closable, movable, floatable, minimizable }` |
+| `designerPanelDock(layout, id)` | 面板停在哪一栏 |
+| `withDesignerPanelVisible`、`withDesignerPanelMoved`、`withDesignerPanelMinimized`、`withDesignerPanelFloating`、`withDesignerDockSize`、`withDesignerPanelShares` | 几种改法，返回新的一份 |
 
 ### 顶栏与状态栏
 
-顶栏与状态栏是整宽的一条，不可拖动，按段放内容：
+顶栏与状态栏是整宽的一条，不可拖动，不是面板，按段放内容：
 
 | 区 | 段与插槽 | 只写区名时进 |
 | --- | --- | --- |
 | `header` | `header-start`（标志与名称）、`header-center`（插入快捷按钮）、`header-end`（主操作） | `header-center` |
 | `status` | `status-start`（选中对象的信息）、`status-end`（缩放、保存与连接状态） | `status-start` |
 
-- 各段有内容才显示这一条，内容拿走就收起。顶栏不受 `panels` 控制；状态栏另外要在 `panels` 里。
+- 各段有内容才显示这一条，内容拿走就收起。不要状态栏（比如设置里关掉了）时从 `regions` 里去掉 `status` 区，里面的状态项回到外框下面，再登记时放回。
 - 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、中段居中、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。
 - 顶栏中段放 `placement` 含 `header` 的命令：另建一条 `display: "stacked"` 的命令工具栏，写上 `slot="header-center"` 交给外框，见下文「命令」。
 - 状态栏上的每一项用 `createStatusItem` 建，标签、值与分隔四款一致：
@@ -556,14 +606,23 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 ### 面板卡片
 
-左右与下方的区给了 `title` 就画成一张卡片：承载面的底、描边与圆角，四周留出间距，上面是面板头，下面是可以滚动的正文，作者内容放进正文。
+三栏里的区给了 `title` 就画成一张卡片：承载面的底、描边与圆角，四周留出间距，上面是面板头，下面是可以滚动的正文，作者内容放进正文。
 
-- 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边是操作区、帮助钮与关闭钮。
-- 操作区放 `slot="<区名>-actions"` 的作者内容，没有内容时收起。
+- 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边依次是操作区、帮助钮、收起钮、「更多」钮与关闭钮。
+- 操作区放 `slot="<区名>-actions"` 的作者内容，没有内容时收起。扩展的面板给 `headerCommands` 时，面板宿主在这里铺一小条命令，见下文「扩展的面板与命令」。
 - `help` 给了才出帮助钮，悬停或聚焦时用 `<xh-tooltip>` 弹出这段说明，按钮的名字取文案 `panelHelp`。
-- 关闭钮缺省出现（`closable: false` 时不出），名字取文案 `closePanel`；点了收起这块面板，并派发 `panels-change`。
+- 收起钮把面板收成标题条：只剩面板头，留在原位，同一栏的其余面板分剩下的高度；一栏全收起时几条面板头贴着栏顶，下栏全收起时下栏只剩面板头那么高。再点展开。双击面板头也是收起与展开。名字取文案 `minimizePanel` / `expandPanel`，带 `aria-expanded`。
+- 「更多」钮打开一张 `<xh-menu>`，按此刻的布局列出能做的事：移到左栏、右栏、下栏，上移、下移，浮出或停靠，收成标题条或展开，隐藏。键盘与读屏挪面板靠它。从右往左写时左右两栏对调叫法。
+- 关闭钮隐藏这块面板，名字取文案 `closePanel`。
 - 卡片是 `role="region"`，以标题为名。区后来加了或去掉标题，外框连同已经搬进去的内容一起换成新的结构。
 - 物料、属性、问题三个零件放进卡片时写 `headless`：不画自己的标题，由面板头显示。
+
+### 拖动面板与浮出
+
+- 按住面板头（不在按钮与操作区上）拖动，越过激活距离才开始，跟手的是面板头的副本。外框盖上一层落点层：左、右、下三条停靠条，栏空着也能停；拖进一栏两块面板之间画一条插入线；拖到画布上画出浮出的落位框。松手在停靠条上停到那一栏末尾，在插入线处插在那里，在画布上就地浮出；停回原处不算。Esc 取消。窄屏不拖。
+- 浮出的面板放进一个 `<xh-floating-panel>` 小窗：标题栏是图标、标题与拖动把手，加停靠、收拢与关闭三颗钮，八个边角可以改尺。卡片的标题、收起、更多与关闭由小窗的标题栏代替，面板头只留副标题、操作区与帮助。
+- 小窗限在外框里：挪出去、改得比外框大时夹回框内；外框变小、页面滚动时跟着外框重新落位。位置按外框左上角记，`floating` 里存的就是这个。
+- 停靠钮把小窗吸回浮出前的栏与位置；收拢就是小窗的收拢形态，记在 `minimized` 里；关闭是隐藏这块面板，再显示时仍是小窗。
 
 ### 画布区的浮动条
 
@@ -577,6 +636,8 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 
 缺省中间区名是 `canvas`，所以插槽是 `canvas-top-start` 等。落点没有内容时不占位置。右侧中间的竖条不超出中间区，里面放竖排的命令工具栏（`createCommandToolbar(document, { orientation: "vertical" })`）时，画布矮了放不下的条目按高度收进「更多」。
 
+要能在面板菜单里开关的浮动件（小地图、翻页条）登记成画布浮动件：`{ name: "minimap", position: "overlay", anchor: "bottom-end", label: "小地图" }`，内容写 `slot="minimap"`。外框把它放进 `anchor` 那个落点（缺省 `bottom-end`），排在作者在同一落点写的内容后面；它跟着布局的 `hidden` 显示或隐藏，进面板菜单，不能挪、浮出或收起。
+
 ### 尺寸槽
 
 外框上的几个 CSS 自定义属性，缺省取 UI 的语义令牌：
@@ -585,25 +646,24 @@ frame.addEventListener("sizes-change", event => save(event.detail.sizes));
 | --- | --- | --- |
 | `--xh-designer-frame-start-min` | `--xh-layout-col-min-sm` | 左栏拖动的下限 |
 | `--xh-designer-frame-end-min` | `--xh-layout-col-min-md` | 右栏拖动的下限 |
-| `--xh-designer-frame-bottom-min` | `--xh-layout-col-min-xs` | 下方拖动的下限 |
+| `--xh-designer-frame-bottom-min` | `--xh-layout-col-min-xs` | 下栏拖动的下限 |
 | `--xh-designer-frame-gap` | `--xh-space-2` | 卡片与四周、画布浮动条与边缘的间距 |
 | `--xh-designer-frame-panel-px` / `-py` | `--xh-space-3` / `--xh-space-2` | 面板头、顶栏与状态栏的内边距 |
 | `--xh-designer-frame-status-h` | `--xh-control-h-sm` | 状态栏的最小高度 |
 
-- 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。
-- 左右与下方的面板在分隔条上可以收起：双击分隔条，或聚焦后按 Enter，收起它旁边那一侧，再来一次按收起前的大小放回；左边那条管物料一侧，右边那条管属性一侧，中间一栏下方那条管下方。
-- 收着期间外框重排（换了显示的面板、外框变宽变窄、窄屏来回）后仍收着，再双击或按 Enter 照样放回收起前的大小，焦点留在那条分隔条上。`sizes-change` 与 `sizes` 记的是收起前的大小，不记 0。
-
-`parseDesignerPanels(value)` 按同一口径解析 `panels`：没写为 `undefined`（全部显示），空串为空集合（全部收起），多个空白与制表符都当分隔。设计器自己的 `panels` 属性可以直接转给外框。
+- 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。收成标题条的面板同样按量出的面板头高度折算。
+- 三栏在分隔条上可以收起：双击分隔条，或聚焦后按 Enter，收起它旁边那一栏，再来一次按收起前的大小放回；左边那条管左栏，右边那条管右栏，中间一栏下方那条管下栏。
+- 收着期间外框重排（换了显示的面板、外框变宽变窄、窄屏来回）后仍收着，再双击或按 Enter 照样放回收起前的大小，焦点留在那条分隔条上。布局的 `sizes` 记的是收起前的大小，不记 0，收起的栏记在 `collapsed` 里。
 
 ### 窄屏
 
 视口窄于断点令牌 `--xh-breakpoint-md` 时外框进窄屏，外框上写 `data-narrow`，`narrow` 为 `true`：
 
-- 中间一栏占满整行，下方的区照旧在中间一栏下面；左右两侧的区收进从两边滑出的 `<xh-drawer>`，缺省收着。抽屉在外框里面（`contained`）、非模态，压在画布上，不挤窄画布。
-- 「面板」命令与 `togglePanel` 开关抽屉，同时只开一侧，开另一侧时这一侧收起；不改 `panels`，不派发 `panels-change`。没列在 `panels` 里的区，开抽屉时先列上并派发一次 `panels-change`。
-- 面板头的关闭钮与 Esc 只收起抽屉，`panels` 不变。抽屉以它里面各区的标题为名，从右往左写时两侧对调。
-- 视口变宽回到三栏，抽屉收起；左右两侧仍按 `panels` 显示，再变窄时两侧都收着。
+- 中间一栏占满整行，下栏照旧在中间一栏下面；左右两栏收进从两边滑出的 `<xh-drawer>`，缺省收着。抽屉在外框里面（`contained`）、非模态，压在画布上，不挤窄画布。
+- 「面板」命令与 `togglePanel` 开关抽屉，同时只开一侧，开另一侧时这一侧收起，不改布局；隐藏着的面板开抽屉时先显示并派发一次 `layout-change`。
+- 面板头的关闭钮与 Esc 只收起抽屉，布局不变。抽屉以它里面各面板的标题为名，从右往左写时两侧对调。
+- 浮出的面板窄屏时按停靠显示在原来那一栏的抽屉里，不改存下的布局，回到宽屏再浮出来。窄屏不能拖动面板，「更多」菜单里不出换栏与浮出。
+- 视口变宽回到三栏，抽屉收起；再变窄时两侧都收着。
 - 没有 `matchMedia` 或断点令牌缺席时不进窄屏。
 
 ## 设置
@@ -663,7 +723,7 @@ dialog.show();
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
-键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `panels` 里去掉 `status`，语言换成对应的产品语言包。
+键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），不对应设置对话框里的条目，见「外框」的「面板布局」。
 
 ### 设置对话框
 
@@ -718,16 +778,18 @@ dialog.show();
 ```ts
 import { createPanelHost } from "@xihan-ui/designer-shell";
 
-const panels = createPanelHost(frame); // 内置区缺省为 DESIGNER_FRAME_REGIONS，产品有自己的就传 { regions }
+// 内置区缺省为 DESIGNER_FRAME_REGIONS，产品有自己的就传 regions；给了 commands，面板头的命令按它铺
+const panels = createPanelHost(frame, { regions, commands: () => commandTable, actionsLabel: (context, title) => title });
 panels.assign(host.list, context); // 每次 extensions 变化后调用
 panels.update(context); // 设计器状态变化后刷新
 panels.dispose();
 ```
 
-- 扩展的 `panels` 是 `{ region, create(context) => { element, update?, destroy? } }`：`region` 是外框的命名区（`{ name, position, size?, minSize?, label? }`），追加在内置区之后，同一位置按扩展顺序上下排；`element` 以 `slot` 交给外框，放进那个区。
+- 扩展的 `panels` 是 `{ region, create(context) => { element, update?, destroy? }, headerCommands? }`：`region` 是外框的命名区，也就是面板的登记（名字、缺省停的栏、标题、图标、能不能挪与浮出等，见「外框」），追加在内置区之后，同一栏按扩展顺序上下排；`element` 以 `slot` 交给外框，放进那个区。
 - 区名与内置区或别的扩展重名时 `assign` 抛 `DesignerExtensionError`（名字空间 `panel`），什么都不变。
 - 按面板对象的引用比对：留下来的不重建，去掉的调 `destroy` 后撤掉。
-- `panels` 照旧只管显隐，扩展登记的区也能用它开关。宿主写在 HTML 里的内容照样用 `slot="<区名>"` 交给外框，不必经扩展。
+- `headerCommands` 是面板头操作区里的命令 id（或按上下文现算的函数）：面板宿主按选项 `commands` 给的命令表铺成一小条只显示图标的工具栏，放进 `slot="<区名>-actions"`，每次 `update` 刷新，命令表里没有的 id 跳过。内置面板（物料、属性、问题这类不是扩展登记的面板）用 `createPanelActions(document, 面板 id)` 建同样的一条，返回 `{ element, update(ids, commands, context, label) }`，由各款放进外框。
+- 扩展登记的面板与内置面板一样进布局：能换栏、浮出、收起、隐藏，记在 `layout` 里。宿主写在 HTML 里的内容照样用 `slot="<区名>"` 交给外框，不必经扩展。
 
 ### 命令
 
@@ -751,7 +813,8 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令：给了 `frame`（返回设计器的外框）有 `panels`，点开一张菜单列出外框的 `panelEntries()`，勾选的显示，选中经 `togglePanel` 开关；给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶的 `panels`、`settings`、`help`，图标由各款从 `@xihan-ui/icons` 传入，缺省都放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
 

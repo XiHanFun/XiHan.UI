@@ -1,5 +1,5 @@
 // 外框在窄屏（视口窄于 --xh-breakpoint-md）下：中间一列占满整行，左右两侧的区收进从两边滑出的抽屉，缺省收着；
-// togglePanel（「面板」菜单）开关抽屉、同时只开一侧，不改 panels；面板头的「×」与 Esc 收起抽屉；视口变宽回到三栏。
+// togglePanel（「面板」菜单）开关抽屉、同时只开一侧，不改布局；面板头的「×」与 Esc 收起抽屉；浮出的面板按停靠收在抽屉里；视口变宽回到三栏。
 import type { DesignerFrameEventMap, XhDesignerFrameElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
@@ -84,9 +84,9 @@ describe('<xh-designer-frame> 窄屏（Chromium）', () => {
     expect(frame.panelEntries().map(entry => [entry.name, entry.shown])).toEqual([['palette', false], ['properties', false], ['issues', true]])
   })
 
-  it('togglePanel 打开那一侧的抽屉，同时只开一侧，不改 panels、不派发 panels-change；抽屉压在画布上，不挤窄画布', async () => {
-    const changes: string[] = []
-    frame.addEventListener('panels-change', event => changes.push((event as DesignerFrameEventMap['panels-change']).detail.panels))
+  it('togglePanel 打开那一侧的抽屉，同时只开一侧，不改布局、不派发 layout-change；抽屉压在画布上，不挤窄画布', async () => {
+    const changes: unknown[] = []
+    frame.addEventListener('layout-change', event => changes.push((event as DesignerFrameEventMap['layout-change']).detail.layout))
     const canvasWidth = region('canvas').getBoundingClientRect().width
     frame.togglePanel('palette')
     await until(() => inPlace('palette'))
@@ -102,18 +102,18 @@ describe('<xh-designer-frame> 窄屏（Chromium）', () => {
     await until(() => inPlace('properties') && !visible('palette'))
     const properties = region('properties').getBoundingClientRect()
     expect(body.right - properties.right).toBeLessThan(16)
-    expect([changes, frame.panels]).toEqual([[], undefined])
+    expect([changes, frame.resolvedLayout.hidden]).toEqual([[], []])
 
     frame.togglePanel('properties')
     await until(() => !visible('properties'))
   })
 
-  it('面板头的「×」与 Esc 都只收起抽屉，panels 不变', async () => {
+  it('面板头的「×」与 Esc 都只收起抽屉，布局不变', async () => {
     frame.togglePanel('palette')
     await until(() => visible('palette'))
     region('palette').querySelector<HTMLButtonElement>('[data-part="panel-close"]')!.click()
     await until(() => !visible('palette'))
-    expect(frame.panels).toBeUndefined()
+    expect(frame.resolvedLayout.hidden).toEqual([])
 
     frame.togglePanel('palette')
     await until(() => visible('palette'))
@@ -152,6 +152,16 @@ describe('<xh-designer-frame> 窄屏（Chromium）', () => {
       document.removeEventListener('open-change', capture, true)
       document.removeEventListener('open-change', bubble)
     }
+  })
+
+  it('浮出的面板窄屏时按停靠收在原来那一侧的抽屉里，不改存下的布局', async () => {
+    frame.layout = { version: 1, floating: { palette: { x: 20, y: 20, width: 200, height: 160 } } }
+    await settle()
+    expect(frame.querySelector('xh-floating-panel[data-part="float"]')).toBeNull()
+    frame.togglePanel('palette')
+    await until(() => inPlace('palette'))
+    expect(region('palette').closest('xh-drawer')).not.toBeNull()
+    expect(frame.resolvedLayout.floating).toEqual({ palette: { x: 20, y: 20, width: 200, height: 160 } })
   })
 
   it('视口变宽回到三栏，抽屉收起；再变窄时两侧仍收着', async () => {

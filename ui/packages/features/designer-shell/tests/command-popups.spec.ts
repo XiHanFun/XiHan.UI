@@ -4,9 +4,9 @@
 // 开着的时候命令被收进「更多」或放回来，锚点跟着换；菜单的条目按上下文现算，选中调 select 或执行写成 id 的那条命令；
 // 内置的「面板」命令列出外框能开关的面板；竖排工具栏的提示与弹层在行首一侧弹出。
 import type { DesignerCommand, DesignerCommandPanel } from '@xihan-ui/designer-kit'
-import type { XhDesignerFrameElement } from '../src'
+import type { DesignerPanelEntry, XhDesignerFrameElement } from '../src'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createCommandToolbar, defineDesignerShell, DESIGNER_COMMANDS_EN_US, designerShellCommands, renderCommandMenu, runCommand } from '../src'
+import { createCommandToolbar, defineDesignerShell, DESIGNER_COMMANDS_EN_US, designerPanelCommands, designerShellCommands, renderCommandMenu, runCommand } from '../src'
 
 defineDesignerShell()
 
@@ -198,20 +198,70 @@ describe('竖排', () => {
 })
 
 describe('内置的「面板」命令', () => {
-  it('给了 frame 才有 panels：菜单列出外框能开关的面板、勾选显示着的，选中调外框的 togglePanel', () => {
-    const toggled: string[] = []
+  function fakeFrame(entries: DesignerPanelEntry[]) {
+    const calls: string[] = []
     const frame = {
-      panelEntries: () => [{ name: 'palette', label: '物料', shown: true }, { name: 'issues', label: '问题', shown: false }],
-      togglePanel: (name: string) => void toggled.push(name),
-    } satisfies Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel'>
+      panelEntries: () => entries,
+      togglePanel: (name: string) => void calls.push(`toggle:${name}`),
+      toggleAllPanels: () => void calls.push('toggle-all'),
+      restorePanels: () => void calls.push('restore'),
+      resetLayout: () => void calls.push('reset'),
+    } satisfies Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel' | 'toggleAllPanels' | 'restorePanels' | 'resetLayout'>
+    return { frame, calls }
+  }
+
+  const ENTRIES: DesignerPanelEntry[] = [
+    { name: 'palette', label: '物料', shown: true, dock: 'start', minimized: false, floating: false, locked: false },
+    { name: 'issues', label: '问题', shown: false, dock: 'bottom', minimized: false, floating: false, locked: true },
+  ]
+
+  it('给了 frame 才有 panels：菜单逐块面板一项（勾选显示着的，锁定的不可点），分隔线后是全部显隐、还原、恢复默认；选中调外框的 togglePanel', () => {
+    const { frame, calls } = fakeFrame(ENTRIES)
     expect(designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US }).map(command => command.id)).toEqual([])
-    const [panels] = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame })
+    const commands = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame })
+    expect(commands.map(command => command.id)).toEqual(['panels', 'panels-toggle-all', 'panels-restore', 'layout-reset'])
+    const [panels] = commands
     const context: Ctx = { page: 0, log: [] }
     expect([panels!.id, panels!.placement, panels!.run, panels!.enabled?.(context)]).toEqual(['panels', ['toolbar'], undefined, true])
-    expect(panels!.menu?.(context)).toEqual([{ value: 'palette', label: '物料', checked: true }, { value: 'issues', label: '问题', checked: false }])
+    expect(panels!.menu?.(context)).toEqual([
+      { value: 'palette', label: '物料', checked: true },
+      { value: 'issues', label: '问题', checked: false, disabled: true },
+      'separator',
+      'panels-toggle-all',
+      'panels-restore',
+      'layout-reset',
+    ])
     panels!.select?.('issues', context)
-    expect(toggled).toEqual(['issues'])
+    expect(calls).toEqual(['toggle:issues'])
     const [none] = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => undefined })
     expect(none!.enabled?.(context)).toBe(false)
+  })
+
+  it('全部显隐与还原带快捷键，三条都不上工具栏；全部面板都锁定时不可用', () => {
+    const { frame, calls } = fakeFrame(ENTRIES)
+    const [, all, restore, reset] = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame })
+    const context: Ctx = { page: 0, log: [] }
+    expect([all!.shortcut, restore!.shortcut, reset!.shortcut]).toEqual([['Mod', '\\'], ['Mod', 'Shift', '\\'], undefined])
+    expect([all!.placement, restore!.placement, reset!.placement]).toEqual([undefined, undefined, undefined])
+    expect([all, restore, reset].map(command => typeof command!.label === 'function' ? command!.label(context) : command!.label)).toEqual(['Show or hide all panels', 'Restore panel visibility', 'Reset layout'])
+    for (const command of [all, restore, reset])
+      command!.run?.(context)
+    expect(calls).toEqual(['toggle-all', 'restore', 'reset'])
+    const locked = fakeFrame(ENTRIES.map(entry => ({ ...entry, locked: true }))).frame
+    const [, lockedAll] = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => locked })
+    expect([all!.enabled?.(context), lockedAll!.enabled?.(context)]).toEqual([true, false])
+  })
+
+  it('每块面板一条开关命令 panel:<id>：文字取面板标题，checked 是看得见，执行即 togglePanel；外框里没有或锁定时不可用', () => {
+    const { frame, calls } = fakeFrame(ENTRIES)
+    const commands = designerPanelCommands<Ctx>({ panels: ['palette', 'issues', 'ghost'], frame: () => frame })
+    const context: Ctx = { page: 0, log: [] }
+    expect(commands.map(command => [command.id, typeof command.label === 'function' ? command.label(context) : command.label, command.checked?.(context), command.enabled?.(context), command.placement, command.shortcut])).toEqual([
+      ['panel:palette', '物料', true, true, undefined, undefined],
+      ['panel:issues', '问题', false, false, undefined, undefined],
+      ['panel:ghost', 'ghost', false, false, undefined, undefined],
+    ])
+    commands[0]!.run?.(context)
+    expect(calls).toEqual(['toggle:palette'])
   })
 })
