@@ -604,6 +604,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
 | `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）、`menu:<主体>`（这种主体的右键菜单）或 `selection:<主体>`（选中这种主体时浮在选中框上的选中工具条），`shortLabel` 是按钮上看得见的短文字（顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`；`alternateShortcuts` 是另外几组也能触发它的快捷键（如重做在 `Mod+Shift+Z` 之外再认 `["Ctrl", "Y"]`），与 `shortcut` 一样查重、一样命中，提示里只显示 `shortcut`；会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
 | `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
+| `fieldSources` | 字段来源：导入字段对话框里的一页（如从接口请求取样例），见下文「字段来源」 |
 | `setup` | 装上时调用，返回卸下时的清理 |
 
 `DesignerExtensionCore` 只含 `id`、`controls` 与 `rules`，给只读纯数据与纯函数的 core 函数（校验、计算）用；`DesignerExtensionBase` 在它之上加设计器层的字段。各款的扩展类型按层是超集：设计器层 ⊇ 运行时层 ⊇ core 层，只用查看器的页面只引运行时层。
@@ -624,7 +625,7 @@ host.dispose(); // 元素离开文档时调用
 
 - 顺序：内置在前，传入的按数组顺序在后。物料分组、追加的属性、规则执行、命令的缺省排列、面板的上下次序都按这个顺序。
 - 命令的形状也在这一刻查：`panel` 与 `menu` 同时给、或两者都没给又没有 `run`，抛 `TypeError`（`assertCommandShape`）。
-- 冲突在给 `extensions` 赋值、合并登记表的那一刻抛 `DesignerExtensionError`（`code` 为 `designer.extension-conflict`），报出名字空间、名字与先后登记它的两个扩展的 id，设计器保持赋值前的状态。查的名字有：扩展 id、命令 id、快捷键（Mod 按 Ctrl 算，`Mod+S` 与 `Ctrl+S` 算同一个）、编辑方式（含内建的那几种）、导入导出 id，以及 `spaces` 里各款的名字（种类、面板区名等）。不支持后登记的就地覆盖先登记的：要换掉内置行为，用自己的 id 另登记一项，再用命令排列或 `panels` 把内置那项去掉。
+- 冲突在给 `extensions` 赋值、合并登记表的那一刻抛 `DesignerExtensionError`（`code` 为 `designer.extension-conflict`），报出名字空间、名字与先后登记它的两个扩展的 id，设计器保持赋值前的状态。查的名字有：扩展 id、命令 id、快捷键（Mod 按 Ctrl 算，`Mod+S` 与 `Ctrl+S` 算同一个）、编辑方式（含内建的那几种）、导入导出 id、字段来源 id，以及 `spaces` 里各款的名字（种类、面板区名等）。不支持后登记的就地覆盖先登记的：要换掉内置行为，用自己的 id 另登记一项，再用命令排列或 `panels` 把内置那项去掉。
 - 编辑器表例外：本来就是层叠模型，按顺序合并，后面的压前面的。
 - 装卸按扩展 id 与对象引用比对：去掉的调它 `setup` 返回的清理，新加的调 `setup`；id 没变但换了一个对象，当作卸下再装上。所以宿主要保持扩展对象的引用稳定，不要每次渲染都新建一个同 id 的对象。
 
@@ -641,6 +642,31 @@ host.dispose(); // 元素离开文档时调用
 | `assertCommandShape(command)` / `isCommandMenuSeparator(entry)` | 查一条命令的形状，不合时抛 `TypeError`（合并时已经查过）；菜单命令的一项是不是分隔线 |
 | `commandShortcuts(command)` | 一条命令的全部快捷键：`shortcut` 在前，`alternateShortcuts` 按先后在后；快捷键表与 `aria-keyshortcuts` 用它 |
 | `commandForShortcut(commands, event, context, platform)` | 这次按键命中（`shortcut` 或任一组 `alternateShortcuts`）的、此刻可用并且有 `run` 的命令（没给 `run` 的弹层命令与菜单命令不由快捷键触发）；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
+
+### 字段来源
+
+designer-shell 的导入字段对话框内置「JSON 样例」「JSON Schema」两页，扩展的 `fieldSources` 往后面加页，比如从接口请求取一份样例。页只负责拿到内容，推断、预览、勾选与确认都走对话框自己的那一套：
+
+```ts
+const request: DesignerFieldSource = {
+  id: "@acme/request",
+  label: "From an API",
+  order: 100, // 内置的两页是 0 与 10，不写按 100；同值按登记顺序
+  create(host) {
+    const element = host.document.createElement("form");
+    element.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const response = await fetch("/api/orders/sample", { signal: host.signal });
+      host.provide({ kind: "sample", value: await response.json() });
+    });
+    return { element };
+  },
+};
+```
+
+- `create(host)` 每次切到这一页时调用；切走或对话框关上时 `host.signal` 中止并调页的 `destroy()`，之后 `provide`、`fail` 不再生效。
+- `provide(content)` 的内容是 `{ kind: "sample", value }`（JSON 样例）、`{ kind: "json-schema", value }`，或 `{ kind: "fields", fields, sample? }`（已经算好的字段）；再给一次就换掉上一次的。`fail(message)` 把页自己写的出错说明交给对话框显示。
+- 字段来源 id 与别的扩展的重名时，合并时抛 `DesignerExtensionError`（名字空间 `field-source`）。
 
 ### 弹层命令与菜单命令
 
