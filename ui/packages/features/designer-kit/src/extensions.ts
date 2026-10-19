@@ -20,10 +20,11 @@ import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 export type SchemaRule<Doc = unknown, RuleCtx = unknown> = (document: Doc, context: RuleCtx) => readonly SchemaIssue[]
 
 /**
- * 命令出现的位置：工具栏；顶栏中段（插入快捷钮，图标在上、短文字在下）；或某种主体的右键菜单
- * （主体由各款定，如 node、edge、element、card、blank）。
+ * 命令出现的位置：工具栏；顶栏中段（插入快捷钮，图标在上、短文字在下）；某种主体的右键菜单
+ * （主体由各款定，如 node、edge、element、card、blank）；或选中某种主体时浮在选中框上的选中工具条
+ * （主体同样由各款定，如 element、text、node、multiple）。
  */
-export type DesignerCommandPlacement = 'toolbar' | 'header' | `menu:${string}`
+export type DesignerCommandPlacement = 'toolbar' | 'header' | `menu:${string}` | `selection:${string}`
 
 /**
  * 弹层命令点开的面板：element 放进锚在命令按钮上的弹层；弹层开着时设计器状态变了调 update，弹层关掉后调 destroy。

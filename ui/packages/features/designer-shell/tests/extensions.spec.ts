@@ -121,6 +121,17 @@ describe('命令', () => {
     expect(() => arrangeCommands('toolbar', commands, [['undo']], { toolbar: [['redo']] })).toThrow('不是登记过的命令')
   })
 
+  it('选中工具条按主体排：selection:<主体> 与右键菜单同一种排法，宿主的 commandLayout 也能改', () => {
+    const selection = new Map<string, DesignerCommand<Ctx>>([
+      ['copy', cmd('copy')],
+      ['duplicate', cmd('duplicate')],
+      ['stamp.rotate', cmd('stamp.rotate', { placement: ['selection:element'] })],
+    ])
+    expect(arrangeCommands('selection:element', selection, [['copy', 'duplicate']])).toEqual([['copy', 'duplicate'], ['stamp.rotate']])
+    expect(arrangeCommands('selection:text', selection, [['copy']])).toEqual([['copy']])
+    expect(arrangeCommands('selection:element', selection, [['copy']], { 'selection:element': [['duplicate']] })).toEqual([['duplicate']])
+  })
+
   it('工具栏：按分组铺按钮，文字、可用、选中状态与语气随上下文刷新，点击执行', async () => {
     ran.length = 0
     const toolbar = createCommandToolbar<Ctx>(document, { platform: 'other' })
