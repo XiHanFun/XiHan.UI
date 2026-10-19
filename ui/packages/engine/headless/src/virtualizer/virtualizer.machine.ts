@@ -39,6 +39,7 @@ function kernelOptions(p: MachineParams, onChange: () => void): VirtualizerKerne
     scrollContainer: p.prop('scrollContainer') ?? 'viewport',
     anchor: p.prop('anchor') ?? 'start',
     stickyIndices: p.prop('stickyIndices'),
+    estimateFromMeasured: p.prop('estimateFromMeasured') ?? false,
     getContentElement: () => p.refs.get('getContentEl')(),
     onChange,
   }
@@ -110,6 +111,7 @@ export const virtualizerMachine = createMachine({
         () => prop('scrollContainer'),
         () => prop('anchor'),
         () => prop('stickyIndices'),
+        () => prop('estimateFromMeasured'),
       ],
       () => action(['syncOptions']),
     )

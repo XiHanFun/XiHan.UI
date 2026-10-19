@@ -59,6 +59,8 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   anchor?: VirtualizerAnchor
   /** 钉在视口起点的条目下标（分组标题）。 */
   stickyIndices?: number[]
+  /** 没量过的条目按已量条目的实测平均估算；条目要开 measure。 */
+  estimateFromMeasured?: boolean
   /** 应渲染的内容发生变化。 */
   onRangeChange?: VirtualizerProps['onRangeChange']
   children?: SlotChildren<VirtualizerRootSlotProps>
@@ -79,6 +81,7 @@ export function XhVirtualizerRoot({
   scrollContainer,
   anchor,
   stickyIndices,
+  estimateFromMeasured,
   onRangeChange,
   children,
   ...rest
@@ -98,6 +101,7 @@ export function XhVirtualizerRoot({
     scrollContainer,
     anchor,
     stickyIndices,
+    estimateFromMeasured,
     onRangeChange,
   } as VirtualizerProps)
   const api = ctx.api

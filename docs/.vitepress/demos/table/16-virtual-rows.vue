@@ -31,17 +31,15 @@ const people = Array.from({ length: 10000 }, (_, i) => ({
 
 // 行号与总数按全量算，与挂了哪几行无关
 const rows = people.map(p => ({ id: p.id }));
-
-// 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
 </script>
 
 <template>
   <!-- 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位 -->
+  <!-- 行高不写死：estimateFromMeasured 按量到的行高估算还没渲染的行，换尺寸、密度或皮肤都跟得上 -->
   <XhVirtualizerRoot
     v-slot="{ virtualItems, collectionVirtualizer }"
     :count="people.length"
-    :estimate-size="36"
+    estimate-from-measured
     scroll-container="ancestor"
     style="inline-size: 100%; max-inline-size: 520px"
   >
@@ -61,8 +59,8 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
       <XhTableBody>
         <XhVirtualizerViewport>
           <XhVirtualizerContent>
-            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index">
-              <XhTableRow :value="people[item.index]!.id" :style="rowStyle">
+            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index" measure>
+              <XhTableRow :value="people[item.index]!.id">
                 <XhTableCell value="no">{{ people[item.index]!.no }}</XhTableCell>
                 <XhTableCell value="name">{{ people[item.index]!.name }}</XhTableCell>
                 <XhTableCell value="dept">{{ people[item.index]!.dept }}</XhTableCell>

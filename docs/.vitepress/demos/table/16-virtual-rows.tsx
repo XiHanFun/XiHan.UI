@@ -1,5 +1,5 @@
 // 只渲染窗口内的行 | 一万行交给 Virtualizer：表格经 virtualizer 接上它的 collectionVirtualizer，行号与方向键仍按完整行序走，DOM 里只有窗口那十几行
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   XhTableBody,
   XhTableCell,
@@ -32,15 +32,13 @@ const people = Array.from({ length: 10000 }, (_, i) => ({
 // 行号与总数按全量算，与挂了哪几行无关
 const rows = people.map(p => ({ id: p.id }));
 
-// 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-const rowStyle: CSSProperties = { blockSize: 36, borderBlockEnd: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" };
-
 export default function Demo(): ReactNode {
   return (
     // 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位
+    // 行高不写死：estimateFromMeasured 按量到的行高估算还没渲染的行，换尺寸、密度或皮肤都跟得上
     <XhVirtualizerRoot
       count={people.length}
-      estimateSize={36}
+      estimateFromMeasured
       scrollContainer="ancestor"
       style={{ inlineSize: "100%", maxInlineSize: 520 }}
     >
@@ -66,8 +64,8 @@ export default function Demo(): ReactNode {
                 {virtualItems.map((item) => {
                   const p = people[item.index]!;
                   return (
-                    <XhVirtualizerItem key={item.key} value={item.index}>
-                      <XhTableRow value={p.id} style={rowStyle}>
+                    <XhVirtualizerItem key={item.key} value={item.index} measure>
+                      <XhTableRow value={p.id}>
                         <XhTableCell value="no">{p.no}</XhTableCell>
                         <XhTableCell value="name">{p.name}</XhTableCell>
                         <XhTableCell value="dept">{p.dept}</XhTableCell>

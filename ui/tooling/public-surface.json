@@ -15473,6 +15473,7 @@
     "virtualizer": [
       "anchor",
       "count",
+      "estimateFromMeasured",
       "estimateSize",
       "gap",
       "getItemKey",
@@ -24291,6 +24292,7 @@
       "attributes": [
         "anchor",
         "count",
+        "estimate-from-measured",
         "estimate-size",
         "gap",
         "horizontal",

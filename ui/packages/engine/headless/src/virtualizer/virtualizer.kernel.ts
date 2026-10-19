@@ -54,6 +54,8 @@ export interface VirtualizerKernelOptions extends VirtualizerMetrics {
   anchor?: VirtualizerAnchor
   /** 分组标题等要钉在视口起点的条目下标。 */
   stickyIndices?: readonly number[]
+  /** 没量过的条目按已量条目的实测平均估算，缺省 false。 */
+  estimateFromMeasured?: boolean
   /**
    * 惰性取视口节点：适配器提交完这一帧节点才存在。
    * viewport 形态下它就是滚动容器；window 与 ancestor 形态下只用来找滚动容器、量列表在里面的起点。
@@ -255,6 +257,12 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
 
   /** 实测尺寸账本，按条目身份记账，条目增删也跟得住。 */
   const sizes = new Map<string | number, number>()
+  /** 账本里实测尺寸的总和，estimateFromMeasured 下按它求平均。 */
+  let measuredTotal = 0
+  /** 账本清空之后沿用的上一份实测平均。 */
+  let learnedEstimate: number | null = null
+  /** 上一次排布所用估算的判据，estimateFromMeasured 下它一变就整份重排。 */
+  let layoutEstimateKey: number | null = null
   let measurements: VirtualizerMeasurement[] = []
   let dirtyFrom = 0
 
@@ -271,19 +279,77 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
   let idleTimer: ReturnType<typeof setTimeout> | undefined
   let itemObserver: ResizeObserver | null = null
   const observedItems = new Set<HTMLElement>()
+  /** estimateFromMeasured 下等到下一帧才挂观察的条目节点。 */
+  const pendingObserve = new Set<HTMLElement>()
+  let observeFrame: number | null = null
   let disposed = false
 
   const viewportSize = (): number => (options.horizontal ? viewportWidth : viewportHeight)
   const anchoredToEnd = (): boolean => (options.anchor ?? 'start') === 'end'
+  const measuredMode = (): boolean => options.estimateFromMeasured === true
 
   function markDirty(from: number): void {
     if (from < dirtyFrom)
       dirtyFrom = from
   }
 
+  function recordSize(key: string | number, size: number): void {
+    measuredTotal += size - (sizes.get(key) ?? 0)
+    sizes.set(key, size)
+  }
+
+  function forgetSize(key: string | number): void {
+    const previous = sizes.get(key)
+    if (previous === undefined)
+      return
+    measuredTotal -= previous
+    sizes.delete(key)
+  }
+
+  function clearSizes(): void {
+    if (sizes.size > 0)
+      learnedEstimate = Math.round(measuredTotal / sizes.size)
+    sizes.clear()
+    measuredTotal = 0
+  }
+
+  /** 账本里实测尺寸的平均（取整）；账本空着时沿用上一份平均，都没有或不为正时为 null。 */
+  function measuredEstimate(): number | null {
+    const estimate = sizes.size > 0 ? Math.round(measuredTotal / sizes.size) : learnedEstimate
+    return estimate != null && estimate > 0 ? estimate : null
+  }
+
+  /**
+   * 排布参数。estimateFromMeasured 下没量过的条目取实测平均；
+   * 一条都没量过、作者也没给估算时先按视口长度估，首屏只排出头几条。
+   */
+  function layoutMetrics(): VirtualizerMetrics {
+    if (!measuredMode())
+      return metrics
+    const measured = measuredEstimate()
+    if (measured != null)
+      return { ...metrics, estimateSize: () => measured }
+    const base = metrics.estimateSize
+    const provisional = viewportSize()
+    return {
+      ...metrics,
+      estimateSize: (index) => {
+        const size = base(index)
+        return size > 0 ? size : provisional
+      },
+    }
+  }
+
   function getMeasurements(): readonly VirtualizerMeasurement[] {
+    if (measuredMode()) {
+      const key = measuredEstimate() ?? -viewportSize()
+      if (key !== layoutEstimateKey) {
+        layoutEstimateKey = key
+        markDirty(0)
+      }
+    }
     if (dirtyFrom !== CLEAN) {
-      measurements = measureVirtualizerItems(metrics, sizes, measurements, dirtyFrom)
+      measurements = measureVirtualizerItems(layoutMetrics(), sizes, measurements, dirtyFrom)
       dirtyFrom = CLEAN
     }
     return measurements
@@ -291,6 +357,26 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
 
   function currentRange(): VirtualizerRange | null {
     return findVirtualizerRange(getMeasurements(), scrollOffset, viewportSize(), metrics.lanes)
+  }
+
+  /** 钉在起点的那一条：可视区首条之前（含首条）最后一个登记过的下标。 */
+  function activeSticky(range: VirtualizerRange): number | null {
+    let active: number | null = null
+    for (const index of normalizeSticky(options.stickyIndices, metrics.count)) {
+      if (index > range.startIndex)
+        break
+      active = index
+    }
+    return active
+  }
+
+  /** 此刻渲着这一条：落在窗口（含过扫描）里，或是钉在起点的那条。 */
+  function isRendered(index: number): boolean {
+    const range = currentRange()
+    if (!range)
+      return false
+    const window = expandVirtualizerRange(range, resolveVirtualizerOverscan(options.overscan), metrics.count)
+    return (index >= window.from && index <= window.to) || index === activeSticky(range)
   }
 
   /** 值真变了才回调。滚动量变了但区间没变的那些帧不该惊动上层。 */
@@ -553,23 +639,76 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
 
     const previous = sizes.get(item.key) ?? item.size
     const delta = size - previous
-    if (delta === 0)
+    const firstMeasure = !sizes.has(item.key)
+    // estimateFromMeasured 下头一次量到的尺寸与估算相同也要记账：它要计进平均
+    if (delta === 0 && !(firstMeasure && measuredMode()))
       return
 
-    const firstMeasure = !sizes.has(item.key)
     const aboveFold = firstMeasure
       ? item.start < scrollOffset
       : item.start + previous <= scrollOffset && !backward
 
-    sizes.set(item.key, size)
+    const anchor = measuredMode() ? captureFirstVisible() : null
+    if (measuredMode() && !firstMeasure)
+      forgetOutsideWindow()
+    recordSize(item.key, size)
     markDirty(index)
 
-    if (anchoredToEnd() && pinnedToEnd)
+    if (anchoredToEnd() && pinnedToEnd) {
       followEnd()
-    else if (aboveFold && target)
-      requestScroll(Math.max(0, scrollOffset + delta))
+    }
+    else if (target) {
+      const compensation = (anchor ? estimateShift(anchor, index, delta) : 0) + (aboveFold ? delta : 0)
+      if (compensation !== 0)
+        requestScroll(Math.max(0, scrollOffset + compensation))
+    }
 
     notify()
+  }
+
+  /** 视口里第一条的下标与起点。 */
+  function captureFirstVisible(): { index: number, start: number } | null {
+    const range = currentRange()
+    const item = range ? getMeasurements()[range.startIndex] : undefined
+    return item ? { index: item.index, start: item.start } : null
+  }
+
+  /**
+   * 视口里第一条的起点因估算变动、旧实测作废挪了多少。
+   * 量的这一条排在它前面时，这一条自己的增量不计在内，照实测补偿的规则另算。
+   */
+  function estimateShift(anchor: { index: number, start: number }, index: number, delta: number): number {
+    const item = getMeasurements()[anchor.index]
+    if (!item)
+      return 0
+    return item.start - anchor.start - (index < anchor.index ? delta : 0)
+  }
+
+  /** 已量条目的尺寸变了（换密度、换皮肤、视口变宽换行）：窗口外的旧实测作废，改按新的平均估算。 */
+  function forgetOutsideWindow(): void {
+    const range = currentRange()
+    const items = getMeasurements()
+    const kept = new Set<string | number>()
+    if (range) {
+      const window = expandVirtualizerRange(range, resolveVirtualizerOverscan(options.overscan), metrics.count)
+      for (let index = window.from; index <= window.to; index++) {
+        const item = items[index]
+        if (item)
+          kept.add(item.key)
+      }
+      const active = activeSticky(range)
+      if (active != null && items[active])
+        kept.add(items[active]!.key)
+    }
+    let forgot = false
+    for (const key of [...sizes.keys()]) {
+      if (kept.has(key))
+        continue
+      forgetSize(key)
+      forgot = true
+    }
+    if (forgot)
+      markDirty(0)
   }
 
   /** 条目节点的尺寸变化也要跟：图片加载完、字体换掉都不经过适配器的更新钩子。 */
@@ -589,13 +728,32 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
             continue
           }
           const index = indexFromElement(node)
-          if (index != null)
+          // estimateFromMeasured 下收起来的节点不量：它量出来恒是 0，计进平均会把估算拉低
+          if (index != null && (!measuredMode() || (!node.hidden && isRendered(index))))
             resizeItem(index, readItemSize(node))
         }
       })
     }
-    itemObserver.observe(el)
     observedItems.add(el)
+    const win = scope.getWin()
+    if (!measuredMode() || typeof win.requestAnimationFrame !== 'function') {
+      itemObserver.observe(el)
+      return
+    }
+    // estimateFromMeasured 下新节点推到下一帧再挂观察，不在同一轮尺寸回报里挂
+    pendingObserve.add(el)
+    observeFrame ??= win.requestAnimationFrame(flushPendingObserve)
+  }
+
+  function flushPendingObserve(): void {
+    observeFrame = null
+    for (const el of pendingObserve) {
+      if (el.isConnected)
+        itemObserver?.observe(el)
+      else
+        observedItems.delete(el)
+    }
+    pendingObserve.clear()
   }
 
   return {
@@ -605,8 +763,11 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
       syncLiveOffset()
       const anchor = captureAnchor()
       const nextMetrics = normalizeVirtualizerMetrics({ ...next, scrollMargin: next.scrollMargin + listStart })
-      const reshaped = nextMetrics.count !== metrics.count || nextMetrics.getItemKey !== metrics.getItemKey
-      if (layoutChanged(metrics, nextMetrics))
+      const modeChanged = (next.estimateFromMeasured === true) !== measuredMode()
+      const reshaped = nextMetrics.count !== metrics.count || nextMetrics.getItemKey !== metrics.getItemKey || modeChanged
+      if (modeChanged)
+        layoutEstimateKey = null
+      if (layoutChanged(metrics, nextMetrics) || modeChanged)
         markDirty(0)
       else if (nextMetrics.count !== metrics.count)
         markDirty(Math.min(nextMetrics.count, metrics.count))
@@ -649,14 +810,8 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
 
       const window = expandVirtualizerRange(range, resolveVirtualizerOverscan(options.overscan), metrics.count)
       const margin = metrics.scrollMargin
-      // 钉在起点的那一条：可视区首条之前（含首条）最后一个登记过的下标，滚过它之后它一直钉着
-      const sticky = normalizeSticky(options.stickyIndices, metrics.count)
-      let active: number | null = null
-      for (const index of sticky) {
-        if (index > range.startIndex)
-          break
-        active = index
-      }
+      // 钉在起点的那一条：滚过它之后它一直钉着
+      const active = activeSticky(range)
       const toState = (item: VirtualizerMeasurement, pinned: boolean): VirtualizerItemState => ({
         // 对外一律报"距 content 起点"的位移，作者不必自己减 scrollMargin
         index: item.index,
@@ -706,6 +861,9 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     measureElement: (element) => {
       if (disposed)
         return
+      // estimateFromMeasured 下已摘下或收起来的节点不量：量出来恒是 0，计进平均会把估算拉低
+      if (measuredMode() && (!element.isConnected || element.hidden))
+        return
       const index = indexFromElement(element)
       if (index == null)
         return
@@ -716,7 +874,7 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     reset: () => {
       if (disposed)
         return
-      sizes.clear()
+      clearSizes()
       markDirty(0)
       followEnd()
       notify()
@@ -727,10 +885,14 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
         return
       disposed = true
       detach()
+      if (observeFrame != null)
+        scope.getWin().cancelAnimationFrame(observeFrame)
+      observeFrame = null
+      pendingObserve.clear()
       itemObserver?.disconnect()
       itemObserver = null
       observedItems.clear()
-      sizes.clear()
+      clearSizes()
       measurements = []
     },
   }
