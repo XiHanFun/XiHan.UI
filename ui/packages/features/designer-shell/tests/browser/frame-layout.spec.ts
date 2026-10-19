@@ -192,6 +192,24 @@ describe('<xh-designer-frame> 面板布局（Chromium）', () => {
     expect(region('outline').getBoundingClientRect().bottom).toBeLessThan(top + header * 2 + 48)
   })
 
+  it('面板头的收起、更多、关闭与小窗的停靠各画各的图形；收成标题条后收起钮换成朝下的图形', async () => {
+    const glyph = (element: Element): string => {
+      const style = getComputedStyle(element, '::before')
+      return style.getPropertyValue('mask-image') || style.getPropertyValue('-webkit-mask-image')
+    }
+    const button = (name: string, part: string): HTMLElement => headerOf(name).querySelector<HTMLElement>(`[data-part="${part}"]`)!
+    const [minimize, menu, close] = ['panel-minimize', 'panel-menu-trigger', 'panel-close'].map(part => glyph(button('properties', part)))
+    expect(new Set([minimize, menu, close]).size).toBe(3)
+    frame.setPanelMinimized('properties', true)
+    await settle()
+    expect(glyph(button('properties', 'panel-minimize'))).not.toBe(minimize)
+    expect(glyph(button('properties', 'panel-minimize'))).not.toBe(close)
+    frame.floatPanel('issues', { x: 200, y: 200, width: 260, height: 200 })
+    await settle()
+    const dock = frame.querySelector<HTMLElement>('xh-floating-panel[data-part="float"] [data-part="float-dock"]')!
+    expect([glyph(dock) === close, glyph(dock) === menu]).toEqual([false, false])
+  })
+
   it('下栏只有一块面板且收成了标题条：下栏只剩面板头那么高，画布多出来', async () => {
     const canvasBefore = region('canvas').getBoundingClientRect().height
     frame.setPanelMinimized('issues', true)

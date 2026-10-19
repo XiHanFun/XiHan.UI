@@ -1614,7 +1614,8 @@
     outline-offset: var(--xh-ring-offset);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock']))::before {
+  /* 缺省画关闭的图形；帮助钮那一支的 button 写在 :where 里，整条与下面各钮的图形规则同一档特异度，排在后面的盖得住 */
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock']))::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-glyph-size-text);
