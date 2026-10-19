@@ -185,6 +185,7 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
 | `empty-text` | 没有问题时的提示 |
 | `readonly` | 列表没有修改类操作，只读时照常浏览与定位 |
 | `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示，列表仍以标题为名；严重程度的过滤照旧显示，要放进面板头见下文 `summary` |
+| `activate` | 哪些条目能点：`target`（缺省）只有落在对象上的问题能点，设计器据此选中对象；`path` 凡有路径的都能点，JSON 编辑框据此把光标移过去 |
 
 | 只读属性 | 说明 |
 | --- | --- |
@@ -204,7 +205,7 @@ list.addEventListener("issue-hover", event => highlight(event.detail.issue?.targ
   frame.append(issues.summary);
   ```
 - 按对象分组时，组按对象在 `items` 里第一次出现的先后排列，组内错误在前。组标题取组内第一条的 `subject`，都没有时显示对象的 `id`；条目里不再重复对象名。没有 `target` 的问题归在最后一组，标题取文案 `noTarget`。
-- 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。
+- 有 `target` 的条目是按钮，方向键、Home、End 在它们之间移动焦点；没有 `target` 的条目只显示，不可激活。`activate="path"` 时每一条都是按钮。
 
 ## 小地图
 
@@ -1024,6 +1025,47 @@ dialog.show();
 
 内置命令 `import-fields` 打开它，见下文「命令」的 `designerShellCommands`。
 
+## JSON 编辑
+
+`<xh-designer-json-editor>` 编辑整份模板的 JSON。里面是 `<xh-dialog>`：一个等宽字体、不折行的多行编辑框，下面是解析失败的说明与问题列表（`<xh-designer-issues>`），底边是格式化、复制、取消与应用。对话框不改设计器的文档，派发 `json-apply`，由设计器自己换上；四款把它作为一步进撤销栈，说明写「编辑 JSON」。宿主元素不占盒。
+
+```ts
+const editor = document.createElement("xh-designer-json-editor");
+editor.value = designer.schema; // 每次打开都从它写起，缩进两格
+editor.validate = value => issuesOf(migrate(value)).map(issue => ({ issue, message: t(issue) }));
+editor.readonly = designer.readonly;
+editor.addEventListener("json-apply", event => designer.replaceDocument(event.detail.value));
+editor.show();
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `value` | 打开时编辑框里的 JSON（设计器此刻的整份文档）；只走 property |
+| `validate` | `(value) => DesignerIssueItem[]`：各款先走读入迁移、再走 core 的校验，与粘贴整份模板同一套，换好文字交回来。不给时只查能不能解析 |
+| `readonly` | 只读：能看、能格式化、能复制，不能改，也没有「应用」。同名 attribute |
+| `open` | 对话框打开。同名 attribute |
+| `translations` | 元素自己的文案，压在全局配置之上 |
+
+| 方法 | 说明 |
+| --- | --- |
+| `show()` | 打开对话框 |
+
+| 事件 | 说明 |
+| --- | --- |
+| `json-apply` | `{ value }`：用户按了「应用」，对话框随即关上。只有文字解析得了、没有错误级问题、又与打开时的值不同时「应用」才可用 |
+| `open-change` | `{ open }`：按 Esc、点遮罩、关闭钮、取消或应用时对话框关上，元素已经换成这个状态 |
+
+- 文字一变就重新解析（core/json 的 `parseJsonText`）并交给 `validate`。解析失败时编辑框标成 invalid，写出第几行第几列与原因，后面一颗「转到出错处」把光标放过去。
+- 点问题列表的一条，光标选中那个路径在文字里的值（core/json 的 `locateJsonPath`，见下），编辑框滚到那一行；路径在文字里没有时退到最近的上级。整块的对象或数组只选它起头的那一行。
+- 打开时落焦在编辑框，光标在开头，不全选。
+- 复制把编辑框里的文字写进剪贴板（`navigator.clipboard.writeText`，要安全上下文），钮旁写一句「已复制」或「复制失败」，再改文字时清掉。
+- 每次打开都从 `value` 重新写起，没应用的改动丢掉。
+- 文案键 `xh-designer-json-editor`，英文表 `DESIGNER_JSON_EDITOR_EN_US`。
+
+`locateJsonPath(text, path)`（`@xihan-ui/core/json`）在 JSON 文本里找路径指向的值，返回 `{ start, end, line, column }`：值在文本里的起止下标与起点的行列（从 1 数起，换行的算法同 `parseJsonText`）。路径写法同 `getJsonAt`，空路径指整个值；文本不是合法 JSON 或路径走不通时为 `undefined`；对象里键重复时取最后一个，与 `JSON.parse` 一致。
+
+内置命令 `edit-json` 打开它，见下文「命令」的 `designerShellCommands`。
+
 ## 新手引导
 
 `<xh-designer-tour>` 是设计器的新手引导：库内 `<xh-tour>` 包一层，designer-shell 的通用步骤加上各款与扩展的步骤，按 `order` 排，一步步高亮外框里的面板、区或工具栏上的命令。放在设计器元素里、外框旁边，和设置对话框一样；宿主元素不占盒。
@@ -1128,9 +1170,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用；不排位置，各款放进面板头或菜单）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
-
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `startTour` 有 `start-tour`（开始新手引导，不上工具栏）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+`）、`panels-restore`（还原面板显隐，`Mod+Shift+`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
@@ -1144,7 +1184,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 - 菜单里点了复选条目、菜单仍开着时，按点过之后的上下文重算条目与勾选，不必等设计器下一次 `update`。
 - `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
-四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置、帮助与导入字段，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
+四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置、帮助、导入字段、编辑 JSON 与开始引导，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
 
 ```ts
 import { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from "@xihan-ui/designer-shell";

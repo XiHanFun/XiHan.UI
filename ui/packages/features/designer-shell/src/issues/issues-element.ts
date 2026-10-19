@@ -99,6 +99,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     items: { attribute: false },
     groupBy: { converter: STRING_CONVERTER, attribute: 'group-by' },
     emptyText: { converter: STRING_CONVERTER, attribute: 'empty-text' },
+    activate: { converter: STRING_CONVERTER },
     readonly: { converter: BOOLEAN_CONVERTER },
     headless: { converter: BOOLEAN_CONVERTER },
     translations: { attribute: false },
@@ -113,6 +114,11 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
   declare groupBy: 'severity' | 'target' | 'none' | undefined
   /** 没有问题时的提示，缺省取文案 empty。 */
   declare emptyText: string | undefined
+  /**
+   * 哪些条目能点：target（缺省）只有落在对象上的问题能点，设计器据此选中对象；path 凡有路径的都能点，
+   * JSON 编辑框据此把光标移到路径在文字里的位置。
+   */
+  declare activate: 'target' | 'path' | undefined
   /** 只读。问题列表没有修改类操作，只读时照常浏览与定位。 */
   declare readonly?: boolean
   /** 放进外框的卡片时写上：不画自己的标题，标题由外框的面板头显示，仍作正文的可访问名。 */
@@ -164,7 +170,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const visible = items.filter(item => this.#shown.has(issueSeverity(item.issue)))
     setText(parts.empty, this.emptyText ?? t.empty)
     parts.empty.hidden = visible.length > 0
-    const inputs = [items, this.groupBy, filter.join(','), t.severityError, t.severityWarning, t.noTarget]
+    const inputs = [items, this.groupBy, this.activate, filter.join(','), t.severityError, t.severityWarning, t.noTarget]
     if (inputs.length === this.#rendered.length && inputs.every((input, index) => input === this.#rendered[index]))
       return
     this.#rendered = inputs
@@ -225,7 +231,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
           createAuthoredElement(doc, 'span', { 'data-xh-part': 'root' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'label' }, [item.source])]),
         ]))
       }
-      const activatable = item.issue.target !== undefined
+      const activatable = this.activate === 'path' || item.issue.target !== undefined
       const body = activatable
         ? createAuthoredElement(doc, 'button', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index, 'type': 'button', 'tabindex': first ? 0 : -1 }, children)
         : createAuthoredElement(doc, 'div', { 'data-part': 'issue', 'data-severity': severity, 'data-index': index }, children)

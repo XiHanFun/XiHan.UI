@@ -1,6 +1,6 @@
 // JSON 工具：普通对象判断、第一处非 JSON 值的 JSON Pointer（含转义、循环与共享引用）、深拷贝不共享引用、按值比较、
 // 深冻结、按路径读写（结构共享、补齐中间层、错误码）、路径前缀、路径的文字形式与解析（往返、非法文本、原型段）、变化路径、
-// 带出错位置的 JSON 文本解析。
+// 带出错位置的 JSON 文本解析、按路径在 JSON 文本里找值的位置。
 import type { JsonObject, JsonPathSegment, JsonValue } from '../src/json'
 import { describe, expect, it } from 'vitest'
 import {
@@ -17,6 +17,7 @@ import {
   isPlainObject,
   jsonEquals,
   JsonPathError,
+  locateJsonPath,
   parseJsonPath,
   parseJsonText,
   setJsonAt,
@@ -376,5 +377,62 @@ describe('parseJsonText', () => {
       }
     }
     expect(checked).toBe(sample.length * replacements.length)
+  })
+})
+
+describe('locateJsonPath', () => {
+  const value: JsonValue = {
+    'title': 'Order',
+    'nodes': [
+      { id: 'a', label: 'Start', tags: ['x', '[{"}]'] },
+      { id: 'b', label: 'B', size: { w: -1.5e2, h: 0 }, on: true, off: null },
+    ],
+    'a"b': { é: [[], {}] },
+  }
+  const paths: JsonPathSegment[][] = []
+  const collect = (node: JsonValue, path: JsonPathSegment[]): void => {
+    paths.push(path)
+    if (Array.isArray(node))
+      node.forEach((item, index) => collect(item, [...path, index]))
+    else if (isPlainObject(node))
+      Object.entries(node as JsonObject).forEach(([key, item]) => collect(item, [...path, key]))
+  }
+  collect(value, [])
+
+  it('紧凑与缩进两种写法里，每条路径找出的那段文字解析回来都是该处的值', () => {
+    for (const text of [JSON.stringify(value), JSON.stringify(value, null, 2), JSON.stringify(value, null, '\t').replaceAll('\n', '\r\n')]) {
+      for (const path of paths) {
+        const found = locateJsonPath(text, path)!
+        expect(JSON.parse(text.slice(found.start, found.end)), JSON.stringify(path)).toEqual(getJsonAt(value, path))
+      }
+    }
+  })
+
+  it('给出起点的行与列；空路径是去掉首尾空白后的整个值', () => {
+    const text = JSON.stringify(value, null, 2)
+    expect(locateJsonPath(text, ['nodes', 1, 'label'])).toEqual({ start: text.indexOf('"B"'), end: text.indexOf('"B"') + 3, line: 14, column: 16 })
+    expect(locateJsonPath(`\n  ${text}\n`, [])).toMatchObject({ start: 3, end: text.length + 3, line: 2, column: 3 })
+    expect(locateJsonPath('{\r\n"a":\r\n  1}', ['a'])).toEqual({ start: 11, end: 12, line: 3, column: 3 })
+  })
+
+  it('键按转义后的文字比较；重复的键取最后一个，与 JSON.parse 一致', () => {
+    const text = '{"k":1,"\\u006b":2,"k":{"x":3}}'
+    expect(text.slice(locateJsonPath(text, ['k'])!.start)).toBe('{"x":3}}')
+    expect(locateJsonPath(text, ['k', 'x'])).toMatchObject({ start: text.length - 3, end: text.length - 2 })
+  })
+
+  it('路径走不通或文本不合法时为 undefined', () => {
+    const text = JSON.stringify(value)
+    expect([
+      locateJsonPath(text, ['missing']),
+      locateJsonPath(text, ['nodes', 2]),
+      locateJsonPath(text, ['nodes', -1]),
+      locateJsonPath(text, ['nodes', 'length']),
+      locateJsonPath(text, ['title', 0]),
+      locateJsonPath(text, ['nodes', 0, 'id', 'x']),
+      locateJsonPath('[]', [0]),
+      locateJsonPath('{"a":1,}', ['a']),
+      locateJsonPath('', []),
+    ]).toEqual(Array.from({ length: 9 }).fill(undefined))
   })
 })

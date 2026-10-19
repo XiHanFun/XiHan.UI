@@ -458,6 +458,8 @@ export interface DesignerCommandsTranslations {
   readonly help: string
   /** 内置命令：打开导入字段对话框。 */
   readonly importFields: string
+  /** 内置命令：打开 JSON 编辑框。 */
+  readonly editJson: string
 }
 
 /** 导入字段对话框的文案。 */
@@ -522,6 +524,34 @@ export interface DesignerFieldImportTranslations {
   readonly import: string
 }
 
+/** JSON 编辑框的文案。 */
+export interface DesignerJsonEditorTranslations {
+  /** 对话框标题。 */
+  readonly title: string
+  /** 编辑框的名字。 */
+  readonly input: string
+  /** 解析失败的说明：line、column 从 1 数起，reason 是 parseErrors 里的一句。 */
+  readonly parseError: (line: number, column: number, reason: string) => string
+  /** 解析失败的几种原因，键是 core/json 的 parseJsonText 给的码。 */
+  readonly parseErrors: Readonly<Record<JsonTextErrorCode, string>>
+  /** 把光标移到解析出错处的钮。 */
+  readonly goToError: string
+  /** 问题列表的名字。 */
+  readonly issues: string
+  /** 格式化钮。 */
+  readonly format: string
+  /** 复制钮。 */
+  readonly copy: string
+  /** 复制成功后钮旁的一句。 */
+  readonly copied: string
+  /** 复制失败（没有剪贴板权限、不在安全上下文）时钮旁的一句。 */
+  readonly copyFailed: string
+  /** 应用钮。 */
+  readonly apply: string
+  /** 取消钮。 */
+  readonly cancel: string
+}
+
 /** 变换覆盖层的文案。 */
 export interface DesignerTransformTranslations {
   /** 尺寸徽标（宽高两个数字框）这一组的名字。 */
@@ -546,6 +576,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
     'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
     'xh-designer-field-import'?: Partial<DesignerFieldImportTranslations>
+    'xh-designer-json-editor'?: Partial<DesignerJsonEditorTranslations>
     'xh-designer-tour'?: Partial<DesignerTourTranslations>
     'xh-designer-transform'?: Partial<DesignerTransformTranslations>
   }

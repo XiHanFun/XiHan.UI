@@ -135,6 +135,13 @@ export function defineFieldImportElements(): void {
   defineXhElement('xh-button', XhButtonElement)
 }
 
+/** JSON 编辑框：对话框、多行编辑框与按钮用到的元素；问题列表是零件，由编辑框自己注册。 */
+export function defineJsonEditorElements(): void {
+  defineXhElement('xh-dialog', XhDialogElement)
+  defineXhElement('xh-text-field', XhTextFieldElement)
+  defineXhElement('xh-button', XhButtonElement)
+}
+
 /** 新手引导用到的元素。 */
 export function defineTourElements(): void {
   defineXhElement('xh-tour', XhTourElement)

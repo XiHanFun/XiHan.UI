@@ -174,6 +174,20 @@ describe('<xh-designer-issues>', () => {
     expect(activated).toEqual([{ issue: items[1]!.issue, index: 1 }])
   })
 
+  it('activate="path" 时凡有路径的条目都能点（JSON 编辑框按路径定位），没有 target 的也派发 issue-activate', async () => {
+    const list = await mount((element) => {
+      element.items = items
+      element.setAttribute('activate', 'path')
+    })
+    const activated = record(list, 'issue-activate')
+    expect(rows(list).map(row => row.tagName)).toEqual(['BUTTON', 'BUTTON', 'BUTTON', 'BUTTON'])
+    rows(list)[1]!.click()
+    expect(activated).toEqual([{ issue: items[2]!.issue, index: 2 }])
+    list.activate = 'target'
+    await list.updateComplete
+    expect(rows(list)[1]!.tagName).toBe('DIV')
+  })
+
   it('方向键、Home、End 在可激活的条目间移动焦点，Tab 位跟着走', async () => {
     const list = await mount((element) => {
       element.items = items

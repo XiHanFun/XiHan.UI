@@ -448,6 +448,36 @@ export function parseJsonText(text: string): JsonTextResult {
   }
 }
 
+/** locateJsonPath 找到的值：在文本里的起止，与起点的行列。 */
+export interface JsonTextLocation {
+  /** 值的第一个字符的下标，按 UTF-16 码元计。 */
+  readonly start: number
+  /** 值的最后一个字符之后的下标。 */
+  readonly end: number
+  /** 起点的行号，从 1 起；换行的算法同 parseJsonText。 */
+  readonly line: number
+  /** 起点的列号，从 1 起，按 UTF-16 码元计。 */
+  readonly column: number
+}
+
+/**
+ * 在 JSON 文本里找路径指向的值，给出它的起止与起点的行列，供编辑框把光标移过去。路径同 getJsonAt：对象键与数组下标，
+ * 空路径指整个值。文本不是合法 JSON、路径走不通（键不存在、下标越界、往原始值里走）时为 undefined。
+ * 对象里键重复时取最后一个，与 JSON.parse 一致。
+ */
+export function locateJsonPath(text: string, path: JsonPath): JsonTextLocation | undefined {
+  if (!parseJsonText(text).ok)
+    return undefined
+  let start = skipJsonSpace(text, 0)
+  for (const segment of path) {
+    const next = typeof segment === 'number' ? jsonItemStart(text, start, segment) : jsonMemberStart(text, start, segment)
+    if (next === undefined)
+      return undefined
+    start = next
+  }
+  return { start, end: skipJsonValue(text, start), ...textPosition(text, start) }
+}
+
 interface JsonTextFailure {
   readonly code: JsonTextErrorCode
   readonly offset: number
@@ -656,4 +686,97 @@ function textPosition(text: string, offset: number): { readonly line: number, re
     }
   }
   return { line, column: offset - lineStart + 1 }
+}
+
+// 下面几个只走已经确认合法的 JSON 文本，不再查文法
+
+function skipJsonSpace(text: string, at: number): number {
+  while (at < text.length) {
+    const char = text.charCodeAt(at)
+    if (char !== CHAR_SPACE && char !== CHAR_TAB && char !== CHAR_LF && char !== CHAR_CR)
+      break
+    at++
+  }
+  return at
+}
+
+/** 从开头的引号走到收尾引号之后。 */
+function skipJsonString(text: string, at: number): number {
+  for (let index = at + 1; index < text.length; index++) {
+    const char = text.charCodeAt(index)
+    if (char === CHAR_BACKSLASH)
+      index++
+    else if (char === CHAR_QUOTE)
+      return index + 1
+  }
+  return text.length
+}
+
+/** 从值的第一个字符走到值之后：字符串、对象与数组按括号配对（跳过字符串里的括号），数字与字面量走到分隔处。 */
+function skipJsonValue(text: string, at: number): number {
+  const char = text.charCodeAt(at)
+  if (char === CHAR_QUOTE)
+    return skipJsonString(text, at)
+  if (char === CHAR_BRACE_OPEN || char === CHAR_BRACKET_OPEN) {
+    let depth = 0
+    for (let index = at; index < text.length; index++) {
+      const next = text.charCodeAt(index)
+      if (next === CHAR_QUOTE) {
+        index = skipJsonString(text, index) - 1
+      }
+      else if (next === CHAR_BRACE_OPEN || next === CHAR_BRACKET_OPEN) {
+        depth++
+      }
+      else if (next === CHAR_BRACE_CLOSE || next === CHAR_BRACKET_CLOSE) {
+        depth--
+        if (depth === 0)
+          return index + 1
+      }
+    }
+    return text.length
+  }
+  let index = at
+  while (index < text.length) {
+    const next = text.charCodeAt(index)
+    if (next === CHAR_COMMA || next === CHAR_BRACE_CLOSE || next === CHAR_BRACKET_CLOSE || next === CHAR_SPACE || next === CHAR_TAB || next === CHAR_LF || next === CHAR_CR)
+      break
+    index++
+  }
+  return index
+}
+
+/** at 处是对象时，键为 key 的成员的值从哪里起；重复的键取最后一个。 */
+function jsonMemberStart(text: string, at: number, key: string): number | undefined {
+  if (text.charCodeAt(at) !== CHAR_BRACE_OPEN)
+    return undefined
+  let found: number | undefined
+  let index = skipJsonSpace(text, at + 1)
+  while (text.charCodeAt(index) === CHAR_QUOTE) {
+    const keyEnd = skipJsonString(text, index)
+    const name = JSON.parse(text.slice(index, keyEnd)) as string
+    const valueStart = skipJsonSpace(text, skipJsonSpace(text, keyEnd) + 1)
+    if (name === key)
+      found = valueStart
+    index = skipJsonSpace(text, skipJsonValue(text, valueStart))
+    if (text.charCodeAt(index) !== CHAR_COMMA)
+      break
+    index = skipJsonSpace(text, index + 1)
+  }
+  return found
+}
+
+/** at 处是数组时，第 position 项从哪里起。 */
+function jsonItemStart(text: string, at: number, position: number): number | undefined {
+  if (text.charCodeAt(at) !== CHAR_BRACKET_OPEN)
+    return undefined
+  let index = skipJsonSpace(text, at + 1)
+  for (let item = 0; text.charCodeAt(index) !== CHAR_BRACKET_CLOSE; item++) {
+    if (item === position)
+      return index
+    index = skipJsonSpace(text, skipJsonValue(text, index))
+    if (text.charCodeAt(index) !== CHAR_COMMA)
+      return undefined
+    index = skipJsonSpace(text, index + 1)
+  }
+  return undefined
 }

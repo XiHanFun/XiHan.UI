@@ -170,6 +170,25 @@ const translations: DesignerShellLocaleTranslations = {
     aboutUi: 'XiHan.UI',
     aboutLicense: '라이선스',
   },
+  'xh-designer-json-editor': {
+    title: 'JSON 편집',
+    input: '템플릿 JSON',
+    parseError: (line, column, reason) => `${line}행 ${column}열: ${reason}`,
+    parseErrors: {
+      'unexpected-end': '텍스트가 너무 일찍 끝났습니다',
+      'unexpected-token': '예상하지 못한 문자입니다',
+      'invalid-string': '문자열이 올바르지 않습니다',
+      'invalid-number': '숫자가 올바르지 않습니다',
+    },
+    goToError: '오류 위치로 이동',
+    issues: '이 JSON의 문제',
+    format: '서식 정리',
+    copy: '복사',
+    copied: '복사했습니다',
+    copyFailed: '복사하지 못했습니다',
+    apply: '적용',
+    cancel: '취소',
+  },
   'xh-designer-tour': {
     prev: '이전',
     next: '다음',
@@ -233,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     settings: '설정',
     help: '도움말',
     importFields: '필드 가져오기',
+    editJson: 'JSON 편집',
   },
   'xh-designer-field-import': {
     title: '필드 가져오기',

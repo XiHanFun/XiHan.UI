@@ -68,7 +68,9 @@ export { createHistoryPanel } from './history/history-panel'
 export type { DesignerHistoryAdapter, DesignerHistoryPanelOptions } from './history/history-panel'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
-export { DESIGNER_COMMANDS_EN_US, DESIGNER_FIELD_IMPORT_EN_US, DESIGNER_HISTORY_EN_US, DESIGNER_TOUR_EN_US } from './locale/en-US'
+export { XhDesignerJsonEditorElement } from './json-editor/json-editor-element'
+export type { DesignerJsonEditorEventMap, DesignerJsonValidator } from './json-editor/json-editor-element'
+export { DESIGNER_COMMANDS_EN_US, DESIGNER_FIELD_IMPORT_EN_US, DESIGNER_HISTORY_EN_US, DESIGNER_JSON_EDITOR_EN_US, DESIGNER_TOUR_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerOutlineElement } from './outline/outline-element'
@@ -161,6 +163,7 @@ export type {
   DesignerFrameTranslations,
   DesignerHistoryTranslations,
   DesignerIssuesTranslations,
+  DesignerJsonEditorTranslations,
   DesignerOutlineTranslations,
   DesignerPaletteTranslations,
   DesignerPropertiesTranslations,

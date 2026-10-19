@@ -20,6 +20,6 @@ describe('设计器零件的布尔 attribute 三态', () => {
     const native = classes.flatMap(ctor => [...ctor.elementProperties].filter(([, options]) => options.type === Boolean).map(([name]) => `${ctor.name}.${name}`))
     expect(native).toEqual([])
     const shared = classes.flatMap(ctor => [...ctor.elementProperties].filter(([, options]) => options.converter === BOOLEAN_CONVERTER).map(([name]) => `${ctor.name}.${name}`))
-    expect(shared).toHaveLength(21)
+    expect(shared).toHaveLength(23)
   })
 })

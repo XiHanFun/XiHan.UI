@@ -8,7 +8,7 @@
 @layer xihan.components {
   /* —— 宿主收起：零件宿主自带 display，hidden 要另写一条才收得起来 —— */
 
-  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings, xh-designer-tour, xh-designer-field-import)[hidden] {
+  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings, xh-designer-tour, xh-designer-field-import, xh-designer-json-editor)[hidden] {
     display: none;
   }
 
@@ -680,6 +680,75 @@
   }
 
   [data-scope='designer-field-import'][data-part][hidden] {
+    display: none;
+  }
+
+  /* —— JSON 编辑框：宿主不占盒，对话框打开时内容搬到浮层根，样式认搬过去的各部件 —— */
+
+  xh-designer-json-editor {
+    display: contents;
+  }
+
+  /* 编辑框铺满对话框宽，等宽字体、不折行、定高，多的行与过长的行都在框里滚 */
+  [data-scope='designer-json-editor'][data-part='input'] {
+    --xh-text-field-control-w: 100%;
+  }
+
+  [data-scope='designer-json-editor'][data-part='input'] > [data-scope='text-field'][data-part='root'] > [data-scope='text-field'][data-part='control'] > textarea {
+    block-size: var(--xh-viewport-h-lg);
+    font-family: var(--xh-font-family-mono);
+    white-space: pre;
+  }
+
+  @media not all and (min-width: 768px) {
+    [data-scope='designer-json-editor'][data-part='input'] > [data-scope='text-field'][data-part='root'] > [data-scope='text-field'][data-part='control'] > textarea {
+      block-size: var(--xh-viewport-h-md);
+    }
+  }
+
+  /* 解析失败的说明，后面跟「转到出错处」 */
+  [data-scope='designer-json-editor'][data-part='error'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--xh-space-2);
+    align-items: center;
+    margin-block-start: var(--xh-space-2);
+    color: var(--xh-fg-danger);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  /* 问题列表限高，多了在这里滚 */
+  [data-scope='designer-json-editor'][data-part='issues'] {
+    max-block-size: var(--xh-viewport-h-sm);
+    margin-block-start: var(--xh-space-3);
+    overflow: auto;
+  }
+
+  /* 底边：格式化、复制与复制结果靠行首，取消与应用靠行尾；一行放不下时取消与应用整组换到下一行 */
+  [data-scope='designer-json-editor'][data-part='actions'] {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: var(--xh-space-2);
+    align-items: center;
+  }
+
+  :is([data-scope='designer-json-editor'][data-part='tools'], [data-scope='designer-json-editor'][data-part='confirm']) {
+    display: flex;
+    gap: var(--xh-space-2);
+    align-items: center;
+  }
+
+  [data-scope='designer-json-editor'][data-part='confirm'] {
+    margin-inline-start: auto;
+  }
+
+  [data-scope='designer-json-editor'][data-part='status'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='designer-json-editor'][data-part][hidden] {
     display: none;
   }
 

@@ -2,7 +2,7 @@
   "name": "@xihan-ui/designer-shell",
   "type": "module",
   "version": "4.2.0",
-  "description": "XiHan.UI designer shell — Web Components parts shared by visual designers: property panel, rulers and guides, transform overlay, palette drag and drop, page structure, history, issue list, minimap, frame, settings dialog, field import dialog and guided tour.",
+  "description": "XiHan.UI designer shell — Web Components parts shared by visual designers: property panel, rulers and guides, transform overlay, palette drag and drop, page structure, history, issue list, minimap, frame, settings dialog, field import dialog, JSON editor and guided tour.",
   "author": {
     "name": "XiHanFun",
     "url": "https://github.com/XiHanFun"

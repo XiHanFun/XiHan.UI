@@ -241,6 +241,7 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   settings: 'Settings',
   help: 'Help',
   importFields: 'Import fields',
+  editJson: 'Edit JSON',
 }
 
 export const DESIGNER_FIELD_IMPORT_EN_US: DesignerShellLocaleTranslations['xh-designer-field-import'] = {
@@ -296,6 +297,26 @@ export const DESIGNER_FIELD_IMPORT_EN_US: DesignerShellLocaleTranslations['xh-de
   import: 'Import',
 }
 
+export const DESIGNER_JSON_EDITOR_EN_US: DesignerShellLocaleTranslations['xh-designer-json-editor'] = {
+  title: 'Edit JSON',
+  input: 'Template JSON',
+  parseError: (line, column, reason) => `Line ${line}, column ${column}: ${reason}`,
+  parseErrors: {
+    'unexpected-end': 'the text ends too early',
+    'unexpected-token': 'unexpected character',
+    'invalid-string': 'invalid string',
+    'invalid-number': 'invalid number',
+  },
+  goToError: 'Go to error',
+  issues: 'Problems in this JSON',
+  format: 'Format',
+  copy: 'Copy',
+  copied: 'Copied',
+  copyFailed: 'Couldn’t copy',
+  apply: 'Apply',
+  cancel: 'Cancel',
+}
+
 const translations: DesignerShellLocaleTranslations = {
   'xh-designer-properties': DESIGNER_PROPERTIES_EN_US,
   'xh-designer-issues': DESIGNER_ISSUES_EN_US,
@@ -307,6 +328,7 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-commands': DESIGNER_COMMANDS_EN_US,
   'xh-designer-settings': DESIGNER_SETTINGS_EN_US,
   'xh-designer-field-import': DESIGNER_FIELD_IMPORT_EN_US,
+  'xh-designer-json-editor': DESIGNER_JSON_EDITOR_EN_US,
   'xh-designer-tour': DESIGNER_TOUR_EN_US,
   'xh-designer-transform': {
     measure: 'Size',
