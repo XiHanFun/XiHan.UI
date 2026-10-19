@@ -136,4 +136,21 @@ describe('页面结构 <xh-designer-outline>', () => {
     expect(box.left).toBeGreaterThanOrEqual(bounds.left - 0.5)
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth)
   })
+
+  it('展开的分支箭头朝下、收起的指向行尾：箭头只转一次', async () => {
+    const outline = await mount()
+    const grid = row(outline, 'grid')
+    expect(arrowAngle(grid)).toBe(90)
+    await userEvent.click(grid.querySelector('[data-scope="tree"][data-part="branch-trigger"]')!)
+    await until(() => arrowAngle(grid) === 0, '箭头转回行尾')
+  })
 })
+
+/** 分支箭头实际转了多少度：展开箭头与它里面各节点的旋转角加起来。 */
+function arrowAngle(control: Element): number {
+  const trigger = control.querySelector<HTMLElement>('[data-scope="tree"][data-part="branch-trigger"]')!
+  return [trigger, ...trigger.querySelectorAll<HTMLElement>('*')].reduce((sum, element) => {
+    const value = getComputedStyle(element).rotate
+    return sum + (value === 'none' ? 0 : Number.parseFloat(value))
+  }, 0)
+}

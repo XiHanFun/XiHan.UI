@@ -349,7 +349,7 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
     }
     return createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch', 'value': node.id }, [
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'branch-control', 'data-id': node.id }, [
-        createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-trigger' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-indicator' })]),
+        createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-trigger' }),
         ...this.#icon(node),
         createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-text' }, [node.label]),
         ...(node.description === undefined ? [] : [createAuthoredElement(doc, 'span', { 'data-xh-part': 'branch-description' }, [node.description])]),
