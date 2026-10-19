@@ -26,7 +26,9 @@ export { floatingPanelMeta } from './floating-panel.meta'
 export type {
   FloatingPanelApi,
   FloatingPanelDimensionsChangeDetails,
+  FloatingPanelDragEndDetails,
   FloatingPanelDragSession,
+  FloatingPanelDragStartDetails,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPoint,
   FloatingPanelPosition,

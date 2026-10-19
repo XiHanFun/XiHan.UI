@@ -61,6 +61,8 @@ export const XhFloatingPanelRoot = defineComponent({
     'update:dimensions': (_dimensions: PayloadOf<FloatingPanelProps, 'onDimensionsChange'>['dimensions']) => true,
     'window-state-change': (_details: PayloadOf<FloatingPanelProps, 'onWindowStateChange'>) => true,
     'update:windowState': (_windowState: PayloadOf<FloatingPanelProps, 'onWindowStateChange'>['windowState']) => true,
+    'drag-start': (_details: PayloadOf<FloatingPanelProps, 'onDragStart'>) => true,
+    'drag-end': (_details: PayloadOf<FloatingPanelProps, 'onDragEnd'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: FloatingPanelRootSlotProps) => VNode[]
@@ -83,6 +85,8 @@ export const XhFloatingPanelRoot = defineComponent({
         emit('window-state-change', details)
         emit('update:windowState', details.windowState)
       },
+      onDragStart: details => emit('drag-start', details),
+      onDragEnd: details => emit('drag-end', details),
     })
     provideFloatingPanel(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

@@ -34,10 +34,10 @@ export interface FloatingPanelContext {
   presence: TitleDescriptionPresence
 }
 
-/** 回调打包为一个对象：该组件有四路对外通知，逐个作为形参排列不便阅读。 */
+/** 回调打包为一个对象：该组件有六路对外通知，逐个作为形参排列不便阅读。 */
 export type FloatingPanelNotifiers = Pick<
   FloatingPanelSchema['props'],
-  'onOpenChange' | 'onPositionChange' | 'onDimensionsChange' | 'onWindowStateChange'
+  'onOpenChange' | 'onPositionChange' | 'onDimensionsChange' | 'onWindowStateChange' | 'onDragStart' | 'onDragEnd'
 >
 
 export function useFloatingPanel(

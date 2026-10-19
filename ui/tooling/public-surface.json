@@ -7161,7 +7161,9 @@
       "FloatButtonTranslations",
       "FloatingPanelApi",
       "FloatingPanelDimensionsChangeDetails",
+      "FloatingPanelDragEndDetails",
       "FloatingPanelDragSession",
+      "FloatingPanelDragStartDetails",
       "FloatingPanelOpenChangeDetails",
       "FloatingPanelPoint",
       "FloatingPanelPosition",
@@ -13904,6 +13906,8 @@
       "maxSize",
       "minSize",
       "onDimensionsChange",
+      "onDragEnd",
+      "onDragStart",
       "onOpenChange",
       "onPositionChange",
       "onWindowStateChange",
@@ -22600,6 +22604,8 @@
       ],
       "events": [
         "dimensions-change",
+        "drag-end",
+        "drag-start",
         "open-change",
         "position-change",
         "window-state-change"

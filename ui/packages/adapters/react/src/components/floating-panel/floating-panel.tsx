@@ -33,7 +33,7 @@ export interface FloatingPanelRootSlotProps extends Pick<
   | 'setOpen' | 'setPosition' | 'setDimensions' | 'setWindowState'
 > {}
 
-export interface XhFloatingPanelRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+export interface XhFloatingPanelRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'onDragStart' | 'onDragEnd'> {
   open?: boolean
   defaultOpen?: boolean
   position?: FloatingPanelPosition
@@ -52,6 +52,8 @@ export interface XhFloatingPanelRootProps extends Omit<ComponentPropsWithRef<'di
   onPositionChange?: FloatingPanelProps['onPositionChange']
   onDimensionsChange?: FloatingPanelProps['onDimensionsChange']
   onWindowStateChange?: FloatingPanelProps['onWindowStateChange']
+  onDragStart?: FloatingPanelProps['onDragStart']
+  onDragEnd?: FloatingPanelProps['onDragEnd']
   children?: SlotChildren<FloatingPanelRootSlotProps>
 }
 
@@ -74,6 +76,8 @@ export function XhFloatingPanelRoot({
   onPositionChange,
   onDimensionsChange,
   onWindowStateChange,
+  onDragStart,
+  onDragEnd,
   children,
   ...rest
 }: XhFloatingPanelRootProps): ReactNode {
@@ -96,6 +100,8 @@ export function XhFloatingPanelRoot({
     onPositionChange,
     onDimensionsChange,
     onWindowStateChange,
+    onDragStart,
+    onDragEnd,
   }) as FloatingPanelProps)
   const api = ctx.api
   return (
@@ -125,6 +131,8 @@ XhFloatingPanelRoot.xhEvents = [
   'position-change',
   'dimensions-change',
   'window-state-change',
+  'drag-start',
+  'drag-end',
 ] as const
 
 export interface XhFloatingPanelTriggerProps extends ComponentPropsWithRef<'button'> {}
