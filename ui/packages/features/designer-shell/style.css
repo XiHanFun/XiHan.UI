@@ -2040,8 +2040,8 @@
     user-select: none;
   }
 
-  /* 收成标题条：只剩面板头，不随所在栏伸长 */
-  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-minimized] {
+  /* 收成标题条：只剩面板头，不随所在栏伸长；放在分隔条的面板里时高度由面板钉住，宽度照旧占满 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='stack'] > [data-scope='designer-frame'][data-part='region'][data-minimized] {
     flex: none;
   }
 

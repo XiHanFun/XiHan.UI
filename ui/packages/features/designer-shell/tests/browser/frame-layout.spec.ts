@@ -321,6 +321,61 @@ describe('<xh-designer-frame> 小窗与面板菜单（Chromium）', () => {
   })
 })
 
+/** 画布区此刻的宽高（取整）。 */
+function canvasSize(): [number, number] {
+  const box = region('canvas').getBoundingClientRect()
+  return [Math.round(box.width), Math.round(box.height)]
+}
+
+describe('<xh-designer-frame> 方法改布局之后（Chromium）', () => {
+  const changes: [string, () => void][] = [
+    ['换栏', () => frame.movePanel('palette', 'end')],
+    ['收起', () => frame.setPanelMinimized('properties', true)],
+    ['全部隐藏', () => frame.toggleAllPanels()],
+    ['还原显隐', () => frame.restorePanels()],
+    ['恢复默认', () => frame.resetLayout()],
+  ]
+
+  it('同一栏还有别的面板时，收成标题条的那块仍占满栏宽', async () => {
+    frame.setPanelMinimized('palette', true)
+    await settle()
+    const palette = region('palette').getBoundingClientRect()
+    const outline = region('outline').getBoundingClientRect()
+    expect([Math.round(palette.left), Math.round(palette.width)]).toEqual([Math.round(outline.left), Math.round(outline.width)])
+  })
+
+  it('换栏、收起、全部显隐、还原与恢复默认之后，焦点仍在原来持有它的元素上：画布里的与挪走的面板里的都是', async () => {
+    const inCanvas = document.createElement('button')
+    inCanvas.textContent = '画布'
+    region('canvas').querySelector(':scope > div:not([data-scope])')!.append(inCanvas)
+    const inPalette = document.createElement('button')
+    inPalette.textContent = '物料'
+    frame.querySelector('[slot="palette"]')!.append(inPalette)
+    await settle()
+    for (const [label, change] of changes) {
+      inCanvas.focus()
+      change()
+      await settle()
+      expect([label, document.activeElement]).toEqual([label, inCanvas])
+    }
+    inPalette.focus()
+    frame.movePanel('palette', 'end')
+    await settle()
+    expect(document.activeElement).toBe(inPalette)
+  })
+
+  it('layout-change 之后排下的更新里量到的画布就是排好以后的大小，不是新分隔条接线前的半成品', async () => {
+    const measured: [number, number][] = []
+    frame.addEventListener('layout-change', () => queueMicrotask(() => void measured.push(canvasSize())))
+    for (const [label, change] of changes) {
+      measured.length = 0
+      change()
+      await settle()
+      expect([label, measured]).toEqual([label, [canvasSize()]])
+    }
+  })
+})
+
 describe('<xh-designer-frame> 面板头的操作区（Chromium）', () => {
   it('左栏窄时标题至少留四个字宽，操作区放不下的钮收进面板头的「更多」菜单、排在最前，命令条自己的「更多」不出现；选了就执行', async () => {
     const ran: string[] = []

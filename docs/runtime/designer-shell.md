@@ -651,7 +651,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 事件 | detail |
 | --- | --- |
-| `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；拖小窗的标题栏挪动在松手时派发，用键盘挪动与改尺停 300 毫秒后派发 |
+| `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；拖小窗的标题栏挪动在松手时派发，用键盘挪动与改尺停 300 毫秒后派发。调方法改布局时先按新布局排好再派发：新的分隔条在随后的微任务里接好线，在这个事件里排下的更新量到的就是排好以后的大小。重排前后焦点留在原来持有它的元素上 |
 
 命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
 
@@ -744,7 +744,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边依次是操作区、帮助钮、收起钮、「更多」钮与关闭钮。标题至少留四个字宽（`--xh-designer-frame-title-min`），窄了先让操作区：面板头命令条放不下的钮收进「更多」菜单，排在布局条目的前面，点了照点钮那样执行。
 - 操作区放 `slot="<区名>-actions"` 的作者内容，没有内容时收起。扩展的面板给 `headerCommands` 时，面板宿主在这里铺一小条命令，见下文「扩展的面板与命令」。
 - `help` 给了才出帮助钮，悬停或聚焦时用 `<xh-tooltip>` 弹出这段说明，按钮的名字取文案 `panelHelp`。
-- 收起钮把面板收成标题条：只剩面板头，留在原位，同一栏的其余面板分剩下的高度；一栏全收起时几条面板头贴着栏顶，下栏全收起时下栏只剩面板头那么高。再点展开。双击面板头也是收起与展开。名字取文案 `minimizePanel` / `expandPanel`，带 `aria-expanded`。
+- 收起钮把面板收成标题条：只剩面板头，留在原位、照旧占满这一栏的宽度，同一栏的其余面板分剩下的高度；一栏全收起时几条面板头贴着栏顶，下栏全收起时下栏只剩面板头那么高。再点展开。双击面板头也是收起与展开。名字取文案 `minimizePanel` / `expandPanel`，带 `aria-expanded`。
 - 「更多」钮打开一张 `<xh-menu>`，按此刻的布局列出能做的事：移到左栏、右栏、下栏，上移、下移，浮出或停靠，收成标题条或展开，隐藏。键盘与读屏挪面板靠它。从右往左写时左右两栏对调叫法。选了一项菜单就收起，焦点回到这块面板的「更多」钮（面板挪到别的栏也一样）；窄屏抽屉里的菜单先收起，再动布局。
 - 关闭钮隐藏这块面板，名字取文案 `closePanel`。
 - 卡片是 `role="region"`，以标题为名。区后来加了或去掉标题，外框连同已经搬进去的内容一起换成新的结构。
