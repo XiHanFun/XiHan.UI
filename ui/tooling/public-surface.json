@@ -208,6 +208,7 @@
     ],
     "@xihan-ui/core": [
       ".",
+      "./clipboard",
       "./color",
       "./date",
       "./hotkey",
@@ -5745,6 +5746,7 @@
       "CascadeStrategy",
       "CellParams",
       "Cleanup",
+      "ClipboardWindowSource",
       "CodeToken",
       "CodeTokenKind",
       "ColorFormat",
@@ -6318,6 +6320,7 @@
       "wallClockParts",
       "warn",
       "weeksInMonth",
+      "writeToClipboard",
       "xihanUiBanner"
     ],
     "@xihan-ui/expression": [

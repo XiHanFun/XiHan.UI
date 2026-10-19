@@ -129,7 +129,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./clipboard`（往系统剪贴板写文本，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） |
 | `@xihan-ui/designer-kit` | `./field-inference`（从 JSON 样例与 JSON Schema 推断字段树、合并字段） `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
 | `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./style.css`（零件的样式） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |

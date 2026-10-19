@@ -36,6 +36,12 @@
     "limit": "0.4 kB"
   },
   {
+    "name": "core/clipboard",
+    "path": "packages/engine/core/dist/clipboard.js",
+    "gzip": true,
+    "limit": "0.3 kB"
+  },
+  {
     "name": "core/template",
     "path": "packages/engine/core/dist/template.js",
     "gzip": true,

@@ -7,7 +7,8 @@
 
 import type { ClipboardSchema } from './clipboard.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
-import { resolveClipboardTimeout, writeToClipboard } from '../shared/clipboard-write'
+import { writeToClipboard } from '@xihan-ui/core/clipboard'
+import { resolveClipboardTimeout } from '../shared/clipboard-write'
 
 const { createMachine } = setup<ClipboardSchema>()
 
