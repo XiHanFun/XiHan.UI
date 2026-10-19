@@ -375,8 +375,10 @@ describe('<xh-designer-frame>', () => {
 })
 
 describe('<xh-designer-frame> 面板头与布局', () => {
+  /** 这块面板的「更多」菜单：宿主放在外框的 menus 里，锚在面板头的「更多」钮上。 */
   function menuOf(name: string): HTMLElement & { collection?: { value: string, label: string }[], open?: boolean } {
-    return region(name)!.querySelector('xh-menu')!
+    const trigger = region(name)!.querySelector('[data-part="panel-menu-trigger"]')
+    return Array.from(frame.querySelectorAll<HTMLElement & { anchor?: Element | null }>('[data-part="menus"] > xh-menu')).find(menu => menu.anchor === trigger)!
   }
 
   async function openMenu(name: string): Promise<string[]> {

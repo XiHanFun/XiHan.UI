@@ -17,7 +17,7 @@ import type { XhDrawerElement, XhFloatingPanelElement, XhMenuElement, XhSplitter
 import type { DesignerFrameTranslations } from '../translations'
 import type { DesignerLayout, DesignerLayoutDock, DesignerLayoutPolicy, DesignerLayoutRect, ResolvedDesignerLayout } from './layout'
 import type { DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
-import { announce as announceToPage } from '@xihan-ui/core'
+import { announce as announceToPage, getLayerRegistry } from '@xihan-ui/core'
 import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { registerDropTarget, startDrag } from '../drag/drag'
 import { adoptSlots } from '../internal/slots'
@@ -76,6 +76,8 @@ interface FrameDrawer {
 /** 一块浮出的面板：小窗与它的各部件。 */
 interface FrameFloat {
   readonly element: XhFloatingPanelElement
+  /** 小窗的标题栏：浮出时面板的帮助钮也放在这里。 */
+  readonly header: HTMLElement
   readonly title: HTMLElement
   readonly icon: HTMLElement & { icon?: IconRecord }
   readonly body: HTMLElement
@@ -188,6 +190,9 @@ const COLLAPSED_SIZE = 0.01
 /** 浮出的小窗缺省大小（像素），不超过外框的八成。 */
 const FLOAT_WIDTH = 320
 const FLOAT_HEIGHT = 360
+/** 浮出时缺省大小的下限：停靠时卡片很小也要看得到内容。 */
+const FLOAT_MIN_WIDTH = 280
+const FLOAT_MIN_HEIGHT = 240
 /** 小窗用键盘挪动、改尺之后多久派发一次 layout-change（毫秒）；拖标题栏挪的松手即派发。 */
 const FLOAT_SETTLE = 300
 /** 小窗的改尺把手。 */
@@ -233,6 +238,8 @@ interface Parts {
   readonly drop: HTMLElement
   readonly dropLine: HTMLElement
   readonly floats: HTMLElement
+  /** 面板「更多」菜单的宿主：不放在面板里，面板换栏、浮出时菜单不随着搬动。 */
+  readonly menus: HTMLElement
 }
 
 /** 一个区的容器与它生成的部件。 */
@@ -344,6 +351,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #parts: Parts | undefined
   readonly #regions = new Map<string, RegionParts>()
   readonly #floats = new Map<string, FrameFloat>()
+  /** 各面板「更多」菜单的宿主，第一次点开时建。 */
+  readonly #menus = new Map<string, XhMenuElement>()
   #releaseSlots: (() => void) | undefined
   #slotsKey = ''
   #layoutKey = ''
@@ -561,6 +570,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       if (!drawer)
         continue
       const regions = plan.docks[position]
+      // 开着的那侧没有面板了（最后一块被隐藏或挪走）就算收起
+      if (this.#drawer === position && regions.length === 0)
+        this.#drawer = undefined
       const open = this.#narrow && this.#drawer === position && regions.length > 0
       if (drawer.element.open !== open)
         drawer.element.open = open
@@ -657,8 +669,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       dropLine,
     ])
     const floats = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'floats' })
-    this.append(header, top, body, status, probeBox, drop, floats)
-    this.#parts = { header, top, body, status, probes, drop, dropLine, floats }
+    const menus = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'menus' })
+    this.append(header, top, body, status, probeBox, drop, floats, menus)
+    this.#parts = { header, top, body, status, probes, drop, dropLine, floats, menus }
     return this.#parts
   }
 
@@ -692,6 +705,12 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #nextId(part: string): string {
     this.#ids += 1
     return `xh-designer-frame-${part}-${this.#ids}`
+  }
+
+  /** 撤掉一块面板的「更多」菜单（面板撤掉或重建时）。 */
+  #removeMenu(name: string): void {
+    this.#menus.get(name)?.remove()
+    this.#menus.delete(name)
   }
 
   /** 区的种类：能停靠的面板不论停在哪一栏都是同一种，换栏不重建。 */
@@ -744,13 +763,32 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         if (event.target !== host)
           return
         event.stopPropagation()
-        menuTrigger.setAttribute('aria-expanded', String((event as CustomEvent<{ open: boolean }>).detail.open))
+        // 受控：照菜单要的开合写回；aria-expanded 由菜单在展开期间写在锚点上，收起时还原
+        host.open = (event as CustomEvent<{ open: boolean }>).detail.open
       })
       host.addEventListener('select', (event) => {
         event.stopPropagation()
-        this.#runMenuAction(region.name, (event as CustomEvent<{ value: string }>).detail.value)
+        const value = (event as CustomEvent<{ value: string }>).detail.value
+        // 窄屏时菜单开在抽屉那一层里：等菜单这一层释放了再动布局（隐藏最后一块面板会收起抽屉），焦点交回「更多」钮
+        const layer = this.#narrow ? getLayerRegistry(this.ownerDocument).list().find(item => item.branches().includes(menuTrigger)) : undefined
+        if (layer === undefined) {
+          this.#runMenuAction(region.name, value)
+          return
+        }
+        const registry = getLayerRegistry(this.ownerDocument)
+        const off = registry.subscribe((layers) => {
+          if (layers.includes(layer))
+            return
+          off()
+          queueMicrotask(() => {
+            this.#runMenuAction(region.name, value)
+            if (menuTrigger.isConnected)
+              menuTrigger.focus()
+          })
+        })
       })
-      menuTrigger.after(host)
+      this.#parts!.menus.append(host)
+      this.#menus.set(region.name, host)
       menu = host
       return host
     }
@@ -822,6 +860,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
             orphans.push(...Array.from(node.children))
         }
         existing.element.replaceWith(next.element)
+        this.#removeMenu(region.name)
       }
       this.#regions.set(region.name, next)
     }
@@ -835,6 +874,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
           orphans.push(...Array.from(zone.children))
         existing.element.remove()
         this.#regions.delete(name)
+        this.#removeMenu(name)
         this.#floats.get(name)?.element.remove()
         this.#floats.delete(name)
       }
@@ -902,8 +942,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     setAttributes(card.menuTrigger, { 'aria-label': t.panelMenu(title) })
     card.close.hidden = floating || !abilities.closable
     setAttributes(card.close, { 'aria-label': t.closePanel(title) })
-    // 浮出时标题、收起、更多与关闭都在小窗的标题栏上；面板头只剩副标题、操作区与帮助，三样都没有就整条收起
-    card.header.hidden = floating && !region.subtitle && card.actions.hidden && !region.help
+    // 浮出时标题、帮助、收起、更多与关闭都在小窗的标题栏上；面板头只剩副标题与操作区，两样都没有就整条收起
+    card.header.hidden = floating && !region.subtitle && card.actions.hidden
+    if (!floating && card.help.parentElement !== card.header)
+      card.header.insertBefore(card.help, card.minimize)
     const element = this.#regions.get(region.name)!.element
     element.toggleAttribute('data-minimized', minimized && !floating)
     element.toggleAttribute('data-floating', floating)
@@ -1515,10 +1557,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       }
       if (float.element.parentElement !== parts.floats)
         parts.floats.append(float.element)
-      const element = this.#regions.get(region.name)!.element
+      const regionParts = this.#regions.get(region.name)!
+      const element = regionParts.element
       element.setAttribute('data-position', 'float')
       if (element.parentElement !== float.body)
         float.body.append(element)
+      // 帮助钮放进小窗的标题栏，排在停靠钮前面
+      if (regionParts.card && regionParts.card.help.parentElement !== float.header)
+        float.header.insertBefore(regionParts.card.help, float.dock)
     }
     this.#placeFloats()
   }
@@ -1597,7 +1643,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       if (!(event as CustomEvent<{ open: boolean }>).detail.open)
         this.setPanelVisible(name, false)
     })
-    return { element, title, icon, body, dock, minimize, restore, close, drag }
+    return { element, header, title, icon, body, dock, minimize, restore, close, drag }
   }
 
   /** 小窗挪了或改了尺：夹在外框里，记进布局；拖标题栏时等松手，其余停一会儿再派发。 */
@@ -1712,8 +1758,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #defaultFloatRect(name: string): DesignerLayoutRect {
     const box = this.getBoundingClientRect()
     const card = this.#regions.get(name)?.element.getBoundingClientRect()
-    const width = Math.min(card && card.width > 0 ? card.width : FLOAT_WIDTH, box.width > 0 ? box.width * 0.8 : FLOAT_WIDTH)
-    const height = Math.min(card && card.height > 0 ? card.height : FLOAT_HEIGHT, box.height > 0 ? box.height * 0.8 : FLOAT_HEIGHT)
+    const maxWidth = box.width > 0 ? box.width * 0.8 : FLOAT_WIDTH
+    const maxHeight = box.height > 0 ? box.height * 0.8 : FLOAT_HEIGHT
+    const width = Math.min(Math.max(card && card.width > 0 ? card.width : FLOAT_WIDTH, FLOAT_MIN_WIDTH), maxWidth)
+    const height = Math.min(Math.max(card && card.height > 0 ? card.height : FLOAT_HEIGHT, FLOAT_MIN_HEIGHT), maxHeight)
     const body = this.#parts?.body.getBoundingClientRect()
     const x = body && body.width > 0 ? body.left - box.left + (body.width - width) / 2 : 0
     const y = body && body.height > 0 ? body.top - box.top + (body.height - height) / 2 : 0
