@@ -37,6 +37,8 @@ export interface DesignerPropertiesTranslations {
   readonly optionColumns: Readonly<{ value: string, label: string, disabled: string }>
   /** 选项表一格里控件的名字：column 是这一列的列名，row 是第几项（从 1 数）。 */
   readonly optionCell: (column: string, row: number) => string
+  /** 布尔选项值格里显示的文字。 */
+  readonly optionBoolean: Readonly<{ true: string, false: string }>
 }
 
 /** 问题列表的文案。 */

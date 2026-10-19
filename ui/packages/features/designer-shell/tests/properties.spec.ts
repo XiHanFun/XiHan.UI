@@ -926,6 +926,80 @@ describe('<xh-designer-properties> 选项表', () => {
     expect(changes.at(-1)!.value).toEqual([{ value: '1', label: '男士' }, { value: '2', disabled: true }])
   })
 
+  /** 值类型是 valueType 的选项表；value 为 undefined 时对象上没有 options。 */
+  const typed = (valueType: 'number' | 'boolean' | 'date' | 'datetime', value: JsonValue | undefined): DesignerPropertyTarget => ({
+    kind: 'field',
+    id: 'f1',
+    value: { data: value === undefined ? {} : { options: value } },
+    descriptors: [{ path: ['data', 'options'], control: { kind: 'options', valueType }, label: '选项' }],
+  })
+  /** 第 index 行值那一格的控件。 */
+  const valueControl = (panel: Element, index: number, tag: string): HTMLElement & { value?: unknown } =>
+    cell(panel, index, 'value').querySelector<HTMLElement & { value?: unknown }>(tag)!
+
+  it('valueType 为 number 时值格是数字框：写回数值，清空即去掉 value，新增的一项是空对象；问题照样标在值格上', async () => {
+    const panel = await mount((element) => {
+      element.targets = [typed('number', [{ value: 1, label: '一' }, { value: 2.5 }])]
+      element.errors = [{ target: { kind: 'field', id: 'f1' }, path: ['data', 'options', 1, 'value'], message: '选项的值重复' }]
+    })
+    await settle(panel)
+    const first = valueControl(panel, 0, 'xh-number-field')
+    expect([first.value, valueControl(panel, 1, 'xh-number-field').value, first.getAttribute('aria-label')]).toEqual(['1', '2.5', 'Value, option 1'])
+    expect([cell(panel, 1, 'value').invalid, cell(panel, 1, 'value').errorText]).toEqual([true, '选项的值重复'])
+    const changes = record(panel, 'property-change')
+    emit(first, 'value-change', { value: '3', valueAsNumber: 3 })
+    expect(changes.at(-1)!.value).toEqual([{ value: 3, label: '一' }, { value: 2.5 }])
+    emit(valueControl(panel, 1, 'xh-number-field'), 'value-change', { value: '', valueAsNumber: Number.NaN })
+    expect(changes.at(-1)!.value).toEqual([{ value: 3, label: '一' }, {}])
+    emit(first, 'value-change', { value: '-', valueAsNumber: Number.NaN })
+    expect(changes).toHaveLength(2)
+    tableOf(panel).add()
+    expect(changes.at(-1)!.value).toEqual([{ value: 3, label: '一' }, {}, {}])
+  })
+
+  it('valueType 为 boolean 时固定 true、false 两行：值格只读显示「是 / 否」，不能增删换序；改文字或禁用时两项都写、true 在前', async () => {
+    const panel = await mount((element) => {
+      element.targets = [typed('boolean', undefined)]
+    })
+    await settle(panel)
+    const array = tableOf(panel) as FieldArray & { readOnly?: boolean, movable?: boolean }
+    expect([array.items.length, array.readOnly, array.movable]).toEqual([2, true, false])
+    const values = [0, 1].map(index => valueControl(panel, index, 'xh-text-field'))
+    expect(values.map(item => [item.value, item.hasAttribute('read-only')])).toEqual([['Yes', true], ['No', true]])
+    expect(control(panel, 0, 'label').hasAttribute('read-only')).toBe(false)
+    const changes = record(panel, 'property-change')
+    emit(values[0]!, 'value-change', { value: 'x' })
+    expect(changes).toHaveLength(0)
+    emit(control(panel, 1, 'label'), 'value-change', { value: '女' })
+    expect(changes.at(-1)!.value).toEqual([{ value: true }, { value: false, label: '女' }])
+
+    // 取值里先 false 后 true、带着别的项：照样 true 在前，文字与禁用取同一个值的那一项
+    panel.targets = [typed('boolean', [{ value: false, label: '女' }, { value: true, label: '男' }])]
+    await settle(panel)
+    expect([control(panel, 0, 'label').value, control(panel, 1, 'label').value]).toEqual(['男', '女'])
+    emit(control(panel, 0, 'disabled'), 'checked-change', { checked: true })
+    expect(changes.at(-1)!.value).toEqual([{ value: true, label: '男', disabled: true }, { value: false, label: '女' }])
+  })
+
+  it('valueType 为 date / datetime 时值格是日期框（到日 / 到分）：写回 ISO 文字，清空即去掉 value', async () => {
+    const panel = await mount((element) => {
+      element.targets = [typed('date', [{ value: '2026-10-01', label: '国庆' }])]
+    })
+    await settle(panel)
+    const day = valueControl(panel, 0, 'xh-date-field')
+    expect([day.getAttribute('granularity'), day.value]).toEqual(['day', '2026-10-01'])
+    const changes = record(panel, 'property-change')
+    emit(day, 'value-change', { value: '2026-10-02' })
+    expect(changes.at(-1)!.value).toEqual([{ value: '2026-10-02', label: '国庆' }])
+    emit(day, 'value-change', { value: null })
+    expect(changes.at(-1)!.value).toEqual([{ label: '国庆' }])
+
+    panel.targets = [typed('datetime', [{ value: '2026-10-01T08:30' }])]
+    await settle(panel)
+    const minute = valueControl(panel, 0, 'xh-date-field')
+    expect([minute.getAttribute('granularity'), minute.value]).toEqual(['minute', '2026-10-01T08:30'])
+  })
+
   it('只读时格子只读、不派发，多个对象取值不同时没有行', async () => {
     const panel = await mount((element) => {
       element.readonly = true

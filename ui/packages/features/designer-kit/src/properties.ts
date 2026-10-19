@@ -12,6 +12,7 @@ import type { FormatSpec } from '@xihan-ui/expression'
 import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DataField, DataFieldKind } from './data-fields'
 import type { SchemaIssue, SchemaIssueTarget } from './schema'
+import { PlainDate, PlainDateTime } from '@xihan-ui/core/date'
 import { formatJsonPath, getJsonAt, isJsonPathText, isPlainObject, jsonEquals, setJsonAt } from '@xihan-ui/core/json'
 import { findOptionViolation } from '@xihan-ui/core/options'
 import { checkFormatSpec } from '@xihan-ui/expression'
@@ -79,6 +80,8 @@ export type PropertySides = Readonly<Record<PropertySide, number>>
  * - options：选项列表，每项是 { value, label?, disabled?, tone?, description? }（选择类组件的选项形状），
  *   按 @xihan-ui/core/options 的 findOptionViolation 严格检查：不许别的键，同一列表里 value 不重复；value 不能是空串。requireLabel 为 true 时每项都要有不为空的 label；
  *   allowDisabled 为 false 时选项没有禁用这回事：每项不能带 disabled，编辑器也不显示禁用那一列。
+ *   valueType 是 value 的类型（缺省 string）：number 是有限数字，boolean 是 true / false，date 是 ISO 日期（如 2026-10-19），
+ *   datetime 是带时刻的 ISO 日期时间（如 2026-10-19T08:30），都按 core/date 严格解析；编辑器按它换值格的控件，boolean 固定 true、false 两行。
  */
 export type PropertyControl
   = | { readonly kind: 'text', readonly multiline?: boolean, readonly placeholder?: string, readonly secret?: boolean }
@@ -104,10 +107,13 @@ export type PropertyControl
       readonly ids?: boolean
     }
     | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
-    | { readonly kind: 'options', readonly requireLabel?: boolean, readonly allowDisabled?: boolean }
+    | { readonly kind: 'options', readonly requireLabel?: boolean, readonly allowDisabled?: boolean, readonly valueType?: PropertyOptionValueType }
 
 /** 内建编辑方式的种类。 */
 export type PropertyControlKind = PropertyControl['kind']
+
+/** options 里 value 的类型。 */
+export type PropertyOptionValueType = 'string' | 'number' | 'boolean' | 'date' | 'datetime'
 
 /** 显示条件：path 与属性描述的 path 一样相对被编辑的对象，可用 all / any / not 组合。 */
 export type PropertyCondition
@@ -292,33 +298,62 @@ function optionCode(found: OptionViolation, item: Readonly<Record<string, unknow
   }
 }
 
+/** 各值类型收哪些取值：date、datetime 这里只认字符串，写法另查。 */
+const OPTION_VALUE_CHECKS: Readonly<Record<PropertyOptionValueType, (value: unknown) => boolean>> = {
+  string: value => typeof value === 'string',
+  number: value => typeof value === 'number' && Number.isFinite(value),
+  boolean: value => typeof value === 'boolean',
+  date: value => typeof value === 'string',
+  datetime: value => typeof value === 'string',
+}
+
+/** date、datetime 的写法对不对：按 core/date 的 PlainDate / PlainDateTime 严格解析，datetime 还要带时刻。 */
+function isIsoText(type: 'date' | 'datetime', text: string): boolean {
+  if (type === 'datetime' && !/[T ]/i.test(text))
+    return false
+  try {
+    if (type === 'date')
+      PlainDate.from(text)
+    else
+      PlainDateTime.from(text)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
 /** JSON Pointer 的一段换回键名：~1 是 /，~0 是 ~。 */
 function pointerToken(token: string): string {
   return token.replaceAll('~1', '/').replaceAll('~0', '~')
 }
 
 /**
- * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对，不许禁用时带了 disabled，value 是空串，
- * 要求 label 时 label 为空，或 value 与前面的项重复。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
+ * 选项列表里按先后的第一处问题：这一项不是对象，有别的键或某个键的取值不对（value 按 valueType 判类型），
+ * 不许禁用时带了 disabled，value 是空串，date / datetime 的写法不对，要求 label 时 label 为空，或 value 与前面的项重复
+ * （按值相等判，数字按数值）。问题落在这一项的那个键上，这一项不是对象时落在这一项上。
  */
 function optionsIssue(control: Extract<PropertyControl, { kind: 'options' }>, value: JsonValue): PropertyValueIssue | undefined {
   if (!Array.isArray(value))
     return { code: 'invalid-type', path: [] }
   const requireLabel = control.requireLabel === true
-  const seen = new Set<string>()
+  const valueType = control.valueType ?? 'string'
+  const seen = new Set<JsonPrimitive>()
   for (const [index, item] of value.entries()) {
     if (!isPlainObject(item))
       return { code: 'invalid-type', path: [index] }
-    const found = findOptionViolation([item], { strict: true, requireLabel })
+    const found = findOptionViolation([item], { strict: true, requireLabel, isValue: OPTION_VALUE_CHECKS[valueType] })
     if (found !== undefined) {
       const key = found.pointer.split('/')[2]
       return { code: optionCode(found, item), path: key === undefined ? [index] : [index, pointerToken(key)] }
     }
     if (control.allowDisabled === false && Object.hasOwn(item, 'disabled'))
       return { code: 'unknown-key', path: [index, 'disabled'] }
-    const option = item as { readonly value: string, readonly label?: string }
+    const option = item as { readonly value: JsonPrimitive, readonly label?: string }
     if (option.value === '')
       return { code: 'required', path: [index, 'value'] }
+    if ((valueType === 'date' || valueType === 'datetime') && !isIsoText(valueType, option.value as string))
+      return { code: 'invalid-value', path: [index, 'value'] }
     if (requireLabel && option.label === '')
       return { code: 'required', path: [index, 'label'] }
     if (seen.has(option.value))
@@ -344,7 +379,7 @@ export function findPropertyValueIssue(control: PropertyControl, value: JsonValu
  * dataField 不是路径写法报 invalid-value；sides 多出四边以外的键报 unknown-key，缺边或某边不是数字报 invalid-type；
  * format 不是对象报 invalid-type，没过 checkFormatSpec 报 invalid-value；filter 不是对象报 invalid-type，条件树的形状不对报 invalid-value；
  * swatch 不是字符串报 invalid-type，既不是选项也不是允许的自定义颜色报 invalid-option；
- * options 不是数组或某项、某个键的类型不对报 invalid-type，有别的键（allowDisabled 为 false 时含 disabled）报 unknown-key，tone 不是色调名报 invalid-option，
+ * options 不是数组或某项、某个键的类型不对（value 按 valueType 判）报 invalid-type，date / datetime 写法不对报 invalid-value，有别的键（allowDisabled 为 false 时含 disabled）报 unknown-key，tone 不是色调名报 invalid-option，
  * value 为空或缺了要求的 label 报 required，value 重复报 duplicate-value。问题落在值里哪一处用 findPropertyValueIssue。
  */
 export function checkPropertyValue(control: PropertyControl, value: JsonValue): PropertyValueIssueCode | undefined {

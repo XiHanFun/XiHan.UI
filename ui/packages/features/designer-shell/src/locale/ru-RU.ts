@@ -36,6 +36,7 @@ const translations: DesignerShellLocaleTranslations = {
     customColor: 'Свой цвет',
     optionColumns: { value: 'Значение', label: 'Подпись', disabled: 'Отключено' },
     optionCell: (column, row) => `${column}, вариант ${row}`,
+    optionBoolean: { true: 'Да', false: 'Нет' },
   },
   'xh-designer-issues': {
     title: 'Проблемы',

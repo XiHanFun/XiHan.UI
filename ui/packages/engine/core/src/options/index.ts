@@ -49,6 +49,11 @@ export interface OptionViolationOptions {
   readonly requireLabel?: boolean
   /** 严格模式：出现选项没有的键即报 `unknown-key`。缺省 `false`，组件不理会多余的键。 */
   readonly strict?: boolean
+  /**
+   * `value` 收哪些取值：返回 false 报 `invalid-value`。缺省只收字符串（选择类组件吃的形状）；
+   * 设计器里取值是数字、布尔这类选项列表（报表参数的候选项）按自己的值类型给。重复按 `Object.is` 判。
+   */
+  readonly isValue?: (value: unknown) => boolean
 }
 
 const TONES: ReadonlySet<string> = new Set(['brand', 'neutral', 'success', 'warning', 'danger', 'info'] satisfies Tone[])
@@ -76,14 +81,15 @@ export function findOptionViolation(value: unknown, options: OptionViolationOpti
   const tree = options.tree === true
   const maxDepth = options.maxDepth ?? 32
   const allowed = tree ? TREE_KEYS : FLAT_KEYS
-  const everywhere = options.unique === 'tree' ? new Set<string>() : null
+  const everywhere = options.unique === 'tree' ? new Set<unknown>() : null
+  const isValue = options.isValue ?? ((value: unknown): boolean => typeof value === 'string')
 
   function visitList(list: unknown, pointer: string, depth: number): OptionViolation | undefined {
     if (!Array.isArray(list))
       return violation(pointer, 'not-array')
     if (depth > maxDepth)
       return violation(pointer, 'too-deep')
-    const seen = everywhere ?? new Set<string>()
+    const seen = everywhere ?? new Set<unknown>()
     for (let index = 0; index < list.length; index += 1) {
       const at = appendJsonPointer(pointer, index)
       const found = visitItem(list[index], at, depth, seen)
@@ -93,7 +99,7 @@ export function findOptionViolation(value: unknown, options: OptionViolationOpti
     return undefined
   }
 
-  function visitItem(item: unknown, pointer: string, depth: number, seen: Set<string>): OptionViolation | undefined {
+  function visitItem(item: unknown, pointer: string, depth: number, seen: Set<unknown>): OptionViolation | undefined {
     if (!isPlainObject(item))
       return violation(pointer, 'not-object')
     if (options.strict === true) {
@@ -101,7 +107,7 @@ export function findOptionViolation(value: unknown, options: OptionViolationOpti
       if (unknown !== undefined)
         return violation(appendJsonPointer(pointer, unknown), 'unknown-key')
     }
-    if (typeof item.value !== 'string')
+    if (!isValue(item.value))
       return violation(appendJsonPointer(pointer, 'value'), 'invalid-value')
     if (seen.has(item.value))
       return violation(appendJsonPointer(pointer, 'value'), 'duplicate-value')
