@@ -5,6 +5,11 @@
 
 // 零件的文案键：键是零件的标签名，四款共用的命令文案另占一桶 xh-designer-commands；类型补进 UI 的 XhTranslationOverrides。
 
+import type { JsonTextErrorCode } from '@xihan-ui/core/json'
+import type { DataFieldContent } from '@xihan-ui/designer-kit'
+import type { FieldInferenceNoteCode } from '@xihan-ui/designer-kit/field-inference'
+import type { FilterValueType } from '@xihan-ui/viz'
+
 /** 属性面板的文案。 */
 export interface DesignerPropertiesTranslations {
   /** 面板标题。 */
@@ -367,6 +372,70 @@ export interface DesignerCommandsTranslations {
   readonly settings: string
   /** 内置命令：打开帮助。 */
   readonly help: string
+  /** 内置命令：打开导入字段对话框。 */
+  readonly importFields: string
+}
+
+/** 导入字段对话框的文案。 */
+export interface DesignerFieldImportTranslations {
+  /** 对话框标题。 */
+  readonly title: string
+  /** 来源页签条的名字。 */
+  readonly sources: string
+  /** 内置「JSON 样例」页的页签。 */
+  readonly sample: string
+  /** 内置「JSON Schema」页的页签。 */
+  readonly schema: string
+  /** JSON 样例输入框的名字。 */
+  readonly sampleInput: string
+  /** JSON Schema 输入框的名字。 */
+  readonly schemaInput: string
+  /** 读文件的投放区上的文字。 */
+  readonly readFile: string
+  /** 文件读不出来。 */
+  readonly readFileFailed: string
+  /** 解析失败的说明：line、column 从 1 数起，reason 是 parseErrors 里的一句。 */
+  readonly parseError: (line: number, column: number, reason: string) => string
+  /** 解析失败的几种原因，键是 core/json 的 parseJsonText 给的码。 */
+  readonly parseErrors: Readonly<Record<JsonTextErrorCode, string>>
+  /** 预览表的名字。 */
+  readonly preview: string
+  /** 还没有内容时预览处的提示。 */
+  readonly empty: string
+  /** 预览表的列名：字段名、显示名、类型、内容。 */
+  readonly columns: { readonly name: string, readonly label: string, readonly type: string, readonly content: string }
+  /** 对象、列表两种字段在「类型」列里的写法。 */
+  readonly kinds: { readonly object: string, readonly list: string }
+  /** 值字段的数据类型。 */
+  readonly types: Readonly<Record<FilterValueType, string>>
+  /** 值字段的内容种类。 */
+  readonly contents: Readonly<Record<DataFieldContent, string>>
+  /** 一行勾选框的名字，path 是用点连起来的字段路径。 */
+  readonly include: (path: string) => string
+  /** 一行显示名输入框的名字。 */
+  readonly labelOf: (path: string) => string
+  /** 一行类型下拉的名字。 */
+  readonly typeOf: (path: string) => string
+  /** 一行内容下拉的名字。 */
+  readonly contentOf: (path: string) => string
+  /** 推断说明，键是 designer-kit 的说明码；sample-limit 带上每个数组看了几项。 */
+  readonly notes: Readonly<Record<Exclude<FieldInferenceNoteCode, 'sample-limit'>, string>> & { readonly 'sample-limit': (limit: number) => string }
+  /** 一条说明前面写上字段路径。 */
+  readonly noteAt: (path: string, text: string) => string
+  /** 合并时同名字段的种类不同：保留现有的。 */
+  readonly conflict: (path: string) => string
+  /** 合并 / 替换这一组的名字。 */
+  readonly mode: string
+  /** 并进现有字段。 */
+  readonly merge: string
+  /** 换掉现有字段。 */
+  readonly replace: string
+  /** 同时把样例作为示例数据。 */
+  readonly useSample: string
+  /** 取消钮。 */
+  readonly cancel: string
+  /** 导入钮。 */
+  readonly import: string
 }
 
 /** 变换覆盖层的文案。 */
@@ -392,6 +461,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
     'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
+    'xh-designer-field-import'?: Partial<DesignerFieldImportTranslations>
     'xh-designer-transform'?: Partial<DesignerTransformTranslations>
   }
 }

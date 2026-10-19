@@ -1,6 +1,6 @@
 # 设计器零件
 
-`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、问题列表、小地图、外框与设置对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
+`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、问题列表、小地图、外框、设置对话框与导入字段对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
 
 ```ts
 import { defineDesignerShell } from "@xihan-ui/designer-shell";
@@ -934,6 +934,52 @@ dialog.show();
 - `load()`：没给存储键、没存过或读不出时是空对象。
 - `dispose()`：撤掉跟随系统与外层的监听、注册的主题色，根上的 `data-theme`、`data-brand`、`data-contrast` 还原成接手前的样子。
 
+## 导入字段
+
+`<xh-designer-field-import>` 从一份 JSON 样例或一份 JSON Schema 导入字段树。里面是 `<xh-dialog>`：上面一排来源页签，下面是预览表，用户勾选、改显示名与类型后按「导入」。推断用 designer-kit 的 `@xihan-ui/designer-kit/field-inference`，全在本机做，不发请求。对话框不改设计器的字段，派发 `fields-import`，由设计器自己换上。宿主元素不占盒。
+
+```ts
+const dialog = document.createElement("xh-designer-field-import");
+dialog.fields = designer.fields; // 现有字段：不为空时出「合并 / 替换」
+dialog.contents = ["text", "image", "barcode", "qrcode"]; // 给了才有「内容」列
+dialog.inference = { detectImages: true };
+dialog.offerSample = true;
+dialog.addEventListener("fields-import", (event) => {
+  designer.fields = event.detail.fields;
+  if (event.detail.sample !== undefined)
+    designer.sampleData = event.detail.sample;
+});
+dialog.show();
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `sources` | 扩展登记的字段来源（designer-kit 的 `DesignerFieldSource`，见那一页的「字段来源」），按 `order` 排在内置两页之后；id 与内置页重名时抛 `TypeError` |
+| `fields` | 现有字段：不为空时出「合并 / 替换」，合并时预先标出同名而种类不同的字段 |
+| `contents` | 给了才有「内容」列，值字段的内容种类只能在这几种里选；不给时保留推断出的内容 |
+| `inference` | 推断选项，交给 `inferDataFields`；JSON Schema 只用其中的 `rootName` 与 `maxDepth` |
+| `offerSample` | 内容带样例时出「同时作为示例数据」，缺省勾上。attribute 是 `offer-sample` |
+| `open` | 对话框打开。同名 attribute |
+| `source` | 当前显示的页：`sample`、`json-schema`（`DESIGNER_FIELD_IMPORT_SOURCES`）或字段来源的 id；不写或找不到时显示第一页。同名 attribute |
+| `translations` | 元素自己的文案，压在全局配置之上 |
+
+| 方法 | 说明 |
+| --- | --- |
+| `show(source?)` | 打开对话框，给了页 id 就显示那一页 |
+
+| 事件 | 说明 |
+| --- | --- |
+| `fields-import` | `{ fields, mode, source, sample?, annotations }`：用户按了「导入」，对话框随即关上。`fields` 已按勾选、显示名、类型、内容与合并 / 替换算好；`mode` 在现有字段为空时恒为 `replace`；`sample` 只在内容带样例、又勾了「同时作为示例数据」时有；`annotations` 是推断出的注解（说明、必填、候选值等），键是 `formatJsonPath(字段路径)` |
+| `open-change` | `{ open }`：按 Esc、点遮罩、关闭钮、取消或导入时对话框关上，元素已经换成这个状态 |
+
+- 内置两页各有一个多行输入框，下面是读文件的投放区：把 `.json` 文件拖进来或点它选一个，文件在本机读进输入框。输入一变就解析；解析失败时写出第几行第几列与原因（core/json 的 `parseJsonText`），预览表收起，导入钮不可用。
+- 字段来源页切到时才建，切走或对话框关上时中止并销毁，它交来的内容一并清掉；`fail(message)` 给的话写在页下。
+- 预览表一个字段一行，下级按层级缩进：勾选框、字段名、显示名输入框、类型下拉（值字段才有，对象与列表写种类）、内容下拉。去掉一行就连同它的下级一起不导入，下级的控件不可用。内容换了时，路径没变的行保留用户改过的显示名、类型与内容。表下列出推断说明（如「列表里是单个值，导入为没有子字段的列表」）与合并时种类不同的字段。
+- 每次打开都从空白开始。
+- 文案键 `xh-designer-field-import`，英文表 `DESIGNER_FIELD_IMPORT_EN_US`；推断说明按 designer-kit 的说明码各一条。
+
+内置命令 `import-fields` 打开它，见下文「命令」的 `designerShellCommands`。
+
 ## 扩展的面板与命令
 
 设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框。
@@ -979,7 +1025,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用；不排位置，各款放进面板头或菜单）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
@@ -993,7 +1039,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 - 菜单里点了复选条目、菜单仍开着时，按点过之后的上下文重算条目与勾选，不必等设计器下一次 `update`。
 - `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
-四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置与帮助，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
+四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置、帮助与导入字段，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
 
 ```ts
 import { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from "@xihan-ui/designer-shell";

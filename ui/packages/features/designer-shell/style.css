@@ -8,7 +8,7 @@
 @layer xihan.components {
   /* —— 宿主收起：零件宿主自带 display，hidden 要另写一条才收得起来 —— */
 
-  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings)[hidden] {
+  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings, xh-designer-field-import)[hidden] {
     display: none;
   }
 
@@ -458,6 +458,106 @@
 
   /* 上面的部件声明了 display，收起时补回来 */
   [data-scope='designer-settings'][data-part][hidden] {
+    display: none;
+  }
+
+  /* —— 导入字段对话框：宿主不占盒，对话框打开时内容搬到浮层根，样式认搬过去的各部件 —— */
+
+  xh-designer-field-import {
+    display: contents;
+  }
+
+  /* 来源页：输入框在上、读文件的投放区在下，解析失败的说明紧跟其后 */
+  [data-scope='designer-field-import'][data-part='source'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-2);
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-field-import'][data-part='input'] > [data-scope='text-field'][data-part='root'] > [data-scope='text-field'][data-part='control'] > textarea {
+    font-family: var(--xh-font-family-mono);
+  }
+
+  [data-scope='designer-field-import'][data-part='error'] {
+    margin-block-start: var(--xh-space-2);
+    color: var(--xh-fg-danger);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  /* 预览表：四列用 subgrid 对齐，字段名列按层级缩进，显示名列吃余宽；行多了在限高里滚 */
+  [data-scope='designer-field-import'][data-part='preview'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, var(--xh-layout-col-min-xs)) minmax(0, var(--xh-layout-col-min-xs));
+    column-gap: var(--xh-space-3);
+    max-block-size: var(--xh-viewport-h-md);
+    margin-block-start: var(--xh-space-4);
+    overflow: auto;
+    color: var(--xh-fg-default);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  [data-scope='designer-field-import'][data-part='row'] {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-block-size: var(--xh-control-h-md);
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
+  [data-scope='designer-field-import'][data-part='row'][data-head] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='designer-field-import'][data-part='field'] {
+    display: flex;
+    gap: var(--xh-space-2);
+    align-items: center;
+    min-inline-size: 0;
+    padding-inline-start: calc(var(--xh-_designer-field-depth, 0) * var(--xh-space-5));
+  }
+
+  [data-scope='designer-field-import'][data-part='name'] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :is([data-scope='designer-field-import'][data-part='label'], [data-scope='designer-field-import'][data-part='type'], [data-scope='designer-field-import'][data-part='content']) {
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  :is([data-scope='designer-field-import'][data-part='kind'], [data-scope='designer-field-import'][data-part='empty']) {
+    color: var(--xh-fg-muted);
+  }
+
+  [data-scope='designer-field-import'][data-part='empty'] {
+    margin-block-start: var(--xh-space-4);
+    font-size: var(--xh-font-size-sm);
+  }
+
+  /* 推断说明与合并冲突：表下一列短句 */
+  [data-scope='designer-field-import'][data-part='notes'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-1);
+    margin-block-start: var(--xh-space-3);
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='designer-field-import'][data-part='options'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--xh-space-3) var(--xh-space-6);
+    align-items: center;
+    margin-block-start: var(--xh-space-4);
+  }
+
+  [data-scope='designer-field-import'][data-part][hidden] {
     display: none;
   }
 

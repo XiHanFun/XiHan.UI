@@ -7,6 +7,7 @@
 
 import type {
   DesignerCommandsTranslations,
+  DesignerFieldImportTranslations,
   DesignerFrameTranslations,
   DesignerHistoryTranslations,
   DesignerIssuesTranslations,
@@ -29,5 +30,6 @@ export interface DesignerShellLocaleTranslations {
   readonly 'xh-designer-frame': DesignerFrameTranslations
   readonly 'xh-designer-commands': DesignerCommandsTranslations
   readonly 'xh-designer-settings': DesignerSettingsTranslations
+  readonly 'xh-designer-field-import': DesignerFieldImportTranslations
   readonly 'xh-designer-transform': DesignerTransformTranslations
 }

@@ -4,7 +4,7 @@
  */
 
 // designer-shell 内置的命令：开关外框的面板、显示或隐藏所有面板、还原面板显隐、恢复默认布局、打开设置对话框、
-// 打开各款文档站的帮助页，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
+// 打开各款文档站的帮助页、打开导入字段对话框，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
 // 各款把它们并进自己的内置扩展，排在工具栏末组。
 
 import type { IconRecord } from '@xihan-ui/core'
@@ -20,6 +20,7 @@ export const DESIGNER_SHELL_COMMANDS = {
   layoutReset: 'layout-reset',
   settings: 'settings',
   help: 'help',
+  importFields: 'import-fields',
 } as const
 
 /** 一块面板的开关命令的 id：panel:<面板 id>。 */
@@ -43,17 +44,22 @@ export interface DesignerShellCommandsOptions<Ctx> {
   readonly openSettings?: (context: Ctx) => void
   /** 帮助页的地址；给了才有 help 命令，在新窗口打开它。返回 undefined 时这条命令不可用。 */
   readonly helpUrl?: (context: Ctx) => string | undefined
+  /** 打开导入字段对话框；给了才有 import-fields 命令。 */
+  readonly openFieldImport?: (context: Ctx) => void
+  /** 此刻不许导入字段（只读、预览，或宿主管着字段）时返回 true，import-fields 不可用。 */
+  readonly fieldImportDisabled?: (context: Ctx) => boolean
   /** 各命令的图标，键是命令 id。 */
   readonly icons?: Readonly<Partial<Record<keyof typeof DESIGNER_SHELL_COMMANDS, IconRecord>>>
 }
 
 /**
  * 建 designer-shell 的内置命令：给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、layout-reset，
- * 给了 openSettings 有 settings，给了 helpUrl 有 help。panels、settings、help 缺省放在工具栏上，另外三条在 panels 菜单里与快捷键上。
+ * 给了 openSettings 有 settings，给了 helpUrl 有 help，给了 openFieldImport 有 import-fields。panels、settings、help 缺省放在工具栏上，
+ * 另外三条在 panels 菜单里与快捷键上；import-fields 不排位置，各款放进面板头或菜单。
  */
 export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions<Ctx>): DesignerCommand<Ctx>[] {
   const commands: DesignerCommand<Ctx>[] = []
-  const { frame, openSettings, helpUrl, icons } = options
+  const { frame, openSettings, helpUrl, openFieldImport, icons } = options
   if (frame) {
     const usable = (context: Ctx): boolean => (frame(context)?.panelEntries().some(entry => !entry.locked) ?? false)
     commands.push(
@@ -110,6 +116,15 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       ...(icons?.settings ? { icon: icons.settings } : {}),
       placement: ['toolbar'],
       run: openSettings,
+    })
+  }
+  if (openFieldImport) {
+    commands.push({
+      id: DESIGNER_SHELL_COMMANDS.importFields,
+      label: context => options.translations(context).importFields,
+      ...(icons?.importFields ? { icon: icons.importFields } : {}),
+      enabled: context => !(options.fieldImportDisabled?.(context) ?? false),
+      run: openFieldImport,
     })
   }
   if (helpUrl) {
