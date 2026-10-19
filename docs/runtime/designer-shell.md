@@ -826,14 +826,14 @@ dialog.show();
 
 ### 分区与条目
 
-- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，同值按登记顺序。
+- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，900 以后留给内建的「帮助」「快捷键」「关于」，同值按登记顺序。
 - 条目就是 `@xihan-ui/designer-kit` 的属性描述：`path` 只写一段条目 id，`label` 是标签，`default` 是缺省值，说明写在 `meta.description`。
 - 值是扁平的键值：键是 `<分区 id>.<条目 id>`，没写的键取条目的 `default`。
 - 内建编辑方式与属性面板同一套字段；别的种类交给对话框的 `editors`，被编辑的对象是整份设置。
 
 | 函数 | 说明 |
 | --- | --- |
-| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout`、`toolbar` 留给内建 |
+| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout`、`toolbar`、`help`、`shortcuts`、`about` 留给内建 |
 | `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
 | `settingKey(section, item)` | 条目的键 |
 | `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
@@ -880,6 +880,31 @@ dialog.show();
 | `toolbarSettingsSource(defaults, commands, context)` | 交给对话框 `toolbar` 的数据，命令表里没有的跳过 |
 | `toolbarVisibleOf(settings)` | 显示工具栏，只有写了 `false` 才为 `false` |
 
+### 「帮助」「快捷键」「关于」分区
+
+对话框给了 `help`、`shortcuts`、`about` 才有这三页，排在最后（900、910、920）。它们由只显示、不存值的条目组成：没有缺省值，编辑器不写设置，`resolveSettings` 里也不出现。
+
+| 页 | 对话框的属性 | 内容 |
+| --- | --- | --- |
+| 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了派发 `settings-command { command }`，由设计器跑这条命令（开始引导前先关上对话框）。两样都没有时没有这一页 |
+| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys? })` 现算。凡有快捷键的命令一行（名字按此刻的上下文取，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消）。键铺成 `<xh-kbd>`，按平台写 |
+| 关于 | `about: { product, version, license?, rows? }` | 产品、版本、界面库（XiHan.UI，即 `DESIGNER_SHELL_VERSION`）的版本与许可证，后面接 `rows`：扩展的 `about` 字段（附加包的版本与授权）由各款接在这里。各款的版本号也从构建时注入的常量取（如流程的 `FLOW_VERSION`） |
+
+各款与扩展的分区也能用这几种条目：
+
+| `control.kind` | 形状 |
+| --- | --- |
+| `note` | `{ kind: "note", paragraphs }`：几段纯文本 |
+| `action` | `{ kind: "action", command, text }`：一颗钮，点了派发 `settings-command`；宿主锁定这一条时不可用 |
+| `info` | `{ kind: "info", rows }`：名字与值的几行 |
+| `shortcutTable` | `{ kind: "shortcutTable", groups }`：几组 `{ label, rows }`，每行 `{ label, keys }` |
+
+| 函数 | 说明 |
+| --- | --- |
+| `designerHelpSettings(t, help)`、`designerShortcutSettings(t, shortcuts)`、`designerAboutSettings(t, about)` | 三页的分区（`DESIGNER_HELP_SETTINGS`、`DESIGNER_SHORTCUT_SETTINGS`、`DESIGNER_ABOUT_SETTINGS`）；对话框自己生成 |
+| `shortcutSettingsSource(commands, context, options?)` | 交给对话框 `shortcuts` 的快捷键表，规则如上 |
+| `isDesignerDisplayControl(control)` | 这条条目只显示、不存值（`DESIGNER_DISPLAY_CONTROL_KINDS`） |
+
 ### 「布局」分区
 
 对话框给了 `frame`（设计器的外框）且外框里有面板时，「基础」后面多一页「布局」：一张面板表，逐块面板一行，列出显示开关、位置（左栏、右栏、下栏、浮动）、上移下移与收成标题条，表下一颗「恢复默认布局」。它和面板头的「更多」菜单一样，是不靠拖动也能改布局的路。
@@ -897,6 +922,9 @@ dialog.show();
 | `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
 | `general` | 「基础」分区的选项 `{ brands?, customBrand?, languages? }`；`false` 不要这一页。文案随对话框的语言 |
 | `frame` | 设计器的外框（`DesignerSettingsFrame`，外框元素本身即可）；给了且有面板时有「布局」页 |
+| `help` | 「帮助」页：几段操作说明与几颗跑命令的钮，见上文 |
+| `shortcuts` | 「快捷键」页：`shortcutSettingsSource` 现算的快捷键表 |
+| `about` | 「关于」页：产品、版本、许可证与扩展给的几行 |
 | `toolbar` | 「工具栏」页：`{ defaults, commands }`（`toolbarSettingsSource` 现算）给了才有按钮表；不给只有显示方式与显示工具栏两条；`false` 不要这一页 |
 | `settings` | 设置的值 |
 | `policy` | 宿主的管控：键是条目键或分区 id，值 `hidden` 不显示、`locked` 只读并把说明换成文案 `locked` |
@@ -913,6 +941,7 @@ dialog.show();
 | --- | --- |
 | `settings-change` | `{ key, value, settings }`：改了一条，`value` 为 `undefined` 表示删掉这个键、回到缺省值；`settings` 是改过之后的整份值，元素已经换成它 |
 | `open-change` | `{ open }`：按 Esc、点遮罩或关闭钮时对话框要关上，元素已经换成这个状态 |
+| `settings-command` | `{ command }`：点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档），由设计器跑这条命令 |
 
 对话框打开时内容搬到浮层根：主题、主题色等视觉轴经视觉桥跟着设计器根走；标题、字段与对话框自己的文案照它们在设计器里的原位取配置，设计器外面包一层局部 `<xh-config>` 时用的是那一层的语言与文案。
 
@@ -1118,6 +1147,10 @@ const history = config.translations("xh-designer-history", DESIGNER_HISTORY_EN_U
 ### 引导步骤
 
 扩展的 `tourSteps` 是若干引导步骤，形状见上文「新手引导」，`order` 从 200 起，排在各款的步骤之后。用 `collectTourSteps` 把各款自己的步骤与扩展的合起来，按上下文用 `resolveTourSteps` 取好交给 `<xh-designer-tour>`；步骤 id 重名或用了 `shell.` 前缀时抛 `DesignerExtensionError`（名字空间 `tour-step`）。
+
+### 关于
+
+扩展的 `about` 是「关于」页里的几行 `{ label, value }`，如附加包的版本与授权；各款把它们接在自己那几行后面，交给设置对话框的 `about.rows`。
 
 ### 导入来源
 

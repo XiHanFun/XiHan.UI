@@ -12,7 +12,7 @@ import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/defin
 import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, userEvent } from 'vitest/browser'
-import { createDesignerSettingsHost, defineDesignerShell, toolbarSettingsSource } from '../../src'
+import { createDesignerSettingsHost, defineDesignerShell, shortcutSettingsSource, toolbarSettingsSource } from '../../src'
 import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -316,6 +316,52 @@ describe('「工具栏」页的按钮表', () => {
       await mountToolbar()
       expect(records.filter(record => record.code.startsWith('wc.')).map(record => record.code)).toEqual([])
       await expectNoAxeViolations(content())
+    }
+    finally {
+      off()
+      resetDiagnostics()
+    }
+  })
+})
+
+describe('帮助、快捷键与关于', () => {
+  it('三页在真实皮肤下：快捷键铺成 xh-kbd、键名看得见，关于两列不出横向滚动；三页都没有 wc.* 诊断，axe 也没有违规', async () => {
+    const records: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    setDiagnosticsConsoleOutput(false)
+    const off = onDiagnostic(record => void records.push(record))
+    try {
+      const element = await mount()
+      const commands = new Map([
+        ['undo', { id: 'undo', label: '撤销', shortcut: ['Mod', 'Z'], run: () => {} }],
+        ['redo', { id: 'redo', label: '重做', shortcut: ['Mod', 'Shift', 'Z'], alternateShortcuts: [['Ctrl', 'Y']], run: () => {} }],
+      ])
+      element.help = { notes: ['把物料拖到画布上。', '按住端口拖出连线。'], actions: [{ command: 'start-tour', label: '开始引导' }] }
+      element.shortcuts = shortcutSettingsSource(commands, {})
+      element.about = { product: '流程设计器', version: '1.0.0', license: 'MIT' }
+      for (const section of ['help', 'shortcuts', 'about']) {
+        element.show(section)
+        await element.updateComplete
+        await settle()
+        expect(records.filter(record => record.code.startsWith('wc.')).map(record => record.code)).toEqual([])
+        await expectNoAxeViolations(content())
+      }
+      element.show('shortcuts')
+      await element.updateComplete
+      await settle()
+      const redo = Array.from(document.querySelectorAll<HTMLElement>('[data-scope="designer-settings"][data-part="shortcut-row"]')).find(row => row.textContent!.includes('重做'))!
+      expect(redo.querySelectorAll('xh-kbd')).toHaveLength(2)
+      expect(redo.querySelector('kbd')!.getBoundingClientRect().width).toBeGreaterThan(0)
+      element.show('about')
+      await element.updateComplete
+      await settle()
+      const info = document.querySelector<HTMLElement>('[data-scope="designer-settings"][data-part="info"]')!
+      expect(info.scrollWidth).toBeLessThanOrEqual(info.clientWidth)
+      const [label, value] = [...info.querySelectorAll<HTMLElement>('[data-part="info-label"], [data-part="info-value"]')].map(node => node.getBoundingClientRect())
+      expect(Math.abs(label!.top - value!.top)).toBeLessThanOrEqual(2)
+      expect(label!.right).toBeLessThan(value!.left)
     }
     finally {
       off()

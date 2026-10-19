@@ -44,6 +44,8 @@ export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, 
   readonly settings?: readonly DesignerSettingsSection[]
   /** 新手引导的步骤：与 designer-shell 的通用步骤、各款的步骤一起按 order 排；id 不能重名，见 collectTourSteps。 */
   readonly tourSteps?: readonly DesignerTourStep<Ctx>[]
+  /** 「关于」页里的几行，如附加包的版本与授权；各款把它们接在自己那几行后面。 */
+  readonly about?: readonly { readonly label: string, readonly value: string }[]
 }
 
 /** 管一台外框上扩展登记的面板。 */

@@ -158,6 +158,23 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbarCommandToggle: label => `Show ${label}`,
   toolbarMove: label => `Move ${label}`,
   toolbarLayoutReset: 'Reset to default',
+  help: 'Help',
+  helpGuide: 'Guide',
+  shortcuts: 'Keyboard shortcuts',
+  shortcutsCommon: 'General',
+  shortcutsEdit: 'Editing',
+  shortcutsDesigner: 'This designer',
+  shortcutsExtensions: 'Extensions',
+  keyNudge: 'Nudge the selection',
+  keyNudgeLarge: 'Nudge further',
+  keyPan: 'Hold Space to pan the canvas',
+  keySelectionToolbar: 'Focus the selection toolbar',
+  keyCancel: 'Cancel the current action',
+  about: 'About',
+  aboutProduct: 'Product',
+  aboutVersion: 'Version',
+  aboutUi: 'XiHan.UI',
+  aboutLicense: 'License',
 }
 
 export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-tour'] = {

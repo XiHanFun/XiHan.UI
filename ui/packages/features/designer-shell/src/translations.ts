@@ -296,6 +296,40 @@ export interface DesignerSettingsTranslations {
   readonly toolbarMove: (label: string) => string
   /** 按钮表下面的「恢复默认」。 */
   readonly toolbarLayoutReset: string
+  /** 内建「帮助」分区的名字。 */
+  readonly help: string
+  /** 帮助页里操作说明的标签。 */
+  readonly helpGuide: string
+  /** 内建「快捷键」分区的名字。 */
+  readonly shortcuts: string
+  /** 快捷键表里「通用」一组的名字。 */
+  readonly shortcutsCommon: string
+  /** 快捷键表里「编辑」一组的名字。 */
+  readonly shortcutsEdit: string
+  /** 快捷键表里「本设计器」一组的名字。 */
+  readonly shortcutsDesigner: string
+  /** 快捷键表里「扩展」一组的名字。 */
+  readonly shortcutsExtensions: string
+  /** 方向键：微移选中的对象。 */
+  readonly keyNudge: string
+  /** Shift 加方向键：大步微移。 */
+  readonly keyNudgeLarge: string
+  /** 按住空格拖动画布。 */
+  readonly keyPan: string
+  /** Alt+F10：焦点移到选中工具条。 */
+  readonly keySelectionToolbar: string
+  /** Esc：取消当前操作。 */
+  readonly keyCancel: string
+  /** 内建「关于」分区的名字。 */
+  readonly about: string
+  /** 关于页「产品」一行的名字。 */
+  readonly aboutProduct: string
+  /** 关于页「版本」一行的名字。 */
+  readonly aboutVersion: string
+  /** 关于页界面库（XiHan.UI）一行的名字。 */
+  readonly aboutUi: string
+  /** 关于页「许可证」一行的名字。 */
+  readonly aboutLicense: string
 }
 
 /** 新手引导 <xh-designer-tour> 的文案：几颗钮与 designer-shell 通用步骤的标题与说明。 */

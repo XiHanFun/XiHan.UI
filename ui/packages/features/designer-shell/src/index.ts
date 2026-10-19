@@ -90,16 +90,26 @@ export type {
 } from './properties/properties-element'
 export { XhDesignerRulerElement } from './ruler/ruler-element'
 export type { DesignerGuideAxis, DesignerGuideChange, DesignerGuides, DesignerRulerEventMap } from './ruler/ruler-element'
+export { shortcutSettingsSource } from './settings/display'
+export type { DesignerShortcutsSourceOptions } from './settings/display'
+export { DESIGNER_COMMON_KEYS, DESIGNER_DISPLAY_CONTROL_KINDS, DESIGNER_EDIT_COMMANDS, isDesignerDisplayControl } from './settings/display-model'
+export type { DesignerDisplayControl, DesignerShortcutGroup, DesignerShortcutGroupId, DesignerShortcutRow, DesignerShortcutsSource, DesignerShortcutTableGroup } from './settings/display-model'
 export { createDesignerSettingsHost } from './settings/host'
 export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settings/host'
 export {
   collectSettingsSections,
+  DESIGNER_ABOUT_SETTINGS,
   DESIGNER_GENERAL_SETTINGS,
+  DESIGNER_HELP_SETTINGS,
   DESIGNER_LAYOUT_SETTINGS,
   DESIGNER_SETTING_KEYS,
+  DESIGNER_SHORTCUT_SETTINGS,
   DESIGNER_TOOLBAR_SETTINGS,
+  designerAboutSettings,
   designerGeneralSettings,
+  designerHelpSettings,
   designerLayoutSettings,
+  designerShortcutSettings,
   designerToolbarSettings,
   PANEL_LAYOUT_CONTROL,
   resolveSettings,
@@ -112,7 +122,9 @@ export {
   toolbarVisibleOf,
 } from './settings/model'
 export type {
+  DesignerAboutSettings,
   DesignerGeneralSettingsOptions,
+  DesignerHelpSettings,
   DesignerSettingItem,
   DesignerSettings,
   DesignerSettingsPolicy,
@@ -156,3 +168,4 @@ export type {
   DesignerTourTranslations,
   DesignerTransformTranslations,
 } from './translations'
+export { DESIGNER_SHELL_VERSION } from './version'

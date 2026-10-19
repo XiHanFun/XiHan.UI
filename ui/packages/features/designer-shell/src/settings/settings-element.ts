@@ -14,7 +14,8 @@ import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { PropertyField } from '../properties/field'
 import type { FieldRow } from '../properties/field-row'
 import type { DesignerSettingsTranslations } from '../translations'
-import type { DesignerGeneralSettingsOptions, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
+import type { DesignerShortcutsSource } from './display-model'
+import type { DesignerAboutSettings, DesignerGeneralSettingsOptions, DesignerHelpSettings, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
 import type { DesignerSettingsFrame } from './panel-layout'
 import type { DesignerToolbarSettingsSource } from './toolbar-layout'
 import { createCounterIdGenerator } from '@xihan-ui/core'
@@ -23,7 +24,9 @@ import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitE
 import { defineSettingsElements } from '../internal/ui-elements'
 import { createPropertyField } from '../properties/field'
 import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/field-row'
-import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerGeneralSettings, designerLayoutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
+import { createDisplayContent } from './display'
+import { isDesignerDisplayControl } from './display-model'
+import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerAboutSettings, designerGeneralSettings, designerHelpSettings, designerLayoutSettings, designerShortcutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
 import { createPanelLayoutEditor } from './panel-layout'
 import { createToolbarLayoutEditor } from './toolbar-layout'
 
@@ -33,6 +36,8 @@ export interface DesignerSettingsEventMap {
   'settings-change': CustomEvent<{ key: string, value: JsonValue | undefined, settings: DesignerSettings }>
   /** 对话框要打开或关上（Esc、点遮罩、点关闭钮）：元素已经换成这个状态。 */
   'open-change': CustomEvent<{ open: boolean }>
+  /** 点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档）：由设计器跑这条命令，必要时先关上对话框。 */
+  'settings-command': CustomEvent<{ command: string }>
 }
 
 /** 设置条目的自定义编辑器：被编辑的对象是整份设置。 */
@@ -83,6 +88,23 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   toolbarCommandToggle: label => `Show ${label}`,
   toolbarMove: label => `Move ${label}`,
   toolbarLayoutReset: 'Reset to default',
+  help: 'Help',
+  helpGuide: 'Guide',
+  shortcuts: 'Keyboard shortcuts',
+  shortcutsCommon: 'General',
+  shortcutsEdit: 'Editing',
+  shortcutsDesigner: 'This designer',
+  shortcutsExtensions: 'Extensions',
+  keyNudge: 'Nudge the selection',
+  keyNudgeLarge: 'Nudge further',
+  keyPan: 'Hold Space to pan the canvas',
+  keySelectionToolbar: 'Focus the selection toolbar',
+  keyCancel: 'Cancel the current action',
+  about: 'About',
+  aboutProduct: 'Product',
+  aboutVersion: 'Version',
+  aboutUi: 'XiHan.UI',
+  aboutLicense: 'License',
 }
 
 const TAG = 'xh-designer-settings'
@@ -124,6 +146,9 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     general: { attribute: false },
     frame: { attribute: false },
     toolbar: { attribute: false },
+    help: { attribute: false },
+    shortcuts: { attribute: false },
+    about: { attribute: false },
     settings: { attribute: false },
     policy: { attribute: false },
     editors: { attribute: false },
@@ -140,6 +165,12 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   declare frame: DesignerSettingsFrame | undefined
   /** 「工具栏」页：给了缺省排列与命令信息（toolbarSettingsSource 现算）时多一张按钮表；不给只有显示方式与显示工具栏两条；false 不要这一页。 */
   declare toolbar: DesignerToolbarSettingsSource | false | undefined
+  /** 「帮助」页：几段操作说明与几颗跑命令的钮；给了且有内容才有这一页。 */
+  declare help: DesignerHelpSettings | undefined
+  /** 「快捷键」页：shortcutSettingsSource 现算的快捷键表；给了才有这一页。 */
+  declare shortcuts: DesignerShortcutsSource | undefined
+  /** 「关于」页：产品、版本、许可证与扩展给的几行；给了才有这一页。 */
+  declare about: DesignerAboutSettings | undefined
   /** 设置的值，键是「分区 id.条目 id」；没写的键取条目的缺省值。 */
   declare settings: DesignerSettings | undefined
   /** 宿主的管控：键是条目键或分区 id，hidden 不显示，locked 只读。 */
@@ -222,6 +253,12 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
       own.push(designerLayoutSettings(t))
     if (this.toolbar !== false)
       own.push(designerToolbarSettings(t, { layout: this.toolbar !== undefined }))
+    if (this.help)
+      own.push(designerHelpSettings(t, this.help))
+    if (this.shortcuts)
+      own.push(designerShortcutSettings(t, this.shortcuts))
+    if (this.about)
+      own.push(designerAboutSettings(t, this.about))
     return sortSettingsSections([...own, ...this.sections ?? []])
       .map(section => ({ ...section, items: section.items.filter(item => settingPolicy(this.policy, section, item) !== 'hidden') }))
       .filter(section => section.items.length > 0)
@@ -308,13 +345,15 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     const key = settingKey(section, item)
     const write = (value: JsonValue | undefined): void => this.#write(key, value)
     const label = item.label ?? key
-    const row = section.id === DESIGNER_LAYOUT_SETTINGS && item.control.kind === PANEL_LAYOUT_CONTROL
-      ? this.#panelLayoutRow(key, item)
-      : section.id === DESIGNER_TOOLBAR_SETTINGS && item.control.kind === TOOLBAR_LAYOUT_CONTROL
-        ? this.#toolbarLayoutRow(key, item, write)
-        : (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
-            ? this.#builtinRow(key, item, label, write)
-            : this.#customRow(key, item, write)
+    const row = isDesignerDisplayControl(item.control)
+      ? this.#displayRow(key, item)
+      : section.id === DESIGNER_LAYOUT_SETTINGS && item.control.kind === PANEL_LAYOUT_CONTROL
+        ? this.#panelLayoutRow(key, item)
+        : section.id === DESIGNER_TOOLBAR_SETTINGS && item.control.kind === TOOLBAR_LAYOUT_CONTROL
+          ? this.#toolbarLayoutRow(key, item, write)
+          : (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
+              ? this.#builtinRow(key, item, label, write)
+              : this.#customRow(key, item, write)
     this.#rows.set(key, row)
     return row
   }
@@ -380,6 +419,23 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
         refreshFieldRow(row, { label: state.label, hint: state.hint, required: item.required === true, readonly: state.readonly })
         const rtl = this.ownerDocument.defaultView?.getComputedStyle(this).direction === 'rtl'
         editor.update({ translations: this.#translationsNow, readonly: state.readonly, rtl })
+      },
+    }
+  }
+
+  /** 只显示、不存值的条目：给了标签就在上面写一行，钮点了派发 settings-command；宿主锁定时钮不可用。 */
+  #displayRow(key: string, item: DesignerSettingItem): Row {
+    const doc = this.ownerDocument
+    const content = createDisplayContent(doc, item.control as Parameters<typeof createDisplayContent>[1], command => emitEvent(this, 'settings-command', { command }))
+    const label = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'display-label' })
+    const element = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'display', 'data-setting': key }, [label, content])
+    return {
+      element,
+      update: (state) => {
+        setText(label, item.label === undefined ? '' : state.label)
+        label.hidden = item.label === undefined
+        if (content.getAttribute('data-part') === 'action')
+          (content as HTMLElement & { disabled?: boolean }).disabled = state.readonly
       },
     }
   }

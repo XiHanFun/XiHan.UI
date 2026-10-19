@@ -456,6 +456,80 @@
     white-space: nowrap;
   }
 
+  /* 只显示的条目（帮助、快捷键、关于几页）：标签一行在上；说明按段铺；名字与值两列；快捷键表一组一块，键靠行尾 */
+  [data-scope='designer-settings'][data-part='display'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-2);
+    align-items: flex-start;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='display-label'] {
+    color: var(--xh-fg-default);
+    font-weight: var(--xh-font-weight-medium);
+  }
+
+  [data-scope='designer-settings'][data-part='note'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-2);
+    color: var(--xh-fg-muted);
+  }
+
+  [data-scope='designer-settings'][data-part='info'] {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--xh-space-1) var(--xh-space-4);
+  }
+
+  [data-scope='designer-settings'][data-part='info-row'] {
+    display: contents;
+  }
+
+  [data-scope='designer-settings'][data-part='info-label'] {
+    color: var(--xh-fg-muted);
+  }
+
+  [data-scope='designer-settings'][data-part='info-value'] {
+    overflow-wrap: anywhere;
+  }
+
+  [data-scope='designer-settings'][data-part='shortcuts'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-4);
+    align-self: stretch;
+  }
+
+  [data-scope='designer-settings'][data-part='shortcut-group'] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-scope='designer-settings'][data-part='shortcut-group-title'] {
+    margin-block-end: var(--xh-space-1);
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+    font-weight: var(--xh-font-weight-semibold);
+  }
+
+  [data-scope='designer-settings'][data-part='shortcut-row'] {
+    display: flex;
+    gap: var(--xh-space-3);
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: var(--xh-control-h-sm);
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
+  [data-scope='designer-settings'][data-part='shortcut-keys'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--xh-space-1);
+    justify-content: flex-end;
+  }
+
   /* 上面的部件声明了 display，收起时补回来 */
   [data-scope='designer-settings'][data-part][hidden] {
     display: none;

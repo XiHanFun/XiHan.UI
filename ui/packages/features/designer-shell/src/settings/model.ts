@@ -10,19 +10,22 @@ import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor, PropertySwatchOption } from '@xihan-ui/designer-kit/properties'
 import type { CommandToolbarDisplay } from '../extensions/commands'
 import type { DesignerSettingsTranslations } from '../translations'
+import type { DesignerDisplayControl, DesignerShortcutsSource } from './display-model'
 import { formatJsonPath } from '@xihan-ui/core/json'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
+import { DESIGNER_SHELL_VERSION } from '../version'
+import { DESIGNER_COMMON_KEYS } from './display-model'
 
-/** 设置条目：一个属性描述，path 只写一段条目 id，说明写在 meta.description。 */
-export type DesignerSettingItem = PropertyDescriptor<PropertyControl | { readonly kind: string }>
+/** 设置条目：一个属性描述，path 只写一段条目 id，说明写在 meta.description；也可以是只显示、不存值的几种条目。 */
+export type DesignerSettingItem = PropertyDescriptor<PropertyControl | DesignerDisplayControl | { readonly kind: string }>
 
 /** 一个设置分区：设置对话框左边的一页。 */
 export interface DesignerSettingsSection {
-  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout、toolbar 留给内建的「基础」「布局」「工具栏」。 */
+  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout、toolbar、help、shortcuts、about 留给内建的几页。 */
   readonly id: string
   /** 左边导航里的名字。 */
   readonly label: string
-  /** 排序：内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起；同值按登记顺序。 */
+  /** 排序：内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，900 以后留给内建的帮助、快捷键与关于；同值按登记顺序。 */
   readonly order?: number
   /** 这一页的条目，按先后排列。 */
   readonly items: readonly DesignerSettingItem[]
@@ -42,6 +45,11 @@ export const DESIGNER_TOOLBAR_SETTINGS = 'toolbar'
 
 /** 「工具栏」分区里按钮表的编辑方式，设置对话框内建，不进属性面板。 */
 export const TOOLBAR_LAYOUT_CONTROL = 'toolbarLayout'
+
+/** 内建「帮助」「快捷键」「关于」分区的 id，排在最后（900、910、920）。 */
+export const DESIGNER_HELP_SETTINGS = 'help'
+export const DESIGNER_SHORTCUT_SETTINGS = 'shortcuts'
+export const DESIGNER_ABOUT_SETTINGS = 'about'
 
 /** 内建「布局」分区的 id：只有一条 panels，值就是外框的布局（layout.panels）。 */
 export const DESIGNER_LAYOUT_SETTINGS = 'layout'
@@ -103,11 +111,11 @@ export interface DesignerSettingsSource {
 }
 
 /**
- * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含 general、layout、toolbar）抛 DesignerExtensionError，
+ * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含留给内建的 general、layout、toolbar、help、shortcuts、about）抛 DesignerExtensionError，
  * 名字空间是 settings-section。
  */
 export function collectSettingsSections(sources: readonly DesignerSettingsSource[]): DesignerSettingsSection[] {
-  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
+  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, DESIGNER_HELP_SETTINGS, DESIGNER_SHORTCUT_SETTINGS, DESIGNER_ABOUT_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
   const sections: DesignerSettingsSection[] = []
   for (const source of sources) {
     for (const section of source.settings ?? []) {
@@ -205,6 +213,60 @@ export function designerToolbarSettings(t: DesignerSettingsTranslations, options
   if (options.layout)
     items.push({ path: ['layout'], label: t.toolbarLayout, control: { kind: TOOLBAR_LAYOUT_CONTROL }, meta: { description: t.toolbarLayoutHint } })
   return { id: DESIGNER_TOOLBAR_SETTINGS, label: t.toolbar, order: 2, items }
+}
+
+/** 设置对话框「帮助」页：几段操作说明与几颗跑命令的钮（如开始引导、打开文档），文字已按语言取好。 */
+export interface DesignerHelpSettings {
+  readonly notes?: readonly string[]
+  readonly actions?: readonly { readonly command: string, readonly label: string }[]
+}
+
+/** 设置对话框「关于」页：产品名、版本与许可证，加上扩展给的几行（附加包的版本与授权）。 */
+export interface DesignerAboutSettings {
+  readonly product: string
+  readonly version: string
+  readonly license?: string
+  readonly rows?: readonly { readonly label: string, readonly value: string }[]
+}
+
+/** 内建的「帮助」分区：一条几段说明，几颗跑命令的钮；都没有时没有条目。 */
+export function designerHelpSettings(t: DesignerSettingsTranslations, help: DesignerHelpSettings): DesignerSettingsSection {
+  const items: DesignerSettingItem[] = []
+  if ((help.notes?.length ?? 0) > 0)
+    items.push({ path: ['guide'], label: t.helpGuide, control: { kind: 'note', paragraphs: help.notes! } })
+  // 条目 id 取命令 id 的驼峰写法（start-tour → startTour），键是 help.startTour
+  for (const action of help.actions ?? [])
+    items.push({ path: [action.command.replace(/[^a-z0-9]+([a-z0-9])?/gi, (_, next: string | undefined) => next?.toUpperCase() ?? '')], control: { kind: 'action', command: action.command, text: action.label } })
+  return { id: DESIGNER_HELP_SETTINGS, label: t.help, order: 900, items }
+}
+
+/** 内建的「快捷键」分区：一张快捷键表，「通用」那一组补上四款都有的按键（DESIGNER_COMMON_KEYS）。 */
+export function designerShortcutSettings(t: DesignerSettingsTranslations, source: DesignerShortcutsSource): DesignerSettingsSection {
+  const names = { common: t.shortcutsCommon, edit: t.shortcutsEdit, designer: t.shortcutsDesigner, extensions: t.shortcutsExtensions }
+  const keyNames = { nudge: t.keyNudge, nudgeLarge: t.keyNudgeLarge, pan: t.keyPan, selectionToolbar: t.keySelectionToolbar, cancel: t.keyCancel }
+  const common = DESIGNER_COMMON_KEYS.map(key => ({ label: keyNames[key.id], keys: key.keys }))
+  const groups = source.groups.some(group => group.id === 'common') ? source.groups : [{ id: 'common' as const, rows: [] }, ...source.groups]
+  return {
+    id: DESIGNER_SHORTCUT_SETTINGS,
+    label: t.shortcuts,
+    order: 910,
+    items: [{
+      path: ['table'],
+      control: { kind: 'shortcutTable', groups: groups.map(group => ({ label: names[group.id], rows: group.id === 'common' ? [...group.rows, ...common] : group.rows })) },
+    }],
+  }
+}
+
+/** 内建的「关于」分区：产品、版本、界面库（XiHan.UI）的版本与许可证，后面接扩展给的几行。 */
+export function designerAboutSettings(t: DesignerSettingsTranslations, about: DesignerAboutSettings): DesignerSettingsSection {
+  const rows = [
+    { label: t.aboutProduct, value: about.product },
+    { label: t.aboutVersion, value: about.version },
+    { label: t.aboutUi, value: DESIGNER_SHELL_VERSION },
+    ...(about.license === undefined ? [] : [{ label: t.aboutLicense, value: about.license }]),
+    ...about.rows ?? [],
+  ]
+  return { id: DESIGNER_ABOUT_SETTINGS, label: t.about, order: 920, items: [{ path: ['rows'], control: { kind: 'info', rows } }] }
 }
 
 /** 设置里的工具栏显示方式（toolbar.display），没写或写的不是 icon、text、both 时是缺省的 icon；交给命令工具栏的 display。 */
