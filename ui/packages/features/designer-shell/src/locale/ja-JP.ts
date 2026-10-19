@@ -81,6 +81,9 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: 'デザイナーのレイアウト',
     resize: label => `「${label}」のサイズを変更`,
+    resizeLeft: '左列の幅を変更',
+    resizeRight: '右列の幅を変更',
+    resizeBottom: '下部エリアの高さを変更',
     closePanel: label => `「${label}」を閉じる`,
     panelHelp: label => `「${label}」について`,
     minimizePanel: label => `「${label}」を折りたたむ`,

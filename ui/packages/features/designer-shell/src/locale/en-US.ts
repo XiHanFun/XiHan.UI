@@ -86,6 +86,9 @@ export const DESIGNER_RULER_EN_US: DesignerShellLocaleTranslations['xh-designer-
 export const DESIGNER_FRAME_EN_US: DesignerShellLocaleTranslations['xh-designer-frame'] = {
   layout: 'Designer layout',
   resize: label => `Resize ${label}`,
+  resizeLeft: 'Resize left column',
+  resizeRight: 'Resize right column',
+  resizeBottom: 'Resize bottom area',
   closePanel: label => `Close ${label}`,
   panelHelp: label => `About ${label}`,
   minimizePanel: label => `Collapse ${label}`,

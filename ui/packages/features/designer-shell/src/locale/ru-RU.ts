@@ -92,6 +92,9 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': {
     layout: 'Макет конструктора',
     resize: label => `Изменить размер: ${label}`,
+    resizeLeft: 'Изменить ширину левой колонки',
+    resizeRight: 'Изменить ширину правой колонки',
+    resizeBottom: 'Изменить высоту нижней области',
     closePanel: label => `Закрыть «${label}»`,
     panelHelp: label => `О панели «${label}»`,
     minimizePanel: label => `Свернуть «${label}»`,
