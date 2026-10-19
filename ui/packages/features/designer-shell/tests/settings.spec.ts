@@ -2,7 +2,7 @@
 
 // 设置：模型（键、取值、分区合并与排序、宿主管控、内建「基础」分区）、设置对话框与宿主应用。
 import type { JsonValue } from '@xihan-ui/core/json'
-import type { DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, XhDesignerSettingsElement } from '../src'
+import type { DesignerFrameEventMap, DesignerLayoutChangeReason, DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, ResolvedDesignerLayout, XhDesignerFrameElement, XhDesignerSettingsElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
@@ -86,6 +86,7 @@ describe('设置模型', () => {
     expect(duplicate).toThrow(DesignerExtensionError)
     expect(duplicate).toThrow(/settings-section/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'general', label: 'G', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
+    expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'layout', label: 'L', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
   })
 
   it('按 order 排，同值保持登记顺序；没写 order 当 0', () => {
@@ -395,5 +396,128 @@ describe('createDesignerSettingsHost', () => {
     host.save({ a: 1 })
     expect([host.load(), localStorage.length]).toEqual([{}, 0])
     expect(() => createDesignerSettingsHost({ root: root(), storageKey: 'x' } as never)).toThrow(TypeError)
+  })
+})
+
+describe('<xh-designer-settings> 的「布局」页', () => {
+  type SwitchHost = HTMLElement & { checked?: boolean, disabled?: boolean }
+  type SelectHost = HTMLElement & { value?: unknown, disabled?: boolean }
+  let frame: XhDesignerFrameElement
+  let seen: { layout: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason }[]
+
+  async function mountWithFrame(setup: (element: XhDesignerSettingsElement) => void = () => {}): Promise<XhDesignerSettingsElement> {
+    frame = document.createElement('xh-designer-frame')
+    frame.regions = [
+      { name: 'toolbar', position: 'top' },
+      { name: 'palette', position: 'start', title: '物料' },
+      { name: 'canvas', position: 'center' },
+      { name: 'properties', position: 'end', title: '属性' },
+      { name: 'issues', position: 'bottom', title: '问题', minimizable: false },
+      { name: 'minimap', position: 'overlay', title: '小地图' },
+    ]
+    seen = []
+    frame.addEventListener('layout-change', event => seen.push((event as DesignerFrameEventMap['layout-change']).detail))
+    document.body.append(frame)
+    await frame.updateComplete
+    return mount((element) => {
+      element.frame = frame
+      setup(element)
+    })
+  }
+
+  function panelRow(name: string): HTMLElement {
+    return document.querySelector<HTMLElement>(`[data-part="panel-row"][data-panel="${name}"]`)!
+  }
+
+  function control<T extends HTMLElement>(name: string, part: string): T {
+    return panelRow(name).querySelector<T>(`[data-part="${part}"]`)!
+  }
+
+  async function refresh(element: XhDesignerSettingsElement): Promise<void> {
+    element.settings = { 'layout.panels': frame.resolvedLayout as never }
+    await element.updateComplete
+  }
+
+  it('给了 frame 才有「布局」页，排在「基础」后面；面板表按三栏的先后列出面板，画布浮动件排在最后、只有显示开关', async () => {
+    await mount(() => {})
+    expect(triggers()).toEqual([english.general])
+    document.body.innerHTML = ''
+    await mountWithFrame(element => element.sections = [flowSection])
+    expect(triggers()).toEqual([english.general, english.layout, '流程'])
+    expect(row('layout.panels').textContent).toContain(english.layoutPanelsHint)
+    const table = document.querySelector<HTMLElement>('[data-part="panel-table"]')!
+    expect([table.getAttribute('role'), table.getAttribute('aria-label')]).toEqual(['table', english.layoutPanels])
+    expect(Array.from(table.querySelectorAll('[role="columnheader"]'), node => node.textContent)).toEqual(Object.values(english.layoutColumns))
+    expect(Array.from(table.querySelectorAll('[data-part="panel-row"][data-panel]'), node => node.getAttribute('data-panel'))).toEqual(['palette', 'properties', 'issues', 'minimap'])
+    expect(control('palette', 'panel-visible').getAttribute('aria-label')).toBe(english.layoutVisible('物料'))
+    expect(control<SelectHost>('properties', 'panel-dock').value).toEqual(['end'])
+    expect([control('minimap', 'panel-dock').hidden, control('minimap', 'panel-overlay').hidden, control('minimap', 'panel-overlay').textContent]).toEqual([true, false, english.layoutDocks.overlay])
+    expect([control('minimap', 'panel-move-up').hidden, control('minimap', 'panel-minimized').hidden]).toEqual([true, true])
+    expect(control<SwitchHost>('issues', 'panel-minimized').disabled).toBe(true)
+  })
+
+  it('显示开关、位置、上下移与收起改的是外框的布局：外框派发 layout-change，表跟着变', async () => {
+    const element = await mountWithFrame()
+    emit(control('palette', 'panel-visible'), 'checked-change', { checked: false })
+    expect(seen.map(change => [change.reason, change.layout.hidden])).toEqual([['toggle', ['palette']]])
+    expect(control<SwitchHost>('palette', 'panel-visible').checked).toBe(false)
+
+    emit(control('properties', 'panel-dock'), 'value-change', { value: ['start'] })
+    expect(seen.at(-1)!.reason).toBe('move')
+    expect(seen.at(-1)!.layout.docks.start).toEqual(['palette', 'properties'])
+    await refresh(element)
+    expect(Array.from(document.querySelectorAll('[data-part="panel-row"][data-panel]'), node => node.getAttribute('data-panel'))).toEqual(['palette', 'properties', 'issues', 'minimap'])
+    expect([control<SwitchHost>('palette', 'panel-move-up').disabled, control<SwitchHost>('properties', 'panel-move-down').disabled]).toEqual([true, true])
+
+    control('properties', 'panel-move-up').querySelector('button')!.click()
+    expect(seen.at(-1)!.layout.docks.start).toEqual(['properties', 'palette'])
+    expect(Array.from(document.querySelectorAll('[data-part="panel-row"][data-panel]'), node => node.getAttribute('data-panel')).slice(0, 2)).toEqual(['properties', 'palette'])
+
+    emit(control('properties', 'panel-minimized'), 'checked-change', { checked: true })
+    expect([seen.at(-1)!.reason, seen.at(-1)!.layout.minimized]).toEqual(['minimize', ['properties']])
+
+    emit(control('palette', 'panel-dock'), 'value-change', { value: ['float'] })
+    expect([seen.at(-1)!.reason, Object.keys(seen.at(-1)!.layout.floating)]).toEqual(['float', ['palette']])
+    expect(control<SelectHost>('palette', 'panel-dock').value).toEqual(['float'])
+    expect(control<SwitchHost>('palette', 'panel-move-up').disabled).toBe(true)
+    emit(control('palette', 'panel-dock'), 'value-change', { value: ['start'] })
+    expect([seen.at(-1)!.reason, seen.at(-1)!.layout.floating]).toEqual(['dock', {}])
+  })
+
+  it('「恢复默认布局」回到宿主的缺省布局；这一页不写设置，设置由设计器从 layout-change 写', async () => {
+    const element = await mountWithFrame()
+    frame.defaultLayout = { version: 1, hidden: ['issues'] }
+    frame.layout = { version: 1, docks: { start: ['palette', 'properties'] } }
+    await frame.updateComplete
+    await refresh(element)
+    const changes: unknown[] = []
+    element.addEventListener('settings-change', event => changes.push(event))
+    seen = []
+    const reset = document.querySelector<HTMLElement>('[data-part="layout-reset"]')!
+    expect(reset.textContent).toBe(english.layoutReset)
+    reset.querySelector('button')!.click()
+    expect(seen.map(change => [change.reason, change.layout.hidden, change.layout.docks.end])).toEqual([['reset', ['issues'], ['properties']]])
+    expect(changes).toEqual([])
+  })
+
+  it('宿主管控：layout.panels 锁定时表只读、说明换成锁定文案；藏掉时没有这一页；锁定一块面板只锁那一行', async () => {
+    const element = await mountWithFrame(el => el.policy = { 'layout.panels': 'locked' })
+    frame.layoutPolicy = { locked: true }
+    await frame.updateComplete
+    await refresh(element)
+    expect(row('layout.panels').textContent).toContain(english.locked)
+    expect([control<SwitchHost>('palette', 'panel-visible').disabled, control<SelectHost>('palette', 'panel-dock').disabled, (document.querySelector('[data-part="layout-reset"]') as SwitchHost).disabled]).toEqual([true, true, true])
+    emit(control('palette', 'panel-visible'), 'checked-change', { checked: false })
+    expect(seen).toEqual([])
+
+    element.policy = { 'layout.panels': 'hidden' }
+    await element.updateComplete
+    expect(triggers()).toEqual([english.general])
+
+    element.policy = {}
+    frame.layoutPolicy = { panels: { palette: 'locked' } }
+    await frame.updateComplete
+    await refresh(element)
+    expect([control<SwitchHost>('palette', 'panel-visible').disabled, control<SwitchHost>('properties', 'panel-visible').disabled]).toEqual([true, false])
   })
 })

@@ -18,11 +18,11 @@ export type DesignerSettingItem = PropertyDescriptor<PropertyControl | { readonl
 
 /** 一个设置分区：设置对话框左边的一页。 */
 export interface DesignerSettingsSection {
-  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general 留给内建的「基础」。 */
+  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout 留给内建的「基础」与「布局」。 */
   readonly id: string
   /** 左边导航里的名字。 */
   readonly label: string
-  /** 排序：内建的「基础」是 0，各款从 100 起，扩展从 200 起；同值按登记顺序。 */
+  /** 排序：内建的「基础」是 0、「布局」是 1，各款从 100 起，扩展从 200 起；同值按登记顺序。 */
   readonly order?: number
   /** 这一页的条目，按先后排列。 */
   readonly items: readonly DesignerSettingItem[]
@@ -36,6 +36,12 @@ export type DesignerSettingsPolicy = Readonly<Record<string, 'hidden' | 'locked'
 
 /** 内建「基础」分区的 id。 */
 export const DESIGNER_GENERAL_SETTINGS = 'general'
+
+/** 内建「布局」分区的 id：只有一条 panels，值就是外框的布局（layout.panels）。 */
+export const DESIGNER_LAYOUT_SETTINGS = 'layout'
+
+/** 「布局」分区里面板表的编辑方式，设置对话框内建，不进属性面板。 */
+export const PANEL_LAYOUT_CONTROL = 'panelLayout'
 
 /** 「基础」分区里主题的取值：follow 跟随所在页面，system 跟随系统，light、dark 固定。 */
 export type DesignerThemeSetting = 'follow' | 'system' | 'light' | 'dark'
@@ -86,11 +92,11 @@ export interface DesignerSettingsSource {
 }
 
 /**
- * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含 general）抛 DesignerExtensionError，
+ * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含 general、layout）抛 DesignerExtensionError，
  * 名字空间是 settings-section。
  */
 export function collectSettingsSections(sources: readonly DesignerSettingsSource[]): DesignerSettingsSection[] {
-  const owners = new Map<string, string>([[DESIGNER_GENERAL_SETTINGS, '@xihan-ui/designer-shell']])
+  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
   const sections: DesignerSettingsSection[] = []
   for (const source of sources) {
     for (const section of source.settings ?? []) {
@@ -162,6 +168,16 @@ export function designerGeneralSettings(t: DesignerSettingsTranslations, options
   if ((options.languages?.length ?? 0) > 0)
     items.push({ path: ['language'], label: t.language, control: { kind: 'select', appearance: 'dropdown', options: options.languages! }, meta: { description: t.languageHint } })
   return { id: DESIGNER_GENERAL_SETTINGS, label: t.general, order: 0, items }
+}
+
+/** 内建的「布局」分区：一张面板表，改的是外框的布局；设置对话框给了 frame 才有这一页。 */
+export function designerLayoutSettings(t: DesignerSettingsTranslations): DesignerSettingsSection {
+  return {
+    id: DESIGNER_LAYOUT_SETTINGS,
+    label: t.layout,
+    order: 1,
+    items: [{ path: ['panels'], label: t.layoutPanels, control: { kind: PANEL_LAYOUT_CONTROL }, meta: { description: t.layoutPanelsHint } }],
+  }
 }
 
 /** 设置里的工具栏显示方式（general.toolbarDisplay），没写或写的不是 icon、text、both 时是缺省的 icon；交给命令工具栏的 display。 */

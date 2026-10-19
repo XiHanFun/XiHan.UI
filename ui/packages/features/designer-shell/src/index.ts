@@ -87,8 +87,11 @@ export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settin
 export {
   collectSettingsSections,
   DESIGNER_GENERAL_SETTINGS,
+  DESIGNER_LAYOUT_SETTINGS,
   DESIGNER_SETTING_KEYS,
   designerGeneralSettings,
+  designerLayoutSettings,
+  PANEL_LAYOUT_CONTROL,
   resolveSettings,
   settingKey,
   settingPolicy,
@@ -105,6 +108,7 @@ export type {
   DesignerSettingsSource,
   DesignerThemeSetting,
 } from './settings/model'
+export type { DesignerSettingsFrame } from './settings/panel-layout'
 export { XhDesignerSettingsElement } from './settings/settings-element'
 export type { DesignerSettingEditor, DesignerSettingsEventMap } from './settings/settings-element'
 export { XhDesignerTransformElement } from './transform/transform-element'

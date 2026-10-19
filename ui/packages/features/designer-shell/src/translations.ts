@@ -241,6 +241,28 @@ export interface DesignerSettingsTranslations {
   readonly language: string
   /** 语言条目的说明。 */
   readonly languageHint: string
+  /** 内建「布局」分区的名字。 */
+  readonly layout: string
+  /** 「布局」分区里面板表的标签。 */
+  readonly layoutPanels: string
+  /** 面板表的说明。 */
+  readonly layoutPanelsHint: string
+  /** 面板表的列名。 */
+  readonly layoutColumns: { readonly panel: string, readonly visible: string, readonly dock: string, readonly order: string, readonly minimized: string }
+  /** 面板的位置：左、右两栏（从右往左写时按看到的左右）、下栏、浮动，以及画布浮动件的「画布上」。 */
+  readonly layoutDocks: { readonly left: string, readonly right: string, readonly bottom: string, readonly floating: string, readonly overlay: string }
+  /** 面板表里显示开关的名字。 */
+  readonly layoutVisible: (label: string) => string
+  /** 面板表里位置下拉的名字。 */
+  readonly layoutDock: (label: string) => string
+  /** 面板表里上移钮的名字。 */
+  readonly layoutMoveUp: (label: string) => string
+  /** 面板表里下移钮的名字。 */
+  readonly layoutMoveDown: (label: string) => string
+  /** 面板表里收起开关的名字。 */
+  readonly layoutMinimized: (label: string) => string
+  /** 面板表下面的「恢复默认布局」。 */
+  readonly layoutReset: string
 }
 
 /** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */

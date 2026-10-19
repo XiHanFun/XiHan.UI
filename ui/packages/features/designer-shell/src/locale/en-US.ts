@@ -133,6 +133,17 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   statusBarHint: 'Show the status bar at the bottom of the designer.',
   language: 'Language',
   languageHint: 'Leave empty to follow the page.',
+  layout: 'Layout',
+  layoutPanels: 'Panels',
+  layoutPanelsHint: 'You can also change these from the More menu on a panel header, or by dragging the header.',
+  layoutColumns: { panel: 'Panel', visible: 'Visible', dock: 'Position', order: 'Order', minimized: 'Collapsed' },
+  layoutDocks: { left: 'Left side', right: 'Right side', bottom: 'Bottom', floating: 'Floating', overlay: 'On the canvas' },
+  layoutVisible: label => `Show ${label}`,
+  layoutDock: label => `Position of ${label}`,
+  layoutMoveUp: label => `Move ${label} up`,
+  layoutMoveDown: label => `Move ${label} down`,
+  layoutMinimized: label => `Collapse ${label} to title`,
+  layoutReset: 'Reset layout',
 }
 
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {

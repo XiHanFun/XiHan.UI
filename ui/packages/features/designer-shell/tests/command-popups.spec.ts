@@ -211,8 +211,8 @@ describe('内置的「面板」命令', () => {
   }
 
   const ENTRIES: DesignerPanelEntry[] = [
-    { name: 'palette', label: '物料', shown: true, dock: 'start', minimized: false, floating: false, locked: false },
-    { name: 'issues', label: '问题', shown: false, dock: 'bottom', minimized: false, floating: false, locked: true },
+    { name: 'palette', label: '物料', shown: true, dock: 'start', minimized: false, floating: false, locked: false, movable: true, floatable: true, minimizable: true },
+    { name: 'issues', label: '问题', shown: false, dock: 'bottom', minimized: false, floating: false, locked: true, movable: false, floatable: false, minimizable: false },
   ]
 
   it('给了 frame 才有 panels：菜单逐块面板一项（勾选显示着的，锁定的不可点），分隔线后是全部显隐、还原、恢复默认；选中调外框的 togglePanel', () => {

@@ -197,13 +197,13 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "323 kB"
+    "limit": "325 kB"
   },
   {
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "18.3 kB"
+    "limit": "20 kB"
   },
   {
     "name": "xlsx",

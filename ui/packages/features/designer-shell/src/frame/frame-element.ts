@@ -148,6 +148,12 @@ export interface DesignerPanelEntry {
   readonly floating: boolean
   /** 宿主锁定了这块面板或整份布局。 */
   readonly locked: boolean
+  /** 此刻能换栏、调序（登记许可且没被锁定）；画布浮动件不能。 */
+  readonly movable: boolean
+  /** 此刻能浮出。 */
+  readonly floatable: boolean
+  /** 此刻能收成标题条。 */
+  readonly minimizable: boolean
 }
 
 /** 外框派发的事件。 */
@@ -1016,6 +1022,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         continue
       const dock = designerPanelDock(layout, region.name)
       const floating = Object.hasOwn(layout.floating, region.name)
+      const abilities = designerPanelAbilities(region, this.layoutPolicy)
       let shown = !hidden.has(region.name)
       if (shown && dock !== undefined && (!floating || this.#narrow)) {
         if (this.#narrow && dock !== 'bottom')
@@ -1032,6 +1039,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         minimized: layout.minimized.includes(region.name),
         floating,
         locked: this.layoutPolicy?.locked === true || this.layoutPolicy?.panels?.[region.name] === 'locked',
+        movable: abilities.movable,
+        floatable: abilities.floatable,
+        minimizable: abilities.minimizable,
       })
     }
     return entries

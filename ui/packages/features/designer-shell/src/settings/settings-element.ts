@@ -5,7 +5,8 @@
 
 // <xh-designer-settings>：设计器的设置对话框。库内 xh-dialog 里放竖排的 xh-tabs，左边一个分区一页，右边逐条列出条目：
 // 内建编辑方式用 createPropertyField 铺，别的种类交给 editors 里按种类登记的编辑器。改一条就写进 settings 并派发
-// settings-change；宿主隐藏的条目不显示，锁定的只读、说明换成「由所在系统管理」。
+// settings-change；宿主隐藏的条目不显示，锁定的只读、说明换成「由所在系统管理」。给了 frame 另有内建的「布局」页，
+// 面板表改的是外框的布局。
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyEditor, PropertyEditorContext, PropertyEditorInstance } from '@xihan-ui/designer-kit/properties'
@@ -14,13 +15,15 @@ import type { PropertyField } from '../properties/field'
 import type { FieldRow } from '../properties/field-row'
 import type { DesignerSettingsTranslations } from '../translations'
 import type { DesignerGeneralSettingsOptions, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
+import type { DesignerSettingsFrame } from './panel-layout'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { BUILTIN_CONTROL_KINDS } from '@xihan-ui/designer-kit/properties'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineSettingsElements } from '../internal/ui-elements'
 import { createPropertyField } from '../properties/field'
 import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/field-row'
-import { designerGeneralSettings, settingKey, settingPolicy, settingValue, sortSettingsSections } from './model'
+import { DESIGNER_LAYOUT_SETTINGS, designerGeneralSettings, designerLayoutSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections } from './model'
+import { createPanelLayoutEditor } from './panel-layout'
 
 /** 设置对话框派发的事件。 */
 export interface DesignerSettingsEventMap {
@@ -55,6 +58,17 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   statusBarHint: 'Show the status bar at the bottom of the designer.',
   language: 'Language',
   languageHint: 'Leave empty to follow the page.',
+  layout: 'Layout',
+  layoutPanels: 'Panels',
+  layoutPanelsHint: 'You can also change these from the More menu on a panel header, or by dragging the header.',
+  layoutColumns: { panel: 'Panel', visible: 'Visible', dock: 'Position', order: 'Order', minimized: 'Collapsed' },
+  layoutDocks: { left: 'Left side', right: 'Right side', bottom: 'Bottom', floating: 'Floating', overlay: 'On the canvas' },
+  layoutVisible: label => `Show ${label}`,
+  layoutDock: label => `Position of ${label}`,
+  layoutMoveUp: label => `Move ${label} up`,
+  layoutMoveDown: label => `Move ${label} down`,
+  layoutMinimized: label => `Collapse ${label} to title`,
+  layoutReset: 'Reset layout',
 }
 
 const TAG = 'xh-designer-settings'
@@ -94,6 +108,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   static override properties = {
     sections: { attribute: false },
     general: { attribute: false },
+    frame: { attribute: false },
     settings: { attribute: false },
     policy: { attribute: false },
     editors: { attribute: false },
@@ -106,6 +121,8 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   declare sections: readonly DesignerSettingsSection[] | undefined
   /** 内建「基础」分区的选项（主题色与语言两项要给了才有）；false 不要这一页。文案随对话框的语言。 */
   declare general: DesignerGeneralSettingsOptions | false | undefined
+  /** 设计器的外框：给了且有面板时多一页内建的「布局」，面板表直接改外框的布局。 */
+  declare frame: DesignerSettingsFrame | undefined
   /** 设置的值，键是「分区 id.条目 id」；没写的键取条目的缺省值。 */
   declare settings: DesignerSettings | undefined
   /** 宿主的管控：键是条目键或分区 id，hidden 不显示，locked 只读。 */
@@ -130,6 +147,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   readonly #pages = new Map<string, Page>()
   readonly #rows = new Map<string, Row>()
   #pagesKey = ''
+  #translationsNow: DesignerSettingsTranslations = DEFAULT_TRANSLATIONS
 
   constructor() {
     super()
@@ -153,6 +171,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     super.update(changed)
     const parts = this.#ensureParts()
     const t = this.#config.translations<DesignerSettingsTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
+    this.#translationsNow = t
     setText(parts.title, t.title)
     parts.list.setAttribute('aria-label', t.sections)
     const sections = this.#visibleSections(t)
@@ -179,9 +198,11 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
       parts.dialog.open = this.open === true
   }
 
-  /** 「基础」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
+  /** 「基础」「布局」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
   #visibleSections(t: DesignerSettingsTranslations): DesignerSettingsSection[] {
     const own = this.general === false ? [] : [designerGeneralSettings(t, this.general)]
+    if ((this.frame?.panelEntries().length ?? 0) > 0)
+      own.push(designerLayoutSettings(t))
     return sortSettingsSections([...own, ...this.sections ?? []])
       .map(section => ({ ...section, items: section.items.filter(item => settingPolicy(this.policy, section, item) !== 'hidden') }))
       .filter(section => section.items.length > 0)
@@ -268,9 +289,11 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     const key = settingKey(section, item)
     const write = (value: JsonValue | undefined): void => this.#write(key, value)
     const label = item.label ?? key
-    const row = (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
-      ? this.#builtinRow(key, item, label, write)
-      : this.#customRow(key, item, write)
+    const row = section.id === DESIGNER_LAYOUT_SETTINGS && item.control.kind === PANEL_LAYOUT_CONTROL
+      ? this.#panelLayoutRow(key, item)
+      : (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
+          ? this.#builtinRow(key, item, label, write)
+          : this.#customRow(key, item, write)
     this.#rows.set(key, row)
     return row
   }
@@ -322,6 +345,21 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
           setText(body, state.value === undefined ? '' : JSON.stringify(state.value))
       },
       destroy: instance?.destroy,
+    }
+  }
+
+  /** 「布局」页的面板表：按一组控件排，改动经外框的方法，不在这里写设置。 */
+  #panelLayoutRow(key: string, item: DesignerSettingItem): Row {
+    const row: FieldRow = createFieldRow(this.ownerDocument, this.#ids, { 'data-setting': key })
+    const editor = createPanelLayoutEditor(this.ownerDocument, () => this.frame)
+    placeAsGroup(row, editor.element)
+    return {
+      element: row.element,
+      update: (state) => {
+        refreshFieldRow(row, { label: state.label, hint: state.hint, required: item.required === true, readonly: state.readonly })
+        const rtl = this.ownerDocument.defaultView?.getComputedStyle(this).direction === 'rtl'
+        editor.update({ translations: this.#translationsNow, readonly: state.readonly, rtl })
+      },
     }
   }
 
