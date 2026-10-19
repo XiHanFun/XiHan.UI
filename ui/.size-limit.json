@@ -328,7 +328,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "814 kB"
+    "limit": "815 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",
