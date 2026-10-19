@@ -5102,6 +5102,16 @@
   --xh-control-w: 100%;
 }
 
+/* 格里的内容可以窄过自己的最小内容宽：文本框的原生宽不把内容撑出这一列、压到相邻的格上，
+   列宽下限之和放不下时由表格本体横向滚动；包了一层 Field 的控件同样铺满这一格 */
+.xh-scope-field-array[data-part='item-cell'][data-layout='table'] > * {
+  min-inline-size: 0;
+}
+
+.xh-scope-field-array[data-part='item-cell'][data-layout='table'] > :is(xh-field, .xh-scope-field[data-part='root']) {
+  flex: 1 1 auto;
+}
+
 /* 一行的控件高取这一行字段控件的尺寸档（data-xh-field-size），几档混排时取大的；行里没有字段族控件时按 md */
 .xh-scope-field-array[data-part='item'][data-layout='table'] {
   --xh-_field-array-cell-control-h: var(--xh-control-h-md);
