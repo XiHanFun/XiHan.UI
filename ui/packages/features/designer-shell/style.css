@@ -1963,6 +1963,15 @@
     min-inline-size: 0;
   }
 
+  /* 操作区里有放不下又不会自己收起的内容：操作区排在面板头末尾，另起一行占满 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='panel-header'][data-wrapped] {
+    flex-wrap: wrap;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='panel-header'][data-wrapped] > [data-scope='designer-frame'][data-part='panel-actions'] {
+    flex: 1 0 100%;
+  }
+
   /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底 */
   :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
     display: inline-flex;
