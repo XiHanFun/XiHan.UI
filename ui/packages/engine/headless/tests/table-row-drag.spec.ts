@@ -1165,3 +1165,73 @@ describe('声明树形 tree', () => {
     expect(onRowMove).not.toHaveBeenCalled()
   })
 })
+
+// ——— 树形换位的播报：放进了哪一层，位次与总数都按新的那一层算 ———
+
+describe('树形行 · 播报', () => {
+  /**
+   * 收件箱
+   *   ├ 报价单
+   *   └ 周报
+   * 归档
+   */
+  const TREE: TableRowDef[] = [
+    { id: 'inbox', expandable: true },
+    { id: 'quote', parentId: 'inbox' },
+    { id: 'weekly', parentId: 'inbox' },
+    { id: 'archive', expandable: true },
+  ]
+
+  function tree(extra: Partial<Props> = {}) {
+    return mount({ rows: TREE, defaultExpandedValue: ['inbox'], ...extra })
+  }
+
+  it('改层级：Alt + 右键把周报缩进到报价单下面，说放进了报价单、那一层的第几位共几位', () => {
+    const h = tree()
+    h.service.send({ type: 'ROW.FOCUS', value: 'weekly' })
+    bodyKey(h, 'ArrowRight', { altKey: true })
+    expect(h.said()).toBe('Moved weekly into quote, position 1 of 1.')
+  })
+
+  it('层内换位：Alt + 上键在收件箱里往前挪一位，总数是收件箱里的兄弟行，不是全部可见行', () => {
+    const h = tree()
+    h.service.send({ type: 'ROW.FOCUS', value: 'weekly' })
+    bodyKey(h, 'ArrowUp', { altKey: true })
+    expect(h.said()).toBe('Moved weekly into inbox, position 1 of 2.')
+  })
+
+  it('移到根层：Alt + 左键把报价单退到收件箱后面，容器是根层的说法', () => {
+    const h = tree()
+    h.service.send({ type: 'ROW.FOCUS', value: 'quote' })
+    bodyKey(h, 'ArrowLeft', { altKey: true })
+    expect(h.said()).toBe('Moved quote into the top level, position 2 of 3.')
+  })
+
+  it('父行的名字经 translations.item 取', () => {
+    const names: Record<string, string> = { inbox: '收件箱', quote: '报价单', weekly: '周报', archive: '归档' }
+    const h = tree({ translations: { item: id => names[id] ?? id } })
+    h.service.send({ type: 'ROW.FOCUS', value: 'weekly' })
+    bodyKey(h, 'ArrowRight', { altKey: true })
+    expect(h.said()).toBe('Moved 周报 into 报价单, position 1 of 1.')
+  })
+
+  it('拖放落定那一路同样报容器：把报价单拖进归档里', () => {
+    const h = tree()
+    // inbox 0-40、quote 40-80、weekly 80-120、archive 120-160：140 是 archive 的中段
+    press(h, 'quote', 50)
+    move(140)
+    release()
+    expect(h.said()).toBe('quote dropped into archive at position 1.')
+  })
+
+  it('声明了 tree 的平铺行同样报容器；平表的播报不变', () => {
+    const t = mount({ tree: true })
+    t.service.send({ type: 'ROW.FOCUS', value: 'b' })
+    bodyKey(t, 'ArrowRight', { altKey: true })
+    expect(t.said()).toBe('Moved b into a, position 1 of 1.')
+    const flat = mount()
+    flat.service.send({ type: 'ROW.FOCUS', value: 'a' })
+    bodyKey(flat, 'ArrowDown', { altKey: true })
+    expect(flat.said()).toBe('Moved a to position 2 of 4.')
+  })
+})

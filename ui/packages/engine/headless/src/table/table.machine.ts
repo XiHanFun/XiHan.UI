@@ -7,6 +7,7 @@
 
 import type { RefsFacade } from '@xihan-ui/core'
 import type { DragAnnounceKind } from '../shared/drag'
+import type { TableRowMove } from './table.drag'
 import type { TableLayoutNeeds } from './table.layout'
 import type {
   TableColumnPreference,
@@ -933,20 +934,44 @@ function visibleRowIds(
     .map(row => row.id)
 }
 
-/** 播报一句。位置说的是可见数据行里的第几行。 */
+/**
+ * 播报一句。平表说的是可见数据行里的第几行；树形表（声明了 tree，或有行带 parentId）说放进了哪一层，
+ * 位次与总数按那一层的兄弟行算，父行的名字经 translations.item 取，根层交给 rootLevel。
+ * move 是这一次搬家；没有时（拒绝、取消）按这一行此刻所在的那一层说。
+ */
 function announceRowMove(
   context: RowDragContext,
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
   kind: DragAnnounceKind,
   rowId: string,
-  position?: number,
+  move?: TableRowMove,
 ): void {
-  const ids = visibleRowIds(context, prop)
+  const rows = prop('rows') ?? []
+  const translations = prop('translations')
+  if (!prop('tree') && !rows.some(row => row.parentId != null)) {
+    const ids = visibleRowIds(context, prop)
+    context.set('announcement', dragAnnouncement(kind, {
+      value: rowId,
+      position: move ? move.index + 1 : ids.indexOf(rowId) + 1,
+      total: ids.length,
+      translations,
+    }))
+    return
+  }
+  // 父行不存在的子行按根行处理，与摊平同一口径
+  const known = new Set(rows.map(row => row.id))
+  const parentOf = (row: TableRowDef): string | null => (row.parentId != null && known.has(row.parentId) ? row.parentId : null)
+  const self = rows.find(row => row.id === rowId)
+  const from = self ? parentOf(self) : null
+  const parent = move ? move.parent : from
+  const siblings = rows.filter(row => parentOf(row) === parent)
   context.set('announcement', dragAnnouncement(kind, {
     value: rowId,
-    position: position ?? ids.indexOf(rowId) + 1,
-    total: ids.length,
-    translations: prop('translations'),
+    position: move ? move.index + 1 : siblings.findIndex(row => row.id === rowId) + 1,
+    // 从别的层搬进来的，这一层多出它自己
+    total: move && move.parent !== from ? siblings.length + 1 : siblings.length,
+    into: parent == null ? null : (translations?.item?.(parent) ?? parent),
+    translations,
   }))
 }
 
@@ -990,7 +1015,7 @@ function commitRowMove(
   prop('onRowMove')?.(details)
   // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点；格子上的焦点留在那一格
   send({ type: 'ROW.FOCUS', value: rowId, keepColumn: true })
-  announceRowMove(context, prop, kind, rowId, move.index + 1)
+  announceRowMove(context, prop, kind, rowId, move)
 }
 
 /**
