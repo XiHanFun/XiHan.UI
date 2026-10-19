@@ -24,6 +24,8 @@ export interface DesignerOutlineNode {
   readonly icon?: IconRecord
   /** 下一层；有数组就是分支（空数组也能放进东西），没有就是叶子。 */
   readonly children?: readonly DesignerOutlineNode[]
+  /** 分支第一次出现时展不展开，缺省 true；false 的先收起，之后随用户展开收起，选中它下面的行时照样展开。 */
+  readonly expanded?: boolean
   /** 缺省 true。false 的行只作分组：点了只展开收起，不派发 node-select。 */
   readonly selectable?: boolean
   /** 缺省 true。false 的行自己不能挪：按住拖不起来，Alt + 方向键也挪不动；仍能当落点。 */
@@ -180,6 +182,8 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
   #query = ''
   /** 收起的分支 id；没记的分支缺省展开。 */
   readonly #collapsed = new Set<string>()
+  /** 出现过的分支 id：expanded 为 false 的只在第一次出现时收起。 */
+  readonly #seen = new Set<string>()
   #index = new Map<string, { node: DesignerOutlineNode, parents: readonly string[] }>()
   #tree: OutlineTree | undefined
   #rendered: readonly unknown[] = []
@@ -208,6 +212,13 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
     parts.searchInput.setAttribute('placeholder', t.search)
     const nodes = this.nodes ?? []
     this.#index = indexNodes(nodes)
+    for (const [id, { node }] of this.#index) {
+      if (node.children === undefined || this.#seen.has(id))
+        continue
+      this.#seen.add(id)
+      if (node.expanded === false)
+        this.#collapsed.add(id)
+    }
     const selection = this.#selection()
     if (changed.has('selection')) {
       for (const id of selection) {

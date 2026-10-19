@@ -145,6 +145,19 @@ describe('<xh-designer-outline>', () => {
     expect(treeitem(outline, 'grid').getAttribute('aria-expanded')).toBe('true')
   })
 
+  it('expanded 为 false 的分支第一次出现时收起，之后随用户展开收起；后来新出现的同样收起，选中它下面的行时照样展开', async () => {
+    const branch = (id: string): DesignerOutlineNode => ({ id, label: id, expanded: false, children: [{ id: `${id}.edge`, label: `${id} edge` }] })
+    const outline = await mount(element => (element.nodes = [branch('a'), { id: 'b', label: 'b', children: [{ id: 'b.edge', label: 'b edge' }] }]))
+    expect(tree(outline).expandedValue).toEqual(['b'])
+    tree(outline).dispatchEvent(new CustomEvent('expanded-value-change', { detail: { value: ['a', 'b'] } }))
+    outline.nodes = [branch('a'), { id: 'b', label: 'b', children: [{ id: 'b.edge', label: 'b edge' }] }, branch('c')]
+    await outline.updateComplete
+    expect(tree(outline).expandedValue).toEqual(['a', 'b'])
+    outline.selection = ['c.edge']
+    await outline.updateComplete
+    expect(tree(outline).expandedValue).toEqual(['a', 'b', 'c'])
+  })
+
   it('悬停与焦点：指针移到一行或焦点落到一行派发 node-highlight，离开整棵树派发 null；同一行不重复派发', async () => {
     const outline = await mount()
     const seen = record(outline, 'node-highlight')
