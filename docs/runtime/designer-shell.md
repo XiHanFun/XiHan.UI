@@ -246,7 +246,7 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 | `searchable` | 显示搜索框，按名称与说明过滤；命中的条目连同它的上级一起展开显示 |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开 |
 | `readonly` | 物料只能浏览，不派发 `item-activate`、不能拖出 |
-| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；标题仍作正文的可访问名，搜索框照旧 |
+| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；外框的区已是这块地标，正文不再是地标，搜索框照旧 |
 
 | 事件 | detail |
 | --- | --- |
@@ -1146,7 +1146,7 @@ panels.dispose();
 - 扩展的 `panels` 是 `{ region, create(context) => { element, update?, destroy? }, headerCommands? }`：`region` 是外框的命名区，也就是面板的登记（名字、缺省停的栏、标题、图标、能不能挪与浮出等，见「外框」），追加在内置区之后，同一栏按扩展顺序上下排；`element` 以 `slot` 交给外框，放进那个区。
 - 区名与内置区或别的扩展重名时 `assign` 抛 `DesignerExtensionError`（名字空间 `panel`），什么都不变。
 - 按面板对象的引用比对：留下来的不重建，去掉的调 `destroy` 后撤掉。
-- `headerCommands` 是面板头操作区里的命令 id（或按上下文现算的函数）：面板宿主按选项 `commands` 给的命令表铺成一小条只显示图标的工具栏，放进 `slot="<区名>-actions"`，每次 `update` 刷新，命令表里没有的 id 跳过。内置面板（物料、属性、问题这类不是扩展登记的面板）用 `createPanelActions(document, 面板 id)` 建同样的一条，返回 `{ element, update(ids, commands, context, label) }`，由各款放进外框。
+- `headerCommands` 是面板头操作区里的命令 id（或按上下文现算的函数）：面板宿主按选项 `commands` 给的命令表铺成一小条只显示图标的工具栏，放进 `slot="<区名>-actions"`，每次 `update` 刷新，命令表里没有的 id 跳过；一条命令都没有时整条藏起，里面不放 `<xh-toolbar>`，有了命令再放回。内置面板（物料、属性、问题这类不是扩展登记的面板）用 `createPanelActions(document, 面板 id)` 建同样的一条，返回 `{ element, update(ids, commands, context, label) }`，由各款放进外框。
 - 扩展登记的面板与内置面板一样进布局：能换栏、浮出、收起、隐藏，记在 `layout` 里。宿主写在 HTML 里的内容照样用 `slot="<区名>"` 交给外框，不必经扩展。
 
 ### 命令

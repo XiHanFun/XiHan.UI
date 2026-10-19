@@ -12,6 +12,7 @@ import {
   arrangeCommands,
   commandShortLabel,
   createCommandToolbar,
+  createPanelActions,
   createPanelHost,
   createStatusItem,
   defineDesignerShell,
@@ -126,6 +127,52 @@ describe('createPanelHost', () => {
     host.dispose()
     await frame.updateComplete
     expect(frame.querySelector('button[value="clear-history"]')).toBeNull()
+  })
+})
+
+describe('面板头命令条没有命令时', () => {
+  it('不建 xh-toolbar、不报 wc.*，整条藏起；有了命令再建，命令又没了时再藏起、拿掉 xh-toolbar（内置面板与扩展面板都一样）', async () => {
+    const seen: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsConsoleOutput(false)
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    const off = onDiagnostic(record => void seen.push(record))
+    try {
+      const frame = await mountFrame()
+      const clear: DesignerCommand<Ctx> = { id: 'clear-history', label: '清空历史', icon: GLYPH, run: () => {} }
+      const commands = new Map([[clear.id, clear]])
+      let ids: string[] = []
+      const log: string[] = []
+      const history: DesignerPanel<Ctx> = { ...panel('history', log), region: { name: 'history', position: 'end', title: '历史' }, headerCommands: () => ids }
+      const builtin = createPanelActions<Ctx>(document, 'palette')
+      builtin.update([], commands, { selected: 0 }, '物料操作')
+      frame.append(builtin.element)
+      const host = createPanelHost<Ctx>(frame, { regions: [{ name: 'palette', position: 'start', title: '物料' }, { name: 'canvas', position: 'center' }], commands: () => commands })
+      host.assign([{ id: 'a', panels: [history] }], { selected: 0 })
+      const settle = async (): Promise<void> => {
+        await new Promise(resolve => setTimeout(resolve))
+        await frame.updateComplete
+      }
+      const bars = (): HTMLElement[] => ['palette', 'history'].map(name => frame.querySelector<HTMLElement>(`[data-region="${name}"] [data-part="panel-actions"] > [slot="${name}-actions"]`)!)
+      await settle()
+      expect(bars().map(bar => [bar.hidden, bar.querySelector('xh-toolbar')])).toEqual([[true, null], [true, null]])
+      ids = ['clear-history']
+      host.update({ selected: 1 })
+      builtin.update(['clear-history'], commands, { selected: 1 }, '物料操作')
+      await settle()
+      expect(bars().map(bar => [bar.hidden, bar.querySelectorAll('xh-toolbar button[value="clear-history"]').length])).toEqual([[false, 1], [false, 1]])
+      ids = []
+      host.update({ selected: 1 })
+      builtin.update([], commands, { selected: 1 }, '物料操作')
+      await settle()
+      expect(bars().map(bar => [bar.hidden, bar.querySelector('xh-toolbar')])).toEqual([[true, null], [true, null]])
+      expect(seen.filter(record => record.code.startsWith('wc.')).map(record => `${record.code} ${record.scope ?? ''}/${record.part ?? ''}`)).toEqual([])
+    }
+    finally {
+      off()
+      resetDiagnostics()
+    }
   })
 })
 
