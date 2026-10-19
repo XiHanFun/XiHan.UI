@@ -76,6 +76,26 @@ describe('焦点工具的所属根与窗口', () => {
     expect(select).toHaveBeenCalledTimes(1)
   })
 
+  it('select 只整段选中单行文本类 input：textarea 与勾选框只落焦', () => {
+    const fields = [
+      ...['text', 'search', 'url', 'tel', 'email', 'password', 'number'].map((type) => {
+        const input = document.createElement('input')
+        input.type = type
+        return input
+      }),
+      document.createElement('textarea'),
+      Object.assign(document.createElement('input'), { type: 'checkbox' }),
+    ]
+    document.body.append(...fields)
+    const called = fields.map((field) => {
+      const select = vi.spyOn(field as HTMLInputElement, 'select')
+      focusSafely(field, { select: true })
+      expect(document.activeElement).toBe(field)
+      return select.mock.calls.length
+    })
+    expect(called).toEqual([1, 1, 1, 1, 1, 1, 1, 0, 0])
+  })
+
   it('html 与 svg 的链接都从无链接焦点候选中移除', () => {
     const htmlLink = document.createElement('a')
     const svgLink = document.createElementNS('http://www.w3.org/2000/svg', 'a')

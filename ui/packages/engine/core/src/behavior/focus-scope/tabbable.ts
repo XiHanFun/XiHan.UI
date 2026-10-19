@@ -64,6 +64,7 @@ export function removeLinks<T extends FocusableElement>(els: T[]): T[] {
 }
 
 export interface FocusOptions {
+  /** 落焦后整段选中单行文本类 input（text、search、url、tel、email、password、number）的内容；textarea 不选。 */
   select?: boolean
 }
 
@@ -75,13 +76,18 @@ export function activeElementInRoot(el: FocusableElement): Element | null {
     : el.ownerDocument.activeElement
 }
 
-function isSelectableTextControl(el: FocusableElement): el is HTMLInputElement | HTMLTextAreaElement {
+/** 落焦时会整段选中内容的 input 类型：单行文本类。 */
+const SELECT_ON_FOCUS_TYPES: ReadonlySet<string> = new Set(['text', 'search', 'url', 'tel', 'email', 'password', 'number'])
+
+/** 单行文本类的 input；多行的 textarea 与勾选框、按钮这类 input 都不算。 */
+function isSelectableTextControl(el: FocusableElement): el is HTMLInputElement {
   return isHTMLElement(el)
     && el.namespaceURI === HTML_NAMESPACE
-    && (el.localName === 'input' || el.localName === 'textarea')
+    && el.localName === 'input'
+    && SELECT_ON_FOCUS_TYPES.has((el as HTMLInputElement).type)
 }
 
-/** 安全聚焦：不滚动；对输入类可选中文本。已聚焦则跳过。 */
+/** 安全聚焦：不滚动；给了 select 时对单行文本类 input 整段选中，textarea 只落焦。已聚焦则跳过。 */
 export function focusSafely(el: FocusableElement | null | undefined, opts: FocusOptions = {}): void {
   if (!el || el === activeElementInRoot(el))
     return
