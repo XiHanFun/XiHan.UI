@@ -1,6 +1,6 @@
 # 设计器零件
 
-`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图、外框与设置对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
+`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、问题列表、小地图、外框与设置对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
 
 ```ts
 import { defineDesignerShell } from "@xihan-ui/designer-shell";
@@ -303,6 +303,45 @@ field.addEventListener("pointerdown", event => startDrag(event, { payload: { sou
 - 命中取指针下最内层的放置目标，预览不挡命中。
 - 贴着接受的目标边缘时逐帧在目标上派发 `pan-request` `{ dx, dy }`：视口要朝哪个方向看过去多少屏幕像素，贴右边缘时 `dx` 为正。
 - Esc、指针离开窗口、在不接受处松手即取消。
+
+## 页面结构
+
+`<xh-designer-outline>` 按树列出模板里的内容（容器、分组与元素），像图层面板一样定位、删除与挪动。零件只吃节点、吐事件：选中、在画布上标出、删除与挪动都由设计器翻成自己的操作，进撤销栈也归设计器。
+
+```ts
+const outline = document.createElement("xh-designer-outline");
+outline.nodes = [
+  { id: "name", label: "姓名", description: "name" },
+  { id: "grid", label: "栅格", children: [
+    { id: "col-1", label: "第 1 列", movable: false, deletable: false, children: [{ id: "phone", label: "手机号" }] },
+  ] },
+];
+outline.selection = designer.getSelection().nodes;
+outline.allowMove = move => canMove(move);
+outline.addEventListener("node-select", event => designer.select({ nodes: event.detail.ids }));
+outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `nodes` | `DesignerOutlineNode[]`：`{ id, label, description?, icon?, children?, selectable?, movable?, deletable? }`。`children` 是数组就是分支（空数组也能放进东西），没有就是叶子；`selectable` 为 false 的行只作分组，点了只展开、收起；`movable` 为 false 的行自己不能挪，仍能当落点；`deletable` 为 false 的行没有删除钮，Delete 不删它 |
+| `selection` | 选中的行 id，受控：点一行只派发 `node-select`，等设计器换上新值。眼下按单选显示，多个时标第一个 |
+| `allowMove` | `(move) => boolean`，一次挪动许不许；不给就不能拖。`movable` 为 false 的行先被拦下，不问它 |
+| `searchable` | 显示搜索框，按名字与副文本过滤；命中的行连同上级一起展开显示，过滤时不能拖 |
+| `readonly` | 能选、能标出，不能删、不能挪 |
+| `headless` | 放进外框的卡片时写：不画自己的标题，由面板头显示；标题仍给树命名 |
+
+| 事件 | detail |
+| --- | --- |
+| `node-select` | `{ ids }` 用户在树上选了这些行 |
+| `node-highlight` | `{ id \| null }` 悬停或焦点所在的行变了，离开整棵树时为 `null`；同一行不重复派发 |
+| `node-delete` | `{ ids }` 按了删除钮或 Delete / Backspace |
+| `node-move` | `{ id, parent, index }` 拖动或 Alt + 方向键挪了一行，已经过 `allowMove` 判定；`parent` 为 `null` 即顶层，`index` 已按先摘后插修正 |
+
+- 树用 [`<xh-tree>`](../components/tree)，键盘与读屏照它的约定：整棵树一个 Tab 位，上下键走行，右键展开、左键收起，Enter 与 Space 选中，连打检索；Alt + 上下键在同一层挪一位，Alt + 左右键改一层缩进，挪动的结果由树的播报区念出。分支缺省展开，展开状态按节点 id 保留；`selection` 换了新值时，被收起的上级跟着展开，选中的行滚进可见区。
+- 删除：Delete 或 Backspace 删焦点所在的一行；焦点在选中的行上时，删全部可删的选中项。行尾的删除钮只接指针，悬停或焦点在这一行时出现（粗指针设备常显），对读屏隐藏、不占 Tab 位，按下不夺焦点；可及名取 `translations.remove(名字)`。
+- 换了 `nodes` 时整棵树重新铺，焦点原在树里的回到同一 id 的行上。
+- 文案键 `xh-designer-outline`：`title`、`search`、`empty`、`noMatches`、`remove(label)`。
 
 ## 变换覆盖层
 

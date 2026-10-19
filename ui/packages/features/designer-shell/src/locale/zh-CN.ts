@@ -48,6 +48,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: '没有匹配的物料',
     empty: '没有物料',
   },
+  'xh-designer-outline': {
+    title: '页面结构',
+    search: '搜索页面结构',
+    noMatches: '没有匹配的内容',
+    empty: '还没有内容',
+    remove: label => `删除${label}`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `横向参考线 ${value}`,
     verticalGuide: value => `竖向参考线 ${value}`,

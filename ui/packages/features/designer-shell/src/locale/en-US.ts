@@ -50,6 +50,14 @@ export const DESIGNER_PALETTE_EN_US: DesignerShellLocaleTranslations['xh-designe
   empty: 'No elements',
 }
 
+export const DESIGNER_OUTLINE_EN_US: DesignerShellLocaleTranslations['xh-designer-outline'] = {
+  title: 'Structure',
+  search: 'Search structure',
+  noMatches: 'No matching items',
+  empty: 'Nothing here yet',
+  remove: label => `Delete ${label}`,
+}
+
 export const DESIGNER_RULER_EN_US: DesignerShellLocaleTranslations['xh-designer-ruler'] = {
   horizontalGuide: value => `Horizontal guide at ${value}`,
   verticalGuide: value => `Vertical guide at ${value}`,
@@ -123,6 +131,7 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-properties': DESIGNER_PROPERTIES_EN_US,
   'xh-designer-issues': DESIGNER_ISSUES_EN_US,
   'xh-designer-palette': DESIGNER_PALETTE_EN_US,
+  'xh-designer-outline': DESIGNER_OUTLINE_EN_US,
   'xh-designer-ruler': DESIGNER_RULER_EN_US,
   'xh-designer-frame': DESIGNER_FRAME_EN_US,
   'xh-designer-commands': DESIGNER_COMMANDS_EN_US,

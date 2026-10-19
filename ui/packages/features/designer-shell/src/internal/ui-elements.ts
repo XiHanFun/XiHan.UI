@@ -72,6 +72,13 @@ export function definePaletteElements(): void {
   defineXhElement('xh-icon', XhIconElement)
 }
 
+/** 页面结构的搜索框、树与图标用到的元素。 */
+export function defineOutlineElements(): void {
+  defineXhElement('xh-text-field', XhTextFieldElement)
+  defineXhElement('xh-tree', XhTreeElement)
+  defineXhElement('xh-icon', XhIconElement)
+}
+
 /** 外框的分隔条、面板头的帮助与窄屏抽屉用到的元素。 */
 export function defineFrameElements(): void {
   defineXhElement('xh-splitter', XhSplitterElement)

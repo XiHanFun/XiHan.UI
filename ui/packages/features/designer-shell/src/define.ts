@@ -9,6 +9,7 @@ import { registerElement } from '@xihan-ui/web-components/authoring'
 import { XhDesignerFrameElement } from './frame/frame-element'
 import { XhDesignerIssuesElement } from './issues/issues-element'
 import { XhDesignerMinimapElement } from './minimap/minimap-element'
+import { XhDesignerOutlineElement } from './outline/outline-element'
 import { XhDesignerPaletteElement } from './palette/palette-element'
 import { XhDesignerPropertiesElement } from './properties/properties-element'
 import { XhDesignerRulerElement } from './ruler/ruler-element'
@@ -26,6 +27,7 @@ export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-issues': XhDesignerIssuesElement,
   'xh-designer-minimap': XhDesignerMinimapElement,
   'xh-designer-palette': XhDesignerPaletteElement,
+  'xh-designer-outline': XhDesignerOutlineElement,
   'xh-designer-transform': XhDesignerTransformElement,
   'xh-designer-ruler': XhDesignerRulerElement,
   'xh-designer-frame': XhDesignerFrameElement,

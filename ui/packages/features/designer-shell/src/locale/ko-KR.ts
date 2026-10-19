@@ -48,6 +48,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: '일치하는 요소 없음',
     empty: '요소 없음',
   },
+  'xh-designer-outline': {
+    title: '페이지 구조',
+    search: '페이지 구조 검색',
+    noMatches: '일치하는 항목이 없습니다',
+    empty: '아직 내용이 없습니다',
+    remove: label => `${label} 삭제`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `가로 안내선 ${value}`,
     verticalGuide: value => `세로 안내선 ${value}`,
