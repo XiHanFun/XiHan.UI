@@ -415,9 +415,44 @@ panel.addEventListener("history-clear", () => runCommand(commands, "clear-histor
 - 列表用 [`<xh-listbox>`](../components/listbox)，单选，选中的就是当前位置：整张列表一个 Tab 位，上下键与 Home、End 只移焦点、不跳转，Enter 与 Space 跳到焦点那一行，点一行同样跳。选中受控：选了一行只派发 `history-go`，列表仍选在当前位置，等设计器交来新快照。
 - 头部的清空钮在列表之前占一个 Tab 位；没有步骤或只读时禁用。
 - 快照换了时按位置号复用行，只改文字与状态，焦点所在的行不被换掉；当前位置变了就把它滚进可见区。
-- 文案键 `xh-designer-history`：`title`、`origin`、`originTruncated`、`untitled`、`undone`、`saved`、`empty`、`clear`，清空确认框的 `clearConfirmTitle`、`clearConfirmContent`、`clearConfirmOk`，播报的 `announceUndo(label)`、`announceRedo(label)`、`announceJump(label, steps)`、`announceCleared`。
+- 文案键 `xh-designer-history`：`title`、`help`（面板头里的帮助）、`origin`、`originTruncated`、`untitled`、`undone`、`saved`、`empty`、`clear`，清空确认框的 `clearConfirmTitle`、`clearConfirmContent`、`clearConfirmOk`，播报的 `announceUndo(label)`、`announceRedo(label)`、`announceJump(label, steps)`、`announceCleared`。
 
 撤销、重做与清空历史三条命令由 `designerHistoryCommands` 统一给出，见下文「命令」。
+
+### 历史记录面板
+
+各款不必自己接零件：写一个适配器交给 `createHistoryPanel`，得到一块面板，放进内置扩展的 `panels`。
+
+```ts
+import { createHistoryPanel } from "@xihan-ui/designer-shell";
+import { HistoryIcon } from "@xihan-ui/icons";
+
+const history = createHistoryPanel<MyContext>({
+  snapshot: context => context.designer.historyState,
+  goTo: (context, position) => context.designer.goToHistory(position),
+  announce: (context, message) => context.frame?.announce(message),
+}, { region: { icon: HistoryIcon }, readonly: context => context.designer.readonly });
+
+const builtin = { id: "my-designer", commands: [...designerHistoryCommands(options)], panels: [history] };
+const host = createPanelHost(frame, { commands: context => commandTable });
+```
+
+| 适配器 | 说明 |
+| --- | --- |
+| `snapshot(context)` | 此刻的快照，说明已按此刻的语言取成字符串（`snapshotHistory`）；每次刷新都会再取 |
+| `goTo(context, position)` | 跳到某一步或起点（快照里的位置号）；只读、预览这类不许改的状态由各款自己挡住 |
+| `announce(context, message)` | 读屏播报，通常交给外框的 `announce`；不给就不播 |
+
+| 选项 | 说明 |
+| --- | --- |
+| `region` | 面板登记里要换的项，如 `icon`、`position`、`defaultHidden`；缺省区名 `history`、停在右栏、缺省隐藏 |
+| `readonly(context)` | 返回 `true` 时只读：只能看，不能跳 |
+
+- 缺省隐藏，从「面板」菜单打开；登记在右栏的内置面板之后，打开后在属性下面。外壳不依赖图标包，图标由各款经 `region.icon` 给。
+- 面板头是清空历史：面板登记了 `headerCommands: ["clear-history"]`，设计器的命令表里要有这条命令（`designerHistoryCommands`），`createPanelHost` 要给 `commands` 才铺得出来。零件是 headless 的，不画自己的清空钮。
+- 面板的标题与帮助取零件文案 `xh-designer-history` 的 `title`、`help`，读的时候按全局配置现取：设计器每次把区交给外框时跟着语言变。
+- 每次 `update(context)` 重取快照，内容没变时不重设；选一行转给适配器的 `goTo`，跳到以后零件经适配器的 `announce` 读一句。用的都是最近一次刷新的上下文。清空、保存这类不改文档的变化也要刷新面板。
+- 一个面板对象可以放进各款共用的内置扩展：每个设计器实例各建一份零件，互不相干。
 
 ## 变换覆盖层
 

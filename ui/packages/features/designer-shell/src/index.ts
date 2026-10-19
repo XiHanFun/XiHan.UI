@@ -62,6 +62,8 @@ export { DESIGNER_HISTORY_COMMANDS, designerHistoryCommands } from './history/hi
 export type { DesignerHistoryCommandsOptions, DesignerHistoryCommandTarget, DesignerHistoryConfirm } from './history/history-commands'
 export { XhDesignerHistoryElement } from './history/history-element'
 export type { DesignerHistoryEventMap } from './history/history-element'
+export { createHistoryPanel } from './history/history-panel'
+export type { DesignerHistoryAdapter, DesignerHistoryPanelOptions } from './history/history-panel'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
 export { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from './locale/en-US'

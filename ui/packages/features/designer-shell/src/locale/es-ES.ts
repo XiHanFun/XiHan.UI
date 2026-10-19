@@ -58,6 +58,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-history': {
     title: 'Historial',
+    help: 'Todos los cambios desde que se abrió, del más antiguo al más reciente. Selecciona un paso para volver a él; los pasos posteriores se pueden rehacer hasta que hagas un cambio nuevo.',
     origin: 'Al abrir',
     originTruncated: 'Pasos anteriores descartados',
     untitled: 'Edición',
