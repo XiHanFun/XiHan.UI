@@ -64,6 +64,7 @@
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
+- **修复** 开着的下拉被外面的点击收起、同一次点击又打开抽屉或对话框时，控制台不再报 `core.layer.dispose-not-top`；这条诊断只在父层先于开在它里面的层释放时报，明细新增 `nested`
 - **修复** Table 接了虚拟滚动时表体画出行间线，与普通表体同一条线，滚动换批时每一行的高度不变；条目里的详情行也画
 - **修复** Table 键盘换位之后，宿主写回时挪动了持有焦点的行节点，焦点不再掉回页面，回到搬走的那一行，可以接着再挪
 - **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；树形表里有子行的行不再写指向不存在详情行的 `aria-controls`；纵向合并格按行的内容盒铺开，行间线画在行下边框上时起点行不再被一次次撑高；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条

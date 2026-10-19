@@ -92,7 +92,7 @@ function hide(...targets: Element[]): Cleanup {
 }
 
 beforeEach(() => {
-  // 乱序拆层会投递 layerDisposeNotTop，是被测行为本身，别让它刷屏
+  // 诊断不打到控制台
   setDiagnosticsConsoleOutput(false)
 })
 

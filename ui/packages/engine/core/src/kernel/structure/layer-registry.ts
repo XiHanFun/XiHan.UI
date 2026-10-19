@@ -81,18 +81,31 @@ function opensInside(inner: Layer, outer: Layer): boolean {
   return originsOf(inner).some(el => el !== content && contains(content, el))
 }
 
+/** 新层在栈里的位置，以及登记这一刻与它有嵌套关系的层。 */
+interface Placement {
+  readonly index: number
+  /** 新层开在它们的内容里，都排在新层之下。 */
+  readonly parents: readonly Layer[]
+  /** 开在新层内容里的已有层，都排在新层之上。 */
+  readonly children: readonly Layer[]
+}
+
 /**
  * 新层插在栈里的位置：缺省排在最上面；开在哪几层的内容里就排在它们之上；
  * 已有的层开在新层的内容里时，新层排到其中最低那层之下，不管谁先登记。
  */
-function insertionIndex(existing: readonly Layer[], layer: Layer): number {
+function placementOf(existing: readonly Layer[], layer: Layer): Placement {
   let floor = 0
+  const parents: Layer[] = []
   existing.forEach((other, index) => {
-    if (opensInside(layer, other))
+    if (opensInside(layer, other)) {
       floor = index + 1
+      parents.push(other)
+    }
   })
-  const firstChild = existing.findIndex((other, index) => index >= floor && opensInside(other, layer))
-  return firstChild === -1 ? existing.length : firstChild
+  const children = existing.filter((other, index) => index >= floor && opensInside(other, layer))
+  const index = children.length ? existing.indexOf(children[0]!) : existing.length
+  return { index, parents, children }
 }
 
 export function createLayerRegistry(doc: Document): LayerRegistry {
@@ -100,6 +113,8 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
   type CollectedError = { found: false } | { found: true, error: unknown }
 
   let layers: readonly Layer[] = Object.freeze([])
+  // 每一层开在哪几层的内容里，登记时按当时的 DOM 记下：释放时节点可能已经卸掉、引用已经清空
+  const parentsOf = new WeakMap<Layer, Set<Layer>>()
   const subs = new Set<Subscriber>()
   let seq = 0
   let changing = false
@@ -174,8 +189,12 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
   const register: LayerRegistry['register'] = input => runChange(() => {
     const id = `layer-${++seq}`
     const layer: Layer = Object.freeze({ ...input, id })
-    const at = insertionIndex(layers, layer)
+    const placement = placementOf(layers, layer)
+    const at = placement.index
     publishRegistration(frozenSnapshot([...layers.slice(0, at), layer, ...layers.slice(at)]))
+    parentsOf.set(layer, new Set(placement.parents))
+    for (const child of placement.children)
+      parentsOf.get(child)?.add(layer)
 
     let disposed = false
     const dispose: Cleanup = () => {
@@ -187,13 +206,15 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
           throw new Error(`[xh] LayerRegistry 无法释放未登记的层: ${layer.id}`)
         const participants = [...subs]
         let diagnosticResult: CollectedError = { found: false }
-        if (idx !== layers.length - 1) {
+        // 只在开在它里面的层还压在上面时报；后来另开、不开在它里面的层压在上面时，从中间释放照常进行
+        const nested = layers.slice(idx + 1).filter(above => parentsOf.get(above)?.has(layer))
+        if (nested.length) {
           try {
             reportDiagnostic({
               code: DIAGNOSTIC_CODES.layerDisposeNotTop,
               level: 'error',
-              message: `dispose 的层不是栈顶（可能与 top layer 顺序不一致）: ${layer.id}`,
-              detail: { layerId: layer.id, index: idx, depth: layers.length },
+              message: `dispose 的层上面还有开在它里面的层，它们会比它晚释放: ${layer.id}`,
+              detail: { layerId: layer.id, index: idx, depth: layers.length, nested: nested.map(above => above.id) },
             })
           }
           catch (error) {

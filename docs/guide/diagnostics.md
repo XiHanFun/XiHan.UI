@@ -29,7 +29,7 @@ interface DiagnosticRecord {
 export const DIAGNOSTIC_CODES = {
   invariant: "core.invariant", // 断言不成立
   warn: "core.warn", // 条件告警
-  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层不是栈顶
+  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层上面还有开在它里面的层
   machineError: "machine.error", // 机器抛出 MachineError
   wcMissingPart: "wc.missing-part", // 作者未渲染必需的角色节点
   wcUnknownPart: "wc.unknown-part", // 角色节点的 part 名不在组件解剖内

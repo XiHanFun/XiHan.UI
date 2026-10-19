@@ -13,7 +13,7 @@ export const DIAGNOSTIC_CODES = {
   invariant: 'core.invariant',
   /** 条件告警。 */
   warn: 'core.warn',
-  /** dispose 的层不是栈顶。 */
+  /** dispose 的层上面还有开在它里面的层。 */
   layerDisposeNotTop: 'core.layer.dispose-not-top',
   /** 机器抛出 MachineError。 */
   machineError: 'machine.error',
