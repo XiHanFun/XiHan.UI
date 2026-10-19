@@ -46,9 +46,9 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @customElement xh-tree
  * @attr {'outline'|'subtle'|'ghost'} variant - 外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留行；默认 outline
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md：行高、行内内衬、字号、指示符盒与层级缩进随档
- * @attr {boolean} multiple - 复选，默认关闭
+ * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
- * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
+ * @attr {boolean} cascade - selection-mode="multiple" 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开
  * @attr {boolean} lines - 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线
@@ -99,7 +99,7 @@ export class XhTreeElement extends XhElement {
     defaultExpandedValue: { attribute: false },
     selection: { attribute: false },
     defaultSelection: { attribute: false },
-    multiple: { converter: BOOLEAN_CONVERTER },
+    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     leafOrientation: { converter: STRING_CONVERTER, attribute: 'leaf-orientation' },
     cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -127,7 +127,7 @@ export class XhTreeElement extends XhElement {
   declare defaultExpandedValue?: string[]
   declare selection?: string[]
   declare defaultSelection?: string[]
-  declare multiple?: boolean
+  declare selectionMode?: TreeSchema['props']['selectionMode']
   declare leafOrientation?: Orientation
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
@@ -176,7 +176,7 @@ export class XhTreeElement extends XhElement {
       defaultExpandedValue: this.defaultExpandedValue,
       selection: this.selection,
       defaultSelection: this.defaultSelection,
-      multiple: this.multiple,
+      selectionMode: this.selectionMode,
       cascade: this.cascade,
       leafOrientation: this.leafOrientation,
       checkedStrategy: this.checkedStrategy,

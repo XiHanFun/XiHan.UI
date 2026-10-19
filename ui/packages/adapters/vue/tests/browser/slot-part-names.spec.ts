@@ -210,7 +210,7 @@ const TREE_COLLECTION = [
 function TREE(): unknown {
   return h(
     XhTreeRoot,
-    { collection: TREE_COLLECTION, multiple: true, defaultExpandedValue: ['branch'] },
+    { collection: TREE_COLLECTION, selectionMode: 'multiple', defaultExpandedValue: ['branch'] },
     () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'branch' }, () => [

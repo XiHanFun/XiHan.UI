@@ -40,7 +40,7 @@ function mount(): HTMLElement {
     setup: () => () =>
       h(
         XhTreeRoot,
-        { collection, multiple: true, defaultExpandedValue: ['dir'] },
+        { collection, selectionMode: 'multiple', defaultExpandedValue: ['dir'] },
         () => [
           h(XhTreeTree, null, () => [
             h(XhTreeBranch, { value: 'dir' }, () => [

@@ -70,7 +70,8 @@ export const XhTreeRoot = defineComponent({
     defaultExpandedValue: { type: Array as PropType<string[]> },
     selection: { type: Array as PropType<string[]> },
     defaultSelection: { type: Array as PropType<string[]> },
-    multiple: { type: Boolean, default: undefined },
+    /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
+    selectionMode: { type: String as PropType<TreeProps['selectionMode']> },
     /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
     leafOrientation: { type: String as PropType<TreeProps['leafOrientation']> },
     cascade: Boolean,

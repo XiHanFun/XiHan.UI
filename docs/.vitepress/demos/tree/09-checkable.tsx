@@ -45,7 +45,7 @@ export default function Demo(): ReactNode {
         onSelectionChange={details => setSelected(details.value)}
         collection={collection}
         defaultExpandedValue={["east", "north"]}
-        multiple
+        selectionMode="multiple"
         cascade
       >
         <XhTreeLabel>投放城市</XhTreeLabel>

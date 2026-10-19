@@ -80,7 +80,8 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   defaultExpandedValue?: string[]
   selection?: string[]
   defaultSelection?: string[]
-  multiple?: boolean
+  /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
+  selectionMode?: TreeSchema['props']['selectionMode']
   /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
   leafOrientation?: Orientation
   cascade?: boolean
@@ -116,7 +117,7 @@ export function XhTreeRoot({
   defaultExpandedValue,
   selection,
   defaultSelection,
-  multiple,
+  selectionMode,
   leafOrientation,
   cascade,
   checkedStrategy,
@@ -146,7 +147,7 @@ export function XhTreeRoot({
     defaultExpandedValue,
     selection,
     defaultSelection,
-    multiple,
+    selectionMode,
     leafOrientation,
     cascade,
     checkedStrategy,

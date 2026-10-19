@@ -74,7 +74,7 @@ export default function Demo(): ReactNode {
         collection={collection}
         leafOrientation={wide ? "horizontal" : "vertical"}
         defaultExpandedValue={["system", "user", "role", "log"]}
-        multiple
+        selectionMode="multiple"
         cascade
       >
         <XhTreeLabel>菜单授权</XhTreeLabel>

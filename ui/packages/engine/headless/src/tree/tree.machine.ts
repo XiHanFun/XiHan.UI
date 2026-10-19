@@ -7,7 +7,7 @@
 
 import type { Scope } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
-import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeVisibleNode } from './tree.types'
+import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
@@ -95,8 +95,8 @@ export function indexTree(collection: readonly TreeNode[]): Map<string, TreeNode
 }
 
 /** 选中集合的不变量：单选恒为长度 ≤ 1，复选去重。公开 API 与内部写入都经这里收口。 */
-function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
-  return multiple ? unique(next) : next.slice(0, 1)
+function normalizeSelection(next: readonly string[], mode: TreeSelectionMode): string[] {
+  return mode === 'single' ? next.slice(0, 1) : unique(next)
 }
 
 // 展开集合与选中集合都住在 context 的 cell 里，受控/非受控在 cell 收口，
@@ -325,7 +325,7 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'SELECTION.SET')
           return
-        context.set('selection', normalizeSelection(e.value, !!prop('multiple')))
+        context.set('selection', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
       },
       selectNode: ({ context, prop, event }) => {
         const e = event.current()
@@ -333,11 +333,41 @@ export const treeMachine = createMachine({
           return
         const current = context.get('selection')
         const anchor = context.get('selectionAnchor')
-        const multiple = !!prop('multiple')
+        const mode = prop('selectionMode') ?? 'single'
+
+        // extended：按文件管理器那套。Shift 选一段整份替换，同时按 Ctrl/Cmd 则并进 Shift 前的选中，锚点不动；
+        // Ctrl/Cmd 切换这一项、裸点换成这一项，锚点都挪过来
+        if (mode === 'extended') {
+          if (e.extend && anchor != null) {
+            const roots = prop('collection') ?? []
+            const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
+            const baseline = e.additive ? (context.get('selectionBaseline') ?? current) : []
+            context.set('selectionBaseline', e.additive ? baseline : null)
+            const next = applySelection({
+              state: { selected: baseline, anchor },
+              mode: 'multiple',
+              value: e.value,
+              extend: true,
+              additive: !!e.additive,
+              items: order,
+            })
+            context.set('selection', [...next.selected])
+            return
+          }
+          context.set('selectionAnchor', e.value)
+          context.set('selectionBaseline', null)
+          context.set(
+            'selection',
+            e.additive
+              ? (current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+              : [e.value],
+          )
+          return
+        }
 
         // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
         // 再叠上范围选，选出来什么会难以预料
-        if (e.extend && multiple && !prop('cascade') && anchor != null) {
+        if (e.extend && mode === 'multiple' && !prop('cascade') && anchor != null) {
           const roots = prop('collection') ?? []
           // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去
           const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
@@ -357,7 +387,7 @@ export const treeMachine = createMachine({
         context.set('selectionAnchor', e.value)
         context.set('selectionBaseline', null)
         // 单选没有取消选中这回事，点两下不会把树点空
-        if (!prop('multiple')) {
+        if (mode === 'single') {
           context.set('selection', [e.value])
           return
         }

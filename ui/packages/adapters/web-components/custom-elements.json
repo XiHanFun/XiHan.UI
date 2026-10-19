@@ -81568,12 +81568,12 @@
             },
             {
               "kind": "field",
-              "name": "multiple",
+              "name": "selectionMode",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "TreeSchema['props']['selectionMode'] | undefined"
               },
-              "attribute": "multiple"
+              "attribute": "selection-mode"
             },
             {
               "kind": "field",
@@ -81841,11 +81841,11 @@
             },
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "TreeSchema['props']['selectionMode'] | undefined"
               },
-              "description": "复选，默认关闭",
-              "name": "multiple",
-              "fieldName": "multiple"
+              "description": "选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
             },
             {
               "type": {
@@ -81859,7 +81859,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
+              "description": "selection-mode=\"multiple\" 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
               "name": "cascade",
               "fieldName": "cascade"
             },

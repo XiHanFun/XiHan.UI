@@ -530,7 +530,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '复选：确认键切换而不是替换，tree 报 aria-multiselectable',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ multiple: true, expandOnClick: false, defaultExpandedValue: ['src'] }),
+      props: props({ selectionMode: 'multiple', expandOnClick: false, defaultExpandedValue: ['src'] }),
       initial: { parts: { tree: { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'focus', part: 'tree' },
@@ -547,6 +547,46 @@ export const treeSuite: ConformanceSuite = {
           key: 'Enter',
           expect: { parts: { item: itemsSelected('index'), branch: branchesSelected() } },
         },
+      ],
+    },
+    {
+      name: 'extended：确认键与裸点击换成这一项，Ctrl+Space 与 Ctrl 点击切换这一项，Shift 点击选一段',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['tree.kbd.toggle'],
+      props: props({ selectionMode: 'extended', defaultExpandedValue: ['src'] }),
+      initial: { parts: { tree: { 'aria-multiselectable': 'true' } } },
+      steps: [
+        { kind: 'focus', part: 'tree' },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[0]', exact: true } } },
+        { kind: 'key', key: 'Enter', expect: { parts: { item: itemsSelected('index') } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[1]', exact: true } } },
+        {
+          kind: 'key',
+          key: ' ',
+          modifiers: ['Control'],
+          expect: { parts: { item: itemsSelected('index'), branch: branchesSelected('utils') } },
+        },
+        {
+          kind: 'key',
+          key: ' ',
+          modifiers: ['Control'],
+          expect: { parts: { item: itemsSelected('index'), branch: branchesSelected() } },
+        },
+        { kind: 'key', key: 'Enter', expect: { parts: { item: itemsSelected(), branch: branchesSelected('utils') } } },
+        {
+          kind: 'click',
+          part: 'item[3]',
+          modifiers: ['Control'],
+          expect: { parts: { item: itemsSelected('license'), branch: branchesSelected('utils') } },
+        },
+        {
+          // 锚点在 license：可见序 src / index / utils / readme / docs / license，docs 到 license 那一段整份替换
+          kind: 'click',
+          part: 'branch-control[2]',
+          modifiers: ['Shift'],
+          expect: { parts: { item: itemsSelected('license'), branch: branchesSelected('docs') } },
+        },
+        { kind: 'click', part: 'item[0]', expect: { parts: { item: itemsSelected('index'), branch: branchesSelected() } } },
       ],
     },
     {

@@ -49,7 +49,7 @@ export default function Demo(): ReactNode {
         collection={collection}
         selection={selected}
         defaultExpandedValue={["src"]}
-        multiple
+        selectionMode="multiple"
         onSelectionChange={onSelectionChange}
       >
         <XhTreeLabel>要提交的文件</XhTreeLabel>

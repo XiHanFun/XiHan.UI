@@ -14,7 +14,7 @@ const collection = [
 function tree(props: Partial<TreeSchema['props']> = {}) {
   const runtime = createVanillaRuntime()
   const service = createService(treeMachine, {
-    props: () => ({ collection, multiple: true, cascade: true, defaultExpandedValue: ['src'], ...props }),
+    props: () => ({ collection, selectionMode: 'multiple' as const, cascade: true, defaultExpandedValue: ['src'], ...props }),
     runtime,
   })
   runtime.start()

@@ -26,7 +26,7 @@ collection 是层级元信息的唯一事实源，标记只负责外观；缩进
 
 ### 多选
 
-multiple 关闭时是单选，开启后点击与确认键都变为切换，选中集合形状不变仍是数组
+选择模式缺省是单选，写 multiple 后点击与确认键都变为切换，选中集合形状不变仍是数组
 
 <XhDemo src="tree/02-multiple" />
 
@@ -120,6 +120,12 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 <XhDemo src="tree/17-item-description" />
 
+### 文件管理器式多选
+
+选择模式写 extended：点击换成这一项，按住 Ctrl（macOS 为 ⌘）点击加选或取消，按住 Shift 点击从锚点选一段
+
+<XhDemo src="tree/18-extended-selection" />
+
 ## 设计指引
 
 ### 何时使用
@@ -138,6 +144,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 - 展开集合与选中集合两套值各自可受控。
 - `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
+- 选择模式 `selectionMode`：缺省 `single` 单选；`multiple` 点击与确认键切换，按住 Shift 点击把锚点到这一项那一段并进来；`extended` 照文件管理器，点击与确认键换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 切换这一项，按住 Shift 点击选锚点到这一项那一段（同时按 Ctrl / Cmd 则并进）。级联勾选只在 `multiple` 下生效。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。拖放与 Alt + 方向键落下之后，宿主写回 `collection` 的那一次重排里，行从旧位置滑到新位置（换了父被重建的节点按节点值认回）；落点线取品牌实心色，与表格、排序同一种。
@@ -194,8 +201,8 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `multiple` | `boolean` |  | 复选：点击与确认键都是切换，tree 带 aria-multiselectable=true。默认 false（单选）。 |
-| `cascade` | `boolean` |  | multiple 下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
+| `selectionMode` | `TreeSelectionMode` |  | 选择模式，默认 single；multiple 与 extended 下 tree 带 aria-multiselectable=true。 |
+| `cascade` | `boolean` |  | selectionMode 为 multiple 时父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 与 extended 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
@@ -290,7 +297,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `expandedValue` | `string[]` |  |
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
-| `multiple` | `boolean` | 生效的是否为复选。 |
+| `selectionMode` | `TreeSelectionMode` | 生效的选择模式。 |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -299,7 +306,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
-| `select` | `(value: string, options?: { extend?: boolean }) => void` | 选中某个节点。extend 为真时选中锚点到该节点的范围（仅复选、且非级联）。 |
+| `select` | `(value: string, options?: { extend?: boolean, additive?: boolean }) => void` | 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认）， additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
@@ -335,7 +342,8 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `End` | focus in tree | 焦点移到末个可见行（展开着的子树也算行） |
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
-| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Ctrl+Space` / `Cmd+Space` | focus on node, selectionMode 为 multiple 或 extended、节点未禁用 | 只切换焦点节点的选中态，其余选中不动，不改展开态 |
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |

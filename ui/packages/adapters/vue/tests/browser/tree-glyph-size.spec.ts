@@ -71,7 +71,7 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
     // src 分支用箭头把手 + 行尾对号，docs 分支用方向指示符：两种展开字形都量到；
     // 级联下只勾 index：叶子的对号画勾、src 分支的对号落到半选画杠；
     // 作者图标塞在分支文字与叶子文字之后
-    render: () => h(XhTreeRoot, { collection, multiple: true, cascade: true, defaultSelection: ['index'], defaultExpandedValue: ['src', 'docs'] }, () => [
+    render: () => h(XhTreeRoot, { collection, selectionMode: 'multiple', cascade: true, defaultSelection: ['index'], defaultExpandedValue: ['src', 'docs'] }, () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'src' }, () => [
           h(XhTreeBranchControl, null, () => [
