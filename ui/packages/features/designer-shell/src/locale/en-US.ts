@@ -58,6 +58,24 @@ export const DESIGNER_OUTLINE_EN_US: DesignerShellLocaleTranslations['xh-designe
   remove: label => `Delete ${label}`,
 }
 
+export const DESIGNER_HISTORY_EN_US: DesignerShellLocaleTranslations['xh-designer-history'] = {
+  title: 'History',
+  origin: 'Opened',
+  originTruncated: 'Earlier steps discarded',
+  untitled: 'Edit',
+  undone: 'Undone',
+  saved: 'Saved',
+  empty: 'No changes yet',
+  clear: 'Clear history',
+  clearConfirmTitle: 'Clear history?',
+  clearConfirmContent: 'You will not be able to undo past this point. The current content stays as it is.',
+  clearConfirmOk: 'Clear',
+  announceUndo: label => `Undid: ${label}`,
+  announceRedo: label => `Redid: ${label}`,
+  announceJump: (label, steps) => `Went to: ${label}, ${steps} ${steps === 1 ? 'step' : 'steps'}`,
+  announceCleared: 'History cleared',
+}
+
 export const DESIGNER_RULER_EN_US: DesignerShellLocaleTranslations['xh-designer-ruler'] = {
   horizontalGuide: value => `Horizontal guide at ${value}`,
   verticalGuide: value => `Vertical guide at ${value}`,
@@ -121,6 +139,9 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbar: 'Designer actions',
   undo: 'Undo',
   redo: 'Redo',
+  undoWith: label => `Undo: ${label}`,
+  redoWith: label => `Redo: ${label}`,
+  clearHistory: 'Clear history',
   cut: 'Cut',
   copy: 'Copy',
   paste: 'Paste',
@@ -158,6 +179,7 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-issues': DESIGNER_ISSUES_EN_US,
   'xh-designer-palette': DESIGNER_PALETTE_EN_US,
   'xh-designer-outline': DESIGNER_OUTLINE_EN_US,
+  'xh-designer-history': DESIGNER_HISTORY_EN_US,
   'xh-designer-ruler': DESIGNER_RULER_EN_US,
   'xh-designer-frame': DESIGNER_FRAME_EN_US,
   'xh-designer-commands': DESIGNER_COMMANDS_EN_US,

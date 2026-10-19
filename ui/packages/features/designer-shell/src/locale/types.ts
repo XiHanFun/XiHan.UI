@@ -8,6 +8,7 @@
 import type {
   DesignerCommandsTranslations,
   DesignerFrameTranslations,
+  DesignerHistoryTranslations,
   DesignerIssuesTranslations,
   DesignerOutlineTranslations,
   DesignerPaletteTranslations,
@@ -23,6 +24,7 @@ export interface DesignerShellLocaleTranslations {
   readonly 'xh-designer-issues': DesignerIssuesTranslations
   readonly 'xh-designer-palette': DesignerPaletteTranslations
   readonly 'xh-designer-outline': DesignerOutlineTranslations
+  readonly 'xh-designer-history': DesignerHistoryTranslations
   readonly 'xh-designer-ruler': DesignerRulerTranslations
   readonly 'xh-designer-frame': DesignerFrameTranslations
   readonly 'xh-designer-commands': DesignerCommandsTranslations

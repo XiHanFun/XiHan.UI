@@ -56,9 +56,13 @@ export type {
 } from './frame/layout'
 export { createStatusItem } from './frame/status-item'
 export type { DesignerStatusItem, DesignerStatusItemOptions, DesignerStatusItemState } from './frame/status-item'
+export { DESIGNER_HISTORY_COMMANDS, designerHistoryCommands } from './history/history-commands'
+export type { DesignerHistoryCommandsOptions, DesignerHistoryCommandTarget, DesignerHistoryConfirm } from './history/history-commands'
+export { XhDesignerHistoryElement } from './history/history-element'
+export type { DesignerHistoryEventMap } from './history/history-element'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
-export { DESIGNER_COMMANDS_EN_US } from './locale/en-US'
+export { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerOutlineElement } from './outline/outline-element'
@@ -117,6 +121,7 @@ export type {
 export type {
   DesignerCommandsTranslations,
   DesignerFrameTranslations,
+  DesignerHistoryTranslations,
   DesignerIssuesTranslations,
   DesignerOutlineTranslations,
   DesignerPaletteTranslations,

@@ -85,6 +85,40 @@ export interface DesignerOutlineTranslations {
   readonly remove: (label: string) => string
 }
 
+/** 历史记录的文案。 */
+export interface DesignerHistoryTranslations {
+  /** 面板标题，也是列表的名字。 */
+  readonly title: string
+  /** 起点那一行：打开、重新载入或清空之后的状态。 */
+  readonly origin: string
+  /** 起点那一行：起点之前有被步数上限丢掉的步骤。 */
+  readonly originTruncated: string
+  /** 没有说明的一步。 */
+  readonly untitled: string
+  /** 已撤销的一步的副文本。 */
+  readonly undone: string
+  /** 保存点那一行的副文本。 */
+  readonly saved: string
+  /** 还没有任何一步时的提示。 */
+  readonly empty: string
+  /** 零件头部清空钮的文字。 */
+  readonly clear: string
+  /** 清空前确认框的标题。 */
+  readonly clearConfirmTitle: string
+  /** 清空前确认框的正文。 */
+  readonly clearConfirmContent: string
+  /** 清空前确认框的确定钮。 */
+  readonly clearConfirmOk: string
+  /** 撤销一步之后的播报，label 是撤销掉的那一步的说明。 */
+  readonly announceUndo: (label: string) => string
+  /** 重做一步之后的播报，label 是重做的那一步的说明。 */
+  readonly announceRedo: (label: string) => string
+  /** 从历史记录跳到某一步之后的播报，label 是到达的那一行，steps 是走了几步。 */
+  readonly announceJump: (label: string, steps: number) => string
+  /** 清空之后的播报。 */
+  readonly announceCleared: string
+}
+
 /** 物料面板的文案。 */
 export interface DesignerPaletteTranslations {
   /** 面板标题。 */
@@ -217,6 +251,12 @@ export interface DesignerCommandsTranslations {
   readonly undo: string
   /** 重做。 */
   readonly redo: string
+  /** 撤销钮带上下一步说明的全名，如「撤销：添加卡片」；要包含 undo 的文字。 */
+  readonly undoWith: (label: string) => string
+  /** 重做钮带上下一步说明的全名；要包含 redo 的文字。 */
+  readonly redoWith: (label: string) => string
+  /** 清空历史。 */
+  readonly clearHistory: string
   /** 剪切。 */
   readonly cut: string
   /** 复制。 */
@@ -297,6 +337,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
     'xh-designer-outline'?: Partial<DesignerOutlineTranslations>
+    'xh-designer-history'?: Partial<DesignerHistoryTranslations>
     'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
