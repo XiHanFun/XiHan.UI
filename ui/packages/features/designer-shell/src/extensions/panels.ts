@@ -83,16 +83,27 @@ export interface DesignerPanelActions<Ctx> {
 
 /**
  * 建一条面板头命令条：内置面板（物料、属性、问题这类不是扩展登记的面板）由各款自己建好，放进外框；
- * 扩展登记的面板给 headerCommands，由面板宿主建。
+ * 扩展登记的面板给 headerCommands，由面板宿主建。没有命令时整条藏起，里面的 <xh-toolbar> 拿掉，有了命令再放回。
  */
 export function createPanelActions<Ctx>(doc: Document, panel: string): DesignerPanelActions<Ctx> {
-  const toolbar: CommandToolbar<Ctx> = createCommandToolbar<Ctx>(doc, { display: 'icon' })
-  toolbar.element.setAttribute('slot', `${panel}-actions`)
+  const bar: CommandToolbar<Ctx> = createCommandToolbar<Ctx>(doc, { display: 'icon' })
+  const trigger = bar.toolbar.parentElement!
+  bar.toolbar.remove()
+  bar.element.setAttribute('slot', `${panel}-actions`)
+  bar.element.hidden = true
   return {
-    element: toolbar.element,
+    element: bar.element,
     update: (ids, commands, context, label) => {
-      toolbar.update(ids.length > 0 ? [ids.filter(id => commands.has(id))] : [], commands, context, label)
-      toolbar.element.hidden = !ids.some(id => commands.has(id))
+      const shown = ids.filter(id => commands.has(id))
+      bar.element.hidden = shown.length === 0
+      if (shown.length === 0) {
+        bar.close()
+        bar.toolbar.remove()
+        return
+      }
+      bar.update([shown], commands, context, label)
+      if (bar.toolbar.parentElement !== trigger)
+        trigger.prepend(bar.toolbar)
     },
   }
 }

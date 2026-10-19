@@ -10,7 +10,7 @@ import type { IconRecord } from '@xihan-ui/core'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerPaletteTranslations } from '../translations'
 import { createCounterIdGenerator } from '@xihan-ui/core'
-import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, SVG_NS, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, SVG_NS, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { startDrag } from '../drag/drag'
 import { definePaletteElements } from '../internal/ui-elements'
 
@@ -146,7 +146,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
   declare collapsible?: boolean
   /** 只读：物料只能浏览，不派发 item-activate、不能拖出。 */
   declare readonly?: boolean
-  /** 放进外框的卡片时写上：不画自己的标题，标题由外框的面板头显示，仍作正文的可访问名。 */
+  /** 放进外框的卡片时写上：不画自己的标题，标题由外框的面板头显示；外框的区已是这块地标，正文不再是地标。 */
   declare headless?: boolean
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerPaletteTranslations> | undefined
@@ -182,6 +182,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     parts.title.hidden = this.headless === true
     parts.search.hidden = !this.searchable
     parts.header.hidden = this.headless === true && !this.searchable
+    // headless 时外框的区已是这块地标，正文不再是
+    setAttributes(parts.body, this.headless === true ? { 'role': undefined, 'aria-labelledby': undefined } : { 'role': 'region', 'aria-labelledby': parts.title.id })
     parts.searchInput.setAttribute('aria-label', t.search)
     parts.searchInput.setAttribute('placeholder', t.search)
     const query = this.searchable ? this.#query.trim().toLocaleLowerCase() : ''
@@ -222,7 +224,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       this.requestUpdate()
     })
     const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, search])
-    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body', 'role': 'region', 'aria-labelledby': title.id })
+    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body' })
     const empty = createGeneratedElement(doc, 'div', { 'data-part': 'empty' })
     body.addEventListener('pointerdown', this.#onPointerDown)
     body.addEventListener('click', this.#onClick)

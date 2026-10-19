@@ -1,8 +1,10 @@
 // 历史记录在真实键盘、指针与布局下：整张列表一个 Tab 位，方向键只移焦点、不跳转，Enter 才派发 history-go；
-// 点一行同样派发；设计器交来新快照后当前位置那一行选中；已撤销的步骤字色减淡；头部的清空钮在列表之前占一个 Tab 位。
+// 点一行同样派发；设计器交来新快照后当前位置那一行选中；已撤销的步骤字色减淡；头部的清空钮在列表之前占一个 Tab 位；
+// 列表以标题命名，axe 没有违规。
 import type { ApplyOperation, History } from '@xihan-ui/designer-kit'
 import type { DesignerHistoryEventMap, XhDesignerHistoryElement } from '../../src'
 import { createHistory, snapshotHistory } from '@xihan-ui/designer-kit'
+import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
@@ -109,6 +111,11 @@ describe('历史记录（真实键盘与指针）', () => {
     await userEvent.keyboard('{Enter}')
     await until(() => selected(panel)[0] === 'Add a', '跳到第一步')
     expect([goes, history.document]).toEqual([[history.entries[0]!.position], ['a']])
+  })
+
+  it('列表以标题命名，axe 没有违规', async () => {
+    const panel = await mount(sample())
+    await expectNoAxeViolations(panel)
   })
 
   it('点一行就跳过去；已撤销的步骤字色比已做的淡', async () => {

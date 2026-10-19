@@ -278,6 +278,17 @@ describe('<xh-designer-properties>', () => {
     expect(action.parentElement!.dataset.part).toBe('footer-slot')
   })
 
+  it('脱离文档期间被更新，连回来后头部与正文仍各只有一份', async () => {
+    const panel = await mount(element => element.targets = [task])
+    panel.remove()
+    panel.targets = [{ ...task, id: 't2' }]
+    await panel.updateComplete
+    document.body.append(panel)
+    await panel.updateComplete
+    expect(Array.from(panel.children, child => child.getAttribute('data-part'))).toEqual(['header', 'body'])
+    expect(panel.querySelectorAll('[data-part="property"][data-path="label"]')).toHaveLength(1)
+  })
+
   it('宿主编辑器拿到全部对象，setValue 与 commit 走同一对事件', async () => {
     const contexts: Parameters<DesignerPropertyEditor>[0][] = []
     const editor: DesignerPropertyEditor = (context) => {

@@ -239,7 +239,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
   }
 
   #ensureParts(): Parts {
-    if (this.#parts?.header.isConnected && this.#parts.header.parentElement === this)
+    if (this.#parts?.header.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
     const title = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'title' })

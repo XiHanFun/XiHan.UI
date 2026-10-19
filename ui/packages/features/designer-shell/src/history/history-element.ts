@@ -9,7 +9,6 @@
 import type { HistorySnapshot } from '@xihan-ui/designer-kit'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { DesignerHistoryTranslations } from '../translations'
-import { createCounterIdGenerator } from '@xihan-ui/core'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineHistoryElements } from '../internal/ui-elements'
 
@@ -96,7 +95,6 @@ export class XhDesignerHistoryElement extends XhReactiveElement {
   }
 
   readonly #config = new XhConfigController(this)
-  readonly #ids = createCounterIdGenerator('xh-designer-history')
   #parts: Parts | undefined
   /** 已铺的行，键是位置号。 */
   #items = new Map<number, HTMLElement>()
@@ -120,8 +118,7 @@ export class XhDesignerHistoryElement extends XhReactiveElement {
     setText(parts.clearFace, t.clear)
     const canClear = this.readonly !== true && snapshot.entries.length > 0
     setAttributes(parts.clear, { disabled: !canClear })
-    parts.list.setAttribute('aria-labelledby', parts.title.id)
-    setAttributes(parts.list, { 'read-only': this.readonly === true })
+    setAttributes(parts.list, { 'aria-label': t.title, 'read-only': this.readonly === true })
     const rows = rowsOf(snapshot, t)
     this.#renderRows(rows, t)
     parts.list.value = String(snapshot.position)
@@ -143,7 +140,7 @@ export class XhDesignerHistoryElement extends XhReactiveElement {
     if (this.#parts?.header.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
-    const title = createAuthoredElement(doc, 'span', { 'data-part': 'title', 'id': this.#ids.scopeId() })
+    const title = createAuthoredElement(doc, 'span', { 'data-part': 'title' })
     const clearFace = createAuthoredElement(doc, 'button', { 'data-xh-part': 'root', 'type': 'button' })
     const clear: Parts['clear'] = createAuthoredElement(doc, 'xh-button', { 'variant': 'ghost', 'size': 'sm', 'tone': 'danger', 'data-part': 'clear-trigger' }, [clearFace])
     clearFace.addEventListener('click', () => {

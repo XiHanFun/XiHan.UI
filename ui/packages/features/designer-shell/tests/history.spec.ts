@@ -74,7 +74,8 @@ describe('<xh-designer-history>', () => {
     expect(rows(panel).map(row => row.getAttribute('data-history'))).toEqual(['origin', 'done', 'done', 'undone'])
     expect(list(panel).value).toBe(String(history.position))
     const title = panel.querySelector('[data-part="title"]')!
-    expect([title.textContent, list(panel).getAttribute('aria-labelledby')]).toEqual(['History', title.id])
+    expect([title.textContent, list(panel).getAttribute('aria-label'), list(panel).hasAttribute('aria-labelledby')]).toEqual(['History', 'History', false])
+    expect(list(panel).querySelector('[role="listbox"]')!.getAttribute('aria-label')).toBe('History')
   })
 
   it('选一行派发 history-go，列表仍选在当前位置等设计器交来新快照；选当前那一行或只读时不派发', async () => {

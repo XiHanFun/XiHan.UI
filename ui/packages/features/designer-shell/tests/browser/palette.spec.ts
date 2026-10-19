@@ -1,5 +1,5 @@
 // 物料面板带下级的一组在真实 Chromium 里：真实键盘按树的约定移动与展开，确认键激活；树里的行能拖到画布上，
-// 按在展开箭头上不起拖；面板按钮的样式不落到树的部件上；axe 没有违规。
+// 按在展开箭头上不起拖；面板按钮的样式不落到树的部件上；axe 没有违规；放进外框的区里不与区重复成同名地标。
 import type { DesignerPaletteDragPayload, DesignerPaletteEventMap, DesignerPaletteGroup, XhDesignerPaletteElement } from '../../src'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -123,6 +123,22 @@ describe('物料面板带下级的一组（Chromium）', () => {
     expect(getComputedStyle(row(palette, 'no')).cursor).toBe('grab')
     await userEvent.click(row(palette, 'items').querySelector('[data-part="branch-trigger"]')!)
     expect(getComputedStyle(row(palette, 'items.qty')).cursor).not.toBe('grab')
+  })
+
+  it('放进外框的区里（headless）：区是唯一的同名地标，axe 没有违规', async () => {
+    const frame = document.createElement('xh-designer-frame')
+    frame.style.cssText = 'width:900px;height:480px'
+    frame.regions = [{ name: 'palette', position: 'start', title: 'Elements' }, { name: 'canvas', position: 'center' }]
+    const palette = document.createElement('xh-designer-palette')
+    palette.slot = 'palette'
+    palette.headless = true
+    palette.groups = [{ id: 'g', label: '元素', items: [{ id: 'text', label: '文本' }] }]
+    frame.append(palette, document.createElement('div'))
+    fixture.append(frame)
+    await frame.updateComplete
+    await palette.updateComplete
+    expect(frame.querySelectorAll('[role="region"]')).toHaveLength(1)
+    await expectNoAxeViolations(frame.querySelector<HTMLElement>('[data-region="palette"]')!)
   })
 
   it('收起的分支箭头指向行尾、展开的朝下：箭头只转一次', async () => {
