@@ -125,7 +125,7 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   themeDark: 'Dark',
   brand: 'Accent color',
   brandHint: 'The color of buttons, selection and highlights in this designer.',
-  toolbarDisplay: 'Toolbar buttons',
+  toolbarDisplay: 'Button style',
   toolbarDisplayHint: 'How the buttons on the toolbar are shown.',
   toolbarDisplayIcon: 'Icons',
   toolbarDisplayText: 'Text',
@@ -145,6 +145,18 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   layoutMoveDown: label => `Move ${label} down`,
   layoutMinimized: label => `Collapse ${label} to title`,
   layoutReset: 'Reset layout',
+  toolbar: 'Toolbar',
+  toolbarVisible: 'Show toolbar',
+  toolbarVisibleHint: 'Commands stay available from shortcuts and menus.',
+  toolbarLayout: 'Buttons',
+  toolbarLayoutHint: 'Choose which buttons to show; drag to reorder and regroup.',
+  toolbarGroups: 'Toolbar groups',
+  toolbarGroup: index => `Group ${index}`,
+  toolbarGroupToggle: index => `Show all buttons in group ${index}`,
+  toolbarCommands: index => `Buttons in group ${index}`,
+  toolbarCommandToggle: label => `Show ${label}`,
+  toolbarMove: label => `Move ${label}`,
+  toolbarLayoutReset: 'Reset to default',
 }
 
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {

@@ -1,8 +1,9 @@
 // 设置对话框在真实 Chromium 与组件皮肤下：左边竖排分区、右边条目，换页时对话框不跳高；
 // 主题写在设计器根上，搬到浮层根的对话框经视觉桥跟着变暗；设计器外面包一层局部 <xh-config> 时，搬到浮层根的
-// 标题、字段与对话框自己的文案都取这一层的语言；没有 wc.* 诊断，axe 也没有违规。
+// 标题、字段与对话框自己的文案都取这一层的语言；没有 wc.* 诊断，axe 也没有违规。「工具栏」页的按钮表用真实指针跨组拖命令、
+// 用键盘挪组。
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import type { DesignerSettingsSection, XhDesignerSettingsElement } from '../../src'
+import type { DesignerSettingsEventMap, DesignerSettingsSection, XhDesignerSettingsElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '@xihan-ui/tokens'
@@ -10,8 +11,8 @@ import { mergeXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
 import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
-import { userEvent } from 'vitest/browser'
-import { createDesignerSettingsHost, defineDesignerShell } from '../../src'
+import { cdp, userEvent } from 'vitest/browser'
+import { createDesignerSettingsHost, defineDesignerShell, toolbarSettingsSource } from '../../src'
 import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -217,6 +218,108 @@ describe('设置对话框', () => {
       off()
       resetDiagnostics()
       frame.remove()
+    }
+  })
+})
+
+describe('「工具栏」页的按钮表', () => {
+  const commands = new Map([
+    ['undo', { id: 'undo', label: '撤销', shortcut: ['Mod', 'Z'], run: () => {} }],
+    ['redo', { id: 'redo', label: '重做', run: () => {} }],
+    ['delete', { id: 'delete', label: '删除', run: () => {} }],
+    ['zoom-in', { id: 'zoom-in', label: '放大', run: () => {} }],
+  ])
+
+  async function mountToolbar(): Promise<{ element: XhDesignerSettingsElement, values: unknown[] }> {
+    const element = await mount()
+    element.toolbar = toolbarSettingsSource([['undo', 'redo'], ['delete', 'zoom-in']], commands, {})
+    const values: unknown[] = []
+    element.addEventListener('settings-change', (event) => {
+      const detail = (event as DesignerSettingsEventMap['settings-change']).detail
+      values.push(detail.value)
+      element.settings = detail.settings
+    })
+    element.show('toolbar')
+    await element.updateComplete
+    await settle()
+    return { element, values }
+  }
+
+  function handle(item: Element): HTMLElement {
+    return item.querySelector<HTMLElement>(':scope > [data-toolbar-handle], :scope > [data-scope="designer-settings"][data-part="toolbar-group-head"] > [data-toolbar-handle]')!
+  }
+
+  function command(id: string): HTMLElement {
+    return document.querySelector<HTMLElement>(`[data-toolbar-command="${id}"]`)!
+  }
+
+  function groups(): string[][] {
+    return Array.from(document.querySelectorAll('[data-toolbar-group]'), group => Array.from(group.querySelectorAll('[data-toolbar-command]'), node => node.getAttribute('data-toolbar-command')!))
+  }
+
+  async function mouseScale(): Promise<number> {
+    const seen = new Promise<number>(resolve => document.addEventListener('pointermove', event => resolve(event.clientX / 20), { once: true }))
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 20, y: 20 })
+    return seen
+  }
+
+  /** 按住 from 的中心，分十步拖到 to，松开。 */
+  async function drag(from: HTMLElement, to: { x: number, y: number }): Promise<void> {
+    const scale = await mouseScale()
+    const at = (x: number, y: number): { x: number, y: number } => ({ x: x / scale, y: y / scale })
+    const box = from.getBoundingClientRect()
+    const start = { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(start.x, start.y) })
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(start.x, start.y) })
+    for (let i = 1; i <= 10; i++) {
+      await frames(1)
+      await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(start.x + ((to.x - start.x) * i) / 10, start.y + ((to.y - start.y) * i) / 10) })
+    }
+    await frames(1)
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(to.x, to.y) })
+    await frames(4)
+  }
+
+  it('真实指针把第一组的「撤销」拖到第二组「删除」下面：只挪这一条，整份写进 toolbar.layout', async () => {
+    const { values } = await mountToolbar()
+    const target = command('delete').getBoundingClientRect()
+    await drag(handle(command('undo')), { x: target.left + target.width / 2, y: target.bottom - 4 })
+    await settle()
+    expect(groups()).toEqual([['redo'], ['delete', 'undo', 'zoom-in']])
+    expect(values.at(-1)).toEqual({ groups: [['redo'], ['delete', 'undo', 'zoom-in']] })
+  })
+
+  it('键盘拿起第二组的把手往上挪一格：组换了位置，焦点留在把手上；勾掉一条后组头是半选', async () => {
+    const { values } = await mountToolbar()
+    const second = document.querySelectorAll('[data-toolbar-group]')[1]!
+    const grip = handle(second)
+    grip.focus()
+    await userEvent.keyboard(' {ArrowUp} ')
+    await settle()
+    expect(groups()).toEqual([['delete', 'zoom-in'], ['undo', 'redo']])
+    expect(values.at(-1)).toEqual({ groups: [['delete', 'zoom-in'], ['undo', 'redo']] })
+    expect(document.activeElement).toBe(grip)
+    await userEvent.click(command('zoom-in').querySelector('[data-part="toolbar-command-toggle"] button, [data-scope="checkbox"][data-part="root"]')!)
+    await settle()
+    expect(values.at(-1)).toEqual({ groups: [['delete', 'zoom-in'], ['undo', 'redo']], hidden: ['zoom-in'] })
+    expect(document.querySelector('[data-toolbar-group] [data-part="toolbar-group-toggle"] [data-scope="checkbox"][data-part="root"]')!.getAttribute('aria-checked')).toBe('mixed')
+  })
+
+  it('打开这一页时没有 wc.* 诊断，axe 也没有违规', async () => {
+    const records: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    setDiagnosticsConsoleOutput(false)
+    const off = onDiagnostic(record => void records.push(record))
+    try {
+      await mountToolbar()
+      expect(records.filter(record => record.code.startsWith('wc.')).map(record => record.code)).toEqual([])
+      await expectNoAxeViolations(content())
+    }
+    finally {
+      off()
+      resetDiagnostics()
     }
   })
 })

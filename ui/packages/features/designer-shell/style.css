@@ -387,6 +387,75 @@
     }
   }
 
+  /* 「工具栏」页的按钮表：一组一块（组头是三态勾选框与把手），命令一行（勾选框带图标与名字、快捷键、把手）；
+     sortable 的 root、item 由它写 data-scope，这几层按 data-toolbar-* 与固定长度的子链选中 */
+  [data-scope='designer-settings'][data-part='toolbar-layout'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-3);
+    align-items: flex-start;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-sortable'] {
+    display: contents;
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-sortable'] > [data-toolbar-groups] {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-sortable'] > [data-toolbar-groups] > [data-toolbar-group] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-1);
+    border: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-surface);
+    padding: var(--xh-space-2);
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-group-head'] {
+    display: flex;
+    gap: var(--xh-space-2);
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* 命令紧挨着排；组空了也留一行高，能把命令拖回来 */
+  [data-scope='designer-settings'][data-part='toolbar-sortable'] > [data-toolbar-commands] {
+    --xh-sortable-gap: 0;
+
+    display: flex;
+    flex-direction: column;
+    min-block-size: var(--xh-control-h-sm);
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-sortable'] > [data-toolbar-commands] > [data-toolbar-command] {
+    display: flex;
+    gap: var(--xh-space-2);
+    align-items: center;
+    min-block-size: var(--xh-control-h-sm);
+    padding-inline-start: var(--xh-space-4);
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-command-toggle'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-command-icon'] {
+    flex: none;
+  }
+
+  [data-scope='designer-settings'][data-part='toolbar-command-shortcut'] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+    white-space: nowrap;
+  }
+
   /* 上面的部件声明了 display，收起时补回来 */
   [data-scope='designer-settings'][data-part][hidden] {
     display: none;
