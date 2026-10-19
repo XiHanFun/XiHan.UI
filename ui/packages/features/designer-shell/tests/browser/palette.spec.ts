@@ -124,4 +124,24 @@ describe('物料面板带下级的一组（Chromium）', () => {
     await userEvent.click(row(palette, 'items').querySelector('[data-part="branch-trigger"]')!)
     expect(getComputedStyle(row(palette, 'items.qty')).cursor).not.toBe('grab')
   })
+
+  it('收起的分支箭头指向行尾、展开的朝下：箭头只转一次', async () => {
+    const { palette } = await mount()
+    const items = row(palette, 'items')
+    expect(arrowAngle(items)).toBe(0)
+    await userEvent.click(items.querySelector('[data-part="branch-trigger"]')!)
+    const start = performance.now()
+    while (arrowAngle(items) !== 90 && performance.now() - start < 2000)
+      await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(arrowAngle(items)).toBe(90)
+  })
 })
+
+/** 分支箭头实际转了多少度：展开箭头与它里面各节点的旋转角加起来。 */
+function arrowAngle(control: Element): number {
+  const trigger = control.querySelector<HTMLElement>('[data-scope="tree"][data-part="branch-trigger"]')!
+  return [trigger, ...trigger.querySelectorAll<HTMLElement>('*')].reduce((sum, element) => {
+    const value = getComputedStyle(element).rotate
+    return sum + (value === 'none' ? 0 : Number.parseFloat(value))
+  }, 0)
+}
