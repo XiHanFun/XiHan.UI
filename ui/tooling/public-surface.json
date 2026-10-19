@@ -271,7 +271,8 @@
     "@xihan-ui/designer-shell": [
       ".",
       "./locale",
-      "./style.css"
+      "./style.css",
+      "./style.unlayered.css"
     ],
     "@xihan-ui/markdown": [
       "."
