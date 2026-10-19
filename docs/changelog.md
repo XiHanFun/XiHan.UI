@@ -82,6 +82,7 @@
 - **修复** 浮层层级栈的先后看嵌套：对话框和里面缺省展开的下拉、或一打开就弹出候选的输入框同一刻打开时，浮层排在对话框之上、Esc 先关浮层
 - **修复** 浮层层级栈、Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数改为页面级单例：页面上装了几份 `@xihan-ui/core`（应用与设计器各自打包）时，Vue、React 与 Web Components 的对话框、菜单、Popover 与提示仍在同一个栈里，后打开的在上面，焦点与 Esc 只作用在最上层
 - **修复** Web Components 的 `<xh-config>` 管到搬进 Portal 的浮层内容：对话框、抽屉与下拉面板里的元素照它们在原来位置取 `locale`、`size` 与文案，打开期间改配置跟着更新；浮层里的 `<xh-config>` 承接外层的主题，禁用的 Fieldset 压进组里开的浮层。`@xihan-ui/core` 新增穿过 Portal 实例壳走逻辑祖先链的 `logicalParentElement` 与 `logicallyContains`
+- **修复** Web Components 的元素插入后紧接着有代码读布局时，部件不再先露出浏览器缺省样式、再从那里播过渡到皮肤色（插进来先带一圈深色边框，过一会儿才恢复）；新建插入与移出再插回都是如此
 - **修复** Menubar 持有焦点的入口随数据删掉时，React 与 Web Components 的菜单栏不再整条退出 Tab 序列，与 Vue 一样由根节点留住 Tab 位
 - **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
 - **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
