@@ -1,12 +1,13 @@
 // 外框的面板布局在真实 Chromium 里：按住面板头拖到外框边上换栏、拖进一栏两块面板之间调序、拖到画布上浮出；
 // 浮出的小窗夹在外框里，挪完停一会儿派发 layout-change；收成标题条的面板只占面板头的高度，一栏全收起时几条面板头贴着栏顶。
-// 小窗与菜单的宿主不占排版；「更多」菜单选了条目就收起、焦点回到面板头；小窗里正文能滚，帮助钮在小窗标题栏上。
+// 小窗与菜单的宿主不占排版；「更多」菜单选了条目就收起、焦点回到面板头；小窗里正文能滚，帮助钮在小窗标题栏上；
+// 面板头的标题至少留四个字宽，操作区放不下的钮收进面板头的「更多」菜单。
 import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerFrameEventMap, DesignerLayoutChangeReason, ResolvedDesignerLayout, XhDesignerFrameElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
-import { defineDesignerShell } from '../../src'
+import { createPanelActions, defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
@@ -317,5 +318,36 @@ describe('<xh-designer-frame> 小窗与面板菜单（Chromium）', () => {
     await settle()
     expect(headerOf('outline').querySelector('[data-part="panel-help-tip"]')).not.toBeNull()
     expect(headerOf('outline').hidden).toBe(false)
+  })
+})
+
+describe('<xh-designer-frame> 面板头的操作区（Chromium）', () => {
+  it('左栏窄时标题至少留四个字宽，操作区放不下的钮收进面板头的「更多」菜单、排在最前，命令条自己的「更多」不出现；选了就执行', async () => {
+    const ran: string[] = []
+    const icon = { name: 'dot', viewBox: '0 0 24 24', nodes: [{ tag: 'circle' as const, attrs: { cx: '12', cy: '12', r: '6' } }] }
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f']
+    const commands = new Map(ids.map(id => [id, { id, label: `操作 ${id}`, icon, run: () => void ran.push(id) }]))
+    const actions = createPanelActions<undefined>(document, 'palette')
+    frame.append(actions.element)
+    actions.update(ids, commands, undefined, '物料操作')
+    await settle()
+    await settle()
+    const heading = headerOf('palette').querySelector<HTMLElement>('[data-part="panel-heading"]')!
+    const fontSize = Number.parseFloat(getComputedStyle(headerOf('palette').querySelector('[data-part="panel-title"]')!).fontSize)
+    expect(heading.getBoundingClientRect().width).toBeGreaterThanOrEqual(fontSize * 4 - 1)
+    const buttons = Array.from(headerOf('palette').querySelectorAll<HTMLButtonElement>('[data-part="panel-actions"] button[value]'))
+    const hidden = buttons.filter(button => button.hidden).map(button => button.value)
+    expect(hidden.length).toBeGreaterThan(0)
+    expect(buttons.filter(button => !button.hidden).every(button => button.getBoundingClientRect().right <= headerOf('palette').getBoundingClientRect().right + 1)).toBe(true)
+    const own = headerOf('palette').querySelector<HTMLElement>('[data-part="panel-actions"] [data-part="overflow-trigger"]')
+    expect(own === null || own.getBoundingClientRect().width === 0).toBe(true)
+    await userEvent.click(menuTriggerOf('palette'))
+    await settle()
+    const items = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).filter(item => item.checkVisibility())
+    expect(items().slice(0, hidden.length).map(item => item.textContent)).toEqual(hidden.map(id => `操作 ${id}`))
+    await userEvent.click(items()[0]!)
+    await settle()
+    expect(ran).toEqual([hidden[0]])
+    actions.element.remove()
   })
 })
