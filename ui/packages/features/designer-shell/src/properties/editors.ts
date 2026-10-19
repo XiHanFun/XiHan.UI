@@ -8,7 +8,7 @@
 
 import type { JsonObject, JsonValue } from '@xihan-ui/core/json'
 import type { DataField, DataFieldKind } from '@xihan-ui/designer-kit'
-import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyNumberConstraints, PropertyOption, PropertySide } from '@xihan-ui/designer-kit/properties'
+import type { PropertyControl, PropertyDescriptor, PropertyEditorContext, PropertyNumberConstraints, PropertyOption, PropertyOptionValueType, PropertySide } from '@xihan-ui/designer-kit/properties'
 import type { FilterField, FilterParameter } from '@xihan-ui/viz'
 import type { DesignerPropertiesTranslations } from '../translations'
 import { formatJsonPath, isJsonPathText, isPlainObject, jsonEquals } from '@xihan-ui/core/json'
@@ -1039,6 +1039,18 @@ interface OptionRow {
 /** 值与文字两列的最小宽：面板放不下时表格横向滚动，行号与把手钉在两侧。 */
 const OPTION_TEXT_MIN_WIDTH = '5rem'
 
+/**
+ * 一列的宽：文字与按文字写的值不窄过 OPTION_TEXT_MIN_WIDTH；数字、日期与日期时间的值不窄过框的最小内容宽，
+ * 整个数、整个日期都放得下；禁用那一列按内容取宽，列头一行放得下。
+ */
+function optionColumnWidth(column: OptionColumn, valueType: PropertyOptionValueType): { width?: string, minWidth: string } {
+  if (column === 'disabled')
+    return { width: 'auto', minWidth: 'max-content' }
+  if (column === 'value' && valueType !== 'string' && valueType !== 'boolean')
+    return { minWidth: 'min-content' }
+  return { minWidth: OPTION_TEXT_MIN_WIDTH }
+}
+
 /** 还不知道行 key 时格子内容的 slot：对不上任何格子，字段数组不把它当作者写的结构。 */
 const PENDING_SLOT = 'designer-option-pending'
 
@@ -1314,9 +1326,8 @@ function optionsEditor(initial: FieldContext): FieldInstance {
   const update = (next: FieldContext): void => {
     context = next
     const t = next.translations
-    array.readOnly = next.readonly
     if (array.columns === undefined || array.columns.some(column => column.label !== t.optionColumns[column.id as OptionColumn]))
-      array.columns = columns.map(id => ({ id, label: t.optionColumns[id], ...(id === 'disabled' ? { width: 'auto' } : { minWidth: OPTION_TEXT_MIN_WIDTH }) }))
+      array.columns = columns.map(id => ({ id, label: t.optionColumns[id], ...optionColumnWidth(id, valueType) }))
     // 布尔的两行不能增删：新增与删除把手按只读铺成按不动
     array.readOnly = next.readonly || fixed
     const value = shownOf(next.mixed ? undefined : next.value)

@@ -1,6 +1,6 @@
 // 属性面板的选项表在真实布局与真实键盘、指针下：落在某一项某一格的问题标在那一格的控件上，读屏名、aria-invalid 与描述都落在那里；
 // 新增一项后焦点落到它的值上；上移、下移、删除与新增都能只用键盘完成；窄的属性面板里各格看得见、不压到相邻的格、页面不横向溢出；
-// 分组可折叠、放不下整张表时表格横向滚动，行尾把手不被裁掉。
+// 分组可折叠、放不下整张表时表格横向滚动，行尾把手不被裁掉；数字与日期的值格放得下整个值，禁用列头一行放得下。
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl } from '@xihan-ui/designer-kit/properties'
 import type { DesignerPropertiesEventMap, DesignerPropertyTarget, XhDesignerPropertiesElement } from '../../src'
@@ -63,6 +63,28 @@ async function mount(options: JsonValue, errors: readonly { path: (string | numb
   await element.updateComplete
   await until(() => element.querySelectorAll('[data-part="item-cell"] input').length > 0 || !Array.isArray(options) || options.length === 0)
   return written
+}
+
+/** 挂一个给定宽度、分组可折叠、中文的属性面板，选项放在「数据」组里。 */
+async function mountNarrow(width: number, options: JsonValue, control: PropertyControl = { kind: 'options' }): Promise<XhDesignerPropertiesElement> {
+  const box = document.createElement('div')
+  box.style.cssText = `display: flex; inline-size: ${width}px; overflow: hidden`
+  const scope = document.createElement('xh-config') as HTMLElement & { translations?: unknown }
+  scope.translations = mergeXhConfig(zhCN, designerShellZhCN).translations
+  scope.style.cssText = 'display: block; flex: 1; min-inline-size: 0'
+  const element = document.createElement('xh-designer-properties')
+  element.collapsible = true
+  element.targets = [{
+    ...target(options, control),
+    descriptors: [{ path: ['data', 'options'], control, label: '选项', group: 'data' }],
+  }]
+  scope.append(element)
+  box.append(scope)
+  document.body.append(box)
+  wrapper = box
+  await element.updateComplete
+  await until(() => element.querySelectorAll('[data-part="item-cell"] input').length > 0)
+  return element
 }
 
 /** 按住把手的中心，分八步拖到 target，松开。 */
@@ -183,24 +205,7 @@ describe('属性面板的选项表', () => {
   })
 
   it('290px、分组可折叠、中文的面板里放不下整张选项表：表格横向滚动，行尾的拖动、上移、下移与删除把手整个落在面板里', async () => {
-    const box = document.createElement('div')
-    box.style.cssText = 'display: flex; inline-size: 290px; overflow: hidden'
-    const scope = document.createElement('xh-config') as HTMLElement & { translations?: unknown }
-    scope.translations = mergeXhConfig(zhCN, designerShellZhCN).translations
-    scope.style.cssText = 'display: block; flex: 1; min-inline-size: 0'
-    const element = document.createElement('xh-designer-properties')
-    element.collapsible = true
-    element.targets = [{
-      ...target([{ value: 'beijing', label: '北京' }, { value: 'shanghai', label: '上海' }]),
-      descriptors: [{ path: ['data', 'options'], control: { kind: 'options' }, label: '选项', group: 'data' }],
-    }]
-    scope.append(element)
-    box.append(scope)
-    document.body.append(box)
-    wrapper = box
-    await element.updateComplete
-    await until(() => element.querySelectorAll('[data-part="item-cell"] input').length > 0)
-
+    const element = await mountNarrow(290, [{ value: 'beijing', label: '北京' }, { value: 'shanghai', label: '上海' }])
     const bounds = element.getBoundingClientRect()
     const table = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="table"]')!
     expect(table.getBoundingClientRect().right).toBeLessThanOrEqual(bounds.right)
@@ -212,6 +217,37 @@ describe('属性面板的选项表', () => {
         expect(rect.left, part).toBeGreaterThanOrEqual(bounds.left)
         expect(rect.right, part).toBeLessThanOrEqual(bounds.right)
       }
+    }
+  })
+
+  it('288px、分组可折叠、中文的面板里：数字、日期与日期时间的值格放得下整个值，「禁用」列头一行放得下', async () => {
+    const cases: [PropertyControl, JsonValue][] = [
+      [{ kind: 'options', valueType: 'number' }, [{ value: 2025, label: '今年', disabled: true }]],
+      [{ kind: 'options', valueType: 'date' }, [{ value: '2026-01-01', label: '元旦' }]],
+      [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-01-01T08:30', label: '开工' }]],
+    ]
+    for (const [control, options] of cases) {
+      const valueType = control.kind === 'options' ? control.valueType : undefined
+      const element = await mountNarrow(288, options, control)
+      const cell = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item-cell"][data-value="value"]')!
+      const shown = valueType === 'number'
+        ? cell.querySelector<HTMLInputElement>('input')!
+        : cell.querySelector<HTMLElement>('[data-scope="date-field"][data-part="segment-group"]')!
+      expect(shown.scrollWidth, valueType).toBeLessThanOrEqual(shown.clientWidth)
+      const field = cell.querySelector('xh-number-field, xh-date-field')!.getBoundingClientRect()
+      expect(field.right, valueType).toBeLessThanOrEqual(cell.getBoundingClientRect().right + 0.5)
+
+      const header = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="column-header"][data-value="disabled"]')!
+      const text = document.createRange()
+      text.selectNodeContents(header)
+      expect(header.textContent).toBe('禁用')
+      expect(text.getClientRects(), valueType).toHaveLength(1)
+      expect(header.scrollWidth, valueType).toBeLessThanOrEqual(header.clientWidth)
+      const box = element.querySelector('[data-scope="field-array"][data-part="item-cell"][data-value="disabled"]')!
+      const checkbox = box.querySelector('[data-scope="checkbox"][data-part="root"]')!.getBoundingClientRect()
+      expect(checkbox.right, valueType).toBeLessThanOrEqual(box.getBoundingClientRect().right + 0.5)
+      wrapper!.remove()
+      wrapper = null
     }
   })
 })
