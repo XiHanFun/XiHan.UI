@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 配置控制器：元素连上文档后订阅所在子树的配置（setXhConfig 与祖先 <xh-config>），配置变化即请求宿主更新；
+// 配置控制器：元素连上文档后订阅所在子树的配置（setXhConfig 与祖先 <xh-config>），连上时与配置变化时都请求宿主更新；
 // 读取时沿祖先链现解析，给出 locale 与按组件分桶的文案。
 
 import type { XhConfig } from '../config'
@@ -25,6 +25,8 @@ export class XhConfigController implements ReactiveController {
   hostConnected(): void {
     this.#unsubscribe?.()
     this.#unsubscribe = onXhConfigChange(() => this.#host.requestUpdate(), this.#host)
+    // 断开期间收不到配置变化，也可能换到了另一个 <xh-config> 下：连上就按此刻的配置重渲一次，首次连接与初次更新合并
+    this.#host.requestUpdate()
   }
 
   hostDisconnected(): void {
