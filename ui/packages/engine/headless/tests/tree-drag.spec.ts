@@ -781,6 +781,53 @@ describe('禁用的节点不是拖动源', () => {
   })
 })
 
+describe('逐个节点不可拖动 draggable: false', () => {
+  const FIXED: TreeNode[] = [
+    { value: 'inbox', draggable: false, children: [{ value: 'quote' }, { value: 'weekly' }] },
+    { value: 'archive', children: [] },
+    { value: 'trash' },
+  ]
+
+  it('指针按住它不起拖，Alt + 方向键也搬不动它', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({ collection: FIXED, onNodeMove })
+    press(h, 'inbox', 20)
+    move(170)
+    expect(h.dragging()).toBeNull()
+    release()
+    h.service.send({ type: 'NODE.FOCUS', value: 'inbox' })
+    key(h, 'ArrowDown', { altKey: true })
+    expect(onNodeMove).not.toHaveBeenCalled()
+  })
+
+  it('不向下传导：它的子节点照常能拖', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({ collection: FIXED, onNodeMove })
+    h.service.send({ type: 'NODE.FOCUS', value: 'weekly' })
+    key(h, 'ArrowUp', { altKey: true })
+    expect(onNodeMove).toHaveBeenCalledWith({ value: 'weekly', parent: 'inbox', index: 0 })
+  })
+
+  it('它照样是落点：把回收站拖进它里面', () => {
+    const onNodeMove = vi.fn()
+    const h = mount({ collection: FIXED, onNodeMove })
+    press(h, 'trash', 180)
+    move(20)
+    expect(h.drop()).toEqual({ targetValue: 'inbox', position: 'inside' })
+    release()
+    expect(onNodeMove).toHaveBeenCalledWith({ value: 'trash', parent: 'inbox', index: 2 })
+  })
+
+  it('属性：它不写 data-draggable，拖动把手报 data-disabled；它本身不是禁用节点，照常能选能展开', () => {
+    const h = mount({ collection: FIXED })
+    const control = h.api().getBranchControlProps({ value: 'inbox' }) as Dict
+    expect(control['data-draggable']).toBeUndefined()
+    expect((h.api().getNodeDragTriggerProps({ value: 'inbox' }) as Dict)['data-disabled']).toBe('')
+    expect((h.api().getBranchProps({ value: 'inbox' }) as Dict)['aria-disabled']).toBe('false')
+    expect((h.api().getBranchControlProps({ value: 'archive' }) as Dict)['data-draggable']).toBe('')
+  })
+})
+
 describe('拖动中版面滚走了，落点仍按指针所指算', () => {
   /** 把全部可见行的矩形桩整体挪 delta（正数 = 内容往上滚走）。 */
   function scrollBy(h: Harness, delta: number): void {
