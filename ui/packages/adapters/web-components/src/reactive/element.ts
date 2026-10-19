@@ -89,6 +89,16 @@ function assertPrototypeFree(ctor: typeof XhReactiveElement, name: string): void
   )
 }
 
+/** 原型链上（查到 stop 为止，不含 stop）离实例最近的同名成员是带 set 的访问器。 */
+function hasInheritedSetter(instance: object, name: string, stop: object): boolean {
+  for (let proto = Object.getPrototypeOf(instance) as object | null; proto !== null && proto !== stop; proto = Object.getPrototypeOf(proto) as object | null) {
+    const descriptor = Object.getOwnPropertyDescriptor(proto, name)
+    if (descriptor !== undefined)
+      return descriptor.set !== undefined
+  }
+  return false
+}
+
 /** 该字段观察哪个属性；undefined 表示不观察。 */
 function attributeNameFor(name: string, options: PropertyDeclaration): string | undefined {
   const { attribute } = options
@@ -185,7 +195,7 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
   private changedProperties: PropertyValues = new Map()
   private pendingUpdate = false
   private hasUpdated = false
-  /** 升级前就写在实例上的字段值，首次连接时补写回去。 */
+  /** 升级前就写在实例上的值，首次连接时补写回去。 */
   private instanceProperties: Map<string, unknown> | undefined
   private updatePromise!: Promise<boolean>
   private startUpdating!: (value: boolean) => void
@@ -200,15 +210,24 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
     this.requestUpdate()
   }
 
-  /** 元素尚未 upgrade 时被赋的字段值会覆盖原型访问器，先取下保存。 */
+  /**
+   * 元素尚未 upgrade 时被赋的值会作为实例自有属性遮住原型访问器，先取下保存：先取声明过的字段，
+   * 再按赋值次序取子类手写的带 set 的访问器（原型链查到本基类为止）。
+   */
   private saveInstanceProperties(): void {
     const self = this as unknown as Record<string, unknown>
-    for (const name of (this.constructor as typeof XhReactiveElement).elementProperties.keys()) {
-      if (!Object.hasOwn(this, name))
-        continue
+    const save = (name: string): void => {
       this.instanceProperties ??= new Map()
       this.instanceProperties.set(name, self[name])
       delete self[name]
+    }
+    for (const name of (this.constructor as typeof XhReactiveElement).elementProperties.keys()) {
+      if (Object.hasOwn(this, name))
+        save(name)
+    }
+    for (const name of Object.getOwnPropertyNames(this)) {
+      if (hasInheritedSetter(this, name, XhReactiveElement.prototype))
+        save(name)
     }
   }
 
@@ -229,7 +248,7 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
   }
 
   /**
-   * 把升级前取下的字段值写回访问器。放在控制器的 hostConnected 之前：状态机在那里就按 props 建起来，
+   * 把升级前取下的值写回访问器。放在控制器的 hostConnected 之前：状态机在那里就按 props 建起来，
    * 等首轮更新再补，模板克隆出来、升级前就赋好的 defaultValue 之类会被错过。
    */
   private restoreInstanceProperties(): void {
