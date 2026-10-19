@@ -16,6 +16,7 @@ import type {
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,
   DesignerSettingsTranslations,
+  DesignerTourTranslations,
   DesignerTransformTranslations,
 } from '../translations'
 
@@ -31,5 +32,6 @@ export interface DesignerShellLocaleTranslations {
   readonly 'xh-designer-commands': DesignerCommandsTranslations
   readonly 'xh-designer-settings': DesignerSettingsTranslations
   readonly 'xh-designer-field-import': DesignerFieldImportTranslations
+  readonly 'xh-designer-tour': DesignerTourTranslations
   readonly 'xh-designer-transform': DesignerTransformTranslations
 }

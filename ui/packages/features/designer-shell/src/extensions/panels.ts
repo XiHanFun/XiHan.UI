@@ -10,6 +10,7 @@ import type { DesignerExtensionBase } from '@xihan-ui/designer-kit'
 import type { PropertyEditor } from '@xihan-ui/designer-kit/properties'
 import type { DesignerFrameRegion, XhDesignerFrameElement } from '../frame/frame-element'
 import type { DesignerSettingsSection } from '../settings/model'
+import type { DesignerTourStep } from '../tour/tour'
 import type { CommandToolbar, DesignerCommandTable } from './commands'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { DESIGNER_FRAME_REGIONS } from '../frame/frame-element'
@@ -41,6 +42,8 @@ export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, 
   readonly panels?: readonly DesignerPanel<Ctx>[]
   /** 设置分区：放进设置对话框，分区 id 不能与内置的 general 或别的扩展的重名，见 collectSettingsSections。 */
   readonly settings?: readonly DesignerSettingsSection[]
+  /** 新手引导的步骤：与 designer-shell 的通用步骤、各款的步骤一起按 order 排；id 不能重名，见 collectTourSteps。 */
+  readonly tourSteps?: readonly DesignerTourStep<Ctx>[]
 }
 
 /** 管一台外框上扩展登记的面板。 */

@@ -8,7 +8,7 @@
 @layer xihan.components {
   /* —— 宿主收起：零件宿主自带 display，hidden 要另写一条才收得起来 —— */
 
-  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings, xh-designer-field-import)[hidden] {
+  :is(xh-designer-properties, xh-designer-issues, xh-designer-minimap, xh-designer-palette, xh-designer-outline, xh-designer-history, xh-designer-transform, xh-designer-ruler, xh-designer-frame, xh-designer-settings, xh-designer-tour, xh-designer-field-import)[hidden] {
     display: none;
   }
 
@@ -559,6 +559,20 @@
 
   [data-scope='designer-field-import'][data-part][hidden] {
     display: none;
+  }
+
+  /* —— 新手引导：宿主不占盒，引导的浮层由 xh-tour 搬到浮层根；底部一行是跳过、上一步与下一步 —— */
+
+  xh-designer-tour {
+    display: contents;
+  }
+
+  [data-scope='designer-tour'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--xh-space-2);
+    justify-content: flex-end;
+    margin-block-start: var(--xh-space-3);
   }
 
   /* —— 问题列表 —— */

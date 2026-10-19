@@ -1,6 +1,6 @@
 # 设计器零件
 
-`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、问题列表、小地图、外框、设置对话框与导入字段对话框。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
+`@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、历史记录、问题列表、小地图、外框、设置对话框、导入字段对话框与新手引导。打印、流程、表单、报表四款设计器用同一套零件，名字、手势与事件对齐。
 
 ```ts
 import { defineDesignerShell } from "@xihan-ui/designer-shell";
@@ -980,6 +980,65 @@ dialog.show();
 
 内置命令 `import-fields` 打开它，见下文「命令」的 `designerShellCommands`。
 
+## 新手引导
+
+`<xh-designer-tour>` 是设计器的新手引导：库内 `<xh-tour>` 包一层，designer-shell 的通用步骤加上各款与扩展的步骤，按 `order` 排，一步步高亮外框里的面板、区或工具栏上的命令。放在设计器元素里、外框旁边，和设置对话框一样；宿主元素不占盒。
+
+```ts
+import { collectTourSteps, resolveTourSteps, tourDoneOf } from "@xihan-ui/designer-shell";
+
+const steps = collectTourSteps([productExtension, ...extensions]); // id 重名时抛 DesignerExtensionError
+const tour = document.createElement("xh-designer-tour");
+tour.frame = frame;
+tour.steps = resolveTourSteps(steps, context); // 每轮按上下文取文字、过一遍 when
+designerRoot.append(tour);
+tour.addEventListener("tour-end", () => writeSetting("help.tourDone", true));
+if (autoTour && !tourDoneOf(settings))
+  tour.start(); // 第一次连上文档、画布铺好之后
+```
+
+### 步骤
+
+| 字段 | 说明 |
+| --- | --- |
+| `id` | 全局唯一：designer-shell 的写 `shell.<名>`，各款写 `<产品>.<名>`，扩展写扩展 id 加点 |
+| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`toolbar`、`canvas`、`status`、`header`）；`{ selector }` 设计器里的任意节点 |
+| `title`、`description` | 标题与说明，可以是按上下文现算的函数 |
+| `placement` | 浮层相对目标的首选位置，缺省 `bottom` |
+| `order` | 排序：designer-shell 的通用步骤 0–90，各款 100 起，扩展 200 起；同值按登记顺序 |
+| `when` | 返回 `false` 时跳过，如只读模式下的编辑步骤 |
+
+通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（工具栏上的设置命令，90），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
+
+| 函数 | 说明 |
+| --- | --- |
+| `resolveTourSteps(steps, context)` | 按上下文取好文字、过一遍 `when`，得到交给零件的 `DesignerTourStepView[]`；顺序不变 |
+| `collectTourSteps(sources)` | 合起各来源（`{ id, tourSteps? }`，扩展的 `tourSteps` 字段就是这个形状）的步骤，保持登记顺序。id 重名或用了留给 designer-shell 的 `shell.` 前缀时抛 `DesignerExtensionError`，名字空间 `tour-step` |
+| `tourDoneOf(settings)` | 设置里 `help.tourDone`（`DESIGNER_TOUR_DONE_KEY`）为 `true`：引导已经完成或跳过过，不再自动开始。这个键不对应设置对话框里的条目 |
+
+### 零件 `<xh-designer-tour>`
+
+| 属性 | 说明 |
+| --- | --- |
+| `frame` | 设计器的外框：解析目标、判断面板显隐，进入一步前经 `revealPanel` 把面板亮出来（展开分隔条上收起的栏、标题条，窄屏时开抽屉） |
+| `steps` | 各款与扩展的步骤（`resolveTourSteps` 取好的） |
+| `builtin` | 带上通用步骤，缺省 `true`；同名 attribute 写 `"false"` 不带 |
+| `translations` | 元素自己的文案，压在全局配置之上 |
+
+| 方法与只读属性 | 说明 |
+| --- | --- |
+| `start()` | 从第一步开始；没有能走的步骤时返回 `false` |
+| `stop()` | 收起引导 |
+| `plannedSteps()` | 此刻会走的各步：排好序、去掉了走不了的 |
+| `running` | 引导此刻开着 |
+
+| 事件 | 说明 |
+| --- | --- |
+| `tour-end` | `{ reason, step }`：引导收起了。`reason` 是 `complete`（走完）、`skip`（跳过或 Esc）或 `close`（关闭钮或 `stop()`）；`step` 是收起时那一步的 id。各款收到后把 `help.tourDone` 写成 `true` |
+
+- 浮层里依次是标题、说明、「第几步，共几步」、一步一个的圆点，底部一行跳过、上一步与下一步（最后一步写「完成」），右上角关闭钮；键盘与读屏照 `<xh-tour>`。
+- 宿主不要自动开始时设计器给 `autoTour = false`；内置命令 `start-tour`（`designerShellCommands` 的 `startTour` 选项）与帮助页里的「开始引导」随时重新开始。
+
 ## 扩展的面板与命令
 
 设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框。
@@ -1026,6 +1085,8 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
 | `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用；不排位置，各款放进面板头或菜单）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `startTour` 有 `start-tour`（开始新手引导，不上工具栏）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
@@ -1052,7 +1113,11 @@ const history = config.translations("xh-designer-history", DESIGNER_HISTORY_EN_U
 
 ### 设置分区
 
-扩展的 `settings` 是若干设置分区，形状见上文「设置」。用 `collectSettingsSections` 把各款自己的分区与扩展的合起来交给设置对话框；分区 id 与内建的 `general` 或别的扩展重名时抛 `DesignerExtensionError`（名字空间 `settings-section`）。
+扩展的 `settings` 是若干设置分区，形状见上文「设置」。用 `collectSettingsSections` 把各款自己的分区与扩展的合起来交给设置对话框；分区 id 与内建的 `general`、`layout`、`toolbar` 或别的扩展重名时抛 `DesignerExtensionError`（名字空间 `settings-section`）。
+
+### 引导步骤
+
+扩展的 `tourSteps` 是若干引导步骤，形状见上文「新手引导」，`order` 从 200 起，排在各款的步骤之后。用 `collectTourSteps` 把各款自己的步骤与扩展的合起来，按上下文用 `resolveTourSteps` 取好交给 `<xh-designer-tour>`；步骤 id 重名或用了 `shell.` 前缀时抛 `DesignerExtensionError`（名字空间 `tour-step`）。
 
 ### 导入来源
 
