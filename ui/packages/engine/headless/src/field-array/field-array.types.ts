@@ -125,6 +125,12 @@ export interface FieldArraySchema extends MachineSchema {
      */
     movable?: boolean
     /**
+     * 表格排布下行尾把手钉在末端侧（缺省 true）：表格区横向滚动时把手留在原处，其余格子从下面滑过。
+     * 关掉时把手随行一起滚动，滚到末端才露出来；钉住的两侧占掉滚动区大半、中间的格子怎么滚都看不全时关掉它。
+     * 行号总是钉在起始侧。
+     */
+    stickyActions?: boolean
+    /**
      * 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。
      * 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。
      */
@@ -231,6 +237,8 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   invalid: boolean
   movable: boolean
+  /** 表格排布下行尾把手钉在末端侧，见 stickyActions。 */
+  stickyActions: boolean
   /** 正有一行被拖动把手拖着（接了拖动时才可能为真）。 */
   dragging: boolean
   layout: FieldArrayLayout

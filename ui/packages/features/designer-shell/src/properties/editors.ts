@@ -1014,6 +1014,7 @@ interface FieldArrayControl extends HTMLElement {
   createItem?: () => unknown
   layout?: string
   movable?: boolean
+  stickyActions?: boolean
   readOnly?: boolean
   columns?: readonly { readonly id: string, readonly label?: string, readonly width?: string | number, readonly minWidth?: string | number }[]
 }
@@ -1037,18 +1038,18 @@ interface OptionRow {
   placed: boolean
 }
 
-/** 值与文字两列的最小宽：面板放不下时表格横向滚动，行号与把手钉在两侧。 */
+/** 值与文字两列的最小宽：面板放不下时表格横向滚动，行号钉在起始侧、把手随行滚动。 */
 const OPTION_TEXT_MIN_WIDTH = '5rem'
 
 /**
- * 一列的宽：文字与按文字写的值不窄过 OPTION_TEXT_MIN_WIDTH；数字、日期与日期时间的值不窄过框的最小内容宽，
- * 整个数、整个日期都放得下；禁用那一列按内容取宽，列头一行放得下。
+ * 一列的宽：文字与按文字写的值不窄过 OPTION_TEXT_MIN_WIDTH；数字、日期与日期时间的值不窄过字段的压缩底线，
+ * 长一些的数、整个日期与时刻都放得下；禁用那一列按内容取宽，列头一行放得下。
  */
 function optionColumnWidth(column: OptionColumn, valueType: PropertyOptionValueType): { width?: string, minWidth: string } {
   if (column === 'disabled')
     return { width: 'auto', minWidth: 'max-content' }
   if (column === 'value' && valueType !== 'string' && valueType !== 'boolean')
-    return { minWidth: 'min-content' }
+    return { minWidth: 'var(--xh-control-min-w)' }
   return { minWidth: OPTION_TEXT_MIN_WIDTH }
 }
 
@@ -1103,6 +1104,8 @@ function optionsEditor(initial: FieldContext): FieldInstance {
   array.layout = 'table'
   // 布尔的两行不换序：拖动与上移下移把手收起
   array.movable = !fixed
+  // 行尾把手随行一起横向滚动，只钉行号
+  array.stickyActions = false
   array.createItem = () => ({})
   // 面板窄：格子用表格的紧凑内衬
   array.style.setProperty('--xh-field-array-cell-px', 'var(--xh-table-cell-px-sm)')

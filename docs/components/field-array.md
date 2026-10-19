@@ -79,7 +79,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 - `createItem` 设置新增行的初始值。
 - `insert(index, item?)` 在指定位置插入一行，后面的行往后挪；`move(from, to)` 一步挪到任意位置。两者与 `add` 同受 `max`、`movable` 与禁用约束。
 - 每行可以包含一个或多个字段。
-- `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。列上写 `minWidth` 给出下限，这一列不再随容器压窄到它以下；各列下限之和超过容器时，表格本体横向滚动，表头与各行一起滚，行号（`item-label`）钉在起始侧、把手（`item-action`）钉在末端侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线，与表格的冻结列一致。格里的字段族控件铺满这一格，包了一层字段也一样，且不超出这一格：文本框的原生宽不会把它撑出这一列、压到相邻的格上。窄的属性面板里放多列时给文字列写上 `minWidth`。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
+- `layout="table"` 换成表格排布：`table` 部件是 role=table，表头 `header` 与各行放在它里面，`add-trigger` 仍排在它之后；表头里一列一个 `column-header`，行里一列一个 `item-cell`，都用 `value` 写列 id。`columns` 给出列序、列头文字与列宽（数字按 px，字符串原样，不写按 1fr），表头与各行共用这一套列宽。列上写 `minWidth` 给出下限，这一列不再随容器压窄到它以下；各列下限之和超过容器时，表格本体横向滚动，表头与各行一起滚，行号（`item-label`）钉在起始侧、把手（`item-action`）钉在末端侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线，与表格的冻结列一致。容器很窄时钉住的两侧会占掉滚动区的大半，中间的格子怎么滚都看不全：这时把 `stickyActions` 关掉，把手随行一起滚动、滚到末端才露出来，Tab 到把手时表格本体把它滚进来，行号仍钉住；钉住的把手与表格的冻结列一样带 `data-frozen="end"`，表头带 `data-frozen-actions`。格里的字段族控件铺满这一格，包了一层字段也一样，且不超出这一格：文本框的原生宽不会把它撑出这一列、压到相邻的格上。窄的属性面板里放多列时给文字列写上 `minWidth`。不带键盘模型，Tab 依次经过各格里的控件与把手。放进字段时字段的标签接到表格上，不在字段里时在表格上写 `aria-label`。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：列表排布下每行是行号（`item-label`，第几行）、内容格与把手（开了 `movable` 时先是拖动、上移与下移，再是删除），表格排布下是表格本体里的表头（每列一个列头）与各行、行里每列一格；最后是新增把手，文字取 `translations.addTrigger`。每行的内容归作者：Vue 写 `item-content` 插槽（载荷 `{ item }`），表格排布写 `item-cell` 插槽（载荷 `{ item, column }`）；React 给 `renderItemContent(item)` / `renderItemCell(item, column)`；Web Components 在宿主的直接子节点上写 `slot="item-content:<行 key>"`，表格排布写 `slot="item-cell:<行 key>:<列 id>"`，元素把它挪进对应的格子，换序时内容跟着行走。没给内容的行就空着，不报缺部件。
 - Web Components 里行 key 从元素只读的 `items` 读（每项的 `key`，由组件分配、跟着这一行走）。`value-change` 同步派发、早于结构重铺，在它的处理函数里（受控时先写回 `value`）按 `items` 补上新行的内容，新行在同一帧就带上内容。删掉的行的内容先别删：原处淡出的替身克隆的是离场的那一行，内容要还在行里才带得上；行离场后它回到宿主、成为宿主的直接子节点，下一帧再把对不上 `items` 的删掉，不删会留在根的后面。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
@@ -123,6 +123,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
 | `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
 | `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时上移、下移与拖动三个把手一律收起。 拖动把手只接指针（键盘与读屏用上移、下移），由适配器接上 sortable 的机器（见 fieldArrayDragProps）。 |
+| `stickyActions` | `boolean` |  | 表格排布下行尾把手钉在末端侧（缺省 true）：表格区横向滚动时把手留在原处，其余格子从下面滑过。 关掉时把手随行一起滚动，滚到末端才露出来；钉住的两侧占掉滚动区大半、中间的格子怎么滚都看不全时关掉它。 行号总是钉在起始侧。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上（表格本体）；只在表格排布下生效。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
 | `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
@@ -199,6 +200,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
+| `stickyActions` | `boolean` | 表格排布下行尾把手钉在末端侧，见 stickyActions。 |
 | `dragging` | `boolean` | 正有一行被拖动把手拖着（接了拖动时才可能为真）。 |
 | `layout` | `FieldArrayLayout` |  |
 | `columns` | `FieldArrayColumn[]` | 表格排布的各列，原样取自 columns；没给时为空数组。 |
@@ -287,6 +289,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `table` | `data-at-max-horizontal` | ''（条件成立时才出现） |
 | `table` | `data-at-min-horizontal` | ''（条件成立时才出现） |
 | `table` | `data-layout` | 'table' \| 'list' |
+| `header` | `data-frozen-actions` | ''（条件成立时才出现） |
 | `header` | `data-layout` | 'table' \| 'list' |
 | `column-header` | `data-layout` | 'table' \| 'list' |
 | `column-header` | `data-value` | column.value |
@@ -326,6 +329,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `item-action` | `data-at-max` | ''（条件成立时才出现） |
 | `item-action` | `data-at-min` | ''（条件成立时才出现） |
 | `item-action` | `data-disabled` | ''（条件成立时才出现） |
+| `item-action` | `data-frozen` | 'end' \| undefined |
 | `item-action` | `data-index` | String(item.index) |
 | `item-action` | `data-invalid` | ''（条件成立时才出现） |
 | `item-action` | `data-layout` | 'table' \| 'list' |
@@ -405,7 +409,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-drag-grip-h` | `item-drag-trigger` | `block-size` | `empty` | `--xh-space-3` | field-array 的 item-drag-trigger 部件 block-size 覆盖槽。 |
 | `--xh-field-array-drag-grip-w` | `item-drag-trigger` | `inline-size` | `empty` | `--xh-space-1` | field-array 的 item-drag-trigger 部件 inline-size 覆盖槽。 |
 | `--xh-field-array-frozen-bg` | `item-action`<br>`item-label` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-field-array-table-bg` | field-array 的 item-action、item-label 部件 background 覆盖槽。 |
-| `--xh-field-array-frozen-edge` | `header`<br>`item`<br>`item-action`<br>`item-label`<br>`table` | `border-inline-end-color`<br>`border-inline-start-color` | `at-max-horizontal`<br>`at-min-horizontal`<br>`is([data-part='item'], [data-part='header'])`<br>`layout=table`<br>`not([data-at-max-horizontal])`<br>`not([data-at-min-horizontal])` | `--xh-border-default` | field-array 的 header、item、item-action、item-label、table 部件 border-inline-end-color、border-inline-start-color 覆盖槽。 |
+| `--xh-field-array-frozen-edge` | `header`<br>`item`<br>`item-action`<br>`item-label`<br>`table` | `border-inline-end-color`<br>`border-inline-start-color` | `at-max-horizontal`<br>`at-min-horizontal`<br>`frozen-actions`<br>`frozen=end`<br>`is([data-part='item'], [data-part='header'])`<br>`layout=table`<br>`not([data-at-max-horizontal])`<br>`not([data-at-min-horizontal])` | `--xh-border-default` | field-array 的 header、item、item-action、item-label、table 部件 border-inline-end-color、border-inline-start-color 覆盖槽。 |
 | `--xh-field-array-frozen-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle-opaque` | field-array 的 header 部件 background 覆盖槽。 |
 | `--xh-field-array-gap` | `root` | `gap` | `default` | `--xh-space-2` | field-array 的 root 部件 gap 覆盖槽。 |
 | `--xh-field-array-header-bg` | `header` | `background` | `layout=table` | `--xh-bg-subtle` | field-array 的 header 部件 background 覆盖槽。 |
@@ -419,7 +423,7 @@ layout="table" 时表头与各行共用一套列宽；columns 定列序与列宽
 | `--xh-field-array-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | field-array 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-field-array-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | field-array 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-field-array-row-divider` | `header`<br>`item` | `border-block-end`<br>`border-block-start` | `layout=table` | `--xh-border-subtle` | field-array 的 header、item 部件 border-block-end、border-block-start 覆盖槽。 |
-| `--xh-field-array-sticky-column-layer` | `header`<br>`item-action`<br>`item-label` | `z-index` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `1` | field-array 的 header、item-action、item-label 部件 z-index 覆盖槽。 |
+| `--xh-field-array-sticky-column-layer` | `header`<br>`item-action`<br>`item-label` | `z-index` | `frozen-actions`<br>`frozen=end`<br>`layout=table` | `1` | field-array 的 header、item-action、item-label 部件 z-index 覆盖槽。 |
 | `--xh-field-array-table-bg` | `item-action`<br>`item-label`<br>`table` | `background` | `is([data-part='item-label'], [data-part='item-action'])`<br>`layout=table` | `--xh-bg-surface` | field-array 的 item-action、item-label、table 部件 background 覆盖槽。 |
 | `--xh-field-array-table-border` | `table` | `border` | `layout=table` | `--xh-border-default` | field-array 的 table 部件 border 覆盖槽。 |
 | `--xh-field-array-table-radius` | `header`<br>`table` | `border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `layout=table` | `--xh-shape-surface` | field-array 的 header、table 部件 border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |

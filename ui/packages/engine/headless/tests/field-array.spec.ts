@@ -779,6 +779,19 @@ describe('表格排布：角色、行号与列轨道', () => {
     expect((table.style as Record<string, string>)['--xh-_field-array-cols']).toBe('minmax(120px, 1fr) minmax(6rem, 2fr) minmax(48px, 64px) minmax(0, 1fr)')
   })
 
+  it('表格排布下行尾把手缺省钉住，表头里把手那条轨道跟着报；stickyActions 为 false 时都不报，列表排布也不报', () => {
+    const pinned = api(makeService({ layout: 'table', columns, defaultValue: ['a'] }))
+    expect(pinned.stickyActions).toBe(true)
+    expect((pinned.getItemActionProps({ index: 0 }) as Record<string, unknown>)['data-frozen']).toBe('end')
+    expect((pinned.getHeaderProps() as Record<string, unknown>)['data-frozen-actions']).toBe('')
+    const scrolling = api(makeService({ layout: 'table', columns, defaultValue: ['a'], stickyActions: false }))
+    expect(scrolling.stickyActions).toBe(false)
+    expect((scrolling.getItemActionProps({ index: 0 }) as Record<string, unknown>)['data-frozen']).toBeUndefined()
+    expect((scrolling.getHeaderProps() as Record<string, unknown>)['data-frozen-actions']).toBeUndefined()
+    const list = api(makeService({ columns, defaultValue: ['a'] }))
+    expect((list.getItemActionProps({ index: 0 }) as Record<string, unknown>)['data-frozen']).toBeUndefined()
+  })
+
   it('表格本体报横向滚动离两端：没量过时两端都贴着；列表排布不报', () => {
     const table = api(makeService({ layout: 'table', columns, defaultValue: ['a'] })).getTableProps() as Record<string, unknown>
     expect([table['data-at-min-horizontal'], table['data-at-max-horizontal']]).toEqual(['', ''])

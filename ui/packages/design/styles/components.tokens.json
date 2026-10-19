@@ -35178,6 +35178,8 @@
       "state": [
         "at-max-horizontal",
         "at-min-horizontal",
+        "frozen-actions",
+        "frozen=end",
         "is([data-part='item'], [data-part='header'])",
         "layout=table",
         "not([data-at-max-horizontal])",
@@ -35447,7 +35449,8 @@
         "z-index"
       ],
       "state": [
-        "is([data-part='item-label'], [data-part='item-action'])",
+        "frozen-actions",
+        "frozen=end",
         "layout=table"
       ],
       "defaultToken": [

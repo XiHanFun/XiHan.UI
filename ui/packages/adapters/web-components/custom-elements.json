@@ -27440,6 +27440,15 @@
             },
             {
               "kind": "field",
+              "name": "stickyActions",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "sticky-actions"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -27806,6 +27815,14 @@
               "description": "是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起",
               "name": "movable",
               "fieldName": "movable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "表格排布下行尾把手钉在末端侧，默认 true；写 sticky-actions=\"false\" 关闭，把手随行一起横向滚动",
+              "name": "sticky-actions",
+              "fieldName": "stickyActions"
             },
             {
               "type": {

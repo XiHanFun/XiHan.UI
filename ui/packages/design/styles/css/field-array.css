@@ -364,12 +364,14 @@
     min-block-size: var(--xh-field-array-cell-control-h, var(--xh-_field-array-cell-control-h));
   }
 
-  /* 行头钉在表格区的起始侧、把手钉在末端侧：表格区横向滚动时它们留在原处，其余格子从下面滑过，
-     与表格的冻结列同一种做法。底取表格本体的底，压住滑过去的格子。表头里这两条轨道没有格子，
-     由表头自己的两个伪元素占住，带表头底。紧挨滚动区的一侧常驻一道透明分隔线，见下面按两端换色的那条 */
-  [data-scope='field-array']:is([data-part='item-label'], [data-part='item-action'])[data-layout='table'],
+  /* 行头钉在表格区的起始侧、把手钉在末端侧（stickyActions 关掉时把手随行滚动，只钉行头）：表格区横向滚动时
+     它们留在原处，其余格子从下面滑过，与表格的冻结列同一种做法。底取表格本体的底，压住滑过去的格子。
+     表头里这两条轨道没有格子，由表头自己的两个伪元素占住，带表头底。紧挨滚动区的一侧常驻一道透明分隔线，
+     见下面按两端换色的那条 */
+  [data-scope='field-array'][data-part='item-label'][data-layout='table'],
+  [data-scope='field-array'][data-part='item-action'][data-layout='table'][data-frozen='end'],
   [data-scope='field-array'][data-part='header'][data-layout='table']::before,
-  [data-scope='field-array'][data-part='header'][data-layout='table']::after {
+  [data-scope='field-array'][data-part='header'][data-layout='table'][data-frozen-actions]::after {
     position: sticky;
     z-index: var(--xh-field-array-sticky-column-layer, 1);
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -419,9 +421,9 @@
 
   [data-scope='field-array'][data-part='table'][data-layout='table']:not([data-at-max-horizontal])
     > [data-scope='field-array']:is([data-part='item'], [data-part='header'])
-    > [data-scope='field-array'][data-part='item-action'],
+    > [data-scope='field-array'][data-part='item-action'][data-frozen='end'],
   [data-scope='field-array'][data-part='table'][data-layout='table']:not([data-at-max-horizontal])
-    > [data-scope='field-array'][data-part='header']::after {
+    > [data-scope='field-array'][data-part='header'][data-frozen-actions]::after {
     border-inline-start-color: var(--xh-field-array-frozen-edge, var(--xh-border-default));
   }
 
