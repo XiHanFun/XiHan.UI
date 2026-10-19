@@ -866,7 +866,7 @@ dialog.show();
 
 按钮表只管顶部工具栏：顶栏的插入钮、右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
 
-- **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令此刻的文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字按此刻的语言取。
+- **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令的短文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字取 `commandShortLabel`（撤销这类文字随下一步变的命令写固定的短名），按此刻的语言取，所以每编辑一步算出来的数据不变、表不重铺。
 - **样子**：一组一块，组头是三态勾选框（全选、部分、全不选）与拖动把手，下面每条命令一行：勾选框（图标与名字）、快捷键、拖动把手。组与组之间、组里的命令都能拖，命令能从一组拖进另一组；键盘在把手上用空格拿起、方向键挪、空格放下（竖排的命令列表用左右键挪到相邻的组）。表下一颗「恢复默认」删掉这个键。组这一层是一个 `<xh-sortable>`，组里的命令各是一个同 `group` 的 `<xh-sortable>`。
 - **值**：`DesignerToolbarCustomization`，`{ groups, hidden? }`：`groups` 按用户的先后列出全部命令（含藏起的），藏起的写进 `hidden`，重新勾上时回到原位；整组藏起就是组里每条都在 `hidden` 里。
 - **生效**：先 `arrangeCommands("toolbar", 命令表, 缺省排列, commandLayout)`，再 `applyToolbarCustomization(上一步的分组, toolbarCustomizationOf(settings))`。用户值里有、命令表里已经没有的命令跳过，不抛错（宿主 `commandLayout` 写错 id 照旧抛错）；命令表里新有、用户值里没有的命令（后装的扩展）放在缺省排列里同组前面最近一条之后，没有就放在后面最近一条之前，整组都新就另起一组。
@@ -887,7 +887,7 @@ dialog.show();
 | 页 | 对话框的属性 | 内容 |
 | --- | --- | --- |
 | 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了派发 `settings-command { command }`，由设计器跑这条命令（开始引导前先关上对话框）。两样都没有时没有这一页 |
-| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys? })` 现算。凡有快捷键的命令一行（名字按此刻的上下文取，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消）。键铺成 `<xh-kbd>`，按平台写 |
+| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消）。键铺成 `<xh-kbd>`，按平台写 |
 | 关于 | `about: { product, version, license?, rows? }` | 产品、版本、界面库（XiHan.UI，即 `DESIGNER_SHELL_VERSION`）的版本与许可证，后面接 `rows`：扩展的 `about` 字段（附加包的版本与授权）由各款接在这里。各款的版本号也从构建时注入的常量取（如流程的 `FLOW_VERSION`） |
 
 各款与扩展的分区也能用这几种条目：

@@ -2,6 +2,7 @@
 
 // 设置：模型（键、取值、分区合并与排序、宿主管控、内建「基础」分区）、设置对话框与宿主应用。
 import type { JsonValue } from '@xihan-ui/core/json'
+import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerDisplayControl, DesignerFrameEventMap, DesignerLayoutChangeReason, DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, ResolvedDesignerLayout, XhDesignerFrameElement, XhDesignerSettingsElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { setXhConfig } from '@xihan-ui/web-components'
@@ -567,8 +568,25 @@ describe('<xh-designer-settings> 的「工具栏」页', () => {
     return document.querySelectorAll<CheckboxHost>('[data-part="toolbar-group-toggle"]')[index]!
   }
 
-  it('toolbarSettingsSource 按上下文取命令的文字、图标与快捷键，命令表里没有的跳过', () => {
+  it('toolbarSettingsSource 取命令的短文字、图标与快捷键，命令表里没有的跳过', () => {
     expect(source.commands.map(command => [command.id, command.label, command.shortcut])).toEqual([['undo', 'Undo', ['Mod', 'Z']], ['redo', 'Redo', undefined], ['delete', 'Delete', undefined], ['zoom-in', 'Zoom in', undefined]])
+  })
+
+  it('名字取命令的短文字：撤销这类文字随下一步变的命令写固定的短名，每编辑一步重算交来的数据不变，表不重铺', async () => {
+    const dynamic = new Map<string, DesignerCommand<{ step: string }>>([
+      ['undo', { id: 'undo', label: context => `Undo: ${context.step}`, shortLabel: 'Undo', shortcut: ['Mod', 'Z'], run: () => {} }],
+      ['delete', { id: 'delete', label: 'Delete', run: () => {} }],
+    ])
+    const first = toolbarSettingsSource([['undo', 'delete']], dynamic, { step: 'move node' })
+    const second = toolbarSettingsSource([['undo', 'delete']], dynamic, { step: 'rename' })
+    expect(first.commands.map(command => command.label)).toEqual(['Undo', 'Delete'])
+    expect(second).toEqual(first)
+    const element = await mount(el => el.toolbar = first)
+    const node = document.querySelector('[data-toolbar-command="undo"]')
+    element.toolbar = second
+    await element.updateComplete
+    expect(document.querySelector('[data-toolbar-command="undo"]')).toBe(node)
+    expect(commandToggle('undo').textContent).toBe('Undo')
   })
 
   it('给了 toolbar 才有按钮表：一组一块，组头写第几组，命令一行带名字与快捷键，按设置里的定制排', async () => {
@@ -667,6 +685,21 @@ describe('帮助、快捷键与关于', () => {
       ['extensions', ['Run']],
     ])
     expect(source.groups[1]!.rows[1]!.keys).toEqual([['Mod', 'Shift', 'Z'], ['Ctrl', 'Y']])
+  })
+
+  it('快捷键页的名字也取短文字：撤销的文字随下一步变时，重算交来的数据不变，整页不重铺', async () => {
+    const dynamic = new Map<string, DesignerCommand<{ step: string }>>([
+      ['undo', { id: 'undo', label: context => `Undo: ${context.step}`, shortLabel: 'Undo', shortcut: ['Mod', 'Z'], run: () => {} }],
+    ])
+    const first = shortcutSettingsSource(dynamic, { step: 'move node' })
+    const second = shortcutSettingsSource(dynamic, { step: 'rename' })
+    expect(first.groups.flatMap(group => group.rows.map(row => row.label))).toEqual(['Undo'])
+    expect(second).toEqual(first)
+    const element = await mount(el => el.shortcuts = first)
+    const table = row('shortcuts.table')
+    element.shortcuts = second
+    await element.updateComplete
+    expect(row('shortcuts.table')).toBe(table)
   })
 
   it('三页的分区：帮助是说明加几颗钮，快捷键的通用组补上四款都有的按键，关于写产品、版本、界面库版本、许可证与扩展的行；只显示的条目不进 resolveSettings', () => {

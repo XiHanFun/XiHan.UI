@@ -11,7 +11,7 @@ import type { DesignerDisplayControl, DesignerShortcutGroupId, DesignerShortcutR
 import { commandShortcuts } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 import { DESIGNER_SHELL_COMMANDS } from '../extensions/builtin-commands'
-import { commandLabel } from '../extensions/commands'
+import { commandShortLabel } from '../extensions/commands'
 import { DESIGNER_EDIT_COMMANDS } from './display-model'
 
 /** shortcutSettingsSource 的选项。 */
@@ -23,7 +23,7 @@ export interface DesignerShortcutsSourceOptions {
 }
 
 /**
- * 从命令表现算快捷键页要的数据：凡有快捷键的命令一行（名字按此刻的上下文取，第二快捷键写在同一行）。designer-shell 内置的
+ * 从命令表现算快捷键页要的数据：凡有快捷键的命令一行（名字取命令的短文字 commandShortLabel，第二快捷键写在同一行）。designer-shell 内置的
  * 命令归「通用」，四款共有的编辑命令（DESIGNER_EDIT_COMMANDS）归「编辑」，扩展的归「扩展」，其余归「本设计器」。
  * 四款都有的按键（DESIGNER_COMMON_KEYS）由设置对话框补进「通用」。各款每轮更新时交给设置对话框的 shortcuts。
  */
@@ -37,7 +37,7 @@ export function shortcutSettingsSource<Ctx>(commands: DesignerCommandTable<Ctx>,
     if (keys.length === 0)
       continue
     const group: DesignerShortcutGroupId = extensions.has(command.id) ? 'extensions' : shell.has(command.id) ? 'common' : edit.has(command.id) ? 'edit' : 'designer'
-    rows[group].push({ label: commandLabel(command, context), keys })
+    rows[group].push({ label: commandShortLabel(command, context), keys })
   }
   rows.designer.push(...options.keys ?? [])
   return { groups: (['common', 'edit', 'designer', 'extensions'] as const).filter(id => rows[id].length > 0).map(id => ({ id, rows: rows[id] })) }

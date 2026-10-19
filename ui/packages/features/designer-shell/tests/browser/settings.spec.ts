@@ -11,7 +11,7 @@ import { mergeXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
 import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp, userEvent } from 'vitest/browser'
+import { cdp, page, userEvent } from 'vitest/browser'
 import { createDesignerSettingsHost, defineDesignerShell, shortcutSettingsSource, toolbarSettingsSource } from '../../src'
 import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
@@ -218,6 +218,65 @@ describe('设置对话框', () => {
       off()
       resetDiagnostics()
       frame.remove()
+    }
+  })
+
+  it('「布局」页在 375 宽的窄屏下：面板名整行写全，控件排在名字下面不压住它，表头不折行，表不出横向滚动', async () => {
+    const frame = document.createElement('xh-designer-frame')
+    try {
+      await page.viewport(375, 700)
+      frame.style.cssText = 'position:fixed;left:0;top:0;width:375px;height:600px'
+      frame.regions = [
+        { name: 'palette', position: 'start', title: '物料' },
+        { name: 'canvas', position: 'center' },
+        { name: 'properties', position: 'end', title: '属性面板' },
+        { name: 'issues', position: 'bottom', title: '问题' },
+        { name: 'minimap', position: 'overlay', title: '小地图' },
+      ]
+      document.body.append(frame)
+      await frame.updateComplete
+      const element = await mount()
+      element.frame = frame
+      element.show('layout')
+      await element.updateComplete
+      await settle()
+      const table = document.querySelector<HTMLElement>('[data-scope="designer-settings"][data-part="panel-table"]')!
+      expect(table.scrollWidth).toBeLessThanOrEqual(table.clientWidth)
+      const overlaps = (a: DOMRect, b: DOMRect): boolean => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1
+      for (const name of ['palette', 'properties', 'issues', 'minimap']) {
+        const row = document.querySelector<HTMLElement>(`[data-part="panel-row"][data-panel="${name}"]`)!
+        const label = row.querySelector<HTMLElement>('[data-part="panel-label"]')!
+        expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth + 1)
+        expect(label.getBoundingClientRect().width).toBeGreaterThan(0)
+        const nameBox = row.querySelector<HTMLElement>('[data-part="panel-name"]')!.getBoundingClientRect()
+        expect(overlaps(nameBox, row.querySelector<HTMLElement>('[data-part="panel-visible"]')!.getBoundingClientRect())).toBe(false)
+      }
+      const lines = (element: HTMLElement): number => {
+        const range = document.createRange()
+        range.selectNodeContents(element)
+        return new Set(Array.from(range.getClientRects(), rect => Math.round(rect.top))).size
+      }
+      // 位置下拉写得全当前那一栏，不缩成只剩箭头、不截成省略号（scrollWidth 取整会吞掉不足一像素的截断，按字量）
+      for (const name of ['palette', 'properties', 'issues']) {
+        const text = document.querySelector<HTMLElement>(`[data-part="panel-row"][data-panel="${name}"] [data-scope="select"][data-part="value-text"]`)!
+        expect(text.textContent).not.toBe('')
+        const range = document.createRange()
+        range.selectNodeContents(text)
+        expect(range.getBoundingClientRect().width).toBeGreaterThan(0)
+        expect(range.getBoundingClientRect().width).toBeLessThanOrEqual(text.getBoundingClientRect().width + 0.5)
+      }
+      expect(lines(document.querySelector<HTMLElement>('[data-part="panel-row"][data-panel="minimap"] [data-part="panel-overlay"]')!)).toBe(1)
+      for (const header of table.querySelectorAll<HTMLElement>('[role="columnheader"]')) {
+        if (header.getClientRects().length === 0)
+          continue
+        const range = document.createRange()
+        range.selectNodeContents(header)
+        expect(new Set(Array.from(range.getClientRects(), rect => Math.round(rect.top))).size).toBeLessThanOrEqual(1)
+      }
+    }
+    finally {
+      frame.remove()
+      await page.viewport(1280, 800)
     }
   })
 })
