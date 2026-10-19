@@ -134,3 +134,70 @@ describe('wc toolbar 溢出收纳（真实排版）', () => {
     expect(document.activeElement).toBe(bar.items()[visible - 1])
   })
 })
+
+const LINE = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
+
+/**
+ * 收集这一段里抛出的错误：重铺条目的那一轮更新不一定是 updateComplete 当时指着的那一轮，
+ * 它抛的错会成为未处理的拒绝，不落在用例的 await 上。
+ */
+async function errorsDuring(run: () => Promise<void>): Promise<string[]> {
+  const errors: string[] = []
+  const onRejection = (event: PromiseRejectionEvent): void => {
+    errors.push(String(event.reason))
+    event.preventDefault()
+  }
+  window.addEventListener('unhandledrejection', onRejection)
+  try {
+    await run().catch((error: unknown) => {
+      errors.push(String(error))
+    })
+    await settle()
+  }
+  finally {
+    window.removeEventListener('unhandledrejection', onRejection)
+  }
+  return errors
+}
+
+/** 「更多」菜单里的条目，按文档序。 */
+function menuOrder(): string[] {
+  return [...document.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]')].map(el => el.getAttribute('data-value')!)
+}
+
+describe('wc toolbar「更多」菜单重铺条目：被换掉或拿掉的节点正是下一个落点', () => {
+  it('收起的首条换上图标（条目整条换新）：菜单照常重铺、次序不乱，新条目带着图标', async () => {
+    const bar = await mount(240)
+    await expect.poll(() => bar.trigger().hidden).toBe(false)
+    const visible = expectedVisible(bar, 240)
+    const first = LABELS[visible]!
+    const toolbar = bar.box.querySelector('xh-toolbar') as Updatable & { itemIcons?: unknown }
+    const errors = await errorsDuring(async () => {
+      toolbar.itemIcons = { [first]: LINE }
+      await settle()
+    })
+    expect(errors).toEqual([])
+    expect(menuOrder()).toEqual(LABELS.slice(visible))
+    expect(bar.menuItem(first)!.querySelector('[data-scope="menu"][data-part="item-icon"]')).not.toBeNull()
+  })
+
+  it('收起的两条之间拿掉分隔线：菜单照常重铺、次序不乱，分隔线跟着撤掉', async () => {
+    const box = document.createElement('div')
+    box.style.inlineSize = '240px'
+    const item = (label: string): string => `<button data-xh-part="item" type="button" value="${label}" style="inline-size: ${ITEM_WIDTH}px">${label}</button>`
+    box.innerHTML = `<xh-toolbar><div data-xh-part="root" aria-label="编辑">${LABELS.slice(0, 5).map(item).join('')}<div data-xh-part="separator"></div>${item(LABELS[5]!)}<button data-xh-part="overflow-trigger"></button></div></xh-toolbar>`
+    document.body.append(box)
+    await settle()
+    const separators = (): number => document.querySelectorAll('[data-scope="menu"][data-part="separator"]').length
+    const collapsed = menuOrder()
+    expect(collapsed.slice(-2)).toEqual([LABELS[4], LABELS[5]])
+    expect(separators()).toBe(1)
+    const errors = await errorsDuring(async () => {
+      box.querySelector('[data-xh-part="separator"]')!.remove()
+      await settle()
+    })
+    expect(errors).toEqual([])
+    expect(menuOrder()).toEqual(collapsed)
+    expect(separators()).toBe(0)
+  })
+})
