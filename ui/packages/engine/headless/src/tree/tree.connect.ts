@@ -126,6 +126,8 @@ export function connectTree<T extends PropTypes>(
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
+  /** 这个节点能不能被拖起来：开着 nodeDraggable、没禁用、节点自己没写 draggable: false。 */
+  const canDrag = (value: string): boolean => nodeDraggable && !isDisabled(value) && metaOf(value)?.draggable !== false
 
   /**
    * 节点语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
@@ -255,7 +257,7 @@ export function connectTree<T extends PropTypes>(
    * 触屏不认——纵向手势在按下那一刻就归了浏览器滚动，touch-action 事后改不回来。
    */
   function onNodeDragStart(event: PointerEvent, value: string): void {
-    if (!nodeDraggable || isDisabled(value) || event.button !== 0 || event.pointerType === 'touch')
+    if (!canDrag(value) || event.button !== 0 || event.pointerType === 'touch')
       return
     const target = event.target as HTMLElement | null
     if (target?.closest('input,textarea,select,button,a,[contenteditable],[role="button"],[role="checkbox"]'))
@@ -399,7 +401,7 @@ export function connectTree<T extends PropTypes>(
      * 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。
      */
     getNodeDragTriggerProps: (node) => {
-      const draggable = nodeDraggable && !isDisabled(node.value)
+      const draggable = canDrag(node.value)
       return normalize.element({
         ...parts['node-drag-trigger'].attrs,
         // 拖拽把手是行首的前导部件
@@ -496,8 +498,7 @@ export function connectTree<T extends PropTypes>(
         // Alt + 方向键搬家。一按就是一次已过守卫的完整提交，不进拖动态——
         // 裸方向键是导航与展开收起，空格是确认键，连打检索还会先吃掉可打印字符，
         // 模态拾起在这棵树上无处落脚
-        if (event.altKey && !event.ctrlKey && !event.metaKey && nodeDraggable && focusedValue != null
-          && !isDisabled(focusedValue)) {
+        if (event.altKey && !event.ctrlKey && !event.metaKey && focusedValue != null && canDrag(focusedValue)) {
           const moveIntent = treeMoveIntentFromKey(key, dir === 'rtl')
           if (moveIntent) {
             // Alt + 方向键在部分浏览器是前进后退，认了就得挡住
@@ -638,7 +639,7 @@ export function connectTree<T extends PropTypes>(
       return normalize.element({
         'data-dragging': dataAttr(draggingNode === node.value),
         'data-drop': dropSide(node.value),
-        'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
+        'data-draggable': dataAttr(canDrag(node.value)),
         // 鼠标按下起拖（触屏不认）；触屏按下进按压通道，两路互不相干
         'onPointerDown': (event: PointerEvent) => {
           onNodeDragStart(event, node.value)
@@ -738,7 +739,7 @@ export function connectTree<T extends PropTypes>(
         'data-tone': nodeTone(node.value),
         'data-dragging': dataAttr(draggingNode === node.value),
         'data-drop': dropSide(node.value),
-        'data-draggable': dataAttr(nodeDraggable && !isDisabled(node.value)),
+        'data-draggable': dataAttr(canDrag(node.value)),
         // 触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active；
         // 键盘那一路由 branch 代发（焦点落在它身上），行自己只接触屏。与叶子行分开认：同一个值按住行时叶子不亮
         'data-pressed': dataAttr(pressedPart === 'branch-control' && pressedValue === node.value),

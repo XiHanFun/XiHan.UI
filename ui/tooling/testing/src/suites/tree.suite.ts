@@ -721,6 +721,33 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '逐个节点不可拖动：写了 draggable: false 的节点不报可拖、Alt + 方向键搬不动它，仍能当落点',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: { collection: COLLECTION.map(node => (node.value === 'src' ? { ...node, draggable: false } : node)), nodeDraggable: true },
+      initial: {
+        parts: {
+          'branch-control[0]': { 'data-draggable': null },
+          'node-drag-trigger[0]': { 'data-disabled': '' },
+          // 不向下传导：docs 照常可拖
+          'branch-control[2]': { 'data-draggable': '' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'tree', expect: { activeElement: { part: 'branch[0]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', modifiers: ['Alt'], expect: { activeElement: { part: 'branch[0]', exact: true }, events: [] } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'branch[2]', exact: true } } },
+        {
+          kind: 'key',
+          key: 'ArrowRight',
+          modifiers: ['Alt'],
+          expect: {
+            // docs 认上一个兄弟 src 当父：src 自己拖不动，照样是落点，排在它三个孩子后面
+            events: [{ type: 'node-move', detail: { value: 'docs', parent: 'src', index: 3 } }],
+          },
+        },
+      ],
+    },
+    {
       name: '节点换位：Alt + 左右键改缩进层级——往里认上一个兄弟当父，往外变成父的下一个兄弟',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: props({ nodeDraggable: true, defaultExpandedValue: ['src'] }),

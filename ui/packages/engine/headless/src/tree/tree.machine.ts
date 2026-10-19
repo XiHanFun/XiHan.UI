@@ -46,6 +46,7 @@ function collectNodes(
         value: node.value,
         label: node.label ?? node.value,
         disabled: !!node.disabled,
+        draggable: node.draggable !== false,
         tone: node.tone ?? null,
         description: node.description ?? null,
         branch,

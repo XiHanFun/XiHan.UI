@@ -32,6 +32,11 @@ export interface TreeNode {
   /** 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 */
   disabled?: boolean
   /**
+   * 写 false 时这一个节点拖不起来（nodeDraggable 开着时指针按住、Alt + 方向键都不搬它），
+   * 照常能选、能展开、能当别的节点的落点。缺省可拖。不向下传导给子节点。
+   */
+  draggable?: boolean
+  /**
    * 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档，
    * 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进，
    * 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。
@@ -63,6 +68,8 @@ export interface TreeNodeMeta {
   /** node.label ?? node.value，恒为字符串，连打检索直接用它比较。 */
   label: string
   disabled: boolean
+  /** 能不能被拖起来：节点写了 draggable: false 时为 false。 */
+  draggable: boolean
   /** 该节点自己写的语气；未提供时为 null，不从父节点继承。 */
   tone: Tone | null
   /** 副文本；未提供时为 null。 */
