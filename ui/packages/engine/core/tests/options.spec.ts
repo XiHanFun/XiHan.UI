@@ -54,4 +54,12 @@ describe('选项结构校验', () => {
   it('键名里的 ~ 与 / 按 JSON Pointer 转义', () => {
     expect(findOptionViolation([{ 'value': 'a', 'a/b~c': 1 }], { strict: true })).toEqual({ pointer: '/0/a~1b~0c', code: 'unknown-key' })
   })
+
+  it('isValue 放宽 value 的取值：数字、布尔这类选项列表按它判，重复按 Object.is 判', () => {
+    const isNumber = (value: unknown): boolean => typeof value === 'number' && Number.isFinite(value)
+    expect(findOptionViolation([{ value: 1 }, { value: 2 }], { isValue: isNumber })).toBeUndefined()
+    expect(findOptionViolation([{ value: 1 }, { value: '2' }], { isValue: isNumber })).toEqual({ pointer: '/1/value', code: 'invalid-value' })
+    expect(findOptionViolation([{ value: 1 }, { value: 1 }], { isValue: isNumber })).toEqual({ pointer: '/1/value', code: 'duplicate-value' })
+    expect(findOptionViolation([{ value: 1 }])).toEqual({ pointer: '/0/value', code: 'invalid-value' })
+  })
 })

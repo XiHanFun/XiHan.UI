@@ -10821,6 +10821,7 @@
       "PropertyIssue",
       "PropertyNumberConstraints",
       "PropertyOption",
+      "PropertyOptionValueType",
       "PropertySide",
       "PropertySides",
       "PropertySwatchOption",

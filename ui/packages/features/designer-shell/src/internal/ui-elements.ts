@@ -13,6 +13,7 @@ import {
   XhColorFieldElement,
   XhColorSwatchPickerElement,
   XhContextMenuElement,
+  XhDateFieldElement,
   XhDialogElement,
   XhDrawerElement,
   XhFieldArrayElement,
@@ -56,6 +57,7 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-filter-builder', XhFilterBuilderElement)
   defineXhElement('xh-field-array', XhFieldArrayElement)
   defineXhElement('xh-checkbox', XhCheckboxElement)
+  defineXhElement('xh-date-field', XhDateFieldElement)
   defineXhElement('xh-accordion', XhAccordionElement)
 }
 

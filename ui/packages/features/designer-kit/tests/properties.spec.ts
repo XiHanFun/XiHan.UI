@@ -164,6 +164,21 @@ describe('checkPropertyValue', () => {
     [{ kind: 'options' }, ['a'], 'invalid-type'],
     [{ kind: 'options', allowDisabled: false }, [{ value: 'a', label: '甲' }], undefined],
     [{ kind: 'options', allowDisabled: false }, [{ value: 'a', disabled: false }], 'unknown-key'],
+    [{ kind: 'options', valueType: 'number' }, [{ value: 1, label: '一' }, { value: 2.5 }], undefined],
+    [{ kind: 'options', valueType: 'number' }, [{ value: '1' }], 'invalid-type'],
+    [{ kind: 'options', valueType: 'number' }, [{ label: '空' }], 'required'],
+    [{ kind: 'options', valueType: 'number' }, [{ value: 1 }, { value: 1 }], 'duplicate-value'],
+    [{ kind: 'options', valueType: 'boolean' }, [{ value: true, label: '是' }, { value: false, label: '否' }], undefined],
+    [{ kind: 'options', valueType: 'boolean' }, [{ value: 'true' }], 'invalid-type'],
+    [{ kind: 'options', valueType: 'boolean' }, [{ value: true }, { value: true }], 'duplicate-value'],
+    [{ kind: 'options', valueType: 'date' }, [{ value: '2026-10-19' }], undefined],
+    [{ kind: 'options', valueType: 'date' }, [{ value: '2026-02-30' }], 'invalid-value'],
+    [{ kind: 'options', valueType: 'date' }, [{ value: '' }], 'required'],
+    [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-10-19T08:30' }], undefined],
+    [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-10-19' }], 'invalid-value'],
+    [{ kind: 'options', valueType: 'datetime' }, [{ value: '+002026-10-19' }], 'invalid-value'],
+    [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-10-19 08:30:15' }], undefined],
+    [{ kind: 'options', valueType: 'datetime' }, [{ value: 20261019 }], 'invalid-type'],
   ]
   it('内建编辑方式的取值约束', () => {
     for (const [control, value, code] of cases)
@@ -182,6 +197,8 @@ describe('findPropertyValueIssue', () => {
     expect(findPropertyValueIssue({ kind: 'options' }, 'a')).toEqual({ code: 'invalid-type', path: [] })
     expect(findPropertyValueIssue({ kind: 'options' }, [{ value: 'a' }])).toBeUndefined()
     expect(findPropertyValueIssue({ kind: 'options', allowDisabled: false }, [{ value: 'a' }, { value: 'b', disabled: true }])).toEqual({ code: 'unknown-key', path: [1, 'disabled'] })
+    expect(findPropertyValueIssue({ kind: 'options', valueType: 'number' }, [{ value: 1 }, { value: 2 }, { value: 1 }])).toEqual({ code: 'duplicate-value', path: [2, 'value'] })
+    expect(findPropertyValueIssue({ kind: 'options', valueType: 'date' }, [{ value: '2026-10-19' }, { value: '10/19' }])).toEqual({ code: 'invalid-value', path: [1, 'value'] })
   })
 
   it('别的编辑方式的问题落在值本身', () => {

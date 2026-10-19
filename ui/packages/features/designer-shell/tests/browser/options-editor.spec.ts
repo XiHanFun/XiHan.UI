@@ -2,6 +2,7 @@
 // 新增一项后焦点落到它的值上；上移、下移、删除与新增都能只用键盘完成；窄的属性面板里各格看得见、不压到相邻的格、页面不横向溢出；
 // 分组可折叠、放不下整张表时表格横向滚动，行尾把手不被裁掉。
 import type { JsonValue } from '@xihan-ui/core/json'
+import type { PropertyControl } from '@xihan-ui/designer-kit/properties'
 import type { DesignerPropertiesEventMap, DesignerPropertyTarget, XhDesignerPropertiesElement } from '../../src'
 import { mergeXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
@@ -36,26 +37,26 @@ async function until(check: () => boolean): Promise<void> {
   }
 }
 
-function target(options: JsonValue): DesignerPropertyTarget {
+function target(options: JsonValue, control: PropertyControl = { kind: 'options' }): DesignerPropertyTarget {
   return {
     kind: 'field',
     id: 'f1',
     value: { data: { options } },
-    descriptors: [{ path: ['data', 'options'], control: { kind: 'options' }, label: 'Options' }],
+    descriptors: [{ path: ['data', 'options'], control, label: 'Options' }],
   }
 }
 
 /** 挂一个 280px 宽的属性面板，选项写回时照样换上新值，像设计器那样。 */
-async function mount(options: JsonValue, errors: readonly { path: (string | number)[], message: string }[] = []): Promise<JsonValue[]> {
+async function mount(options: JsonValue, errors: readonly { path: (string | number)[], message: string }[] = [], control?: PropertyControl): Promise<JsonValue[]> {
   const element = document.createElement('xh-designer-properties')
   element.style.inlineSize = '280px'
-  element.targets = [target(options)]
+  element.targets = [target(options, control)]
   element.errors = errors.map(error => ({ target: { kind: 'field', id: 'f1' }, ...error }))
   const written: JsonValue[] = []
   element.addEventListener('property-change', (event) => {
     const { value } = (event as DesignerPropertiesEventMap['property-change']).detail
     written.push(value ?? null)
-    element.targets = [target(value ?? [])]
+    element.targets = [target(value ?? [], control)]
   })
   document.body.append(element)
   panel = element
@@ -141,6 +142,28 @@ describe('属性面板的选项表', () => {
     await until(() => JSON.stringify(written.at(-1)) === JSON.stringify([{ value: 'b', label: 'B' }, { value: 'c', label: 'C' }, { value: 'a', label: 'A' }]))
     await until(() => (page.getByRole('textbox', { name: 'Value, option 3' }).element() as HTMLInputElement).value === 'a')
     expect((page.getByRole('textbox', { name: 'Label, option 1' }).element() as HTMLInputElement).value).toBe('B')
+  })
+
+  it('valueType 为 number：新增一项后键入数字写回数值；为 boolean：两行的值格只读、没有换序把手，新增与删除按不动，改文字时两项都写', async () => {
+    const written = await mount([{ value: 1 }], [], { kind: 'options', valueType: 'number' })
+    await userEvent.click(panel!.querySelector<HTMLElement>('[data-scope="field-array"][data-part="add-trigger"]')!)
+    await until(() => document.activeElement === page.getByRole('spinbutton', { name: 'Value, option 2' }).element())
+    expect(written.at(-1)).toEqual([{ value: 1 }, {}])
+    await userEvent.keyboard('2.5')
+    await until(() => JSON.stringify(written.at(-1)) === JSON.stringify([{ value: 1 }, { value: 2.5 }]))
+    panel!.remove()
+
+    const booleans = await mount([], [], { kind: 'options', valueType: 'boolean' })
+    await until(() => panel!.querySelectorAll('[data-part="item-cell"] input').length > 0)
+    const first = page.getByRole('textbox', { name: 'Value, option 1' }).element() as HTMLInputElement
+    expect([first.value, first.readOnly]).toEqual(['Yes', true])
+    expect(panel!.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item-drag-trigger"]')?.checkVisibility() ?? false).toBe(false)
+    expect(panel!.querySelector<HTMLElement>('[data-scope="field-array"][data-part="move-up-trigger"]')?.checkVisibility() ?? false).toBe(false)
+    for (const part of ['add-trigger', 'item-delete-trigger'])
+      expect(panel!.querySelector(`[data-scope="field-array"][data-part="${part}"]`)!.getAttribute('aria-disabled'), part).toBe('true')
+    await userEvent.click(page.getByRole('textbox', { name: 'Label, option 2' }).element())
+    await userEvent.keyboard('Off')
+    await until(() => JSON.stringify(booleans.at(-1)) === JSON.stringify([{ value: true }, { value: false, label: 'Off' }]))
   })
 
   it('280px 的面板里每格的控件看得见、有宽度、落在自己那一格里，页面不横向溢出', async () => {

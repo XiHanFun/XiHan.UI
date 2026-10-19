@@ -24,6 +24,7 @@ export const DESIGNER_PROPERTIES_EN_US: DesignerShellLocaleTranslations['xh-desi
   customColor: 'Custom color',
   optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
   optionCell: (column, row) => `${column}, option ${row}`,
+  optionBoolean: { true: 'Yes', false: 'No' },
 }
 
 export const DESIGNER_ISSUES_EN_US: DesignerShellLocaleTranslations['xh-designer-issues'] = {

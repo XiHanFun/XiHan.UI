@@ -1047,14 +1047,20 @@ function optionText(item: JsonValue | undefined, key: 'value' | 'label'): string
   return isPlainObject(item) ? textOf(item[key]) : ''
 }
 
-/** 改一项的一个键：label 为空、disabled 为 false 时去掉这个键；这一项不是对象时换成只有这个键的对象。 */
-function withOptionKey(item: JsonValue | undefined, key: OptionColumn, value: string | boolean): JsonObject {
+/** 改一项的一个键：value 清空、label 为空、disabled 为 false 时去掉这个键；这一项不是对象时换成只有这个键的对象。 */
+function withOptionKey(item: JsonValue | undefined, key: OptionColumn, value: string | number | boolean | undefined): JsonObject {
   const next: Record<string, JsonValue> = isPlainObject(item) ? { ...item } : {}
-  if ((key === 'label' && value === '') || (key === 'disabled' && value === false))
+  if (value === undefined || (key === 'label' && value === '') || (key === 'disabled' && value === false))
     delete next[key]
   else
     next[key] = value
   return next
+}
+
+/** 布尔选项固定的两行：先 true 后 false，文字与禁用取值里同一个值的那一项。 */
+function booleanOptions(value: JsonValue | undefined): JsonObject[] {
+  const list = Array.isArray(value) ? value : []
+  return [true, false].map(flag => (list.find(item => isPlainObject(item) && item.value === flag) as JsonObject | undefined) ?? { value: flag })
 }
 
 /** 问题落在一项的哪一格：值、文字、禁用三个键落在各自那一格（没有禁用那一列时落在值上），别的键与这一项本身落在值上。 */
@@ -1065,18 +1071,25 @@ function optionColumnOf(path: PropertyEditorContext['issues'][number]['path'], c
 
 /**
  * 选项列表：库内 xh-field-array 的表格排布，一项一行，三格依次是值、文字与禁用（allowDisabled 为 false 时没有禁用这一列），
- * 行号、拖动、上移下移与删除把手、新增把手由它铺出；
+ * 行号、拖动、上移下移与删除把手、新增把手由它铺出。值格按 valueType 换控件：string 文本框，number 数字框（写回数值，清空即去掉 value），
+ * date / datetime 日期框（到日 / 到分）；boolean 固定 true、false 两行，值格只读、显示「是 / 否」，不能增删换序，写回时两项都写、true 在前。
  * 每格是一个字段，控件以「列名 + 第几项」为名。值与文字边输入边写入、失焦封口；勾选禁用，以及增删与换序，各是一步。
- * 新增的一项只有空的 value，新增后焦点落到它的值上。文字为空、不禁用时不写这两个键，别的键（tone、description）原样留着。
+ * 新增的一项只有空的 value（数字不带 value），新增后焦点落到它的值上。文字为空、不禁用时不写这两个键，别的键（tone、description）原样留着。
  * 里层的问题按路径标到格上：[i, "value"] 等落在那一格的字段上（aria-invalid 与错误文案由字段接到控件上），
  * 落在这一项别的键上或这一项本身的标在它的值上。多个对象取值不同时没有行，新增的一项整体写给这几个对象。
  */
 function optionsEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
-  const columns: readonly OptionColumn[] = controlOf<'options'>(initial).allowDisabled === false ? ['value', 'label'] : OPTION_COLUMNS
+  const optionsControl = controlOf<'options'>(initial)
+  const columns: readonly OptionColumn[] = optionsControl.allowDisabled === false ? ['value', 'label'] : OPTION_COLUMNS
+  const valueType = optionsControl.valueType ?? 'string'
+  const fixed = valueType === 'boolean'
+  /** 读到的值换成显示的各项：布尔固定两行，其余不是数组时没有行。 */
+  const shownOf = (value: JsonValue | undefined): readonly JsonValue[] => (fixed ? booleanOptions(value) : Array.isArray(value) ? value : [])
   const array: FieldArrayControl = createAuthoredElement(doc, 'xh-field-array', { 'data-xh-part': 'control' })
   array.layout = 'table'
-  array.movable = true
+  // 布尔的两行不换序：拖动与上移下移把手收起
+  array.movable = !fixed
   array.createItem = () => ({})
   // 面板窄：格子用表格的紧凑内衬
   array.style.setProperty('--xh-field-array-cell-px', 'var(--xh-table-cell-px-sm)')
@@ -1102,14 +1115,54 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     options = next
     context.setValue(next.length === 0 ? undefined : [...next])
   }
-  const edit = (token: object, key: OptionColumn, value: string | boolean): void => {
+  const edit = (token: object, key: OptionColumn, value: string | number | boolean | undefined): void => {
     const index = tokens.indexOf(token)
     if (index >= 0)
       write(options.map((item, at) => (at === index ? withOptionKey(item, key, value) : item)))
   }
 
+  /** 值格的控件：按值类型换，布尔是只读的文本框。 */
+  const valueControl = (token: object): ControlElement => {
+    if (valueType === 'number') {
+      const control: ControlElement = createAuthoredElement(doc, 'xh-number-field', { slot: 'control', size: 'sm' })
+      control.addEventListener('value-change', (event) => {
+        event.stopPropagation()
+        const { value, valueAsNumber } = (event as CustomEvent<{ value: string, valueAsNumber: number }>).detail
+        control.value = value
+        if (value.trim() === '')
+          edit(token, 'value', undefined)
+        else if (Number.isFinite(valueAsNumber))
+          edit(token, 'value', valueAsNumber)
+      })
+      control.addEventListener('focusout', () => context.commit())
+      return control
+    }
+    if (valueType === 'date' || valueType === 'datetime') {
+      const control: ControlElement = createAuthoredElement(doc, 'xh-date-field', { slot: 'control', size: 'sm', granularity: valueType === 'date' ? 'day' : 'minute' })
+      control.addEventListener('value-change', (event) => {
+        event.stopPropagation()
+        const { value } = (event as ValueChange<string | null>).detail
+        control.value = value
+        edit(token, 'value', value ?? undefined)
+      })
+      control.addEventListener('focusout', () => context.commit())
+      return control
+    }
+    const control: ControlElement = createAuthoredElement(doc, 'xh-text-field', { 'slot': 'control', 'size': 'sm', 'read-only': fixed })
+    if (!fixed) {
+      control.addEventListener('value-change', (event) => {
+        event.stopPropagation()
+        const { value } = (event as ValueChange<string>).detail
+        control.value = value
+        edit(token, 'value', value)
+      })
+      control.addEventListener('focusout', () => context.commit())
+    }
+    return control
+  }
+
   const createCell = (token: object, column: OptionColumn): { field: FieldHost, control: ControlElement } => {
-    const control: ControlElement = createAuthoredElement(doc, column === 'disabled' ? 'xh-checkbox' : 'xh-text-field', { slot: 'control', size: 'sm' })
+    const control: ControlElement = column === 'value' ? valueControl(token) : createAuthoredElement(doc, column === 'disabled' ? 'xh-checkbox' : 'xh-text-field', { slot: 'control', size: 'sm' })
     const field: FieldHost = createAuthoredElement(doc, 'xh-field', { slot: PENDING_SLOT, hidden: true }, [control])
     field.errorText = ''
     if (column === 'disabled') {
@@ -1121,7 +1174,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
         context.commit()
       })
     }
-    else {
+    else if (column === 'label') {
       control.addEventListener('value-change', (event) => {
         event.stopPropagation()
         const { value } = (event as ValueChange<string>).detail
@@ -1170,7 +1223,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     for (const column of columns) {
       const control = row.controls[column]!
       setAttributes(control, { 'aria-label': t.optionCell(t.optionColumns[column], index + 1) })
-      control.toggleAttribute('read-only', context.readonly)
+      control.toggleAttribute('read-only', context.readonly || (fixed && column === 'value'))
       const message = issues.find(issue => optionColumnOf(issue.path, columns) === column)?.message
       const field = row.fields[column]!
       if (field.errorText !== (message ?? ''))
@@ -1182,10 +1235,25 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     const checked = isPlainObject(item) && item.disabled === true
     if (checkbox && checkbox.checked !== checked)
       checkbox.checked = checked
-    for (const column of ['value', 'label'] as const) {
-      const text = optionText(item, column)
-      if (row.controls[column]!.value !== text)
-        row.controls[column]!.value = text
+    const label = optionText(item, 'label')
+    if (row.controls.label!.value !== label)
+      row.controls.label!.value = label
+    const valueField = row.controls.value!
+    const value = isPlainObject(item) ? item.value : undefined
+    if (valueType === 'number') {
+      // 框里的数与取值一致就不重写（哪怕写法不同，如 1.50），没有取值时框里为空
+      if (!showsNumber(valueField, typeof value === 'number' ? value : undefined))
+        valueField.value = typeof value === 'number' ? textOf(value) : ''
+    }
+    else if (valueType === 'date' || valueType === 'datetime') {
+      const iso = typeof value === 'string' && value !== '' ? value : null
+      if (valueField.value !== iso)
+        valueField.value = iso
+    }
+    else {
+      const text = fixed ? (typeof value === 'boolean' ? t.optionBoolean[value ? 'true' : 'false'] : '') : optionText(item, 'value')
+      if (valueField.value !== text)
+        valueField.value = text
     }
   }
 
@@ -1226,8 +1294,9 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     if (mutation === undefined || mutation.type === 'replace')
       return
     const next = [...options]
+    // 新增的一项：数字没有空值可写，不带 value；其余写空串，待填
     if (mutation.type === 'insert')
-      next.splice(mutation.index, 0, { value: '' })
+      next.splice(mutation.index, 0, valueType === 'number' ? {} : { value: '' })
     else if (mutation.type === 'remove')
       next.splice(mutation.index, 1)
     else
@@ -1238,7 +1307,7 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     context.commit()
     if (mutation.type === 'insert') {
       const row = rows.get(tokens[mutation.index]!)
-      void array.updateComplete?.then(() => row?.controls.value!.querySelector<HTMLElement>('input')?.focus())
+      void array.updateComplete?.then(() => row?.controls.value!.querySelector<HTMLElement>('input, [role="spinbutton"]')?.focus())
     }
   })
 
@@ -1248,7 +1317,9 @@ function optionsEditor(initial: FieldContext): FieldInstance {
     array.readOnly = next.readonly
     if (array.columns === undefined || array.columns.some(column => column.label !== t.optionColumns[column.id as OptionColumn]))
       array.columns = columns.map(id => ({ id, label: t.optionColumns[id], ...(id === 'disabled' ? { width: 'auto' } : { minWidth: OPTION_TEXT_MIN_WIDTH }) }))
-    const value = next.mixed || !Array.isArray(next.value) ? [] : next.value
+    // 布尔的两行不能增删：新增与删除把手按只读铺成按不动
+    array.readOnly = next.readonly || fixed
+    const value = shownOf(next.mixed ? undefined : next.value)
     if (!jsonEquals(value, options)) {
       options = value
       reconcile()

@@ -25,6 +25,7 @@ const translations: DesignerShellLocaleTranslations = {
     customColor: 'カスタムカラー',
     optionColumns: { value: '値', label: 'ラベル', disabled: '無効' },
     optionCell: (column, row) => `${row} 番目の項目の${column}`,
+    optionBoolean: { true: 'はい', false: 'いいえ' },
   },
   'xh-designer-issues': {
     title: '問題',

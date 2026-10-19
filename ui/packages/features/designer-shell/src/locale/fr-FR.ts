@@ -25,6 +25,7 @@ const translations: DesignerShellLocaleTranslations = {
     customColor: 'Couleur personnalisée',
     optionColumns: { value: 'Valeur', label: 'Libellé', disabled: 'Désactivée' },
     optionCell: (column, row) => `${column}, option ${row}`,
+    optionBoolean: { true: 'Oui', false: 'Non' },
   },
   'xh-designer-issues': {
     title: 'Problèmes',

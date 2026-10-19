@@ -25,6 +25,7 @@ const translations: DesignerShellLocaleTranslations = {
     customColor: '사용자 지정 색',
     optionColumns: { value: '값', label: '레이블', disabled: '비활성' },
     optionCell: (column, row) => `${row}번째 항목의 ${column}`,
+    optionBoolean: { true: '예', false: '아니요' },
   },
   'xh-designer-issues': {
     title: '문제',

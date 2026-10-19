@@ -33,6 +33,7 @@ export const DEFAULT_PROPERTIES_TRANSLATIONS: DesignerPropertiesTranslations = {
   customColor: 'Custom color',
   optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
   optionCell: (column, row) => `${column}, option ${row}`,
+  optionBoolean: { true: 'Yes', false: 'No' },
 }
 
 /** createPropertyField 的选项：建好后不再变的部分。 */

@@ -25,6 +25,7 @@ const translations: DesignerShellLocaleTranslations = {
     customColor: '自訂顏色',
     optionColumns: { value: '值', label: '文字', disabled: '停用' },
     optionCell: (column, row) => `第 ${row} 項的${column}`,
+    optionBoolean: { true: '是', false: '否' },
   },
   'xh-designer-issues': {
     title: '問題',
