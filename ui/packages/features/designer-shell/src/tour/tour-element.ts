@@ -7,12 +7,14 @@
 // 问题、状态栏、设置）加上设计器交进来的各款与扩展的步骤，按 order 排；目标是外框的面板、区、工具栏上的命令或选择器，
 // 目标面板隐藏或不在外框里的那一步跳过，进入一步前让外框把面板亮出来（展开收起的栏、标题条，窄屏时开抽屉）。
 // 引导限在外框里：遮罩只盖外框，高亮框裁在外框里，页面别处照常可用；同一页只跑一个引导。
-// 收起时派发 tour-end：走完是 complete，跳过或 Esc 是 skip，关闭钮或 stop() 是 close。
+// 收起时派发 tour-end：走完是 complete，跳过或 Esc 是 skip，关闭钮或 stop() 是 close；焦点回到开始时持有它的元素，
+// 那个元素已不在文档里时退回外框画布区里能聚焦的第一个。
 
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { XhDesignerFrameElement } from '../frame/frame-element'
 import type { DesignerTourTranslations } from '../translations'
 import type { DesignerTourStepView, DesignerTourTarget } from './tour'
+import { getTabbables } from '@xihan-ui/core'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineTourElements } from '../internal/ui-elements'
 
@@ -78,7 +80,7 @@ function byAttribute<T extends Element>(root: ParentNode | null | undefined, sel
   return null
 }
 
-type TourHost = HTMLElement & { steps?: unknown[], open?: boolean, value?: number, boundary?: () => HTMLElement | null, translations?: Record<string, unknown> }
+type TourHost = HTMLElement & { steps?: unknown[], open?: boolean, value?: number, boundary?: () => HTMLElement | null, translations?: Record<string, unknown>, remeasure?: () => void, updateComplete?: Promise<boolean> }
 
 interface Parts {
   readonly tour: TourHost
@@ -120,6 +122,8 @@ export class XhDesignerTourElement extends XhReactiveElement {
   #reason: 'complete' | 'skip' | undefined
   /** 开始引导时外框窄屏抽屉的开合：引导打开的抽屉在不需要时、以及收起时还原成它。 */
   #drawer: 'start' | 'end' | undefined
+  /** 开始引导时持有焦点的元素。 */
+  #returnTo: Element | null = null
 
   /** 引导此刻开着。 */
   get running(): boolean {
@@ -154,8 +158,10 @@ export class XhDesignerTourElement extends XhReactiveElement {
     if (steps.length === 0)
       return false
     const parts = this.#ensureParts()
-    if (!this.#running)
+    if (!this.#running) {
       this.#drawer = this.frame?.openDrawer
+      this.#returnTo = (this.getRootNode() as Document | ShadowRoot).activeElement
+    }
     this.#run = steps
     this.#reason = undefined
     parts.tour.steps = steps.map(step => ({
@@ -264,7 +270,24 @@ export class XhDesignerTourElement extends XhReactiveElement {
     if (RUNNING.get(this.ownerDocument) === this)
       RUNNING.delete(this.ownerDocument)
     this.#restoreDrawer()
+    const back = this.#returnTo
+    this.#returnTo = null
+    if (back === null || !back.isConnected)
+      void this.#focusFrame()
     emitEvent(this, 'tour-end', { reason, step })
+  }
+
+  /** 引导收起、焦点没处可回（落在页面上）时，交给外框画布区里能聚焦的第一个，画布区没有就取外框里的第一个。 */
+  async #focusFrame(): Promise<void> {
+    await this.#parts?.tour.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const frame = this.frame
+    const active = (this.getRootNode() as Document | ShadowRoot).activeElement
+    if (this.#running || !frame?.isConnected || (active !== null && active !== this.ownerDocument.body))
+      return
+    const center = frame.querySelector<HTMLElement>('[data-scope="designer-frame"][data-part="region"][data-position="center"]')
+    const target = (center ? getTabbables(center)[0] : undefined) ?? getTabbables(frame)[0]
+    target?.focus({ preventScroll: true })
   }
 
   /** 外框窄屏抽屉还原成开始引导时的样子。 */
@@ -286,13 +309,50 @@ export class XhDesignerTourElement extends XhReactiveElement {
     setText(parts.skip, t.skip)
   }
 
-  /** 进入一步前：目标是面板就让外框把它亮出来；不是面板时，引导打开的窄屏抽屉收回去，免得盖住这一步的目标。 */
+  /**
+   * 进入一步前：目标是面板就让外框把它亮出来，外框排好、抽屉滑进来之后再量一次高亮框；
+   * 目标不在窄屏抽屉里（不是面板、或面板在下栏）时，引导打开的抽屉收回去，免得盖住这一步的目标。
+   */
   #reveal(index: number): void {
     const target = this.#run[index]?.target
-    if (target && 'panel' in target)
-      this.frame?.revealPanel(target.panel)
-    else
+    if (!target || !('panel' in target)) {
       this.#restoreDrawer()
+      return
+    }
+    this.frame?.revealPanel(target.panel)
+    if (!this.#inDrawer(target.panel))
+      this.#restoreDrawer()
+    void this.#remeasure(index)
+  }
+
+  /** 面板此刻收在窄屏的左右抽屉里。 */
+  #inDrawer(panel: string): boolean {
+    const frame = this.frame
+    const dock = frame?.panelEntries().find(entry => entry.name === panel)?.dock
+    return frame?.narrow === true && (dock === 'start' || dock === 'end')
+  }
+
+  /** 外框排好以后量一次高亮框与浮层；目标所在的祖先还在播动画（抽屉滑进来）时，播完再量一次。还停在这一步才量。 */
+  async #remeasure(index: number): Promise<void> {
+    const tour = this.#parts?.tour
+    await this.frame?.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const current = (): boolean => this.#running && tour !== undefined && (tour.value ?? 0) === index
+    const target = this.#run[index]?.target
+    const node = target ? this.#resolve(target) : null
+    if (!current() || node === null)
+      return
+    tour!.remeasure?.()
+    const moving = node.ownerDocument.getAnimations().filter((animation) => {
+      const effect = animation.effect
+      const owner = effect instanceof KeyframeEffect ? effect.target : null
+      return owner !== null && owner.contains(node) && effect!.getComputedTiming().endTime !== Infinity
+    })
+    if (moving.length === 0)
+      return
+    await Promise.all(moving.map(animation => animation.finished.catch(() => {})))
+    if (current())
+      tour!.remeasure?.()
   }
 
   /** 这一步此刻能不能走：面板与区要在外框里且显示着，命令要有它的按钮。 */

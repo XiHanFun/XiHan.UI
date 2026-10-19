@@ -36,7 +36,7 @@ export interface DesignerSettingsEventMap {
   'settings-change': CustomEvent<{ key: string, value: JsonValue | undefined, settings: DesignerSettings }>
   /** 对话框要打开或关上（Esc、点遮罩、点关闭钮）：元素已经换成这个状态。 */
   'open-change': CustomEvent<{ open: boolean }>
-  /** 点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档）：由设计器跑这条命令，必要时先关上对话框。 */
+  /** 点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档）：对话框开着时等它收起、焦点回到打开它的元素再派发，由设计器跑这条命令。 */
   'settings-command': CustomEvent<{ command: string }>
 }
 
@@ -195,6 +195,8 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   readonly #pages = new Map<string, Page>()
   readonly #rows = new Map<string, Row>()
   #pagesKey = ''
+  /** 等对话框收起、焦点回到打开它的元素之后要派发的命令。 */
+  #pendingCommand: string | undefined
   #translationsNow: DesignerSettingsTranslations = DEFAULT_TRANSLATIONS
 
   constructor() {
@@ -204,13 +206,25 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
 
   /** 打开对话框，给了分区 id 就显示那一页。 */
   show(section?: string): void {
+    this.#pendingCommand = undefined
     if (section !== undefined)
       this.section = section
     this.open = true
   }
 
+  /** 帮助页等的钮：对话框开着时先收起，等它退场、焦点回到打开它的元素再派发 settings-command；关着时当场派发。 */
+  #runCommand(command: string): void {
+    if (this.open !== true) {
+      emitEvent(this, 'settings-command', { command })
+      return
+    }
+    this.#pendingCommand = command
+    this.open = false
+  }
+
   override disconnectedCallback(): void {
     super.disconnectedCallback()
+    this.#pendingCommand = undefined
     for (const row of this.#rows.values())
       row.destroy?.()
   }
@@ -284,6 +298,13 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
         ]),
       ]),
     ])
+    dialog.addEventListener('exit-complete', (event) => {
+      const command = this.#pendingCommand
+      if (event.target !== dialog || command === undefined)
+        return
+      this.#pendingCommand = undefined
+      emitEvent(this, 'settings-command', { command })
+    })
     // 页里的控件也派发这两个事件并冒泡上来，只认对话框与分区页自己的
     dialog.addEventListener('open-change', (event) => {
       if (event.target !== dialog)
@@ -426,7 +447,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   /** 只显示、不存值的条目：给了标签就在上面写一行，钮点了派发 settings-command；宿主锁定时钮不可用。 */
   #displayRow(key: string, item: DesignerSettingItem): Row {
     const doc = this.ownerDocument
-    const content = createDisplayContent(doc, item.control as Parameters<typeof createDisplayContent>[1], command => emitEvent(this, 'settings-command', { command }))
+    const content = createDisplayContent(doc, item.control as Parameters<typeof createDisplayContent>[1], command => this.#runCommand(command))
     const label = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'display-label' })
     const element = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'display', 'data-setting': key }, [label, content])
     return {

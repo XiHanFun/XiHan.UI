@@ -67,6 +67,25 @@ function content(): HTMLElement {
 }
 
 describe('设置对话框', () => {
+  it('帮助页的钮：对话框先收起、焦点回到打开它的那颗钮，再派发 settings-command', async () => {
+    const element = await mount()
+    element.help = { notes: ['把物料拖到画布上。'], actions: [{ command: 'start-tour', label: '开始引导' }] }
+    const opener = document.createElement('button')
+    opener.textContent = '设置'
+    root!.prepend(opener)
+    opener.addEventListener('click', () => element.show('help'))
+    const seen: [string, Element | null, boolean][] = []
+    element.addEventListener('settings-command', event => void seen.push([(event as DesignerSettingsEventMap['settings-command']).detail.command, document.activeElement, element.open === true]))
+    await userEvent.click(opener)
+    await element.updateComplete
+    await settle()
+    const action = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-scope="designer-settings"] button')).find(button => button.textContent === '开始引导')!
+    await userEvent.click(action)
+    for (let round = 0; round < 20 && seen.length === 0; round++)
+      await frames()
+    expect(seen).toEqual([['start-tour', opener, false]])
+  })
+
   it('左边竖排分区、右边条目；换页时对话框高度不变；点分区切页', async () => {
     const element = await mount()
     element.show()
