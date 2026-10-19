@@ -440,6 +440,16 @@ const fontMm = convertLength(12, "pt", "mm"); // 4.233…
 
 `PAPER_PRESETS` 收 ISO 216 的 A3–A6 与 B4、B5，以及北美的 Letter、Legal，都是纵向尺寸，横向时宽高互换。`PAPER_PRESET_NAMES` 与 `LENGTH_UNITS` 按声明顺序列出全部取值，供页面设置与属性面板列选项；`isPaperPresetName` 区分大小写。
 
+尺寸徽标、标尺这类显示与微调长度的地方：
+
+| 名称 | 说明 |
+| --- | --- |
+| `LENGTH_UNIT_SYMBOLS` | 每种 `LengthUnit` 的符号 |
+| `formatLength(value, { fractionDigits?, locale? })` | 把长度数值写成文字（不带单位）：按 `locale` 写小数点，最多 `fractionDigits` 位小数（缺省 1），不分组，负零写成 `0` |
+| `stepLength(value, delta, { min?, max?, fractionDigits? })` | `value + delta` 按 `fractionDigits` 位小数（缺省 1）取整，再夹在 `[min, max]` 里，避开 `0.1 + 0.2` 这类尾差 |
+
+数值不是有限数、`fractionDigits` 不是 0–20 的整数、`min` 大于 `max` 时抛 `RangeError`。
+
 ## 属性描述
 
 属性面板与属性检查用同一份描述，从子入口 `@xihan-ui/designer-kit/properties` 引入（只做画布的页面不为它付字节）：

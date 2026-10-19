@@ -1,6 +1,6 @@
 import type { LengthUnit } from '../src'
 import { describe, expect, it } from 'vitest'
-import { convertLength, CSS_PX_PER_INCH, isPaperPresetName, LENGTH_UNITS, MM_PER_INCH, PAPER_PRESET_NAMES, PAPER_PRESETS, PT_PER_INCH } from '../src'
+import { convertLength, CSS_PX_PER_INCH, formatLength, isPaperPresetName, LENGTH_UNIT_SYMBOLS, LENGTH_UNITS, MM_PER_INCH, PAPER_PRESET_NAMES, PAPER_PRESETS, PT_PER_INCH, stepLength } from '../src'
 
 describe('convertLength', () => {
   it('一英寸在各单位下的长度', () => {
@@ -68,5 +68,34 @@ describe('纸张预设', () => {
     expect(isPaperPresetName('constructor')).toBe(false)
     expect(isPaperPresetName(4)).toBe(false)
     expect(isPaperPresetName(undefined)).toBe(false)
+  })
+})
+
+describe('长度的显示与步进', () => {
+  it('lENGTH_UNIT_SYMBOLS 与 LENGTH_UNITS 一一对应', () => {
+    expect(Object.keys(LENGTH_UNIT_SYMBOLS)).toEqual([...LENGTH_UNITS])
+    expect(LENGTH_UNIT_SYMBOLS.mm).toBe('mm')
+  })
+
+  it('formatLength：按 locale 写小数点，最多 fractionDigits 位小数（缺省 1），不分组，负零写成 0', () => {
+    expect(formatLength(12.345)).toBe('12.3')
+    expect(formatLength(12.36, { fractionDigits: 1, locale: 'de-DE' })).toBe('12,4')
+    expect(formatLength(12, { fractionDigits: 2 })).toBe('12')
+    expect(formatLength(1234.5, { locale: 'en-US' })).toBe('1234.5')
+    expect(formatLength(-0.04)).toBe('0')
+    expect(formatLength(7.6, { fractionDigits: 0 })).toBe('8')
+    expect(() => formatLength(Number.NaN)).toThrow(RangeError)
+    expect(() => formatLength(1, { fractionDigits: 1.5 })).toThrow(RangeError)
+  })
+
+  it('stepLength：加上步长后按小数位取整，再夹在上下限里', () => {
+    expect(stepLength(0.1, 0.2)).toBe(0.3)
+    expect(stepLength(10.25, 1)).toBe(11.3)
+    expect(stepLength(10.25, 1, { fractionDigits: 2 })).toBe(11.25)
+    expect(stepLength(3, -5, { min: 1 })).toBe(1)
+    expect(stepLength(9, 5, { max: 10 })).toBe(10)
+    expect(stepLength(1.04, -1, { min: 0.05, fractionDigits: 1 })).toBe(0.05)
+    expect(() => stepLength(1, Number.POSITIVE_INFINITY)).toThrow(RangeError)
+    expect(() => stepLength(1, 1, { min: 5, max: 2 })).toThrow(RangeError)
   })
 })
