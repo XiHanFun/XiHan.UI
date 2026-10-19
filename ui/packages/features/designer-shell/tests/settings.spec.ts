@@ -2,7 +2,7 @@
 
 // 设置：模型（键、取值、分区合并与排序、宿主管控、内建「基础」分区）、设置对话框与宿主应用。
 import type { JsonValue } from '@xihan-ui/core/json'
-import type { DesignerFrameEventMap, DesignerLayoutChangeReason, DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, ResolvedDesignerLayout, XhDesignerFrameElement, XhDesignerSettingsElement } from '../src'
+import type { DesignerDisplayControl, DesignerFrameEventMap, DesignerLayoutChangeReason, DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, ResolvedDesignerLayout, XhDesignerFrameElement, XhDesignerSettingsElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
@@ -12,12 +12,18 @@ import {
   createDesignerSettingsHost,
   defineDesignerShell,
   DESIGNER_SETTING_KEYS,
+  DESIGNER_SHELL_VERSION,
+  designerAboutSettings,
   designerGeneralSettings,
+  designerHelpSettings,
+  designerShortcutSettings,
   designerToolbarSettings,
+  isDesignerDisplayControl,
   resolveSettings,
   settingKey,
   settingPolicy,
   settingValue,
+  shortcutSettingsSource,
   sortSettingsSections,
   toolbarDisplayOf,
   toolbarSettingsSource,
@@ -639,5 +645,80 @@ describe('<xh-designer-settings> 的「工具栏」页', () => {
     element.toolbar = false
     await element.updateComplete
     expect(triggers()).toEqual([english.general])
+  })
+})
+
+describe('帮助、快捷键与关于', () => {
+  const commands = new Map([
+    ['undo', { id: 'undo', label: 'Undo', shortcut: ['Mod', 'Z'], run: () => {} }],
+    ['redo', { id: 'redo', label: 'Redo', shortcut: ['Mod', 'Shift', 'Z'], alternateShortcuts: [['Ctrl', 'Y']], run: () => {} }],
+    ['auto-layout', { id: 'auto-layout', label: () => 'Auto layout', shortcut: ['Mod', 'L'], run: () => {} }],
+    ['panels-toggle-all', { id: 'panels-toggle-all', label: 'Show or hide all panels', shortcut: ['Mod', 'B'], run: () => {} }],
+    ['acme.run', { id: 'acme.run', label: 'Run', shortcut: ['Mod', 'R'], run: () => {} }],
+    ['zoom-to-fit', { id: 'zoom-to-fit', label: 'Fit', run: () => {} }],
+  ])
+
+  it('shortcutSettingsSource：有快捷键的命令一行，内置归通用、共有的编辑命令归编辑、扩展的归扩展、其余归本设计器，本设计器末尾接各款给的按键', () => {
+    const source = shortcutSettingsSource(commands, {}, { extensionCommands: ['acme.run'], keys: [{ label: 'Delete', keys: [['Backspace']] }] })
+    expect(source.groups.map(group => [group.id, group.rows.map(row => row.label)])).toEqual([
+      ['common', ['Show or hide all panels']],
+      ['edit', ['Undo', 'Redo']],
+      ['designer', ['Auto layout', 'Delete']],
+      ['extensions', ['Run']],
+    ])
+    expect(source.groups[1]!.rows[1]!.keys).toEqual([['Mod', 'Shift', 'Z'], ['Ctrl', 'Y']])
+  })
+
+  it('三页的分区：帮助是说明加几颗钮，快捷键的通用组补上四款都有的按键，关于写产品、版本、界面库版本、许可证与扩展的行；只显示的条目不进 resolveSettings', () => {
+    const help = designerHelpSettings(english, { notes: ['一', '二'], actions: [{ command: 'start-tour', label: 'Start tour' }] })
+    expect([help.id, help.order, help.items.map(item => [settingKey(help, item), item.control.kind])]).toEqual(['help', 900, [['help.guide', 'note'], ['help.startTour', 'action']]])
+    expect(designerHelpSettings(english, {}).items).toEqual([])
+    const shortcuts = designerShortcutSettings(english, shortcutSettingsSource(commands, {}))
+    const table = shortcuts.items[0]!.control as Extract<DesignerDisplayControl, { kind: 'shortcutTable' }>
+    expect([shortcuts.order, table.groups.map(group => group.label)]).toEqual([910, [english.shortcutsCommon, english.shortcutsEdit, english.shortcutsDesigner]])
+    expect(table.groups[0]!.rows.map(row => row.label)).toEqual(['Show or hide all panels', english.keyNudge, english.keyNudgeLarge, english.keyPan, english.keySelectionToolbar, english.keyCancel])
+    expect(designerShortcutSettings(english, { groups: [] }).items[0]!.control).toMatchObject({ groups: [{ label: english.shortcutsCommon }] })
+    const about = designerAboutSettings(english, { product: 'Flow', version: '1.0.0', license: 'MIT', rows: [{ label: 'Pro', value: '2.0.0' }] })
+    expect([about.order, (about.items[0]!.control as Extract<DesignerDisplayControl, { kind: 'info' }>).rows]).toEqual([920, [
+      { label: english.aboutProduct, value: 'Flow' },
+      { label: english.aboutVersion, value: '1.0.0' },
+      { label: english.aboutUi, value: DESIGNER_SHELL_VERSION },
+      { label: english.aboutLicense, value: 'MIT' },
+      { label: 'Pro', value: '2.0.0' },
+    ]])
+    expect(DESIGNER_SHELL_VERSION).toMatch(/^\d+\.\d+\.\d+/)
+    expect(resolveSettings([help, shortcuts, about], {})).toEqual({})
+    expect([isDesignerDisplayControl({ kind: 'note' }), isDesignerDisplayControl({ kind: 'boolean' })]).toEqual([true, false])
+    for (const id of ['help', 'shortcuts', 'about'])
+      expect(() => collectSettingsSections([{ id: 'x', settings: [{ id, label: id, items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
+  })
+
+  it('对话框：给了 help、shortcuts、about 才有三页，排在最后；说明按段铺，钮点了派发 settings-command，快捷键铺成 xh-kbd，关于两列', async () => {
+    const element = await mount((el) => {
+      el.sections = [flowSection]
+      el.help = { notes: ['Drag nodes.', 'Connect ports.'], actions: [{ command: 'start-tour', label: 'Start tour' }] }
+      el.shortcuts = shortcutSettingsSource(commands, {})
+      el.about = { product: 'Flow', version: '1.0.0', license: 'MIT' }
+    })
+    expect(triggers()).toEqual([english.general, english.toolbar, '流程', english.help, english.shortcuts, english.about])
+    expect(Array.from(row('help.guide').querySelectorAll('[data-part="note-paragraph"]'), node => node.textContent)).toEqual(['Drag nodes.', 'Connect ports.'])
+    expect(row('help.guide').querySelector('[data-part="display-label"]')!.textContent).toBe(english.helpGuide)
+    const commandsRun: string[] = []
+    element.addEventListener('settings-command', event => commandsRun.push((event as DesignerSettingsEventMap['settings-command']).detail.command))
+    const action = row('help.startTour').querySelector<HTMLElement>('[data-part="action"]')!
+    expect(action.textContent).toBe('Start tour')
+    action.querySelector('button')!.click()
+    expect(commandsRun).toEqual(['start-tour'])
+    const kbds = row('shortcuts.table').querySelectorAll('xh-kbd')
+    expect(kbds.length).toBeGreaterThan(5)
+    expect(Array.from(row('shortcuts.table').querySelectorAll('[role="group"]'), node => node.getAttribute('aria-label'))).toEqual([english.shortcutsCommon, english.shortcutsEdit, english.shortcutsDesigner])
+    expect(Array.from(row('about.rows').querySelectorAll('[data-part="info-label"]'), node => node.textContent)).toEqual([english.aboutProduct, english.aboutVersion, english.aboutUi, english.aboutLicense])
+    element.policy = { help: 'locked', about: 'hidden' }
+    await element.updateComplete
+    const locked = row('help.startTour').querySelector<HTMLElement & { disabled?: boolean }>('[data-part="action"]')!
+    expect(locked.disabled).toBe(true)
+    locked.querySelector('button')!.click()
+    expect(commandsRun).toEqual(['start-tour'])
+    expect(triggers()).not.toContain(english.about)
   })
 })
