@@ -7,7 +7,7 @@
 // 纯数据与纯函数，不碰 DOM。外框按它排版，改了就派发改完的整份；设计器把它存进设置的 layout.panels。
 
 import type { DesignerSettingsPolicy } from '../settings/model'
-import type { DesignerFrameRegion } from './frame-element'
+import type { DesignerFrameRegion } from './types'
 
 /** 能停靠的三栏：中间一行的左、右，中间一列的下方。 */
 export type DesignerLayoutDock = 'start' | 'end' | 'bottom'
