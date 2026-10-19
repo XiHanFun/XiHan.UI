@@ -60,6 +60,8 @@ export const XhFieldArrayRoot = defineComponent({
     max: { type: Number },
     createItem: { type: Function as PropType<() => unknown> },
     movable: Boolean,
+    /** 表格排布下行尾把手钉在末端侧，缺省 true；关掉时把手随行一起横向滚动。 */
+    stickyActions: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },

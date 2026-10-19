@@ -518,13 +518,13 @@ export const fieldArraySuite: ConformanceSuite = {
         parts: {
           'root': { 'role': null, 'data-layout': 'table' },
           'table': { 'role': 'table', 'aria-rowcount': '4', 'data-layout': 'table' },
-          'header': { 'role': 'row', 'aria-rowindex': '1', 'hidden': null },
+          'header': { 'role': 'row', 'aria-rowindex': '1', 'hidden': null, 'data-frozen-actions': '' },
           'column-header[1]': { 'role': 'columnheader', 'data-value': 'amount', 'hidden': null },
           'item[0]': { 'role': 'row', 'aria-rowindex': '2', 'data-layout': 'table' },
           'item[2]': { 'role': 'row', 'aria-rowindex': '4' },
           'item-label[1]': { 'role': 'rowheader', 'data-index': '1' },
           'item-cell[3]': { 'role': 'cell', 'data-index': '1', 'data-value': 'amount' },
-          'item-action[1]': { 'role': 'cell', 'data-index': '1' },
+          'item-action[1]': { 'role': 'cell', 'data-index': '1', 'data-frozen': 'end' },
         },
       },
       steps: [
@@ -551,7 +551,21 @@ export const fieldArraySuite: ConformanceSuite = {
           'item[0]': { 'role': null, 'aria-rowindex': null },
           'item-label[0]': { role: null },
           'item-cell[0]': { 'role': null, 'data-value': 'date' },
-          'item-action[0]': { role: null },
+          'item-action[0]': { 'role': null, 'data-frozen': null },
+        },
+      },
+    },
+    {
+      name: '表格排布关掉 stickyActions：行尾把手与表头里把手那一格不报钉住，其余照旧',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/table/' },
+      props: { defaultValue: ['甲', '乙'], layout: 'table', columns: COLUMNS, stickyActions: false },
+      fixture: tableFixture,
+      initial: {
+        parts: {
+          'table': { 'role': 'table', 'data-layout': 'table' },
+          'header': { 'role': 'row', 'data-frozen-actions': null },
+          'item-label[0]': { role: 'rowheader' },
+          'item-action[0]': { 'role': 'cell', 'data-frozen': null },
         },
       },
     },

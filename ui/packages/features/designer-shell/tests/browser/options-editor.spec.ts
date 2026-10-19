@@ -159,8 +159,13 @@ describe('属性面板的选项表', () => {
     const rows = (): HTMLElement[] => [...panel!.querySelectorAll<HTMLElement>('[data-scope="field-array"][data-part="item"]:not([data-xh-ghost])')]
     const handle = rows()[0]!.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item-drag-trigger"]')!
     expect([handle.getAttribute('tabindex'), handle.getAttribute('aria-hidden')]).toEqual(['-1', 'true'])
+    // 把手随行滚动：先把表格滚到末端，把手露出来再拖
+    const table = panel!.querySelector<HTMLElement>('[data-scope="field-array"][data-part="table"]')!
+    table.scrollLeft = table.scrollWidth
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const start = handle.getBoundingClientRect()
     const last = rows()[2]!.getBoundingClientRect()
-    await drag(handle, { x: last.left + last.width / 2, y: last.bottom - 4 })
+    await drag(handle, { x: start.left + start.width / 2, y: last.bottom - 4 })
     await until(() => JSON.stringify(written.at(-1)) === JSON.stringify([{ value: 'b', label: 'B' }, { value: 'c', label: 'C' }, { value: 'a', label: 'A' }]))
     await until(() => (page.getByRole('textbox', { name: 'Value, option 3' }).element() as HTMLInputElement).value === 'a')
     expect((page.getByRole('textbox', { name: 'Label, option 1' }).element() as HTMLInputElement).value).toBe('B')
@@ -204,12 +209,14 @@ describe('属性面板的选项表', () => {
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth)
   })
 
-  it('290px、分组可折叠、中文的面板里放不下整张选项表：表格横向滚动，行尾的拖动、上移、下移与删除把手整个落在面板里', async () => {
+  it('290px、分组可折叠、中文的面板里放不下整张选项表：表格横向滚动，滚到末端时行尾的拖动、上移、下移与删除把手整个落在面板里', async () => {
     const element = await mountNarrow(290, [{ value: 'beijing', label: '北京' }, { value: 'shanghai', label: '上海' }])
     const bounds = element.getBoundingClientRect()
     const table = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="table"]')!
     expect(table.getBoundingClientRect().right).toBeLessThanOrEqual(bounds.right)
     expect(table.scrollWidth).toBeGreaterThan(table.clientWidth)
+    table.scrollLeft = table.scrollWidth
+    await new Promise(resolve => requestAnimationFrame(resolve))
     for (const part of ['item-drag-trigger', 'move-up-trigger', 'move-down-trigger', 'item-delete-trigger']) {
       for (const handle of element.querySelectorAll(`[data-scope="field-array"][data-part="${part}"]`)) {
         const rect = handle.getBoundingClientRect()
@@ -246,6 +253,62 @@ describe('属性面板的选项表', () => {
       const box = element.querySelector('[data-scope="field-array"][data-part="item-cell"][data-value="disabled"]')!
       const checkbox = box.querySelector('[data-scope="checkbox"][data-part="root"]')!.getBoundingClientRect()
       expect(checkbox.right, valueType).toBeLessThanOrEqual(box.getBoundingClientRect().right + 0.5)
+      wrapper!.remove()
+      wrapper = null
+    }
+  })
+
+  it('288px、分组可折叠、中文的面板里：数字、日期与日期时间的值总有一个横向滚动位置整个看得见；行尾把手键盘 Tab 得到、滚到末端指针点得中', async () => {
+    const frame = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => resolve()))
+    const cases: [PropertyControl, JsonValue][] = [
+      [{ kind: 'options', valueType: 'number' }, [{ value: 123456789.25, label: '金额' }]],
+      [{ kind: 'options', valueType: 'date' }, [{ value: '2026-12-31', label: '年底' }]],
+      [{ kind: 'options', valueType: 'datetime' }, [{ value: '2026-01-01T08:30', label: '开工' }]],
+    ]
+    for (const [control, options] of cases) {
+      const valueType = control.kind === 'options' ? control.valueType : undefined
+      const element = await mountNarrow(288, options, control)
+      const table = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="table"]')!
+      const row = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item"]')!
+      const label = row.querySelector<HTMLElement>(':scope > [data-scope="field-array"][data-part="item-label"]')!
+      const action = row.querySelector<HTMLElement>(':scope > [data-scope="field-array"][data-part="item-action"]')!
+      const field = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item-cell"][data-value="value"] :is([data-scope="number-field"], [data-scope="date-field"])[data-part="root"]')!
+      // 逐个横向滚动位置看：值框整个落在行头之后、把手之前、表格的可见区里
+      let seen = false
+      for (let left = 0; left <= table.scrollWidth - table.clientWidth && !seen; left += 4) {
+        table.scrollLeft = left
+        await frame()
+        const box = field.getBoundingClientRect()
+        const bounds = table.getBoundingClientRect()
+        const from = Math.max(bounds.left, label.getBoundingClientRect().right)
+        const to = Math.min(bounds.right, action.getBoundingClientRect().left)
+        seen = box.left >= from - 0.5 && box.right <= to + 0.5
+      }
+      expect(seen, `${valueType} 没有一个滚动位置整个看得见`).toBe(true)
+      const shown = valueType === 'number'
+        ? field.querySelector<HTMLInputElement>('input')!
+        : field.querySelector<HTMLElement>('[data-scope="date-field"][data-part="segment-group"]')!
+      expect(shown.scrollWidth, valueType).toBeLessThanOrEqual(shown.clientWidth)
+
+      // 键盘：从禁用勾选框 Tab 到行尾第一颗把手，表格把它滚进可见区
+      table.scrollLeft = 0
+      await frame()
+      page.getByRole('checkbox', { name: '第 1 项的禁用' }).element().focus()
+      await userEvent.keyboard('{Tab}')
+      const focused = document.activeElement as HTMLElement
+      expect(focused.closest('[data-scope="field-array"][data-part="item-action"]'), valueType).toBe(action)
+      await frame()
+      const bounds = table.getBoundingClientRect()
+      expect(focused.getBoundingClientRect().right, valueType).toBeLessThanOrEqual(bounds.right + 0.5)
+      expect(focused.getBoundingClientRect().left, valueType).toBeGreaterThanOrEqual(bounds.left - 0.5)
+
+      // 指针：滚到末端，删除把手中心点上就是它自己，没被别的格子压住
+      table.scrollLeft = table.scrollWidth
+      await frame()
+      const remove = action.querySelector<HTMLElement>('[data-scope="field-array"][data-part="item-delete-trigger"]')!
+      const rect = remove.getBoundingClientRect()
+      expect(rect.right, valueType).toBeLessThanOrEqual(bounds.right + 0.5)
+      expect(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)?.closest('[data-scope="field-array"][data-part="item-delete-trigger"]'), valueType).toBe(remove)
       wrapper!.remove()
       wrapper = null
     }

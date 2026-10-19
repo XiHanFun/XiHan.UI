@@ -55,6 +55,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} min - 最少行数；到达后删除把手不可按下
  * @attr {number} max - 最多行数；到达后新增把手不可按下
  * @attr {boolean} movable - 是否显示换序把手；关闭时拖动、上移与下移三个把手一律收起
+ * @attr {boolean} sticky-actions - 表格排布下行尾把手钉在末端侧，默认 true；写 sticky-actions="false" 关闭，把手随行一起横向滚动
  * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
  * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
  * @attr {boolean} invalid - 校验失败标注；写在根与每一行上
@@ -101,6 +102,7 @@ export class XhFieldArrayElement extends XhElement {
     max: { converter: NUMBER_CONVERTER },
     createItem: { attribute: false },
     movable: { converter: BOOLEAN_CONVERTER },
+    stickyActions: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-actions' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -117,6 +119,7 @@ export class XhFieldArrayElement extends XhElement {
   declare max?: number
   declare createItem?: () => unknown
   declare movable?: boolean
+  declare stickyActions?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -173,6 +176,7 @@ export class XhFieldArrayElement extends XhElement {
       max: this.max,
       createItem: this.createItem,
       movable: this.movable ?? false,
+      stickyActions: this.stickyActions,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,

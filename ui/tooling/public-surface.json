@@ -13767,6 +13767,7 @@
       "name",
       "onValueChange",
       "readOnly",
+      "stickyActions",
       "translations",
       "value"
     ],
@@ -15598,6 +15599,7 @@
     "data-format",
     "data-frame",
     "data-frozen",
+    "data-frozen-actions",
     "data-frozen-edge",
     "data-full-width",
     "data-fullscreen",
@@ -22434,7 +22436,8 @@
         "min",
         "movable",
         "name",
-        "read-only"
+        "read-only",
+        "sticky-actions"
       ],
       "events": [
         "value-change"

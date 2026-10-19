@@ -50,6 +50,7 @@ export function connectFieldArray<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const name = prop('name')
   const movable = !!prop('movable')
+  const stickyActions = prop('stickyActions') !== false
   const min = rowBound(prop('min'))
   const max = rowBound(prop('max'))
   const atMin = atRowMin(count, min)
@@ -185,6 +186,7 @@ export function connectFieldArray<T extends PropTypes>(
     readOnly,
     invalid,
     movable,
+    stickyActions,
     dragging: !!sortable?.dragging,
     layout,
     columns,
@@ -238,6 +240,8 @@ export function connectFieldArray<T extends PropTypes>(
       'role': table ? 'row' : undefined,
       'aria-rowindex': table ? 1 : undefined,
       'data-layout': layout,
+      // 表头里把手那条轨道由表头自己占住，跟着把手钉不钉
+      'data-frozen-actions': dataAttr(table && stickyActions),
       'hidden': !table || undefined,
     }),
 
@@ -292,12 +296,14 @@ export function connectFieldArray<T extends PropTypes>(
       ...itemAttrs(item),
     }),
 
-    // 表格排布下把手这一格落在最后一条轨道上
+    // 表格排布下把手这一格落在最后一条轨道上，缺省钉在末端侧
     getItemActionProps: item => normalize.element({
       ...parts['item-action'].attrs,
       ...itemAttrs(item),
-      role: table ? 'cell' : undefined,
-      style: { gridColumn: table ? '-2 / -1' : '' },
+      'role': table ? 'cell' : undefined,
+      // 与表格的冻结列同一个属性：钉在末端侧写 end
+      'data-frozen': table && stickyActions ? 'end' : undefined,
+      'style': { gridColumn: table ? '-2 / -1' : '' },
     }),
 
     getAddTriggerProps: () => normalize.button({
