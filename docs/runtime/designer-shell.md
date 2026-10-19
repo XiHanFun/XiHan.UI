@@ -891,7 +891,7 @@ dialog.show();
 
 | 页 | 对话框的属性 | 内容 |
 | --- | --- | --- |
-| 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了派发 `settings-command { command }`，由设计器跑这条命令（开始引导前先关上对话框）。两样都没有时没有这一页 |
+| 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了先收起对话框，等焦点回到打开它的元素再派发 `settings-command { command }`，由设计器跑这条命令；这时开始的引导收起后焦点回到那里。两样都没有时没有这一页 |
 | 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys?, commonKeys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消），各款经 `commonKeys` 换掉这几行，见下文。键铺成 `<xh-kbd>`，按平台写 |
 | 关于 | `about: { product, version, license?, rows? }` | 产品、版本、界面库（XiHan.UI，即 `DESIGNER_SHELL_VERSION`）的版本与许可证，后面接 `rows`：扩展的 `about` 字段（附加包的版本与授权）由各款接在这里。各款的版本号也从构建时注入的常量取（如流程的 `FLOW_VERSION`） |
 
@@ -961,7 +961,7 @@ settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKey
 | --- | --- |
 | `settings-change` | `{ key, value, settings }`：改了一条，`value` 为 `undefined` 表示删掉这个键、回到缺省值；`settings` 是改过之后的整份值，元素已经换成它 |
 | `open-change` | `{ open }`：按 Esc、点遮罩或关闭钮时对话框要关上，元素已经换成这个状态 |
-| `settings-command` | `{ command }`：点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档），由设计器跑这条命令 |
+| `settings-command` | `{ command }`：点了只显示条目里跑命令的钮（帮助页的开始引导、打开文档），由设计器跑这条命令。对话框开着时先收起，退场完、焦点回到打开它的元素后才派发；设计器在事件里再写 `open = false` 不起作用，可以不写 |
 
 对话框打开时内容搬到浮层根：主题、主题色等视觉轴经视觉桥跟着设计器根走；标题、字段与对话框自己的文案照它们在设计器里的原位取配置，设计器外面包一层局部 `<xh-config>` 时用的是那一层的语言与文案。
 
@@ -1129,7 +1129,8 @@ if (autoTour && !tourDoneOf(settings))
 
 - 浮层里依次是标题、说明、「第几步，共几步」、一步一个的圆点，底部一行跳过、上一步与下一步（最后一步写「完成」），右上角关闭钮；键盘与读屏照 `<xh-tour>`。
 - 引导限在外框里（`<xh-tour>` 的 `boundary` 是外框）：遮罩只盖外框，高亮框连同暗幕裁在外框里，居中的那步摆在外框中间，气泡以外框为界避让；页面别处照常可读可点，焦点不困在气泡里。同一页同时只有一个引导开着。
-- 窄屏时，目标面板收在抽屉里的那步把抽屉打开，抽屉排在引导之下，不盖住提示框，Esc 仍先收引导；换到目标不是面板的一步、以及引导收起时，抽屉还原成开始引导时的样子。元素从文档上摘下时引导一并收起。
+- 窄屏时，目标面板收在抽屉里的那步把抽屉打开，抽屉排在引导之下，不盖住提示框，Esc 仍先收引导；抽屉滑进来之后高亮框按面板滑到的位置重新量。换到目标不在抽屉里的一步（不是面板，或面板在下栏）、以及引导收起时，抽屉还原成开始引导时的样子。元素从文档上摘下时引导一并收起。
+- 收起时焦点回到开始引导时持有它的元素；那个元素已不在文档里时，退回外框画布区里能聚焦的第一个（画布区没有就取外框里的第一个）。
 - 宿主不要自动开始时设计器给 `autoTour = false`；内置命令 `start-tour`（`designerShellCommands` 的 `startTour` 选项）与帮助页里的「开始引导」随时重新开始。
 
 ## 扩展的面板与命令

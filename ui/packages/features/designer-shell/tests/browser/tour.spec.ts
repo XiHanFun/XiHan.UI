@@ -186,6 +186,62 @@ describe('引导限在外框里', () => {
       await page.viewport(1280, 800)
     }
   })
+
+  it('窄屏：打开抽屉的那一步，高亮框盖住滑进来以后的面板；下一步的面板不在抽屉里时先收回引导打开的抽屉', async () => {
+    await page.viewport(375, 700)
+    try {
+      const { frame, tour } = await mount('position:fixed;inset:0')
+      await frames(4)
+      tour.start()
+      await settle()
+      await walkTo(tour, 'shell.palette')
+      await frame.updateComplete
+      await settle()
+      expect(frame.openDrawer).toBe('start')
+      expect(covers(part('spotlight').getBoundingClientRect(), region(frame, 'palette'))).toBe(true)
+      await walkTo(tour, 'shell.properties')
+      await frame.updateComplete
+      await settle()
+      expect(frame.openDrawer).toBe('end')
+      expect(covers(part('spotlight').getBoundingClientRect(), region(frame, 'properties'))).toBe(true)
+      await userEvent.click(part('next-trigger'))
+      await frame.updateComplete
+      await settle()
+      expect(part('title').textContent).toBe('Problems')
+      expect(frame.openDrawer).toBeUndefined()
+      const issues = region(frame, 'issues')
+      expect(covers(part('spotlight').getBoundingClientRect(), issues)).toBe(true)
+      // 问题面板没被抽屉盖住：中心点上去掉引导自己的几层，最上面的是问题面板
+      const under = document.elementsFromPoint(issues.left + issues.width / 2, issues.top + issues.height / 2).find(element => !element.closest('[data-scope="tour"]'))
+      expect(frame.querySelector('[data-part="region"][data-region="issues"]')!.contains(under ?? null)).toBe(true)
+    }
+    finally {
+      await page.viewport(1280, 800)
+    }
+  })
+
+  it('收起时焦点回到开始时持有它的元素；那个元素已不在文档里时退回外框画布区里能聚焦的第一个', async () => {
+    const { frame, tour } = await mount()
+    const inCanvas = document.createElement('button')
+    inCanvas.textContent = '画布'
+    frame.querySelector('[data-part="region"][data-region="canvas"] > div:not([data-scope])')!.append(inCanvas)
+    const holder = document.createElement('button')
+    holder.textContent = '别处'
+    stage!.append(holder)
+    holder.focus()
+    tour.start()
+    await settle()
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(document.activeElement).toBe(holder)
+    holder.focus()
+    tour.start()
+    await settle()
+    holder.remove()
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(document.activeElement).toBe(inCanvas)
+  })
 })
 
 describe('新手引导', () => {

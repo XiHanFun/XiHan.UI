@@ -203,7 +203,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "369.2 kB"
+    "limit": "369.8 kB"
   },
   {
     "name": "designer-shell/locale",
