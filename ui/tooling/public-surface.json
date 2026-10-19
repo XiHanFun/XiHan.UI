@@ -8336,6 +8336,7 @@
       "TooltipSchema",
       "TooltipTranslations",
       "TourApi",
+      "TourBoundaryRect",
       "TourCompleteDetails",
       "TourOpenChangeDetails",
       "TourPressedPart",
@@ -9596,6 +9597,7 @@
       "resolveTimerPrecision",
       "resolveTimerStart",
       "resolveTimerTarget",
+      "resolveTourBoundary",
       "resolveTreeSelectCollection",
       "resolveTruncateLines",
       "resolveTwoDigitYear",
@@ -15515,6 +15517,7 @@
     ],
     "tour": [
       "autoScroll",
+      "boundary",
       "closeOnEscape",
       "closeOnInteractOutside",
       "defaultOpen",
@@ -24344,6 +24347,7 @@
     "xh-tour": {
       "attributes": [
         "auto-scroll",
+        "boundary",
         "close-on-escape",
         "close-on-interact-outside",
         "default-open",

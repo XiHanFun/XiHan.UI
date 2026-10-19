@@ -6,7 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
-import type { TourPressedPart, TourSchema, TourSpotlightRect, TourStep } from './tour.types'
+import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
@@ -62,7 +62,15 @@ function stepOf(prop: PropFn<TourSchema>, raw: number): number {
  * 已脱离文档的节点量不出几何，按取不到处理。
  */
 export function resolveTourTarget(scope: Scope, step: TourStep | null): HTMLElement | null {
-  const target = step?.target
+  return resolveTourNode(scope, step?.target)
+}
+
+/** 取限定区域的节点，规则同步骤的目标；取不到时引导按整个视口进行。 */
+export function resolveTourBoundary(scope: Scope, boundary: TourTarget | null | undefined): HTMLElement | null {
+  return resolveTourNode(scope, boundary)
+}
+
+function resolveTourNode(scope: Scope, target: TourTarget | null | undefined): HTMLElement | null {
   if (!target)
     return null
   let el: HTMLElement | null
@@ -97,6 +105,8 @@ export const tourMachine = createMachine({
     position: cell<PositionResult | null>(() => ({ defaultValue: null })),
     // 高亮框由 measureSpotlight 量出来写进来；带 isEqual，量到同一个结果不多推一轮重渲
     spotlight: cell<TourSpotlightRect | null>(() => ({ defaultValue: null, isEqual: sameTourSpotlight })),
+    // 限定区域的矩形与高亮框一起量，同样带 isEqual
+    boundary: cell<TourBoundaryRect | null>(() => ({ defaultValue: null, isEqual: sameTourSpotlight })),
     // 按压通道：正被按住的那颗按钮，四颗都住在气泡里，只在展开态收事件
     pressed: cell<TourPressedPart | null>(() => ({ defaultValue: null })),
     // 声明的目标等满时长仍没出现：该步按居中呈现
@@ -228,6 +238,7 @@ export const tourMachine = createMachine({
       clearGeometry: ({ context }) => {
         context.set('position', null)
         context.set('spotlight', null)
+        context.set('boundary', null)
       },
       /**
        * 展开着换步：气泡定位层与聚光框投影 data-animating，皮肤只在这一档挂位置与尺寸的过渡，
@@ -295,7 +306,7 @@ export const tourMachine = createMachine({
         target?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
       },
       /**
-       * 量高亮框，量两遍：同步那遍照顾展开态里换步，推迟那遍照顾首帧、目标节点刚挂上来、
+       * 量高亮框与限定区域，量两遍：同步那遍照顾展开态里换步，推迟那遍照顾首帧、目标节点刚挂上来、
        * 以及从收起转到展开的那一拍（效应在状态位落定之前挂载，同步那遍读到的还是旧状态）。
        * cell 带 isEqual，两遍量到同一个结果不多推一轮重渲。
        */
@@ -304,6 +315,9 @@ export const tourMachine = createMachine({
           // 收起后不再量：退场在最后一次量到的位置播完，下次展开由 entry 清掉重量
           if (state.get() !== 'open')
             return
+          const area = resolveTourBoundary(scope, prop('boundary'))
+          const box = area?.getBoundingClientRect()
+          context.set('boundary', box ? { x: box.x, y: box.y, width: box.width, height: box.height } : null)
           const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
           const target = resolveTourTarget(scope, step)
           if (!target) {
@@ -366,6 +380,8 @@ export const tourMachine = createMachine({
               arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
               size: true,
+              // 限定在区域里时气泡以它为界避让
+              boundary: resolveTourBoundary(scope, prop('boundary')) ?? undefined,
             },
             result => context.set('position', result),
           )
@@ -394,10 +410,24 @@ export const tourMachine = createMachine({
        * 高频事件按帧合并，一帧至多量一次。读 DOM 由 measureSpotlight 自己推迟，
        * 这里不必再包一层 flush；disposed 标记仍要留，监听器与 cleanup 之间总有一帧可能被触发。
        */
-      trackSpotlight: ({ scope, action }) => {
+      trackSpotlight: ({ prop, scope, action }) => {
         let disposed = false
         let frame = 0
         const win = scope.getWin()
+        // 限定区域自己变了尺寸（宿主改布局）也重量；它挪了位置多半伴着滚动或缩放，由下面两路收
+        const area = resolveTourBoundary(scope, prop('boundary'))
+        let skipFirst = true
+        const observer = area && win.ResizeObserver
+          ? new win.ResizeObserver(() => {
+              if (skipFirst) {
+                skipFirst = false
+                return
+              }
+              if (!disposed)
+                action(['endStepping', 'measureSpotlight'])
+            })
+          : null
+        observer?.observe(area!)
         // 页面滚动与视口缩放是跟手的重量：先撤换步标记，两者直接到位、不拖尾
         const onResize = (): void => {
           if (!disposed)
@@ -417,6 +447,7 @@ export const tourMachine = createMachine({
         win.addEventListener('scroll', onScroll, { capture: true, passive: true })
         return () => {
           disposed = true
+          observer?.disconnect()
           if (frame)
             win.cancelAnimationFrame(frame)
           win.removeEventListener('resize', onResize)
@@ -472,7 +503,7 @@ export const tourMachine = createMachine({
       },
       // 层、消解层与焦点域共享 Presence 生命周期：逻辑关闭先让内容失活，
       // 真正的视觉退场结束后才逆序归还。Tour 本身没有滚动锁或背景失活资源，不能在这里虚构它们。
-      trackOverlay: ({ refs, prop, scope, send, flush, state, track }) => {
+      trackOverlay: ({ refs, prop, context, scope, send, flush, state, track }) => {
         const config = refs.get('config')
         const registerLayer = refs.get('registerLayer')
         // 无 DOM 环境（纯逻辑测试）：状态机照常转移，不挂副作用
@@ -516,8 +547,8 @@ export const tourMachine = createMachine({
             flush,
             // 每次读最新 ref，容器晚一拍就位也能命中
             container: () => getContentEl(),
-            // 退场内容已经 inert，保留焦点域的归还资格但不再把焦点拉回去。
-            trapped: () => state.get() === 'open',
+            // 退场内容已经 inert，保留焦点域的归还资格但不再把焦点拉回去；限定在区域里时区域外照常可用，不困焦点
+            trapped: () => state.get() === 'open' && context.get('boundary') == null,
             loop: true,
             // 焦点落在 content 容器本身而不是第一个按钮：读屏念完整段文案，Enter/Space 归下一步管。
             // 容器还没显形时回 null，回非空会被当成焦点已安排好

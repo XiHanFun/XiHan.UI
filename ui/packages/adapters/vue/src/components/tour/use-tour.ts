@@ -10,7 +10,7 @@ import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTour, tourMachine } from '@xihan-ui/headless'
+import { connectTour, resolveTourBoundary, tourMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -69,6 +69,8 @@ export function useTour(
       isModal: () => true,
       // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
+      // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
+      covers: () => resolveTourBoundary(scope, service.prop('boundary')),
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析

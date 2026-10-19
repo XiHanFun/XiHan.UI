@@ -289,6 +289,26 @@ describe('layer registry 嵌套顺序', () => {
     expect(registry.list()).toEqual([first.layer, second.layer])
   })
 
+  it('新层开在已有层罩住的区域里：排在它之下，Escape 与视觉层级先归它；开在它内容里的层照旧排在它之上', () => {
+    const registry = createLayerRegistry(document)
+    const area = document.createElement('div')
+    const drawer = document.createElement('div')
+    const tourContent = document.createElement('div')
+    const menuTrigger = document.createElement('button')
+    const menu = document.createElement('div')
+    const outside = document.createElement('div')
+    area.append(drawer)
+    tourContent.append(menuTrigger)
+    document.body.append(area, tourContent, menu, outside)
+    const tour = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => tourContent, covers: () => area })
+    const inArea = registry.register({ ...layerInput(), node: () => drawer })
+    const inTour = registry.register({ ...layerInput(), node: () => menu, branches: () => [menuTrigger] })
+    const elsewhere = registry.register({ ...layerInput(), node: () => outside })
+    cleanups.push(elsewhere.dispose, inTour.dispose, inArea.dispose, tour.dispose)
+    expect(registry.list()).toEqual([inArea.layer, tour.layer, inTour.layer, elsewhere.layer])
+    expect(registry.visualOf(inArea.layer).visualIndex).toBeLessThan(registry.visualOf(tour.layer).visualIndex)
+  })
+
   it('新层开在中间那层里、又罩着更早登记的层时，排在两者之间', () => {
     const registry = createLayerRegistry(document)
     const outerContent = document.createElement('div')

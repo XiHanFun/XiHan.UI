@@ -6,7 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { TourApi, TourSchema, TourStep, TourTranslations } from '@xihan-ui/headless'
+import type { TourApi, TourSchema, TourStep, TourTarget, TourTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -56,6 +56,8 @@ export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   autoScroll?: boolean
   /** 目标缺席时等它出现的时长（ms），默认 3000；0 即不等。 */
   targetTimeout?: number
+  /** 引导只在这块区域里进行：遮罩只盖它、高亮框裁在它里面，区域外照常可用；省略即整个视口。 */
+  boundary?: TourTarget | null
   translations?: Partial<TourTranslations>
   onOpenChange?: TourProps['onOpenChange']
   onValueChange?: TourProps['onValueChange']
@@ -80,6 +82,7 @@ export function XhTourRoot({
   spotlightPadding,
   autoScroll,
   targetTimeout,
+  boundary,
   translations,
   onOpenChange,
   onValueChange,
@@ -103,6 +106,7 @@ export function XhTourRoot({
     spotlightPadding,
     autoScroll,
     targetTimeout,
+    boundary,
     translations,
     onOpenChange,
     onValueChange,

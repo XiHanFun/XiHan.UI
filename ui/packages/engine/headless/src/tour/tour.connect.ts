@@ -6,7 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { TourApi, TourPressedPart, TourSchema } from './tour.types'
+import type { TourApi, TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect } from './tour.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { TOUR_EN_US } from '../locale/en-US'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayPositioned } from '../shared/overlay'
@@ -15,6 +15,25 @@ import { tourAnatomy } from './tour.anatomy'
 import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
 
 const parts = tourAnatomy.build()
+
+/**
+ * 铺满限定区域的内联几何；没有区域时四条边与尺寸都写空串，交回皮肤（整个视口）。
+ * 键的集合每帧一致，WC 侧 Object.assign 才不会留下上一帧的残值。
+ */
+function boundedBox(boundary: TourBoundaryRect | null): Record<string, string> {
+  return boundary
+    ? { left: `${boundary.x}px`, top: `${boundary.y}px`, right: 'auto', bottom: 'auto', inlineSize: `${boundary.width}px`, blockSize: `${boundary.height}px` }
+    : { left: '', top: '', right: '', bottom: '', inlineSize: '', blockSize: '' }
+}
+
+/** 把高亮框（连同它的暗幕与描边）裁在限定区域里：区域四条边相对高亮框四条边的距离，可以是负的。 */
+function spotlightClip(spotlight: TourSpotlightRect, boundary: TourBoundaryRect): string {
+  const top = boundary.y - spotlight.y
+  const right = spotlight.x + spotlight.width - (boundary.x + boundary.width)
+  const bottom = spotlight.y + spotlight.height - (boundary.y + boundary.height)
+  const left = boundary.x - spotlight.x
+  return `inset(${top}px ${right}px ${bottom}px ${left}px)`
+}
 
 /**
  * 焦点落在这些控件上时 content 不接管 Enter/Space：平台已把这两个键翻成对它们的激活，
@@ -51,6 +70,7 @@ export function connectTour<T extends PropTypes>(
   // 箭头落点：引擎没算（没要箭头 / 尚未落位）时缺席，皮肤退回居中
   const arrowAt = position?.arrow
   const spotlight = context.get('spotlight')
+  const boundary = context.get('boundary')
   const stepping = context.get('stepping')
   const placement = position?.placement ?? currentStep?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT
 
@@ -108,7 +128,7 @@ export function connectTour<T extends PropTypes>(
       'data-empty': dataAttr(count === 0),
     }),
 
-    // 遮罩纯装饰，读屏不念它；点它关不关由 closeOnInteractOutside 说了算
+    // 遮罩纯装饰，读屏不念它；点它关不关由 closeOnInteractOutside 说了算。限定在区域里时只盖那块区域
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
       'aria-hidden': true,
@@ -116,6 +136,7 @@ export function connectTour<T extends PropTypes>(
       'data-instant': dataAttr(context.get('openedAtMount')),
       'data-position': anchored ? 'anchored' : 'center',
       'hidden': !open || !showBackdrop || undefined,
+      'style': boundedBox(boundary),
     }),
 
     /**
@@ -141,6 +162,8 @@ export function connectTour<T extends PropTypes>(
         'inlineSize': `${spotlight?.width ?? 0}px`,
         'blockSize': `${spotlight?.height ?? 0}px`,
         '--xh-_tour-spotlight-radius': spotlight?.borderRadius ?? '',
+        // 限定在区域里时暗幕与描边都裁在区域里：裁剪框按区域相对高亮框自身的四条边写
+        'clipPath': spotlight && boundary ? spotlightClip(spotlight, boundary) : '',
       },
     }),
 
@@ -158,10 +181,9 @@ export function connectTour<T extends PropTypes>(
       'data-animating': dataAttr(stepping),
       'hidden': !open || undefined,
       'style': {
+        // 居中步显式写空串把上一步留下的内联坐标撤掉，不写键的话 WC 侧会留着旧值；限定在区域里的居中步铺满那块区域
+        ...(anchored ? { ...boundedBox(null), left: `${position?.x ?? 0}px`, top: `${position?.y ?? 0}px` } : boundedBox(boundary)),
         position: 'fixed',
-        // 居中步显式写空串把上一步留下的内联坐标撤掉，不写键的话 WC 侧会留着旧值
-        left: anchored ? `${position?.x ?? 0}px` : '',
-        top: anchored ? `${position?.y ?? 0}px` : '',
         // 居中步没有引擎结果，同样发空串把上一步的高度撤掉
         ...overlayAvailableSpaceVars('tour', anchored ? position : undefined, 160),
       },
@@ -172,8 +194,8 @@ export function connectTour<T extends PropTypes>(
       'id': ids.content,
       'role': 'dialog',
       'tabindex': -1,
-      // 引导期间页面其余部分不该被误触，与焦点陷阱一致
-      'aria-modal': 'true',
+      // 引导期间页面其余部分不该被误触，与焦点陷阱一致；限定在区域里时区域外照常可用，不标模态
+      'aria-modal': boundary == null ? 'true' : undefined,
       // 只引用作者渲染了的标题与说明：省略 parts 按都在场
       'aria-labelledby': rendered?.title !== false ? ids.title : undefined,
       'aria-describedby': rendered?.description !== false ? ids.description : undefined,

@@ -12,6 +12,7 @@ export {
   clampTourStep,
   currentTourStep,
   isTourLastStep,
+  resolveTourBoundary,
   TOUR_DEFAULT_OFFSET,
   TOUR_DEFAULT_PLACEMENT,
   TOUR_TARGET_TIMEOUT,
@@ -22,6 +23,7 @@ export { tourMeta } from './tour.meta'
 export { sameTourSpotlight, TOUR_DEFAULT_SPOTLIGHT_PADDING, tourSpotlightBox } from './tour.spotlight'
 export type {
   TourApi,
+  TourBoundaryRect,
   TourCompleteDetails,
   TourOpenChangeDetails,
   TourPressedPart,

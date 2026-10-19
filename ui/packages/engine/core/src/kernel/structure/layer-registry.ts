@@ -45,6 +45,11 @@ export interface Layer {
   readonly surfaces: () => Element[]
   /** 应消费视觉层级的宿主节点；缺省由 node、同 scope 父节点与 surfaces 推出。 */
   readonly visuals?: () => Element[]
+  /**
+   * 本层罩住的页面区域（如限定在一块区域里的引导）：之后在这块区域里新开、又不开在本层内容里的层排在本层之下，
+   * Escape 与视觉层级都先归本层。缺省不罩任何区域。
+   */
+  readonly covers?: () => Element | null
 }
 
 export interface LayerRegistry {
@@ -81,6 +86,12 @@ function opensInside(inner: Layer, outer: Layer): boolean {
   return originsOf(inner).some(el => el !== content && contains(content, el))
 }
 
+/** layer 开在 outer 罩住的区域里：layer 的根节点或某个分支落在 outer.covers() 之内。 */
+function opensUnder(layer: Layer, outer: Layer): boolean {
+  const area = outer.covers?.()
+  return !!area && originsOf(layer).some(el => contains(area, el))
+}
+
 /** 新层在栈里的位置，以及登记这一刻与它有嵌套关系的层。 */
 interface Placement {
   readonly index: number
@@ -92,7 +103,8 @@ interface Placement {
 
 /**
  * 新层插在栈里的位置：缺省排在最上面；开在哪几层的内容里就排在它们之上；
- * 已有的层开在新层的内容里时，新层排到其中最低那层之下，不管谁先登记。
+ * 已有的层开在新层的内容里时，新层排到其中最低那层之下，不管谁先登记；
+ * 新层开在某个已有层罩住的区域里时，同样排到其中最低那层之下，但不低于它开在其里的层。
  */
 function placementOf(existing: readonly Layer[], layer: Layer): Placement {
   let floor = 0
@@ -104,7 +116,9 @@ function placementOf(existing: readonly Layer[], layer: Layer): Placement {
     }
   })
   const children = existing.filter((other, index) => index >= floor && opensInside(other, layer))
-  const index = children.length ? existing.indexOf(children[0]!) : existing.length
+  const covering = existing.findIndex((other, index) => index >= floor && opensUnder(layer, other))
+  const nested = children.length ? existing.indexOf(children[0]!) : existing.length
+  const index = covering === -1 ? nested : Math.min(nested, covering)
   return { index, parents, children }
 }
 
