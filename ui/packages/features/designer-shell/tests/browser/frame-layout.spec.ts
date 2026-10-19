@@ -1,7 +1,11 @@
 // 外框的面板布局在真实 Chromium 里：按住面板头拖到外框边上换栏、拖进一栏两块面板之间调序、拖到画布上浮出；
 // 浮出的小窗夹在外框里，挪完停一会儿派发 layout-change；收成标题条的面板只占面板头的高度，一栏全收起时几条面板头贴着栏顶。
+// 小窗与菜单的宿主不占排版；「更多」菜单选了条目就收起、焦点回到面板头；小窗里正文能滚，帮助钮在小窗标题栏上。
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { DesignerFrameEventMap, DesignerLayoutChangeReason, ResolvedDesignerLayout, XhDesignerFrameElement } from '../../src'
+import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { page, userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -218,5 +222,100 @@ describe('<xh-designer-frame> 面板布局（Chromium）', () => {
     expect(region('issues').getBoundingClientRect().height).toBeLessThan(header + 24)
     expect(region('issues').getBoundingClientRect().height).toBeGreaterThanOrEqual(header - 1)
     expect(region('canvas').getBoundingClientRect().height).toBeGreaterThan(canvasBefore + 40)
+  })
+})
+
+/** 一块面板的「更多」钮。 */
+function menuTriggerOf(name: string): HTMLButtonElement {
+  return headerOf(name).querySelector<HTMLButtonElement>('[data-part="panel-menu-trigger"]')!
+}
+
+/** 此刻开着的面板菜单。 */
+function openMenus(): HTMLElement[] {
+  return Array.from(frame.querySelectorAll<HTMLElement & { open?: boolean }>('[data-part="menus"] > xh-menu')).filter(menu => menu.open === true)
+}
+
+describe('<xh-designer-frame> 小窗与面板菜单（Chromium）', () => {
+  it('小窗与菜单的宿主不占排版：往里放一块升级前那样的静态大块，画布的位置与大小不变', async () => {
+    const before = region('canvas').getBoundingClientRect()
+    for (const part of ['floats', 'menus']) {
+      const block = document.createElement('div')
+      block.style.cssText = 'width:1200px;height:520px'
+      frame.querySelector(`[data-part="${part}"]`)!.append(block)
+      const after = region('canvas').getBoundingClientRect()
+      expect([after.left, after.top, after.width, after.height]).toEqual([before.left, before.top, before.width, before.height])
+      block.remove()
+    }
+  })
+
+  it('键盘在「更多」菜单里选「移到右侧」：面板挪到右栏，菜单收起，焦点回到挪过去的那块面板的「更多」钮', async () => {
+    menuTriggerOf('palette').focus()
+    await userEvent.keyboard('{Enter}')
+    await settle()
+    expect(openMenus()).toHaveLength(1)
+    const first = document.activeElement as HTMLElement
+    expect(first.textContent).toBe('Move to right side')
+    await userEvent.keyboard('{Enter}')
+    await settle()
+    expect(stackOf('palette')).toBe('end')
+    expect(openMenus()).toEqual([])
+    expect(document.activeElement).toBe(menuTriggerOf('palette'))
+    expect(menuTriggerOf('palette').getAttribute('aria-expanded')).not.toBe('true')
+  })
+
+  it('窄屏抽屉里用「更多」菜单隐藏最后一块面板：抽屉随之收起，菜单收起，不报 core.layer.dispose-not-top', async () => {
+    const records: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    setDiagnosticsConsoleOutput(false)
+    const off = onDiagnostic(record => void records.push(record))
+    await page.viewport(375, 700)
+    try {
+      frame.style.cssText = 'position:fixed;inset:0'
+      frame.setPanelVisible('outline', false)
+      await settle()
+      expect(frame.narrow).toBe(true)
+      frame.openDrawer = 'start'
+      await settle()
+      await userEvent.click(menuTriggerOf('palette'))
+      await settle()
+      const hide = Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find(item => item.textContent === 'Hide')!
+      await userEvent.click(hide)
+      for (let round = 0; round < 30; round++)
+        await new Promise(resolve => requestAnimationFrame(resolve))
+      expect(frame.resolvedLayout.hidden).toContain('palette')
+      expect(frame.openDrawer).toBeUndefined()
+      expect(openMenus()).toEqual([])
+      expect(records.map(record => record.code)).not.toContain('core.layer.dispose-not-top')
+    }
+    finally {
+      off()
+      resetDiagnostics()
+      await page.viewport(1280, 800)
+    }
+  })
+
+  it('浮出的小窗：缺省大小有下限；帮助钮在小窗的标题栏上，面板头没别的就收起；内容比小窗高时正文能滚；吸回后帮助钮回到面板头', async () => {
+    frame.regions = frame.regions!.map(item => item.name === 'outline' ? { ...item, help: '页面上的元素' } : item)
+    frame.querySelector<HTMLElement>('[slot="outline"]')!.style.cssText = 'flex:none;height:900px'
+    await settle()
+    frame.floatPanel('outline')
+    await settle()
+    const float = frame.querySelector<HTMLElement>('xh-floating-panel[data-region="outline"]')!
+    const content = float.querySelector<HTMLElement>('[data-part="content"]')!.getBoundingClientRect()
+    expect(content.width).toBeGreaterThanOrEqual(280)
+    expect(content.height).toBeGreaterThanOrEqual(240)
+    expect(float.querySelector('[data-xh-part="header"] [data-part="panel-help-tip"], [data-part="header"] [data-part="panel-help-tip"]')).not.toBeNull()
+    expect(headerOf('outline').hidden).toBe(true)
+    const body = region('outline').querySelector<HTMLElement>(':scope > [data-part="panel-body"]')!
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight)
+    expect(body.getBoundingClientRect().bottom).toBeLessThanOrEqual(content.bottom + 1)
+    body.scrollTop = 120
+    expect(body.scrollTop).toBeGreaterThan(0)
+    frame.dockPanel('outline')
+    await settle()
+    expect(headerOf('outline').querySelector('[data-part="panel-help-tip"]')).not.toBeNull()
+    expect(headerOf('outline').hidden).toBe(false)
   })
 })

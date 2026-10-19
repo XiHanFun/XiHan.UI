@@ -2057,6 +2057,7 @@
   /* 浮出的面板：卡片铺满小窗的正文，不再画自己的间距、描边与圆角；标题在小窗的标题栏上 */
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-floating] {
     flex: 1 1 auto;
+    min-block-size: 0;
     margin: 0;
     border: 0;
     border-radius: 0;
@@ -2066,8 +2067,14 @@
     display: none;
   }
 
-  xh-designer-frame > [data-scope='designer-frame'][data-part='floats'] {
-    display: contents;
+  /* 小窗与面板「更多」菜单的宿主：贴在外框左上角、不占排版，小窗与菜单自己定位；
+     小窗升级之前那一拍以静态块留在这里，也不会把画布挤窄 */
+  xh-designer-frame > [data-scope='designer-frame']:is([data-part='floats'], [data-part='menus']) {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 0;
+    block-size: 0;
   }
 
   xh-floating-panel[data-scope='designer-frame'][data-part='float'] > [data-scope='floating-panel'][data-part='root'] > [data-scope='floating-panel'][data-part='positioner'] > [data-scope='floating-panel'][data-part='content'] > [data-scope='floating-panel'][data-part='body'] {
