@@ -30,6 +30,21 @@ function layerInput(): Omit<Layer, 'id'> {
   }
 }
 
+/** 一对嵌套的层：对话框的内容节点里有浮层的触发器，浮层开在对话框里、排在它之上。 */
+function nestedPair(registry: ReturnType<typeof createLayerRegistry>): {
+  outer: ReturnType<ReturnType<typeof createLayerRegistry>['register']>
+  inner: ReturnType<ReturnType<typeof createLayerRegistry>['register']>
+} {
+  const content = document.createElement('div')
+  const trigger = document.createElement('button')
+  const popover = document.createElement('div')
+  content.append(trigger)
+  document.body.append(content, popover)
+  const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+  const inner = registry.register({ ...layerInput(), node: () => popover, branches: () => [trigger] })
+  return { outer, inner }
+}
+
 function captureError(run: () => void): unknown {
   try {
     run()
@@ -464,8 +479,7 @@ describe('layer registry 释放事务', () => {
 
   it('非栈顶诊断与通知都抛错时仍提交释放并按阶段聚合', () => {
     const registry = createLayerRegistry(document)
-    const lower = registry.register(layerInput())
-    const upper = registry.register(layerInput())
+    const { outer: lower, inner: upper } = nestedPair(registry)
     const diagnosticError = new Error('诊断输出失败')
     const notificationError = new Error('释放订阅失败')
     setDiagnosticsConsoleOutput(true)
@@ -496,8 +510,7 @@ describe('layer registry 释放事务', () => {
 
   it('乱序释放在状态改变前报告诊断', () => {
     const registry = createLayerRegistry(document)
-    const lower = registry.register(layerInput())
-    const upper = registry.register(layerInput())
+    const { outer: lower, inner: upper } = nestedPair(registry)
     const before = registry.list()
     const diagnosticSnapshots: Array<readonly Layer[]> = []
 
@@ -511,6 +524,119 @@ describe('layer registry 释放事务', () => {
     expect(diagnosticSnapshots).toEqual([before])
     expect(registry.list()).toEqual([upper.layer])
     upper.dispose()
+  })
+})
+
+describe('layer registry 释放顺序', () => {
+  /** 记下 layerDisposeNotTop 的明细。 */
+  function watchNotTop(): Array<Record<string, unknown> | undefined> {
+    const details: Array<Record<string, unknown> | undefined> = []
+    cleanups.push(onDiagnostic((record) => {
+      if (record.code === DIAGNOSTIC_CODES.layerDisposeNotTop)
+        details.push(record.detail)
+    }))
+    return details
+  }
+
+  it('下拉逻辑收起、退场还没播完时，同一次点击打开的抽屉压在它上面：下拉退场后从抽屉下面释放，不报诊断', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    const trigger = document.createElement('button')
+    const listbox = document.createElement('div')
+    const opener = document.createElement('button')
+    const drawer = document.createElement('div')
+    document.body.append(trigger, listbox, opener, drawer)
+    const select = registry.register({ ...layerInput(), node: () => listbox, branches: () => [trigger] })
+    const sheet = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => drawer, branches: () => [opener] })
+    cleanups.push(sheet.dispose)
+
+    select.dispose()
+
+    expect(details).toEqual([])
+    expect(registry.list()).toEqual([sheet.layer])
+  })
+
+  it('下拉开在对话框里、抽屉由对话框里的按钮打开：栈是对话框、下拉、抽屉，下拉从中间释放不报诊断', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    const content = document.createElement('div')
+    const trigger = document.createElement('button')
+    const opener = document.createElement('button')
+    const listbox = document.createElement('div')
+    const drawer = document.createElement('div')
+    content.append(trigger, opener)
+    document.body.append(content, listbox, drawer)
+    const dialog = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    const select = registry.register({ ...layerInput(), node: () => listbox, branches: () => [trigger] })
+    const sheet = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => drawer, branches: () => [opener] })
+    cleanups.push(sheet.dispose, dialog.dispose)
+    expect(registry.list()).toEqual([dialog.layer, select.layer, sheet.layer])
+
+    select.dispose()
+
+    expect(details).toEqual([])
+    expect(registry.list()).toEqual([dialog.layer, sheet.layer])
+  })
+
+  it('上面还压着开在它里面的层时先释放它：报诊断，明细里列出那几层', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    const { outer, inner } = nestedPair(registry)
+    cleanups.push(inner.dispose)
+
+    outer.dispose()
+
+    expect(details).toEqual([{ layerId: outer.layer.id, index: 0, depth: 2, nested: [inner.layer.id] }])
+    expect(registry.list()).toEqual([inner.layer])
+  })
+
+  it('嵌套关系按登记那一刻的 DOM 记：释放时节点已经摘掉、引用也清空了，照样报', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    let content: HTMLElement | null = document.createElement('div')
+    let trigger: HTMLElement | null = document.createElement('button')
+    content.append(trigger)
+    document.body.append(content)
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    const inner = registry.register({ ...layerInput(), branches: () => (trigger ? [trigger] : []) })
+    cleanups.push(inner.dispose)
+    content.remove()
+    content = null
+    trigger = null
+
+    outer.dispose()
+
+    expect(details).toEqual([{ layerId: outer.layer.id, index: 0, depth: 2, nested: [inner.layer.id] }])
+  })
+
+  it('浮层先登记、对话框后登记并插到它下面：浮层开在对话框里，先拆对话框照样报', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    const content = document.createElement('div')
+    const trigger = document.createElement('button')
+    const popover = document.createElement('div')
+    content.append(trigger)
+    document.body.append(content, popover)
+    const inner = registry.register({ ...layerInput(), node: () => popover, branches: () => [trigger] })
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    cleanups.push(inner.dispose)
+    expect(registry.list()).toEqual([outer.layer, inner.layer])
+
+    outer.dispose()
+
+    expect(details).toEqual([{ layerId: outer.layer.id, index: 0, depth: 2, nested: [inner.layer.id] }])
+  })
+
+  it('开在它里面的层已经先释放：再释放它就是栈顶，不报', () => {
+    const registry = createLayerRegistry(document)
+    const details = watchNotTop()
+    const { outer, inner } = nestedPair(registry)
+
+    inner.dispose()
+    outer.dispose()
+
+    expect(details).toEqual([])
+    expect(registry.list()).toEqual([])
   })
 })
 
