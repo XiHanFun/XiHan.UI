@@ -732,6 +732,17 @@ export function connectTable<T extends PropTypes>(
         event.preventDefault()
         focusItem(cellEl)
       }
+      // 编辑中 Tab / Shift + Tab 只在这一格的控件之间走，到头回绕；控件自己用掉了 Tab 的不管
+      if (event.key === 'Tab' && !command && !event.altKey && !event.defaultPrevented) {
+        const widgets = getTabbables(cellEl).filter(el => el !== cellEl)
+        if (widgets.length) {
+          event.preventDefault()
+          const at = widgets.findIndex(el => el === target || el.contains(target))
+          const step = event.shiftKey ? -1 : 1
+          const next = at === -1 ? (event.shiftKey ? widgets.length - 1 : 0) : (at + step + widgets.length) % widgets.length
+          focusSafely(widgets[next])
+        }
+      }
       return true
     }
 
@@ -806,12 +817,15 @@ export function connectTable<T extends PropTypes>(
         return true
       case 'Enter':
       case 'F2': {
-        const widget = getTabbables(cellEl).find(el => el !== cellEl)
+        // 格内控件平时锁在 Tab 序列之外：先放开这一格，再取第一个控件
+        const lock = service.refs.get('cellWidgets')
+        const widget = (lock ? lock.release(cellEl) : getTabbables(cellEl).filter(el => el !== cellEl))[0]
         if (widget) {
           event.preventDefault()
           focusSafely(widget)
           return true
         }
+        lock?.relock()
         // 格内没有控件：Enter 是这一格的行主操作，F2 无事可做
         if (event.key === 'Enter' && !row.disabled) {
           event.preventDefault()

@@ -323,6 +323,58 @@ function withSizeInput(base: FixtureNode): FixtureNode {
   return map(base)
 }
 
+/** 格内控件锁用例专用：b 那一行的 size 格里放两个输入框，d 那一行的 name 格里放一个按钮。 */
+function withCellWidgets(base: FixtureNode): FixtureNode {
+  const map = (node: FixtureNode): FixtureNode => {
+    if (node.part === 'row' && (node.attrs?.value === 'b' || node.attrs?.value === 'd')) {
+      const target = node.attrs.value === 'b' ? 'size' : 'name'
+      const widgets: FixtureNode[] = node.attrs.value === 'b'
+        ? [{ tag: 'input', attrs: { 'aria-label': '大小' } }, { tag: 'input', attrs: { 'aria-label': '单位' } }]
+        : [{ tag: 'button', attrs: { type: 'button' }, text: '改名' }]
+      return {
+        ...node,
+        children: node.children?.map(child => child.part === 'cell' && child.attrs?.value === target
+          ? { part: 'cell', attrs: { value: target }, children: widgets }
+          : child),
+      }
+    }
+    return node.children?.length ? { ...node, children: node.children.map(map) } : node
+  }
+  return map(base)
+}
+
+/** 表体格子里的控件此刻的 tabindex，按 DOM 序：大小、单位、改名。 */
+function widgetTabindex(expected: readonly (string | null)[], why: string): StepWithExpect {
+  return {
+    kind: 'raw',
+    why,
+    run: async ({ doc, flush }) => {
+      await flush()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      const body = doc.querySelector<HTMLElement>('[data-scope="table"][data-part="body"]')
+      const widgets = [...(body?.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="cell"] :is(input, button)') ?? [])]
+      const actual = widgets.map(el => el.getAttribute('tabindex'))
+      if (JSON.stringify(actual) !== JSON.stringify(expected))
+        throw new Error(`格内控件的 tabindex 是 ${JSON.stringify(actual)}，应当是 ${JSON.stringify(expected)}`)
+    },
+  }
+}
+
+/** 焦点在第几个格内控件上（按 DOM 序：大小、单位、改名）。 */
+function activeWidget(index: number): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: '同一格里有两个输入框，activeElement 的 part 寻址只能落到格子这一层，要按控件本身判',
+    run: ({ doc }) => {
+      const body = doc.querySelector<HTMLElement>('[data-scope="table"][data-part="body"]')
+      const widgets = [...(body?.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="cell"] :is(input, button)') ?? [])]
+      const at = widgets.indexOf(doc.activeElement as HTMLElement)
+      if (at !== index)
+        throw new Error(`焦点在第 ${at} 个格内控件上，应当在第 ${index} 个`)
+    },
+  }
+}
+
 export const tableSuite: ConformanceSuite = {
   component: 'table',
   anatomy: tableAnatomy,
@@ -1022,6 +1074,38 @@ export const tableSuite: ConformanceSuite = {
         { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'row[1]', exact: true } } },
         // 行上的 Ctrl + End 到末行
         { kind: 'key', key: 'End', modifiers: ['Control'], expect: { activeElement: { part: 'row[4]', exact: true } } },
+      ],
+    },
+    {
+      name: '单元格级导航：格内控件平时退出 Tab 序列；进编辑只放开这一格，Tab / Shift + Tab 在这一格的控件之间回绕，Esc 回到格子后收回',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction' },
+      covers: ['table.kbd.cell-edit-tab'],
+      fixture: withCellWidgets,
+      props: props({ navigation: 'cell' }),
+      steps: [
+        widgetTabindex(['-1', '-1', '-1'], '格内控件平时都退出 Tab 序列，整张表只留锚点一个 Tab 位'),
+        { kind: 'focus', part: 'cell[6]', expect: { activeElement: { part: 'cell[6]', exact: true } } },
+        { kind: 'key', key: 'Enter', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        activeWidget(0),
+        widgetTabindex([null, null, '-1'], '进编辑只放开这一格：b 的两个输入框还原，d 的按钮照锁'),
+        { kind: 'key', key: 'Tab', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        activeWidget(1),
+        // 到头回绕，不离开这一格
+        { kind: 'key', key: 'Tab', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        activeWidget(0),
+        { kind: 'key', key: 'Tab', modifiers: ['Shift'], expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        activeWidget(1),
+        { kind: 'key', key: 'Escape', expect: { activeElement: { part: 'cell[6]', exact: true } } },
+        widgetTabindex(['-1', '-1', '-1'], '退出编辑收回这一格'),
+        // 只有一个控件的格子：Tab 停在它上面
+        { kind: 'focus', part: 'cell[12]', expect: { activeElement: { part: 'cell[12]', exact: true } } },
+        { kind: 'key', key: 'F2', expect: { activeElement: { part: 'cell[12]', exact: false } } },
+        activeWidget(2),
+        widgetTabindex(['-1', '-1', null], '放开 d 的那一格'),
+        { kind: 'key', key: 'Tab', expect: { activeElement: { part: 'cell[12]', exact: false } } },
+        activeWidget(2),
+        { kind: 'key', key: 'F2', expect: { activeElement: { part: 'cell[12]', exact: true } } },
+        widgetTabindex(['-1', '-1', '-1'], '退出编辑收回这一格'),
       ],
     },
     {

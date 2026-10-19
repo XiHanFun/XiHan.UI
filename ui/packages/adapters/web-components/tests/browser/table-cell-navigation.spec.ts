@@ -1,7 +1,8 @@
 // 单元格级导航（navigation="cell"）的真实键盘：Tab 进表体落在行上，右键进格子，格子上画一圈内收的聚焦环；
 // Enter 进格内输入框，打字与方向键都归输入框，Esc 回到格子；格子上按 Alt + 下键换位，宿主写回行序后焦点仍在那一格。
 // 宿主照文档示例的写法把行节点按新次序 append 回表体：挪的正是持有焦点的那一行，行级导航（缺省）下焦点同样要回到那一行。
-// 树形表：a 下挂 b、c，d 是根行；b 的 value 格里放一个输入框。
+// 格内控件平时退出 Tab 序列，Tab 一次就离开表格；进编辑后 Tab / Shift + Tab 不出这一格，退出后控件回到 -1；宿主后插的控件也管到。
+// 树形表：a 下挂 b、c，d 是根行；b 的 value 格里放两个输入框。
 import type { TableRowDef, TableRowMoveDetails } from '@xihan-ui/headless'
 import type { XhTableElement } from '../../src/elements/table'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -28,7 +29,7 @@ async function mount(navigation: 'row' | 'cell' = 'cell', initial: TableRowDef[]
   const rowsHtml = initial.map(row => `
     <div data-xh-part="row" value="${row.id}">
       <div data-xh-part="cell" value="name">${row.id} 名称</div>
-      <div data-xh-part="cell" value="value">${row.id === 'b' ? '<input aria-label="取值">' : `${row.id} 取值`}</div>
+      <div data-xh-part="cell" value="value">${row.id === 'b' ? '<input aria-label="取值"><input aria-label="单位">' : `${row.id} 取值`}</div>
     </div>`).join('')
   document.body.innerHTML = `
     <div style="inline-size: 420px">
@@ -44,6 +45,7 @@ async function mount(navigation: 'row' | 'cell' = 'cell', initial: TableRowDef[]
           <div data-xh-part="body">${rowsHtml}</div>
         </div>
       </xh-table>
+      <button type="button" data-test-end>终点</button>
     </div>
   `
   const table = document.querySelector<XhTableElement>('xh-table')!
@@ -167,5 +169,70 @@ describe('xh-table 单元格级导航', () => {
       expect(cell('z', 'value').getAttribute('tabindex')).toBe('0')
       expect(row('z').getAttribute('tabindex')).toBe('-1')
     }
+  })
+
+  it('格内控件平时都是 -1：Tab 进表体落在行上，再按一次 Tab 就离开表格', async () => {
+    await mount()
+    await enterBody()
+    expect(document.activeElement).toBe(row('a'))
+    const widgets = [...document.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="body"] input')]
+    expect(widgets).toHaveLength(2)
+    expect(widgets.map(el => el.getAttribute('tabindex'))).toEqual(['-1', '-1'])
+    await userEvent.tab()
+    expect(document.activeElement).toBe(document.querySelector('[data-test-end]'))
+    await userEvent.tab({ shift: true })
+    expect(document.activeElement).toBe(row('a'))
+  })
+
+  it('进编辑后 Tab / Shift + Tab 只在这一格的控件之间走；Esc 退回格子，控件回到 -1，再按 Tab 离开表格', async () => {
+    await mount()
+    await enterBody()
+    await userEvent.keyboard('{ArrowRight}{ArrowDown}{ArrowRight}')
+    await settle()
+    const [first, second] = [...cell('b', 'value').querySelectorAll('input')]
+    await userEvent.keyboard('{Enter}')
+    expect(document.activeElement).toBe(first)
+    expect([first!.getAttribute('tabindex'), second!.getAttribute('tabindex')]).toEqual([null, null])
+    await userEvent.tab()
+    expect(document.activeElement).toBe(second)
+    await userEvent.tab()
+    expect(document.activeElement).toBe(first)
+    await userEvent.tab({ shift: true })
+    expect(document.activeElement).toBe(second)
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(document.activeElement).toBe(cell('b', 'value'))
+    expect([first!.getAttribute('tabindex'), second!.getAttribute('tabindex')]).toEqual(['-1', '-1'])
+    await userEvent.tab()
+    expect(document.activeElement).toBe(document.querySelector('[data-test-end]'))
+  })
+
+  it('指针点进格内控件：只放开那一格，Tab 照样不出这一格', async () => {
+    await mount()
+    const [first, second] = [...cell('b', 'value').querySelectorAll('input')]
+    await userEvent.click(second!)
+    await settle()
+    expect(document.activeElement).toBe(second)
+    expect([first!.getAttribute('tabindex'), second!.getAttribute('tabindex')]).toEqual([null, null])
+    await userEvent.tab()
+    expect(document.activeElement).toBe(first)
+    await userEvent.keyboard('{Escape}')
+    await settle()
+    expect(document.activeElement).toBe(cell('b', 'value'))
+    expect(second!.getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('宿主后来往格子里插进的控件也退出 Tab 序列', async () => {
+    await mount()
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = '改'
+    cell('d', 'value').replaceChildren(button)
+    await settle()
+    const late = cell('d', 'value').querySelector<HTMLElement>('button')!
+    expect(late.getAttribute('tabindex')).toBe('-1')
+    await enterBody()
+    await userEvent.tab()
+    expect(document.activeElement).toBe(document.querySelector('[data-test-end]'))
   })
 })
