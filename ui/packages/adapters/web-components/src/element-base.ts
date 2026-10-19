@@ -17,6 +17,7 @@ import { mergeAsChildProps } from './dom/as-child'
 import { GEN_ATTR } from './dom/generated-nodes'
 import { validatePartContract } from './dom/part-contract'
 import { containsPart, discoverParts, PART_OWNER_ATTR } from './dom/parts'
+import { settleTransitionsAfterWiring } from './dom/settle-transitions'
 import { createSpreader } from './dom/spread'
 import { reportStackingTrap } from './dom/stacking-context'
 import { createStructureState, hasSlotContent, slotAttrOf, syncStructure } from './dom/structure'
@@ -326,6 +327,24 @@ export abstract class XhElement extends XhReactiveElement {
     // 于是不会自动排更新——wire 不再跑，角色节点上仍挂着指向已停机器的处理器（送事件会被静默丢弃，等于全是死的）。
     // 这里显式排一次；首帧与基类的初次更新合并，不多跑一帧
     this.requestUpdate()
+    this.settleUnwiredTransitions()
+  }
+
+  /**
+   * 记下连接当场还没接线的部件（没有 data-scope），首轮更新接线后取消它们身上已经起播的 CSS 过渡。
+   * 嵌套组件当的部件由它自己连接时处理。
+   */
+  private settleUnwiredTransitions(): void {
+    if (!this.isConnected || this.closest(`[${GHOST_ATTR}]`))
+      return
+    const unwired: HTMLElement[] = []
+    for (const els of discoverParts(this as unknown as HTMLElement, this.externalPartRoots()).values()) {
+      for (const el of els) {
+        if (!el.localName.startsWith('xh-') && !el.hasAttribute('data-scope'))
+          unwired.push(el)
+      }
+    }
+    settleTransitionsAfterWiring(unwired)
   }
 
   private stopConfigWatch: (() => void) | undefined
