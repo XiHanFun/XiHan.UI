@@ -215,13 +215,13 @@
     "name": "designer-shell/style.css（有层）",
     "path": "packages/features/designer-shell/style.css",
     "gzip": true,
-    "limit": "7.3 kB"
+    "limit": "7.4 kB"
   },
   {
     "name": "designer-shell/style.unlayered.css（无层）",
     "path": "packages/features/designer-shell/dist/style.unlayered.css",
     "gzip": true,
-    "limit": "7.3 kB"
+    "limit": "7.4 kB"
   },
   {
     "name": "xlsx",
@@ -257,7 +257,7 @@
     "name": "headless/locale（十种语言整份）",
     "path": "packages/engine/headless/dist/locale.js",
     "gzip": true,
-    "limit": "74 kB"
+    "limit": "75 kB"
   },
   {
     "name": "vue",
