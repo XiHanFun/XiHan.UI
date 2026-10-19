@@ -1,10 +1,11 @@
 // 变换覆盖层在真实 Chromium 里：选中框按视口落在画布上的正确位置并绕中心旋转，覆盖层除控制柄外不挡指针，
-// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走。
+// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走；尺寸徽标的排位与定宽。
 import type { Viewport } from '@xihan-ui/designer-kit'
 import type { DesignerTransformEventMap, XhDesignerTransformElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
 import '../../style.css'
 
 defineDesignerShell()
@@ -187,5 +188,39 @@ describe('<xh-designer-transform>（Chromium）', () => {
     overlay.items = [{ id: 'a', rect: { x: 100, y: 80, width: 60, height: 30 } }]
     await overlay.updateComplete
     expect(toolbar.hidden).toBe(false)
+  })
+})
+
+describe('<xh-designer-transform> 尺寸徽标（Chromium）', () => {
+  it('常驻在选中框下方居中、接指针，数字框按内容定宽；工具条翻到下方时排在徽标下面，两者不重叠', async () => {
+    overlay.measure = 'selection'
+    overlay.measureOptions = { unit: 'mm' }
+    overlay.items = [{ id: 'a', rect: { x: 100, y: 80, width: 100, height: 50 } }]
+    await overlay.updateComplete
+    await frames(2)
+    const measure = overlay.querySelector<HTMLElement>('[data-part="measure"]')!
+    const frame = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    const badge = measure.getBoundingClientRect()
+    const fields = Array.from(measure.querySelectorAll('[data-part="measure-field"]'), field => field.getBoundingClientRect())
+    expect(getComputedStyle(measure).pointerEvents).toBe('auto')
+    expect(badge.top).toBeGreaterThanOrEqual(frame.bottom)
+    expect(Math.abs((badge.left + badge.right) / 2 - (frame.left + frame.right) / 2)).toBeLessThanOrEqual(1)
+    expect(fields).toHaveLength(2)
+    for (const field of fields)
+      expect(field.width).toBeLessThan(160)
+    expect(Math.abs(fields[0]!.top - fields[1]!.top)).toBeLessThanOrEqual(1)
+
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.style.cssText = 'display:flex'
+    bar.innerHTML = '<button type="button">Copy</button>'
+    overlay.append(bar)
+    overlay.items = [{ id: 'a', rect: { x: -20, y: -15, width: 60, height: 30 } }]
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    await frames(2)
+    const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!
+    expect(toolbar.dataset.placement).toBe('bottom')
+    expect(toolbar.getBoundingClientRect().top).toBeGreaterThanOrEqual(measure.getBoundingClientRect().bottom)
   })
 })

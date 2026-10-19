@@ -45,6 +45,9 @@ describe('语言包', () => {
       expect(t['xh-designer-issues']!.errors!(3 as never), name).toContain('3')
       expect(t['xh-designer-ruler']!.horizontalGuide!('42' as never), name).toContain('42')
       expect(t['xh-designer-frame']!.resize!('Inspector' as never), name).toContain('Inspector')
+      const measureText = t['xh-designer-transform']!.measureText as unknown as (width: string, height: string, unit: string) => string
+      expect(measureText('12', '34', 'mm'), name).toMatch(/12.*34.*mm/)
+      expect(measureText('12', '34', ''), name).not.toMatch(/\s$/)
     }
   })
 })

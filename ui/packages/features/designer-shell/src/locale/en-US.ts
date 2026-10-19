@@ -136,6 +136,12 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-frame': DESIGNER_FRAME_EN_US,
   'xh-designer-commands': DESIGNER_COMMANDS_EN_US,
   'xh-designer-settings': DESIGNER_SETTINGS_EN_US,
+  'xh-designer-transform': {
+    measure: 'Size',
+    width: 'Width',
+    height: 'Height',
+    measureText: (width, height, unit) => (unit === '' ? `${width} × ${height}` : `${width} × ${height} ${unit}`),
+  },
 }
 
 /** 英文。 */

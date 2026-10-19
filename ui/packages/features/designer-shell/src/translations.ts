@@ -227,6 +227,18 @@ export interface DesignerCommandsTranslations {
   readonly help: string
 }
 
+/** 变换覆盖层的文案。 */
+export interface DesignerTransformTranslations {
+  /** 尺寸徽标（宽高两个数字框）这一组的名字。 */
+  readonly measure: string
+  /** 宽度数字框的名字。 */
+  readonly width: string
+  /** 高度数字框的名字。 */
+  readonly height: string
+  /** 只显示不编辑时的整句：宽、高已按精度写好，unit 是单位文字，没有单位时为空串。 */
+  readonly measureText: (width: string, height: string, unit: string) => string
+}
+
 declare module '@xihan-ui/web-components' {
   interface XhTranslationOverrides {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
@@ -237,5 +249,6 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
     'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
+    'xh-designer-transform'?: Partial<DesignerTransformTranslations>
   }
 }

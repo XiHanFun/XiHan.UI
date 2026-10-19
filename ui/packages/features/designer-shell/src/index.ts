@@ -70,6 +70,9 @@ export type { DesignerSettingEditor, DesignerSettingsEventMap } from './settings
 export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,
+  DesignerMeasureChangeDetail,
+  DesignerMeasureMode,
+  DesignerMeasureOptions,
   DesignerSnapOptions,
   DesignerTransformEventMap,
   DesignerTransformItem,
@@ -84,4 +87,5 @@ export type {
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,
   DesignerSettingsTranslations,
+  DesignerTransformTranslations,
 } from './translations'

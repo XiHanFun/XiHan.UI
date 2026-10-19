@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { DesignerTransformEventMap, DesignerTransformItem, XhDesignerTransformElement } from '../src'
+import type { DesignerMeasureOptions, DesignerTransformEventMap, DesignerTransformItem, XhDesignerTransformElement } from '../src'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../src'
 
@@ -267,11 +267,11 @@ describe('<xh-designer-transform>', () => {
     expect(part(overlay, 'marquee').hidden).toBe(true)
   })
 
-  it('只读时 startMove 不起作用；悬停框不在手势中显示；度量标签取 formatMeasure', async () => {
+  it('只读时 startMove 不起作用；悬停框不在手势中显示；拖动中的尺寸标签按 measureOptions 写单位', async () => {
     const overlay = await mount((element) => {
       element.items = [box]
       element.hover = { x: 0, y: 0, width: 10, height: 10 }
-      element.formatMeasure = rect => `${rect.width} × ${rect.height}`
+      element.measureOptions = { unit: 'mm' }
     })
     expect(part(overlay, 'hover').hidden).toBe(false)
     expect(part(overlay, 'measure').hidden).toBe(true)
@@ -281,7 +281,7 @@ describe('<xh-designer-transform>', () => {
     expect(part(overlay, 'hover').hidden).toBe(true)
     expect(overlay.dataset.gesture).toBe('move')
     const measure = part(overlay, 'measure')
-    expect(measure.textContent).toBe('100 × 50')
+    expect(measure.textContent).toBe('100 × 50 mm')
     expect(measure.style.transform).toBe('translate(140px, 140px) translate(-50%, 0)')
     up(20, 0)
     await overlay.updateComplete
@@ -344,5 +344,190 @@ describe('<xh-designer-transform>', () => {
     await overlay.updateComplete
     expect(overlay.focusToolbar()).toBe(false)
     expect(document.activeElement).toBe(canvas)
+  })
+})
+
+describe('<xh-designer-transform> 尺寸徽标', () => {
+  type MeasureDetail = DesignerTransformEventMap['measure-change']['detail']
+  type NumberBox = HTMLElement & { value?: string, readOnly?: boolean, min?: number }
+
+  const sized: DesignerTransformItem = { id: 'a', rect: { x: 10, y: 20, width: 100, height: 50 }, minSize: { width: 5, height: 5 } }
+
+  function measures(overlay: Element): MeasureDetail[] {
+    const seen: MeasureDetail[] = []
+    overlay.addEventListener('measure-change', event => seen.push((event as DesignerTransformEventMap['measure-change']).detail))
+    return seen
+  }
+
+  function numberBox(overlay: Element, axis: 'width' | 'height'): NumberBox {
+    return overlay.querySelector<NumberBox>(`[data-part="measure-field"][data-axis="${axis}"]`)!
+  }
+
+  function inputOf(overlay: Element, axis: 'width' | 'height'): HTMLInputElement {
+    return numberBox(overlay, axis).querySelector('input')!
+  }
+
+  function typeInto(input: HTMLInputElement, text: string): void {
+    input.value = text
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  function key(target: Element, name: string, init: KeyboardEventInit = {}): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true, ...init })
+    target.dispatchEvent(event)
+    return event
+  }
+
+  async function selection(options: DesignerMeasureOptions = { unit: 'mm' }, items: readonly DesignerTransformItem[] = [sized]): Promise<XhDesignerTransformElement> {
+    return mount((element) => {
+      element.measure = 'selection'
+      element.measureOptions = options
+      element.items = items
+    })
+  }
+
+  it('measure 缺省 gesture：只在拖动、缩放时只读显示，单选写元素自己的宽高；没给 measureOptions 时不显示', async () => {
+    const overlay = await mount((element) => {
+      element.items = [{ id: 'a', rect: { x: 10, y: 20, width: 100, height: 50, rotation: 30 } }]
+      element.measureOptions = { unit: 'mm' }
+    })
+    expect(overlay.measure).toBe('gesture')
+    const measure = part(overlay, 'measure')
+    expect(measure.hidden).toBe(true)
+    overlay.startMove(pointer('pointerdown', 0, 0))
+    move(20, 0)
+    await overlay.updateComplete
+    expect([measure.hidden, measure.textContent, measure.getAttribute('aria-hidden')]).toEqual([false, '100 × 50 mm', 'true'])
+    up(20, 0)
+    await overlay.updateComplete
+    expect(measure.hidden).toBe(true)
+    overlay.measureOptions = undefined
+    overlay.startMove(pointer('pointerdown', 0, 0))
+    move(20, 0)
+    await overlay.updateComplete
+    expect(measure.hidden).toBe(true)
+    up(20, 0)
+  })
+
+  it('measure="selection"：单选可缩放时常驻，宽高各一个数字框，按显示单位换算、按精度写；是一组有名字的控件，不 aria-hidden', async () => {
+    const overlay = await selection({ unit: 'mm', displayUnit: 'cm', fractionDigits: 2, step: 0.5 })
+    const measure = part(overlay, 'measure')
+    expect([measure.hidden, measure.getAttribute('role'), measure.getAttribute('aria-label'), measure.hasAttribute('aria-hidden')]).toEqual([false, 'group', 'Size', false])
+    expect([numberBox(overlay, 'width').value, numberBox(overlay, 'height').value]).toEqual(['10', '5'])
+    expect([numberBox(overlay, 'width').getAttribute('aria-label'), numberBox(overlay, 'height').getAttribute('aria-label')]).toEqual(['Width', 'Height'])
+    expect(numberBox(overlay, 'width').min).toBe(0.5)
+    expect(part(overlay, 'measure-unit').textContent).toBe('cm')
+    expect(part(overlay, 'measure-separator').getAttribute('aria-hidden')).toBe('true')
+    overlay.setAttribute('measure', 'gesture')
+    await overlay.updateComplete
+    expect(measure.hidden).toBe(true)
+  })
+
+  it('点加减钮按 step 步进，派发 measure-change（source: step）：换回模型单位，左上角不动，不小于 minSize', async () => {
+    const overlay = await selection({ unit: 'mm', displayUnit: 'cm', step: 0.5 })
+    const seen = measures(overlay)
+    numberBox(overlay, 'width').querySelector<HTMLButtonElement>('[data-part="increment-trigger"]')!.click()
+    expect(seen).toEqual([{ id: 'a', axis: 'width', source: 'step', rect: { x: 10, y: 20, width: 105, height: 50 } }])
+    overlay.items = [{ ...sized, rect: { ...sized.rect, height: 6 } }]
+    await overlay.updateComplete
+    numberBox(overlay, 'height').querySelector<HTMLButtonElement>('[data-part="decrement-trigger"]')!.click()
+    expect(seen.at(-1)).toEqual({ id: 'a', axis: 'height', source: 'step', rect: { x: 10, y: 20, width: 100, height: 5 } })
+  })
+
+  it('输入后按 Enter 或失焦才提交（source: input），输入途中不派发；Esc 放弃，框里回到原值；写不成数字的不提交', async () => {
+    const overlay = await selection()
+    const seen = measures(overlay)
+    const input = inputOf(overlay, 'height')
+    typeInto(input, '7')
+    typeInto(input, '72')
+    expect(seen).toEqual([])
+    key(input, 'Enter')
+    expect(seen).toEqual([{ id: 'a', axis: 'height', source: 'input', rect: { x: 10, y: 20, width: 100, height: 72 } }])
+    typeInto(input, '9')
+    key(input, 'Escape')
+    await overlay.updateComplete
+    expect([seen.length, numberBox(overlay, 'height').value]).toEqual([1, '50'])
+    typeInto(input, '60')
+    input.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
+    expect(seen.at(-1)).toEqual({ id: 'a', axis: 'height', source: 'input', rect: { x: 10, y: 20, width: 100, height: 60 } })
+    typeInto(input, 'abc')
+    key(input, 'Enter')
+    await overlay.updateComplete
+    expect([seen.length, numberBox(overlay, 'height').value]).toEqual([2, '50'])
+    typeInto(input, '1')
+    key(input, 'Enter')
+    expect(seen.at(-1)!.rect.height).toBe(5)
+  })
+
+  it('按住 Shift 加方向键按 largeStep 步进；keepAspect 的项改一边另一边按比例跟着变', async () => {
+    const overlay = await selection({ unit: 'mm', largeStep: 10 }, [{ ...sized, keepAspect: true }])
+    const seen = measures(overlay)
+    const event = key(inputOf(overlay, 'width'), 'ArrowUp', { shiftKey: true })
+    expect(event.defaultPrevented).toBe(true)
+    expect(seen).toEqual([{ id: 'a', axis: 'width', source: 'step', rect: { x: 10, y: 20, width: 110, height: 55 } }])
+  })
+
+  it('只给了某些方向的控制柄时，只有能缩放的那一边可编辑', async () => {
+    const overlay = await selection({ unit: 'mm' }, [{ ...sized, handles: ['e', 'w'] }])
+    expect([numberBox(overlay, 'width').readOnly, numberBox(overlay, 'height').readOnly]).toEqual([false, true])
+  })
+
+  it('按单位以外的计法：不给 unit 时直接显示模型数值，单位文字取 unitLabel', async () => {
+    const overlay = await selection({ unitLabel: '格', fractionDigits: 0 }, [{ id: 'c', rect: { x: 0, y: 0, width: 4, height: 3 }, minSize: { width: 1, height: 1 } }])
+    const seen = measures(overlay)
+    expect([numberBox(overlay, 'width').value, numberBox(overlay, 'height').value, part(overlay, 'measure-unit').textContent]).toEqual(['4', '3', '格'])
+    numberBox(overlay, 'width').querySelector<HTMLButtonElement>('[data-part="increment-trigger"]')!.click()
+    expect(seen).toEqual([{ id: 'c', axis: 'width', source: 'step', rect: { x: 0, y: 0, width: 5, height: 3 } }])
+  })
+
+  it('多选、锁定（handles: false）与只读时只显示尺寸，不给数字框；多选写整体包围框的尺寸', async () => {
+    const overlay = await selection({ unit: 'mm' }, [{ ...sized }, { id: 'b', rect: { x: 200, y: 20, width: 50, height: 50 } }])
+    const measure = part(overlay, 'measure')
+    expect([measure.textContent, measure.getAttribute('aria-hidden'), measure.querySelector('[data-part="measure-field"]')]).toEqual(['240 × 50 mm', 'true', null])
+    overlay.items = [{ ...sized, handles: false }]
+    await overlay.updateComplete
+    expect(measure.textContent).toBe('100 × 50 mm')
+    overlay.items = [sized]
+    overlay.readonly = true
+    await overlay.updateComplete
+    expect([measure.textContent, measure.querySelector('[data-part="measure-field"]')]).toEqual(['100 × 50 mm', null])
+  })
+
+  it('拖动中只读显示实时尺寸，松手后回到数字框', async () => {
+    const overlay = await selection()
+    overlay.startMove(pointer('pointerdown', 0, 0))
+    move(20, 0)
+    await overlay.updateComplete
+    const measure = part(overlay, 'measure')
+    expect([measure.textContent, measure.querySelector('[data-part="measure-field"]')]).toEqual(['100 × 50 mm', null])
+    up(20, 0)
+    await overlay.updateComplete
+    expect(numberBox(overlay, 'width').value).toBe('100')
+  })
+
+  it('工具条在徽标之前：在工具条里按 Tab 接着进到徽标的数字框', async () => {
+    const overlay = await selection()
+    expect(part(overlay, 'toolbar').compareDocumentPosition(part(overlay, 'measure')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('focusMeasure 把焦点交给宽度框；在徽标里按 Esc 回到交之前的位置；徽标里的按键与按下不冒泡到画布', async () => {
+    const canvas = document.createElement('div')
+    canvas.tabIndex = 0
+    document.body.append(canvas)
+    const outside: string[] = []
+    document.body.addEventListener('keydown', event => outside.push(event.key))
+    document.body.addEventListener('pointerdown', () => outside.push('pointerdown'))
+    const overlay = await selection()
+    canvas.focus()
+    expect(overlay.focusMeasure()).toBe(true)
+    expect(document.activeElement).toBe(inputOf(overlay, 'width'))
+    key(inputOf(overlay, 'width'), 'Delete')
+    inputOf(overlay, 'width').dispatchEvent(pointer('pointerdown', 0, 0))
+    expect(outside).toEqual([])
+    key(inputOf(overlay, 'width'), 'Escape')
+    expect(document.activeElement).toBe(canvas)
+    overlay.measure = 'gesture'
+    await overlay.updateComplete
+    expect(overlay.focusMeasure()).toBe(false)
   })
 })
