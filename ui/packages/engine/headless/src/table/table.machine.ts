@@ -28,6 +28,7 @@ import { hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
 import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR, TABLE_CELL_SELECTOR, TABLE_ROW_SELECTOR } from './table.anatomy'
+import { createCellWidgetLock } from './table.cell-widgets'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
@@ -130,6 +131,7 @@ export const tableMachine = createMachine({
   // 按住途中转入加载：取数在途各把手都动不了，不会再来 keyup，按压面由机器自己收
   watch: ({ track, prop, action }) => {
     track([() => prop('loading')], () => action(['releaseWhenInert']))
+    track([() => prop('navigation')], () => action(['syncCellWidgets']))
   },
   refs: () => ({
     getRootEl: () => null,
@@ -138,10 +140,11 @@ export const tableMachine = createMachine({
     rowDrag: null,
     reorder: null,
     swallowClick: false,
+    cellWidgets: null,
   }),
   initialState: () => 'idle',
   // 版面实测与拖动 / 改宽的过程无关，全程挂着；需不需要量由 props 现判
-  effects: ['measureLayout', 'trackScrollEdges'],
+  effects: ['measureLayout', 'trackScrollEdges', 'lockCellWidgets'],
   // 按压通道与拖动 / 改宽的过程无关，四个状态都认；加载中不进，部件自身的禁用随事件带入
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
@@ -290,6 +293,24 @@ export const tableMachine = createMachine({
         }
       },
       /**
+       * 单元格级导航时表体格内的控件平时退出 Tab 序列，整张表只留锚点一个 Tab 位；进编辑只放开那一格。
+       * 锁全程挂着，开关现读 navigation，切换时由 watch 同步一次。
+       */
+      lockCellWidgets: ({ refs, prop, flush }) => {
+        let disposed = false
+        flush(() => {
+          const root = refs.get('getRootEl')()
+          if (disposed || !root)
+            return
+          refs.set('cellWidgets', createCellWidgetLock(root, () => prop('navigation') === 'cell'))
+        })
+        return () => {
+          disposed = true
+          refs.get('cellWidgets')?.dispose()
+          refs.set('cellWidgets', null)
+        }
+      },
+      /**
        * 盯住横向滚动离两端还有多远，给冻结列的边界提示用：只在有冻结列时才写，滚动与尺寸变化时现量。
        * 滚动容器是 root 自己；放进滚动区的表格不自己滚，两端一直贴着，不画提示。
        */
@@ -375,6 +396,9 @@ export const tableMachine = createMachine({
       releaseWhenInert: ({ context, prop }) => {
         if (context.get('pressed') != null && prop('loading'))
           context.set('pressed', null)
+      },
+      syncCellWidgets: ({ refs }) => {
+        refs.get('cellWidgets')?.sync()
       },
 
       startColumnResize: ({ context, refs, event }) => {

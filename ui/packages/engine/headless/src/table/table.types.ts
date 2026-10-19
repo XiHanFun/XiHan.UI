@@ -8,6 +8,7 @@
 import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 import type { CollectionVirtualizer } from '../virtualizer'
+import type { CellWidgetLock } from './table.cell-widgets'
 
 /**
  * 焦点模型：缺省（navigation 为 row）是行级 roving tabindex。
@@ -621,6 +622,8 @@ export interface TableSchema extends MachineSchema {
     reorder: (() => void) | null
     /** 行拖动刚松手：随后到来的那一次点击不算行主操作。下一次在行上按下时清掉。 */
     swallowClick: boolean
+    /** 单元格级导航时替表体格内控件管 tabindex 的锁；挂载后由机器建好，卸载时还原。 */
+    cellWidgets: CellWidgetLock | null
   }
   /**
    * 排序、选中、展开与列偏好都不编码进状态：它们是随时可读可写的事实，不是过程。
@@ -713,6 +716,7 @@ export interface TableSchema extends MachineSchema {
     | 'toggleExpandRow'
     | 'setFocusedRow'
     | 'setFocusedCell'
+    | 'syncCellWidgets'
     | 'clearFocusedRow'
     | 'startColumnResize'
     | 'trackColumnResize'
@@ -733,7 +737,7 @@ export interface TableSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout' | 'trackScrollEdges'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout' | 'trackScrollEdges' | 'lockCellWidgets'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {

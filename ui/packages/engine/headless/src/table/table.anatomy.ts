@@ -51,6 +51,9 @@ export const TABLE_BODY_ROW_SELECTOR = `${parts.row.selector}, ${parts['expanded
 export const TABLE_ROW_SELECTOR = parts.row.selector
 export const TABLE_CELL_SELECTOR = parts.cell.selector
 
+/** 表体部件本身，给 closest 判归属用（TABLE_BODY_SELECTOR 带 :scope，只能从 root 往下找）。 */
+export const TABLE_BODY_PART_SELECTOR = parts.body.selector
+
 /**
  * 行级 roving 的导航集合只认 row 部件，查询容器取 body 而不是 root：
  * 表头行与脚注行同样写成 row 部件，以 body 为容器查询才把它们排除在外。
