@@ -49,15 +49,19 @@ type ApplyOperation<D, O> = (document: D, operation: O) => {
 
 | 成员 | 说明 |
 | --- | --- |
-| `execute(operations, { merge?, label? })` | 依次应用一组操作并记为一步，返回新文档；清空重做栈。空数组、或应用后文档仍是同一引用（操作没有带来变化）时什么都不做，不入栈也不通知 |
+| `execute(operations, { merge?, label?, mergeWithin? })` | 依次应用一组操作并记为一步，返回新文档；清空重做栈。空数组、或应用后文档仍是同一引用（操作没有带来变化）时什么都不做，不入栈也不通知 |
 | `undo()` / `redo()` | 撤销或重做一步，没有可执行的步时返回 `false` |
 | `canUndo` / `canRedo`、`undoCount` / `redoCount` | 工具栏按钮的可用状态与步数 |
-| `undoLabel` / `redoLabel` | 下一次撤销、重做那一步的说明 |
+| `undoLabel` / `redoLabel` | 下一次撤销、重做那一步的说明，读的时候现取成字符串 |
+| `entries` | 全部步骤 `{ position, label, state, saved, time }`，按先后：已做的在前（`state` 为 `done`），已撤销的在后（`undone`）；每次读都给新数组 |
+| `position` / `origin` | 当前位置：最后一个已做步骤的位置号，一步都没做时等于 `origin`；起点：`entries` 之前那个状态的位置号 |
+| `truncated` / `originSaved` | 起点之前有被步数上限丢掉的步骤；起点是保存点 |
+| `goTo(position)` | 跳到起点或某一步，见下文「步骤列表与跳转」 |
 | `document` | 当前文档 |
 | `markSaved()` / `dirty` | 把当前位置记为保存点；`dirty` 为当前位置与保存点不同，或事务中已有改动 |
 | `reset(document)` | 换成新文档并清空两个栈，新文档视为已保存（装载模板时用） |
 | `clear()` | 只清空两个栈，是否已保存不变 |
-| `subscribe(listener)` | 每次变化后通知 `{ kind, document, operations }`，返回取消订阅的函数 |
+| `subscribe(listener)` | 每次变化后通知 `{ kind, document, operations, steps }`，返回取消订阅的函数；`steps` 是撤销或重做一次走了几步：`undo()`、`redo()` 为 1，`goTo` 为实际步数，别的种类为 0 |
 
 应用失败时 `apply` 抛出的错误原样抛出，文档与两个栈都不变。`limit` 是撤销栈的步数上限，缺省 100，超出时丢弃最早的一步。
 
@@ -73,6 +77,12 @@ history.execute([setLabel(nodeId, value)], { merge: `node:${nodeId}:label`, labe
 
 上一步带同一合并键且没有封口时，新执行并入上一步，说明保留上一步的。`seal()`、撤销、重做与事务都会封口；字段失焦时调用 `seal()`，下次再输入就另起一步。`mergeWithin`（毫秒）可再加一道时间窗，配合 `now` 选项注入时钟；单次执行也可以带自己的 `mergeWithin` 盖过它，比如属性面板的输入传 `Infinity`，不论停顿多久都并成一步，只等失焦封口，而方向键微移仍按历史的时间窗合并。
 
+方向键微移各设计器用同一个口径：合并键用 `nudgeMergeKey(ids)`（按选中对象的 id 定，与先后无关），时间窗用 `HISTORY_NUDGE_MERGE_WITHIN`（1000 毫秒），选中变化时 `seal()`。这样连续按、选中不变、一秒之内的微移并成一步：
+
+```ts
+history.execute(moveBy(selection, dx, dy), { merge: nudgeMergeKey(selection), mergeWithin: HISTORY_NUDGE_MERGE_WITHIN });
+```
+
 ### 事务
 
 拖动、批量对齐这类由多次执行组成的交互用事务记为一步：
@@ -84,7 +94,31 @@ history.commit(); // 整段拖动记为一步
 // 或 history.rollback()：按 Esc 放弃，文档回到拖动前
 ```
 
-事务可嵌套，最外层 `commit` 时才入栈；`rollback` 放弃整个事务（含外层），重做栈保持事务前的样子。`transact(run, label)` 在 `run` 正常返回时提交、抛错时回滚后重新抛出。事务中调用 `undo`、`redo`、`reset`、`clear` 会抛错，事务中的执行忽略合并键。
+事务可嵌套，最外层 `commit` 时才入栈，说明以最外层给的为准；`rollback` 放弃整个事务（含外层），重做栈保持事务前的样子。`transact(run, label)` 在 `run` 正常返回时提交、抛错时回滚后重新抛出。事务中调用 `undo`、`redo`、`goTo`、`reset`、`clear` 会抛错，事务中的执行忽略合并键与自己的说明。
+
+### 步骤说明
+
+每一步的说明是 `HistoryLabel`：字符串，或读的时候现取的函数。写成函数时，步骤列表与撤销、重做的提示换语言后跟着变；函数里用到的对象名在执行那一刻取好闭进去，说明写的是当时改了什么：
+
+```ts
+const title = card.title;
+history.execute(ops, { label: () => t().history.removeCard(title) });
+```
+
+说明的先后是：`execute` 的 `label`，事务的 `label`，都没写时调用 `createHistory` 的 `describe(operations, before)`。`describe` 在新起一步时调用，收到这一步的正向操作与应用前的文档；并入上一步的执行不再调用；事务提交时收到整个事务的正向操作与事务开始前的文档。返回 `undefined` 时这一步没有说明。
+
+### 步骤列表与跳转
+
+`entries` 按先后列出全部步骤，`position` 是当前位置，`origin` 是起点。每一步有一个位置号，撤销、重做后不变；超过步数上限丢掉最早的步时，别的步的位置号也不变，可以拿来给列表的条目定键。
+
+`goTo(position)` 跳到起点或某一步：目标在当前之前就连续撤销，之后就连续重做。
+
+- 各步依次应用、全部成功才生效；有一步抛错时文档与两个栈都不变，错误照样抛出。
+- 成功后只通知一次：`kind` 是 `undo` 或 `redo`，`operations` 是各步实际应用的操作按先后拼起来，`steps` 是走过的步数。
+- 已在那里或位置号不认识时返回 `false`。
+- 跳转与撤销、重做一样会封口；之后再执行新的修改，已撤销的步骤整段丢掉。
+
+`snapshotHistory(history)` 把历史取成快照 `{ entries, position, origin, truncated, originSaved }`，各步的说明按此刻的语言取成字符串，给历史面板与宿主用。
 
 ### 依次应用一组操作
 
@@ -484,7 +518,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `controls` | 新的编辑方式，键是属性描述里的 `control.kind`，不能与内建的重名；`checkProperties` 的 `controls` 用合并后的这张表 |
 | `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
-| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）或 `menu:<主体>`，`shortLabel` 是按钮上看得见的短文字（顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`，会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
+| `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）或 `menu:<主体>`，`shortLabel` 是按钮上看得见的短文字（顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`；`alternateShortcuts` 是另外几组也能触发它的快捷键（如重做在 `Mod+Shift+Z` 之外再认 `["Ctrl", "Y"]`），与 `shortcut` 一样查重、一样命中，提示里只显示 `shortcut`；会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
 | `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
 | `setup` | 装上时调用，返回卸下时的清理 |
 
@@ -521,7 +555,8 @@ host.dispose(); // 元素离开文档时调用
 | `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
 | `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
 | `assertCommandShape(command)` / `isCommandMenuSeparator(entry)` | 查一条命令的形状，不合时抛 `TypeError`（合并时已经查过）；菜单命令的一项是不是分隔线 |
-| `commandForShortcut(commands, event, context, platform)` | 这次按键命中的、此刻可用并且有 `run` 的命令（没给 `run` 的弹层命令与菜单命令不由快捷键触发）；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
+| `commandShortcuts(command)` | 一条命令的全部快捷键：`shortcut` 在前，`alternateShortcuts` 按先后在后；快捷键表与 `aria-keyshortcuts` 用它 |
+| `commandForShortcut(commands, event, context, platform)` | 这次按键命中（`shortcut` 或任一组 `alternateShortcuts`）的、此刻可用并且有 `run` 的命令（没给 `run` 的弹层命令与菜单命令不由快捷键触发）；`platform` 由 `@xihan-ui/core/hotkey` 的 `detectKbdPlatform()` 测出；`event` 只读 key、code 与四个修饰键 |
 
 ### 弹层命令与菜单命令
 

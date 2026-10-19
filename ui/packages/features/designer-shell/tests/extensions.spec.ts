@@ -295,6 +295,18 @@ describe('命令', () => {
     expect((item.querySelector('xh-icon') as HTMLElement & { icon?: unknown }).icon).toBe(GLYPH)
     expect([item.getAttribute('aria-keyshortcuts'), item.querySelector('[data-xh-part="item-shortcut"]')!.textContent]).toEqual(['Meta+Z', '⌘Z'])
   })
+
+  it('第二快捷键接在主快捷键后面写进 aria-keyshortcuts，菜单行尾与提示只显示主快捷键', () => {
+    const redo = new Map<string, DesignerCommand<Ctx>>([['redo', cmd('redo', { shortcut: ['Mod', 'Shift', 'z'], alternateShortcuts: [['Ctrl', 'y']] })]])
+    const bar = createCommandToolbar<Ctx>(document, { platform: 'mac' })
+    document.body.append(bar.element)
+    bar.update([['redo']], redo, { selected: 1 }, '工具')
+    expect(bar.toolbar.querySelector('[data-xh-part="item"]')!.getAttribute('aria-keyshortcuts')).toBe('Meta+Shift+Z Control+Y')
+    const content = document.createElement('div')
+    renderCommandMenu(content, [['redo']], redo, { selected: 0 }, { platform: 'other' })
+    const item = content.firstElementChild!
+    expect([item.getAttribute('aria-keyshortcuts'), item.querySelector('[data-xh-part="item-shortcut"]')!.textContent]).toEqual(['Control+Shift+Z Control+Y', 'Ctrl+Shift+Z'])
+  })
 })
 
 describe('createStatusItem', () => {

@@ -2,7 +2,7 @@
 // 步数上限、封口、保存点、跳过无变化的执行、出错时状态不变，以及变化通知。
 import type { ApplyOperation, HistoryChange } from '../src'
 import { describe, expect, it, vi } from 'vitest'
-import { createHistory } from '../src'
+import { createHistory, HISTORY_NUDGE_MERGE_WITHIN, nudgeMergeKey, snapshotHistory } from '../src'
 
 type Doc = readonly string[]
 type Op
@@ -417,5 +417,212 @@ describe('保存点', () => {
     history.markSaved()
     history.clear()
     expect(history.dirty).toBe(false)
+  })
+})
+
+describe('步骤列表与跳转', () => {
+  it('entries 按先后列出已做与已撤销的步，position 是最后一个已做的步，起点在它们之前；位置号随步不变', () => {
+    const history = setup()
+    expect([history.entries, history.position === history.origin, history.truncated, history.originSaved]).toEqual([[], true, false, true])
+    history.execute([insert(1, 'b')], { label: '加 b' })
+    history.execute([insert(2, 'c')], { label: '加 c' })
+    history.execute([insert(3, 'd')], { label: '加 d' })
+    history.undo()
+    const [b, c, d] = history.entries
+    expect(history.entries.map(entry => [entry.label, entry.state])).toEqual([['加 b', 'done'], ['加 c', 'done'], ['加 d', 'undone']])
+    expect(history.position).toBe(c!.position)
+    expect(new Set([history.origin, b!.position, c!.position, d!.position]).size).toBe(4)
+    history.undo()
+    history.redo()
+    expect(history.entries.map(entry => entry.position)).toEqual([b!.position, c!.position, d!.position])
+  })
+
+  it('goTo 往前连续撤销、往后连续重做，只通知一次，steps 是走过的步数', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')])
+    history.execute([insert(2, 'c')])
+    history.execute([insert(3, 'd')])
+    const [b, , d] = history.entries
+    const changes: HistoryChange<Doc, Op>[] = []
+    history.subscribe(change => changes.push(change))
+    expect(history.goTo(history.origin)).toBe(true)
+    expect([history.document, history.entries.map(entry => entry.state)]).toEqual([['a'], ['undone', 'undone', 'undone']])
+    expect(history.goTo(d!.position)).toBe(true)
+    expect(history.document).toEqual(['a', 'b', 'c', 'd'])
+    expect(history.goTo(b!.position)).toBe(true)
+    expect([history.document, history.position]).toEqual([['a', 'b'], b!.position])
+    expect(changes.map(change => [change.kind, change.steps, change.operations])).toEqual([
+      ['undo', 3, [remove(3), remove(2), remove(1)]],
+      ['redo', 3, [insert(1, 'b'), insert(2, 'c'), insert(3, 'd')]],
+      ['undo', 2, [remove(3), remove(2)]],
+    ])
+    expect([history.goTo(b!.position), history.goTo(-1)]).toEqual([false, false])
+    expect(changes).toHaveLength(3)
+  })
+
+  it('undo、redo 的通知 steps 为 1，其余种类为 0', () => {
+    const history = setup()
+    const changes: HistoryChange<Doc, Op>[] = []
+    history.subscribe(change => changes.push(change))
+    history.execute([insert(1, 'b')])
+    history.undo()
+    history.redo()
+    history.transact(() => history.execute([set(0, 'x')]))
+    history.markSaved()
+    history.clear()
+    expect(changes.map(change => [change.kind, change.steps])).toEqual([['execute', 0], ['undo', 1], ['redo', 1], ['execute', 0], ['commit', 0], ['save', 0], ['clear', 0]])
+  })
+
+  it('跳转是原子的：有一步应用失败时文档、位置与栈都不变，错误照样抛出', () => {
+    let fail = false
+    const history = createHistory<Doc, Op>({
+      document: ['a'],
+      apply: (doc, op) => {
+        if (fail && op.type === 'remove' && op.index === 1)
+          throw new Error('boom')
+        return apply(doc, op)
+      },
+    })
+    history.execute([insert(1, 'b')])
+    history.execute([insert(2, 'c')])
+    const position = history.position
+    const notified = vi.fn()
+    history.subscribe(notified)
+    fail = true
+    expect(() => history.goTo(history.origin)).toThrow('boom')
+    expect([history.document, history.position, history.entries.map(entry => entry.state)]).toEqual([['a', 'b', 'c'], position, ['done', 'done']])
+    expect(notified).not.toHaveBeenCalled()
+  })
+
+  it('跳转后封口；之后的修改丢掉已撤销的步（线性历史）', () => {
+    const history = setup()
+    history.execute([set(0, 'x')], { merge: 'k' })
+    history.execute([insert(1, 'b')])
+    history.goTo(history.entries[0]!.position)
+    history.execute([set(0, 'y')], { merge: 'k' })
+    expect([history.document, history.entries.map(entry => entry.state), history.canRedo]).toEqual([['y'], ['done', 'done'], false])
+  })
+
+  it('事务中不能跳转', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')])
+    history.begin()
+    expect(() => history.goTo(history.origin)).toThrow(/transaction/)
+  })
+
+  it('超过步数上限丢过步之后 truncated 为 true，起点是丢掉的最后一步之后；clear、reset 之后清掉', () => {
+    const history = setup({ limit: 2 })
+    history.execute([insert(1, 'b')])
+    history.execute([insert(2, 'c')])
+    expect(history.truncated).toBe(false)
+    history.execute([insert(3, 'd')])
+    expect([history.truncated, history.entries.length]).toEqual([true, 2])
+    history.goTo(history.origin)
+    expect(history.document).toEqual(['a', 'b'])
+    history.clear()
+    expect([history.truncated, history.origin === history.position]).toEqual([false, true])
+    history.execute([insert(2, 'c')])
+    history.execute([insert(3, 'd')])
+    history.execute([insert(4, 'e')])
+    history.reset(['z'])
+    expect(history.truncated).toBe(false)
+  })
+
+  it('保存点标在那一步或起点上', () => {
+    const history = setup()
+    expect(history.originSaved).toBe(true)
+    history.execute([insert(1, 'b')])
+    history.execute([insert(2, 'c')])
+    history.goTo(history.entries[0]!.position)
+    history.markSaved()
+    expect([history.originSaved, history.entries.map(entry => entry.saved)]).toEqual([false, [true, false]])
+    history.clear()
+    expect([history.originSaved, history.entries]).toEqual([true, []])
+  })
+})
+
+describe('步骤说明', () => {
+  it('说明可以是函数，读的时候现取：换语言后跟着变', () => {
+    let language = 'zh'
+    const history = setup()
+    history.execute([insert(1, 'b')], { label: () => (language === 'zh' ? '加 b' : 'Add b') })
+    expect(history.undoLabel).toBe('加 b')
+    language = 'en'
+    expect([history.undoLabel, snapshotHistory(history).entries[0]!.label]).toEqual(['Add b', 'Add b'])
+    history.undo()
+    expect(history.redoLabel).toBe('Add b')
+  })
+
+  it('describe 给没写说明的步生成说明：新起一步时按正向操作与应用前的文档调用，并入的不调；事务按整段正向操作调一次', () => {
+    const calls: [readonly Op[], Doc][] = []
+    const history = createHistory<Doc, Op>({
+      document: ['a'],
+      apply,
+      describe: (operations, before) => {
+        calls.push([operations, before])
+        return `${operations.length} 步`
+      },
+    })
+    history.execute([insert(1, 'b')])
+    history.execute([set(0, 'x')], { merge: 'k' })
+    history.execute([set(0, 'y')], { merge: 'k' })
+    history.execute([insert(1, 'z')], { label: '自己写的' })
+    history.transact(() => {
+      history.execute([insert(0, 'p')])
+      history.execute([insert(0, 'q')])
+    })
+    history.transact(() => history.execute([insert(0, 'r')]), () => '事务的说明')
+    expect(snapshotHistory(history).entries.map(entry => entry.label)).toEqual(['1 步', '1 步', '自己写的', '2 步', '事务的说明'])
+    expect(calls).toEqual([
+      [[insert(1, 'b')], ['a']],
+      [[set(0, 'x')], ['a', 'b']],
+      [[insert(0, 'p'), insert(0, 'q')], ['y', 'z', 'b']],
+    ])
+  })
+})
+
+describe('snapshotHistory', () => {
+  it('取成快照：说明现取成字符串，带当前位置、起点、丢过步与保存点', () => {
+    const history = setup()
+    history.execute([insert(1, 'b')], { label: '加 b' })
+    history.markSaved()
+    history.execute([insert(2, 'c')])
+    history.undo()
+    const [b, c] = history.entries
+    expect(snapshotHistory(history)).toEqual({
+      entries: [
+        { position: b!.position, label: '加 b', state: 'done', saved: true },
+        { position: c!.position, label: undefined, state: 'undone', saved: false },
+      ],
+      position: b!.position,
+      origin: history.origin,
+      truncated: false,
+      originSaved: false,
+    })
+  })
+})
+
+describe('键盘微移的合并', () => {
+  it('合并键与选中对象的先后无关，选中不同就不同；时限是 1 秒', () => {
+    expect(nudgeMergeKey(['b', 'a'])).toBe(nudgeMergeKey(['a', 'b']))
+    expect(nudgeMergeKey(['a'])).not.toBe(nudgeMergeKey(['a', 'b']))
+    expect(nudgeMergeKey(['a,b'])).not.toBe(nudgeMergeKey(['a', 'b']))
+    expect(HISTORY_NUDGE_MERGE_WITHIN).toBe(1000)
+  })
+
+  it('连续微移在时限内并成一步，超过时限或封口后另起一步', () => {
+    let time = 0
+    const history = setup({ now: () => time })
+    const key = nudgeMergeKey(['a'])
+    history.execute([set(0, 'x')], { merge: key, mergeWithin: HISTORY_NUDGE_MERGE_WITHIN })
+    time = 900
+    history.execute([set(0, 'y')], { merge: key, mergeWithin: HISTORY_NUDGE_MERGE_WITHIN })
+    expect(history.undoCount).toBe(1)
+    time = 2000
+    history.execute([set(0, 'z')], { merge: key, mergeWithin: HISTORY_NUDGE_MERGE_WITHIN })
+    expect(history.undoCount).toBe(2)
+    history.seal()
+    history.execute([set(0, 'w')], { merge: key, mergeWithin: HISTORY_NUDGE_MERGE_WITHIN })
+    expect(history.undoCount).toBe(3)
   })
 })

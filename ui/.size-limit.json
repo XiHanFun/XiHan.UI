@@ -173,7 +173,7 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "13.5 kB"
+    "limit": "14.1 kB"
   },
   {
     "name": "designer-kit/properties",

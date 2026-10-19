@@ -85,6 +85,11 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly placement?: readonly DesignerCommandPlacement[]
   /** 快捷键，写法同 xh-kbd 的 keys：['Mod', 'Shift', 'P']，Mod 在 macOS 上是 ⌘，其余平台是 Ctrl。 */
   readonly shortcut?: readonly string[]
+  /**
+   * 另外几组也能触发这条命令的快捷键，写法同 shortcut，如重做在 Mod+Shift+Z 之外再认 ['Ctrl', 'Y']。
+   * 与 shortcut 一样查重、一样由 commandForShortcut 命中；提示里只显示 shortcut，快捷键表与 aria-keyshortcuts 全部列出（见 commandShortcuts）。
+   */
+  readonly alternateShortcuts?: readonly (readonly string[])[]
   /** 不给即总是可用。 */
   readonly enabled?: (context: Ctx) => boolean
   /** 给了就是开关式命令，按钮与菜单项显示选中状态。 */
@@ -205,7 +210,7 @@ type AnyExtension = { readonly id: string } & Partial<DesignerExtensionBase<neve
 /** 内建的名字空间：命令、快捷键、编辑方式、导入、导出。 */
 const BASE_SPACES: ExtensionKeySpaces<AnyExtension> = {
   command: extension => (extension.commands ?? []).map(command => command.id),
-  shortcut: extension => (extension.commands ?? []).flatMap(command => (command.shortcut === undefined ? [] : [shortcutKey(command.shortcut)])),
+  shortcut: extension => (extension.commands ?? []).flatMap(command => commandShortcuts(command).map(shortcutKey)),
   control: extension => Object.keys(extension.controls ?? {}),
   importer: extension => (extension.importers ?? []).map(importer => importer.id),
   exporter: extension => (extension.exporters ?? []).map(exporter => exporter.id),
@@ -384,9 +389,14 @@ export function formatShortcut(keys: readonly string[], platform: KbdPlatform): 
   return formatHotkeyLabel(keys, platform)
 }
 
+/** 一条命令的全部快捷键：shortcut 在前，alternateShortcuts 按先后在后；都没有时为空数组。 */
+export function commandShortcuts(command: Pick<DesignerCommand<never>, 'shortcut' | 'alternateShortcuts'>): readonly (readonly string[])[] {
+  return [...(command.shortcut === undefined ? [] : [command.shortcut]), ...(command.alternateShortcuts ?? [])]
+}
+
 /**
- * 找出这次按键命中的命令：快捷键恰好命中、此刻可用、并且有 run 的那一条；没有时为 undefined。platform 由调用方测出（detectKbdPlatform）。
- * 没给 run 的弹层命令与菜单命令不由快捷键触发。
+ * 找出这次按键命中的命令：快捷键或第二快捷键恰好命中、此刻可用、并且有 run 的那一条；没有时为 undefined。
+ * platform 由调用方测出（detectKbdPlatform）。没给 run 的弹层命令与菜单命令不由快捷键触发。
  */
 export function commandForShortcut<Ctx>(
   commands: Iterable<DesignerCommand<Ctx>>,
@@ -395,7 +405,7 @@ export function commandForShortcut<Ctx>(
   platform: KbdPlatform,
 ): (DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }) | undefined {
   for (const command of commands) {
-    if (command.run !== undefined && command.shortcut !== undefined && matchesHotkey(event, command.shortcut, platform) && (command.enabled?.(context) ?? true))
+    if (command.run !== undefined && commandShortcuts(command).some(keys => matchesHotkey(event, keys, platform)) && (command.enabled?.(context) ?? true))
       return command as DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }
   }
   return undefined

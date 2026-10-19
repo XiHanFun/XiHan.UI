@@ -40,7 +40,7 @@ const snap = snapRect({ x: 103, y: 40, width: 120, height: 48 }, {
 
 ## 约定
 
-- 历史栈每一步只存待执行方向的操作：撤销时应用逆操作，应用得到的逆操作就是重做所需，所以操作必须可逆、逆操作必须能精确还原。`execute` 接收一组操作并记为一步；`merge` 合并键相同的连续执行并成一步（`seal()`、撤销、重做之后不再合并，`mergeWithin` 可加时间窗）；`begin` / `commit` / `rollback` 与 `transact` 把一段交互（如拖动）记为一步，可嵌套，回滚放弃整个事务；`limit` 是撤销步数上限，缺省 100；`markSaved()` 记下保存点，`dirty` 判断是否有未保存的修改。应用后文档仍是同一引用的执行不入栈；应用失败时抛错，文档与两个栈都不变。`subscribe` 在每次变化后通知变化种类、新文档与实际应用的操作。
+- 历史栈每一步只存待执行方向的操作：撤销时应用逆操作，应用得到的逆操作就是重做所需，所以操作必须可逆、逆操作必须能精确还原。`execute` 接收一组操作并记为一步；`merge` 合并键相同的连续执行并成一步（`seal()`、撤销、重做之后不再合并，`mergeWithin` 可加时间窗）；`begin` / `commit` / `rollback` 与 `transact` 把一段交互（如拖动）记为一步，可嵌套，回滚放弃整个事务；`limit` 是撤销步数上限，缺省 100；`entries` 按先后列出已做与已撤销的步，`goTo(position)` 一次跳到其中一步（原子执行，只通知一次）；说明可以写成函数（换语言后跟着变），没写时由 `describe` 按操作生成；`markSaved()` 记下保存点，`dirty` 判断是否有未保存的修改。应用后文档仍是同一引用的执行不入栈；应用失败时抛错，文档与两个栈都不变。`subscribe` 在每次变化后通知变化种类、新文档、实际应用的操作与走过的步数。
 - `applyInSequence` 依次应用一组操作，逆操作按反序拼接；历史栈内部就用它。
 - 路径编辑操作 `applyPathOperation(s)`：`set`（`value` 缺省删除对象键，`createMissing` 补中间层）、`insert`、`remove`、`move`，可直接作为历史栈的 `apply`。不改输入，没有变化时返回同一文档、逆操作为空；失败抛 `PathOperationError`，`message` 即 `code`。路径语义同 `@xihan-ui/core/json`。
 - 文档内唯一 id：`nextFreeId(prefix, taken)` 取同前缀最大序号加一，`createIdAllocator` 连续分配并可登记已占用的 id，`remapIds` 给粘贴出的对象换新 id。
