@@ -91,6 +91,19 @@ const FIXTURE: FixtureNode = {
   ],
 }
 
+/** 每个分支行末尾也摆一个 item-indicator（叶子与分支同一种对号读法）。 */
+function withBranchChecks(node: FixtureNode): FixtureNode {
+  const children = node.children?.map(withBranchChecks)
+  if (node.part === 'branch-control')
+    return { ...node, children: [...(children ?? []), { part: 'item-indicator', tag: 'span' }] }
+  return children === undefined ? node : { ...node, children }
+}
+
+/** 分支行也摆对号时七个对号的选中期望，按文档序 src / index / utils / dom / readme / docs / license。 */
+function checksSelected(...values: readonly string[]): readonly AttrExpectation[] {
+  return ['src', 'index', 'utils', 'dom', 'readme', 'docs', 'license'].map(v => ({ 'data-selected': values.includes(v) ? '' : null }))
+}
+
 /** 四个叶子的选中期望，逐个写全——只写关心的那个会漏掉"另一个也被选中了"。 */
 function itemsSelected(...values: readonly string[]): readonly AttrExpectation[] {
   return ['index', 'dom', 'readme', 'license'].map(v => ({
@@ -601,6 +614,17 @@ export const treeSuite: ConformanceSuite = {
           modifiers: ['Shift'],
           expect: { parts: { item: itemsSelected('license'), branch: branchesSelected('docs') } },
         },
+      ],
+    },
+    {
+      name: '分支行也摆 item-indicator：选中的分支，它行尾的对号与叶子的一样带 data-selected',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: withBranchChecks,
+      props: props({ selectionMode: 'multiple', defaultExpandedValue: ['src'], defaultSelection: ['src', 'license'] }),
+      initial: { parts: { 'item-indicator': checksSelected('src', 'license') } },
+      steps: [
+        { kind: 'click', part: 'branch-control[2]', expect: { parts: { 'item-indicator': checksSelected('src', 'docs', 'license') } } },
+        { kind: 'click', part: 'branch-control[0]', expect: { parts: { 'item-indicator': checksSelected('docs', 'license') } } },
       ],
     },
     {

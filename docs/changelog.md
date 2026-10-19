@@ -71,6 +71,7 @@
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
+- **修复** Tree 的 Web Components 版：分支行里摆的 `item-indicator` 跟着分支的选中亮出对号，不再一直不亮，与叶子行、Vue 与 React 一致
 - **修复** Table 树形表换位后的读屏播报说放进了哪一层，位次与总数按那一层的兄弟行算，不再拿层内位次配全部可见行的总数
 - **修复** Sortable 嵌套时（项里再放一个排序列表），指针按住里层条目或它的手柄不再连外层那一项一起拖起来
 - **修复** 开着的下拉被外面的点击收起、同一次点击又打开抽屉或对话框时，控制台不再报 `core.layer.dispose-not-top`；这条诊断只在父层先于开在它里面的层释放时报，明细新增 `nested`

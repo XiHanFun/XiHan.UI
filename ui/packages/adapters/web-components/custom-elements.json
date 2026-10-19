@@ -81468,7 +81468,7 @@
               "name": "item-checkbox"
             },
             {
-              "description": "叶子选中标记（aria-hidden）",
+              "description": "选中标记（aria-hidden），叶子行与分支行都可摆",
               "name": "item-indicator"
             },
             {
