@@ -46,19 +46,35 @@ export interface DesignerShortcutGroup {
   readonly rows: readonly DesignerShortcutRow[]
 }
 
+/** DESIGNER_COMMON_KEYS 里的 id：这几种的名字由设置对话框按语言取。 */
+export type DesignerCommonKeyId = 'nudge' | 'nudgeLarge' | 'pan' | 'selectionToolbar' | 'cancel'
+
+/**
+ * 快捷键表「通用」组末尾的一行按键。id 是 DESIGNER_COMMON_KEYS 里的几种时可以不写名字，由设置对话框按语言取；
+ * 写了 label（已按语言取好）就用它，各款改写某一行的说明时用；另加的行必须写 label。
+ */
+export type DesignerCommonKey
+  = | { readonly id: DesignerCommonKeyId, readonly keys: readonly (readonly string[])[], readonly label?: string }
+    | { readonly id: string, readonly keys: readonly (readonly string[])[], readonly label: string }
+
 /** 快捷键页要的数据。 */
 export interface DesignerShortcutsSource {
   readonly groups: readonly DesignerShortcutGroup[]
+  /** 「通用」组末尾的那几行；不给时是 DESIGNER_COMMON_KEYS。 */
+  readonly commonKeys?: readonly DesignerCommonKey[]
 }
 
-/** 四款都有、不是命令的按键；名字由设置对话框按语言取。 */
+/**
+ * 四款都有、不是命令的按键；名字由设置对话框按语言取。快捷键页缺省把它们接在「通用」组末尾，
+ * 各款有不适用或说法不同的，在它的基础上过滤、改写后经 shortcutSettingsSource 的 commonKeys 交进去。
+ */
 export const DESIGNER_COMMON_KEYS = [
   { id: 'nudge', keys: [['ArrowUp'], ['ArrowDown'], ['ArrowLeft'], ['ArrowRight']] },
   { id: 'nudgeLarge', keys: [['Shift', 'ArrowUp'], ['Shift', 'ArrowDown'], ['Shift', 'ArrowLeft'], ['Shift', 'ArrowRight']] },
   { id: 'pan', keys: [['Space']] },
   { id: 'selectionToolbar', keys: [['Alt', 'F10']] },
   { id: 'cancel', keys: [['Escape']] },
-] as const satisfies readonly { readonly id: string, readonly keys: readonly (readonly string[])[] }[]
+] as const satisfies readonly { readonly id: DesignerCommonKeyId, readonly keys: readonly (readonly string[])[] }[]
 
 /** 四款共有的编辑命令，快捷键表里归「编辑」。 */
 export const DESIGNER_EDIT_COMMANDS: readonly string[] = ['undo', 'redo', 'cut', 'copy', 'paste', 'delete', 'duplicate', 'select-all']

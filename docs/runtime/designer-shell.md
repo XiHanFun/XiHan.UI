@@ -887,7 +887,7 @@ dialog.show();
 | 页 | 对话框的属性 | 内容 |
 | --- | --- | --- |
 | 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了派发 `settings-command { command }`，由设计器跑这条命令（开始引导前先关上对话框）。两样都没有时没有这一页 |
-| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消）。键铺成 `<xh-kbd>`，按平台写 |
+| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys?, commonKeys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消），各款经 `commonKeys` 换掉这几行，见下文。键铺成 `<xh-kbd>`，按平台写 |
 | 关于 | `about: { product, version, license?, rows? }` | 产品、版本、界面库（XiHan.UI，即 `DESIGNER_SHELL_VERSION`）的版本与许可证，后面接 `rows`：扩展的 `about` 字段（附加包的版本与授权）由各款接在这里。各款的版本号也从构建时注入的常量取（如流程的 `FLOW_VERSION`） |
 
 各款与扩展的分区也能用这几种条目：
@@ -904,6 +904,21 @@ dialog.show();
 | `designerHelpSettings(t, help)`、`designerShortcutSettings(t, shortcuts)`、`designerAboutSettings(t, about)` | 三页的分区（`DESIGNER_HELP_SETTINGS`、`DESIGNER_SHORTCUT_SETTINGS`、`DESIGNER_ABOUT_SETTINGS`）；对话框自己生成 |
 | `shortcutSettingsSource(commands, context, options?)` | 交给对话框 `shortcuts` 的快捷键表，规则如上 |
 | `isDesignerDisplayControl(control)` | 这条条目只显示、不存值（`DESIGNER_DISPLAY_CONTROL_KINDS`） |
+
+「通用」组末尾四款共有的那几行，各款可以换掉：在导出的 `DESIGNER_COMMON_KEYS` 基础上去掉本设计器没有的操作、改写说法不同的那一行，或另加几行，经 `shortcutSettingsSource` 的 `commonKeys` 交进去。
+
+- 一行是 `{ id, keys, label? }`（`DesignerCommonKey`）：`id` 是内建的几种（`DesignerCommonKeyId`：`nudge`、`nudgeLarge`、`pan`、`selectionToolbar`、`cancel`）时可以不写 `label`，名字由对话框按语言取；写了 `label` 就用它，取各款自己的文案（按此刻的语言取好），外壳不写死。另加的行必须写 `label`，不写时类型报错，`shortcutSettingsSource` 也抛 `TypeError`。
+- 不给 `commonKeys` 时照旧是 `DESIGNER_COMMON_KEYS`；给空数组就没有这几行。
+
+```ts
+import { DESIGNER_COMMON_KEYS, shortcutSettingsSource } from "@xihan-ui/designer-shell";
+
+// 看板上没有按住空格拖动画布；Shift 加方向键是把卡片改大或改小一格
+const commonKeys = DESIGNER_COMMON_KEYS
+  .filter(key => key.id !== "pan")
+  .map(key => (key.id === "nudgeLarge" ? { ...key, label: t.shortcutResize } : key));
+settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKeys });
+```
 
 ### 「布局」分区
 

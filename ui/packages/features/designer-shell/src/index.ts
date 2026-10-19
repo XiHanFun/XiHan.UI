@@ -93,6 +93,7 @@ export type { DesignerGuideAxis, DesignerGuideChange, DesignerGuides, DesignerRu
 export { shortcutSettingsSource } from './settings/display'
 export type { DesignerShortcutsSourceOptions } from './settings/display'
 export { DESIGNER_COMMON_KEYS, DESIGNER_DISPLAY_CONTROL_KINDS, DESIGNER_EDIT_COMMANDS, isDesignerDisplayControl } from './settings/display-model'
+export type { DesignerCommonKey, DesignerCommonKeyId } from './settings/display-model'
 export type { DesignerDisplayControl, DesignerShortcutGroup, DesignerShortcutGroupId, DesignerShortcutRow, DesignerShortcutsSource, DesignerShortcutTableGroup } from './settings/display-model'
 export { createDesignerSettingsHost } from './settings/host'
 export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settings/host'

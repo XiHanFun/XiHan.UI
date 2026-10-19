@@ -10,7 +10,7 @@ import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyControl, PropertyDescriptor, PropertySwatchOption } from '@xihan-ui/designer-kit/properties'
 import type { CommandToolbarDisplay } from '../extensions/commands'
 import type { DesignerSettingsTranslations } from '../translations'
-import type { DesignerDisplayControl, DesignerShortcutsSource } from './display-model'
+import type { DesignerCommonKey, DesignerCommonKeyId, DesignerDisplayControl, DesignerShortcutsSource } from './display-model'
 import { formatJsonPath } from '@xihan-ui/core/json'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { DESIGNER_SHELL_VERSION } from '../version'
@@ -240,11 +240,13 @@ export function designerHelpSettings(t: DesignerSettingsTranslations, help: Desi
   return { id: DESIGNER_HELP_SETTINGS, label: t.help, order: 900, items }
 }
 
-/** 内建的「快捷键」分区：一张快捷键表，「通用」那一组补上四款都有的按键（DESIGNER_COMMON_KEYS）。 */
+/** 内建的「快捷键」分区：一张快捷键表，「通用」那一组补上四款都有的按键（DESIGNER_COMMON_KEYS，各款经 commonKeys 换掉的按它）。 */
 export function designerShortcutSettings(t: DesignerSettingsTranslations, source: DesignerShortcutsSource): DesignerSettingsSection {
   const names = { common: t.shortcutsCommon, edit: t.shortcutsEdit, designer: t.shortcutsDesigner, extensions: t.shortcutsExtensions }
-  const keyNames = { nudge: t.keyNudge, nudgeLarge: t.keyNudgeLarge, pan: t.keyPan, selectionToolbar: t.keySelectionToolbar, cancel: t.keyCancel }
-  const common = DESIGNER_COMMON_KEYS.map(key => ({ label: keyNames[key.id], keys: key.keys }))
+  const keyNames: Readonly<Record<DesignerCommonKeyId, string>> = { nudge: t.keyNudge, nudgeLarge: t.keyNudgeLarge, pan: t.keyPan, selectionToolbar: t.keySelectionToolbar, cancel: t.keyCancel }
+  const keys: readonly DesignerCommonKey[] = source.commonKeys ?? DESIGNER_COMMON_KEYS
+  // 不写名字的行只能是内建的几种（类型与 shortcutSettingsSource 都拦着）
+  const common = keys.map(key => ({ label: key.label ?? keyNames[key.id as DesignerCommonKeyId], keys: key.keys }))
   const groups = source.groups.some(group => group.id === 'common') ? source.groups : [{ id: 'common' as const, rows: [] }, ...source.groups]
   return {
     id: DESIGNER_SHORTCUT_SETTINGS,

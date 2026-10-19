@@ -12,6 +12,7 @@ import {
   collectSettingsSections,
   createDesignerSettingsHost,
   defineDesignerShell,
+  DESIGNER_COMMON_KEYS,
   DESIGNER_SETTING_KEYS,
   DESIGNER_SHELL_VERSION,
   designerAboutSettings,
@@ -700,6 +701,28 @@ describe('帮助、快捷键与关于', () => {
     element.shortcuts = second
     await element.updateComplete
     expect(row('shortcuts.table')).toBe(table)
+  })
+
+  it('commonKeys：各款换掉「通用」组末尾的那几行，可以去掉不适用的行、改写某一行的名字或另加一行；不给时照旧是 DESIGNER_COMMON_KEYS；内建以外的行不写名字时抛 TypeError', () => {
+    const own = DESIGNER_COMMON_KEYS
+      .filter(key => key.id !== 'pan')
+      .map(key => key.id === 'nudgeLarge' ? { ...key, label: 'Resize the card by one cell' } : key)
+    const source = shortcutSettingsSource(commands, {}, { commonKeys: [...own, { id: 'zoom', keys: [['Ctrl', 'Wheel']], label: 'Zoom at the pointer' }] })
+    const rows = (shortcuts: DesignerSettingsSection): readonly { label: string, keys: readonly (readonly string[])[] }[] =>
+      (shortcuts.items[0]!.control as Extract<DesignerDisplayControl, { kind: 'shortcutTable' }>).groups[0]!.rows
+    expect(rows(designerShortcutSettings(english, source)).map(row => row.label)).toEqual([
+      'Show or hide all panels',
+      english.keyNudge,
+      'Resize the card by one cell',
+      english.keySelectionToolbar,
+      english.keyCancel,
+      'Zoom at the pointer',
+    ])
+    expect(rows(designerShortcutSettings(english, source))[2]!.keys).toEqual(DESIGNER_COMMON_KEYS[1].keys)
+    expect('commonKeys' in shortcutSettingsSource(commands, {})).toBe(false)
+    expect(rows(designerShortcutSettings(english, shortcutSettingsSource(commands, {}, { commonKeys: [] }))).map(row => row.label)).toEqual(['Show or hide all panels'])
+    // @ts-expect-error 内建以外的行要写名字
+    expect(() => shortcutSettingsSource(commands, {}, { commonKeys: [{ id: 'zoom', keys: [['Ctrl', 'Wheel']] }] })).toThrow(TypeError)
   })
 
   it('三页的分区：帮助是说明加几颗钮，快捷键的通用组补上四款都有的按键，关于写产品、版本、界面库版本、许可证与扩展的行；只显示的条目不进 resolveSettings', () => {

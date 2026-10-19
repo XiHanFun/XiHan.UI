@@ -11035,6 +11035,8 @@
       "DesignerCommandLayout",
       "DesignerCommandTable",
       "DesignerCommandsTranslations",
+      "DesignerCommonKey",
+      "DesignerCommonKeyId",
       "DesignerDisplayControl",
       "DesignerFieldImportDetail",
       "DesignerFieldImportEventMap",
