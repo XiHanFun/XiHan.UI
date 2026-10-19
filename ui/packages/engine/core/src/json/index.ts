@@ -4,7 +4,7 @@
  */
 
 // @xihan-ui/core/json —— JSON 值的类型与纯函数：普通对象判断、合法性检查、深拷贝、按值比较、深冻结、
-// 按路径读写、路径前缀、路径的文字形式与解析、JSON Pointer 片段与变化路径。零依赖。
+// 按路径读写、路径前缀、路径的文字形式与解析、JSON Pointer 片段与变化路径、带出错位置的 JSON 文本解析。零依赖。
 
 /** JSON 原始值。 */
 export type JsonPrimitive = string | number | boolean | null
@@ -406,4 +406,254 @@ function collectChanges(before: JsonValue | undefined, after: JsonValue | undefi
     return
   }
   out.push(path)
+}
+
+/**
+ * JSON 文本解析失败的原因：
+ * - unexpected-end：文本在一个值写完之前就结束了（含空文本）；
+ * - unexpected-token：这里出现了不该出现的字符（含末尾逗号、注释、单引号、值后面多出的内容）；
+ * - invalid-string：字符串里有未转义的控制字符，或转义写法不对；
+ * - invalid-number：数字写法不对（前导零、小数点或指数后面没有数字）。
+ */
+export type JsonTextErrorCode = 'unexpected-end' | 'unexpected-token' | 'invalid-string' | 'invalid-number'
+
+/** parseJsonText 的结果：成功时是解析出的值，失败时是原因码与出错处。 */
+export type JsonTextResult
+  = | { readonly ok: true, readonly value: JsonValue }
+    | {
+      readonly ok: false
+      readonly code: JsonTextErrorCode
+      /** 出错处在文本里的下标，按 UTF-16 码元计。 */
+      readonly offset: number
+      /** 出错处的行号，从 1 起；\r\n、\n、\r 各算一次换行。 */
+      readonly line: number
+      /** 出错处的列号，从 1 起，按 UTF-16 码元计。 */
+      readonly column: number
+    }
+
+/**
+ * 按 RFC 8259 严格解析 JSON 文本，失败时给出原因码与出错处，不抛异常。
+ * 接受的文本与 JSON.parse 完全相同：不认注释、末尾逗号、单引号、NaN 与开头的 BOM；__proto__ 键照样落成自有属性。
+ */
+export function parseJsonText(text: string): JsonTextResult {
+  try {
+    return { ok: true, value: JSON.parse(text) as JsonValue }
+  }
+  catch (error) {
+    const failure = scanJsonText(text)
+    if (failure === undefined)
+      throw error
+    const { line, column } = textPosition(text, failure.offset)
+    return { ok: false, code: failure.code, offset: failure.offset, line, column }
+  }
+}
+
+interface JsonTextFailure {
+  readonly code: JsonTextErrorCode
+  readonly offset: number
+}
+
+const CHAR_TAB = 0x09
+const CHAR_LF = 0x0A
+const CHAR_CR = 0x0D
+const CHAR_SPACE = 0x20
+const CHAR_QUOTE = 0x22
+const CHAR_COMMA = 0x2C
+const CHAR_MINUS = 0x2D
+const CHAR_DOT = 0x2E
+const CHAR_ZERO = 0x30
+const CHAR_NINE = 0x39
+const CHAR_COLON = 0x3A
+const CHAR_BRACKET_OPEN = 0x5B
+const CHAR_BACKSLASH = 0x5C
+const CHAR_BRACKET_CLOSE = 0x5D
+const CHAR_BRACE_OPEN = 0x7B
+const CHAR_BRACE_CLOSE = 0x7D
+const SIMPLE_ESCAPES = '"\\/bfnrt'
+const LITERALS = ['true', 'false', 'null']
+
+function isDigit(char: number): boolean {
+  return char >= CHAR_ZERO && char <= CHAR_NINE
+}
+
+function isHexDigit(char: number): boolean {
+  return isDigit(char) || (char >= 0x41 && char <= 0x46) || (char >= 0x61 && char <= 0x66)
+}
+
+/** 从头扫一遍 JSON 文本，返回第一处不合文法的地方；文本合法时为 undefined。用显式的栈，不递归。 */
+function scanJsonText(text: string): JsonTextFailure | undefined {
+  const length = text.length
+  const closers: number[] = []
+  let at = 0
+  const fail = (code: JsonTextErrorCode, offset = at): JsonTextFailure => ({ code, offset })
+  const endOr = (code: JsonTextErrorCode): JsonTextFailure => fail(at >= length ? 'unexpected-end' : code)
+  const skipSpace = (): void => {
+    while (at < length) {
+      const char = text.charCodeAt(at)
+      if (char !== CHAR_SPACE && char !== CHAR_TAB && char !== CHAR_LF && char !== CHAR_CR)
+        return
+      at++
+    }
+  }
+  const scanString = (): JsonTextFailure | undefined => {
+    at++
+    while (at < length) {
+      const char = text.charCodeAt(at)
+      if (char === CHAR_QUOTE) {
+        at++
+        return undefined
+      }
+      if (char < CHAR_SPACE)
+        return fail('invalid-string')
+      if (char === CHAR_BACKSLASH) {
+        at++
+        if (at >= length)
+          return fail('unexpected-end')
+        if (text[at] === 'u') {
+          for (let digit = 1; digit <= 4; digit++) {
+            if (at + digit >= length)
+              return fail('unexpected-end', length)
+            if (!isHexDigit(text.charCodeAt(at + digit)))
+              return fail('invalid-string', at + digit)
+          }
+          at += 5
+          continue
+        }
+        if (!SIMPLE_ESCAPES.includes(text[at]!))
+          return fail('invalid-string')
+      }
+      at++
+    }
+    return fail('unexpected-end')
+  }
+  const scanDigits = (): JsonTextFailure | undefined => {
+    if (!isDigit(text.charCodeAt(at)))
+      return endOr('invalid-number')
+    while (isDigit(text.charCodeAt(at)))
+      at++
+    return undefined
+  }
+  const scanNumber = (): JsonTextFailure | undefined => {
+    if (text.charCodeAt(at) === CHAR_MINUS)
+      at++
+    if (text.charCodeAt(at) === CHAR_ZERO) {
+      at++
+      if (isDigit(text.charCodeAt(at)))
+        return fail('invalid-number')
+    }
+    else {
+      const failure = scanDigits()
+      if (failure !== undefined)
+        return failure
+    }
+    if (text.charCodeAt(at) === CHAR_DOT) {
+      at++
+      const failure = scanDigits()
+      if (failure !== undefined)
+        return failure
+    }
+    if (text[at] === 'e' || text[at] === 'E') {
+      at++
+      if (text[at] === '+' || text[at] === '-')
+        at++
+      return scanDigits()
+    }
+    return undefined
+  }
+  const scanLiteral = (): JsonTextFailure | undefined => {
+    const literal = LITERALS.find(word => word[0] === text[at])
+    if (literal === undefined)
+      return fail('unexpected-token')
+    for (let index = 1; index < literal.length; index++) {
+      if (at + index >= length)
+        return fail('unexpected-end', length)
+      if (text[at + index] !== literal[index])
+        return fail('unexpected-token', at + index)
+    }
+    at += literal.length
+    return undefined
+  }
+  /** 对象里的「键 :」，停在冒号后面。 */
+  const scanKey = (): JsonTextFailure | undefined => {
+    skipSpace()
+    if (text.charCodeAt(at) !== CHAR_QUOTE)
+      return endOr('unexpected-token')
+    const failure = scanString()
+    if (failure !== undefined)
+      return failure
+    skipSpace()
+    if (text.charCodeAt(at) !== CHAR_COLON)
+      return endOr('unexpected-token')
+    at++
+    return undefined
+  }
+
+  for (;;) {
+    skipSpace()
+    if (at >= length)
+      return fail('unexpected-end')
+    const char = text.charCodeAt(at)
+    let failure: JsonTextFailure | undefined
+    if (char === CHAR_BRACE_OPEN || char === CHAR_BRACKET_OPEN) {
+      const closer = char === CHAR_BRACE_OPEN ? CHAR_BRACE_CLOSE : CHAR_BRACKET_CLOSE
+      at++
+      skipSpace()
+      if (text.charCodeAt(at) !== closer) {
+        closers.push(closer)
+        failure = closer === CHAR_BRACE_CLOSE ? scanKey() : undefined
+        if (failure !== undefined)
+          return failure
+        continue
+      }
+      at++
+    }
+    else if (char === CHAR_QUOTE) {
+      failure = scanString()
+    }
+    else if (char === CHAR_MINUS || isDigit(char)) {
+      failure = scanNumber()
+    }
+    else {
+      failure = scanLiteral()
+    }
+    if (failure !== undefined)
+      return failure
+    // 一个值写完：在容器里就接逗号或闭合，不在容器里文本就该结束
+    for (;;) {
+      skipSpace()
+      const closer = closers.at(-1)
+      if (closer === undefined)
+        return at < length ? fail('unexpected-token') : undefined
+      if (at >= length)
+        return fail('unexpected-end')
+      const next = text.charCodeAt(at)
+      if (next === CHAR_COMMA) {
+        at++
+        if (closer === CHAR_BRACE_CLOSE) {
+          failure = scanKey()
+          if (failure !== undefined)
+            return failure
+        }
+        break
+      }
+      if (next !== closer)
+        return fail('unexpected-token')
+      at++
+      closers.pop()
+    }
+  }
+}
+
+/** 下标所在的行与列，都从 1 起；\r\n 算一次换行。 */
+function textPosition(text: string, offset: number): { readonly line: number, readonly column: number } {
+  let line = 1
+  let lineStart = 0
+  for (let index = 0; index < offset; index++) {
+    const char = text.charCodeAt(index)
+    if (char === CHAR_LF || (char === CHAR_CR && text.charCodeAt(index + 1) !== CHAR_LF)) {
+      line++
+      lineStart = index + 1
+    }
+  }
+  return { line, column: offset - lineStart + 1 }
 }

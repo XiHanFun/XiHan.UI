@@ -1,5 +1,6 @@
 // JSON 工具：普通对象判断、第一处非 JSON 值的 JSON Pointer（含转义、循环与共享引用）、深拷贝不共享引用、按值比较、
-// 深冻结、按路径读写（结构共享、补齐中间层、错误码）、路径前缀、路径的文字形式与解析（往返、非法文本、原型段）、变化路径。
+// 深冻结、按路径读写（结构共享、补齐中间层、错误码）、路径前缀、路径的文字形式与解析（往返、非法文本、原型段）、变化路径、
+// 带出错位置的 JSON 文本解析。
 import type { JsonObject, JsonPathSegment, JsonValue } from '../src/json'
 import { describe, expect, it } from 'vitest'
 import {
@@ -17,6 +18,7 @@ import {
   jsonEquals,
   JsonPathError,
   parseJsonPath,
+  parseJsonText,
   setJsonAt,
 } from '../src/json'
 
@@ -291,5 +293,88 @@ describe('parseJsonPath / isJsonPathText', () => {
     expect(isJsonPathText('')).toBe(true)
     expect(isJsonPathText('a..b')).toBe(false)
     expect(isJsonPathText(1 as unknown as string)).toBe(false)
+  })
+})
+
+describe('parseJsonText', () => {
+  it('合法文本与 JSON.parse 的结果相同', () => {
+    const texts = [
+      '{"no":"SO-001","items":[{"qty":2,"price":-1.5e2}],"ok":true,"note":null}',
+      ' [ 1 , 2.5 , -0 , 1E+3 , 0.001 ] ',
+      '"\\u4e2d\\n\\"\\\\\\/\\b\\f\\r\\t"',
+      '\r\n\t{}\n',
+      '0',
+      'false',
+    ]
+    for (const text of texts)
+      expect(parseJsonText(text), text).toEqual({ ok: true, value: JSON.parse(text) as JsonValue })
+  })
+
+  it('__proto__ 键照 JSON.parse 落成自有属性，不改原型', () => {
+    const result = parseJsonText('{"__proto__":{"x":1}}')
+    expect(result.ok).toBe(true)
+    const value = (result as { readonly value: Record<string, unknown> }).value
+    expect(Object.getPrototypeOf(value)).toBe(Object.prototype)
+    expect(Object.hasOwn(value, '__proto__')).toBe(true)
+    expect(isJsonValue(value)).toBe(true)
+  })
+
+  it('失败时给出原因码与出错处的下标、行与列', () => {
+    const cases: Array<[string, string, number, number, number]> = [
+      ['', 'unexpected-end', 0, 1, 1],
+      ['   ', 'unexpected-end', 3, 1, 4],
+      ['{"a":1,}', 'unexpected-token', 7, 1, 8],
+      ['[1,]', 'unexpected-token', 3, 1, 4],
+      ['[1,2', 'unexpected-end', 4, 1, 5],
+      ['{"a" 1}', 'unexpected-token', 5, 1, 6],
+      ['{a:1}', 'unexpected-token', 1, 1, 2],
+      ['{"a":1 "b":2}', 'unexpected-token', 7, 1, 8],
+      ['{} x', 'unexpected-token', 3, 1, 4],
+      ['"a\tb"', 'invalid-string', 2, 1, 3],
+      ['"\\x"', 'invalid-string', 2, 1, 3],
+      ['"\\u12g4"', 'invalid-string', 5, 1, 6],
+      ['"\\u12', 'unexpected-end', 5, 1, 6],
+      ['"abc', 'unexpected-end', 4, 1, 5],
+      ['01', 'invalid-number', 1, 1, 2],
+      ['-', 'unexpected-end', 1, 1, 2],
+      ['-a', 'invalid-number', 1, 1, 2],
+      ['1.', 'unexpected-end', 2, 1, 3],
+      ['1.e3', 'invalid-number', 2, 1, 3],
+      ['1e', 'unexpected-end', 2, 1, 3],
+      ['1e+x', 'invalid-number', 3, 1, 4],
+      ['.5', 'unexpected-token', 0, 1, 1],
+      ['tru', 'unexpected-end', 3, 1, 4],
+      ['trux', 'unexpected-token', 3, 1, 4],
+      ['NaN', 'unexpected-token', 0, 1, 1],
+      ['// 注释\n{}', 'unexpected-token', 0, 1, 1],
+      ['{\'a\':1}', 'unexpected-token', 1, 1, 2],
+      ['﻿{}', 'unexpected-token', 0, 1, 1],
+      ['{\n  "a": 1,\n  "b": }', 'unexpected-token', 19, 3, 8],
+      ['[\r\n1,\r\n]', 'unexpected-token', 7, 3, 1],
+      ['[\r1,\r]', 'unexpected-token', 5, 3, 1],
+    ]
+    for (const [text, code, offset, line, column] of cases)
+      expect(parseJsonText(text), JSON.stringify(text)).toEqual({ ok: false, code, offset, line, column })
+  })
+
+  it('逐个删去或改写一个字符：成败与 JSON.parse 一致', () => {
+    const sample = '{"no":"SO-1","n":-12.5e-3,"t":true,"f":false,"z":null,"a":[1,{"b":"\\u00e9\\n"}],"e":{}}'
+    const replacements = ['', ' ', '"', ',', ':', '[', ']', '{', '}', '0', '-', '.', 'e', 'x', '\\', '\n']
+    let checked = 0
+    for (let index = 0; index < sample.length; index++) {
+      for (const replacement of replacements) {
+        const text = sample.slice(0, index) + replacement + sample.slice(index + 1)
+        let native = true
+        try {
+          JSON.parse(text)
+        }
+        catch {
+          native = false
+        }
+        expect(parseJsonText(text).ok, JSON.stringify(text)).toBe(native)
+        checked++
+      }
+    }
+    expect(checked).toBe(sample.length * replacements.length)
   })
 })
