@@ -253,4 +253,28 @@ describe('配置控制器', () => {
     await element.updateComplete
     expect(element.dataset.empty).toBe('回来了')
   })
+
+  it('断开期间配置变了，重新连上就按新配置重渲', async () => {
+    const element = mount()
+    await element.updateComplete
+    expect(element.dataset.empty).toBe('No items')
+    element.remove()
+    setXhConfig({ locale: 'zh-CN', translations: { 'test-viewer': { empty: '暂无数据' } } as never })
+    document.body.appendChild(element)
+    await element.updateComplete
+    expect([element.dataset.empty, element.config.locale]).toEqual(['暂无数据', 'zh-CN'])
+  })
+
+  it('断开后挪进另一个配置作用域，连上就按那里的配置重渲', async () => {
+    const scope = document.createElement('div') as HTMLDivElement & { xhConfig: object }
+    scope.xhConfig = { translations: { 'test-viewer': { empty: '子树' } } }
+    document.body.appendChild(scope)
+    const element = mount()
+    await element.updateComplete
+    expect(element.dataset.empty).toBe('No items')
+    scope.appendChild(element)
+    await element.updateComplete
+    expect(element.dataset.empty).toBe('子树')
+    scope.remove()
+  })
 })
