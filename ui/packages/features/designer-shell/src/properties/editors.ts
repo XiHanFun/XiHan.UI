@@ -1440,10 +1440,10 @@ function treeOptionColumnOf(rest: readonly (string | number)[], columns: readonl
 }
 
 /**
- * 选项树：库内 xh-table 的树形表（treegrid），navigation 为 cell，一项一行，四格依次是值、文字、禁用与操作
+ * 选项树：库内 xh-table 的树形表（声明 tree，平铺的各项也报 treegrid、能改层级），navigation 为 cell，一项一行，四格依次是值、文字、禁用与操作
  * （allowDisabled 为 false 时没有禁用这一列；操作列钉在行尾，表格横向滚动时留在原处）。值格按层缩进，有下一层的项带展开把手；操作格里是加子项与删除两颗钮，
  * 表格下面是在顶层末尾新增一项的钮。方向键在格子之间走，Enter / F2 进格内编辑、Esc 退回格子，左右键收起与展开；
- * 行可以拖动，Alt + 上下键在同一层换序，Alt + 左右键改一层缩进，写回整棵树，焦点留在原来那一格。
+ * 行可以拖动，拖到哪一项的中段就放进那一项（叶子项也行），Alt + 上下键在同一层换序，Alt + 左右键改一层缩进，写回整棵树，焦点留在原来那一格。
  * 每格是一个字段，控件以「列名 + 大纲号」为名（如第 1.2 项的值）。值与文字边输入边写入、失焦封口；勾选禁用，
  * 以及加子项、新增、删除与换位，各是一步。新的一项只有空的 value，加好后焦点落到它的值上；文字为空、不禁用时不写这两个键，
  * 别的键（tone、description、hasChildren）原样留着；删掉一项连同它的下一层，删掉最后一项即清除。
@@ -1467,7 +1467,7 @@ function treeOptionsEditor(initial: FieldContext): FieldInstance {
 
   const headers = Object.fromEntries(columns.map(column => [column, createAuthoredElement(doc, 'span', { 'data-xh-part': 'column-label' })])) as Record<TreeOptionColumn, HTMLElement>
   const body = createAuthoredElement(doc, 'div', { 'data-xh-part': 'body' })
-  const table: TableControl = createAuthoredElement(doc, 'xh-table', { 'navigation': 'cell', 'size': 'sm', 'row-reorderable': true }, [
+  const table: TableControl = createAuthoredElement(doc, 'xh-table', { 'navigation': 'cell', 'size': 'sm', 'tree': true, 'row-reorderable': true }, [
     createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'row' }, columns.map(column => createAuthoredElement(doc, 'div', { 'data-xh-part': 'column-header', 'value': column }, [headers[column]]))),
