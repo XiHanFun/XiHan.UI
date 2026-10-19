@@ -221,10 +221,16 @@ const COLLAPSED_SIZE = 0.01
 /** 浮出的小窗缺省大小（像素），不超过外框的八成。 */
 const FLOAT_WIDTH = 320
 const FLOAT_HEIGHT = 360
-/** 小窗挪动、改尺之后多久派发一次 layout-change（毫秒）。 */
+/** 小窗用键盘挪动、改尺之后多久派发一次 layout-change（毫秒）；拖标题栏挪的松手即派发。 */
 const FLOAT_SETTLE = 300
 /** 小窗的改尺把手。 */
 const RESIZE_EDGES = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'] as const
+
+/** floating-panel 拖动起止时的指针位置。 */
+interface FloatDragPoint {
+  readonly clientX: number
+  readonly clientY: number
+}
 
 /** 拖面板时交给放置目标的数据。 */
 interface PanelDragPayload {
@@ -407,6 +413,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   /** 拖面板时此刻的落点。 */
   #drop: PanelDrop | undefined
   #floatTimer: ReturnType<typeof setTimeout> | undefined
+  /** 正在拖标题栏的小窗：拖动中画停靠条，松手时按落点吸回或派发挪动。 */
+  #floatDrag: { readonly name: string, readonly payload: PanelDragPayload | undefined, readonly release: () => void } | undefined
   /** 正按着分隔条拖：拖动中的大小等松手再派发。 */
   #resizing = false
   #liveTimer: ReturnType<typeof setTimeout> | undefined
@@ -485,6 +493,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.ownerDocument.removeEventListener('pointerup', this.#onPointerUp, true)
     this.#narrowQuery?.removeEventListener('change', this.#onNarrowChange)
     this.#narrowQuery = undefined
+    this.#floatDrag?.release()
+    this.#floatDrag = undefined
     if (this.#floatTimer !== undefined) {
       clearTimeout(this.#floatTimer)
       this.#floatTimer = undefined
@@ -1598,6 +1608,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         return
       this.#moveFloat(name, { ...current, width: dimensions.width, height: dimensions.height })
     })
+    element.addEventListener('drag-start', (event) => {
+      if (stop(event))
+        this.#startFloatDrag(name, (event as CustomEvent<FloatDragPoint>).detail)
+    })
+    element.addEventListener('drag-end', (event) => {
+      if (stop(event))
+        this.#endFloatDrag(name, (event as CustomEvent<FloatDragPoint & { canceled: boolean }>).detail)
+    })
     element.addEventListener('window-state-change', (event) => {
       if (!stop(event))
         return
@@ -1613,18 +1631,58 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return { element, title, icon, body, dock, minimize, restore, close, drag }
   }
 
-  /** 小窗挪了或改了尺：夹在外框里，记进布局，停一会儿再派发。 */
+  /** 小窗挪了或改了尺：夹在外框里，记进布局；拖标题栏时等松手，其余停一会儿再派发。 */
   #moveFloat(name: string, rect: DesignerLayoutRect): void {
     const clamped = this.#clampFloat(rect)
     this.#state = withDesignerPanelFloating(this.resolvedLayout, name, clamped)
     this.#placeFloats()
     if (this.#floatTimer !== undefined)
       clearTimeout(this.#floatTimer)
+    this.#floatTimer = undefined
+    if (this.#floatDrag?.name === name)
+      return
     this.#floatTimer = setTimeout(() => {
       this.#floatTimer = undefined
       if (!this.layoutPolicy?.locked)
         this.#flush('float')
     }, FLOAT_SETTLE)
+  }
+
+  /** 开始拖小窗的标题栏：能挪的面板跟着指针画停靠条与插入线。 */
+  #startFloatDrag(name: string, point: FloatDragPoint): void {
+    this.#floatDrag?.release()
+    const rect = this.resolvedLayout.floating[name]
+    if (this.#narrow || !rect || !this.#abilities(name)?.movable) {
+      this.#floatDrag = { name, payload: undefined, release: () => {} }
+      return
+    }
+    const payload: PanelDragPayload = { kind: 'designer-panel', frame: this, id: name, grab: { x: 0, y: 0 }, size: { width: rect.width, height: rect.height } }
+    const doc = this.ownerDocument
+    const move = (event: PointerEvent): void => {
+      this.#showDrop({ x: event.clientX, y: event.clientY }, payload, true)
+    }
+    doc.addEventListener('pointermove', move, true)
+    this.#floatDrag = { name, payload, release: () => doc.removeEventListener('pointermove', move, true) }
+    this.#showDrop({ x: point.clientX, y: point.clientY }, payload, true)
+  }
+
+  /** 松开小窗的标题栏：松在停靠处就吸回到那里，否则派发挪动；取消时只派发已经挪到的位置。 */
+  #endFloatDrag(name: string, point: FloatDragPoint & { canceled: boolean }): void {
+    const drag = this.#floatDrag
+    if (drag?.name !== name)
+      return
+    this.#floatDrag = undefined
+    drag.release()
+    const drop = drag.payload && !point.canceled ? this.#showDrop({ x: point.clientX, y: point.clientY }, drag.payload, true) : undefined
+    this.#dragLeave()
+    if (drop?.kind === 'dock') {
+      const next = withDesignerPanelMoved(this.resolvedLayout, name, drop.dock, drop.index)
+      if (this.#commit(next, 'dock'))
+        this.announce(this.#translations().announceDocked(this.#labelOf(name), this.#dockLabel(drop.dock)))
+      return
+    }
+    if (!this.layoutPolicy?.locked)
+      this.#flush('float')
   }
 
   /** 小窗按布局落位：相对外框的坐标换成视口坐标。 */
@@ -1784,13 +1842,22 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #dragOver(point: { x: number, y: number }, payload: unknown): { accept: boolean } {
     if (!this.#isOwnPanelDrag(payload))
       return { accept: false }
+    return { accept: this.#showDrop(point, payload, false) !== undefined }
+  }
+
+  /**
+   * 盖上落点层，按指针下的落点点亮停靠条或画出插入线、浮出框，返回会改布局的落点。
+   * floating 为 true 时拖的是小窗：只认停靠处，停回原处也算（吸回）。
+   */
+  #showDrop(point: { x: number, y: number }, payload: PanelDragPayload, floating: boolean): PanelDrop | undefined {
     const parts = this.#parts!
     const body = parts.body.getBoundingClientRect()
     const box = this.getBoundingClientRect()
     setAttributes(parts.drop, { style: `inset-block-start: ${Math.round(body.top - box.top)}px; block-size: ${Math.round(body.height)}px` })
     this.toggleAttribute('data-panel-drag', true)
-    const drop = this.#dropAt(point, payload)
-    const changes = drop !== undefined && this.#changes(drop, payload.id)
+    const found = this.#dropAt(point, payload)
+    const drop = floating && found?.kind === 'float' ? undefined : found
+    const changes = drop !== undefined && (floating || this.#changes(drop, payload.id))
     this.#drop = changes ? drop : undefined
     for (const edge of parts.drop.querySelectorAll<HTMLElement>('[data-part="drop-edge"]'))
       edge.toggleAttribute('data-active', changes && drop.kind === 'dock' && drop.edge && edge.getAttribute('data-dock') === drop.dock)
@@ -1805,7 +1872,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     else {
       parts.dropLine.hidden = true
     }
-    return { accept: changes }
+    return changes ? drop : undefined
   }
 
   #dragDrop(_point: { x: number, y: number }, payload: unknown): void {
