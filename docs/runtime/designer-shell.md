@@ -552,7 +552,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 事件 | detail |
 | --- | --- |
-| `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；小窗挪动、改尺停 300 毫秒后派发 |
+| `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；拖小窗的标题栏挪动在松手时派发，用键盘挪动与改尺停 300 毫秒后派发 |
 
 命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
 
@@ -656,7 +656,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 按住面板头（不在按钮与操作区上）拖动，越过激活距离才开始，跟手的是面板头的副本。外框盖上一层落点层：左、右、下三条停靠条，栏空着也能停；拖进一栏两块面板之间画一条插入线；拖到画布上画出浮出的落位框。松手在停靠条上停到那一栏末尾，在插入线处插在那里，在画布上就地浮出；停回原处不算。Esc 取消。窄屏不拖。
 - 浮出的面板放进一个 `<xh-floating-panel>` 小窗：标题栏是图标、标题与拖动把手，加停靠、收拢与关闭三颗钮，八个边角可以改尺。卡片的标题、收起、更多与关闭由小窗的标题栏代替，面板头只留副标题、操作区与帮助。
 - 小窗限在外框里：挪出去、改得比外框大时夹回框内；外框变小、页面滚动时跟着外框重新落位。位置按外框左上角记，`floating` 里存的就是这个。
-- 停靠钮把小窗吸回浮出前的栏与位置；收拢就是小窗的收拢形态，记在 `minimized` 里；关闭是隐藏这块面板，再显示时仍是小窗。
+- 拖着小窗的标题栏时外框同样盖上落点层：松在停靠条上停到那一栏末尾，松在一栏两块面板之间插在那里，小窗随之收起；松在别处就是挪动，松手时派发。停靠钮把小窗吸回浮出前的栏与位置；收拢就是小窗的收拢形态，记在 `minimized` 里；关闭是隐藏这块面板，再显示时仍是小窗。
 
 ### 画布区的浮动条
 

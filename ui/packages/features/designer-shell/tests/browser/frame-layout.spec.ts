@@ -125,7 +125,7 @@ describe('<xh-designer-frame> 面板布局（Chromium）', () => {
     expect(region('properties').closest('xh-floating-panel')).toBe(float)
   })
 
-  it('浮出的小窗挪出外框时夹回框内，停一会儿派发一次 float', async () => {
+  it('浮出的小窗挪出外框时夹回框内，松手时派发一次 float', async () => {
     frame.floatPanel('properties', { x: 100, y: 100, width: 260, height: 200 })
     await settle()
     seen.length = 0
@@ -141,9 +141,34 @@ describe('<xh-designer-frame> 面板布局（Chromium）', () => {
     const box = frame.getBoundingClientRect()
     const content = float.querySelector('[data-xh-part="content"]')!.getBoundingClientRect()
     expect([Math.round(content.left), Math.round(content.top)]).toEqual([Math.round(box.left), Math.round(box.top)])
-    expect(seen).toEqual([])
-    await new Promise(resolve => setTimeout(resolve, 400))
     expect(seen.map(change => [change.reason, change.layout.floating.properties])).toEqual([['float', { x: 0, y: 0, width: 260, height: 200 }]])
+    await new Promise(resolve => setTimeout(resolve, 400))
+    expect(seen).toHaveLength(1)
+  })
+
+  it('拖着小窗的标题栏：拖动中出现停靠条，松在左边的停靠条上吸回左栏末尾，派发 dock', async () => {
+    frame.floatPanel('properties', { x: 400, y: 200, width: 260, height: 200 })
+    await settle()
+    seen.length = 0
+    const float = frame.querySelector<HTMLElement>('xh-floating-panel[data-part="float"]')!
+    const trigger = float.querySelector<HTMLElement>('[data-xh-part="drag-trigger"]')!
+    const handle = trigger.getBoundingClientRect()
+    const x = handle.left + handle.width / 2
+    const y = handle.top + handle.height / 2
+    pointer(trigger, 'pointerdown', x, y)
+    pointer(document, 'pointermove', x - 20, y)
+    pointer(document, 'pointermove', x - 40, y)
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect(frame.hasAttribute('data-panel-drag')).toBe(true)
+    const strip = frame.querySelector<HTMLElement>('[data-part="drop-edge"][data-dock="start"]')!
+    const edge = strip.getBoundingClientRect()
+    pointer(document, 'pointermove', edge.left + edge.width / 2, edge.top + edge.height / 2)
+    expect(strip.hasAttribute('data-active')).toBe(true)
+    pointer(document, 'pointerup', edge.left + edge.width / 2, edge.top + edge.height / 2)
+    await settle()
+    expect(frame.hasAttribute('data-panel-drag')).toBe(false)
+    expect(seen.map(change => [change.reason, change.layout.docks.start, change.layout.floating])).toEqual([['dock', ['palette', 'outline', 'properties'], {}]])
+    expect([frame.querySelector('xh-floating-panel[data-part="float"]'), stackOf('properties')]).toEqual([null, 'start'])
   })
 
   it('收成标题条的面板只占面板头的高度，同一栏的另一块占满其余；一栏全收起时两条面板头贴着栏顶', async () => {
