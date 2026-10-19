@@ -128,6 +128,7 @@ export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,
   DesignerMeasureChangeDetail,
+  DesignerMeasureConvert,
   DesignerMeasureMode,
   DesignerMeasureOptions,
   DesignerSnapOptions,

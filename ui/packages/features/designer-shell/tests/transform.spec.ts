@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import type { DesignerMeasureOptions, DesignerTransformEventMap, DesignerTransformItem, XhDesignerTransformElement } from '../src'
+import type { DesignerMeasureConvert, DesignerMeasureOptions, DesignerTransformEventMap, DesignerTransformItem, XhDesignerTransformElement } from '../src'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineDesignerShell } from '../src'
 
@@ -478,6 +478,41 @@ describe('<xh-designer-transform> 尺寸徽标', () => {
     expect([numberBox(overlay, 'width').value, numberBox(overlay, 'height').value, part(overlay, 'measure-unit').textContent]).toEqual(['4', '3', '格'])
     numberBox(overlay, 'width').querySelector<HTMLButtonElement>('[data-part="increment-trigger"]')!.click()
     expect(seen).toEqual([{ id: 'c', axis: 'width', source: 'step', rect: { x: 0, y: 0, width: 5, height: 3 } }])
+  })
+
+  it('给了 convert 时数值按它逐轴换算：按格计、两轴的距与间隙不同，步进、取整与下限在显示值上算，交出的矩形换回模型', async () => {
+    // 列距 100、列间隙 10，行距 40、行间隙 8：显示值是格数 (长 + 间隙) / 距，模型值是格数 × 距 − 间隙
+    const pitch = { width: 100, height: 40 }
+    const gap = { width: 10, height: 8 }
+    const convert: DesignerMeasureConvert = {
+      toDisplay: (value, axis) => (value + gap[axis]) / pitch[axis],
+      toModel: (value, axis) => value * pitch[axis] - gap[axis],
+    }
+    const card: DesignerTransformItem = { id: 'card', rect: { x: 0, y: 0, width: 390, height: 152 }, minSize: { width: 90, height: 32 } }
+    const overlay = await selection({ convert, unitLabel: 'cells', fractionDigits: 0, largeStep: 2 }, [card])
+    const seen = measures(overlay)
+    expect([numberBox(overlay, 'width').value, numberBox(overlay, 'height').value, part(overlay, 'measure-unit').textContent]).toEqual(['4', '4', 'cells'])
+    expect([numberBox(overlay, 'width').min, numberBox(overlay, 'height').min]).toEqual([1, 1])
+    numberBox(overlay, 'width').querySelector<HTMLButtonElement>('[data-part="increment-trigger"]')!.click()
+    numberBox(overlay, 'height').querySelector<HTMLButtonElement>('[data-part="decrement-trigger"]')!.click()
+    key(inputOf(overlay, 'height'), 'ArrowUp', { shiftKey: true })
+    expect(seen.map(change => [change.axis, change.source, change.rect.width, change.rect.height])).toEqual([
+      ['width', 'step', 490, 152],
+      ['height', 'step', 390, 112],
+      ['height', 'step', 390, 232],
+    ])
+    typeInto(inputOf(overlay, 'width'), '7')
+    key(inputOf(overlay, 'width'), 'Enter')
+    typeInto(inputOf(overlay, 'width'), '0')
+    key(inputOf(overlay, 'width'), 'Enter')
+    expect(seen.slice(3).map(change => [change.source, change.rect])).toEqual([
+      ['input', { x: 0, y: 0, width: 690, height: 152 }],
+      ['input', { x: 0, y: 0, width: 90, height: 152 }],
+    ])
+    overlay.readonly = true
+    overlay.items = [{ ...card, rect: { ...card.rect, width: 395 } }]
+    await overlay.updateComplete
+    expect(part(overlay, 'measure').textContent).toBe('4 × 4 cells')
   })
 
   it('多选、锁定（handles: false）与只读时只显示尺寸，不给数字框；多选写整体包围框的尺寸', async () => {

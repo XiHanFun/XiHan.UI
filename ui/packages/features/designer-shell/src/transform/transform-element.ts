@@ -66,13 +66,26 @@ export type DesignerSnapOptions = Omit<SnapOptions, 'threshold'> & { readonly th
 /** 尺寸徽标何时显示：gesture 只在拖动、缩放中只读显示；selection 选中即常驻，单选可缩放时带宽高微调。 */
 export type DesignerMeasureMode = 'gesture' | 'selection'
 
+/** 尺寸徽标逐轴的换算：模型长度与显示值互换。按格计这类两轴换算不同、也不是长度单位的设计器给它。 */
+export interface DesignerMeasureConvert {
+  /** 模型长度换成显示值，如画布像素换成格数。 */
+  readonly toDisplay: (value: number, axis: 'width' | 'height') => number
+  /** 显示值换回模型长度。 */
+  readonly toModel: (value: number, axis: 'width' | 'height') => number
+}
+
 /** 尺寸徽标的单位、精度与步长。 */
 export interface DesignerMeasureOptions {
-  /** 模型坐标的长度单位；按格计这类不是长度的设计器不给，徽标直接显示模型数值。 */
+  /** 模型坐标的长度单位；不是长度的设计器不给，徽标直接显示模型数值（给了 convert 时显示它换出的值）。 */
   readonly unit?: LengthUnit
   /** 显示单位，缺省同 unit。 */
   readonly displayUnit?: LengthUnit
-  /** 单位文字：缺省取显示单位的符号；没有 unit 时由设计器给，不给就不写单位。 */
+  /**
+   * 逐轴的换算：给了时数值只按它在模型与显示之间换算，unit、displayUnit 只用来取缺省的单位文字；
+   * 步进、取整与下限都在显示值上算，交出的矩形按 toModel 换回。不给时按 unit、displayUnit 换算。
+   */
+  readonly convert?: DesignerMeasureConvert
+  /** 单位文字：缺省取显示单位的符号；没有 unit 时由设计器按自己的语言给（换了语言重交 measureOptions），不给就不写单位。 */
   readonly unitLabel?: string
   /** 显示的小数位，缺省 1。 */
   readonly fractionDigits?: number
@@ -495,7 +508,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     if (editable === undefined) {
       this.#measured = undefined
       const size = rects.length === 1 ? rects[0]! : bounds
-      this.#showMeasureText(element, t.measureText(this.#formatSide(size.width), this.#formatSide(size.height), this.#unitLabel()))
+      this.#showMeasureText(element, t.measureText(this.#formatSide(size.width, 'width'), this.#formatSide(size.height, 'height'), this.#unitLabel()))
     }
     else {
       this.#measured = { item: items[0]!, rect: rects[0]!, editable }
@@ -532,14 +545,14 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     for (const axis of AXES) {
       const field = fields[axis]
       field.setAttribute('aria-label', axis === 'width' ? t.width : t.height)
-      field.min = this.#toDisplay(measured.item.minSize?.[axis] ?? 0)
+      field.min = this.#toDisplay(measured.item.minSize?.[axis] ?? 0, axis)
       field.step = options.step ?? 1
       field.largeStep = options.largeStep ?? 10
       field.readOnly = !measured.editable[axis]
       field.format = this.#formatDisplay
       field.parse = this.#parseDisplay
       if (this.#typed?.axis !== axis)
-        field.value = this.#formatSide(measured.rect[axis])
+        field.value = this.#formatSide(measured.rect[axis], axis)
     }
     const unit = this.#unitLabel()
     setText(fields.unit, unit)
@@ -588,13 +601,19 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     return options?.unit === undefined ? '' : LENGTH_UNIT_SYMBOLS[options.displayUnit ?? options.unit]
   }
 
-  #toDisplay(value: number): number {
-    const { unit, displayUnit } = this.measureOptions ?? {}
+  /** 一边的模型长度换成显示值：给了 convert 按它逐轴换，否则按 unit、displayUnit 换。 */
+  #toDisplay(value: number, axis: MeasureAxis): number {
+    const { unit, displayUnit, convert } = this.measureOptions ?? {}
+    if (convert)
+      return convert.toDisplay(value, axis)
     return unit === undefined ? value : convertLength(value, unit, displayUnit ?? unit)
   }
 
-  #toModel(value: number): number {
-    const { unit, displayUnit } = this.measureOptions ?? {}
+  /** 一边的显示值换回模型长度。 */
+  #toModel(value: number, axis: MeasureAxis): number {
+    const { unit, displayUnit, convert } = this.measureOptions ?? {}
+    if (convert)
+      return convert.toModel(value, axis)
     return unit === undefined ? value : convertLength(value, displayUnit ?? unit, unit)
   }
 
@@ -603,8 +622,8 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   }
 
   /** 一边的模型长度写成显示文字。 */
-  #formatSide(value: number): string {
-    return this.#formatDisplay(this.#toDisplay(value))
+  #formatSide(value: number, axis: MeasureAxis): string {
+    return this.#formatDisplay(this.#toDisplay(value, axis))
   }
 
   readonly #formatDisplay = (value: number): string => formatLength(value, { fractionDigits: this.#fractionDigits(), locale: this.#config.locale })
@@ -644,7 +663,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const measured = this.#measured
     const field = this.#measureFields?.[axis]
     if (measured && field)
-      field.value = this.#formatSide(measured.rect[axis])
+      field.value = this.#formatSide(measured.rect[axis], axis)
   }
 
   /** 按显示单位的新值改这一边：按精度取整、不小于 minSize，换回模型单位；keepAspect 时另一边按比例跟着变。值没变不派发。 */
@@ -652,13 +671,13 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const measured = this.#measured
     if (!measured || !measured.editable[axis] || !Number.isFinite(display))
       return
-    const rounded = stepLength(display, 0, { min: this.#toDisplay(measured.item.minSize?.[axis] ?? 0), fractionDigits: this.#fractionDigits() })
+    const rounded = stepLength(display, 0, { min: this.#toDisplay(measured.item.minSize?.[axis] ?? 0, axis), fractionDigits: this.#fractionDigits() })
     const current = measured.rect[axis]
-    if (this.#formatDisplay(rounded) === this.#formatSide(current)) {
+    if (this.#formatDisplay(rounded) === this.#formatSide(current, axis)) {
       this.#restoreMeasure(axis)
       return
     }
-    const value = this.#toModel(rounded)
+    const value = this.#toModel(rounded, axis)
     const other = axis === 'width' ? 'height' : 'width'
     const rect: Rect = { ...measured.rect, [axis]: value }
     const scaled: Rect = measured.item.keepAspect === true && current > 0 ? { ...rect, [other]: measured.rect[other] * value / current } : rect
@@ -677,7 +696,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     event.stopPropagation()
     this.#typed = undefined
     const delta = (this.measureOptions?.largeStep ?? 10) * (event.key === 'ArrowUp' ? 1 : -1)
-    this.#commitMeasure(axis, this.#toDisplay(measured.rect[axis]) + delta, 'step')
+    this.#commitMeasure(axis, this.#toDisplay(measured.rect[axis], axis) + delta, 'step')
   }
 
   /** 徽标里的按键不交给画布：Enter 确认输入，Esc 放弃输入并把焦点还回去。 */
