@@ -32,6 +32,9 @@ const SCOPE = 'designer-settings'
 /** 位置下拉的取值：三栏加浮动。 */
 const PLACES = ['start', 'end', 'bottom', 'float'] as const
 type Place = typeof PLACES[number]
+/** 表的五列；表头与单元格都带 data-column，窄屏按它重排。 */
+const PANEL_COLUMNS = ['panel', 'visible', 'dock', 'order', 'minimized'] as const
+type PanelColumn = typeof PANEL_COLUMNS[number]
 
 type SwitchElement = HTMLElement & { checked?: boolean, disabled?: boolean }
 type SelectElement = HTMLElement & { value?: unknown, disabled?: boolean }
@@ -76,8 +79,8 @@ function moveButton(doc: Document, direction: 'up' | 'down', onClick: () => void
 
 /** 建「布局」页的面板表；frame 每次现取，没有外框时表是空的。 */
 export function createPanelLayoutEditor(doc: Document, frame: () => DesignerSettingsFrame | undefined): PanelLayoutEditor {
-  const cell = (children: Node[], part?: string): HTMLElement => createAuthoredElement(doc, 'div', { 'role': 'cell', 'data-scope': SCOPE, ...(part ? { 'data-part': part } : {}) }, children)
-  const headers = (['panel', 'visible', 'dock', 'order', 'minimized'] as const).map(column => createAuthoredElement(doc, 'div', { 'role': 'columnheader', 'data-scope': SCOPE, 'data-part': 'panel-column', 'data-column': column }))
+  const cell = (column: PanelColumn, children: Node[], part?: string): HTMLElement => createAuthoredElement(doc, 'div', { 'role': 'cell', 'data-scope': SCOPE, 'data-column': column, ...(part ? { 'data-part': part } : {}) }, children)
+  const headers = PANEL_COLUMNS.map(column => createAuthoredElement(doc, 'div', { 'role': 'columnheader', 'data-scope': SCOPE, 'data-part': 'panel-column', 'data-column': column }))
   const head = createAuthoredElement(doc, 'div', { 'role': 'row', 'data-scope': SCOPE, 'data-part': 'panel-row', 'data-head': '' }, headers)
   const table = createAuthoredElement(doc, 'div', { 'role': 'table', 'data-scope': SCOPE, 'data-part': 'panel-table' }, [head])
   const resetText = createAuthoredElement(doc, 'span', {})
@@ -151,11 +154,11 @@ export function createPanelLayoutEditor(doc: Document, frame: () => DesignerSett
     const up = moveButton(doc, 'up', () => step(-1))
     const down = moveButton(doc, 'down', () => step(1))
     const row = createAuthoredElement(doc, 'div', { 'role': 'row', 'data-scope': SCOPE, 'data-part': 'panel-row', 'data-panel': name }, [
-      cell([icon, label], 'panel-name'),
-      cell([visible]),
-      cell([place, overlay]),
-      cell([up, down], 'panel-order'),
-      cell([minimized]),
+      cell('panel', [icon, label], 'panel-name'),
+      cell('visible', [visible]),
+      cell('dock', [place, overlay]),
+      cell('order', [up, down], 'panel-order'),
+      cell('minimized', [minimized]),
     ])
     return { element: row, icon, label, visible, place, placeTexts, placeItems, overlay, up, down, minimized }
   }
