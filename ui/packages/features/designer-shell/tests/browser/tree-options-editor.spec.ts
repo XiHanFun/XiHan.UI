@@ -143,18 +143,23 @@ describe('属性面板的选项树', () => {
     expect(document.activeElement).toBe(cell(panel, 'sh', 'label'))
   })
 
-  it('按 Alt + 上下键在同一层换序，写回整棵树，焦点留在原来那一格，层内位次跟着更新', async () => {
-    const { panel, written } = await mount(sample)
-    cell(panel, 'north', 'label').focus()
-    await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
-    await until(() => written.length > 0, '写回')
-    expect(written.at(-1)).toEqual([sample[0], { value: 'north', label: 'North' }, { value: 'west', label: 'West' }])
-    await until(() => document.activeElement === cell(panel, 'north', 'label'), '焦点回到搬走那一项的文字格')
-    expect(row(panel, 'north').getAttribute('aria-posinset')).toBe('2')
-    expect(page.getByRole('textbox', { name: 'Label, option 2', exact: true }).element()).toHaveProperty('value', 'North')
-    await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
-    await until(() => (written.at(-1) as { value: string }[])[0]!.value === 'north', '再挪一位')
-    expect(row(panel, 'north').getAttribute('aria-posinset')).toBe('1')
+  it('按 Alt + 上下键在同一层换序，写回整棵树；连按三次，每次之后焦点都在搬走那一项同一列的格子上，层内位次跟着更新', async () => {
+    const south = { value: 'south', label: 'South' }
+    const { panel, written } = await mount([...(sample as JsonValue[]), south])
+    const [east, west, north] = sample as JsonValue[]
+    cell(panel, 'south', 'label').focus()
+    const orders = [
+      [east, west, south, north],
+      [east, south, west, north],
+      [south, east, west, north],
+    ]
+    for (const [step, order] of orders.entries()) {
+      await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
+      await until(() => JSON.stringify(written.at(-1)) === JSON.stringify(order), `第 ${step + 1} 次写回`)
+      await until(() => document.activeElement === cell(panel, 'south', 'label'), `第 ${step + 1} 次之后焦点回到搬走那一项的文字格`)
+      expect(row(panel, 'south').getAttribute('aria-posinset')).toBe(String(3 - step))
+    }
+    expect(page.getByRole('textbox', { name: 'Label, option 1', exact: true }).element()).toHaveProperty('value', 'South')
   })
 
   it('按 Alt + 右键认上一项当上级，Alt + 左键退回上一层，层级跟着更新，焦点留在原来那一格', async () => {
