@@ -332,4 +332,24 @@ describe('单元格级导航：换位照旧可用', () => {
     expect(h.api().focusedRow).toBe('b')
     expect(h.api().focusedColumn).toBe('note')
   })
+
+  it('宿主写回时焦点先离开表体、再在换位的这一轮里落回那一格：锚点仍在格子上，连着再换位还是那一格', () => {
+    let h: Harness
+    // 浏览器里宿主挪走持有焦点的行节点时先派离场事件，之后焦点交回那一格；两件都发生在换位回调这一轮里
+    const onRowMove = vi.fn(() => {
+      ;(document.activeElement as HTMLElement | null)?.blur()
+      h.cell('d', 'note').focus()
+    })
+    h = mount({ rowReorderable: true, onRowMove })
+    h.cell('d', 'note').focus()
+    for (let i = 0; i < 2; i++) {
+      press('ArrowUp', { altKey: true })
+      expect(document.activeElement).toBe(h.cell('d', 'note'))
+      expect(h.api().focusedRow).toBe('d')
+      expect(h.api().focusedColumn).toBe('note')
+      expect(h.cell('d', 'note').getAttribute('tabindex')).toBe('0')
+      expect(h.row('d').getAttribute('tabindex')).toBe('-1')
+    }
+    expect(onRowMove).toHaveBeenCalledTimes(2)
+  })
 })
