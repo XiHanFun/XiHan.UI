@@ -212,6 +212,18 @@
     "limit": "39.5 kB"
   },
   {
+    "name": "designer-shell/style.css（有层）",
+    "path": "packages/features/designer-shell/style.css",
+    "gzip": true,
+    "limit": "7.3 kB"
+  },
+  {
+    "name": "designer-shell/style.unlayered.css（无层）",
+    "path": "packages/features/designer-shell/dist/style.unlayered.css",
+    "gzip": true,
+    "limit": "7.3 kB"
+  },
+  {
     "name": "xlsx",
     "path": "packages/features/xlsx/dist/index.js",
     "gzip": true,

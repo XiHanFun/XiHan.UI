@@ -4,7 +4,7 @@
 
 ```ts
 import { defineDesignerShell } from "@xihan-ui/designer-shell";
-import "@xihan-ui/designer-shell/style.css";
+import "@xihan-ui/designer-shell/style.css"; // 配无层皮肤时改引 style.unlayered.css
 
 defineDesignerShell();
 ```
@@ -16,7 +16,7 @@ defineDesignerShell();
 - 只有 Web Components，没有 headless 契约，也没有 Vue 与 React 版本，不进三端一致性套件。四款设计器都以原生 Web Components 交付，这些零件只给设计器用，不是通用组件。
 - 元素自己生成内部结构，不要求作者写 `data-xh-part` 的 Light DOM。部件用 `data-part` 标出，供样式与测试选取。作者内容用 `slot="<名>"` 标在零件的直接子节点上，零件把它搬进对应区域。
 - 内部用到的库内元素（字段、开关、选择器、标签等）经 `defineXhElement` 按需注册，不全量注册 `@xihan-ui/web-components`。
-- 样式随包发 `@xihan-ui/designer-shell/style.css`，只消费语义令牌，不进 `@xihan-ui/styles` 的组件槽与无层产物。
+- 样式随包发两份，都只消费语义令牌，不进 `@xihan-ui/styles` 的组件槽：`style.css` 在 `xihan.components` 层里，配有层的组件皮肤 `@xihan-ui/styles`；`style.unlayered.css` 内容相同、没有层壳，配无层的组件皮肤 `@xihan-ui/styles/index.unlayered.css`（本站与各设计器的文档站就是这样）。皮肤与零件样式要成对：无层规则不论特指度都压过有层规则，配无层皮肤却引 `style.css` 时，零件覆盖库内组件部件的那几条会静默失效，如 JSON 编辑框的定高与等宽字体、外框分隔条的直角。
 
 ## 注册
 
