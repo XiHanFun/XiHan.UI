@@ -36,7 +36,8 @@
       "types": "./dist/locale.d.ts",
       "import": "./dist/locale.js"
     },
-    "./style.css": "./style.css"
+    "./style.css": "./style.css",
+    "./style.unlayered.css": "./dist/style.unlayered.css"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -54,7 +55,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node build/emit-unlayered-style.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:browser": "vitest run --config vitest.browser.config.ts"
