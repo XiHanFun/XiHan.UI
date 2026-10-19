@@ -128,8 +128,10 @@ export const treeMachine = createMachine({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
   }),
   // 按住途中整棵树转入禁用 / 加载：不会再来 keyup，按压面由机器自己收
-  watch: ({ track, prop, action }) => {
+  entry: ['followSelection'],
+  watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled'), () => prop('loading')], () => action(['releaseWhenInert']))
+    track([context.dep('selection')], () => action(['followSelection']))
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
@@ -139,6 +141,7 @@ export const treeMachine = createMachine({
     gesture: null,
     nodeDrag: null,
     reorder: null,
+    knownSelection: null,
   }),
   initialState: () => 'idle',
   states: {
@@ -327,13 +330,32 @@ export const treeMachine = createMachine({
           return
         context.set('selection', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
       },
-      selectNode: ({ context, prop, event }) => {
+      // 选中换成了树上一次所知之外的一份（受控时宿主另写了值、setSelection、初始的选中）：空了就清掉连选的锚点；
+      // 多出了别的项，锚点挪到多出来的最后一项；只是少了几项（宿主筛过树提的选中、外面取消了几项）锚点不动
+      followSelection: ({ context, refs }) => {
+        const next = context.get('selection')
+        const known = refs.get('knownSelection')
+        refs.set('knownSelection', next)
+        if (known !== null && sameValues(next, known))
+          return
+        const added = next.filter(value => !known?.includes(value))
+        if (next.length > 0 && added.length === 0)
+          return
+        context.set('selectionAnchor', added.at(-1) ?? null)
+        context.set('selectionBaseline', null)
+      },
+      selectNode: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'NODE.SELECT')
           return
         const current = context.get('selection')
         const anchor = context.get('selectionAnchor')
         const mode = prop('selectionMode') ?? 'single'
+        // 树自己提的选中先记下，宿主照着写回时不算从外面换的
+        const commit = (next: string[]): void => {
+          refs.set('knownSelection', next)
+          context.set('selection', next)
+        }
 
         // extended：按文件管理器那套。Shift 选一段整份替换，同时按 Ctrl/Cmd 则并进 Shift 前的选中，锚点不动；
         // Ctrl/Cmd 切换这一项、裸点换成这一项，锚点都挪过来
@@ -351,13 +373,12 @@ export const treeMachine = createMachine({
               additive: !!e.additive,
               items: order,
             })
-            context.set('selection', [...next.selected])
+            commit([...next.selected])
             return
           }
           context.set('selectionAnchor', e.value)
           context.set('selectionBaseline', null)
-          context.set(
-            'selection',
+          commit(
             e.additive
               ? (current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
               : [e.value],
@@ -381,25 +402,24 @@ export const treeMachine = createMachine({
             additive: true,
             items: order,
           })
-          context.set('selection', [...next.selected])
+          commit([...next.selected])
           return
         }
         context.set('selectionAnchor', e.value)
         context.set('selectionBaseline', null)
         // 单选没有取消选中这回事，点两下不会把树点空
         if (mode === 'single') {
-          context.set('selection', [e.value])
+          commit([e.value])
           return
         }
         // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
         if (prop('cascade')) {
           const roots = prop('collection') ?? []
           const state = cascadeToggle(roots, current, e.value)
-          context.set('selection', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+          commit(collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
           return
         }
-        context.set(
-          'selection',
+        commit(
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },

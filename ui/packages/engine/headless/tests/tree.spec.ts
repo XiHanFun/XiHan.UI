@@ -1161,6 +1161,36 @@ describe('选择模式 extended', () => {
     h.api().setSelection(['docs', 'docs', 'license'])
     expect(h.selected()).toEqual(['docs', 'license'])
   })
+
+  it('受控选中被宿主换成别的一份时，连选的锚点挪到多出来的最后一项；照着写回或只少了几项时不动；清空了就没有锚点', () => {
+    const asked: string[][] = []
+    // 全折叠时可见序：src / docs / license；初始的选中也算外面给的，锚点落在 src
+    const h = mount({ selectionMode: 'extended', selection: ['src'], onSelectionChange: ({ value }) => void asked.push(value) })
+    click(h.item('license').item, { shiftKey: true })
+    h.setProps({ selection: asked.at(-1) })
+    click(h.branch('docs').control, { shiftKey: true })
+    expect(asked).toEqual([['src', 'docs', 'license'], ['src', 'docs']])
+    h.setProps({ selection: ['license'] })
+    click(h.branch('docs').control, { shiftKey: true })
+    expect(asked.at(-1)).toEqual(['docs', 'license'])
+    // 宿主筛掉一项再写回：锚点还在 license
+    h.setProps({ selection: ['docs'] })
+    click(h.branch('src').control, { shiftKey: true })
+    expect(asked.at(-1)).toEqual(['src', 'docs', 'license'])
+    h.setProps({ selection: [] })
+    click(h.branch('docs').control, { shiftKey: true })
+    expect(asked.at(-1)).toEqual(['docs'])
+  })
+
+  it('非受控时初始的选中与 setSelection 换上的一份同样带着锚点', () => {
+    const h = mount({ selectionMode: 'extended', defaultSelection: ['docs'] })
+    click(h.item('license').item, { shiftKey: true })
+    expect(h.selected()).toEqual(['docs', 'license'])
+    // 多出来的只有 src
+    h.api().setSelection(['src', 'license'])
+    click(h.branch('docs').control, { shiftKey: true })
+    expect(h.selected()).toEqual(['src', 'docs'])
+  })
 })
 
 describe('另两种模式下的 Ctrl+Space', () => {
