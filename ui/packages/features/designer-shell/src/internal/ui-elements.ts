@@ -22,6 +22,7 @@ import {
   XhFloatingPanelElement,
   XhFormatInputElement,
   XhIconElement,
+  XhListboxElement,
   XhMenuElement,
   XhNumberFieldElement,
   XhPasswordInputElement,
@@ -78,6 +79,12 @@ export function defineOutlineElements(): void {
   defineXhElement('xh-text-field', XhTextFieldElement)
   defineXhElement('xh-tree', XhTreeElement)
   defineXhElement('xh-icon', XhIconElement)
+}
+
+/** 历史记录的列表与清空钮用到的元素。 */
+export function defineHistoryElements(): void {
+  defineXhElement('xh-listbox', XhListboxElement)
+  defineXhElement('xh-button', XhButtonElement)
 }
 
 /** 外框的分隔条、面板头的帮助与「更多」菜单、窄屏抽屉与浮出的小窗用到的元素。 */

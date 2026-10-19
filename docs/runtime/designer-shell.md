@@ -343,6 +343,40 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 - 换了 `nodes` 时整棵树重新铺，焦点原在树里的回到同一 id 的行上。
 - 文案键 `xh-designer-outline`：`title`、`search`、`empty`、`noMatches`、`remove(label)`。
 
+## 历史记录
+
+`<xh-designer-history>` 按先后列出撤销栈里的每一步，标出当前位置；选一行就跳回那一步。零件只吃 designer-kit 历史的快照、吐事件，跳转与清空都由设计器调历史栈，零件不碰文档。
+
+```ts
+import { snapshotHistory } from "@xihan-ui/designer-kit";
+
+const panel = document.createElement("xh-designer-history");
+const refresh = () => (panel.snapshot = snapshotHistory(editor.history));
+editor.history.subscribe(refresh); // 换语言时也调一次：说明按当时的语言取成字符串
+panel.addEventListener("history-go", event => editor.history.goTo(event.detail.position));
+panel.addEventListener("history-clear", () => runCommand(commands, "clear-history", context));
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `snapshot` | designer-kit 的 `snapshotHistory(history)`：`{ entries, position, origin, truncated, originSaved }`。历史变了、换了语言都重交一份 |
+| `readonly` | 能浏览，不能跳转，清空钮禁用 |
+| `headless` | 放进外框的卡片时写：不画自己的标题与清空钮，标题由面板头显示；标题仍给列表命名 |
+| `announce` | `(message) => void`，读屏播报：从这里选一行、跳转完成后礼貌级地读一句「跳到哪一步、走了几步」；不给就不播 |
+
+| 事件 | detail |
+| --- | --- |
+| `history-go` | `{ position }` 用户选了起点或某一步，`position` 是快照里的 `origin` 或那一步的 `position` |
+| `history-clear` | `{}` 用户按了头部的清空钮；设计器转给 `clear-history` 命令，先确认再清空 |
+
+- 第一行是起点：打开、重新载入或清空之后的状态，写「打开时」；起点之前有被步数上限丢掉的步骤时写「更早的步骤已丢弃」。其后按先后列出各步，最新的在最下面；没写说明的一步写「编辑」，已撤销的一步字色减淡、副文本写「已撤销」，保存点那一行副文本写「已保存」。
+- 列表用 [`<xh-listbox>`](../components/listbox)，单选，选中的就是当前位置：整张列表一个 Tab 位，上下键与 Home、End 只移焦点、不跳转，Enter 与 Space 跳到焦点那一行，点一行同样跳。选中受控：选了一行只派发 `history-go`，列表仍选在当前位置，等设计器交来新快照。
+- 头部的清空钮在列表之前占一个 Tab 位；没有步骤或只读时禁用。
+- 快照换了时按位置号复用行，只改文字与状态，焦点所在的行不被换掉；当前位置变了就把它滚进可见区。
+- 文案键 `xh-designer-history`：`title`、`origin`、`originTruncated`、`untitled`、`undone`、`saved`、`empty`、`clear`，清空确认框的 `clearConfirmTitle`、`clearConfirmContent`、`clearConfirmOk`，播报的 `announceUndo(label)`、`announceRedo(label)`、`announceJump(label, steps)`、`announceCleared`。
+
+撤销、重做与清空历史三条命令由 `designerHistoryCommands` 统一给出，见下文「命令」。
+
 ## 变换覆盖层
 
 `<xh-designer-transform>` 叠在画布上方，画选中框、控制柄、旋转柄、对齐线、框选框、悬停框与尺寸徽标，并跑移动、缩放、旋转与框选的手势。命中判断归设计器：设计器在选中项上按下后调 `startMove`，在空白处按下后调 `startMarquee`；控制柄由覆盖层自己接。覆盖层盖满画布、左上角就是视口的屏幕原点，除控制柄外不挡指针。
@@ -813,6 +847,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
+| `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
 | `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用）。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
@@ -827,14 +862,15 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 - 菜单里点了复选条目、菜单仍开着时，按点过之后的上下文重算条目与勾选，不必等设计器下一次 `update`。
 - `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
-四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置与帮助，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
+四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置与帮助，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
 
 ```ts
-import { DESIGNER_COMMANDS_EN_US } from "@xihan-ui/designer-shell";
+import { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from "@xihan-ui/designer-shell";
 import { XhConfigController } from "@xihan-ui/web-components/authoring";
 
 const config = new XhConfigController(designer);
 const t = config.translations("xh-designer-commands", DESIGNER_COMMANDS_EN_US); // t.undo、t.alignCenter……
+const history = config.translations("xh-designer-history", DESIGNER_HISTORY_EN_US); // 给 designerHistoryCommands 的 historyTranslations
 ```
 
 ### 设置分区
