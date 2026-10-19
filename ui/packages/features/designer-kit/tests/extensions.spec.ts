@@ -15,6 +15,7 @@ import {
   findImporter,
   formatShortcut,
   getExtensionData,
+  importerAccept,
   mergeExtensions,
   runExtensionRules,
   setExtensionData,
@@ -126,6 +127,13 @@ describe('合并后的登记表', () => {
     expect(asked).toEqual(['image:text/plain', 'html:text/plain', 'image:text/html', 'html:text/html'])
     expect(findImporter([image], sources)).toBeUndefined()
     expect(findImporter([], sources)).toBeUndefined()
+  })
+
+  it('importerAccept：各导入器的 fileTypes 按先后去重、逗号连起来，给打开文件的选择框；都没写时为空串', () => {
+    const importer = (id: string, fileTypes?: readonly string[]) => ({ id, accepts: () => true, import: () => undefined, ...(fileTypes ? { fileTypes } : {}) })
+    expect(importerAccept([importer('json', ['.json', 'application/json']), importer('text'), importer('image', ['image/*', '.json'])])).toBe('.json,application/json,image/*')
+    expect(importerAccept([importer('text')])).toBe('')
+    expect(importerAccept([])).toBe('')
   })
 })
 

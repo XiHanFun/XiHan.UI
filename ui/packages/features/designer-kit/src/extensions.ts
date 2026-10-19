@@ -144,6 +144,8 @@ export interface DesignerImporter<Ctx = unknown, Result = unknown> {
   readonly id: string
   /** 接不接这个来源：只看类型、文件名或文本，不读文件内容，当场返回。 */
   readonly accepts: (source: DesignerImportSource) => boolean
+  /** 打开文件时选择框认的类型：MIME 类型（application/json、image/*）或扩展名（.json）。各款用 importerAccept 拼成 accept。 */
+  readonly fileTypes?: readonly string[]
   /** 把接下的来源换成结果，可以是异步的；结果的形状与抛错后怎么报由各款定。 */
   readonly import: (source: DesignerImportSource, context: Ctx) => Result | Promise<Result>
 }
@@ -327,6 +329,11 @@ export function findImporter<I extends Pick<DesignerImporter<never, unknown>, 'a
       return { importer, source }
   }
   return undefined
+}
+
+/** 打开文件时选择框的 accept：各导入器的 fileTypes 按先后去重、用逗号连起来；都没写时为空串，不限类型。 */
+export function importerAccept(importers: readonly Pick<DesignerImporter<never, unknown>, 'fileTypes'>[]): string {
+  return [...new Set(importers.flatMap(importer => importer.fileTypes ?? []))].join(',')
 }
 
 /** 扩展问题码的前缀：扩展 id 的末段，@xihan-flow-pro/simulation 是 simulation。 */

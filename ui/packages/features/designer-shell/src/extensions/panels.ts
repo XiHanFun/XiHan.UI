@@ -9,6 +9,7 @@
 import type { DesignerExtensionBase } from '@xihan-ui/designer-kit'
 import type { PropertyEditor } from '@xihan-ui/designer-kit/properties'
 import type { DesignerFrameRegion, XhDesignerFrameElement } from '../frame/frame-element'
+import type { DesignerPaletteSource } from '../palette/palette-sources'
 import type { DesignerSettingsSection } from '../settings/model'
 import type { DesignerTourStep } from '../tour/tour'
 import type { CommandToolbar, DesignerCommandTable } from './commands'
@@ -37,13 +38,15 @@ export interface DesignerPanel<Ctx = unknown> {
 }
 
 /** 带面板的设计器层扩展；各款的设计器扩展在此之上加种类、渲染与物料。 */
-export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown> extends DesignerExtensionBase<Ctx, Editor, Doc, RuleCtx> {
+export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown, At = unknown> extends DesignerExtensionBase<Ctx, Editor, Doc, RuleCtx> {
   /** 面板：各占外框的一个命名区，同一栏按扩展顺序上下排。 */
   readonly panels?: readonly DesignerPanel<Ctx>[]
   /** 设置分区：放进设置对话框，分区 id 不能与内置的 general 或别的扩展的重名，见 collectSettingsSections。 */
   readonly settings?: readonly DesignerSettingsSection[]
   /** 新手引导的步骤：与 designer-shell 的通用步骤、各款的步骤一起按 order 排；id 不能重名，见 collectTourSteps。 */
   readonly tourSteps?: readonly DesignerTourStep<Ctx>[]
+  /** 物料来源：往物料面板里加的几组，排在各款内置分组之后；id 不能重名，见 collectPaletteSources。At 是各款的落点信息。 */
+  readonly paletteSources?: readonly DesignerPaletteSource<Ctx, At>[]
   /** 「关于」页里的几行，如附加包的版本与授权；各款把它们接在自己那几行后面。 */
   readonly about?: readonly { readonly label: string, readonly value: string }[]
 }

@@ -603,7 +603,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
 | `commands` | 工具栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`header`（顶栏中段的插入快捷钮）、`menu:<主体>`（这种主体的右键菜单）或 `selection:<主体>`（选中这种主体时浮在选中框上的选中工具条），`shortLabel` 是按钮上看得见的短文字（顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`；`alternateShortcuts` 是另外几组也能触发它的快捷键（如重做在 `Mod+Shift+Z` 之外再认 `["Ctrl", "Y"]`），与 `shortcut` 一样查重、一样命中，提示里只显示 `shortcut`；会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示 |
-| `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定 |
+| `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定。导入器可写 `fileTypes`（MIME 类型如 `application/json`、`image/*`，或扩展名如 `.json`），打开文件时拼进选择框的 `accept`，见 `importerAccept` |
 | `fieldSources` | 字段来源：导入字段对话框里的一页（如从接口请求取样例），见下文「字段来源」 |
 | `setup` | 装上时调用，返回卸下时的清理 |
 
@@ -637,6 +637,7 @@ host.dispose(); // 元素离开文档时调用
 | `extensionControls(extensions)` | 编辑方式合成一张表 |
 | `extensionCommands(extensions)` | 命令按登记顺序排成 `Map`，键是命令 id |
 | `findImporter(importers, sources)` | 挑出接下导入的导入器：来源按先后，每个来源按导入器的先后问 `accepts`，返回第一个接下的与那个来源；都不接时为 `undefined`。粘贴与拖放的数据由 designer-shell 的 `importSources` 列成来源 |
+| `importerAccept(importers)` | 打开文件时选择框的 `accept`：各导入器的 `fileTypes` 按先后去重、用逗号连起来；都没写时为空串，不限类型 |
 | `runExtensionRules(extensions, document, context)` | 按扩展顺序逐条跑规则，检查问题码前缀 |
 | `shortcutKey(keys)` / `formatShortcut(keys, platform)` | 快捷键的比较用写法；显示文字，macOS 上 `⌘⇧P`，其余平台 `Ctrl+Shift+P` |
 | `assertCommandShape(command)` / `isCommandMenuSeparator(entry)` | 查一条命令的形状，不合时抛 `TypeError`（合并时已经查过）；菜单命令的一项是不是分隔线 |
