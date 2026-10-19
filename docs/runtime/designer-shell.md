@@ -341,7 +341,49 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 - 树用 [`<xh-tree>`](../components/tree)，键盘与读屏照它的约定：整棵树一个 Tab 位，上下键走行，右键展开、左键收起，Enter 与 Space 选中，连打检索；Alt + 上下键在同一层挪一位，Alt + 左右键改一层缩进，挪动的结果由树的播报区念出。分支缺省展开，展开状态按节点 id 保留；`selection` 换了新值时，被收起的上级跟着展开，选中的行滚进可见区。
 - 删除：Delete 或 Backspace 删焦点所在的一行；焦点在选中的行上时，删全部可删的选中项。行尾的删除钮只接指针，悬停或焦点在这一行时出现（粗指针设备常显），对读屏隐藏、不占 Tab 位，按下不夺焦点；可及名取 `translations.remove(名字)`。
 - 换了 `nodes` 时整棵树重新铺，焦点原在树里的回到同一 id 的行上。
-- 文案键 `xh-designer-outline`：`title`、`search`、`empty`、`noMatches`、`remove(label)`。
+- 文案键 `xh-designer-outline`：`title`、`help`（面板头里的帮助）、`search`、`empty`、`noMatches`、`remove(label)`。
+
+### 页面结构面板
+
+各款不必自己接零件的事件：写一个适配器交给 `createOutlinePanel`，得到一块面板，放进内置扩展的 `panels`。
+
+```ts
+import { createOutlinePanel } from "@xihan-ui/designer-shell";
+import { ListTreeIcon } from "@xihan-ui/icons";
+
+const outline = createOutlinePanel<MyContext>({
+  nodes: context => toOutlineNodes(context.designer.schema),
+  selection: context => context.designer.getSelection(),
+  select: (context, ids) => context.designer.select(ids),
+  highlight: (context, id) => context.designer.highlight(id),
+  remove: (context, ids) => context.designer.remove(ids),
+  canMove: (context, move) => context.designer.canMoveTo(move),
+  move: (context, move) => context.designer.moveTo(move),
+}, { region: { icon: ListTreeIcon }, readonly: context => context.designer.readonly });
+
+const builtin = { id: "my-designer", panels: [outline] };
+```
+
+| 适配器 | 说明 |
+| --- | --- |
+| `nodes(context)` | 整棵树，每次刷新都会再取；同一份文档要给出稳定的 id |
+| `selection(context)` | 画布上当前选中的行 id |
+| `select(context, ids)` | 选中这些行，并把第一个滚进画布的可见区（必要时切页、切页签、展开折叠项） |
+| `highlight(context, id)` | 在画布上标出这一行对应的东西，`null` 撤掉；不改选择、不滚动 |
+| `remove(context, ids)` | 删除这些行，通常是先选中再走设计器自己的删除 |
+| `canMove(context, move)`、`move(context, move)` | 一次挪动许不许、执行挪动（记为一步撤销）；两个要么都给，要么都不给，不给就不能挪 |
+
+| 选项 | 说明 |
+| --- | --- |
+| `region` | 面板登记里要换的项，如 `position`、`icon`、`defaultHidden`；缺省区名 `outline`、停在左栏 |
+| `searchable` | 显示搜索框，缺省 `true` |
+| `readonly(context)` | 返回 `true` 时只读：能选、能标出，不能删、不能挪 |
+
+- 面板的标题与帮助取零件文案 `xh-designer-outline` 的 `title`、`help`，读的时候按全局配置现取：设计器每次把区交给外框时跟着语言变。
+- 每次 `update(context)` 重取树与选中的行，内容没变时不重设，树的展开与焦点不受影响；树上的事件转给适配器，用的是最近一次刷新的上下文。
+- 同一行不重复调 `highlight`；面板撤掉时撤掉标出。
+- 一个面板对象可以放进各款共用的内置扩展：每个设计器实例各建一份零件，互不相干。
+- 适配器只给了 `canMove`、`move` 之一时，`createOutlinePanel` 抛 `TypeError`。
 
 ## 历史记录
 

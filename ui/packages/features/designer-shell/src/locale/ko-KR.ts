@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: '페이지 구조',
+    help: '템플릿의 내용을 트리로 보여 줍니다. 항목을 고르면 캔버스에서 선택되고, 드래그하거나 Alt와 방향 키를 눌러 옮길 수 있습니다.',
     search: '페이지 구조 검색',
     noMatches: '일치하는 항목이 없습니다',
     empty: '아직 내용이 없습니다',

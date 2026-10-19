@@ -75,6 +75,8 @@ export interface DesignerIssuesTranslations {
 export interface DesignerOutlineTranslations {
   /** 面板标题，也是树的名字。 */
   readonly title: string
+  /** 面板头里的帮助：这块面板列的是什么、怎么用。 */
+  readonly help: string
   /** 搜索框的名称与占位。 */
   readonly search: string
   /** 搜索没有结果时的提示。 */

@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: 'ページ構造',
+    help: 'テンプレートの内容をツリーで表示します。項目を選ぶとキャンバス上で選択されます。ドラッグするか、Alt と矢印キーで移動できます。',
     search: 'ページ構造を検索',
     noMatches: '一致する項目はありません',
     empty: 'まだ何もありません',

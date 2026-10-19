@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: 'Estructura',
+    help: 'El contenido de la plantilla en forma de árbol. Al elegir un elemento se selecciona en el lienzo. Para moverlo, arrástralo o pulsa Alt con una tecla de flecha.',
     search: 'Buscar en la estructura',
     noMatches: 'No hay elementos que coincidan',
     empty: 'Todavía no hay contenido',

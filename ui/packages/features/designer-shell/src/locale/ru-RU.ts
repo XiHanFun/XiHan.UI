@@ -61,6 +61,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: 'Структура',
+    help: 'Содержимое шаблона в виде дерева. Выбранный элемент выделяется на холсте. Чтобы переместить его, перетащите его или нажмите Alt со стрелкой.',
     search: 'Поиск по структуре',
     noMatches: 'Нет подходящих элементов',
     empty: 'Пока ничего нет',

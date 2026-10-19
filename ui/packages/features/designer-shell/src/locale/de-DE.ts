@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: 'Struktur',
+    help: 'Der Inhalt der Vorlage als Baum. Ein gewählter Eintrag wird auf der Arbeitsfläche ausgewählt. Zum Verschieben ziehen oder Alt mit einer Pfeiltaste drücken.',
     search: 'Struktur durchsuchen',
     noMatches: 'Keine passenden Einträge',
     empty: 'Noch keine Inhalte',
