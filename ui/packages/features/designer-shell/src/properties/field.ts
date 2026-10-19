@@ -34,6 +34,11 @@ export const DEFAULT_PROPERTIES_TRANSLATIONS: DesignerPropertiesTranslations = {
   optionColumns: { value: 'Value', label: 'Label', disabled: 'Disabled' },
   optionCell: (column, row) => `${column}, option ${row}`,
   optionBoolean: { true: 'Yes', false: 'No' },
+  optionTreeCell: (column, outline) => `${column}, option ${outline}`,
+  optionActions: 'Actions',
+  optionAddChild: outline => `Add a child to option ${outline}`,
+  optionRemove: outline => `Remove option ${outline}`,
+  optionAdd: 'Add option',
 }
 
 /** createPropertyField 的选项：建好后不再变的部分。 */

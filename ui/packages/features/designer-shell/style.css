@@ -171,6 +171,85 @@
     gap: var(--xh-space-2);
   }
 
+  /* 选项树：表格在上、放不下时由表格自己横向滚动，新增钮在下、按内容取宽 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-options'] {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--xh-space-2);
+    min-inline-size: 0;
+  }
+
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-options'] > xh-table {
+    align-self: stretch;
+    min-inline-size: 0;
+  }
+
+  /* 值格的缩进头：一层缩进一个展开把手加格内间距，子项的把手对齐上级的值框；装展开把手或同宽的空位 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-head'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    padding-inline-start: calc(
+      var(--xh-_designer-tree-option-level, 0) *
+        (var(--xh-table-trigger-size, var(--xh-control-indicator-size)) + var(--xh-table-cell-gap, var(--xh-control-gap-md)))
+    );
+  }
+
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-spacer'] {
+    flex: none;
+    inline-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+  }
+
+  /* 格里的字段铺满这一格剩下的宽，可以窄过文本框的原生宽 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-field'] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-field']
+    > [data-scope='field'][data-part='root']
+    > [data-scope='field'][data-part='error-text'][hidden] {
+    position: absolute;
+    block-size: 0;
+    transition: none;
+  }
+
+  /* 加子项、新增与删除钮的图形 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-glyph']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
+  }
+
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-glyph'][data-glyph='remove']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-close);
+    mask-image: var(--xh-glyph-mark-close);
+  }
+
+  @media (forced-colors: active) {
+    /* 图形是 mask 挖出来的一块底色，这一档里底色被换成 Canvas：退出强制换色、直接写系统色，
+       按钮面上取 ButtonText，悬停与按下时按钮涂成 Highlight、图形换 HighlightText，禁用取 GrayText */
+    :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='tree-option-glyph']:empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='button'][data-part='root']:not(:disabled):is(:hover, :active) > [data-scope='designer-properties'][data-part='tree-option-glyph']:empty::before {
+      background-color: HighlightText;
+    }
+
+    :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='button'][data-part='root']:disabled > [data-scope='designer-properties'][data-part='tree-option-glyph']:empty::before {
+      background-color: GrayText;
+    }
+  }
+
   /* —— 设置对话框：宿主不占盒，对话框打开时内容搬到浮层根，样式认搬过去的 pages、items 两层 —— */
 
   xh-designer-settings {

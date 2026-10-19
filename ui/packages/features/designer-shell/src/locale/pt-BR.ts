@@ -26,6 +26,11 @@ const translations: DesignerShellLocaleTranslations = {
     optionColumns: { value: 'Valor', label: 'Rótulo', disabled: 'Desativada' },
     optionCell: (column, row) => `${column}, opção ${row}`,
     optionBoolean: { true: 'Sim', false: 'Não' },
+    optionTreeCell: (column, outline) => `${column}, opção ${outline}`,
+    optionActions: 'Ações',
+    optionAddChild: outline => `Adicionar uma subopção à opção ${outline}`,
+    optionRemove: outline => `Remover a opção ${outline}`,
+    optionAdd: 'Adicionar opção',
   },
   'xh-designer-issues': {
     title: 'Problemas',
