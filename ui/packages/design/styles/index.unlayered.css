@@ -45385,6 +45385,13 @@
   transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
+/* 单元格级导航（navigation="cell"）时格子带 tabindex、是焦点落点：键盘焦点画一圈环，与行同一种焦点色，
+   收在格子里面，不压到相邻的格子与行间线上；所在的行照旧按焦点行换面 */
+.xh-scope-table[data-part='cell'][tabindex]:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
 /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
 .xh-scope-table:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ .xh-scope-table:is([data-part='row'], [data-part='expanded-row']) {
   border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));

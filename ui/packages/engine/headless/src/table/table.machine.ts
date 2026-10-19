@@ -21,13 +21,13 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
-import { applySelection, cascadeState, cascadeToggle, collapseChecked, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
+import { applySelection, cascadeState, cascadeToggle, collapseChecked, focusItem, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
-import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR } from './table.anatomy'
+import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR, TABLE_CELL_SELECTOR, TABLE_ROW_SELECTOR } from './table.anatomy'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
@@ -103,6 +103,7 @@ export const tableMachine = createMachine({
     })),
     // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
     focusedRow: cell<string | null>(() => ({ defaultValue: null })),
+    focusedColumn: cell<string | null>(() => ({ defaultValue: null })),
     selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
     selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
     columnPreference: cell<TableColumnPreference>(() => ({
@@ -162,6 +163,7 @@ export const tableMachine = createMachine({
         'ROW.COLLAPSE': { actions: ['collapseRow'] },
         'ROW.EXPAND_TOGGLE': { actions: ['toggleExpandRow'] },
         'ROW.FOCUS': { actions: ['setFocusedRow'] },
+        'CELL.FOCUS': { actions: ['setFocusedCell'] },
         'TABLE.BLUR': { actions: ['clearFocusedRow'] },
         // 键盘改宽不进拖动态：按一下改一步，没有「进行中」这回事
         'COLUMN_RESIZE.STEP': { actions: ['stepColumnWidth'] },
@@ -547,7 +549,10 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ROW.MOVE_BY')
           return
+        // 提交前记下锚点的列：宿主写回时若挪动了持有焦点的节点，离场会把锚点连同列一起清掉
+        const column = context.get('focusedColumn')
         commitRowMove(context, prop, send, e.rowId, e.target, 'moved', () => armRowReorder(refs))
+        refocusMovedRow(refs, e.rowId, column)
       },
 
       moveColumnBy: ({ context, prop, event, send }) => {
@@ -747,12 +752,23 @@ export const tableMachine = createMachine({
       },
       setFocusedRow: ({ context, event }) => {
         const e = event.current()
-        if (e.type === 'ROW.FOCUS')
-          context.set('focusedRow', e.value)
+        if (e.type !== 'ROW.FOCUS')
+          return
+        context.set('focusedRow', e.value)
+        if (!e.keepColumn)
+          context.set('focusedColumn', null)
+      },
+      setFocusedCell: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'CELL.FOCUS')
+          return
+        context.set('focusedRow', e.row)
+        context.set('focusedColumn', e.column)
       },
       // 焦点离场只清焦点锚点，排序、选中与展开留着
       clearFocusedRow: ({ context }) => {
         context.set('focusedRow', null)
+        context.set('focusedColumn', null)
       },
     },
   },
@@ -927,7 +943,7 @@ function announceRowMove(
 function commitRowMove(
   context: RowDragContext,
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
-  send: (event: { type: 'ROW.FOCUS', value: string }) => void,
+  send: (event: { type: 'ROW.FOCUS', value: string, keepColumn?: boolean }) => void,
   rowId: string,
   target: TableDropTarget,
   kind: DragAnnounceKind,
@@ -947,8 +963,8 @@ function commitRowMove(
   }
   beforeCommit()
   prop('onRowMove')?.(details)
-  // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点
-  send({ type: 'ROW.FOCUS', value: rowId })
+  // 焦点锚点跟着搬走的那一行，键盘连着挪几格才不会挪一次就丢了起点；格子上的焦点留在那一格
+  send({ type: 'ROW.FOCUS', value: rowId, keepColumn: true })
   announceRowMove(context, prop, kind, rowId, move.index + 1)
 }
 
@@ -963,6 +979,37 @@ function armRowReorder(refs: RefsFacade<TableSchema>): void {
   refs.set('reorder', body
     ? trackReorder(body, { item: TABLE_BODY_ROW_SELECTOR, key: row => row.getAttribute(ITEM_VALUE_ATTR) ?? row.id })
     : null)
+}
+
+/**
+ * 键盘换位之后把焦点交回搬走的那一行（锚点在格子上时交回那一格）。
+ *
+ * 宿主按 ids 重排时若挪的正是持有焦点的节点（Light DOM 里把行节点按新次序 append 回表体就是这样），
+ * 节点一摘下焦点就掉回 body，连着按 Alt + 方向键挪几格的那一路就断了。宿主同步写回的当场查一次，
+ * 经框架重渲写回的下一帧再查一次；焦点已被移到表格以外别处的不去抢。落点自己的落焦处理会把锚点接回来。
+ */
+function refocusMovedRow(refs: RefsFacade<TableSchema>, rowId: string, column: string | null): void {
+  const root = refs.get('getRootEl')()
+  if (!root)
+    return
+  const doc = root.ownerDocument
+  const restore = (): void => {
+    const active = doc.activeElement
+    if (active && active !== doc.body)
+      return
+    const body = root.querySelector<HTMLElement>(TABLE_BODY_SELECTOR)
+    const rowEl = [...(body?.querySelectorAll<HTMLElement>(TABLE_ROW_SELECTOR) ?? [])]
+      .find(el => el.getAttribute(ITEM_VALUE_ATTR) === rowId)
+    if (!rowEl)
+      return
+    const cell = column == null
+      ? null
+      : [...rowEl.querySelectorAll<HTMLElement>(TABLE_CELL_SELECTOR)]
+          .find(el => el.closest(TABLE_ROW_SELECTOR) === rowEl && el.getAttribute(ITEM_VALUE_ATTR) === column)
+    focusItem(cell ?? rowEl)
+  }
+  restore()
+  doc.defaultView?.requestAnimationFrame(restore)
 }
 
 /** 收尾：拖动态的三样一起清干净，别留半截。 */

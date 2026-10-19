@@ -186,6 +186,12 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 <XhDemo src="table/28-row-action" />
 
+### 单元格导航
+
+navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，右键进到格子，方向键在格子之间走、上下键走同一列；Enter 或 F2 进格内的输入框编辑，编辑时方向键归输入框，Esc 退回格子
+
+<XhDemo src="table/29-cell-navigation" />
+
 ## 设计指引
 
 ### 何时使用
@@ -214,13 +220,14 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
 - 只渲了一段行时（接了虚拟滚动，或宿主只渲了一页），合并区只按在场的行铺开；起点行滚出窗口时，合并区里第一条在场的行接替起点：它的那一格露出内容、报剩下的行数作 `aria-rowspan`，`cellSpanOf` 对它报 `covered: false`。所以被合并掉的格子也照常写内容，接替时才有东西可显示。
 - 横向滚过之后，冻结列与滚动区之间只在确有内容被压住时出现一道描边：行首冻结列滚离起始端后画在紧挨滚动区那一列的行尾侧，行尾冻结列没滚到末端时画在它的行首侧（`data-frozen-edge` 标出那一列，`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报两端）。滚动容器是 `root` 自己；放进滚动区的表格不画这道边界。
-- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。
+- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。键盘换位时宿主写回若挪动了持有焦点的行节点（Web Components 下把行节点按新次序排回表体就是这样），焦点仍回到搬走的那一行，可以接着再挪。
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
 - 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
+- 单元格级导航：`navigation="cell"` 让表体的格子也成为焦点落点，照 WAI-ARIA treegrid 的键盘。焦点在行上时左右键照旧展开 / 收起，已展开或不可展开的行再按右键进到首格，已收起的行或叶子行按左键回到父行，Ctrl + Home / End 到首末行；焦点在格子上时左右键在格子之间走（首格再按左键回到行），上下键在可见数据行之间走同一列（禁用行跳过），Home / End 到本行首末格，Ctrl + Home / End 到本列首末行。Enter 或 F2 进到格内第一个可聚焦的控件，之后按键都归控件，Esc 或 F2 退回格子（控件自己用掉了 Esc 的不退）；格内没有控件时 Enter 触发行主操作，`column` 报这一格的列 id。选中（Space）、Alt + 方向键换位与改层级、拖动照常可用，换位之后焦点仍在原来那一格。表体同一时刻只有一个 Tab 位，落在锚点所在的行或格子上；格内控件不归 roving 管，仍在 Tab 序列里。被合并掉的格子不是落点，上下键走到那一行时落在行上。缺省 `row` 是行级焦点。
 - 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。表尾的格子合并用 `footerCellSpan`，与 `cellSpan` 同一种写法，逐格询问第几行表尾（`level`）的哪一格：总计的标题格可以横跨行表头的几列、纵跨几行表尾，被跨过的格子同样由表格藏起或留占位，表尾格子照常逐格渲染。纵向只在表尾行之间。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动、滚动面在根节点上时同样钉在根的下沿。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
 - 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾原样保留、照常可操作，不淡化（淡到禁用透明度会把文字压到 4.5:1 以下）。两种都由 `root` 报告 `aria-busy`。
@@ -285,6 +292,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `footerRows` | `number` |  | 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入； 每一行表尾经 getFooterRowProps 写明第几行（level）。 |
 | `stickyFooter` | `boolean` |  | 表尾吸底：只写 data-fixed（布尔），钉在滚动容器下沿的实现归皮肤，与 stickyHeader 对称。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `navigation` | `TableNavigation` |  | 表体的键盘导航粒度，缺省 row（只落在行上）；cell 时格子也是焦点落点，见 TableNavigation。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只影响单元格的纵向内边距与字号，列宽算法不受影响。 |
 | `translations` | `Partial<TableTranslations>` |  |  |
@@ -392,7 +400,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -415,6 +423,8 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `selectionMode` | `TableSelectionMode` |  |
 | `expandedValue` | `string[]` |  |
 | `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体中时为 null。 |
+| `focusedColumn` | `string \| null` | navigation 为 cell 时锚点所在的列，焦点在行上或不在表体中时为 null。 |
+| `navigation` | `TableNavigation` | 表体的键盘导航粒度。 |
 | `loading` | `boolean` |  |
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
 | `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 表尾行。 |
@@ -497,6 +507,14 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 | `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
 | `ArrowLeft` / `ArrowRight` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕 |
 | `Home` / `End` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动 |
+| `ArrowRight` | navigation=cell，focus on 已展开或不可展开的行（dir=rtl 时改由 ArrowLeft 承担） | 焦点进到这一行的首格；收起的可展开行上仍是展开 |
+| `ArrowLeft` | navigation=cell，focus on 收起或不可展开、且有父行的行（dir=rtl 时改由 ArrowRight 承担） | 焦点回到父行；已展开的行上仍是收起，根层的行上什么都不做且不吞键 |
+| `ArrowRight` / `ArrowLeft` | navigation=cell，focus on 表体格子 | 焦点在这一行的格子之间走一格；已在末格就停住，首格再往回走一格回到行；被合并掉的格子跳过。rtl 下两键对调，语义恒是「下一格 / 上一格」 |
+| `ArrowDown` / `ArrowUp` | navigation=cell，focus on 表体格子 | 焦点移到下一个 / 上一个可见数据行的同一列（禁用行跳过，loop 默认关）；那一行的这一列被合并掉时落到行上 |
+| `Home` / `End` | navigation=cell，focus on 表体格子 | 焦点移到本行的首格 / 末格 |
+| `Ctrl+Home` / `Ctrl+End` | navigation=cell，focus in table body | 焦点在格子上时移到本列的首行 / 末行，在行上时移到首行 / 末行 |
+| `Enter` / `F2` | navigation=cell，focus on 表体格子 | 焦点交给格内第一个可聚焦的控件（格内编辑），编辑时方向键等按键都归控件；格内没有控件时 Enter 触发行主操作（onAction，column 是这一格的列 id），F2 无事可做 |
+| `Escape` / `F2` | navigation=cell，focus in 表体格子里的控件 | 退出格内编辑，焦点回到这一格；控件自己用掉了 Escape（比如收起它的下拉）时不退出 |
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
 | `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面 |
 
@@ -582,7 +600,7 @@ cellSpan 逐格询问合并区的大小：部门列按连续相同的值纵向�
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
 - 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
 - Enter 在焦点行上触发行主操作，与点击同一条路径；焦点停在行内控件上时 Enter 归那个控件。
-- 焦点是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。表格刻意不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。
+- 焦点缺省是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。缺省不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。`navigation="cell"` 时格子也是落点（`tabindex` 随锚点轮换），格子上画一圈内收的聚焦环；被合并掉的格子不是落点。
 - 级联的半选只画在行选把手上：`row` 角色没有 mixed 这一档，半选的父行对读屏报 `aria-selected=false`，勾了哪些子行由子行各自报出。
 
 ## 样式参考

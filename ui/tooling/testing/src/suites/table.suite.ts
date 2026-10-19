@@ -292,6 +292,37 @@ function singleBodyTabStop(): StepWithExpect {
   }
 }
 
+/** 单元格级导航：表体里只留一个 Tab 停靠点，行与格子一起数。 */
+function singleCellTabStop(): StepWithExpect {
+  return {
+    kind: 'raw',
+    why: 'Tab 停靠点的数目是跨节点的计数：单元格级导航时锚点可以是一行，也可以是一格，两种部件得一起数',
+    run: ({ doc }) => {
+      const body = doc.querySelector<HTMLElement>('[data-scope="table"][data-part="body"]')
+      const stops = [...(body?.querySelectorAll<HTMLElement>('[data-scope="table"]:is([data-part="row"], [data-part="cell"])') ?? [])]
+        .filter(el => el.getAttribute('tabindex') === '0')
+      if (stops.length !== 1)
+        throw new Error(`表体里有 ${stops.length} 个 Tab 停靠点，应当恰好一个`)
+    },
+  }
+}
+
+/** 格内编辑用例专用：b 那一行的 size 格里放一个输入框。 */
+function withSizeInput(base: FixtureNode): FixtureNode {
+  const map = (node: FixtureNode): FixtureNode => {
+    if (node.part === 'row' && node.attrs?.value === 'b') {
+      return {
+        ...node,
+        children: node.children?.map(child => child.part === 'cell' && child.attrs?.value === 'size'
+          ? { part: 'cell', attrs: { value: 'size' }, children: [{ tag: 'input', attrs: { 'aria-label': '大小' } }] }
+          : child),
+      }
+    }
+    return node.children?.length ? { ...node, children: node.children.map(map) } : node
+  }
+  return map(base)
+}
+
 export const tableSuite: ConformanceSuite = {
   component: 'table',
   anatomy: tableAnatomy,
@@ -956,6 +987,61 @@ export const tableSuite: ConformanceSuite = {
         // 换成一行都不带 parentId 的那份行：平表没有层级，同一个键不再归表格管
         { kind: 'setProps', props: { rows: REORDERABLE_ROWS } },
         { kind: 'key', key: 'ArrowRight', modifiers: ['Alt'], expect: { events: [] } },
+      ],
+    },
+    {
+      name: '单元格级导航：行上右键进首格、左键回父行；格子上左右键走格、上下键走同一列，Home / End 到本行首末格，Ctrl + Home / End 到本列首末行',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/treegrid/#keyboardinteraction' },
+      covers: ['table.kbd.cell-enter', 'table.kbd.cell-parent', 'table.kbd.cell-move', 'table.kbd.cell-column', 'table.kbd.cell-row-edge', 'table.kbd.cell-column-edge'],
+      // 树形那一份行：b、c 挂在 a 底下且 a 展开着，可见序 a、b、c、d 与 DOM 里四个数据行一一对上。
+      // 格子按文档序编号：每个数据行三格（select、name、size），详情行各一格
+      props: props({ rows: TREE_ROWS, defaultExpandedValue: ['a'], navigation: 'cell' }),
+      steps: [
+        { kind: 'focus', part: 'body', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        singleCellTabStop(),
+        // a 已展开：右键不再是展开，而是进到首格
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'cell[0]', exact: true }, parts: { 'cell[0]': { tabindex: '0' }, 'row[1]': { tabindex: '-1' } } } },
+        singleCellTabStop(),
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'cell[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'cell[5]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'cell[8]', exact: true } } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'cell[12]', exact: true } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'cell[13]', exact: true } } },
+        { kind: 'key', key: 'Home', expect: { activeElement: { part: 'cell[11]', exact: true } } },
+        { kind: 'key', key: 'End', expect: { activeElement: { part: 'cell[13]', exact: true } } },
+        // 本列首行与末行：size 列在 a、d 两行
+        { kind: 'key', key: 'Home', modifiers: ['Control'], expect: { activeElement: { part: 'cell[2]', exact: true } } },
+        { kind: 'key', key: 'End', modifiers: ['Control'], expect: { activeElement: { part: 'cell[13]', exact: true } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'cell[12]', exact: true } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'cell[11]', exact: true } } },
+        // 首格再往回走一格回到行
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'row[4]', exact: true } } },
+        singleCellTabStop(),
+        { kind: 'key', key: 'ArrowUp', expect: { activeElement: { part: 'row[3]', exact: true } } },
+        // c 是 a 的子行、不可展开：左键回到父行
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'row[1]', exact: true } } },
+        // 行上的 Ctrl + End 到末行
+        { kind: 'key', key: 'End', modifiers: ['Control'], expect: { activeElement: { part: 'row[4]', exact: true } } },
+      ],
+    },
+    {
+      name: '单元格级导航：Enter / F2 进到格内控件，编辑时方向键归控件，Esc / F2 退回格子；格内没有控件时 Enter 触发行主操作',
+      spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction' },
+      covers: ['table.kbd.cell-edit', 'table.kbd.cell-edit-exit'],
+      fixture: withSizeInput,
+      props: props({ navigation: 'cell' }),
+      steps: [
+        { kind: 'focus', part: 'cell[6]', expect: { activeElement: { part: 'cell[6]', exact: true } } },
+        { kind: 'key', key: 'Enter', expect: { activeElement: { part: 'cell[6]', exact: false }, events: [] } },
+        // 编辑时方向键归输入框，焦点不出格
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        { kind: 'key', key: 'Escape', expect: { activeElement: { part: 'cell[6]', exact: true } } },
+        { kind: 'key', key: 'F2', expect: { activeElement: { part: 'cell[6]', exact: false } } },
+        { kind: 'key', key: 'F2', expect: { activeElement: { part: 'cell[6]', exact: true } } },
+        // name 格里没有控件：Enter 是这一格的行主操作，报行与列
+        { kind: 'key', key: 'ArrowLeft', expect: { activeElement: { part: 'cell[5]', exact: true } } },
+        { kind: 'key', key: 'Enter', expect: { activeElement: { part: 'cell[5]', exact: true }, events: [{ type: 'action', detail: { value: 'b', column: 'name' } }] } },
       ],
     },
     {

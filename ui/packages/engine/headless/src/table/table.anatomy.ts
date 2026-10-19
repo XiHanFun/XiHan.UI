@@ -47,6 +47,10 @@ export const TABLE_BODY_SELECTOR = `:scope > ${parts.body.selector}`
 /** 表体里的行：数据行与展开的详情行，行换位之后逐行从旧位置滑到新位置（详情行里嵌的表随外层一起走）。 */
 export const TABLE_BODY_ROW_SELECTOR = `${parts.row.selector}, ${parts['expanded-row'].selector}`
 
+/** 数据行与格子部件，换位之后按身份找回焦点落点用。 */
+export const TABLE_ROW_SELECTOR = parts.row.selector
+export const TABLE_CELL_SELECTOR = parts.cell.selector
+
 /**
  * 行级 roving 的导航集合只认 row 部件，查询容器取 body 而不是 root：
  * 表头行与脚注行同样写成 row 部件，以 body 为容器查询才把它们排除在外。

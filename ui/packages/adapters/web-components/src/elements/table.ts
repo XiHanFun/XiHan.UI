@@ -15,6 +15,7 @@ import type {
   TableColumnProps,
   TableColumnSetting,
   TableExpandedValueChangeDetails,
+  TableNavigation,
   TableRowDef,
   TableRowProps,
   TableSchema,
@@ -79,6 +80,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} sticky-footer - 表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
+ * @attr {'row'|'cell'} navigation - 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
  * @attr {'sm'|'md'|'lg'} size - 密度：只影响单元格的纵向内边距与字号，列宽不受影响
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
@@ -157,6 +159,7 @@ export class XhTableElement extends XhElement {
     // 落点校验是函数，走不了属性；只作为 property 暴露
     allowRowDrop: { attribute: false },
     loop: { converter: BOOLEAN_CONVERTER },
+    navigation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     size: { converter: STRING_CONVERTER },
     // 对象进不了属性，只作为 property 暴露
@@ -193,6 +196,7 @@ export class XhTableElement extends XhElement {
   declare rowReorderable?: boolean
   declare allowRowDrop?: (move: TableRowMoveDetails) => boolean
   declare loop?: boolean
+  declare navigation?: TableNavigation
   declare direction?: Direction
   declare size?: Size
   /** 列宽把手、列拖拽把手、全选把手的名字，以及行拖拽的播报。 */
@@ -272,6 +276,7 @@ export class XhTableElement extends XhElement {
       rowReorderable: this.rowReorderable ?? false,
       allowRowDrop: this.allowRowDrop,
       loop: this.loop,
+      navigation: this.navigation,
       dir: this.direction,
       size: this.size,
       translations: this.translations,

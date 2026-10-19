@@ -9,8 +9,8 @@ import type { KeyboardTable } from '../spec/types'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/grid/#keyboardinteraction'
 
-// 焦点粒度是一整行：表体里只有锚点行占 Tab 位，方向键在可见数据行上走。
-// 不做单元格级导航与 F2 编辑模式，左右方向键另有语义（展开/收起当前行）。
+// 缺省的焦点粒度是一整行：表体里只有锚点行占 Tab 位，方向键在可见数据行上走，左右方向键展开 / 收起当前行。
+// navigation 为 cell 时照 treegrid 多一层格子：锚点可以是一格，格子之间与格内编辑的按键见 cell 那几行。
 // 表头里的排序把手与全选把手不在 roving 行组内，各自占一个 Tab 位。
 export const tableKeyboard: KeyboardTable = {
   component: 'table',
@@ -34,6 +34,14 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.column-resize-large', keys: ['Shift+ArrowLeft', 'Shift+ArrowRight'], when: 'focus in column-resize-trigger，该列 resizable', does: '按 40px 收窄 / 加宽，方向规则同上' },
     { id: 'table.kbd.column-move', keys: ['ArrowLeft', 'ArrowRight'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕' },
     { id: 'table.kbd.column-move-edge', keys: ['Home', 'End'], when: 'focus in column-drag-trigger，该列在可拖的那一段里', does: '把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动' },
+    { id: 'table.kbd.cell-enter', keys: ['ArrowRight'], when: 'navigation=cell，focus on 已展开或不可展开的行（dir=rtl 时改由 ArrowLeft 承担）', does: '焦点进到这一行的首格；收起的可展开行上仍是展开' },
+    { id: 'table.kbd.cell-parent', keys: ['ArrowLeft'], when: 'navigation=cell，focus on 收起或不可展开、且有父行的行（dir=rtl 时改由 ArrowRight 承担）', does: '焦点回到父行；已展开的行上仍是收起，根层的行上什么都不做且不吞键' },
+    { id: 'table.kbd.cell-move', keys: ['ArrowRight', 'ArrowLeft'], when: 'navigation=cell，focus on 表体格子', does: '焦点在这一行的格子之间走一格；已在末格就停住，首格再往回走一格回到行；被合并掉的格子跳过。rtl 下两键对调，语义恒是「下一格 / 上一格」' },
+    { id: 'table.kbd.cell-column', keys: ['ArrowDown', 'ArrowUp'], when: 'navigation=cell，focus on 表体格子', does: '焦点移到下一个 / 上一个可见数据行的同一列（禁用行跳过，loop 默认关）；那一行的这一列被合并掉时落到行上' },
+    { id: 'table.kbd.cell-row-edge', keys: ['Home', 'End'], when: 'navigation=cell，focus on 表体格子', does: '焦点移到本行的首格 / 末格' },
+    { id: 'table.kbd.cell-column-edge', keys: ['Ctrl+Home', 'Ctrl+End'], when: 'navigation=cell，focus in table body', does: '焦点在格子上时移到本列的首行 / 末行，在行上时移到首行 / 末行' },
+    { id: 'table.kbd.cell-edit', keys: ['Enter', 'F2'], when: 'navigation=cell，focus on 表体格子', does: '焦点交给格内第一个可聚焦的控件（格内编辑），编辑时方向键等按键都归控件；格内没有控件时 Enter 触发行主操作（onAction，column 是这一格的列 id），F2 无事可做' },
+    { id: 'table.kbd.cell-edit-exit', keys: ['Escape', 'F2'], when: 'navigation=cell，focus in 表体格子里的控件', does: '退出格内编辑，焦点回到这一格；控件自己用掉了 Escape（比如收起它的下拉）时不退出' },
     { id: 'table.kbd.row-move', keys: ['Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in table body，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起' },
     { id: 'table.kbd.row-indent', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面' },
   ],

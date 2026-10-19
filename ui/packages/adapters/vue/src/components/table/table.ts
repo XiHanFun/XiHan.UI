@@ -12,6 +12,7 @@ import type {
   TableColumnKind,
   TableColumnPreference,
   TableColumnProps,
+  TableNavigation,
   TableRowDef,
   TableRowProps,
   TableSchema,
@@ -167,6 +168,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
     allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']> },
     loop: { type: Boolean, default: undefined },
+    /** 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑。 */
+    navigation: { type: String as PropType<TableNavigation> },
     dir: { type: String as PropType<Direction> },
     size: { type: String as PropType<Size> },
     translations: { type: Object as PropType<TableProps['translations']> },

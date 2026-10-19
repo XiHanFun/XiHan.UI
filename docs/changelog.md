@@ -52,6 +52,7 @@
 - **新增** Tree 分支行的说明部件 `branch-description`，带说明的分支与叶子一样折成两行，说明在名称下面
 - **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
+- **新增** Table 单元格级导航 `navigation="cell"`：照 WAI-ARIA treegrid，方向键在格子之间走，Enter 或 F2 进格内控件编辑、Esc 退回格子，换位、改层级与拖动照常可用
 - **新增** Tooltip 的委托模式 `delegate`：一个提示管一整个容器里的锚点，文字取锚点的 `data-xh-tooltip` 或可及名，快捷键取 `aria-keyshortcuts` 并按平台显示；提示新增 `translations.keyLabel`
 - **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`）与各档代表色 `BRAND_PRESET_COLORS`，`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
 - **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
@@ -63,6 +64,7 @@
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
+- **修复** Table 键盘换位之后，宿主写回时挪动了持有焦点的行节点，焦点不再掉回页面，回到搬走的那一行，可以接着再挪
 - **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；树形表里有子行的行不再写指向不存在详情行的 `aria-controls`；纵向合并格按行的内容盒铺开，行间线画在行下边框上时起点行不再被一次次撑高；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条
 - **修复** FieldArray 表格排布里一行的格子按这一行字段的尺寸档占一条控件高并居中，复选框、开关与文本框落在同一条中线上；Web Components 的复选框与开关宿主不再占一层盒子，与 Vue / React 一样直接参与外层排布
 - **修复** 滚动锁在同一页面里允许不同目标同时锁住：外层对话框锁着布局里的滚动容器、里层对话框锁页面时（两份配置的 `scrollRoot` 不同），里层不再初始化失败、被外层盖住或点开即收起

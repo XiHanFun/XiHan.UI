@@ -10,13 +10,25 @@ import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
- * 焦点模型：行级 roving tabindex。
+ * 焦点模型：缺省（navigation 为 row）是行级 roving tabindex。
  *
  * 表体中只有锚点行 tabindex=0，其余一律 -1；锚点 = focusedRow ?? 首个选中的数据行。
  * 焦点不在表体中时由 body 兜底进入 Tab 序列，它的 onFocus 再把焦点转交给某一行。
- * 左右方向键的语义是展开 / 收起当前行，因此不做单元格级导航与 F2 编辑模式。
+ * 左右方向键的语义是展开 / 收起当前行。单元格级导航与格内编辑见 TableNavigation 的 cell。
  */
 export type TableFocusModel = 'row-roving-tabindex'
+
+/**
+ * 表体的键盘导航粒度：
+ * - row（缺省）：焦点只落在行上，上下键走行，左右键展开 / 收起；
+ * - cell：照 WAI-ARIA treegrid，焦点可以落在行上，也可以落在格子上。表体仍只占一个 Tab 位，
+ *   锚点是一行或一格。焦点在行上时左右键展开 / 收起，已展开或不可展开时右键进到首格、左键回到父行；
+ *   在格子上时左右键在格子之间走（首格再按左键回到行），上下键走同一列，Home / End 到本行首末格，
+ *   Ctrl + Home / End 到本列首末行。Enter 或 F2 把焦点交给格内第一个可聚焦的控件（格内编辑），
+ *   编辑时按键都归控件，Esc 或 F2 退回格子；格内没有控件时 Enter 照旧触发行主操作，带上列 id。
+ *   选中、Alt + 方向键换位与改层级、拖动与 row 模式相同。
+ */
+export type TableNavigation = 'row' | 'cell'
 
 /**
  * 选择模式：
@@ -485,6 +497,8 @@ export interface TableSchema extends MachineSchema {
     stickyFooter?: boolean
     /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean
+    /** 表体的键盘导航粒度，缺省 row（只落在行上）；cell 时格子也是焦点落点，见 TableNavigation。 */
+    navigation?: TableNavigation
     /** 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 */
     dir?: Direction
     /** 密度：sm / md / lg。只影响单元格的纵向内边距与字号，列宽算法不受影响。 */
@@ -521,6 +535,8 @@ export interface TableSchema extends MachineSchema {
     expandedValue: string[]
     /** 焦点位于表体时的瞬态锚点，焦点离开即清空。 */
     focusedRow: string | null
+    /** navigation 为 cell 时锚点所在的列；为 null 表示焦点在行上。随 focusedRow 一起清空。 */
+    focusedColumn: string | null
     /**
      * 范围选的起点。与 focusedRow 是两个概念：那个跟随焦点、离场即清除，
      * 这个只在选中发生时移动，Shift 的范围从它计算。
@@ -668,7 +684,10 @@ export interface TableSchema extends MachineSchema {
     | { type: 'ROW.EXPAND', value: string }
     | { type: 'ROW.COLLAPSE', value: string }
     | { type: 'ROW.EXPAND_TOGGLE', value: string }
-    | { type: 'ROW.FOCUS', value: string }
+    /** 焦点落到行上。keepColumn 为真时保留锚点的列：换位提交后锚点跟着那一行走，格子上的焦点不回到行。 */
+    | { type: 'ROW.FOCUS', value: string, keepColumn?: boolean }
+    /** navigation 为 cell 时焦点落到格子或格内控件上。 */
+    | { type: 'CELL.FOCUS', row: string, column: string }
     /** 焦点离开表体，或持有焦点的行被移出 DOM（此时浏览器不派发 focusout，由适配器上报）。 */
     | { type: 'TABLE.BLUR' }
     /**
@@ -693,6 +712,7 @@ export interface TableSchema extends MachineSchema {
     | 'collapseRow'
     | 'toggleExpandRow'
     | 'setFocusedRow'
+    | 'setFocusedCell'
     | 'clearFocusedRow'
     | 'startColumnResize'
     | 'trackColumnResize'
@@ -750,6 +770,10 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   expandedValue: string[]
   /** 焦点锚点；焦点不在表体中时为 null。 */
   focusedRow: string | null
+  /** navigation 为 cell 时锚点所在的列，焦点在行上或不在表体中时为 null。 */
+  focusedColumn: string | null
+  /** 表体的键盘导航粒度。 */
+  navigation: TableNavigation
   loading: boolean
   /** 表体为空（显式声明或 rows 为空）。 */
   empty: boolean

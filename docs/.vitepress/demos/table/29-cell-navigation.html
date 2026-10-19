@@ -1,0 +1,97 @@
+<!-- 单元格导航 | navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，右键进到格子，方向键在格子之间走、上下键走同一列；Enter 或 F2 进格内的输入框编辑，编辑时方向键归输入框，Esc 退回格子 -->
+<div id="table-cell-navigation" style="width: 100%; max-width: 560px">
+  <xh-table data-host navigation="cell" aria-label="地区选项">
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="label"><span data-xh-part="column-label">显示名</span></div>
+          <div data-xh-part="column-header" value="value"><span data-xh-part="column-label">取值</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-cell-navigation");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+
+  table.columns = [
+    { id: "label", label: "显示名", width: "16rem" },
+    { id: "value", label: "取值" },
+  ];
+
+  // 选项树：父子由 parentId 定
+  const options = [
+    { id: "east", label: "华东", value: "east" },
+    { id: "sh", label: "上海", value: "shanghai", parentId: "east" },
+    { id: "hz", label: "杭州", value: "hangzhou", parentId: "east" },
+    { id: "south", label: "华南", value: "south" },
+    { id: "gz", label: "广州", value: "guangzhou", parentId: "south" },
+  ];
+
+  let expanded = ["east", "south"];
+
+  function textField(value, label) {
+    const field = document.createElement("xh-text-field");
+    field.setAttribute("size", "sm");
+    field.setAttribute("default-value", value);
+    field.setAttribute("aria-label", label);
+    field.innerHTML =
+      '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input" /></div></div>';
+    return field;
+  }
+
+  function rowNode(option) {
+    const level = option.parentId ? 2 : 1;
+    const el = document.createElement("div");
+    el.dataset.xhPart = "row";
+    el.setAttribute("value", option.id);
+
+    const label = document.createElement("div");
+    label.dataset.xhPart = "cell";
+    label.setAttribute("value", "label");
+    label.style.paddingInlineStart = `${level * 16}px`;
+    if (level === 1) {
+      const trigger = document.createElement("span");
+      trigger.dataset.xhPart = "expand-trigger";
+      label.append(trigger);
+    }
+    label.append(textField(option.label, `${option.label}的显示名`));
+
+    const value = document.createElement("div");
+    value.dataset.xhPart = "cell";
+    value.setAttribute("value", "value");
+    value.append(textField(option.value, `${option.label}的取值`));
+
+    el.append(label, value);
+    return el;
+  }
+
+  // 行节点建一次留着用：收起再展开，格里改过的内容还在
+  const nodes = new Map(options.map((option) => [option.id, rowNode(option)]));
+
+  // 收起的父行连着子行整段不出现。只插入、摘掉子行，不挪父行：挪动持有焦点的节点会丢焦点
+  function render() {
+    table.expandedValue = expanded;
+    table.rows = options.map((option) => ({ id: option.id, parentId: option.parentId }));
+    const visible = options
+      .filter((option) => !option.parentId || expanded.includes(option.parentId))
+      .map((option) => nodes.get(option.id));
+    for (const node of [...body.children]) {
+      if (!visible.includes(node)) node.remove();
+    }
+    visible.forEach((node, index) => {
+      if (body.children[index] !== node) body.insertBefore(node, body.children[index] ?? null);
+    });
+  }
+
+  table.addEventListener("expanded-value-change", (event) => {
+    expanded = event.detail.value;
+    render();
+  });
+
+  render();
+</script>
