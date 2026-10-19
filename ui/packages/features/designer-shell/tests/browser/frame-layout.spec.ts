@@ -405,4 +405,40 @@ describe('<xh-designer-frame> 面板头的操作区（Chromium）', () => {
     expect(ran).toEqual([hidden[0]])
     actions.element.remove()
   })
+
+  it('操作区里不会自己收起的作者内容放不下时另起一行，不压面板头的钮；栏宽够了回到同一行', async () => {
+    const filter = document.createElement('div')
+    filter.slot = 'palette-actions'
+    filter.style.cssText = 'display:flex;flex:none;width:150px;height:24px'
+    const toggle = document.createElement('button')
+    toggle.textContent = '0 个警告'
+    toggle.style.cssText = 'flex:1'
+    filter.append(toggle)
+    frame.append(filter)
+    await settle()
+    await settle()
+    const header = headerOf('palette')
+    const box = (element: Element): DOMRect => element.getBoundingClientRect()
+    const buttons = ['panel-minimize', 'panel-menu-trigger', 'panel-close'].map(part => header.querySelector<HTMLElement>(`[data-part="${part}"]`)!)
+    const overlaps = (a: DOMRect, b: DOMRect): boolean => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5
+    expect(buttons.map(button => overlaps(box(filter), box(button)))).toEqual([false, false, false])
+    expect(box(filter).right).toBeLessThanOrEqual(box(header).right + 0.5)
+    expect(box(filter).top).toBeGreaterThanOrEqual(box(buttons[0]!).bottom - 0.5)
+    for (const button of [...buttons, toggle]) {
+      const rect = box(button)
+      expect(button.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2))).toBe(true)
+    }
+    const fontSize = Number.parseFloat(getComputedStyle(header.querySelector('[data-part="panel-title"]')!).fontSize)
+    expect(box(header.querySelector('[data-part="panel-heading"]')!).width).toBeGreaterThanOrEqual(fontSize * 4 - 1)
+    // 键盘顺序与看到的一致：标题行的钮在前，第二行的操作区在后
+    const order = Array.from(header.querySelectorAll<HTMLElement>('button')).filter(button => button.checkVisibility())
+    expect(order.indexOf(toggle)).toBe(order.length - 1)
+
+    frame.style.width = '2400px'
+    await settle()
+    await settle()
+    expect(box(filter).top).toBeLessThan(box(buttons[0]!).bottom)
+    expect(buttons.map(button => overlaps(box(filter), box(button)))).toEqual([false, false, false])
+    filter.remove()
+  })
 })

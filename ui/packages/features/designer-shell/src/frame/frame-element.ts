@@ -268,6 +268,7 @@ interface RegionParts {
 /** 卡片的面板头。 */
 interface CardParts {
   readonly header: HTMLElement
+  readonly heading: HTMLElement
   readonly title: HTMLElement
   readonly subtitle: HTMLElement
   readonly actions: HTMLElement
@@ -387,6 +388,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #dirObserver: MutationObserver | undefined
   #zoneObserver: MutationObserver | undefined
   #resizeObserver: ResizeObserver | undefined
+  /** 盯着卡片的面板头与操作区里的作者内容：宽度变了重算操作区放不放得下。 */
+  #actionsObserver: ResizeObserver | undefined
+  /** 各张卡片的操作区里此刻盯着的作者节点。 */
+  readonly #observedActions = new WeakMap<CardParts, Set<Element>>()
   #releaseDrop: (() => void) | undefined
   readonly #ids = createCounterIdGenerator('xh-designer-frame')
   /** 视口窄于断点：左右两栏收进抽屉。 */
@@ -480,6 +485,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#zoneObserver?.disconnect()
     this.#zoneObserver = undefined
     this.#resizeObserver?.disconnect()
+    this.#actionsObserver?.disconnect()
+    this.#actionsObserver = undefined
     this.#releaseSlots?.()
     this.#releaseSlots = undefined
     this.#slotsKey = ''
@@ -840,8 +847,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     })
     const close = createAuthoredElement(doc, 'button', { 'type': 'button', 'data-scope': SCOPE, 'data-part': 'panel-close' }) as HTMLButtonElement
     close.addEventListener('click', () => this.#closePanel(region.name))
+    const heading = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-heading' }, [title, subtitle])
     const header = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-header' }, [
-      createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-heading' }, [title, subtitle]),
+      heading,
       actions,
       help,
       minimize,
@@ -859,7 +867,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const body = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-body' })
     setAttributes(element, { 'data-card': '', 'role': 'region', 'aria-labelledby': titleId })
     element.append(header, body)
-    return { element, content: body, zones: { actions }, signature, card: { header, title, subtitle, actions, help, helpTrigger, helpContent, minimize, menuTrigger, close } }
+    return { element, content: body, zones: { actions }, signature, card: { header, heading, title, subtitle, actions, help, helpTrigger, helpContent, minimize, menuTrigger, close } }
   }
 
   /** 事件来自面板头里的按钮、操作区或别的控件，而不是面板头本身。 */
@@ -959,6 +967,72 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   }
 
   /** 面板头随区的描述、布局与文案刷新。 */
+  /** 盯住卡片的面板头与操作区里此刻的作者节点，不在了的不再盯。 */
+  #observeActions(card: CardParts): void {
+    if (typeof ResizeObserver !== 'function')
+      return
+    this.#actionsObserver ??= new ResizeObserver(() => {
+      for (const parts of this.#regions.values()) {
+        if (parts.card)
+          this.#fitActions(parts.card)
+      }
+    })
+    let observed = this.#observedActions.get(card)
+    if (observed === undefined) {
+      observed = new Set()
+      this.#observedActions.set(card, observed)
+      this.#actionsObserver.observe(card.header)
+    }
+    const children = new Set(Array.from(card.actions.children))
+    for (const node of observed) {
+      if (!children.has(node)) {
+        this.#actionsObserver.unobserve(node)
+        observed.delete(node)
+      }
+    }
+    for (const node of children) {
+      if (!observed.has(node)) {
+        this.#actionsObserver.observe(node)
+        observed.add(node)
+      }
+    }
+  }
+
+  /**
+   * 操作区里有不会自己收起的作者内容（命令条以外的，如问题面板的严重程度开关）、和标题与面板头的钮挤一行放不下时，
+   * 把操作区挪到面板头末尾另起一行；放得下了挪回标题后面。焦点在操作区里时挪完放回去。
+   */
+  #fitActions(card: CardParts): void {
+    const { header, heading, actions } = card
+    const view = this.ownerDocument.defaultView
+    if (!view || !header.isConnected || header.clientWidth === 0)
+      return
+    const fixed = actions.hidden ? [] : Array.from(actions.children).filter((child): child is HTMLElement => child instanceof HTMLElement && !child.hidden && panelActionsOverflow(child) === undefined)
+    let wrap = false
+    if (fixed.length > 0) {
+      const style = view.getComputedStyle(header)
+      const gap = Number.parseFloat(style.columnGap) || 0
+      const others = Array.from(header.children).filter((child): child is HTMLElement => child instanceof HTMLElement && child !== heading && child !== actions && !child.hidden && view.getComputedStyle(child).display !== 'none')
+      const room = header.clientWidth - (Number.parseFloat(style.paddingInlineStart) || 0) - (Number.parseFloat(style.paddingInlineEnd) || 0)
+        - (Number.parseFloat(view.getComputedStyle(heading).minInlineSize) || 0)
+        - others.reduce((sum, child) => sum + child.getBoundingClientRect().width, 0)
+        - gap * (others.length + 1)
+      const need = fixed.reduce((sum, child) => sum + child.getBoundingClientRect().width, 0) + (Number.parseFloat(view.getComputedStyle(actions).columnGap) || 0) * (fixed.length - 1)
+      wrap = need > room + 0.5
+    }
+    if (header.hasAttribute('data-wrapped') === wrap)
+      return
+    const root = this.getRootNode() as Document | ShadowRoot
+    const focused = root.activeElement instanceof HTMLElement && actions.contains(root.activeElement) ? root.activeElement : undefined
+    header.toggleAttribute('data-wrapped', wrap)
+    if (wrap)
+      header.append(actions)
+    else
+      heading.after(actions)
+    if (focused?.isConnected && root.activeElement !== focused)
+      focused.focus({ preventScroll: true })
+  }
+
   #paintCard(region: DesignerFrameRegion, card: CardParts, t: DesignerFrameTranslations): void {
     const title = region.title ?? region.name
     const layout = this.resolvedLayout
@@ -969,6 +1043,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     setText(card.subtitle, region.subtitle ?? '')
     card.subtitle.hidden = !region.subtitle
     card.actions.hidden = card.actions.childElementCount === 0
+    this.#observeActions(card)
     setText(card.helpContent, region.help ?? '')
     card.help.hidden = !region.help
     setAttributes(card.helpTrigger, { 'aria-label': t.panelHelp(title) })
