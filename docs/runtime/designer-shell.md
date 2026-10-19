@@ -535,7 +535,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | 方法 | 说明 |
 | --- | --- |
 | `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，顶栏、状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
-| `panelEntries()` | 面板菜单的数据：能停靠的面板与画布浮动件，按登记顺序，`closable: false` 的不列。每项 `{ name, label, icon?, shown, dock?, minimized, floating, locked }`；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻看得见：没隐藏，所在栏没在分隔条上收起，窄屏时左右两栏的面板还要它所在的抽屉开着 |
+| `panelEntries()` | 面板菜单的数据：能停靠的面板与画布浮动件，按登记顺序，`closable: false` 的不列。每项 `{ name, label, icon?, shown, dock?, minimized, floating, locked, movable, floatable, minimizable }`（后三项是此刻能不能换栏、浮出、收起，算上了管控）；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻看得见：没隐藏，所在栏没在分隔条上收起，窄屏时左右两栏的面板还要它所在的抽屉开着 |
 | `togglePanel(name)` | 开关一块面板：显示着就隐藏、隐藏着就显示。所在栏在分隔条上收起着时是把那一栏放回收起前的大小；窄屏时左右两栏的面板是开关它所在那一侧的抽屉 |
 | `setPanelVisible(name, visible)` | 显示或隐藏一块面板 |
 | `movePanel(name, dock, index?)` | 停到某一栏的第 `index` 位（按布局里那一栏的先后算，含隐藏的；缺省末尾），浮着的一并吸回 |
@@ -732,20 +732,21 @@ dialog.show();
 
 ### 分区与条目
 
-- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0，各款从 100 起，扩展从 200 起，同值按登记顺序。
+- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1，各款从 100 起，扩展从 200 起，同值按登记顺序。
 - 条目就是 `@xihan-ui/designer-kit` 的属性描述：`path` 只写一段条目 id，`label` 是标签，`default` 是缺省值，说明写在 `meta.description`。
 - 值是扁平的键值：键是 `<分区 id>.<条目 id>`，没写的键取条目的 `default`。
 - 内建编辑方式与属性面板同一套字段；别的种类交给对话框的 `editors`，被编辑的对象是整份设置。
 
 | 函数 | 说明 |
 | --- | --- |
-| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general` 留给内建 |
+| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout` 留给内建 |
 | `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
 | `settingKey(section, item)` | 条目的键 |
 | `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
 | `resolveSettings(sections, settings)` | 此刻生效的设置：写了的键原样保留，各分区里没写的条目取缺省值（没有缺省值的不写）。交给命令、面板与扩展的上下文用这一份；`sections` 通常是 `collectSettingsSections` 合出的分区，基础分区要缺省值时把 `designerGeneralSettings` 的分区也传进来 |
 | `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
 | `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
+| `designerLayoutSettings(t)` | 内建的「布局」分区（`DESIGNER_LAYOUT_SETTINGS`）：一条 `panels`，编辑方式 `PANEL_LAYOUT_CONTROL`；对话框给了 `frame` 时自己生成 |
 
 ### 「基础」分区
 
@@ -757,7 +758,15 @@ dialog.show();
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
-键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），不对应设置对话框里的条目，见「外框」的「面板布局」。
+键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
+
+### 「布局」分区
+
+对话框给了 `frame`（设计器的外框）且外框里有面板时，「基础」后面多一页「布局」：一张面板表，逐块面板一行，列出显示开关、位置（左栏、右栏、下栏、浮动）、上移下移与收成标题条，表下一颗「恢复默认布局」。它和面板头的「更多」菜单一样，是不靠拖动也能改布局的路。
+
+- 表直接调外框的方法改布局（`setPanelVisible`、`movePanel`、`floatPanel`、`dockPanel`、`setPanelMinimized`、`resetLayout`），外框派发 `layout-change`，设计器照常把它写进设置；这一页自己不派发 `settings-change`。
+- 三栏按布局里的先后排，画布浮动件排在最后、只有显示开关；不能挪的面板位置与上下移不可用，不能浮出的没有「浮动」，不能收起的收起开关不可用；浮着的面板不能上下移。从右往左写时左右两栏的叫法对调。
+- 管控：`layout.panels`（或整个 `layout` 分区）`hidden` 时没有这一页，`locked` 时表只读、说明换成文案 `locked`；锁定一块面板（外框的 `layoutPolicy`）只锁那一行。
 
 ### 设置对话框
 
@@ -767,6 +776,7 @@ dialog.show();
 | --- | --- |
 | `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
 | `general` | 「基础」分区的选项 `{ brands?, customBrand?, languages? }`；`false` 不要这一页。文案随对话框的语言 |
+| `frame` | 设计器的外框（`DesignerSettingsFrame`，外框元素本身即可）；给了且有面板时有「布局」页 |
 | `settings` | 设置的值 |
 | `policy` | 宿主的管控：键是条目键或分区 id，值 `hidden` 不显示、`locked` 只读并把说明换成文案 `locked` |
 | `editors` | 内建编辑方式之外的条目按 `control.kind` 用这里的编辑器；没登记的只显示值 |

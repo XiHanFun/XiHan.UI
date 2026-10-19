@@ -297,6 +297,101 @@
     font-size: var(--xh-font-size-xs);
   }
 
+  /* 「布局」页的面板表：五列用 subgrid 对齐，名字列吃余宽，位置列不超过最窄一栏的下限；表下是「恢复默认布局」 */
+  [data-scope='designer-settings'][data-part='panel-layout'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-3);
+    align-items: flex-start;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-table'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, var(--xh-layout-col-min-xs)) auto auto;
+    column-gap: var(--xh-space-3);
+    align-self: stretch;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-row'] {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-block-size: var(--xh-control-h-md);
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
+  [data-scope='designer-settings'][data-part='panel-row'][data-head] {
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-xs);
+  }
+
+  [data-scope='designer-settings'][data-part='panel-name'] {
+    display: flex;
+    gap: var(--xh-space-2);
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-label'] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-dock'] {
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-overlay'] {
+    color: var(--xh-fg-muted);
+  }
+
+  [data-scope='designer-settings'][data-part='panel-order'] {
+    display: flex;
+    gap: var(--xh-space-1);
+  }
+
+  /* 上移、下移钮的图形 */
+  [data-scope='designer-settings'][data-part='panel-move-glyph']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
+  }
+
+  [data-scope='designer-settings'][data-part='panel-move-glyph'][data-glyph='down']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-down);
+    mask-image: var(--xh-glyph-mark-chevron-down);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='designer-settings'][data-part='panel-move-glyph']:empty::before {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    [data-scope='button'][data-part='root']:not(:disabled):is(:hover, :active) > [data-scope='designer-settings'][data-part='panel-move-glyph']:empty::before {
+      background-color: HighlightText;
+    }
+
+    [data-scope='button'][data-part='root']:disabled > [data-scope='designer-settings'][data-part='panel-move-glyph']:empty::before {
+      background-color: GrayText;
+    }
+  }
+
+  /* 上面的部件声明了 display，收起时补回来 */
+  [data-scope='designer-settings'][data-part][hidden] {
+    display: none;
+  }
+
   /* —— 问题列表 —— */
 
   xh-designer-issues {

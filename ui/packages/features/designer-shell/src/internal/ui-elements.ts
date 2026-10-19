@@ -108,10 +108,11 @@ export function defineStatusElements(): void {
   defineXhElement('xh-button', XhButtonElement)
 }
 
-/** 设置对话框：对话框、竖排的分区页与属性字段用到的元素。 */
+/** 设置对话框：对话框、竖排的分区页、属性字段与「布局」页面板的图标用到的元素。 */
 export function defineSettingsElements(): void {
   defineXhElement('xh-dialog', XhDialogElement)
   defineXhElement('xh-tabs', XhTabsElement)
+  defineXhElement('xh-icon', XhIconElement)
   definePropertyFieldElements()
 }
 

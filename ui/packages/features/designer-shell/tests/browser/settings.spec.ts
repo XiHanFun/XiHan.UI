@@ -178,4 +178,45 @@ describe('设置对话框', () => {
       resetDiagnostics()
     }
   })
+
+  it('「布局」页：面板表各列对齐、不出横向滚动，画布浮动件那一行只有显示开关；没有 wc.* 诊断，axe 也没有违规', async () => {
+    const records: DiagnosticRecord[] = []
+    resetDiagnostics()
+    setDiagnosticsLevel('warn')
+    setDiagnosticsDedupe(false)
+    setDiagnosticsConsoleOutput(false)
+    const off = onDiagnostic(record => void records.push(record))
+    const frame = document.createElement('xh-designer-frame')
+    try {
+      frame.style.cssText = 'position:fixed;left:0;top:0;width:900px;height:600px'
+      frame.regions = [
+        { name: 'palette', position: 'start', title: '物料' },
+        { name: 'canvas', position: 'center' },
+        { name: 'properties', position: 'end', title: '属性' },
+        { name: 'issues', position: 'bottom', title: '问题' },
+        { name: 'minimap', position: 'overlay', title: '小地图' },
+      ]
+      document.body.append(frame)
+      await frame.updateComplete
+      const element = await mount()
+      element.frame = frame
+      element.show('layout')
+      await element.updateComplete
+      await settle()
+      const table = document.querySelector<HTMLElement>('[data-scope="designer-settings"][data-part="panel-table"]')!
+      expect(table.scrollWidth).toBeLessThanOrEqual(table.clientWidth)
+      const left = (name: string, part: string): number => Math.round(document.querySelector<HTMLElement>(`[data-part="panel-row"][data-panel="${name}"] [data-part="${part}"]`)!.getBoundingClientRect().left)
+      expect(new Set(['palette', 'properties', 'issues', 'minimap'].map(name => left(name, 'panel-visible'))).size).toBe(1)
+      expect(new Set(['palette', 'properties', 'issues'].map(name => left(name, 'panel-dock'))).size).toBe(1)
+      const minimap = document.querySelector<HTMLElement>('[data-part="panel-row"][data-panel="minimap"]')!
+      expect(['panel-dock', 'panel-move-up', 'panel-move-down', 'panel-minimized'].map(part => getComputedStyle(minimap.querySelector(`[data-part="${part}"]`)!).display)).toEqual(['none', 'none', 'none', 'none'])
+      expect(records.filter(record => record.code.startsWith('wc.')).map(record => record.code)).toEqual([])
+      await expectNoAxeViolations(content())
+    }
+    finally {
+      off()
+      resetDiagnostics()
+      frame.remove()
+    }
+  })
 })
