@@ -124,6 +124,8 @@ export interface FloatingPanelRefs {
   session: FloatingPanelDragSession | null
   /** 这一场移动最后跟到的指针位置；报过拖动开始、还没报结束时才有值。 */
   dragPoint: FloatingPanelPoint | null
+  /** 这一扇窗在页面窗口叠放序里的身份；展开期间在栈里。 */
+  stackKey: object
 }
 
 export interface FloatingPanelSchema extends MachineSchema {
@@ -191,6 +193,11 @@ export interface FloatingPanelSchema extends MachineSchema {
     windowAnimating: boolean
     /** 上一次落定的形态：与 windowState 对照，判出这一次切换有没有进出最大化。 */
     settledWindowState: FloatingPanelWindowState
+    /**
+     * 在页面窗口叠放序里从上往下数第几扇，最上面为 0；展开期间随别的面板提上来、收起而变。
+     * 定位层的 --xh-_layer 取抽屉层减去它。
+     */
+    windowDepth: number
   }
   computed: Record<string, never>
   refs: FloatingPanelRefs
@@ -219,6 +226,10 @@ export interface FloatingPanelSchema extends MachineSchema {
     | { type: 'PRESS.END', part: FloatingPanelPressedPart }
     /** 进出最大化的几何过渡播完。 */
     | { type: 'WINDOW_STATE.SETTLED' }
+    /** 在面板上按下或焦点进到面板里：提到窗口叠放序最上面。 */
+    | { type: 'WINDOW.RAISE' }
+    /** 窗口叠放序变了：depth 是从上往下数第几扇。 */
+    | { type: 'WINDOW.DEPTH', depth: number }
   tag: never
   guard: 'canDrag' | 'canInteract' | 'canResize' | 'isOpenControlled' | 'canPress'
   action:
@@ -240,7 +251,9 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'syncWindowAnimation'
     | 'clearWindowAnimation'
     | 'clearOpenedAtMount'
-  effect: 'trackPointer'
+    | 'raiseWindow'
+    | 'setWindowDepth'
+  effect: 'trackPointer' | 'joinWindowStack'
 }
 
 export interface FloatingPanelApi<T extends PropTypes = PropTypes> {

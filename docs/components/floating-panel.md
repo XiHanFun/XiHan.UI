@@ -80,6 +80,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 - 正文是浮在页面之上的滚动面：原生细条，`overscroll-behavior: contain` 让滚到头不带走页面。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快速移动、Enter / Space 送回初始位置；调整把手上方向键推动边缘；Esc 关闭。
 - 指针拖动面板时报一对起止事件：按下拖拽把手进入拖动报 `onDragStart`（事件名 `drag-start`，带按下处的 `clientX` / `clientY`），这一场移动收尾报 `onDragEnd`（`drag-end`，带 `clientX` / `clientY` 与 `canceled`）。手松开时坐标是松手处、`canceled` 为 false；系统收回指针、拖动途中面板被收起时 `canceled` 为 true，坐标是最后跟到的那一点。两者一一对应，途中的位置照旧由 `onPositionChange` 连续报出；改尺与键盘平移不报。宿主可以据此在拖动期间画停靠提示、松手时判断落在哪里。
+- 几个面板同时开着时按叠放序排：后展开的在上面，在哪个面板上按下或焦点进到哪个面板里，哪个就提到最上，收起的退出叠放序。叠放序整页一份（core 的 [`getWindowStack`](../guide/behavior#窗口叠放序)），三种适配器、页面上几份 core 的面板都排在同一个序里；最上面的面板仍在模态层之下，对话框、抽屉与面板里弹出的浮层照旧盖在它上面。
 - `minSize` / `maxSize` 在每一处入口都生效：拖动、键盘推动、`setDimensions` 使用同一个夹取函数。
 - 内建默认矩形在挂载时按视口夹取一次：先收尺寸再调位置，窄屏上面板与右侧的调整把手不会落在屏幕外。提供 `defaultPosition` / `defaultDimensions` 时按提供的值。
 
@@ -190,7 +191,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 
 **状态**：`closed` · `open` · `open.dragging` · `open.idle` · `open.resizing`
 
-**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `DIMENSIONS.SET` · `DIMENSIONS.NUDGE` · `WINDOW_STATE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END` · `WINDOW_STATE.SETTLED`
+**事件**：`OPEN` · `CLOSE` · `TOGGLE` · `CONTROLLED.OPEN` · `CONTROLLED.CLOSE` · `POSITION.SET` · `POSITION.NUDGE` · `DIMENSIONS.SET` · `DIMENSIONS.NUDGE` · `WINDOW_STATE.SET` · `DRAG.START` · `RESIZE.START` · `DRAG.MOVE` · `DRAG.END` · `PRESS.START` · `PRESS.END` · `WINDOW_STATE.SETTLED` · `WINDOW.RAISE` · `WINDOW.DEPTH`
 
 **判据**：`canDrag` · `canInteract` · `canResize` · `isOpenControlled` · `canPress`
 
@@ -371,7 +372,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `--xh-floating-panel-header-px` | `header` | `padding-inline` | `default` | `--xh-space-3` | floating-panel 的 header 部件 padding-inline 覆盖槽。 |
 | `--xh-floating-panel-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | floating-panel 的 header 部件 padding-block 覆盖槽。 |
 | `--xh-floating-panel-icon-size` | `close-trigger`<br>`content`<br>`root`<br>`trigger`<br>`window-state-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | floating-panel 的 close-trigger、content、root、trigger、window-state-trigger 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-layer-drawer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
+| `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-floating-panel-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | floating-panel 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-floating-panel-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
