@@ -197,14 +197,21 @@ export class OverflowMenuController {
       else
         nodes.content.insertBefore(node, cursor)
     }
+    // 要移走的节点里有游标所指的那个时，先把游标挪到它们后面：下一次 insertBefore 的参照节点得还在 content 里
+    const skip = (...leaving: (ChildNode | null)[]): void => {
+      while (cursor && leaving.includes(cursor))
+        cursor = cursor.nextSibling
+    }
     menu.collection.forEach((meta, index) => {
       alive.add(meta.value)
       let entry = nodes.entries.get(meta.value)
       const wantsIndicator = meta.kind !== 'item'
       const wantsIcon = meta.icon != null
       if (!entry || (entry.indicator != null) !== wantsIndicator || (entry.icon != null) !== wantsIcon) {
-        if (entry)
+        if (entry) {
+          skip(entry.separator, entry.item)
           this.removeEntry(entry)
+        }
         const item = doc.createElement('div')
         const indicator = wantsIndicator ? doc.createElement('span') : null
         // 图标格里放一枚 xh-icon，它不写部件时自己生成 <svg> 与 glyph
@@ -225,6 +232,7 @@ export class OverflowMenuController {
       if (wantsSeparator && !entry.separator)
         entry.separator = doc.createElement('div')
       if (!wantsSeparator && entry.separator) {
+        skip(entry.separator)
         spreader.release(entry.separator)
         entry.separator.remove()
         entry.separator = null

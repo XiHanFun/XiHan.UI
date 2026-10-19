@@ -86,6 +86,7 @@
 - **修复** Web Components 的 `<xh-config>` 管到搬进 Portal 的浮层内容：对话框、抽屉与下拉面板里的元素照它们在原来位置取 `locale`、`size` 与文案，打开期间改配置跟着更新；浮层里的 `<xh-config>` 承接外层的主题，禁用的 Fieldset 压进组里开的浮层。`@xihan-ui/core` 新增穿过 Portal 实例壳走逻辑祖先链的 `logicalParentElement` 与 `logicallyContains`
 - **修复** Web Components 的元素插入后、或往已连接的元素里放进新部件后紧接着有代码读布局时，部件不再先露出浏览器缺省样式、再从那里播过渡到皮肤色（插进来先带一圈深色边框，过一会儿才恢复）；新建插入、移出再插回、往已连接的元素里追加或整批换掉部件都是如此
 - **修复** ContextMenu 的触发区里已有自带 Tab 位的内容（可聚焦的画布、列表）时，触发区不再另占一个 Tab 位；菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到它
+- **修复** 工具条与标签页的「更多」菜单在收起的条目换上或去掉图标、条目之间拿掉分隔线时，不再报 `NotFoundError`、整轮更新失败
 - **修复** Menubar 持有焦点的入口随数据删掉时，React 与 Web Components 的菜单栏不再整条退出 Tab 序列，与 Vue 一样由根节点留住 Tab 位
 - **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
 - **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
