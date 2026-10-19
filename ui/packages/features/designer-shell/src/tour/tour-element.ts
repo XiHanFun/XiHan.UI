@@ -6,6 +6,7 @@
 // <xh-designer-tour>：设计器的新手引导。库内 xh-tour 包一层：designer-shell 的通用步骤（欢迎、工具栏、物料、画布、属性、
 // 问题、状态栏、设置）加上设计器交进来的各款与扩展的步骤，按 order 排；目标是外框的面板、区、工具栏上的命令或选择器，
 // 目标面板隐藏或不在外框里的那一步跳过，进入一步前让外框把面板亮出来（展开收起的栏、标题条，窄屏时开抽屉）。
+// 引导限在外框里：遮罩只盖外框，高亮框裁在外框里，页面别处照常可用；同一页只跑一个引导。
 // 收起时派发 tour-end：走完是 complete，跳过或 Esc 是 skip，关闭钮或 stop() 是 close。
 
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
@@ -60,8 +61,11 @@ const BUILTIN_STEPS: readonly { readonly id: string, readonly target?: DesignerT
   { id: 'shell.properties', target: { panel: 'properties' }, order: 40, title: 'propertiesTitle', description: 'propertiesDescription' },
   { id: 'shell.issues', target: { panel: 'issues' }, order: 50, title: 'issuesTitle', description: 'issuesDescription' },
   { id: 'shell.status', target: { region: 'status' }, order: 60, title: 'statusTitle', description: 'statusDescription' },
-  { id: 'shell.settings', target: { command: 'settings' }, order: 90, title: 'settingsTitle', description: 'settingsDescription' },
+  { id: 'shell.settings', target: { command: 'settings' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
 ]
+
+/** 每个文档里此刻开着的引导：同一页只跑一个。 */
+const RUNNING = new WeakMap<Document, XhDesignerTourElement>()
 
 const REGION_SELECTOR = '[data-part="region"][data-region]'
 
@@ -74,7 +78,7 @@ function byAttribute<T extends Element>(root: ParentNode | null | undefined, sel
   return null
 }
 
-type TourHost = HTMLElement & { steps?: unknown[], open?: boolean, value?: number, translations?: Record<string, unknown> }
+type TourHost = HTMLElement & { steps?: unknown[], open?: boolean, value?: number, boundary?: () => HTMLElement | null, translations?: Record<string, unknown> }
 
 interface Parts {
   readonly tour: TourHost
@@ -114,6 +118,8 @@ export class XhDesignerTourElement extends XhReactiveElement {
   #running = false
   /** 收起时的起因：complete、skip 事件先到，open-change 收起时才派发 tour-end。 */
   #reason: 'complete' | 'skip' | undefined
+  /** 开始引导时外框窄屏抽屉的开合：引导打开的抽屉在不需要时、以及收起时还原成它。 */
+  #drawer: 'start' | 'end' | undefined
 
   /** 引导此刻开着。 */
   get running(): boolean {
@@ -133,12 +139,23 @@ export class XhDesignerTourElement extends XhReactiveElement {
       .filter(step => this.#available(step.target))
   }
 
-  /** 开始引导，从第一步起；没有能走的步骤时返回 false。 */
-  start(): boolean {
+  /**
+   * 开始引导，从第一步起；没有能走的步骤时返回 false。同一页里已有别的引导开着时：缺省不开始、返回 false
+   * （自动开始用这个），force 为 true 时先收起那一个（用户手动开始用这个）。
+   */
+  start(options: { readonly force?: boolean } = {}): boolean {
+    const other = RUNNING.get(this.ownerDocument)
+    if (other !== undefined && other !== this && other.running) {
+      if (!options.force)
+        return false
+      other.stop()
+    }
     const steps = this.plannedSteps()
     if (steps.length === 0)
       return false
     const parts = this.#ensureParts()
+    if (!this.#running)
+      this.#drawer = this.frame?.openDrawer
     this.#run = steps
     this.#reason = undefined
     parts.tour.steps = steps.map(step => ({
@@ -153,6 +170,7 @@ export class XhDesignerTourElement extends XhReactiveElement {
     parts.tour.value = 0
     parts.tour.open = true
     this.#running = true
+    RUNNING.set(this.ownerDocument, this)
     this.#paint()
     return true
   }
@@ -161,6 +179,11 @@ export class XhDesignerTourElement extends XhReactiveElement {
   stop(): void {
     if (this.#running && this.#parts)
       this.#finish('close')
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.stop()
   }
 
   protected override update(changed: PropertyValues): void {
@@ -200,6 +223,7 @@ export class XhDesignerTourElement extends XhReactiveElement {
       ]),
     ])
     tour.open = false
+    tour.boundary = () => this.frame ?? null
     tour.addEventListener('value-change', (event) => {
       if (event.target !== tour)
         return
@@ -237,7 +261,17 @@ export class XhDesignerTourElement extends XhReactiveElement {
       return
     this.#running = false
     this.#reason = undefined
+    if (RUNNING.get(this.ownerDocument) === this)
+      RUNNING.delete(this.ownerDocument)
+    this.#restoreDrawer()
     emitEvent(this, 'tour-end', { reason, step })
+  }
+
+  /** 外框窄屏抽屉还原成开始引导时的样子。 */
+  #restoreDrawer(): void {
+    const frame = this.frame
+    if (frame && frame.openDrawer !== this.#drawer)
+      frame.openDrawer = this.#drawer
   }
 
   #paint(): void {
@@ -252,11 +286,13 @@ export class XhDesignerTourElement extends XhReactiveElement {
     setText(parts.skip, t.skip)
   }
 
-  /** 进入一步前：目标是面板就让外框把它亮出来。 */
+  /** 进入一步前：目标是面板就让外框把它亮出来；不是面板时，引导打开的窄屏抽屉收回去，免得盖住这一步的目标。 */
   #reveal(index: number): void {
     const target = this.#run[index]?.target
     if (target && 'panel' in target)
       this.frame?.revealPanel(target.panel)
+    else
+      this.#restoreDrawer()
   }
 
   /** 这一步此刻能不能走：面板与区要在外框里且显示着，命令要有它的按钮。 */
