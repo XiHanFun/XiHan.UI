@@ -170,6 +170,7 @@
   "[data-scope=\"field-array\"][data-part=\"item-action\"][data-layout=\"table\"]": "部件不接焦点：field-array/item-action",
   "[data-scope=\"field-array\"][data-part=\"item-delete-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"field-array\"][data-part=\"item-label\"][data-layout=\"table\"]": "部件不接焦点：field-array/item-label",
+  "[data-scope=\"field-array\"][data-part=\"item\"][data-dragging]": "部件不接焦点：field-array/item",
   "[data-scope=\"field-array\"][data-part=\"move-down-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"field-array\"][data-part=\"move-up-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"field-array\"][data-part=\"table\"][data-layout=\"table\"]": "部件不接焦点：field-array/table",
