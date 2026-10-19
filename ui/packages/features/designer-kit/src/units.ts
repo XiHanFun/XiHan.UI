@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 长度单位换算与纸张预设：在毫米、厘米、英寸、磅与像素之间换算，页面设置取常用纸张的纵向尺寸。
+// 长度单位换算、显示与纸张预设：在毫米、厘米、英寸、磅与像素之间换算，长度数值的显示与步进，页面设置取常用纸张的纵向尺寸。
 
 import type { Size } from './geometry'
 
@@ -65,6 +65,74 @@ export function convertLength(value: number, from: LengthUnit, to: LengthUnit, o
   const fromBase = baseLength(from, dpi)
   const toBase = baseLength(to, dpi)
   return from === to ? value : value * fromBase / toBase
+}
+
+/** 长度单位的符号，与 LengthUnit 一一对应；尺寸徽标、标尺这类显示长度的地方取用。 */
+export const LENGTH_UNIT_SYMBOLS: Readonly<Record<LengthUnit, string>> = { mm: 'mm', cm: 'cm', in: 'in', pt: 'pt', px: 'px' }
+
+/** formatLength 的选项。 */
+export interface FormatLengthOptions {
+  /** 最多几位小数，缺省 1；须是 0–20 的整数。 */
+  readonly fractionDigits?: number
+  /** 写小数点用的 locale，缺省为运行环境的。 */
+  readonly locale?: string
+}
+
+/** stepLength 的选项。 */
+export interface StepLengthOptions {
+  readonly min?: number
+  readonly max?: number
+  /** 取整到几位小数，缺省 1；须是 0–20 的整数。 */
+  readonly fractionDigits?: number
+}
+
+function checkFractionDigits(digits: number): number {
+  if (!Number.isInteger(digits) || digits < 0 || digits > 20)
+    throw new RangeError(`[designer-kit] fractionDigits must be an integer between 0 and 20, got ${digits}`)
+  return 10 ** digits
+}
+
+function checkFinite(name: string, value: number): void {
+  if (!Number.isFinite(value))
+    throw new RangeError(`[designer-kit] ${name} must be a finite number, got ${value}`)
+}
+
+/** 按小数位四舍五入，负零归成零。 */
+function roundLength(value: number, factor: number): number {
+  return Math.round(value * factor) / factor || 0
+}
+
+/**
+ * 把长度数值写成文字（不带单位）：按 locale 写小数点，最多 fractionDigits 位小数（缺省 1），不分组，负零写成 0。
+ * value 不是有限数或 fractionDigits 不合法时抛 RangeError。
+ *
+ * @example
+ * formatLength(12.345) // '12.3'
+ * formatLength(12.36, { locale: 'de-DE' }) // '12,4'
+ */
+export function formatLength(value: number, options: FormatLengthOptions = {}): string {
+  checkFinite('value', value)
+  const digits = options.fractionDigits ?? 1
+  const rounded = roundLength(value, checkFractionDigits(digits))
+  return new Intl.NumberFormat(options.locale, { maximumFractionDigits: digits, useGrouping: false }).format(rounded)
+}
+
+/**
+ * 长度步进：value 加上 delta，按 fractionDigits 位小数（缺省 1）取整，再夹在 [min, max] 里；用来避开 0.1 + 0.2 这类尾差。
+ * 数值不是有限数、fractionDigits 不合法或 min 大于 max 时抛 RangeError。
+ *
+ * @example
+ * stepLength(0.1, 0.2) // 0.3
+ * stepLength(3, -5, { min: 1 }) // 1
+ */
+export function stepLength(value: number, delta: number, options: StepLengthOptions = {}): number {
+  checkFinite('value', value)
+  checkFinite('delta', delta)
+  const { min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY } = options
+  if (min > max)
+    throw new RangeError(`[designer-kit] min ${min} is greater than max ${max}`)
+  const rounded = roundLength(value + delta, checkFractionDigits(options.fractionDigits ?? 1))
+  return Math.min(max, Math.max(min, rounded))
 }
 
 /** 纸张预设名：ISO 216 的 A3–A6 与 B4、B5，北美的 Letter 与 Legal。 */

@@ -82,8 +82,8 @@ export { checkTableCells, planCellMerge, planCellSplit, planTableLineInsert, pla
 export type { TableAxis, TableCell, TableCellIssue, TableCellPosition, TableLinePlan, TableMergePlan, TableSize } from './table-cells'
 export { handlePoints, nudgeDelta, resizeWithHandle, rotateWithHandle } from './transform'
 export type { NudgeOptions, ResizeHandle, ResizeOptions, RotateOptions, TransformHandle } from './transform'
-export { convertLength, CSS_PX_PER_INCH, isPaperPresetName, LENGTH_UNITS, MM_PER_INCH, PAPER_PRESET_NAMES, PAPER_PRESETS, PT_PER_INCH } from './units'
-export type { LengthConversionOptions, LengthUnit, PaperPresetName } from './units'
+export { convertLength, CSS_PX_PER_INCH, formatLength, isPaperPresetName, LENGTH_UNIT_SYMBOLS, LENGTH_UNITS, MM_PER_INCH, PAPER_PRESET_NAMES, PAPER_PRESETS, PT_PER_INCH, stepLength } from './units'
+export type { FormatLengthOptions, LengthConversionOptions, LengthUnit, PaperPresetName, StepLengthOptions } from './units'
 export {
   centerOn,
   clampZoom,
