@@ -45392,8 +45392,13 @@
   outline-offset: var(--xh-ring-offset);
 }
 
-/* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器 */
-.xh-scope-table:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ .xh-scope-table:is([data-part='row'], [data-part='expanded-row']) {
+/* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器。
+   接了虚拟滚动时每一行包在一个虚拟条目里，上面那条兄弟选择器够不着：条目里的数据行按完整行序判，
+   除了第 0 条都画（data-index），不按窗口里的先后，滚动换批时每一行的高度不变；一个条目只装一行数据行，
+   跟在它后面的详情行照样画 */
+.xh-scope-table:is([data-part='header'], [data-part='body'], [data-part='footer']) > :not([hidden]) ~ .xh-scope-table:is([data-part='row'], [data-part='expanded-row']),
+.xh-scope-virtualizer[data-part='item']:not([data-index='0']) > .xh-scope-table[data-part='row'],
+.xh-scope-virtualizer[data-part='item'] > :not([hidden]) ~ .xh-scope-table[data-part='expanded-row'] {
   border-block-start: var(--xh-stroke-thin) solid var(--xh-table-row-border, var(--xh-border-subtle));
 }
 

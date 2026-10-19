@@ -75945,6 +75945,7 @@
         "expanded-row",
         "footer",
         "header",
+        "item",
         "root",
         "row"
       ],
@@ -75953,9 +75954,11 @@
         "border-inline-end"
       ],
       "state": [
+        "index=0",
         "is([data-part='header'], [data-part='body'], [data-part='footer'])",
         "is([data-part='row'], [data-part='expanded-row'])",
         "not(:last-child)",
+        "not([data-index='0'])",
         "not([hidden])",
         "split"
       ],
@@ -75963,7 +75966,7 @@
         "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "table 的 body、cell、column-header、expanded-row、footer、header、root、row 部件 border-block-start、border-inline-end 覆盖槽。"
+      "description": "table 的 body、cell、column-header、expanded-row、footer、header、item、root、row 部件 border-block-start、border-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-table-row-cursor",
