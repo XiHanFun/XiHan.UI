@@ -1,9 +1,10 @@
 // field-array 表格排布在窄容器里：列宽有下限，下限之和超过容器时表格区横向滚动，表头与各行一起滚；
-// 行头与把手钉在两侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线。
+// 行头与把手钉在两侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线；放不下时表格本体进 Tab 序列，一行都没有也能用键盘滚动。
 //
 // 只有真实浏览器量得出来：靠的是网格轨道、粘性定位与滚动的实际排布。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { page, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhFieldArrayColumnHeader,
@@ -46,12 +47,12 @@ async function settle(): Promise<void> {
   }
 }
 
-async function mount(width: number): Promise<HTMLElement> {
+async function mount(width: number, count = 2): Promise<HTMLElement> {
   host = document.createElement('div')
   host.style.inlineSize = `${width}px`
   document.body.append(host)
   app = createApp({
-    render: () => h(XhFieldArrayRoot, { 'layout': 'table', 'columns': COLUMNS, 'defaultValue': [{}, {}], 'aria-label': '启动变量' }, {
+    render: () => h(XhFieldArrayRoot, { 'layout': 'table', 'columns': COLUMNS, 'defaultValue': Array.from({ length: count }, () => ({})), 'aria-label': '启动变量' }, {
       default: ({ items }: { items: Array<{ key: string, index: number }> }) => [
         h(XhFieldArrayTable, null, () => [
           h(XhFieldArrayHeader, null, () => COLUMNS.map(column => h(XhFieldArrayColumnHeader, { key: column.id, value: column.id }))),
@@ -149,9 +150,33 @@ describe('field-array 表格排布的窄宽', () => {
     expect(transparent(actionEdge())).toBe(true)
   })
 
-  it('容器放得下时不滚动，两侧都不画分隔线', async () => {
+  it('放不下时表格本体进 Tab 序列：一行都没有，Tab 也停得到它上面，名字是表格的名字，方向键横向滚动', async () => {
+    const before = document.createElement('button')
+    before.textContent = 'before'
+    document.body.prepend(before)
+    try {
+      const root = await mount(241, 0)
+      const area = table(root)
+      expect(area.scrollWidth).toBeGreaterThan(area.clientWidth)
+      expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth)
+      expect(area.getAttribute('tabindex')).toBe('0')
+      before.focus()
+      await userEvent.keyboard('{Tab}')
+      expect(document.activeElement).toBe(area)
+      expect(page.getByRole('table', { name: '启动变量' }).element()).toBe(area)
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}')
+      await settle()
+      expect(area.scrollLeft).toBeGreaterThan(0)
+    }
+    finally {
+      before.remove()
+    }
+  })
+
+  it('容器放得下时不滚动，两侧都不画分隔线，表格本体不进 Tab 序列', async () => {
     const root = await mount(900)
     const area = table(root)
+    expect(area.hasAttribute('tabindex')).toBe(false)
     expect(area.scrollWidth).toBeLessThanOrEqual(area.clientWidth)
     expect(area.hasAttribute('data-at-min-horizontal')).toBe(true)
     expect(area.hasAttribute('data-at-max-horizontal')).toBe(true)

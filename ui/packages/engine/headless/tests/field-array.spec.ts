@@ -799,6 +799,19 @@ describe('表格排布：角色、行号与列轨道', () => {
     expect([list['data-at-min-horizontal'], list['data-at-max-horizontal']]).toEqual([undefined, undefined])
   })
 
+  it('表格本体只在横向放不下时进 Tab 序列：两端都贴着时不带 tabindex，离开任一端就带上；列表排布不带', () => {
+    const tabindex = (service: Svc): unknown => (api(service).getTableProps() as Record<string, unknown>).tabindex
+    const table = makeService({ layout: 'table', columns, defaultValue: [] })
+    expect(tabindex(table)).toBeUndefined()
+    table.context.set('scrollEdges', { atStart: true, atEnd: false })
+    expect(tabindex(table)).toBe(0)
+    table.context.set('scrollEdges', { atStart: false, atEnd: true })
+    expect(tabindex(table)).toBe(0)
+    const list = makeService({ columns, defaultValue: ['a'] })
+    list.context.set('scrollEdges', { atStart: true, atEnd: false })
+    expect(tabindex(list)).toBeUndefined()
+  })
+
   it('格子的列 id 不在 columns 里：不指定轨道，由排布自然流入', () => {
     const service = makeService({ layout: 'table', columns, defaultValue: ['a'] })
     const cell = api(service).getItemCellProps({ index: 0, value: 'missing' }) as Record<string, unknown>

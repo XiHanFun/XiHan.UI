@@ -233,6 +233,8 @@ export function connectFieldArray<T extends PropTypes>(
       // 表格本体是横向滚动容器：报它离两端的远近，钉在两侧的行头与把手据此画分隔线
       'data-at-min-horizontal': dataAttr(table && scrollEdges.atStart),
       'data-at-max-horizontal': dataAttr(table && scrollEdges.atEnd),
+      // 横向放不下时进 Tab 序列：一行都没有、行里没有能聚焦的控件时，键盘也能停在上面用方向键滚动
+      'tabindex': table && !(scrollEdges.atStart && scrollEdges.atEnd) ? 0 : undefined,
     }),
 
     getHeaderProps: () => normalize.element({
