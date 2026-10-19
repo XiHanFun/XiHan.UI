@@ -7,10 +7,11 @@
 // 并跑移动、框选与控制柄的手势会话；命中判断归设计器。坐标只认 Viewport，覆盖层左上角就是视口的屏幕原点。
 // 覆盖层本身不接指针，只有控制柄接；移动与框选由设计器命中后调 startMove / startMarquee 开始。
 // 多选时控制柄画在整体包围框上，拖动按包围框等比缩放全部选中项。
-// 写 slot="toolbar" 的子节点是上下文工具条：浮在选中框上方，贴顶放不下时翻到下方，手势中收起；
+// 写 slot="toolbar" 的子节点是上下文工具条：浮在选中框上方，贴顶放不下时翻到下方，手势中收起；左右夹在覆盖层里，
+// 最宽到覆盖层的宽减去两侧间距，里面的工具条放不下的收进自己的「更多」；
 // focusToolbar() 把焦点交给它，在工具条里按 Esc 回到交之前的位置。画的框与控制柄都是 aria-hidden，工具条不是。
 // 给了 measureOptions 时选中框下方有尺寸徽标：measure 为 gesture 时只在拖动、缩放中只读显示；为 selection 时选中即常驻，
-// 单选可缩放时宽高各一个数字框，改了派发 measure-change，由设计器改模型。工具条翻到下方时排在徽标下面；
+// 单选可缩放时宽高各一个数字框，改了派发 measure-change，由设计器改模型；徽标同样左右夹在覆盖层里。工具条翻到下方时排在徽标下面；
 // 工具条在徽标之前，在工具条里按 Tab 接着进到徽标。
 
 import type { LengthUnit, MarqueeMode, Point, Rect, ResizeHandle, Size, SnapGuide, SnapOptions, Viewport } from '@xihan-ui/designer-kit'
@@ -124,7 +125,7 @@ const HANDLE_ANGLES: Readonly<Record<ResizeHandle, number>> = { n: 0, ne: 45, e:
 const ROTATE_OFFSET = 24
 /** 吸附的屏幕距离。 */
 const SNAP_DISTANCE = 6
-/** 上下文工具条离选中框与覆盖层边缘的屏幕距离。 */
+/** 上下文工具条离选中框与覆盖层边缘、尺寸徽标离覆盖层边缘的屏幕距离。 */
 const TOOLBAR_GAP = 8
 /** 工具条里先取 roving 的当前条目，再取第一个能聚焦的。 */
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -251,6 +252,8 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   #parts: Parts | undefined
   #gesture: Gesture | undefined
   #childObserver: MutationObserver | undefined
+  /** 覆盖层、工具条与徽标的尺寸一变就重排：画布改了大小、工具条收进「更多」后变窄、徽标换了内容。 */
+  #resizeObserver: ResizeObserver | undefined
   /** focusToolbar、focusMeasure 之前焦点所在的元素，Esc 时还回去。 */
   #returnFocus: HTMLElement | undefined
   #measureFields: MeasureFields | undefined
@@ -269,11 +272,20 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     // 后来放进来的工具条内容要挪进工具条部件
     this.#childObserver ??= new MutationObserver(() => this.requestUpdate())
     this.#childObserver.observe(this, { childList: true })
+    if (typeof ResizeObserver !== 'undefined') {
+      this.#resizeObserver ??= new ResizeObserver(() => this.requestUpdate())
+      this.#resizeObserver.observe(this)
+      if (this.#parts) {
+        this.#resizeObserver.observe(this.#parts.toolbar)
+        this.#resizeObserver.observe(this.#parts.measure)
+      }
+    }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.#childObserver?.disconnect()
+    this.#resizeObserver?.disconnect()
     this.cancel()
   }
 
@@ -389,6 +401,8 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     toolbar.addEventListener('keydown', this.#onToolbarKey)
     this.#adoptToolbar(toolbar)
     this.replaceChildren(hover, frames, bounds, guides, marquee, ...handles.values(), toolbar, measure)
+    this.#resizeObserver?.observe(toolbar)
+    this.#resizeObserver?.observe(measure)
     this.#parts = { hover, frames, bounds, guides, marquee, handles, measure, toolbar }
     return this.#parts
   }
@@ -403,7 +417,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
 
   /**
    * 上下文工具条：在选中框（整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方，徽标显示着就排在徽标下面；
-   * 左右夹在覆盖层里。没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
+   * 最宽到覆盖层的宽减去两侧间距，左右夹在覆盖层里。没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
    */
   #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean, measure: HTMLElement): void {
     const shown = bounds !== undefined && element.childElementCount > 0
@@ -414,14 +428,27 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     }
     const start = worldToScreen(viewport, { x: bounds.x, y: bounds.y })
     const end = worldToScreen(viewport, { x: bounds.x + bounds.width, y: bounds.y + bounds.height })
+    element.style.maxInlineSize = this.#maxInline()
     const box = element.getBoundingClientRect()
     const above = start.y - (rotate ? ROTATE_OFFSET : 0) - TOOLBAR_GAP - box.height
     const placement = above >= TOOLBAR_GAP ? 'top' : 'bottom'
     const below = measure.hidden ? end.y : Math.max(end.y, measure.getBoundingClientRect().bottom - this.getBoundingClientRect().top)
     const y = placement === 'top' ? above : below + TOOLBAR_GAP
-    const x = Math.min(Math.max((start.x + end.x - box.width) / 2, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, this.clientWidth - box.width - TOOLBAR_GAP))
+    const x = this.#clampInline((start.x + end.x - box.width) / 2, box.width)
     element.dataset.placement = placement
     element.style.transform = `translate(${x}px, ${y}px)`
+  }
+
+  /** 工具条与徽标的最大宽：覆盖层的宽减去两侧间距；覆盖层没有排版（宽为 0）时不限。 */
+  #maxInline(): string {
+    return this.clientWidth > 0 ? `${Math.max(0, this.clientWidth - 2 * TOOLBAR_GAP)}px` : ''
+  }
+
+  /** 宽 width 的一块从 left 起放：左右夹进覆盖层、两侧留出间距，比覆盖层还宽时贴左边的间距；覆盖层没有排版时原样返回。 */
+  #clampInline(left: number, width: number): number {
+    if (this.clientWidth === 0)
+      return left
+    return Math.min(Math.max(left, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, this.clientWidth - width - TOOLBAR_GAP))
   }
 
   /** 工具条里按 Esc：焦点回到 focusToolbar 之前的位置。 */
@@ -488,7 +515,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   }
 
   /**
-   * 尺寸徽标：在选中框（整体包围框）底边下方居中。拖动、缩放中只读显示实时尺寸；measure 为 selection 时空闲也显示，
+   * 尺寸徽标：在选中框（整体包围框）底边下方居中，左右夹在覆盖层里。拖动、缩放中只读显示实时尺寸；measure 为 selection 时空闲也显示，
    * 单选、可编辑、能缩放时是宽高两个数字框，否则只读显示（多选写整体包围框的尺寸，单选写元素自己的宽高）。
    */
   #placeMeasure(element: HTMLElement, items: readonly DesignerTransformItem[], rects: readonly Rect[], gesture: Gesture | undefined, viewport: Viewport): void {
@@ -515,7 +542,9 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       this.#showMeasureFields(element, t)
     }
     const at = worldToScreen(viewport, { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height })
-    element.style.transform = `translate(${at.x}px, ${at.y}px) translate(-50%, 0)`
+    element.style.maxInlineSize = this.#maxInline()
+    const width = element.getBoundingClientRect().width
+    element.style.transform = `translate(${this.#clampInline(at.x - width / 2, width)}px, ${at.y}px)`
   }
 
   #translations(): DesignerTransformTranslations {
