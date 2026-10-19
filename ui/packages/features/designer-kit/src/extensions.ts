@@ -4,11 +4,12 @@
  */
 
 // @xihan-ui/designer-kit —— 设计器扩展：按实例传入的扩展对象的公共骨架、合并与查重、装上与卸下、
-// 规则执行、命令的快捷键，以及模板里各扩展自己的数据。
+// 规则执行、命令的快捷键、字段来源，以及模板里各扩展自己的数据。
 
 import type { DIAGNOSTIC_CODES, IconRecord, Tone } from '@xihan-ui/core'
 import type { HotkeyEvent, KbdPlatform } from '@xihan-ui/core/hotkey'
 import type { JsonObject, JsonPath, JsonValue } from '@xihan-ui/core/json'
+import type { DataField } from './data-fields'
 import type { PathOperation } from './path-operation'
 import type { ControlKind, PropertyEditor, PropertyEditorLayer, PropertyEditorTable } from './properties'
 import type { SchemaIssue } from './schema'
@@ -159,6 +160,46 @@ export interface DesignerExporter<Ctx = unknown> {
   readonly export: (format: string, context: Ctx) => Promise<Blob | string>
 }
 
+/** 字段来源交给导入对话框的内容：一份 JSON 样例、一份 JSON Schema，或已经算好的字段（可以带一份样例）。 */
+export type DesignerFieldSourceContent
+  = | { readonly kind: 'sample', readonly value: JsonValue }
+    | { readonly kind: 'json-schema', readonly value: JsonValue }
+    | { readonly kind: 'fields', readonly fields: readonly DataField[], readonly sample?: JsonValue }
+
+/** 导入对话框交给字段来源页的宿主。 */
+export interface DesignerFieldSourceHost {
+  /** 对话框所在的文档，页用它建元素。 */
+  readonly document: Document
+  /** 对话框关上或切走这一页时中止；中止之后 provide 与 fail 不再生效。 */
+  readonly signal: AbortSignal
+  /** 页里拿到内容后交给对话框，对话框据此推断并刷新预览；再给一次就换掉上一次的。 */
+  readonly provide: (content: DesignerFieldSourceContent) => void
+  /** 页里出错时交给对话框显示，文案由页自己给。 */
+  readonly fail: (message: string) => void
+}
+
+/** 字段来源在对话框里的一页。 */
+export interface DesignerFieldSourcePage {
+  /** 这一页的根元素，放进对话框。 */
+  readonly element: HTMLElement
+  /** 切走这一页或对话框关上后调用。 */
+  readonly destroy?: () => void
+}
+
+/** 字段来源：导入对话框里的一页，如从接口请求取样例；内容交回对话框，后面的推断、预览与确认走对话框自己的。 */
+export interface DesignerFieldSource {
+  /** 全局唯一，写法同命令 id；不能与别的扩展的字段来源重名。 */
+  readonly id: string
+  /** 页签上的名字。 */
+  readonly label: string
+  /** 页签上的图标。 */
+  readonly icon?: IconRecord
+  /** 页签的先后：对话框内置的两页是 0 与 10，不写按 100；同值按登记顺序。 */
+  readonly order?: number
+  /** 每次切到这一页时建一份。 */
+  readonly create: (host: DesignerFieldSourceHost) => DesignerFieldSourcePage
+}
+
 /** 扩展里只含纯数据与纯函数的部分：校验、计算这类 core 函数读它。 */
 export interface DesignerExtensionCore<Doc = unknown, RuleCtx = unknown> {
   /** 全局唯一，用包名加功能名：@xihan-flow-pro/simulation。也是模板里扩展数据的键。 */
@@ -179,6 +220,8 @@ export interface DesignerExtensionBase<Ctx = unknown, Editor = PropertyEditor, D
   readonly importers?: readonly DesignerImporter<Ctx>[]
   /** 导出器：把当前文档换成文件，交给登记了所要格式的第一个。 */
   readonly exporters?: readonly DesignerExporter<Ctx>[]
+  /** 字段来源：导入字段的对话框里，排在内置的 JSON 样例与 JSON Schema 两页之后。 */
+  readonly fieldSources?: readonly DesignerFieldSource[]
   /** 装上时调用，返回卸下时的清理。 */
   readonly setup?: (context: Ctx) => (() => void) | void
 }
@@ -187,7 +230,7 @@ export interface DesignerExtensionBase<Ctx = unknown, Editor = PropertyEditor, D
 export class DesignerExtensionError extends Error {
   /** 诊断码，恒为 designer.extension-conflict。 */
   readonly code: typeof DIAGNOSTIC_CODES.designerExtensionConflict = 'designer.extension-conflict'
-  /** 冲突的名字空间：extension、command、shortcut、control、importer、exporter，或各款传入的。 */
+  /** 冲突的名字空间：extension、command、shortcut、control、importer、exporter、field-source，或各款传入的。 */
   readonly space: string
   /** 重名的那个名字。 */
   readonly key: string
@@ -208,18 +251,19 @@ export type ExtensionKeySpaces<E> = Readonly<Record<string, (extension: E) => It
 
 type AnyExtension = { readonly id: string } & Partial<DesignerExtensionBase<never, unknown, unknown, unknown>>
 
-/** 内建的名字空间：命令、快捷键、编辑方式、导入、导出。 */
+/** 内建的名字空间：命令、快捷键、编辑方式、导入、导出、字段来源。 */
 const BASE_SPACES: ExtensionKeySpaces<AnyExtension> = {
-  command: extension => (extension.commands ?? []).map(command => command.id),
-  shortcut: extension => (extension.commands ?? []).flatMap(command => commandShortcuts(command).map(shortcutKey)),
-  control: extension => Object.keys(extension.controls ?? {}),
-  importer: extension => (extension.importers ?? []).map(importer => importer.id),
-  exporter: extension => (extension.exporters ?? []).map(exporter => exporter.id),
+  'command': extension => (extension.commands ?? []).map(command => command.id),
+  'shortcut': extension => (extension.commands ?? []).flatMap(command => commandShortcuts(command).map(shortcutKey)),
+  'control': extension => Object.keys(extension.controls ?? {}),
+  'importer': extension => (extension.importers ?? []).map(importer => importer.id),
+  'exporter': extension => (extension.exporters ?? []).map(exporter => exporter.id),
+  'field-source': extension => (extension.fieldSources ?? []).map(source => source.id),
 }
 
 /**
  * 合并内置扩展与传入的扩展：内置在前、传入的按数组顺序在后。扩展 id、命令 id、快捷键、编辑方式（含内建的那几种）、
- * 导入导出 id，以及 spaces 里各款的名字，有一个重名就抛 DesignerExtensionError，报出名字与两个扩展的 id。
+ * 导入导出 id、字段来源 id，以及 spaces 里各款的名字，有一个重名就抛 DesignerExtensionError，报出名字与两个扩展的 id。
  * 命令的形状不合（见 assertCommandShape）抛 TypeError。
  */
 export function mergeExtensions<E extends { readonly id: string }>(

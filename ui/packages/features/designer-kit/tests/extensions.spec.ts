@@ -52,7 +52,7 @@ describe('mergeExtensions', () => {
     expect(mergeExtensions([builtin], [a, b])).toEqual([builtin, a, b])
   })
 
-  it('扩展 id、命令 id、快捷键、编辑方式与各款的名字重名都抛错，报出名字与两个扩展', () => {
+  it('扩展 id、命令 id、快捷键、编辑方式、字段来源与各款的名字重名都抛错，报出名字与两个扩展', () => {
     const extension = conflictOf(() => mergeExtensions<Ext>([{ id: 'x' }], [{ id: 'x' }]))
     expect([extension.code, extension.space, extension.key, extension.extensions]).toEqual(['designer.extension-conflict', 'extension', 'x', ['x', 'x']])
 
@@ -65,6 +65,11 @@ describe('mergeExtensions', () => {
 
     const control = conflictOf(() => mergeExtensions<Ext>([], [{ id: 'a', controls: { text: {} } }]))
     expect([control.space, control.key, control.extensions]).toEqual(['control', 'text', ['builtin', 'a']])
+
+    const source = (id: string): NonNullable<Ext['fieldSources']>[number] => ({ id, label: id, create: host => ({ element: host.document.createElement('div') }) })
+    const fields = conflictOf(() => mergeExtensions<Ext>([{ id: 'a', fieldSources: [source('request')] }], [{ id: 'b', fieldSources: [source('request')] }]))
+    expect([fields.space, fields.key, fields.extensions]).toEqual(['field-source', 'request', ['a', 'b']])
+    expect(mergeExtensions<Ext>([{ id: 'a', fieldSources: [source('request')] }], [{ id: 'b', fieldSources: [source('database')] }])).toHaveLength(2)
 
     const kind = conflictOf(() => mergeExtensions<Ext>([{ id: 'builtin', nodeTypes: ['task'] }], [{ id: 'a', nodeTypes: ['task'] }], {
       'node-type': extension => extension.nodeTypes ?? [],
