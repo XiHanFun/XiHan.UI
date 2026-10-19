@@ -82803,6 +82803,15 @@
             },
             {
               "kind": "field",
+              "name": "estimateFromMeasured",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "estimate-from-measured"
+            },
+            {
+              "kind": "field",
               "name": "getItemKey",
               "privacy": "public",
               "type": {
@@ -83079,6 +83088,14 @@
               "description": "条目增删时钉住哪一头；end 从底部看起、贴底时继续贴底，默认 start",
               "name": "anchor",
               "fieldName": "anchor"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "没量过的条目按已量条目的实测平均估算，默认 false；条目要写 measure 属性",
+              "name": "estimate-from-measured",
+              "fieldName": "estimateFromMeasured"
             },
             {
               "name": "viewport-tab-index",

@@ -857,3 +857,132 @@ describe('scrollContainer: window', () => {
     expect(viewport.tabindex).toBeUndefined()
   })
 })
+
+describe('estimateFromMeasured', () => {
+  /** 量一条：节点自报下标，主轴尺寸取 size。这条得在窗口里，connect 才会把它交给内核。 */
+  function measureAt(r: Rig, index: number, size: number): void {
+    const node = document.createElement('div')
+    node.setAttribute('data-index', String(index))
+    Object.defineProperty(node, 'offsetHeight', { configurable: true, get: () => size })
+    r.viewport.appendChild(node)
+    r.api().measureElement(node)
+  }
+
+  function sizeOf(r: Rig, index: number): number | undefined {
+    return r.api().virtualItems.find(item => item.index === index)?.size
+  }
+
+  it('不打开时没量过的条目照旧按 estimateSize 排', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0 })
+    await settle()
+    measureAt(r, 0, 45)
+    expect(sizeOf(r, 1)).toBe(30)
+    expect(r.api().totalSize).toBe(45 + 999 * 30)
+  })
+
+  it('打开后没量过的条目按已量条目的实测平均估', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    measureAt(r, 0, 45)
+    expect(sizeOf(r, 1)).toBe(45)
+    expect(r.api().totalSize).toBe(1000 * 45)
+  })
+
+  it('平均取整：45 与 46 平均 45.5，没量过的按 46 排', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    measureAt(r, 0, 45)
+    measureAt(r, 1, 46)
+    expect(sizeOf(r, 2)).toBe(46)
+    expect(r.api().totalSize).toBe(45 + 46 + 998 * 46)
+  })
+
+  it('没给 estimateSize：一条都没量到时按视口长度估，首屏只排出头几条，量到之后按实测铺满', async () => {
+    const r = rig({ count: 1000, estimateFromMeasured: true })
+    await settle()
+    // 视口 100、每条先按 100 估：可视区只有第 0 条，过扫描往后多 5 条
+    expect(indexes(r)).toEqual([0, 1, 2, 3, 4, 5])
+    for (const index of indexes(r))
+      measureAt(r, index, 25)
+    expect(r.api().totalSize).toBe(1000 * 25)
+    expect(r.api().endIndex).toBe(3)
+  })
+
+  it('跳到远处：没量过的条目按实测排，量完窗口里的条目滚动量不被校正', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    r.scroll(3000)
+    expect(r.api().startIndex).toBe(66)
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    expect(r.viewport.scrollTop).toBe(3000)
+    expect(r.api().startIndex).toBe(66)
+  })
+
+  it('对照：写死的估算与实测对不上时，量完窗口里的条目滚动量被校正', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0 })
+    await settle()
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    r.scroll(3000)
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    expect(r.viewport.scrollTop).not.toBe(3000)
+  })
+
+  it('已量条目的尺寸变了（换密度）：窗口外的旧实测作废，估算换成新的平均', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    r.scroll(3000)
+    const far = indexes(r)
+    for (const index of far)
+      measureAt(r, index, 45)
+    r.scroll(0)
+    for (const index of indexes(r))
+      measureAt(r, index, 40)
+    // 远处那几条的 45 已作废：整份按 40 排
+    expect(r.api().totalSize).toBe(1000 * 40)
+    r.scroll(66 * 40)
+    expect(r.api().startIndex).toBe(66)
+    expect(sizeOf(r, far[0]!)).toBe(40)
+  })
+
+  it('估算变了视口里第一条不跳：它离视口起点的距离保持不变', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    for (const index of indexes(r))
+      measureAt(r, index, 45)
+    r.scroll(3000)
+    // 第 66 条起点 2970，露出视口起点之上 30
+    const window = indexes(r)
+    expect(window[0]).toBe(66)
+    for (const index of window)
+      measureAt(r, index, 45)
+    for (const index of window)
+      measureAt(r, index, 40)
+    expect(r.api().startIndex).toBe(66)
+    expect(r.viewport.scrollTop).toBe(66 * 40 + 30)
+  })
+
+  it('measure 丢掉实测后沿用上一份平均，不退回 estimateSize', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0, estimateFromMeasured: true })
+    await settle()
+    measureAt(r, 0, 45)
+    r.api().measure()
+    expect(sizeOf(r, 0)).toBe(45)
+    expect(r.api().totalSize).toBe(1000 * 45)
+  })
+
+  it('运行中打开：没量过的条目改按已量条目的平均重排', async () => {
+    const r = rig({ count: 1000, estimateSize: 30, overscan: 0 })
+    await settle()
+    measureAt(r, 0, 45)
+    expect(r.api().totalSize).toBe(45 + 999 * 30)
+    r.setProps({ estimateFromMeasured: true })
+    expect(r.api().totalSize).toBe(1000 * 45)
+  })
+})

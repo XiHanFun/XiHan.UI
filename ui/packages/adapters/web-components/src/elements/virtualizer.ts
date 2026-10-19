@@ -63,6 +63,7 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @attr {number} lanes - 多列网格的列数，默认 1
  * @attr {'viewport'|'window'|'ancestor'} scroll-container - 滚动容器：viewport（默认）是视口自己滚，window 是列表铺在页面里随整页滚，ancestor 滚视口最近的可滚动祖先（找不到时随整页滚）
  * @attr {'start'|'end'} anchor - 条目增删时钉住哪一头；end 从底部看起、贴底时继续贴底，默认 start
+ * @attr {boolean} estimate-from-measured - 没量过的条目按已量条目的实测平均估算，默认 false；条目要写 measure 属性
  * @fires range-change - 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
  * @csspart root - 组件根容器，承载 data-orientation 与 data-scrolling
  * @csspart viewport - 实际 overflow:auto 的层，带 tabindex=0 使键盘用户可以进入
@@ -86,6 +87,7 @@ export class XhVirtualizerElement extends XhElement {
     viewportTabIndex: { converter: NUMBER_CONVERTER, attribute: 'viewport-tab-index' },
     scrollContainer: { converter: STRING_CONVERTER, attribute: 'scroll-container' },
     anchor: { converter: STRING_CONVERTER },
+    estimateFromMeasured: { converter: BOOLEAN_CONVERTER, attribute: 'estimate-from-measured' },
     // 函数与数组走不了属性；只作为 property 暴露，与 Vue 侧的同名 prop 对齐
     getItemKey: { attribute: false },
     stickyIndices: { attribute: false },
@@ -103,6 +105,7 @@ export class XhVirtualizerElement extends XhElement {
   declare viewportTabIndex?: number
   declare scrollContainer?: VirtualizerScrollContainer
   declare anchor?: VirtualizerAnchor
+  declare estimateFromMeasured?: boolean
   declare getItemKey?: (index: number) => string | number
   declare stickyIndices?: number[]
 
@@ -135,6 +138,7 @@ export class XhVirtualizerElement extends XhElement {
       viewportTabIndex: this.viewportTabIndex,
       scrollContainer: this.scrollContainer,
       anchor: this.anchor,
+      estimateFromMeasured: this.estimateFromMeasured,
       stickyIndices: this.stickyIndices,
       getItemKey: this.getItemKey,
       onRangeChange: this.notify,

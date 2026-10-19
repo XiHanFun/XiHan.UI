@@ -128,6 +128,13 @@ export interface VirtualizerSchema extends MachineSchema {
     anchor?: VirtualizerAnchor
     /** 钉在视口起点的条目下标（分组标题）：滚过它之后它一直钉着，直到下一个钉住的条目接替。 */
     stickyIndices?: number[]
+    /**
+     * 没量过的条目按已量条目的实测平均（取整）估算，缺省 false；条目要开 measure 把真实尺寸回传。
+     * 打开后 estimateSize 只管一条都还没量到的时候，没给时先按视口长度估，首屏只排出头几条。
+     * 已量条目的尺寸变了（换密度、换皮肤、视口变宽换行）时，窗口外的旧实测作废，一并按新的平均估算。
+     * 行高随尺寸、密度与皮肤变化的表格行用它，不必写死估算值。
+     */
+    estimateFromMeasured?: boolean
   }
   context: {
     /** 应渲染内容的唯一事实源。连接层只读取它，不涉及任何 DOM。 */

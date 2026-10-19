@@ -10,7 +10,8 @@
       </div>
     </div>
     <div data-xh-part="body">
-      <xh-virtualizer id="table-virtual-rows-virtualizer" count="10000" estimate-size="36" scroll-container="ancestor">
+      <!-- 行高不写死：estimateFromMeasured 按量到的行高估算还没渲染的行，换尺寸、密度或皮肤都跟得上 -->
+      <xh-virtualizer id="table-virtual-rows-virtualizer" count="10000" estimate-from-measured scroll-container="ancestor">
         <div data-xh-part="root">
           <div data-xh-part="viewport">
             <div data-xh-part="content"></div>
@@ -53,8 +54,6 @@
     el.dataset.xhPart = "row";
     el.dataset.xhPartOwner = "table";
     el.setAttribute("value", p.id);
-    // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-    el.style.cssText = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
     el.append(...columns.map((col) => {
       const cell = document.createElement("div");
       cell.dataset.xhPart = "cell";
@@ -70,6 +69,8 @@
       const shell = document.createElement("div");
       shell.dataset.xhPart = "item";
       shell.setAttribute("value", item.index);
+      // 量出真实行高交给 virtualizer，还没渲染的行按它估算
+      shell.setAttribute("measure", "");
       shell.append(row(people[item.index]));
       return shell;
     }));

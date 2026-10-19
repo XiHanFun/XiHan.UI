@@ -47,6 +47,7 @@ export const XhVirtualizerRoot = defineComponent({
     scrollContainer: { type: String as PropType<VirtualizerScrollContainer> },
     anchor: { type: String as PropType<VirtualizerAnchor> },
     stickyIndices: { type: Array as PropType<number[]> },
+    estimateFromMeasured: { type: Boolean, default: undefined },
   },
   // change 携带当前该渲染哪些条目的详情
   emits: {
