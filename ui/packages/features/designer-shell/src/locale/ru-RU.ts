@@ -131,6 +131,12 @@ const translations: DesignerShellLocaleTranslations = {
     settings: 'Настройки',
     help: 'Справка',
   },
+  'xh-designer-transform': {
+    measure: 'Размер',
+    width: 'Ширина',
+    height: 'Высота',
+    measureText: (width, height, unit) => (unit === '' ? `${width} × ${height}` : `${width} × ${height} ${unit}`),
+  },
 }
 
 /** 俄语。 */

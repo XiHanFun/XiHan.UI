@@ -833,6 +833,31 @@
     white-space: nowrap;
   }
 
+  /* 可编辑的尺寸徽标：与上下文工具条同一种实体面，接指针；两个数字框按内容定宽 */
+  xh-designer-transform > [data-part='measure'][data-editable]:not([hidden]) {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--xh-space-1);
+    padding: var(--xh-space-0_5);
+    border: var(--xh-stroke-thin) solid var(--xh-material-solid-border);
+    border-radius: var(--xh-shape-overlay);
+    background: var(--xh-material-solid-bg);
+    box-shadow: var(--xh-material-solid-shadow);
+    color: var(--xh-fg-default);
+    pointer-events: auto;
+  }
+
+  xh-designer-transform > [data-part='measure'] > [data-part='measure-field'] {
+    --xh-number-field-control-w: max-content;
+    --xh-number-field-control-min-w: 0;
+  }
+
+  xh-designer-transform > [data-part='measure'] > [data-part='measure-unit'] {
+    padding-inline-end: var(--xh-space-1);
+    color: var(--xh-fg-muted);
+  }
+
   /* 上下文工具条：接指针，实体底、描边与一层柔和投影，盖在框与控制柄之上 */
   xh-designer-transform > [data-part='toolbar'] {
     position: absolute;

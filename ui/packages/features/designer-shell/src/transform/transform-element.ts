@@ -9,13 +9,20 @@
 // 多选时控制柄画在整体包围框上，拖动按包围框等比缩放全部选中项。
 // 写 slot="toolbar" 的子节点是上下文工具条：浮在选中框上方，贴顶放不下时翻到下方，手势中收起；
 // focusToolbar() 把焦点交给它，在工具条里按 Esc 回到交之前的位置。画的框与控制柄都是 aria-hidden，工具条不是。
+// 给了 measureOptions 时选中框下方有尺寸徽标：measure 为 gesture 时只在拖动、缩放中只读显示；为 selection 时选中即常驻，
+// 单选可缩放时宽高各一个数字框，改了派发 measure-change，由设计器改模型。工具条翻到下方时排在徽标下面；
+// 工具条在徽标之前，在工具条里按 Tab 接着进到徽标。
 
-import type { MarqueeMode, Point, Rect, ResizeHandle, Size, SnapGuide, SnapOptions, Viewport } from '@xihan-ui/designer-kit'
+import type { LengthUnit, MarqueeMode, Point, Rect, ResizeHandle, Size, SnapGuide, SnapOptions, Viewport } from '@xihan-ui/designer-kit'
 import type { PointerEndDetails, PointerSession, PointerSessionDetails } from '@xihan-ui/pointer'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { PanRequestDetail } from '../drag/drag'
+import type { DesignerTransformTranslations } from '../translations'
 import {
+  convertLength,
+  formatLength,
   handlePoints,
+  LENGTH_UNIT_SYMBOLS,
   marqueeModeFromDrag,
   marqueeRect,
   rectCenter,
@@ -24,11 +31,13 @@ import {
   rotateWithHandle,
   screenToWorld,
   snapRect,
+  stepLength,
   unionRects,
   worldToScreen,
 } from '@xihan-ui/designer-kit'
 import { createPointerSession, edgeScrollDelta, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
-import { BOOLEAN_CONVERTER, createGeneratedElement, emitEvent, setText, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { defineTransformElements } from '../internal/ui-elements'
 
 /** 一个选中项与它能做的变换。 */
 export interface DesignerTransformItem {
@@ -54,6 +63,33 @@ export type DesignerGesturePhase = 'start' | 'move' | 'end' | 'cancel'
 /** 吸附选项；threshold 不给时取屏幕上的固定像素除以 zoom。 */
 export type DesignerSnapOptions = Omit<SnapOptions, 'threshold'> & { readonly threshold?: number }
 
+/** 尺寸徽标何时显示：gesture 只在拖动、缩放中只读显示；selection 选中即常驻，单选可缩放时带宽高微调。 */
+export type DesignerMeasureMode = 'gesture' | 'selection'
+
+/** 尺寸徽标的单位、精度与步长。 */
+export interface DesignerMeasureOptions {
+  /** 模型坐标的长度单位；按格计这类不是长度的设计器不给，徽标直接显示模型数值。 */
+  readonly unit?: LengthUnit
+  /** 显示单位，缺省同 unit。 */
+  readonly displayUnit?: LengthUnit
+  /** 单位文字：缺省取显示单位的符号；没有 unit 时由设计器给，不给就不写单位。 */
+  readonly unitLabel?: string
+  /** 显示的小数位，缺省 1。 */
+  readonly fractionDigits?: number
+  /** 加减钮与方向键的一步（显示单位），缺省 1。 */
+  readonly step?: number
+  /** Shift 加方向键与 PageUp / PageDown 的一步（显示单位），缺省 10。 */
+  readonly largeStep?: number
+}
+
+/** measure-change 的内容：rect 是改后的模型矩形，左上角不动；source 为 step 是加减钮或方向键，input 是输入后确认。 */
+export interface DesignerMeasureChangeDetail {
+  readonly id: string
+  readonly rect: Rect
+  readonly axis: 'width' | 'height'
+  readonly source: 'step' | 'input'
+}
+
 /** 变换覆盖层派发的事件。 */
 export interface DesignerTransformEventMap {
   'transform': CustomEvent<{
@@ -65,6 +101,7 @@ export interface DesignerTransformEventMap {
   }>
   'marquee': CustomEvent<{ phase: DesignerGesturePhase, rect: Rect, mode: MarqueeMode, additive: boolean }>
   'pan-request': CustomEvent<PanRequestDetail>
+  'measure-change': CustomEvent<DesignerMeasureChangeDetail>
 }
 
 const ALL_HANDLES: readonly ResizeHandle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
@@ -79,6 +116,47 @@ const TOOLBAR_GAP = 8
 /** 工具条里先取 roving 的当前条目，再取第一个能聚焦的。 */
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 }
+const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? undefined }
+const TAG = 'xh-designer-transform'
+const DEFAULT_TRANSLATIONS: DesignerTransformTranslations = {
+  measure: 'Size',
+  width: 'Width',
+  height: 'Height',
+  measureText: (width, height, unit) => (unit === '' ? `${width} × ${height}` : `${width} × ${height} ${unit}`),
+}
+const AXES = ['width', 'height'] as const
+/** 能改宽、能改高的控制柄方向。 */
+const AXIS_HANDLES: Readonly<Record<MeasureAxis, readonly ResizeHandle[]>> = {
+  width: ['e', 'w', 'ne', 'nw', 'se', 'sw'],
+  height: ['n', 's', 'ne', 'nw', 'se', 'sw'],
+}
+
+type MeasureAxis = (typeof AXES)[number]
+
+/** 徽标里的数字框：库内 xh-number-field。 */
+type MeasureBox = HTMLElement & {
+  value?: string
+  min?: number
+  step?: number
+  largeStep?: number
+  readOnly?: boolean
+  format?: (value: number) => string
+  parse?: (text: string) => number
+}
+
+interface MeasureFields {
+  readonly width: MeasureBox
+  readonly height: MeasureBox
+  readonly separator: HTMLElement
+  readonly unit: HTMLElement
+}
+
+/** 徽标正在编辑的那一项。 */
+interface Measured {
+  readonly item: DesignerTransformItem
+  readonly rect: Rect
+  readonly editable: Readonly<Record<MeasureAxis, boolean>>
+}
 
 interface Gesture {
   readonly kind: DesignerTransformKind | 'marquee'
@@ -125,9 +203,16 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     items: { attribute: false },
     hover: { attribute: false },
     getSnap: { attribute: false },
-    formatMeasure: { attribute: false },
+    measure: { converter: STRING_CONVERTER },
+    measureOptions: { attribute: false },
     rotateStep: { type: Number, attribute: 'rotate-step' },
     readonly: { converter: BOOLEAN_CONVERTER },
+    translations: { attribute: false },
+  }
+
+  /** 徽标里的数字框。 */
+  static defineDependencies(): void {
+    defineTransformElements()
   }
 
   /** 画布的视口。 */
@@ -138,21 +223,31 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   declare hover: Rect | undefined
   /** 每次手势开始时取一次吸附选项；返回 undefined 不吸附。 */
   declare getSnap: ((kind: 'move' | 'resize') => DesignerSnapOptions | undefined) | undefined
-  /** 拖动中的尺寸与位置标签；不给不显示。 */
-  declare formatMeasure: ((rect: Rect) => string) | undefined
+  /** 尺寸徽标何时显示，缺省 gesture。同名 attribute。 */
+  declare measure: DesignerMeasureMode | undefined
+  /** 尺寸徽标的单位、精度与步长；不给不显示徽标。 */
+  declare measureOptions: DesignerMeasureOptions | undefined
   /** 按住 Shift 旋转时吸附的角度，缺省 15。 */
   declare rotateStep: number | undefined
-  /** 只读：不画控制柄，startMove 不起作用；框选照常。 */
+  /** 只读：不画控制柄，startMove 不起作用，徽标只显示不能改；框选照常。 */
   declare readonly?: boolean
+  /** 覆盖 xh-designer-transform 桶里的文案。 */
+  declare translations: Partial<DesignerTransformTranslations> | undefined
 
+  readonly #config = new XhConfigController(this)
   #parts: Parts | undefined
   #gesture: Gesture | undefined
   #childObserver: MutationObserver | undefined
-  /** focusToolbar 之前焦点所在的元素，Esc 时还回去。 */
+  /** focusToolbar、focusMeasure 之前焦点所在的元素，Esc 时还回去。 */
   #returnFocus: HTMLElement | undefined
+  #measureFields: MeasureFields | undefined
+  #measured: Measured | undefined
+  /** 正在输入、还没确认的那一边与框里的文字。 */
+  #typed: { readonly axis: MeasureAxis, readonly text: string } | undefined
 
   constructor() {
     super()
+    this.measure = 'gesture'
     this.readonly = false
   }
 
@@ -182,6 +277,24 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       return false
     const active = this.ownerDocument.activeElement
     this.#returnFocus = active instanceof HTMLElement && !toolbar.contains(active) ? active : undefined
+    target.focus()
+    return true
+  }
+
+  /**
+   * 把焦点交给尺寸徽标里第一个能改的数字框，与 focusToolbar 对称；徽标没显示数字框时什么都不做。
+   * 返回是否交了。在徽标里按 Esc，焦点回到交之前的位置。
+   */
+  focusMeasure(): boolean {
+    const measure = this.#parts?.measure
+    const fields = this.#measureFields
+    if (!measure || measure.hidden || !fields || fields.width.parentElement !== measure)
+      return false
+    const target = AXES.map(axis => fields[axis]).find(field => field.readOnly !== true)?.querySelector('input')
+    if (!target)
+      return false
+    const active = this.ownerDocument.activeElement
+    this.#returnFocus = active instanceof HTMLElement && !measure.contains(active) ? active : undefined
     target.focus()
     return true
   }
@@ -232,10 +345,10 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     this.#placeBox(parts.marquee, gesture?.marquee, viewport)
     const target = this.readonly ? undefined : handleTargetOf(items, rects)
     this.#placeHandles(parts.handles, target, viewport, gesture)
-    this.#placeMeasure(parts.measure, gesture && gesture.kind !== 'marquee' ? unionRects(rects.map(rotatedBounds)) : undefined, viewport)
+    this.#placeMeasure(parts.measure, items, rects, gesture, viewport)
     this.#adoptToolbar(parts.toolbar)
     const toolbarFor = gesture || this.readonly || rects.length === 0 ? undefined : unionRects(rects.map(rotatedBounds))
-    this.#placeToolbar(parts.toolbar, toolbarFor, viewport, target?.allowed.has('rotate') === true)
+    this.#placeToolbar(parts.toolbar, toolbarFor, viewport, target?.allowed.has('rotate') === true, parts.measure)
   }
 
   #ensureParts(): Parts {
@@ -254,12 +367,15 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       handles.set(handle, element)
     }
     const measure = createGeneratedElement(doc, 'div', { 'data-part': 'measure', 'hidden': true })
+    measure.addEventListener('keydown', this.#onMeasureLargeStep, true)
+    measure.addEventListener('keydown', this.#onMeasureKey)
+    measure.addEventListener('pointerdown', this.#onMeasurePointer)
     for (const decorative of [hover, frames, bounds, guides, marquee, ...handles.values(), measure])
       decorative.setAttribute('aria-hidden', 'true')
     const toolbar = createGeneratedElement(doc, 'div', { 'data-part': 'toolbar', 'hidden': true })
     toolbar.addEventListener('keydown', this.#onToolbarKey)
     this.#adoptToolbar(toolbar)
-    this.replaceChildren(hover, frames, bounds, guides, marquee, ...handles.values(), measure, toolbar)
+    this.replaceChildren(hover, frames, bounds, guides, marquee, ...handles.values(), toolbar, measure)
     this.#parts = { hover, frames, bounds, guides, marquee, handles, measure, toolbar }
     return this.#parts
   }
@@ -273,10 +389,10 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   }
 
   /**
-   * 上下文工具条：在选中框（整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方；左右夹在覆盖层里。
-   * 没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
+   * 上下文工具条：在选中框（整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方，徽标显示着就排在徽标下面；
+   * 左右夹在覆盖层里。没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
    */
-  #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean): void {
+  #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean, measure: HTMLElement): void {
     const shown = bounds !== undefined && element.childElementCount > 0
     element.hidden = !shown
     if (!shown) {
@@ -288,7 +404,8 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const box = element.getBoundingClientRect()
     const above = start.y - (rotate ? ROTATE_OFFSET : 0) - TOOLBAR_GAP - box.height
     const placement = above >= TOOLBAR_GAP ? 'top' : 'bottom'
-    const y = placement === 'top' ? above : end.y + TOOLBAR_GAP
+    const below = measure.hidden ? end.y : Math.max(end.y, measure.getBoundingClientRect().bottom - this.getBoundingClientRect().top)
+    const y = placement === 'top' ? above : below + TOOLBAR_GAP
     const x = Math.min(Math.max((start.x + end.x - box.width) / 2, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, this.clientWidth - box.width - TOOLBAR_GAP))
     element.dataset.placement = placement
     element.style.transform = `translate(${x}px, ${y}px)`
@@ -357,14 +474,244 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     }
   }
 
-  #placeMeasure(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport): void {
-    const text = bounds && this.formatMeasure ? this.formatMeasure(bounds) : undefined
-    element.hidden = text === undefined
-    if (!bounds || text === undefined)
+  /**
+   * 尺寸徽标：在选中框（整体包围框）底边下方居中。拖动、缩放中只读显示实时尺寸；measure 为 selection 时空闲也显示，
+   * 单选、可编辑、能缩放时是宽高两个数字框，否则只读显示（多选写整体包围框的尺寸，单选写元素自己的宽高）。
+   */
+  #placeMeasure(element: HTMLElement, items: readonly DesignerTransformItem[], rects: readonly Rect[], gesture: Gesture | undefined, viewport: Viewport): void {
+    const options = this.measureOptions
+    const moving = gesture !== undefined && gesture.kind !== 'marquee'
+    const shown = options !== undefined && rects.length > 0 && (moving || (gesture === undefined && this.measure === 'selection'))
+    element.hidden = !shown
+    if (!shown) {
+      this.#measured = undefined
       return
-    setText(element, text)
+    }
+    const t = this.#translations()
+    const bounds = unionRects(rects.map(rotatedBounds))!
+    const editable = moving || this.readonly || rects.length !== 1 ? undefined : editableAxes(items[0]!)
+    if (this.#typed && this.#measured?.item.id !== items[0]?.id)
+      this.#typed = undefined
+    if (editable === undefined) {
+      this.#measured = undefined
+      const size = rects.length === 1 ? rects[0]! : bounds
+      this.#showMeasureText(element, t.measureText(this.#formatSide(size.width), this.#formatSide(size.height), this.#unitLabel()))
+    }
+    else {
+      this.#measured = { item: items[0]!, rect: rects[0]!, editable }
+      this.#showMeasureFields(element, t)
+    }
     const at = worldToScreen(viewport, { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height })
     element.style.transform = `translate(${at.x}px, ${at.y}px) translate(-50%, 0)`
+  }
+
+  #translations(): DesignerTransformTranslations {
+    return this.#config.translations<DesignerTransformTranslations>(TAG, DEFAULT_TRANSLATIONS, this.translations)
+  }
+
+  /** 只读显示：一句文字，对读屏隐藏，不接指针。 */
+  #showMeasureText(element: HTMLElement, text: string): void {
+    setText(element, text)
+    element.setAttribute('aria-hidden', 'true')
+    element.removeAttribute('role')
+    element.removeAttribute('aria-label')
+    delete element.dataset.editable
+  }
+
+  /** 编辑：宽、乘号、高、单位；数字框跟着当前项刷新，正在输入的那一边不动。 */
+  #showMeasureFields(element: HTMLElement, t: DesignerTransformTranslations): void {
+    const measured = this.#measured!
+    const fields = this.#measureFields ?? this.#createMeasureFields()
+    if (fields.width.parentElement !== element)
+      element.replaceChildren(fields.width, fields.separator, fields.height, fields.unit)
+    element.removeAttribute('aria-hidden')
+    element.setAttribute('role', 'group')
+    element.setAttribute('aria-label', t.measure)
+    element.dataset.editable = ''
+    const options = this.measureOptions!
+    for (const axis of AXES) {
+      const field = fields[axis]
+      field.setAttribute('aria-label', axis === 'width' ? t.width : t.height)
+      field.min = this.#toDisplay(measured.item.minSize?.[axis] ?? 0)
+      field.step = options.step ?? 1
+      field.largeStep = options.largeStep ?? 10
+      field.readOnly = !measured.editable[axis]
+      field.format = this.#formatDisplay
+      field.parse = this.#parseDisplay
+      if (this.#typed?.axis !== axis)
+        field.value = this.#formatSide(measured.rect[axis])
+    }
+    const unit = this.#unitLabel()
+    setText(fields.unit, unit)
+    fields.unit.hidden = unit === ''
+  }
+
+  #createMeasureFields(): MeasureFields {
+    const doc = this.ownerDocument
+    const field = (axis: MeasureAxis): MeasureBox => {
+      const input = createAuthoredElement(doc, 'input', { 'data-xh-part': 'input' })
+      const box: MeasureBox = createAuthoredElement(doc, 'xh-number-field', { 'data-part': 'measure-field', 'data-axis': axis, 'size': 'sm' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
+          createAuthoredElement(doc, 'div', { 'data-xh-part': 'control' }, [
+            createAuthoredElement(doc, 'button', { 'data-xh-part': 'decrement-trigger', 'type': 'button' }),
+            input,
+            createAuthoredElement(doc, 'button', { 'data-xh-part': 'increment-trigger', 'type': 'button' }),
+          ]),
+        ]),
+      ])
+      // 先于数字框自己的处理记下输入：随后的 value-change 与它一致就是输入，不一致就是步进
+      box.addEventListener('input', (event) => {
+        if (event.target === input)
+          this.#typed = { axis, text: input.value }
+      }, true)
+      box.addEventListener('value-change', event => this.#onMeasureValue(axis, event as CustomEvent<{ value: string, valueAsNumber: number }>))
+      box.addEventListener('focusout', (event) => {
+        if (!box.contains(event.relatedTarget as Node | null))
+          this.#commitTyped(axis)
+      })
+      return box
+    }
+    const fields: MeasureFields = {
+      width: field('width'),
+      height: field('height'),
+      separator: createGeneratedElement(doc, 'span', { 'data-part': 'measure-separator', 'aria-hidden': 'true' }, ['×']),
+      unit: createGeneratedElement(doc, 'span', { 'data-part': 'measure-unit' }),
+    }
+    this.#measureFields = fields
+    return fields
+  }
+
+  #unitLabel(): string {
+    const options = this.measureOptions
+    if (options?.unitLabel !== undefined)
+      return options.unitLabel
+    return options?.unit === undefined ? '' : LENGTH_UNIT_SYMBOLS[options.displayUnit ?? options.unit]
+  }
+
+  #toDisplay(value: number): number {
+    const { unit, displayUnit } = this.measureOptions ?? {}
+    return unit === undefined ? value : convertLength(value, unit, displayUnit ?? unit)
+  }
+
+  #toModel(value: number): number {
+    const { unit, displayUnit } = this.measureOptions ?? {}
+    return unit === undefined ? value : convertLength(value, displayUnit ?? unit, unit)
+  }
+
+  #fractionDigits(): number {
+    return this.measureOptions?.fractionDigits ?? 1
+  }
+
+  /** 一边的模型长度写成显示文字。 */
+  #formatSide(value: number): string {
+    return this.#formatDisplay(this.#toDisplay(value))
+  }
+
+  readonly #formatDisplay = (value: number): string => formatLength(value, { fractionDigits: this.#fractionDigits(), locale: this.#config.locale })
+
+  /** 显示文字读回数：认这个 locale 的小数点，读不出时为 NaN。 */
+  readonly #parseDisplay = (text: string): number => {
+    const decimal = new Intl.NumberFormat(this.#config.locale).formatToParts(1.5).find(part => part.type === 'decimal')?.value ?? '.'
+    const normalized = text.trim().replace(decimal, '.')
+    return normalized === '' ? Number.NaN : Number(normalized)
+  }
+
+  /** 数字框的值变了：与刚输入的文字一致是输入途中，等确认；否则是加减钮或方向键，马上提交。 */
+  #onMeasureValue(axis: MeasureAxis, event: CustomEvent<{ value: string, valueAsNumber: number }>): void {
+    event.stopPropagation()
+    const { value, valueAsNumber } = event.detail
+    this.#measureFields![axis].value = value
+    if (this.#typed?.axis === axis && this.#typed.text === value)
+      return
+    this.#typed = undefined
+    this.#commitMeasure(axis, valueAsNumber, 'step')
+  }
+
+  /** 确认输入：读不成数时框里回到当前值。 */
+  #commitTyped(axis: MeasureAxis): void {
+    const typed = this.#typed
+    if (typed?.axis !== axis)
+      return
+    this.#typed = undefined
+    const value = this.#parseDisplay(typed.text)
+    if (Number.isFinite(value))
+      this.#commitMeasure(axis, value, 'input')
+    else
+      this.#restoreMeasure(axis)
+  }
+
+  #restoreMeasure(axis: MeasureAxis): void {
+    const measured = this.#measured
+    const field = this.#measureFields?.[axis]
+    if (measured && field)
+      field.value = this.#formatSide(measured.rect[axis])
+  }
+
+  /** 按显示单位的新值改这一边：按精度取整、不小于 minSize，换回模型单位；keepAspect 时另一边按比例跟着变。值没变不派发。 */
+  #commitMeasure(axis: MeasureAxis, display: number, source: DesignerMeasureChangeDetail['source']): void {
+    const measured = this.#measured
+    if (!measured || !measured.editable[axis] || !Number.isFinite(display))
+      return
+    const rounded = stepLength(display, 0, { min: this.#toDisplay(measured.item.minSize?.[axis] ?? 0), fractionDigits: this.#fractionDigits() })
+    const current = measured.rect[axis]
+    if (this.#formatDisplay(rounded) === this.#formatSide(current)) {
+      this.#restoreMeasure(axis)
+      return
+    }
+    const value = this.#toModel(rounded)
+    const other = axis === 'width' ? 'height' : 'width'
+    const rect: Rect = { ...measured.rect, [axis]: value }
+    const scaled: Rect = measured.item.keepAspect === true && current > 0 ? { ...rect, [other]: measured.rect[other] * value / current } : rect
+    emitEvent(this, 'measure-change', { id: measured.item.id, rect: scaled, axis, source } satisfies DesignerMeasureChangeDetail)
+  }
+
+  /** 徽标里按住 Shift 加上下方向键：先于数字框自己的方向键，按 largeStep 步进。 */
+  readonly #onMeasureLargeStep = (event: KeyboardEvent): void => {
+    if (!event.shiftKey || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown'))
+      return
+    const axis = this.#measureAxisOf(event.target)
+    const measured = this.#measured
+    if (!axis || !measured?.editable[axis])
+      return
+    event.preventDefault()
+    event.stopPropagation()
+    this.#typed = undefined
+    const delta = (this.measureOptions?.largeStep ?? 10) * (event.key === 'ArrowUp' ? 1 : -1)
+    this.#commitMeasure(axis, this.#toDisplay(measured.rect[axis]) + delta, 'step')
+  }
+
+  /** 徽标里的按键不交给画布：Enter 确认输入，Esc 放弃输入并把焦点还回去。 */
+  readonly #onMeasureKey = (event: KeyboardEvent): void => {
+    event.stopPropagation()
+    const axis = this.#measureAxisOf(event.target)
+    if (event.key === 'Enter' && axis) {
+      event.preventDefault()
+      this.#commitTyped(axis)
+      return
+    }
+    if (event.key !== 'Escape')
+      return
+    event.preventDefault()
+    if (axis && this.#typed?.axis === axis) {
+      this.#typed = undefined
+      this.#restoreMeasure(axis)
+    }
+    const back = this.#returnFocus
+    this.#returnFocus = undefined
+    if (back?.isConnected)
+      back.focus()
+  }
+
+  /** 徽标上的按下不交给画布，免得设计器当成点在画布上。 */
+  readonly #onMeasurePointer = (event: PointerEvent): void => {
+    if (this.#measured !== undefined)
+      event.stopPropagation()
+  }
+
+  #measureAxisOf(target: EventTarget | null): MeasureAxis | undefined {
+    const field = target instanceof Element ? target.closest<HTMLElement>('[data-part="measure-field"]') : null
+    const axis = field?.dataset.axis
+    return axis === 'width' || axis === 'height' ? axis : undefined
   }
 
   #snapOptions(kind: 'move' | 'resize'): SnapOptions | undefined {
@@ -619,6 +966,14 @@ function resizeHandlesOf(item: DesignerTransformItem): readonly ResizeHandle[] {
   if (item.handles === false)
     return []
   return item.handles === undefined || item.handles === true ? ALL_HANDLES : item.handles
+}
+
+/** 这一项在徽标里能改哪几边：有对应方向的控制柄才能改；一边都不能改时为 undefined。 */
+function editableAxes(item: DesignerTransformItem): Readonly<Record<MeasureAxis, boolean>> | undefined {
+  const handles = resizeHandlesOf(item)
+  const width = AXIS_HANDLES.width.some(handle => handles.includes(handle))
+  const height = AXIS_HANDLES.height.some(handle => handles.includes(handle))
+  return width || height ? { width, height } : undefined
 }
 
 /** 单选取该项的框与能力；多选在每一项都能八向缩放时取整体包围框的八个方向，不出旋转柄。 */

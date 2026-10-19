@@ -104,6 +104,11 @@ export function defineSettingsElements(): void {
   definePropertyFieldElements()
 }
 
+/** 变换覆盖层的尺寸徽标用到的数字框。 */
+export function defineTransformElements(): void {
+  defineXhElement('xh-number-field', XhNumberFieldElement)
+}
+
 /** 命令工具栏与命令菜单用到的元素，弹层命令的弹层与菜单命令的菜单也在内。 */
 export function defineCommandElements(): void {
   defineXhElement('xh-toolbar', XhToolbarElement)

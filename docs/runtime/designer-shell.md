@@ -345,7 +345,7 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 
 ## 变换覆盖层
 
-`<xh-designer-transform>` 叠在画布上方，画选中框、控制柄、旋转柄、对齐线、框选框、悬停框与度量标签，并跑移动、缩放、旋转与框选的手势。命中判断归设计器：设计器在选中项上按下后调 `startMove`，在空白处按下后调 `startMarquee`；控制柄由覆盖层自己接。覆盖层盖满画布、左上角就是视口的屏幕原点，除控制柄外不挡指针。
+`<xh-designer-transform>` 叠在画布上方，画选中框、控制柄、旋转柄、对齐线、框选框、悬停框与尺寸徽标，并跑移动、缩放、旋转与框选的手势。命中判断归设计器：设计器在选中项上按下后调 `startMove`，在空白处按下后调 `startMarquee`；控制柄由覆盖层自己接。覆盖层盖满画布、左上角就是视口的屏幕原点，除控制柄外不挡指针。
 
 ```ts
 const overlay = document.createElement("xh-designer-transform");
@@ -373,9 +373,11 @@ overlay.addEventListener("transform", (event) => {
 | `items` | 选中项 `{ id, rect, handles?, rotatable?, keepAspect?, minSize? }`。`handles` 缺省 `true` 为八向，`false` 不能缩放，数组为只给这些方向；`rotatable` 缺省不显示旋转柄；`keepAspect` 为总是等比；`minSize` 是缩放的下限 |
 | `hover` | 悬停框，世界坐标 |
 | `getSnap(kind)` | 每次手势开始时取一次吸附选项，交给 `snapRect`；`threshold` 不给时取屏幕上的固定像素除以 `zoom` |
-| `formatMeasure(rect)` | 拖动中的尺寸与位置标签；不给不显示 |
+| `measure` | 尺寸徽标何时显示：`gesture`（缺省）只在拖动、缩放中只读显示；`selection` 选中即常驻，单选能缩放时可以直接改宽高，见下文「尺寸徽标」 |
+| `measureOptions` | 徽标的单位、精度与步长 `{ unit?, displayUnit?, unitLabel?, fractionDigits?, step?, largeStep? }`；不给不显示徽标 |
 | `rotate-step` | 按住 Shift 旋转时吸附的角度，缺省 15 |
-| `readonly` | 不画控制柄，`startMove` 不起作用；框选照常 |
+| `readonly` | 不画控制柄，`startMove` 不起作用，徽标只显示不能改；框选照常 |
+| `translations` | 覆盖 `xh-designer-transform` 桶里的文案：`measure`（徽标这一组的名字）、`width`、`height`（两个数字框的名字）、`measureText(width, height, unit)`（只读显示的整句） |
 
 | 方法 | 说明 |
 | --- | --- |
@@ -383,25 +385,27 @@ overlay.addEventListener("transform", (event) => {
 | `startMarquee(event, { additive? })` | 越过激活距离后开始框选 |
 | `cancel()` | 取消进行中的手势，派发 `cancel` |
 | `focusToolbar()` | 把焦点交给上下文工具条：先交给工具条里 roving 的当前条目，没有就交给第一个能聚焦的；工具条没显示时什么都不做。返回是否交了 |
+| `focusMeasure()` | 把焦点交给尺寸徽标里第一个能改的数字框；徽标没显示数字框时什么都不做。返回是否交了 |
 
 | 事件 | detail |
 | --- | --- |
 | `transform` | `{ phase, kind, rects, guides, copy? }`：`phase` 为 `start`、`move`、`end`、`cancel`，`kind` 为 `move`、`resize`、`rotate`，`rects` 是 id 到新矩形的表，`cancel` 时为开始时的矩形；`copy` 只在移动时有 |
 | `marquee` | `{ phase, rect, mode, additive }`：`rect` 是世界坐标的选框，`mode` 自左向右拖为 `contain`、反向为 `intersect`，交给 `selectInMarquee` |
 | `pan-request` | `{ dx, dy }`：拖到画布边缘时逐帧派发，含义与通用拖放相同 |
+| `measure-change` | `{ id, rect, axis, source }`：用户在徽标里改了宽或高。`rect` 是改后的模型矩形，左上角不动；`axis` 为 `width` 或 `height`；`source` 为 `step`（加减钮、方向键）或 `input`（输入后确认）。设计器按自己的编辑命令改模型、记撤销，再更新 `items` |
 
 - 修饰键：缩放时 Shift 等比、Alt 以中心为基准；旋转时 Shift 按 `rotate-step` 吸附；移动时 Shift 锁定水平或竖直、Alt 为复制。修饰键在拖动中按下也算。Esc 取消。
 - 设计器在 `move` 阶段是只看预览还是执行事务自行决定；手势进行中覆盖层按自己算出的矩形画框，不等 `items` 更新。
 - 单选按该项的能力出控制柄。多选画各自的细框与整体包围框，可以整体移动；每一项都能八向缩放时，包围框上出八个控制柄（不出旋转柄），拖动按包围框等比缩放全部选中项：位置与尺寸乘同一比例，旋转角不变，Alt 以中心为基准，任一项缩到 `minSize` 即停。`transform` 事件的 `kind` 为 `resize`，`rects` 带全部选中项。
 - 缩放时只吸附被拖动的那条边；单选时旋转过的矩形缩放时不吸附。
 - 控制柄是固定的屏幕尺寸，按旋转后的方向画，指针形状随角度换；粗指针设备放大命中区。
-- 画的框、线、控制柄与度量标签都是 `aria-hidden`；上下文工具条不是。
+- 画的框、线、控制柄与只读显示的徽标都是 `aria-hidden`；上下文工具条与带数字框的徽标不是。
 
 ### 上下文工具条
 
-写 `slot="toolbar"` 的子节点是选中时浮在选中框上的一条格式工具条，内容与按钮由各款放，通常是一条横排的 `<xh-toolbar>`：
+写 `slot="toolbar"` 的子节点是选中时浮在选中框上的一条工具条，内容由各款放，通常是一条横排的命令工具栏：各款按当前选中算出主体（如 `element`、`text`、`node`、`multiple`），用 `arrangeCommands("selection:<主体>", …)` 排出分组，宿主经 `commandLayout` 改排列，扩展登记命令时在 `placement` 里写 `selection:<主体>` 就会出现在这里。
 
-- 位置：在选中框（多选时是整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方；左右夹在覆盖层里。落在哪一侧写在工具条部件的 `data-placement` 上（`top` 或 `bottom`）。
+- 位置：在选中框（多选时是整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方，尺寸徽标显示着就排在徽标下面；左右夹在覆盖层里。落在哪一侧写在工具条部件的 `data-placement` 上（`top` 或 `bottom`）。
 - 显示：有选中才显示；只读、手势进行中（移动、缩放、旋转、框选）或没有内容时收起，松手后再出现。工具条跟着画布裁剪，不进浮层。
 - 外观：实体底、描边与一层柔和投影，接指针。
 - 键盘：各款在画布的 keydown 里认 Alt+F10，调 `focusToolbar()` 把焦点交过去；在工具条里按 Esc，焦点回到交之前的位置。
@@ -413,6 +417,26 @@ overlay.append(format);
 canvas.addEventListener("keydown", (event) => {
   if (event.altKey && event.key === "F10" && overlay.focusToolbar())
     event.preventDefault();
+});
+```
+
+### 尺寸徽标
+
+给了 `measureOptions` 时，选中框（多选时是整体包围框）底边下方居中有一块尺寸徽标：
+
+- `measure` 为 `gesture`（缺省）：只在拖动、缩放中显示实时尺寸，只读。
+- `measure` 为 `selection`：选中即常驻。单选、不是只读、这一项能缩放时，宽、高各一个数字框（库内 `<xh-number-field>`，带加减钮），整块接指针；多选时写整体包围框的尺寸，`handles: false` 的项与只读时写元素自己的宽高，都只读。拖动、缩放中只读显示实时尺寸，松手回到数字框。只给了某些方向的控制柄时，只有能缩放的那一边可以改。
+- 单位：`unit` 是模型坐标的长度单位，`displayUnit`（缺省同 `unit`）是显示单位，数值按 designer-kit 的 `convertLength` 换算、`formatLength` 按 locale 写出，最多 `fractionDigits`（缺省 1）位小数；单位文字缺省取显示单位的符号。按格计这类不是长度的设计器不给 `unit`，徽标直接显示模型数值，单位文字写在 `unitLabel` 里。单选写元素自己的宽高，不是旋转后的外接框。
+- 改值：加减钮、上下方向键按 `step`（缺省 1），Shift 加上下方向键与 PageUp / PageDown 按 `largeStep`（缺省 10），马上派发 `measure-change`；输入数字后按 Enter 或离开数字框才派发，输入途中不派发，Esc 放弃输入。新值按精度取整、不小于 `minSize`；`keepAspect` 的项改一边，另一边按比例跟着变；值没变不派发。覆盖层不改 `items`，由设计器改完模型后更新。
+- 键盘与指针：工具条在徽标之前，Alt+F10 交给工具条后，在工具条里按 Tab 接着进到徽标的数字框；没有工具条时各款可以让 Alt+F10 改调 `focusMeasure()`。在徽标里按 Esc，焦点回到交之前的位置。徽标里的按键与按下不冒泡到画布，打字时的 Delete 不会删掉元素。
+- 外观：带数字框时与上下文工具条同一种实体面，数字框按内容定宽；只读显示时是一枚品牌色的小标签。
+
+```ts
+overlay.measure = "selection";
+overlay.measureOptions = { unit: "mm", fractionDigits: 1, step: 1, largeStep: 10 };
+overlay.addEventListener("measure-change", (event) => {
+  const { id, rect } = event.detail;
+  resize(id, rect);
 });
 ```
 

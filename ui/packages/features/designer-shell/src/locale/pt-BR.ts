@@ -120,6 +120,12 @@ const translations: DesignerShellLocaleTranslations = {
     settings: 'Configurações',
     help: 'Ajuda',
   },
+  'xh-designer-transform': {
+    measure: 'Tamanho',
+    width: 'Largura',
+    height: 'Altura',
+    measureText: (width, height, unit) => (unit === '' ? `${width} × ${height}` : `${width} × ${height} ${unit}`),
+  },
 }
 
 /** 巴西葡萄牙语。 */

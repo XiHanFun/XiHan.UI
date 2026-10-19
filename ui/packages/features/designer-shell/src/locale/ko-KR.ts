@@ -120,6 +120,12 @@ const translations: DesignerShellLocaleTranslations = {
     settings: '설정',
     help: '도움말',
   },
+  'xh-designer-transform': {
+    measure: '크기',
+    width: '너비',
+    height: '높이',
+    measureText: (width, height, unit) => (unit === '' ? `${width} × ${height}` : `${width} × ${height} ${unit}`),
+  },
 }
 
 /** 韩语。 */

@@ -14,6 +14,7 @@ import type {
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,
   DesignerSettingsTranslations,
+  DesignerTransformTranslations,
 } from '../translations'
 
 /** 设计器零件一种语言的全部文案，键是零件的标签名。 */
@@ -26,4 +27,5 @@ export interface DesignerShellLocaleTranslations {
   readonly 'xh-designer-frame': DesignerFrameTranslations
   readonly 'xh-designer-commands': DesignerCommandsTranslations
   readonly 'xh-designer-settings': DesignerSettingsTranslations
+  readonly 'xh-designer-transform': DesignerTransformTranslations
 }
