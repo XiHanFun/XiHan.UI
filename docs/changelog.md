@@ -54,7 +54,7 @@
 - **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
 - **新增** Tree 节点数据的 `draggable: false`：这一个节点拖不起来，照常能选、能展开、能当落点
-- **新增** Tree 的选择模式 `extended`：照文件管理器，点击换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 加选与取消，按住 Shift 点击选一段；两种多选模式下 Ctrl / Cmd + Space 都只切换焦点节点
+- **新增** Tree 的选择模式 `extended`：照文件管理器，点击换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 加选与取消，按住 Shift 点击选一段；两种多选模式下 Ctrl / Cmd + Space 都只切换焦点节点；选中从外面换了（宿主另写了值、调了 `setSelection`、挂载时就带着选中），Shift 点击从新选中里多出来的最后一项连起
 - **新增** `@xihan-ui/core` 的页面级窗口叠放序 `getWindowStack(doc)`；浮动面板几个同时开着时，点到或聚焦哪个哪个到最上面，最上面的仍在模态层之下
 - **新增** `@xihan-ui/core` 的页面级礼貌播报器 `announce(message)`：整页一个播报区挂在 `body` 末尾，同一句话连播也会再读，模态浮层打开时照旧可读；不属于某一个组件的播报用它，设计器外框的 `announce` 改经它；视觉隐藏的内联样式 `VISUALLY_HIDDEN_STYLE` 也从 core 导出
 - **新增** Table 的 `tree`：声明这是一棵树，一行 `parentId` 都没有时也报 treegrid、Alt + 左右键改层级、任何一行都能接受「放进去」，叶子行不写 `aria-expanded`

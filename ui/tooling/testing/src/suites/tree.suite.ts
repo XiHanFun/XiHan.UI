@@ -590,6 +590,20 @@ export const treeSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'extended：初始的选中带着锚点，Shift 点击从它的最后一项连到这一项',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      props: props({ selectionMode: 'extended', defaultExpandedValue: ['src'], defaultSelection: ['index', 'docs'] }),
+      steps: [
+        {
+          // 可见序 src / index / utils / readme / docs / license：锚点在 docs
+          kind: 'click',
+          part: 'item[3]',
+          modifiers: ['Shift'],
+          expect: { parts: { item: itemsSelected('license'), branch: branchesSelected('docs') } },
+        },
+      ],
+    },
+    {
       name: '点击：点分支行只选中不展开，点箭头只切展开，点叶子替换选中',
       spec: { apg: APG },
       props: props(),

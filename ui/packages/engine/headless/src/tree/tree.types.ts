@@ -150,6 +150,8 @@ export interface TreeRefs {
    * 放在模块变量中会使同页两棵树共用一个缓冲。
    */
   typeahead: Typeahead
+  /** 树上一次所知的选中：自己提的那份，或从外面换上的那份；还没看过时为 null。 */
+  knownSelection: readonly string[] | null
 }
 
 /** 接了按压通道的两个部件：叶子行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
@@ -317,6 +319,7 @@ export interface TreeSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
+    | 'followSelection'
   effect: 'trackPointer'
 }
 
