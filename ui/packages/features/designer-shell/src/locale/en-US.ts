@@ -61,6 +61,7 @@ export const DESIGNER_OUTLINE_EN_US: DesignerShellLocaleTranslations['xh-designe
 
 export const DESIGNER_HISTORY_EN_US: DesignerShellLocaleTranslations['xh-designer-history'] = {
   title: 'History',
+  help: 'Every change since opening, oldest first. Select a step to go back to it; the steps after it can be redone until you make a new change.',
   origin: 'Opened',
   originTruncated: 'Earlier steps discarded',
   untitled: 'Edit',

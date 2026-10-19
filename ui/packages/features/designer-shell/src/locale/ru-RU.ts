@@ -69,6 +69,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-history': {
     title: 'История',
+    help: 'Все изменения с момента открытия, от ранних к поздним. Выберите шаг, чтобы вернуться к нему; следующие шаги можно повторить, пока вы не внесёте новое изменение.',
     origin: 'При открытии',
     originTruncated: 'Более ранние шаги отброшены',
     untitled: 'Правка',

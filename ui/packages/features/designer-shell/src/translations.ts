@@ -91,6 +91,8 @@ export interface DesignerOutlineTranslations {
 export interface DesignerHistoryTranslations {
   /** 面板标题，也是列表的名字。 */
   readonly title: string
+  /** 面板头里的帮助。 */
+  readonly help: string
   /** 起点那一行：打开、重新载入或清空之后的状态。 */
   readonly origin: string
   /** 起点那一行：起点之前有被步数上限丢掉的步骤。 */

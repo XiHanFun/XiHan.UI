@@ -58,6 +58,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-history': {
     title: '履歴',
+    help: '開いてからの変更を古い順に並べています。ステップを選ぶとその時点に戻ります。新しく変更するまでは、その後のステップをやり直せます。',
     origin: '開いた時点',
     originTruncated: 'それより前の手順は破棄されました',
     untitled: '編集',

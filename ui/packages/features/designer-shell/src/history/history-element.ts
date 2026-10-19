@@ -23,6 +23,7 @@ export interface DesignerHistoryEventMap {
 
 const DEFAULT_TRANSLATIONS: DesignerHistoryTranslations = {
   title: 'History',
+  help: 'Every change since opening, oldest first. Select a step to go back to it; the steps after it can be redone until you make a new change.',
   origin: 'Opened',
   originTruncated: 'Earlier steps discarded',
   untitled: 'Edit',

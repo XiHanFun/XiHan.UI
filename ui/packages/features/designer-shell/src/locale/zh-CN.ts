@@ -58,6 +58,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-history': {
     title: '历史记录',
+    help: '打开以来的每一步修改，先做的在上。点一步回到那里；在做出新的修改之前，它后面的几步还能重做。',
     origin: '打开时',
     originTruncated: '更早的步骤已丢弃',
     untitled: '编辑',

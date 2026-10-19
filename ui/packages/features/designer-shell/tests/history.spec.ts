@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 
 import type { ApplyOperation, DesignerCommand, History } from '@xihan-ui/designer-kit'
-import type { DesignerHistoryConfirm, DesignerHistoryEventMap, XhDesignerHistoryElement } from '../src'
+import type { DesignerHistoryAdapter, DesignerHistoryConfirm, DesignerHistoryEventMap, XhDesignerHistoryElement } from '../src'
 import { createHistory, snapshotHistory } from '@xihan-ui/designer-kit'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineDesignerShell, DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_COMMANDS, DESIGNER_HISTORY_EN_US, designerHistoryCommands } from '../src'
+import { createHistoryPanel, defineDesignerShell, DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_COMMANDS, DESIGNER_HISTORY_EN_US, designerHistoryCommands } from '../src'
 import { designerShellZhCN } from '../src/locale'
 
 defineDesignerShell()
@@ -225,5 +225,70 @@ describe('designerHistoryCommands', () => {
     await Promise.resolve()
     expect([history.entries.length, announce.mock.calls]).toEqual([0, [['History cleared']]])
     expect(clear.enabled!({ history })).toBe(false)
+  })
+})
+
+describe('createHistoryPanel', () => {
+  interface Host {
+    readonly history: History<Doc, Op>
+    readonly readonly: boolean
+    readonly log: string[]
+  }
+
+  const icon = { name: 'history', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M3 12a9 9 0 1 0 3-6.7L3 8' } }] } as const
+
+  function adapter(): DesignerHistoryAdapter<Host> {
+    return {
+      snapshot: host => snapshotHistory(host.history),
+      goTo: (host, position) => {
+        host.log.push(`go:${position}`)
+        host.history.goTo(position)
+      },
+      announce: (host, message) => void host.log.push(`announce:${message}`),
+    }
+  }
+
+  it('登记缺省是右栏、缺省隐藏的 history，面板头是 clear-history；区的其余项可换；标题与帮助是零件文案，读的时候按全局配置现取', () => {
+    const panel = createHistoryPanel(adapter(), { region: { icon } })
+    expect([panel.region.name, panel.region.position, panel.region.defaultHidden, panel.region.icon, panel.headerCommands]).toEqual(['history', 'end', true, icon, [DESIGNER_HISTORY_COMMANDS.clearHistory]])
+    expect([panel.region.title, panel.region.help]).toEqual([DESIGNER_HISTORY_EN_US.title, DESIGNER_HISTORY_EN_US.help])
+    expect(createHistoryPanel(adapter(), { region: { position: 'start', defaultHidden: false } }).region).toMatchObject({ name: 'history', position: 'start', defaultHidden: false })
+    setXhConfig(designerShellZhCN)
+    expect([panel.region.title, JSON.parse(JSON.stringify(panel.region)).title]).toEqual(['历史记录', '历史记录'])
+    expect(panel.region.help).toContain('点一步回到那里')
+  })
+
+  it('建出无头的零件，交上快照；内容没变时不重设，只读时只能看', async () => {
+    const history = sample()
+    const host: Host = { history, readonly: false, log: [] }
+    const instance = createHistoryPanel(adapter(), { readonly: context => context.readonly }).create(host)
+    const element = instance.element as Panel
+    document.body.append(element)
+    await element.updateComplete
+    expect([element.localName, element.headless, element.snapshot, element.readonly]).toEqual(['xh-designer-history', true, snapshotHistory(history), false])
+    const before = element.snapshot
+    instance.update!({ ...host })
+    expect(element.snapshot).toBe(before)
+    history.redo()
+    instance.update!({ ...host, readonly: true })
+    expect([element.snapshot!.position, element.readonly]).toEqual([history.position, true])
+    expect(createHistoryPanel(adapter()).create(host).element).toHaveProperty('readonly', false)
+  })
+
+  it('选一行转给适配器的 goTo，到了以后经适配器的 announce 播报；用的是最近一次刷新的上下文', async () => {
+    const history = sample()
+    const first: Host = { history, readonly: false, log: [] }
+    const panel = createHistoryPanel(adapter())
+    const instance = panel.create(first)
+    const element = instance.element as Panel
+    document.body.append(element)
+    await element.updateComplete
+    const later: Host = { history, readonly: false, log: [] }
+    instance.update!(later)
+    pick(element, history.origin)
+    instance.update!(later)
+    await element.updateComplete
+    expect(later.log).toEqual([`go:${history.origin}`, 'announce:Went to: Opened, 2 steps'])
+    expect(first.log).toEqual([])
   })
 })

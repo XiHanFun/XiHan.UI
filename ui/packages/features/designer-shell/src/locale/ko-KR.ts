@@ -58,6 +58,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-history': {
     title: '기록',
+    help: '연 뒤의 모든 변경을 오래된 순서로 보여 줍니다. 단계를 선택하면 그 시점으로 돌아가며, 새로 변경하기 전까지는 그 뒤의 단계를 다시 실행할 수 있습니다.',
     origin: '열었을 때',
     originTruncated: '이전 단계는 삭제됨',
     untitled: '편집',
