@@ -485,7 +485,7 @@ overlay.addEventListener("transform", (event) => {
 | `hover` | 悬停框，世界坐标 |
 | `getSnap(kind)` | 每次手势开始时取一次吸附选项，交给 `snapRect`；`threshold` 不给时取屏幕上的固定像素除以 `zoom` |
 | `measure` | 尺寸徽标何时显示：`gesture`（缺省）只在拖动、缩放中只读显示；`selection` 选中即常驻，单选能缩放时可以直接改宽高，见下文「尺寸徽标」 |
-| `measureOptions` | 徽标的单位、精度与步长 `{ unit?, displayUnit?, unitLabel?, fractionDigits?, step?, largeStep? }`；不给不显示徽标 |
+| `measureOptions` | 徽标的单位、换算、精度与步长 `{ unit?, displayUnit?, convert?, unitLabel?, fractionDigits?, step?, largeStep? }`；不给不显示徽标 |
 | `rotate-step` | 按住 Shift 旋转时吸附的角度，缺省 15 |
 | `readonly` | 不画控制柄，`startMove` 不起作用，徽标只显示不能改；框选照常 |
 | `translations` | 覆盖 `xh-designer-transform` 桶里的文案：`measure`（徽标这一组的名字）、`width`、`height`（两个数字框的名字）、`measureText(width, height, unit)`（只读显示的整句） |
@@ -537,7 +537,9 @@ canvas.addEventListener("keydown", (event) => {
 
 - `measure` 为 `gesture`（缺省）：只在拖动、缩放中显示实时尺寸，只读。
 - `measure` 为 `selection`：选中即常驻。单选、不是只读、这一项能缩放时，宽、高各一个数字框（库内 `<xh-number-field>`，带加减钮），整块接指针；多选时写整体包围框的尺寸，`handles: false` 的项与只读时写元素自己的宽高，都只读。拖动、缩放中只读显示实时尺寸，松手回到数字框。只给了某些方向的控制柄时，只有能缩放的那一边可以改。
-- 单位：`unit` 是模型坐标的长度单位，`displayUnit`（缺省同 `unit`）是显示单位，数值按 designer-kit 的 `convertLength` 换算、`formatLength` 按 locale 写出，最多 `fractionDigits`（缺省 1）位小数；单位文字缺省取显示单位的符号。按格计这类不是长度的设计器不给 `unit`，徽标直接显示模型数值，单位文字写在 `unitLabel` 里。单选写元素自己的宽高，不是旋转后的外接框。
+- 单位：`unit` 是模型坐标的长度单位，`displayUnit`（缺省同 `unit`）是显示单位，数值按 designer-kit 的 `convertLength` 换算、`formatLength` 按 locale 写出，最多 `fractionDigits`（缺省 1）位小数；单位文字缺省取显示单位的符号。不是长度的设计器不给 `unit`，徽标直接显示模型数值，单位文字写在 `unitLabel` 里。单选写元素自己的宽高，不是旋转后的外接框。
+- 逐轴换算：模型坐标与显示值不是同一种长度、两轴换算还不一样时（如按格计的看板，模型是画布像素，显示格数，列距与行距不同、还要扣掉间隙），给 `convert: { toDisplay(value, axis), toModel(value, axis) }`。给了它，数值只按它换算，`unit`、`displayUnit` 只用来取缺省的单位文字；显示、步进、取整与 `minSize` 的下限都在显示值上算，交出的 `rect` 按 `toModel` 换回模型。不给时照旧按 `unit`、`displayUnit` 换算。
+- 单位文字随语言：`unitLabel` 由设计器按自己的语言包给（如「格」「cells」），换了语言重交一份 `measureOptions`，徽标跟着刷新；外壳不写死任何单位文字。
 - 改值：加减钮、上下方向键按 `step`（缺省 1），Shift 加上下方向键与 PageUp / PageDown 按 `largeStep`（缺省 10），马上派发 `measure-change`；输入数字后按 Enter 或离开数字框才派发，输入途中不派发，Esc 放弃输入。新值按精度取整、不小于 `minSize`；`keepAspect` 的项改一边，另一边按比例跟着变；值没变不派发。覆盖层不改 `items`，由设计器改完模型后更新。
 - 键盘与指针：工具条在徽标之前，Alt+F10 交给工具条后，在工具条里按 Tab 接着进到徽标的数字框；没有工具条时各款可以让 Alt+F10 改调 `focusMeasure()`。在徽标里按 Esc，焦点回到交之前的位置。徽标里的按键与按下不冒泡到画布，打字时的 Delete 不会删掉元素。
 - 外观：带数字框时与上下文工具条同一种实体面，数字框按内容定宽；只读显示时是一枚品牌色的小标签。
@@ -549,6 +551,21 @@ overlay.addEventListener("measure-change", (event) => {
   const { id, rect } = event.detail;
   resize(id, rect);
 });
+```
+
+按格计的看板：模型是画布像素，列距、行距各含一道间隙。
+
+```ts
+const pitch = { width: metrics.column, height: metrics.row };
+const gap = { width: metrics.columnGap, height: metrics.rowGap };
+overlay.measureOptions = {
+  convert: {
+    toDisplay: (value, axis) => (value + gap[axis]) / pitch[axis],
+    toModel: (value, axis) => value * pitch[axis] - gap[axis],
+  },
+  unitLabel: t.cells, // 设计器自己的文案，换语言时重交
+  fractionDigits: 0,
+};
 ```
 
 ## 标尺与参考线

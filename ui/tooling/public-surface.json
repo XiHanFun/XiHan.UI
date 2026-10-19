@@ -11036,6 +11036,7 @@
       "DesignerLayoutRect",
       "DesignerLayoutSizes",
       "DesignerMeasureChangeDetail",
+      "DesignerMeasureConvert",
       "DesignerMeasureMode",
       "DesignerMeasureOptions",
       "DesignerMinimapEventMap",

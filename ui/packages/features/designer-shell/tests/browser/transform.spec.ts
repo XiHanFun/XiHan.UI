@@ -1,8 +1,9 @@
 // 变换覆盖层在真实 Chromium 里：选中框按视口落在画布上的正确位置并绕中心旋转，覆盖层除控制柄外不挡指针，
-// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走；尺寸徽标的排位与定宽。
+// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走；尺寸徽标的排位、定宽与按格计的换算。
 import type { Viewport } from '@xihan-ui/designer-kit'
 import type { DesignerTransformEventMap, XhDesignerTransformElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -222,5 +223,37 @@ describe('<xh-designer-transform> 尺寸徽标（Chromium）', () => {
     const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!
     expect(toolbar.dataset.placement).toBe('bottom')
     expect(toolbar.getBoundingClientRect().top).toBeGreaterThanOrEqual(measure.getBoundingClientRect().bottom)
+  })
+
+  it('给了 convert 按格计：两轴的距与间隙不同，点加号与键盘步进一格，输入格数按 Enter 后换回模型的长度', async () => {
+    // 列距 100、列间隙 10，行距 40、行间隙 8
+    const pitch = { width: 100, height: 40 }
+    const gap = { width: 10, height: 8 }
+    overlay.measure = 'selection'
+    overlay.measureOptions = {
+      convert: { toDisplay: (value, axis) => (value + gap[axis]) / pitch[axis], toModel: (value, axis) => value * pitch[axis] - gap[axis] },
+      unitLabel: 'cells',
+      fractionDigits: 0,
+    }
+    overlay.viewport = { x: 0, y: 0, zoom: 1 }
+    overlay.items = [{ id: 'card', rect: { x: 0, y: 0, width: 390, height: 152 }, minSize: { width: 90, height: 32 } }]
+    await overlay.updateComplete
+    await frames(2)
+    const seen: DesignerTransformEventMap['measure-change']['detail'][] = []
+    overlay.addEventListener('measure-change', event => seen.push((event as DesignerTransformEventMap['measure-change']).detail))
+    const field = (axis: string): HTMLElement => overlay.querySelector<HTMLElement>(`[data-part="measure-field"][data-axis="${axis}"]`)!
+    const input = (axis: string): HTMLInputElement => field(axis).querySelector('input')!
+    expect([input('width').value, input('height').value, overlay.querySelector('[data-part="measure-unit"]')!.textContent]).toEqual(['4', '4', 'cells'])
+    await userEvent.hover(input('width'))
+    await userEvent.click(field('width').querySelector<HTMLElement>('[data-part="increment-trigger"]')!)
+    await userEvent.click(input('height'))
+    await userEvent.keyboard('{ArrowDown}')
+    await userEvent.tripleClick(input('width'))
+    await userEvent.keyboard('7{Enter}')
+    expect(seen.map(change => [change.axis, change.source, change.rect.width, change.rect.height])).toEqual([
+      ['width', 'step', 490, 152],
+      ['height', 'step', 390, 112],
+      ['width', 'input', 690, 152],
+    ])
   })
 })
