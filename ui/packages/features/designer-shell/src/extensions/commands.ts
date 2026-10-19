@@ -88,6 +88,11 @@ export interface CommandToolbarOptions {
   readonly orientation?: CommandToolbarOrientation
   /** 快捷键按哪个平台写进 aria-keyshortcuts、在提示里显示成什么样子：auto（缺省）建工具栏时测一次。 */
   readonly platform?: KbdPlatform
+  /**
+   * 放不下的按钮：menu（缺省）收进行尾自己的「更多」菜单；external 由调用方列在别处（如面板头的「更多」菜单），
+   * 自己的「更多」钮不占位、看不见，只留作弹层与菜单的锚点。收起的条目变了时外壳派发冒泡的 overflow-change。
+   */
+  readonly overflow?: 'menu' | 'external'
 }
 
 /**
@@ -117,6 +122,10 @@ export interface CommandToolbar<Ctx> {
   readonly close: () => void
   /** 开着的那条弹层命令或菜单命令的 id；都没开时为 undefined。 */
   readonly opened: () => string | undefined
+  /** 此刻收在「更多」里的命令，按工具栏上的先后。 */
+  readonly overflowed: () => readonly { readonly id: string, readonly label: string, readonly disabled: boolean }[]
+  /** 照点它的按钮那样执行一条命令：弹层与菜单命令开合，其余直接执行；不可用时什么都不做。 */
+  readonly activate: (id: string) => void
 }
 
 /** 命令的全部快捷键写成 aria-keyshortcuts：shortcut 在前（委托提示只显示第一条），第二快捷键依次在后；一条都写不出时为 undefined。 */
@@ -282,10 +291,12 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     orientation: orientation === 'vertical' ? 'vertical' : undefined,
   }, [root]) as HTMLElement & { itemIcons?: Readonly<Record<string, IconRecord>> }
   const trigger = createAuthoredElement(doc, 'div', { 'data-xh-part': 'trigger' }, [toolbar])
+  const external = options.overflow === 'external'
   const element = createAuthoredElement(doc, 'xh-tooltip', {
     'data-scope': 'designer-commands',
     'data-display': display,
     'data-orientation': orientation,
+    'data-overflow': external ? 'external' : undefined,
     'delegate': tooltipAnchors(display),
     platform,
   }, [
@@ -429,21 +440,43 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     return true
   }
 
-  root.addEventListener('click', (event) => {
-    const item = (event.target as Element | null)?.closest<HTMLButtonElement>(ITEM_SELECTOR)
+  /** 点一颗按钮：弹层与菜单命令开合，其余直接执行。 */
+  const activate = (id: string): void => {
+    const item = items.get(id)?.item
     if (!item || item.disabled || !current)
       return
-    const command = current.commands.get(item.value)
+    const command = current.commands.get(id)
     if (command?.panel !== undefined || command?.menu !== undefined) {
       // 点开着的那一条是收起，点别的弹层或菜单命令是换过去
-      if (popup?.id === item.value)
+      if (popup?.id === id)
         close()
       else
-        open(item.value)
+        open(id)
       return
     }
-    runCommand(current.commands, item.value, current.context)
+    runCommand(current.commands, id, current.context)
+  }
+  root.addEventListener('click', (event) => {
+    const item = (event.target as Element | null)?.closest<HTMLButtonElement>(ITEM_SELECTOR)
+    if (item)
+      activate(item.value)
   })
+  const overflowed = (): { id: string, label: string, disabled: boolean }[] =>
+    [...items].filter(([, button]) => button.item.hidden).map(([id, button]) => ({ id, label: button.item.getAttribute('aria-label') ?? id, disabled: button.item.disabled }))
+  if (external) {
+    // 收起的条目变了就告诉调用方，好让它重排自己列出这些条目的地方
+    let key = ''
+    const Observer = doc.defaultView?.MutationObserver
+    if (Observer) {
+      new Observer(() => {
+        const next = overflowed().map(item => item.id).join(' ')
+        if (next === key)
+          return
+        key = next
+        element.dispatchEvent(new CustomEvent('overflow-change', { bubbles: true }))
+      }).observe(root, { subtree: true, attributes: true, attributeFilter: ['hidden'] })
+    }
+  }
   return {
     element,
     toolbar,
@@ -459,6 +492,8 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     open,
     close,
     opened: () => popup?.id,
+    overflowed,
+    activate,
     update(groups, commands, context, label) {
       current = { commands, context }
       const key = JSON.stringify(groups)

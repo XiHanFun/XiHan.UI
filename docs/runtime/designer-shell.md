@@ -741,7 +741,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 三栏里的区给了 `title` 就画成一张卡片：承载面的底、描边与圆角，四周留出间距，上面是面板头，下面是可以滚动的正文，作者内容放进正文。
 
-- 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边依次是操作区、帮助钮、收起钮、「更多」钮与关闭钮。
+- 面板头左边是标题与一行副标题（`subtitle`，不给不显示）；右边依次是操作区、帮助钮、收起钮、「更多」钮与关闭钮。标题至少留四个字宽（`--xh-designer-frame-title-min`），窄了先让操作区：面板头命令条放不下的钮收进「更多」菜单，排在布局条目的前面，点了照点钮那样执行。
 - 操作区放 `slot="<区名>-actions"` 的作者内容，没有内容时收起。扩展的面板给 `headerCommands` 时，面板宿主在这里铺一小条命令，见下文「扩展的面板与命令」。
 - `help` 给了才出帮助钮，悬停或聚焦时用 `<xh-tooltip>` 弹出这段说明，按钮的名字取文案 `panelHelp`。
 - 收起钮把面板收成标题条：只剩面板头，留在原位，同一栏的其余面板分剩下的高度；一栏全收起时几条面板头贴着栏顶，下栏全收起时下栏只剩面板头那么高。再点展开。双击面板头也是收起与展开。名字取文案 `minimizePanel` / `expandPanel`，带 `aria-expanded`。
@@ -1151,7 +1151,7 @@ panels.dispose();
 - 扩展的 `panels` 是 `{ region, create(context) => { element, update?, destroy? }, headerCommands? }`：`region` 是外框的命名区，也就是面板的登记（名字、缺省停的栏、标题、图标、能不能挪与浮出等，见「外框」），追加在内置区之后，同一栏按扩展顺序上下排；`element` 以 `slot` 交给外框，放进那个区。
 - 区名与内置区或别的扩展重名时 `assign` 抛 `DesignerExtensionError`（名字空间 `panel`），什么都不变。
 - 按面板对象的引用比对：留下来的不重建，去掉的调 `destroy` 后撤掉。
-- `headerCommands` 是面板头操作区里的命令 id（或按上下文现算的函数）：面板宿主按选项 `commands` 给的命令表铺成一小条只显示图标的工具栏，放进 `slot="<区名>-actions"`，每次 `update` 刷新，命令表里没有的 id 跳过；一条命令都没有时整条藏起，里面不放 `<xh-toolbar>`，有了命令再放回。内置面板（物料、属性、问题这类不是扩展登记的面板）用 `createPanelActions(document, 面板 id)` 建同样的一条，返回 `{ element, update(ids, commands, context, label) }`，由各款放进外框。
+- `headerCommands` 是面板头操作区里的命令 id（或按上下文现算的函数）：面板宿主按选项 `commands` 给的命令表铺成一小条只显示图标的工具栏，放进 `slot="<区名>-actions"`，每次 `update` 刷新，命令表里没有的 id 跳过；一条命令都没有时整条藏起，里面不放 `<xh-toolbar>`，有了命令再放回。内置面板（物料、属性、问题这类不是扩展登记的面板）用 `createPanelActions(document, 面板 id)` 建同样的一条，返回 `{ element, update(ids, commands, context, label) }`，由各款放进外框。这条命令条放不下的钮不收进自己的「更多」，由外框列进面板头的「更多」菜单。
 - 扩展登记的面板与内置面板一样进布局：能换栏、浮出、收起、隐藏，记在 `layout` 里。宿主写在 HTML 里的内容照样用 `slot="<区名>"` 交给外框，不必经扩展。
 
 ### 命令
@@ -1172,7 +1172,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | 函数 | 说明 |
 | --- | --- |
 | `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、顶栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
-| `createCommandToolbar(document, { display?, orientation?, platform? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text`、`both` 或 `stacked`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`stacked` 是图标在上、短文字（`shortLabel`）在下、钮高随内容，给顶栏的插入快捷钮用，名字仍是全名，每个按钮都给提示；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。弹层命令与菜单命令见下文 |
+| `createCommandToolbar(document, { display?, orientation?, platform?, overflow? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text`、`both` 或 `stacked`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`stacked` 是图标在上、短文字（`shortLabel`）在下、钮高随内容，给顶栏的插入快捷钮用，名字仍是全名，每个按钮都给提示；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。`overflow` 缺省 `menu`；写 `external` 时放不下的钮由调用方列在别处，自己的「更多」钮不占位、看不见（只留作弹层与菜单的锚点），收起的条目变了时外壳派发冒泡的 `overflow-change`；`overflowed()` 是此刻收起的命令 `{ id, label, disabled }`，`activate(id)` 照点按钮那样执行一条。弹层命令与菜单命令见下文 |
 | `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |

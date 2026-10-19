@@ -14,12 +14,14 @@
 import type { IconRecord } from '@xihan-ui/core'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
 import type { XhDrawerElement, XhFloatingPanelElement, XhMenuElement, XhSplitterElement } from '@xihan-ui/web-components/define'
+import type { OverflowedCommand } from '../extensions/panel-actions-overflow'
 import type { DesignerFrameTranslations } from '../translations'
 import type { DesignerLayout, DesignerLayoutDock, DesignerLayoutPolicy, DesignerLayoutRect, ResolvedDesignerLayout } from './layout'
 import type { DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
 import { announce as announceToPage, getLayerRegistry } from '@xihan-ui/core'
 import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { registerDropTarget, startDrag } from '../drag/drag'
+import { panelActionsOverflow } from '../extensions/panel-actions-overflow'
 import { adoptSlots } from '../internal/slots'
 import { defineFrameElements } from '../internal/ui-elements'
 import {
@@ -188,6 +190,9 @@ const MIN_SIZE_EPSILON = 0.5
 /** 分隔条报来的大小不超过它就算在分隔条上收起了（百分比）。 */
 const COLLAPSED_SIZE = 0.01
 /** 浮出的小窗缺省大小（像素），不超过外框的八成。 */
+/** 「更多」菜单里操作区命令的条目值前缀。 */
+const ACTION_PREFIX = 'action:'
+
 const FLOAT_WIDTH = 320
 const FLOAT_HEIGHT = 360
 /** 浮出时缺省大小的下限：停靠时卡片很小也要看得到内容。 */
@@ -741,6 +746,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const title = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'panel-title', 'id': titleId })
     const subtitle = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'panel-subtitle' })
     const actions = createAuthoredElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'panel-actions' })
+    // 操作区里的命令条收起或放回了按钮：「更多」菜单与它的显隐跟着重算
+    actions.addEventListener('overflow-change', () => this.requestUpdate())
     const helpTrigger = createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' })
     const helpContent = createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' })
     const help = createAuthoredElement(doc, 'xh-tooltip', { 'placement': 'bottom-end', 'size': 'sm', 'data-scope': SCOPE, 'data-part': 'panel-help-tip' }, [
@@ -990,10 +997,27 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       push(layout.minimized.includes(name) ? { value: 'expand', label: t.expand } : { value: 'minimize', label: t.minimize })
     if (abilities.closable)
       push({ value: 'hide', label: t.hide })
-    return items
+    // 操作区放不下的命令排在最前面，与布局的条目之间一条分隔线
+    const actions = this.#overflowedActions(name).map((action): MenuNode => ({ value: `${ACTION_PREFIX}${action.id}`, label: action.label, ...(action.disabled ? { disabled: true } : {}) }))
+    if (actions.length === 0 || items.length === 0)
+      return [...actions, ...items]
+    return [...actions, { ...items[0]!, separatorBefore: true }, ...items.slice(1)]
+  }
+
+  /** 面板头操作区里收起来的命令。 */
+  #overflowedActions(name: string): readonly OverflowedCommand[] {
+    const actions = this.#regions.get(name)?.card?.actions
+    return actions ? Array.from(actions.children).flatMap(child => panelActionsOverflow(child)?.overflowed() ?? []) : []
   }
 
   #runMenuAction(name: string, value: string): void {
+    if (value.startsWith(ACTION_PREFIX)) {
+      const id = value.slice(ACTION_PREFIX.length)
+      const actions = this.#regions.get(name)?.card?.actions
+      const owner = actions ? Array.from(actions.children).map(child => panelActionsOverflow(child)).find(link => link?.overflowed().some(action => action.id === id)) : undefined
+      owner?.activate(id)
+      return
+    }
     const layout = this.resolvedLayout
     const dock = designerPanelDock(layout, name)
     if (value.startsWith('move:') && dock !== undefined) {

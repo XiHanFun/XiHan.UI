@@ -1786,6 +1786,8 @@
     --xh-designer-frame-panel-px: var(--xh-space-3);
     --xh-designer-frame-panel-py: var(--xh-space-2);
     --xh-designer-frame-status-h: var(--xh-control-h-sm);
+    /* 面板标题的最小宽度：四个字宽 */
+    --xh-designer-frame-title-min: calc(var(--xh-font-size-sm) * 4);
 
     position: relative;
   }
@@ -1928,11 +1930,12 @@
     border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
   }
 
+  /* 标题至少留几个字宽，操作区先让：放不下的操作钮收进面板头的「更多」菜单 */
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-heading'] {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    min-inline-size: 0;
+    min-inline-size: var(--xh-designer-frame-title-min);
   }
 
   xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-title'], [data-part='panel-subtitle']) {
@@ -1954,9 +1957,10 @@
 
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-actions'] {
     display: flex;
-    flex: none;
+    flex: 0 1 auto;
     gap: var(--xh-space-1);
     align-items: center;
+    min-inline-size: 0;
   }
 
   /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底 */
@@ -2208,6 +2212,16 @@
   /* 命令工具栏的外壳：委托提示包着那条工具栏，布局上不占盒子，工具栏直接排进调用方的容器 */
   xh-tooltip[data-scope='designer-commands'] {
     display: contents;
+  }
+
+  /* 放不下的条目由调用方列在别处：自己的「更多」钮不占位、看不见，只留作弹层与菜单的锚点 */
+  xh-tooltip[data-scope='designer-commands'][data-overflow='external'] [data-scope='toolbar'][data-part='overflow-trigger'] {
+    min-inline-size: 0;
+    inline-size: 0;
+    border: 0;
+    padding: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 
   /* 放进弹性容器（如顶栏的一段）时工具栏能缩到容器的宽度，量得出放不下，多的收进「更多」 */

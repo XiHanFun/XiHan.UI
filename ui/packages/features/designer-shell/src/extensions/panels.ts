@@ -16,6 +16,7 @@ import type { CommandToolbar, DesignerCommandTable } from './commands'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { DESIGNER_FRAME_REGIONS } from '../frame/frame-element'
 import { createCommandToolbar } from './commands'
+import { linkPanelActionsOverflow } from './panel-actions-overflow'
 
 /** 面板实例：element 放进外框的区，设计器状态变化时调用 update，撤掉前调用 destroy。 */
 export interface DesignerPanelInstance<Ctx = unknown> {
@@ -86,7 +87,8 @@ export interface DesignerPanelActions<Ctx> {
  * 扩展登记的面板给 headerCommands，由面板宿主建。没有命令时整条藏起，里面的 <xh-toolbar> 拿掉，有了命令再放回。
  */
 export function createPanelActions<Ctx>(doc: Document, panel: string): DesignerPanelActions<Ctx> {
-  const bar: CommandToolbar<Ctx> = createCommandToolbar<Ctx>(doc, { display: 'icon' })
+  const bar: CommandToolbar<Ctx> = createCommandToolbar<Ctx>(doc, { display: 'icon', overflow: 'external' })
+  linkPanelActionsOverflow(bar.element, { overflowed: bar.overflowed, activate: bar.activate })
   const trigger = bar.toolbar.parentElement!
   bar.toolbar.remove()
   bar.element.setAttribute('slot', `${panel}-actions`)
