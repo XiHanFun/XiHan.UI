@@ -546,6 +546,18 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         this.#emitted = this.#state
       this.#recordInputs()
     }
+    this.#render(parts, external)
+  }
+
+  /** 方法改了布局：当场按新布局重排（rebuild 为真时签名没变也重建），已经画过一轮才做。 */
+  #relayout(rebuild: boolean): void {
+    if (this.#parts === undefined || this.#layoutKey === '' || !this.isConnected)
+      return
+    this.#render(this.#parts, rebuild)
+  }
+
+  /** 按此刻的布局排版并画各区：排版的签名变了或 rebuild 为真时重建结构，焦点留在原来持有它的元素上。 */
+  #render(parts: Parts, rebuild: boolean): void {
     const t = this.#translations()
     const plan = this.#plan()
     const minimized = this.#state!.minimized.length > 0
@@ -558,9 +570,13 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       this.#state!.minimized,
       minimized ? [Math.round(this.#foldedHeight), Math.round(this.#bodyHeight / 8)] : 0,
     ])
-    if (key !== this.#layoutKey || external) {
+    if (key !== this.#layoutKey || rebuild) {
       this.#layoutKey = key
+      const root = this.getRootNode() as Document | ShadowRoot
+      const focused = root.activeElement instanceof HTMLElement && this.contains(root.activeElement) ? root.activeElement : undefined
       this.#build(parts, plan)
+      if (focused?.isConnected && root.activeElement !== focused)
+        focused.focus({ preventScroll: true })
       this.#restoreFocus()
     }
     for (const region of this.#regionList()) {
@@ -1234,9 +1250,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     if (this.layoutPolicy?.locked)
       return
     this.#stash = undefined
-    this.#commit(this.#defaults(), 'reset')
-    this.#layoutKey = ''
-    this.requestUpdate()
+    this.#commit(this.#defaults(), 'reset', true)
   }
 
   /** 读屏播报一句（礼貌级），经 core 的页面级播报器。 */
@@ -1261,14 +1275,19 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return (dock === 'start') !== rtl ? t.dockLeft : t.dockRight
   }
 
-  /** 换成新布局并派发；和此刻那份一样时什么都不做，返回 false。 */
-  #commit(next: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason): boolean {
-    if (this.#state !== undefined && designerLayoutEquals(next, this.#state))
+  /**
+   * 换成新布局：当场重排，再派发 layout-change。
+   * 和此刻那份一样时什么都不做、返回 false；rebuild 为真时一样也重建结构（不派发）。
+   */
+  #commit(next: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason, rebuild = false): boolean {
+    const same = this.#state !== undefined && designerLayoutEquals(next, this.#state)
+    if (same && !rebuild)
       return false
     this.#state = next
+    this.#relayout(rebuild)
     this.#flush(reason)
     this.requestUpdate()
-    return true
+    return !same
   }
 
   /** 把还没派发的布局派发出去。 */
@@ -1326,9 +1345,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   /** 把收起的栏按收起前的大小放回：重排一次；refocus 给了就把焦点放回重排后的那条分隔条。 */
   #expand(dock: DesignerLayoutDock, refocus?: FrameTriggerRef): void {
     this.#state = withDesignerDockSize(this.resolvedLayout, dock, undefined, false)
-    this.#flush('resize')
     this.#refocus = refocus
-    this.#layoutKey = ''
+    this.#relayout(true)
+    this.#flush('resize')
     this.requestUpdate()
   }
 
