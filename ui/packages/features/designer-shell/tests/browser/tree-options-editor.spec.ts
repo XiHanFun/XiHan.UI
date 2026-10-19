@@ -310,6 +310,31 @@ describe('属性面板的选项树', () => {
     expect(panel.querySelectorAll('[data-scope="table"][data-part="row"][aria-level="2"]')).toHaveLength(1)
   })
 
+  describe('换位以后表格的播报区读出放进了哪一层、在那一层的第几位（项以文字为名）', () => {
+    /** 焦点放到这一项的值格上，按 Alt 加方向键，等写回以后读表格的播报区。 */
+    async function moveBy(options: JsonValue, value: string, key: string): Promise<string> {
+      const { panel, written } = await mount(options)
+      cell(panel, value, 'value').focus()
+      await userEvent.keyboard(`{Alt>}{${key}}{/Alt}`)
+      await until(() => written.length > 0, '写回')
+      const live = panel.querySelector<HTMLElement>('[data-scope="table"][data-part="live-region"]')!
+      await until(() => (live.textContent ?? '') !== '', '播报区有字')
+      return live.textContent!
+    }
+
+    it('按 Alt + 右键放进上一项下面：说放进了上一项，是它下面的第 1 位、共 1 项', async () => {
+      expect(await moveBy(flat, 'b', 'ArrowRight')).toBe('Moved B into A, position 1 of 1.')
+    })
+
+    it('按 Alt + 上键在同一层里往前挪：说还在上级里，位次与总数按那一层的兄弟项', async () => {
+      expect(await moveBy(sample, 'hz', 'ArrowUp')).toBe('Moved Hangzhou into East, position 1 of 2.')
+    })
+
+    it('按 Alt + 左键移到根层：说放到了顶层，排在原来的上级后面', async () => {
+      expect(await moveBy(sample, 'sh', 'ArrowLeft')).toBe('Moved Shanghai into the top level, position 2 of 4.')
+    })
+  })
+
   it('左键收起有下级的一项，子项不在表体里；再展开时格里的值还在', async () => {
     const { panel } = await mount(sample)
     row(panel, 'east').focus()
