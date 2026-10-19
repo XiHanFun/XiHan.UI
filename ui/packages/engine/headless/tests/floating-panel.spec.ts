@@ -8,6 +8,8 @@
 import type { Service } from '@xihan-ui/core'
 import type {
   FloatingPanelDimensionsChangeDetails,
+  FloatingPanelDragEndDetails,
+  FloatingPanelDragStartDetails,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPositionChangeDetails,
   FloatingPanelResizeEdge,
@@ -39,6 +41,8 @@ interface Rig {
   positions: FloatingPanelPositionChangeDetails[]
   sizes: FloatingPanelDimensionsChangeDetails[]
   windowStates: FloatingPanelWindowStateChangeDetails[]
+  dragStarts: FloatingPanelDragStartDetails[]
+  dragEnds: FloatingPanelDragEndDetails[]
 }
 
 /** props 对象身份固定、字段可改：受控用例要在机器活着的时候从外面写回。 */
@@ -47,12 +51,16 @@ function makeRig(initial: Props = {}): Rig {
   const positions: FloatingPanelPositionChangeDetails[] = []
   const sizes: FloatingPanelDimensionsChangeDetails[] = []
   const windowStates: FloatingPanelWindowStateChangeDetails[] = []
+  const dragStarts: FloatingPanelDragStartDetails[] = []
+  const dragEnds: FloatingPanelDragEndDetails[] = []
   const props: Props = {
     ...initial,
     onOpenChange: d => opens.push(d),
     onPositionChange: d => positions.push(d),
     onDimensionsChange: d => sizes.push(d),
     onWindowStateChange: d => windowStates.push(d),
+    onDragStart: d => dragStarts.push(d),
+    onDragEnd: d => dragEnds.push(d),
   }
   const runtime = createVanillaRuntime()
   const service = createService(floatingPanelMachine, { props: () => props, runtime })
@@ -64,6 +72,8 @@ function makeRig(initial: Props = {}): Rig {
     positions,
     sizes,
     windowStates,
+    dragStarts,
+    dragEnds,
   }
 }
 
@@ -112,8 +122,8 @@ function movePointer(clientX: number, clientY: number): void {
   document.dispatchEvent(new PointerEvent('pointermove', { clientX, clientY, bubbles: true }))
 }
 
-function releasePointer(): void {
-  document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }))
+function releasePointer(clientX = 0, clientY = 0): void {
+  document.dispatchEvent(new PointerEvent('pointerup', { clientX, clientY, bubbles: true }))
 }
 
 afterEach(() => {
@@ -707,6 +717,48 @@ describe('connectFloatingPanel 指针拖动', () => {
     expect(rig.service.state.get()).toBe('open.idle')
     movePointer(200, 200)
     expect(rig.service.context.get('dimensions')).toEqual({ width: 300, height: 200 })
+  })
+
+  it('拖动开始与结束：按下时报一次开始，松手时报一次结束，都带指针位置', () => {
+    const rig = makeRig({ defaultOpen: true, defaultPosition: { x: 100, y: 100 } })
+    pointerDown(dragProps(rig.service), 50, 40)
+    expect(rig.dragStarts).toEqual([{ clientX: 50, clientY: 40 }])
+    expect(rig.dragEnds).toEqual([])
+    movePointer(80, 70)
+    movePointer(90, 75)
+    releasePointer(92, 77)
+    expect(rig.dragStarts).toHaveLength(1)
+    expect(rig.dragEnds).toEqual([{ clientX: 92, clientY: 77, canceled: false }])
+  })
+
+  it('系统收回指针：拖动结束报 canceled，位置是最后跟到的那一点', () => {
+    const rig = makeRig({ defaultOpen: true })
+    pointerDown(dragProps(rig.service), 10, 10)
+    movePointer(30, 25)
+    document.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true }))
+    expect(rig.dragEnds).toEqual([{ clientX: 30, clientY: 25, canceled: true }])
+  })
+
+  it('拖动途中面板被收起：照样报一次结束，canceled 为 true；之后再松手不再报', () => {
+    const rig = makeRig({ defaultOpen: true })
+    pointerDown(dragProps(rig.service), 10, 10)
+    movePointer(20, 30)
+    rig.service.send({ type: 'CLOSE' })
+    expect(rig.dragEnds).toEqual([{ clientX: 20, clientY: 30, canceled: true }])
+    releasePointer(40, 40)
+    expect(rig.dragEnds).toHaveLength(1)
+  })
+
+  it('改尺、推不动时的按下、键盘平移都不报拖动起止', () => {
+    const rig = makeRig({ defaultOpen: true, defaultDimensions: { width: 300, height: 200 } })
+    pointerDown(resizeProps(rig.service, 'se'), 10, 10)
+    movePointer(40, 40)
+    releasePointer(40, 40)
+    press(dragProps(rig.service), 'ArrowRight')
+    const fixed = makeRig({ defaultOpen: true, draggable: false })
+    pointerDown(dragProps(fixed.service), 10, 10)
+    releasePointer()
+    expect([...rig.dragStarts, ...rig.dragEnds, ...fixed.dragStarts, ...fixed.dragEnds]).toEqual([])
   })
 
   it('pointercancel 与 pointerup 一样收场：不收会永远停在拖动态', () => {

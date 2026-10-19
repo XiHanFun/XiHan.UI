@@ -31517,6 +31517,18 @@
             },
             {
               "kind": "field",
+              "name": "notifyDragStart",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyDragEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -31636,6 +31648,20 @@
               "name": "window-state-change",
               "type": {
                 "text": "FloatingPanelWindowStateChangeDetails"
+              }
+            },
+            {
+              "description": "指针开始移动面板；detail 为 `{ clientX, clientY }`，改尺与键盘平移不发",
+              "name": "drag-start",
+              "type": {
+                "text": "FloatingPanelDragStartDetails"
+              }
+            },
+            {
+              "description": "这一场移动收尾（含取消）；detail 为 `{ clientX, clientY, canceled }`",
+              "name": "drag-end",
+              "type": {
+                "text": "FloatingPanelDragEndDetails"
               }
             }
           ],

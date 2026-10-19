@@ -8,6 +8,8 @@
 import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
 import type {
   FloatingPanelDimensionsChangeDetails,
+  FloatingPanelDragEndDetails,
+  FloatingPanelDragStartDetails,
   FloatingPanelOpenChangeDetails,
   FloatingPanelPosition,
   FloatingPanelPositionChangeDetails,
@@ -85,6 +87,8 @@ const WINDOW_STATES: readonly FloatingPanelWindowState[] = ['default', 'minimize
  * @fires position-change - 落点变化（拖动途中连续发出）；detail 为 `{ position: { x, y } }`
  * @fires dimensions-change - 尺寸变化（改尺途中连续发出）；detail 为 `{ dimensions: { width, height } }`
  * @fires window-state-change - 形态变化；detail 为 `{ windowState: 'default' | 'minimized' | 'maximized' }`
+ * @fires drag-start - 指针开始移动面板；detail 为 `{ clientX, clientY }`，改尺与键盘平移不发
+ * @fires drag-end - 这一场移动收尾（含取消）；detail 为 `{ clientX, clientY, canceled }`
  * @csspart root - 面板与触发器共同的容器
  * @csspart trigger - 打开面板的按钮
  * @csspart positioner - 承载落位与尺寸的定位容器，收起时由内联 display 隐藏
@@ -160,6 +164,14 @@ export class XhFloatingPanelElement extends XhElement {
     this.dispatchEvent(new CustomEvent('window-state-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyDragStart = (details: FloatingPanelDragStartDetails): void => {
+    this.dispatchEvent(new CustomEvent('drag-start', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyDragEnd = (details: FloatingPanelDragEndDetails): void => {
+    this.dispatchEvent(new CustomEvent('drag-end', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly ctrl = new MachineController<FloatingPanelSchema>(
     this,
     floatingPanelMachine,
@@ -190,6 +202,8 @@ export class XhFloatingPanelElement extends XhElement {
       onPositionChange: this.notifyPosition,
       onDimensionsChange: this.notifyDimensions,
       onWindowStateChange: this.notifyWindowState,
+      onDragStart: this.notifyDragStart,
+      onDragEnd: this.notifyDragEnd,
     }
   }
 

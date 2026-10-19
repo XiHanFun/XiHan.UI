@@ -78,6 +78,22 @@ export interface FloatingPanelWindowStateChangeDetails {
   windowState: FloatingPanelWindowState
 }
 
+/** 指针按住拖拽把手、开始移动面板的那一刻，坐标是按下处。 */
+export interface FloatingPanelDragStartDetails {
+  clientX: number
+  clientY: number
+}
+
+/**
+ * 这一场移动收尾。手松开时坐标是松手处；系统收回指针或拖动途中面板被收起时 canceled 为 true，
+ * 坐标是最后跟到的那一点。
+ */
+export interface FloatingPanelDragEndDetails {
+  clientX: number
+  clientY: number
+  canceled: boolean
+}
+
 /** 改尺把手的声明：对应哪条边。 */
 export interface FloatingPanelResizeTriggerProps {
   edge: FloatingPanelResizeEdge
@@ -106,6 +122,8 @@ export interface FloatingPanelRefs {
   getContentEl: () => HTMLElement | null
   /** 当前这场拖动 / 改尺的依据；不在拖动中时为 null。 */
   session: FloatingPanelDragSession | null
+  /** 这一场移动最后跟到的指针位置；报过拖动开始、还没报结束时才有值。 */
+  dragPoint: FloatingPanelPoint | null
 }
 
 export interface FloatingPanelSchema extends MachineSchema {
@@ -145,6 +163,10 @@ export interface FloatingPanelSchema extends MachineSchema {
     /** 尺寸变化意图回调；改尺过程中连续发出。 */
     onDimensionsChange?: (details: FloatingPanelDimensionsChangeDetails) => void
     onWindowStateChange?: (details: FloatingPanelWindowStateChangeDetails) => void
+    /** 指针开始移动面板（按下拖拽把手、进入拖动态）。改尺与键盘平移不报。 */
+    onDragStart?: (details: FloatingPanelDragStartDetails) => void
+    /** 这一场移动收尾，含取消；与 onDragStart 一一对应。 */
+    onDragEnd?: (details: FloatingPanelDragEndDetails) => void
   }
   context: {
     /**
@@ -190,7 +212,8 @@ export interface FloatingPanelSchema extends MachineSchema {
     | { type: 'DRAG.START', point: FloatingPanelPoint }
     | { type: 'RESIZE.START', edge: FloatingPanelResizeEdge, point: FloatingPanelPoint }
     | { type: 'DRAG.MOVE', point: FloatingPanelPoint }
-    | { type: 'DRAG.END' }
+    /** 指针会话收尾：point 是抬起处，canceled 表示被系统收回。 */
+    | { type: 'DRAG.END', point?: FloatingPanelPoint, canceled?: boolean }
     // 按压通道（shared/press）：Space / Enter 或触屏按住与松开，part 说的是哪颗按钮
     | { type: 'PRESS.START', part: FloatingPanelPressedPart }
     | { type: 'PRESS.END', part: FloatingPanelPressedPart }
@@ -208,6 +231,8 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'nudgeDimensions'
     | 'setWindowState'
     | 'startSession'
+    | 'invokeDragStart'
+    | 'invokeDragEnd'
     | 'dragMove'
     | 'startPress'
     | 'endPress'

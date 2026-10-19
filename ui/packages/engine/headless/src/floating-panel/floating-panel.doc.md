@@ -25,6 +25,7 @@
 - 开合触发器走 Action Control text 档：默认 `outline` 描边、md 高度，按下缩放并换底。标题栏的形态按钮与关闭按钮走 icon 档 sm、`ghost` 面：磨砂白面上悬停 100 → 按下 200，焦点面透明吃库环；当前形态的那颗按钮是按下的开关（`aria-pressed`），取品牌淡底 `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，悬停 20% → 按下 28%。Space / Enter 与触屏按住期间由连接层投影 `data-pressed`。
 - 正文是浮在页面之上的滚动面：原生细条，`overscroll-behavior: contain` 让滚到头不带走页面。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快速移动、Enter / Space 送回初始位置；调整把手上方向键推动边缘；Esc 关闭。
+- 指针拖动面板时报一对起止事件：按下拖拽把手进入拖动报 `onDragStart`（事件名 `drag-start`，带按下处的 `clientX` / `clientY`），这一场移动收尾报 `onDragEnd`（`drag-end`，带 `clientX` / `clientY` 与 `canceled`）。手松开时坐标是松手处、`canceled` 为 false；系统收回指针、拖动途中面板被收起时 `canceled` 为 true，坐标是最后跟到的那一点。两者一一对应，途中的位置照旧由 `onPositionChange` 连续报出；改尺与键盘平移不报。宿主可以据此在拖动期间画停靠提示、松手时判断落在哪里。
 - `minSize` / `maxSize` 在每一处入口都生效：拖动、键盘推动、`setDimensions` 使用同一个夹取函数。
 - 内建默认矩形在挂载时按视口夹取一次：先收尺寸再调位置，窄屏上面板与右侧的调整把手不会落在屏幕外。提供 `defaultPosition` / `defaultDimensions` 时按提供的值。
 

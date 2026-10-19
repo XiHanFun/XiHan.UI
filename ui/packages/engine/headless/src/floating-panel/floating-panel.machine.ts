@@ -76,6 +76,7 @@ export const floatingPanelMachine = createMachine({
   refs: () => ({
     getContentEl: () => null,
     session: null,
+    dragPoint: null,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写。
@@ -132,12 +133,14 @@ export const floatingPanelMachine = createMachine({
         idle: {
           on: {
             // 按下不改矩形：面板本来就在指针底下，位移从下一次 DRAG.MOVE 才开始算
-            'DRAG.START': { guard: 'canDrag', target: 'open.dragging', actions: ['startSession'] },
+            'DRAG.START': { guard: 'canDrag', target: 'open.dragging', actions: ['startSession', 'invokeDragStart'] },
             'RESIZE.START': { guard: 'canResize', target: 'open.resizing', actions: ['startSession'] },
           },
         },
         dragging: {
           effects: ['trackPointer'],
+          // 松手、系统收回指针、面板中途收起或改了形态，离开拖动态都从这里报结束
+          exit: ['invokeDragEnd'],
           on: {
             'DRAG.MOVE': { actions: ['dragMove'] },
             'DRAG.END': { target: 'open.idle' },
@@ -280,6 +283,24 @@ export const floatingPanelMachine = createMachine({
           size: { ...context.get('dimensions') },
         })
       },
+      invokeDragStart: ({ prop, refs, event }) => {
+        const e = event.current()
+        if (e.type !== 'DRAG.START')
+          return
+        refs.set('dragPoint', { clientX: e.point.clientX, clientY: e.point.clientY })
+        prop('onDragStart')?.({ clientX: e.point.clientX, clientY: e.point.clientY })
+      },
+      invokeDragEnd: ({ prop, refs, event }) => {
+        const last = refs.get('dragPoint')
+        if (!last)
+          return
+        refs.set('dragPoint', null)
+        const e = event.current()
+        const canceled = e.type !== 'DRAG.END' || !!e.canceled
+        // 被收回时浏览器给的坐标没有意义，报最后跟到的那一点
+        const end = !canceled && e.type === 'DRAG.END' && e.point ? e.point : last
+        prop('onDragEnd')?.({ clientX: end.clientX, clientY: end.clientY, canceled })
+      },
       dragMove: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'DRAG.MOVE')
@@ -287,6 +308,8 @@ export const floatingPanelMachine = createMachine({
         const session = refs.get('session')
         if (!session)
           return
+        if (refs.get('dragPoint'))
+          refs.set('dragPoint', { clientX: e.point.clientX, clientY: e.point.clientY })
         // 基准是按下那一刻的矩形，不是上一帧：增量累加在顶到尺寸下限之后回不来
         const dx = e.point.clientX - session.origin.clientX
         const dy = e.point.clientY - session.origin.clientY
@@ -318,7 +341,11 @@ export const floatingPanelMachine = createMachine({
         const pointer = createPointerSession({
           doc: resolveSessionDoc(refs.get('getContentEl')()),
           onMove: ({ point }) => send({ type: 'DRAG.MOVE', point }),
-          onEnd: () => send({ type: 'DRAG.END' }),
+          onEnd: ({ point, reason }) => send({
+            type: 'DRAG.END',
+            point: { clientX: point.clientX, clientY: point.clientY },
+            canceled: reason === 'pointercancel',
+          }),
         })
         return () => {
           refs.set('session', null)
