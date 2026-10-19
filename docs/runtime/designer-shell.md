@@ -629,6 +629,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `layoutPolicy` | 宿主对布局的管控 `{ locked?, panels? }`，通常由 `designerLayoutPolicy(settingsPolicy)` 换算得来 |
 | `resolvedLayout` | 只读：此刻的整份布局，每个字段都在 |
 | `narrow` | 只读：视口窄于断点、左右两栏收进抽屉时为 `true`，见下文「窄屏」 |
+| `openDrawer` | 窄屏时开着的那侧抽屉（`start` 或 `end`），都收着时为 `undefined`；赋值开、关抽屉，不是窄屏时读出 `undefined`、赋值不起作用 |
 
 | 方法 | 说明 |
 | --- | --- |
@@ -1083,7 +1084,8 @@ tour.steps = resolveTourSteps(steps, context); // 每轮按上下文取文字、
 designerRoot.append(tour);
 tour.addEventListener("tour-end", () => writeSetting("help.tourDone", true));
 if (autoTour && !tourDoneOf(settings))
-  tour.start(); // 第一次连上文档、画布铺好之后
+  tour.start(); // 第一次连上文档、画布铺好之后；同一页已有引导开着时不开始
+// 用户手动开始（start-tour、帮助页的「开始引导」）写 tour.start({ force: true })，先收起同一页别的引导
 ```
 
 ### 步骤
@@ -1094,10 +1096,10 @@ if (autoTour && !tourDoneOf(settings))
 | `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`toolbar`、`canvas`、`status`、`header`）；`{ selector }` 设计器里的任意节点 |
 | `title`、`description` | 标题与说明，可以是按上下文现算的函数 |
 | `placement` | 浮层相对目标的首选位置，缺省 `bottom` |
-| `order` | 排序：designer-shell 的通用步骤 0–90，各款 100 起，扩展 200 起；同值按登记顺序 |
+| `order` | 排序：designer-shell 的通用步骤 0–60 与收尾的 900，各款 100 起，扩展 200 起；同值按登记顺序 |
 | `when` | 返回 `false` 时跳过，如只读模式下的编辑步骤 |
 
-通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（工具栏上的设置命令，90），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
+通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（工具栏上的设置命令，900，排在各款与扩展的步骤之后收尾），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
 
 | 函数 | 说明 |
 | --- | --- |
@@ -1116,7 +1118,7 @@ if (autoTour && !tourDoneOf(settings))
 
 | 方法与只读属性 | 说明 |
 | --- | --- |
-| `start()` | 从第一步开始；没有能走的步骤时返回 `false` |
+| `start(options?)` | 从第一步开始；没有能走的步骤时返回 `false`。同一页里已有别的引导开着时缺省不开始、返回 `false`（自动开始用这个）；`{ force: true }` 先收起那一个再开始（用户手动开始用这个） |
 | `stop()` | 收起引导 |
 | `plannedSteps()` | 此刻会走的各步：排好序、去掉了走不了的 |
 | `running` | 引导此刻开着 |
@@ -1126,6 +1128,8 @@ if (autoTour && !tourDoneOf(settings))
 | `tour-end` | `{ reason, step }`：引导收起了。`reason` 是 `complete`（走完）、`skip`（跳过或 Esc）或 `close`（关闭钮或 `stop()`）；`step` 是收起时那一步的 id。各款收到后把 `help.tourDone` 写成 `true` |
 
 - 浮层里依次是标题、说明、「第几步，共几步」、一步一个的圆点，底部一行跳过、上一步与下一步（最后一步写「完成」），右上角关闭钮；键盘与读屏照 `<xh-tour>`。
+- 引导限在外框里（`<xh-tour>` 的 `boundary` 是外框）：遮罩只盖外框，高亮框连同暗幕裁在外框里，居中的那步摆在外框中间，气泡以外框为界避让；页面别处照常可读可点，焦点不困在气泡里。同一页同时只有一个引导开着。
+- 窄屏时，目标面板收在抽屉里的那步把抽屉打开，抽屉排在引导之下，不盖住提示框，Esc 仍先收引导；换到目标不是面板的一步、以及引导收起时，抽屉还原成开始引导时的样子。元素从文档上摘下时引导一并收起。
 - 宿主不要自动开始时设计器给 `autoTour = false`；内置命令 `start-tour`（`designerShellCommands` 的 `startTour` 选项）与帮助页里的「开始引导」随时重新开始。
 
 ## 扩展的面板与命令

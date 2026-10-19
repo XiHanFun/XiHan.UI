@@ -442,6 +442,18 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return this.#narrow
   }
 
+  /** 窄屏时开着的那侧抽屉（start 或 end），都收着时为 undefined；赋值开、关抽屉，不是窄屏时读出 undefined、赋值不起作用。 */
+  get openDrawer(): 'start' | 'end' | undefined {
+    return this.#narrow ? this.#drawer : undefined
+  }
+
+  set openDrawer(value: 'start' | 'end' | undefined) {
+    if (!this.#narrow || this.#drawer === value)
+      return
+    this.#drawer = value
+    this.requestUpdate()
+  }
+
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.#dirObserver?.disconnect()
