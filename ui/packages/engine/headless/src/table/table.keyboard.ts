@@ -44,6 +44,6 @@ export const tableKeyboard: KeyboardTable = {
     { id: 'table.kbd.cell-edit-tab', keys: ['Tab', 'Shift+Tab'], when: 'navigation=cell，focus in 表体格子里的控件', does: '只在这一格的控件之间走，到头回绕，不离开这一格；格里只有一个控件时停在它上面；控件自己用掉了 Tab 时不管' },
     { id: 'table.kbd.cell-edit-exit', keys: ['Escape', 'F2'], when: 'navigation=cell，focus in 表体格子里的控件', does: '退出格内编辑，焦点回到这一格；控件自己用掉了 Escape（比如收起它的下拉）时不退出' },
     { id: 'table.kbd.row-move', keys: ['Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in table body，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起' },
-    { id: 'table.kbd.row-indent', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面' },
+    { id: 'table.kbd.row-indent', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in table body，声明了 tree 或 rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因', does: '把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。没声明 tree、rows 里也一行都不带 parentId 时这两个键不归表格管，放行给页面' },
   ],
 }

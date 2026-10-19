@@ -224,6 +224,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行间线与普通表体一样画在行与行之间：按完整行序判，第一行不画，滚动换批时每一行的高度不变。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
 - 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
+- `tree` 声明这是一棵树，不必等某一行带上 `parentId`：一开始平铺的选项表也报 `treegrid`、每行写 `aria-level`，Alt + 左右键改层级归表格（平表不开时这两个键放行给页面），任何一行都能接受「放进去」（指针拖到一行中段，仍经 `allowRowDrop` 把关），叶子行不写 `aria-expanded`，读屏不会把它念成「已收起」。不开时照旧按行有没有 `parentId` 推断。用户先平铺加了几项、再把后面几项挪到第一项下面，开着它就做得到。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
@@ -277,6 +278,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
 | `footerCellSpan` | `(details: TableFooterCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 表尾单元格合并，与 cellSpan 同一种写法：逐格询问第几行表尾的哪一格，返回合并区的大小。 起点格报 aria-colspan / aria-rowspan，同一行里被横向合并的格子不渲染（hidden），下面的表尾行里被纵向跨过的 在那一列留一格占位、对读屏隐藏。纵向只在表尾行之间，不跨进表体。表尾格子须写明所在的第几行（getCellProps 的 footer）。 |
 | `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
+| `tree` | `boolean` |  | 声明这是一棵树，不必等某一行带上 parentId：根节点报 treegrid、行写 aria-level， Alt + 左右键改层级归表格，任何一行都能接受「放进去」（仍经 allowRowDrop 把关）， 叶子行不写 aria-expanded。缺省 false：按行有没有 parentId 推断。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
@@ -517,7 +519,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `Tab` / `Shift+Tab` | navigation=cell，focus in 表体格子里的控件 | 只在这一格的控件之间走，到头回绕，不离开这一格；格里只有一个控件时停在它上面；控件自己用掉了 Tab 时不管 |
 | `Escape` / `F2` | navigation=cell，focus in 表体格子里的控件 | 退出格内编辑，焦点回到这一格；控件自己用掉了 Escape（比如收起它的下拉）时不退出 |
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，声明了 tree 或 rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。没声明 tree、rows 里也一行都不带 parentId 时这两个键不归表格管，放行给页面 |
 
 ### ARIA
 

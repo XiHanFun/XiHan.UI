@@ -52,6 +52,7 @@
 - **新增** Tree 分支行的说明部件 `branch-description`，带说明的分支与叶子一样折成两行，说明在名称下面
 - **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
+- **新增** Table 的 `tree`：声明这是一棵树，一行 `parentId` 都没有时也报 treegrid、Alt + 左右键改层级、任何一行都能接受「放进去」，叶子行不写 `aria-expanded`
 - **新增** FloatingPanel 的拖动起止事件 `onDragStart` / `onDragEnd`（Web Components 为 `drag-start` / `drag-end`），带指针位置与是否取消
 - **新增** Table 单元格级导航 `navigation="cell"`：照 WAI-ARIA treegrid，整张表只占一个 Tab 位，方向键在格子之间走，Enter 或 F2 进格内控件编辑、编辑中 Tab 只在这一格里走、Esc 退回格子，换位、改层级与拖动照常可用
 - **新增** Tooltip 的委托模式 `delegate`：一个提示管一整个容器里的锚点，文字取锚点的 `data-xh-tooltip` 或可及名，快捷键取 `aria-keyshortcuts` 并按平台显示；提示新增 `translations.keyLabel`

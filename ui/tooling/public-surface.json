@@ -15107,6 +15107,7 @@
       "stickyHeader",
       "striped",
       "translations",
+      "tree",
       "variant",
       "virtualizer"
     ],
@@ -23890,6 +23891,7 @@
         "sticky-footer",
         "sticky-header",
         "striped",
+        "tree",
         "variant"
       ],
       "events": [

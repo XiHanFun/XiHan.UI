@@ -79,6 +79,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {number} footer-rows - 表尾行数：行号空间的最后几行留给表尾，aria-rowcount 也计入；多行表尾在每个表尾 row 上写 level
  * @attr {boolean} sticky-footer - 表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
+ * @attr {boolean} tree - 声明这是一棵树：一行 parentId 都没有时也报 treegrid、Alt + 左右键改层级、任何行都能接受「放进去」
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {'row'|'cell'} navigation - 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
@@ -156,6 +157,7 @@ export class XhTableElement extends XhElement {
     footerRows: { converter: NUMBER_CONVERTER, attribute: 'footer-rows' },
     stickyFooter: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-footer' },
     rowReorderable: { converter: BOOLEAN_CONVERTER, attribute: 'row-reorderable' },
+    tree: { converter: BOOLEAN_CONVERTER },
     // 落点校验是函数，走不了属性；只作为 property 暴露
     allowRowDrop: { attribute: false },
     loop: { converter: BOOLEAN_CONVERTER },
@@ -194,6 +196,7 @@ export class XhTableElement extends XhElement {
   declare footerRows?: number
   declare stickyFooter?: boolean
   declare rowReorderable?: boolean
+  declare tree?: boolean
   declare allowRowDrop?: (move: TableRowMoveDetails) => boolean
   declare loop?: boolean
   declare navigation?: TableNavigation
@@ -274,6 +277,7 @@ export class XhTableElement extends XhElement {
       footerRows: this.footerRows,
       stickyFooter: this.stickyFooter ?? false,
       rowReorderable: this.rowReorderable ?? false,
+      tree: this.tree,
       allowRowDrop: this.allowRowDrop,
       loop: this.loop,
       navigation: this.navigation,
