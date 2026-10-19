@@ -9,15 +9,51 @@ export { defineDesignerShell, defineDesignerShellElement, DESIGNER_SHELL_ELEMENT
 export type { DesignerShellTagMap } from './define'
 export { registerDropTarget, startDrag } from './drag/drag'
 export type { DragOptions, DragSession, DropOver, DropTargetHandlers, PanRequestDetail } from './drag/drag'
-export { DESIGNER_SHELL_COMMANDS, designerShellCommands } from './extensions/builtin-commands'
-export type { DesignerShellCommandsOptions } from './extensions/builtin-commands'
+export { DESIGNER_SHELL_COMMANDS, designerPanelCommandId, designerPanelCommands, designerShellCommands } from './extensions/builtin-commands'
+export type { DesignerPanelCommandsOptions, DesignerShellCommandsOptions } from './extensions/builtin-commands'
 export { arrangeCommands, commandEnabled, commandLabel, commandShortLabel, createCommandToolbar, renderCommandMenu, runCommand } from './extensions/commands'
 export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, CommandToolbarOrientation, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
 export { importSources } from './extensions/importers'
-export { createPanelHost } from './extensions/panels'
-export type { DesignerPanel, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
-export { DESIGNER_FRAME_REGIONS, parseDesignerPanels, XhDesignerFrameElement } from './frame/frame-element'
-export type { DesignerFrameEventMap, DesignerFramePosition, DesignerFrameRegion, DesignerFrameResizable, DesignerFrameSizes } from './frame/frame-element'
+export { createPanelActions, createPanelHost } from './extensions/panels'
+export type { DesignerPanel, DesignerPanelActions, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
+export { DESIGNER_FRAME_REGIONS, XhDesignerFrameElement } from './frame/frame-element'
+export type {
+  DesignerFrameEventMap,
+  DesignerFrameOverlayAnchor,
+  DesignerFramePosition,
+  DesignerFrameRegion,
+  DesignerFrameResizable,
+  DesignerLayoutChangeReason,
+  DesignerPanelEntry,
+} from './frame/frame-element'
+export {
+  defaultDesignerLayout,
+  DESIGNER_LAYOUT_DOCKS,
+  DESIGNER_LAYOUT_SETTING_KEY,
+  DESIGNER_LAYOUT_VERSION,
+  designerLayoutEquals,
+  designerLayoutPolicy,
+  designerPanelAbilities,
+  designerPanelDock,
+  isDesignerDockRegion,
+  isDesignerOverlayRegion,
+  resolveDesignerLayout,
+  withDesignerDockSize,
+  withDesignerPanelFloating,
+  withDesignerPanelMinimized,
+  withDesignerPanelMoved,
+  withDesignerPanelShares,
+  withDesignerPanelVisible,
+} from './frame/layout'
+export type {
+  DesignerLayout,
+  DesignerLayoutDock,
+  DesignerLayoutPolicy,
+  DesignerLayoutRect,
+  DesignerLayoutSizes,
+  DesignerPanelAbilities,
+  ResolvedDesignerLayout,
+} from './frame/layout'
 export { createStatusItem } from './frame/status-item'
 export type { DesignerStatusItem, DesignerStatusItemOptions, DesignerStatusItemState } from './frame/status-item'
 export { XhDesignerIssuesElement } from './issues/issues-element'

@@ -1,8 +1,8 @@
-// 外框在真实 Chromium 里：区按缺省比例排开，拖动分隔条后区宽跟着变并派发 sizes-change；
-// 收起再展开时保留拖过的大小；中间区始终填满剩下的空间；同一位置堆叠的区按分隔条等分，不随内容多少分高度。
-import type { DesignerFrameEventMap, XhDesignerFrameElement } from '../../src'
+// 外框在真实 Chromium 里：区按缺省比例排开，拖动分隔条后区宽跟着变，松手派发 layout-change；
+// 隐藏再显示时保留拖过的大小；中间区始终填满剩下的空间；同一栏堆叠的面板按分隔条等分，不随内容多少分高度。
+import type { DesignerFrameEventMap, ResolvedDesignerLayout, XhDesignerFrameElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createStatusItem, defineDesignerShell } from '../../src'
+import { createStatusItem, defineDesignerShell, DESIGNER_FRAME_REGIONS } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '../../style.css'
 
@@ -49,6 +49,13 @@ async function drag(trigger: Element, dx: number, dy: number): Promise<void> {
   await new Promise(resolve => requestAnimationFrame(resolve))
 }
 
+/** 记下派发的 layout-change。 */
+function layouts(): ResolvedDesignerLayout[] {
+  const seen: ResolvedDesignerLayout[] = []
+  frame.addEventListener('layout-change', event => seen.push((event as DesignerFrameEventMap['layout-change']).detail.layout))
+  return seen
+}
+
 function rowTriggers(): Element[] {
   const row = frame.querySelector('[data-part="splitter"][data-orientation="horizontal"]')!
   return Array.from(row.querySelectorAll(':scope > div > [data-xh-part="resize-trigger"]'))
@@ -70,8 +77,9 @@ describe('<xh-designer-frame>（Chromium）', () => {
       return [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth].map(Number.parseFloat)
     }
     const stacks: Readonly<Record<string, readonly string[]>> = { '': ['center'], 'palette': ['start', 'center'], 'properties': ['center', 'end'], 'issues': ['center', 'bottom'] }
-    for (const [panels, expected] of Object.entries(stacks)) {
-      frame.panels = panels
+    frame.regions = DESIGNER_FRAME_REGIONS.filter(region => region.name !== 'toolbar')
+    for (const [shown, expected] of Object.entries(stacks)) {
+      frame.layout = { version: 1, hidden: ['palette', 'properties', 'issues'].filter(name => name !== shown) }
       await frame.updateComplete
       const top = frame.querySelector<HTMLElement>(':scope > [data-part="top"]')!
       expect(top.hidden).toBe(true)
@@ -81,17 +89,17 @@ describe('<xh-designer-frame>（Chromium）', () => {
       expect([body.top, body.height]).toEqual([20, 600])
       const positions = Array.from(frame.querySelectorAll<HTMLElement>('[data-part="stack"]'), stack => stack.dataset.position)
       expect(positions).toEqual(expected)
-      for (const part of frame.querySelectorAll('[data-part="body"], [data-part="main"], [data-part="stack"], [data-part="region"]'))
+      for (const part of frame.querySelectorAll(':scope > [data-part="body"], :scope > [data-part="body"] :is([data-part="main"], [data-part="stack"], [data-part="region"])'))
         expect(borders(part)).toEqual([0, 0, 0, 0])
     }
-    frame.panels = undefined
+    frame.regions = undefined
+    frame.layout = undefined
     await frame.updateComplete
     expect(getComputedStyle(frame.querySelector(':scope > [data-part="top"]')!).display).toBe('flex')
   })
 
-  it('拖动分隔条后区宽跟着变，派发 sizes-change；收起再展开时保留拖过的大小', async () => {
-    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
-    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+  it('拖动分隔条后区宽跟着变，松手派发 layout-change；隐藏再显示时保留拖过的大小', async () => {
+    const seen = layouts()
     const before = width('palette')
     const canvasBefore = width('canvas')
     await drag(rowTriggers()[0]!, 100, 0)
@@ -102,10 +110,10 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(seen.at(-1)!.sizes.start! / 100).toBeCloseTo(width('palette') / body.width, 1)
 
     const dragged = width('palette')
-    frame.panels = 'toolbar properties issues'
+    frame.layout = { ...frame.resolvedLayout, hidden: ['palette'] }
     await frame.updateComplete
     expect(frame.querySelector('[data-region="palette"]')).toBeNull()
-    frame.panels = undefined
+    frame.layout = { ...frame.resolvedLayout, hidden: [] }
     await frame.updateComplete
     await new Promise(resolve => requestAnimationFrame(resolve))
     expect(width('palette')).toBeCloseTo(dragged, -1)
@@ -136,7 +144,7 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(frame.querySelector('[data-region="issues"]')!.getBoundingClientRect().height).toBeCloseTo(before + 60, -1)
   })
 
-  it('同一位置堆叠的两区缺省等分，内容多的不挤内容少的；拖动两区间的分隔条后高度跟着变，并进 sizes-change', async () => {
+  it('同一栏堆叠的两块面板缺省等分，内容多的不挤内容少的；拖动两块之间的分隔条后高度跟着变，松手并进 layout-change', async () => {
     frame.regions = [
       { name: 'toolbar', position: 'top' },
       { name: 'palette', position: 'start', size: 18 },
@@ -157,18 +165,17 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(height('properties') + height('minimap')).toBeGreaterThan(stack.height - 20)
     expect(height('minimap')).toBeGreaterThan(200)
 
-    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
-    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    const seen = layouts()
     const before = { properties: height('properties'), minimap: height('minimap') }
     const trigger = frame.querySelector('[data-part="stack"][data-position="end"] [data-xh-part="resize-trigger"]')!
     await drag(trigger, 0, 80)
     expect(height('properties')).toBeCloseTo(before.properties + 80, -1)
     expect(height('minimap')).toBeCloseTo(before.minimap - 80, -1)
-    const shares = seen.at(-1)!.sizes.regions!
+    const shares = seen.at(-1)!.sizes.panels!
     expect(shares.properties! / 100).toBeCloseTo(height('properties') / (height('properties') + height('minimap')), 1)
   })
 
-  it('堆叠区之间的分隔条带名称，可用方向键调高度；回填含过期区名、合计不是 100 的 sizes 时按比例排开', async () => {
+  it('堆叠面板之间的分隔条带名称，可用方向键调高度；回填含过期 id、合计不是 100 的份额时按比例排开', async () => {
     frame.regions = [
       { name: 'toolbar', position: 'top' },
       { name: 'canvas', position: 'center' },
@@ -176,7 +183,7 @@ describe('<xh-designer-frame>（Chromium）', () => {
       { name: 'minimap', position: 'end' },
     ]
     frame.translations = { resize: label => `调整「${label}」的大小` }
-    frame.sizes = { regions: { properties: 300, ghost: 40, minimap: 100 } }
+    frame.layout = { version: 1, sizes: { panels: { properties: 300, ghost: 40, minimap: 100 } } }
     await frame.updateComplete
     await new Promise(resolve => requestAnimationFrame(resolve))
     const height = (name: string): number => frame.querySelector(`[data-part="region"][data-region="${name}"]`)!.getBoundingClientRect().height
@@ -186,15 +193,14 @@ describe('<xh-designer-frame>（Chromium）', () => {
 
     const trigger = frame.querySelector<HTMLElement>('[data-part="stack"][data-position="end"] [data-xh-part="resize-trigger"]')!
     expect([trigger.getAttribute('role'), trigger.getAttribute('aria-label')]).toEqual(['separator', '调整「属性」的大小'])
-    const seen: DesignerFrameEventMap['sizes-change']['detail'][] = []
-    frame.addEventListener('sizes-change', event => seen.push((event as DesignerFrameEventMap['sizes-change']).detail))
+    const seen = layouts()
     const before = height('properties')
     trigger.focus()
     trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true, bubbles: true, cancelable: true }))
     await frame.updateComplete
     await new Promise(resolve => requestAnimationFrame(resolve))
     expect(height('properties')).toBeCloseTo(before - total() * 0.1, -1)
-    expect(seen.at(-1)!.sizes.regions).toEqual({ properties: expect.closeTo(65, 0), minimap: expect.closeTo(35, 0) })
+    expect(seen.at(-1)!.sizes.panels).toEqual({ properties: expect.closeTo(65, 0), minimap: expect.closeTo(35, 0) })
   })
   it('尺寸槽给的下限按外框的宽高折成百分比：外框窄时侧栏不小于槽的像素宽；在分隔条上按 Enter 收起，再按一次展开回来', async () => {
     frame.style.width = '800px'

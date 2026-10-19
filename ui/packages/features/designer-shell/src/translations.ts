@@ -115,6 +115,52 @@ export interface DesignerFrameTranslations {
   readonly closePanel: (label: string) => string
   /** 面板头帮助钮的名字，入参是面板标题。 */
   readonly panelHelp: (label: string) => string
+  /** 面板头收起钮（收成标题条）的名字，入参是面板标题。 */
+  readonly minimizePanel: (label: string) => string
+  /** 收成标题条以后展开钮的名字，入参是面板标题。 */
+  readonly expandPanel: (label: string) => string
+  /** 面板头「更多」钮的名字与菜单的无障碍名称，入参是面板标题。 */
+  readonly panelMenu: (label: string) => string
+  /** 浮出小窗标题栏上停靠钮的名字，入参是面板标题。 */
+  readonly dockPanel: (label: string) => string
+  /** 「更多」菜单：移到左栏。 */
+  readonly moveLeft: string
+  /** 「更多」菜单：移到右栏。 */
+  readonly moveRight: string
+  /** 「更多」菜单：移到下栏。 */
+  readonly moveBottom: string
+  /** 「更多」菜单：在这一栏里上移。 */
+  readonly moveUp: string
+  /** 「更多」菜单：在这一栏里下移。 */
+  readonly moveDown: string
+  /** 「更多」菜单：浮出成小窗。 */
+  readonly float: string
+  /** 「更多」菜单：吸回原来的栏。 */
+  readonly dock: string
+  /** 「更多」菜单：收成标题条。 */
+  readonly minimize: string
+  /** 「更多」菜单：展开。 */
+  readonly expand: string
+  /** 「更多」菜单：隐藏这块面板。 */
+  readonly hide: string
+  /** 播报里左栏的叫法。 */
+  readonly dockLeft: string
+  /** 播报里右栏的叫法。 */
+  readonly dockRight: string
+  /** 播报里下栏的叫法。 */
+  readonly dockBottom: string
+  /** 播报：面板挪到了某一栏的第几位。 */
+  readonly announceMoved: (label: string, dock: string, position: number) => string
+  /** 播报：面板浮出了。 */
+  readonly announceFloated: (label: string) => string
+  /** 播报：面板停靠到某一栏。 */
+  readonly announceDocked: (label: string, dock: string) => string
+  /** 播报：面板收成了标题条。 */
+  readonly announceMinimized: (label: string) => string
+  /** 播报：面板展开了。 */
+  readonly announceExpanded: (label: string) => string
+  /** 播报：面板隐藏了。 */
+  readonly announceHidden: (label: string) => string
 }
 
 /** 设置对话框的文案。 */
@@ -221,6 +267,12 @@ export interface DesignerCommandsTranslations {
   readonly preview: string
   /** 内置命令：面板（勾选显示哪些区）。 */
   readonly panels: string
+  /** 内置命令：显示或隐藏所有面板。 */
+  readonly panelsToggleAll: string
+  /** 内置命令：各面板的显隐回到缺省。 */
+  readonly panelsRestore: string
+  /** 内置命令：整份布局回到缺省。 */
+  readonly layoutReset: string
   /** 内置命令：打开设置。 */
   readonly settings: string
   /** 内置命令：打开帮助。 */
