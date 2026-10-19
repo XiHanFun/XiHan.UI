@@ -17,8 +17,9 @@ import type {
   JsonViewerWalkOptions,
 } from './json-viewer.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { writeToClipboard } from '@xihan-ui/core/clipboard'
 import { uniqueArray as unique } from '../shared/array'
-import { resolveClipboardTimeout, writeToClipboard } from '../shared/clipboard-write'
+import { resolveClipboardTimeout } from '../shared/clipboard-write'
 
 const { createMachine } = setup<JsonViewerSchema>()
 

@@ -4,7 +4,7 @@ import { createCounterIdGenerator, createScope, createService, normalizeProps } 
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 // 直接指到组件目录：包主入口的导出由接线一并补，测试不等它
-import { CLIPBOARD_TIMEOUT, clipboardMachine, connectClipboard, resolveClipboardTimeout, writeToClipboard } from '../src/clipboard'
+import { CLIPBOARD_TIMEOUT, clipboardMachine, connectClipboard, resolveClipboardTimeout } from '../src/clipboard'
 
 type Props = ClipboardSchema['props']
 type Dict = Record<string, unknown>
@@ -73,31 +73,6 @@ describe('resolveClipboardTimeout', () => {
     expect(resolveClipboardTimeout(-1)).toBe(Number.POSITIVE_INFINITY)
     expect(resolveClipboardTimeout(Number.NaN)).toBe(Number.POSITIVE_INFINITY)
     expect(resolveClipboardTimeout(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY)
-  })
-})
-
-describe('writeToClipboard', () => {
-  it('接口在场时把文本原样交给 writeText', async () => {
-    const writeText = vi.fn(async () => {})
-    teardowns.push(installClipboard(writeText))
-    const scope = createScope(document.body, createCounterIdGenerator())
-
-    await expect(writeToClipboard(scope, '要复制的')).resolves.toBeUndefined()
-    expect(writeText).toHaveBeenCalledWith('要复制的')
-  })
-
-  it('接口缺席时给出一个拒绝，而不是抛同步异常', async () => {
-    const scope = createScope(document.body, createCounterIdGenerator())
-    // jsdom 默认没有 navigator.clipboard，这就是非安全上下文的真实形状
-    await expect(writeToClipboard(scope, 'x')).rejects.toBeInstanceOf(Error)
-  })
-
-  it('writeText 同步抛也翻成拒绝：调用方只需处理"失败"一种形态', async () => {
-    teardowns.push(installClipboard(() => {
-      throw new Error('boom')
-    }))
-    const scope = createScope(document.body, createCounterIdGenerator())
-    await expect(writeToClipboard(scope, 'x')).rejects.toThrow('boom')
   })
 })
 
