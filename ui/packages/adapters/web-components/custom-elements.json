@@ -78325,6 +78325,16 @@
             },
             {
               "kind": "field",
+              "name": "boundary",
+              "privacy": "public",
+              "type": {
+                "text": "TourTarget | null | undefined"
+              },
+              "description": "限定区域：选择器、元素或返回元素的函数，写法同步骤的 target；同名 attribute 只收选择器。",
+              "attribute": "boundary"
+            },
+            {
+              "kind": "field",
               "name": "steps",
               "privacy": "public",
               "type": {
@@ -78723,6 +78733,14 @@
               "description": "目标缺席时等它出现的时长（ms），默认 3000；0 即不等，超时后该步居中呈现",
               "name": "target-timeout",
               "fieldName": "targetTimeout"
+            },
+            {
+              "type": {
+                "text": "TourTarget | null | undefined"
+              },
+              "description": "限定区域：选择器、元素或返回元素的函数，写法同步骤的 target；同名 attribute 只收选择器。",
+              "name": "boundary",
+              "fieldName": "boundary"
             }
           ],
           "superclass": {

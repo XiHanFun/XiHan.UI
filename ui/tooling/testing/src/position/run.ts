@@ -105,6 +105,26 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
 
+    hooks.it('给了 boundary 时以它为界：区域里这一侧放不下就翻面，交叉轴挪回区域里', async () => {
+      const stage = createStage()
+      try {
+        const center = viewportCenter()
+        // 300×200 的区域，锚点贴着它的底缘：下方在视口里放得下、在区域里放不下；居中对齐会伸出区域左缘
+        const boundary = stage.putAnchor(center.x - 100, center.y - 100, 300, 200)
+        const anchor = stage.putAnchor(center.x - 90, center.y + 60, 40, 40)
+        const floating = stage.putFloating(120, 40)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, boundary })
+        await probe.settle()
+
+        expectSame(probe.last().placement.split('-')[0], 'top', '区域里下方放不下时应翻到上方')
+        expectAtLeast(floating.getBoundingClientRect().left, boundary.getBoundingClientRect().left, '交叉轴避让后浮层左缘应留在区域里')
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
     hooks.it('交叉轴顶到边时沿轴移动，但不改 placement', async () => {
       const stage = createStage()
       try {

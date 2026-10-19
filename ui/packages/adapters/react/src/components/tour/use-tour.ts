@@ -10,7 +10,7 @@ import type { TourApi, TourSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
-import { connectTour, tourMachine } from '@xihan-ui/headless'
+import { connectTour, resolveTourBoundary, tourMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -53,6 +53,8 @@ export function useTour(props: TourSchema['props'], container?: () => Element | 
       kind: 'modal',
       branches: () => [],
       isModal: () => true,
+      // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下。
+      covers: () => resolveTourBoundary(scope, serviceRef.current?.prop('boundary')),
     }),
     node: () => contentRef.current,
     // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定。

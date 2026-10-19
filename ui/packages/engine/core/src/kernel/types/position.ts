@@ -84,6 +84,11 @@ export interface PositionOptions {
    * padding 是浮层距可用区域边缘的最小距离，从可用空间里先扣掉，缺省与 shift 贴边时的余量一致。
    */
   size?: boolean | { padding?: number }
+  /**
+   * 浮层只在这块区域里摆：可用区域再与它此刻的矩形取交集，flip、shift 与可用空间都以交集为界。
+   * 缺省只受视口与裁剪祖先约束。
+   */
+  boundary?: Anchor
 }
 
 /** 虚拟锚点（右键菜单 / 文本选区）：只需能给出矩形。 */

@@ -203,7 +203,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "366.4 kB"
+    "limit": "367.0 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -251,7 +251,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "766.1 kB"
+    "limit": "766.5 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -263,7 +263,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "818.7 kB",
+    "limit": "819.1 kB",
     "ignore": [
       "vue"
     ]

@@ -47,6 +47,14 @@ export interface TourTranslations {
   finish: string
 }
 
+/** 限定区域此刻的矩形，视口坐标。 */
+export interface TourBoundaryRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 /** 高亮框的几何，视口坐标，已包含 spotlightPadding。 */
 export interface TourSpotlightRect {
   x: number
@@ -137,6 +145,12 @@ export interface TourSchema extends MachineSchema {
     showBackdrop?: boolean
     /** 高亮框在目标四周留出的空白（px），默认 8。 */
     spotlightPadding?: number
+    /**
+     * 引导只在这块区域里进行：遮罩只盖它，高亮框在它里面裁剪，居中步摆在它中间，气泡以它为界避让；
+     * 区域外的页面照常可读可点，焦点不困在气泡里，对话框不标 aria-modal。写法同步骤的 target；
+     * 省略或取不到时是整个视口。区域的尺寸与位置跟着它自己的尺寸变化、窗口缩放与滚动重量。
+     */
+    boundary?: TourTarget | null
     /** 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 */
     autoScroll?: boolean
     /**
@@ -176,6 +190,8 @@ export interface TourSchema extends MachineSchema {
     position: PositionResult | null
     /** 高亮框几何，由效应测量后写入；居中步与收起态恒为 null。 */
     spotlight: TourSpotlightRect | null
+    /** 限定区域的矩形，与高亮框一起量；没给 boundary、取不到或收起态为 null。 */
+    boundary: TourBoundaryRect | null
     /**
      * 正被按住的按钮：Space / Enter 或触屏手指按下到松开之间，该按钮投影 data-pressed；没有按住时为 null。
      * 指针按住由 :active 表出。气泡收起时一并清空——按住 Enter 走完末步或跳过后，那颗按钮随内容藏起，不会再来 keyup。

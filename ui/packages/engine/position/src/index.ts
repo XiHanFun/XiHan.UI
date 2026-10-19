@@ -6,7 +6,7 @@
 // 导出 src 模块的公共接口。
 
 import type { Anchor, PositionEnginePort, PositionOptions, PositionResult } from '@xihan-ui/core'
-import type { PositionBox } from './compute'
+import type { PositionBox, PositionEdges } from './compute'
 import { computePlacement, intersectEdges, isFullyClipped } from './compute'
 import {
   boxToFrame,
@@ -34,6 +34,11 @@ const SHIFT_PADDING = 4
 function anchorBox(anchor: Anchor): PositionBox {
   const rect = anchor.getBoundingClientRect()
   return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+}
+
+/** 矩形的四条边。 */
+function boxEdges(box: PositionBox): PositionEdges {
+  return { top: box.y, right: box.x + box.width, bottom: box.y + box.height, left: box.x }
 }
 
 /** size 选项归一：true 即只用默认余量，关掉时不给计算层。 */
@@ -64,8 +69,10 @@ export function createPositionEngine(): PositionEnginePort {
         const clipChain = strategy === 'fixed'
           ? (block ? clippingAncestors(floating, block) : [])
           : clippingAncestors(floating)
-        const clipViewport = clipChain
+        const clipped = clipChain
           .reduce((edges, ancestor) => intersectEdges(edges, paddingEdgesOf(ancestor)), view)
+        // 给了 boundary 时可用区域再与它此刻的矩形取交集
+        const clipViewport = options.boundary ? intersectEdges(clipped, boxEdges(anchorBox(options.boundary))) : clipped
 
         const placed = computePlacement({
           anchor: boxToFrame(anchorViewport, frame),

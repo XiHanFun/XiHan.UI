@@ -42,6 +42,12 @@
 
 <XhDemo src="tour/04-per-step" />
 
+### 限定区域
+
+引导只在一块区域里进行，区域外照常可读可点
+
+<XhDemo src="tour/05-boundary" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +67,7 @@
 - `autoScroll` 自动将目标滚动到可见区域。
 - 无目标步骤在视口中居中，适合开场与结束。
 - 步骤的 `target` 可以是 CSS 选择器、元素，或返回元素的函数（路由切换后才挂上的节点用函数最稳）。进入某一步时目标还没挂上，组件盯住文档等它出现，期间气泡不露面；等到了即滚进视口、定位并高亮，等满 `targetTimeout`（缺省 3000ms，0 即不等）仍没有，该步改在视口中居中呈现、不画高亮框与箭头，不再等待；之后目标才挂上来，调用 `remeasure()` 重新锚定。
+- `boundary` 把引导限在一块区域里（写法同步骤的 `target`）：遮罩只盖它，高亮框连同暗幕裁在它里面，居中步摆在它中间，气泡以它为界避让；区域外照常可读可点，焦点不困在气泡里，对话框也不标 `aria-modal`。引导途中区域里新开的层（如抽屉）排在引导之下，Esc 仍先收引导。嵌在页面里的编辑器、设计器这类局部界面用它。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
 - 支持受控步序、完成和跳过回调。
 - 气泡走 M4 sheet 三件套（1px 描边、不透明底、投影），与对话框同源；边界由描边承担，不只靠影分层。锚定步从贴着目标的那条边涨开入场，退场按 exit 档收拢。
@@ -111,6 +118,7 @@
 | `closeOnInteractOutside` | `boolean` |  | 层外交互关闭，默认 false：引导需经 skip 或 close 两个明确出口退出。 |
 | `showBackdrop` | `boolean` |  | 绘制遮罩，默认 true。 |
 | `spotlightPadding` | `number` |  | 高亮框在目标四周留出的空白（px），默认 8。 |
+| `boundary` | `TourTarget \| null` |  | 引导只在这块区域里进行：遮罩只盖它，高亮框在它里面裁剪，居中步摆在它中间，气泡以它为界避让； 区域外的页面照常可读可点，焦点不困在气泡里，对话框不标 aria-modal。写法同步骤的 target； 省略或取不到时是整个视口。区域的尺寸与位置跟着它自己的尺寸变化、窗口缩放与滚动重量。 |
 | `autoScroll` | `boolean` |  | 展开与换步时自动把目标滚进视口（nearest，已可见时不动），默认 true。 |
 | `targetTimeout` | `number` |  | 目标缺席时等它出现的时长（ms），默认 3000；只收有限非负数，0 即不等。 超时后该步按居中呈现、不再等待；之后目标挂上来了，调用 remeasure 重新锚定。 |
 | `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
@@ -231,7 +239,7 @@
 | `Enter` / `Space` | open 且焦点在 content 上（不在按钮等控件上） | 走到下一步；停在末步时完成引导并关闭 |
 | `Escape` | open 且 closeOnEscape | 放弃引导（发 onSkip）并关闭 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | open | 一概不接管：既不换步也不阻止默认行为，留给页面滚动与读屏浏览 |
-| `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来 |
+| `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来；限定在区域里（boundary）时不困焦点，照常离开 |
 | `Enter` / `Space` | held in prev-trigger / next-trigger / skip-trigger / close-trigger | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或气泡收起撤下 |
 
 ### ARIA
@@ -245,7 +253,7 @@
 | `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
-| `content` | `aria-modal` | 'true' |
+| `content` | `aria-modal` | 'true' \| undefined |
 | `content` | `role` | 'dialog' |
 | `progress-text` | `aria-live` | 'polite' |
 | `progress-indicator` | `aria-hidden` | 'true' |
@@ -380,7 +388,7 @@
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `inline-size` · `left` · `top` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `clip-path` · `inline-size` · `left` · `top` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

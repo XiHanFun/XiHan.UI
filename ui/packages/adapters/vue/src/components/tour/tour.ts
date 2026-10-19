@@ -6,7 +6,7 @@
 // 提供 tour 相关实现。
 
 import type { Direction, Placement } from '@xihan-ui/core'
-import type { TourApi, TourSchema, TourStep } from '@xihan-ui/headless'
+import type { TourApi, TourSchema, TourStep, TourTarget } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, mergeProps } from 'vue'
@@ -56,6 +56,8 @@ export const XhTourRoot = defineComponent({
     autoScroll: { type: Boolean, default: undefined },
     /** 目标缺席时等它出现的时长（ms），默认 3000；0 即不等。 */
     targetTimeout: { type: Number },
+    /** 引导只在这块区域里进行：遮罩只盖它、高亮框裁在它里面，区域外照常可用；省略即整个视口。 */
+    boundary: { type: [String, Object, Function] as PropType<TourTarget | null> },
     translations: { type: Object as PropType<TourProps['translations']> },
     /** 本实例三张 Tour 浮层的 Portal 容器；优先于应用级配置。 */
     container: { type: Object as PropType<Element> },

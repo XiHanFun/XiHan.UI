@@ -12,12 +12,13 @@ import type {
   TourSchema,
   TourSkipDetails,
   TourStep,
+  TourTarget,
   TourTranslations,
   TourValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTour, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
+import { connectTour, resolveTourBoundary, tourAnatomy, tourMachine, tourMeta } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
@@ -59,6 +60,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {number} spotlight-padding - 高亮框在目标四周留出的空白（px），默认 8
  * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关闭
  * @attr {number} target-timeout - 目标缺席时等它出现的时长（ms），默认 3000；0 即不等，超时后该步居中呈现
+ * @attr {string} boundary - 限定区域的 CSS 选择器：引导只在这块区域里进行，遮罩只盖它、高亮框裁在它里面，区域外照常可用；省略即整个视口
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
@@ -102,6 +104,7 @@ export class XhTourElement extends XhPortalHostElement {
     spotlightPadding: { converter: NUMBER_CONVERTER, attribute: 'spotlight-padding' },
     autoScroll: { converter: BOOLEAN_CONVERTER, attribute: 'auto-scroll' },
     targetTimeout: { converter: NUMBER_CONVERTER, attribute: 'target-timeout' },
+    boundary: { converter: STRING_CONVERTER },
     // 对象值进不了属性，只作为 property 暴露
     steps: { attribute: false },
     translations: { attribute: false },
@@ -120,6 +123,8 @@ export class XhTourElement extends XhPortalHostElement {
   declare spotlightPadding?: number
   declare autoScroll?: boolean
   declare targetTimeout?: number
+  /** 限定区域：选择器、元素或返回元素的函数，写法同步骤的 target；同名 attribute 只收选择器。 */
+  declare boundary?: TourTarget | null
   /** 步骤清单。它是步序的上界，也是读屏"第 m 步，共 n 步"的分母。 */
   declare steps?: TourStep[]
   /** 关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上的值会被覆盖，只能从此处提供。 */
@@ -183,6 +188,7 @@ export class XhTourElement extends XhPortalHostElement {
       spotlightPadding: this.spotlightPadding,
       autoScroll: this.autoScroll,
       targetTimeout: this.targetTimeout,
+      boundary: this.boundary,
       translations: this.translations,
       // 只引用作者写了的标题与说明
       parts: renderedTitleDescription(this.getPart('title'), this.getPart('description')),
@@ -224,6 +230,8 @@ export class XhTourElement extends XhPortalHostElement {
       isModal: () => true,
       // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
+      // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
+      covers: () => resolveTourBoundary(this.tourScope, this.boundary),
     })
   }
 
