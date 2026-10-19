@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: '頁面結構',
+    help: '以樹狀列出範本中的內容。點一項就在畫布上選取它；拖曳它，或按 Alt 加方向鍵，就能移動它。',
     search: '搜尋頁面結構',
     noMatches: '沒有相符的內容',
     empty: '還沒有內容',

@@ -53,6 +53,7 @@ export interface DesignerOutlineEventMap {
 
 const DEFAULT_TRANSLATIONS: DesignerOutlineTranslations = {
   title: 'Structure',
+  help: 'Everything in the template as a tree. Choose an item to select it on the canvas; drag it, or press Alt with an arrow key, to move it.',
   search: 'Search structure',
   noMatches: 'No matching items',
   empty: 'Nothing here yet',

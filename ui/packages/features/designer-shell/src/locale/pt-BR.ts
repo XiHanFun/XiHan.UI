@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: 'Estrutura',
+    help: 'O conteúdo do modelo em forma de árvore. Escolher um item o seleciona na tela. Para movê-lo, arraste-o ou pressione Alt com uma tecla de seta.',
     search: 'Pesquisar na estrutura',
     noMatches: 'Nenhum item correspondente',
     empty: 'Ainda não há conteúdo',

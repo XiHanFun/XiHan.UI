@@ -50,6 +50,7 @@ const translations: DesignerShellLocaleTranslations = {
   },
   'xh-designer-outline': {
     title: '页面结构',
+    help: '按树列出模板里的内容。点一项就在画布上选中它；拖动它，或按 Alt 加方向键，就能挪动它。',
     search: '搜索页面结构',
     noMatches: '没有匹配的内容',
     empty: '还没有内容',

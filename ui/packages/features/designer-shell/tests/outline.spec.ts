@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import type { DesignerOutlineEventMap, DesignerOutlineMove, DesignerOutlineNode, XhDesignerOutlineElement } from '../src'
+import type { DesignerOutlineAdapter, DesignerOutlineEventMap, DesignerOutlineMove, DesignerOutlineNode, XhDesignerOutlineElement } from '../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { afterEach, describe, expect, it } from 'vitest'
-import { defineDesignerShell } from '../src'
+import { createOutlinePanel, defineDesignerShell } from '../src'
 import { designerShellZhCN } from '../src/locale'
 
 defineDesignerShell()
@@ -234,5 +234,87 @@ describe('<xh-designer-outline>', () => {
     expect([title.hidden, title.textContent]).toEqual([true, '大纲'])
     expect(tree(outline).querySelector('[data-scope="tree"][data-part="tree"]')!.getAttribute('aria-labelledby')).toBe(title.id)
     expect(row(outline, 'logo').querySelector('[data-part="delete-trigger"]')!.getAttribute('aria-label')).toBe('移除标志')
+  })
+})
+
+describe('createOutlinePanel', () => {
+  interface Host {
+    selection: string[]
+    readonly: boolean
+    readonly log: string[]
+  }
+
+  function adapter(): DesignerOutlineAdapter<Host> {
+    return {
+      nodes: () => nodes,
+      selection: host => host.selection,
+      select: (host, ids) => void host.log.push(`select:${ids.join(',')}`),
+      highlight: (host, id) => void host.log.push(`highlight:${id}`),
+      remove: (host, ids) => void host.log.push(`remove:${ids.join(',')}`),
+      canMove: (host, move) => {
+        host.log.push(`can:${move.id}>${move.parent}`)
+        return move.parent !== 'header'
+      },
+      move: (host, move) => void host.log.push(`move:${move.id}>${move.parent}@${move.index}`),
+    }
+  }
+
+  it('登记缺省是左栏的 outline，区的其余项可换；标题与帮助是零件文案，读的时候按全局配置现取', () => {
+    const icon = check
+    const panel = createOutlinePanel(adapter(), { region: { position: 'end', icon, defaultHidden: true } })
+    expect([panel.region.name, panel.region.position, panel.region.icon, panel.region.defaultHidden]).toEqual(['outline', 'end', icon, true])
+    expect([panel.region.title, panel.region.help!.startsWith('Everything in the template')]).toEqual(['Structure', true])
+    expect(createOutlinePanel(adapter()).region.position).toBe('start')
+    setXhConfig(designerShellZhCN)
+    expect([panel.region.title, JSON.parse(JSON.stringify(panel.region)).title]).toEqual(['页面结构', '页面结构'])
+    expect(panel.region.help).toContain('按树列出模板里的内容')
+  })
+
+  it('建出无头、带搜索框的零件，交上树与选中的行；内容没变时不重设，只读时不能删、不能挪', async () => {
+    const host: Host = { selection: ['phone'], readonly: false, log: [] }
+    const panel = createOutlinePanel(adapter(), { readonly: context => context.readonly })
+    const instance = panel.create(host)
+    const outline = instance.element as Outline
+    document.body.append(outline)
+    await outline.updateComplete
+    expect([outline.localName, outline.headless, outline.searchable, outline.nodes, outline.selection]).toEqual(['xh-designer-outline', true, true, nodes, ['phone']])
+    expect(outline.allowMove).toBeTypeOf('function')
+    const before = outline.nodes
+    instance.update!({ ...host })
+    expect(outline.nodes).toBe(before)
+    instance.update!({ ...host, selection: ['name'], readonly: true })
+    expect([outline.selection, outline.readonly, outline.allowMove]).toEqual([['name'], true, undefined])
+    expect(createOutlinePanel(adapter(), { searchable: false }).create(host).element).toHaveProperty('searchable', false)
+  })
+
+  it('树上的选中、标出、删除与挪动转给适配器，用的是最近一次刷新的上下文；同一行不重复标出，撤掉面板时撤掉标出', async () => {
+    const log: string[] = []
+    const first: Host = { selection: [], readonly: false, log }
+    const panel = createOutlinePanel(adapter())
+    const instance = panel.create(first)
+    const outline = instance.element as Outline
+    document.body.append(outline)
+    await outline.updateComplete
+    const later: Host = { selection: [], readonly: false, log: [] }
+    instance.update!(later)
+    const send = <K extends keyof DesignerOutlineEventMap>(type: K, detail: DesignerOutlineEventMap[K]['detail']): void => {
+      outline.dispatchEvent(new CustomEvent(type, { detail }))
+    }
+    send('node-select', { ids: ['phone'] })
+    send('node-highlight', { id: 'phone' })
+    send('node-highlight', { id: 'phone' })
+    send('node-delete', { ids: ['logo'] })
+    expect(outline.allowMove!({ id: 'phone', parent: 'header', index: 0 })).toBe(false)
+    send('node-move', { id: 'phone', parent: 'col-2', index: 0 })
+    instance.destroy!()
+    expect(later.log).toEqual(['select:phone', 'highlight:phone', 'remove:logo', 'can:phone>header', 'move:phone>col-2@0', 'highlight:null'])
+    expect(log).toEqual([])
+  })
+
+  it('没给 canMove 就不能挪；canMove 与 move 只给一个时抛 TypeError', () => {
+    const { canMove: _canMove, move: _move, ...rest } = adapter()
+    const instance = createOutlinePanel(rest).create({ selection: [], readonly: false, log: [] })
+    expect((instance.element as Outline).allowMove).toBeUndefined()
+    expect(() => createOutlinePanel({ ...rest, move: () => {} })).toThrow(TypeError)
   })
 })
