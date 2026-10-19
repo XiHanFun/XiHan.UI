@@ -5,8 +5,8 @@
 
 // <xh-designer-settings>：设计器的设置对话框。库内 xh-dialog 里放竖排的 xh-tabs，左边一个分区一页，右边逐条列出条目：
 // 内建编辑方式用 createPropertyField 铺，别的种类交给 editors 里按种类登记的编辑器。改一条就写进 settings 并派发
-// settings-change；宿主隐藏的条目不显示，锁定的只读、说明换成「由所在系统管理」。给了 frame 另有内建的「布局」页，
-// 面板表改的是外框的布局。
+// settings-change；宿主隐藏的条目不显示，锁定的只读、说明换成「由所在系统管理」。内建「基础」「工具栏」两页；给了
+// frame 另有「布局」页，面板表改的是外框的布局；给了 toolbar 的命令表，「工具栏」页多一张按钮表。
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { PropertyEditor, PropertyEditorContext, PropertyEditorInstance } from '@xihan-ui/designer-kit/properties'
@@ -16,14 +16,16 @@ import type { FieldRow } from '../properties/field-row'
 import type { DesignerSettingsTranslations } from '../translations'
 import type { DesignerGeneralSettingsOptions, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
 import type { DesignerSettingsFrame } from './panel-layout'
+import type { DesignerToolbarSettingsSource } from './toolbar-layout'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { BUILTIN_CONTROL_KINDS } from '@xihan-ui/designer-kit/properties'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineSettingsElements } from '../internal/ui-elements'
 import { createPropertyField } from '../properties/field'
 import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/field-row'
-import { DESIGNER_LAYOUT_SETTINGS, designerGeneralSettings, designerLayoutSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections } from './model'
+import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerGeneralSettings, designerLayoutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
 import { createPanelLayoutEditor } from './panel-layout'
+import { createToolbarLayoutEditor } from './toolbar-layout'
 
 /** 设置对话框派发的事件。 */
 export interface DesignerSettingsEventMap {
@@ -49,7 +51,7 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   themeDark: 'Dark',
   brand: 'Accent color',
   brandHint: 'The color of buttons, selection and highlights in this designer.',
-  toolbarDisplay: 'Toolbar buttons',
+  toolbarDisplay: 'Button style',
   toolbarDisplayHint: 'How the buttons on the toolbar are shown.',
   toolbarDisplayIcon: 'Icons',
   toolbarDisplayText: 'Text',
@@ -69,6 +71,18 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   layoutMoveDown: label => `Move ${label} down`,
   layoutMinimized: label => `Collapse ${label} to title`,
   layoutReset: 'Reset layout',
+  toolbar: 'Toolbar',
+  toolbarVisible: 'Show toolbar',
+  toolbarVisibleHint: 'Commands stay available from shortcuts and menus.',
+  toolbarLayout: 'Buttons',
+  toolbarLayoutHint: 'Choose which buttons to show; drag to reorder and regroup.',
+  toolbarGroups: 'Toolbar groups',
+  toolbarGroup: index => `Group ${index}`,
+  toolbarGroupToggle: index => `Show all buttons in group ${index}`,
+  toolbarCommands: index => `Buttons in group ${index}`,
+  toolbarCommandToggle: label => `Show ${label}`,
+  toolbarMove: label => `Move ${label}`,
+  toolbarLayoutReset: 'Reset to default',
 }
 
 const TAG = 'xh-designer-settings'
@@ -109,6 +123,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     sections: { attribute: false },
     general: { attribute: false },
     frame: { attribute: false },
+    toolbar: { attribute: false },
     settings: { attribute: false },
     policy: { attribute: false },
     editors: { attribute: false },
@@ -123,6 +138,8 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
   declare general: DesignerGeneralSettingsOptions | false | undefined
   /** 设计器的外框：给了且有面板时多一页内建的「布局」，面板表直接改外框的布局。 */
   declare frame: DesignerSettingsFrame | undefined
+  /** 「工具栏」页：给了缺省排列与命令信息（toolbarSettingsSource 现算）时多一张按钮表；不给只有显示方式与显示工具栏两条；false 不要这一页。 */
+  declare toolbar: DesignerToolbarSettingsSource | false | undefined
   /** 设置的值，键是「分区 id.条目 id」；没写的键取条目的缺省值。 */
   declare settings: DesignerSettings | undefined
   /** 宿主的管控：键是条目键或分区 id，hidden 不显示，locked 只读。 */
@@ -198,11 +215,13 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
       parts.dialog.open = this.open === true
   }
 
-  /** 「基础」「布局」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
+  /** 「基础」「布局」「工具栏」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
   #visibleSections(t: DesignerSettingsTranslations): DesignerSettingsSection[] {
     const own = this.general === false ? [] : [designerGeneralSettings(t, this.general)]
     if ((this.frame?.panelEntries().length ?? 0) > 0)
       own.push(designerLayoutSettings(t))
+    if (this.toolbar !== false)
+      own.push(designerToolbarSettings(t, { layout: this.toolbar !== undefined }))
     return sortSettingsSections([...own, ...this.sections ?? []])
       .map(section => ({ ...section, items: section.items.filter(item => settingPolicy(this.policy, section, item) !== 'hidden') }))
       .filter(section => section.items.length > 0)
@@ -291,9 +310,11 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     const label = item.label ?? key
     const row = section.id === DESIGNER_LAYOUT_SETTINGS && item.control.kind === PANEL_LAYOUT_CONTROL
       ? this.#panelLayoutRow(key, item)
-      : (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
-          ? this.#builtinRow(key, item, label, write)
-          : this.#customRow(key, item, write)
+      : section.id === DESIGNER_TOOLBAR_SETTINGS && item.control.kind === TOOLBAR_LAYOUT_CONTROL
+        ? this.#toolbarLayoutRow(key, item, write)
+        : (BUILTIN_CONTROL_KINDS as readonly string[]).includes(item.control.kind)
+            ? this.#builtinRow(key, item, label, write)
+            : this.#customRow(key, item, write)
     this.#rows.set(key, row)
     return row
   }
@@ -359,6 +380,20 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
         refreshFieldRow(row, { label: state.label, hint: state.hint, required: item.required === true, readonly: state.readonly })
         const rtl = this.ownerDocument.defaultView?.getComputedStyle(this).direction === 'rtl'
         editor.update({ translations: this.#translationsNow, readonly: state.readonly, rtl })
+      },
+    }
+  }
+
+  /** 「工具栏」页的按钮表：按一组控件排，改动写成 toolbar.layout 的整份值。 */
+  #toolbarLayoutRow(key: string, item: DesignerSettingItem, write: (value: JsonValue | undefined) => void): Row {
+    const row: FieldRow = createFieldRow(this.ownerDocument, this.#ids, { 'data-setting': key })
+    const editor = createToolbarLayoutEditor(this.ownerDocument, value => write(value as JsonValue | undefined))
+    placeAsGroup(row, editor.element)
+    return {
+      element: row.element,
+      update: (state) => {
+        refreshFieldRow(row, { label: state.label, hint: state.hint, required: item.required === true, readonly: state.readonly })
+        editor.update({ value: state.value, source: this.toolbar === false ? undefined : this.toolbar, translations: this.#translationsNow, readonly: state.readonly })
       },
     }
   }

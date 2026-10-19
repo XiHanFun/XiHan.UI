@@ -13,12 +13,15 @@ import {
   defineDesignerShell,
   DESIGNER_SETTING_KEYS,
   designerGeneralSettings,
+  designerToolbarSettings,
   resolveSettings,
   settingKey,
   settingPolicy,
   settingValue,
   sortSettingsSections,
   toolbarDisplayOf,
+  toolbarSettingsSource,
+  toolbarVisibleOf,
 } from '../src'
 import { designerShellZhCN } from '../src/locale'
 import { DESIGNER_SETTINGS_EN_US } from '../src/locale/en-US'
@@ -75,9 +78,10 @@ describe('设置模型', () => {
     expect(resolveSettings([flowSection], undefined)).toEqual({ 'flow.grid': true })
     expect(resolveSettings([flowSection], { 'flow.grid': false, 'flow.token': 'k', 'other.x': 1 })).toEqual({ 'flow.grid': false, 'flow.token': 'k', 'other.x': 1 })
     expect(resolveSettings([], { 'general.theme': 'dark' })).toEqual({ 'general.theme': 'dark' })
-    // 基础分区要缺省值时把它也传进来
+    // 内建分区要缺省值时把它们也传进来
     const general = designerGeneralSettings(DESIGNER_SETTINGS_EN_US)
-    expect(resolveSettings([general, flowSection], {})).toMatchObject({ 'general.theme': 'follow', 'general.toolbarDisplay': 'icon', 'flow.grid': true })
+    const toolbar = designerToolbarSettings(DESIGNER_SETTINGS_EN_US)
+    expect(resolveSettings([general, toolbar, flowSection], {})).toMatchObject({ 'general.theme': 'follow', 'toolbar.display': 'icon', 'toolbar.visible': true, 'flow.grid': true })
   })
 
   it('合起各来源的分区：分区 id 重名或占用 general 时抛 DesignerExtensionError，名字空间是 settings-section', () => {
@@ -87,6 +91,7 @@ describe('设置模型', () => {
     expect(duplicate).toThrow(/settings-section/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'general', label: 'G', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'layout', label: 'L', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
+    expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'toolbar', label: 'T', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
   })
 
   it('按 order 排，同值保持登记顺序；没写 order 当 0', () => {
@@ -108,27 +113,38 @@ describe('设置模型', () => {
     ]).toEqual([undefined, 'locked', 'hidden'])
   })
 
-  it('「基础」分区：主题、工具栏显示方式与状态栏总有；主题色要给了预设或许自定义，语言要给了可选语言', () => {
+  it('「基础」分区：主题与状态栏总有；主题色要给了预设或许自定义，语言要给了可选语言', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
-    expect(keys(designerGeneralSettings(english))).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.statusBar])
+    expect(keys(designerGeneralSettings(english))).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.statusBar])
     const full = designerGeneralSettings(english, { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true, languages: [{ value: 'zh-CN', label: '简体中文' }] })
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.language])
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.language])
     expect(full.items[1]!.control).toEqual({ kind: 'swatch', options: [{ value: 'blue', color: '#1677ff' }], custom: true })
-    expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default, full.items[3]!.default]).toEqual(['general', 0, 'follow', 'icon', true])
-    expect(full.items[2]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
+    expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
-  it('toolbarDisplayOf 取设置里的工具栏显示方式，没写或不认识的值是 icon', () => {
-    expect([toolbarDisplayOf(undefined), toolbarDisplayOf({ 'general.toolbarDisplay': 'both' }), toolbarDisplayOf({ 'general.toolbarDisplay': 'text' }), toolbarDisplayOf({ 'general.toolbarDisplay': 'large' })]).toEqual(['icon', 'both', 'text', 'icon'])
+  it('「工具栏」分区：按钮显示方式与显示工具栏总有，给了 layout 才有按钮表', () => {
+    const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
+    const plain = designerToolbarSettings(english)
+    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible]])
+    expect([plain.items[0]!.default, plain.items[1]!.default]).toEqual(['icon', true])
+    expect(plain.items[0]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
+    const full = designerToolbarSettings(english, { layout: true })
+    expect([keys(full).at(-1), full.items.at(-1)!.control]).toEqual([DESIGNER_SETTING_KEYS.toolbarLayout, { kind: 'toolbarLayout' }])
+  })
+
+  it('toolbarDisplayOf 取工具栏按钮的显示方式，没写或不认识的值是 icon；toolbarVisibleOf 只有写了 false 才不显示', () => {
+    expect([toolbarDisplayOf(undefined), toolbarDisplayOf({ 'toolbar.display': 'both' }), toolbarDisplayOf({ 'toolbar.display': 'text' }), toolbarDisplayOf({ 'toolbar.display': 'large' })]).toEqual(['icon', 'both', 'text', 'icon'])
+    expect([toolbarVisibleOf(undefined), toolbarVisibleOf({ 'toolbar.visible': false }), toolbarVisibleOf({ 'toolbar.visible': 0 })]).toEqual([true, false, true])
   })
 })
 
 describe('<xh-designer-settings>', () => {
-  it('左边一个分区一页，「基础」在前；条目按内建编辑方式铺成字段，说明取 meta.description', async () => {
+  it('左边一个分区一页，「基础」「工具栏」在前；条目按内建编辑方式铺成字段，说明取 meta.description', async () => {
     await mount((element) => {
       element.sections = [flowSection]
     })
-    expect(triggers()).toEqual([english.general, '流程'])
+    expect(triggers()).toEqual([english.general, english.toolbar, '流程'])
+    expect([row('toolbar.display') !== null, row('toolbar.visible') !== null, row('toolbar.layout')]).toEqual([true, true, null])
     expect(row('general.theme').querySelector('xh-toggle-group')).not.toBeNull()
     expect(row('flow.grid').querySelector('xh-switch')).not.toBeNull()
     expect(row('flow.grid').textContent).toContain('画布上显示网格')
@@ -157,7 +173,7 @@ describe('<xh-designer-settings>', () => {
       el.sections = [flowSection]
       el.policy = { 'general.theme': 'locked', 'flow': 'hidden' }
     })
-    expect(triggers()).toEqual([english.general])
+    expect(triggers()).toEqual([english.general, english.toolbar])
     expect(row('flow.grid')).toBeNull()
     expect(row('general.theme').querySelector('xh-field')!.hasAttribute('read-only')).toBe(true)
     expect(row('general.theme').textContent).toContain(english.locked)
@@ -167,9 +183,10 @@ describe('<xh-designer-settings>', () => {
     expect(changes).toEqual([])
   })
 
-  it('general 为 false 时不要「基础」；没有可显示的分区时对话框只剩标题', async () => {
+  it('general、toolbar 为 false 时不要「基础」「工具栏」；没有可显示的分区时对话框只剩标题', async () => {
     await mount((el) => {
       el.general = false
+      el.toolbar = false
       el.sections = [flowSection]
     })
     expect(triggers()).toEqual(['流程'])
@@ -244,7 +261,7 @@ describe('<xh-designer-settings>', () => {
     await element.updateComplete
     const zh = designerShellZhCN.translations!['xh-designer-settings']!
     expect(element.querySelector('h2')!.textContent).toBe(zh.title)
-    expect(triggers()).toEqual([zh.general])
+    expect(triggers()).toEqual([zh.general, zh.toolbar])
     element.show()
     await element.updateComplete
     expect(scope.contains(row('general.brand'))).toBe(false)
@@ -440,10 +457,10 @@ describe('<xh-designer-settings> 的「布局」页', () => {
 
   it('给了 frame 才有「布局」页，排在「基础」后面；面板表按三栏的先后列出面板，画布浮动件排在最后、只有显示开关', async () => {
     await mount(() => {})
-    expect(triggers()).toEqual([english.general])
+    expect(triggers()).toEqual([english.general, english.toolbar])
     document.body.innerHTML = ''
     await mountWithFrame(element => element.sections = [flowSection])
-    expect(triggers()).toEqual([english.general, english.layout, '流程'])
+    expect(triggers()).toEqual([english.general, english.layout, english.toolbar, '流程'])
     expect(row('layout.panels').textContent).toContain(english.layoutPanelsHint)
     const table = document.querySelector<HTMLElement>('[data-part="panel-table"]')!
     expect([table.getAttribute('role'), table.getAttribute('aria-label')]).toEqual(['table', english.layoutPanels])
@@ -512,12 +529,115 @@ describe('<xh-designer-settings> 的「布局」页', () => {
 
     element.policy = { 'layout.panels': 'hidden' }
     await element.updateComplete
-    expect(triggers()).toEqual([english.general])
+    expect(triggers()).toEqual([english.general, english.toolbar])
 
     element.policy = {}
     frame.layoutPolicy = { panels: { palette: 'locked' } }
     await frame.updateComplete
     await refresh(element)
     expect([control<SwitchHost>('palette', 'panel-visible').disabled, control<SwitchHost>('properties', 'panel-visible').disabled]).toEqual([true, false])
+  })
+})
+
+describe('<xh-designer-settings> 的「工具栏」页', () => {
+  type CheckboxHost = HTMLElement & { checked?: boolean | 'indeterminate', disabled?: boolean }
+  const commands = new Map([
+    ['undo', { id: 'undo', label: () => 'Undo', shortcut: ['Mod', 'Z'], run: () => {} }],
+    ['redo', { id: 'redo', label: 'Redo', run: () => {} }],
+    ['delete', { id: 'delete', label: 'Delete', run: () => {} }],
+    ['zoom-in', { id: 'zoom-in', label: 'Zoom in', run: () => {} }],
+  ])
+  const source = toolbarSettingsSource([['undo', 'redo'], ['delete', 'zoom-in', 'missing']], commands, {})
+
+  function groupsShown(): string[][] {
+    return Array.from(document.querySelectorAll('[data-toolbar-group]'), group => Array.from(group.querySelectorAll('[data-toolbar-command]'), command => command.getAttribute('data-toolbar-command')!))
+  }
+
+  function commandToggle(id: string): CheckboxHost {
+    return document.querySelector<CheckboxHost>(`[data-toolbar-command="${id}"] [data-part="toolbar-command-toggle"]`)!
+  }
+
+  function groupToggle(index: number): CheckboxHost {
+    return document.querySelectorAll<CheckboxHost>('[data-part="toolbar-group-toggle"]')[index]!
+  }
+
+  it('toolbarSettingsSource 按上下文取命令的文字、图标与快捷键，命令表里没有的跳过', () => {
+    expect(source.commands.map(command => [command.id, command.label, command.shortcut])).toEqual([['undo', 'Undo', ['Mod', 'Z']], ['redo', 'Redo', undefined], ['delete', 'Delete', undefined], ['zoom-in', 'Zoom in', undefined]])
+  })
+
+  it('给了 toolbar 才有按钮表：一组一块，组头写第几组，命令一行带名字与快捷键，按设置里的定制排', async () => {
+    const element = await mount(el => el.toolbar = source)
+    expect(groupsShown()).toEqual([['undo', 'redo'], ['delete', 'zoom-in']])
+    expect(Array.from(document.querySelectorAll('[data-part="toolbar-group-toggle"]'), node => node.textContent)).toEqual([english.toolbarGroup(1), english.toolbarGroup(2)])
+    const undo = document.querySelector('[data-toolbar-command="undo"]')!
+    expect(undo.querySelector('[data-part="toolbar-command-toggle"]')!.textContent).toBe('Undo')
+    expect(undo.querySelector('[data-part="toolbar-command-shortcut"]')!.textContent).not.toBe('')
+    expect((document.querySelector('[data-part="toolbar-layout-reset"]') as CheckboxHost).disabled).toBe(true)
+    element.settings = { 'toolbar.layout': { groups: [['zoom-in', 'undo'], ['redo', 'delete']], hidden: ['redo'] } }
+    await element.updateComplete
+    expect(groupsShown()).toEqual([['zoom-in', 'undo'], ['redo', 'delete']])
+    expect([commandToggle('redo').checked, commandToggle('delete').checked, groupToggle(1).checked]).toEqual([false, true, 'indeterminate'])
+  })
+
+  it('勾掉一条写进 toolbar.layout 的 hidden；组头勾选框一次勾上或勾掉整组；「恢复默认」删掉这个键', async () => {
+    const element = await mount(el => el.toolbar = source)
+    const changes: { key: string, value: JsonValue | undefined }[] = []
+    element.addEventListener('settings-change', event => changes.push((event as DesignerSettingsEventMap['settings-change']).detail))
+    emit(commandToggle('redo'), 'checked-change', { checked: false })
+    expect(changes.at(-1)).toEqual({ key: 'toolbar.layout', value: { groups: [['undo', 'redo'], ['delete', 'zoom-in']], hidden: ['redo'] }, settings: expect.anything() })
+    expect(groupToggle(0).checked).toBe('indeterminate')
+    await element.updateComplete
+    emit(groupToggle(1), 'checked-change', { checked: false })
+    expect(changes.at(-1)!.value).toEqual({ groups: [['undo', 'redo'], ['delete', 'zoom-in']], hidden: ['redo', 'delete', 'zoom-in'] })
+    emit(groupToggle(0), 'checked-change', { checked: true })
+    expect(changes.at(-1)!.value).toEqual({ groups: [['undo', 'redo'], ['delete', 'zoom-in']], hidden: ['delete', 'zoom-in'] })
+    await element.updateComplete
+    document.querySelector('[data-part="toolbar-layout-reset"] button')!.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(changes.at(-1)).toMatchObject({ key: 'toolbar.layout', value: undefined })
+    await element.updateComplete
+    expect([commandToggle('delete').checked, groupToggle(1).checked]).toEqual([true, true])
+  })
+
+  it('同一组里排序、跨组挪：按 sort 与 transfer 挪节点、写回 ids，整份写进 toolbar.layout', async () => {
+    const element = await mount(el => el.toolbar = source)
+    const changes: { value: JsonValue | undefined }[] = []
+    element.addEventListener('settings-change', event => changes.push((event as DesignerSettingsEventMap['settings-change']).detail))
+    const lists = document.querySelectorAll<HTMLElement & { ids?: string[] }>('[data-toolbar-group] xh-sortable')
+    lists[0]!.dispatchEvent(new CustomEvent('sort', { detail: { from: 0, to: 1, id: 'undo', ids: ['redo', 'undo'] }, bubbles: true }))
+    expect(groupsShown()).toEqual([['redo', 'undo'], ['delete', 'zoom-in']])
+    expect(lists[0]!.ids).toEqual(['redo', 'undo'])
+    expect(changes.at(-1)!.value).toEqual({ groups: [['redo', 'undo'], ['delete', 'zoom-in']] })
+    const from = lists[0]!.getAttribute('list-id')!
+    const to = lists[1]!.getAttribute('list-id')!
+    lists[0]!.dispatchEvent(new CustomEvent('transfer', { detail: { id: 'undo', fromList: from, toList: to, from: 1, to: 0, fromIds: ['redo'], toIds: ['undo', 'delete', 'zoom-in'] }, bubbles: true }))
+    expect(groupsShown()).toEqual([['redo'], ['undo', 'delete', 'zoom-in']])
+    expect(changes.at(-1)!.value).toEqual({ groups: [['redo'], ['undo', 'delete', 'zoom-in']] })
+    const outer = document.querySelector<HTMLElement & { ids?: string[] }>('[data-part="toolbar-layout"] > xh-sortable')!
+    outer.dispatchEvent(new CustomEvent('sort', { detail: { from: 0, to: 1, id: outer.ids![0], ids: [outer.ids![1]!, outer.ids![0]!] }, bubbles: true }))
+    expect(changes.at(-1)!.value).toEqual({ groups: [['undo', 'delete', 'zoom-in'], ['redo']] })
+    // 自己写出去的值回来时不重铺
+    const node = document.querySelector('[data-toolbar-command="undo"]')
+    element.settings = { 'toolbar.layout': changes.at(-1)!.value! }
+    await element.updateComplete
+    expect(document.querySelector('[data-toolbar-command="undo"]')).toBe(node)
+  })
+
+  it('宿主管控：toolbar.layout 锁定时只读、说明换成锁定文案，藏掉时没有这张表；toolbar 为 false 时没有这一页', async () => {
+    const element = await mount((el) => {
+      el.toolbar = source
+      el.policy = { 'toolbar.layout': 'locked' }
+    })
+    expect(row('toolbar.layout').textContent).toContain(english.locked)
+    expect([commandToggle('undo').disabled, groupToggle(0).disabled]).toEqual([true, true])
+    const changes: unknown[] = []
+    element.addEventListener('settings-change', event => changes.push(event))
+    emit(commandToggle('undo'), 'checked-change', { checked: false })
+    expect(changes).toEqual([])
+    element.policy = { 'toolbar.layout': 'hidden' }
+    await element.updateComplete
+    expect([row('toolbar.layout'), row('toolbar.display') !== null]).toEqual([null, true])
+    element.toolbar = false
+    await element.updateComplete
+    expect(triggers()).toEqual([english.general])
   })
 })

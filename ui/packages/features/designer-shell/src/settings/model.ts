@@ -18,11 +18,11 @@ export type DesignerSettingItem = PropertyDescriptor<PropertyControl | { readonl
 
 /** 一个设置分区：设置对话框左边的一页。 */
 export interface DesignerSettingsSection {
-  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout 留给内建的「基础」与「布局」。 */
+  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout、toolbar 留给内建的「基础」「布局」「工具栏」。 */
   readonly id: string
   /** 左边导航里的名字。 */
   readonly label: string
-  /** 排序：内建的「基础」是 0、「布局」是 1，各款从 100 起，扩展从 200 起；同值按登记顺序。 */
+  /** 排序：内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起；同值按登记顺序。 */
   readonly order?: number
   /** 这一页的条目，按先后排列。 */
   readonly items: readonly DesignerSettingItem[]
@@ -37,6 +37,12 @@ export type DesignerSettingsPolicy = Readonly<Record<string, 'hidden' | 'locked'
 /** 内建「基础」分区的 id。 */
 export const DESIGNER_GENERAL_SETTINGS = 'general'
 
+/** 内建「工具栏」分区的 id。 */
+export const DESIGNER_TOOLBAR_SETTINGS = 'toolbar'
+
+/** 「工具栏」分区里按钮表的编辑方式，设置对话框内建，不进属性面板。 */
+export const TOOLBAR_LAYOUT_CONTROL = 'toolbarLayout'
+
 /** 内建「布局」分区的 id：只有一条 panels，值就是外框的布局（layout.panels）。 */
 export const DESIGNER_LAYOUT_SETTINGS = 'layout'
 
@@ -46,13 +52,18 @@ export const PANEL_LAYOUT_CONTROL = 'panelLayout'
 /** 「基础」分区里主题的取值：follow 跟随所在页面，system 跟随系统，light、dark 固定。 */
 export type DesignerThemeSetting = 'follow' | 'system' | 'light' | 'dark'
 
-/** 「基础」分区各条目的键，以及外框存布局的键。 */
+/** 内建「基础」「工具栏」分区各条目的键，以及外框存布局的键。 */
 export const DESIGNER_SETTING_KEYS = {
   theme: 'general.theme',
   brand: 'general.brand',
-  toolbarDisplay: 'general.toolbarDisplay',
   statusBar: 'general.statusBar',
   language: 'general.language',
+  /** 工具栏按钮的显示方式：icon、text、both。 */
+  toolbarDisplay: 'toolbar.display',
+  /** 显示顶部工具栏，缺省 true。 */
+  toolbarVisible: 'toolbar.visible',
+  /** 用户改过的工具栏（DesignerToolbarCustomization）；宿主用 settingsPolicy 的 toolbar.layout 锁定或藏掉这张表。 */
+  toolbarLayout: 'toolbar.layout',
   /** 面板布局，值是 DesignerLayout；宿主用 settingsPolicy 的 layout.panels 锁整份、layout.panels.<面板 id> 管一块面板。 */
   layout: 'layout.panels',
 } as const
@@ -92,11 +103,11 @@ export interface DesignerSettingsSource {
 }
 
 /**
- * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含 general、layout）抛 DesignerExtensionError，
+ * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含 general、layout、toolbar）抛 DesignerExtensionError，
  * 名字空间是 settings-section。
  */
 export function collectSettingsSections(sources: readonly DesignerSettingsSource[]): DesignerSettingsSection[] {
-  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
+  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
   const sections: DesignerSettingsSection[] = []
   for (const source of sources) {
     for (const section of source.settings ?? []) {
@@ -127,7 +138,7 @@ export interface DesignerGeneralSettingsOptions {
   readonly languages?: readonly { readonly value: string, readonly label: string }[]
 }
 
-/** 内建的「基础」分区：主题、主题色、工具栏显示方式、状态栏与语言；主题色与语言按选项决定有没有。 */
+/** 内建的「基础」分区：主题、主题色、状态栏与语言；主题色与语言按选项决定有没有。 */
 export function designerGeneralSettings(t: DesignerSettingsTranslations, options: DesignerGeneralSettingsOptions = {}): DesignerSettingsSection {
   const items: DesignerSettingItem[] = [
     {
@@ -149,21 +160,6 @@ export function designerGeneralSettings(t: DesignerSettingsTranslations, options
   ]
   if ((options.brands?.length ?? 0) > 0 || options.customBrand)
     items.push({ path: ['brand'], label: t.brand, control: { kind: 'swatch', options: options.brands ?? [], custom: options.customBrand === true }, meta: { description: t.brandHint } })
-  items.push({
-    path: ['toolbarDisplay'],
-    label: t.toolbarDisplay,
-    control: {
-      kind: 'select',
-      appearance: 'toggle',
-      options: [
-        { value: 'icon', label: t.toolbarDisplayIcon },
-        { value: 'text', label: t.toolbarDisplayText },
-        { value: 'both', label: t.toolbarDisplayBoth },
-      ],
-    },
-    default: 'icon',
-    meta: { description: t.toolbarDisplayHint },
-  })
   items.push({ path: ['statusBar'], label: t.statusBar, control: { kind: 'boolean' }, default: true, meta: { description: t.statusBarHint } })
   if ((options.languages?.length ?? 0) > 0)
     items.push({ path: ['language'], label: t.language, control: { kind: 'select', appearance: 'dropdown', options: options.languages! }, meta: { description: t.languageHint } })
@@ -180,10 +176,46 @@ export function designerLayoutSettings(t: DesignerSettingsTranslations): Designe
   }
 }
 
-/** 设置里的工具栏显示方式（general.toolbarDisplay），没写或写的不是 icon、text、both 时是缺省的 icon；交给命令工具栏的 display。 */
+/** designerToolbarSettings 的选项。 */
+export interface DesignerToolbarSettingsOptions {
+  /** 有「按钮」这张表（设置对话框给了 toolbar 的命令表时）。 */
+  readonly layout?: boolean
+}
+
+/** 内建的「工具栏」分区：按钮的显示方式、显示工具栏，以及给了命令表时的「按钮」表。 */
+export function designerToolbarSettings(t: DesignerSettingsTranslations, options: DesignerToolbarSettingsOptions = {}): DesignerSettingsSection {
+  const items: DesignerSettingItem[] = [
+    {
+      path: ['display'],
+      label: t.toolbarDisplay,
+      control: {
+        kind: 'select',
+        appearance: 'toggle',
+        options: [
+          { value: 'icon', label: t.toolbarDisplayIcon },
+          { value: 'text', label: t.toolbarDisplayText },
+          { value: 'both', label: t.toolbarDisplayBoth },
+        ],
+      },
+      default: 'icon',
+      meta: { description: t.toolbarDisplayHint },
+    },
+    { path: ['visible'], label: t.toolbarVisible, control: { kind: 'boolean' }, default: true, meta: { description: t.toolbarVisibleHint } },
+  ]
+  if (options.layout)
+    items.push({ path: ['layout'], label: t.toolbarLayout, control: { kind: TOOLBAR_LAYOUT_CONTROL }, meta: { description: t.toolbarLayoutHint } })
+  return { id: DESIGNER_TOOLBAR_SETTINGS, label: t.toolbar, order: 2, items }
+}
+
+/** 设置里的工具栏显示方式（toolbar.display），没写或写的不是 icon、text、both 时是缺省的 icon；交给命令工具栏的 display。 */
 export function toolbarDisplayOf(settings: DesignerSettings | undefined): CommandToolbarDisplay {
   const value = settings?.[DESIGNER_SETTING_KEYS.toolbarDisplay]
   return value === 'text' || value === 'both' ? value : 'icon'
+}
+
+/** 设置里的显示工具栏（toolbar.visible），只有写了 false 才不显示。 */
+export function toolbarVisibleOf(settings: DesignerSettings | undefined): boolean {
+  return settings?.[DESIGNER_SETTING_KEYS.toolbarVisible] !== false
 }
 
 /** 条目在宿主管控下的状态：所在分区或条目本身被隐藏、锁定。 */

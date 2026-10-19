@@ -265,6 +265,30 @@ export interface DesignerSettingsTranslations {
   readonly layoutMinimized: (label: string) => string
   /** 面板表下面的「恢复默认布局」。 */
   readonly layoutReset: string
+  /** 内建「工具栏」分区的名字。 */
+  readonly toolbar: string
+  /** 显示工具栏条目的标签。 */
+  readonly toolbarVisible: string
+  /** 显示工具栏条目的说明。 */
+  readonly toolbarVisibleHint: string
+  /** 「工具栏」分区里按钮表的标签。 */
+  readonly toolbarLayout: string
+  /** 按钮表的说明。 */
+  readonly toolbarLayoutHint: string
+  /** 按钮表里分组列表的名字。 */
+  readonly toolbarGroups: string
+  /** 一组的名字，index 从 1 起。 */
+  readonly toolbarGroup: (index: number) => string
+  /** 组头勾选框的名字。 */
+  readonly toolbarGroupToggle: (index: number) => string
+  /** 一组里命令列表的名字。 */
+  readonly toolbarCommands: (index: number) => string
+  /** 命令勾选框的名字。 */
+  readonly toolbarCommandToggle: (label: string) => string
+  /** 分组与命令拖动把手的名字，label 是那一组或那条命令的名字。 */
+  readonly toolbarMove: (label: string) => string
+  /** 按钮表下面的「恢复默认」。 */
+  readonly toolbarLayoutReset: string
 }
 
 /** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */

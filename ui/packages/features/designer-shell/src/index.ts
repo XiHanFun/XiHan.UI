@@ -16,6 +16,8 @@ export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, Comm
 export { importSources } from './extensions/importers'
 export { createPanelActions, createPanelHost } from './extensions/panels'
 export type { DesignerPanel, DesignerPanelActions, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
+export { applyToolbarCustomization, mergeToolbarCustomization, toolbarCustomizationOf } from './extensions/toolbar-customization'
+export type { DesignerToolbarCustomization } from './extensions/toolbar-customization'
 export { DESIGNER_FRAME_REGIONS, XhDesignerFrameElement } from './frame/frame-element'
 export type {
   DesignerFrameEventMap,
@@ -91,15 +93,19 @@ export {
   DESIGNER_GENERAL_SETTINGS,
   DESIGNER_LAYOUT_SETTINGS,
   DESIGNER_SETTING_KEYS,
+  DESIGNER_TOOLBAR_SETTINGS,
   designerGeneralSettings,
   designerLayoutSettings,
+  designerToolbarSettings,
   PANEL_LAYOUT_CONTROL,
   resolveSettings,
   settingKey,
   settingPolicy,
   settingValue,
   sortSettingsSections,
+  TOOLBAR_LAYOUT_CONTROL,
   toolbarDisplayOf,
+  toolbarVisibleOf,
 } from './settings/model'
 export type {
   DesignerGeneralSettingsOptions,
@@ -109,10 +115,13 @@ export type {
   DesignerSettingsSection,
   DesignerSettingsSource,
   DesignerThemeSetting,
+  DesignerToolbarSettingsOptions,
 } from './settings/model'
 export type { DesignerSettingsFrame } from './settings/panel-layout'
 export { XhDesignerSettingsElement } from './settings/settings-element'
 export type { DesignerSettingEditor, DesignerSettingsEventMap } from './settings/settings-element'
+export { toolbarSettingsSource } from './settings/toolbar-layout'
+export type { DesignerToolbarCommandInfo, DesignerToolbarSettingsSource } from './settings/toolbar-layout'
 export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,

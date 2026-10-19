@@ -744,7 +744,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 ## 设置
 
-设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、工具栏显示方式、状态栏与语言，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
@@ -774,14 +774,14 @@ dialog.show();
 
 ### 分区与条目
 
-- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1，各款从 100 起，扩展从 200 起，同值按登记顺序。
+- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，同值按登记顺序。
 - 条目就是 `@xihan-ui/designer-kit` 的属性描述：`path` 只写一段条目 id，`label` 是标签，`default` 是缺省值，说明写在 `meta.description`。
 - 值是扁平的键值：键是 `<分区 id>.<条目 id>`，没写的键取条目的 `default`。
 - 内建编辑方式与属性面板同一套字段；别的种类交给对话框的 `editors`，被编辑的对象是整份设置。
 
 | 函数 | 说明 |
 | --- | --- |
-| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout` 留给内建 |
+| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout`、`toolbar` 留给内建 |
 | `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
 | `settingKey(section, item)` | 条目的键 |
 | `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
@@ -789,6 +789,7 @@ dialog.show();
 | `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
 | `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
 | `designerLayoutSettings(t)` | 内建的「布局」分区（`DESIGNER_LAYOUT_SETTINGS`）：一条 `panels`，编辑方式 `PANEL_LAYOUT_CONTROL`；对话框给了 `frame` 时自己生成 |
+| `designerToolbarSettings(t, { layout? })` | 内建的「工具栏」分区（`DESIGNER_TOOLBAR_SETTINGS`）：按钮显示方式、显示工具栏，`layout` 为真时加按钮表（编辑方式 `TOOLBAR_LAYOUT_CONTROL`）；对话框自己生成 |
 
 ### 「基础」分区
 
@@ -796,11 +797,36 @@ dialog.show();
 | --- | --- | --- | --- | --- |
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
 | 主题色 | `general.brand` | 色板 | 不写即跟随页面 | 给了 `brands` 或 `customBrand` |
-| 工具栏显示方式 | `general.toolbarDisplay` | 分段：图标、文字、图标和文字 | `icon` | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
-键也在 `DESIGNER_SETTING_KEYS` 里。工具栏显示方式只走设置，各款不另设属性：用 `toolbarDisplayOf(settings)` 取出来（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
+键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
+
+### 「工具栏」分区
+
+| 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
+| --- | --- | --- | --- | --- |
+| 按钮显示方式 | `toolbar.display` | 分段：图标、文字、图标和文字 | `icon` | 总有 |
+| 显示工具栏 | `toolbar.visible` | 开关 | `true` | 总有 |
+| 按钮 | `toolbar.layout` | 按钮表（`toolbarLayout`） | 不写即缺省排列 | 对话框给了 `toolbar` 的缺省排列与命令 |
+
+工具栏只走设置，各款不另设属性：`toolbarDisplayOf(settings)` 取显示方式（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`；`toolbarVisibleOf(settings)` 只有写了 `false` 才是不显示，各款这时从外框的 `regions` 里去掉工具栏的区，命令照样能经快捷键与菜单执行。
+
+按钮表只管顶部工具栏：顶栏的插入钮、右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
+
+- **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令此刻的文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字按此刻的语言取。
+- **样子**：一组一块，组头是三态勾选框（全选、部分、全不选）与拖动把手，下面每条命令一行：勾选框（图标与名字）、快捷键、拖动把手。组与组之间、组里的命令都能拖，命令能从一组拖进另一组；键盘在把手上用空格拿起、方向键挪、空格放下（竖排的命令列表用左右键挪到相邻的组）。表下一颗「恢复默认」删掉这个键。组这一层是一个 `<xh-sortable>`，组里的命令各是一个同 `group` 的 `<xh-sortable>`。
+- **值**：`DesignerToolbarCustomization`，`{ groups, hidden? }`：`groups` 按用户的先后列出全部命令（含藏起的），藏起的写进 `hidden`，重新勾上时回到原位；整组藏起就是组里每条都在 `hidden` 里。
+- **生效**：先 `arrangeCommands("toolbar", 命令表, 缺省排列, commandLayout)`，再 `applyToolbarCustomization(上一步的分组, toolbarCustomizationOf(settings))`。用户值里有、命令表里已经没有的命令跳过，不抛错（宿主 `commandLayout` 写错 id 照旧抛错）；命令表里新有、用户值里没有的命令（后装的扩展）放在缺省排列里同组前面最近一条之后，没有就放在后面最近一条之前，整组都新就另起一组。
+- **管控**：`toolbar.layout` 锁定时按钮表只读，藏掉时没有这张表；显示方式与显示工具栏照常。整个 `toolbar` 分区也能藏或锁。
+
+| 函数 | 说明 |
+| --- | --- |
+| `toolbarCustomizationOf(settings)` | 设置里的 `toolbar.layout`；没写或形状不对时为 `undefined` |
+| `mergeToolbarCustomization(arranged, customization)` | 合起缺省排列与用户定制，列出全部命令（含藏起的），规则如上；按钮表用它 |
+| `applyToolbarCustomization(arranged, customization)` | 合起来以后去掉藏起的命令与空组，就是工具栏此刻的分组 |
+| `toolbarSettingsSource(defaults, commands, context)` | 交给对话框 `toolbar` 的数据，命令表里没有的跳过 |
+| `toolbarVisibleOf(settings)` | 显示工具栏，只有写了 `false` 才为 `false` |
 
 ### 「布局」分区
 
@@ -819,6 +845,7 @@ dialog.show();
 | `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
 | `general` | 「基础」分区的选项 `{ brands?, customBrand?, languages? }`；`false` 不要这一页。文案随对话框的语言 |
 | `frame` | 设计器的外框（`DesignerSettingsFrame`，外框元素本身即可）；给了且有面板时有「布局」页 |
+| `toolbar` | 「工具栏」页：`{ defaults, commands }`（`toolbarSettingsSource` 现算）给了才有按钮表；不给只有显示方式与显示工具栏两条；`false` 不要这一页 |
 | `settings` | 设置的值 |
 | `policy` | 宿主的管控：键是条目键或分区 id，值 `hidden` 不显示、`locked` 只读并把说明换成文案 `locked` |
 | `editors` | 内建编辑方式之外的条目按 `control.kind` 用这里的编辑器；没登记的只显示值 |
