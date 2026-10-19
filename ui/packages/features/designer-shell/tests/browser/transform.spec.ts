@@ -1,10 +1,12 @@
 // 变换覆盖层在真实 Chromium 里：选中框按视口落在画布上的正确位置并绕中心旋转，覆盖层除控制柄外不挡指针，
-// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走；尺寸徽标的排位、定宽与按格计的换算。
+// 控制柄的指针形状随旋转角换，移动拖到画布边缘时逐帧派发 pan-request，选中项跟着平移后的视口走；尺寸徽标的排位、定宽与按格计的换算；
+// 窄画布里选中工具条与尺寸徽标都不出画布，工具条放不下的钮收进「更多」。
+import type { IconRecord } from '@xihan-ui/core'
 import type { Viewport } from '@xihan-ui/designer-kit'
-import type { DesignerTransformEventMap, XhDesignerTransformElement } from '../../src'
+import type { DesignerCommandTable, DesignerTransformEventMap, XhDesignerTransformElement } from '../../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { defineDesignerShell } from '../../src'
+import { createCommandToolbar, defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
@@ -255,5 +257,55 @@ describe('<xh-designer-transform> 尺寸徽标（Chromium）', () => {
       ['height', 'step', 390, 112],
       ['width', 'input', 690, 152],
     ])
+  })
+})
+
+describe('<xh-designer-transform> 窄画布里的选中工具条与尺寸徽标（Chromium）', () => {
+  const DOT: IconRecord = { name: 'dot', viewBox: '0 0 24 24', nodes: [{ tag: 'circle', attrs: { cx: '12', cy: '12', r: '6' } }] }
+
+  /** 一条十二颗钮的命令工具条，与各款的选中工具条同一种做法。 */
+  function commandBar(): HTMLElement {
+    const bar = createCommandToolbar<undefined>(document)
+    const commands: DesignerCommandTable<undefined> = new Map(Array.from({ length: 12 }, (_, index) => {
+      const id = `command-${index}`
+      return [id, { id, label: `Command ${index}`, icon: DOT, run: () => {} }] as const
+    }))
+    bar.update([[...commands.keys()]], commands, undefined, 'Selection')
+    bar.element.slot = 'toolbar'
+    return bar.element
+  }
+
+  it('工具条放不下时缩在画布里，多的钮收进「更多」；徽标在元素贴着画布左缘时也不被裁掉', async () => {
+    canvas.style.width = '260px'
+    overlay.measure = 'selection'
+    overlay.measureOptions = { unit: 'mm' }
+    overlay.viewport = { x: 0, y: 0, zoom: 1 }
+    overlay.append(commandBar())
+    overlay.items = [{ id: 'a', rect: { x: 4, y: 120, width: 40, height: 20 } }]
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    await frames(4)
+    await overlay.updateComplete
+    const host = overlay.getBoundingClientRect()
+    const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!.getBoundingClientRect()
+    expect(toolbar.left).toBeGreaterThanOrEqual(host.left)
+    expect(toolbar.right).toBeLessThanOrEqual(host.right)
+    const more = overlay.querySelector<HTMLElement>('[data-scope="toolbar"][data-part="overflow-trigger"]')!
+    const moreBox = more.getBoundingClientRect()
+    expect(more.hidden).toBe(false)
+    expect(moreBox.width).toBeGreaterThan(0)
+    expect(moreBox.right).toBeLessThanOrEqual(host.right)
+    const shown = Array.from(overlay.querySelectorAll<HTMLElement>('[data-scope="toolbar"][data-part="item"]')).filter(item => !item.hidden)
+    expect(shown.length).toBeLessThan(12)
+    const measure = overlay.querySelector<HTMLElement>('[data-part="measure"]')!.getBoundingClientRect()
+    expect(measure.left).toBeGreaterThanOrEqual(host.left)
+    expect(measure.right).toBeLessThanOrEqual(host.right)
+
+    overlay.items = [{ id: 'a', rect: { x: 210, y: 120, width: 40, height: 20 } }]
+    await overlay.updateComplete
+    await frames(2)
+    await overlay.updateComplete
+    const right = overlay.querySelector<HTMLElement>('[data-part="measure"]')!.getBoundingClientRect()
+    expect(right.right).toBeLessThanOrEqual(host.right)
   })
 })

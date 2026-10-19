@@ -282,7 +282,7 @@ describe('<xh-designer-transform>', () => {
     expect(overlay.dataset.gesture).toBe('move')
     const measure = part(overlay, 'measure')
     expect(measure.textContent).toBe('100 × 50 mm')
-    expect(measure.style.transform).toBe('translate(140px, 140px) translate(-50%, 0)')
+    expect(measure.style.transform).toBe('translate(140px, 140px)')
     up(20, 0)
     await overlay.updateComplete
     expect(overlay.dataset.gesture).toBeUndefined()
