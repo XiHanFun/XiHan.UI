@@ -10,6 +10,7 @@ import { XhDesignerFieldImportElement } from './fields/field-import-element'
 import { XhDesignerFrameElement } from './frame/frame-element'
 import { XhDesignerHistoryElement } from './history/history-element'
 import { XhDesignerIssuesElement } from './issues/issues-element'
+import { XhDesignerJsonEditorElement } from './json-editor/json-editor-element'
 import { XhDesignerMinimapElement } from './minimap/minimap-element'
 import { XhDesignerOutlineElement } from './outline/outline-element'
 import { XhDesignerPaletteElement } from './palette/palette-element'
@@ -37,6 +38,7 @@ export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-frame': XhDesignerFrameElement,
   'xh-designer-settings': XhDesignerSettingsElement,
   'xh-designer-field-import': XhDesignerFieldImportElement,
+  'xh-designer-json-editor': XhDesignerJsonEditorElement,
   'xh-designer-tour': XhDesignerTourElement,
 } as const satisfies Readonly<Record<`xh-designer-${string}`, ShellElementClass>>
 

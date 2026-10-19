@@ -170,6 +170,25 @@ const translations: DesignerShellLocaleTranslations = {
     aboutUi: 'XiHan.UI',
     aboutLicense: 'ライセンス',
   },
+  'xh-designer-json-editor': {
+    title: 'JSON を編集',
+    input: 'テンプレートの JSON',
+    parseError: (line, column, reason) => `${line} 行 ${column} 列: ${reason}`,
+    parseErrors: {
+      'unexpected-end': 'テキストが途中で終わっています',
+      'unexpected-token': '予期しない文字があります',
+      'invalid-string': '文字列が正しくありません',
+      'invalid-number': '数値が正しくありません',
+    },
+    goToError: 'エラー箇所へ移動',
+    issues: 'この JSON の問題',
+    format: '整形',
+    copy: 'コピー',
+    copied: 'コピーしました',
+    copyFailed: 'コピーできませんでした',
+    apply: '適用',
+    cancel: 'キャンセル',
+  },
   'xh-designer-tour': {
     prev: '戻る',
     next: '次へ',
@@ -233,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     settings: '設定',
     help: 'ヘルプ',
     importFields: 'フィールドのインポート',
+    editJson: 'JSON を編集',
   },
   'xh-designer-field-import': {
     title: 'フィールドのインポート',

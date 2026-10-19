@@ -4,7 +4,7 @@
  */
 
 // designer-shell 内置的命令：开关外框的面板、显示或隐藏所有面板、还原面板显隐、恢复默认布局、打开设置对话框、
-// 打开各款文档站的帮助页、打开导入字段对话框、开始新手引导，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
+// 打开各款文档站的帮助页、打开导入字段对话框、打开 JSON 编辑框、开始新手引导，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
 // 各款把它们并进自己的内置扩展，排在工具栏末组。
 
 import type { IconRecord } from '@xihan-ui/core'
@@ -21,6 +21,7 @@ export const DESIGNER_SHELL_COMMANDS = {
   settings: 'settings',
   help: 'help',
   importFields: 'import-fields',
+  editJson: 'edit-json',
   startTour: 'start-tour',
 } as const
 
@@ -49,6 +50,8 @@ export interface DesignerShellCommandsOptions<Ctx> {
   readonly openFieldImport?: (context: Ctx) => void
   /** 此刻不许导入字段（只读、预览，或宿主管着字段）时返回 true，import-fields 不可用。 */
   readonly fieldImportDisabled?: (context: Ctx) => boolean
+  /** 打开 JSON 编辑框；给了才有 edit-json 命令（Mod+Shift+J），不上工具栏。只读时也能打开，编辑框里只能看与复制。 */
+  readonly openJsonEditor?: (context: Ctx) => void
   /** 开始新手引导；给了才有 start-tour 命令，不上工具栏。返回 false 表示这次没有能走的步骤。 */
   readonly startTour?: (context: Ctx) => unknown
   /** 各命令的图标，键是命令 id。 */
@@ -57,13 +60,14 @@ export interface DesignerShellCommandsOptions<Ctx> {
 
 /**
  * 建 designer-shell 的内置命令：给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、layout-reset，
- * 给了 openSettings 有 settings，给了 helpUrl 有 help，给了 openFieldImport 有 import-fields，给了 startTour 有 start-tour。
- * panels、settings、help 缺省放在工具栏上，另外三条在 panels 菜单里与快捷键上；import-fields 不排位置，各款放进面板头或菜单；
+ * 给了 openSettings 有 settings，给了 helpUrl 有 help，给了 openFieldImport 有 import-fields，给了 openJsonEditor 有 edit-json（Mod+Shift+J），
+ * 给了 startTour 有 start-tour。panels、settings、help 缺省放在工具栏上，另外三条在 panels 菜单里与快捷键上；import-fields、edit-json
+ * 不排位置，各款放进面板头或菜单；
  * start-tour 只经 commandLayout、帮助页与扩展出现。
  */
 export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions<Ctx>): DesignerCommand<Ctx>[] {
   const commands: DesignerCommand<Ctx>[] = []
-  const { frame, openSettings, helpUrl, openFieldImport, startTour, icons } = options
+  const { frame, openSettings, helpUrl, openFieldImport, openJsonEditor, startTour, icons } = options
   if (frame) {
     const usable = (context: Ctx): boolean => (frame(context)?.panelEntries().some(entry => !entry.locked) ?? false)
     commands.push(
@@ -129,6 +133,15 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       ...(icons?.importFields ? { icon: icons.importFields } : {}),
       enabled: context => !(options.fieldImportDisabled?.(context) ?? false),
       run: openFieldImport,
+    })
+  }
+  if (openJsonEditor) {
+    commands.push({
+      id: DESIGNER_SHELL_COMMANDS.editJson,
+      label: context => options.translations(context).editJson,
+      ...(icons?.editJson ? { icon: icons.editJson } : {}),
+      shortcut: ['Mod', 'Shift', 'J'],
+      run: openJsonEditor,
     })
   }
   if (helpUrl) {

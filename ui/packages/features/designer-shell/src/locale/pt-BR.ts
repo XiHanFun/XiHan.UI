@@ -170,6 +170,25 @@ const translations: DesignerShellLocaleTranslations = {
     aboutUi: 'XiHan.UI',
     aboutLicense: 'Licença',
   },
+  'xh-designer-json-editor': {
+    title: 'Editar JSON',
+    input: 'JSON do modelo',
+    parseError: (line, column, reason) => `Linha ${line}, coluna ${column}: ${reason}`,
+    parseErrors: {
+      'unexpected-end': 'o texto termina cedo demais',
+      'unexpected-token': 'caractere inesperado',
+      'invalid-string': 'texto entre aspas inválido',
+      'invalid-number': 'número inválido',
+    },
+    goToError: 'Ir para o erro',
+    issues: 'Problemas neste JSON',
+    format: 'Formatar',
+    copy: 'Copiar',
+    copied: 'Copiado',
+    copyFailed: 'Não foi possível copiar',
+    apply: 'Aplicar',
+    cancel: 'Cancelar',
+  },
   'xh-designer-tour': {
     prev: 'Voltar',
     next: 'Próximo',
@@ -233,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     settings: 'Configurações',
     help: 'Ajuda',
     importFields: 'Importar campos',
+    editJson: 'Editar JSON',
   },
   'xh-designer-field-import': {
     title: 'Importar campos',

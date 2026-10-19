@@ -170,6 +170,25 @@ const translations: DesignerShellLocaleTranslations = {
     aboutUi: 'XiHan.UI',
     aboutLicense: '许可证',
   },
+  'xh-designer-json-editor': {
+    title: '编辑 JSON',
+    input: '模板 JSON',
+    parseError: (line, column, reason) => `第 ${line} 行第 ${column} 列：${reason}`,
+    parseErrors: {
+      'unexpected-end': '文字提前结束了',
+      'unexpected-token': '这里不该出现这个字符',
+      'invalid-string': '字符串写得不对',
+      'invalid-number': '数字写得不对',
+    },
+    goToError: '转到出错处',
+    issues: '这份 JSON 的问题',
+    format: '格式化',
+    copy: '复制',
+    copied: '已复制',
+    copyFailed: '复制失败',
+    apply: '应用',
+    cancel: '取消',
+  },
   'xh-designer-tour': {
     prev: '上一步',
     next: '下一步',
@@ -233,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     settings: '设置',
     help: '帮助',
     importFields: '导入字段',
+    editJson: '编辑 JSON',
   },
   'xh-designer-field-import': {
     title: '导入字段',

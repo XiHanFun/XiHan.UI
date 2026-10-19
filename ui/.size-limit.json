@@ -15,7 +15,7 @@
     "name": "core/json",
     "path": "packages/engine/core/dist/json.js",
     "gzip": true,
-    "limit": "2.8 kB"
+    "limit": "3.2 kB"
   },
   {
     "name": "core/hotkey",
@@ -197,13 +197,13 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "362 kB"
+    "limit": "365 kB"
   },
   {
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "38.4 kB"
+    "limit": "39.5 kB"
   },
   {
     "name": "xlsx",
