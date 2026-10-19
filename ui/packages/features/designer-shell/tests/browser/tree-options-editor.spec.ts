@@ -1,4 +1,4 @@
-// 属性面板的选项树在真实布局与真实键盘、指针下：表格报 treegrid、各行报层级；方向键在格子之间走，Enter / F2 进格内编辑、
+// 属性面板的选项树在真实布局与真实键盘、指针下：表格报 treegrid、各行报层级、整张表只占一个 Tab 位；方向键在格子之间走，Enter / F2 进格内编辑、
 // 格内输入框里的左右键归输入框，Esc 回到格子；Alt + 方向键同层换序、改一层缩进，写回整棵树，焦点留在原来那一格；
 // 加子项、新增与删除写回整棵树；落在里层某一项某一格的问题标在那一格的控件上；窄面板里表格横向滚动、不撑出面板。
 import type { JsonValue } from '@xihan-ui/core/json'
@@ -141,6 +141,55 @@ describe('属性面板的选项树', () => {
     expect(document.activeElement).toBe(page.getByRole('textbox', { name: 'Label, option 1.1', exact: true }).element())
     await userEvent.keyboard('{F2}')
     expect(document.activeElement).toBe(cell(panel, 'sh', 'label'))
+  })
+
+  it('整张表只占一个 Tab 位：从表外 Tab 进表格、再 Tab 就离开；Enter 进编辑后 Tab 与 Shift + Tab 不出这一格，Esc 退出后控件回到 -1', async () => {
+    const { panel } = await mount(sample)
+    const before = document.createElement('button')
+    before.textContent = 'before'
+    wrapper!.prepend(before)
+    const grid = page.getByRole('treegrid', { name: 'Options', exact: true }).element()
+    const controls = (): HTMLElement[] => [...grid.querySelectorAll<HTMLElement>('[data-scope="table"][data-part="cell"] :is(input, button)')]
+    expect(controls().length).toBeGreaterThan(0)
+    expect(controls().filter(control => control.tabIndex !== -1)).toEqual([])
+
+    before.focus()
+    await userEvent.keyboard('{Tab}')
+    expect(grid.contains(document.activeElement)).toBe(true)
+    await userEvent.keyboard('{Tab}')
+    expect(grid.contains(document.activeElement)).toBe(false)
+    expect(document.activeElement).toBe(page.getByRole('button', { name: 'Add option', exact: true }).element())
+
+    // 一格一个控件：Tab 与 Shift + Tab 都回到它自己
+    cell(panel, 'sh', 'label').focus()
+    await userEvent.keyboard('{Enter}')
+    const input = page.getByRole('textbox', { name: 'Label, option 1.1', exact: true }).element() as HTMLInputElement
+    expect(document.activeElement).toBe(input)
+    expect(input.tabIndex).toBeGreaterThanOrEqual(0)
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(input)
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}')
+    expect(document.activeElement).toBe(input)
+    await userEvent.keyboard('{Escape}')
+    expect(document.activeElement).toBe(cell(panel, 'sh', 'label'))
+    expect(input.tabIndex).toBe(-1)
+
+    // 操作格两颗钮：Tab 在两颗之间回绕，Esc 退出后都回到 -1
+    cell(panel, 'sh', 'actions').focus()
+    await userEvent.keyboard('{Enter}')
+    const addChild = page.getByRole('button', { name: 'Add a child to option 1.1', exact: true }).element()
+    const remove = page.getByRole('button', { name: 'Remove option 1.1', exact: true }).element()
+    expect(document.activeElement).toBe(addChild)
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(remove)
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(addChild)
+    await userEvent.keyboard('{Shift>}{Tab}{/Shift}')
+    expect(document.activeElement).toBe(remove)
+    await userEvent.keyboard('{Escape}')
+    expect(document.activeElement).toBe(cell(panel, 'sh', 'actions'))
+    expect([addChild.tabIndex, remove.tabIndex]).toEqual([-1, -1])
+    expect(controls().filter(control => control.tabIndex !== -1)).toEqual([])
   })
 
   it('按 Alt + 上下键在同一层换序，写回整棵树；连按三次，每次之后焦点都在搬走那一项同一列的格子上，层内位次跟着更新', async () => {
