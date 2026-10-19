@@ -153,8 +153,15 @@ export function connectFloatingPanel<T extends PropTypes>(
       'data-animating': dataAttr(context.get('windowAnimating')),
       // 坐标由自己的拖拽状态每帧写死，不问引擎、没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
-      // 落位与尺寸每帧写死，皮肤不要再碰这四个属性
-      'style': floatingPanelRectStyle(windowState, position, dimensions),
+      // 落位与尺寸每帧写死，皮肤不要再碰这四个属性。
+      // 层号按窗口叠放序写进 --xh-_layer：最上面的面板在抽屉层上，往下每一扇减一
+      'style': {
+        ...floatingPanelRectStyle(windowState, position, dimensions),
+        '--xh-_layer': `calc(var(--xh-layer-drawer, 1100) - ${context.get('windowDepth')})`,
+      },
+      // 在面板上按下、焦点进到面板里，都把它提到最上面
+      'onPointerDown': () => send({ type: 'WINDOW.RAISE' }),
+      'onFocusIn': () => send({ type: 'WINDOW.RAISE' }),
       // 收起态自带 hidden：面板整棵子树都在 positioner 底下，收住它就够
       'hidden': !open || undefined,
     }),

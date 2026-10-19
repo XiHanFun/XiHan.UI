@@ -251,7 +251,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "818.0 kB",
+    "limit": "818.5 kB",
     "ignore": [
       "vue"
     ]
@@ -278,7 +278,7 @@
     "name": "react",
     "path": "packages/adapters/react/dist/index.js",
     "gzip": true,
-    "limit": "816 kB",
+    "limit": "817 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -340,7 +340,7 @@
     "name": "web-components/define",
     "path": "packages/adapters/web-components/dist/define.js",
     "gzip": true,
-    "limit": "817 kB"
+    "limit": "818 kB"
   },
   {
     "name": "web-components/define：只按需注册一个元素（defineXhElement + XhStatisticElement）",

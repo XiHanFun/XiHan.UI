@@ -39318,7 +39318,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-layer-drawer"
+        "--xh-_layer"
       ],
       "visibility": "public",
       "description": "floating-panel 的 positioner 部件 z-index 覆盖槽。"

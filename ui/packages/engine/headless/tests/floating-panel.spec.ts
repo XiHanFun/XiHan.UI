@@ -771,6 +771,76 @@ describe('connectFloatingPanel 指针拖动', () => {
 
 // ══ 受控的位置与尺寸 ══
 
+// ══ 窗口叠放序 ══
+
+describe('floatingPanelMachine 窗口叠放序', () => {
+  const stops: Array<() => void> = []
+
+  function openPanel(initial: Props = { defaultOpen: true }): Service<FloatingPanelSchema> {
+    const runtime = createVanillaRuntime()
+    const service = createService(floatingPanelMachine, { props: () => initial, runtime })
+    runtime.start()
+    stops.push(() => runtime.stop())
+    return service
+  }
+
+  const order = (service: Service<FloatingPanelSchema>): unknown => (positionerProps(service).style as Dict)['--xh-_layer']
+  const layerAt = (depth: number): string => `calc(var(--xh-layer-drawer, 1100) - ${depth})`
+
+  afterEach(() => {
+    for (const stop of stops.splice(0))
+      stop()
+  })
+
+  it('后展开的在最上：定位层层号最上为抽屉层，往下每一扇减一', () => {
+    const a = openPanel()
+    const b = openPanel()
+    expect([order(b), order(a)]).toEqual([layerAt(0), layerAt(1)])
+  })
+
+  it('在下面那个的定位层按下，它提到最上', () => {
+    const a = openPanel()
+    const b = openPanel()
+    ;(positionerProps(a).onPointerDown as (e: PointerEvent) => void)(new PointerEvent('pointerdown', { button: 0 }))
+    expect([order(a), order(b)]).toEqual([layerAt(0), layerAt(1)])
+  })
+
+  it('焦点进到下面那个里面，它提到最上', () => {
+    const a = openPanel()
+    const b = openPanel()
+    ;(positionerProps(a).onFocusIn as (e: FocusEvent) => void)(new FocusEvent('focusin'))
+    expect([order(a), order(b)]).toEqual([layerAt(0), layerAt(1)])
+  })
+
+  it('收起最上面的那个，下面的收紧到 0；收起的面板按下也不回到叠放序，再展开回到最上', () => {
+    const a = openPanel()
+    const b = openPanel()
+    b.send({ type: 'CLOSE' })
+    expect(order(a)).toBe(layerAt(0))
+    ;(positionerProps(b).onPointerDown as (e: PointerEvent) => void)(new PointerEvent('pointerdown', { button: 0 }))
+    expect(order(a)).toBe(layerAt(0))
+    b.send({ type: 'OPEN' })
+    expect([order(b), order(a)]).toEqual([layerAt(0), layerAt(1)])
+  })
+
+  it('挂载时收着的面板不进叠放序', () => {
+    const a = openPanel()
+    openPanel({})
+    const c = openPanel()
+    expect([order(c), order(a)]).toEqual([layerAt(0), layerAt(1)])
+  })
+
+  it('卸载就退出叠放序，别的面板随之收紧', () => {
+    const a = openPanel()
+    openPanel()
+    const stopB = stops.pop()!
+    const c = openPanel()
+    expect(order(a)).toBe(layerAt(2))
+    stopB()
+    expect([order(c), order(a)]).toEqual([layerAt(0), layerAt(1)])
+  })
+})
+
 describe('floatingPanelMachine 受控几何', () => {
   it('位置受控：拖动只发意图，DOM 上的值等宿主写回', () => {
     const rig = makeRig({ defaultOpen: true, position: { x: 0, y: 0 } })

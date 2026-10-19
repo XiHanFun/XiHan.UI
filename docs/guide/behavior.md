@@ -156,6 +156,26 @@ popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍�
 
 单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
 
+## 窗口叠放序
+
+```ts
+import { getWindowStack } from "@xihan-ui/core";
+
+const stack = getWindowStack(document);
+const panel = {};
+const stop = stack.subscribe(() => render(stack.depthOf(panel)));
+stack.raise(panel); // 展开、按下、聚焦时提到最上面
+stack.remove(panel); // 收起时移出
+```
+
+`getWindowStack(doc)` 给出一份页面级的窗口叠放序，管非模态、能同时开着几个的浮动窗口谁在上面，比如浮动面板（Floating Panel）。它与层栈分开：不登记成层，不参与 Esc、外部点击、焦点域与背景失活，模态浮层照旧由层栈排在所有浮动窗口之上。
+
+- 键是调用方自己的任意对象，叠放序只记先后。`raise(key)` 把它放到最上面，还不在栈里就加进来；已经在最上面时不变、不通知。`remove(key)` 移出，不在栈里时不做事。
+- `depthOf(key)` 从上往下数：最上面是 0，往下 1、2…，增删之后序号收紧；不在栈里为 -1。叠放序每变一次通知订阅者一次，单个订阅者抛错不截断后面的订阅者。
+- 按 Document 各一份，存在 Document 上：页面上装了几份 `@xihan-ui/core`、Vue / React / Web Components 混用时，所有浮动面板排在同一个序里。
+
+浮动面板展开时提到最上面，在面板上按下或焦点进到面板里再提一次，收起或卸载时移出；定位层的私有层号 `--xh-_layer` 取抽屉层减去 `depthOf`：最上面的面板就在抽屉层上，往下每一扇减一，所以不会高过模态层，面板里弹出的下拉、提示照旧盖在面板上面。皮肤照层级链取 `--xh-floating-panel-layer` → `--xh-_layer` → `--xh-layer-drawer`，写了 `--xh-floating-panel-layer` 就按写的来，不再排叠放序。
+
 ## 消隐层
 
 ```ts

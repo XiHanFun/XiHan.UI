@@ -6,7 +6,7 @@
 // 提供 floating panel 相关实现。
 
 import type { FloatingPanelPressedPart, FloatingPanelSchema, FloatingPanelWindowState } from './floating-panel.types'
-import { setup } from '@xihan-ui/core'
+import { getWindowStack, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
@@ -71,12 +71,14 @@ export const floatingPanelMachine = createMachine({
       pressed: cell<FloatingPanelPressedPart | null>(() => ({ defaultValue: null })),
       windowAnimating: cell<boolean>(() => ({ defaultValue: false })),
       settledWindowState: cell<FloatingPanelWindowState>(() => ({ defaultValue: prop('windowState') ?? prop('defaultWindowState') ?? 'default' })),
+      windowDepth: cell<number>(() => ({ defaultValue: 0 })),
     }
   },
   refs: () => ({
     getContentEl: () => null,
     session: null,
     dragPoint: null,
+    stackKey: {},
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 受控时用户事件只发意图、不自改状态；宿主写回 open 后由这条 watch 派发影子事件回写。
@@ -118,7 +120,11 @@ export const floatingPanelMachine = createMachine({
     },
     open: {
       initial: 'idle',
+      // 展开期间在页面的窗口叠放序里：一展开就提到最上面，收起时退出
+      effects: ['joinWindowStack'],
       on: {
+        'WINDOW.RAISE': { actions: ['raiseWindow'] },
+        'WINDOW.DEPTH': { actions: ['setWindowDepth'] },
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
           { target: 'closed', actions: ['invokeOnClose'] },
@@ -211,6 +217,12 @@ export const floatingPanelMachine = createMachine({
         })
       },
       clearWindowAnimation: ({ context }) => context.set('windowAnimating', false),
+      raiseWindow: ({ refs, scope }) => getWindowStack(scope.getDoc()).raise(refs.get('stackKey')),
+      setWindowDepth: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'WINDOW.DEPTH')
+          context.set('windowDepth', e.depth)
+      },
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled') && context.get('pressed')?.startsWith('window-state:'))
           context.set('pressed', null)
@@ -333,6 +345,20 @@ export const floatingPanelMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 页面窗口叠放序：先订阅再提到最上面，叠放序每变一次就把自己从上往下数第几扇报回来；
+       * 收起或卸载时先退订再移出，别的面板随之收紧。
+       */
+      joinWindowStack: ({ refs, scope, send }) => {
+        const stack = getWindowStack(scope.getDoc())
+        const key = refs.get('stackKey')
+        const stop = stack.subscribe(() => send({ type: 'WINDOW.DEPTH', depth: stack.depthOf(key) }))
+        stack.raise(key)
+        return () => {
+          stop()
+          stack.remove(key)
+        }
+      },
       /**
        * 跟手期间的指针会话。监听挂在文档上而不是把手上：指针拖出把手甚至拖出面板仍要跟手；
        * 系统收走指针也会收尾，不收会让状态永远停在拖动中，面板从此粘在指针上。

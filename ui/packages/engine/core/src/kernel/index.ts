@@ -82,6 +82,9 @@ export { ensurePortalRoot } from './structure/portal-root'
 export { logicallyContains, logicalParentElement } from './structure/portal-source'
 export type { PortalVisualBridge, PortalVisualBridgeOptions } from './structure/portal-visual-bridge'
 export { createPortalVisualBridge } from './structure/portal-visual-bridge'
+// 结构：窗口叠放序
+export type { WindowStack } from './structure/window-stack'
+export { getWindowStack } from './structure/window-stack'
 // 类型与生命周期
 export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, FocusableElement, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
 export { toCleanup } from './types'
