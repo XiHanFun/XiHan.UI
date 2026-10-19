@@ -1,21 +1,30 @@
 // 属性面板的选项表在真实布局与真实键盘、指针下：落在某一项某一格的问题标在那一格的控件上，读屏名、aria-invalid 与描述都落在那里；
-// 新增一项后焦点落到它的值上；上移、下移、删除与新增都能只用键盘完成；窄的属性面板里各格看得见、页面不横向溢出。
+// 新增一项后焦点落到它的值上；上移、下移、删除与新增都能只用键盘完成；窄的属性面板里各格看得见、不压到相邻的格、页面不横向溢出；
+// 分组可折叠、放不下整张表时表格横向滚动，行尾把手不被裁掉。
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { DesignerPropertiesEventMap, DesignerPropertyTarget, XhDesignerPropertiesElement } from '../../src'
+import { mergeXhConfig } from '@xihan-ui/web-components'
+import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
+import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, page, userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
+import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
 
 defineDesignerShell()
+defineXhElement('xh-config', XhConfigElement)
 
 let panel: XhDesignerPropertiesElement | null = null
+let wrapper: HTMLElement | null = null
 
 afterEach(() => {
   panel?.remove()
   panel = null
+  wrapper?.remove()
+  wrapper = null
 })
 
 async function until(check: () => boolean): Promise<void> {
@@ -134,13 +143,52 @@ describe('属性面板的选项表', () => {
     expect((page.getByRole('textbox', { name: 'Label, option 1' }).element() as HTMLInputElement).value).toBe('B')
   })
 
-  it('280px 的面板里每格的控件看得见、有宽度，页面不横向溢出', async () => {
+  it('280px 的面板里每格的控件看得见、有宽度、落在自己那一格里，页面不横向溢出', async () => {
     await mount([{ value: 'beijing', label: 'Beijing', disabled: true }, { value: 'shanghai', label: 'Shanghai' }])
     for (const name of ['Value, option 1', 'Label, option 1', 'Value, option 2', 'Label, option 2']) {
       const box = page.getByRole('textbox', { name }).element().getBoundingClientRect()
       expect(box.width, name).toBeGreaterThan(40)
     }
     await expect.element(page.getByRole('checkbox', { name: 'Disabled, option 1' })).toBeChecked()
+    // 文本框的原生宽不把格里的字段撑出这一列、压到相邻的格上
+    for (const cell of panel!.querySelectorAll<HTMLElement>('[data-scope="field-array"][data-part="item-cell"]')) {
+      const outer = cell.getBoundingClientRect()
+      const inner = cell.firstElementChild!.getBoundingClientRect()
+      expect(inner.right, cell.dataset.value).toBeLessThanOrEqual(outer.right + 0.5)
+    }
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth)
+  })
+
+  it('290px、分组可折叠、中文的面板里放不下整张选项表：表格横向滚动，行尾的拖动、上移、下移与删除把手整个落在面板里', async () => {
+    const box = document.createElement('div')
+    box.style.cssText = 'display: flex; inline-size: 290px; overflow: hidden'
+    const scope = document.createElement('xh-config') as HTMLElement & { translations?: unknown }
+    scope.translations = mergeXhConfig(zhCN, designerShellZhCN).translations
+    scope.style.cssText = 'display: block; flex: 1; min-inline-size: 0'
+    const element = document.createElement('xh-designer-properties')
+    element.collapsible = true
+    element.targets = [{
+      ...target([{ value: 'beijing', label: '北京' }, { value: 'shanghai', label: '上海' }]),
+      descriptors: [{ path: ['data', 'options'], control: { kind: 'options' }, label: '选项', group: 'data' }],
+    }]
+    scope.append(element)
+    box.append(scope)
+    document.body.append(box)
+    wrapper = box
+    await element.updateComplete
+    await until(() => element.querySelectorAll('[data-part="item-cell"] input').length > 0)
+
+    const bounds = element.getBoundingClientRect()
+    const table = element.querySelector<HTMLElement>('[data-scope="field-array"][data-part="table"]')!
+    expect(table.getBoundingClientRect().right).toBeLessThanOrEqual(bounds.right)
+    expect(table.scrollWidth).toBeGreaterThan(table.clientWidth)
+    for (const part of ['item-drag-trigger', 'move-up-trigger', 'move-down-trigger', 'item-delete-trigger']) {
+      for (const handle of element.querySelectorAll(`[data-scope="field-array"][data-part="${part}"]`)) {
+        const rect = handle.getBoundingClientRect()
+        expect(rect.width, part).toBeGreaterThan(0)
+        expect(rect.left, part).toBeGreaterThanOrEqual(bounds.left)
+        expect(rect.right, part).toBeLessThanOrEqual(bounds.right)
+      }
+    }
   })
 })

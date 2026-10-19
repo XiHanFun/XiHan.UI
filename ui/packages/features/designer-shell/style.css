@@ -68,9 +68,12 @@
 
   xh-designer-properties [data-scope='designer-properties'][data-part='groups'],
   xh-designer-properties [data-scope='designer-properties'][data-part='group'],
+  /* 分组可折叠时这一组的行放在手风琴的内容格（网格）里：网格子项缺省不窄过内容的最小宽，
+     一张放不下的选项表会把整组撑出面板、行尾的把手被裁掉；归零后表格本体照常横向滚动 */
   xh-designer-properties [data-scope='designer-properties'][data-part='group-rows'] {
     display: flex;
     flex-direction: column;
+    min-inline-size: 0;
   }
 
   xh-designer-properties [data-scope='designer-properties'][data-part='groups'] {
