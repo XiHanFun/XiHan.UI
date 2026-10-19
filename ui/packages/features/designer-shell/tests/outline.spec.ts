@@ -283,6 +283,27 @@ describe('createOutlinePanel', () => {
     expect(panel.region.help).toContain('按树列出模板里的内容')
   })
 
+  it('translations 是这块面板自己的文案：读的时候现取，压在零件文案之上，标题、帮助与零件里的搜索框都用它', async () => {
+    let language = 'en'
+    const own = (): { title: string, help: string, search: string } => language === 'en'
+      ? { title: 'Flow structure', help: 'Nodes and the connections leaving them.', search: 'Search flow' }
+      : { title: '流程结构', help: '列出节点与从它出去的连线。', search: '搜索流程' }
+    const panel = createOutlinePanel(adapter(), { translations: own })
+    expect([panel.region.title, panel.region.help]).toEqual(['Flow structure', 'Nodes and the connections leaving them.'])
+    const host: Host = { selection: [], readonly: false, log: [] }
+    const instance = panel.create(host)
+    const outline = instance.element as Outline
+    document.body.append(outline)
+    await outline.updateComplete
+    expect(outline.querySelector('input')!.getAttribute('aria-label')).toBe('Search flow')
+    language = 'zh'
+    setXhConfig(designerShellZhCN)
+    instance.update!({ ...host })
+    await outline.updateComplete
+    expect([panel.region.title, outline.querySelector('input')!.getAttribute('aria-label')]).toEqual(['流程结构', '搜索流程'])
+    expect(outline.querySelector('[data-part="empty"]')!.textContent).toBe(designerShellZhCN.translations!['xh-designer-outline']!.empty)
+  })
+
   it('建出无头、带搜索框的零件，交上树与选中的行；内容没变时不重设，只读时不能删、不能挪', async () => {
     const host: Host = { selection: ['phone'], readonly: false, log: [] }
     const panel = createOutlinePanel(adapter(), { readonly: context => context.readonly })

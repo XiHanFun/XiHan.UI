@@ -44,11 +44,16 @@ export interface DesignerOutlinePanelOptions<Ctx> {
   readonly searchable?: boolean
   /** 返回 true 时只读：能选、能标出，不能删、不能挪。 */
   readonly readonly?: (context: Ctx) => boolean
+  /**
+   * 这块面板自己的文案，压在零件文案之上：标题、帮助与零件里的搜索框、空状态等都用它，没给的项照旧取零件文案。
+   * 读的时候现取，按全局配置换语言；同一页面放几款设计器时，各款经它换掉自己那块的说法，不去改全局的那一桶。
+   */
+  readonly translations?: () => Partial<DesignerOutlineTranslations>
 }
 
-/** 零件文案：内置英文垫底，全局配置里 xh-designer-outline 那一桶压上去。 */
-function outlineTexts(): DesignerOutlineTranslations {
-  return { ...DESIGNER_OUTLINE_EN_US, ...resolveXhConfig(null).translations?.['xh-designer-outline'] }
+/** 零件文案：内置英文垫底，全局配置里 xh-designer-outline 那一桶压上去，面板自己的文案再压上去。 */
+function outlineTexts(own?: Partial<DesignerOutlineTranslations>): DesignerOutlineTranslations {
+  return { ...DESIGNER_OUTLINE_EN_US, ...resolveXhConfig(null).translations?.['xh-designer-outline'], ...own }
 }
 
 /**
@@ -66,10 +71,10 @@ export function createOutlinePanel<Ctx>(adapter: DesignerOutlineAdapter<Ctx>, op
     position: 'start',
     ...options.region,
     get title() {
-      return outlineTexts().title
+      return outlineTexts(options.translations?.()).title
     },
     get help() {
-      return outlineTexts().help
+      return outlineTexts(options.translations?.()).help
     },
   }
   const create = (context: Ctx): DesignerPanelInstance<Ctx> => {
@@ -81,6 +86,7 @@ export function createOutlinePanel<Ctx>(adapter: DesignerOutlineAdapter<Ctx>, op
     let highlighted: string | null = null
     let nodesKey: string | undefined
     let selectionKey: string | undefined
+    let translationsKey: string | undefined
     const highlight = (id: string | null): void => {
       if (id === highlighted)
         return
@@ -94,6 +100,12 @@ export function createOutlinePanel<Ctx>(adapter: DesignerOutlineAdapter<Ctx>, op
     element.addEventListener('node-move', event => adapter.move?.(current, (event as DesignerOutlineEventMap['node-move']).detail))
     const update = (next: Ctx): void => {
       current = next
+      const own = options.translations?.()
+      const nextTranslationsKey = JSON.stringify(own ?? null)
+      if (nextTranslationsKey !== translationsKey) {
+        translationsKey = nextTranslationsKey
+        element.translations = own
+      }
       const nodes = adapter.nodes(next)
       const nextNodesKey = JSON.stringify(nodes)
       if (nextNodesKey !== nodesKey) {
