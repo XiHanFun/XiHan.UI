@@ -72,7 +72,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart item-description - 条目的第 2 行副文本
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart item-checkbox - 叶子的勾选把手，点击只勾选、不触发点击行；可选
- * @csspart item-indicator - 叶子选中标记（aria-hidden）
+ * @csspart item-indicator - 选中标记（aria-hidden），叶子行与分支行都可摆
  * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
  * @csspart branch-checkbox - 分支的勾选把手，点击只勾选、不展开该分支；可选
  * @csspart branch-control - 分支可点击行（选中；打开 expand-on-click 时顺带切换展开）
@@ -266,7 +266,8 @@ export class XhTreeElement extends XhElement {
     putAll('item-description', ITEM_SELECTOR, node => api.getItemDescriptionProps(node))
     putAll('item', ITEM_SELECTOR, node => api.getItemProps(node))
     putAll('item-suffix', ITEM_SELECTOR, node => api.getItemSuffixProps(node))
-    putAll('item-indicator', ITEM_SELECTOR, node => api.getItemIndicatorProps(node))
+    // 对号叶子行与分支行都可摆，身份跟着最近的那个节点走
+    putAll('item-indicator', NODE_SELECTOR, node => api.getItemIndicatorProps(node))
     putAll('branch', BRANCH_SELECTOR, node => api.getBranchProps(node))
     putAll('branch-control', BRANCH_SELECTOR, node => api.getBranchControlProps(node))
     putAll('branch-trigger', BRANCH_SELECTOR, node => api.getBranchTriggerProps(node))
