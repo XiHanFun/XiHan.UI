@@ -287,6 +287,22 @@ const restore = hideOutside(() => [
 
 `hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 `aria-hidden` 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 `aria-hidden`。
 
+## 页面级播报
+
+```ts
+import { announce } from "@xihan-ui/core";
+
+announce("属性面板已移到左栏第 2 位");
+```
+
+`announce(message, { document? })` 以礼貌级读一句话，不打断读屏正在读的内容。整页只有一个播报区：第一次播报时在 `body` 末尾建一个视觉隐藏的 `role="status"`（`aria-live="polite"`、`aria-atomic="true"`，带 `data-xh-announcer`），之后的播报都写进它。
+
+- 每次先清空、隔一拍再写，同一句话连播两次读屏也会再读；一拍之内连着播几句只留最后一句；写下约 7 秒后清空，读屏翻到页尾时读不到过时的话。`message` 为空字符串时只清空。
+- 播报区挂在 `body` 下，不在任何组件里：模态浮层打开、背景被 `hideOutside` 藏起时它照旧可读。被宿主从 DOM 里摘掉了，下次播报时挂回去。
+- 按 Document 各一个，iframe 或画中画窗口里的播报传 `document`；页面上装了几份 `@xihan-ui/core` 也共用同一个。没有 `document`（服务端渲染）时不做事。
+
+分工：组件自己的状态变化由组件自带的播报区负责，比如剪贴板（Clipboard）复制后的「已复制」、走马灯（Carousel）的换页、审批（Approval）的批准与拒绝，读的时机和文案跟着组件走，不经这里。不属于某一个组件的页面级播报用 `announce`，比如设计器外框挪动面板后的提示、历史面板跳转后的「跳到哪一步」。
+
 ## 进出场
 
 退场动画与何时可以从 DOM 移除是一对常见问题。`presence` 用租约解决：

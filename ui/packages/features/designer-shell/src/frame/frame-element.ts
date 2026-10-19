@@ -17,6 +17,7 @@ import type { XhDrawerElement, XhFloatingPanelElement, XhMenuElement, XhSplitter
 import type { DesignerFrameTranslations } from '../translations'
 import type { DesignerLayout, DesignerLayoutDock, DesignerLayoutPolicy, DesignerLayoutRect, ResolvedDesignerLayout } from './layout'
 import type { DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
+import { announce as announceToPage } from '@xihan-ui/core'
 import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { registerDropTarget, startDrag } from '../drag/drag'
 import { adoptSlots } from '../internal/slots'
@@ -232,8 +233,6 @@ interface Parts {
   readonly drop: HTMLElement
   readonly dropLine: HTMLElement
   readonly floats: HTMLElement
-  /** 礼貌级播报。 */
-  readonly live: HTMLElement
 }
 
 /** 一个区的容器与它生成的部件。 */
@@ -383,7 +382,6 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #floatDrag: { readonly name: string, readonly payload: PanelDragPayload | undefined, readonly release: () => void } | undefined
   /** 正按着分隔条拖：拖动中的大小等松手再派发。 */
   #resizing = false
-  #liveTimer: ReturnType<typeof setTimeout> | undefined
   readonly #onNarrowChange = (): void => {
     const narrow = this.#narrowQuery !== undefined && !this.#narrowQuery.matches
     if (narrow === this.#narrow)
@@ -647,9 +645,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       dropLine,
     ])
     const floats = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'floats' })
-    const live = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'live', 'role': 'status', 'aria-live': 'polite' })
-    this.append(header, top, body, status, probeBox, drop, floats, live)
-    this.#parts = { header, top, body, status, probes, drop, dropLine, floats, live }
+    this.append(header, top, body, status, probeBox, drop, floats)
+    this.#parts = { header, top, body, status, probes, drop, dropLine, floats }
     return this.#parts
   }
 
@@ -1151,19 +1148,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.requestUpdate()
   }
 
-  /** 读屏播报一句（礼貌级）。 */
+  /** 读屏播报一句（礼貌级），经 core 的页面级播报器。 */
   announce(message: string): void {
-    const live = this.#parts?.live
-    if (!live)
-      return
-    if (this.#liveTimer !== undefined)
-      clearTimeout(this.#liveTimer)
-    live.textContent = ''
-    // 先清空再写：同一句话连播两次时读屏也能再读一遍
-    this.#liveTimer = setTimeout(() => {
-      this.#liveTimer = undefined
-      live.textContent = message
-    }, 50)
+    announceToPage(message, { document: this.ownerDocument })
   }
 
   #defaults(): ResolvedDesignerLayout {

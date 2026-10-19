@@ -398,7 +398,7 @@ describe('<xh-designer-frame> 面板头与布局', () => {
     expect([region('palette')!.hasAttribute('data-minimized'), minimize.getAttribute('aria-expanded'), minimize.getAttribute('data-state'), minimize.getAttribute('aria-label')]).toEqual([true, 'false', 'closed', 'Expand 物料'])
     expect(seen.map(change => [change.reason, change.layout.minimized])).toEqual([['minimize', ['palette']]])
     await new Promise(resolve => setTimeout(resolve, 80))
-    expect(frame.querySelector(':scope > [data-part="live"]')!.textContent).toBe('物料 collapsed')
+    expect([document.querySelector('[data-xh-announcer]')!.parentElement, document.querySelector('[data-xh-announcer]')!.textContent]).toEqual([document.body, '物料 collapsed'])
     minimize.click()
     await frame.updateComplete
     expect([region('palette')!.hasAttribute('data-minimized'), seen.at(-1)!.layout.minimized]).toEqual([false, []])
@@ -417,7 +417,7 @@ describe('<xh-designer-frame> 面板头与布局', () => {
     expect(seen.at(-1)!.layout.docks).toEqual({ start: ['palette', 'outline'], end: ['properties'], bottom: ['issues'] })
     expect(region('outline')!.closest('[data-part="stack"]')!.getAttribute('data-position')).toBe('start')
     await new Promise(resolve => setTimeout(resolve, 80))
-    expect(frame.querySelector(':scope > [data-part="live"]')!.textContent).toBe('结构 moved to left side, position 2')
+    expect(document.querySelector('[data-xh-announcer]')!.textContent).toBe('结构 moved to left side, position 2')
     choose('outline', 'hide')
     await frame.updateComplete
     expect([seen.at(-1)!.layout.hidden, region('outline')]).toEqual([['outline'], null])

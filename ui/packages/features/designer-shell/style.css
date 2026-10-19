@@ -2134,17 +2134,6 @@
     border-radius: var(--xh-shape-overlay);
   }
 
-  /* 礼貌级播报：读屏读得到，看不见 */
-  xh-designer-frame > [data-scope='designer-frame'][data-part='live'] {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] {
     display: contents;
   }

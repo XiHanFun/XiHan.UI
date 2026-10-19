@@ -53,6 +53,7 @@
 - **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
 - **新增** Tree 节点数据的 `draggable: false`：这一个节点拖不起来，照常能选、能展开、能当落点
+- **新增** `@xihan-ui/core` 的页面级礼貌播报器 `announce(message)`：整页一个播报区挂在 `body` 末尾，同一句话连播也会再读，模态浮层打开时照旧可读；不属于某一个组件的播报用它，设计器外框的 `announce` 改经它；视觉隐藏的内联样式 `VISUALLY_HIDDEN_STYLE` 也从 core 导出
 - **新增** Table 的 `tree`：声明这是一棵树，一行 `parentId` 都没有时也报 treegrid、Alt + 左右键改层级、任何一行都能接受「放进去」，叶子行不写 `aria-expanded`
 - **新增** FloatingPanel 的拖动起止事件 `onDragStart` / `onDragEnd`（Web Components 为 `drag-start` / `drag-end`），带指针位置与是否取消
 - **新增** Table 单元格级导航 `navigation="cell"`：照 WAI-ARIA treegrid，整张表只占一个 Tab 位，方向键在格子之间走，Enter 或 F2 进格内控件编辑、编辑中 Tab 只在这一格里走、Esc 退回格子，换位、改层级与拖动照常可用
