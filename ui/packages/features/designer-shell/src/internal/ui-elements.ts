@@ -18,6 +18,7 @@ import {
   XhDrawerElement,
   XhFieldArrayElement,
   XhFieldElement,
+  XhFileUploadElement,
   XhFilterBuilderElement,
   XhFloatingPanelElement,
   XhFormatInputElement,
@@ -27,6 +28,7 @@ import {
   XhNumberFieldElement,
   XhPasswordInputElement,
   XhPopoverElement,
+  XhRadioGroupElement,
   XhSelectElement,
   XhSortableElement,
   XhSplitterElement,
@@ -116,6 +118,18 @@ export function defineSettingsElements(): void {
   defineXhElement('xh-icon', XhIconElement)
   defineXhElement('xh-sortable', XhSortableElement)
   definePropertyFieldElements()
+}
+
+/** 导入字段对话框：对话框、来源页签、输入框与读文件、预览表的勾选框与下拉、合并方式与按钮用到的元素。 */
+export function defineFieldImportElements(): void {
+  defineXhElement('xh-dialog', XhDialogElement)
+  defineXhElement('xh-tabs', XhTabsElement)
+  defineXhElement('xh-text-field', XhTextFieldElement)
+  defineXhElement('xh-file-upload', XhFileUploadElement)
+  defineXhElement('xh-checkbox', XhCheckboxElement)
+  defineXhElement('xh-select', XhSelectElement)
+  defineXhElement('xh-radio-group', XhRadioGroupElement)
+  defineXhElement('xh-button', XhButtonElement)
 }
 
 /** 变换覆盖层的尺寸徽标用到的数字框。 */

@@ -18,6 +18,8 @@ export { createPanelActions, createPanelHost } from './extensions/panels'
 export type { DesignerPanel, DesignerPanelActions, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
 export { applyToolbarCustomization, mergeToolbarCustomization, toolbarCustomizationOf } from './extensions/toolbar-customization'
 export type { DesignerToolbarCustomization } from './extensions/toolbar-customization'
+export { DESIGNER_FIELD_IMPORT_SOURCES, XhDesignerFieldImportElement } from './fields/field-import-element'
+export type { DesignerFieldImportDetail, DesignerFieldImportEventMap } from './fields/field-import-element'
 export { DESIGNER_FRAME_REGIONS, XhDesignerFrameElement } from './frame/frame-element'
 export type {
   DesignerFrameEventMap,
@@ -66,7 +68,7 @@ export { createHistoryPanel } from './history/history-panel'
 export type { DesignerHistoryAdapter, DesignerHistoryPanelOptions } from './history/history-panel'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
-export { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from './locale/en-US'
+export { DESIGNER_COMMANDS_EN_US, DESIGNER_FIELD_IMPORT_EN_US, DESIGNER_HISTORY_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerOutlineElement } from './outline/outline-element'
@@ -138,6 +140,7 @@ export type {
 } from './transform/transform-element'
 export type {
   DesignerCommandsTranslations,
+  DesignerFieldImportTranslations,
   DesignerFrameTranslations,
   DesignerHistoryTranslations,
   DesignerIssuesTranslations,
