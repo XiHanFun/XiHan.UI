@@ -41,6 +41,7 @@ import {
   XhToggleGroupElement,
   XhToolbarElement,
   XhTooltipElement,
+  XhTourElement,
   XhTreeElement,
   XhTreeSelectElement,
 } from '@xihan-ui/web-components/define'
@@ -130,6 +131,11 @@ export function defineFieldImportElements(): void {
   defineXhElement('xh-select', XhSelectElement)
   defineXhElement('xh-radio-group', XhRadioGroupElement)
   defineXhElement('xh-button', XhButtonElement)
+}
+
+/** 新手引导用到的元素。 */
+export function defineTourElements(): void {
+  defineXhElement('xh-tour', XhTourElement)
 }
 
 /** 变换覆盖层的尺寸徽标用到的数字框。 */

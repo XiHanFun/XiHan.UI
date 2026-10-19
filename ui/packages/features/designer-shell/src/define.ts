@@ -16,6 +16,7 @@ import { XhDesignerPaletteElement } from './palette/palette-element'
 import { XhDesignerPropertiesElement } from './properties/properties-element'
 import { XhDesignerRulerElement } from './ruler/ruler-element'
 import { XhDesignerSettingsElement } from './settings/settings-element'
+import { XhDesignerTourElement } from './tour/tour-element'
 import { XhDesignerTransformElement } from './transform/transform-element'
 
 /** 零件元素类：可以带一个注册它用到的库内元素的静态方法。 */
@@ -36,6 +37,7 @@ export const DESIGNER_SHELL_ELEMENTS = {
   'xh-designer-frame': XhDesignerFrameElement,
   'xh-designer-settings': XhDesignerSettingsElement,
   'xh-designer-field-import': XhDesignerFieldImportElement,
+  'xh-designer-tour': XhDesignerTourElement,
 } as const satisfies Readonly<Record<`xh-designer-${string}`, ShellElementClass>>
 
 /** 标签名 → 元素实例类型。 */

@@ -160,6 +160,31 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbarLayoutReset: 'Reset to default',
 }
 
+export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-tour'] = {
+  prev: 'Back',
+  next: 'Next',
+  finish: 'Done',
+  skip: 'Skip',
+  close: 'Close tour',
+  progress: (step, count) => `Step ${step} of ${count}`,
+  welcomeTitle: 'Welcome',
+  welcomeDescription: 'A quick look at the parts of the designer. You can take this tour again from the settings.',
+  toolbarTitle: 'Toolbar',
+  toolbarDescription: 'Frequently used commands. You can choose which buttons to show in the settings.',
+  paletteTitle: 'Palette',
+  paletteDescription: 'Drag an item onto the canvas, or click it to add it.',
+  canvasTitle: 'Canvas',
+  canvasDescription: 'Select, move and resize what you are designing here.',
+  propertiesTitle: 'Properties',
+  propertiesDescription: 'Edit the selected object.',
+  issuesTitle: 'Problems',
+  issuesDescription: 'Problems found in the design. Select one to go to it.',
+  statusTitle: 'Status bar',
+  statusDescription: 'What is selected and the current zoom.',
+  settingsTitle: 'Settings',
+  settingsDescription: 'Change the theme, panel layout and toolbar buttons here, or take this tour again.',
+}
+
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {
   toolbar: 'Designer actions',
   undo: 'Undo',
@@ -195,6 +220,7 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   panelsToggleAll: 'Show or hide all panels',
   panelsRestore: 'Restore panel visibility',
   layoutReset: 'Reset layout',
+  startTour: 'Start tour',
   settings: 'Settings',
   help: 'Help',
   importFields: 'Import fields',
@@ -264,6 +290,7 @@ const translations: DesignerShellLocaleTranslations = {
   'xh-designer-commands': DESIGNER_COMMANDS_EN_US,
   'xh-designer-settings': DESIGNER_SETTINGS_EN_US,
   'xh-designer-field-import': DESIGNER_FIELD_IMPORT_EN_US,
+  'xh-designer-tour': DESIGNER_TOUR_EN_US,
   'xh-designer-transform': {
     measure: 'Size',
     width: 'Width',

@@ -68,7 +68,7 @@ export { createHistoryPanel } from './history/history-panel'
 export type { DesignerHistoryAdapter, DesignerHistoryPanelOptions } from './history/history-panel'
 export { XhDesignerIssuesElement } from './issues/issues-element'
 export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-element'
-export { DESIGNER_COMMANDS_EN_US, DESIGNER_FIELD_IMPORT_EN_US, DESIGNER_HISTORY_EN_US } from './locale/en-US'
+export { DESIGNER_COMMANDS_EN_US, DESIGNER_FIELD_IMPORT_EN_US, DESIGNER_HISTORY_EN_US, DESIGNER_TOUR_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
 export { XhDesignerOutlineElement } from './outline/outline-element'
@@ -126,6 +126,10 @@ export { XhDesignerSettingsElement } from './settings/settings-element'
 export type { DesignerSettingEditor, DesignerSettingsEventMap } from './settings/settings-element'
 export { toolbarSettingsSource } from './settings/toolbar-layout'
 export type { DesignerToolbarCommandInfo, DesignerToolbarSettingsSource } from './settings/toolbar-layout'
+export { collectTourSteps, DESIGNER_TOUR_DONE_KEY, resolveTourSteps, tourDoneOf } from './tour/tour'
+export type { DesignerTourStep, DesignerTourStepSource, DesignerTourStepView, DesignerTourTarget } from './tour/tour'
+export { XhDesignerTourElement } from './tour/tour-element'
+export type { DesignerTourEventMap } from './tour/tour-element'
 export { XhDesignerTransformElement } from './transform/transform-element'
 export type {
   DesignerGesturePhase,
@@ -149,5 +153,6 @@ export type {
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,
   DesignerSettingsTranslations,
+  DesignerTourTranslations,
   DesignerTransformTranslations,
 } from './translations'

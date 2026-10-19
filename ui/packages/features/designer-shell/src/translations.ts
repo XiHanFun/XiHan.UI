@@ -298,6 +298,54 @@ export interface DesignerSettingsTranslations {
   readonly toolbarLayoutReset: string
 }
 
+/** 新手引导 <xh-designer-tour> 的文案：几颗钮与 designer-shell 通用步骤的标题与说明。 */
+export interface DesignerTourTranslations {
+  /** 上一步钮的文字。 */
+  readonly prev: string
+  /** 下一步钮的文字。 */
+  readonly next: string
+  /** 最后一步时下一步钮的文字（完成）。 */
+  readonly finish: string
+  /** 跳过钮的文字。 */
+  readonly skip: string
+  /** 关闭钮的名字。 */
+  readonly close: string
+  /** 「第几步，共几步」，step 从 1 起。 */
+  readonly progress: (step: number, count: number) => string
+  /** 通用步骤「欢迎」的标题。 */
+  readonly welcomeTitle: string
+  /** 通用步骤「欢迎」的说明。 */
+  readonly welcomeDescription: string
+  /** 通用步骤「工具栏」的标题。 */
+  readonly toolbarTitle: string
+  /** 通用步骤「工具栏」的说明。 */
+  readonly toolbarDescription: string
+  /** 通用步骤「物料」的标题。 */
+  readonly paletteTitle: string
+  /** 通用步骤「物料」的说明。 */
+  readonly paletteDescription: string
+  /** 通用步骤「画布」的标题。 */
+  readonly canvasTitle: string
+  /** 通用步骤「画布」的说明。 */
+  readonly canvasDescription: string
+  /** 通用步骤「属性」的标题。 */
+  readonly propertiesTitle: string
+  /** 通用步骤「属性」的说明。 */
+  readonly propertiesDescription: string
+  /** 通用步骤「问题」的标题。 */
+  readonly issuesTitle: string
+  /** 通用步骤「问题」的说明。 */
+  readonly issuesDescription: string
+  /** 通用步骤「状态栏」的标题。 */
+  readonly statusTitle: string
+  /** 通用步骤「状态栏」的说明。 */
+  readonly statusDescription: string
+  /** 通用步骤「设置」的标题。 */
+  readonly settingsTitle: string
+  /** 通用步骤「设置」的说明。 */
+  readonly settingsDescription: string
+}
+
 /** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */
 export interface DesignerCommandsTranslations {
   /** 命令工具栏的无障碍名称。 */
@@ -368,6 +416,8 @@ export interface DesignerCommandsTranslations {
   readonly panelsRestore: string
   /** 内置命令：整份布局回到缺省。 */
   readonly layoutReset: string
+  /** 内置命令：开始新手引导。 */
+  readonly startTour: string
   /** 内置命令：打开设置。 */
   readonly settings: string
   /** 内置命令：打开帮助。 */
@@ -462,6 +512,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
     'xh-designer-settings'?: Partial<DesignerSettingsTranslations>
     'xh-designer-field-import'?: Partial<DesignerFieldImportTranslations>
+    'xh-designer-tour'?: Partial<DesignerTourTranslations>
     'xh-designer-transform'?: Partial<DesignerTransformTranslations>
   }
 }
