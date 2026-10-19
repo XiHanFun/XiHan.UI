@@ -22,6 +22,7 @@ afterEach(() => {
 
 const COLUMNS = [{ id: 'name', label: '名称' }, { id: 'value', label: '取值' }]
 const ROWS: TableRowDef[] = [{ id: 'a' }, { id: 'b', parentId: 'a' }, { id: 'c', parentId: 'a' }, { id: 'd' }]
+const FLAT: TableRowDef[] = [{ id: 'w' }, { id: 'x' }, { id: 'y' }, { id: 'z' }]
 
 async function settle(): Promise<void> {
   await nextTick()
@@ -29,11 +30,11 @@ async function settle(): Promise<void> {
     await new Promise(resolve => requestAnimationFrame(resolve))
 }
 
-async function mount(): Promise<void> {
+async function mount(initial: TableRowDef[] = ROWS): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '420px'
   document.body.append(host)
-  const rows = ref<TableRowDef[]>(ROWS)
+  const rows = ref<TableRowDef[]>(initial)
   app = createApp({
     render: () => h('div', [
       h('button', { 'type': 'button', 'data-test-start': '' }, '起点'),
@@ -126,5 +127,22 @@ describe('xhTable 单元格级导航（Vue）', () => {
     await userEvent.keyboard('{ArrowDown}')
     await settle()
     expect(document.activeElement).toBe(cell('d', 'name'))
+  })
+
+  it('平表上格子里连按三次 Alt + 上键：宿主每次写回行序后焦点都回到同一列的格子，锚点跟着在格子上', async () => {
+    await mount(FLAT)
+    await enterBody()
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowRight}{ArrowRight}')
+    await settle()
+    expect(document.activeElement).toBe(cell('z', 'value'))
+    const expected = [['w', 'x', 'z', 'y'], ['w', 'z', 'x', 'y'], ['z', 'w', 'x', 'y']]
+    for (const order of expected) {
+      await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
+      await settle()
+      expect([...host!.querySelectorAll('[data-scope="table"][data-part="body"] [data-part="row"]')].map(el => el.getAttribute('data-value'))).toEqual(order)
+      expect(document.activeElement).toBe(cell('z', 'value'))
+      expect(cell('z', 'value').getAttribute('tabindex')).toBe('0')
+      expect(row('z').getAttribute('tabindex')).toBe('-1')
+    }
   })
 })

@@ -1440,10 +1440,8 @@ export function connectTable<T extends PropTypes>(
         ...(cellMode && cell.row != null && cell.footer == null
           ? {
               tabindex: focusedRow === cell.row && focusedColumn === cell.value ? 0 : -1,
-              onFocusIn: () => {
-                if (context.get('focusedRow') !== cell.row || context.get('focusedColumn') !== cell.value)
-                  send({ type: 'CELL.FOCUS', row: cell.row!, column: cell.value })
-              },
+              // 每次落焦都记一次，不与现有锚点比对
+              onFocusIn: () => send({ type: 'CELL.FOCUS', row: cell.row!, column: cell.value }),
             }
           : {}),
         // 与表头格同发：指示线要贯穿整张表，只画在列头上会看不出落到哪儿

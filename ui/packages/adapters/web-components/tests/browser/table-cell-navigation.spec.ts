@@ -17,14 +17,15 @@ afterEach(() => {
 })
 
 const ROWS: TableRowDef[] = [{ id: 'a' }, { id: 'b', parentId: 'a' }, { id: 'c', parentId: 'a' }, { id: 'd' }]
+const FLAT: TableRowDef[] = [{ id: 'w' }, { id: 'x' }, { id: 'y' }, { id: 'z' }]
 
 async function settle(): Promise<void> {
   for (let i = 0; i < 2; i++)
     await new Promise(resolve => requestAnimationFrame(resolve))
 }
 
-async function mount(navigation: 'row' | 'cell' = 'cell'): Promise<void> {
-  const rowsHtml = ROWS.map(row => `
+async function mount(navigation: 'row' | 'cell' = 'cell', initial: TableRowDef[] = ROWS, insert = false): Promise<void> {
+  const rowsHtml = initial.map(row => `
     <div data-xh-part="row" value="${row.id}">
       <div data-xh-part="cell" value="name">${row.id} 名称</div>
       <div data-xh-part="cell" value="value">${row.id === 'b' ? '<input aria-label="取值">' : `${row.id} 取值`}</div>
@@ -47,7 +48,7 @@ async function mount(navigation: 'row' | 'cell' = 'cell'): Promise<void> {
   `
   const table = document.querySelector<XhTableElement>('xh-table')!
   table.columns = [{ id: 'name', label: '名称' }, { id: 'value', label: '取值' }]
-  table.rows = ROWS
+  table.rows = initial
   table.defaultExpandedValue = ['a']
   // 宿主按 ids 重排、把这一行的 parentId 设成 parent，再按新次序把行节点排回表体
   table.addEventListener('row-move', (event) => {
@@ -55,7 +56,16 @@ async function mount(navigation: 'row' | 'cell' = 'cell'): Promise<void> {
     const byId = new Map((table.rows ?? []).map(row => [row.id, row]))
     table.rows = details.ids.map(id => (id === details.id ? { ...byId.get(id)!, parentId: details.parent ?? undefined } : byId.get(id)!))
     const body = document.querySelector<HTMLElement>('[data-xh-part="body"]')!
-    body.append(...details.ids.map(id => row(id)))
+    if (insert) {
+      details.ids.forEach((id, index) => {
+        const node = row(id)
+        if (body.children[index] !== node)
+          body.insertBefore(node, body.children[index] ?? null)
+      })
+    }
+    else {
+      body.append(...details.ids.map(id => row(id)))
+    }
   })
   await table.updateComplete
   await settle()
@@ -140,5 +150,22 @@ describe('xh-table 单元格级导航', () => {
     await settle()
     expect([...document.querySelectorAll('[data-scope="table"][data-part="body"] [data-part="row"]')].map(el => el.getAttribute('data-value'))).toEqual(['a', 'b', 'c', 'd'])
     expect(document.activeElement).toBe(row('b'))
+  })
+
+  it('平表上格子里连按三次 Alt + 上键：宿主每次写回行序后焦点都回到同一列的格子，锚点跟着在格子上', async () => {
+    await mount('cell', FLAT, true)
+    await enterBody()
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowRight}{ArrowRight}')
+    await settle()
+    expect(document.activeElement).toBe(cell('z', 'value'))
+    const expected = [['w', 'x', 'z', 'y'], ['w', 'z', 'x', 'y'], ['z', 'w', 'x', 'y']]
+    for (const order of expected) {
+      await userEvent.keyboard('{Alt>}{ArrowUp}{/Alt}')
+      await settle()
+      expect([...document.querySelectorAll('[data-scope="table"][data-part="body"] [data-part="row"]')].map(el => el.getAttribute('data-value'))).toEqual(order)
+      expect(document.activeElement).toBe(cell('z', 'value'))
+      expect(cell('z', 'value').getAttribute('tabindex')).toBe('0')
+      expect(row('z').getAttribute('tabindex')).toBe('-1')
+    }
   })
 })
