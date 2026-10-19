@@ -1,7 +1,7 @@
 // 带作者结构的元素插进文档、随即有代码同步读一次布局：浏览器在那一刻为部件算出一份样式，
 // 那份样式若还没接线（没有 data-scope / data-part），皮肤的 transition 会从浏览器缺省样式播到皮肤色，
-// 用户看到的就是「插进来先带一圈深色边框，过一会儿才恢复」。新建与移出再插回两种插入都不该播这段过渡；
-// 只取消接线时起播的那一段，之后的状态变化照常过渡。
+// 用户看到的就是「插进来先带一圈深色边框，过一会儿才恢复」。新建、移出再插回、往已接线的宿主里追加部件
+// 与整批换掉部件都不该播这段过渡；只取消接线时起播的那一段，之后的状态变化照常过渡。
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
@@ -111,5 +111,44 @@ describe('插入后紧接着同步读布局：部件不从未接线的样式播�
     part.style.borderColor = 'rgb(255, 0, 0)'
     part.getBoundingClientRect()
     expect(transitions(part).some(name => name.startsWith('border'))).toBe(true)
+  })
+})
+
+/** 一颗作者写的工具条钮，还没接线。 */
+function toolbarItem(value: string): HTMLButtonElement {
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.value = value
+  button.setAttribute('data-xh-part', 'item')
+  button.textContent = value.toUpperCase()
+  return button
+}
+
+describe('往已接线的宿主里放新部件：紧接着同步读布局也不播过渡', () => {
+  async function mountedToolbar(): Promise<HTMLElement> {
+    const el = create(CASES[1]!)
+    document.body.append(el)
+    await frames(2)
+    return el.querySelector<HTMLElement>('[data-xh-part="root"]')!
+  }
+
+  it('追加两颗作者写的钮，同步读一次布局，下一帧新钮没有 CSS 过渡', async () => {
+    const root = await mountedToolbar()
+    const added = [toolbarItem('c'), toolbarItem('d')]
+    root.append(...added)
+    root.getBoundingClientRect()
+    await frame()
+    expect(added.map(transitions)).toEqual([[], []])
+    expect(added.map(button => button.getAttribute('data-scope'))).toEqual(['toolbar', 'toolbar'])
+  })
+
+  it('replaceChildren 整批换钮，同步读一次布局，下一帧新钮没有 CSS 过渡', async () => {
+    const root = await mountedToolbar()
+    const next = [toolbarItem('x'), toolbarItem('y'), toolbarItem('z')]
+    root.replaceChildren(...next)
+    root.getBoundingClientRect()
+    await frame()
+    expect(next.map(transitions)).toEqual([[], [], []])
+    expect(next.map(button => button.getAttribute('data-scope'))).toEqual(['toolbar', 'toolbar', 'toolbar'])
   })
 })
