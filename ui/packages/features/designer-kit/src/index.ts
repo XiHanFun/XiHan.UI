@@ -27,6 +27,7 @@ export {
   findImporter,
   formatShortcut,
   getExtensionData,
+  importerAccept,
   isCommandMenuSeparator,
   mergeExtensions,
   runExtensionRules,

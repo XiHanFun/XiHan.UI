@@ -254,6 +254,7 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 
 - 方向键、Home、End 在物料间移动焦点，禁用的物料也能停留，读屏照样念出。
 - 从物料拖出时的载荷是 `{ source: "palette", id, payload }`。
+- 扩展往面板里加的分组（如「我的物料」）经物料来源接进来，见下文「扩展的面板与命令」的「物料来源」。
 - `disabled` 是用不了的物料：显示为禁用，不派发 `item-activate`、不能拖出。`browseOnly` 是只作浏览的物料：照常显示、能用方向键走到，同样不派发、不能拖出，用于只起分组作用的上级与只供查看的下级。
 
 ### 带下级的物料
@@ -1127,7 +1128,7 @@ if (autoTour && !tourDoneOf(settings))
 
 ## 扩展的面板与命令
 
-设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框。
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框，物料来源接进物料面板。
 
 ### 面板
 
@@ -1170,7 +1171,7 @@ menu.addEventListener("select", event => runCommand(commands, event.detail.value
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+`）、`panels-restore`（还原面板显隐，`Mod+Shift+`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
@@ -1206,6 +1207,37 @@ const history = config.translations("xh-designer-history", DESIGNER_HISTORY_EN_U
 ### 关于
 
 扩展的 `about` 是「关于」页里的几行 `{ label, value }`，如附加包的版本与授权；各款把它们接在自己那几行后面，交给设置对话框的 `about.rows`。
+
+### 物料来源
+
+扩展的 `paletteSources` 往物料面板里加几组，排在各款内置分组之后，如专业版的「我的物料」、行业模板。开源版不登记，就没有这几组。
+
+```ts
+import { collectPaletteSources, resolvePaletteSources } from "@xihan-ui/designer-shell";
+
+const sources = collectPaletteSources([builtinExtension, ...extensions]); // id 重名时抛 DesignerExtensionError
+const view = resolvePaletteSources(BUILTIN_GROUPS, sources, context); // 每轮刷新现取
+palette.groups = view.groups;
+palette.addEventListener("item-activate", (event) => {
+  if (!view.insert(event.detail.id, context))
+    insertKind(event.detail.payload); // 内置的物料照旧
+});
+// 画布放下时一样先问来源：view.insert(payload.id, context, 落点)
+```
+
+| 字段 | 说明 |
+| --- | --- |
+| `id` | 全局唯一，写法同命令 id；名字空间 `palette-source` |
+| `order` | 先后：各款内置的分组在前，来源按它排在后面，不写按 100；同值按登记顺序 |
+| `groups(context)` | 这一来源此刻的分组，形状同物料面板的 `groups`；组 id 与条目 id（含下级）在整个物料面板里唯一 |
+| `insert(item, context, at?)` | 这一来源的条目被激活或拖到画布上放下：`at` 是放下处，激活时没有。插入怎么做由来源自己定，通常调设计器的 `paste(clip, { at })` |
+
+| 函数 | 说明 |
+| --- | --- |
+| `collectPaletteSources(sources)` | 合起各来源（`{ id, paletteSources? }`，扩展本身就是这个形状）的物料来源，按 `order` 排；id 重名时抛 `DesignerExtensionError`，名字空间 `palette-source` |
+| `resolvePaletteSources(builtin, sources, context)` | 返回 `{ groups, insert(itemId, context, at?) }`：`groups` 是内置分组在前、各来源按上下文现取的接在后面；`insert` 在条目（含下级）属于某个来源时交给它的 `insert` 并返回 `true`，内置条目返回 `false`。组 id 或条目 id 重名时抛 `TypeError` |
+
+落点 `at` 的形状由各款定（流程是画布坐标，打印还带页与带区），在扩展类型上写：`DesignerShellExtension<Ctx, Editor, Doc, RuleCtx, At>` 的最后一个类型参数。
 
 ### 导入来源
 
