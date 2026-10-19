@@ -1,8 +1,9 @@
 // 页面结构在真实键盘、指针与布局下：整棵树一个 Tab 位，方向键走行、Enter 选中、Delete 删除，焦点与悬停所在的行派发标出；
-// 删除钮平时不显、悬停时出现，点它只删不选、不夺焦点；Alt + 方向键挪动经 allowMove 判定；窄面板里长名字收成省略号、删除钮不出界。
+// 删除钮平时不显、悬停时出现，点它只删不选、不夺焦点；Alt + 方向键挪动经 allowMove 判定；movable 为 false 的行真实鼠标拖不起来、
+// 仍能当落点；窄面板里长名字收成省略号、删除钮不出界。
 import type { DesignerOutlineEventMap, DesignerOutlineNode, XhDesignerOutlineElement } from '../../src'
 import { afterEach, describe, expect, it } from 'vitest'
-import { page, userEvent } from 'vitest/browser'
+import { cdp, page, userEvent } from 'vitest/browser'
 import { defineDesignerShell } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -120,6 +121,29 @@ describe('页面结构 <xh-designer-outline>', () => {
     expect(moved).toHaveLength(1)
   })
 
+  it('movable 为 false 的行真实鼠标按住拖不起来、行上不报可拖；别的行照样能拖进它里面', async () => {
+    const outline = await mount(320, element => element.allowMove = () => true)
+    const moved = record(outline, 'node-move')
+    const column = row(outline, 'col-1')
+    expect([column.hasAttribute('data-draggable'), row(outline, 'phone').hasAttribute('data-draggable')]).toEqual([false, true])
+    const scale = await mouseScale()
+    const at = (point: { x: number, y: number }) => ({ x: point.x / scale, y: point.y / scale })
+    const from = center(column)
+    const to = center(row(outline, 'remark'))
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(from) })
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(from) })
+    for (let i = 1; i <= 10; i++) {
+      await frame()
+      await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at({ x: from.x + ((to.x - from.x) * i) / 10, y: from.y + ((to.y - from.y) * i) / 10 }) })
+    }
+    expect(outline.querySelector('[data-dragging]')).toBeNull()
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(to) })
+    expect(moved).toEqual([])
+    await drag(center(row(outline, 'remark')), center(column))
+    await until(() => moved.length > 0, '拖进第 1 列')
+    expect(moved).toEqual([{ id: 'remark', parent: 'col-1', index: 2 }])
+  })
+
   it('240px 的面板里长名字收成一行省略号，悬停时删除钮整个落在行里，页面不横向溢出', async () => {
     const outline = await mount(240)
     const email = row(outline, 'email')
@@ -153,4 +177,35 @@ function arrowAngle(control: Element): number {
     const value = getComputedStyle(element).rotate
     return sum + (value === 'none' ? 0 : Number.parseFloat(value))
   }, 0)
+}
+
+/** 一帧。 */
+function frame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()))
+}
+
+function center(element: Element): { x: number, y: number } {
+  const box = element.getBoundingClientRect()
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+}
+
+/** 真实鼠标的坐标换算：页面坐标除以它就是 CDP 要的坐标。 */
+async function mouseScale(): Promise<number> {
+  const seen = new Promise<number>(resolve => document.addEventListener('pointermove', event => resolve(event.clientX / 20), { once: true }))
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 20, y: 20 })
+  return seen
+}
+
+/** 真实鼠标按住 from、分十步拖到 to 再松开，每步隔一帧。 */
+async function drag(from: { x: number, y: number }, to: { x: number, y: number }): Promise<void> {
+  const scale = await mouseScale()
+  const at = (x: number, y: number) => ({ x: x / scale, y: y / scale })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...at(from.x, from.y) })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...at(from.x, from.y) })
+  for (let i = 1; i <= 10; i++) {
+    await frame()
+    await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', button: 'left', ...at(from.x + ((to.x - from.x) * i) / 10, from.y + ((to.y - from.y) * i) / 10) })
+  }
+  await frame()
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...at(to.x, to.y) })
 }

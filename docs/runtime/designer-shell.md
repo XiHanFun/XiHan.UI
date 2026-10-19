@@ -324,7 +324,7 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 
 | 属性 | 说明 |
 | --- | --- |
-| `nodes` | `DesignerOutlineNode[]`：`{ id, label, description?, icon?, children?, selectable?, movable?, deletable? }`。`children` 是数组就是分支（空数组也能放进东西），没有就是叶子；`selectable` 为 false 的行只作分组，点了只展开、收起；`movable` 为 false 的行自己不能挪，仍能当落点；`deletable` 为 false 的行没有删除钮，Delete 不删它 |
+| `nodes` | `DesignerOutlineNode[]`：`{ id, label, description?, icon?, children?, selectable?, movable?, deletable? }`。`children` 是数组就是分支（空数组也能放进东西），没有就是叶子；`selectable` 为 false 的行只作分组，点了只展开、收起；`movable` 为 false 的行自己不能挪（按住拖不起来，Alt + 方向键也挪不动），仍能当落点，区域、页、页眉页脚这类行就这样写；`deletable` 为 false 的行没有删除钮，Delete 不删它 |
 | `selection` | 选中的行 id，受控：点一行只派发 `node-select`，等设计器换上新值。眼下按单选显示，多个时标第一个 |
 | `allowMove` | `(move) => boolean`，一次挪动许不许；不给就不能拖。`movable` 为 false 的行先被拦下，不问它 |
 | `searchable` | 显示搜索框，按名字与副文本过滤；命中的行连同上级一起展开显示，过滤时不能拖 |

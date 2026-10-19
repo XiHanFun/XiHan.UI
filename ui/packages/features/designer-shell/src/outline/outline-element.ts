@@ -26,7 +26,7 @@ export interface DesignerOutlineNode {
   readonly children?: readonly DesignerOutlineNode[]
   /** 缺省 true。false 的行只作分组：点了只展开收起，不派发 node-select。 */
   readonly selectable?: boolean
-  /** 缺省 true。false 的行自己不能挪，仍能当落点。 */
+  /** 缺省 true。false 的行自己不能挪：按住拖不起来，Alt + 方向键也挪不动；仍能当落点。 */
   readonly movable?: boolean
   /** 缺省 true。false 的行没有删除钮，Delete 不删它。 */
   readonly deletable?: boolean
@@ -70,6 +70,8 @@ interface OutlineTreeNode {
   readonly value: string
   readonly label: string
   readonly description?: string
+  /** false 时这一行拖不起来，仍能当落点。 */
+  readonly draggable?: false
   readonly children?: OutlineTreeNode[]
 }
 
@@ -115,6 +117,7 @@ function treeNodes(nodes: readonly DesignerOutlineNode[]): OutlineTreeNode[] {
     value: node.id,
     label: node.label,
     ...(node.description === undefined ? {} : { description: node.description }),
+    ...(node.movable === false ? { draggable: false as const } : {}),
     ...(node.children === undefined ? {} : { children: treeNodes(node.children) }),
   }))
 }
