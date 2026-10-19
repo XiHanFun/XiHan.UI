@@ -1,4 +1,5 @@
 // 页面结构在真实键盘、指针与布局下：整棵树一个 Tab 位，方向键走行、Enter 选中、Delete 删除，焦点与悬停所在的行派发标出；
+// 多选照文件管理器：裸点换选、Ctrl 点与 Ctrl + Space 加选取消、Shift 点从锚点选一段，画布换了选中后锚点跟过去；
 // 删除钮平时不显、悬停时出现，点它只删不选、不夺焦点；Alt + 方向键挪动经 allowMove 判定；movable 为 false 的行真实鼠标拖不起来、
 // 仍能当落点；窄面板里长名字收成省略号、删除钮不出界。
 import type { DesignerOutlineEventMap, DesignerOutlineNode, XhDesignerOutlineElement } from '../../src'
@@ -67,6 +68,39 @@ function row(outline: Element, id: string): HTMLElement {
   return outline.querySelector<HTMLElement>(`[data-scope="tree"][data-id="${id}"]`)!
 }
 
+/** 当设计器：node-select 照着写回 selection，记下每一次交出的选中。 */
+function echo(outline: XhDesignerOutlineElement): string[][] {
+  const seen: string[][] = []
+  outline.addEventListener('node-select', (event) => {
+    const { ids } = (event as DesignerOutlineEventMap['node-select']).detail
+    seen.push(ids)
+    outline.selection = ids
+  })
+  return seen
+}
+
+/** 此刻报 aria-selected=true 的行，按文档顺序。 */
+function selectedRows(outline: Element): string[] {
+  return [...outline.querySelectorAll<HTMLElement>('[role="treeitem"][aria-selected="true"]')].map(item => item.getAttribute('value')!)
+}
+
+/** CDP 修饰键位：Ctrl 2、Shift 8。 */
+const CTRL = 2
+const SHIFT = 8
+
+/** 真实鼠标按着修饰键点这一行的名字。 */
+async function clickRow(target: Element, modifiers = 0): Promise<void> {
+  const scale = await mouseScale()
+  const text = target.querySelector('[data-scope="tree"][data-part="item-text"], [data-scope="tree"][data-part="branch-text"]')!
+  const { x, y } = center(text)
+  const point = { x: x / scale, y: y / scale }
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', modifiers, ...point })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, modifiers, ...point })
+  await cdp().send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, modifiers, ...point })
+  await frame()
+  await frame()
+}
+
 describe('页面结构 <xh-designer-outline>', () => {
   it('整棵树一个 Tab 位；方向键走行，焦点所在的行派发标出；Enter 选中，Delete 删除，离开树撤掉标出', async () => {
     const outline = await mount(320, element => element.selection = ['phone'])
@@ -85,6 +119,48 @@ describe('页面结构 <xh-designer-outline>', () => {
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(page.getByRole('button', { name: 'after' }).element())
     expect(highlighted).toEqual([{ id: 'phone' }, { id: 'email' }, { id: null }])
+  })
+
+  it('真实鼠标多选：裸点换选，按住 Ctrl 点加选与取消，按住 Shift 点从锚点选一段；画布换了选中后 Shift 点从新选上的最后一行连起', async () => {
+    const outline = await mount()
+    const selected = echo(outline)
+    expect(outline.querySelector('[role="tree"]')!.getAttribute('aria-multiselectable')).toBe('true')
+    await clickRow(row(outline, 'name'))
+    await clickRow(row(outline, 'remark'), CTRL)
+    expect(selectedRows(outline)).toEqual(['name', 'remark'])
+    // 可见序 name / grid / col-1 / phone / email / remark，锚点在 remark
+    await clickRow(row(outline, 'phone'), SHIFT)
+    expect(selectedRows(outline)).toEqual(['phone', 'email', 'remark'])
+    await clickRow(row(outline, 'email'), CTRL)
+    expect(selectedRows(outline)).toEqual(['phone', 'remark'])
+    // 画布上改选了栅格
+    outline.selection = ['grid']
+    await outline.updateComplete
+    await frame()
+    await clickRow(row(outline, 'email'), SHIFT)
+    expect(selectedRows(outline)).toEqual(['grid', 'col-1', 'phone', 'email'])
+    await clickRow(row(outline, 'col-1'))
+    expect(selected).toEqual([['name'], ['name', 'remark'], ['phone', 'email', 'remark'], ['phone', 'remark'], ['grid', 'col-1', 'phone', 'email'], ['col-1']])
+  })
+
+  it('真实键盘多选：Ctrl + Space 加选焦点所在的行，Delete 删全部选中的行，Enter 换成焦点所在的行', async () => {
+    const outline = await mount(320, element => element.selection = ['phone'])
+    const selected = echo(outline)
+    const deleted = record(outline, 'node-delete')
+    page.getByRole('button', { name: 'before' }).element().focus()
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement?.getAttribute('value')).toBe('phone')
+    await userEvent.keyboard('{ArrowDown}{Control>} {/Control}')
+    await frame()
+    await userEvent.keyboard('{ArrowDown}{Control>} {/Control}')
+    await frame()
+    expect(selectedRows(outline)).toEqual(['phone', 'email', 'remark'])
+    await userEvent.keyboard('{Delete}')
+    expect(deleted).toEqual([{ ids: ['phone', 'email', 'remark'] }])
+    await userEvent.keyboard('{ArrowUp}{Enter}')
+    await frame()
+    expect(selectedRows(outline)).toEqual(['email'])
+    expect(selected).toEqual([['phone', 'email'], ['phone', 'email', 'remark'], ['email']])
   })
 
   it('悬停一行派发标出、移开撤掉；删除钮悬停时才出现，点它只删不选', async () => {
