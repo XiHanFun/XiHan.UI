@@ -21,7 +21,10 @@ export interface DesignerOutlineAdapter<Ctx> {
   readonly nodes: (context: Ctx) => readonly DesignerOutlineNode[]
   /** 画布上当前选中的行 id。 */
   readonly selection: (context: Ctx) => readonly string[]
-  /** 选中这些行，并把第一个滚进画布的可见区（必要时切页、切页签、展开折叠项）。 */
+  /**
+   * 换成这些行：ids 是整份新的选中，空数组为全部取消。新选上的行里至少把一个滚进画布的可见区（必要时切页、切页签、展开折叠项）；
+   * 设计器的选择分不同种类、不能混选时，按新选上的那一行取舍。
+   */
   readonly select: (context: Ctx, ids: readonly string[]) => void
   /** 在画布上标出这一行对应的东西，null 撤掉；不改选择、不滚动。 */
   readonly highlight: (context: Ctx, id: string | null) => void

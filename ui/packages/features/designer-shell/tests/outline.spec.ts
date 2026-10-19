@@ -134,6 +134,57 @@ describe('<xh-designer-outline>', () => {
     expect(tree(outline).selection).toEqual(['phone'])
   })
 
+  it('多选：树报 aria-multiselectable、拿到整份选中；Ctrl 点击加选与取消，Shift 点击从锚点选一段，一段里的分组行不算；Ctrl 点分组行只展开收起', async () => {
+    const outline = await mount(element => element.selection = ['name'])
+    expect(tree(outline).querySelector('[role="tree"]')!.getAttribute('aria-multiselectable')).toBe('true')
+    const selected = record(outline, 'node-select')
+    const click = (id: string, init: MouseEventInit = {}): void => void row(outline, id).dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...init }))
+    click('phone', { ctrlKey: true })
+    outline.selection = ['name', 'phone']
+    await outline.updateComplete
+    expect(tree(outline).selection).toEqual(['name', 'phone'])
+    // 可见序 name / grid / col-1 / phone / col-2 / header / logo，锚点在 phone
+    click('logo', { shiftKey: true })
+    click('header', { ctrlKey: true })
+    await outline.updateComplete
+    expect(treeitem(outline, 'header').getAttribute('aria-expanded')).toBe('false')
+    click('name', { metaKey: true })
+    expect(selected).toEqual([{ ids: ['name', 'phone'] }, { ids: ['phone', 'col-2', 'logo'] }, { ids: ['phone'] }])
+    outline.selection = ['phone']
+    await outline.updateComplete
+    click('phone', { ctrlKey: true })
+    expect(selected.at(-1)).toEqual({ ids: [] })
+  })
+
+  it('selection 从外面换了：Shift 点击从新选上的最后一行连起，新选上的第一行滚进可见区；照着 node-select 写回时不滚动', async () => {
+    const scrolled: string[] = []
+    // 只记大纲的行：树自己也会把焦点所在的 treeitem 滚进可见区
+    HTMLElement.prototype.scrollIntoView = function (this: HTMLElement) {
+      if (this.dataset.id !== undefined)
+        scrolled.push(this.dataset.id)
+    }
+    try {
+      const outline = await mount()
+      const selected = record(outline, 'node-select')
+      outline.selection = ['phone', 'logo']
+      await outline.updateComplete
+      await outline.updateComplete
+      row(outline, 'grid').dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }))
+      // 锚点在 logo：可见序 grid / col-1 / phone / col-2 / header / logo，分组行 header 不算
+      expect(selected).toEqual([{ ids: ['grid', 'col-1', 'phone', 'col-2', 'logo'] }])
+      outline.selection = selected[0]!.ids
+      await outline.updateComplete
+      await outline.updateComplete
+      outline.selection = ['grid', 'col-1', 'phone', 'col-2', 'logo', 'name']
+      await outline.updateComplete
+      await outline.updateComplete
+      expect(scrolled).toEqual(['phone', 'name'])
+    }
+    finally {
+      delete (HTMLElement.prototype as Partial<HTMLElement>).scrollIntoView
+    }
+  })
+
   it('选中了收起的分支里的节点：它的上级都展开', async () => {
     const outline = await mount()
     tree(outline).dispatchEvent(new CustomEvent('expanded-value-change', { detail: { value: ['header'] } }))

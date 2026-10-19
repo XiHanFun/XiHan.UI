@@ -4,7 +4,7 @@
  */
 
 // <xh-designer-outline>：页面结构。按树列出模板里的内容，选中、标出、删除与挪动都派发事件，由设计器翻成自己的操作；
-// 选中集合受控，展开状态按节点 id 保留，键盘与读屏照 xh-tree 的约定。
+// 选中集合受控、照文件管理器多选，展开状态按节点 id 保留，键盘与读屏照 xh-tree 的约定。
 
 import type { IconRecord } from '@xihan-ui/core'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
@@ -26,7 +26,7 @@ export interface DesignerOutlineNode {
   readonly children?: readonly DesignerOutlineNode[]
   /** 分支第一次出现时展不展开，缺省 true；false 的先收起，之后随用户展开收起，选中它下面的行时照样展开。 */
   readonly expanded?: boolean
-  /** 缺省 true。false 的行只作分组：点了只展开收起，不派发 node-select。 */
+  /** 缺省 true。false 的行只作分组：点了只展开收起，不进选中、不派发 node-select。 */
   readonly selectable?: boolean
   /** 缺省 true。false 的行自己不能挪：按住拖不起来，Alt + 方向键也挪不动；仍能当落点。 */
   readonly movable?: boolean
@@ -43,7 +43,10 @@ export interface DesignerOutlineMove {
 
 /** 页面结构派发的事件。 */
 export interface DesignerOutlineEventMap {
-  /** 用户在树上选了这些行；选中集合受控，元素不自己改。 */
+  /**
+   * 用户在树上改了选中，ids 是整份新的选中（可能为空）：点击换成这一行，按住 Ctrl / ⌘ 点击或按 Ctrl / ⌘ + Space 加选与取消，
+   * 按住 Shift 点击选一段，一段里夹着的分组行不算。选中集合受控，元素不自己改。
+   */
   'node-select': CustomEvent<{ ids: string[] }>
   /** 悬停或焦点所在的行变了；离开整棵树时为 null。 */
   'node-highlight': CustomEvent<{ id: string | null }>
@@ -93,6 +96,11 @@ interface Parts {
   readonly searchInput: HTMLInputElement
   readonly body: HTMLElement
   readonly empty: HTMLElement
+}
+
+/** 两组 id 是不是同一批，不计先后。 */
+function sameIds(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every(id => b.includes(id))
 }
 
 function matches(node: DesignerOutlineNode, query: string): boolean {
@@ -158,7 +166,7 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
 
   /** 整棵树。 */
   declare nodes: readonly DesignerOutlineNode[] | undefined
-  /** 选中的行 id；受控，设计器的选择变了就换上新值。 */
+  /** 选中的行 id；受控，设计器的选择变了就换上新值。从外面换的（不是照着 node-select 写回的）把新选上的第一行滚进可见区。 */
   declare selection: readonly string[] | undefined
   /** 一次挪动许不许；不给就不能拖。movable 为 false 的行先被拦下，不问它。 */
   declare allowMove: ((move: DesignerOutlineMove) => boolean) | undefined
@@ -192,6 +200,8 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
   /** 指针悬停的行与焦点所在的行；指针离开时退回焦点所在的行。 */
   #hovered: string | null = null
   #focused: string | null = null
+  /** 最近一次 node-select 交出的选中；设计器照着写回时不再把行滚进可见区。 */
+  #requested: readonly string[] | undefined
 
   constructor() {
     super()
@@ -220,11 +230,16 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
         this.#collapsed.add(id)
     }
     const selection = this.#selection()
+    let reveal: string | undefined
     if (changed.has('selection')) {
       for (const id of selection) {
         for (const parent of this.#index.get(id)?.parents ?? [])
           this.#collapsed.delete(parent)
       }
+      const echoed = this.#requested !== undefined && sameIds(this.selection ?? [], this.#requested)
+      this.#requested = undefined
+      const before = (changed.get('selection') as readonly string[] | undefined) ?? []
+      reveal = echoed ? undefined : selection.find(id => !before.includes(id))
     }
     const query = this.searchable ? this.#query.trim().toLocaleLowerCase() : ''
     const shown = query === '' ? nodes : filterNodes(nodes, query)
@@ -238,11 +253,11 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
     const tree = this.#tree
     if (tree === undefined)
       return
-    tree.selection = selection.slice(0, 1)
+    tree.selection = selection
     tree.expandedValue = query === '' ? branchIds(shown).filter(id => !this.#collapsed.has(id)) : branchIds(shown)
     tree.nodeDraggable = this.allowMove !== undefined && this.readonly !== true && query === ''
-    if (changed.has('selection') && selection[0] !== undefined)
-      void this.updateComplete.then(() => this.#row(selection[0]!)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }))
+    if (reveal !== undefined)
+      void this.updateComplete.then(() => this.#row(reveal)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }))
   }
 
   #translations(): DesignerOutlineTranslations {
@@ -298,7 +313,7 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
       parts.body.replaceChildren()
       return
     }
-    const tree: OutlineTree = createAuthoredElement(doc, 'xh-tree', { 'size': 'sm', 'variant': 'ghost', 'data-part': 'tree' }, [
+    const tree: OutlineTree = createAuthoredElement(doc, 'xh-tree', { 'size': 'sm', 'variant': 'ghost', 'selection-mode': 'extended', 'data-part': 'tree' }, [
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'tree', 'aria-labelledby': parts.title.id }, nodes.map(node => this.#node(node, t))),
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'live-region' }),
@@ -390,25 +405,28 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
     emitEvent(this, 'node-highlight', { id })
   }
 
+  /** 树要换成的选中：点到只作分组的那一行时只展开收起；一段里夹着的分组行不进选中；与现在的相同时不派发。 */
   readonly #onSelectionChange = (event: Event): void => {
     event.stopPropagation()
-    const id = (event as CustomEvent<{ value: string[] }>).detail.value[0]
-    const found = id === undefined ? undefined : this.#index.get(id)
-    // 选中受控：树上的选中换回设计器给的，等设计器换上新值
-    this.#tree!.selection = this.#selection().slice(0, 1)
-    if (found === undefined)
-      return
-    if (found.node.selectable === false) {
-      if (found.node.children !== undefined) {
-        if (this.#collapsed.has(found.node.id))
-          this.#collapsed.delete(found.node.id)
+    const value = (event as CustomEvent<{ value: string[] }>).detail.value
+    const current = this.#selection()
+    const added = value.filter(id => !current.includes(id))
+    const group = added.length === 1 ? this.#index.get(added[0]!)?.node : undefined
+    if (group?.selectable === false) {
+      if (group.children !== undefined) {
+        if (this.#collapsed.has(group.id))
+          this.#collapsed.delete(group.id)
         else
-          this.#collapsed.add(found.node.id)
+          this.#collapsed.add(group.id)
         this.requestUpdate()
       }
       return
     }
-    emitEvent(this, 'node-select', { ids: [found.node.id] })
+    const ids = value.filter(id => this.#index.has(id) && this.#index.get(id)!.node.selectable !== false)
+    if (sameIds(ids, current))
+      return
+    this.#requested = ids
+    emitEvent(this, 'node-select', { ids })
   }
 
   readonly #onExpandedChange = (event: Event): void => {

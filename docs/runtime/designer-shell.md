@@ -327,7 +327,7 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 | 属性 | 说明 |
 | --- | --- |
 | `nodes` | `DesignerOutlineNode[]`：`{ id, label, description?, icon?, children?, expanded?, selectable?, movable?, deletable? }`。`children` 是数组就是分支（空数组也能放进东西），没有就是叶子；分支缺省展开，`expanded` 为 false 的第一次出现时先收起，之后随用户展开收起，选中它下面的行时照样展开；`selectable` 为 false 的行只作分组，点了只展开、收起；`movable` 为 false 的行自己不能挪（按住拖不起来，Alt + 方向键也挪不动），仍能当落点，区域、页、页眉页脚这类行就这样写；`deletable` 为 false 的行没有删除钮，Delete 不删它 |
-| `selection` | 选中的行 id，受控：点一行只派发 `node-select`，等设计器换上新值。眼下按单选显示，多个时标第一个 |
+| `selection` | 选中的行 id，受控、可以多个：在树上改选中只派发 `node-select`，等设计器换上新值。从外面换的（不是照着 `node-select` 写回的）把新选上的第一行滚进可见区，按住 Shift 点击也从新选上的最后一行连起 |
 | `allowMove` | `(move) => boolean`，一次挪动许不许；不给就不能拖。`movable` 为 false 的行先被拦下，不问它 |
 | `searchable` | 显示搜索框，按名字与副文本过滤；命中的行连同上级一起展开显示，过滤时不能拖 |
 | `readonly` | 能选、能标出，不能删、不能挪 |
@@ -335,12 +335,12 @@ outline.addEventListener("node-highlight", event => markOnCanvas(event.detail.id
 
 | 事件 | detail |
 | --- | --- |
-| `node-select` | `{ ids }` 用户在树上选了这些行 |
+| `node-select` | `{ ids }` 用户在树上改了选中，`ids` 是整份新的选中，可能为空 |
 | `node-highlight` | `{ id \| null }` 悬停或焦点所在的行变了，离开整棵树时为 `null`；同一行不重复派发 |
 | `node-delete` | `{ ids }` 按了删除钮或 Delete / Backspace |
 | `node-move` | `{ id, parent, index }` 拖动或 Alt + 方向键挪了一行，已经过 `allowMove` 判定；`parent` 为 `null` 即顶层，`index` 已按先摘后插修正 |
 
-- 树用 [`<xh-tree>`](../components/tree)，键盘与读屏照它的约定：整棵树一个 Tab 位，上下键走行，右键展开、左键收起，Enter 与 Space 选中，连打检索；Alt + 上下键在同一层挪一位，Alt + 左右键改一层缩进，挪动的结果由树的播报区念出。分支缺省展开，展开状态按节点 id 保留；`selection` 换了新值时，被收起的上级跟着展开，选中的行滚进可见区。
+- 树用 [`<xh-tree>`](../components/tree)，键盘与读屏照它的约定：整棵树一个 Tab 位，上下键走行，右键展开、左键收起，Enter 与 Space 选中，连打检索；多选照文件管理器（树的 `selection-mode="extended"`）：点击换成这一行，按住 Ctrl（macOS 为 ⌘）点击或按 Ctrl / ⌘ + Space 加选与取消，按住 Shift 点击从锚点选一段，一段里夹着的分组行（`selectable` 为 false）不算；Alt + 上下键在同一层挪一位，Alt + 左右键改一层缩进，挪动的结果由树的播报区念出。分支缺省展开，展开状态按节点 id 保留；`selection` 换了新值时，被收起的上级跟着展开。
 - 删除：Delete 或 Backspace 删焦点所在的一行；焦点在选中的行上时，删全部可删的选中项。行尾的删除钮只接指针，悬停或焦点在这一行时出现（粗指针设备常显），对读屏隐藏、不占 Tab 位，按下不夺焦点；可及名取 `translations.remove(名字)`。
 - 换了 `nodes` 时整棵树重新铺，焦点原在树里的回到同一 id 的行上。
 - 文案键 `xh-designer-outline`：`title`、`help`（面板头里的帮助）、`search`、`empty`、`noMatches`、`remove(label)`。
@@ -370,7 +370,7 @@ const builtin = { id: "my-designer", panels: [outline] };
 | --- | --- |
 | `nodes(context)` | 整棵树，每次刷新都会再取；同一份文档要给出稳定的 id |
 | `selection(context)` | 画布上当前选中的行 id |
-| `select(context, ids)` | 选中这些行，并把第一个滚进画布的可见区（必要时切页、切页签、展开折叠项） |
+| `select(context, ids)` | 换成这些行：`ids` 是整份新的选中，空数组为全部取消；新选上的行里至少把一个滚进画布的可见区（必要时切页、切页签、展开折叠项）。设计器的选择分种类、不能混选时，按新选上的那一行取舍 |
 | `highlight(context, id)` | 在画布上标出这一行对应的东西，`null` 撤掉；不改选择、不滚动 |
 | `remove(context, ids)` | 删除这些行，通常是先选中再走设计器自己的删除 |
 | `canMove(context, move)`、`move(context, move)` | 一次挪动许不许、执行挪动（记为一步撤销）；两个要么都给，要么都不给，不给就不能挪 |
