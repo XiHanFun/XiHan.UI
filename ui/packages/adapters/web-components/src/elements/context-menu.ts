@@ -60,7 +60,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @fires checkbox-value-change - checkbox 选中集合变化
  * @fires radio-value-change - RadioGroup 选中映射变化
  * @csspart root - 组件根容器（承载 data-state）
- * @csspart trigger - 右键触发区（aria-haspopup / aria-controls 所在，自带 Tab 位供键盘打开）
+ * @csspart trigger - 右键触发区（aria-haspopup / aria-controls 所在）；里面的内容没有 Tab 位时自带一个供键盘打开，有就不再另占
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"

@@ -18085,7 +18085,7 @@
               "name": "root"
             },
             {
-              "description": "右键触发区（aria-haspopup / aria-controls 所在，自带 Tab 位供键盘打开）",
+              "description": "右键触发区（aria-haspopup / aria-controls 所在）；里面的内容没有 Tab 位时自带一个供键盘打开，有就不再另占",
               "name": "trigger"
             },
             {
