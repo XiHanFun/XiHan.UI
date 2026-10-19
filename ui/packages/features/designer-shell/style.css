@@ -597,6 +597,11 @@
     min-inline-size: 0;
   }
 
+  /* 输入框与投放区一样铺满来源页的内容宽 */
+  [data-scope='designer-field-import'][data-part='input'] {
+    --xh-text-field-control-w: 100%;
+  }
+
   [data-scope='designer-field-import'][data-part='input'] > [data-scope='text-field'][data-part='root'] > [data-scope='text-field'][data-part='control'] > textarea {
     font-family: var(--xh-font-family-mono);
   }

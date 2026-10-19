@@ -1,5 +1,6 @@
-// 导入字段对话框在真实 Chromium 与组件皮肤下：在输入框里键入 JSON 后预览表铺出字段，表头与各行的列对齐、下级按层级缩进；
-// 一行里 Tab 依次经过勾选框、显示名、类型与内容，空格勾掉一行后导入的字段里没有它；axe 没有违规。
+// 导入字段对话框在真实 Chromium 与组件皮肤下：输入框与读文件的投放区一样铺满来源页的内容宽；在输入框里键入 JSON 后
+// 预览表铺出字段，表头与各行的列对齐、下级按层级缩进；一行里 Tab 依次经过勾选框、显示名、类型与内容，空格勾掉一行后
+// 导入的字段里没有它；axe 没有违规。
 import type { DesignerFieldImportDetail, DesignerFieldImportEventMap, XhDesignerFieldImportElement } from '../../src'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -59,6 +60,15 @@ function cellOf(row: HTMLElement, name: string): HTMLElement {
 }
 
 describe('导入字段对话框', () => {
+  it('粘贴 JSON 的输入框铺满来源页的内容宽，与下面读文件的投放区同宽', async () => {
+    await open()
+    const width = (selector: string): number => document.querySelector<HTMLElement>(selector)!.getBoundingClientRect().width
+    const source = document.querySelector<HTMLElement>('[data-scope="designer-field-import"][data-part="source"]')!
+    const control = width('[data-scope="designer-field-import"][data-part="input"] > [data-scope="text-field"][data-part="root"] > [data-scope="text-field"][data-part="control"]')
+    expect(control).toBeCloseTo(source.clientWidth, 0)
+    expect(control).toBeCloseTo(width('[data-scope="designer-field-import"][data-part="file"]'), 0)
+  })
+
   it('键入 JSON 后铺出字段：表头与各行四列对齐，下级按层级缩进', async () => {
     const dialog = await open()
     const textarea = document.querySelector<HTMLTextAreaElement>('[data-scope="designer-field-import"][data-part="input"] textarea')!
