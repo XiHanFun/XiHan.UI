@@ -48,6 +48,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: 'Nenhum elemento correspondente',
     empty: 'Nenhum elemento',
   },
+  'xh-designer-outline': {
+    title: 'Estrutura',
+    search: 'Pesquisar na estrutura',
+    noMatches: 'Nenhum item correspondente',
+    empty: 'Ainda não há conteúdo',
+    remove: label => `Excluir ${label}`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `Guia horizontal em ${value}`,
     verticalGuide: value => `Guia vertical em ${value}`,

@@ -48,6 +48,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: '沒有符合的元件',
     empty: '沒有元件',
   },
+  'xh-designer-outline': {
+    title: '頁面結構',
+    search: '搜尋頁面結構',
+    noMatches: '沒有相符的內容',
+    empty: '還沒有內容',
+    remove: label => `刪除${label}`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `水平參考線 ${value}`,
     verticalGuide: value => `垂直參考線 ${value}`,

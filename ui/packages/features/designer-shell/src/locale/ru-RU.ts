@@ -59,6 +59,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: 'Нет подходящих элементов',
     empty: 'Нет элементов',
   },
+  'xh-designer-outline': {
+    title: 'Структура',
+    search: 'Поиск по структуре',
+    noMatches: 'Нет подходящих элементов',
+    empty: 'Пока ничего нет',
+    remove: label => `Удалить ${label}`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `Горизонтальная направляющая: ${value}`,
     verticalGuide: value => `Вертикальная направляющая: ${value}`,

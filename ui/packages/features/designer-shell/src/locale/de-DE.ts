@@ -48,6 +48,13 @@ const translations: DesignerShellLocaleTranslations = {
     noMatches: 'Keine passenden Elemente',
     empty: 'Keine Elemente',
   },
+  'xh-designer-outline': {
+    title: 'Struktur',
+    search: 'Struktur durchsuchen',
+    noMatches: 'Keine passenden Einträge',
+    empty: 'Noch keine Inhalte',
+    remove: label => `${label} löschen`,
+  },
   'xh-designer-ruler': {
     horizontalGuide: value => `Horizontale Hilfslinie bei ${value}`,
     verticalGuide: value => `Vertikale Hilfslinie bei ${value}`,

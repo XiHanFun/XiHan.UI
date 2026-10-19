@@ -25,6 +25,8 @@ export type { DesignerIssueItem, DesignerIssuesEventMap } from './issues/issues-
 export { DESIGNER_COMMANDS_EN_US } from './locale/en-US'
 export { XhDesignerMinimapElement } from './minimap/minimap-element'
 export type { DesignerMinimapEventMap, DesignerMinimapShape } from './minimap/minimap-element'
+export { XhDesignerOutlineElement } from './outline/outline-element'
+export type { DesignerOutlineEventMap, DesignerOutlineMove, DesignerOutlineNode } from './outline/outline-element'
 export { XhDesignerPaletteElement } from './palette/palette-element'
 export type { DesignerPaletteDragPayload, DesignerPaletteEventMap, DesignerPaletteGroup, DesignerPaletteItem } from './palette/palette-element'
 export { createPropertyField } from './properties/field'
@@ -77,6 +79,7 @@ export type {
   DesignerCommandsTranslations,
   DesignerFrameTranslations,
   DesignerIssuesTranslations,
+  DesignerOutlineTranslations,
   DesignerPaletteTranslations,
   DesignerPropertiesTranslations,
   DesignerRulerTranslations,

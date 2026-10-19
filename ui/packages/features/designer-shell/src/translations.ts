@@ -71,6 +71,20 @@ export interface DesignerIssuesTranslations {
   readonly noTarget: string
 }
 
+/** 页面结构的文案。 */
+export interface DesignerOutlineTranslations {
+  /** 面板标题，也是树的名字。 */
+  readonly title: string
+  /** 搜索框的名称与占位。 */
+  readonly search: string
+  /** 搜索没有结果时的提示。 */
+  readonly noMatches: string
+  /** 模板里还没有内容时的提示。 */
+  readonly empty: string
+  /** 一行的删除钮的名字，label 是这一行的名字。 */
+  readonly remove: (label: string) => string
+}
+
 /** 物料面板的文案。 */
 export interface DesignerPaletteTranslations {
   /** 面板标题。 */
@@ -218,6 +232,7 @@ declare module '@xihan-ui/web-components' {
     'xh-designer-properties'?: Partial<DesignerPropertiesTranslations>
     'xh-designer-issues'?: Partial<DesignerIssuesTranslations>
     'xh-designer-palette'?: Partial<DesignerPaletteTranslations>
+    'xh-designer-outline'?: Partial<DesignerOutlineTranslations>
     'xh-designer-ruler'?: Partial<DesignerRulerTranslations>
     'xh-designer-frame'?: Partial<DesignerFrameTranslations>
     'xh-designer-commands'?: Partial<DesignerCommandsTranslations>
