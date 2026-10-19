@@ -71,6 +71,7 @@
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持右键菜单展开。
 - 选中任意层级的命令后发出根级 `select` 并关闭菜单链。
+- 触发区里的内容自带 Tab 位时（可聚焦的画布、列表），触发区不再另占一个：菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到打开前的持有者。判据只看 DOM：原生可聚焦或 `tabindex` ≥ 0 的元素，禁用的、`hidden` 或 `inert` 子树里的与菜单自己的浮层不算；内容里没有 Tab 位时触发区自己占一个。
 - `disabled` 让整张菜单失效：右键、长按、菜单键与 Shift+F10 都不再展开，浏览器自己的右键菜单照常出现；触发区退出 Tab 序列，展开途中转为禁用即收起。
 
 ### 组合
@@ -276,9 +277,9 @@
 | `Home` | open, focus in content | 焦点移到首个可用条目 |
 | `End` | open, focus in content | 焦点移到末个可用条目 |
 | `单个可打印字符` | open, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不选中它 |
-| `Enter` / `Space` | focus in item, not disabled | 派发选中详情并关闭菜单，焦点归还触发区 |
+| `Enter` / `Space` | focus in item, not disabled | 派发选中详情并关闭菜单，焦点归还触发区（触发区里的内容自带 Tab 位时归还打开前的持有者） |
 | `Enter` / `Space` | held in item, not disabled | 按住期间该条目投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦或菜单收起撤下 |
-| `Escape` | open | 关闭菜单并把焦点归还触发区 |
+| `Escape` | open | 关闭菜单并把焦点归还触发区（触发区里的内容自带 Tab 位时归还打开前的持有者） |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还触发区，按 Tab 序列自然离开 |
 
 ### ARIA

@@ -73,6 +73,25 @@ function fixture(copyDisabled = false): FixtureNode {
 
 const FIXTURE = fixture()
 
+const CANVAS_SELECTOR = '[data-testid="canvas"]'
+
+/** 触发区里放一块自带 Tab 位的画布（作者内容，不是部件），代替原来的一行字。 */
+function withCanvas(base: FixtureNode): FixtureNode {
+  return {
+    ...base,
+    children: base.children?.map(child => child.part === 'trigger'
+      ? { part: 'trigger', children: [{ tag: 'div', attrs: { 'tabindex': '0', 'data-testid': 'canvas', 'aria-label': '画布' }, text: '画布' }] }
+      : child),
+  }
+}
+
+function requireCanvas(doc: Document): HTMLElement {
+  const el = doc.querySelector<HTMLElement>(CANVAS_SELECTOR)
+  if (!el)
+    throw new Error('画布不存在')
+  return el
+}
+
 /** 条目上的图标：一枚只有一条横线的记录，够看出 item-icon 铺没铺、里面有没有 svg。 */
 const ITEM_ICON = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] }
 
@@ -752,6 +771,65 @@ export const contextMenuSuite: ConformanceSuite = {
             requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
           }),
           expect: { activeElement: null, parts: { content: { hidden: '' } }, events: [] },
+        },
+      ],
+    },
+    {
+      name: '触发区里的内容自带 Tab 位：触发区不再另占一个，Shift+F10 在那个元素上展开，Escape 后焦点回到它',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      covers: ['context-menu.kbd.open', 'context-menu.kbd.escape'],
+      fixture: withCanvas,
+      steps: [
+        {
+          kind: 'settle',
+          until: { attr: { part: 'trigger', name: 'tabindex', value: null } },
+          // 让出的只是 Tab 位：弹出关系与快捷键提示照旧写在触发区上
+          expect: { parts: { trigger: { 'tabindex': null, 'aria-haspopup': 'menu', 'aria-keyshortcuts': 'Shift+F10' } } },
+        },
+        {
+          kind: 'raw',
+          why: '画布是作者内容，不是部件，focus 步骤点不到它',
+          run: ({ doc }) => requireCanvas(doc).focus(),
+          expect: { activeElement: { part: 'trigger', exact: false } },
+        },
+        {
+          kind: 'key',
+          key: 'F10',
+          modifiers: ['Shift'],
+          expect: {
+            parts: { content: { hidden: null } },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }] },
+        },
+        // 触发区不占 Tab 位就接不住焦点：落回打开前的持有者，也就是触发区里的画布，而不是触发区本身
+        {
+          kind: 'settle',
+          until: { activeElement: 'trigger' },
+          expect: { activeElement: { part: 'trigger', exact: false } },
+        },
+      ],
+    },
+    {
+      name: '触发区里的 Tab 位被移走：触发区拿回自己的 Tab 位',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: withCanvas,
+      steps: [
+        { kind: 'settle', until: { attr: { part: 'trigger', name: 'tabindex', value: null } } },
+        {
+          kind: 'raw',
+          why: '画布是作者内容，改它的 tabindex 没有对应的步骤',
+          run: ({ doc }) => requireCanvas(doc).setAttribute('tabindex', '-1'),
+        },
+        {
+          kind: 'settle',
+          until: { attr: { part: 'trigger', name: 'tabindex', value: '0' } },
+          expect: { parts: { trigger: { tabindex: '0' } } },
         },
       ],
     },

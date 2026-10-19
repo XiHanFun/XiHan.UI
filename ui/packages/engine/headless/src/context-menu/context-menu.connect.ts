@@ -59,6 +59,8 @@ export function connectContextMenu<T extends PropTypes>(
   const typeaheadOn = prop('typeahead') ?? true
   // 整张菜单禁用：触发区不再展开、不拦浏览器自己的右键菜单，条目全部禁用
   const menuDisabled = !!prop('disabled')
+  // 触发区里作者内容已有 Tab 位（如可聚焦的画布）：键盘入口归它，菜单键与 Shift+F10 从它冒泡上来
+  const innerTabStop = context.get('innerTabStop')
 
   // collection 推出的条目元信息：显示文本、禁用、语气、标记位与分组都在这里定案，条目部件只报 value
   const collection: ContextMenuNodeMeta[] = (prop('collection') ?? []).map((node) => {
@@ -279,8 +281,9 @@ export function connectContextMenu<T extends PropTypes>(
       'aria-haspopup': menuDisabled ? undefined : 'menu',
       'aria-controls': menuDisabled ? undefined : ids.content,
       'aria-keyshortcuts': menuDisabled ? undefined : 'Shift+F10',
-      // 区域上没有 Tab 位，Shift+F10 与 ContextMenu 键就送不到这里
-      'tabindex': menuDisabled ? undefined : 0,
+      // 区域里没有别的 Tab 位时由它自己占一个，Shift+F10 与 ContextMenu 键才送得到这里；
+      // 作者内容已有 Tab 位就不再另占，按键从那里冒泡上来
+      'tabindex': menuDisabled || innerTabStop ? undefined : 0,
       'data-state': stateAttr,
       'data-pressing': dataAttr(pressing),
       'data-disabled': dataAttr(menuDisabled),

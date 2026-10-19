@@ -96,6 +96,8 @@ interface MountOptions {
   onLayerDispose?: () => void
   /** 注入真实 Presence，验证行为资源延迟到视觉退场完成后释放。 */
   withPresence?: boolean
+  /** 机器启动前写进触发区的作者内容（innerHTML）。 */
+  triggerContent?: string
 }
 
 interface Harness {
@@ -136,6 +138,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const separator = doc.createElement('div')
   root.append(trigger, positioner)
   positioner.appendChild(content)
+  if (options.triggerContent)
+    trigger.innerHTML = options.triggerContent
 
   const groupEls = new Map<string, HTMLElement>()
   const groupLabels = new Map<string, HTMLElement>()
@@ -1117,6 +1121,75 @@ describe('层、消解与焦点归还', () => {
     expect(h.service.context.get('returnFocus')).toBe(false)
     await settle()
     expect(document.activeElement).not.toBe(h.trigger)
+  })
+})
+
+describe('触发区里作者内容自带 Tab 位', () => {
+  it('内容里有 Tab 位时触发区不占 Tab 位；后来插入、改成 -1、移走，触发区跟着让出或拿回', async () => {
+    const owned = mount({}, { triggerContent: '<div tabindex="0" data-canvas>画布</div>' })
+    await flushed()
+    expect(owned.trigger.hasAttribute('tabindex')).toBe(false)
+    expect(owned.trigger.getAttribute('aria-haspopup')).toBe('menu')
+
+    const h = mount()
+    await flushed()
+    expect(h.trigger.getAttribute('tabindex')).toBe('0')
+    const button = document.createElement('button')
+    h.trigger.appendChild(button)
+    await flushed()
+    expect(h.trigger.hasAttribute('tabindex')).toBe(false)
+    button.setAttribute('tabindex', '-1')
+    await flushed()
+    expect(h.trigger.getAttribute('tabindex')).toBe('0')
+    button.removeAttribute('tabindex')
+    await flushed()
+    expect(h.trigger.hasAttribute('tabindex')).toBe(false)
+    button.remove()
+    await flushed()
+    expect(h.trigger.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('禁用的控件、hidden 与 inert 子树里的、菜单自己的浮层不算', async () => {
+    const h = mount({}, {
+      triggerContent: '<button disabled>禁用</button><div hidden><input></div><div inert><a href="#x">链接</a></div><input type="hidden">',
+    })
+    await flushed()
+    expect(h.trigger.getAttribute('tabindex')).toBe('0')
+    // 作者把浮层嵌进触发区：展开后条目认领 tabindex=0，触发区照样占着自己的 Tab 位
+    h.trigger.appendChild(h.positioner)
+    menuKey(h.trigger)
+    await flushed()
+    expect(h.item('copy').getAttribute('tabindex')).toBe('0')
+    expect(h.trigger.getAttribute('tabindex')).toBe('0')
+  })
+
+  it('菜单键与 Shift+F10 从内容里的元素冒泡上来照常展开；Escape 关掉后焦点回到那个元素', async () => {
+    const h = mount({}, { layer: true, triggerContent: '<div tabindex="0" data-canvas>画布</div>' })
+    await flushed()
+    const canvas = h.trigger.querySelector<HTMLElement>('[data-canvas]')!
+    canvas.focus()
+    const event = press(canvas, 'F10', { shiftKey: true })
+    expect(event.defaultPrevented).toBe(true)
+    expect(h.state()).toBe('open')
+    await settle()
+    expect(document.activeElement).toBe(h.item('copy'))
+    press(h.item('copy'), 'Escape')
+    await settle()
+    expect(h.state()).toBe('closed')
+    expect(document.activeElement).toBe(canvas)
+  })
+
+  it('选中条目关掉后焦点同样回到内容里的那个元素', async () => {
+    const h = mount({}, { layer: true, triggerContent: '<div tabindex="0" data-canvas>画布</div>' })
+    await flushed()
+    const canvas = h.trigger.querySelector<HTMLElement>('[data-canvas]')!
+    canvas.focus()
+    menuKey(canvas)
+    await settle()
+    press(h.item('copy'), 'Enter')
+    await settle()
+    expect(h.state()).toBe('closed')
+    expect(document.activeElement).toBe(canvas)
   })
 })
 

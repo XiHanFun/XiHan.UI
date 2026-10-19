@@ -226,6 +226,11 @@ export interface ContextMenuSchema extends MachineSchema {
     focusIntent: ContextMenuFocusIntent
     /** 关闭时是否把焦点归还触发区；Tab 与层外交互关闭时为 false，让焦点自然离开。 */
     returnFocus: boolean
+    /**
+     * 触发区的子树里已有作者内容自带的 Tab 位（原生可聚焦或 tabindex ≥ 0，禁用的、hidden 或 inert 子树里的
+     * 与菜单自己的浮层不算）。为真时触发区不占 Tab 位，关闭后焦点归还打开前的持有者。
+     */
+    innerTabStop: boolean
     /** 按压通道：Space / Enter 或触屏按住的条目 value；抬起、失焦或菜单收起即清空。触发区的长按另走 pressing 状态。 */
     pressedValue: string | null
     checkboxValue: string[]
@@ -287,7 +292,7 @@ export interface ContextMenuSchema extends MachineSchema {
     | 'setRadioValue'
     | 'closeWhenDisabled'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackLongPress'
+  effect: 'trackPosition' | 'trackLayer' | 'trackLongPress' | 'trackInnerTabStop'
 }
 
 export interface ContextMenuApi<T extends PropTypes = PropTypes> {

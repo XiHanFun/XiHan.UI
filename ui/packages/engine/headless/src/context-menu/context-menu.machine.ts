@@ -14,8 +14,13 @@ import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from 
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { contextMenuAnatomy, contextMenuItemQuery } from './context-menu.anatomy'
+import { watchInnerTabStop } from './context-menu.inner-tab-stop'
 
 const { createMachine } = setup<ContextMenuSchema>()
+
+const parts = contextMenuAnatomy.build()
+/** 菜单自己的浮层：作者把它嵌在触发区里时，里面的条目不算触发区的 Tab 位。 */
+const OWN_OVERLAY_SELECTOR = `${parts.positioner.selector}, ${parts.content.selector}`
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const CONTEXT_MENU_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
@@ -56,6 +61,8 @@ export const contextMenuMachine = createMachine({
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     focusIntent: cell<ContextMenuFocusIntent>(() => ({ defaultValue: 'none' })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
+    // 触发区里作者内容自带 Tab 位：由 trackInnerTabStop 盯着 DOM 回填
+    innerTabStop: cell<boolean>(() => ({ defaultValue: false })),
     // 条目的按压通道：正被按住的那条；触发区的长按是另一回事（pressing 状态），不共用这一格
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     checkboxValue: cell<string[]>(() => ({
@@ -84,7 +91,7 @@ export const contextMenuMachine = createMachine({
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // Layer、消解与焦点资源由顶层 effect 持有，逻辑关闭后等 Presence 真实退场再释放。
-  effects: ['trackLayer'],
+  effects: ['trackLayer', 'trackInnerTabStop'],
   watch: ({ track, prop, context, action }) => {
     // 受控（open 给定）时用户事件只发意图、不自改状态，由这条 track 派发 CONTROLLED.* 回写
     track([() => prop('open')], () => action(['syncOpen']))
@@ -341,6 +348,22 @@ export const contextMenuMachine = createMachine({
           () => send({ type: 'after.longPressDelay' }),
           prop('longPressDelay') ?? CONTEXT_MENU_LONG_PRESS_DELAY,
         ),
+      // 触发区里有没有作者内容自带的 Tab 位：宿主提交 DOM 后开始盯，子树变了就重判
+      trackInnerTabStop: ({ refs, context, flush }) => {
+        let stop: (() => void) | null = null
+        let disposed = false
+        flush(() => {
+          const trigger = refs.get('getTriggerEl')()
+          if (disposed || !trigger)
+            return
+          stop = watchInnerTabStop(trigger, OWN_OVERLAY_SELECTOR, value => context.set('innerTabStop', value))
+        })
+        return () => {
+          disposed = true
+          stop?.()
+          stop = null
+        }
+      },
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
       trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
         // 无引擎时不定位，其余照常
@@ -417,7 +440,8 @@ export const contextMenuMachine = createMachine({
                 return context.get('focusIntent') === 'none' ? content : null
               },
               restoreFocus: () => context.get('returnFocus'),
-              restoreTarget: () => refs.get('getTriggerEl')(),
+              // 触发区不占 Tab 位时它接不住焦点，归还给打开前的持有者（触发区里那个自带 Tab 位的元素）
+              restoreTarget: () => context.get('innerTabStop') ? null : refs.get('getTriggerEl')(),
               onReactivate: reactivate => reactivateFocus = reactivate,
             },
           }),
