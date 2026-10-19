@@ -210,6 +210,11 @@ export function connectSortable<T extends PropTypes>(
           // 只认主键：右键要弹上下文菜单，中键是自动滚动
           if (off || event.button !== 0)
             return
+          // 项里嵌着另一个排序列表时，按在里层条目上的那一下归里层：只认离按下处最近的那一项
+          const target = event.target as Element | null
+          const nearest = typeof target?.closest === 'function' ? target.closest(parts.item.selector) : null
+          if (nearest && nearest !== event.currentTarget)
+            return
           // 这里刻意不 preventDefault：整项可拖时项里常有按钮与链接，
           // 拦掉默认行为会连它们的聚焦一起拦掉。拖起来之后由皮肤关掉选中
           send({

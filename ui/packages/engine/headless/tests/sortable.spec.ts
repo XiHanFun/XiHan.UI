@@ -473,6 +473,30 @@ describe('排序 · 不给手柄时整项可拖', () => {
   })
 })
 
+describe('排序 · 嵌套', () => {
+  it('按在里层排序列表的条目上：那一下归里层，外层不进 pending；按在外层条目自己的地方照常进', () => {
+    const s = makeSortable()
+    const outerItem = s.root.querySelector<HTMLElement>('[data-value="a"]')!
+    const inner = document.createElement('div')
+    inner.setAttribute('data-scope', 'sortable')
+    inner.setAttribute('data-part', 'root')
+    const innerItem = document.createElement('div')
+    innerItem.setAttribute('data-scope', 'sortable')
+    innerItem.setAttribute('data-part', 'item')
+    innerItem.setAttribute('data-value', 'x')
+    const grip = document.createElement('button')
+    innerItem.append(grip)
+    inner.append(innerItem)
+    const label = document.createElement('span')
+    outerItem.append(label, inner)
+    outerItem.addEventListener('pointerdown', (s.api().getItemProps({ id: 'a' }) as Record<string, unknown>).onPointerDown as EventListener)
+    grip.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true, cancelable: true }))
+    expect(s.state()).toBe('idle')
+    label.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true, cancelable: true }))
+    expect(s.state()).toBe('pending')
+  })
+})
+
 describe('排序 · 逐项禁用', () => {
   it('禁掉的那一项拖不动，别的照拖', () => {
     const s = makeSortable()
