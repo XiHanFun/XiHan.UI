@@ -2513,7 +2513,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_tone-soft"
       ],
       "visibility": "public",
       "description": "approval 的 pending-indicator 部件 background 覆盖槽。"
