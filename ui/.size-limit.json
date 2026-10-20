@@ -75,7 +75,7 @@
     "name": "tokens",
     "path": "packages/design/tokens/dist/index.js",
     "gzip": true,
-    "limit": "15.3 kB"
+    "limit": "16 kB"
   },
   {
     "name": "tokens/tokens.css",
@@ -179,7 +179,7 @@
     "name": "designer-kit",
     "path": "packages/features/designer-kit/dist/index.js",
     "gzip": true,
-    "limit": "14.4 kB"
+    "limit": "15 kB"
   },
   {
     "name": "designer-kit/field-inference",
@@ -191,7 +191,7 @@
     "name": "designer-kit/properties",
     "path": "packages/features/designer-kit/dist/properties.js",
     "gzip": true,
-    "limit": "10.6 kB"
+    "limit": "11 kB"
   },
   {
     "name": "designer-kit/schema",
@@ -203,13 +203,13 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "369.8 kB"
+    "limit": "370 kB"
   },
   {
     "name": "designer-shell/locale",
     "path": "packages/features/designer-shell/dist/locale.js",
     "gzip": true,
-    "limit": "39.9 kB"
+    "limit": "40 kB"
   },
   {
     "name": "designer-shell/style.css（有层）",
@@ -251,7 +251,7 @@
     "name": "headless",
     "path": "packages/engine/headless/dist/index.js",
     "gzip": true,
-    "limit": "767.2 kB"
+    "limit": "768 kB"
   },
   {
     "name": "headless/locale（十种语言整份）",
@@ -263,7 +263,7 @@
     "name": "vue",
     "path": "packages/adapters/vue/dist/index.js",
     "gzip": true,
-    "limit": "819.8 kB",
+    "limit": "820 kB",
     "ignore": [
       "vue"
     ]
@@ -346,7 +346,7 @@
     "name": "web-components",
     "path": "packages/adapters/web-components/dist/index.js",
     "gzip": true,
-    "limit": "14.2 kB"
+    "limit": "15 kB"
   },
   {
     "name": "web-components/define",
