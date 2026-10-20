@@ -46713,6 +46713,32 @@
             },
             {
               "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "入口与条目的禁用声明：connect 每帧把 aria-disabled 写回去，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
+            },
+            {
+              "kind": "method",
+              "name": "authorDisabled",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean | undefined"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "读入口或条目的禁用声明：给了 collection 时没写即 undefined，交给数据定夺；没给时没写即不禁用。\n作者写的原生 disabled 摘掉，禁用态归一到 aria-disabled：原生禁用的按钮不可聚焦，禁用项就当不了方向键的起点。"
+            },
+            {
+              "kind": "field",
               "name": "idGen",
               "type": {
                 "text": "IdGenerator"

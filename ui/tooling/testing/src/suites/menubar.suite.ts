@@ -46,6 +46,13 @@ const STRUCTURE_COLLECTION = [
   },
 ]
 
+/** 不写结构时按数据铺、禁用也写在数据里：第二个入口整张禁用，第一张菜单的中间那条禁用。 */
+const DISABLED_COLLECTION = [
+  { value: 'file', label: '文件', items: [{ value: 'open', label: '打开' }, { value: 'save', label: '保存', disabled: true }, { value: 'close', label: '关闭' }] },
+  { value: 'help', label: '帮助', disabled: true, items: [{ value: 'about', label: '关于' }] },
+  { value: 'view', label: '视图', items: [{ value: 'zoom', label: '缩放' }] },
+]
+
 interface TreeOptions {
   /** 被禁用的 trigger（对应 MENUS 里的 value）。 */
   disabledMenu?: string
@@ -999,6 +1006,39 @@ export const menubarSuite: ConformanceSuite = {
             order: ['root', 'trigger', 'positioner', 'content', 'item[0]', 'item-text[0]', 'item-description', 'item[1]', 'item-text[1]'],
             // 持有焦点的入口（视图）随数据删掉了：roving 锚点跟着清掉，根节点兜底留在 Tab 序列里，菜单栏不至于整条退出 Tab 序列
             parts: { 'root': { tabindex: '0' }, 'trigger': { tabindex: '-1' }, 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构：数据里写的禁用照样生效，入口与条目报 aria-disabled、方向键跳过；换数据去掉禁用即恢复',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: DISABLED_COLLECTION },
+      initial: {
+        parts: {
+          'trigger[0]': { 'aria-disabled': 'false' },
+          'trigger[1]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '' },
+          'item[0]': { 'aria-disabled': 'false' },
+          'item[1]': { 'aria-disabled': 'true', 'disabled': null, 'data-disabled': '' },
+        },
+      },
+      steps: [
+        { kind: 'focus', part: 'trigger[0]' },
+        { kind: 'key', key: 'ArrowRight', expect: { activeElement: { part: 'trigger[2]', exact: true } } },
+        { kind: 'focus', part: 'trigger[0]' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[2]', exact: true } } },
+        { kind: 'key', key: 'Escape' },
+        {
+          kind: 'setProps',
+          props: { collection: DISABLED_COLLECTION.map(menu => ({ ...menu, disabled: undefined, items: menu.items.map(item => ({ ...item, disabled: undefined })) })) },
+          expect: {
+            parts: {
+              'trigger[1]': { 'aria-disabled': 'false', 'data-disabled': null },
+              'item[1]': { 'aria-disabled': 'false', 'data-disabled': null },
+            },
           },
         },
       ],
