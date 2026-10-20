@@ -1,11 +1,10 @@
 ---
 '@xihan-ui/web-components': major
-'@xihan-ui/designer-shell': major
 ---
 
 全部元素的布尔 attribute 改为三态，与已有的三态属性同一个转换器：显式写 `="false"` 为假，不写交给组件缺省，写空串或别的值为真。此前约一百三十个布尔属性（`disabled`、`default-open`、`loading`、`multiple`、`lazy-mount`、`unmount-on-exit`、`full-width`、`icon-only`、`read-only` 等）按 HTML 原生规矩写出即为真，`disabled="false"` 也是禁用，与同一元素上其余属性的读法不一致。
 
-`@xihan-ui/web-components/authoring` 新增导出 `BOOLEAN_CONVERTER`，作者自己写的元素在 `static properties` 里写 `{ converter: BOOLEAN_CONVERTER }`，与库内元素同一个读法：没写为 `undefined`，写 `"false"` 为 `false`，其余为 `true`。designer-shell 的零件（`xh-designer-properties`、`-palette`、`-issues`、`-minimap`、`-ruler`、`-transform`）的 `readonly`、`searchable`、`collapsible` 一并改为三态。
+`@xihan-ui/web-components/authoring` 新增导出 `BOOLEAN_CONVERTER`，作者自己写的元素在 `static properties` 里写 `{ converter: BOOLEAN_CONVERTER }`，与库内元素同一个读法：没写为 `undefined`，写 `"false"` 为 `false`，其余为 `true`。
 
 迁移：
 
