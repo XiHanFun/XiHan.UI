@@ -99,7 +99,7 @@ describe('<xh-designer-frame>', () => {
 
     frame.regions = DESIGNER_FRAME_REGIONS.filter(item => item.name !== 'status')
     await frame.updateComplete
-    expect([status.hidden, frame.showsPanel('status'), frame.showsPanel('header'), selection.parentElement]).toEqual([true, false, true, frame])
+    expect([status.hidden, frame.showsPanel('status'), frame.showsPanel('header'), selection.parentElement]).toEqual([true, false, true, frame.querySelector('[data-part="parked"]')])
 
     logo.remove()
     insert.remove()
@@ -185,7 +185,7 @@ describe('<xh-designer-frame>', () => {
     expect([frame.showsPanel('palette'), frame.resolvedLayout.hidden]).toEqual([false, ['palette']])
   })
 
-  it('卡片先换成普通区再换回来：面板头操作区里的作者内容先回到宿主，再回到新面板头里', async () => {
+  it('卡片先换成普通区再换回来：面板头操作区里的作者内容先收进停放处，再回到新面板头里', async () => {
     await mount(element => element.regions = CARDS)
     const counts = document.createElement('span')
     counts.slot = 'issues-actions'
@@ -195,7 +195,7 @@ describe('<xh-designer-frame>', () => {
 
     frame.regions = CARDS.map(({ name, position }) => ({ name, position }))
     await frame.updateComplete
-    expect([counts.parentElement, counts.isConnected]).toEqual([frame, true])
+    expect([counts.parentElement, counts.isConnected]).toEqual([frame.querySelector('[data-part="parked"]'), true])
 
     frame.regions = CARDS
     await settle()

@@ -1690,8 +1690,8 @@
     contain: inline-size;
   }
 
-  /* 带 slot 而外框此刻没有对应位置的作者内容留在宿主下，不占版面 */
-  xh-designer-frame > [slot] {
+  /* 带 slot 而外框此刻没有对应位置的作者内容：领走或收进停放处之前不占版面；停放处整个不显示 */
+  xh-designer-frame > :is([slot], [data-scope='designer-frame'][data-part='parked']) {
     display: none;
   }
 
