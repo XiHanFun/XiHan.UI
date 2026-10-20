@@ -3,12 +3,13 @@
 // 引导限在外框里：遮罩与居中步只铺外框，高亮框的暗幕裁在外框里，外框外照常能点；同一页只跑一个引导；
 // 窄屏时引导打开的抽屉不盖住提示框，换到别的步骤与收起时收回。
 import type { DiagnosticRecord } from '@xihan-ui/core'
+import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerTourEventMap, XhDesignerFrameElement, XhDesignerTourElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { afterEach, describe, expect, it } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
-import { defineDesignerShell } from '../../src'
+import { arrangeMenubar, createCommandMenubar, defineDesignerShell, DESIGNER_COMMANDS_EN_US, designerMenubarLayout, designerMenubarMenus } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 import '../../style.css'
@@ -35,11 +36,22 @@ async function settle(): Promise<void> {
   await frames(2)
 }
 
-async function mount(style = 'position:fixed;left:0;top:0;width:1000px;height:640px'): Promise<{ frame: XhDesignerFrameElement, tour: XhDesignerTourElement, ends: DesignerTourEventMap['tour-end']['detail'][] }> {
+/** 外框最上一条放一条命令菜单栏：文件（保存、设置）与帮助（关于）两张菜单。 */
+function addMenubar(frame: XhDesignerFrameElement): void {
+  const command = (id: string, label: string): DesignerCommand<undefined> => ({ id, label, run: () => {} })
+  const commands = new Map([command('save', 'Save'), command('settings', 'Settings'), command('about', 'About')].map(item => [item.id, item]))
+  const bar = createCommandMenubar<undefined>(document, { platform: 'other' })
+  bar.element.slot = 'menubar'
+  bar.update(arrangeMenubar(designerMenubarMenus<undefined>({ translations: () => DESIGNER_COMMANDS_EN_US }), commands, designerMenubarLayout(commands)), commands, undefined, { menubar: 'Menu bar', menu: 'Menu' })
+  frame.prepend(bar.element)
+}
+
+async function mount(style = 'position:fixed;left:0;top:0;width:1000px;height:640px', options: { readonly menubar?: boolean } = {}): Promise<{ frame: XhDesignerFrameElement, tour: XhDesignerTourElement, ends: DesignerTourEventMap['tour-end']['detail'][] }> {
   stage ??= document.createElement('div')
   const frame = document.createElement('xh-designer-frame')
   frame.style.cssText = style
   frame.regions = [
+    ...(options.menubar ? [{ name: 'menubar', position: 'menubar' } as const] : []),
     { name: 'toolbar', position: 'top' },
     { name: 'palette', position: 'start', title: '物料' },
     { name: 'canvas', position: 'center' },
@@ -54,6 +66,8 @@ async function mount(style = 'position:fixed;left:0;top:0;width:1000px;height:64
     frame.append(content)
   }
   frame.append(document.createElement('div'))
+  if (options.menubar)
+    addMenubar(frame)
   const tour = document.createElement('xh-designer-tour')
   tour.frame = frame
   stage.append(frame, tour)
@@ -241,6 +255,49 @@ describe('引导限在外框里', () => {
     await userEvent.keyboard('{Escape}')
     await settle()
     expect(document.activeElement).toBe(inCanvas)
+  })
+})
+
+describe('引导里的菜单栏', () => {
+  it('宽屏：欢迎之后先高亮整条菜单栏，再到工具栏；收尾的设置一步高亮「文件」菜单的入口', async () => {
+    const { frame, tour } = await mount(undefined, { menubar: true })
+    tour.start()
+    await settle()
+    await userEvent.click(part('next-trigger'))
+    await settle()
+    expect(part('title').textContent).toBe('Menu bar')
+    expect(covers(part('spotlight').getBoundingClientRect(), region(frame, 'menubar'))).toBe(true)
+    await userEvent.click(part('next-trigger'))
+    await settle()
+    expect(part('title').textContent).toBe('Toolbar')
+    await walkTo(tour, 'shell.settings')
+    expect(part('title').textContent).toBe('Settings')
+    const file = frame.querySelector<HTMLElement>('[data-scope="menubar"][data-part="trigger"][value="file"]')!
+    expect(file.checkVisibility()).toBe(true)
+    expect(covers(part('spotlight').getBoundingClientRect(), file.getBoundingClientRect())).toBe(true)
+  })
+
+  it('窄屏：菜单栏收成「菜单」钮，菜单栏一步与设置一步都高亮这颗钮', async () => {
+    await page.viewport(375, 700)
+    try {
+      const { frame, tour } = await mount('position:fixed;inset:0', { menubar: true })
+      await frames(4)
+      expect(frame.narrow).toBe(true)
+      const button = frame.querySelector<HTMLElement>('[data-scope="designer-menubar"][data-part="menu-trigger"]')!
+      expect(button.checkVisibility()).toBe(true)
+      tour.start()
+      await settle()
+      await walkTo(tour, 'shell.menubar')
+      expect(covers(part('spotlight').getBoundingClientRect(), button.getBoundingClientRect())).toBe(true)
+      await walkTo(tour, 'shell.settings')
+      expect(part('title').textContent).toBe('Settings')
+      const spot = part('spotlight').getBoundingClientRect()
+      expect(covers(spot, button.getBoundingClientRect())).toBe(true)
+      expect(spot.width).toBeLessThan(region(frame, 'menubar').width)
+    }
+    finally {
+      await page.viewport(1280, 800)
+    }
   })
 })
 

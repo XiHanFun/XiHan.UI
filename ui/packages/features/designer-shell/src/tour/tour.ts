@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 新手引导的步骤：各款与扩展登记，按 order 排；目标是外框的一块面板、一个区、工具栏上的一条命令或任意选择器。
+// 新手引导的步骤：各款与扩展登记，按 order 排；目标是外框的一块面板、一个区、工具栏上的一条命令、菜单栏上的一张菜单或任意选择器。
 // 设计器每轮按上下文用 resolveTourSteps 取好文字、过一遍 when，交给 <xh-designer-tour>。
 
 import type { Placement } from '@xihan-ui/core'
@@ -16,8 +16,10 @@ export type DesignerTourTarget
   = | { readonly panel: string, readonly part?: string }
     /** 工具栏上的这条命令；收在「更多」里时指向「更多」钮。 */
     | { readonly command: string }
-    /** 外框的区（toolbar、canvas、status、header）。 */
+    /** 外框的区（menubar、toolbar、canvas、status）。 */
     | { readonly region: string }
+    /** 菜单栏上这张菜单的入口（菜单 id，如 file、各款自己的菜单）；窄屏收成「菜单」钮时指向那颗钮。菜单栏上没有这张菜单或菜单栏没显示时跳过。 */
+    | { readonly menubar: string }
     /** 设计器里的任意节点，各款的专属部件用。 */
     | { readonly selector: string }
 

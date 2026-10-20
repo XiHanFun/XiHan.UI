@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `Paso ${step} de ${count}`,
     welcomeTitle: 'Bienvenido',
     welcomeDescription: 'Un vistazo rápido al diseñador. Puedes repetir este recorrido desde la configuración.',
+    menubarTitle: 'Barra de menús',
+    menubarDescription: 'Los comandos habituales están agrupados en menús: Archivo tiene Guardar (Ctrl/⌘+S), Abrir y Configuración; Editar, deshacer y el portapapeles; Ver cambia entre diseño y vista previa y tiene el zoom, los paneles y la apariencia; Ayuda tiene el recorrido, los atajos de teclado y Acerca de. F10 entra y sale de la barra de menús.',
     toolbarTitle: 'Barra de herramientas',
     toolbarDescription: 'Los comandos más usados. Elige qué botones mostrar en la configuración.',
     paletteTitle: 'Paleta',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: 'Barra de estado',
     statusDescription: 'Muestra la selección y el nivel de zoom.',
     settingsTitle: 'Configuración',
-    settingsDescription: 'Guardar, la configuración y la ayuda están en la barra de menús: cambia el tema, la disposición de los paneles y los botones de la barra de herramientas en Archivo › Configuración, y repite este recorrido desde Ayuda. F10 lleva a la barra de menús.',
+    settingsDescription: 'La configuración está en el menú Archivo (Ctrl/⌘+,): cambia ahí el tema, la disposición de los paneles y los botones de la barra de herramientas. Para repetir este recorrido, inícialo desde el menú Ayuda.',
+    settingsToolbarDescription: 'Con la barra de menús desactivada, la configuración y la ayuda vuelven a la barra de herramientas: cambia el tema, la disposición de los paneles y los botones en la configuración, y vuelve a activar ahí la barra de menús.',
   },
   'xh-designer-commands': {
     toolbar: 'Acciones del diseñador',

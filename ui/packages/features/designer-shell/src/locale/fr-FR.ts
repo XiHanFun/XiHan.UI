@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `Étape ${step} sur ${count}`,
     welcomeTitle: 'Bienvenue',
     welcomeDescription: 'Un aperçu rapide du concepteur. Vous pouvez relancer cette visite depuis les paramètres.',
+    menubarTitle: 'Barre de menus',
+    menubarDescription: 'Les commandes courantes sont regroupées en menus : Fichier contient Enregistrer (Ctrl/⌘+S), Ouvrir et Paramètres ; Édition, l’annulation et le presse-papiers ; Affichage permet de basculer entre conception et aperçu et contient le zoom, les panneaux et l’apparence ; Aide contient la visite, les raccourcis clavier et À propos. F10 permet d’entrer dans la barre de menus et d’en sortir.',
     toolbarTitle: 'Barre d’outils',
     toolbarDescription: 'Les commandes courantes. Choisissez les boutons affichés dans les paramètres.',
     paletteTitle: 'Palette',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: 'Barre d’état',
     statusDescription: 'Indique la sélection et le niveau de zoom.',
     settingsTitle: 'Paramètres',
-    settingsDescription: 'Enregistrer, les paramètres et l’aide se trouvent dans la barre de menus : changez le thème, la disposition des panneaux et les boutons de la barre d’outils dans Fichier › Paramètres, et relancez cette visite depuis Aide. F10 mène à la barre de menus.',
+    settingsDescription: 'Les paramètres se trouvent dans le menu Fichier (Ctrl/⌘+,) : changez-y le thème, la disposition des panneaux et les boutons de la barre d’outils. Pour refaire cette visite, lancez-la depuis le menu Aide.',
+    settingsToolbarDescription: 'Quand la barre de menus est désactivée, les paramètres et l’aide reviennent dans la barre d’outils : changez le thème, la disposition des panneaux et les boutons dans les paramètres, et réactivez-y la barre de menus.',
   },
   'xh-designer-commands': {
     toolbar: 'Actions du concepteur',

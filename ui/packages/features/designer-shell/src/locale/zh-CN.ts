@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
     welcomeTitle: '欢迎',
     welcomeDescription: '花一分钟认识设计器的几块地方。以后想再看，可以在设置里重新开始。',
+    menubarTitle: '菜单栏',
+    menubarDescription: '常用的功能按菜单分好：「文件」里有保存（Ctrl/⌘+S）、打开与设置，「编辑」里是撤销与剪贴，「视图」里切换设计与预览，还有缩放、面板与外观，「帮助」里有引导、快捷键与关于。按 F10 进出菜单栏。',
     toolbarTitle: '工具栏',
     toolbarDescription: '常用的命令都在这里；显示哪些按钮，可以在设置里改。',
     paletteTitle: '物料',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: '状态栏',
     statusDescription: '显示选中了什么与缩放比例。',
     settingsTitle: '设置',
-    settingsDescription: '保存、设置与帮助都在菜单栏里：主题、面板布局与工具栏按钮在「文件」→「设置」里改，「帮助」里能重新开始引导；按 F10 用键盘进入菜单栏。',
+    settingsDescription: '设置在「文件」菜单里（Ctrl/⌘+,）：主题、面板布局与工具栏按钮都在那里改。想再看一遍引导，从「帮助」菜单重新开始。',
+    settingsToolbarDescription: '菜单栏关着时，设置与帮助回到工具栏上：主题、面板布局与工具栏按钮在设置里改，菜单栏也可以在那里重新打开。',
   },
   'xh-designer-commands': {
     toolbar: '设计器操作',

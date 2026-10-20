@@ -50,6 +50,30 @@ async function mount(setup: (tour: XhDesignerTourElement, frame: XhDesignerFrame
   return { tour, frame, ends }
 }
 
+/** 菜单栏的内容：每张菜单一个入口（照 <xh-menubar> 的部件写），末尾是窄屏时的「菜单」钮。 */
+function menubarOf(menus: readonly string[]): HTMLElement {
+  const bar = document.createElement('div')
+  bar.slot = 'menubar'
+  for (const menu of menus) {
+    const trigger = document.createElement('button')
+    trigger.setAttribute('data-scope', 'menubar')
+    trigger.setAttribute('data-part', 'trigger')
+    trigger.setAttribute('value', menu)
+    trigger.textContent = menu
+    bar.append(trigger)
+  }
+  const compact = document.createElement('button')
+  compact.setAttribute('data-scope', 'designer-menubar')
+  compact.setAttribute('data-part', 'menu-trigger')
+  bar.append(compact)
+  return bar
+}
+
+/** 工具栏上的设置钮（菜单栏关着时设置回到工具栏）。 */
+function settingsButton(frame: XhDesignerFrameElement): void {
+  frame.querySelector('[slot="toolbar"]')!.innerHTML = '<xh-toolbar><div data-xh-part="root"><button value="settings">设置</button></div></xh-toolbar>'
+}
+
 function host(tour: XhDesignerTourElement): TourHost {
   return tour.querySelector<TourHost>('xh-tour')!
 }
@@ -83,7 +107,7 @@ describe('<xh-designer-tour>', () => {
     const { tour, frame } = await mount((element) => {
       element.steps = product
     })
-    // 工具栏上没有设置命令的按钮，shell.settings 跳过
+    // 没有菜单栏，工具栏上也没有设置命令的按钮：shell.menubar 与 shell.settings 都跳过
     expect(tour.plannedSteps().map(step => step.id)).toEqual(['shell.welcome', 'shell.toolbar', 'shell.palette', 'flow.edges', 'shell.canvas', 'shell.properties', 'shell.issues', 'shell.status', 'flow.end'])
     frame.layout = { version: 1, hidden: ['issues', 'palette'] }
     await frame.updateComplete
@@ -92,19 +116,54 @@ describe('<xh-designer-tour>', () => {
     expect(tour.plannedSteps().map(step => step.id)).toEqual(['flow.end'])
   })
 
-  it('菜单栏显示着时才有 shell.settings，目标是菜单栏区', async () => {
-    expect((await mount()).tour.plannedSteps().at(-1)!.id).toBe('shell.status')
-    document.body.replaceChildren()
-    const { tour } = await mount((_, frame) => {
-      const menubar = document.createElement('div')
-      menubar.slot = 'menubar'
-      menubar.textContent = '文件'
-      frame.append(menubar)
+  it('菜单栏显示着时：shell.menubar 排在欢迎之后、工具栏之前，指向菜单栏区；shell.settings 收尾，指向「文件」菜单的入口', async () => {
+    const { tour, frame } = await mount((_, frame) => {
+      frame.append(menubarOf(['file', 'help']))
+      settingsButton(frame)
     })
-    await tour.frame!.updateComplete
-    expect(tour.plannedSteps().at(-1)!.id).toBe('shell.settings')
+    await frame.updateComplete
+    const planned = tour.plannedSteps()
+    expect(planned.map(step => step.id)).toEqual(['shell.welcome', 'shell.menubar', 'shell.toolbar', 'shell.palette', 'shell.canvas', 'shell.properties', 'shell.issues', 'shell.status', 'shell.settings'])
+    expect(planned.filter(step => step.id === 'shell.menubar' || step.id === 'shell.settings').map(step => [step.target, step.title, step.description])).toEqual([
+      [{ region: 'menubar' }, DESIGNER_TOUR_EN_US.menubarTitle, DESIGNER_TOUR_EN_US.menubarDescription],
+      [{ menubar: 'file' }, DESIGNER_TOUR_EN_US.settingsTitle, DESIGNER_TOUR_EN_US.settingsDescription],
+    ])
     expect(tour.start()).toBe(true)
-    expect(host(tour).steps!.at(-1)!.target!()).toBe(tour.frame!.querySelector('[data-part="region"][data-region="menubar"]'))
+    const steps = host(tour).steps!
+    expect(steps[1]!.target!()).toBe(frame.querySelector('[data-part="region"][data-region="menubar"]'))
+    expect(steps.at(-1)!.target!()).toBe(frame.querySelector('button[data-part="trigger"][value="file"]'))
+  })
+
+  it('菜单栏关着（外框不登记它）时跳过 shell.menubar；shell.settings 改指工具栏上的设置钮，说明换成设置在工具栏上的那一句', async () => {
+    const { tour, frame } = await mount((_, frame) => {
+      frame.regions = REGIONS.filter(region => region.name !== 'menubar')
+      frame.append(menubarOf(['file', 'help']))
+      settingsButton(frame)
+    })
+    await frame.updateComplete
+    const planned = tour.plannedSteps()
+    expect(planned.map(step => step.id)).toEqual(['shell.welcome', 'shell.toolbar', 'shell.palette', 'shell.canvas', 'shell.properties', 'shell.issues', 'shell.status', 'shell.settings'])
+    expect([planned.at(-1)!.target, planned.at(-1)!.description]).toEqual([{ command: 'settings' }, DESIGNER_TOUR_EN_US.settingsToolbarDescription])
+    expect(tour.start()).toBe(true)
+    expect(host(tour).steps!.at(-1)!.target!()).toBe(frame.querySelector('button[value="settings"]'))
+  })
+
+  it('目标 { menubar: <菜单 id> } 指到那张菜单的入口；菜单栏上没有这张菜单、或菜单栏关着时那一步跳过', async () => {
+    const { tour, frame } = await mount((element, frame) => {
+      element.steps = [
+        { id: 'print.insert', target: { menubar: 'insert' }, order: 150, title: '插入', description: '往页面里插入对象' },
+        { id: 'print.page', target: { menubar: 'page' }, order: 160, title: '页面', description: '纸张与页眉页脚' },
+      ]
+      frame.append(menubarOf(['file', 'insert', 'help']))
+    })
+    await frame.updateComplete
+    expect(tour.plannedSteps().map(step => step.id).filter(id => id.startsWith('print.'))).toEqual(['print.insert'])
+    expect(tour.start()).toBe(true)
+    expect(host(tour).steps!.find(step => step.id === 'print.insert')!.target!()).toBe(frame.querySelector('button[data-part="trigger"][value="insert"]'))
+    tour.stop()
+    frame.regions = REGIONS.filter(region => region.name !== 'menubar')
+    await frame.updateComplete
+    expect(tour.plannedSteps().map(step => step.id).filter(id => id.startsWith('print.'))).toEqual([])
   })
 
   it('目标是命令的步骤：工具栏上有它的按钮时才走；按钮收进「更多」时目标是「更多」钮', async () => {

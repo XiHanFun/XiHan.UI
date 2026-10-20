@@ -192,6 +192,8 @@ export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-t
   progress: (step, count) => `Step ${step} of ${count}`,
   welcomeTitle: 'Welcome',
   welcomeDescription: 'A quick look at the parts of the designer. You can take this tour again from the settings.',
+  menubarTitle: 'Menu bar',
+  menubarDescription: 'Common commands are grouped into menus: File has Save (Ctrl/⌘+S), Open and Settings; Edit has undo and the clipboard; View switches between design and preview and has zoom, panels and appearance; Help has the tour, keyboard shortcuts and About. Press F10 to move into and out of the menu bar.',
   toolbarTitle: 'Toolbar',
   toolbarDescription: 'Frequently used commands. You can choose which buttons to show in the settings.',
   paletteTitle: 'Palette',
@@ -205,7 +207,8 @@ export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-t
   statusTitle: 'Status bar',
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
-  settingsDescription: 'Save, settings and help are in the menu bar: change the theme, panel layout and toolbar buttons under File › Settings, and take this tour again from Help. F10 moves focus to the menu bar.',
+  settingsDescription: 'Settings are in the File menu (Ctrl/⌘+,): change the theme, panel layout and toolbar buttons there. To take this tour again, start it from the Help menu.',
+  settingsToolbarDescription: 'With the menu bar turned off, settings and help are back on the toolbar: change the theme, panel layout and toolbar buttons in the settings, and turn the menu bar back on there.',
 }
 
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {

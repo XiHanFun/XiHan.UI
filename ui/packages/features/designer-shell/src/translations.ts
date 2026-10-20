@@ -362,6 +362,10 @@ export interface DesignerTourTranslations {
   readonly welcomeTitle: string
   /** 通用步骤「欢迎」的说明。 */
   readonly welcomeDescription: string
+  /** 通用步骤「菜单栏」的标题。 */
+  readonly menubarTitle: string
+  /** 通用步骤「菜单栏」的说明。 */
+  readonly menubarDescription: string
   /** 通用步骤「工具栏」的标题。 */
   readonly toolbarTitle: string
   /** 通用步骤「工具栏」的说明。 */
@@ -388,8 +392,10 @@ export interface DesignerTourTranslations {
   readonly statusDescription: string
   /** 通用步骤「设置」的标题。 */
   readonly settingsTitle: string
-  /** 通用步骤「设置」的说明。 */
+  /** 通用步骤「设置」的说明：设置在「文件」菜单里。 */
   readonly settingsDescription: string
+  /** 菜单栏关着时通用步骤「设置」的说明：设置钮在工具栏上。 */
+  readonly settingsToolbarDescription: string
 }
 
 /** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */

@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `${step} / ${count} ステップ`,
     welcomeTitle: 'ようこそ',
     welcomeDescription: 'デザイナーの各部を簡単にご紹介します。設定からいつでももう一度見られます。',
+    menubarTitle: 'メニューバー',
+    menubarDescription: 'よく使う機能はメニューごとにまとまっています。「ファイル」には保存（Ctrl/⌘+S）、開く、設定、「編集」には元に戻すとクリップボード、「表示」にはデザインとプレビューの切り替え、ズーム、パネル、外観、「ヘルプ」にはツアー、ショートカット、バージョン情報があります。F10 でメニューバーに出入りします。',
     toolbarTitle: 'ツールバー',
     toolbarDescription: 'よく使うコマンドが並びます。表示するボタンは設定で変えられます。',
     paletteTitle: 'パレット',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: 'ステータスバー',
     statusDescription: '選択中のものとズーム倍率を表示します。',
     settingsTitle: '設定',
-    settingsDescription: '保存、設定、ヘルプはメニューバーにあります。テーマ、パネルのレイアウト、ツールバーのボタンは「ファイル」→「設定」で変更でき、ツアーは「ヘルプ」からもう一度見られます。F10 でメニューバーへ移動します。',
+    settingsDescription: '設定は「ファイル」メニューにあります（Ctrl/⌘+,）。テーマ、パネルのレイアウト、ツールバーのボタンはそこで変更できます。ツアーは「ヘルプ」メニューからもう一度始められます。',
+    settingsToolbarDescription: 'メニューバーをオフにすると、設定とヘルプはツールバーに戻ります。テーマ、パネルのレイアウト、ツールバーのボタンは設定で変更でき、メニューバーもそこで再びオンにできます。',
   },
   'xh-designer-commands': {
     toolbar: 'デザイナーの操作',
