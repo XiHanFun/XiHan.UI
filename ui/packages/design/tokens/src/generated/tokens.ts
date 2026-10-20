@@ -631,7 +631,7 @@ export const tokens = {
   "--xh-fg-segment-selected": "var(--xh-fg-brand-strong)",
   "--xh-fg-segment-selected-disabled": "color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))",
   "--xh-fg-success": "var(--xh-color-success-700)",
-  "--xh-fg-warning": "var(--xh-color-warning-700)",
+  "--xh-fg-warning": "var(--xh-color-warning-800)",
   "--xh-fg-info": "var(--xh-color-info-700)",
   "--xh-fg-danger": "var(--xh-color-danger-700)",
   "--xh-fg-danger-hover": "color-mix(in oklab, var(--xh-color-danger-700) 82%, var(--xh-color-neutral-950))",

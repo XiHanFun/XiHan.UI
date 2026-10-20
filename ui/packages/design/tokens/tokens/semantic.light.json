@@ -166,7 +166,8 @@
     },
     "warning": {
       "$type": "color",
-      "$value": "{color.warning.700}"
+      "$value": "{color.warning.800}",
+      "$description": "黄族 700 档对白底只有 3.75，文字取 800 档（4.98）才达到正文对比度"
     },
     "info": {
       "$type": "color",
