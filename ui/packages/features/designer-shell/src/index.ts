@@ -31,6 +31,7 @@ export { applyToolbarCustomization, mergeToolbarCustomization, toolbarCustomizat
 export type { DesignerToolbarCustomization } from './extensions/toolbar-customization'
 export { DESIGNER_FIELD_IMPORT_SOURCES, XhDesignerFieldImportElement } from './fields/field-import-element'
 export type { DesignerFieldImportDetail, DesignerFieldImportEventMap } from './fields/field-import-element'
+export { forwardFrameSlots } from './frame/forward-slots'
 export { DESIGNER_FRAME_REGIONS, XhDesignerFrameElement } from './frame/frame-element'
 export type {
   DesignerCanvasTool,
