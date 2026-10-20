@@ -5389,6 +5389,7 @@
       "jaJP",
       "koKR",
       "mergeXhConfig",
+      "notifyXhConfigChange",
       "onXhConfigChange",
       "ptBR",
       "reconcile",

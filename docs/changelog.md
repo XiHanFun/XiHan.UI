@@ -46,6 +46,7 @@
 
 - **新增** Menu、ContextMenu、Menubar 按数据铺时，条目可写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`，读屏念得出快捷键；看得见的快捷键提示照旧是装饰
 - **新增** Menu 的 `fitAvailableHeight`（Web Components 为 `fit-available-height`）：内容只按可用高度封顶，不叠 20rem 的固定上限；菜单栏的子菜单由菜单栏自动带上
+- **新增** `@xihan-ui/web-components/authoring` 导出 `notifyXhConfigChange` 与类型 `XhConfigScope`、`XhConfig`：自定义元素声明 `xhConfig` 即可当一层配置作用域（如设计器单独设语言），改了它就调 `notifyXhConfigChange(this)`，子树里已渲染的元素（含浮层内容）照新配置重画
 - **新增** Menu、ContextMenu、Menubar 按数据铺时，带 `children` 的条目可写子菜单那一层的勾选值与单选值（`checkboxValue` / `radioValue`），子层里的勾选与单选条目照它显示；Vue / React 的 `XhMenubarSub`、`XhContextMenuSub` 同 `XhMenuSub` 一样收这一层的勾选与单选并派发改动
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
