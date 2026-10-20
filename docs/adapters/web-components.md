@@ -175,7 +175,7 @@ document.querySelector("xh-dialog")
 
 ## 编写自己的元素
 
-`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、布尔属性的三态转换器、按 key 复用生成节点、事件派发、元素注册，以及读取全局配置与文案的控制器。这个子入口不含库内的元素类，Node 下可以安全 import。
+`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、布尔属性的三态转换器、按 key 复用生成节点、事件派发、元素注册、读取全局配置与文案的控制器，以及元素自己当配置作用域时用的接口与变更通知。这个子入口不含库内的元素类，Node 下可以安全 import。
 
 ```ts
 import type { KeyedChildren, PropertyValues } from "@xihan-ui/web-components/authoring";
@@ -236,6 +236,8 @@ registerElement("xh-step-list", XhStepList);
 | `emitEvent(target, type, detail, { cancelable? })` | 与库内元素同一约定派发 `CustomEvent`（`bubbles: true, composed: true`），返回 `false` 表示被 `preventDefault` |
 | `registerElement(tag, ctor)` | 注册元素：同一构造器重复注册不报错，标签被别的构造器占用时抛错，没有 `customElements` 的环境跳过；不写任何全局登记表 |
 | `XhConfigController` | 元素连上文档后订阅所在子树的配置，`setXhConfig` 或祖先 `<xh-config>` 变化时自动请求更新；`config`、`locale` 现解析，`translations(component, defaults, own?)` 按 defaults < 配置里那一桶 < 元素自己的顺序叠加，值为 `undefined` 的键视为没给 |
+| `XhConfigScope` / `XhConfig` | 配置作用域的接口与配置的类型：元素带一个 `xhConfig` 字段就是一层作用域（`<xh-config>` 也是这样认的），子树里的元素沿逻辑祖先链逐层并入它；同一个作用域要对子树里不同节点给不同配置时再实现 `xhConfigFor(node)` |
+| `notifyXhConfigChange(root?)` | 配置变了通知订阅者重画。自定义元素当作用域时，改了它的 `xhConfig` 就调 `notifyXhConfigChange(this)`：它子树里已渲染的元素（含搬进 Portal 的浮层内容）照新配置重画，不调则照旧。不给 `root` 时通知整页 |
 
 第三方元素的文案与内建组件走同一条路：元素自带语言包，形状与内建语言包相同，应用合并后交给全局配置，或用 `<xh-config>` 只作用于一棵子树。
 
@@ -254,6 +256,22 @@ setXhConfig(mergeXhConfig(zhCN, stepListZhCN));
 declare module "@xihan-ui/web-components" {
   interface XhTranslationOverrides {
     "xh-step-list"?: { empty?: string };
+  }
+}
+```
+
+元素自己也能当一层配置作用域，比如设计器单独设语言：声明 `xhConfig` 字段，改了它就调 `notifyXhConfigChange(this)`。
+
+```ts
+import type { XhConfig, XhConfigScope } from "@xihan-ui/web-components/authoring";
+import { notifyXhConfigChange, XhReactiveElement } from "@xihan-ui/web-components/authoring";
+
+class XhMyDesigner extends XhReactiveElement implements XhConfigScope {
+  xhConfig: XhConfig = {};
+
+  setLanguage(pack: XhConfig): void {
+    this.xhConfig = pack;
+    notifyXhConfigChange(this);
   }
 }
 ```
