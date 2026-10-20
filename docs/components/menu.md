@@ -74,7 +74,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 
 ### 特性
 
-- `collection` 可直接生成条目、分组、标记位、图标、说明、快捷键提示和分隔线。条目的 `icon` 是图标记录，铺进文字之前的 `item-icon`（装饰态，读屏从条目文字取意）；勾选与单选条目的勾仍在 `item-indicator`，两者各占一格。
+- `collection` 可直接生成条目、分组、标记位、图标、说明、快捷键提示和分隔线。条目的 `icon` 是图标记录，铺进文字之前的 `item-icon`（装饰态，读屏从条目文字取意）；勾选与单选条目的勾在 `item-indicator`，两者各占一格。勾选与单选条目的勾排在行尾、与子菜单箭头同列，快捷键在它之前，图标与普通条目左缘对齐；同一层有勾选条目时，普通条目的快捷键与它们同列。
 - 只给 `collection` 时照标准结构铺：触发按钮（内容归作者，没写时取 `label`），定位层里的条目、分组与分隔线；带 `children` 的条目是一个嵌套的子菜单，它的触发条目文字取 `label`。Vue / React 不写默认插槽与 Web Components 不写部件时生成的节点出自同一个结构函数；Web Components 的部件直接长在 `<xh-menu>` 里，触发按钮的内容与条目可用宿主直接子节点 `slot="trigger"`、`slot="item:<值>"` 等接管（只到根菜单这一层），子菜单生成嵌套的 `<xh-menu submenu>`，触发条目写着它的 `value`。指向锚点的箭头要手写结构时自己摆。
 - `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，菜单就贴着它定位、收起时焦点归还给它；按数据铺设时不再铺触发按钮。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算菜单内的交互，开合交给打开它的那条命令。没有触发器替菜单命名，名字写在 `translations.content` 上。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
@@ -430,7 +430,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `--xh-menu-item-gap` | `item` | `gap` | `default` | `--xh-_menu-item-gap` | menu 的 item 部件 gap 覆盖槽。 |
 | `--xh-menu-item-h` | `item` | `min-block-size` | `default` | `--xh-_menu-item-h` | menu 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-menu-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menu 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-menu-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-menu-item-indicator-size` | `content`<br>`group`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`has(> [data-scope='menu'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='menu'][data-part='group'] > [data-scope='menu'][data-part='item'] > [data-xh-menu-choice-indicator])`<br>`not([aria-haspopup='menu'], [aria-checked])`<br>`xh-menu-choice-indicator` | `--xh-control-indicator-size` | menu 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_menu-item-px` | menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` | menu 的 item 部件 padding-block 覆盖槽。 |

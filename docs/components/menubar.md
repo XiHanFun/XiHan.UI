@@ -67,7 +67,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 - 不写结构时照标准结构铺：一排入口按钮（文字取入口的 `label`），其后是各自菜单的定位层，里面按这张菜单的 `items` 铺条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里条目文字、行首、行尾可用宿主直接子节点 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
 - 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
-- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。
+- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾排在行尾、与子菜单箭头同列，快捷键在它之前，图标与普通条目左缘对齐；同一层有勾选条目时，普通条目的快捷键与它们同列。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 菜单内支持 `CheckboxItem` 与 `RadioGroup / RadioItem`；选择值独立于当前展开的顶层菜单，切换后默认保持菜单栏展开。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
@@ -428,7 +428,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-item-gap` | `item` | `gap` | `default` | `--xh-_menubar-item-gap` | menubar 的 item 部件 gap 覆盖槽。 |
 | `--xh-menubar-item-h` | `item` | `min-block-size` | `default` | `--xh-_menubar-item-h` | menubar 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-menubar-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menubar 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-menubar-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-menubar-item-indicator-size` | `content`<br>`group`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`has(> [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator])`<br>`not([aria-haspopup='menu'], [aria-checked])`<br>`xh-menu-choice-indicator` | `--xh-control-indicator-size` | menubar 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |

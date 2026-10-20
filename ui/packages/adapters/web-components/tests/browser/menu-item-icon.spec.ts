@@ -1,5 +1,5 @@
 // 条目图标在真实排版下的落位（Web Components）：collection 给的 icon 铺进 item-icon，里面是一枚自己生成结构的 xh-icon，
-// 排在文字之前；勾选条目的勾在 item-indicator，两格并排不叠。工具条放不下时，收起的条目带着 itemIcons 里的图标进「更多」菜单。
+// 排在文字之前；勾选条目的勾（item-indicator）排在行尾，与图标不叠。工具条放不下时，收起的条目带着 itemIcons 里的图标进「更多」菜单。
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { defineXhElements } from '../../src/define'
@@ -38,7 +38,7 @@ function menuPart(value: string, part: string): HTMLElement | null {
 }
 
 describe('菜单条目的图标（Chromium）', () => {
-  it('图标排在文字之前；勾选条目的勾与图标各占一格不重叠；两条的图标同尺寸且画出了 svg', async () => {
+  it('图标排在文字之前；勾选条目的勾排在文字之后，图标与普通条目左缘对齐；两条的图标同尺寸且画出了 svg', async () => {
     box = document.createElement('div')
     const menu = document.createElement('xh-menu') as HTMLElement & { collection?: unknown, label?: string }
     menu.setAttribute('label', '格式')
@@ -54,7 +54,8 @@ describe('菜单条目的图标（Chromium）', () => {
     await settle()
     const rect = (value: string, part: string): DOMRect => menuPart(value, part)!.getBoundingClientRect()
     expect(rect('open', 'item-icon').right).toBeLessThanOrEqual(rect('open', 'item-text').left + 0.5)
-    expect(rect('bold', 'item-indicator').right).toBeLessThanOrEqual(rect('bold', 'item-icon').left + 0.5)
+    expect(rect('bold', 'item-indicator').left).toBeGreaterThanOrEqual(rect('bold', 'item-text').right - 0.5)
+    expect(rect('bold', 'item-icon').left).toBeCloseTo(rect('open', 'item-icon').left, 0)
     expect(rect('bold', 'item-icon').right).toBeLessThanOrEqual(rect('bold', 'item-text').left + 0.5)
     const svgs = ['open', 'bold'].map(value => menuPart(value, 'item-icon')!.querySelector('svg')!.getBoundingClientRect())
     expect(svgs[0]!.width).toBeGreaterThan(8)
