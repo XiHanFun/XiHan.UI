@@ -11842,6 +11842,30 @@
   }
 }
 
+/* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+   （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。有行首格的那一层把开关打开 */
+.xh-scope-mention[data-part='content']:has(> .xh-scope-mention[data-part='item'] > .xh-scope-mention[data-part='item-prefix']) {
+  --xh-_mention-lead-column: '';
+  --xh-_mention-lead-min: var(--xh-icon-size);
+}
+
+.xh-scope-mention[data-part='item-prefix'] {
+  min-inline-size: var(--xh-_mention-lead-min, auto);
+}
+
+.xh-scope-mention[data-part='item']::before {
+  content: var(--xh-_mention-lead-column, none);
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  inline-size: var(--xh-icon-size);
+  margin-inline-end: var(--xh-mention-item-gap, var(--xh-_mention-gap));
+}
+
+/* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+.xh-scope-mention[data-part='item']:has(> .xh-scope-mention[data-part='item-prefix'])::before {
+  content: none;
+}
+
 /* styles/number-animation.css */
 /* 定义 number animation 样式。 */
 
@@ -26589,6 +26613,30 @@
   }
 }
 
+/* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+   （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。跨分组算一层。有行首格的那一层把开关打开 */
+.xh-scope-combobox[data-part='content']:has(> .xh-scope-combobox[data-part='item'] > .xh-scope-combobox[data-part='item-prefix'], > .xh-scope-combobox[data-part='group'] > .xh-scope-combobox[data-part='item'] > .xh-scope-combobox[data-part='item-prefix']) {
+  --xh-_combobox-lead-column: '';
+  --xh-_combobox-lead-min: var(--xh-icon-size);
+}
+
+.xh-scope-combobox[data-part='item-prefix'] {
+  min-inline-size: var(--xh-_combobox-lead-min, auto);
+}
+
+.xh-scope-combobox[data-part='item']::before {
+  content: var(--xh-_combobox-lead-column, none);
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  inline-size: var(--xh-icon-size);
+  margin-inline-end: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
+}
+
+/* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+.xh-scope-combobox[data-part='item']:has(> .xh-scope-combobox[data-part='item-prefix'])::before {
+  content: none;
+}
+
 /* styles/command.css */
 /* 定义 command 样式。 */
 
@@ -26981,6 +27029,28 @@
   }
 }
 
+/* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+   （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。跨分组算一层。有行首格的那一层把开关打开 */
+.xh-scope-command[data-part='list']:has(> .xh-scope-command[data-part='item'] > .xh-scope-command[data-part='item-prefix'], > .xh-scope-command[data-part='group'] > .xh-scope-command[data-part='item'] > .xh-scope-command[data-part='item-prefix']) {
+  --xh-_command-lead-column: '';
+  --xh-_command-lead-min: var(--xh-icon-size);
+}
+
+.xh-scope-command[data-part='item-prefix'] {
+  min-inline-size: var(--xh-_command-lead-min, auto);
+}
+
+.xh-scope-command[data-part='item']::before {
+  content: var(--xh-_command-lead-column, none);
+  flex: none;
+  inline-size: var(--xh-icon-size);
+}
+
+/* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+.xh-scope-command[data-part='item']:has(> .xh-scope-command[data-part='item-prefix'])::before {
+  content: none;
+}
+
 /* styles/context-menu.css */
 /* 定义 context menu 样式。 */
 
@@ -27251,6 +27321,41 @@
 [dir='rtl'] .xh-scope-context-menu[data-part='item'][aria-haspopup='menu']::after {
   -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
   mask-image: var(--xh-glyph-mark-chevron-left);
+}
+
+/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+.xh-scope-context-menu[data-part='item-icon'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-icon-size);
+}
+
+.xh-scope-context-menu[data-part='item-icon'][hidden] {
+  display: none;
+}
+
+/* 同一层里只要有一条带图标，没带图标的条目在行首空出图标那一格（后面照常隔一个行内间距），正文左缘对齐；
+   整层都没有图标就不留。跨分组与分隔线算一层；只认这一层的条目（content 的子项、分组里的子项、
+   Web Components 子菜单宿主里的入口）。每一层先把开关关上，有图标的那一层再打开，下一层的子菜单不跟着开 */
+.xh-scope-context-menu[data-part='content'] {
+  --xh-_context-menu-icon-column: none;
+}
+
+.xh-scope-context-menu[data-part='content']:has(
+    > .xh-scope-context-menu[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-context-menu[data-part='group'] > .xh-scope-context-menu[data-part='item'] > [data-part='item-icon'],
+    > :not([data-part]) > .xh-scope-context-menu[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-context-menu[data-part='group'] > :not([data-part]) > .xh-scope-context-menu[data-part='item'] > [data-part='item-icon']
+  ) {
+  --xh-_context-menu-icon-column: '';
+}
+
+.xh-scope-context-menu[data-part='item']:not(:has(> [data-part='item-icon']))::before {
+  content: var(--xh-_context-menu-icon-column, none);
+  flex: none;
+  inline-size: var(--xh-icon-size);
 }
 
 .xh-scope-context-menu[data-part='item-text'] {
@@ -35045,6 +35150,30 @@
   }
 }
 
+/* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+   （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。跨分组算一层。有行首格的那一层把开关打开 */
+.xh-scope-listbox[data-part='content']:has(> .xh-scope-listbox[data-part='item'] > .xh-scope-listbox[data-part='item-prefix'], > .xh-scope-listbox[data-part='group'] > .xh-scope-listbox[data-part='item'] > .xh-scope-listbox[data-part='item-prefix']) {
+  --xh-_listbox-lead-column: '';
+  --xh-_listbox-lead-min: var(--xh-icon-size);
+}
+
+.xh-scope-listbox[data-part='item-prefix'] {
+  min-inline-size: var(--xh-_listbox-lead-min, auto);
+}
+
+.xh-scope-listbox[data-part='item']::before {
+  content: var(--xh-_listbox-lead-column, none);
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  inline-size: var(--xh-icon-size);
+  margin-inline-end: var(--xh-listbox-item-gap, var(--xh-_listbox-gap));
+}
+
+/* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+.xh-scope-listbox[data-part='item']:has(> .xh-scope-listbox[data-part='item-prefix'])::before {
+  content: none;
+}
+
 /* styles/loading-bar.css */
 /* 定义 loading bar 样式。 */
 
@@ -35377,6 +35506,41 @@
   --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
 
   transition: none;
+}
+
+/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+.xh-scope-menu[data-part='item-icon'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-icon-size);
+}
+
+.xh-scope-menu[data-part='item-icon'][hidden] {
+  display: none;
+}
+
+/* 同一层里只要有一条带图标，没带图标的条目在行首空出图标那一格（后面照常隔一个行内间距），正文左缘对齐；
+   整层都没有图标就不留。跨分组与分隔线算一层；只认这一层的条目（content 的子项、分组里的子项、
+   Web Components 子菜单宿主里的入口）。每一层先把开关关上，有图标的那一层再打开，下一层的子菜单不跟着开 */
+.xh-scope-menu[data-part='content'] {
+  --xh-_menu-icon-column: none;
+}
+
+.xh-scope-menu[data-part='content']:has(
+    > .xh-scope-menu[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-menu[data-part='group'] > .xh-scope-menu[data-part='item'] > [data-part='item-icon'],
+    > :not([data-part]) > .xh-scope-menu[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-menu[data-part='group'] > :not([data-part]) > .xh-scope-menu[data-part='item'] > [data-part='item-icon']
+  ) {
+  --xh-_menu-icon-column: '';
+}
+
+.xh-scope-menu[data-part='item']:not(:has(> [data-part='item-icon']))::before {
+  content: var(--xh-_menu-icon-column, none);
+  flex: none;
+  inline-size: var(--xh-icon-size);
 }
 
 /* 条目里的文字载体：占满剩余宽度，长文本自己收省略号 */
@@ -35893,6 +36057,41 @@
 [dir='rtl'] .xh-scope-menubar[data-part='item'][aria-haspopup='menu']::after {
   -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
   mask-image: var(--xh-glyph-mark-chevron-left);
+}
+
+/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+.xh-scope-menubar[data-part='item-icon'] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-icon-size);
+}
+
+.xh-scope-menubar[data-part='item-icon'][hidden] {
+  display: none;
+}
+
+/* 同一层里只要有一条带图标，没带图标的条目在行首空出图标那一格（后面照常隔一个行内间距），正文左缘对齐；
+   整层都没有图标就不留。跨分组与分隔线算一层；只认这一层的条目（content 的子项、分组里的子项、
+   Web Components 子菜单宿主里的入口）。每一层先把开关关上，有图标的那一层再打开，下一层的子菜单不跟着开 */
+.xh-scope-menubar[data-part='content'] {
+  --xh-_menubar-icon-column: none;
+}
+
+.xh-scope-menubar[data-part='content']:has(
+    > .xh-scope-menubar[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-menubar[data-part='group'] > .xh-scope-menubar[data-part='item'] > [data-part='item-icon'],
+    > :not([data-part]) > .xh-scope-menubar[data-part='item'] > [data-part='item-icon'],
+    > .xh-scope-menubar[data-part='group'] > :not([data-part]) > .xh-scope-menubar[data-part='item'] > [data-part='item-icon']
+  ) {
+  --xh-_menubar-icon-column: '';
+}
+
+.xh-scope-menubar[data-part='item']:not(:has(> [data-part='item-icon']))::before {
+  content: var(--xh-_menubar-icon-column, none);
+  flex: none;
+  inline-size: var(--xh-icon-size);
 }
 
 .xh-scope-menubar[data-part='item-text'] {
@@ -42440,6 +42639,30 @@
   .xh-scope-select[data-part='clear-trigger'][data-disabled]:empty::before {
     background-color: GrayText;
   }
+}
+
+/* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+   （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。跨分组算一层。有行首格的那一层把开关打开 */
+.xh-scope-select[data-part='list']:has(> .xh-scope-select[data-part='item'] > .xh-scope-select[data-part='item-prefix'], > .xh-scope-select[data-part='group'] > .xh-scope-select[data-part='item'] > .xh-scope-select[data-part='item-prefix']) {
+  --xh-_select-lead-column: '';
+  --xh-_select-lead-min: var(--xh-icon-size);
+}
+
+.xh-scope-select[data-part='item-prefix'] {
+  min-inline-size: var(--xh-_select-lead-min, auto);
+}
+
+.xh-scope-select[data-part='item']::before {
+  content: var(--xh-_select-lead-column, none);
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  inline-size: var(--xh-icon-size);
+  margin-inline-end: var(--xh-select-item-gap, var(--xh-_select-gap));
+}
+
+/* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+.xh-scope-select[data-part='item']:has(> .xh-scope-select[data-part='item-prefix'])::before {
+  content: none;
 }
 
 /* styles/separator.css */

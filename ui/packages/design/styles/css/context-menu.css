@@ -279,6 +279,41 @@
     mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
+  /* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+  [data-scope='context-menu'][data-part='item-icon'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-icon-size);
+  }
+
+  [data-scope='context-menu'][data-part='item-icon'][hidden] {
+    display: none;
+  }
+
+  /* 同一层里只要有一条带图标，没带图标的条目在行首空出图标那一格（后面照常隔一个行内间距），正文左缘对齐；
+     整层都没有图标就不留。跨分组与分隔线算一层；只认这一层的条目（content 的子项、分组里的子项、
+     Web Components 子菜单宿主里的入口）。每一层先把开关关上，有图标的那一层再打开，下一层的子菜单不跟着开 */
+  [data-scope='context-menu'][data-part='content'] {
+    --xh-_context-menu-icon-column: none;
+  }
+
+  [data-scope='context-menu'][data-part='content']:has(
+      > [data-scope='context-menu'][data-part='item'] > [data-part='item-icon'],
+      > [data-scope='context-menu'][data-part='group'] > [data-scope='context-menu'][data-part='item'] > [data-part='item-icon'],
+      > :not([data-part]) > [data-scope='context-menu'][data-part='item'] > [data-part='item-icon'],
+      > [data-scope='context-menu'][data-part='group'] > :not([data-part]) > [data-scope='context-menu'][data-part='item'] > [data-part='item-icon']
+    ) {
+    --xh-_context-menu-icon-column: '';
+  }
+
+  [data-scope='context-menu'][data-part='item']:not(:has(> [data-part='item-icon']))::before {
+    content: var(--xh-_context-menu-icon-column, none);
+    flex: none;
+    inline-size: var(--xh-icon-size);
+  }
+
   [data-scope='context-menu'][data-part='item-text'] {
     flex: 1;
     min-inline-size: 0;

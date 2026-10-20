@@ -20620,6 +20620,7 @@
         "margin-inline-start"
       ],
       "state": [
+        "default",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -48591,6 +48592,7 @@
         "margin-inline-start"
       ],
       "state": [
+        "default",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -51206,6 +51208,7 @@
         "margin-inline-start"
       ],
       "state": [
+        "default",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -68454,6 +68457,7 @@
         "margin-inline-start"
       ],
       "state": [
+        "default",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",

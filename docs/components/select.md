@@ -180,6 +180,7 @@ outline、subtle 和 ghost
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项来自模板或宿主数据时，用 `@xihan-ui/core/options` 导出的 `findOptionViolation(collection, { tree?, unique?, requireLabel?, strict?, isValue? })` 先校验结构（`isValue` 换掉缺省只收字符串的 `value` 检查，供取值是数字、布尔的选项列表用），返回第一处问题的 JSON Pointer 与原因；单选组、复选组、组合框、树选择与级联吃同一套节点形状，同样适用。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面；候选面板与字段盒等宽，长选项在条目里截断。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
@@ -626,7 +627,7 @@ outline、subtle 和 ghost
 | `--xh-select-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
 | `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | select 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-select-item-h` | `item` | `min-block-size` | `default` | `--xh-_select-item-h` | select 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
