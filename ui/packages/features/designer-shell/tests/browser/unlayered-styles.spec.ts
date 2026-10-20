@@ -11,7 +11,7 @@ import layeredUrl from '@xihan-ui/styles/index.css?url'
 import unlayeredUrl from '@xihan-ui/styles/index.unlayered.css?url'
 import tokensUrl from '@xihan-ui/tokens/tokens.css?url'
 import { afterEach, describe, expect, it } from 'vitest'
-import { defineDesignerShell, DESIGNER_FRAME_REGIONS } from '../../src'
+import { createStatusItem, defineDesignerShell, DESIGNER_FRAME_REGIONS } from '../../src'
 import shellUrl from '../../style.css?url'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -216,7 +216,7 @@ describe('外壳零件在有层与无层两种搭配下算出同一套计算样�
     expect(await compare(document.body.innerHTML)).toEqual([])
   })
 
-  it('外框与物料、属性、问题、页面结构、历史记录各块面板', async () => {
+  it('外框的菜单栏三段、状态栏，与物料、属性、问题、页面结构、历史记录各块面板', async () => {
     const frame = mount(document.createElement('xh-designer-frame'))
     frame.style.cssText = 'display: block; inline-size: 1200px; block-size: 760px'
     frame.regions = DESIGNER_FRAME_REGIONS
@@ -239,6 +239,19 @@ describe('外壳零件在有层与无层两种搭配下算出同一套计算样�
     issues.slot = 'issues'
     issues.items = [{ issue: { code: 'graph.no-end', path: [] }, message: 'No end node' }]
     frame.append(palette, properties, issues)
+    // 菜单栏三段与状态栏：行首一段是菜单栏本身，正中是标题，行尾与状态栏右端是宿主的内容
+    const menu = document.createElement('div')
+    menu.slot = 'menubar'
+    menu.textContent = 'File Edit View'
+    const title = document.createElement('span')
+    title.slot = 'menubar-center'
+    title.textContent = 'Purchase order template'
+    const draft = document.createElement('span')
+    draft.slot = 'menubar-end'
+    draft.textContent = 'Draft'
+    const zoom = createStatusItem(document, { label: 'Zoom', value: '100%' })
+    zoom.element.slot = 'status-end'
+    frame.append(menu, title, draft, zoom.element)
     const outline = mount(document.createElement('xh-designer-outline'))
     outline.style.cssText = 'display: flex; flex-direction: column; inline-size: 280px; block-size: 240px'
     outline.searchable = true

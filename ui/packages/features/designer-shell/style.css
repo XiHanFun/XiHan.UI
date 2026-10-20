@@ -1829,7 +1829,8 @@
     block-size: var(--xh-designer-frame-bottom-min);
   }
 
-  /* 菜单栏：整宽一条，在工具栏上面；区里按段排开，菜单栏本身在行首一段，宿主的内容在行尾一段，放不下时行尾一段先收窄 */
+  /* 菜单栏：整宽一条，在工具栏上面；区里按段排开，菜单栏本身在行首一段，宿主的标题在正中一段，宿主的其他内容在行尾一段；
+     放不下时行尾一段先收窄 */
   xh-designer-frame > [data-scope='designer-frame'][data-part='menubar'] {
     display: flex;
     flex: none;
@@ -1838,6 +1839,7 @@
   }
 
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] {
+    position: relative;
     display: flex;
     flex-direction: row;
     gap: var(--xh-space-3);
@@ -1850,12 +1852,36 @@
     flex: none;
   }
 
+  /* 行尾一段按内容宽、贴右，空当按它的宽量 */
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] > [data-scope='designer-frame'][data-part='zone'][data-zone='end'] {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    margin-inline-start: auto;
     overflow: hidden;
     color: var(--xh-fg-muted);
     font-size: var(--xh-font-size-sm);
     white-space: nowrap;
+  }
+
+  /* 正中一段按整条菜单栏的宽度居中，不随两边内容的宽窄偏；外框量出两边留给它的空当写成最大宽，
+     放不下时里面的作者内容截断加省略号，空当窄过最小宽时外框把它藏起 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] > [data-scope='designer-frame'][data-part='zone'][data-zone='center'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0;
+    justify-content: center;
+    inline-size: fit-content;
+    min-inline-size: var(--xh-designer-frame-title-min);
+    margin-inline: auto;
+    overflow: hidden;
+    color: var(--xh-fg-default);
+    font-size: var(--xh-font-size-sm);
+    white-space: nowrap;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] > [data-scope='designer-frame'][data-part='zone'][data-zone='center'] > * {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* 状态栏：整宽一条，区里按段排开 */

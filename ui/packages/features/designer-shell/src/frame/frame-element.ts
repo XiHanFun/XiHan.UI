@@ -145,7 +145,7 @@ export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
 
 /** 菜单栏与状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
 const ZONES: Readonly<Partial<Record<DesignerFramePosition, readonly string[]>>> = {
-  menubar: ['start', 'end'],
+  menubar: ['start', 'center', 'end'],
   status: ['start', 'end'],
 }
 
@@ -400,6 +400,12 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #actionsObserver: ResizeObserver | undefined
   /** 各张卡片的操作区里此刻盯着的作者节点。 */
   readonly #observedActions = new WeakMap<CardParts, Set<Element>>()
+  /** 盯着菜单栏与它的行首、正中、行尾三段：宽度变了重量正中一段。 */
+  #centerResize: ResizeObserver | undefined
+  /** 盯着菜单栏正中一段里的作者内容：文字与子节点变了重量。 */
+  #centerMutation: MutationObserver | undefined
+  /** 此刻盯着的菜单栏各部分。 */
+  #centerWatched: readonly Element[] = []
   #releaseDrop: (() => void) | undefined
   readonly #ids = createCounterIdGenerator('xh-designer-frame')
   /** 视口窄于断点：左右两栏收进抽屉。 */
@@ -604,6 +610,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#resizeObserver?.disconnect()
     this.#actionsObserver?.disconnect()
     this.#actionsObserver = undefined
+    this.#centerResize?.disconnect()
+    this.#centerMutation?.disconnect()
+    this.#centerWatched = []
     this.#releaseSlots?.()
     this.#releaseSlots = undefined
     this.#slotsKey = ''
@@ -743,6 +752,74 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         drawer.element.open = open
       drawer.element.side = this.#sideOf(position)
       drawer.content.setAttribute('aria-label', regions.map(region => region.title ?? region.label ?? region.name).join('、'))
+    }
+    this.#watchMenubarCenter()
+  }
+
+  /** 盯住此刻的菜单栏、它的三段与正中一段里的作者内容，变了就重量正中一段；换了区重新盯。 */
+  #watchMenubarCenter(): void {
+    const watched = this.#menubarParts().flatMap(parts => [parts.element, ...Object.values(parts.zones)])
+    if (watched.length !== this.#centerWatched.length || watched.some((node, index) => node !== this.#centerWatched[index])) {
+      this.#centerWatched = watched
+      this.#centerResize?.disconnect()
+      this.#centerMutation?.disconnect()
+      if (typeof ResizeObserver === 'function') {
+        this.#centerResize ??= new ResizeObserver(() => this.#fitMenubarCenter())
+        for (const node of watched)
+          this.#centerResize.observe(node)
+      }
+      if (typeof MutationObserver === 'function') {
+        this.#centerMutation ??= new MutationObserver(() => this.#fitMenubarCenter())
+        for (const parts of this.#menubarParts())
+          this.#centerMutation.observe(parts.zones.center!, { childList: true, subtree: true, characterData: true })
+      }
+    }
+    this.#fitMenubarCenter()
+  }
+
+  /** 登记了的菜单栏区。 */
+  #menubarParts(): RegionParts[] {
+    return this.#regionList()
+      .filter(region => region.position === 'menubar')
+      .flatMap(region => this.#regions.get(region.name)?.zones.center ? [this.#regions.get(region.name)!] : [])
+  }
+
+  /**
+   * 菜单栏正中一段按整条菜单栏的宽度居中：行首、行尾两段的内容各自挡住一边，取离中线近的那一边定出以中线对称的空当；
+   * 内容放得下照原宽，放不下截到空当的宽（里面的作者内容截断加省略号），空当窄过这一段的最小宽就藏起。
+   */
+  #fitMenubarCenter(): void {
+    const view = this.ownerDocument.defaultView
+    if (!view)
+      return
+    for (const parts of this.#menubarParts()) {
+      const center = parts.zones.center!
+      center.style.removeProperty('max-inline-size')
+      center.hidden = false
+      const bar = parts.element.getBoundingClientRect()
+      if (center.childElementCount === 0 || bar.width === 0)
+        continue
+      const style = view.getComputedStyle(parts.element)
+      const gap = Number.parseFloat(style.columnGap) || 0
+      const middle = bar.left + bar.width / 2
+      let left = bar.left + (Number.parseFloat(style.paddingLeft) || 0)
+      let right = bar.right - (Number.parseFloat(style.paddingRight) || 0)
+      for (const zone of [parts.zones.start, parts.zones.end]) {
+        const box = zone?.getBoundingClientRect()
+        if (box === undefined || box.width === 0)
+          continue
+        if (box.left + box.width / 2 < middle)
+          left = Math.max(left, box.right + gap)
+        else
+          right = Math.min(right, box.left - gap)
+      }
+      const room = 2 * Math.min(middle - left, right - middle)
+      if (center.getBoundingClientRect().width <= room + 0.5)
+        continue
+      if (room >= (Number.parseFloat(view.getComputedStyle(center).minInlineSize) || 0))
+        center.style.maxInlineSize = `${Math.floor(room)}px`
+      else
+        center.hidden = true
     }
   }
 

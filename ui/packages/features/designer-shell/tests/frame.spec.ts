@@ -147,6 +147,30 @@ describe('<xh-designer-frame>', () => {
     host.remove()
   })
 
+  it('forwardFrameSlots 转来的 menubar-center 进菜单栏正中一段；转来的内容在同一段里排在设计器自己放的前面，后转来的也一样', async () => {
+    const host = document.createElement('div')
+    frame = document.createElement('xh-designer-frame')
+    const item = (text: string): HTMLSpanElement => Object.assign(document.createElement('span'), { slot: 'status-end', textContent: text })
+    const zoom = item('zoom')
+    frame.append(zoom)
+    const title = document.createElement('span')
+    title.slot = 'menubar-center'
+    const saved = item('saved')
+    host.append(frame, title, saved)
+    document.body.append(host)
+    forwardFrameSlots(host, frame, ['menubar-center', 'status-end'])
+    await settle()
+    const zone = (element: Element): string | null => element.parentElement!.getAttribute('data-zone')
+    expect([zone(title), title.closest('[data-region]')!.getAttribute('data-region')]).toEqual(['center', 'menubar'])
+    const order = (): string[] => [...zoom.parentElement!.children].map(node => node.textContent!)
+    expect(order()).toEqual(['saved', 'zoom'])
+    host.append(item('online'))
+    frame.append(item('own'))
+    await settle()
+    expect(order()).toEqual(['saved', 'online', 'zoom', 'own'])
+    host.remove()
+  })
+
   it('三栏的区给了标题就是卡片：面板头写标题、副标题，帮助、收起、更多与关闭钮，操作区按 slot 放内容；点关闭隐藏这块并派发 layout-change', async () => {
     const content = await mount((element) => {
       element.regions = [

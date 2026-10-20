@@ -5,17 +5,22 @@
 
 // 宿主写在设计器元素上的作者内容转交给设计器内部的外框：写了 slot="<名>" 的直接子元素搬进外框，后来加的跟着搬。
 
+import { markForwarded } from '../internal/slots'
+
 /**
  * 把 host 上 slot 写在 names 里的直接子元素搬进 frame，外框再按 slot 领进对应的区或段；后来加到 host 上的跟着搬。
- * 设计器用它让宿主往内部外框里放内容，如菜单栏右边一段的 menubar-end。返回停止转交的函数，已经搬过去的不搬回来。
+ * 设计器用它让宿主往内部外框里放内容，如菜单栏正中的 menubar-center、右边的 menubar-end 与状态栏右端的 status-end。
+ * 转过去的内容在同一段里排在设计器自己放的内容前面。返回停止转交的函数，已经搬过去的不搬回来。
  */
 export function forwardFrameSlots(host: HTMLElement, frame: HTMLElement, names: readonly string[]): () => void {
   const wanted = new Set(names)
   const move = (): void => {
     for (const child of Array.from(host.children)) {
       const slot = child.getAttribute('slot')
-      if (child !== frame && slot !== null && wanted.has(slot))
+      if (child !== frame && slot !== null && wanted.has(slot)) {
+        markForwarded(child)
         frame.append(child)
+      }
     }
   }
   move()
