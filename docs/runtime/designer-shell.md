@@ -611,7 +611,7 @@ ruler.addEventListener("guides-change", event => setGuides(event.detail.guides))
 
 ## 外框
 
-`<xh-designer-frame>` 是设计器的整体版式：最上一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一栏，最下一条状态栏。版式按命名区排，缺省登记工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 六个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。
+`<xh-designer-frame>` 是设计器的整体版式：最上一条菜单栏，下面一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一栏，最下一条状态栏。版式按命名区排，缺省登记菜单栏 `menubar`、工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 七个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。
 
 左、右、下三栏里的区是面板：停在哪一栏、先后、显隐、收成标题条、浮出成小窗，都记在一份布局 `layout` 里。外框改了布局就换成改完的整份，并派发 `layout-change`；设计器把它存进设置的 `layout.panels`。栏与栏、同一栏的面板之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
 
@@ -637,7 +637,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 方法 | 说明 |
 | --- | --- |
-| `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
+| `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，菜单栏与状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
 | `panelEntries()` | 面板菜单的数据：能停靠的面板与画布浮动件，按登记顺序，`closable: false` 的不列。每项 `{ name, label, icon?, shown, dock?, minimized, floating, locked, movable, floatable, minimizable }`（后三项是此刻能不能换栏、浮出、收起，算上了管控）；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻看得见：没隐藏，所在栏没在分隔条上收起，窄屏时左右两栏的面板还要它所在的抽屉开着 |
 | `togglePanel(name)` | 开关一块面板：显示着就隐藏、隐藏着就显示。所在栏在分隔条上收起着时是把那一栏放回收起前的大小；窄屏时左右两栏的面板是开关它所在那一侧的抽屉 |
 | `setPanelVisible(name, visible)` | 显示或隐藏一块面板 |
@@ -646,7 +646,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `floatPanel(name, rect?)` | 浮出成小窗；`rect` 是相对外框左上角的像素位置与大小，不给时按卡片此刻的大小（不小于 280 × 240，不超过外框的八成）放在中间一行的中央 |
 | `dockPanel(name)` | 把小窗吸回原来的栏与位置 |
 | `revealPanel(name)` | 把显示着的面板亮出来：收在窄屏抽屉里的打开抽屉，所在栏在分隔条上收起的放回，收成标题条的展开；面板隐藏着时返回 `false`。引导与问题定位用 |
-| `toggleAllPanels()` | 有面板显示着就全部隐藏，否则放回全部隐藏前的那一组；不动工具栏与状态栏 |
+| `toggleAllPanels()` | 有面板显示着就全部隐藏，否则放回全部隐藏前的那一组；不动菜单栏、工具栏与状态栏 |
 | `restorePanels()` | 各面板的显隐回到缺省，位置与大小不动 |
 | `resetLayout()` | 整份布局回到缺省：显隐、停靠、先后、大小、收起、浮出一起复原 |
 | `announce(message)` | 礼貌级地读一句，经 core 的页面级播报器（[`announce`](../guide/behavior#页面级播报)）；外框自己在挪动、浮出、停靠、收起与隐藏之后各读一句 |
@@ -660,7 +660,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
 
-- `position` 取 `top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
+- `position` 取 `menubar`、`top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
 - `size` 是那一栏的缺省大小：左右两栏占中间一行的宽度，下栏占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取那一栏第一块面板的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
 - `label` 是一栏里两块面板之间那条分隔条名称里的区名，缺省用 `title`，再缺省用 `name`，名称取文案 `resize`；左右两栏与画布之间、下栏与画布之间的分隔条按栏命名，取文案 `resizeLeft`、`resizeRight`、`resizeBottom`（左右按看到的方向，从右往左书写时开头那一栏在右边）；分隔条所在的布局取文案 `layout`。
 - `icon` 是面板菜单与浮出小窗标题栏里的图标。`defaultHidden` 的面板缺省不显示。`closable`、`movable`、`floatable`、`minimizable` 缺省都是 `true`，写 `false` 就不出对应的钮与菜单项；没给 `title` 的区没有面板头，只能显示或隐藏。
@@ -707,6 +707,19 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `designerPanelAbilities(region, policy?)` | 一块面板此刻能做的事：`{ closable, movable, floatable, minimizable }` |
 | `designerPanelDock(layout, id)` | 面板停在哪一栏 |
 | `withDesignerPanelVisible`、`withDesignerPanelMoved`、`withDesignerPanelMinimized`、`withDesignerPanelFloating`、`withDesignerDockSize`、`withDesignerPanelShares` | 几种改法，返回新的一份 |
+
+### 菜单栏
+
+菜单栏是最上整宽的一条，在工具栏上面，不可拖动，不是面板，按段放内容：
+
+| 区 | 段与插槽 | 只写区名时进 |
+| --- | --- | --- |
+| `menubar` | `menubar-start`（菜单栏本身，`createCommandMenubar` 建的那一条）、`menubar-end`（宿主的内容，如模板标题与保存状态） | `menubar-start` |
+
+- 各段有内容才显示这一条，内容拿走就收起。不要菜单栏（比如设置里关掉了）时从 `regions` 里去掉 `menubar` 区，里面的内容收进停放处不显示，再登记时放回；菜单里的命令照样能用快捷键。
+- 行首一段按内容宽，行尾一段占剩下的宽度、贴右，放不下时先收窄，里面的作者内容自己截断（如写 `text-overflow: ellipsis`）；行尾一段的文字取弱一档的颜色。
+- 键盘：设计器里有焦点时按 F10（不带修饰键），焦点交给菜单栏里第一个看得见、能用 Tab 走到的元素（宽屏是菜单栏，窄屏是那颗「菜单」钮）；再按 F10，或在菜单栏里按 Esc（菜单收着时），回到按 F10 之前持有焦点的地方。用 Tab 走进菜单栏的，Esc 不带回去。Shift+F10 仍是右键菜单，Alt+F10 仍是选中工具条。外框在自己身上接这个键，各款不用另接；里面的元件已经接走（`preventDefault`）的 F10 与 Esc 外框不管。
+- 菜单栏本身怎么从命令表铺，见下文「扩展的面板与命令」的「菜单栏」。
 
 ### 状态栏
 
@@ -793,7 +806,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 ### 拖动工具
 
-工具栏上的「拖动」（内置命令 `pan-tool`，快捷键 `H`）把外框的 `canvasTool` 切成 `pan`，再按一次或按 Esc 退回 `select`。外框只管模式、光标与 Esc，平移由各款在自己的画布上接：
+工具栏与「视图」菜单里的「拖动」（内置命令 `pan-tool`，快捷键 `H`）把外框的 `canvasTool` 切成 `pan`，再按一次或按 Esc 退回 `select`。外框只管模式、光标与 Esc，平移由各款在自己的画布上接：
 
 - 拖动开着时，在画布任意处（节点、元素上也一样）按住拖动都是平移画布，不选中、不挪对象；只点一下什么都不改。
 - 画布区的光标是手形（`grab`）；画布里自己设了光标的内容（节点、控制柄）按 `[data-canvas-tool="pan"]` 改回手形，拖动中换成握拳（`grabbing`）。
@@ -808,12 +821,13 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 「面板」命令与 `togglePanel` 开关抽屉，同时只开一侧，开另一侧时这一侧收起，不改布局；隐藏着的面板开抽屉时先显示并派发一次 `layout-change`。
 - 面板头的关闭钮与 Esc 只收起抽屉，布局不变。抽屉以它里面各面板的标题为名，从右往左写时两侧对调。
 - 浮出的面板窄屏时按停靠显示在原来那一栏的抽屉里，不改存下的布局，回到宽屏再浮出来。窄屏不能拖动面板，「更多」菜单里不出换栏与浮出。
+- 菜单栏（`createCommandMenubar` 建的）收成行首一颗「菜单」钮，点开一张 `<xh-menu>`，每张菜单是它的一个子菜单。焦点在菜单栏里时宽窄一换，焦点落到此刻看得见的入口上（变窄落到「菜单」钮，变宽落到菜单栏）。
 - 视口变宽回到三栏，抽屉收起；再变窄时两侧都收着。
 - 没有 `matchMedia` 或断点令牌缺席时不进窄屏。
 
 ## 设置
 
-设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，菜单栏的显示，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
@@ -858,7 +872,7 @@ dialog.show();
 | `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
 | `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
 | `designerLayoutSettings(t)` | 内建的「布局」分区（`DESIGNER_LAYOUT_SETTINGS`）：一条 `panels`，编辑方式 `PANEL_LAYOUT_CONTROL`；对话框给了 `frame` 时自己生成 |
-| `designerToolbarSettings(t, { layout? })` | 内建的「工具栏」分区（`DESIGNER_TOOLBAR_SETTINGS`）：按钮显示方式、显示工具栏，`layout` 为真时加按钮表（编辑方式 `TOOLBAR_LAYOUT_CONTROL`）；对话框自己生成 |
+| `designerToolbarSettings(t, { layout? })` | 内建的「工具栏」分区（`DESIGNER_TOOLBAR_SETTINGS`）：按钮显示方式、显示工具栏、显示菜单栏，`layout` 为真时加按钮表（编辑方式 `TOOLBAR_LAYOUT_CONTROL`）；对话框自己生成 |
 
 ### 「基础」分区
 
@@ -877,11 +891,12 @@ dialog.show();
 | --- | --- | --- | --- | --- |
 | 按钮显示方式 | `toolbar.display` | 分段：图标、文字、图标和文字 | `icon` | 总有 |
 | 显示工具栏 | `toolbar.visible` | 开关 | `true` | 总有 |
+| 显示菜单栏 | `toolbar.menubar` | 开关 | `true` | 总有 |
 | 按钮 | `toolbar.layout` | 按钮表（`toolbarLayout`） | 不写即缺省排列 | 对话框给了 `toolbar` 的缺省排列与命令 |
 
-工具栏只走设置，各款不另设属性：`toolbarDisplayOf(settings)` 取显示方式（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`；`toolbarVisibleOf(settings)` 只有写了 `false` 才是不显示，各款这时从外框的 `regions` 里去掉工具栏的区，命令照样能经快捷键与菜单执行。
+工具栏只走设置，各款不另设属性：`toolbarDisplayOf(settings)` 取显示方式（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`；`toolbarVisibleOf(settings)` 只有写了 `false` 才是不显示，各款这时从外框的 `regions` 里去掉工具栏的区，命令照样能经快捷键与菜单执行。`menubarVisibleOf(settings)` 同样只有写了 `false` 才是不显示，各款这时从 `regions` 里去掉菜单栏的区；设置命令还有快捷键 Mod+,，菜单栏与工具栏都关掉了也能打开设置。
 
-按钮表只管顶部工具栏：右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
+按钮表只管顶部工具栏：菜单栏、右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
 
 - **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令的短文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字取 `commandShortLabel`（撤销这类文字随下一步变的命令写固定的短名），按此刻的语言取，所以每编辑一步算出来的数据不变、表不重铺。
 - **样子**：一组一块，组头是三态勾选框（全选、部分、全不选）与拖动把手，下面每条命令一行：勾选框（图标与名字）、快捷键、拖动把手。组与组之间、组里的命令都能拖，命令能从一组拖进另一组；键盘在把手上用空格拿起、方向键挪、空格放下（竖排的命令列表用左右键挪到相邻的组）。表下一颗「恢复默认」删掉这个键。组这一层是一个 `<xh-sortable>`，组里的命令各是一个同 `group` 的 `<xh-sortable>`。
@@ -896,6 +911,7 @@ dialog.show();
 | `applyToolbarCustomization(arranged, customization)` | 合起来以后去掉藏起的命令与空组，就是工具栏此刻的分组 |
 | `toolbarSettingsSource(defaults, commands, context)` | 交给对话框 `toolbar` 的数据，命令表里没有的跳过 |
 | `toolbarVisibleOf(settings)` | 显示工具栏，只有写了 `false` 才为 `false` |
+| `menubarVisibleOf(settings)` | 显示菜单栏（`toolbar.menubar`），只有写了 `false` 才为 `false` |
 
 ### 「帮助」「快捷键」「关于」分区
 
@@ -904,7 +920,7 @@ dialog.show();
 | 页 | 对话框的属性 | 内容 |
 | --- | --- | --- |
 | 帮助 | `help: { notes?, actions? }` | `notes` 是几段操作说明（各款的文案，按语言取好）；`actions` 是几颗钮 `{ command, label }`，如「开始引导」（`start-tour`）、「打开文档」（`help`），点了先收起对话框，等焦点回到打开它的元素再派发 `settings-command { command }`，由设计器跑这条命令；这时开始的引导收起后焦点回到那里。两样都没有时没有这一页 |
-| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys?, commonKeys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、Alt+F10 聚焦选中工具条、Esc 取消），各款经 `commonKeys` 换掉这几行，见下文。键铺成 `<xh-kbd>`，按平台写 |
+| 快捷键 | `shortcuts: { groups }` | 一张快捷键表，从命令表生成，不手写：各款用 `shortcutSettingsSource(命令表, 上下文, { extensionCommands?, keys?, commonKeys? })` 现算。凡有快捷键的命令一行（名字取 `commandShortLabel`，第二快捷键写在同一行），designer-shell 内置的命令归「通用」，四款共有的编辑命令（`DESIGNER_EDIT_COMMANDS`）归「编辑」，扩展的归「扩展」，其余归「本设计器」；`keys` 是本设计器不是命令的按键，排在「本设计器」末尾。对话框给「通用」补上四款都有的按键（`DESIGNER_COMMON_KEYS`：方向键微移、Shift 加方向键大步微移、按住空格拖动画布、F10 进出菜单栏、Alt+F10 聚焦选中工具条、Esc 取消），各款经 `commonKeys` 换掉这几行，见下文。键铺成 `<xh-kbd>`，按平台写 |
 | 关于 | `about: { product, version, license?, rows? }` | 产品、版本、界面库（XiHan.UI，即 `DESIGNER_SHELL_VERSION`）的版本与许可证，后面接 `rows`：扩展的 `about` 字段（附加包的版本与授权）由各款接在这里。各款的版本号也从构建时注入的常量取（如流程的 `FLOW_VERSION`） |
 
 各款与扩展的分区也能用这几种条目：
@@ -1105,13 +1121,13 @@ if (autoTour && !tourDoneOf(settings))
 | 字段 | 说明 |
 | --- | --- |
 | `id` | 全局唯一：designer-shell 的写 `shell.<名>`，各款写 `<产品>.<名>`，扩展写扩展 id 加点 |
-| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`toolbar`、`canvas`、`status`）；`{ selector }` 设计器里的任意节点 |
+| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`menubar`、`toolbar`、`canvas`、`status`）；`{ selector }` 设计器里的任意节点 |
 | `title`、`description` | 标题与说明，可以是按上下文现算的函数 |
 | `placement` | 浮层相对目标的首选位置，缺省 `bottom` |
 | `order` | 排序：designer-shell 的通用步骤 0–60 与收尾的 900，各款 100 起，扩展 200 起；同值按登记顺序 |
 | `when` | 返回 `false` 时跳过，如只读模式下的编辑步骤 |
 
-通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（工具栏上的设置命令，900，排在各款与扩展的步骤之后收尾），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
+通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（菜单栏区，900，排在各款与扩展的步骤之后收尾：设置在「文件」菜单里，引导能从「帮助」重新开始，F10 进菜单栏），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
 
 | 函数 | 说明 |
 | --- | --- |
@@ -1147,7 +1163,7 @@ if (autoTour && !tourDoneOf(settings))
 
 ## 扩展的面板与命令
 
-设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框，物料来源接进物料面板。
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮、菜单栏与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框，物料来源接进物料面板。
 
 ### 面板
 
@@ -1184,13 +1200,13 @@ menu.addEventListener("item-select", event => runCommand(commands, event.detail.
 
 | 函数 | 说明 |
 | --- | --- |
-| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
+| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它；菜单栏的 `menubar:<菜单 id>` 用下文的 `arrangeMenubar`）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
 | `createCommandToolbar(document, { display?, orientation?, platform?, overflow? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text` 或 `both`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。`overflow` 缺省 `menu`；写 `external` 时放不下的钮由调用方列在别处，自己的「更多」钮不占位、看不见（只留作弹层与菜单的锚点），收起的条目变了时外壳派发冒泡的 `overflow-change`；`overflowed()` 是此刻收起的命令 `{ id, label, disabled }`，`activate(id)` 照点按钮那样执行一条。弹层命令与菜单命令见下文 |
 | `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有五条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用；`pan-tool`（拖动，`H`）是开关式，上工具栏，按下状态跟着外框的 `canvasTool`，执行时在 `select` 与 `pan` 之间切换。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, save?, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, settings?, icons? })` | designer-shell 内置的命令。给了 `save` 有 `save`（保存，`Mod+S`），通常派发各款的 `save` 事件，各款原来在画布上自己接的 Ctrl / ⌘ + S 改走这条命令。给了 `frame`（返回设计器的外框）有五条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用；`pan-tool`（拖动，`H`）是开关式，按下状态跟着外框的 `canvasTool`，执行时在 `select` 与 `pan` 之间切换。给了 `openSettings(context, section?)` 有三条：`settings`（打开设置对话框，`Mod+,`）、`shortcuts`（翻到快捷键页）与 `about`（翻到关于页）。给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）。给了 `settings: { read, change, policy? }` 有三条开关式命令 `show-toolbar`、`show-status-bar`、`show-menubar`：勾选读 `toolbar.visible`、`general.statusBar`、`toolbar.menubar`，执行时把那一条取反经 `change(context, key, value)` 写回；`policy` 里藏起或锁定了那一条（或它所在的分区）时不可用。落点：`save`、`settings` 在「文件」菜单，`edit-json` 在「编辑」菜单，`panels`、`pan-tool` 与三条显示开关在「视图」菜单（`panels`、`pan-tool` 同时上工具栏），`start-tour`、`help`、`shortcuts`、`about` 在「帮助」菜单；`import-fields` 不排位置，各款放进面板头或菜单。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入。各款把它们并进自己的内置扩展；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。
@@ -1204,7 +1220,7 @@ menu.addEventListener("item-select", event => runCommand(commands, event.detail.
 - 菜单里点了复选条目、菜单仍开着时，按点过之后的上下文重算条目与勾选，不必等设计器下一次 `update`。
 - `open(id)` 打开一条弹层命令或菜单命令，给快捷键用：命令的 `run` 里调它；不是这两类命令、不在工具栏上或此刻不可用时返回 `false`。`close()` 关掉开着的那一个，`opened()` 是开着的命令 id。
 
-四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的面板、设置、帮助、导入字段、编辑 JSON 与开始引导，以及命令工具栏的名字 `toolbar`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
+四款都有的通用命令，文案收在 designer-shell 语言包的 `xh-designer-commands` 一桶里：撤销、重做（以及带上下一步说明的 `undoWith`、`redoWith`）、清空历史、剪切、复制、粘贴、创建副本、删除、全选，六种对齐、两种分布、四种层级，放大、缩小、适合窗口、实际大小，设计与预览，内置命令的保存、面板、拖动、设置、快捷键、关于、帮助、导入字段、编辑 JSON、开始引导与工具栏、状态栏、菜单栏三条显示开关，命令工具栏的名字 `toolbar`，以及菜单栏的名字 `menubar`、窄屏那颗钮上的 `menu` 与四张菜单的名字 `menuFile`、`menuEdit`、`menuView`、`menuHelp`。各款引用这一桶，不再各写一份；产品专属的命令仍写在各款自己的语言包里。
 
 ```ts
 import { DESIGNER_COMMANDS_EN_US, DESIGNER_HISTORY_EN_US } from "@xihan-ui/designer-shell";
@@ -1214,6 +1230,51 @@ const config = new XhConfigController(designer);
 const t = config.translations("xh-designer-commands", DESIGNER_COMMANDS_EN_US); // t.undo、t.alignCenter……
 const history = config.translations("xh-designer-history", DESIGNER_HISTORY_EN_US); // 给 designerHistoryCommands 的 historyTranslations
 ```
+
+### 菜单栏
+
+菜单栏放通用的功能：保存、设置、关于、帮助这类，按菜单分组，下面是工具栏。命令照样来自命令表，用 `placement` 的 `menubar:<菜单 id>` 或排列落进某张菜单。
+
+```ts
+import { arrangeMenubar, collectMenubarMenus, createCommandMenubar, designerMenubarLayout, designerMenubarMenus } from "@xihan-ui/designer-shell";
+
+const menubar = createCommandMenubar(document, { menuIcon: MenuIcon }); // 快捷键提示的平台缺省当场测
+menubar.element.slot = "menubar";
+frame.append(menubar.element);
+
+// 内置四张在前，扩展的在后；每轮更新时排一次、铺一次
+const menus = collectMenubarMenus(designerMenubarMenus({ translations: () => t }), host.list);
+menubar.update(arrangeMenubar(menus, commands, designerMenubarLayout(commands), designer.commandLayout), commands, context, t);
+```
+
+| 函数 | 说明 |
+| --- | --- |
+| `designerMenubarMenus({ translations })` | 内置的四张菜单 `{ id, label, order }`：文件 `file`（0）、编辑 `edit`（10）、视图 `view`（20）、帮助 `help`（90），名字取 `xh-designer-commands` 的 `menuFile`、`menuEdit`、`menuView`、`menuHelp`；id 也在 `DESIGNER_MENUBAR_MENUS` 里 |
+| `designerMenubarLayout(commands)` | 外壳认得的命令在四张菜单里的缺省排列，只留命令表里有的，空组去掉：文件是保存 / 打开文件 / 设置；编辑是撤销、重做 / 剪切、复制、粘贴、删除、创建副本 / 全选 / 编辑 JSON；视图是设计、预览 / 放大、缩小、适合窗口、实际大小 / 拖动 / 面板 / 工具栏、状态栏、菜单栏三条显示开关；帮助是开始引导、帮助、快捷键 / 关于 |
+| `arrangeMenubar(menus, commands, defaults, layout?)` | 排出菜单栏，返回 `{ menu, groups }[]`：菜单按 `order` 排（不写按 50，同值按登记顺序）；每张菜单照 `arrangeCommands` 的规则，位置是 `menubar:<菜单 id>`：`layout` 写了就只用它（给空数组就不要这张菜单），否则用 `defaults` 里这张菜单的排列，`placement` 落在这张菜单、又不在排列里的命令按登记顺序成一组，排在缺省排列的最后一组之前（最后一组是收尾，如文件菜单的设置；缺省排列不到两组时接在后面）。没有命令的菜单不出现；排列里写了没登记的命令 id 时抛 `TypeError` |
+| `collectMenubarMenus(builtins, sources)` | 合起内置菜单与各来源（`{ id, menubarMenus? }`，扩展的 `menubarMenus` 字段就是这个形状）登记的菜单，内置在前。菜单 id 与内置的或彼此重名时抛 `DesignerExtensionError`，名字空间 `menubar-menu` |
+| `createCommandMenubar(document, { platform?, menuIcon? })` | 一条数据模式的 `<xh-menubar>`（`menubar`），外面一层外壳（`element`，`data-scope="designer-menubar"`）。`update(menus, commands, context, labels)` 按排好的菜单铺：每张菜单一个入口，条目带图标、快捷键提示（按 `platform` 写，如 `Ctrl+S`、`⌘S`）与不可用，组与组之间一道分隔线；开关式命令是勾选条目，选中即收起；菜单命令（如「面板」）是子菜单，里面就是它原来那张菜单；弹层命令不进菜单栏（菜单条目当不了弹层的锚点），开发期报一条 `core.warn` 告警。选中条目执行命令（此刻不可用的不执行），子菜单的条目交给菜单命令的 `select`。数据没变时不重设；换了数据时开着的菜单不收、焦点不丢。`labels` 是 `{ menubar, menu }`：整条菜单栏的名字与窄屏那颗钮上的字，直接交 `xh-designer-commands` 那一桶 |
+
+- 条目的名字用命令的 `label`，不用 `shortLabel`。
+- 菜单栏不进用户定制：设置的「工具栏」页只管顶部工具栏，菜单栏只由宿主的 `commandLayout` 改。设置里有「显示菜单栏」开关，见上文「设置」的「工具栏」分区。
+- 窄屏（外框写着 `data-narrow`）时这一条收起，换成一颗「菜单」钮（`menu-trigger` 部件，文字取 `labels.menu`，给了 `menuIcon` 在前面铺图标），点开一张 `<xh-menu>`，每张菜单是它的一个子菜单，选中照样执行。
+- 键盘照 `<xh-menubar>`：整条一个 Tab 位，左右键在菜单之间走，下键、Enter、Space 展开，展开后左右键换到相邻的菜单，Esc 收起回到入口；F10 进出菜单栏由外框接，见「外框」的「菜单栏」。
+
+宿主自己的操作（新建、预览、打印、返回列表）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题与保存状态放进外框的 `slot="menubar-end"`。这样设计器外面不必另起一条操作条。
+
+```ts
+designer.extensions = [...presets, {
+  id: "acme.host",
+  commands: [
+    { id: "acme.new", label: "新建", shortcut: ["Mod", "Alt", "N"], placement: ["menubar:file"], run: () => createTemplate() },
+    { id: "acme.preview", label: "预览", placement: ["menubar:file", "toolbar"], run: () => preview() },
+  ],
+}];
+```
+
+没写进排列的宿主命令在「文件」菜单里另起一组，排在收尾的设置之前；要定位置时写 `commandLayout["menubar:file"]` 的整份排列。宿主不要菜单栏时关掉设置里的「显示菜单栏」，或者把各张菜单的排列都写成空数组。
+
+扩展的 `menubarMenus` 往菜单栏上加菜单 `{ id, label, order? }`，如打印的「插入」「页面」、报表的「数据」，`order` 写在 30–80 之间；命令经 `placement` 的 `menubar:<菜单 id>` 落进去，命令落到哪张菜单只看 `placement` 与排列，不看菜单由谁登记。
 
 ### 设置分区
 

@@ -77,7 +77,7 @@ describe('<xh-designer-frame>', () => {
 
   it('状态栏按段放内容：只写区名的进缺省段，有内容才显示；不登记状态栏就不显示。外框没有顶栏，写 slot="header" 的内容收进停放处', async () => {
     await mount()
-    expect(DESIGNER_FRAME_REGIONS.map(item => item.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
+    expect(DESIGNER_FRAME_REGIONS.map(item => item.name)).toEqual(['menubar', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
     expect(frame.querySelector(':scope > [data-part="header"]')).toBeNull()
     const status = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!
     expect([status.hidden, frame.showsPanel('status')]).toEqual([true, false])
@@ -97,6 +97,27 @@ describe('<xh-designer-frame>', () => {
     frame.regions = DESIGNER_FRAME_REGIONS.filter(item => item.name !== 'status')
     await frame.updateComplete
     expect([status.hidden, frame.showsPanel('status'), selection.parentElement]).toEqual([true, false, frame.querySelector('[data-part="parked"]')])
+  })
+
+  it('菜单栏在工具栏上面一条，分两段：只写区名的进缺省段（菜单栏本身），menubar-end 放宿主的内容；两段都空时收起，不登记菜单栏区时内容收进停放处', async () => {
+    await mount()
+    const strip = frame.querySelector<HTMLElement>(':scope > [data-part="menubar"]')!
+    expect([strip.nextElementSibling, strip.hidden, frame.showsPanel('menubar')]).toEqual([frame.querySelector(':scope > [data-part="top"]'), true, false])
+
+    const bar = document.createElement('div')
+    bar.slot = 'menubar'
+    const title = document.createElement('span')
+    title.slot = 'menubar-end'
+    frame.append(bar, title)
+    await settle()
+    const zone = (element: Element): string | null => element.parentElement!.getAttribute('data-zone')
+    expect([zone(bar), zone(title)]).toEqual(['start', 'end'])
+    expect([strip.hidden, frame.showsPanel('menubar'), region('menubar')!.parentElement, region('menubar')!.getAttribute('data-position')]).toEqual([false, true, strip, 'menubar'])
+
+    frame.regions = DESIGNER_FRAME_REGIONS.filter(item => item.name !== 'menubar')
+    await frame.updateComplete
+    const parked = frame.querySelector('[data-part="parked"]')
+    expect([strip.hidden, frame.showsPanel('menubar'), bar.parentElement, title.parentElement]).toEqual([true, false, parked, parked])
   })
 
   it('三栏的区给了标题就是卡片：面板头写标题、副标题，帮助、收起、更多与关闭钮，操作区按 slot 放内容；点关闭隐藏这块并派发 layout-change', async () => {

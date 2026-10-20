@@ -46,7 +46,7 @@ const DEFAULT_TRANSLATIONS: DesignerTourTranslations = {
   statusTitle: 'Status bar',
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
-  settingsDescription: 'Change the theme, panel layout and toolbar buttons here, or take this tour again.',
+  settingsDescription: 'Save, settings and help are in the menu bar: change the theme, panel layout and toolbar buttons under File › Settings, and take this tour again from Help. F10 moves focus to the menu bar.',
 }
 
 const TAG = 'xh-designer-tour'
@@ -63,7 +63,7 @@ const BUILTIN_STEPS: readonly { readonly id: string, readonly target?: DesignerT
   { id: 'shell.properties', target: { panel: 'properties' }, order: 40, title: 'propertiesTitle', description: 'propertiesDescription' },
   { id: 'shell.issues', target: { panel: 'issues' }, order: 50, title: 'issuesTitle', description: 'issuesDescription' },
   { id: 'shell.status', target: { region: 'status' }, order: 60, title: 'statusTitle', description: 'statusDescription' },
-  { id: 'shell.settings', target: { command: 'settings' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
+  { id: 'shell.settings', target: { region: 'menubar' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
 ]
 
 /** 每个文档里此刻开着的引导：同一页只跑一个。 */

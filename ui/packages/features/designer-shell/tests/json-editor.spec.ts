@@ -168,7 +168,7 @@ describe('内置命令 edit-json', () => {
     const open = vi.fn()
     const commands = designerShellCommands<object>({ translations: () => DESIGNER_COMMANDS_EN_US, openJsonEditor: open })
     const command = commands.find(item => item.id === DESIGNER_SHELL_COMMANDS.editJson)!
-    expect([typeof command.label === 'function' ? command.label({}) : command.label, command.shortcut, command.placement]).toEqual([DESIGNER_COMMANDS_EN_US.editJson, ['Mod', 'Shift', 'J'], undefined])
+    expect([typeof command.label === 'function' ? command.label({}) : command.label, command.shortcut, command.placement]).toEqual([DESIGNER_COMMANDS_EN_US.editJson, ['Mod', 'Shift', 'J'], ['menubar:edit']])
     command.run?.({})
     expect(open).toHaveBeenCalledTimes(1)
     expect(designerShellCommands<object>({ translations: () => DESIGNER_COMMANDS_EN_US }).some(item => item.id === 'edit-json')).toBe(false)

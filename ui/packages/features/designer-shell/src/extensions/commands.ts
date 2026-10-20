@@ -189,19 +189,19 @@ function sameIcons(a: Readonly<Record<string, IconRecord>> | undefined, b: Reado
 }
 
 /** 快捷键落定按哪个平台写：auto 与不给都当场测一次。 */
-function resolvePlatform(platform: KbdPlatform | undefined): KbdResolvedPlatform {
+export function resolvePlatform(platform: KbdPlatform | undefined): KbdResolvedPlatform {
   return platform === undefined || platform === 'auto' ? detectKbdPlatform() : resolveKbdPlatform(platform)
 }
 
 /** <xh-menu> 的一个条目。 */
-type MenuNode = NonNullable<XhMenuElement['collection']>[number]
+export type MenuNode = NonNullable<XhMenuElement['collection']>[number]
 
 /** 菜单命令的一项在 <xh-menu> 里的值：条目与命令各占一个前缀，彼此不撞。 */
-const MENU_ITEM_PREFIX = 'item:'
-const MENU_COMMAND_PREFIX = 'command:'
+export const MENU_ITEM_PREFIX = 'item:'
+export const MENU_COMMAND_PREFIX = 'command:'
 
 /** 菜单命令现算出的一份 <xh-menu> 数据。 */
-interface CommandMenuData {
+export interface CommandMenuData {
   readonly collection: MenuNode[]
   readonly checkboxValue: string[]
   readonly radioValue: Record<string, string>
@@ -210,8 +210,9 @@ interface CommandMenuData {
 /**
  * 把菜单命令的各项换成 <xh-menu> 的数据：分隔线落到下一项的 separatorBefore 上，打头与收尾的分隔线不画；
  * 写成命令 id 的项按那条命令的文字、图标、可用与语气铺；可勾选的条目按 group 分复选与单选。
+ * 条目的值是 prefix 加 item:<条目值> 或 command:<命令 id>。
  */
-function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], commands: DesignerCommandTable<Ctx>, context: Ctx): CommandMenuData {
+export function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], commands: DesignerCommandTable<Ctx>, context: Ctx, prefix = ''): CommandMenuData {
   const collection: MenuNode[] = []
   const checkboxValue: string[] = []
   const radioValue: Record<string, string> = {}
@@ -229,7 +230,7 @@ function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], comm
         throw new TypeError(`[xh] 菜单命令里的 ${entry} 不是登记过的命令`)
       collection.push({
         ...base,
-        value: `${MENU_COMMAND_PREFIX}${entry}`,
+        value: `${prefix}${MENU_COMMAND_PREFIX}${entry}`,
         label: commandLabel(command, context),
         disabled: !commandEnabled(command, context),
         ...(command.icon ? { icon: command.icon } : {}),
@@ -237,7 +238,7 @@ function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], comm
       })
       continue
     }
-    const value = `${MENU_ITEM_PREFIX}${entry.value}`
+    const value = `${prefix}${MENU_ITEM_PREFIX}${entry.value}`
     const node: MenuNode = {
       ...base,
       value,

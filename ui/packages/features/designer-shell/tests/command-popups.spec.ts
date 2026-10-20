@@ -223,7 +223,7 @@ describe('内置的「面板」命令', () => {
     expect(commands.map(command => command.id)).toEqual(['panels', 'panels-toggle-all', 'panels-restore', 'layout-reset', 'pan-tool'])
     const [panels] = commands
     const context: Ctx = { page: 0, log: [] }
-    expect([panels!.id, panels!.placement, panels!.run, panels!.enabled?.(context)]).toEqual(['panels', ['toolbar'], undefined, true])
+    expect([panels!.id, panels!.placement, panels!.run, panels!.enabled?.(context)]).toEqual(['panels', ['toolbar', 'menubar:view'], undefined, true])
     expect(panels!.menu?.(context)).toEqual([
       { value: 'palette', label: '物料', checked: true },
       { value: 'issues', label: '问题', checked: false, disabled: true },

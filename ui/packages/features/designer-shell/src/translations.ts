@@ -284,6 +284,10 @@ export interface DesignerSettingsTranslations {
   readonly toolbarVisible: string
   /** 显示工具栏条目的说明。 */
   readonly toolbarVisibleHint: string
+  /** 显示菜单栏条目的标签。 */
+  readonly toolbarMenubar: string
+  /** 显示菜单栏条目的说明。 */
+  readonly toolbarMenubarHint: string
   /** 「工具栏」分区里按钮表的标签。 */
   readonly toolbarLayout: string
   /** 按钮表的说明。 */
@@ -322,6 +326,8 @@ export interface DesignerSettingsTranslations {
   readonly keyNudgeLarge: string
   /** 按住空格拖动画布。 */
   readonly keyPan: string
+  /** F10：焦点移到菜单栏，再按一次回来。 */
+  readonly keyMenubar: string
   /** Alt+F10：焦点移到选中工具条。 */
   readonly keySelectionToolbar: string
   /** Esc：取消当前操作。 */
@@ -468,6 +474,30 @@ export interface DesignerCommandsTranslations {
   readonly importFields: string
   /** 内置命令：打开 JSON 编辑框。 */
   readonly editJson: string
+  /** 内置命令：保存。 */
+  readonly save: string
+  /** 内置命令：打开设置的快捷键页。 */
+  readonly shortcuts: string
+  /** 内置命令：打开设置的关于页。 */
+  readonly about: string
+  /** 内置命令：显示或隐藏工具栏（开关式）。 */
+  readonly showToolbar: string
+  /** 内置命令：显示或隐藏状态栏（开关式）。 */
+  readonly showStatusBar: string
+  /** 内置命令：显示或隐藏菜单栏（开关式）。 */
+  readonly showMenubar: string
+  /** 菜单栏的无障碍名称。 */
+  readonly menubar: string
+  /** 窄屏时菜单栏收成的那颗钮上的字。 */
+  readonly menu: string
+  /** 菜单栏的「文件」菜单。 */
+  readonly menuFile: string
+  /** 菜单栏的「编辑」菜单。 */
+  readonly menuEdit: string
+  /** 菜单栏的「视图」菜单。 */
+  readonly menuView: string
+  /** 菜单栏的「帮助」菜单。 */
+  readonly menuHelp: string
 }
 
 /** 导入字段对话框的文案。 */

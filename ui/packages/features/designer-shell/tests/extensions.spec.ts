@@ -67,7 +67,7 @@ describe('createPanelHost', () => {
     host.assign(extensions, { selected: 1 })
     await frame.updateComplete
 
-    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status', 'layers', 'simulation'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['menubar', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status', 'layers', 'simulation'])
     expect(frame.querySelector('[data-region="layers"]')!.textContent).toBe('layers')
     expect(log.splice(0)).toEqual(['create layers 1', 'create simulation 1'])
 
@@ -82,7 +82,7 @@ describe('createPanelHost', () => {
     host.dispose()
     await frame.updateComplete
     expect(log.splice(0)).toEqual(['destroy layers'])
-    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['menubar', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
   })
 
   it('区名与内置区或别的扩展重名时抛错，什么都不变', async () => {
@@ -300,22 +300,30 @@ describe('命令', () => {
     }
   })
 
-  it('内置命令：给了 openSettings 有 settings、给了 helpUrl 有 help，文案取 xh-designer-commands，图标由各款给', () => {
+  it('内置命令：给了 openSettings 有 settings（Mod+,）与打开设置对应页的 shortcuts、about，给了 helpUrl 有 help，都落在菜单栏里、不上工具栏；文案取 xh-designer-commands，图标由各款给', () => {
     expect(designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US })).toEqual([])
-    const opened: Ctx[] = []
+    const opened: [Ctx, string | undefined][] = []
     let url: string | undefined = 'https://flow.docs.xihanfun.com/guide/designer'
     const built = designerShellCommands<Ctx>({
       translations: () => ({ ...DESIGNER_COMMANDS_EN_US, settings: '设置' }),
-      openSettings: context => void opened.push(context),
+      openSettings: (context, section) => void opened.push([context, section]),
       helpUrl: () => url,
       icons: { settings: GLYPH },
     })
     const table = new Map(built.map(command => [command.id, command]))
-    expect([...table.keys()]).toEqual(['settings', 'help'])
+    expect([...table.keys()]).toEqual(['settings', 'shortcuts', 'about', 'help'])
     expect([commandShortLabel(table.get('settings')!, { selected: 0 }), table.get('settings')!.icon, table.get('help')!.icon]).toEqual(['设置', GLYPH, undefined])
-    expect(built.map(command => command.placement)).toEqual([['toolbar'], ['toolbar']])
+    expect(built.map(command => [command.id, command.placement, command.shortcut])).toEqual([
+      ['settings', ['menubar:file'], ['Mod', ',']],
+      ['shortcuts', ['menubar:help'], undefined],
+      ['about', ['menubar:help'], undefined],
+      ['help', ['menubar:help'], undefined],
+    ])
+    expect([table.get('shortcuts')!.label, table.get('about')!.label].map(label => typeof label === 'function' ? label({ selected: 0 }) : label)).toEqual([DESIGNER_COMMANDS_EN_US.shortcuts, DESIGNER_COMMANDS_EN_US.about])
     runCommand(table, 'settings', { selected: 3 })
-    expect(opened).toEqual([{ selected: 3 }])
+    runCommand(table, 'shortcuts', { selected: 4 })
+    runCommand(table, 'about', { selected: 5 })
+    expect(opened).toEqual([[{ selected: 3 }, undefined], [{ selected: 4 }, 'shortcuts'], [{ selected: 5 }, 'about']])
     const open = vi.spyOn(window, 'open').mockReturnValue(null)
     try {
       expect(runCommand(table, 'help', { selected: 0 })).toBe(true)
@@ -329,12 +337,63 @@ describe('命令', () => {
     }
   })
 
-  it('给了 frame 有拖动工具 pan-tool：快捷键 H、上工具栏、开关式，勾选跟着外框的 canvasTool，执行时在 select 与 pan 之间切换', () => {
+  it('给了 save 有 save（Mod+S，落在文件菜单）；start-tour 落在帮助菜单、edit-json 落在编辑菜单', () => {
+    const saved: Ctx[] = []
+    const built = designerShellCommands<Ctx>({
+      translations: () => DESIGNER_COMMANDS_EN_US,
+      save: context => void saved.push(context),
+      startTour: () => true,
+      openJsonEditor: () => {},
+      icons: { save: GLYPH },
+    })
+    const table = new Map(built.map(command => [command.id, command]))
+    expect([...table.values()].map(command => [command.id, command.placement, command.shortcut])).toEqual([
+      ['save', ['menubar:file'], ['Mod', 'S']],
+      ['edit-json', ['menubar:edit'], ['Mod', 'Shift', 'J']],
+      ['start-tour', ['menubar:help'], undefined],
+    ])
+    expect([table.get('save')!.icon, commandShortLabel(table.get('save')!, { selected: 0 })]).toEqual([GLYPH, DESIGNER_COMMANDS_EN_US.save])
+    runCommand(table, 'save', { selected: 7 })
+    expect(saved).toEqual([{ selected: 7 }])
+  })
+
+  it('给了 settings 有三条显示开关：show-toolbar、show-status-bar、show-menubar 落在视图菜单，勾选读设置，执行时把那一条取反写回；宿主藏起或锁定那一条时不可用', () => {
+    let settings: Record<string, unknown> = { 'toolbar.visible': false }
+    let policy: Record<string, 'hidden' | 'locked'> = {}
+    const changes: [string, unknown][] = []
+    const built = designerShellCommands<Ctx>({
+      translations: () => DESIGNER_COMMANDS_EN_US,
+      settings: {
+        read: () => settings as never,
+        change: (_context, key, value) => {
+          changes.push([key, value])
+          settings = { ...settings, [key]: value }
+        },
+        policy: () => policy,
+      },
+    })
+    const table = new Map(built.map(command => [command.id, command]))
+    const ctx = { selected: 0 }
+    expect([...table.values()].map(command => [command.id, command.placement, command.checked!(ctx), command.enabled!(ctx)])).toEqual([
+      ['show-toolbar', ['menubar:view'], false, true],
+      ['show-status-bar', ['menubar:view'], true, true],
+      ['show-menubar', ['menubar:view'], true, true],
+    ])
+    runCommand(table, 'show-toolbar', ctx)
+    runCommand(table, 'show-status-bar', ctx)
+    runCommand(table, 'show-menubar', ctx)
+    expect(changes).toEqual([['toolbar.visible', true], ['general.statusBar', false], ['toolbar.menubar', false]])
+    policy = { 'toolbar.menubar': 'locked', 'general': 'hidden' }
+    expect(['show-toolbar', 'show-status-bar', 'show-menubar'].map(id => table.get(id)!.enabled!(ctx))).toEqual([true, false, false])
+  })
+
+  it('给了 frame 有拖动工具 pan-tool：快捷键 H、上工具栏也落在视图菜单、开关式，勾选跟着外框的 canvasTool，执行时在 select 与 pan 之间切换；panels 也落在视图菜单', () => {
     const frame = { canvasTool: 'select' as 'select' | 'pan', panelEntries: () => [], togglePanel: () => {}, toggleAllPanels: () => {}, restorePanels: () => {}, resetLayout: () => {} }
     const built = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame, icons: { panTool: GLYPH } })
     const table = new Map(built.map(command => [command.id, command]))
     const pan = table.get('pan-tool')!
-    expect([pan.shortcut, pan.placement, pan.icon, commandShortLabel(pan, { selected: 0 })]).toEqual([['H'], ['toolbar'], GLYPH, DESIGNER_COMMANDS_EN_US.panTool])
+    expect(table.get('panels')!.placement).toEqual(['toolbar', 'menubar:view'])
+    expect([pan.shortcut, pan.placement, pan.icon, commandShortLabel(pan, { selected: 0 })]).toEqual([['H'], ['toolbar', 'menubar:view'], GLYPH, DESIGNER_COMMANDS_EN_US.panTool])
     expect(pan.checked!({ selected: 0 })).toBe(false)
     expect(runCommand(table, 'pan-tool', { selected: 0 })).toBe(true)
     expect([frame.canvasTool, pan.checked!({ selected: 0 })]).toEqual(['pan', true])

@@ -21,6 +21,7 @@ import {
   designerShortcutSettings,
   designerToolbarSettings,
   isDesignerDisplayControl,
+  menubarVisibleOf,
   resolveSettings,
   settingKey,
   settingPolicy,
@@ -130,17 +131,19 @@ describe('设置模型', () => {
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
-  it('「工具栏」分区：按钮显示方式与显示工具栏总有，给了 layout 才有按钮表', () => {
+  it('「工具栏」分区：按钮显示方式、显示工具栏与显示菜单栏总有，给了 layout 才有按钮表', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const plain = designerToolbarSettings(english)
-    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible]])
-    expect([plain.items[0]!.default, plain.items[1]!.default]).toEqual(['icon', true])
+    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible, DESIGNER_SETTING_KEYS.toolbarMenubar]])
+    expect(DESIGNER_SETTING_KEYS.toolbarMenubar).toBe('toolbar.menubar')
+    expect([plain.items[0]!.default, plain.items[1]!.default, plain.items[2]!.default, plain.items[2]!.label, plain.items[2]!.control]).toEqual(['icon', true, true, english.toolbarMenubar, { kind: 'boolean' }])
     expect(plain.items[0]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
     const full = designerToolbarSettings(english, { layout: true })
     expect([keys(full).at(-1), full.items.at(-1)!.control]).toEqual([DESIGNER_SETTING_KEYS.toolbarLayout, { kind: 'toolbarLayout' }])
   })
 
-  it('toolbarDisplayOf 取工具栏按钮的显示方式，没写或不认识的值是 icon；toolbarVisibleOf 只有写了 false 才不显示', () => {
+  it('toolbarDisplayOf 取工具栏按钮的显示方式，没写或不认识的值是 icon；toolbarVisibleOf、menubarVisibleOf 只有写了 false 才不显示', () => {
+    expect([menubarVisibleOf(undefined), menubarVisibleOf({ 'toolbar.menubar': false }), menubarVisibleOf({ 'toolbar.menubar': 0 })]).toEqual([true, false, true])
     expect([toolbarDisplayOf(undefined), toolbarDisplayOf({ 'toolbar.display': 'both' }), toolbarDisplayOf({ 'toolbar.display': 'text' }), toolbarDisplayOf({ 'toolbar.display': 'large' })]).toEqual(['icon', 'both', 'text', 'icon'])
     expect([toolbarVisibleOf(undefined), toolbarVisibleOf({ 'toolbar.visible': false }), toolbarVisibleOf({ 'toolbar.visible': 0 })]).toEqual([true, false, true])
   })
@@ -714,11 +717,14 @@ describe('帮助、快捷键与关于', () => {
       'Show or hide all panels',
       english.keyNudge,
       'Resize the card by one cell',
+      english.keyMenubar,
       english.keySelectionToolbar,
       english.keyCancel,
       'Zoom at the pointer',
     ])
     expect(rows(designerShortcutSettings(english, source))[2]!.keys).toEqual(DESIGNER_COMMON_KEYS[1].keys)
+    expect(DESIGNER_COMMON_KEYS.map(key => key.id)).toEqual(['nudge', 'nudgeLarge', 'pan', 'menubar', 'selectionToolbar', 'cancel'])
+    expect(rows(designerShortcutSettings(english, source))[3]!.keys).toEqual([['F10']])
     expect('commonKeys' in shortcutSettingsSource(commands, {})).toBe(false)
     expect(rows(designerShortcutSettings(english, shortcutSettingsSource(commands, {}, { commonKeys: [] }))).map(row => row.label)).toEqual(['Show or hide all panels'])
     // @ts-expect-error 内建以外的行要写名字
@@ -732,7 +738,7 @@ describe('帮助、快捷键与关于', () => {
     const shortcuts = designerShortcutSettings(english, shortcutSettingsSource(commands, {}))
     const table = shortcuts.items[0]!.control as Extract<DesignerDisplayControl, { kind: 'shortcutTable' }>
     expect([shortcuts.order, table.groups.map(group => group.label)]).toEqual([910, [english.shortcutsCommon, english.shortcutsEdit, english.shortcutsDesigner]])
-    expect(table.groups[0]!.rows.map(row => row.label)).toEqual(['Show or hide all panels', english.keyNudge, english.keyNudgeLarge, english.keyPan, english.keySelectionToolbar, english.keyCancel])
+    expect(table.groups[0]!.rows.map(row => row.label)).toEqual(['Show or hide all panels', english.keyNudge, english.keyNudgeLarge, english.keyPan, english.keyMenubar, english.keySelectionToolbar, english.keyCancel])
     expect(designerShortcutSettings(english, { groups: [] }).items[0]!.control).toMatchObject({ groups: [{ label: english.shortcutsCommon }] })
     const about = designerAboutSettings(english, { product: 'Flow', version: '1.0.0', license: 'MIT', rows: [{ label: 'Pro', value: '2.0.0' }] })
     expect([about.order, (about.items[0]!.control as Extract<DesignerDisplayControl, { kind: 'info' }>).rows]).toEqual([920, [
