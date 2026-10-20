@@ -30,10 +30,12 @@ const COMMANDS = new Map<string, DesignerCommand<Ctx>>([
   ['undo', command('undo', { label: ctx => `Undo ${ctx.count}` })],
   ['grid', command('grid', { label: 'Show grid', checked: () => grid, run: () => void (grid = !grid) })],
   ['help', command('help', { label: 'Help' })],
+  ['tour', command('tour', { label: 'Start tour', enabled: () => false })],
+  ['about', command('about', { label: 'About' })],
   ['panels', command('panels', { label: 'Panels', run: undefined, menu: () => [{ value: 'palette', label: 'Palette' }, 'separator', 'undo'], select: value => ran.push(`panels:${value}`) })],
 ])
 const MENUS = designerMenubarMenus<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US })
-const LAYOUT = { file: [['save'], ['settings']], edit: [['undo']], view: [['grid'], ['panels']], help: [['help']] }
+const LAYOUT = { file: [['save'], ['settings']], edit: [['undo']], view: [['grid'], ['panels']], help: [['help', 'tour', 'about']] }
 
 let bar: ReturnType<typeof createCommandMenubar<Ctx>>
 
@@ -134,6 +136,19 @@ describe('菜单栏（Chromium）', () => {
     await userEvent.click(inner()[0]!)
     await until(() => openMenuItems().length === 0)
     expect(ran).toEqual(['panels:palette'])
+  })
+
+  it('此刻不可用的命令是不可用的条目：写 aria-disabled="true"，方向键跳过它，点了不执行', async () => {
+    trigger('Help').focus()
+    await userEvent.keyboard('{ArrowDown}')
+    await until(() => openMenuItems().length === 3 && document.activeElement === openMenuItems()[0])
+    expect(openMenuItems().map(item => [item.textContent, item.getAttribute('aria-disabled')])).toEqual([['Help', 'false'], ['Start tour', 'true'], ['About', 'false']])
+    await userEvent.keyboard('{ArrowDown}')
+    expect(document.activeElement).toBe(openMenuItems()[2])
+    await userEvent.keyboard('{ArrowUp}')
+    expect(document.activeElement).toBe(openMenuItems()[0])
+    await userEvent.click(openMenuItems()[1]!, { force: true })
+    expect(ran).toEqual([])
   })
 
   it('按 F10 把焦点交给第一个菜单入口；再按 F10 回到进来前的地方；入口上按 Esc 也回去', async () => {
