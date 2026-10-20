@@ -123,6 +123,7 @@ export class XhMenuElement extends XhPortalHostElement {
     openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
     hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
     hoverCloseDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-close-delay' },
+    fitAvailableHeight: { converter: BOOLEAN_CONVERTER, attribute: 'fit-available-height' },
   }
 
   declare collection?: MenuNode[]
@@ -153,6 +154,8 @@ export class XhMenuElement extends XhPortalHostElement {
   declare openOnHover?: boolean
   declare hoverOpenDelay?: number
   declare hoverCloseDelay?: number
+  /** 内容只按可用高度封顶，不叠 20rem 的固定上限；子菜单没写时跟着所属的菜单或菜单栏（菜单栏的子菜单为真）。 */
+  declare fitAvailableHeight?: boolean
 
   /** 当前 checkbox 选中集合；非受控值从状态机读取。 */
   get currentCheckboxValue(): string[] {
@@ -195,6 +198,7 @@ export class XhMenuElement extends XhPortalHostElement {
   private readonly submenuOwner: MenuSubmenuOwner = {
     tree: this.menuTree,
     registerSubmenu: child => this.registerSubmenu(child),
+    fitAvailableHeight: () => this.ctrl.service.prop('fitAvailableHeight'),
   }
 
   private readonly portal = this.createAnchoredPortalController({
@@ -274,6 +278,7 @@ export class XhMenuElement extends XhPortalHostElement {
       openOnHover: this.openOnHover,
       hoverOpenDelay: this.hoverOpenDelay,
       hoverCloseDelay: this.hoverCloseDelay,
+      fitAvailableHeight: this.fitAvailableHeight ?? this.parentTriggerOwner?.fitAvailableHeight?.(),
       onOpenChange: this.notifyOpen,
       onItemSelect: this.notifyItemSelect,
       onCheckboxValueChange: this.notifyCheckboxValue,
@@ -341,6 +346,8 @@ export class XhMenuElement extends XhPortalHostElement {
     this.parentRegistration = null
     this.parentTriggerOwner = owner
     this.parentTrigger = trigger
+    // 上一层换了：子机器的 props 里有跟着上一层走的项，重铺一次
+    this.requestUpdate()
     if (owner && trigger) {
       this.parentRegistration = owner.registerSubmenu({
         trigger,

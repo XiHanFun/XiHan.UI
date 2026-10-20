@@ -71,6 +71,8 @@ export interface XhMenuRootProps {
   dir?: Direction
   tone?: Tone
   size?: Size
+  /** 内容只按可用高度封顶，不叠 20rem 的固定上限。 */
+  fitAvailableHeight?: boolean
   typeahead?: boolean
   disabled?: boolean
   translations?: Partial<MenuTranslations>
@@ -396,6 +398,8 @@ export interface XhMenuSubProps {
   tone?: Tone
   /** 尺寸；默认继承父层，理由同 tone。 */
   size?: Size
+  /** 只按可用高度封顶；默认继承父层，理由同 tone。 */
+  fitAvailableHeight?: boolean
   onCheckboxValueChange?: MenuProps['onCheckboxValueChange']
   onRadioValueChange?: MenuProps['onRadioValueChange']
   children?: SlotChildren<MenuSubSlotProps>
@@ -415,6 +419,7 @@ export function XhMenuSub({ value, label, disabled, children, ...props }: XhMenu
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
+    fitAvailableHeight: props.fitAvailableHeight ?? parent.service.prop('fitAvailableHeight'),
   } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])

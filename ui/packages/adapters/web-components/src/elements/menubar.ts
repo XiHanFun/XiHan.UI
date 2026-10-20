@@ -222,6 +222,8 @@ export class XhMenubarElement extends XhPortalHostElement {
   private readonly submenuOwner: MenuSubmenuOwner = {
     tree: this.menuTree,
     registerSubmenu: child => this.registerSubmenu(child),
+    // 菜单栏的子菜单与下拉同一种上限：只按可用高度封顶
+    fitAvailableHeight: () => true,
   }
 
   private readonly notifyValue = (details: MenubarValueChangeDetails): void => {

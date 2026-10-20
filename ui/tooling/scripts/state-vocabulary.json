@@ -176,6 +176,7 @@
     "data-expandable": "truncate 的文本超出了容器，给得出展开入口。",
     "data-expanded": "已经展开：diff-view 的这段折叠间隙；notification 叠成的一摞被指针或焦点展开，各条按自己的高度排开。",
     "data-first": "field-array 的这一行是第一行。",
+    "data-fit-available-height": "菜单的内容只按落定那一侧的可用高度封顶、不叠 20rem 那一档（menu 的 fitAvailableHeight，菜单栏的子菜单由菜单栏传入）。",
     "data-fixed": "这块钉住不随滚动走：layout 的页头与侧栏、table 的吸顶表头、affix 越过判定线后的内容、virtualizer 钉在视口起点的分组标题。layout 的根上同时有页头与侧栏两个开关，各带部件名分开转述。",
     "data-focus": "键盘焦点所在的条目 / 格子。",
     "data-foldable": "code-view 允许折叠代码段。",

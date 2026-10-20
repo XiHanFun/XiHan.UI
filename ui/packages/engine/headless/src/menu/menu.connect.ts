@@ -309,6 +309,8 @@ export function connectMenu<T extends PropTypes>(
       // 菜单没有 root 部件，视觉轴落在浮层树最外层的 content 上，条目继承私有槽
       'data-tone': prop('tone'),
       'data-size': prop('size'),
+      // 只按可用高度封顶：菜单栏的子菜单与写了 fitAvailableHeight 的菜单
+      'data-fit-available-height': dataAttr(prop('fitAvailableHeight')),
       // Presence 保留视觉节点期间，逻辑关闭立即撤出交互与可访问树。
       'inert': !open || undefined,
       'aria-hidden': !open || undefined,

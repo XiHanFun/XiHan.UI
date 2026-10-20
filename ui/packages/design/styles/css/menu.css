@@ -91,6 +91,8 @@
     --xh-_menu-item-px: var(--xh-control-px-md);
     --xh-_menu-item-gap: var(--xh-control-gap-md);
     --xh-_menu-font-size: var(--xh-control-font-md);
+    /* 固定的高度上限：缺省 20rem 一档，写了 fitAvailableHeight 换成可用高度 */
+    --xh-_menu-max-h: var(--xh-overlay-menu-max-h);
 
     position: relative;
     display: flex;
@@ -101,7 +103,7 @@
     max-inline-size: min(var(--xh-menu-max-w, var(--xh-overlay-max-w)), var(--xh-_menu-available-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
        列表族的 16rem 对命令菜单偏矮，这里另给一档 */
-    max-block-size: min(var(--xh-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menu-available-h));
+    max-block-size: min(var(--xh-menu-max-h, var(--xh-_menu-max-h)), var(--xh-_menu-available-h));
     padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-menu-content-px, 0);
     border-radius: var(--xh-menu-content-radius, var(--xh-shape-overlay));
@@ -110,6 +112,12 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     pointer-events: auto;
+  }
+
+  /* 写了 fitAvailableHeight（菜单栏的子菜单由菜单栏传入）：只按落定那一侧的可用高度封顶，不叠 20rem 那一档；
+     作者写的上限照样生效 */
+  [data-scope='menu'][data-part='content'][data-fit-available-height] {
+    --xh-_menu-max-h: var(--xh-_menu-available-h);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：

@@ -45,6 +45,7 @@
 :::
 
 - **新增** Menu、ContextMenu、Menubar 按数据铺时，条目可写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`，读屏念得出快捷键；看得见的快捷键提示照旧是装饰
+- **新增** Menu 的 `fitAvailableHeight`（Web Components 为 `fit-available-height`）：内容只按可用高度封顶，不叠 20rem 的固定上限；菜单栏的子菜单由菜单栏自动带上
 - **新增** Menu、ContextMenu、Menubar 按数据铺时，带 `children` 的条目可写子菜单那一层的勾选值与单选值（`checkboxValue` / `radioValue`），子层里的勾选与单选条目照它显示；Vue / React 的 `XhMenubarSub`、`XhContextMenuSub` 同 `XhMenuSub` 一样收这一层的勾选与单选并派发改动
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
@@ -80,6 +81,7 @@
 - **调整** Menu、ContextMenu、Menubar、Command、Mention 的选中事件改名 `item-select`（`onItemSelect`），不再与原生 `select` 同名（详见升级须知）
 - **调整** Popconfirm 的取消事件改名 `cancel-press`（`onCancelPress`），不再与原生 `cancel` 同名（详见升级须知）
 - **调整** Menu、ContextMenu、Menubar 的勾选与单选对号排到行尾，与子菜单箭头同列、快捷键在它之前，与 Select、Tree 等集合的对号同位；标准结构里对号也挪到条目最后，读屏先念正文（详见升级须知）。勾选条目的图标与普通条目左缘对齐，同一层有勾选条目时整张菜单的快捷键同列
+- **调整** Menubar 的下拉与它的子菜单只按可用高度封顶，和桌面应用的菜单栏一样，可用高度够时整张菜单一次铺开、不出滚动条；要收矮写 `--xh-menubar-max-h`。Menu 与 ContextMenu 照旧以 20rem 一档封顶
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`

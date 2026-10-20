@@ -519,6 +519,8 @@ export const XhMenubarSub = defineComponent({
         dir: props.dir ?? parent.service.prop('dir'),
         tone: props.tone ?? parent.service.prop('tone'),
         size: props.size ?? parent.service.prop('size'),
+        // 菜单栏的子菜单与下拉同一种上限：只按可用高度封顶
+        fitAvailableHeight: true,
       })),
       undefined,
       parent.tree,

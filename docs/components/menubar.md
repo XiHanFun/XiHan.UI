@@ -69,6 +69,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - 条目可组合图标、文字、说明和快捷键提示。
+- 下拉与它的子菜单只按落定那一侧的可用高度封顶（留出与视口边缘的间距），和桌面应用的菜单栏一样，不叠菜单 20rem 那一档；要收矮写 `--xh-menubar-max-h`。
 - 菜单内支持 `CheckboxItem` 与 `RadioGroup / RadioItem`；选择值独立于当前展开的顶层菜单，切换后默认保持菜单栏展开。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
 
@@ -434,7 +435,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `0` | menubar 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menubar 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-_menubar-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menubar-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menubar 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-menubar-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | menubar 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-menubar-px` | `root` | `padding-inline` | `default` | `--xh-space-1` | menubar 的 root 部件 padding-inline 覆盖槽。 |

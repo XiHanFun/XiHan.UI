@@ -635,5 +635,15 @@ export const menuSuite: ConformanceSuite = {
       props: { collection: CHOICE_ORDER_ITEMS.map(node => ({ ...node })), label: '视图' },
       steps: [choicePartOrder('menu')],
     },
+    {
+      name: 'fitAvailableHeight：content 带 data-fit-available-height，皮肤据此只按可用高度封顶；写 false 即无',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: [{ value: 'save', label: '保存' }], label: '文件', fitAvailableHeight: true },
+      initial: { parts: { content: { 'data-fit-available-height': '' } } },
+      steps: [
+        { kind: 'setProps', props: { collection: [{ value: 'save', label: '保存' }], label: '文件', fitAvailableHeight: false }, expect: { parts: { content: { 'data-fit-available-height': null } } } },
+      ],
+    },
   ],
 }

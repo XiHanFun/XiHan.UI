@@ -81,6 +81,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `item-select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
+- 内容高度缺省以 20rem 一档封顶，`--xh-menu-max-h` 可改；写 `fitAvailableHeight` 则只按落定那一侧的可用高度封顶，菜单栏的子菜单由菜单栏自动带上。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
 - 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。
@@ -132,6 +133,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 MenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
+| `fitAvailableHeight` | `boolean` |  | 内容只按落定那一侧的可用高度封顶，不叠菜单的固定上限（20rem 一档）；作者写的 `--xh-menu-max-h` 照样生效。 菜单栏的子菜单由菜单栏传入，再往下一层跟着上一层；单独用的菜单一般不写。 |
 | `typeahead` | `boolean` |  | 首字符连打检索，默认开启。 |
 | `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 |
 | `translations` | `Partial<MenuTranslations>` |  |  |
@@ -227,6 +229,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `XhMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenuSub` | `fitAvailableHeight` | `boolean` |  | 只按可用高度封顶；默认继承父层，理由同 tone。 |
 | `XhMenuSub` | `onCheckboxValueChange` | `MenuProps['onCheckboxValueChange']` |  |  |
 | `XhMenuSub` | `onRadioValueChange` | `MenuProps['onRadioValueChange']` |  |  |
 | `XhMenuSub` | `children` | `SlotChildren<MenuSubSlotProps>` |  |  |
@@ -355,6 +358,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
 | `positioner` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-fit-available-height` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-size` | props.size |
@@ -436,7 +440,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` | menu 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `0` | menu 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menu 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menu 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_menu-max-h` | menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menu 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | menu 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | menu 的 separator 部件 background 覆盖槽。 |

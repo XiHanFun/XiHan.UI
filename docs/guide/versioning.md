@@ -125,7 +125,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 318 个不同的 `data-*` 属性名、2106 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 319 个不同的 `data-*` 属性名、2107 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -137,7 +137,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 266 个属性名 / 1191 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
+样式钩子。自带皮肤消费了 267 个属性名 / 1192 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -200,7 +200,7 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 892 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 895 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
@@ -217,8 +217,8 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 148（`defineXhElements()` 注册 147 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1672 条声明 / 500 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 500 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| observed attribute | 1673 条声明 / 501 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 501 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
 | `CustomEvent` 名 | 122 个名字 / 291 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（277 处中 275 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 234 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
@@ -431,11 +431,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，20713 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，20715 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
 覆盖：包名与 239 条子入口、11060 个导出名、143 个 `data-scope` 与 1416 条部件配对、
-143 个组件的 2314 个 prop 名、320 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
+143 个组件的 2315 个 prop 名、321 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
 5 个 `@layer` 名、4800 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

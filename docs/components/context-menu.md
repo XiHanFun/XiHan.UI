@@ -412,7 +412,7 @@
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `0` | context-menu 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | context-menu 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_context-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | context-menu 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-context-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | context-menu 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-context-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | context-menu 的 separator 部件 background 覆盖槽。 |

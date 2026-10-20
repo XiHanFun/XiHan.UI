@@ -24,6 +24,8 @@ export interface MenuSubmenuRegistration {
 export interface MenuSubmenuOwner {
   readonly tree: MenuTreeNode
   registerSubmenu: (child: MenuSubmenuChild) => MenuSubmenuRegistration
+  /** 子菜单没写 fitAvailableHeight 时跟着它：菜单栏为真，菜单取自己的值。 */
+  fitAvailableHeight?: () => boolean | undefined
 }
 
 const owners = new WeakMap<Element, MenuSubmenuOwner>()
