@@ -284,4 +284,27 @@ describe('菜单栏（Chromium）', () => {
     await until(() => gridItem() !== undefined)
     expect(gridItem()!.getAttribute('aria-checked')).toBe('true')
   })
+
+  it('正中一段的标题：宽屏时在整条菜单栏正中；窄屏收成「菜单」钮时仍在正中，放不下截断，不压那颗钮', async () => {
+    const title = document.createElement('span')
+    title.slot = 'menubar-center'
+    title.textContent = 'Purchase order approval template · PO-2026-001'
+    frame.append(title)
+    await settle()
+    const strip = frame.querySelector('[data-part="region"][data-position="menubar"]')!
+    const center = title.parentElement!
+    const middle = (element: Element): number => element.getBoundingClientRect().left + element.getBoundingClientRect().width / 2
+    expect(center.getAttribute('data-zone')).toBe('center')
+    expect(Math.abs(middle(center) - middle(strip))).toBeLessThanOrEqual(0.5)
+    expect(center.getBoundingClientRect().left).toBeGreaterThan(frame.querySelector('[role="menubar"]')!.getBoundingClientRect().right)
+
+    await page.viewport(375, 700)
+    await until(() => frame.narrow)
+    await settle()
+    const button = frame.querySelector<HTMLButtonElement>('[data-scope="designer-menubar"][data-part="menu-trigger"]')!
+    expect([button.checkVisibility(), center.checkVisibility()]).toEqual([true, true])
+    expect(Math.abs(middle(center) - middle(strip))).toBeLessThanOrEqual(0.5)
+    expect(center.getBoundingClientRect().left).toBeGreaterThanOrEqual(button.getBoundingClientRect().right + Number.parseFloat(getComputedStyle(strip).columnGap) - 0.5)
+    expect(title.scrollWidth).toBeGreaterThan(title.clientWidth)
+  })
 })
