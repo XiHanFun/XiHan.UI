@@ -10,10 +10,11 @@ import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarIte
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
-import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
+import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -26,14 +27,6 @@ import { XhMenuElement } from './menu'
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
-
-/** 读角色节点的禁用声明，并摘掉作者写的原生 disabled，禁用态归一到 aria-disabled。 */
-function authorDisabled(el: HTMLElement): boolean {
-  const disabled = isItemDisabled(el)
-  if (el.hasAttribute('disabled'))
-    el.removeAttribute('disabled')
-  return disabled
-}
 
 /**
  * `<xh-menubar>`：Light-DOM 行为宿主：作者写
@@ -190,6 +183,20 @@ export class XhMenubarElement extends XhPortalHostElement {
   setRadioValue(next: MenubarRadioValue): void {
     if (this.ctrl.service)
       connectMenubar(this.ctrl.service, wcNormalize).setRadioValue(next)
+  }
+
+  /** 入口与条目的禁用声明：connect 每帧把 aria-disabled 写回去，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
+  private readonly declaredDisabled = createDisabledDeclarations()
+
+  /**
+   * 读入口或条目的禁用声明：给了 collection 时没写即 undefined，交给数据定夺；没给时没写即不禁用。
+   * 作者写的原生 disabled 摘掉，禁用态归一到 aria-disabled：原生禁用的按钮不可聚焦，禁用项就当不了方向键的起点。
+   */
+  private authorDisabled(el: HTMLElement): boolean | undefined {
+    const declared = this.declaredDisabled.read(el)
+    if (el.hasAttribute('disabled'))
+      el.removeAttribute('disabled')
+    return this.collection ? declared : declared ?? false
   }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -420,9 +427,10 @@ export class XhMenubarElement extends XhPortalHostElement {
     for (const el of this.getParts('trigger')) {
       const props = api.getTriggerProps({
         value: el.getAttribute('value') ?? '',
-        disabled: authorDisabled(el),
+        disabled: this.authorDisabled(el),
       })
       this.spreader.spread(el, props as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
     }
 
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
@@ -486,7 +494,7 @@ export class XhMenubarElement extends XhPortalHostElement {
       const kind = (meta?.kind ?? el.getAttribute('kind') ?? 'item') as MenubarAnyItemProps['kind']
       const closeAttr = el.getAttribute('close-on-select')
       const closeOnSelect = meta?.closeOnSelect ?? (closeAttr == null ? undefined : closeAttr !== 'false')
-      const disabled = authorDisabled(el)
+      const disabled = this.authorDisabled(el)
       const item: MenubarAnyItemProps = kind === 'radio'
         ? { value, disabled, closeOnSelect, kind, group: meta?.group ?? el.closest<HTMLElement>('[data-xh-part="group"]')?.getAttribute('value') ?? '' }
         : kind === 'checkbox'
@@ -498,6 +506,7 @@ export class XhMenubarElement extends XhPortalHostElement {
           ? api.getRadioItemProps(item)
           : api.getItemProps(item)
       this.spreader.spread(el, itemProps as Record<string, unknown>)
+      this.declaredDisabled.commit(el)
       // 条目内的文本与标记位跟着同一份声明走
       for (const icon of this.partsIn(el, 'item-icon'))
         this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
