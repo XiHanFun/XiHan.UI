@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-description` · `item-shortcut` · `item-suffix` · `item-indicator` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -67,7 +67,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 - 不写结构时照标准结构铺：一排入口按钮（文字取入口的 `label`），其后是各自菜单的定位层，里面按这张菜单的 `items` 铺条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里条目文字、行首、行尾可用宿主直接子节点 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
 - 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
-- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾排在行尾、与子菜单箭头同列，快捷键在它之前，图标与普通条目左缘对齐；同一层有勾选条目时，普通条目的快捷键与它们同列。
+- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - 条目可组合图标、文字、说明和快捷键提示。
 - 菜单内支持 `CheckboxItem` 与 `RadioGroup / RadioItem`；选择值独立于当前展开的顶层菜单，切换后默认保持菜单栏展开。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
@@ -317,8 +317,8 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'menu' |
 | `item-icon` | `aria-hidden` | 'true' |
-| `item-indicator` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -371,11 +371,6 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
-| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
-| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-collection-slot` | 'prefix' |
-| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
@@ -385,6 +380,11 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' \| 'prefix' |
+| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `radio-group` | `data-value` | group.value |

@@ -41,7 +41,7 @@ type MenubarStructureNode = StructureNode<(typeof MENUBAR_STRUCTURE_PARTS)[numbe
 /** 结构里要铺哪几处作者内容。 */
 export interface MenubarStructureOptions {
   /**
-   * 作者给了哪些插槽的内容：item（条目文字）、item-prefix（行首标记位）、item-suffix（行尾），按条目的值带 key。
+   * 作者给了哪些插槽的内容：item（条目文字）、item-prefix（标记位：普通条目在行首，勾选与单选条目是对号、排在最后）、item-suffix（行尾），按条目的值带 key。
    * 入口按钮的文字取入口的 label；子菜单那一层按数据铺，不认这几个插槽。
    */
   slotted?: StructureSlotted

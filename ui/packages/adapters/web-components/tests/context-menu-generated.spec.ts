@@ -71,7 +71,7 @@ describe('xh-context-menu 生成结构', () => {
     const group = own(el, 'group')[0]!
     expect(group.getAttribute('value')).toBe('format')
     expect(partsOf(group)).toEqual(['group-label', 'item', 'item'])
-    expect(partsOf(own(el, 'item')[2]!)).toEqual(['item-indicator', 'item-text'])
+    expect(partsOf(own(el, 'item')[2]!)).toEqual(['item-text', 'item-indicator'])
     expect(own(el, 'item')[2]!.getAttribute('role')).toBe('menuitemcheckbox')
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
   })

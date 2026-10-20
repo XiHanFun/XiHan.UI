@@ -446,7 +446,7 @@ export function connectContextMenu<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 标记位是常显的前导图标槽，不是选中对号：落家族的 prefix 列（indicator 槽缺省是藏起来的勾选标记）
+    // 勾选与单选条目的标记位是对号，落家族的 indicator 列（行尾，按选中态显隐）；普通条目的标记位是常显的前导图标槽，落 prefix 列
     getItemIndicatorProps: (item) => {
       const choiceState = item.kind === 'checkbox'
         ? (checkboxValue.includes(item.value) ? 'checked' : 'unchecked')
@@ -456,7 +456,7 @@ export function connectContextMenu<T extends PropTypes>(
       return normalize.element({
         ...parts['item-indicator'].attrs,
         ...itemStateAttrs(item),
-        'data-xh-collection-slot': 'prefix',
+        'data-xh-collection-slot': choiceState ? 'indicator' : 'prefix',
         'data-state': choiceState,
         'data-xh-menu-choice-indicator': item.kind === 'checkbox' || item.kind === 'radio' ? item.kind : undefined,
         // 标记位是纯装饰，语义由条目自己给出

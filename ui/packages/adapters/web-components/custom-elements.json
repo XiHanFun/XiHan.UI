@@ -18105,7 +18105,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden",
+              "description": "条目标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；aria-hidden",
               "name": "item-indicator"
             },
             {
@@ -45421,7 +45421,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目中的标记位，对读屏隐藏",
+              "description": "条目中的标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；对读屏隐藏",
               "name": "item-indicator"
             },
             {
@@ -46408,7 +46408,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden",
+              "description": "条目标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；aria-hidden",
               "name": "item-indicator"
             },
             {

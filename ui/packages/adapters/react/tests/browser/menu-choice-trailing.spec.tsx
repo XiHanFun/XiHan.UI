@@ -1,6 +1,6 @@
 // 菜单族勾选与单选条目的对号排在行尾：正文与快捷键之后，与子菜单箭头同一列；勾选条目的图标与普通条目左缘对齐，
 // 同一张菜单里的快捷键同列（没勾的条目占位不塌，普通条目在行尾留出同宽的一格）；没有勾选条目的一层不留这一格。
-// menu、context-menu、menubar 各核一遍，全程键盘打开。
+// 标准结构里对号排在正文与快捷键之后，是条目的最后一个部件。menu、context-menu、menubar 各核一遍，全程键盘打开。
 import type { MenuNode } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
@@ -63,6 +63,9 @@ function trailingEdge(value: string): number {
 }
 
 async function expectTrailingChoice(): Promise<void> {
+  // 文档序：对号是勾选与单选条目的最后一个部件，读屏先念正文与快捷键
+  for (const value of ['pan', 'grid', 'design'])
+    expect([...item(value).children].map(child => child.getAttribute('data-part'))).toEqual(['item-icon', 'item-text', 'item-shortcut', 'item-indicator'])
   for (const value of ['pan', 'design']) {
     expect(rect(value, 'item-shortcut').left).toBeGreaterThanOrEqual(rect(value, 'item-text').right - 0.5)
     expect(rect(value, 'item-indicator').left).toBeGreaterThanOrEqual(rect(value, 'item-shortcut').right - 0.5)
