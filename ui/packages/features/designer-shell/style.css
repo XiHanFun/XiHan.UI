@@ -1907,6 +1907,21 @@
     padding-inline: var(--xh-designer-frame-panel-px);
   }
 
+  /* 放不下时行首一段先收窄、截掉多出来的；右端一段（保存状态、缩放这类）按内容宽整段留着，里面的文字不折行 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='status'] > [data-scope='designer-frame'][data-part='zone'][data-zone='start'] {
+    overflow: hidden;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='status'] > [data-scope='designer-frame'][data-part='zone'][data-zone='end'] {
+    flex: none;
+  }
+
+  /* 同一段里相邻两样之间一道细分隔，宿主直接写的文字也一样 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='status'] > [data-scope='designer-frame'][data-part='zone'] > * + * {
+    padding-inline-start: var(--xh-space-2);
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
   xh-designer-frame [data-scope='designer-frame'][data-part='zone'] {
     display: flex;
     gap: var(--xh-space-2);

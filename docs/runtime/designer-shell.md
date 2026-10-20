@@ -732,7 +732,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `status` | `status-start`（选中对象的信息）、`status-end`（缩放、保存与连接状态；宿主经设计器转来的排在设计器自己的前面） | `status-start` |
 
 - 各段有内容才显示这一条，内容拿走就收起。不要状态栏（比如设置里关掉了）时从 `regions` 里去掉 `status` 区，里面的状态项收进停放处不显示，再登记时放回。
-- 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。
+- 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。放不下时左段先收窄、截掉多出来的，右段按内容宽整段留着；同一段里相邻两样之间一道细分隔，宿主直接写的文字也一样。
 - 状态栏上的每一项用 `createStatusItem` 建，标签、值与分隔四款一致：
 
   ```ts

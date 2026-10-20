@@ -227,7 +227,7 @@
     "name": "designer-shell/style.unlayered.css（无层）",
     "path": "packages/features/designer-shell/dist/style.unlayered.css",
     "gzip": true,
-    "limit": "7.7 kB"
+    "limit": "7.8 kB"
   },
   {
     "name": "xlsx",
