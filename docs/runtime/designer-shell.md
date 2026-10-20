@@ -1254,11 +1254,11 @@ menubar.update(arrangeMenubar(menus, commands, designerMenubarLayout(commands), 
 | `designerMenubarLayout(commands)` | 外壳认得的命令在四张菜单里的缺省排列，只留命令表里有的，空组去掉：文件是保存 / 打开文件 / 设置；编辑是撤销、重做 / 剪切、复制、粘贴、删除、创建副本 / 全选 / 编辑 JSON；视图是设计、预览 / 放大、缩小、适合窗口、实际大小 / 拖动 / 面板 / 工具栏、状态栏、菜单栏三条显示开关；帮助是开始引导、帮助、快捷键 / 关于 |
 | `arrangeMenubar(menus, commands, defaults, layout?)` | 排出菜单栏，返回 `{ menu, groups }[]`：菜单按 `order` 排（不写按 50，同值按登记顺序）；每张菜单照 `arrangeCommands` 的规则，位置是 `menubar:<菜单 id>`：`layout` 写了就只用它（给空数组就不要这张菜单），否则用 `defaults` 里这张菜单的排列，`placement` 落在这张菜单、又不在排列里的命令按登记顺序成一组，排在缺省排列的最后一组之前（最后一组是收尾，如文件菜单的设置；缺省排列不到两组时接在后面）。没有命令的菜单不出现；排列里写了没登记的命令 id 时抛 `TypeError` |
 | `collectMenubarMenus(builtins, sources)` | 合起内置菜单与各来源（`{ id, menubarMenus? }`，扩展的 `menubarMenus` 字段就是这个形状）登记的菜单，内置在前。菜单 id 与内置的或彼此重名时抛 `DesignerExtensionError`，名字空间 `menubar-menu` |
-| `createCommandMenubar(document, { platform?, menuIcon? })` | 一条数据模式的 `<xh-menubar>`（`menubar`），外面一层外壳（`element`，`data-scope="designer-menubar"`）。`update(menus, commands, context, labels)` 按排好的菜单铺：每张菜单一个入口，条目带图标、快捷键提示（按 `platform` 写，如 `Ctrl+S`、`⌘S`）与不可用，组与组之间一道分隔线；开关式命令是勾选条目，选中即收起；菜单命令（如「面板」）是子菜单，里面就是它原来那张菜单；弹层命令不进菜单栏（菜单条目当不了弹层的锚点），开发期报一条 `core.warn` 告警。选中条目执行命令（此刻不可用的不执行），子菜单的条目交给菜单命令的 `select`。数据没变时不重设；换了数据时开着的菜单不收、焦点不丢。`labels` 是 `{ menubar, menu }`：整条菜单栏的名字与窄屏那颗钮上的字，直接交 `xh-designer-commands` 那一桶 |
+| `createCommandMenubar(document, { platform?, menuIcon? })` | 一条数据模式的 `<xh-menubar>`（`menubar`），外面一层外壳（`element`，`data-scope="designer-menubar"`）。`update(menus, commands, context, labels)` 按排好的菜单铺：每张菜单一个入口，条目带图标、快捷键提示（按 `platform` 写，如 `Ctrl+S`、`⌘S`）与不可用，组与组之间一道分隔线；开关式命令是勾选条目，选中即收起；菜单命令（如「面板」）是子菜单，里面就是它原来那张菜单，勾选与单选照菜单命令此刻的状态，勾选条目选中即收起；弹层命令不进菜单栏（菜单条目当不了弹层的锚点），开发期报一条 `core.warn` 告警。选中条目执行命令（此刻不可用的不执行），子菜单的条目交给菜单命令的 `select`。数据没变时不重设；换了数据时开着的菜单不收、焦点不丢。`labels` 是 `{ menubar, menu }`：整条菜单栏的名字与窄屏那颗钮上的字，直接交 `xh-designer-commands` 那一桶 |
 
 - 条目的名字用命令的 `label`，不用 `shortLabel`。
 - 菜单栏不进用户定制：设置的「工具栏」页只管顶部工具栏，菜单栏只由宿主的 `commandLayout` 改。设置里有「显示菜单栏」开关，见上文「设置」的「工具栏」分区。
-- 窄屏（外框写着 `data-narrow`）时这一条收起，换成一颗「菜单」钮（`menu-trigger` 部件，文字取 `labels.menu`，给了 `menuIcon` 在前面铺图标），点开一张 `<xh-menu>`，每张菜单是它的一个子菜单，选中照样执行。
+- 窄屏（外框写着 `data-narrow`）时这一条收起，换成一颗「菜单」钮（`menu-trigger` 部件，文字取 `labels.menu`，给了 `menuIcon` 在前面铺图标），点开一张 `<xh-menu>`，每张菜单是它的一个子菜单，开关式命令的勾照样跟着状态，选中照样执行。
 - 键盘照 `<xh-menubar>`：整条一个 Tab 位，左右键在菜单之间走，下键、Enter、Space 展开，展开后左右键换到相邻的菜单，Esc 收起回到入口；F10 进出菜单栏由外框接，见「外框」的「菜单栏」。
 
 宿主自己的操作（新建、预览、打印、返回列表）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题与保存状态写成设计器元素的子元素 `slot="menubar-end"`，各款经 `forwardFrameSlots` 转进外框。这样设计器外面不必另起一条操作条。

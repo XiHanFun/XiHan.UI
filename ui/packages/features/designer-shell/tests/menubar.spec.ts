@@ -163,7 +163,7 @@ interface MenubarHost extends HTMLElement {
 }
 
 interface MenuHost extends HTMLElement {
-  collection?: { value: string, label?: string, children?: { value: string }[] }[]
+  collection?: { value: string, label?: string, children?: { value: string }[], checkboxValue?: string[] }[]
 }
 
 describe('createCommandMenubar', () => {
@@ -217,9 +217,11 @@ describe('createCommandMenubar', () => {
       label: 'PANELS',
       separatorBefore: true,
       children: [
-        { value: 'view/panels/item:palette', label: 'Palette', kind: 'checkbox' },
+        { value: 'view/panels/item:palette', label: 'Palette', kind: 'checkbox', closeOnSelect: true },
         { value: 'view/panels/command:undo', label: 'Undo 2', separatorBefore: true, disabled: false },
       ],
+      checkboxValue: ['view/panels/item:palette'],
+      radioValue: {},
     })
     bar.update(arranged(), commands, { selected: 1 }, LABELS)
     expect(host.checkboxValue).toEqual([])
@@ -273,9 +275,9 @@ describe('createCommandMenubar', () => {
     }
   })
 
-  it('窄屏的「菜单」钮：文字取 labels.menu，点开一张 <xh-menu>，每张菜单是它的一个子菜单；从里面选中照样执行', () => {
+  it('窄屏的「菜单」钮：文字取 labels.menu，点开一张 <xh-menu>，每张菜单是它的一个子菜单，子层的勾照命令的状态；从里面选中照样执行', () => {
     ran.length = 0
-    const bar = mount({ selected: 1 })
+    const bar = mount({ selected: 2 })
     const trigger = bar.element.querySelector<HTMLButtonElement>('[data-scope="designer-menubar"][data-part="menu-trigger"]')!
     expect([trigger.textContent, trigger.getAttribute('aria-haspopup')]).toEqual(['Menu', 'menu'])
     trigger.click()
@@ -285,6 +287,7 @@ describe('createCommandMenubar', () => {
       ['menu:edit', 'Edit', ['edit/undo']],
       ['menu:view', 'View', ['view/pan-tool', 'view/panels']],
     ])
+    expect(menu.collection!.map(node => node.checkboxValue)).toEqual([[], [], ['view/pan-tool']])
     menu.dispatchEvent(new CustomEvent('item-select', { detail: { value: 'edit/undo' }, bubbles: true }))
     expect(ran).toEqual(['undo'])
   })

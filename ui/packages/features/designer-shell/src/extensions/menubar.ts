@@ -174,7 +174,8 @@ export interface CommandMenubar<Ctx> {
   readonly menubar: HTMLElement
   /**
    * 换上排好的菜单与此刻的状态：文字、图标、快捷键提示、可用与勾选每次都刷新，数据没变时不重设。
-   * 普通命令是一条，开关式命令是勾选条目（选中即收起），菜单命令是子菜单；弹层命令不进菜单栏，开发期报一条告警。
+   * 普通命令是一条，开关式命令是勾选条目（选中即收起），菜单命令是子菜单（勾选与单选值交给子层，勾选条目同样选中即收起）；
+   * 弹层命令不进菜单栏，开发期报一条告警。
    */
   readonly update: (menus: readonly ArrangedMenubarMenu<Ctx>[], commands: DesignerCommandTable<Ctx>, context: Ctx, labels: CommandMenubarLabels) => void
 }
@@ -250,7 +251,10 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
           ? { kind: 'command', id: raw.slice(MENU_COMMAND_PREFIX.length) }
           : { kind: 'item', command: command.id, value: raw.slice(MENU_ITEM_PREFIX.length) })
       }
-      node.children = sub.collection
+      // 子层的勾选写成受控值，勾选条目选中即收起：受控的子层不另外上报勾选改动，靠根上的 item-select 执行
+      node.children = sub.collection.map(child => (child.kind === 'checkbox' ? { ...child, closeOnSelect: true } : child))
+      node.checkboxValue = sub.checkboxValue
+      node.radioValue = sub.radioValue
     }
     else {
       actions.set(value, { kind: 'command', id: command.id })
@@ -295,12 +299,14 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
     return { collection: collection.filter(node => (node.items?.length ?? 0) > 0), checkboxValue, actions }
   }
 
-  /** 窄屏菜单的数据：每张菜单一个子菜单入口，里面是同一份条目。 */
+  /** 窄屏菜单的数据：每张菜单一个子菜单入口，里面是同一份条目，勾选值是这张菜单里勾上的那几条。 */
   const paintCompact = (host: MenuHost): void => {
+    const checked = new Set(data.checkboxValue)
     const nodes = data.collection.map((node): MenuNode => ({
       value: `${COMPACT_MENU_PREFIX}${node.value}`,
       label: node.label ?? node.value,
       children: (node.items ?? []) as MenuNode[],
+      checkboxValue: (node.items ?? []).filter(item => checked.has(item.value)).map(item => item.value),
     }))
     const key = JSON.stringify(nodes)
     if (key === compactKey)
