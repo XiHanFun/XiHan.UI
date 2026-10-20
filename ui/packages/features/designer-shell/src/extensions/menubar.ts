@@ -173,7 +173,8 @@ export interface CommandMenubar<Ctx> {
   /** 里面那条 <xh-menubar>。 */
   readonly menubar: HTMLElement
   /**
-   * 换上排好的菜单与此刻的状态：文字、图标、快捷键提示、可用与勾选每次都刷新，数据没变时不重设。
+   * 换上排好的菜单与此刻的状态：文字、图标、快捷键提示、可用与勾选每次都刷新，数据没变时不重设；
+   * 之后每次打开菜单（含窄屏那张）都用这一份命令表与上下文按此刻的状态重算一遍。
    * 普通命令是一条，开关式命令是勾选条目（选中即收起），菜单命令是子菜单（勾选与单选值交给子层，勾选条目同样选中即收起）；
    * 弹层命令不进菜单栏，开发期报一条告警。
    */
@@ -350,6 +351,11 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
     paint()
   }
   menubar.addEventListener('item-select', event => choose((event as CustomEvent<{ value: string }>).detail.value))
+  // 打开或换一张菜单时按此刻的状态重铺：状态变了设计器不一定刷新菜单栏（如外框变窄收起面板）
+  menubar.addEventListener('value-change', (event) => {
+    if ((event as CustomEvent<{ value: string | null }>).detail.value != null)
+      paint()
+  })
 
   const ensureMenu = (): MenuHost => {
     if (menu)
@@ -372,6 +378,7 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
       host.open = false
       return
     }
+    paint()
     compactKey = undefined
     paintCompact(host)
     host.open = true
