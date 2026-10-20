@@ -215,7 +215,7 @@
     "name": "designer-shell/style.css（有层）",
     "path": "packages/features/designer-shell/style.css",
     "gzip": true,
-    "limit": "7.4 kB"
+    "limit": "7.5 kB"
   },
   {
     "name": "designer-shell/style.unlayered.css（无层）",

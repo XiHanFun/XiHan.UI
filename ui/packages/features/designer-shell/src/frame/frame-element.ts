@@ -251,6 +251,8 @@ interface Parts {
   readonly floats: HTMLElement
   /** 面板「更多」菜单的宿主：不放在面板里，面板换栏、浮出时菜单不随着搬动。 */
   readonly menus: HTMLElement
+  /** 此刻没有对应区的作者内容收在这里藏着，区再登记时领走。 */
+  readonly parked: HTMLElement
 }
 
 /** 一个区的容器与它生成的部件。 */
@@ -711,8 +713,9 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     ])
     const floats = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'floats' })
     const menus = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'menus' })
-    this.append(header, top, body, status, probeBox, drop, floats, menus)
-    this.#parts = { header, top, body, status, probes, drop, dropLine, floats, menus }
+    const parked = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'parked', 'hidden': '' })
+    this.append(header, top, body, status, probeBox, drop, floats, menus, parked)
+    this.#parts = { header, top, body, status, probes, drop, dropLine, floats, menus, parked }
     return this.#parts
   }
 
@@ -910,7 +913,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     for (const name of [...this.#regions.keys()]) {
       if (!names.has(name)) {
-        // 撤掉的区里的作者内容放回宿主，这个区再登记时由插槽重新领走
+        // 撤掉的区里的作者内容收进停放处藏着，这个区再登记时由插槽重新领走
         const existing = this.#regions.get(name)!
         const generated = new Set<Element>([...Object.values(existing.zones), ...(existing.card ? [existing.card.header] : [])])
         orphans.push(...Array.from(existing.content.children).filter(child => !generated.has(child)))
@@ -924,11 +927,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       }
     }
     if (orphans.length > 0) {
-      // 先停掉按旧区领内容的观察，放回宿主的节点才不会又被领进已经换下的旧段
+      // 先停掉按旧区领内容的观察，收起的节点才不会又被领进已经换下的旧段
       this.#releaseSlots?.()
       this.#releaseSlots = undefined
       this.#slotsKey = ''
-      this.append(...orphans)
+      this.#ensureParts().parked.append(...orphans)
     }
     const center = this.#regionList().find(region => region.position === 'center')
     const signatures = [...this.#regions.entries()].map(([name, parts]) => `${name}=${parts.signature}`)
@@ -945,7 +948,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       for (const [zone, node] of Object.entries(parts.zones))
         targets[`${region.name}-${zone}`] = node
     }
-    this.#releaseSlots = adoptSlots(this, targets, center === undefined ? undefined : this.#regions.get(center.name)!.content)
+    this.#releaseSlots = adoptSlots(this, targets, center === undefined ? undefined : this.#regions.get(center.name)!.content, this.#ensureParts().parked)
     this.#observeZones()
   }
 

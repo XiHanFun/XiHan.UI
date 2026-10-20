@@ -347,16 +347,51 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(['canvas', 'palette', 'properties', 'issues', 'toolbar'].map(name => frame.querySelector(`[data-region="${name}"]`)!.getAttribute('data-position'))).toEqual(['center', 'start', 'end', 'bottom', 'top'])
   })
 
-  it('带 slot 而外框没有对应位置的作者内容留在宿主下，不占版面', async () => {
+  it('带 slot 而外框没有对应位置的作者内容藏起来、不占版面，自带 display 的也一样', async () => {
+    const own = document.createElement('style')
+    own.textContent = '.own-flex { display: flex; block-size: 120px; }'
+    document.head.append(own)
     const before = frame.querySelector('[data-part="body"]')!.getBoundingClientRect().height
     const stray = document.createElement('div')
     stray.slot = 'nowhere'
-    stray.style.blockSize = '120px'
+    stray.className = 'own-flex'
     stray.textContent = '没有位置'
     frame.append(stray)
     await frame.updateComplete
     await new Promise(resolve => requestAnimationFrame(resolve))
-    expect([stray.parentElement, getComputedStyle(stray).display]).toEqual([frame, 'none'])
+    expect([frame.contains(stray), stray.checkVisibility()]).toEqual([true, false])
     expect(frame.querySelector('[data-part="body"]')!.getBoundingClientRect().height).toBe(before)
+    own.remove()
+  })
+
+  it('区从 regions 里拿掉以后，里面的作者内容藏起来，不露在外框里；再登记时领回去', async () => {
+    const own = document.createElement('style')
+    own.textContent = '.own-flex { display: flex; }'
+    document.head.append(own)
+    frame.regions = [...DESIGNER_FRAME_REGIONS]
+    const status = document.createElement('div')
+    status.slot = 'status'
+    status.className = 'own-flex'
+    status.textContent = '已选中 3 个元素'
+    const corner = document.createElement('button')
+    corner.slot = 'canvas-top-end'
+    corner.className = 'own-flex'
+    corner.textContent = '角落'
+    frame.append(status, corner)
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const statusRegion = (): Element => frame.querySelector('[data-part="region"][data-region="status"]')!
+    expect([statusRegion().contains(status), status.checkVisibility(), corner.checkVisibility()]).toEqual([true, true, true])
+
+    frame.regions = DESIGNER_FRAME_REGIONS.filter(region => region.name !== 'status' && region.name !== 'canvas')
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect([frame.contains(status), status.checkVisibility(), corner.checkVisibility()]).toEqual([true, false, false])
+
+    frame.regions = [...DESIGNER_FRAME_REGIONS]
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    expect([statusRegion().contains(status), status.checkVisibility(), corner.checkVisibility()]).toEqual([true, true, true])
+    own.remove()
   })
 })
