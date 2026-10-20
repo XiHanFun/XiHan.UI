@@ -82,6 +82,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放职位、handle 一类的补充信息。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
@@ -415,7 +416,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
 | `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
-| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-mention-item-h` | `item` | `min-block-size` | `default` | `--xh-_mention-item-h` | mention 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |

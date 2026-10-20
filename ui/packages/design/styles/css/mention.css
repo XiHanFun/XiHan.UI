@@ -396,3 +396,29 @@
     }
   }
 }
+
+@layer xihan.components {
+  /* 同一层里只要有一条带行首格，这一层的行首格都至少一个图标宽，没写行首格的条目也在这一列空出同宽一格
+     （后面照常隔一个间距），正文左缘对齐；整层都没有就不留。有行首格的那一层把开关打开 */
+  [data-scope='mention'][data-part='content']:has(> [data-scope='mention'][data-part='item'] > [data-scope='mention'][data-part='item-prefix']) {
+    --xh-_mention-lead-column: '';
+    --xh-_mention-lead-min: var(--xh-icon-size);
+  }
+
+  [data-scope='mention'][data-part='item-prefix'] {
+    min-inline-size: var(--xh-_mention-lead-min, auto);
+  }
+
+  [data-scope='mention'][data-part='item']::before {
+    content: var(--xh-_mention-lead-column, none);
+    grid-column: prefix;
+    grid-row: 1 / span 2;
+    inline-size: var(--xh-icon-size);
+    margin-inline-end: var(--xh-mention-item-gap, var(--xh-_mention-gap));
+  }
+
+  /* 写了行首格的条目不占这一格：它自己的行首格就在这一列 */
+  [data-scope='mention'][data-part='item']:has(> [data-scope='mention'][data-part='item-prefix'])::before {
+    content: none;
+  }
+}
