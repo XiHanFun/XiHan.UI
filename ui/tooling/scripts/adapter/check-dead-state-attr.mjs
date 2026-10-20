@@ -92,6 +92,7 @@ const HOOKS = {
   'color-field:data-editing': '正在编辑的视觉就是框里那串还没收下的字本身，收不下才由 data-invalid 描红；这一位留给作者做提示文案一类的钩子',
   'date-range-picker:data-editing': '起止两组时间列的小标题刻意同一副样式（与时间范围选择器一致），哪一端在改由段位焦点与日历的点选结果表达；这一位留给作者按正在编辑的那一端写强调的钩子',
   'kbd:data-key': '逐键规范化后的 KeyboardEvent.key，供作者与测试定位，不改变统一表面',
+  'form:data-invalid': '整张表单出错由各字段的警示色标签、错误文案与错误摘要表达，表单根不换面；这一位留给作者按整表出错写样式的钩子',
   'json-viewer:data-match': '命中的视觉由行里的 mark 片段承担，行面不换；这一位留给作者与测试定位命中行',
   'log:data-bright': '高亮色（90–97）在缺省皮肤里与基础色同一档，由 data-fg 着色；data-bright 留给作者把两组分开着色的钩子',
   'kbd:data-register': '监听已注册的行为事实；展示外观不因是否安装监听而改变，保留为作者样式钩子',

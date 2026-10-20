@@ -1,5 +1,5 @@
 // 字段辅助行与表单项距：说明 12 / --xh-fg-subtle、错误文案 12 / --xh-fg-danger，紧贴控件、最小高 --xh-space-5；
-// 表单项距 --xh-space-5，字段带辅助行时那一行就是项距（不再另留）；一行流列距 --xh-space-6、行距 --xh-space-2；
+// 表单项距 --xh-space-5：给错误文案留的那一行空着时就是项距，说明是字、带说明的字段照常留项距；一行流列距 --xh-space-6、行距 --xh-space-2；
 // 出错的字段不再在起始缘画色带。判据是排出来的几何与级联算出的颜色，jsdom 不排版。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -67,11 +67,12 @@ function field(name: string, parts: { description?: string, error?: boolean, inv
   ]))
 }
 
-/** 上一项控件底缘到下一项标签顶缘的距离。 */
+/** 上一项最后一段看得见的内容（说明，或报错时的错误文案；都没有就是控件）的底缘，到下一项标签顶缘的距离。 */
 function between(index: number): number {
-  const controls = all('field', 'control')
-  const labels = all('field', 'label')
-  return Math.round(labels[index + 1]!.getBoundingClientRect().top - controls[index]!.getBoundingClientRect().bottom)
+  const tail = ['description', 'error-text', 'control']
+    .map(part => all('field', 'root')[index]!.querySelector<HTMLElement>(`[data-scope='field'][data-part='${part}']`))
+    .find(element => element && !element.hasAttribute('hidden') && getComputedStyle(element).display !== 'none')!
+  return Math.round(all('field', 'label')[index + 1]!.getBoundingClientRect().top - tail.getBoundingClientRect().bottom)
 }
 
 describe('字段的辅助行', () => {
@@ -134,7 +135,7 @@ function bareField(name: string, parts: { description?: string, error?: boolean,
 }
 
 describe('字段集组内项距', () => {
-  it('与表单同一套：没有辅助行的字段隔 --xh-space-5，带说明或错误文案行的字段那一行就是项距', async () => {
+  it('与表单同一套：上一项看得见的内容到下一项标签都隔 --xh-space-5，给错误文案留的空行算项距、说明不算', async () => {
     await mount(() => h(XhFieldsetRoot, null, () => [
       h(XhFieldsetLegend, null, () => '账号'),
       bareField('甲', { description: '一行说明' }),
@@ -156,16 +157,16 @@ describe('字段集组内项距', () => {
     expect(between(0)).toBe(px('--xh-space-5'))
   })
 
-  it('并排的一段里有字段带辅助行：这一段不再另留项距', async () => {
+  it('并排的一段里有字段带说明：这一段在说明下面照常留项距', async () => {
     await mount(() => h(XhFieldsetRoot, null, () => [
       h(XhFieldsetLegend, null, () => '地址'),
       h(XhFieldsetFieldGroup, null, () => [bareField('省', { description: '一行说明' }), bareField('市')]),
       bareField('街道'),
     ]))
-    // 首段里带说明的那一项（下标 0）到下一段首项标签（下标 2）的距离就是那行说明
-    const controls = all('field', 'control')
+    // 首段里带说明的那一项（下标 0）的说明到下一段首项标签（下标 2）隔一段项距
+    const description = all('field', 'description')[0]!
     const labels = all('field', 'label')
-    expect(Math.round(labels[2]!.getBoundingClientRect().top - controls[0]!.getBoundingClientRect().bottom)).toBe(px('--xh-space-5'))
+    expect(Math.round(labels[2]!.getBoundingClientRect().top - description.getBoundingClientRect().bottom)).toBe(px('--xh-space-5'))
   })
 })
 
@@ -191,14 +192,14 @@ describe('表单项距', () => {
     expect(between(0)).toBe(px('--xh-space-5'))
   })
 
-  it('带辅助行的字段：辅助行就是项距，下一项紧接在它之后', async () => {
+  it('只留了错误行的字段：那一行就是项距；带说明的字段在说明下面照常留项距', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('甲', { error: true }), field('乙', { error: true }), field('丙', { description: '一行说明' }), field('丁')]))
     expect(between(0)).toBe(px('--xh-space-5'))
     expect(between(1)).toBe(px('--xh-space-5'))
     expect(between(2)).toBe(px('--xh-space-5'))
   })
 
-  it('字段直接放进表单（不包 field-group）同一套：辅助行就是项距，没有辅助行的照常留', async () => {
+  it('字段直接放进表单（不包 field-group）同一套', async () => {
     await mount(() => h(XhFormRoot, null, () => [
       bareField('甲', { error: true }),
       bareField('乙', { description: '一行说明' }),

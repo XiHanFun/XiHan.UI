@@ -17,7 +17,8 @@
   [data-scope='field'][data-part='root'] {
     display: flex;
     flex-direction: column;
-    /* 说明与错误文案紧贴控件：那一行辅助行自己有最小高（description.css），在表单里就是项距 */
+    /* 说明与错误文案紧贴控件：那一行辅助行自己有最小高（description.css）；给错误文案留的那一行空着时，
+       在表单里就是项距（form.css） */
     gap: var(--xh-field-gap, var(--xh-space-0));
     /* 字段族控件放进字段即铺满字段宽：字段的宽由表单的列给，控件跟着列走，
        不必逐个组件在根上写 inline-size: 100%。单独摆放的控件仍是 16rem 缺省宽；
