@@ -5,7 +5,7 @@
 
 // 提供 menu 相关实现。
 
-import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Placement, Size, Tone } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuApi, MenuCheckboxItemProps, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioItemProps, MenuRadioValue, MenuSchema, MenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
@@ -380,6 +380,8 @@ export interface XhMenuSubProps {
   value: string
   /** 按数据铺设时触发条目的文字；缺省取父菜单 collection 里这一条的 label。 */
   label?: string
+  /** 按数据铺设时触发条目的图标；缺省取父菜单 collection 里这一条的 icon。 */
+  icon?: IconRecord
   disabled?: boolean
   collection?: MenuNode[]
   checkboxValue?: string[]
@@ -410,7 +412,7 @@ export interface XhMenuSubProps {
  * 渲染为父菜单条目与本子菜单触发器的双重身份。本身不渲染节点。
  * 不给 children 时照标准结构铺自己那一层：触发条目、定位层与按 collection 铺的条目。
  */
-export function XhMenuSub({ value, label, disabled, children, ...props }: XhMenuSubProps): ReactNode {
+export function XhMenuSub({ value, label, icon, disabled, children, ...props }: XhMenuSubProps): ReactNode {
   const parent = useMenuContext()
   const ctx = useMenuWithParent({
     ...props,
@@ -440,7 +442,7 @@ export function XhMenuSub({ value, label, disabled, children, ...props }: XhMenu
       <MenuSubProvider value={handle}>
         {children != null
           ? renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })
-          : renderSubStructure(ctx.api, parent.api, value, label, renderers)}
+          : renderSubStructure(ctx.api, parent.api, value, { label, icon }, renderers)}
       </MenuSubProvider>
     </MenuProvider>
   )
@@ -469,7 +471,7 @@ export function XhMenuSubTrigger({ children, ...rest }: XhMenuSubTriggerProps): 
         { ref: (el: HTMLDivElement | null) => { ctx.triggerRef.current = el } },
       )}
     >
-      {children}
+      <MenuItemProvider value={item}>{children}</MenuItemProvider>
     </div>
   )
 }
@@ -560,9 +562,9 @@ function renderDefaultStructure(
 }
 
 /** 子菜单那一层照 menuStructure 铺：触发条目的文字与 renderItem 的入参取父菜单里这一条。 */
-function renderSubStructure(api: MenuApi, parent: MenuApi, value: string, label: string | undefined, renderers: MenuItemRenderers): ReactNode[] {
+function renderSubStructure(api: MenuApi, parent: MenuApi, value: string, entry: { label?: string, icon?: IconRecord }, renderers: MenuItemRenderers): ReactNode[] {
   const meta = parent.collection.find(node => node.value === value)
-  const nodes = menuStructure(api, { submenu: true, value, label: label ?? meta?.label ?? value, slotted: slottedBy(renderers) })
+  const nodes = menuStructure(api, { submenu: true, value, label: entry.label ?? meta?.label ?? value, icon: entry.icon ?? meta?.icon ?? null, slotted: slottedBy(renderers) })
   const lookup = (key: string): MenuNodeMeta | undefined => key === value ? meta : api.collection.find(node => node.value === key)
   return renderStructure(nodes, { ...MENU_PARTS, trigger: MenuStructureSubTrigger }, itemContent(renderers, lookup), MENU_INSTANCES)
 }

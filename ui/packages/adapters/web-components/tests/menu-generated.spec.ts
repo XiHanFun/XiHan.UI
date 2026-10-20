@@ -90,7 +90,9 @@ describe('xh-menu 生成结构', () => {
     expect(subTrigger!.textContent).toBe('发送到')
     expect(subTrigger!.getAttribute('role')).toBe('menuitem')
     expect(subTrigger!.getAttribute('aria-haspopup')).toBe('menu')
-    expect(own(sub, 'item-text').map(text => text.textContent)).toEqual(['邮件', '消息'])
+    // 触发条目与普通条目一样，文字在 item-text 里
+    expect(subTrigger!.querySelector('[data-part="item-text"]')!.textContent).toBe('发送到')
+    expect(own(sub, 'item-text').map(text => text.textContent)).toEqual(['发送到', '邮件', '消息'])
   })
 
   it('点触发按钮展开；slot 接管触发按钮的内容与某一条的整条', async () => {

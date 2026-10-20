@@ -344,6 +344,8 @@ export interface MenuStructureOptions {
   value?: string
   /** 触发器的文字：根菜单是按钮里的文字（trigger 插槽没有内容时），子菜单是触发条目的文字。 */
   label?: string
+  /** 子菜单触发条目的图标：铺进条目文字之前的 item-icon，与普通条目同一格；没写时不铺。 */
+  icon?: IconRecord | null
   /** 根菜单锚在外部元素上（写了 anchor）：不铺触发按钮。 */
   anchored?: boolean
   /**

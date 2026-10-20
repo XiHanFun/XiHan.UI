@@ -6,6 +6,7 @@
 // 菜单的标准结构：触发器，定位层里的 content 按 collection 铺出条目、分组与分隔线；带 children 的条目是一个嵌套的子菜单。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件时元素生成的节点，都照这一份渲。
 
+import type { IconRecord } from '@xihan-ui/core'
 import type { StructureChild, StructureNode, StructureSlotted } from '../shared/structure'
 import type { menuAnatomy } from './menu.anatomy'
 import type { MenuApi, MenuNodeMeta, MenuStructureOptions } from './menu.types'
@@ -60,6 +61,7 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
       submenu: true,
       value: meta.value,
       label: meta.label,
+      ...(meta.icon ? { icon: meta.icon } : {}),
       ...(meta.disabled ? { disabled: true } : {}),
       ...(meta.checkboxValue ? { checkboxValue: [...meta.checkboxValue] } : {}),
       ...(meta.radioValue ? { radioValue: { ...meta.radioValue } } : {}),
@@ -126,6 +128,14 @@ export function menuNodesStructure(
   })
 }
 
+/** 子菜单触发条目里的内容：与普通条目一样，图标在 item-icon（写了才铺）、文字在 item-text。 */
+function submenuTriggerContent(label: string, icon: IconRecord | null | undefined): MenuStructureNode[] {
+  return [
+    ...(icon ? [{ key: 'icon', tag: 'span', part: 'item-icon', children: [structureInstance('glyph', 'icon', { icon })] } satisfies MenuStructureNode] : []),
+    { key: 'text', tag: 'span', part: 'item-text', text: label },
+  ]
+}
+
 /** 菜单的标准结构：触发器在前，定位层在后，定位层里是 content 与按数据铺的节点；锚在外部元素上的根菜单不铺触发器。 */
 export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuStructureOptions = {}): StructureChild<MenuStructureNode['part']>[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -134,7 +144,7 @@ export function menuStructure(model: Pick<MenuApi, 'collection'>, options: MenuS
     const value = options.value ?? ''
     trigger = slotted('item', value)
       ? { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, slot: { name: 'item', key: value } }
-      : { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, text: options.label ?? value }
+      : { key: 'trigger', tag: 'div', part: 'trigger', attrs: { value }, children: submenuTriggerContent(options.label ?? value, options.icon) }
   }
   else if (options.anchored) {
     trigger = null

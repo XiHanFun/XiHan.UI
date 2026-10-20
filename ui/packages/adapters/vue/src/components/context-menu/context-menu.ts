@@ -5,7 +5,7 @@
 
 // 提供 context menu 相关实现。
 
-import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Placement, Size, Tone } from '@xihan-ui/core'
 import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -20,8 +20,8 @@ import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhIcon } from '../icon/icon'
-import { provideMenu, useMenuContext } from '../menu/context'
-import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
+import { provideMenu, provideMenuItem, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideContextMenu,
@@ -307,6 +307,8 @@ export const XhContextMenuSub = defineComponent({
     value: { type: String, required: true },
     /** 按数据铺设时触发条目的文字；缺省取父层 collection 里这一条的 label。 */
     label: { type: String },
+    /** 按数据铺设时触发条目的图标；缺省取父层 collection 里这一条的 icon。 */
+    icon: { type: Object as PropType<IconRecord> },
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
@@ -360,7 +362,7 @@ export const XhContextMenuSub = defineComponent({
     })
     return () => slots.default
       ? slots.default({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
-      : renderSubLayer(props.label ?? parent.api.value.collection.find(node => node.value === props.value)?.label ?? props.value)
+      : renderSubLayer(props.label ?? parent.api.value.collection.find(node => node.value === props.value)?.label ?? props.value, props.icon ?? parent.api.value.collection.find(node => node.value === props.value)?.icon ?? null)
   },
 })
 
@@ -369,6 +371,8 @@ export const XhContextMenuSubTrigger = defineComponent({
   setup(_, { slots }) {
     const handle = useContextMenuSubContext()
     const sub = useMenuContext()
+    // 入口里的图标与文字部件归子菜单那台机器，身份是这一条
+    provideMenuItem({ item: computed(() => ({ value: handle.value, disabled: handle.disabled })) })
     return () => h('div', {
       // 合并序=子先父后：父层的 data-scope/data-part 胜出，父层的方向键与选中照常认它
       // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
@@ -460,9 +464,13 @@ export const XhContextMenuArrow = defineComponent({
 })
 
 /** 子菜单不写插槽时那一层：触发条目、定位层与按本层 collection 铺的条目；子层不经根上的条目插槽。 */
-function renderSubLayer(label: string): VNode[] {
+function renderSubLayer(label: string, icon: IconRecord | null): VNode[] {
   return [
-    h(XhContextMenuSubTrigger, null, () => [label]),
+    // 入口与普通条目一样：图标在 item-icon（写了才铺）、文字在 item-text
+    h(XhContextMenuSubTrigger, null, () => [
+      ...(icon ? [h(XhMenuItemIcon, null, () => [h(XhIcon, { icon })])] : []),
+      h(XhMenuItemText, null, () => [label]),
+    ]),
     h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
   ]
 }

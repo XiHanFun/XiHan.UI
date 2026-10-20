@@ -1,6 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
-import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS } from './shared/choice-order'
+import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS, SUBMENU_ICON_EXPECTED, SUBMENU_ICON_ITEMS } from './shared/choice-order'
 import { clickExternalAnchor, externalAnchorAria, focusReturnsToExternalAnchor, mountExternalAnchor, removeExternalAnchor, withoutTrigger } from './shared/external-anchor'
 import { focusByValue, nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -651,6 +651,14 @@ export const menuSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ defaultStructure: true }),
       props: { collection: LEADING_ITEMS.map(node => ({ ...node })), label: '视图' },
       steps: [choicePartOrder('menu', LEADING_EXPECTED)],
+    },
+    {
+      name: '作者不写结构：带 children 的条目（子菜单入口）写了 icon 也铺 item-icon，文字落 item-text，与普通条目同样排',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: SUBMENU_ICON_ITEMS.map(node => ({ ...node })), label: '视图' },
+      skipParity: '子层的定位层搬进 portal 的时机三端不同，同为 menu 的部件文档序对不齐，逐帧比对没有意义',
+      steps: [choicePartOrder('menu', SUBMENU_ICON_EXPECTED)],
     },
   ],
 }

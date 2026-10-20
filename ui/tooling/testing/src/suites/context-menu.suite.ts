@@ -1,6 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { contextMenuAnatomy, contextMenuKeyboard } from '@xihan-ui/headless'
-import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS } from './shared/choice-order'
+import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS, SUBMENU_ICON_EXPECTED, SUBMENU_ICON_ITEMS } from './shared/choice-order'
 import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -981,6 +981,13 @@ export const contextMenuSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { collection: LEADING_ITEMS.map(node => ({ ...node })) },
       steps: [choicePartOrder('context-menu', LEADING_EXPECTED)],
+    },
+    {
+      name: '作者不写结构：带 children 的条目（子菜单入口）写了 icon 也铺 item-icon，文字落 item-text，与普通条目同样排',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: SUBMENU_ICON_ITEMS.map(node => ({ ...node })) },
+      steps: [choicePartOrder('context-menu', SUBMENU_ICON_EXPECTED)],
     },
   ],
 }

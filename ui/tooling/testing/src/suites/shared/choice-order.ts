@@ -54,3 +54,15 @@ export const LEADING_EXPECTED: Readonly<Record<string, readonly string[]>> = {
   bold: ['item-icon', 'item-text', 'item-indicator'],
   plain: ['item-text'],
 }
+
+/** 子菜单入口按数据铺：带 children 的条目写了 icon，入口与普通条目一样铺 item-icon，文字在 item-text 里。 */
+export const SUBMENU_ICON_ITEMS = [
+  { value: 'open', label: '打开', icon: LINE },
+  { value: 'more', label: '更多', icon: LINE, children: [{ value: 'about', label: '关于' }] },
+] as const
+
+/** 上面那组条目的部件次序：子菜单入口与普通条目同样是图标在前、文字在后。 */
+export const SUBMENU_ICON_EXPECTED: Readonly<Record<string, readonly string[]>> = {
+  open: ['item-icon', 'item-text'],
+  more: ['item-icon', 'item-text'],
+}

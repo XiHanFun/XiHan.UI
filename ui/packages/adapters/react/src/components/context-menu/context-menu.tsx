@@ -5,7 +5,7 @@
 
 // 提供 context menu 相关实现。
 
-import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   ContextMenuAnyItemProps,
   ContextMenuApi,
@@ -37,8 +37,8 @@ import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhIcon } from '../icon/icon'
-import { MenuProvider, useMenuContext } from '../menu/context'
-import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
+import { MenuItemProvider, MenuProvider, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   ContextMenuGroupProvider,
@@ -421,6 +421,8 @@ export interface XhContextMenuSubProps {
   value: string
   /** 按数据铺设时触发条目的文字；缺省取父层 collection 里这一条的 label。 */
   label?: string
+  /** 按数据铺设时触发条目的图标；缺省取父层 collection 里这一条的 icon。 */
+  icon?: IconRecord
   disabled?: boolean
   collection?: MenuNode[]
   checkboxValue?: string[]
@@ -450,7 +452,7 @@ export interface XhContextMenuSubProps {
  * 子层内部使用 XhMenu 系部件。本身不渲染节点。
  * 不给 children 时照标准结构铺自己那一层：触发条目、定位层与按 collection 铺的条目。
  */
-export function XhContextMenuSub({ value, label, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
+export function XhContextMenuSub({ value, label, icon, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
   const parent = useContextMenuContext()
   const sub = useMenuWithParent({
     ...props,
@@ -471,6 +473,7 @@ export function XhContextMenuSub({ value, label, disabled, children, ...props }:
       setOpenRef.current(false)
   }, [parentOpen])
 
+  const entryIcon = icon ?? parent.api.collection.find(node => node.value === value)?.icon
   return (
     <MenuProvider value={sub}>
       <ContextMenuSubProvider value={handle}>
@@ -478,7 +481,10 @@ export function XhContextMenuSub({ value, label, disabled, children, ...props }:
           ? renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })
           : (
               <>
-                <XhContextMenuSubTrigger>{label ?? parent.api.collection.find(node => node.value === value)?.label ?? value}</XhContextMenuSubTrigger>
+                <XhContextMenuSubTrigger>
+                  {entryIcon ? <XhMenuItemIcon><XhIcon icon={entryIcon} /></XhMenuItemIcon> : null}
+                  <XhMenuItemText>{label ?? parent.api.collection.find(node => node.value === value)?.label ?? value}</XhMenuItemText>
+                </XhContextMenuSubTrigger>
                 <XhMenuPositioner>
                   <XhMenuContent>
                     <MenuDefaultNodes />
@@ -517,7 +523,7 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
         { ref: (el: HTMLDivElement | null) => { sub.triggerRef.current = el } },
       )}
     >
-      {children}
+      <MenuItemProvider value={item}>{children}</MenuItemProvider>
     </div>
   )
 }

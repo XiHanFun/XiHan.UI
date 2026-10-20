@@ -222,7 +222,7 @@ brand  neutral  success  warning  danger  info
 | `CustomEvent` 名 | 122 个名字 / 291 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（277 处中 275 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
 | 事件 `detail` 形状 | 234 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 333 条（涉及 115 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| `attribute: false` 的 JS 字段 | 334 条（涉及 115 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 184（分布在 63 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：

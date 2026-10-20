@@ -97,7 +97,9 @@ describe('xh-menubar 生成结构', () => {
     expect(subTrigger.textContent).toBe('发送到')
     expect(subTrigger.getAttribute('role')).toBe('menuitem')
     expect(subTrigger.getAttribute('aria-haspopup')).toBe('menu')
-    expect(Array.from(sub.querySelectorAll('[data-xh-part="item-text"]'), text => text.textContent)).toEqual(['邮件', '消息'])
+    // 触发条目与普通条目一样，文字在 item-text 里
+    expect(subTrigger.querySelector('[data-xh-part="item-text"]')!.textContent).toBe('发送到')
+    expect(Array.from(sub.querySelectorAll('[data-xh-part="item-text"]'), text => text.textContent)).toEqual(['发送到', '邮件', '消息'])
   })
 
   it('slot 给出某一条的文字，快捷键仍照数据铺；点入口展开那张菜单', async () => {

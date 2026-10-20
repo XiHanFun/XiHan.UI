@@ -5,7 +5,7 @@
 
 // 提供 menu 相关实现。
 
-import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, IconRecord, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuItemSelectDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
@@ -88,6 +88,7 @@ export class XhMenuElement extends XhPortalHostElement {
           anchored: host.anchor !== undefined,
           ...(host.value === undefined ? {} : { value: host.value }),
           ...(host.label === undefined ? {} : { label: host.label }),
+          ...(host.icon == null ? {} : { icon: host.icon }),
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -119,6 +120,8 @@ export class XhMenuElement extends XhPortalHostElement {
     translations: { attribute: false },
     submenu: { converter: BOOLEAN_CONVERTER },
     label: { converter: STRING_CONVERTER },
+    // 图标记录是对象，只走 property
+    icon: { attribute: false },
     value: { converter: STRING_CONVERTER },
     openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
     hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
@@ -150,6 +153,8 @@ export class XhMenuElement extends XhPortalHostElement {
   declare translations?: Partial<MenuTranslations>
   declare submenu?: boolean
   declare label?: string
+  /** 子菜单形态：触发条目的图标，铺进条目文字之前的 item-icon；按数据铺时由父层的那一条带来。只作为 property 暴露。 */
+  declare icon?: IconRecord | null
   declare value?: string
   declare openOnHover?: boolean
   declare hoverOpenDelay?: number
@@ -490,9 +495,14 @@ export class XhMenuElement extends XhPortalHostElement {
     this.parentRegistration?.sync()
 
     // 条目子部件的身份取所属条目自报的 value，与条目本身同一份声明
+    // 子菜单形态的触发条目也是一条：它里面的图标与文字部件归本机器，身份就是这一条
     const ownerItem = (el: HTMLElement): MenuAnyItemProps => {
       const owner = this.getParts('item').find(item => item.contains(el))
-      return owner ? itemDeclaration(owner) : { value: '', kind: 'item' }
+      if (owner)
+        return itemDeclaration(owner)
+      if (triggerEl?.contains(el))
+        return { value: this.value ?? triggerEl.getAttribute('value') ?? '', kind: 'item', disabled: this.disabled }
+      return { value: '', kind: 'item' }
     }
     for (const el of this.getParts('item-icon'))
       this.spreader.spread(el, api.getItemIconProps(ownerItem(el)) as Record<string, unknown>)
