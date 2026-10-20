@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: 'アイコンとテキスト',
     statusBar: 'ステータスバー',
     statusBarHint: 'デザイナーの下部にステータスバーを表示します。',
+    developer: '開発者モード',
+    developerHint: 'オフにすると、JSON / Blob のデバッグ表示の入口が隠れます。',
     language: '言語',
     languageHint: 'このデザイナーにのみ適用され、ページの他の部分には影響しません。システムに合わせる場合は、ブラウザーの言語設定に最も近い言語を選びます。',
     languageDisplay: '表示言語',

@@ -70,6 +70,8 @@ export const DESIGNER_SETTING_KEYS = {
   theme: 'general.theme',
   brand: 'general.brand',
   statusBar: 'general.statusBar',
+  /** 开发者模式：调试总开关，缺省 false；关着时 JSON 与 Blob 一类调试查看入口都不出现。 */
+  developer: 'general.developer',
   /** 设计器的语言：follow（缺省）、system 或一种语言，见 DesignerLanguageSetting。 */
   language: 'language.locale',
   /** 工具栏按钮的显示方式：icon、text、both。 */
@@ -155,7 +157,7 @@ const BRAND_NAMES: Readonly<Record<BrandPreset, keyof DesignerSettingsTranslatio
 }
 
 /**
- * 内建的「基础」分区：主题、主题色与状态栏。主题色内置：跟随页面（缺省，不写值）、UI 的预设品牌（@xihan-ui/tokens 的
+ * 内建的「基础」分区：主题、主题色、状态栏与开发者模式。主题色内置：跟随页面（缺省，不写值）、UI 的预设品牌（@xihan-ui/tokens 的
  * BRAND_PRESETS，格子画 BRAND_PRESET_COLORS）与自定义颜色。语言在单独的「语言」分区（designerLanguageSettings）。
  */
 export function designerGeneralSettings(t: DesignerSettingsTranslations): DesignerSettingsSection {
@@ -189,6 +191,7 @@ export function designerGeneralSettings(t: DesignerSettingsTranslations): Design
     meta: { description: t.brandHint },
   })
   items.push({ path: ['statusBar'], label: t.statusBar, control: { kind: 'boolean' }, default: true, meta: { description: t.statusBarHint } })
+  items.push({ path: ['developer'], label: t.developer, control: { kind: 'boolean' }, default: false, meta: { description: t.developerHint } })
   return { id: DESIGNER_GENERAL_SETTINGS, label: t.general, order: 0, items }
 }
 
@@ -293,6 +296,11 @@ export function designerAboutSettings(t: DesignerSettingsTranslations, about: De
 export function toolbarDisplayOf(settings: DesignerSettings | undefined): CommandToolbarDisplay {
   const value = settings?.[DESIGNER_SETTING_KEYS.toolbarDisplay]
   return value === 'text' || value === 'both' ? value : 'icon'
+}
+
+/** 设置里的开发者模式（general.developer），只有写了 true 才开着；各款的调试查看入口按它决定有没有。 */
+export function developerModeOf(settings: DesignerSettings | undefined): boolean {
+  return settings?.[DESIGNER_SETTING_KEYS.developer] === true
 }
 
 /** 设置里的显示工具栏（toolbar.visible），只有写了 false 才不显示。 */

@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: 'Icônes et texte',
     statusBar: 'Barre d’état',
     statusBarHint: 'Afficher la barre d’état en bas du concepteur.',
+    developer: 'Mode développeur',
+    developerHint: 'Désactivé, les accès de débogage JSON / Blob sont masqués.',
     language: 'Langue',
     languageHint: 'S’applique uniquement à ce concepteur, pas au reste de la page. « Suivre le système » choisit la langue la plus proche des préférences de votre navigateur.',
     languageDisplay: 'Langue d’affichage',

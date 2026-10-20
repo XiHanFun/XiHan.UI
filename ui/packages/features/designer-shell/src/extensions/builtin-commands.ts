@@ -14,7 +14,7 @@ import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { XhDesignerFrameElement } from '../frame/frame-element'
 import type { DesignerSettings, DesignerSettingsPolicy } from '../settings/model'
 import type { DesignerCommandsTranslations } from '../translations'
-import { DESIGNER_ABOUT_SETTINGS, DESIGNER_SETTING_KEYS, DESIGNER_SHORTCUT_SETTINGS } from '../settings/model'
+import { DESIGNER_ABOUT_SETTINGS, DESIGNER_SETTING_KEYS, DESIGNER_SHORTCUT_SETTINGS, developerModeOf } from '../settings/model'
 
 /** 内置命令的 id。 */
 export const DESIGNER_SHELL_COMMANDS = {
@@ -211,6 +211,7 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       ...(icons?.editJson ? { icon: icons.editJson } : {}),
       shortcut: ['Mod', 'Shift', 'J'],
       placement: ['menubar:edit'],
+      ...(settings ? { visible: (context: Ctx) => developerModeOf(settings.read(context)) } : {}),
       run: openJsonEditor,
     })
   }

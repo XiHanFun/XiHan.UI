@@ -94,6 +94,11 @@ export interface DesignerCommand<Ctx = unknown> {
   readonly alternateShortcuts?: readonly (readonly string[])[]
   /** 不给即总是可用。 */
   readonly enabled?: (context: Ctx) => boolean
+  /**
+   * 不给即总是存在；返回 false 时这条命令此刻不存在：工具栏、菜单栏、右键菜单与菜单命令里都不列它，
+   * 快捷键不触发，执行也不跑（如只在开发者模式下才有的调试入口）。
+   */
+  readonly visible?: (context: Ctx) => boolean
   /** 给了就是开关式命令，按钮与菜单项显示选中状态。 */
   readonly checked?: (context: Ctx) => boolean
   /** 语气：按钮与菜单项按这族色显示，破坏性命令写 danger。不给即不带语气。 */
@@ -450,6 +455,11 @@ export function commandShortcuts(command: Pick<DesignerCommand<never>, 'shortcut
  * 找出这次按键命中的命令：快捷键或第二快捷键恰好命中、此刻可用、并且有 run 的那一条；没有时为 undefined。
  * platform 由调用方测出（detectKbdPlatform）。没给 run 的弹层命令与菜单命令不由快捷键触发。
  */
+/** 这条命令此刻存不存在：没写 visible 总是存在。 */
+export function commandVisible<Ctx>(command: Pick<DesignerCommand<Ctx>, 'visible'>, context: Ctx): boolean {
+  return command.visible?.(context) ?? true
+}
+
 export function commandForShortcut<Ctx>(
   commands: Iterable<DesignerCommand<Ctx>>,
   event: HotkeyEvent,
@@ -457,7 +467,7 @@ export function commandForShortcut<Ctx>(
   platform: KbdPlatform,
 ): (DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }) | undefined {
   for (const command of commands) {
-    if (command.run !== undefined && commandShortcuts(command).some(keys => matchesHotkey(event, keys, platform)) && (command.enabled?.(context) ?? true))
+    if (command.run !== undefined && commandShortcuts(command).some(keys => matchesHotkey(event, keys, platform)) && commandVisible(command, context) && (command.enabled?.(context) ?? true))
       return command as DesignerCommand<Ctx> & { readonly run: (context: Ctx) => void }
   }
   return undefined

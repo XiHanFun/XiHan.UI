@@ -132,6 +132,7 @@ export {
   designerLayoutSettings,
   designerShortcutSettings,
   designerToolbarSettings,
+  developerModeOf,
   PANEL_LAYOUT_CONTROL,
   resolveSettings,
   settingKey,

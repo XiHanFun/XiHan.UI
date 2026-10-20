@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: '圖示和文字',
     statusBar: '狀態列',
     statusBarHint: '在設計器底部顯示狀態列。',
+    developer: '開發人員模式',
+    developerHint: '關閉後會隱藏 JSON / Blob 偵錯檢視入口。',
     language: '語言',
     languageHint: '只作用於設計器，不影響頁面其餘部分。跟隨系統時依瀏覽器的語言偏好挑最接近的一種。',
     languageDisplay: '介面語言',

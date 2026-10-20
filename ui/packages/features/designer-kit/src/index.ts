@@ -16,6 +16,7 @@ export {
   checkExtensionData,
   commandForShortcut,
   commandShortcuts,
+  commandVisible,
   createExtensionHost,
   DesignerExtensionError,
   EXTENSION_DATA_KEY,

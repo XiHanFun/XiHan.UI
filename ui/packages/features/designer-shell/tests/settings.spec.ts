@@ -130,7 +130,7 @@ describe('设置模型', () => {
   it('「基础」分区：主题、主题色与状态栏，语言不在这里；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const full = designerGeneralSettings(english)
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar])
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.developer])
     const names = [english.brandBlue, english.brandCyan, english.brandTeal, english.brandGreen, english.brandOrange, english.brandRed, english.brandPink, english.brandPurple]
     expect(full.items[1]!.control).toEqual({
       kind: 'swatch',
@@ -139,6 +139,8 @@ describe('设置模型', () => {
       none: english.brandFollow,
     })
     expect([full.items[1]!.default, new Set(names).size]).toEqual([undefined, 8])
+    const developer = full.items.find(item => settingKey(full, item) === DESIGNER_SETTING_KEYS.developer)!
+    expect([developer.label, developer.control, developer.default, developer.meta?.description]).toEqual([english.developer, { kind: 'boolean' }, false, english.developerHint])
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
@@ -428,6 +430,26 @@ describe('createDesignerSettingsHost', () => {
     const host = createDesignerSettingsHost({ root: element })
     host.apply({ 'general.brand': 'not-a-color' })
     expect([element.hasAttribute('data-brand'), document.head.querySelector('style[data-xh-brand^="xh-designer-brand-"]')]).toEqual([false, null])
+  })
+
+  it('条目写了 enabledWhen：按此刻生效的设置（含缺省值）求值，不满足时只读、说明照旧；满足了照常可改', async () => {
+    const gated: DesignerSettingsSection = {
+      id: 'flow',
+      label: '画布',
+      order: 100,
+      items: [
+        { path: ['grid'], label: '网格', control: { kind: 'boolean' }, default: false },
+        { path: ['gridSize'], label: '格距', control: { kind: 'number' }, enabledWhen: { path: ['flow.grid'], equals: true }, meta: { description: '网格打开时才能改' } },
+      ],
+    }
+    const element = await mount((el) => {
+      el.sections = [gated]
+    })
+    const field = (): Element => row('flow.gridSize').querySelector('xh-field')!
+    expect([field().hasAttribute('read-only'), row('flow.gridSize').textContent!.includes('网格打开时才能改')]).toEqual([true, true])
+    element.settings = { 'flow.grid': true }
+    await element.updateComplete
+    expect(field().hasAttribute('read-only')).toBe(false)
   })
 
   it('对话框里用到的 xh-* 元素都随 defineDesignerShell 按需注册了（含主题色那一行的「跟随页面」钮）', async () => {

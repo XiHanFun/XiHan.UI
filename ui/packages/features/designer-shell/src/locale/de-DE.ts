@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: 'Symbole und Text',
     statusBar: 'Statusleiste',
     statusBarHint: 'Statusleiste unten im Designer anzeigen.',
+    developer: 'Entwicklermodus',
+    developerHint: 'Ausgeschaltet sind die Debug-Ansichten für JSON und Blob ausgeblendet.',
     language: 'Sprache',
     languageHint: 'Gilt nur für diesen Designer, nicht für den Rest der Seite. „Wie System“ wählt die Sprache, die Ihren Spracheinstellungen im Browser am nächsten kommt.',
     languageDisplay: 'Anzeigesprache',

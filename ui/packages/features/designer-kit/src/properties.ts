@@ -154,6 +154,8 @@ export interface PropertyDescriptor<C extends { readonly kind: string } = Proper
   readonly default?: JsonValue
   /** 显示条件；缺省总是显示。 */
   readonly visibleWhen?: PropertyCondition
+  /** 可用条件，写法同 visibleWhen；不满足时照样显示、但只读。缺省总是可用。 */
+  readonly enabledWhen?: PropertyCondition
   /** 产品自用，内核不解释。 */
   readonly meta?: JsonObject
 }
@@ -222,7 +224,7 @@ function nestCondition(prefix: JsonPath, condition: PropertyCondition): Property
 }
 
 /**
- * 把相对某个子对象的属性描述换成相对上级对象：path 与显示条件里的 path 都接在 prefix 之后，
+ * 把相对某个子对象的属性描述换成相对上级对象：path 与显示条件、可用条件里的 path 都接在 prefix 之后，
  * 其余字段（含产品扩展的字段）原样保留。
  */
 export function nestProperties<D extends PropertyDescriptor<{ readonly kind: string }>>(prefix: JsonPath, descriptors: readonly D[]): D[] {
@@ -230,7 +232,13 @@ export function nestProperties<D extends PropertyDescriptor<{ readonly kind: str
     ...descriptor,
     path: [...prefix, ...descriptor.path],
     ...(descriptor.visibleWhen === undefined ? {} : { visibleWhen: nestCondition(prefix, descriptor.visibleWhen) }),
+    ...(descriptor.enabledWhen === undefined ? {} : { enabledWhen: nestCondition(prefix, descriptor.enabledWhen) }),
   }))
+}
+
+/** 判断属性在当前对象上是否可改：没写 enabledWhen 总是可改。 */
+export function isPropertyEnabled(descriptor: PropertyDescriptor<{ readonly kind: string }>, target: JsonValue | undefined): boolean {
+  return descriptor.enabledWhen === undefined || evaluateCondition(descriptor.enabledWhen, target)
 }
 
 /** 判断属性在当前对象上是否显示。 */

@@ -150,6 +150,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: 'Значки и текст',
     statusBar: 'Строка состояния',
     statusBarHint: 'Показывать строку состояния внизу конструктора.',
+    developer: 'Режим разработчика',
+    developerHint: 'Если выключен, точки входа для отладочного просмотра JSON / Blob скрыты.',
     language: 'Язык',
     languageHint: 'Применяется только к этому конструктору, а не ко всей странице. «Как в системе» выбирает язык, ближайший к языковым настройкам браузера.',
     languageDisplay: 'Язык интерфейса',
