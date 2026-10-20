@@ -25,13 +25,14 @@ function command(id: string, extra: Partial<DesignerCommand<Ctx>> = {}): Designe
 
 let grid = false
 let palette = false
+let tourReady = false
 const COMMANDS = new Map<string, DesignerCommand<Ctx>>([
   ['save', command('save', { label: 'Save', shortcut: ['Mod', 'S'] })],
   ['settings', command('settings', { label: 'Settings' })],
   ['undo', command('undo', { label: ctx => `Undo ${ctx.count}` })],
   ['grid', command('grid', { label: 'Show grid', checked: () => grid, run: () => void (grid = !grid) })],
   ['help', command('help', { label: 'Help' })],
-  ['tour', command('tour', { label: 'Start tour', enabled: () => false })],
+  ['tour', command('tour', { label: 'Start tour', enabled: () => tourReady })],
   ['about', command('about', { label: 'About' })],
   ['panels', command('panels', {
     label: 'Panels',
@@ -84,6 +85,7 @@ beforeEach(async () => {
   ran.length = 0
   grid = false
   palette = false
+  tourReady = false
   context = { count: 0 }
   frame = document.createElement('xh-designer-frame')
   frame.style.cssText = 'position:fixed;inset:0'
@@ -156,6 +158,30 @@ describe('菜单栏（Chromium）', () => {
     expect(inner()[0]!.getAttribute('aria-checked')).toBe('true')
   })
 
+  it('打开菜单时按此刻的状态重算：状态变了而设计器没有刷新菜单栏，打开后条目的勾与子菜单里的勾都是此刻的', async () => {
+    grid = true
+    palette = true
+    await userEvent.click(trigger('View'))
+    await until(() => openMenuItems().length >= 1)
+    expect(openMenuItems()[0]!.getAttribute('aria-checked')).toBe('true')
+    const sub = openMenuItems().find(item => item.textContent?.trim().startsWith('Panels'))!
+    await userEvent.click(sub)
+    const inner = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="content"]')]
+      .filter(content => content.checkVisibility())
+      .flatMap(content => [...content.querySelectorAll<HTMLElement>('[role^="menuitem"]')])
+    await until(() => inner().length === 2)
+    expect(inner()[0]!.getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('开着一张菜单时指针掠到另一张：换上的那张同样按此刻的状态', async () => {
+    await userEvent.click(trigger('File'))
+    await until(() => openMenuItems().length === 2)
+    tourReady = true
+    await userEvent.hover(trigger('Help'))
+    await until(() => openMenuItems().length === 3)
+    expect(openMenuItems()[1]!.getAttribute('aria-disabled')).toBe('false')
+  })
+
   it('此刻不可用的命令是不可用的条目：写 aria-disabled="true"，方向键跳过它，点了不执行', async () => {
     trigger('Help').focus()
     await userEvent.keyboard('{ArrowDown}')
@@ -213,16 +239,25 @@ describe('菜单栏（Chromium）', () => {
     expect(items().map(item => item.textContent?.trim())).toEqual(['File', 'Edit', 'View', 'Help'])
     // 子菜单里开关式命令的勾照命令的状态
     await userEvent.click(items()[2]!)
-    const grid = (): HTMLElement | undefined => [...document.querySelectorAll<HTMLElement>('[data-scope="menu"][role="menuitemcheckbox"]')].find(item => item.checkVisibility() && item.textContent?.includes('Show grid'))
-    await until(() => grid() !== undefined)
-    expect(grid()!.getAttribute('aria-checked')).toBe('false')
-    await userEvent.click(grid()!)
-    await until(() => grid() === undefined)
+    const gridItem = (): HTMLElement | undefined => [...document.querySelectorAll<HTMLElement>('[data-scope="menu"][role="menuitemcheckbox"]')].find(item => item.checkVisibility() && item.textContent?.includes('Show grid'))
+    await until(() => gridItem() !== undefined)
+    expect(gridItem()!.getAttribute('aria-checked')).toBe('false')
+    await userEvent.click(gridItem()!)
+    await until(() => gridItem() === undefined)
     expect(ran).toEqual([])
     await userEvent.click(button)
     await until(() => items().length === 4)
     await userEvent.click(items()[2]!)
-    await until(() => grid() !== undefined)
-    expect(grid()!.getAttribute('aria-checked')).toBe('true')
+    await until(() => gridItem() !== undefined)
+    expect(gridItem()!.getAttribute('aria-checked')).toBe('true')
+    // 点开「菜单」钮时同样按此刻的状态重算，不等设计器刷新
+    await userEvent.click(gridItem()!)
+    await until(() => gridItem() === undefined)
+    grid = true
+    await userEvent.click(button)
+    await until(() => items().length === 4)
+    await userEvent.click(items()[2]!)
+    await until(() => gridItem() !== undefined)
+    expect(gridItem()!.getAttribute('aria-checked')).toBe('true')
   })
 })
