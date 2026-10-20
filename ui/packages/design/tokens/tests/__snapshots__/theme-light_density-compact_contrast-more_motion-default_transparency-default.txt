@@ -232,7 +232,7 @@
 --xh-fg-segment-selected-disabled: color-mix(in oklab, oklch(0.546 0.216 258) 50%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))
 --xh-fg-subtle: oklch(0.52 0.018 256)  ← var(--xh-color-neutral-550)
 --xh-fg-success: oklch(0.51 0.15 149)  ← var(--xh-color-success-700)
---xh-fg-warning: oklch(0.62 0.15 70)  ← var(--xh-color-warning-700)
+--xh-fg-warning: oklch(0.55 0.14 70)  ← var(--xh-color-warning-800)
 --xh-field-py: 6px  ← var(--xh-space-1_5)
 --xh-glyph-baseline-shift: -0.125em
 --xh-glyph-mark-arrow-down: url("data:image/svg+xml,…")  sha256:a07f0e76013b
