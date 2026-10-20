@@ -91,6 +91,7 @@
 - **修复** FieldArray 表格排布横向放不下时表格本体进 Tab 序列，一行都没有也能用键盘横向滚动，放得下时不占 Tab 位
 - **修复** 亮色下警告色文字加深一档，达到正文对比度：`--xh-fg-warning` 改指 `--xh-color-warning-800`（对白底 4.98:1，原来 3.75:1），表达式输入框的警告提示、日志 warn 级、字数到上限等小字都够得上 4.5:1；暗色不变
 - **修复** Menu、ContextMenu、Menubar 按数据铺时，子菜单入口（带 `children` 的条目）写了 `icon` 却不画图标：入口与普通条目一样铺 `item-icon` 与 `item-text`；子菜单组件与 `<xh-menu submenu>` 新增 `icon`
+- **修复** 菜单族与 Listbox、Select、Combobox、Command、Mention 的行首图标与正文上下居中：菜单族的 `item-icon` 按图标尺取高、图标在里面居中，候选列表 `item-prefix` 里的图标居中，图标比行高矮时不再贴着上沿、比正文高出约 2px；Web Components 的 `<xh-icon>` 宿主改为只包住图标的行内块（行高归 0），放进弹性或网格容器时与 Vue / React 一样居中
 - **修复** Approval 待决的呼吸点取图形色，不随警告文字色变深；写了语气时六族在亮暗两态对承载面都不低于 3:1（`warning` 语气原来在白底上只有 2.69:1）
 - **修复** Web Components 的 Menubar 按 `collection` 铺结构时，数据里写的 `disabled` 照样生效：入口与条目报不可用、方向键跳过，与 Vue / React 一致
 - **修复** Vue 的子菜单（`XhMenuSub`、`XhMenubarSub`、`XhContextMenuSub`）改了属性后子层跟着变，不再只认挂载时那一份；Vue / React 的子菜单入口不再同时挂着菜单的皮肤挂载类，也照旧带着子层的展开态（`data-state`）

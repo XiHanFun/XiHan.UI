@@ -43,6 +43,10 @@ export async function stageSheet(markup: string, sheet: Sheet): Promise<Document
   const doc = frame.contentDocument
   if (!doc)
     throw new Error('iframe 没有文档')
+  // 空白 iframe 的文档没有 doctype，跑在怪异模式里：只放图片或行内块的行不算支柱，行高撑不起行盒，与真实页面不同
+  doc.open()
+  doc.write('<!doctype html><html><head></head><body></body></html>')
+  doc.close()
   doc.documentElement.setAttribute('data-theme', 'light')
   doc.documentElement.setAttribute('dir', 'ltr')
   doc.documentElement.setAttribute('lang', 'zh-CN')

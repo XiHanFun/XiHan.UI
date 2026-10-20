@@ -323,13 +323,15 @@
     mask-image: var(--xh-glyph-mark-chevron-left);
   }
 
-  /* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+  /* 图标格按图标尺定宽定高：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里；
+     盒高不靠行高撑，里面的图标上下居中，与正文中线对齐 */
   [data-scope='menubar'][data-part='item-icon'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
     inline-size: var(--xh-icon-size);
+    block-size: var(--xh-icon-size);
   }
 
   [data-scope='menubar'][data-part='item-icon'][hidden] {
