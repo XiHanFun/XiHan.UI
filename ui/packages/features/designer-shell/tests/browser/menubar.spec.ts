@@ -112,7 +112,7 @@ afterEach(async () => {
 })
 
 describe('菜单栏（Chromium）', () => {
-  it('在外框最上一条、工具栏上面；点开「文件」选中「保存」执行命令，菜单收起', async () => {
+  it('在外框最上一条、工具栏上面；点开「文件」，带快捷键的条目写着读屏念的 aria-keyshortcuts，选中「保存」执行命令，菜单收起', async () => {
     const strip = frame.querySelector<HTMLElement>(':scope > [data-part="menubar"]')!
     const top = frame.querySelector<HTMLElement>(':scope > [data-part="top"]')!
     expect(strip.getBoundingClientRect().bottom).toBeLessThanOrEqual(top.getBoundingClientRect().top + 0.5)
@@ -120,7 +120,7 @@ describe('菜单栏（Chromium）', () => {
     expect(frame.querySelector('[role="menubar"]')!.getAttribute('aria-label')).toBe('Designer menu bar')
     await userEvent.click(trigger('File'))
     await until(() => openMenuItems().length === 2)
-    expect(openMenuItems().map(item => item.textContent)).toEqual(['SaveCtrl+S', 'Settings'])
+    expect(openMenuItems().map(item => [item.textContent, item.getAttribute('aria-keyshortcuts')])).toEqual([['SaveCtrl+S', 'Control+S'], ['Settings', null]])
     await userEvent.click(openMenuItems()[0]!)
     await until(() => openMenuItems().length === 0)
     expect(ran).toEqual(['save'])

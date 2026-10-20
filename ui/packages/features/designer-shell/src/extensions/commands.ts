@@ -129,7 +129,7 @@ export interface CommandToolbar<Ctx> {
 }
 
 /** 命令的全部快捷键写成 aria-keyshortcuts：shortcut 在前（委托提示只显示第一条），第二快捷键依次在后；一条都写不出时为 undefined。 */
-function commandKeyshortcuts(command: Pick<DesignerCommand<never>, 'shortcut' | 'alternateShortcuts'>, platform: KbdPlatform): string | undefined {
+export function commandKeyshortcuts(command: Pick<DesignerCommand<never>, 'shortcut' | 'alternateShortcuts'>, platform: KbdPlatform): string | undefined {
   const value = commandShortcuts(command).map(keys => ariaKeyshortcut(keys, platform)).filter(Boolean).join(' ')
   return value === '' ? undefined : value
 }
