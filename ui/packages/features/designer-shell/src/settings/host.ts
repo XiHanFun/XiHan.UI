@@ -9,22 +9,15 @@
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { EnvSignals, VisualEnvironmentStorageError } from '@xihan-ui/core/visual-environment'
-import type { PropertySwatchOption } from '@xihan-ui/designer-kit/properties'
 import type { DesignerSettings, DesignerSettingsSection, DesignerThemeSetting } from './model'
 import { isJsonValue } from '@xihan-ui/core/json'
 import { createEnvSignals } from '@xihan-ui/core/visual-environment'
+import { BRAND_PRESETS, registerBrand } from '@xihan-ui/tokens'
 import { DESIGNER_SETTING_KEYS, settingKey } from './model'
 
 interface DesignerSettingsHostBaseOptions {
   /** 设计器根：主题写成它的 data-theme，主题色写成它的 data-brand。 */
   readonly root: HTMLElement
-  /** 预设的主题色，与「基础」分区给的同一份：值是其中一项的 value 时直接写成 data-brand。 */
-  readonly brands?: readonly PropertySwatchOption[]
-  /**
-   * 注册自定义主题色：入参是品牌 id 与颜色，返回撤销函数。designer-shell 不依赖令牌包，各款传 @xihan-ui/tokens 的
-   * registerBrand；不给时不是预设的主题色不生效。
-   */
-  readonly registerBrand?: (id: string, color: string) => () => void
 }
 
 /** createDesignerSettingsHost 的选项；要存储就得同时给出错出口，读写失败时回调、设置留在内存里。 */
@@ -122,18 +115,26 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
     registeredColor = undefined
   }
 
-  /** 主题色设置换成要写到根上的品牌 id：预设直接用，别的颜色经 registerBrand 注册成本设计器的品牌。 */
+  /**
+   * 主题色设置换成要写到根上的品牌 id：UI 的预设品牌直接用，别的颜色在根所在文档里注册成本设计器的品牌
+   * （@xihan-ui/tokens 的 registerBrand）；取不出品牌梯度的值不生效。
+   */
   const resolveBrand = (value: JsonValue | undefined): string | undefined => {
-    if (typeof value === 'string' && value !== '' && options.brands?.some(option => option.value === value)) {
+    if (typeof value === 'string' && (BRAND_PRESETS as readonly string[]).includes(value)) {
       releaseBrand()
       return value
     }
-    if (typeof value === 'string' && value !== '' && options.registerBrand) {
-      if (registeredColor !== value) {
-        releaseBrand()
-        unregisterBrand = options.registerBrand(brandId, value)
-        registeredColor = value
+    if (typeof value === 'string' && value !== '') {
+      if (registeredColor === value)
+        return brandId
+      releaseBrand()
+      try {
+        unregisterBrand = registerBrand(brandId, value, { doc })
       }
+      catch {
+        return undefined
+      }
+      registeredColor = value
       return brandId
     }
     releaseBrand()

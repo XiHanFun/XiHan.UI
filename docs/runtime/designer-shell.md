@@ -82,7 +82,7 @@ panel.addEventListener("property-commit", () => history.seal());
 - 四边（`sides`）是一组控件，整行 `role="group"`：「四边相同」开关加一个数字框，关掉后换成上、右、下、左四个（两列），每个框上方是这一边的名字、后缀是单位；四边相同时那一个框以「四边」为名。四边都按描述的数值约束校验，有边空着或违反约束时就地报错、不派发；打开开关时四边不同就按上边统一。换了取值的对象按四边是否相同摆开关；多个对象取值不同时开关禁用，只能四边一起改。
 - 格式（`format`）是 `<xh-format-input>`：种类限在描述的 `kinds`，不是必填时种类里多一项「不设格式」，选它即清除；改动随输入派发，失焦时封口。多个对象取值不同时格式输入框标 `mixed`，种类显示「多个值」，选了种类就写给每个对象。
 - 写了 `secret` 的文本是 `<xh-password-input>`：缺省不显示明文，可切换显隐，浏览器不代填也不记住。
-- 颜色预设（`swatch`）是一组控件，整行 `role="group"`：上面是 `<xh-color-swatch-picker>`，一项一格，格子画选项的 `color`，选中写入选项的 `value`；描述写了 `custom` 时下面另有一个颜色框，填任意颜色。取值不在选项里时显示在颜色框里，色板不选中任何一格。
+- 颜色预设（`swatch`）是一组控件，整行 `role="group"`：上面是 `<xh-color-swatch-picker>`，一项一格，格子画选项的 `color`，选中写入选项的 `value`；描述写了 `custom` 时下面另有一个颜色框，填任意颜色。取值不在选项里时显示在颜色框里，色板不选中任何一格。描述写了 `none` 时色板前另有一颗开关钮（`<xh-toggle>`），文字就是它：取值没写时按下，按下即不写值（删掉这个键）；松开不算一种取值，等选了色板或填了颜色才松开。
 - 选项列表（`options`）是 `<xh-field-array>` 的表格排布，放在这一行的字段里，字段的标题就是表格的名字。一项一行，三格依次是值、文字与禁用（描述写了 `allowDisabled: false` 时没有禁用这一列，写出的选项也不带 `disabled`），每格是一个字段，控件以「列名 + 第几项」为名（中文如「第 3 项的值」）；行号、拖动、上移、下移与删除把手和下面的新增把手由字段数组铺出：按住拖动把手把这一项拖到别处换位，键盘用上移、下移，新增与删除也都能按到。值与文字边输入边写入、失焦封口；勾选禁用，以及新增、删除与换序，各是一步。新增的一项只有空的 `value`，加好后焦点落到它的值上；文字为空、不禁用时不写这两个键，项上别的键（`tone`、`description`）原样留着；删掉最后一项即清除。值与文字两列有最小宽，数字、日期与日期时间的值列不窄过字段的压缩底线（`--xh-control-min-w`），放得下长一些的数与整个日期时间，禁用列放得下列头；格里的控件不超出自己那一格。面板放不下时表格横向滚动，行号钉在起始侧，把手随行一起滚动（字段数组的 `stickyActions` 关掉），滚到末端或 Tab 到时露出来，值格因此总有一个滚动位置整个看得见。值格按描述的 `valueType` 换控件：`"string"`（缺省）是文本框；`"number"` 是数字框，写回数值，清空即去掉 `value`，新增的一项是空对象；`"date"` / `"datetime"` 是日期框（到日 / 到分），写回 `YYYY-MM-DD` / `YYYY-MM-DDTHH:mm`；`"boolean"` 固定 `true`、`false` 两行，值格只读、显示「是 / 否」（随面板语言），没有新增、删除与换序，文字与禁用照常可改，写回时两项都写、`true` 在前。多个对象取值不同时没有行，新增的一项整体写给这几个对象。
 - 选项树（`treeOptions`）是 `<xh-table>` 的树形表（声明了 `tree`，平铺的各项也报 `role="treegrid"`），单元格级导航（`navigation="cell"`），整行按一组控件排，表格的名字是这一行的标题。一项一行，四格依次是值、文字、禁用与操作（描述写了 `allowDisabled: false` 时没有禁用这一列），各行报层级与层内位次；值格按层缩进，有下一层的项带展开把手；操作列里是「加子项」与「删除」两颗钮，钉在行尾，面板放不下时表格横向滚动、操作列留在原处；表格下面是「新增一项」，加在顶层末尾。键盘照表格的单元格导航：方向键在格子之间走，Enter 或 F2 进格内编辑（输入框里的左右键归输入框），Esc 或 F2 回到格子，焦点在行上时左右键收起与展开；Alt + 上下键在同一层换序，Alt + 左右键改一层缩进（往里是认上一项当上级，各项还是平铺时也行），也可以按住行拖动，拖到哪一项的中段就放进那一项下面（叶子项也行）；叶子项不带 `aria-expanded`；写回整棵树，焦点留在原来那一格。格里的控件以「列名 + 大纲号」为名（中文如「第 1.2 项的值」），两颗钮也按大纲号起名（「给第 1.2 项加子项」「删除第 1.2 项」）。值与文字边输入边写入、失焦封口；勾选禁用，以及加子项、新增、删除与换位，各是一步。新的一项只有空的 `value`，加好后焦点落到它的值上；删掉一项连同它的下一层，下一层删空时不再写 `children`；项上别的键（`tone`、`description`、`hasChildren`）原样留着。问题按路径标到那一项那一格，如 `[0, "children", 1, "value"]` 标在第 1.2 项值那一格。多个对象取值不同时没有行，新增的一项整体写给这几个对象。
 - 选项列表与选项树自己不另做校验：值为空、值重复、缺了要求的文字这些问题由 designer-kit 的取值检查报（`checkProperties` 与 `findPropertyValueIssue`，路径落在那一项的那个键上），设计器照常把它们交给面板的 `errors`。编辑器按路径把问题标到格上：`[i, "value"]`、`[i, "label"]`、`[i, "disabled"]` 落在那一格（选项树先按 `children` 找到那一层那一项），项上别的键与这一项本身落在它的值上；那一格的控件 `aria-invalid="true"`，错误文字显示在格子里、经 `aria-describedby` 接上。两种编辑器都写了 `nestedIssues`，只有里层问题时行下不重复。
@@ -828,23 +828,18 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 ## 设置
 
-设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。主题色是内置的，宿主不传预设。
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
-import { BRAND_PRESET_COLORS, BRAND_PRESETS, registerBrand } from "@xihan-ui/tokens";
 
-const brands = BRAND_PRESETS.map(id => ({ value: id, color: BRAND_PRESET_COLORS[id] }));
 const host = createDesignerSettingsHost({
   root: designerRoot,
-  brands,
-  registerBrand,
   storageKey: "flow-designer:settings",
   onStorageError: detail => console.warn(detail),
 });
 
 const dialog = document.createElement("xh-designer-settings");
-dialog.general = { brands, customBrand: true };
 dialog.sections = collectSettingsSections([productSettings, ...extensions]);
 dialog.settings = host.load();
 host.apply(dialog.settings);
@@ -880,7 +875,7 @@ dialog.show();
 | 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
 | --- | --- | --- | --- | --- |
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
-| 主题色 | `general.brand` | 色板 | 不写即跟随页面 | 给了 `brands` 或 `customBrand` |
+| 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
@@ -967,7 +962,7 @@ settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKey
 | 属性 | 说明 |
 | --- | --- |
 | `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
-| `general` | 「基础」分区的选项 `{ brands?, customBrand?, languages? }`；`false` 不要这一页。文案随对话框的语言 |
+| `general` | 「基础」分区的选项 `{ languages? }`；`false` 不要这一页。主题色是内置的，不用传。文案随对话框的语言 |
 | `frame` | 设计器的外框（`DesignerSettingsFrame`，外框元素本身即可）；给了且有面板时有「布局」页 |
 | `help` | 「帮助」页：几段操作说明与几颗跑命令的钮，见上文 |
 | `shortcuts` | 「快捷键」页：`shortcutSettingsSource` 现算的快捷键表 |
@@ -999,12 +994,10 @@ settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKey
 | 选项 | 说明 |
 | --- | --- |
 | `root` | 设计器根：主题写成它的 `data-theme`，主题色写成它的 `data-brand`，只作用于设计器 |
-| `brands` | 预设的主题色，与「基础」分区给的同一份；直接用 tokens 的 `BRAND_PRESETS`，色块取 `BRAND_PRESET_COLORS` |
-| `registerBrand` | 注册自定义主题色，形状与 `@xihan-ui/tokens` 的 `registerBrand` 相同；不给时不是预设的颜色不生效 |
 | `storageKey` | 设置存在根所在窗口 localStorage 的哪个键下；不给就不读写 |
 | `onStorageError` | 读写失败（无痕窗口、配额满、内容不是对象）时回调 `{ operation, key, error }`，设置留在内存里。给了 `storageKey` 就必须给，否则抛 `TypeError` |
 
-- `apply(settings)`：主题跟随页面时把根的 `data-theme` 还原成接手前的值，跟随系统时按 `prefers-color-scheme` 写、系统改了跟着改；主题色是预设就写它的 `value`，否则经 `registerBrand` 注册成这台设计器自己的品牌，换走时撤销。
+- `apply(settings)`：主题跟随页面时把根的 `data-theme` 还原成接手前的值，跟随系统时按 `prefers-color-scheme` 写、系统改了跟着改；主题色是 UI 的预设品牌就直接写它；别的颜色经 `@xihan-ui/tokens` 的 `registerBrand` 在根所在的文档里注册成这台设计器自己的品牌（一份 `[data-brand]` 取值块），换走时撤销；取不出品牌梯度的值不生效，按跟随页面处理。
 - `data-brand` 要与 `data-theme` 在同一个元素上才换得动品牌：主题跟随页面又选了主题色时，根上照抄外层的 `data-theme`（外层没写就是亮色）。根上新写了主题时，语义令牌在这里重新声明，外层的 `data-contrast` 也一并照抄。外层这两个属性变了，根上跟着改。
 - `save(settings, sections?)`：`sections` 里标了 `secret` 的文本条目不存。
 - `load()`：没给存储键、没存过或读不出时是空对象。

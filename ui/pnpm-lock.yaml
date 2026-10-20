@@ -683,6 +683,9 @@ importers:
       '@xihan-ui/pointer':
         specifier: workspace:^
         version: link:../../engine/pointer
+      '@xihan-ui/tokens':
+        specifier: workspace:^
+        version: link:../../design/tokens
       '@xihan-ui/viz':
         specifier: workspace:^
         version: link:../../engine/viz
@@ -705,9 +708,6 @@ importers:
       '@xihan-ui/testing':
         specifier: workspace:*
         version: link:../../../tooling/testing
-      '@xihan-ui/tokens':
-        specifier: workspace:*
-        version: link:../../design/tokens
       '@xihan-ui/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/tsconfig

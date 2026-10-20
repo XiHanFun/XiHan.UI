@@ -7,12 +7,14 @@
 // 值的键是「分区 id.条目 id」。designer-shell 内建「基础」分区，各款与扩展登记自己的分区，宿主能隐藏或锁定条目。
 
 import type { JsonValue } from '@xihan-ui/core/json'
-import type { PropertyControl, PropertyDescriptor, PropertySwatchOption } from '@xihan-ui/designer-kit/properties'
+import type { PropertyControl, PropertyDescriptor } from '@xihan-ui/designer-kit/properties'
+import type { BrandPreset } from '@xihan-ui/tokens'
 import type { CommandToolbarDisplay } from '../extensions/commands'
 import type { DesignerSettingsTranslations } from '../translations'
 import type { DesignerCommonKey, DesignerCommonKeyId, DesignerDisplayControl, DesignerShortcutsSource } from './display-model'
 import { formatJsonPath } from '@xihan-ui/core/json'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
+import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '@xihan-ui/tokens'
 import { DESIGNER_SHELL_VERSION } from '../version'
 import { DESIGNER_COMMON_KEYS } from './display-model'
 
@@ -136,17 +138,28 @@ export function sortSettingsSections(sections: readonly DesignerSettingsSection[
     .map(({ section }) => section)
 }
 
-/** designerGeneralSettings 的选项：主题色与语言两项要宿主给了才有。 */
+/** designerGeneralSettings 的选项：语言要宿主给了才有。 */
 export interface DesignerGeneralSettingsOptions {
-  /** 预设主题色：value 是品牌 id（写到设计器根的 data-brand），color 是格子画的颜色。不给且不许自定义时没有主题色这一项。 */
-  readonly brands?: readonly PropertySwatchOption[]
-  /** 主题色许自定义（宿主给了品牌注册函数时）。 */
-  readonly customBrand?: boolean
   /** 可选的语言：给了才有语言这一项，不选即跟随所在页面。 */
   readonly languages?: readonly { readonly value: string, readonly label: string }[]
 }
 
-/** 内建的「基础」分区：主题、主题色、状态栏与语言；主题色与语言按选项决定有没有。 */
+/** UI 预设品牌在设置文案里的名字。 */
+const BRAND_NAMES: Readonly<Record<BrandPreset, keyof DesignerSettingsTranslations>> = {
+  blue: 'brandBlue',
+  cyan: 'brandCyan',
+  teal: 'brandTeal',
+  green: 'brandGreen',
+  orange: 'brandOrange',
+  red: 'brandRed',
+  pink: 'brandPink',
+  purple: 'brandPurple',
+}
+
+/**
+ * 内建的「基础」分区：主题、主题色、状态栏与语言；语言按选项决定有没有。主题色内置：跟随页面（缺省，不写值）、
+ * UI 的预设品牌（@xihan-ui/tokens 的 BRAND_PRESETS，格子画 BRAND_PRESET_COLORS）与自定义颜色。
+ */
 export function designerGeneralSettings(t: DesignerSettingsTranslations, options: DesignerGeneralSettingsOptions = {}): DesignerSettingsSection {
   const items: DesignerSettingItem[] = [
     {
@@ -166,8 +179,17 @@ export function designerGeneralSettings(t: DesignerSettingsTranslations, options
       meta: { description: t.themeHint },
     },
   ]
-  if ((options.brands?.length ?? 0) > 0 || options.customBrand)
-    items.push({ path: ['brand'], label: t.brand, control: { kind: 'swatch', options: options.brands ?? [], custom: options.customBrand === true }, meta: { description: t.brandHint } })
+  items.push({
+    path: ['brand'],
+    label: t.brand,
+    control: {
+      kind: 'swatch',
+      options: BRAND_PRESETS.map(id => ({ value: id, color: BRAND_PRESET_COLORS[id], label: t[BRAND_NAMES[id]] as string })),
+      custom: true,
+      none: t.brandFollow,
+    },
+    meta: { description: t.brandHint },
+  })
   items.push({ path: ['statusBar'], label: t.statusBar, control: { kind: 'boolean' }, default: true, meta: { description: t.statusBarHint } })
   if ((options.languages?.length ?? 0) > 0)
     items.push({ path: ['language'], label: t.language, control: { kind: 'select', appearance: 'dropdown', options: options.languages! }, meta: { description: t.languageHint } })

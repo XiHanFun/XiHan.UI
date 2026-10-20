@@ -199,7 +199,6 @@ describe('外壳零件在有层与无层两种搭配下算出同一套计算样�
 
   it('设置对话框', async () => {
     const settings = mount(document.createElement('xh-designer-settings'))
-    settings.general = { brands: [{ value: 'blue', color: '#1677ff' }] }
     settings.sections = [section]
     await settings.updateComplete
     settings.show()

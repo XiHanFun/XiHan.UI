@@ -109,7 +109,14 @@ export type PropertyControl
       readonly maxDepth?: number
       readonly ids?: boolean
     }
-    | { readonly kind: 'swatch', readonly options: readonly PropertySwatchOption[], readonly custom?: boolean }
+    | {
+      readonly kind: 'swatch'
+      readonly options: readonly PropertySwatchOption[]
+      /** 许填任意颜色：色板下面另有一个颜色框。 */
+      readonly custom?: boolean
+      /** 给了就在色板前多一颗开关钮，文字是它：取值没写时按下，按下即不写值（删掉这个键、回到缺省）。 */
+      readonly none?: string
+    }
     | { readonly kind: 'options', readonly requireLabel?: boolean, readonly allowDisabled?: boolean, readonly valueType?: PropertyOptionValueType }
     | { readonly kind: 'treeOptions', readonly requireLabel?: boolean, readonly allowDisabled?: boolean }
 

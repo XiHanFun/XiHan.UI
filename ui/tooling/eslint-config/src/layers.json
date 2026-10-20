@@ -130,6 +130,7 @@
       "level": 5,
       "canDependOn": [
         "engine/core",
+        "design/tokens",
         "engine/pointer",
         "engine/viz",
         "features/designer-kit",

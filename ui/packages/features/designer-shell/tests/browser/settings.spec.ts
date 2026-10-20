@@ -54,7 +54,6 @@ async function settle(): Promise<void> {
 async function mount(): Promise<XhDesignerSettingsElement> {
   root = document.createElement('div')
   const element = document.createElement('xh-designer-settings')
-  element.general = { brands: [{ value: 'blue', color: '#1677ff' }] }
   element.sections = [flowSection]
   root.append(element)
   document.body.append(root)
@@ -143,8 +142,7 @@ describe('设置对话框', () => {
       return value
     }
     const before = tokenColor(root, '--xh-bg-brand')
-    const brands = BRAND_PRESETS.map(id => ({ value: id, color: BRAND_PRESET_COLORS[id] }))
-    const host = createDesignerSettingsHost({ root, brands })
+    const host = createDesignerSettingsHost({ root })
     host.apply({ 'general.brand': preset })
     expect(root.getAttribute('data-theme')).toBe(theme)
     expect(tokenColor(root, '--xh-color-brand-600')).toBe(literal(BRAND_PRESET_COLORS[preset]))
@@ -161,7 +159,6 @@ describe('设置对话框', () => {
     scope.translations = mergeXhConfig(zhCN, designerShellZhCN).translations
     root = scope
     const element = document.createElement('xh-designer-settings')
-    element.general = { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true }
     element.sections = [flowSection]
     scope.append(element)
     document.body.append(scope)

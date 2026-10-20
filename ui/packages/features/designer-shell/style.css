@@ -164,11 +164,16 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* 颜色预设：色板在上，允许自定义时颜色框在下 */
+  /* 颜色预设：「跟随页面」钮与色板在上，允许自定义时颜色框在下 */
   :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='swatch'] {
     display: flex;
     flex-direction: column;
     gap: var(--xh-space-2);
+  }
+
+  /* 「跟随页面」钮按内容取宽 */
+  :is(xh-designer-properties, [data-scope='designer-settings'][data-part='items']) [data-scope='designer-properties'][data-part='swatch'] > [data-scope='designer-properties'][data-part='swatch-none'] {
+    align-self: flex-start;
   }
 
   /* 选项树：表格在上、放不下时由表格自己横向滚动，新增钮在下、按内容取宽 */
