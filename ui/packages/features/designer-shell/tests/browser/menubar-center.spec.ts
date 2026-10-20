@@ -204,4 +204,27 @@ describe('状态栏右端的宿主内容（Chromium）', () => {
     expect(order()).toEqual(['Saved', 'Online', '100%'])
     expect(saved.checkVisibility()).toBe(true)
   })
+
+  it('窄的时候：宿主写的文字不折行，和设计器自己的状态项之间一道分隔；放不下时行首一段先收窄，右端整段留着', async () => {
+    const selection = createStatusItem(document, { label: 'Selected', value: 'Flow · 6 nodes, 6 connections, 2 selected, edited by Zhang San' })
+    selection.element.slot = 'status-start'
+    frame.append(selection.element)
+    const saved = document.createElement('span')
+    saved.slot = 'status-end'
+    saved.textContent = 'Saved 10:21'
+    host.append(saved)
+    await resize(360)
+    const region = document.querySelector('[data-part="region"][data-region="status"]')!
+    const start = zone(document, 'status', 'start').getBoundingClientRect()
+    const end = zone(document, 'status', 'end').getBoundingClientRect()
+    // 一行的高不到两倍字号，折成两行就超过
+    expect(saved.getBoundingClientRect().height).toBeLessThan(Number.parseFloat(getComputedStyle(saved).fontSize) * 2)
+    expect(Number.parseFloat(getComputedStyle(zoom.element).borderInlineStartWidth)).toBeGreaterThan(0)
+    expect(start.right).toBeLessThanOrEqual(end.left + 0.5)
+    // 行首一段收窄后多出来的截掉，不伸进两段之间的空当
+    const gap = Number.parseFloat(getComputedStyle(region).columnGap)
+    expect(zone(document, 'status', 'start').contains(document.elementFromPoint(end.left - gap / 2, end.top + end.height / 2))).toBe(false)
+    expect(end.right).toBeCloseTo(region.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(region).paddingRight), 0)
+    expect(end.width).toBeCloseTo(saved.getBoundingClientRect().width + zoom.element.getBoundingClientRect().width + Number.parseFloat(getComputedStyle(zone(document, 'status', 'end')).columnGap), 0)
+  })
 })
