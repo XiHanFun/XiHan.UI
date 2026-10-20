@@ -6,7 +6,7 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
-import { XhMenuRoot, XhToolbarItem, XhToolbarOverflowTrigger, XhToolbarRoot } from '../../src'
+import { XhMenubarRoot, XhMenuRoot, XhToolbarItem, XhToolbarOverflowTrigger, XhToolbarRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -61,6 +61,14 @@ function expectPrefixFollowsText(): void {
   expect(colors[0]).not.toBe(colors[1])
 }
 
+/** 子菜单入口与普通条目的图标、文字左缘对齐，入口的图标画出了 svg。 */
+function expectSubmenuEntryIcon(): void {
+  const part = (value: string, name: string): HTMLElement => document.querySelector<HTMLElement>(`[data-part="item"][data-value="${value}"] [data-part="${name}"]`)!
+  expect(part('panels', 'item-icon').querySelector('svg')!.getBoundingClientRect().width).toBeGreaterThan(8)
+  expect(part('panels', 'item-icon').getBoundingClientRect().left).toBeCloseTo(part('zoom', 'item-icon').getBoundingClientRect().left, 0)
+  expect(part('panels', 'item-text').getBoundingClientRect().left).toBeCloseTo(part('zoom', 'item-text').getBoundingClientRect().left, 0)
+}
+
 describe('菜单条目的图标（Chromium）', () => {
   it('图标排在文字之前；勾选条目的勾排在文字之后，图标与普通条目左缘对齐；两条的图标同尺寸且画出了 svg', async () => {
     await render(
@@ -95,6 +103,14 @@ describe('菜单条目的图标（Chromium）', () => {
     )
     await userEvent.click(document.querySelector<HTMLElement>('[data-scope="menu"][data-part="trigger"]')!)
     expectPrefixFollowsText()
+  })
+
+  it('按数据铺的菜单栏里，子菜单入口也画图标：与普通条目的图标、文字左缘对齐', async () => {
+    await render(<XhMenubarRoot collection={[{ value: 'view', label: '视图', items: [{ value: 'zoom', label: '缩放', icon: LINE }, { value: 'panels', label: '面板', icon: LINE, children: [{ value: 'outline', label: '页面结构' }] }] }]} />)
+    await inAct(() => document.querySelector<HTMLElement>('[data-scope="menubar"][data-part="trigger"][data-value="view"]')!.focus())
+    await userEvent.keyboard('{ArrowDown}')
+    await inAct(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())))
+    expectSubmenuEntryIcon()
   })
 
   it('工具条放不下时，收起的条目带着 itemIcons 的图标进「更多」菜单', async () => {

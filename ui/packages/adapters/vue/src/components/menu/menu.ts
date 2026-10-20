@@ -5,7 +5,7 @@
 
 // 提供 menu 相关实现。
 
-import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Placement, Size, Tone } from '@xihan-ui/core'
 import type { MenuAnyItemProps, MenuApi, MenuGroupProps, MenuNode, MenuNodeMeta, MenuRadioValue, MenuSchema, MenuTranslations, StructureNode } from '@xihan-ui/headless'
 import type { InjectionKey, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
@@ -254,6 +254,8 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     value: { type: String, required: true },
     /** 按数据铺设时触发条目的文字；缺省取父菜单 collection 里这一条的 label。 */
     label: { type: String },
+    /** 按数据铺设时触发条目的图标；缺省取父菜单 collection 里这一条的 icon。 */
+    icon: { type: Object as PropType<IconRecord> },
     disabled: { type: Boolean, default: undefined },
     collection: { type: Array as PropType<MenuNode[]> },
     checkboxValue: { type: Array as PropType<string[]> },
@@ -310,7 +312,7 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     const itemSlots = inject(MENU_ITEM_SLOTS, {})
     return () => slots.default
       ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
-      : renderSubStructure(ctx.api.value, parent.api.value, props.value, props.label, itemSlots)
+      : renderSubStructure(ctx.api.value, parent.api.value, props.value, { label: props.label, icon: props.icon }, itemSlots)
   },
 })
 
@@ -319,6 +321,8 @@ export const XhMenuSubTrigger = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const sub = useMenuSubContext()
     const ctx = useMenuContext()
+    // 入口里的图标与文字部件归子菜单那台机器，身份是这一条
+    provideMenuItem({ item: computed(() => ({ value: sub.value, disabled: sub.disabled })) })
     return () => h('div', {
       ...mergeProps(
         sub.parent.api.value.getItemProps({ value: sub.value, disabled: sub.disabled }) as Record<string, unknown>,
@@ -547,9 +551,9 @@ function renderDefaultStructure(
 }
 
 /** 子菜单那一层照 menuStructure 铺：触发条目的文字与 item 插槽的载荷取父菜单里这一条。 */
-function renderSubStructure(api: MenuApi, parent: MenuApi, value: string, label: string | undefined, itemSlots: MenuItemSlots): VNode[] {
+function renderSubStructure(api: MenuApi, parent: MenuApi, value: string, entry: { label?: string, icon?: IconRecord }, itemSlots: MenuItemSlots): VNode[] {
   const meta = parent.collection.find(node => node.value === value)
-  const nodes = menuStructure(api, { submenu: true, value, label: label ?? meta?.label ?? value, slotted: slottedBy(itemSlots) })
+  const nodes = menuStructure(api, { submenu: true, value, label: entry.label ?? meta?.label ?? value, icon: entry.icon ?? meta?.icon ?? null, slotted: slottedBy(itemSlots) })
   const lookup = (key: string): MenuNodeMeta | undefined => key === value ? meta : api.collection.find(node => node.value === key)
   return renderStructure(nodes, { ...MENU_PARTS, trigger: MenuStructureSubTrigger }, itemContent(itemSlots, lookup), MENU_INSTANCES)
 }

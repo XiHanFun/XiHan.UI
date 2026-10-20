@@ -5,7 +5,7 @@
 
 // 提供 menubar 相关实现。
 
-import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -23,8 +23,8 @@ import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhIcon } from '../icon/icon'
-import { provideMenu, useMenuContext } from '../menu/context'
-import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
+import { provideMenu, provideMenuItem, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   provideMenubar,
@@ -478,6 +478,8 @@ export const XhMenubarSub = defineComponent({
     value: { type: String, required: true },
     /** 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 */
     label: { type: String },
+    /** 按数据铺设时触发条目的图标；缺省取所属菜单 items 里这一条的 icon。 */
+    icon: { type: Object as PropType<IconRecord> },
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
@@ -537,7 +539,7 @@ export const XhMenubarSub = defineComponent({
     })
     return () => slots.default
       ? slots.default({ open: sub.api.value.open, setOpen: sub.api.value.setOpen })
-      : renderSubLayer(props.label ?? parent.api.value.collection.find(menu => menu.value === owner.menu.value.value)?.items.find(node => node.value === props.value)?.label ?? props.value)
+      : renderSubLayer(props.label ?? parent.api.value.collection.find(menu => menu.value === owner.menu.value.value)?.items.find(node => node.value === props.value)?.label ?? props.value, props.icon ?? parent.api.value.collection.find(menu => menu.value === owner.menu.value.value)?.items.find(node => node.value === props.value)?.icon ?? null)
   },
 })
 
@@ -546,6 +548,8 @@ export const XhMenubarSubTrigger = defineComponent({
   setup(_, { slots }) {
     const handle = useMenubarSubContext()
     const sub = useMenuContext()
+    // 入口里的图标与文字部件归子菜单那台机器，身份是这一条
+    provideMenuItem({ item: computed(() => ({ value: handle.value, disabled: handle.disabled })) })
     return () => h('div', {
       // 合并序=子先父后：父层的 data-scope/data-part 胜出，菜单栏的方向键与选中照常认它。
       // 反过来写会让节点带上 data-scope="menu"，菜单栏按自己的 scope 查条目就一条都找不到
@@ -564,9 +568,13 @@ export const XhMenubarSubTrigger = defineComponent({
 })
 
 /** 子菜单不写插槽时那一层：触发条目、定位层与按本层 collection 铺的条目；子层不经菜单栏上的条目插槽。 */
-function renderSubLayer(label: string): VNode[] {
+function renderSubLayer(label: string, icon: IconRecord | null): VNode[] {
   return [
-    h(XhMenubarSubTrigger, null, () => [label]),
+    // 入口与普通条目一样：图标在 item-icon（写了才铺）、文字在 item-text
+    h(XhMenubarSubTrigger, null, () => [
+      ...(icon ? [h(XhMenuItemIcon, null, () => [h(XhIcon, { icon })])] : []),
+      h(XhMenuItemText, null, () => [label]),
+    ]),
     h(XhMenuPositioner, null, () => [h(XhMenuContent, null, () => [h(MenuDefaultNodes)])]),
   ]
 }

@@ -5,7 +5,7 @@
 
 // 提供 menubar 相关实现。
 
-import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
+import type { Direction, IconRecord, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MenuApi, MenubarAnyItemProps, MenubarApi, MenubarCheckboxItemProps, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioItemProps, MenubarRadioValue, MenubarSchema, MenubarTranslations, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
@@ -26,8 +26,8 @@ import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { XhIcon } from '../icon/icon'
-import { MenuProvider, useMenuContext } from '../menu/context'
-import { MenuDefaultNodes, XhMenuContent, XhMenuPositioner } from '../menu/menu'
+import { MenuItemProvider, MenuProvider, useMenuContext } from '../menu/context'
+import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
 import { useMenuWithParent } from '../menu/use-menu'
 import {
   MenubarGroupProvider,
@@ -530,6 +530,8 @@ export interface XhMenubarSubProps {
   value: string
   /** 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 */
   label?: string
+  /** 按数据铺设时触发条目的图标；缺省取所属菜单 items 里这一条的 icon。 */
+  icon?: IconRecord
   disabled?: boolean
   /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
   collection?: MenuNode[]
@@ -559,7 +561,7 @@ export interface XhMenubarSubProps {
  * 渲染为菜单栏条目与本子菜单触发器的双重身份。本身不渲染节点。
  * 不给 children 时照标准结构铺自己那一层：触发条目、定位层与按 collection 铺的条目。
  */
-export function XhMenubarSub({ value, label, disabled, children, ...props }: XhMenubarSubProps): ReactNode {
+export function XhMenubarSub({ value, label, icon, disabled, children, ...props }: XhMenubarSubProps): ReactNode {
   const parent = useMenubarContext()
   const owner = useMenubarMenuContext()
   if (!owner)
@@ -587,6 +589,7 @@ export function XhMenubarSub({ value, label, disabled, children, ...props }: XhM
       setOpenRef.current(false)
   }, [ownerOpen])
 
+  const entryIcon = icon ?? ownItems(parent.api, owner).find(node => node.value === value)?.icon
   return (
     <MenuProvider value={sub}>
       <MenubarSubProvider value={handle}>
@@ -594,7 +597,10 @@ export function XhMenubarSub({ value, label, disabled, children, ...props }: XhM
           ? renderSlot(children, { open: sub.api.open, setOpen: sub.api.setOpen })
           : (
               <>
-                <XhMenubarSubTrigger>{label ?? ownItems(parent.api, owner).find(node => node.value === value)?.label ?? value}</XhMenubarSubTrigger>
+                <XhMenubarSubTrigger>
+                  {entryIcon ? <XhMenuItemIcon><XhIcon icon={entryIcon} /></XhMenuItemIcon> : null}
+                  <XhMenuItemText>{label ?? ownItems(parent.api, owner).find(node => node.value === value)?.label ?? value}</XhMenuItemText>
+                </XhMenubarSubTrigger>
                 <XhMenuPositioner>
                   <XhMenuContent>
                     <MenuDefaultNodes />
@@ -634,7 +640,7 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
         { ref: (el: HTMLDivElement | null) => { sub.triggerRef.current = el } },
       )}
     >
-      {children}
+      <MenuItemProvider value={item}>{children}</MenuItemProvider>
     </div>
   )
 }

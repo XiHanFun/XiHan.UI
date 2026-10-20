@@ -45492,7 +45492,7 @@
                 "text": "ElementStructure<XhMenuElement>"
               },
               "static": true,
-              "default": "{ rootless: true, build: host => host.ctrl.service ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), { submenu: host.submenu ?? false, anchored: host.anchor !== undefined, ...(host.value === undefined ? {} : { value: host.value }), ...(host.label === undefined ? {} : { label: host.label }), slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ rootless: true, build: host => host.ctrl.service ? menuStructure(connectMenu(host.ctrl.service, wcNormalize), { submenu: host.submenu ?? false, anchored: host.anchor !== undefined, ...(host.value === undefined ? {} : { value: host.value }), ...(host.label === undefined ? {} : { label: host.label }), ...(host.icon == null ? {} : { icon: host.icon }), slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -45658,6 +45658,15 @@
                 "text": "string | undefined"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "icon",
+              "privacy": "public",
+              "type": {
+                "text": "IconRecord | null | undefined"
+              },
+              "description": "子菜单形态：触发条目的图标，铺进条目文字之前的 item-icon；按数据铺时由父层的那一条带来。只作为 property 暴露。"
             },
             {
               "kind": "field",
