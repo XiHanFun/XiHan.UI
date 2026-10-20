@@ -267,6 +267,14 @@ export interface DesignerSettingsTranslations {
   readonly developer: string
   /** 开发者模式的说明。 */
   readonly developerHint: string
+  /** 分页调试日志的标签。 */
+  readonly debugPagination: string
+  /** 分页调试日志的说明。 */
+  readonly debugPaginationHint: string
+  /** 渲染调试日志的标签。 */
+  readonly debugRender: string
+  /** 渲染调试日志的说明。 */
+  readonly debugRenderHint: string
   /** 语言条目的标签。 */
   readonly language: string
   /** 语言条目的说明。 */
