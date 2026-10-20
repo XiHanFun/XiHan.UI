@@ -120,6 +120,11 @@ const CROSS_PART = {
   'menu.content': ['arrow'],
   'menubar.content': ['arrow'],
   'context-menu.content': ['arrow'],
+  // 同一层有勾选条目时，普通条目在行尾留出的那一格就是对号那一列：宽度读对号的尺寸槽，
+  // 作者改了对号尺寸，留位一起跟，整张菜单的快捷键才同列
+  'menu.item-indicator': ['item'],
+  'menubar.item-indicator': ['item'],
+  'context-menu.item-indicator': ['item'],
   // 外壳与面板是同一片面的两种形态（单面板直接画在 content 上、多面板共用 viewport），
   // 底、描边与落影必须同源，否则两种形态并存时看得出接缝；
   // 面板里的一枝子级是面板的一段，条目之间的行距读面板的间隙槽，展开前后行距不跳

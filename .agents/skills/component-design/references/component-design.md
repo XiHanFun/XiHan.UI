@@ -654,12 +654,12 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 槽 | 归属 | 内容来源 |
 | --- | --- | --- |
-| `prefix` | 菜单族是前导图标（`item-indicator`）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
+| `prefix` | 菜单族是前导标记（`item-indicator`，勾选与单选条目的对号除外）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
 | `text` | `item-text`，也是连打检索的取字来源 | `label` |
 | `description` | 第 2 行，跨 text 列 | 数据 |
 | `shortcut` | 行尾，菜单族与 Command 才有 | 数据 |
 | `suffix` | 行尾，排在快捷键之后、对号之前 | 适配器的逐条钩子 |
-| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠 | 库 |
+| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠。菜单族勾选与单选条目的对号仍是 `item-indicator`，皮肤按 `order` 排到这一列、与子菜单箭头同列，没勾时只隐不塌；同一层有勾选条目时，普通条目在行尾留出同宽的一格，快捷键同列 | 库 |
 
 - 行首与行尾两格承载任意节点（图标、头像、计数、徽标），家族只管落位，不规定字号与颜色——它们不是文字。
 - 行首那一格是装饰：可及名由 `text` 承担，该格一律 `aria-hidden`。

@@ -27464,7 +27464,7 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）按作者写入的槽位留在主行，不为没写的条目强制占列。盒是指示符：按指示符档
+  /* 标记位（前导标记 / 勾选与单选的对号）留在主行，不为没写的条目强制占列；对号排到行尾，见下文。盒是指示符：按指示符档
      取尺，与 Menu / Cascader 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
@@ -27487,6 +27487,33 @@
 
   .xh-scope-context-menu[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 勾选与单选条目的对号排到行尾，与子菜单箭头同一列；快捷键与行尾那一格（item-suffix）在它之前，DOM 顺序不动。
+     行首只留前导标记与图标，勾选条目的图标因此与普通条目左缘对齐；没勾时对号只是看不见，占位不塌 */
+  .xh-scope-context-menu[data-part='item-indicator'][data-xh-menu-choice-indicator] {
+    order: 1;
+    margin-inline-start: auto;
+  }
+
+  /* 同一层里有勾选或单选条目时，普通条目在行尾留出对号那一格，快捷键与它们同列；子菜单入口那一格是箭头。
+     只认这一层的条目（content 的子项与分组里的子项），子菜单那一层的勾选不算 */
+  .xh-scope-context-menu[data-part='content']:has(
+      > .xh-scope-context-menu[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-context-menu[data-part='group'] > .xh-scope-context-menu[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-context-menu[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after,
+  .xh-scope-context-menu[data-part='content']:has(
+      > .xh-scope-context-menu[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-context-menu[data-part='group'] > .xh-scope-context-menu[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-context-menu[data-part='group']
+    > .xh-scope-context-menu[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after {
+    content: '';
+    flex: none;
+    order: 1;
+    margin-inline-start: auto;
+    inline-size: var(--xh-context-menu-item-indicator-size, var(--xh-control-indicator-size));
   }
 
   /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
@@ -35608,7 +35635,7 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
+  /* 标记位（前导标记 / 勾选与单选的对号，对号排到行尾，见下文）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
      与 Cascader / Select 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      作者塞进标记位的 XhIcon 与盒同尺；条目上那支只管作者直接放进条目里的图标 */
@@ -35630,6 +35657,33 @@
 
   .xh-scope-menu[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 勾选与单选条目的对号排到行尾，与子菜单箭头同一列；快捷键与行尾那一格（item-suffix）在它之前，DOM 顺序不动。
+     行首只留前导标记与图标，勾选条目的图标因此与普通条目左缘对齐；没勾时对号只是看不见，占位不塌 */
+  .xh-scope-menu[data-part='item-indicator'][data-xh-menu-choice-indicator] {
+    order: 1;
+    margin-inline-start: auto;
+  }
+
+  /* 同一层里有勾选或单选条目时，普通条目在行尾留出对号那一格，快捷键与它们同列；子菜单入口那一格是箭头。
+     只认这一层的条目（content 的子项与分组里的子项）：Web Components 的子菜单铺在父层 DOM 里，下一层的勾选不算 */
+  .xh-scope-menu[data-part='content']:has(
+      > .xh-scope-menu[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-menu[data-part='group'] > .xh-scope-menu[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-menu[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after,
+  .xh-scope-menu[data-part='content']:has(
+      > .xh-scope-menu[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-menu[data-part='group'] > .xh-scope-menu[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-menu[data-part='group']
+    > .xh-scope-menu[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after {
+    content: '';
+    flex: none;
+    order: 1;
+    margin-inline-start: auto;
+    inline-size: var(--xh-menu-item-indicator-size, var(--xh-control-indicator-size));
   }
 
   /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */
@@ -36096,7 +36150,7 @@
     display: none;
   }
 
-  /* 标记位（勾选符号 / 图标）按作者写入的位置留在主行，不为没写的条目强制占列。盒是指示符：按指示符档
+  /* 标记位（前导标记 / 勾选与单选的对号）留在主行，不为没写的条目强制占列；对号排到行尾，见下文。盒是指示符：按指示符档
      取尺，与 Menu / ContextMenu 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
@@ -36119,6 +36173,33 @@
 
   .xh-scope-menubar[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 勾选与单选条目的对号排到行尾，与子菜单箭头同一列；快捷键与行尾那一格（item-suffix）在它之前，DOM 顺序不动。
+     行首只留前导标记与图标，勾选条目的图标因此与普通条目左缘对齐；没勾时对号只是看不见，占位不塌 */
+  .xh-scope-menubar[data-part='item-indicator'][data-xh-menu-choice-indicator] {
+    order: 1;
+    margin-inline-start: auto;
+  }
+
+  /* 同一层里有勾选或单选条目时，普通条目在行尾留出对号那一格，快捷键与它们同列；子菜单入口那一格是箭头。
+     只认这一层的条目（content 的子项与分组里的子项），子菜单那一层的勾选不算 */
+  .xh-scope-menubar[data-part='content']:has(
+      > .xh-scope-menubar[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-menubar[data-part='group'] > .xh-scope-menubar[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-menubar[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after,
+  .xh-scope-menubar[data-part='content']:has(
+      > .xh-scope-menubar[data-part='item'] > [data-xh-menu-choice-indicator],
+      > .xh-scope-menubar[data-part='group'] > .xh-scope-menubar[data-part='item'] > [data-xh-menu-choice-indicator]
+    )
+    > .xh-scope-menubar[data-part='group']
+    > .xh-scope-menubar[data-part='item']:not([aria-haspopup='menu'], [aria-checked])::after {
+    content: '';
+    flex: none;
+    order: 1;
+    margin-inline-start: auto;
+    inline-size: var(--xh-menubar-item-indicator-size, var(--xh-control-indicator-size));
   }
 
   /* 副文本另起一行：整行占满，把条目的一行内容折成两行 */

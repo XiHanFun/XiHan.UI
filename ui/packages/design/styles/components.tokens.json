@@ -22609,6 +22609,9 @@
       "name": "--xh-context-menu-item-indicator-size",
       "component": "context-menu",
       "part": [
+        "content",
+        "group",
+        "item",
         "item-indicator"
       ],
       "property": [
@@ -22617,13 +22620,16 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "has(> [data-scope='context-menu'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='context-menu'][data-part='group'] > [data-scope='context-menu'][data-part='item'] > [data-xh-menu-choice-indicator])",
+        "not([aria-haspopup='menu'], [aria-checked])",
+        "xh-menu-choice-indicator"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "context-menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "context-menu 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-item-leading",
@@ -52077,6 +52083,9 @@
       "name": "--xh-menu-item-indicator-size",
       "component": "menu",
       "part": [
+        "content",
+        "group",
+        "item",
         "item-indicator"
       ],
       "property": [
@@ -52085,13 +52094,16 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "has(> [data-scope='menu'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='menu'][data-part='group'] > [data-scope='menu'][data-part='item'] > [data-xh-menu-choice-indicator])",
+        "not([aria-haspopup='menu'], [aria-checked])",
+        "xh-menu-choice-indicator"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "menu 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "menu 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-menu-item-leading",
@@ -52985,6 +52997,9 @@
       "name": "--xh-menubar-item-indicator-size",
       "component": "menubar",
       "part": [
+        "content",
+        "group",
+        "item",
         "item-indicator"
       ],
       "property": [
@@ -52993,13 +53008,16 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "has(> [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator])",
+        "not([aria-haspopup='menu'], [aria-checked])",
+        "xh-menu-choice-indicator"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
+      "description": "menubar 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-menubar-item-leading",
