@@ -27,15 +27,17 @@ async function mountCollection(collection: MenuNode[]): Promise<void> {
   await act(async () => root!.render(<XhMenuRoot collection={collection} trigger="操作" />))
 }
 
+const LINE = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path' as const, attrs: { d: 'M4 12h16' } }] }
+
 /** 部件名序列，按文档顺序；positioner 搬到了 portal 落点，所以从整篇文档取件。 */
 function partNames(scope: ParentNode = document.body): (string | null)[] {
   return [...scope.querySelectorAll('[data-scope="menu"][data-part]')].map(el => el.getAttribute('data-part'))
 }
 
 describe('menu 的 collection', () => {
-  it('标记位、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', async () => {
+  it('图标、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', async () => {
     await mountCollection([
-      { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+      { value: 'copy', label: '复制', icon: LINE, description: '连同格式', shortcut: '⌘ C' },
       { value: 'paste', label: '粘贴' },
     ])
     expect(partNames()).toEqual([
@@ -43,7 +45,7 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
-      'item-indicator',
+      'item-icon',
       'item-text',
       'item-description',
       'item-shortcut',
@@ -58,14 +60,14 @@ describe('menu 的 collection', () => {
     expect(shortcut.getAttribute('data-xh-collection-slot')).toBe('shortcut')
   })
 
-  it('renderItemPrefix 只接管行首那一格，说明与快捷键照旧由数据铺；它压过数据里的 indicator', async () => {
+  it('renderItemPrefix 只接管行首那一格（item-icon），说明与快捷键照旧由数据铺；它压过数据里的 icon', async () => {
     host = document.createElement('div')
     document.body.append(host)
     root = createRoot(host)
     ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
     await act(async () => root!.render(
       <XhMenuRoot
-        collection={[{ value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' }]}
+        collection={[{ value: 'copy', label: '复制', icon: LINE, description: '连同格式', shortcut: '⌘ C' }]}
         trigger="操作"
         renderItemPrefix={node => <svg data-icon={node.value} />}
       />,
@@ -75,12 +77,14 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
-      'item-indicator',
+      'item-icon',
       'item-text',
       'item-description',
       'item-shortcut',
     ])
-    expect(document.body.querySelector('[data-part="item-indicator"] svg')?.getAttribute('data-icon')).toBe('copy')
+    const icon = document.body.querySelector('[data-part="item-icon"]')!
+    expect(icon.querySelector('svg')?.getAttribute('data-icon')).toBe('copy')
+    expect(icon.querySelector('[data-scope="icon"]')).toBeNull()
   })
 
   it('renderItemSuffix 落行尾那一格，排在快捷键之后', async () => {

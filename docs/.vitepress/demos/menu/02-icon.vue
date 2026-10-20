@@ -6,7 +6,7 @@ import {
   XhIcon,
   XhMenuContent,
   XhMenuItem,
-  XhMenuItemIndicator,
+  XhMenuItemIcon,
   XhMenuItemShortcut,
   XhMenuItemText,
   XhMenuPositioner,
@@ -24,18 +24,18 @@ import {
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuItem value="copy">
-          <XhMenuItemIndicator><XhIcon :icon="CopyIcon" size="sm" /></XhMenuItemIndicator>
+          <XhMenuItemIcon><XhIcon :icon="CopyIcon" size="sm" /></XhMenuItemIcon>
           <XhMenuItemText>复制</XhMenuItemText>
           <XhMenuItemShortcut>⌘ C</XhMenuItemShortcut>
         </XhMenuItem>
         <XhMenuItem value="rename">
-          <XhMenuItemIndicator><XhIcon :icon="PencilIcon" size="sm" /></XhMenuItemIndicator>
+          <XhMenuItemIcon><XhIcon :icon="PencilIcon" size="sm" /></XhMenuItemIcon>
           <XhMenuItemText>重命名</XhMenuItemText>
           <XhMenuItemShortcut>F2</XhMenuItemShortcut>
         </XhMenuItem>
         <XhMenuSeparator />
         <XhMenuItem value="delete">
-          <XhMenuItemIndicator><XhIcon :icon="TrashIcon" size="sm" /></XhMenuItemIndicator>
+          <XhMenuItemIcon><XhIcon :icon="TrashIcon" size="sm" /></XhMenuItemIcon>
           <XhMenuItemText>移到回收站</XhMenuItemText>
           <XhMenuItemShortcut>⌫</XhMenuItemShortcut>
         </XhMenuItem>

@@ -74,7 +74,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 
 ### 特性
 
-- `collection` 可直接生成条目、分组、标记位、图标、说明、快捷键提示和分隔线。条目的 `icon` 是图标记录，铺进文字之前的 `item-icon`（装饰态，读屏从条目文字取意）；勾选与单选条目的勾在 `item-indicator`，两者各占一格。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
+- `collection` 可直接生成条目、分组、图标、说明、快捷键提示和分隔线。条目的 `icon` 是图标记录，铺进文字之前的 `item-icon`（装饰态，读屏从条目文字取意），`item-prefix` 插槽也落在这一格、压过 `icon`；勾选与单选条目的勾在 `item-indicator`，两者各占一格。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - 只给 `collection` 时照标准结构铺：触发按钮（内容归作者，没写时取 `label`），定位层里的条目、分组与分隔线；带 `children` 的条目是一个嵌套的子菜单，它的触发条目文字取 `label`。Vue / React 不写默认插槽与 Web Components 不写部件时生成的节点出自同一个结构函数；Web Components 的部件直接长在 `<xh-menu>` 里，触发按钮的内容与条目可用宿主直接子节点 `slot="trigger"`、`slot="item:<值>"` 等接管（只到根菜单这一层），子菜单生成嵌套的 `<xh-menu submenu>`，触发条目写着它的 `value`。指向锚点的箭头要手写结构时自己摆。
 - `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，菜单就贴着它定位、收起时焦点归还给它；按数据铺设时不再铺触发按钮。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算菜单内的交互，开合交给打开它的那条命令。没有触发器替菜单命名，名字写在 `translations.content` 上。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
@@ -157,7 +157,6 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `label` | `string` |  | 展示文本；默认回退为 value。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
-| `indicator` | `string` |  | 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 |
 | `icon` | `IconRecord` |  | 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
@@ -385,7 +384,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-collection-slot` | 'indicator' \| 'prefix' |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |

@@ -75,7 +75,6 @@ export function connectContextMenu<T extends PropTypes>(
       label: node.label ?? node.value,
       disabled: !!node.disabled,
       tone: node.tone ?? null,
-      indicator: node.indicator ?? null,
       icon: node.icon ?? null,
       description: node.description ?? null,
       shortcut: node.shortcut ?? null,
@@ -446,7 +445,7 @@ export function connectContextMenu<T extends PropTypes>(
       'data-xh-collection-slot': 'text',
     }),
 
-    // 勾选与单选条目的标记位是对号，落家族的 indicator 列（行尾，按选中态显隐）；普通条目的标记位是常显的前导图标槽，落 prefix 列
+    // 对号：只在勾选与单选条目上，落家族的 indicator 列（行尾，按选中态显隐）；行首内容归 item-icon
     getItemIndicatorProps: (item) => {
       const choiceState = item.kind === 'checkbox'
         ? (checkboxValue.includes(item.value) ? 'checked' : 'unchecked')
@@ -456,7 +455,7 @@ export function connectContextMenu<T extends PropTypes>(
       return normalize.element({
         ...parts['item-indicator'].attrs,
         ...itemStateAttrs(item),
-        'data-xh-collection-slot': choiceState ? 'indicator' : 'prefix',
+        'data-xh-collection-slot': 'indicator',
         'data-state': choiceState,
         'data-xh-menu-choice-indicator': item.kind === 'checkbox' || item.kind === 'radio' ? item.kind : undefined,
         // 标记位是纯装饰，语义由条目自己给出

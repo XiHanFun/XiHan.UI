@@ -132,7 +132,7 @@ describe('menubar 入口与条目', () => {
     await releasePointer(openItem)
   })
 
-  it('禁用条目不悬停换底；标记位落 prefix 槽且盒尺按指示符档 16px', async () => {
+  it('禁用条目不悬停换底；对号落 indicator 槽且盒尺按指示符档 16px', async () => {
     await mountMenubar()
     const blocked = item('blocked')
     await userEvent.hover(blocked)
@@ -140,7 +140,7 @@ describe('menubar 入口与条目', () => {
     expect(getComputedStyle(blocked).color).toBe(resolve('--xh-fg-disabled', 'color'))
     expect(getComputedStyle(blocked).cursor).toBe('not-allowed')
     const indicator = item('new').querySelector<HTMLElement>('[data-part="item-indicator"]')!
-    expect(indicator.getAttribute('data-xh-collection-slot')).toBe('prefix')
+    expect(indicator.getAttribute('data-xh-collection-slot')).toBe('indicator')
     expect(getComputedStyle(indicator).visibility).toBe('visible')
     // 标记位是指示符：与指示符档同尺，不随家族按档下发的 --xh-icon-size（20px）；字形尺寸的契约由 menubar-glyph-size.spec 管
     expect(getComputedStyle(indicator).width).toBe('16px')

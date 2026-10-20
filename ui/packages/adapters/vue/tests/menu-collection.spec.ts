@@ -155,12 +155,12 @@ describe('menu 的 collection', () => {
     w.unmount()
   })
 
-  it('标记位、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', () => {
+  it('图标、文字、说明与快捷键按数据铺，未提供的那几个不铺对应部件', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [
         h(XhMenuRoot, {
           collection: [
-            { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+            { value: 'copy', label: '复制', icon: { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] }, description: '连同格式', shortcut: '⌘ C' },
             { value: 'paste', label: '粘贴' },
           ] satisfies MenuNode[],
         }),
@@ -171,7 +171,7 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
-      'item-indicator',
+      'item-icon',
       'item-text',
       'item-description',
       'item-shortcut',
@@ -187,7 +187,7 @@ describe('menu 的 collection', () => {
     w.unmount()
   })
 
-  it('item-prefix 只接管行首那一格，说明与快捷键照旧由数据铺', () => {
+  it('item-prefix 只接管行首那一格（item-icon），说明与快捷键照旧由数据铺', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [
         h(XhMenuRoot, {
@@ -202,28 +202,29 @@ describe('menu 的 collection', () => {
       'positioner',
       'content',
       'item',
-      'item-indicator',
+      'item-icon',
       'item-text',
       'item-description',
       'item-shortcut',
     ])
-    expect(document.body.querySelector('[data-part="item-indicator"] svg')?.getAttribute('data-icon')).toBe('copy')
+    expect(document.body.querySelector('[data-part="item-icon"] svg')?.getAttribute('data-icon')).toBe('copy')
     w.unmount()
   })
 
-  it('item-prefix 压过数据里的 indicator：同一格只画一次', () => {
+  it('item-prefix 压过数据里的 icon：行首那一格只画一次', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', [
         h(XhMenuRoot, {
-          collection: [{ value: 'copy', label: '复制', indicator: '✓' }] satisfies MenuNode[],
+          collection: [{ value: 'copy', label: '复制', icon: { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] } }] satisfies MenuNode[],
         }, {
           'item-prefix': () => [h('b', '★')],
         }),
       ]),
     }), { attachTo: document.body })
-    const indicators = [...document.body.querySelectorAll('[data-part="item-indicator"]')]
-    expect(indicators).toHaveLength(1)
-    expect(indicators[0]!.textContent).toBe('★')
+    const icons = [...document.body.querySelectorAll('[data-scope="menu"][data-part="item-icon"]')]
+    expect(icons).toHaveLength(1)
+    expect(icons[0]!.textContent).toBe('★')
+    expect(document.body.querySelector('[data-part="item-indicator"]')).toBeNull()
     w.unmount()
   })
 

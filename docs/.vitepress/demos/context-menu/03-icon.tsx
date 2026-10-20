@@ -4,7 +4,7 @@ import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";
 import {
   XhContextMenuContent,
   XhContextMenuItem,
-  XhContextMenuItemIndicator,
+  XhContextMenuItemIcon,
   XhContextMenuItemShortcut,
   XhContextMenuItemText,
   XhContextMenuPositioner,
@@ -25,18 +25,18 @@ export default function Demo(): ReactNode {
       <XhContextMenuPositioner>
         <XhContextMenuContent>
           <XhContextMenuItem value="copy">
-            <XhContextMenuItemIndicator><XhIcon icon={CopyIcon} size="sm" /></XhContextMenuItemIndicator>
+            <XhContextMenuItemIcon><XhIcon icon={CopyIcon} size="sm" /></XhContextMenuItemIcon>
             <XhContextMenuItemText>复制</XhContextMenuItemText>
             <XhContextMenuItemShortcut>⌘ C</XhContextMenuItemShortcut>
           </XhContextMenuItem>
           <XhContextMenuItem value="rename">
-            <XhContextMenuItemIndicator><XhIcon icon={PencilIcon} size="sm" /></XhContextMenuItemIndicator>
+            <XhContextMenuItemIcon><XhIcon icon={PencilIcon} size="sm" /></XhContextMenuItemIcon>
             <XhContextMenuItemText>重命名</XhContextMenuItemText>
             <XhContextMenuItemShortcut>F2</XhContextMenuItemShortcut>
           </XhContextMenuItem>
           <XhContextMenuSeparator />
           <XhContextMenuItem value="delete">
-            <XhContextMenuItemIndicator><XhIcon icon={TrashIcon} size="sm" /></XhContextMenuItemIndicator>
+            <XhContextMenuItemIcon><XhIcon icon={TrashIcon} size="sm" /></XhContextMenuItemIcon>
             <XhContextMenuItemText>移到回收站</XhContextMenuItemText>
             <XhContextMenuItemShortcut>⌫</XhContextMenuItemShortcut>
           </XhContextMenuItem>

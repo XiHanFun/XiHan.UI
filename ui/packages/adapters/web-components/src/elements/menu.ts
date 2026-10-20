@@ -60,9 +60,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart item-text - 条目中的文字载体，连打检索取自它
- * @csspart item-indicator - 条目中的标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；对读屏隐藏
+ * @csspart item-indicator - 勾选与单选条目的对号，排在条目最后；aria-hidden
  * @csspart item-description - 条目中的副文本
- * @csspart item-icon - 条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon
+ * @csspart item-icon - 条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon，slot="item-prefix:<值>" 的内容也落这里
  * @csspart item-shortcut - 条目中的快捷键提示（aria-hidden，读屏从条目文字取意）
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标、次级图标）
  * @csspart separator - 分隔线（role=separator，不进入方向键导航）

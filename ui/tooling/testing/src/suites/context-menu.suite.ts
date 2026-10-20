@@ -1,6 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { contextMenuAnatomy, contextMenuKeyboard } from '@xihan-ui/headless'
-import { CHOICE_ORDER_ITEMS, choicePartOrder } from './shared/choice-order'
+import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS } from './shared/choice-order'
 import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -234,8 +234,8 @@ export const contextMenuSuite: ConformanceSuite = {
           },
           'item[2]': { 'data-value': 'delete', 'tabindex': '-1' },
           'item-text[1]': { 'data-disabled': '', 'data-xh-collection-slot': 'text' },
-          // 标记位是常显的前导图标槽，落 prefix 列而不是藏起来的 indicator 列
-          'item-indicator[0]': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'prefix' },
+          // item-indicator 只当对号：一律落家族的 indicator 列（行尾），行首内容归 item-icon
+          'item-indicator[0]': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'indicator' },
           'separator': { 'role': 'separator', 'aria-orientation': 'horizontal', 'data-xh-collection-separator': '' },
           'group[0]': { 'role': 'group', 'aria-labelledby': '@part(group-label[0])' },
           'group[1]': { 'role': 'group', 'aria-labelledby': '@part(group-label[1])' },
@@ -974,6 +974,13 @@ export const contextMenuSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { collection: CHOICE_ORDER_ITEMS.map(node => ({ ...node })) },
       steps: [choicePartOrder('context-menu')],
+    },
+    {
+      name: '作者不写结构：行首内容只在 item-icon，数据里的 indicator 不再铺标记位；对号只在勾选与单选条目上、排在最后',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: LEADING_ITEMS.map(node => ({ ...node })) },
+      steps: [choicePartOrder('context-menu', LEADING_EXPECTED)],
     },
   ],
 }

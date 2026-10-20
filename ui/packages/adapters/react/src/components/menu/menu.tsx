@@ -288,7 +288,7 @@ export function XhMenuItemText({ children, ...rest }: XhMenuItemTextProps): Reac
 }
 
 export interface XhMenuItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 条目中的标记位（勾选、图标），纯装饰。 */
+/** 勾选与单选条目的对号，排在条目最后，纯装饰；行首的图标写在 XhMenuItemIcon 里。 */
 export function XhMenuItemIndicator({ children, ...rest }: XhMenuItemIndicatorProps): ReactNode {
   const ctx = useMenuContext()
   const item = useMenuItemContext()

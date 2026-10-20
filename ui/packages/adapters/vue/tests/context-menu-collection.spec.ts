@@ -8,7 +8,6 @@ import {
   XhContextMenuGroup,
   XhContextMenuGroupLabel,
   XhContextMenuItem,
-  XhContextMenuItemIndicator,
   XhContextMenuItemText,
   XhContextMenuPositioner,
   XhContextMenuRoot,
@@ -19,7 +18,7 @@ import {
 const COLLECTION: ContextMenuNode[] = [
   { value: 'copy', label: '复制' },
   { value: 'paste', label: '粘贴', disabled: true },
-  { value: 'name', label: '按名称', group: 'sort', groupLabel: '排序方式', indicator: '✓', separatorBefore: true },
+  { value: 'name', label: '按名称', group: 'sort', groupLabel: '排序方式', separatorBefore: true },
   { value: 'time', label: '按时间', group: 'sort' },
   { value: 'delete', label: '删除', separatorBefore: true },
 ]
@@ -50,7 +49,6 @@ function mountFromParts() {
           h(XhContextMenuGroup, { value: 'sort' }, () => [
             h(XhContextMenuGroupLabel, () => '排序方式'),
             h(XhContextMenuItem, { value: 'name' }, () => [
-              h(XhContextMenuItemIndicator, () => '✓'),
               h(XhContextMenuItemText, () => '按名称'),
             ]),
             h(XhContextMenuItem, { value: 'time' }, () => [h(XhContextMenuItemText, () => '按时间')]),
@@ -102,7 +100,6 @@ describe('context-menu 的 collection', () => {
       'group',
       'group-label',
       'item',
-      'item-indicator',
       'item-text',
       'item',
       'item-text',

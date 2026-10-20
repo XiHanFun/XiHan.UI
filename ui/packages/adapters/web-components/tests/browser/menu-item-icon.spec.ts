@@ -37,6 +37,18 @@ function menuPart(value: string, part: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-scope="menu"][data-part="item"][data-value="${value}"] [data-scope="menu"][data-part="${part}"]`)
 }
 
+/** item-prefix 给的图标落在 item-icon 里，颜色就是条目的字色；危险条目随字转红。 */
+function expectPrefixFollowsText(): void {
+  const colors = ['copy', 'remove'].map((value) => {
+    const item = document.querySelector<HTMLElement>(`[data-scope="menu"][data-part="item"][data-value="${value}"]`)!
+    const svg = item.querySelector<SVGElement>(`svg[data-prefix="${value}"]`)!
+    expect(svg.parentElement!.getAttribute('data-part')).toBe('item-icon')
+    expect(getComputedStyle(svg).color).toBe(getComputedStyle(item).color)
+    return getComputedStyle(item).color
+  })
+  expect(colors[0]).not.toBe(colors[1])
+}
+
 describe('菜单条目的图标（Chromium）', () => {
   it('图标排在文字之前；勾选条目的勾排在文字之后，图标与普通条目左缘对齐；两条的图标同尺寸且画出了 svg', async () => {
     box = document.createElement('div')
@@ -61,6 +73,20 @@ describe('菜单条目的图标（Chromium）', () => {
     expect(svgs[0]!.width).toBeGreaterThan(8)
     expect(svgs[1]!.width).toBeCloseTo(svgs[0]!.width, 1)
     expect(menuPart('plain', 'item-icon')).toBeNull()
+  })
+
+  it('item-prefix 的图标落进 item-icon、随条目字色走：普通条目中性，危险条目跟着转红，不取对号的品牌色', async () => {
+    box = document.createElement('div')
+    const menu = document.createElement('xh-menu') as HTMLElement & { collection?: unknown }
+    menu.setAttribute('label', '编辑')
+    menu.innerHTML = ['copy', 'remove'].map(value => `<svg slot="item-prefix:${value}" data-prefix="${value}" viewBox="0 0 24 24" width="16" height="16"><path d="M4 12h16" stroke="currentColor"/></svg>`).join('')
+    menu.collection = [{ value: 'copy', label: '复制' }, { value: 'remove', label: '删除', tone: 'danger' }]
+    box.append(menu)
+    document.body.append(box)
+    await settle()
+    await userEvent.click(menu.querySelector<HTMLElement>('[data-scope="menu"][data-part="trigger"]')!)
+    await settle()
+    expectPrefixFollowsText()
   })
 
   it('工具条放不下时，收起的条目带着 itemIcons 的图标进「更多」菜单', async () => {

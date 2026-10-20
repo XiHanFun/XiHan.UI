@@ -1,6 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { menubarAnatomy, menubarKeyboard } from '@xihan-ui/headless'
-import { CHOICE_ORDER_ITEMS, choicePartOrder } from './shared/choice-order'
+import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS } from './shared/choice-order'
 import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -252,8 +252,8 @@ export const menubarSuite: ConformanceSuite = {
           },
           'item-text[0]': { 'data-xh-collection-slot': 'text' },
           'separator': { 'role': 'separator', 'aria-orientation': 'horizontal', 'data-xh-collection-separator': '' },
-          // 标记位是常显的前导图标槽，落 prefix 列而不是藏起来的 indicator 列
-          'item-indicator': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'prefix' },
+          // item-indicator 只当对号：一律落家族的 indicator 列（行尾），行首内容归 item-icon
+          'item-indicator': { 'aria-hidden': 'true', 'data-xh-collection-slot': 'indicator' },
         },
       },
     },
@@ -1083,6 +1083,13 @@ export const menubarSuite: ConformanceSuite = {
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       props: { collection: [{ value: 'view', label: '视图', items: CHOICE_ORDER_ITEMS.map(node => ({ ...node })) }] },
       steps: [choicePartOrder('menubar')],
+    },
+    {
+      name: '作者不写结构：行首内容只在 item-icon，数据里的 indicator 不再铺标记位；对号只在勾选与单选条目上、排在最后',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: [{ value: 'view', label: '视图', items: LEADING_ITEMS.map(node => ({ ...node })) }] },
+      steps: [choicePartOrder('menubar', LEADING_EXPECTED)],
     },
   ],
 }
