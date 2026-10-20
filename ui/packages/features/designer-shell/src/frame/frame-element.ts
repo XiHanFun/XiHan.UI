@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-frame>：设计器外框。按命名区布局：最上一条顶栏、下面一条（工具栏），中间一行左、中、右三栏，
+// <xh-designer-frame>：设计器外框。按命名区布局：最上一条（工具栏），中间一行左、中、右三栏，
 // 中间一列的下方一栏，最下一条状态栏。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
 // 左、右、下三栏里的区是面板：按布局（layout）停在哪一栏、先后、显隐、收成标题条、浮出成小窗，改了就派发 layout-change。
 // 给了标题的面板画成卡片：面板头写标题与副标题，右侧是操作区、帮助、收起、「更多」与关闭；按住面板头可以拖到别的栏或画布上。
@@ -130,9 +130,8 @@ export interface DesignerFrameEventMap {
   'layout-change': CustomEvent<{ layout: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason }>
 }
 
-/** 缺省的命名区：顶栏、工具栏、物料、画布、属性、问题、状态栏。 */
+/** 缺省的命名区：工具栏、物料、画布、属性、问题、状态栏。 */
 export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
-  { name: 'header', position: 'header' },
   { name: 'toolbar', position: 'top' },
   { name: 'palette', position: 'start', size: 18 },
   { name: 'canvas', position: 'center' },
@@ -141,14 +140,13 @@ export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
   { name: 'status', position: 'status' },
 ]
 
-/** 顶栏与状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
+/** 状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
 const ZONES: Readonly<Partial<Record<DesignerFramePosition, readonly string[]>>> = {
-  header: ['start', 'center', 'end'],
   status: ['start', 'end'],
 }
 
 /** 只写区名的作者内容放进哪一段。 */
-const DEFAULT_ZONE: Readonly<Partial<Record<DesignerFramePosition, string>>> = { header: 'center', status: 'start' }
+const DEFAULT_ZONE: Readonly<Partial<Record<DesignerFramePosition, string>>> = { status: 'start' }
 
 /** 画布区上浮动条的落点：作者内容写 slot="<中间区名>-<落点>"，画布浮动件也落在这里。 */
 const OVERLAYS: readonly DesignerFrameOverlayAnchor[] = ['top-start', 'top-end', 'bottom-start', 'bottom-end', 'end']
@@ -239,7 +237,6 @@ type PanelDrop
     | { readonly kind: 'float', readonly rect: DesignerLayoutRect }
 
 interface Parts {
-  readonly header: HTMLElement
   readonly top: HTMLElement
   readonly body: HTMLElement
   readonly status: HTMLElement
@@ -260,7 +257,7 @@ interface RegionParts {
   readonly element: HTMLElement
   /** 作者内容放进哪里：卡片放在 panel-body，其余放在区本身。 */
   readonly content: HTMLElement
-  /** 顶栏、状态栏的分段，画布区的浮动条落点，卡片的操作区。 */
+  /** 状态栏的分段，画布区的浮动条落点，卡片的操作区。 */
   readonly zones: Readonly<Record<string, HTMLElement>>
   readonly card?: CardParts
   /** 区结构的签名：种类与是不是卡片变了就重建。 */
@@ -284,7 +281,6 @@ interface CardParts {
 
 /** 一轮排版：各位置此刻显示的区。 */
 interface Plan {
-  readonly header: readonly DesignerFrameRegion[]
   readonly top: readonly DesignerFrameRegion[]
   readonly center: readonly DesignerFrameRegion[]
   readonly status: readonly DesignerFrameRegion[]
@@ -526,14 +522,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return resolveDesignerLayout(this.#regionList(), this.layout, this.defaultLayout, this.layoutPolicy)
   }
 
-  /** 这个区是否显示：中间区与工具栏总是显示；顶栏、状态栏看有没有内容；面板与画布浮动件看布局（浮出的也算）。 */
+  /** 这个区是否显示：中间区与工具栏总是显示；状态栏看有没有内容；面板与画布浮动件看布局（浮出的也算）。 */
   showsPanel(name: string): boolean {
     const region = this.#regionList().find(item => item.name === name)
     if (region === undefined)
       return false
     if (region.position === 'center' || region.position === 'top')
       return true
-    if (region.position === 'header' || region.position === 'status')
+    if (region.position === 'status')
       return this.#hasContent(name)
     if (this.layoutPolicy?.panels?.[name] === 'hidden')
       return false
@@ -681,7 +677,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return this.#regionList().find(region => region.name === name)
   }
 
-  /** 顶栏、状态栏的某一段有没有元素。 */
+  /** 状态栏的某一段有没有元素。 */
   #hasContent(name: string): boolean {
     const zones = this.#regions.get(name)?.zones ?? {}
     return Object.values(zones).some(zone => zone.childElementCount > 0)
@@ -691,7 +687,6 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     if (this.#parts?.top.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
-    const header = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'header' })
     const top = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'top' })
     const body = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'body' })
     const status = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'status' })
@@ -714,8 +709,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const floats = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'floats' })
     const menus = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'menus' })
     const parked = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'parked', 'hidden': '' })
-    this.append(header, top, body, status, probeBox, drop, floats, menus, parked)
-    this.#parts = { header, top, body, status, probes, drop, dropLine, floats, menus, parked }
+    this.append(top, body, status, probeBox, drop, floats, menus, parked)
+    this.#parts = { top, body, status, probes, drop, dropLine, floats, menus, parked }
     return this.#parts
   }
 
@@ -762,7 +757,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return isDesignerDockRegion(region) ? 'dock' : region.position
   }
 
-  /** 一个区的结构：卡片带面板头，顶栏与状态栏分段，画布区带浮动条的落点。 */
+  /** 一个区的结构：卡片带面板头，状态栏分段，画布区带浮动条的落点。 */
   #createRegion(region: DesignerFrameRegion): RegionParts {
     const doc = this.ownerDocument
     const card = isDesignerDockRegion(region) && region.title !== undefined
@@ -952,7 +947,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#observeZones()
   }
 
-  /** 各段与面板头操作区的内容变了就重排：顶栏、状态栏有没有内容决定显不显示，操作区空着时收起。 */
+  /** 各段与面板头操作区的内容变了就重排：状态栏有没有内容决定显不显示，操作区空着时收起。 */
   #observeZones(): void {
     if (typeof MutationObserver !== 'function')
       return
@@ -1402,7 +1397,6 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       docks[dock] = layout.docks[dock].filter(name => shown(name) && (this.#narrow || !Object.hasOwn(layout.floating, name))).map(name => byName.get(name)!)
     const byPosition = (position: DesignerFramePosition): DesignerFrameRegion[] => regions.filter(region => region.position === position)
     return {
-      header: byPosition('header').filter(region => this.#hasContent(region.name)),
       top: byPosition('top'),
       center: byPosition('center'),
       status: byPosition('status').filter(region => this.#hasContent(region.name)),
@@ -1564,7 +1558,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   #build(parts: Parts, plan: Plan): void {
     this.#splitters = []
-    for (const position of ['header', 'top', 'center', 'status'] as const) {
+    for (const position of ['top', 'center', 'status'] as const) {
       for (const region of plan[position])
         this.#regions.get(region.name)!.element.setAttribute('data-position', position)
     }
@@ -1572,20 +1566,18 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       for (const region of plan.docks[dock])
         this.#regions.get(region.name)!.element.setAttribute('data-position', dock)
     }
-    parts.header.replaceChildren(...plan.header.map(region => this.#regions.get(region.name)!.element))
-    parts.header.hidden = plan.header.length === 0
     parts.top.replaceChildren(...plan.top.map(region => this.#regions.get(region.name)!.element))
     parts.top.hidden = plan.top.length === 0
     parts.status.replaceChildren(...plan.status.map(region => this.#regions.get(region.name)!.element))
     parts.status.hidden = plan.status.length === 0
-    // 不显示的顶栏、状态栏区仍要在文档里，作者内容搬进它的段里才看得到有没有内容
-    const parked = [...this.#regionList()].filter(region => ZONES[region.position] !== undefined && !plan[region.position as 'header' | 'status'].includes(region))
+    // 不显示的状态栏区仍要在文档里，作者内容搬进它的段里才看得到有没有内容
+    const parked = [...this.#regionList()].filter(region => ZONES[region.position] !== undefined && !plan.status.includes(region))
     for (const region of parked) {
       const element = this.#regions.get(region.name)!.element
       element.hidden = true
       parts.status.append(element)
     }
-    for (const region of [...plan.header, ...plan.status])
+    for (const region of plan.status)
       this.#regions.get(region.name)!.element.hidden = false
     this.#placeOverlays(parts, plan)
 

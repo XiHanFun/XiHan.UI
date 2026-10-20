@@ -223,9 +223,8 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(width('palette')).toBeGreaterThanOrEqual(14 * rem - 1)
   })
 
-  it('给了标题的区画成卡片：承载面的底、描边与圆角，面板头在上、正文滚动；顶栏与状态栏有内容时各占一条', async () => {
+  it('给了标题的区画成卡片：承载面的底、描边与圆角，面板头在上、正文滚动；状态栏有内容时占最下一条', async () => {
     frame.regions = [
-      { name: 'header', position: 'header' },
       { name: 'toolbar', position: 'top' },
       { name: 'palette', position: 'start', title: '物料', subtitle: '拖到画布上', help: '点一下放到视口中间' },
       { name: 'canvas', position: 'center' },
@@ -233,13 +232,10 @@ describe('<xh-designer-frame>（Chromium）', () => {
       { name: 'issues', position: 'bottom', title: '问题' },
       { name: 'status', position: 'status' },
     ]
-    const name = document.createElement('strong')
-    name.slot = 'header-start'
-    name.textContent = '流程设计器'
     const zoom = document.createElement('span')
     zoom.slot = 'status-end'
     zoom.textContent = '100%'
-    frame.append(name, zoom)
+    frame.append(zoom)
     await new Promise(resolve => setTimeout(resolve))
     await frame.updateComplete
     await new Promise(resolve => requestAnimationFrame(resolve))
@@ -250,10 +246,9 @@ describe('<xh-designer-frame>（Chromium）', () => {
     const body = card.querySelector<HTMLElement>('[data-part="panel-body"]')!.getBoundingClientRect()
     expect(header.bottom).toBeLessThanOrEqual(body.top + 1)
     expect(getComputedStyle(card.querySelector('[data-part="panel-body"]')!).overflowY).toBe('auto')
-    const top = frame.querySelector<HTMLElement>(':scope > [data-part="header"]')!.getBoundingClientRect()
     const status = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!.getBoundingClientRect()
     const frameBox = frame.getBoundingClientRect()
-    expect([top.height > 0, Math.round(top.top), status.height > 0, Math.round(status.bottom)]).toEqual([true, Math.round(frameBox.top), true, Math.round(frameBox.bottom)])
+    expect([status.height > 0, Math.round(status.bottom)]).toEqual([true, Math.round(frameBox.bottom)])
     expect(zoom.getBoundingClientRect().right).toBeGreaterThan(frameBox.right - 40)
   })
 

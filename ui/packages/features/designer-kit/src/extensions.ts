@@ -21,11 +21,11 @@ import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 export type SchemaRule<Doc = unknown, RuleCtx = unknown> = (document: Doc, context: RuleCtx) => readonly SchemaIssue[]
 
 /**
- * 命令出现的位置：工具栏；顶栏中段（插入快捷钮，图标在上、短文字在下）；某种主体的右键菜单
+ * 命令出现的位置：工具栏；某种主体的右键菜单
  * （主体由各款定，如 node、edge、element、card、blank）；或选中某种主体时浮在选中框上的选中工具条
  * （主体同样由各款定，如 element、text、node、multiple）。
  */
-export type DesignerCommandPlacement = 'toolbar' | 'header' | `menu:${string}` | `selection:${string}`
+export type DesignerCommandPlacement = 'toolbar' | `menu:${string}` | `selection:${string}`
 
 /**
  * 弹层命令点开的面板：element 放进锚在命令按钮上的弹层；弹层开着时设计器状态变了调 update，弹层关掉后调 destroy。
@@ -77,7 +77,7 @@ export interface DesignerCommand<Ctx = unknown> {
   /** 按钮与菜单项上的文字；给函数时每次刷新现取，随语言变。 */
   readonly label: string | ((context: Ctx) => string)
   /**
-   * 按钮上看得见的短文字：顶栏按钮图标下的那一行，工具栏只显示图标时没有图标的按钮上也写它；不给用 label。
+   * 按钮上看得见的短文字：工具栏只显示图标时没有图标的按钮上写它；不给用 label。
    * 名字（读屏与提示）仍取 label，所以短文字要出现在 label 里（不分大小写），开发期不在时报一条告警。
    */
   readonly shortLabel?: string | ((context: Ctx) => string)

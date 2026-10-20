@@ -75,37 +75,28 @@ describe('<xh-designer-frame>', () => {
     expect(region('canvas')!.closest('[data-part="stack"]')!.getAttribute('data-position')).toBe('center')
   })
 
-  it('顶栏与状态栏按段放内容：只写区名的进缺省段，有内容才显示，内容拿走就收起；不登记状态栏就不显示', async () => {
+  it('状态栏按段放内容：只写区名的进缺省段，有内容才显示；不登记状态栏就不显示。外框没有顶栏，写 slot="header" 的内容收进停放处', async () => {
     await mount()
-    const header = frame.querySelector<HTMLElement>(':scope > [data-part="header"]')!
+    expect(DESIGNER_FRAME_REGIONS.map(item => item.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
+    expect(frame.querySelector(':scope > [data-part="header"]')).toBeNull()
     const status = frame.querySelector<HTMLElement>(':scope > [data-part="status"]')!
-    expect([header.hidden, status.hidden, frame.showsPanel('header'), frame.showsPanel('status')]).toEqual([true, true, false, false])
+    expect([status.hidden, frame.showsPanel('status')]).toEqual([true, false])
 
-    const logo = document.createElement('span')
-    logo.slot = 'header-start'
     const insert = document.createElement('div')
     insert.slot = 'header'
-    const save = document.createElement('button')
-    save.slot = 'header-end'
     const selection = document.createElement('span')
     selection.slot = 'status'
     const zoom = document.createElement('span')
     zoom.slot = 'status-end'
-    frame.append(logo, insert, save, selection, zoom)
+    frame.append(insert, selection, zoom)
     await settle()
     const zone = (element: Element): string | null => element.parentElement!.getAttribute('data-zone')
-    expect([logo, insert, save, selection, zoom].map(zone)).toEqual(['start', 'center', 'end', 'start', 'end'])
-    expect([header.hidden, status.hidden, region('header')!.parentElement, region('status')!.parentElement]).toEqual([false, false, header, status])
+    expect([selection, zoom].map(zone)).toEqual(['start', 'end'])
+    expect([status.hidden, region('status')!.parentElement, insert.parentElement]).toEqual([false, status, frame.querySelector('[data-part="parked"]')])
 
     frame.regions = DESIGNER_FRAME_REGIONS.filter(item => item.name !== 'status')
     await frame.updateComplete
-    expect([status.hidden, frame.showsPanel('status'), frame.showsPanel('header'), selection.parentElement]).toEqual([true, false, true, frame.querySelector('[data-part="parked"]')])
-
-    logo.remove()
-    insert.remove()
-    save.remove()
-    await settle()
-    expect(header.hidden).toBe(true)
+    expect([status.hidden, frame.showsPanel('status'), selection.parentElement]).toEqual([true, false, frame.querySelector('[data-part="parked"]')])
   })
 
   it('三栏的区给了标题就是卡片：面板头写标题、副标题，帮助、收起、更多与关闭钮，操作区按 slot 放内容；点关闭隐藏这块并派发 layout-change', async () => {
