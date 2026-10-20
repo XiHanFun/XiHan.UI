@@ -5,6 +5,7 @@ import type { JsonValue } from '@xihan-ui/core/json'
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { DesignerDisplayControl, DesignerFrameEventMap, DesignerLayoutChangeReason, DesignerSettingEditor, DesignerSettings, DesignerSettingsEventMap, DesignerSettingsSection, ResolvedDesignerLayout, XhDesignerFrameElement, XhDesignerSettingsElement } from '../src'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
+import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '@xihan-ui/tokens'
 import { setXhConfig } from '@xihan-ui/web-components'
 import { defineXhElement, XhConfigElement } from '@xihan-ui/web-components/define'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -122,12 +123,19 @@ describe('设置模型', () => {
     ]).toEqual([undefined, 'locked', 'hidden'])
   })
 
-  it('「基础」分区：主题与状态栏总有；主题色要给了预设或许自定义，语言要给了可选语言', () => {
+  it('「基础」分区：主题、主题色与状态栏总有，语言要给了可选语言；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
-    expect(keys(designerGeneralSettings(english))).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.statusBar])
-    const full = designerGeneralSettings(english, { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true, languages: [{ value: 'zh-CN', label: '简体中文' }] })
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.language])
-    expect(full.items[1]!.control).toEqual({ kind: 'swatch', options: [{ value: 'blue', color: '#1677ff' }], custom: true })
+    const full = designerGeneralSettings(english)
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar])
+    expect(keys(designerGeneralSettings(english, { languages: [{ value: 'zh-CN', label: '简体中文' }] })).at(-1)).toBe(DESIGNER_SETTING_KEYS.language)
+    const names = [english.brandBlue, english.brandCyan, english.brandTeal, english.brandGreen, english.brandOrange, english.brandRed, english.brandPink, english.brandPurple]
+    expect(full.items[1]!.control).toEqual({
+      kind: 'swatch',
+      options: BRAND_PRESETS.map((id, index) => ({ value: id, color: BRAND_PRESET_COLORS[id], label: names[index] })),
+      custom: true,
+      none: english.brandFollow,
+    })
+    expect([full.items[1]!.default, new Set(names).size]).toEqual([undefined, 8])
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
@@ -266,7 +274,6 @@ describe('<xh-designer-settings>', () => {
     scope.translations = designerShellZhCN.translations
     document.body.append(scope)
     const element = document.createElement('xh-designer-settings')
-    element.general = { brands: [{ value: 'blue', color: '#1677ff' }], customBrand: true }
     scope.append(element)
     await element.updateComplete
     const zh = designerShellZhCN.translations!['xh-designer-settings']!
@@ -331,24 +338,24 @@ describe('createDesignerSettingsHost', () => {
     }
   })
 
-  it('主题色：预设直接写 data-brand；别的颜色经 registerBrand 注册成本设计器的品牌，换走或 dispose 时撤销', () => {
+  it('主题色内置：预设直接写 data-brand；别的颜色在根所在文档里注册成本设计器的品牌（一份 [data-brand] 取值块），换走或 dispose 时撤销', () => {
     const element = root()
-    const unregister = vi.fn()
-    const registerBrand = vi.fn(() => unregister)
-    const host = createDesignerSettingsHost({ root: element, brands: [{ value: 'blue', color: '#1677ff' }], registerBrand })
-    host.apply({ 'general.brand': 'blue' })
-    expect([element.getAttribute('data-brand'), registerBrand.mock.calls.length]).toEqual(['blue', 0])
+    const blocks = (): HTMLStyleElement[] => [...document.head.querySelectorAll<HTMLStyleElement>('style[data-xh-brand^="xh-designer-brand-"]')]
+    const host = createDesignerSettingsHost({ root: element })
+    host.apply({ 'general.brand': 'teal' })
+    expect([element.getAttribute('data-brand'), blocks().length]).toEqual(['teal', 0])
     host.apply({ 'general.brand': '#ff0000' })
     const id = element.getAttribute('data-brand')!
     expect(id).toMatch(/^xh-designer-brand-\d+$/)
-    expect(registerBrand).toHaveBeenCalledWith(id, '#ff0000')
+    expect(blocks().map(block => block.getAttribute('data-xh-brand'))).toEqual([id])
+    expect(blocks()[0]!.textContent).toContain(`[data-brand='${id}']`)
     host.apply({ 'general.brand': '#ff0000', 'general.theme': 'dark' })
-    expect(registerBrand).toHaveBeenCalledTimes(1)
+    expect(blocks()).toHaveLength(1)
     host.apply({})
-    expect([element.hasAttribute('data-brand'), unregister.mock.calls.length]).toEqual([false, 1])
+    expect([element.hasAttribute('data-brand'), blocks().length]).toEqual([false, 0])
     host.apply({ 'general.brand': '#00ff00' })
     host.dispose()
-    expect([element.hasAttribute('data-brand'), unregister.mock.calls.length]).toEqual([false, 2])
+    expect([element.hasAttribute('data-brand'), blocks().length]).toEqual([false, 0])
   })
 
   it('主题跟随页面又选了主题色：根上照抄外层的 data-theme（外层没写是 light），外层改了跟着改，去掉主题色后还原', async () => {
@@ -356,7 +363,7 @@ describe('createDesignerSettingsHost', () => {
     document.body.append(page)
     const element = document.createElement('div')
     page.append(element)
-    const host = createDesignerSettingsHost({ root: element, brands: [{ value: 'green', color: '#16a34a' }] })
+    const host = createDesignerSettingsHost({ root: element })
     host.apply({})
     expect(element.hasAttribute('data-theme')).toBe(false)
     host.apply({ 'general.brand': 'green' })
@@ -398,11 +405,27 @@ describe('createDesignerSettingsHost', () => {
     }
   })
 
-  it('没给 registerBrand 时不是预设的主题色不生效', () => {
+  it('主题色写的不是颜色（取不出品牌梯度）时不生效，按跟随页面处理', () => {
     const element = root()
-    const host = createDesignerSettingsHost({ root: element, brands: [{ value: 'blue', color: '#1677ff' }] })
-    host.apply({ 'general.brand': '#ff0000' })
-    expect(element.hasAttribute('data-brand')).toBe(false)
+    const host = createDesignerSettingsHost({ root: element })
+    host.apply({ 'general.brand': 'not-a-color' })
+    expect([element.hasAttribute('data-brand'), document.head.querySelector('style[data-xh-brand^="xh-designer-brand-"]')]).toEqual([false, null])
+  })
+
+  it('主题色那一行：「跟随页面」开关钮在色板前，没写值时按下；选了色以后按它删掉这个键、回到跟随页面', async () => {
+    const element = await mount((el) => {
+      el.settings = { 'general.brand': 'teal' }
+    })
+    const changes: unknown[] = []
+    element.addEventListener('settings-change', event => changes.push((event as DesignerSettingsEventMap['settings-change']).detail.value))
+    const follow = row('general.brand').querySelector<HTMLElement & { pressed?: boolean }>('xh-toggle')!
+    expect([follow.textContent, follow.pressed]).toEqual([english.brandFollow, false])
+    emit(follow, 'pressed-change', { pressed: true })
+    expect([changes, element.settings]).toEqual([[undefined], {}])
+    await element.updateComplete
+    expect(follow.pressed).toBe(true)
+    emit(follow, 'pressed-change', { pressed: false })
+    expect([changes.length, follow.pressed]).toEqual([1, true])
   })
 
   it('存储：标了 secret 的条目不存；读出的不是对象时回调出错出口并给空对象', () => {

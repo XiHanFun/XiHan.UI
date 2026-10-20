@@ -64,6 +64,7 @@
     "@xihan-ui/core": "workspace:^",
     "@xihan-ui/designer-kit": "workspace:^",
     "@xihan-ui/pointer": "workspace:^",
+    "@xihan-ui/tokens": "workspace:^",
     "@xihan-ui/viz": "workspace:^",
     "@xihan-ui/web-components": "workspace:^"
   },
@@ -73,7 +74,6 @@
     "@xihan-ui/build": "workspace:*",
     "@xihan-ui/styles": "workspace:*",
     "@xihan-ui/testing": "workspace:*",
-    "@xihan-ui/tokens": "workspace:*",
     "@xihan-ui/tsconfig": "workspace:*",
     "jsdom": "catalog:",
     "playwright": "catalog:",

@@ -557,7 +557,8 @@ interface SwatchControl extends HTMLElement {
 
 /**
  * 颜色预设：库内 xh-color-swatch-picker 一格一项，格子画选项的 color，选中写入选项的 value；
- * custom 为 true 时下面另有一个颜色框，填任意颜色，取值不在选项里时显示在这里、色板不选中任何一格。整组按一组控件排。
+ * custom 为 true 时下面另有一个颜色框，填任意颜色，取值不在选项里时显示在这里、色板不选中任何一格；
+ * 给了 none 时色板前多一颗 xh-toggle，取值没写时按下，按下即不写值。整组按一组控件排。
  */
 function swatchEditor(initial: FieldContext): FieldInstance {
   const doc = initial.ownerDocument
@@ -572,8 +573,27 @@ function swatchEditor(initial: FieldContext): FieldInstance {
         ])]),
       ])
     : undefined
-  const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'swatch' }, custom ? [picker, custom] : [picker])
+  const none: ControlElement & { pressed?: boolean } | undefined = control.none === undefined
+    ? undefined
+    : createAuthoredElement(doc, 'xh-toggle', { 'size': 'sm', 'variant': 'outline', 'data-scope': PROPERTIES_SCOPE, 'data-part': 'swatch-none' }, [
+        createAuthoredElement(doc, 'button', { 'type': 'button', 'data-xh-part': 'root' }, [control.none]),
+      ])
+  const element = createAuthoredElement(doc, 'div', { 'data-scope': PROPERTIES_SCOPE, 'data-part': 'swatch' }, [...none ? [none] : [], picker, ...custom ? [custom] : []])
   let context = initial
+  none?.addEventListener('pressed-change', (event) => {
+    event.stopPropagation()
+    // 只认按下：松开不是一种取值，按下的状态等选了色板或颜色框才换
+    if (!(event as CustomEvent<{ pressed: boolean }>).detail.pressed) {
+      none.pressed = true
+      return
+    }
+    none.pressed = true
+    picker.value = ''
+    if (custom)
+      custom.value = ''
+    context.setValue(undefined)
+    context.commit()
+  })
   picker.addEventListener('value-change', (event) => {
     event.stopPropagation()
     const { value } = (event as ValueChange<string | null>).detail
@@ -605,6 +625,10 @@ function swatchEditor(initial: FieldContext): FieldInstance {
     const color = option?.color ?? ''
     if (picker.value !== color)
       picker.value = color
+    if (none) {
+      none.pressed = !next.mixed && next.value === undefined
+      none.toggleAttribute('disabled', next.readonly)
+    }
     if (custom) {
       setAttributes(custom, { 'aria-label': next.translations.customColor })
       custom.toggleAttribute('read-only', next.readonly)

@@ -238,6 +238,17 @@ export interface DesignerSettingsTranslations {
   readonly brand: string
   /** 主题色条目的说明。 */
   readonly brandHint: string
+  /** 主题色：跟随所在页面（不写主题色）。 */
+  readonly brandFollow: string
+  /** 主题色预设的名字：蓝、青、蓝绿、绿、橙、红、粉、紫，读屏念的就是它。 */
+  readonly brandBlue: string
+  readonly brandCyan: string
+  readonly brandTeal: string
+  readonly brandGreen: string
+  readonly brandOrange: string
+  readonly brandRed: string
+  readonly brandPink: string
+  readonly brandPurple: string
   /** 工具栏显示方式条目的标签。 */
   readonly toolbarDisplay: string
   /** 工具栏显示方式条目的说明。 */
