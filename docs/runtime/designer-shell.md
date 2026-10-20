@@ -886,8 +886,28 @@ dialog.show();
 | 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 开发者模式 | `general.developer` | 开关：关闭后将隐藏 JSON / Blob 调试查看入口 | `false` | 总有 |
+| 分页调试日志 | `general.debugPagination` | 开关：开启后在控制台输出分页拆分与回流日志，建议仅在排查问题时使用 | `false` | 总有，开发者模式开着才能改 |
+| 渲染调试日志 | `general.debugRender` | 开关：开启后在控制台输出各渲染环节的耗时，用于性能优化 | `false` | 总有，开发者模式开着才能改 |
 
 开发者模式是调试总开关，本身不加功能：`developerModeOf(settings)` 只有写了 `true` 才为真，各款的调试查看入口（如编辑 JSON、查看生成的打印数据）写成 `visible` 跟着它的命令；宿主可以在 `settings` 里预先写开，或用 `settingsPolicy` 锁住。
+
+两条调试日志只在开发者模式开着时生效，关掉开发者模式随即都停。四款都显示这两个开关；没有分页的款开了也没有分页日志。日志内容写在各款里，外壳出记日志的小工具：
+
+```ts
+import { createDesignerDebugLogger } from "@xihan-ui/designer-shell";
+
+const debug = createDesignerDebugLogger({ name: "xh-print-designer", settings: () => resolvedSettings });
+debug.log("pagination", "第 2 页放不下，拆到第 3 页", () => ({ page: 2, height }));
+const dom = debug.measure("render", "生成 DOM", () => buildPages());
+const end = debug.start("render", "出图");
+await renderImages();
+end(() => ({ pages: dom.length }));
+```
+
+- 每次调用都按 `settings()` 此刻的值判断这一路开没开（`debugLogOf(settings, channel)`：开发者模式与这一路的开关都写了 `true`）。
+- 开着时写到浏览器控制台，折叠成一组，组名是「[设计器名] 这一路 · 标题」，`measure`、`start` 记的组名末尾带耗时（毫秒，一位小数）；`details` 是现取的函数，结果写在组里。
+- 关着时不碰控制台、不调 `details`；`measure` 只跑 `run` 并返回它的结果，`start` 返回什么都不做的函数。标题本身要算很久时先问 `enabled(channel)`。
+- 渲染日志记哪次重画、因为什么、用了多久，把原因写进标题；分页日志记分页的每一步，内容由各款自己定。
 
 键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
 

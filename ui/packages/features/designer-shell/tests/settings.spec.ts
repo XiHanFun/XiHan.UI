@@ -130,7 +130,7 @@ describe('设置模型', () => {
   it('「基础」分区：主题、主题色与状态栏，语言不在这里；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const full = designerGeneralSettings(english)
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.developer])
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.developer, DESIGNER_SETTING_KEYS.debugPagination, DESIGNER_SETTING_KEYS.debugRender])
     const names = [english.brandBlue, english.brandCyan, english.brandTeal, english.brandGreen, english.brandOrange, english.brandRed, english.brandPink, english.brandPurple]
     expect(full.items[1]!.control).toEqual({
       kind: 'swatch',
@@ -141,6 +141,11 @@ describe('设置模型', () => {
     expect([full.items[1]!.default, new Set(names).size]).toEqual([undefined, 8])
     const developer = full.items.find(item => settingKey(full, item) === DESIGNER_SETTING_KEYS.developer)!
     expect([developer.label, developer.control, developer.default, developer.meta?.description]).toEqual([english.developer, { kind: 'boolean' }, false, english.developerHint])
+    // 两条调试日志：开关，缺省关，开发者模式开着才能改
+    expect(full.items.slice(-2).map(item => [item.label, item.control, item.default, item.meta?.description, item.enabledWhen])).toEqual([
+      [english.debugPagination, { kind: 'boolean' }, false, english.debugPaginationHint, { path: [DESIGNER_SETTING_KEYS.developer], equals: true }],
+      [english.debugRender, { kind: 'boolean' }, false, english.debugRenderHint, { path: [DESIGNER_SETTING_KEYS.developer], equals: true }],
+    ])
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
@@ -430,6 +435,15 @@ describe('createDesignerSettingsHost', () => {
     const host = createDesignerSettingsHost({ root: element })
     host.apply({ 'general.brand': 'not-a-color' })
     expect([element.hasAttribute('data-brand'), document.head.querySelector('style[data-xh-brand^="xh-designer-brand-"]')]).toEqual([false, null])
+  })
+
+  it('两条调试日志开关：开发者模式关着时只读，开了才能改', async () => {
+    const element = await mount(() => {})
+    const locked = (): boolean[] => ['general.debugPagination', 'general.debugRender'].map(key => row(key).querySelector('xh-field')!.hasAttribute('read-only'))
+    expect(locked()).toEqual([true, true])
+    element.settings = { 'general.developer': true }
+    await element.updateComplete
+    expect(locked()).toEqual([false, false])
   })
 
   it('条目写了 enabledWhen：按此刻生效的设置（含缺省值）求值，不满足时只读、说明照旧；满足了照常可改', async () => {
