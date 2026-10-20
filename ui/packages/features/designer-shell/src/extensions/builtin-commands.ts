@@ -23,6 +23,7 @@ export const DESIGNER_SHELL_COMMANDS = {
   importFields: 'import-fields',
   editJson: 'edit-json',
   startTour: 'start-tour',
+  panTool: 'pan-tool',
 } as const
 
 /** 一块面板的开关命令的 id：panel:<面板 id>。 */
@@ -31,14 +32,14 @@ export function designerPanelCommandId(panel: string): string {
 }
 
 /** 内置命令要用到的外框能力。 */
-type FrameForCommands = Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel' | 'toggleAllPanels' | 'restorePanels' | 'resetLayout'>
+type FrameForCommands = Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel' | 'toggleAllPanels' | 'restorePanels' | 'resetLayout' | 'canvasTool'>
 
 /** designerShellCommands 的选项。 */
 export interface DesignerShellCommandsOptions<Ctx> {
   /** 命令的文案（xh-designer-commands 那一桶），每次刷新现取，随语言变。 */
   readonly translations: (context: Ctx) => DesignerCommandsTranslations
   /**
-   * 设计器的外框；给了才有 panels、panels-toggle-all、panels-restore、layout-reset 四条命令。
+   * 设计器的外框；给了才有 panels、panels-toggle-all、panels-restore、layout-reset 与 pan-tool 五条命令。
    * panels 点开一张菜单，逐块面板一项（勾选的显示），分隔线后是另外三条命令。返回 undefined 时这几条命令不可用。
    */
   readonly frame?: (context: Ctx) => FrameForCommands | undefined
@@ -59,7 +60,8 @@ export interface DesignerShellCommandsOptions<Ctx> {
 }
 
 /**
- * 建 designer-shell 的内置命令：给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、layout-reset，
+ * 建 designer-shell 的内置命令：给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、layout-reset、
+ * pan-tool（H，开关式：切换外框的 canvasTool），
  * 给了 openSettings 有 settings，给了 helpUrl 有 help，给了 openFieldImport 有 import-fields，给了 openJsonEditor 有 edit-json（Mod+Shift+J），
  * 给了 startTour 有 start-tour。panels、settings、help 缺省放在工具栏上，另外三条在 panels 菜单里与快捷键上；import-fields、edit-json
  * 不排位置，各款放进面板头或菜单；
@@ -114,6 +116,20 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
         ...(icons?.layoutReset ? { icon: icons.layoutReset } : {}),
         enabled: usable,
         run: context => frame(context)?.resetLayout(),
+      },
+      {
+        id: DESIGNER_SHELL_COMMANDS.panTool,
+        label: context => options.translations(context).panTool,
+        ...(icons?.panTool ? { icon: icons.panTool } : {}),
+        shortcut: ['H'],
+        placement: ['toolbar'],
+        enabled: context => frame(context) !== undefined,
+        checked: context => frame(context)?.canvasTool === 'pan',
+        run: (context) => {
+          const target = frame(context)
+          if (target)
+            target.canvasTool = target.canvasTool === 'pan' ? 'select' : 'pan'
+        },
       },
     )
   }

@@ -22,6 +22,7 @@ export { DESIGNER_FIELD_IMPORT_SOURCES, XhDesignerFieldImportElement } from './f
 export type { DesignerFieldImportDetail, DesignerFieldImportEventMap } from './fields/field-import-element'
 export { DESIGNER_FRAME_REGIONS, XhDesignerFrameElement } from './frame/frame-element'
 export type {
+  DesignerCanvasTool,
   DesignerFrameEventMap,
   DesignerFrameOverlayAnchor,
   DesignerFramePosition,

@@ -252,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     panelsRestore: 'Restaurar a visibilidade dos painéis',
     layoutReset: 'Redefinir o layout padrão',
     startTour: 'Iniciar tour',
+    panTool: 'Ferramenta mão',
     settings: 'Configurações',
     help: 'Ajuda',
     importFields: 'Importar campos',

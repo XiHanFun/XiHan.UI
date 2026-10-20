@@ -389,4 +389,26 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect([statusRegion().contains(status), status.checkVisibility(), corner.checkVisibility()]).toEqual([true, true, true])
     own.remove()
   })
+
+  it('拖动工具：canvasTool 写 pan 时画布区标上 data-canvas-tool、光标是手形，派发 canvas-tool-change；画布里按 Esc 退回 select', async () => {
+    const changes: string[] = []
+    frame.addEventListener('canvas-tool-change', event => void changes.push((event as CustomEvent<{ tool: string }>).detail.tool))
+    const canvas = frame.querySelector<HTMLElement>('[data-part="region"][data-region="canvas"]')!
+    expect([frame.canvasTool, canvas.hasAttribute('data-canvas-tool')]).toEqual(['select', false])
+    frame.canvasTool = 'pan'
+    await frame.updateComplete
+    expect([canvas.getAttribute('data-canvas-tool'), getComputedStyle(canvas).cursor]).toEqual(['pan', 'grab'])
+    const inside = document.createElement('button')
+    canvas.querySelector(':scope > div:not([data-scope])')!.append(inside)
+    inside.focus()
+    inside.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await frame.updateComplete
+    expect([frame.canvasTool, canvas.hasAttribute('data-canvas-tool'), changes]).toEqual(['select', false, ['pan', 'select']])
+    // 里面的元件已经接走的 Esc 不退出
+    frame.canvasTool = 'pan'
+    const handled = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    inside.addEventListener('keydown', event => event.preventDefault(), { once: true })
+    inside.dispatchEvent(handled)
+    expect(frame.canvasTool).toBe('pan')
+  })
 })

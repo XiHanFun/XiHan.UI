@@ -263,6 +263,7 @@ const translations: DesignerShellLocaleTranslations = {
     panelsRestore: 'Восстановить видимость панелей',
     layoutReset: 'Сбросить расположение',
     startTour: 'Начать обзор',
+    panTool: 'Инструмент «Рука»',
     settings: 'Настройки',
     help: 'Справка',
     importFields: 'Импорт полей',

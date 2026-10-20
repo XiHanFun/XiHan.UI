@@ -13,6 +13,9 @@ import type { IconRecord } from '@xihan-ui/core'
  */
 export type DesignerFramePosition = 'top' | 'start' | 'center' | 'end' | 'bottom' | 'status' | 'overlay'
 
+/** 画布上此刻的工具：select 是点选与框选（缺省），pan 是按住拖动平移画布。 */
+export type DesignerCanvasTool = 'select' | 'pan'
+
 /** 画布浮动件落在画布区的哪个角上，或右侧中间。 */
 export type DesignerFrameOverlayAnchor = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'end'
 

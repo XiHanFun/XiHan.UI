@@ -17,7 +17,7 @@ import type { XhDrawerElement, XhFloatingPanelElement, XhMenuElement, XhSplitter
 import type { OverflowedCommand } from '../extensions/panel-actions-overflow'
 import type { DesignerFrameTranslations } from '../translations'
 import type { DesignerLayout, DesignerLayoutDock, DesignerLayoutPolicy, DesignerLayoutRect, ResolvedDesignerLayout } from './layout'
-import type { DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
+import type { DesignerCanvasTool, DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
 import { announce as announceToPage, createCounterIdGenerator, getLayerRegistry } from '@xihan-ui/core'
 import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { registerDropTarget, startDrag } from '../drag/drag'
@@ -40,7 +40,7 @@ import {
   withDesignerPanelVisible,
 } from './layout'
 
-export type { DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
+export type { DesignerCanvasTool, DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
 
 /** 一条分隔条调整的是什么：一栏里某个区的高度（区名），或左右两栏、下栏的整栏大小。 */
 type FrameSplitterTarget = string | { readonly column: 'start' | 'end' | 'bottom' }
@@ -128,6 +128,8 @@ export interface DesignerPanelEntry {
 export interface DesignerFrameEventMap {
   /** 布局变了：layout 是改完的整份，外框已经换成它；拖分隔条只在松手时派发。 */
   'layout-change': CustomEvent<{ layout: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason }>
+  /** 画布上的工具换了（写 canvasTool、拖动工具命令或 Esc 退出拖动）。 */
+  'canvas-tool-change': CustomEvent<{ tool: DesignerCanvasTool }>
 }
 
 /** 缺省的命名区：工具栏、物料、画布、属性、问题、状态栏。 */
@@ -405,6 +407,16 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #floatDrag: { readonly name: string, readonly payload: PanelDragPayload | undefined, readonly release: () => void } | undefined
   /** 正按着分隔条拖：拖动中的大小等松手再派发。 */
   #resizing = false
+  #canvasTool: DesignerCanvasTool = 'select'
+
+  /** 拖动工具开着时，外框里按 Esc（里面的元件没接走）退回点选。 */
+  readonly #onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape' || event.defaultPrevented || this.#canvasTool !== 'pan')
+      return
+    this.canvasTool = 'select'
+    event.preventDefault()
+  }
+
   readonly #onNarrowChange = (): void => {
     const narrow = this.#narrowQuery !== undefined && !this.#narrowQuery.matches
     if (narrow === this.#narrow)
@@ -447,6 +459,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     })
     this.ownerDocument.addEventListener('scroll', this.#onScroll, { capture: true, passive: true })
     this.ownerDocument.addEventListener('pointerup', this.#onPointerUp, true)
+    this.addEventListener('keydown', this.#onKeyDown)
     this.#watchNarrow()
   }
 
@@ -458,6 +471,34 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#narrowQuery = width && typeof win?.matchMedia === 'function' ? win.matchMedia(`(min-width: ${width})`) : undefined
     this.#narrowQuery?.addEventListener('change', this.#onNarrowChange)
     this.#onNarrowChange()
+  }
+
+  /**
+   * 画布上此刻的工具：select（缺省，点选与框选）或 pan（按住拖动平移画布）。画布区随之标上 data-canvas-tool，
+   * 显示手形光标；换了就派发 canvas-tool-change。拖动开着时，外框里按 Esc 退回 select。怎么平移由各款在自己的画布上接。
+   */
+  get canvasTool(): DesignerCanvasTool {
+    return this.#canvasTool
+  }
+
+  set canvasTool(value: DesignerCanvasTool) {
+    const next = value === 'pan' ? 'pan' : 'select'
+    if (next === this.#canvasTool)
+      return
+    this.#canvasTool = next
+    this.#paintCanvasTool()
+    emitEvent(this, 'canvas-tool-change', { tool: next })
+  }
+
+  /** 画布区标上此刻的工具：拖动时写 data-canvas-tool="pan"，点选时不写。 */
+  #paintCanvasTool(): void {
+    for (const region of this.#regionList()) {
+      const element = region.position === 'center' ? this.#regions.get(region.name)?.element : undefined
+      if (this.#canvasTool === 'pan')
+        element?.setAttribute('data-canvas-tool', 'pan')
+      else
+        element?.removeAttribute('data-canvas-tool')
+    }
   }
 
   /** 视口窄于断点（--xh-breakpoint-md）时为真：中间一列占满整行，左右两栏收进抽屉。 */
@@ -492,6 +533,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     this.#releaseDrop = undefined
     this.ownerDocument.removeEventListener('scroll', this.#onScroll, { capture: true })
     this.ownerDocument.removeEventListener('pointerup', this.#onPointerUp, true)
+    this.removeEventListener('keydown', this.#onKeyDown)
     this.#narrowQuery?.removeEventListener('change', this.#onNarrowChange)
     this.#narrowQuery = undefined
     this.#floatDrag?.release()
@@ -590,6 +632,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         this.#paintCard(region, card, t)
     }
     this.#paintFloats(plan, t)
+    this.#paintCanvasTool()
     const labelOf = (name: string): string => {
       const region = this.#regionList().find(item => item.name === name)
       return region?.label ?? region?.title ?? name

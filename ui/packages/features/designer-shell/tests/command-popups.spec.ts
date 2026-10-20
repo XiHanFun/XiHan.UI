@@ -206,7 +206,8 @@ describe('内置的「面板」命令', () => {
       toggleAllPanels: () => void calls.push('toggle-all'),
       restorePanels: () => void calls.push('restore'),
       resetLayout: () => void calls.push('reset'),
-    } satisfies Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel' | 'toggleAllPanels' | 'restorePanels' | 'resetLayout'>
+      canvasTool: 'select' as 'select' | 'pan',
+    } satisfies Pick<XhDesignerFrameElement, 'panelEntries' | 'togglePanel' | 'toggleAllPanels' | 'restorePanels' | 'resetLayout' | 'canvasTool'>
     return { frame, calls }
   }
 
@@ -219,7 +220,7 @@ describe('内置的「面板」命令', () => {
     const { frame, calls } = fakeFrame(ENTRIES)
     expect(designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US }).map(command => command.id)).toEqual([])
     const commands = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame })
-    expect(commands.map(command => command.id)).toEqual(['panels', 'panels-toggle-all', 'panels-restore', 'layout-reset'])
+    expect(commands.map(command => command.id)).toEqual(['panels', 'panels-toggle-all', 'panels-restore', 'layout-reset', 'pan-tool'])
     const [panels] = commands
     const context: Ctx = { page: 0, log: [] }
     expect([panels!.id, panels!.placement, panels!.run, panels!.enabled?.(context)]).toEqual(['panels', ['toolbar'], undefined, true])

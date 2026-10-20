@@ -252,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     panelsRestore: '還原面板顯示狀態',
     layoutReset: '恢復預設版面',
     startTour: '開始導覽',
+    panTool: '拖曳',
     settings: '設定',
     help: '說明',
     importFields: '匯入欄位',

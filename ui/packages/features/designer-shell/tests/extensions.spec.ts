@@ -329,6 +329,19 @@ describe('命令', () => {
     }
   })
 
+  it('给了 frame 有拖动工具 pan-tool：快捷键 H、上工具栏、开关式，勾选跟着外框的 canvasTool，执行时在 select 与 pan 之间切换', () => {
+    const frame = { canvasTool: 'select' as 'select' | 'pan', panelEntries: () => [], togglePanel: () => {}, toggleAllPanels: () => {}, restorePanels: () => {}, resetLayout: () => {} }
+    const built = designerShellCommands<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US, frame: () => frame, icons: { panTool: GLYPH } })
+    const table = new Map(built.map(command => [command.id, command]))
+    const pan = table.get('pan-tool')!
+    expect([pan.shortcut, pan.placement, pan.icon, commandShortLabel(pan, { selected: 0 })]).toEqual([['H'], ['toolbar'], GLYPH, DESIGNER_COMMANDS_EN_US.panTool])
+    expect(pan.checked!({ selected: 0 })).toBe(false)
+    expect(runCommand(table, 'pan-tool', { selected: 0 })).toBe(true)
+    expect([frame.canvasTool, pan.checked!({ selected: 0 })]).toEqual(['pan', true])
+    runCommand(table, 'pan-tool', { selected: 0 })
+    expect(frame.canvasTool).toBe('select')
+  })
+
   it('菜单：铺条目与分隔线，不可用的写 aria-disabled，语气写 data-tone，带快捷键的写提示；runCommand 只执行可用的', () => {
     ran.length = 0
     const content = document.createElement('div')
