@@ -6,7 +6,7 @@
 // 提供 menubar 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Orientation, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarSelectDetails, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarCheckboxValueChangeDetails, MenubarItemSelectDetails, MenubarNode, MenubarRadioValue, MenubarRadioValueChangeDetails, MenubarSchema, MenubarTranslations, MenubarValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
@@ -64,7 +64,7 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
- * @fires select - 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`
+ * @fires item-select - 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`
  * @fires checkbox-value-change - checkbox 选中集合变化
  * @fires radio-value-change - RadioGroup 选中映射变化
  * @csspart root - role=menubar 容器，承载 roving tabindex 的兜底 Tab 位与焦点离场
@@ -208,7 +208,7 @@ export class XhMenubarElement extends XhPortalHostElement {
     onRootSelect: (details) => {
       const menu = this.openValue()
       if (menu != null)
-        this.notifySelect({ menu, value: details.value })
+        this.notifyItemSelect({ menu, value: details.value })
     },
   })
 
@@ -221,8 +221,8 @@ export class XhMenubarElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelect = (details: MenubarSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyItemSelect = (details: MenubarItemSelectDetails): void => {
+    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyCheckboxValue = (details: MenubarCheckboxValueChangeDetails): void => {
@@ -317,7 +317,7 @@ export class XhMenubarElement extends XhPortalHostElement {
       size: this.size,
       translations: this.translations,
       onValueChange: this.notifyValue,
-      onSelect: this.notifySelect,
+      onItemSelect: this.notifyItemSelect,
       onCheckboxValueChange: this.notifyCheckboxValue,
       onRadioValueChange: this.notifyRadioValue,
     }

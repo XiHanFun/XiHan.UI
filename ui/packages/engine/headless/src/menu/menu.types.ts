@@ -47,7 +47,7 @@ export interface MenuOpenChangeDetails {
   reason?: OverlayCloseReason
 }
 
-export interface MenuSelectDetails {
+export interface MenuItemSelectDetails {
   value: string
 }
 
@@ -201,7 +201,7 @@ export interface MenuSchema extends MachineSchema {
     /** open 变化回调。 */
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */
-    onSelect?: (details: MenuSelectDetails) => void
+    onItemSelect?: (details: MenuItemSelectDetails) => void
     onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
     onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
@@ -250,7 +250,7 @@ export interface MenuSchema extends MachineSchema {
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
-    | 'invokeOnSelect'
+    | 'invokeOnItemSelect'
     | 'syncOpen'
     | 'setFocusIntent'
     | 'setReturnFocus'

@@ -68,7 +68,7 @@ export interface XhCommandRootProps {
   translations?: CommandProps['translations']
   onOpenChange?: CommandProps['onOpenChange']
   onInputValueChange?: CommandProps['onInputValueChange']
-  onSelect?: CommandProps['onSelect']
+  onItemSelect?: CommandProps['onItemSelect']
   /** 每条命令的自定义内容；未提供时使用清单中的 label。 */
   renderItem?: (node: CommandNodeMeta) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
@@ -107,7 +107,7 @@ export function XhCommandRoot({ children, empty, trigger, footer, renderItem, re
   return <CommandProvider value={ctx}>{body}</CommandProvider>
 }
 
-XhCommandRoot.xhEvents = ['open-change', 'input-value-change', 'select'] as const
+XhCommandRoot.xhEvents = ['open-change', 'input-value-change', 'item-select'] as const
 
 export interface XhCommandTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhCommandTrigger({ children, asChild, ...rest }: XhCommandTriggerProps): ReactNode {

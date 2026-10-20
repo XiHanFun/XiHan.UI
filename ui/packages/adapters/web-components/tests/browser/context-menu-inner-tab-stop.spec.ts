@@ -75,7 +75,7 @@ describe('xh-context-menu 触发区里已有 Tab 位', () => {
   it('选中条目关掉后焦点同样回到画布', async () => {
     await mount(CANVAS)
     const picked: string[] = []
-    el('xh-context-menu').addEventListener('select', event => picked.push((event as CustomEvent<{ value: string }>).detail.value))
+    el('xh-context-menu').addEventListener('item-select', event => picked.push((event as CustomEvent<{ value: string }>).detail.value))
     el('[data-test-canvas]').focus()
     await userEvent.keyboard('{Shift>}{F10}{/Shift}')
     await settle()

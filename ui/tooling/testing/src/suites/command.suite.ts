@@ -297,7 +297,7 @@ export const commandSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'Enter 执行锚点所在的命令：派发 select，长按连发的重复键不重复执行',
+      name: 'Enter 执行锚点所在的命令：派发 item-select，长按连发的重复键不重复执行',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['command.kbd.select'],
       props: { ...OPEN, closeOnSelect: false },
@@ -308,7 +308,7 @@ export const commandSuite: ConformanceSuite = {
           key: 'Enter',
           expect: {
             parts: { 'item[0]': { 'aria-selected': 'true', 'data-state': null } },
-            events: [{ type: 'select', detail: { value: 'page-users', label: '用户管理' } }],
+            events: [{ type: 'item-select', detail: { value: 'page-users', label: '用户管理' } }],
           },
         },
         {
@@ -326,7 +326,7 @@ export const commandSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击命令：派发 select 并收起面板',
+      name: '点击命令：派发 item-select 并收起面板',
       spec: { apg: `${APG}#roles_states_properties` },
       props: OPEN,
       steps: [
@@ -335,7 +335,7 @@ export const commandSuite: ConformanceSuite = {
           part: 'item[2]',
           expect: {
             events: [
-              { type: 'select', detail: { value: 'action-export', label: '导出报表' } },
+              { type: 'item-select', detail: { value: 'action-export', label: '导出报表' } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
@@ -348,7 +348,7 @@ export const commandSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击禁用的命令：不派发 select，面板不动',
+      name: '点击禁用的命令：不派发 item-select，面板不动',
       spec: { apg: `${APG}#roles_states_properties` },
       props: OPEN,
       steps: [

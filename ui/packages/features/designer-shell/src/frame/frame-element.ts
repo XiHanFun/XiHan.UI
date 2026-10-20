@@ -809,7 +809,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         // 受控：照菜单要的开合写回；aria-expanded 由菜单在展开期间写在锚点上，收起时还原
         host.open = (event as CustomEvent<{ open: boolean }>).detail.open
       })
-      host.addEventListener('select', (event) => {
+      host.addEventListener('item-select', (event) => {
         event.stopPropagation()
         const value = (event as CustomEvent<{ value: string }>).detail.value
         // 窄屏时菜单开在抽屉那一层里：等菜单这一层释放了再动布局（隐藏最后一块面板会收起抽屉），焦点交回「更多」钮

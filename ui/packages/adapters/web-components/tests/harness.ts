@@ -11,7 +11,7 @@ interface Updatable extends HTMLElement {
 }
 
 // 对外语义事件（跨适配器一致的 CustomEvent），无关组件忽略
-const PUBLIC_EVENTS = ['action', 'active-source-change', 'open-change', 'panel-size-change', 'checked-change', 'clear', 'retry', 'checkbox-value-change', 'radio-value-change', 'clamp-toggle', 'color-error', 'recent-colors-change', 'branch-load-start', 'branch-load', 'branch-load-error', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-close', 'tab-move', 'tag-reject', 'scroll-change', 'reach-end', 'value-change', 'select', 'sort', 'transfer', 'status-change', 'submit', 'stop', 'source-open', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'folded-change', 'comment-request', 'index-change', 'answers-change', 'notes-change', 'paused-change', 'hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change', 'brush-selection-change', 'root-key-change', 'view-change', 'issues-change', 'completion-select']
+const PUBLIC_EVENTS = ['action', 'active-source-change', 'open-change', 'panel-size-change', 'checked-change', 'clear', 'retry', 'checkbox-value-change', 'radio-value-change', 'clamp-toggle', 'color-error', 'recent-colors-change', 'branch-load-start', 'branch-load', 'branch-load-error', 'column-preference-change', 'pressed-change', 'node-move', 'row-move', 'tab-close', 'tab-move', 'tag-reject', 'scroll-change', 'reach-end', 'value-change', 'item-select', 'sort', 'transfer', 'status-change', 'submit', 'stop', 'source-open', 'stick-change', 'download-complete', 'download-error', 'item-delete', 'item-focus', 'decision', 'granted-scopes-change', 'expanded-value-change', 'folded-change', 'comment-request', 'index-change', 'answers-change', 'notes-change', 'paused-change', 'hidden-series-change', 'active-key-change', 'datum-active', 'datum-press', 'window-change', 'brush-selection-change', 'root-key-change', 'view-change', 'issues-change', 'completion-select']
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -123,9 +123,7 @@ export function createWcHarness(): AdapterHarness {
   let scope: HTMLElement | null = null
   let events: AdapterEvent[] = []
   const onEvent = (e: Event): void => {
-    // 语义事件一律是 CustomEvent；同名的原生事件要挡掉。
-    // 具体撞上的是 select：焦点域把焦点送进输入框时会连带 .select() 全选，
-    // 那个原生 select 事件是冒泡的，会一路冒到宿主上冒充成组件的选中事件。
+    // 只收组件派发的语义事件（CustomEvent），冒泡上来的原生事件不算
     if (!(e instanceof CustomEvent))
       return
     events.push({ type: e.type, detail: e.detail })

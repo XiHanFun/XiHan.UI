@@ -434,9 +434,9 @@ describe('把候选插回正文中间', () => {
     expect(m.state()).toBe('closed')
   })
 
-  it('onSelect 报回是哪一条候选、用的哪个前缀', async () => {
+  it('onItemSelect 报回是哪一条候选、用的哪个前缀', async () => {
     const picked: Array<{ value: string, label: string, prefix: string }> = []
-    const m = mount({ onSelect: d => picked.push(d) })
+    const m = mount({ onItemSelect: d => picked.push(d) })
     type(m.input, '@')
     await tick()
     click(m.item('poly'))

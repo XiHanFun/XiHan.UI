@@ -1,4 +1,4 @@
-import type { ContextMenuSelectDetails, MenubarSelectDetails } from '@xihan-ui/headless'
+import type { ContextMenuItemSelectDetails, MenubarItemSelectDetails } from '@xihan-ui/headless'
 import type { Mock } from 'vitest'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -25,7 +25,7 @@ import {
 } from '../../src'
 
 type Family = 'context-menu' | 'menubar'
-type Select = (details: ContextMenuSelectDetails | MenubarSelectDetails) => void
+type Select = (details: ContextMenuItemSelectDetails | MenubarItemSelectDetails) => void
 
 // trackHoverIntent 的公开缺省：进入 100ms、离开 300ms。本测试不改参数，真实跨过原关闭时限。
 const OPEN_SETTLE = 140
@@ -62,7 +62,7 @@ function nestedMenu(): VNode[] {
 }
 
 function contextTree(select: Select): VNode {
-  return h(XhContextMenuRoot, { defaultOpen: true, onSelect: select }, () => [
+  return h(XhContextMenuRoot, { defaultOpen: true, onItemSelect: select }, () => [
     h(XhContextMenuTrigger, () => '右键目标'),
     h(XhContextMenuPositioner, null, () => [
       h(XhContextMenuContent, null, () => [
@@ -76,7 +76,7 @@ function contextTree(select: Select): VNode {
 }
 
 function menubarTree(select: Select): VNode {
-  return h(XhMenubarRoot, { defaultValue: 'file', onSelect: select }, () => [
+  return h(XhMenubarRoot, { defaultValue: 'file', onItemSelect: select }, () => [
     h(XhMenubarTrigger, { value: 'file' }, () => '文件'),
     h(XhMenubarPositioner, { value: 'file' }, () => [
       h(XhMenubarContent, { value: 'file' }, () => [

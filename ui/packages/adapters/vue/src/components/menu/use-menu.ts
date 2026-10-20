@@ -39,7 +39,7 @@ export interface MenuContext {
 function useMenuImpl(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
-  onSelect?: MenuSchema['props']['onSelect'],
+  onItemSelect?: MenuSchema['props']['onItemSelect'],
   onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
   treeParent?: MenuTreeNode,
@@ -57,12 +57,12 @@ function useMenuImpl(
     isOpen: () => service?.state.get() === 'open',
     close: () => service?.send({ type: 'CLOSE' }),
     isRoot: () => !(service?.prop('submenu') ?? props.submenu),
-    onRootSelect: details => onSelect?.(details),
+    onRootSelect: details => onItemSelect?.(details),
   })
   service = useMachine(menuMachine, () => ({
     ...props,
     onOpenChange,
-    onSelect: treeParent ? tree.select : onSelect,
+    onItemSelect: treeParent ? tree.select : onItemSelect,
     onCheckboxValueChange,
     onRadioValueChange,
   }), scope)
@@ -116,11 +116,11 @@ function useMenuImpl(
 export function useMenu(
   props: MenuSchema['props'],
   onOpenChange?: MenuSchema['props']['onOpenChange'],
-  onSelect?: MenuSchema['props']['onSelect'],
+  onItemSelect?: MenuSchema['props']['onItemSelect'],
   onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: MenuSchema['props']['onRadioValueChange'],
 ): MenuContext {
-  return useMenuImpl(props, onOpenChange, onSelect, onCheckboxValueChange, onRadioValueChange)
+  return useMenuImpl(props, onOpenChange, onItemSelect, onCheckboxValueChange, onRadioValueChange)
 }
 
 /** 组合部件内部入口：把子菜单连接到 headless 逻辑树。 */

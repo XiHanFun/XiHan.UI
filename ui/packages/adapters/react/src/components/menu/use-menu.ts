@@ -50,7 +50,7 @@ function useMenuImpl(props: MenuSchema['props'], treeParent?: MenuTreeNode): Men
     isOpen: () => serviceRef.current?.state.get() === 'open',
     close: () => serviceRef.current?.send({ type: 'CLOSE' }),
     isRoot: () => !(serviceRef.current?.prop('submenu') ?? latestProps.current.submenu),
-    onRootSelect: details => latestProps.current.onSelect?.(details),
+    onRootSelect: details => latestProps.current.onItemSelect?.(details),
   }), [])
 
   useIsomorphicLayoutEffect(
@@ -85,7 +85,7 @@ function useMenuImpl(props: MenuSchema['props'], treeParent?: MenuTreeNode): Men
     },
   })
 
-  const service = useMachine(menuMachine, () => treeParent ? { ...props, onSelect: tree.select } : props, {
+  const service = useMachine(menuMachine, () => treeParent ? { ...props, onItemSelect: tree.select } : props, {
     scope,
     onCreate: overlay.onCreate as never,
   })

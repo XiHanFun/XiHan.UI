@@ -122,7 +122,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<MenubarTranslations>` |  |  |
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
-| `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
+| `onItemSelect` | `(details: MenubarItemSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 | `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
 | `onRadioValueChange` | `(details: MenuRadioValueChangeDetails) => void` |  |  |
 
@@ -154,7 +154,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `MenubarValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
-| `select` | `MenubarSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
+| `item-select` | `MenubarItemSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
 | `checkbox-value-change` | `MenubarCheckboxValueChangeDetails` | checkbox 选中集合变化 |
 | `radio-value-change` | `MenubarRadioValueChangeDetails` | RadioGroup 选中映射变化 |
 

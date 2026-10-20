@@ -35,7 +35,7 @@ export interface ContextMenuContext {
 export function useContextMenu(
   props: ContextMenuSchema['props'],
   onOpenChange?: ContextMenuSchema['props']['onOpenChange'],
-  onSelect?: ContextMenuSchema['props']['onSelect'],
+  onItemSelect?: ContextMenuSchema['props']['onItemSelect'],
   onCheckboxValueChange?: ContextMenuSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: ContextMenuSchema['props']['onRadioValueChange'],
 ): ContextMenuContext {
@@ -52,9 +52,9 @@ export function useContextMenu(
     isOpen: () => service?.state.get() === 'open',
     close: () => service?.send({ type: 'CLOSE' }),
     isRoot: () => true,
-    onRootSelect: details => onSelect?.(details),
+    onRootSelect: details => onItemSelect?.(details),
   })
-  service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onSelect, onCheckboxValueChange, onRadioValueChange }), scope)
+  service = useMachine(contextMenuMachine, () => ({ ...props, onOpenChange, onItemSelect, onCheckboxValueChange, onRadioValueChange }), scope)
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   let config: RuntimeConfig | null = null

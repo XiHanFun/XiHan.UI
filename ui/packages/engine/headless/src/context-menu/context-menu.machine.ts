@@ -172,9 +172,9 @@ export const contextMenuMachine = createMachine({
         ],
         // 选中即关闭：先发选中详情，再走与 CLOSE 相同的收口
         'ITEM.SELECT': [
-          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnSelect'] },
-          { guard: 'isOpenControlled', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
-          { target: 'closed', actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnItemSelect'] },
+          { guard: 'isOpenControlled', actions: ['selectChoice', 'invokeOnItemSelect', 'setReturnFocus', 'invokeOnClose'] },
+          { target: 'closed', actions: ['selectChoice', 'invokeOnItemSelect', 'setReturnFocus', 'invokeOnClose'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
         'FOCUS.CLEAR': { actions: ['clearFocusedValue'] },
@@ -234,10 +234,10 @@ export const contextMenuMachine = createMachine({
       },
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
-      invokeOnSelect: ({ prop, event }) => {
+      invokeOnItemSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT' && (e.kind === 'item' || e.close))
-          prop('onSelect')?.({ value: e.value })
+          prop('onItemSelect')?.({ value: e.value })
       },
       selectChoice: ({ context, event }) => {
         const e = event.current()

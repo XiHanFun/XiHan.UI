@@ -76,7 +76,7 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: {
     'open-change': (_details: PayloadOf<MenuProps, 'onOpenChange'>) => true,
-    'select': (_details: PayloadOf<MenuProps, 'onSelect'>) => true,
+    'item-select': (_details: PayloadOf<MenuProps, 'onItemSelect'>) => true,
     'checkbox-value-change': (_details: PayloadOf<MenuProps, 'onCheckboxValueChange'>) => true,
     'radio-value-change': (_details: PayloadOf<MenuProps, 'onRadioValueChange'>) => true,
     'update:open': (_open: PayloadOf<MenuProps, 'onOpenChange'>['open']) => true,
@@ -96,10 +96,10 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const notifySelect: MenuProps['onSelect'] = details => emit('select', details)
+    const notifyItemSelect: MenuProps['onItemSelect'] = details => emit('item-select', details)
     const notifyCheckboxValue: MenuProps['onCheckboxValueChange'] = details => emit('checkbox-value-change', details)
     const notifyRadioValue: MenuProps['onRadioValueChange'] = details => emit('radio-value-change', details)
-    const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifySelect, notifyCheckboxValue, notifyRadioValue)
+    const ctx = useMenu(withXhConfig('menu', props) as MenuProps, notifyOpen, notifyItemSelect, notifyCheckboxValue, notifyRadioValue)
     provideMenu(ctx)
     // 各层子菜单按数据铺条目时与本层同用这几个插槽
     provide(MENU_ITEM_SLOTS, { 'item': slots.item, 'item-prefix': slots['item-prefix'], 'item-suffix': slots['item-suffix'] })

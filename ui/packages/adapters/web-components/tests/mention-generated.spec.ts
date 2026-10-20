@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import type { MentionNode, MentionSelectDetails } from '@xihan-ui/headless'
+import type { MentionItemSelectDetails, MentionNode } from '@xihan-ui/headless'
 import { onDiagnostic } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
@@ -90,15 +90,11 @@ describe('xh-mention 生成结构', () => {
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
   })
 
-  it('敲下前缀即开，点候选把查询串换成候选文字并派发 select', async () => {
+  it('敲下前缀即开，点候选把查询串换成候选文字并派发 item-select', async () => {
     const el = mount({ collection: COLLECTION })
     await settle(el)
-    const selected: MentionSelectDetails[] = []
-    // 输入框改选区时原生 select 事件也冒泡到宿主，只收元素派发的那种
-    el.addEventListener('select', (event) => {
-      if (event instanceof CustomEvent)
-        selected.push((event as CustomEvent<MentionSelectDetails>).detail)
-    })
+    const selected: MentionItemSelectDetails[] = []
+    el.addEventListener('item-select', event => selected.push((event as CustomEvent<MentionItemSelectDetails>).detail))
 
     await type(el, '你好 @po')
     expect(part(el, 'input')!.getAttribute('aria-expanded')).toBe('true')

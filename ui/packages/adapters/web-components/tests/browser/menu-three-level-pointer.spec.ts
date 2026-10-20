@@ -69,7 +69,7 @@ async function mountMenu(onSelect: (event: Event) => void, markup = MARKUP): Pro
   rootMenu = stage.querySelector<UpdatableMenu>('xh-menu')
   if (!rootMenu)
     throw new Error('找不到根 xh-menu')
-  rootMenu.addEventListener('select', onSelect)
+  rootMenu.addEventListener('item-select', onSelect)
   await settle()
 }
 

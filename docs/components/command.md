@@ -133,7 +133,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `translations` | `Partial<CommandTranslations>` |  |  |
 | `onOpenChange` | `(details: CommandOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
-| `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
+| `onItemSelect` | `(details: CommandItemSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
 
 ### CommandNode
 
@@ -167,7 +167,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | --- | --- | --- |
 | `open-change` | `CommandOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: string }` |
 | `input-value-change` | `CommandInputValueChangeDetails` | 检索串变化；detail 为 `{ inputValue: string }` |
-| `select` | `CommandSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
+| `item-select` | `CommandItemSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
 
 ### 插槽
 

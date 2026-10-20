@@ -286,7 +286,7 @@ export const menuSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击条目：派发 select 后关闭，锚点清空，焦点归还 trigger',
+      name: '点击条目：派发 item-select 后关闭，锚点清空，焦点归还 trigger',
       spec: { apg: APG },
       steps: [
         { kind: 'click', part: 'trigger' },
@@ -302,7 +302,7 @@ export const menuSuite: ConformanceSuite = {
             },
             // 先选中详情、后开合意图
             events: [
-              { type: 'select', detail: { value: 'paste' } },
+              { type: 'item-select', detail: { value: 'paste' } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
@@ -364,7 +364,7 @@ export const menuSuite: ConformanceSuite = {
               content: { 'hidden': '', 'data-state': 'closed' },
             },
             events: [
-              { type: 'select', detail: { value: 'copy' } },
+              { type: 'item-select', detail: { value: 'copy' } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },

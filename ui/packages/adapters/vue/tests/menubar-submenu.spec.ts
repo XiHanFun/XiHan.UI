@@ -37,7 +37,7 @@ function mount(): { select: ReturnType<typeof vi.fn> } {
   document.body.appendChild(host)
   const app = createApp({
     setup: () => () =>
-      h(XhMenubarRoot, { defaultValue: 'file', onSelect: select }, () => [
+      h(XhMenubarRoot, { defaultValue: 'file', onItemSelect: select }, () => [
         h(XhMenubarTrigger, { value: 'file' }, () => '文件'),
         h(XhMenubarPositioner, { value: 'file' }, () => [
           h(XhMenubarContent, { value: 'file' }, () => [

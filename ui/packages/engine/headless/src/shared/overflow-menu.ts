@@ -98,6 +98,6 @@ export function overflowMenuProps(options: OverflowMenuOptions): MenuSchema['pro
     dir: options.dir,
     size: options.size,
     disabled: options.disabled,
-    onSelect: ({ value }) => options.onSelect(value),
+    onItemSelect: ({ value }) => options.onSelect(value),
   }
 }

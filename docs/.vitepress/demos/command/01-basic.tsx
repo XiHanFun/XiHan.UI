@@ -1,5 +1,5 @@
 // 基础用法 | 提供一份命令清单，过滤、归组与空态都由组件处理
-import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
+import type { CommandItemSelectDetails, CommandNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhCommandRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -22,7 +22,7 @@ const groups = [
 export default function Demo(): ReactNode {
   const [last, setLast] = useState("还没执行过命令");
 
-  function run(details: CommandSelectDetails): void {
+  function run(details: CommandItemSelectDetails): void {
     setLast(`执行了：${details.label}`);
   }
 
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
         groups={groups}
         placeholder="搜命令…"
         empty="没有匹配的命令"
-        onSelect={run}
+        onItemSelect={run}
         trigger="打开命令面板"
         footer="方向键选择 · Enter 执行 · Esc 关闭"
       />

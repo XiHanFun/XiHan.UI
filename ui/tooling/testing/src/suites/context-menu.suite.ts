@@ -531,7 +531,7 @@ export const contextMenuSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击条目：派发 select 后关闭，锚点清空，焦点归还触发区',
+      name: '点击条目：派发 item-select 后关闭，锚点清空，焦点归还触发区',
       spec: { apg: APG },
       steps: [
         { kind: 'focus', part: 'trigger' },
@@ -548,7 +548,7 @@ export const contextMenuSuite: ConformanceSuite = {
             },
             // 先选中详情、后开合意图
             events: [
-              { type: 'select', detail: { value: 'delete' } },
+              { type: 'item-select', detail: { value: 'delete' } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
@@ -577,7 +577,7 @@ export const contextMenuSuite: ConformanceSuite = {
               content: { 'hidden': '', 'data-state': 'closed' },
             },
             events: [
-              { type: 'select', detail: { value: 'copy' } },
+              { type: 'item-select', detail: { value: 'copy' } },
               { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },

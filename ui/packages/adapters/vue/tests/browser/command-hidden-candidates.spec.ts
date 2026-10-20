@@ -47,7 +47,7 @@ it('隐藏组不成为活动命令，后续全部隐藏清理 ARIA，恢复后�
     modal: false,
     closeOnSelect: false,
     collection: [{ value: 'first', label: '首项', group: 'primary' }, { value: 'second', label: '次项' }],
-    onSelect: (details: { value: string }) => selected.push(details.value),
+    onItemSelect: (details: { value: string }) => selected.push(details.value),
   }, () => h(XhCommandContent, null, () => [
     h(XhCommandInput),
     h(XhCommandList, null, () => [

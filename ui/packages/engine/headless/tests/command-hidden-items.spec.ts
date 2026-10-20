@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { CommandSchema, CommandSelectDetails } from '../src/command'
+import type { CommandItemSelectDetails, CommandSchema } from '../src/command'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, expect, it } from 'vitest'
@@ -9,12 +9,12 @@ const cleanups: (() => void)[] = []
 
 async function fixture(options: { hiddenGroup?: boolean, missingFirst?: boolean } = {}) {
   const runtime = createVanillaRuntime()
-  const selected: CommandSelectDetails[] = []
+  const selected: CommandItemSelectDetails[] = []
   const props = runtime.signal<CommandSchema['props']>({
     collection: [{ value: 'first', label: '首项' }, { value: 'second', label: '次项' }],
     defaultOpen: true,
     closeOnSelect: false,
-    onSelect: details => selected.push(details),
+    onItemSelect: details => selected.push(details),
   })
   const list = document.createElement('div')
   list.dataset.scope = 'command'

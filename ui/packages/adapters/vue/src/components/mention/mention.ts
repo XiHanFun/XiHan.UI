@@ -69,7 +69,7 @@ export const XhMentionRoot = defineComponent({
   emits: {
     'value-change': (_details: PayloadOf<MentionProps, 'onValueChange'>) => true,
     'query-change': (_details: PayloadOf<MentionProps, 'onQueryChange'>) => true,
-    'select': (_details: PayloadOf<MentionProps, 'onSelect'>) => true,
+    'item-select': (_details: PayloadOf<MentionProps, 'onItemSelect'>) => true,
     'open-change': (_details: PayloadOf<MentionProps, 'onOpenChange'>) => true,
     'update:value': (_value: PayloadOf<MentionProps, 'onValueChange'>['value']) => true,
   },
@@ -91,13 +91,13 @@ export const XhMentionRoot = defineComponent({
       emit('update:value', details.value)
     }
     const notifyQuery: MentionProps['onQueryChange'] = details => emit('query-change', details)
-    const notifySelect: MentionProps['onSelect'] = details => emit('select', details)
+    const notifyItemSelect: MentionProps['onItemSelect'] = details => emit('item-select', details)
     const notifyOpen: MentionProps['onOpenChange'] = details => emit('open-change', details)
 
     const ctx = useMention(withXhConfig('mention', useFormControlProps(props)) as MentionProps, {
       onValueChange: notifyValue,
       onQueryChange: notifyQuery,
-      onSelect: notifySelect,
+      onItemSelect: notifyItemSelect,
       onOpenChange: notifyOpen,
     })
     provideMention(ctx)

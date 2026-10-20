@@ -38,6 +38,7 @@
 - **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
 - **ColorPicker**：单选给空数组改为未选（色块画斜线、值文字显示 `placeholder`、`value` 为空数组），不再按 `#000000` 显示；要黑色的改写 `['#000000']`
 - **树**：`multiple` 改为选择模式 `selectionMode`（Web Components 为 `selection-mode`），`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变
+- **菜单族的选中事件**：Menu、ContextMenu、Menubar、Command、Mention 的 `select` 改名 `item-select`，不再与原生 `select`（输入框里选中文字时冒泡上来）同名：Vue 写 `@item-select`，React 写 `onItemSelect`，Web Components 监听 `item-select`；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变
 :::
 
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
@@ -68,6 +69,7 @@
 - **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
 - **调整** Web Components 的 `<xh-dialog>`、`<xh-drawer>` 语义角色改写 `dialog-role`，宿主上不再带 `role`（详见升级须知）
 - **调整** Web Components 的 `<xh-notification-item>` 标题文案改写 `title-text`，宿主上不再带 `title`（详见升级须知）
+- **调整** Menu、ContextMenu、Menubar、Command、Mention 的选中事件改名 `item-select`（`onItemSelect`），不再与原生 `select` 同名（详见升级须知）
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`

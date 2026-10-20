@@ -44,7 +44,7 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     isOpen: () => serviceRef.current?.state.get() === 'open',
     close: () => serviceRef.current?.send({ type: 'CLOSE' }),
     isRoot: () => true,
-    onRootSelect: details => latestProps.current.onSelect?.(details),
+    onRootSelect: details => latestProps.current.onItemSelect?.(details),
   }), [])
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false

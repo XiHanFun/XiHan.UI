@@ -1167,7 +1167,7 @@ const toolbar = createCommandToolbar(document, { display: "icon" }); // 显示�
 toolbar.update(arrangeCommands("toolbar", commands, BUILTIN_TOOLBAR, designer.commandLayout), commands, context, t.toolbar);
 
 renderCommandMenu(menuContent, arrangeCommands("menu:node", commands, BUILTIN_NODE_MENU, designer.commandLayout), commands, context, { platform });
-menu.addEventListener("select", event => runCommand(commands, event.detail.value, context));
+menu.addEventListener("item-select", event => runCommand(commands, event.detail.value, context));
 ```
 
 | 函数 | 说明 |

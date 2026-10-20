@@ -26,6 +26,7 @@ export type {
   ContextMenuFocusIntent,
   ContextMenuGroupProps,
   ContextMenuItemProps,
+  ContextMenuItemSelectDetails,
   ContextMenuNode,
   ContextMenuNodeMeta,
   ContextMenuOpenChangeDetails,
@@ -35,6 +36,5 @@ export type {
   ContextMenuRadioValueChangeDetails,
   ContextMenuRefs,
   ContextMenuSchema,
-  ContextMenuSelectDetails,
   ContextMenuTranslations,
 } from './context-menu.types'

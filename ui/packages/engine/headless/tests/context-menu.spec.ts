@@ -691,13 +691,13 @@ describe('选中与关闭', () => {
   })
 
   it('点击条目：先发选中详情再发关闭意图', () => {
-    const onSelect = vi.fn()
+    const onItemSelect = vi.fn()
     const onOpenChange = vi.fn()
-    const h = mount({ onSelect, onOpenChange })
+    const h = mount({ onItemSelect, onOpenChange })
     rightClick(h.trigger)
     onOpenChange.mockClear()
     click(h.item('delete'))
-    expect(onSelect).toHaveBeenCalledExactlyOnceWith({ value: 'delete' })
+    expect(onItemSelect).toHaveBeenCalledExactlyOnceWith({ value: 'delete' })
     expect(onOpenChange).toHaveBeenCalledExactlyOnceWith({ open: false, reason: 'selection' })
     expect(h.state()).toBe('closed')
     // 收起即清锚点
@@ -705,35 +705,35 @@ describe('选中与关闭', () => {
   })
 
   it('禁用条目点不动：不选中、不关闭、一个事件也不发', () => {
-    const onSelect = vi.fn()
+    const onItemSelect = vi.fn()
     const onOpenChange = vi.fn()
-    const h = mount({ onSelect, onOpenChange })
+    const h = mount({ onItemSelect, onOpenChange })
     rightClick(h.trigger)
     onOpenChange.mockClear()
     click(h.item('paste'))
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onItemSelect).not.toHaveBeenCalled()
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(h.state()).toBe('open')
   })
 
   it('enter / Space 认焦点所在条目，与点击同一条出口', () => {
-    const onSelect = vi.fn()
-    const h = mount({ onSelect })
+    const onItemSelect = vi.fn()
+    const h = mount({ onItemSelect })
     rightClick(h.trigger)
     h.item('copy').focus()
     const event = press(h.item('copy'), 'Enter')
     expect(event.defaultPrevented).toBe(true)
-    expect(onSelect).toHaveBeenCalledExactlyOnceWith({ value: 'copy' })
+    expect(onItemSelect).toHaveBeenCalledExactlyOnceWith({ value: 'copy' })
     expect(h.state()).toBe('closed')
   })
 
   it('焦点停在禁用条目上时确认键不认', () => {
-    const onSelect = vi.fn()
-    const h = mount({ onSelect })
+    const onItemSelect = vi.fn()
+    const h = mount({ onItemSelect })
     rightClick(h.trigger)
     h.item('paste').focus()
     press(h.item('paste'), 'Enter')
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onItemSelect).not.toHaveBeenCalled()
     expect(h.state()).toBe('open')
   })
 
@@ -765,13 +765,13 @@ describe('选中与关闭', () => {
 
 describe('连打检索', () => {
   it('按首字母把焦点移到匹配条目，不选中它', () => {
-    const onSelect = vi.fn()
-    const h = mount({ onSelect })
+    const onItemSelect = vi.fn()
+    const h = mount({ onItemSelect })
     rightClick(h.trigger)
     const event = press(h.content, 'd')
     expect(event.defaultPrevented).toBe(true)
     expect(focused()).toBe('delete')
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onItemSelect).not.toHaveBeenCalled()
     expect(h.state()).toBe('open')
   })
 
@@ -783,14 +783,14 @@ describe('连打检索', () => {
   })
 
   it('缓冲区非空时空格算词中间的字符，不当确认键', () => {
-    const onSelect = vi.fn()
-    const h = mount({ onSelect })
+    const onItemSelect = vi.fn()
+    const h = mount({ onItemSelect })
     rightClick(h.trigger)
     press(h.content, 'd')
     expect(focused()).toBe('delete')
     press(h.item('delete'), ' ')
     // 查询串变成 "d "，匹配不上任何条目：焦点不动，更不该把 delete 选中
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onItemSelect).not.toHaveBeenCalled()
     expect(h.state()).toBe('open')
   })
 

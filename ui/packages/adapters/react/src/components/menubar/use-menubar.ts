@@ -84,7 +84,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     onRootSelect: (details) => {
       const menu = serviceRef.current?.context.get('value') ?? null
       if (menu != null)
-        latestProps.current.onSelect?.({ menu, value: details.value })
+        latestProps.current.onItemSelect?.({ menu, value: details.value })
     },
   }), [registry])
 

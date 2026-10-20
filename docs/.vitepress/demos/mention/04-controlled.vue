@@ -40,7 +40,7 @@ function reset(): void {
     placeholder="输入 @ 提及同事"
     :translations="{ input: '会议纪要', content: '提及谁' }"
     @query-change="query = $event.query"
-    @select="onSelect"
+    @item-select="onSelect"
   />
   <XhButton variant="outline" size="sm" @click="reset">清空</XhButton>
   <p data-demo-output>已提及：{{ mentioned.join("、") || "（无）" }}</p>

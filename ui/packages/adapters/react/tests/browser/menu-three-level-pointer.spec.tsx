@@ -43,9 +43,9 @@ async function settle(delay = 0): Promise<void> {
     await inAct(async () => Promise.resolve())
 }
 
-function tree(onSelect: (details: { value: string }) => void): ReactNode {
+function tree(onItemSelect: (details: { value: string }) => void): ReactNode {
   return (
-    <XhMenuRoot onSelect={onSelect}>
+    <XhMenuRoot onItemSelect={onItemSelect}>
       <XhMenuTrigger>文件操作</XhMenuTrigger>
       <XhMenuPositioner>
         <XhMenuContent>
@@ -78,12 +78,12 @@ function tree(onSelect: (details: { value: string }) => void): ReactNode {
   )
 }
 
-async function mountMenu(onSelect: (details: { value: string }) => void): Promise<void> {
+async function mountMenu(onItemSelect: (details: { value: string }) => void): Promise<void> {
   host = document.createElement('div')
   host.style.cssText = 'position:fixed;inset:64px auto auto 64px'
   document.body.append(host)
   root = createRoot(host)
-  await inAct(() => root!.render(tree(onSelect)))
+  await inAct(() => root!.render(tree(onItemSelect)))
   await settle()
 }
 
@@ -153,8 +153,8 @@ afterEach(async () => {
 
 describe('react Menu 三级真实指针', () => {
   it('三级叶项停留超过默认关闭延时仍保留整棵树，返回二级后可重进并选中关闭', async () => {
-    const onSelect = vi.fn()
-    await mountMenu(onSelect)
+    const onItemSelect = vi.fn()
+    await mountMenu(onItemSelect)
     await openThreeLevels()
     const middle = contentOf('share-email')
     const leaf = contentOf('share-wecom')
@@ -173,8 +173,8 @@ describe('react Menu 三级真实指针', () => {
     expectThreeLevelsOpen()
     await click(byValue('share-dingtalk'))
 
-    expect(onSelect).toHaveBeenCalledTimes(1)
-    expect(onSelect).toHaveBeenCalledWith({ value: 'share-dingtalk' })
+    expect(onItemSelect).toHaveBeenCalledTimes(1)
+    expect(onItemSelect).toHaveBeenCalledWith({ value: 'share-dingtalk' })
     expect(rootTrigger().getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share').getAttribute('aria-expanded')).toBe('false')
     expect(byValue('share-im').getAttribute('aria-expanded')).toBe('false')

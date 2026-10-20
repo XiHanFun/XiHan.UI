@@ -68,7 +68,7 @@ export const XhCommandRoot = defineComponent({
   emits: {
     'open-change': (_details: PayloadOf<CommandProps, 'onOpenChange'>) => true,
     'input-value-change': (_details: PayloadOf<CommandProps, 'onInputValueChange'>) => true,
-    'select': (_details: PayloadOf<CommandProps, 'onSelect'>) => true,
+    'item-select': (_details: PayloadOf<CommandProps, 'onItemSelect'>) => true,
     'update:open': (_open: PayloadOf<CommandProps, 'onOpenChange'>['open']) => true,
     'update:inputValue': (_inputValue: PayloadOf<CommandProps, 'onInputValueChange'>['inputValue']) => true,
   },
@@ -94,12 +94,12 @@ export const XhCommandRoot = defineComponent({
       emit('input-value-change', details)
       emit('update:inputValue', details.inputValue)
     }
-    const notifySelect: CommandProps['onSelect'] = details => emit('select', details)
+    const notifyItemSelect: CommandProps['onItemSelect'] = details => emit('item-select', details)
 
     const ctx = useCommand(withXhConfig('command', props) as CommandProps, {
       onOpenChange: notifyOpen,
       onInputValueChange: notifyInputValue,
-      onSelect: notifySelect,
+      onItemSelect: notifyItemSelect,
     })
     provideCommand(ctx)
 

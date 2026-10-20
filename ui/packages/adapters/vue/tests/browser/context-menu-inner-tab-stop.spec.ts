@@ -30,14 +30,14 @@ function canvas(): VNodeChild {
   return h('div', { 'tabindex': 0, 'aria-label': '画布', 'data-test-canvas': '', 'style': { blockSize: '120px' } }, '销售额 ¥217,664 占比 8.8%')
 }
 
-async function mount(content: () => VNodeChild, onSelect?: (details: { value: string }) => void): Promise<void> {
+async function mount(content: () => VNodeChild, onItemSelect?: (details: { value: string }) => void): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '360px'
   document.body.append(host)
   app = createApp({
     render: () => h('div', [
       h('button', { 'type': 'button', 'data-test-start': '' }, '起点'),
-      h(XhContextMenuRoot, { onSelect }, () => [
+      h(XhContextMenuRoot, { onItemSelect }, () => [
         h(XhContextMenuTrigger, null, content),
         h(XhContextMenuPositioner, null, () => [
           h(XhContextMenuContent, null, () => ITEMS.map(item => h(XhContextMenuItem, { key: item.value, value: item.value }, () => [

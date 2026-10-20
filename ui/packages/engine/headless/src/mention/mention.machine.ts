@@ -298,7 +298,7 @@ export const mentionMachine = createMachine({
         context.set('value', value)
         context.set('trigger', null)
         context.set('dismissedIndex', null)
-        prop('onSelect')?.({ value: e.value, label, prefix: trigger.prefix })
+        prop('onItemSelect')?.({ value: e.value, label, prefix: trigger.prefix })
 
         // 正文落定才移光标。受控宿主没把这次改动写回来时 context 里还是旧文，此时不动框里的东西
         flush(() => {

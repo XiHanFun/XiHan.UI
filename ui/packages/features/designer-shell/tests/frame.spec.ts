@@ -413,7 +413,7 @@ describe('<xh-designer-frame> 面板头与布局', () => {
   }
 
   function choose(name: string, value: string): void {
-    menuOf(name).dispatchEvent(new CustomEvent('select', { detail: { value }, bubbles: true }))
+    menuOf(name).dispatchEvent(new CustomEvent('item-select', { detail: { value }, bubbles: true }))
   }
 
   it('收起钮把面板收成标题条：正文不显示，再点展开；改完派发 layout-change 并播报', async () => {

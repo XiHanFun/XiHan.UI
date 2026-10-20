@@ -29,7 +29,7 @@ const ITEMS = [{ value: 'copy', label: '复制' }, { value: 'paste', label: '粘
 
 const CANVAS = <div tabIndex={0} aria-label="画布" data-test-canvas="" style={{ blockSize: '120px' }}>销售额 ¥217,664 占比 8.8%</div>
 
-async function mount(content: ReactNode, onSelect?: (details: { value: string }) => void): Promise<void> {
+async function mount(content: ReactNode, onItemSelect?: (details: { value: string }) => void): Promise<void> {
   host = document.createElement('div')
   host.style.inlineSize = '360px'
   document.body.append(host)
@@ -37,7 +37,7 @@ async function mount(content: ReactNode, onSelect?: (details: { value: string })
   await act(async () => root!.render(
     <div>
       <button type="button" data-test-start="">起点</button>
-      <XhContextMenuRoot onSelect={onSelect}>
+      <XhContextMenuRoot onItemSelect={onItemSelect}>
         <XhContextMenuTrigger>{content}</XhContextMenuTrigger>
         <XhContextMenuPositioner>
           <XhContextMenuContent>

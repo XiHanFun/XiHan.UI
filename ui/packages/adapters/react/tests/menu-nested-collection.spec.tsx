@@ -55,8 +55,8 @@ const ROUTES: MenuNode[] = [
 
 describe('menu 的 children', () => {
   it('带 children 的节点铺成子菜单入口，逐层展开到第三层，叶子选中汇到根', async () => {
-    const onSelect = vi.fn()
-    await mount(<XhMenuRoot collection={ROUTES} trigger="导航" onSelect={onSelect} />)
+    const onItemSelect = vi.fn()
+    await mount(<XhMenuRoot collection={ROUTES} trigger="导航" onItemSelect={onItemSelect} />)
     await click(document.querySelector<HTMLElement>('[data-scope="menu"][data-part="trigger"]')!)
     const system = item('menu', 'system')
     expect(system.getAttribute('aria-haspopup')).toBe('menu')
@@ -64,13 +64,13 @@ describe('menu 的 children', () => {
     await click(item('menu', 'perm'))
     expect(item('menu', 'menus').getAttribute('aria-disabled')).toBe('true')
     await click(item('menu', 'roles'))
-    expect(onSelect).toHaveBeenCalledWith({ value: 'roles' })
+    expect(onItemSelect).toHaveBeenCalledWith({ value: 'roles' })
   })
 })
 
 describe('menubar 条目的 children', () => {
   it('菜单栏里的条目带 children 时铺成子菜单，下一层再带 children 继续往下', async () => {
-    const onSelect = vi.fn()
+    const onItemSelect = vi.fn()
     const menus: MenubarNode[] = [{
       value: 'file',
       label: '文件',
@@ -79,12 +79,12 @@ describe('menubar 条目的 children', () => {
         { value: 'export', label: '导出为', children: [{ value: 'pdf', label: 'PDF' }, { value: 'img', label: '图片', children: [{ value: 'png', label: 'PNG' }] }] },
       ],
     }]
-    await mount(<XhMenubarRoot collection={menus} onSelect={onSelect} />)
+    await mount(<XhMenubarRoot collection={menus} onItemSelect={onItemSelect} />)
     await click(document.querySelector<HTMLElement>('[data-scope="menubar"][data-part="trigger"][data-value="file"]')!)
     expect(item('menubar', 'export').getAttribute('aria-haspopup')).toBe('menu')
     await click(item('menubar', 'export'))
     await click(item('menu', 'img'))
     await click(item('menu', 'png'))
-    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ value: 'png' }))
+    expect(onItemSelect).toHaveBeenCalledWith(expect.objectContaining({ value: 'png' }))
   })
 })

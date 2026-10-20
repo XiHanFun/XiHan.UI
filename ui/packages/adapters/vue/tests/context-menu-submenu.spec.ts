@@ -38,7 +38,7 @@ function mountCtx(): { select: ReturnType<typeof vi.fn> } {
   document.body.appendChild(host)
   const app = createApp({
     setup: () => () =>
-      h(XhContextMenuRoot, { onSelect: select }, () => [
+      h(XhContextMenuRoot, { onItemSelect: select }, () => [
         h(XhContextMenuTrigger, () => '右键这里'),
         h(XhContextMenuPositioner, null, () => [
           h(XhContextMenuContent, null, () => [
@@ -100,7 +100,7 @@ describe('context-menu 子菜单', () => {
     expect(t.select).not.toHaveBeenCalled()
   })
 
-  it('子层选中汇到根：发根的 select 并整链关闭', async () => {
+  it('子层选中汇到根：发根的 item-select 并整链关闭', async () => {
     const t = mountCtx()
     await openCtx()
     el(SUB_TRIGGER).click()

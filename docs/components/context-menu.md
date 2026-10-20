@@ -70,7 +70,7 @@
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持右键菜单展开。
-- 选中任意层级的命令后发出根级 `select` 并关闭菜单链。
+- 选中任意层级的命令后发出根级 `item-select` 并关闭菜单链。
 - 触发区里的内容自带 Tab 位时（可聚焦的画布、列表），触发区不再另占一个：菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到打开前的持有者。判据只看 DOM：原生可聚焦或 `tabindex` ≥ 0 的元素，禁用的、`hidden` 或 `inert` 子树里的与菜单自己的浮层不算；内容里没有 Tab 位时触发区自己占一个。
 - `disabled` 让整张菜单失效：右键、长按、菜单键与 Shift+F10 都不再展开，浏览器自己的右键菜单照常出现；触发区退出 Tab 序列，展开途中转为禁用即收起。
 
@@ -124,7 +124,7 @@
 | `tone` | `Tone` |  | 整张菜单的语气：brand / neutral / success / warning / danger / info。 只为浮层与作者放进来的内容备好该族颜色，不下发给条目——条目保持中性档， 逐条的语气写在 collection 的 `tone` 上（见 ContextMenuNode）。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
-| `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
+| `onItemSelect` | `(details: ContextMenuItemSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 | `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
 | `onRadioValueChange` | `(details: MenuRadioValueChangeDetails) => void` |  |  |
 
@@ -156,7 +156,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `ContextMenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `select` | `ContextMenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+| `item-select` | `ContextMenuItemSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
 | `checkbox-value-change` | `ContextMenuCheckboxValueChangeDetails` | checkbox 选中集合变化 |
 | `radio-value-change` | `ContextMenuRadioValueChangeDetails` | RadioGroup 选中映射变化 |
 

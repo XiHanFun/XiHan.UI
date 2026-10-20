@@ -6,7 +6,7 @@
 // 提供 menu 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuSelectDetails, MenuTranslations } from '@xihan-ui/headless'
+import type { MenuAnyItemProps, MenuCheckboxValueChangeDetails, MenuItemSelectDetails, MenuNode, MenuOpenChangeDetails, MenuRadioValue, MenuRadioValueChangeDetails, MenuSchema, MenuTranslations } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
@@ -52,7 +52,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {string} label - 生成结构时的触发器文字：根菜单是按钮里的文字（没写 slot="trigger" 时），子菜单是触发条目的文字；手写部件时不使用它
  * @attr {string} value - 子菜单在父菜单里的条目身份：生成结构时写在触发条目上；手写部件时写在触发条目自己身上
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
+ * @fires item-select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @fires checkbox-value-change - checkbox 选中集合变化；detail 为 `{ value: string[] }`
  * @fires radio-value-change - RadioGroup 选中映射变化；detail 为 `{ value: Record<string, string> }`
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在）；没给 anchor 时同时是定位锚点
@@ -218,12 +218,12 @@ export class XhMenuElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelect = (details: MenuSelectDetails): void => {
+  private readonly notifyItemSelect = (details: MenuItemSelectDetails): void => {
     this.menuTree.select(details)
   }
 
-  private readonly dispatchSelect = (details: MenuSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  private readonly dispatchSelect = (details: MenuItemSelectDetails): void => {
+    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyCheckboxValue = (details: MenuCheckboxValueChangeDetails): void => {
@@ -275,7 +275,7 @@ export class XhMenuElement extends XhPortalHostElement {
       hoverOpenDelay: this.hoverOpenDelay,
       hoverCloseDelay: this.hoverCloseDelay,
       onOpenChange: this.notifyOpen,
-      onSelect: this.notifySelect,
+      onItemSelect: this.notifyItemSelect,
       onCheckboxValueChange: this.notifyCheckboxValue,
       onRadioValueChange: this.notifyRadioValue,
     }

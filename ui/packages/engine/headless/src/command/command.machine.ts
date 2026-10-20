@@ -126,9 +126,9 @@ export const commandMachine = createMachine({
         'HIGHLIGHT.CLEAR': { actions: ['clearHighlightedValue'] },
         // 先把选中通知发出去，再按 closeOnSelect 决定收不收；受控时收起同样只发意图
         'ITEM.SELECT': [
-          { guard: 'keepsOpenOnSelect', actions: ['invokeOnSelect'] },
-          { guard: 'isOpenControlled', actions: ['invokeOnSelect', 'invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnSelect', 'invokeOnClose'] },
+          { guard: 'keepsOpenOnSelect', actions: ['invokeOnItemSelect'] },
+          { guard: 'isOpenControlled', actions: ['invokeOnItemSelect', 'invokeOnClose'] },
+          { target: 'closed', actions: ['invokeOnItemSelect', 'invokeOnClose'] },
         ],
         'CONTROLLED.CLOSE': { target: 'closed' },
         'ARRIVALS.TRACKED': { actions: ['markArrivalsTracked'] },
@@ -226,10 +226,10 @@ export const commandMachine = createMachine({
       },
 
       /** 选中通知；条目自报禁用的在连接层就被挡下，走不到这里。 */
-      invokeOnSelect: ({ prop, event }) => {
+      invokeOnItemSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT')
-          prop('onSelect')?.({ value: e.value, label: e.label })
+          prop('onItemSelect')?.({ value: e.value, label: e.label })
       },
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },

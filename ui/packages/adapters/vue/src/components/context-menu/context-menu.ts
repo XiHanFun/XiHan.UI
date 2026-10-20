@@ -78,7 +78,7 @@ export const XhContextMenuRoot = defineComponent({
   // open-change 携带 { open }、select 携带 { value }，update:open 携带裸布尔
   emits: {
     'open-change': (_details: PayloadOf<ContextMenuProps, 'onOpenChange'>) => true,
-    'select': (_details: PayloadOf<ContextMenuProps, 'onSelect'>) => true,
+    'item-select': (_details: PayloadOf<ContextMenuProps, 'onItemSelect'>) => true,
     'checkbox-value-change': (_details: PayloadOf<ContextMenuProps, 'onCheckboxValueChange'>) => true,
     'radio-value-change': (_details: PayloadOf<ContextMenuProps, 'onRadioValueChange'>) => true,
     'update:open': (_open: PayloadOf<ContextMenuProps, 'onOpenChange'>['open']) => true,
@@ -98,11 +98,11 @@ export const XhContextMenuRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const notifySelect: ContextMenuProps['onSelect'] = details => emit('select', details)
+    const notifyItemSelect: ContextMenuProps['onItemSelect'] = details => emit('item-select', details)
     const ctx = useContextMenu(
       withXhConfig('context-menu', props) as ContextMenuProps,
       notifyOpen,
-      notifySelect,
+      notifyItemSelect,
       details => emit('checkbox-value-change', details),
       details => emit('radio-value-change', details),
     )

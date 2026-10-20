@@ -1,6 +1,6 @@
 <!-- 基础用法 | 提供一份命令清单，过滤、归组与空态都由组件处理 -->
 <script setup lang="ts">
-import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
+import type { CommandItemSelectDetails, CommandNode } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -21,7 +21,7 @@ const groups = [
 
 const last = ref("还没执行过命令");
 
-function run(details: CommandSelectDetails) {
+function run(details: CommandItemSelectDetails) {
   last.value = `执行了：${details.label}`;
 }
 </script>
@@ -32,7 +32,7 @@ function run(details: CommandSelectDetails) {
     :groups="groups"
     placeholder="搜命令…"
     empty="没有匹配的命令"
-    @select="run"
+    @item-select="run"
   >
     <template #trigger>打开命令面板</template>
     <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>

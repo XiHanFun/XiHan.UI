@@ -37,8 +37,8 @@ export type MentionRootSlotProps = Pick<
   | 'close'
 >
 
-/** 根上自有的取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhMentionRootProps extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
@@ -70,7 +70,7 @@ export interface XhMentionRootProps extends RootElementProps {
   size?: Size
   onValueChange?: MentionProps['onValueChange']
   onQueryChange?: MentionProps['onQueryChange']
-  onSelect?: MentionProps['onSelect']
+  onItemSelect?: MentionProps['onItemSelect']
   onOpenChange?: MentionProps['onOpenChange']
   /** 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MentionNodeMeta) => ReactNode
@@ -107,7 +107,7 @@ export function XhMentionRoot({
   size,
   onValueChange,
   onQueryChange,
-  onSelect,
+  onItemSelect,
   onOpenChange,
   children,
   renderItem,
@@ -138,7 +138,7 @@ export function XhMentionRoot({
     size,
     onValueChange,
     onQueryChange,
-    onSelect,
+    onItemSelect,
     onOpenChange,
   }
   const ctx = useMention(withXhConfig('mention', useFormControlProps(machineProps)) as MentionProps)
@@ -176,7 +176,7 @@ export function XhMentionRoot({
   )
 }
 
-XhMentionRoot.xhEvents = ['value-change', 'query-change', 'select', 'open-change'] as const
+XhMentionRoot.xhEvents = ['value-change', 'query-change', 'item-select', 'open-change'] as const
 
 export interface XhMentionLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 使用原生 label，connect 给出的 for 恒指向输入框。 */

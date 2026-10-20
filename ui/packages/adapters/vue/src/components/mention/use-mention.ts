@@ -41,7 +41,7 @@ export interface MentionContext {
 
 export function useMention(
   props: MentionSchema['props'],
-  handlers: Pick<MentionSchema['props'], 'onValueChange' | 'onQueryChange' | 'onSelect' | 'onOpenChange'> = {},
+  handlers: Pick<MentionSchema['props'], 'onValueChange' | 'onQueryChange' | 'onItemSelect' | 'onOpenChange'> = {},
 ): MentionContext {
   const xhConfig = useXhConfig()
   const inputRef = ref<MentionInputEl | null>(null)

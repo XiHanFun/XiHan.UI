@@ -79,12 +79,12 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 - `anchor` 换成外部锚点：由别处的按钮（工具栏命令等）受控打开时，把那颗按钮交给 `anchor`，菜单就贴着它定位、收起时焦点归还给它；按数据铺设时不再铺触发按钮。展开期间这颗按钮带 `aria-haspopup`、`aria-expanded` 与 `aria-controls`，收起或换锚点时还原；点它算菜单内的交互，开合交给打开它的那条命令。没有触发器替菜单命名，名字写在 `translations.content` 上。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。
-- 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
+- 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `item-select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
 - 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。
-- 选中命令后发出根级 `select` 并关闭菜单链。
+- 选中命令后发出根级 `item-select` 并关闭菜单链。
 
 ### 组合
 
@@ -140,7 +140,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `hoverOpenDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
 | `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
-| `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
+| `onItemSelect` | `(details: MenuItemSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 | `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
 | `onRadioValueChange` | `(details: MenuRadioValueChangeDetails) => void` |  |  |
 
@@ -172,7 +172,7 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+| `item-select` | `MenuItemSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
 | `checkbox-value-change` | `MenuCheckboxValueChangeDetails` | checkbox 选中集合变化；detail 为 `{ value: string[] }` |
 | `radio-value-change` | `MenuRadioValueChangeDetails` | RadioGroup 选中映射变化；detail 为 `{ value: Record&lt;string, string&gt; }` |
 

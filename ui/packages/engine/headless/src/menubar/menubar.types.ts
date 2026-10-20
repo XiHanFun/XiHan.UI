@@ -47,7 +47,7 @@ export interface MenubarValueChangeDetails {
   value: string | null
 }
 
-export interface MenubarSelectDetails {
+export interface MenubarItemSelectDetails {
   /** 条目所属的菜单（即 trigger 的 value）。 */
   menu: string
   /** 被选中的条目。 */
@@ -198,7 +198,7 @@ export interface MenubarSchema extends MachineSchema {
     /** value 变化回调。 */
     onValueChange?: (details: MenubarValueChangeDetails) => void
     /** 条目被选中；菜单随之收起。 */
-    onSelect?: (details: MenubarSelectDetails) => void
+    onItemSelect?: (details: MenubarItemSelectDetails) => void
     onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
     onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
@@ -301,7 +301,7 @@ export interface MenubarSchema extends MachineSchema {
     | 'setInitialFocusedItem'
     | 'setReturnFocus'
     | 'restoreTriggerFocus'
-    | 'invokeOnSelect'
+    | 'invokeOnItemSelect'
     | 'selectChoice'
     | 'setCheckboxValue'
     | 'setRadioValue'

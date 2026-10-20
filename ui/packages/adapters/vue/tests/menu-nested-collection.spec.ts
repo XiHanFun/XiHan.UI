@@ -61,7 +61,7 @@ const ROUTES: MenuNode[] = [
 describe('menu 的 children', () => {
   it('带 children 的节点铺成子菜单入口，逐层展开到第三层，叶子选中汇到根并整链收起', async () => {
     const select = vi.fn()
-    mount(() => h(XhMenuRoot, { collection: ROUTES, onSelect: select }, { trigger: () => '导航' }))
+    mount(() => h(XhMenuRoot, { collection: ROUTES, onItemSelect: select }, { trigger: () => '导航' }))
     document.querySelector<HTMLElement>('[data-scope="menu"][data-part="trigger"]')!.click()
     await tick()
 
@@ -102,7 +102,7 @@ describe('menubar 条目的 children', () => {
         ],
       },
     ]
-    mount(() => h(XhMenubarRoot, { collection: menus, onSelect: select }))
+    mount(() => h(XhMenubarRoot, { collection: menus, onItemSelect: select }))
     document.querySelector<HTMLElement>('[data-scope="menubar"][data-part="trigger"][data-value="file"]')!.click()
     await tick()
     const exporter = item('menubar', 'export')
@@ -124,7 +124,7 @@ describe('context-menu 的 children', () => {
       { value: 'copy', label: '复制' },
       { value: 'share', label: '发送到', children: [{ value: 'email', label: '邮件' }, { value: 'im', label: '消息' }] },
     ]
-    mount(() => h(XhContextMenuRoot, { collection: nodes, onSelect: select }, { trigger: () => [h('span', '右键这块区域')] }))
+    mount(() => h(XhContextMenuRoot, { collection: nodes, onItemSelect: select }, { trigger: () => [h('span', '右键这块区域')] }))
     const trigger = document.querySelector<HTMLElement>('[data-scope="context-menu"][data-part="trigger"]')!
     trigger.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 40, clientY: 40 }))
     await tick()

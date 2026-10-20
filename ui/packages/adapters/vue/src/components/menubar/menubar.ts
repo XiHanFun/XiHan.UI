@@ -96,7 +96,7 @@ export const XhMenubarRoot = defineComponent({
   // value-change 携带 { value }、select 携带 { menu, value }，update:value 携带裸值
   emits: {
     'value-change': (_details: PayloadOf<MenubarProps, 'onValueChange'>) => true,
-    'select': (_details: PayloadOf<MenubarProps, 'onSelect'>) => true,
+    'item-select': (_details: PayloadOf<MenubarProps, 'onItemSelect'>) => true,
     'checkbox-value-change': (_details: PayloadOf<MenubarProps, 'onCheckboxValueChange'>) => true,
     'radio-value-change': (_details: PayloadOf<MenubarProps, 'onRadioValueChange'>) => true,
     'update:value': (_value: PayloadOf<MenubarProps, 'onValueChange'>['value']) => true,
@@ -115,11 +115,11 @@ export const XhMenubarRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const notifySelect: MenubarProps['onSelect'] = details => emit('select', details)
+    const notifyItemSelect: MenubarProps['onItemSelect'] = details => emit('item-select', details)
     const ctx = useMenubar(
       withXhConfig('menubar', props) as MenubarProps,
       notifyValue,
-      notifySelect,
+      notifyItemSelect,
       details => emit('checkbox-value-change', details),
       details => emit('radio-value-change', details),
     )

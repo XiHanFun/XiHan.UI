@@ -153,8 +153,8 @@ describe('菜单命令', () => {
     const log: string[] = []
     const t = mount({ page: 1, log })
     t.button('page-menu').click()
-    t.menu().dispatchEvent(new CustomEvent('select', { detail: { value: 'item:0' } }))
-    t.menu().dispatchEvent(new CustomEvent('select', { detail: { value: 'command:move-up' } }))
+    t.menu().dispatchEvent(new CustomEvent('item-select', { detail: { value: 'item:0' } }))
+    t.menu().dispatchEvent(new CustomEvent('item-select', { detail: { value: 'command:move-up' } }))
     expect(log).toEqual(['select 0', 'move-up'])
     t.menu().dispatchEvent(new CustomEvent('open-change', { detail: { open: false } }))
     expect([t.bar.opened(), t.menu().open]).toEqual([undefined, false])
