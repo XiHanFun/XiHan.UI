@@ -18,7 +18,7 @@ export default function Demo(): ReactNode {
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-      <XhPopconfirmRoot onConfirm={() => setAnswer("已删除")} onCancel={() => setAnswer("已取消")}>
+      <XhPopconfirmRoot onConfirm={() => setAnswer("已删除")} onCancelPress={() => setAnswer("已取消")}>
         <XhPopconfirmTrigger>删除这条记录</XhPopconfirmTrigger>
         <XhPopconfirmPositioner>
           <XhPopconfirmContent>

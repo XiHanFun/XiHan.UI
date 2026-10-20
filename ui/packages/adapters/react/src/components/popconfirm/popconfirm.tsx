@@ -25,8 +25,8 @@ export type PopconfirmRootSlotProps = Pick<
   'open' | 'pending' | 'actionError' | 'setOpen' | 'confirm' | 'cancel'
 >
 
-/** 根上自有的取值；onCancel 与 dir 与原生的同名属性含义不同，由这里接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onCancel' | 'dir'>
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhPopconfirmRootProps extends RootElementProps {
   open?: boolean
@@ -49,7 +49,7 @@ export interface XhPopconfirmRootProps extends RootElementProps {
   /** 确认动作失败；details.cause 保留同步抛出或 thenable 拒绝时的原始原因。 */
   onConfirmError?: PopconfirmNotifiers['onConfirmError']
   /** 点击取消，随后浮层收起；Escape 与层外交互只触发 onOpenChange，不触发该回调。 */
-  onCancel?: PopconfirmNotifiers['onCancel']
+  onCancelPress?: PopconfirmNotifiers['onCancelPress']
   children?: SlotChildren<PopconfirmRootSlotProps>
 }
 
@@ -66,11 +66,11 @@ export function XhPopconfirmRoot({
   onOpenChange,
   onConfirm,
   onConfirmError,
-  onCancel,
+  onCancelPress,
   children,
   ...rest
 }: XhPopconfirmRootProps): ReactNode {
-  const notify: PopconfirmNotifiers = { onOpenChange, onConfirm, onConfirmError, onCancel }
+  const notify: PopconfirmNotifiers = { onOpenChange, onConfirm, onConfirmError, onCancelPress }
   const ctx = usePopconfirm({
     open,
     defaultOpen,
@@ -98,7 +98,7 @@ export function XhPopconfirmRoot({
   )
 }
 
-XhPopconfirmRoot.xhEvents = ['open-change', 'confirm-error'] as const
+XhPopconfirmRoot.xhEvents = ['open-change', 'confirm-error', 'cancel-press'] as const
 
 export interface XhPopconfirmTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhPopconfirmTrigger({ children, asChild, ...rest }: XhPopconfirmTriggerProps): ReactNode {

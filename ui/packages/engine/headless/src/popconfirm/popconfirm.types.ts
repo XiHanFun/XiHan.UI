@@ -32,7 +32,7 @@ export interface PopconfirmNotifiers {
   /** 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 */
   onConfirmError?: (details: PopconfirmConfirmErrorDetails) => void
   /** 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 */
-  onCancel?: () => void
+  onCancelPress?: () => void
 }
 
 /** 确认动作的挂起通道：布尔由适配器持有并回传，connect 只发变化意图。 */
@@ -49,7 +49,7 @@ export interface PopconfirmActionErrorChannel {
 }
 
 /** connect 使用的部分：确认与取消不改变开合以外的状态，因此不进入状态机，由 connect 直接转交。 */
-export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onConfirmError' | 'onCancel'>
+export type PopconfirmIntents = Pick<PopconfirmNotifiers, 'onConfirm' | 'onConfirmError' | 'onCancelPress'>
   & PopconfirmPendingChannel
   & PopconfirmActionErrorChannel
 

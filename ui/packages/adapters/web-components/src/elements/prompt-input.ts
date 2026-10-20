@@ -86,7 +86,7 @@ export class XhPromptInputElement extends XhElement {
   private readonly notifyValue = (details: PromptInputValueChangeDetails): void => this.emit('value-change', details)
   // submit 与原生表单提交同名，故不冒泡，避免被祖先 <form> 当成自己的提交
   private readonly notifySubmit = (details: PromptInputSubmitDetails): void => this.emit('submit', details, false)
-  // 无载荷：不写 detail，与其它无载荷事件（popconfirm 的 confirm/cancel 等）同一写法
+  // 无载荷：不写 detail，与其它无载荷事件（popconfirm 的 confirm/cancel-press 等）同一写法
   private readonly notifyStop = (): void => this.emit('stop')
 
   private readonly ctrl = new MachineController<PromptInputSchema>(this, promptInputMachine, () => this.machineProps())

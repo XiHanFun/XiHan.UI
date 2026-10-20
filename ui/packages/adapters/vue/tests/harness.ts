@@ -38,6 +38,7 @@ const PUBLIC_EVENTS = {
   'recent-colors-change': 'onRecentColorsChange',
   'row-move': 'onRowMove',
   'item-select': 'onItemSelect',
+  'cancel-press': 'onCancelPress',
   'sort': 'onSort',
   'transfer': 'onTransfer',
   'status-change': 'onStatusChange',

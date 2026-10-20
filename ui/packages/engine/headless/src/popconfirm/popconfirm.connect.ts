@@ -275,7 +275,7 @@ export function connectPopconfirm<T extends PropTypes>(
       props.onPendingChange?.(false)
     props.onActionErrorChange?.(null)
     try {
-      props.onCancel?.()
+      props.onCancelPress?.()
     }
     finally {
       send({ type: 'CLOSE', src: 'close-trigger' })

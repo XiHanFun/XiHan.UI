@@ -45,12 +45,12 @@ export const XhPopconfirmRoot = defineComponent({
      */
     onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']> },
   },
-  // open-change 携带 { open }，update:open 携带裸布尔；cancel 不带载荷
+  // open-change 携带 { open }，update:open 携带裸布尔；cancel-press 不带载荷
   emits: {
     'open-change': (_details: PayloadOf<PopconfirmProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<PopconfirmProps, 'onOpenChange'>['open']) => true,
     'confirm-error': (_details: PopconfirmConfirmErrorDetails) => true,
-    'cancel': () => true,
+    'cancel-press': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: PopconfirmRootSlotProps) => VNode[]
@@ -63,7 +63,7 @@ export const XhPopconfirmRoot = defineComponent({
       },
       onConfirm: () => props.onConfirm?.(),
       onConfirmError: details => emit('confirm-error', details),
-      onCancel: () => { emit('cancel') },
+      onCancelPress: () => { emit('cancel-press') },
     }
     const ctx = usePopconfirm(props as PopconfirmOverlayProps, notify)
     providePopconfirm(ctx)

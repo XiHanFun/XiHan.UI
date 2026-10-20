@@ -106,7 +106,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
 | `offset` | `number` |  |  |
-| `onCancel` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
+| `onCancelPress` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
 | `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点击了确认按钮。返回 thenable 即挂起确认门：浮层等待它兑现才收起、 确认按钮转圈且再次点击无效，拒绝则留在原地并报告确认错误。同步返回照常立即收起。 |
 | `onConfirmError` | `(details: PopconfirmConfirmErrorDetails) => void` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -124,7 +124,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `confirm` | `` | 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
 | `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
-| `cancel` | `` | 点击了取消按钮；随后浮层收起 |
+| `cancel-press` | `` | 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change |
 
 ### 插槽
 
