@@ -93,6 +93,7 @@
 - **修复** Menu、ContextMenu、Menubar 按数据铺时，子菜单入口（带 `children` 的条目）写了 `icon` 却不画图标：入口与普通条目一样铺 `item-icon` 与 `item-text`；子菜单组件与 `<xh-menu submenu>` 新增 `icon`
 - **修复** 菜单族与 Listbox、Select、Combobox、Command、Mention 的行首图标与正文上下居中：菜单族的 `item-icon` 按图标尺取高、图标在里面居中，候选列表 `item-prefix` 里的图标居中，图标比行高矮时不再贴着上沿、比正文高出约 2px；Web Components 的 `<xh-icon>` 宿主改为只包住图标的行内块（行高归 0），放进弹性或网格容器时与 Vue / React 一样居中
 - **修复** Tour 开在模态对话框或抽屉里时，锚定步的高亮框与遮罩、气泡同在引导这一层，排在外层对话框之上，周围照常压暗、目标照常框出；原先高亮框落回模态层的基数，被外层对话框盖住
+- **修复** Form 与 Fieldset 里带说明的字段在说明下面照常留一段项距，与只给错误文案留了一行的字段、普通字段交替排时留白一致，说明文字不再贴着下一项的标签；Web Components 里字段直接放进表单或字段集时（直接子项是 `<xh-field>`），只留了错误行的字段不再多留一段项距
 - **修复** Approval 待决的呼吸点取图形色，不随警告文字色变深；写了语气时六族在亮暗两态对承载面都不低于 3:1（`warning` 语气原来在白底上只有 2.69:1）
 - **修复** Web Components 的 Menubar 按 `collection` 铺结构时，数据里写的 `disabled` 照样生效：入口与条目报不可用、方向键跳过，与 Vue / React 一致
 - **修复** Vue 的子菜单（`XhMenuSub`、`XhMenubarSub`、`XhContextMenuSub`）改了属性后子层跟着变，不再只认挂载时那一份；Vue / React 的子菜单入口不再同时挂着菜单的皮肤挂载类，也照旧带着子层的展开态（`data-state`）

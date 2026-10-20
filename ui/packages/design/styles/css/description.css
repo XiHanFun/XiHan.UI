@@ -9,8 +9,8 @@
  *
  * 收在这里的是逐值相同的角色规则：说明 = --xh-text-caption-size / --xh-fg-subtle /
  * --xh-leading-normal；错误文案 = --xh-text-caption-size / --xh-fg-danger / --xh-leading-normal；
- * 两者外边距归零、紧贴控件（字段根的 gap 缺省为 0），最小高 --xh-space-5：这一行辅助行在表单里
- * 就是字段之间的项距，有它的字段不再另留项距。挂了 --xh-<组件>-description-* /
+ * 两者外边距归零、紧贴控件（字段根的 gap 缺省为 0），最小高 --xh-space-5：给错误文案留的这一行空着时，
+ * 在表单里就是字段之间的项距；说明是字，带说明的字段照常另留项距。挂了 --xh-<组件>-description-* /
  * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
  * margin 与 line-height 不再重写。
  *
