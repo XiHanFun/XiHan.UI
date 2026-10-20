@@ -357,7 +357,7 @@ describe('命令', () => {
     expect(saved).toEqual([{ selected: 7 }])
   })
 
-  it('给了 settings 有三条显示开关 show-toolbar、show-status-bar、show-menubar，收在视图菜单的「外观」子菜单（appearance）里，自己不排位置；勾选读设置，执行时把那一条取反写回；宿主藏起或锁定那一条时不可用', () => {
+  it('给了 settings 有两条显示开关 show-toolbar、show-status-bar（菜单栏常开，没有它的开关），收在视图菜单的「外观」子菜单（appearance）里，自己不排位置；勾选读设置，执行时把那一条取反写回；宿主藏起或锁定那一条时不可用', () => {
     let settings: Record<string, unknown> = { 'toolbar.visible': false }
     let policy: Record<string, 'hidden' | 'locked'> = {}
     const changes: [string, unknown][] = []
@@ -374,25 +374,23 @@ describe('命令', () => {
     })
     const table = new Map(built.map(command => [command.id, command]))
     const ctx = { selected: 0 }
-    expect([...table.keys()]).toEqual(['show-toolbar', 'show-status-bar', 'show-menubar', 'appearance'])
-    expect(['show-toolbar', 'show-status-bar', 'show-menubar'].map(id => table.get(id)!).map(command => [command.id, command.placement, command.checked!(ctx), command.enabled!(ctx)])).toEqual([
+    expect([...table.keys()]).toEqual(['show-toolbar', 'show-status-bar', 'appearance'])
+    expect(['show-toolbar', 'show-status-bar'].map(id => table.get(id)!).map(command => [command.id, command.placement, command.checked!(ctx), command.enabled!(ctx)])).toEqual([
       ['show-toolbar', undefined, false, true],
       ['show-status-bar', undefined, true, true],
-      ['show-menubar', undefined, true, true],
     ])
     const appearance = table.get('appearance')!
     expect([appearance.placement, commandShortLabel(appearance, ctx), appearance.menu!(ctx), appearance.run]).toEqual([
       ['menubar:view'],
       DESIGNER_COMMANDS_EN_US.appearance,
-      ['show-toolbar', 'show-status-bar', 'show-menubar'],
+      ['show-toolbar', 'show-status-bar'],
       undefined,
     ])
     runCommand(table, 'show-toolbar', ctx)
     runCommand(table, 'show-status-bar', ctx)
-    runCommand(table, 'show-menubar', ctx)
-    expect(changes).toEqual([['toolbar.visible', true], ['general.statusBar', false], ['toolbar.menubar', false]])
-    policy = { 'toolbar.menubar': 'locked', 'general': 'hidden' }
-    expect(['show-toolbar', 'show-status-bar', 'show-menubar'].map(id => table.get(id)!.enabled!(ctx))).toEqual([true, false, false])
+    expect(changes).toEqual([['toolbar.visible', true], ['general.statusBar', false]])
+    policy = { 'toolbar.visible': 'locked', 'general': 'hidden' }
+    expect(['show-toolbar', 'show-status-bar'].map(id => table.get(id)!.enabled!(ctx))).toEqual([false, false])
   })
 
   it('给了 frame 有拖动工具 pan-tool：快捷键 H、上工具栏也落在视图菜单、开关式，勾选跟着外框的 canvasTool，执行时在 select 与 pan 之间切换；panels 也落在视图菜单', () => {

@@ -79,8 +79,6 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   toolbar: 'Toolbar',
   toolbarVisible: 'Show toolbar',
   toolbarVisibleHint: 'Commands stay available from shortcuts and menus.',
-  toolbarMenubar: 'Show menu bar',
-  toolbarMenubarHint: 'Commands stay available from shortcuts and the toolbar; Ctrl+, (⌘, on macOS) opens the settings.',
   toolbarLayout: 'Buttons',
   toolbarLayoutHint: 'Choose which buttons to show; drag to reorder and regroup.',
   toolbarGroups: 'Toolbar groups',

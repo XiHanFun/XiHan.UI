@@ -73,7 +73,6 @@ describe('内置菜单与缺省排列', () => {
       'panels',
       'show-toolbar',
       'show-status-bar',
-      'show-menubar',
       'appearance',
       'start-tour',
       'help',

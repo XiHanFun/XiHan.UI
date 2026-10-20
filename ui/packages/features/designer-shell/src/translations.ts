@@ -284,10 +284,6 @@ export interface DesignerSettingsTranslations {
   readonly toolbarVisible: string
   /** 显示工具栏条目的说明。 */
   readonly toolbarVisibleHint: string
-  /** 显示菜单栏条目的标签。 */
-  readonly toolbarMenubar: string
-  /** 显示菜单栏条目的说明。 */
-  readonly toolbarMenubarHint: string
   /** 「工具栏」分区里按钮表的标签。 */
   readonly toolbarLayout: string
   /** 按钮表的说明。 */
@@ -394,8 +390,6 @@ export interface DesignerTourTranslations {
   readonly settingsTitle: string
   /** 通用步骤「设置」的说明：设置在「文件」菜单里。 */
   readonly settingsDescription: string
-  /** 菜单栏关着时通用步骤「设置」的说明：设置钮在工具栏上。 */
-  readonly settingsToolbarDescription: string
 }
 
 /** 四款设计器共用的命令文案：通用编辑、对齐与分布、层级、缩放与视图切换，以及命令工具栏的名字。 */
@@ -490,8 +484,6 @@ export interface DesignerCommandsTranslations {
   readonly showToolbar: string
   /** 内置命令：显示或隐藏状态栏（开关式）。 */
   readonly showStatusBar: string
-  /** 内置命令：显示或隐藏菜单栏（开关式）。 */
-  readonly showMenubar: string
   /** 内置命令：视图菜单里收着三条显示开关的「外观」子菜单。 */
   readonly appearance: string
   /** 菜单栏的无障碍名称。 */

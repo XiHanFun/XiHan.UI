@@ -152,8 +152,6 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbar: 'Toolbar',
   toolbarVisible: 'Show toolbar',
   toolbarVisibleHint: 'Commands stay available from shortcuts and menus.',
-  toolbarMenubar: 'Show menu bar',
-  toolbarMenubarHint: 'Commands stay available from shortcuts and the toolbar; Ctrl+, (⌘, on macOS) opens the settings.',
   toolbarLayout: 'Buttons',
   toolbarLayoutHint: 'Choose which buttons to show; drag to reorder and regroup.',
   toolbarGroups: 'Toolbar groups',
@@ -208,7 +206,6 @@ export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-t
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
   settingsDescription: 'Settings are in the File menu (Ctrl/⌘+,): change the theme, panel layout and toolbar buttons there. To take this tour again, start it from the Help menu.',
-  settingsToolbarDescription: 'With the menu bar turned off, settings and help are back on the toolbar: change the theme, panel layout and toolbar buttons in the settings, and turn the menu bar back on there.',
 }
 
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {
@@ -257,7 +254,6 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   about: 'About',
   showToolbar: 'Toolbar',
   showStatusBar: 'Status bar',
-  showMenubar: 'Menu bar',
   appearance: 'Appearance',
   menubar: 'Designer menu bar',
   menu: 'Menu',
