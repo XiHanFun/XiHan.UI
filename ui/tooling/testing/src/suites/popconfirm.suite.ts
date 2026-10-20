@@ -200,7 +200,7 @@ export const popconfirmSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点取消：同样收起浮层，焦点归还 trigger',
+      name: '点取消：派发 cancel-press 后收起浮层，焦点归还 trigger',
       spec: { apg: DIALOG_SPEC },
       steps: [
         { kind: 'click', part: 'trigger' },
@@ -208,7 +208,8 @@ export const popconfirmSuite: ConformanceSuite = {
         {
           kind: 'click',
           part: 'cancel-trigger',
-          expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
+          // 先报取消、后报收起；cancel-press 不带载荷
+          expect: { events: [{ type: 'cancel-press', detail: null }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] },
         },
         {
           kind: 'settle',

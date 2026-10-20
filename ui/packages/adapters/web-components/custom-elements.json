@@ -53565,7 +53565,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onConfirmError: (details) => { this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true })) }, onCancel: () => { this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, onActionErrorChange: (next) => { this.actionErrorState = next this.requestUpdate() }, }"
+              "default": "{ onConfirm: () => { this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true })) return this.confirmAction?.() }, onConfirmError: (details) => { this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true })) }, onCancelPress: () => { this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true })) }, onPendingChange: (next) => { this.pendingState = next this.requestUpdate() }, onActionErrorChange: (next) => { this.actionErrorState = next this.requestUpdate() }, }"
             },
             {
               "kind": "field",
@@ -53685,8 +53685,8 @@
               }
             },
             {
-              "description": "点击了取消按钮；随后浮层收起",
-              "name": "cancel"
+              "description": "点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change",
+              "name": "cancel-press"
             }
           ],
           "attributes": [

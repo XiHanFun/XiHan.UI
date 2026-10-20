@@ -97,7 +97,7 @@ export function usePopconfirm(
   const intents: PopconfirmIntents = {
     onConfirm: () => notify?.onConfirm?.(),
     onConfirmError: details => notify?.onConfirmError?.(details),
-    onCancel: () => { notify?.onCancel?.() },
+    onCancelPress: () => { notify?.onCancelPress?.() },
     get pending() {
       return pending.value
     },

@@ -18,7 +18,7 @@ const answer = ref("还没答复");
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
-    <XhPopconfirmRoot @confirm="answer = '已删除'" @cancel="answer = '已取消'">
+    <XhPopconfirmRoot @confirm="answer = '已删除'" @cancel-press="answer = '已取消'">
       <XhPopconfirmTrigger>删除这条记录</XhPopconfirmTrigger>
       <XhPopconfirmPositioner>
         <XhPopconfirmContent>

@@ -47,7 +47,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门
  *   （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知
  * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
- * @fires cancel - 点击了取消按钮；随后浮层收起
+ * @fires cancel-press - 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change
  * @csspart root - 包裹触发器的根容器，承载 data-state
  * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
  * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
@@ -144,8 +144,8 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     onConfirmError: (details) => {
       this.dispatchEvent(new CustomEvent<PopconfirmConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
     },
-    onCancel: () => {
-      this.dispatchEvent(new CustomEvent('cancel', { bubbles: true, composed: true }))
+    onCancelPress: () => {
+      this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true }))
     },
     onPendingChange: (next) => {
       this.pendingState = next

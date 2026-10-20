@@ -14727,7 +14727,7 @@
       "dir",
       "disabled",
       "offset",
-      "onCancel",
+      "onCancelPress",
       "onConfirm",
       "onConfirmError",
       "onOpenChange",
@@ -23501,7 +23501,7 @@
         "size"
       ],
       "events": [
-        "cancel",
+        "cancel-press",
         "confirm",
         "confirm-error",
         "open-change"

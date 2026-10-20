@@ -105,7 +105,7 @@ export function usePopconfirm(
   const intents: PopconfirmIntents = {
     onConfirm: () => notifyRef.current?.onConfirm?.(),
     onConfirmError: details => notifyRef.current?.onConfirmError?.(details),
-    onCancel: () => { notifyRef.current?.onCancel?.() },
+    onCancelPress: () => { notifyRef.current?.onCancelPress?.() },
     pending,
     onPendingChange: (next) => {
       // ref 同步落位，props 记忆当场作废：机器下一次读 props 立刻看到拦截态，
