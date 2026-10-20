@@ -45,6 +45,11 @@
       ],
       "outputs": ["component-tokens.d.ts", "component-tokens.js", "components.tokens.json", "index.css", "index.unlayered.css", "dist/**"]
     },
+    "@xihan-ui/designer-shell#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "build/**", "style.css", "tsdown.config.ts", "tsconfig.json", "package.json"],
+      "outputs": ["dist/**"]
+    },
     "@xihan-ui/cli#build": {
       "dependsOn": ["^build"],
       "cache": false,
