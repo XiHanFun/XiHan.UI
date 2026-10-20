@@ -405,8 +405,16 @@
     --xh-_mention-lead-min: var(--xh-icon-size);
   }
 
+  /* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
   [data-scope='mention'][data-part='item-prefix'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-inline-size: var(--xh-_mention-lead-min, auto);
+  }
+
+  [data-scope='mention'][data-part='item-prefix'][hidden] {
+    display: none;
   }
 
   [data-scope='mention'][data-part='item']::before {

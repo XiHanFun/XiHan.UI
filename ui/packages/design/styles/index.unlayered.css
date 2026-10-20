@@ -11849,8 +11849,16 @@
   --xh-_mention-lead-min: var(--xh-icon-size);
 }
 
+/* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
 .xh-scope-mention[data-part='item-prefix'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-inline-size: var(--xh-_mention-lead-min, auto);
+}
+
+.xh-scope-mention[data-part='item-prefix'][hidden] {
+  display: none;
 }
 
 .xh-scope-mention[data-part='item']::before {
@@ -26620,8 +26628,16 @@
   --xh-_combobox-lead-min: var(--xh-icon-size);
 }
 
+/* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
 .xh-scope-combobox[data-part='item-prefix'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-inline-size: var(--xh-_combobox-lead-min, auto);
+}
+
+.xh-scope-combobox[data-part='item-prefix'][hidden] {
+  display: none;
 }
 
 .xh-scope-combobox[data-part='item']::before {
@@ -27036,8 +27052,16 @@
   --xh-_command-lead-min: var(--xh-icon-size);
 }
 
+/* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
 .xh-scope-command[data-part='item-prefix'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-inline-size: var(--xh-_command-lead-min, auto);
+}
+
+.xh-scope-command[data-part='item-prefix'][hidden] {
+  display: none;
 }
 
 .xh-scope-command[data-part='item']::before {
@@ -27323,13 +27347,15 @@
   mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
-/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+/* 图标格按图标尺定宽定高：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里；
+   盒高不靠行高撑，里面的图标上下居中，与正文中线对齐 */
 .xh-scope-context-menu[data-part='item-icon'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-icon-size);
+  block-size: var(--xh-icon-size);
 }
 
 .xh-scope-context-menu[data-part='item-icon'][hidden] {
@@ -33866,6 +33892,15 @@
   --xh-icon-skin: 1;
 }
 
+/* Web Components 的宿主是一层只包住 <svg> 的行内块：行高归 0，里面那一行就是图标本身那么高，盒子与图标
+   一样大，不再按行高撑出一截、把图标顶到上沿。放进弹性或网格容器居中时图标落在中线上；行内文字里图标照旧
+   按自己的 vertical-align 往下挪，宿主的基线随之对齐，与 Vue / React 直接渲染 root 落在同一高度。
+   零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+:where(xh-icon:not([hidden])) {
+  display: inline-block;
+  line-height: 0;
+}
+
 /*
  * 根 <svg>。直径、描边粗细、行内位置都由这里给，记录只带几何。
  * 不写 fill / stroke：记录里那两条呈现属性取 currentColor，改这里会把
@@ -33880,6 +33915,9 @@
   /* 替换元素的基线就是自身下边缘，落在文字基线上时整块图形都在基线以上、看着偏高。
      往下挪一小段，单位是 em，跟着相邻文字的字号一起缩放 */
   vertical-align: var(--xh-icon-shift, var(--xh-glyph-baseline-shift));
+
+  /* 图里没有文字，行高对它不起作用；写定 normal，不随 Web Components 宿主归 0 的行高或上下文变 */
+  line-height: normal;
   color: var(--xh-icon-fg, currentColor);
 
   /* 记录把 stroke-width 写成根上的呈现属性，呈现属性的层叠优先级低于任何 CSS 规则，
@@ -35157,8 +35195,16 @@
   --xh-_listbox-lead-min: var(--xh-icon-size);
 }
 
+/* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
 .xh-scope-listbox[data-part='item-prefix'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-inline-size: var(--xh-_listbox-lead-min, auto);
+}
+
+.xh-scope-listbox[data-part='item-prefix'][hidden] {
+  display: none;
 }
 
 .xh-scope-listbox[data-part='item']::before {
@@ -35508,13 +35554,15 @@
   transition: none;
 }
 
-/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+/* 图标格按图标尺定宽定高：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里；
+   盒高不靠行高撑，里面的图标上下居中，与正文中线对齐 */
 .xh-scope-menu[data-part='item-icon'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-icon-size);
+  block-size: var(--xh-icon-size);
 }
 
 .xh-scope-menu[data-part='item-icon'][hidden] {
@@ -36059,13 +36107,15 @@
   mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
-/* 图标格定宽：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里 */
+/* 图标格按图标尺定宽定高：图标列是同一把尺，作者放进来的图标大一号小一号都落在这一列里；
+   盒高不靠行高撑，里面的图标上下居中，与正文中线对齐 */
 .xh-scope-menubar[data-part='item-icon'] {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-icon-size);
+  block-size: var(--xh-icon-size);
 }
 
 .xh-scope-menubar[data-part='item-icon'][hidden] {
@@ -42648,8 +42698,16 @@
   --xh-_select-lead-min: var(--xh-icon-size);
 }
 
+/* 行首格里的图标上下居中：不落进行盒按基线排，图标比行高矮时也不贴着上沿 */
 .xh-scope-select[data-part='item-prefix'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-inline-size: var(--xh-_select-lead-min, auto);
+}
+
+.xh-scope-select[data-part='item-prefix'][hidden] {
+  display: none;
 }
 
 .xh-scope-select[data-part='item']::before {

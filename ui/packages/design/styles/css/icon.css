@@ -11,6 +11,15 @@
     --xh-icon-skin: 1;
   }
 
+  /* Web Components 的宿主是一层只包住 <svg> 的行内块：行高归 0，里面那一行就是图标本身那么高，盒子与图标
+     一样大，不再按行高撑出一截、把图标顶到上沿。放进弹性或网格容器居中时图标落在中线上；行内文字里图标照旧
+     按自己的 vertical-align 往下挪，宿主的基线随之对齐，与 Vue / React 直接渲染 root 落在同一高度。
+     零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-icon:not([hidden])) {
+    display: inline-block;
+    line-height: 0;
+  }
+
   /*
    * 根 <svg>。直径、描边粗细、行内位置都由这里给，记录只带几何。
    * 不写 fill / stroke：记录里那两条呈现属性取 currentColor，改这里会把
@@ -25,6 +34,9 @@
     /* 替换元素的基线就是自身下边缘，落在文字基线上时整块图形都在基线以上、看着偏高。
        往下挪一小段，单位是 em，跟着相邻文字的字号一起缩放 */
     vertical-align: var(--xh-icon-shift, var(--xh-glyph-baseline-shift));
+
+    /* 图里没有文字，行高对它不起作用；写定 normal，不随 Web Components 宿主归 0 的行高或上下文变 */
+    line-height: normal;
     color: var(--xh-icon-fg, currentColor);
 
     /* 记录把 stroke-width 写成根上的呈现属性，呈现属性的层叠优先级低于任何 CSS 规则，
