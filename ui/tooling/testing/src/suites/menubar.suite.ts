@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { menubarAnatomy, menubarKeyboard } from '@xihan-ui/headless'
+import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menubar/'
@@ -1041,6 +1042,22 @@ export const menubarSuite: ConformanceSuite = {
             },
           },
         },
+      ],
+    },
+    {
+      name: '作者不写结构：带 children 的条目写着子层的勾选与单选值，子层按它显示，换数据跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: [{ value: 'view', label: '视图', items: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['outline'], 'compact')] }] },
+      steps: [
+        { kind: 'focus', part: 'trigger' },
+        { kind: 'key', key: 'ArrowDown' },
+        { kind: 'settle', until: { activeElement: 'item[0]' } },
+        { kind: 'key', key: 'ArrowDown', expect: { activeElement: { part: 'item[1]', exact: true } } },
+        { kind: 'key', key: 'ArrowRight' },
+        nestedChoiceState({ outline: 'true', history: 'false', comfortable: 'false', compact: 'true' }),
+        { kind: 'setProps', props: { collection: [{ value: 'view', label: '视图', items: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['history'], 'comfortable')] }] } },
+        nestedChoiceState({ outline: 'false', history: 'true', comfortable: 'true', compact: 'false' }),
       ],
     },
   ],

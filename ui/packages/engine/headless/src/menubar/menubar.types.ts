@@ -103,6 +103,13 @@ export interface MenubarNode {
    * 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。
    */
   children?: MenuNode[]
+  /**
+   * 子菜单那一层的勾选值：只在带 children 的条目上读取，交给按数据铺出的那一层，与子菜单自己的 checkboxValue 同义，
+   * 写了即受控。按数据铺时子层的勾选改动不另外上报，勾选条目写 closeOnSelect，由根上的 item-select 得知。
+   */
+  checkboxValue?: string[]
+  /** 子菜单那一层的单选值（组 → 选中的值）：只在带 children 的条目上读取，其余同 checkboxValue。 */
+  radioValue?: MenuRadioValue
 }
 
 /** 单个节点的元信息，由 collection 推导，不含展开态与焦点态。 */
@@ -131,6 +138,10 @@ export interface MenubarNodeMeta {
   items: readonly MenubarNodeMeta[]
   /** 子菜单的条目；只在条目上有值，没有下一层时为 null。 */
   children: readonly MenuNode[] | null
+  /** 子菜单那一层的勾选值；没写或没有下一层时为 null。 */
+  checkboxValue: readonly string[] | null
+  /** 子菜单那一层的单选值；没写或没有下一层时为 null。 */
+  radioValue: Readonly<MenuRadioValue> | null
 }
 
 /**

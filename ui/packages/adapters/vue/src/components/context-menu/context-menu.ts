@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode, StructureNode } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuGroupProps, ContextMenuNode, ContextMenuNodeMeta, ContextMenuRadioValue, ContextMenuSchema, MenuApi, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { mergeProps } from '@xihan-ui/core'
@@ -14,7 +14,8 @@ import { contextMenuStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps as mergeVueProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
-import { mergePartProps } from '../../runtime/merge-props'
+import { liveProps } from '../../runtime/live-props'
+import { mergePartProps, withoutScopeClass, withoutUndefined } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
@@ -309,6 +310,10 @@ export const XhContextMenuSub = defineComponent({
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<ContextMenuRadioValue> },
+    defaultRadioValue: { type: Object as PropType<ContextMenuRadioValue> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -322,21 +327,28 @@ export const XhContextMenuSub = defineComponent({
     size: { type: String as PropType<Size> },
     hoverCloseDelay: { type: Number },
   },
+  emits: {
+    'checkbox-value-change': (_details: PayloadOf<MenuSchema['props'], 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<MenuSchema['props'], 'onRadioValueChange'>) => true,
+  },
   slots: Object as SlotsType<{
     default?: (props: ContextMenuSubSlotProps) => VNode[]
   }>,
-  setup(props, { slots }) {
+  setup(props, { slots, emit }) {
     const parent = useContextMenuContext()
     const sub = useMenuWithParent(
-      {
+      // 子层的 props 按 getter 现取：宿主换数据（子层的 collection、勾选与单选值）时子机器跟着变
+      liveProps(() => ({
         ...props,
         submenu: true,
         dir: props.dir ?? parent.service.prop('dir'),
         tone: props.tone ?? parent.service.prop('tone'),
         size: props.size ?? parent.service.prop('size'),
-      },
+      })),
       undefined,
       parent.tree,
+      details => emit('checkbox-value-change', details),
+      details => emit('radio-value-change', details),
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
@@ -359,9 +371,11 @@ export const XhContextMenuSubTrigger = defineComponent({
     const sub = useMenuContext()
     return () => h('div', {
       // 合并序=子先父后：父层的 data-scope/data-part 胜出，父层的方向键与选中照常认它
+      // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
       ...mergeProps(
-        sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
-        handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
+        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
       ),
       // 子菜单的定位锚点就是这一条
       ref: (el: unknown) => {

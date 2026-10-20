@@ -14,6 +14,7 @@ import { menuNodesStructure, menuStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, mergeProps as mergeVueProps, onBeforeUnmount, provide, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
+import { liveProps } from '../../runtime/live-props'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
@@ -281,13 +282,14 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
   setup(props, { slots, emit }) {
     const parent = useMenuContext()
     const ctx = useMenuWithParent(
-      {
+      // 子层的 props 按 getter 现取：宿主换数据（子层的 collection、勾选与单选值）时子机器跟着变
+      liveProps(() => ({
         ...props,
         submenu: true,
         dir: props.dir ?? parent.service.prop('dir'),
         tone: props.tone ?? parent.service.prop('tone'),
         size: props.size ?? parent.service.prop('size'),
-      } as MenuProps,
+      }) as MenuProps),
       undefined,
       parent.tree,
       details => emit('checkbox-value-change', details),
