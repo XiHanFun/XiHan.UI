@@ -277,6 +277,7 @@ const translations: DesignerShellLocaleTranslations = {
     showToolbar: 'Панель инструментов',
     showStatusBar: 'Строка состояния',
     showMenubar: 'Строка меню',
+    appearance: 'Внешний вид',
     menubar: 'Строка меню конструктора',
     menu: 'Меню',
     menuFile: 'Файл',

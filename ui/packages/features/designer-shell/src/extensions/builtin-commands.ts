@@ -34,6 +34,7 @@ export const DESIGNER_SHELL_COMMANDS = {
   showToolbar: 'show-toolbar',
   showStatusBar: 'show-status-bar',
   showMenubar: 'show-menubar',
+  appearance: 'appearance',
 } as const
 
 /** 一块面板的开关命令的 id：panel:<面板 id>。 */
@@ -87,8 +88,9 @@ export interface DesignerShellCommandsOptions<Ctx> {
  * 建 designer-shell 的内置命令：给了 save 有 save（Mod+S）；给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、
  * layout-reset、pan-tool（H，开关式：切换外框的 canvasTool）；给了 openSettings 有 settings（Mod+,）、shortcuts、about；
  * 给了 helpUrl 有 help；给了 openFieldImport 有 import-fields；给了 openJsonEditor 有 edit-json（Mod+Shift+J）；
- * 给了 startTour 有 start-tour；给了 settings 有 show-toolbar、show-status-bar、show-menubar（开关式）。
- * 落点：save、settings 在文件菜单，edit-json 在编辑菜单，panels、pan-tool 与三条显示开关在视图菜单（panels、pan-tool 也上工具栏），
+ * 给了 startTour 有 start-tour；给了 settings 有 show-toolbar、show-status-bar、show-menubar（开关式）与收着它们的 appearance（菜单命令）。
+ * 落点：save、settings 在文件菜单，edit-json 在编辑菜单，panels、pan-tool 与 appearance 在视图菜单（panels、pan-tool 也上工具栏），
+ * 三条显示开关在 appearance 菜单里，
  * start-tour、help、shortcuts、about 在帮助菜单；panels-toggle-all、panels-restore、layout-reset 在 panels 菜单里与快捷键上；
  * import-fields 不排位置，各款放进面板头或菜单。
  */
@@ -248,7 +250,6 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
         id: toggle.id,
         label: context => options.translations(context)[toggle.text],
         ...(icons?.[toggle.text] ? { icon: icons[toggle.text] } : {}),
-        placement: ['menubar:view'],
         enabled: (context) => {
           const policy = settings.policy?.(context)
           return (policy?.[toggle.key] ?? policy?.[toggle.section]) === undefined
@@ -257,6 +258,13 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
         run: context => settings.change(context, toggle.key, !shown(context)),
       })
     }
+    commands.push({
+      id: DESIGNER_SHELL_COMMANDS.appearance,
+      label: context => options.translations(context).appearance,
+      ...(icons?.appearance ? { icon: icons.appearance } : {}),
+      placement: ['menubar:view'],
+      menu: () => toggles.map(toggle => toggle.id),
+    })
   }
   return commands
 }

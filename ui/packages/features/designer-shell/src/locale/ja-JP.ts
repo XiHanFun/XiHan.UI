@@ -266,6 +266,7 @@ const translations: DesignerShellLocaleTranslations = {
     showToolbar: 'ツールバー',
     showStatusBar: 'ステータスバー',
     showMenubar: 'メニューバー',
+    appearance: '外観',
     menubar: 'デザイナーのメニューバー',
     menu: 'メニュー',
     menuFile: 'ファイル',

@@ -66,14 +66,14 @@ export function designerMenubarMenus<Ctx>(options: DesignerMenubarMenusOptions<C
 const BUILTIN_LAYOUT: Readonly<Record<string, readonly (readonly string[])[]>> = {
   file: [['save'], ['open-file'], ['settings']],
   edit: [['undo', 'redo'], ['cut', 'copy', 'paste', 'delete', 'duplicate'], ['select-all'], ['edit-json']],
-  view: [['design', 'preview'], ['zoom-in', 'zoom-out', 'zoom-to-fit', 'zoom-to-actual'], ['pan-tool'], ['panels'], ['show-toolbar', 'show-status-bar', 'show-menubar']],
+  view: [['design', 'preview'], ['zoom-in', 'zoom-out', 'zoom-to-fit', 'zoom-to-actual'], ['pan-tool'], ['panels', 'appearance']],
   help: [['start-tour', 'help', 'shortcuts'], ['about']],
 }
 
 /**
  * 四张内置菜单的缺省排列，只留 commands 里有的命令，空组去掉：
  * 文件是保存 / 打开文件 / 设置，编辑是撤销、重做 / 剪切、复制、粘贴、删除、创建副本 / 全选 / 编辑 JSON，
- * 视图是设计、预览 / 放大、缩小、适合窗口、实际大小 / 拖动 / 面板 / 显示工具栏、状态栏、菜单栏，
+ * 视图是设计、预览 / 放大、缩小、适合窗口、实际大小 / 拖动 / 面板、外观（显示工具栏、状态栏、菜单栏三条开关收在这个子菜单里），
  * 帮助是开始引导、帮助、快捷键 / 关于。各款自己的命令写 placement 落进来，或在这份排列上改了交给 arrangeMenubar。
  */
 export function designerMenubarLayout(commands: DesignerCommandTable<never>): Record<string, string[][]> {

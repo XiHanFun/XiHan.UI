@@ -255,6 +255,7 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   showToolbar: 'Toolbar',
   showStatusBar: 'Status bar',
   showMenubar: 'Menu bar',
+  appearance: 'Appearance',
   menubar: 'Designer menu bar',
   menu: 'Menu',
   menuFile: 'File',

@@ -357,7 +357,7 @@ describe('命令', () => {
     expect(saved).toEqual([{ selected: 7 }])
   })
 
-  it('给了 settings 有三条显示开关：show-toolbar、show-status-bar、show-menubar 落在视图菜单，勾选读设置，执行时把那一条取反写回；宿主藏起或锁定那一条时不可用', () => {
+  it('给了 settings 有三条显示开关 show-toolbar、show-status-bar、show-menubar，收在视图菜单的「外观」子菜单（appearance）里，自己不排位置；勾选读设置，执行时把那一条取反写回；宿主藏起或锁定那一条时不可用', () => {
     let settings: Record<string, unknown> = { 'toolbar.visible': false }
     let policy: Record<string, 'hidden' | 'locked'> = {}
     const changes: [string, unknown][] = []
@@ -374,10 +374,18 @@ describe('命令', () => {
     })
     const table = new Map(built.map(command => [command.id, command]))
     const ctx = { selected: 0 }
-    expect([...table.values()].map(command => [command.id, command.placement, command.checked!(ctx), command.enabled!(ctx)])).toEqual([
-      ['show-toolbar', ['menubar:view'], false, true],
-      ['show-status-bar', ['menubar:view'], true, true],
-      ['show-menubar', ['menubar:view'], true, true],
+    expect([...table.keys()]).toEqual(['show-toolbar', 'show-status-bar', 'show-menubar', 'appearance'])
+    expect(['show-toolbar', 'show-status-bar', 'show-menubar'].map(id => table.get(id)!).map(command => [command.id, command.placement, command.checked!(ctx), command.enabled!(ctx)])).toEqual([
+      ['show-toolbar', undefined, false, true],
+      ['show-status-bar', undefined, true, true],
+      ['show-menubar', undefined, true, true],
+    ])
+    const appearance = table.get('appearance')!
+    expect([appearance.placement, commandShortLabel(appearance, ctx), appearance.menu!(ctx), appearance.run]).toEqual([
+      ['menubar:view'],
+      DESIGNER_COMMANDS_EN_US.appearance,
+      ['show-toolbar', 'show-status-bar', 'show-menubar'],
+      undefined,
     ])
     runCommand(table, 'show-toolbar', ctx)
     runCommand(table, 'show-status-bar', ctx)
