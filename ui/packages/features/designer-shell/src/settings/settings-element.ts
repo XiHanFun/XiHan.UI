@@ -15,7 +15,7 @@ import type { PropertyField } from '../properties/field'
 import type { FieldRow } from '../properties/field-row'
 import type { DesignerSettingsTranslations } from '../translations'
 import type { DesignerShortcutsSource } from './display-model'
-import type { DesignerAboutSettings, DesignerGeneralSettingsOptions, DesignerHelpSettings, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
+import type { DesignerAboutSettings, DesignerHelpSettings, DesignerSettingItem, DesignerSettings, DesignerSettingsPolicy, DesignerSettingsSection } from './model'
 import type { DesignerSettingsFrame } from './panel-layout'
 import type { DesignerToolbarSettingsSource } from './toolbar-layout'
 import { createCounterIdGenerator } from '@xihan-ui/core'
@@ -26,6 +26,7 @@ import { createPropertyField } from '../properties/field'
 import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/field-row'
 import { createDisplayContent } from './display'
 import { isDesignerDisplayControl } from './display-model'
+import { designerLanguageSettings } from './language'
 import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerAboutSettings, designerGeneralSettings, designerHelpSettings, designerLayoutSettings, designerShortcutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
 import { createPanelLayoutEditor } from './panel-layout'
 import { createToolbarLayoutEditor } from './toolbar-layout'
@@ -73,7 +74,10 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   statusBar: 'Status bar',
   statusBarHint: 'Show the status bar at the bottom of the designer.',
   language: 'Language',
-  languageHint: 'Leave empty to follow the page.',
+  languageHint: 'Applies to this designer only, not the rest of the page. Follow system picks the closest match to your browser’s language preferences.',
+  languageDisplay: 'Display language',
+  languageFollow: 'Follow page',
+  languageSystem: 'Follow system',
   layout: 'Layout',
   layoutPanels: 'Panels',
   layoutPanelsHint: 'You can also change these from the More menu on a panel header, or by dragging the header.',
@@ -169,8 +173,8 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
 
   /** 各款与扩展的设置分区，按 order 排；没有可显示条目的分区不出现。 */
   declare sections: readonly DesignerSettingsSection[] | undefined
-  /** 内建「基础」分区的选项（主题色与语言两项要给了才有）；false 不要这一页。文案随对话框的语言。 */
-  declare general: DesignerGeneralSettingsOptions | false | undefined
+  /** false 不要内建的「基础」这一页；文案随对话框的语言。 */
+  declare general: false | undefined
   /** 设计器的外框：给了且有面板时多一页内建的「布局」，面板表直接改外框的布局。 */
   declare frame: DesignerSettingsFrame | undefined
   /** 「工具栏」页：给了缺省排列与命令信息（toolbarSettingsSource 现算）时多一张按钮表；不给只有显示方式与显示工具栏两条；false 不要这一页。 */
@@ -270,9 +274,10 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
       parts.dialog.open = this.open === true
   }
 
-  /** 「基础」「布局」「工具栏」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
+  /** 「基础」「语言」「布局」「工具栏」与各分区排好序、去掉被隐藏的条目后还有条目的分区。 */
   #visibleSections(t: DesignerSettingsTranslations): DesignerSettingsSection[] {
-    const own = this.general === false ? [] : [designerGeneralSettings(t, this.general)]
+    const own = this.general === false ? [] : [designerGeneralSettings(t)]
+    own.push(designerLanguageSettings(t))
     if ((this.frame?.panelEntries().length ?? 0) > 0)
       own.push(designerLayoutSettings(t))
     if (this.toolbar !== false)

@@ -36,6 +36,10 @@
       "types": "./dist/locale.d.ts",
       "import": "./dist/locale.js"
     },
+    "./language": {
+      "types": "./dist/language.d.ts",
+      "import": "./dist/language.js"
+    },
     "./style.css": "./style.css",
     "./style.unlayered.css": "./dist/style.unlayered.css"
   },

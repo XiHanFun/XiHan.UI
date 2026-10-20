@@ -5,19 +5,31 @@
 
 // 设置落到设计器上：主题与主题色写在设计器根的 data-theme、data-brand 上，只作用于设计器（浮层经视觉桥跟着走）；
 // 主题跟随页面又选了主题色时，根上照抄外层的 data-theme；根上写了主题时一并照抄外层的 data-contrast，外层变了跟着改。
-// 设置的读写走根所在窗口的 localStorage。状态栏与语言由各款自己接。
+// 语言：选了一种语言（或跟随系统）时按 locale 选项取这台设计器的配置，记成 localeConfig 并通知根下的子树重画，设计器根把它
+// 作为自己的 xhConfig 交出去，只作用于设计器；跟随系统时系统语言变了跟着换。设置的读写走根所在窗口的 localStorage。状态栏由各款自己接。
 
 import type { JsonValue } from '@xihan-ui/core/json'
 import type { EnvSignals, VisualEnvironmentStorageError } from '@xihan-ui/core/visual-environment'
+import type { XhConfig } from '@xihan-ui/web-components'
+import type { DesignerLanguage } from './language'
 import type { DesignerSettings, DesignerSettingsSection, DesignerThemeSetting } from './model'
 import { isJsonValue } from '@xihan-ui/core/json'
 import { createEnvSignals } from '@xihan-ui/core/visual-environment'
 import { BRAND_PRESETS, registerBrand } from '@xihan-ui/tokens'
+import { notifyXhConfigChange } from '@xihan-ui/web-components/authoring'
+import { designerLanguageOf } from './language'
 import { DESIGNER_SETTING_KEYS, settingKey } from './model'
 
 interface DesignerSettingsHostBaseOptions {
   /** 设计器根：主题写成它的 data-theme，主题色写成它的 data-brand。 */
   readonly root: HTMLElement
+  /**
+   * 选了语言（「语言」分区不是跟随页面）时这台设计器用的配置：通常是 @xihan-ui/designer-shell/language 的 loadDesignerLocale
+   * 取的 UI 与 designer-shell 同语言包，再并上各款自己的同语言包。取到后记成 localeConfig、通知根下的子树重画；不给时语言那一条不生效。
+   */
+  readonly locale?: (language: DesignerLanguage) => XhConfig | Promise<XhConfig>
+  /** localeConfig 换了时调用（语言换了、跟随系统时系统语言变了、dispose 时回到跟随页面）：设计器据此重画自己。 */
+  readonly onLocaleChange?: () => void
 }
 
 /** createDesignerSettingsHost 的选项；要存储就得同时给出错出口，读写失败时回调、设置留在内存里。 */
@@ -32,11 +44,22 @@ export interface DesignerSettingsHost {
   load: () => DesignerSettings
   /** 存进存储；sections 里 text 编辑方式标了 secret 的条目不存。 */
   save: (settings: DesignerSettings, sections?: readonly DesignerSettingsSection[]) => void
-  /** 把主题与主题色写到设计器根上。 */
+  /** 把主题与主题色写到设计器根上，并按语言那一条换 localeConfig（要取语言包时稍后才换）。 */
   apply: (settings: DesignerSettings) => void
-  /** 撤掉跟随系统与外层的监听、注册的主题色，根上的 data-theme、data-brand、data-contrast 还原成接手前的样子。 */
+  /**
+   * 设计器根此刻的语言配置：跟随页面时是空对象，选了语言时是 locale 选项给的那一份。设计器根声明 xhConfig 返回它，
+   * 根下的元素（含搬进浮层根的内容）就按它取 locale 与文案，页面别处不受影响。
+   */
+  readonly localeConfig: XhConfig
+  /**
+   * 撤掉跟随系统与外层的监听、注册的主题色，根上的 data-theme、data-brand、data-contrast 还原成接手前的样子，
+   * localeConfig 回到空对象。
+   */
   dispose: () => void
 }
+
+/** 跟随页面时的语言配置。 */
+const FOLLOW_PAGE: XhConfig = Object.freeze({})
 
 let customBrands = 0
 
@@ -65,6 +88,15 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
   let observer: MutationObserver | undefined
   let unregisterBrand: (() => void) | undefined
   let registeredColor: string | undefined
+  let localeConfig: XhConfig = FOLLOW_PAGE
+  /** 此刻要的语言（取语言包期间已经是新的）与已经落定的语言。 */
+  let wantedLanguage: DesignerLanguage | undefined
+  let appliedLanguage: DesignerLanguage | undefined
+  /** 每次换语言加一：取完语言包时已经又换过就丢掉这一份。 */
+  let localeRequest = 0
+  /** 最近一次 apply 的设置：跟随系统时系统语言变了按它重挑。 */
+  let lastSettings: DesignerSettings = {}
+  let watchingLanguages = false
 
   /** 根以外最近的祖先上写的这个属性。 */
   const inherited = (name: Axis): string | null => root.parentElement?.closest(`[${name}]`)?.getAttribute(name) ?? null
@@ -141,7 +173,50 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
     return undefined
   }
 
+  const setLocale = (language: DesignerLanguage | undefined, config: XhConfig): void => {
+    appliedLanguage = language
+    localeConfig = config
+    notifyXhConfigChange(root)
+    options.onLocaleChange?.()
+  }
+
+  /** 换到这种语言：跟随页面当场换回空配置，选了语言时取完配置再换；取的期间又换了就丢掉旧的那一份。 */
+  const switchLanguage = (language: DesignerLanguage | undefined): void => {
+    if (language === wantedLanguage)
+      return
+    wantedLanguage = language
+    const request = ++localeRequest
+    if (language === undefined) {
+      setLocale(undefined, FOLLOW_PAGE)
+      return
+    }
+    void Promise.resolve(options.locale!(language)).then((config) => {
+      if (request === localeRequest)
+        setLocale(language, config)
+    }, (error: unknown) => {
+      if (request === localeRequest)
+        wantedLanguage = appliedLanguage
+      throw error
+    })
+  }
+
+  const onLanguageChange = (): void => switchLanguage(designerLanguageOf(lastSettings, win?.navigator.languages ?? []))
+
+  /** 跟随系统时盯着浏览器的语言偏好。 */
+  const watchLanguages = (on: boolean): void => {
+    if (on === watchingLanguages || !win)
+      return
+    watchingLanguages = on
+    if (on)
+      win.addEventListener('languagechange', onLanguageChange)
+    else
+      win.removeEventListener('languagechange', onLanguageChange)
+  }
+
   return {
+    get localeConfig() {
+      return localeConfig
+    },
     load() {
       const key = options.storageKey
       if (key === undefined)
@@ -191,6 +266,11 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
       brand = resolveBrand(settings[DESIGNER_SETTING_KEYS.brand])
       sync()
       watch(theme !== 'follow' || brand !== undefined)
+      if (options.locale) {
+        lastSettings = settings
+        watchLanguages(settings[DESIGNER_SETTING_KEYS.language] === 'system')
+        onLanguageChange()
+      }
     },
     dispose() {
       unsubscribeSystem?.()
@@ -201,6 +281,8 @@ export function createDesignerSettingsHost(options: DesignerSettingsHostOptions)
       brand = undefined
       for (const name of AXES)
         write(name, initial[name])
+      watchLanguages(false)
+      switchLanguage(undefined)
     },
   }
 }

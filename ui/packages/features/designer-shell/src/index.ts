@@ -114,11 +114,14 @@ export type { DesignerCommonKey, DesignerCommonKeyId } from './settings/display-
 export type { DesignerDisplayControl, DesignerShortcutGroup, DesignerShortcutGroupId, DesignerShortcutRow, DesignerShortcutsSource, DesignerShortcutTableGroup } from './settings/display-model'
 export { createDesignerSettingsHost } from './settings/host'
 export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settings/host'
+export { DESIGNER_LANGUAGES, designerLanguageOf, designerLanguageSettings, matchDesignerLanguage } from './settings/language'
+export type { DesignerLanguage, DesignerLanguageSetting } from './settings/language'
 export {
   collectSettingsSections,
   DESIGNER_ABOUT_SETTINGS,
   DESIGNER_GENERAL_SETTINGS,
   DESIGNER_HELP_SETTINGS,
+  DESIGNER_LANGUAGE_SETTINGS,
   DESIGNER_LAYOUT_SETTINGS,
   DESIGNER_SETTING_KEYS,
   DESIGNER_SHORTCUT_SETTINGS,
@@ -141,7 +144,6 @@ export {
 } from './settings/model'
 export type {
   DesignerAboutSettings,
-  DesignerGeneralSettingsOptions,
   DesignerHelpSettings,
   DesignerSettingItem,
   DesignerSettings,

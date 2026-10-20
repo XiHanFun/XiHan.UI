@@ -23,11 +23,11 @@ export type DesignerSettingItem = PropertyDescriptor<PropertyControl | DesignerD
 
 /** 一个设置分区：设置对话框左边的一页。 */
 export interface DesignerSettingsSection {
-  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、layout、toolbar、help、shortcuts、about 留给内建的几页。 */
+  /** 分区 id：值的键以它开头；四款与各扩展之间不能重名，general、language、layout、toolbar、help、shortcuts、about 留给内建的几页。 */
   readonly id: string
   /** 左边导航里的名字。 */
   readonly label: string
-  /** 排序：内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，900 以后留给内建的帮助、快捷键与关于；同值按登记顺序。 */
+  /** 排序：内建的「基础」是 0、「语言」是 1、「布局」是 2、「工具栏」是 3，各款从 100 起，扩展从 200 起，900 以后留给内建的帮助、快捷键与关于；同值按登记顺序。 */
   readonly order?: number
   /** 这一页的条目，按先后排列。 */
   readonly items: readonly DesignerSettingItem[]
@@ -41,6 +41,9 @@ export type DesignerSettingsPolicy = Readonly<Record<string, 'hidden' | 'locked'
 
 /** 内建「基础」分区的 id。 */
 export const DESIGNER_GENERAL_SETTINGS = 'general'
+
+/** 内建「语言」分区的 id。 */
+export const DESIGNER_LANGUAGE_SETTINGS = 'language'
 
 /** 内建「工具栏」分区的 id。 */
 export const DESIGNER_TOOLBAR_SETTINGS = 'toolbar'
@@ -62,12 +65,13 @@ export const PANEL_LAYOUT_CONTROL = 'panelLayout'
 /** 「基础」分区里主题的取值：follow 跟随所在页面，system 跟随系统，light、dark 固定。 */
 export type DesignerThemeSetting = 'follow' | 'system' | 'light' | 'dark'
 
-/** 内建「基础」「工具栏」分区各条目的键，以及外框存布局的键。 */
+/** 内建「基础」「语言」「工具栏」分区各条目的键，以及外框存布局的键。 */
 export const DESIGNER_SETTING_KEYS = {
   theme: 'general.theme',
   brand: 'general.brand',
   statusBar: 'general.statusBar',
-  language: 'general.language',
+  /** 设计器的语言：follow（缺省）、system 或一种语言，见 DesignerLanguageSetting。 */
+  language: 'language.locale',
   /** 工具栏按钮的显示方式：icon、text、both。 */
   toolbarDisplay: 'toolbar.display',
   /** 显示顶部工具栏，缺省 true。 */
@@ -113,11 +117,11 @@ export interface DesignerSettingsSource {
 }
 
 /**
- * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含留给内建的 general、layout、toolbar、help、shortcuts、about）抛 DesignerExtensionError，
+ * 合起各来源的分区，按 order 排（同值按登记顺序）。分区 id 重名（含留给内建的 general、language、layout、toolbar、help、shortcuts、about）抛 DesignerExtensionError，
  * 名字空间是 settings-section。
  */
 export function collectSettingsSections(sources: readonly DesignerSettingsSource[]): DesignerSettingsSection[] {
-  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, DESIGNER_HELP_SETTINGS, DESIGNER_SHORTCUT_SETTINGS, DESIGNER_ABOUT_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
+  const owners = new Map<string, string>([DESIGNER_GENERAL_SETTINGS, DESIGNER_LANGUAGE_SETTINGS, DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, DESIGNER_HELP_SETTINGS, DESIGNER_SHORTCUT_SETTINGS, DESIGNER_ABOUT_SETTINGS].map(id => [id, '@xihan-ui/designer-shell']))
   const sections: DesignerSettingsSection[] = []
   for (const source of sources) {
     for (const section of source.settings ?? []) {
@@ -138,12 +142,6 @@ export function sortSettingsSections(sections: readonly DesignerSettingsSection[
     .map(({ section }) => section)
 }
 
-/** designerGeneralSettings 的选项：语言要宿主给了才有。 */
-export interface DesignerGeneralSettingsOptions {
-  /** 可选的语言：给了才有语言这一项，不选即跟随所在页面。 */
-  readonly languages?: readonly { readonly value: string, readonly label: string }[]
-}
-
 /** UI 预设品牌在设置文案里的名字。 */
 const BRAND_NAMES: Readonly<Record<BrandPreset, keyof DesignerSettingsTranslations>> = {
   blue: 'brandBlue',
@@ -157,10 +155,10 @@ const BRAND_NAMES: Readonly<Record<BrandPreset, keyof DesignerSettingsTranslatio
 }
 
 /**
- * 内建的「基础」分区：主题、主题色、状态栏与语言；语言按选项决定有没有。主题色内置：跟随页面（缺省，不写值）、
- * UI 的预设品牌（@xihan-ui/tokens 的 BRAND_PRESETS，格子画 BRAND_PRESET_COLORS）与自定义颜色。
+ * 内建的「基础」分区：主题、主题色与状态栏。主题色内置：跟随页面（缺省，不写值）、UI 的预设品牌（@xihan-ui/tokens 的
+ * BRAND_PRESETS，格子画 BRAND_PRESET_COLORS）与自定义颜色。语言在单独的「语言」分区（designerLanguageSettings）。
  */
-export function designerGeneralSettings(t: DesignerSettingsTranslations, options: DesignerGeneralSettingsOptions = {}): DesignerSettingsSection {
+export function designerGeneralSettings(t: DesignerSettingsTranslations): DesignerSettingsSection {
   const items: DesignerSettingItem[] = [
     {
       path: ['theme'],
@@ -191,8 +189,6 @@ export function designerGeneralSettings(t: DesignerSettingsTranslations, options
     meta: { description: t.brandHint },
   })
   items.push({ path: ['statusBar'], label: t.statusBar, control: { kind: 'boolean' }, default: true, meta: { description: t.statusBarHint } })
-  if ((options.languages?.length ?? 0) > 0)
-    items.push({ path: ['language'], label: t.language, control: { kind: 'select', appearance: 'dropdown', options: options.languages! }, meta: { description: t.languageHint } })
   return { id: DESIGNER_GENERAL_SETTINGS, label: t.general, order: 0, items }
 }
 
@@ -201,7 +197,7 @@ export function designerLayoutSettings(t: DesignerSettingsTranslations): Designe
   return {
     id: DESIGNER_LAYOUT_SETTINGS,
     label: t.layout,
-    order: 1,
+    order: 2,
     items: [{ path: ['panels'], label: t.layoutPanels, control: { kind: PANEL_LAYOUT_CONTROL }, meta: { description: t.layoutPanelsHint } }],
   }
 }
@@ -234,7 +230,7 @@ export function designerToolbarSettings(t: DesignerSettingsTranslations, options
   ]
   if (options.layout)
     items.push({ path: ['layout'], label: t.toolbarLayout, control: { kind: TOOLBAR_LAYOUT_CONTROL }, meta: { description: t.toolbarLayoutHint } })
-  return { id: DESIGNER_TOOLBAR_SETTINGS, label: t.toolbar, order: 2, items }
+  return { id: DESIGNER_TOOLBAR_SETTINGS, label: t.toolbar, order: 3, items }
 }
 
 /** 设置对话框「帮助」页：几段操作说明与几颗跑命令的钮（如开始引导、打开文档），文字已按语言取好。 */
