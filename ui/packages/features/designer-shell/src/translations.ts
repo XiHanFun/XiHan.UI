@@ -263,6 +263,10 @@ export interface DesignerSettingsTranslations {
   readonly statusBar: string
   /** 状态栏条目的说明。 */
   readonly statusBarHint: string
+  /** 「基础」里自动保存的标签。 */
+  readonly autoSave: string
+  /** 自动保存的说明。 */
+  readonly autoSaveHint: string
   /** 「基础」里开发者模式的标签。 */
   readonly developer: string
   /** 开发者模式的说明。 */
@@ -513,8 +517,16 @@ export interface DesignerCommandsTranslations {
   readonly showToolbar: string
   /** 内置命令：显示或隐藏状态栏（开关式）。 */
   readonly showStatusBar: string
-  /** 内置命令：视图菜单里收着三条显示开关的「外观」子菜单。 */
+  /** 内置命令：视图菜单里收着两条显示开关的「外观」子菜单。 */
   readonly appearance: string
+  /** 自动保存：载入时发现了未保存的草稿，time 是草稿存下的日期与时刻。 */
+  readonly draftFound: (time: string) => string
+  /** 自动保存：问恢复还是丢弃时的说明。 */
+  readonly draftFoundDescription: string
+  /** 自动保存：恢复草稿的钮。 */
+  readonly draftRestore: string
+  /** 自动保存：丢弃草稿的钮。 */
+  readonly draftDiscard: string
   /** 菜单栏的无障碍名称。 */
   readonly menubar: string
   /** 窄屏时菜单栏收成的那颗钮上的字。 */

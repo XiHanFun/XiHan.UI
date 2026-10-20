@@ -5,6 +5,8 @@
 
 // @xihan-ui/designer-shell —— 四款画布式设计器共用的界面零件，只出 Web Components。元素不在 import 时注册。
 
+export { createDesignerAutosave } from './autosave'
+export type { DesignerAutosave, DesignerAutosaveOptions } from './autosave'
 export { createDesignerDebugLogger, debugLogOf } from './debug-log'
 export type { DesignerDebugChannel, DesignerDebugLogger, DesignerDebugLoggerOptions } from './debug-log'
 export { defineDesignerShell, defineDesignerShellElement, DESIGNER_SHELL_ELEMENTS } from './define'
@@ -119,6 +121,7 @@ export type { DesignerSettingsHost, DesignerSettingsHostOptions } from './settin
 export { DESIGNER_LANGUAGES, designerLanguageOf, designerLanguageSettings, matchDesignerLanguage } from './settings/language'
 export type { DesignerLanguage, DesignerLanguageSetting } from './settings/language'
 export {
+  autoSaveOf,
   collectSettingsSections,
   DESIGNER_ABOUT_SETTINGS,
   DESIGNER_GENERAL_SETTINGS,
