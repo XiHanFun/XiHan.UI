@@ -2000,8 +2000,9 @@
     flex: 1 0 100%;
   }
 
-  /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底 */
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
+  /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底；
+     帮助钮那一支的 button 写在 :where 里，整条与收起各钮的 [hidden] 规则同一档特异度，带 hidden 的钮照样收起 */
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
     display: inline-flex;
     flex: none;
     align-items: center;

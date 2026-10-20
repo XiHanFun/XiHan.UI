@@ -130,6 +130,24 @@ describe('<xh-designer-frame> 面板布局（Chromium）', () => {
     expect(region('properties').closest('xh-floating-panel')).toBe(float)
   })
 
+  it('锁住、收不起也关不掉的面板，面板头不画收起、更多与关闭钮；浮出后这几颗钮在小窗的标题栏上，正文顶上的面板头不再画', async () => {
+    frame.regions = [
+      { name: 'canvas', position: 'center' },
+      { name: 'palette', position: 'start', title: '物料', minimizable: false, closable: false, movable: false, floatable: false },
+      { name: 'outline', position: 'start', title: '结构' },
+      { name: 'properties', position: 'end', title: '属性', subtitle: '选中的节点' },
+    ]
+    frame.layoutPolicy = { panels: { outline: 'locked' } }
+    await settle()
+    const shown = (name: string): string[] => Array.from(headerOf(name).querySelectorAll<HTMLElement>(':scope > button'))
+      .filter(button => button.checkVisibility())
+      .map(button => button.dataset.part!)
+    expect([shown('palette'), shown('outline'), shown('properties')]).toEqual([[], [], ['panel-minimize', 'panel-menu-trigger', 'panel-close']])
+    frame.floatPanel('properties', { x: 100, y: 100, width: 260, height: 200 })
+    await settle()
+    expect([headerOf('properties').checkVisibility(), shown('properties')]).toEqual([true, []])
+  })
+
   it('浮出的小窗挪出外框时夹回框内，松手时派发一次 float', async () => {
     frame.floatPanel('properties', { x: 100, y: 100, width: 260, height: 200 })
     await settle()
