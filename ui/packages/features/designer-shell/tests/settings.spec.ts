@@ -14,11 +14,14 @@ import {
   createDesignerSettingsHost,
   defineDesignerShell,
   DESIGNER_COMMON_KEYS,
+  DESIGNER_LANGUAGES,
   DESIGNER_SETTING_KEYS,
   DESIGNER_SHELL_VERSION,
   designerAboutSettings,
   designerGeneralSettings,
   designerHelpSettings,
+  designerLanguageSettings,
+  designerLayoutSettings,
   designerShortcutSettings,
   designerToolbarSettings,
   isDesignerDisplayControl,
@@ -101,6 +104,7 @@ describe('设置模型', () => {
     expect(duplicate).toThrow(/settings-section/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'general', label: 'G', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'layout', label: 'L', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
+    expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'language', label: 'L', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
     expect(() => collectSettingsSections([{ id: 'x', settings: [{ id: 'toolbar', label: 'T', items: [] }] }])).toThrow(/@xihan-ui\/designer-shell/)
   })
 
@@ -123,11 +127,10 @@ describe('设置模型', () => {
     ]).toEqual([undefined, 'locked', 'hidden'])
   })
 
-  it('「基础」分区：主题、主题色与状态栏总有，语言要给了可选语言；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
+  it('「基础」分区：主题、主题色与状态栏，语言不在这里；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const full = designerGeneralSettings(english)
     expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar])
-    expect(keys(designerGeneralSettings(english, { languages: [{ value: 'zh-CN', label: '简体中文' }] })).at(-1)).toBe(DESIGNER_SETTING_KEYS.language)
     const names = [english.brandBlue, english.brandCyan, english.brandTeal, english.brandGreen, english.brandOrange, english.brandRed, english.brandPink, english.brandPurple]
     expect(full.items[1]!.control).toEqual({
       kind: 'swatch',
@@ -139,10 +142,23 @@ describe('设置模型', () => {
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
+  it('「语言」分区单独一页，排在「基础」之后：一条下拉，缺省跟随页面，再是跟随系统与外壳自带的全部语言（名字是本名）；「布局」「工具栏」顺次往后', () => {
+    const section = designerLanguageSettings(english)
+    expect([section.id, section.label, section.order, section.items.map(item => settingKey(section, item))]).toEqual(['language', english.language, 1, [DESIGNER_SETTING_KEYS.language]])
+    const item = section.items[0]!
+    expect([item.label, item.default, item.meta?.description]).toEqual([english.languageDisplay, 'follow', english.languageHint])
+    expect(item.control).toEqual({
+      kind: 'select',
+      appearance: 'dropdown',
+      options: [{ value: 'follow', label: english.languageFollow }, { value: 'system', label: english.languageSystem }, ...DESIGNER_LANGUAGES],
+    })
+    expect([designerLayoutSettings(english).order, designerToolbarSettings(english).order]).toEqual([2, 3])
+  })
+
   it('「工具栏」分区：按钮显示方式与显示工具栏总有，给了 layout 才有按钮表；菜单栏常开，没有显示菜单栏这一条', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const plain = designerToolbarSettings(english)
-    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible]])
+    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 3, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible]])
     expect([Object.values(DESIGNER_SETTING_KEYS).includes('toolbar.menubar' as never), 'menubarVisibleOf' in shell]).toEqual([false, false])
     expect([plain.items[0]!.default, plain.items[1]!.default]).toEqual(['icon', true])
     expect(plain.items[0]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
@@ -161,7 +177,8 @@ describe('<xh-designer-settings>', () => {
     await mount((element) => {
       element.sections = [flowSection]
     })
-    expect(triggers()).toEqual([english.general, english.toolbar, '流程'])
+    expect(triggers()).toEqual([english.general, english.language, english.toolbar, '流程'])
+    expect(row('language.locale')).not.toBeNull()
     expect([row('toolbar.display') !== null, row('toolbar.visible') !== null, row('toolbar.layout')]).toEqual([true, true, null])
     expect(row('general.theme').querySelector('xh-toggle-group')).not.toBeNull()
     expect(row('flow.grid').querySelector('xh-switch')).not.toBeNull()
@@ -191,7 +208,7 @@ describe('<xh-designer-settings>', () => {
       el.sections = [flowSection]
       el.policy = { 'general.theme': 'locked', 'flow': 'hidden' }
     })
-    expect(triggers()).toEqual([english.general, english.toolbar])
+    expect(triggers()).toEqual([english.general, english.language, english.toolbar])
     expect(row('flow.grid')).toBeNull()
     expect(row('general.theme').querySelector('xh-field')!.hasAttribute('read-only')).toBe(true)
     expect(row('general.theme').textContent).toContain(english.locked)
@@ -201,10 +218,11 @@ describe('<xh-designer-settings>', () => {
     expect(changes).toEqual([])
   })
 
-  it('general、toolbar 为 false 时不要「基础」「工具栏」；没有可显示的分区时对话框只剩标题', async () => {
+  it('general、toolbar 为 false 时不要「基础」「工具栏」，「语言」经 policy 藏掉；没有可显示的分区时对话框只剩标题', async () => {
     await mount((el) => {
       el.general = false
       el.toolbar = false
+      el.policy = { language: 'hidden' }
       el.sections = [flowSection]
     })
     expect(triggers()).toEqual(['流程'])
@@ -278,7 +296,7 @@ describe('<xh-designer-settings>', () => {
     await element.updateComplete
     const zh = designerShellZhCN.translations!['xh-designer-settings']!
     expect(element.querySelector('h2')!.textContent).toBe(zh.title)
-    expect(triggers()).toEqual([zh.general, zh.toolbar])
+    expect(triggers()).toEqual([zh.general, zh.language, zh.toolbar])
     element.show()
     await element.updateComplete
     expect(scope.contains(row('general.brand'))).toBe(false)
@@ -490,10 +508,10 @@ describe('<xh-designer-settings> 的「布局」页', () => {
 
   it('给了 frame 才有「布局」页，排在「基础」后面；面板表按三栏的先后列出面板，画布浮动件排在最后、只有显示开关', async () => {
     await mount(() => {})
-    expect(triggers()).toEqual([english.general, english.toolbar])
+    expect(triggers()).toEqual([english.general, english.language, english.toolbar])
     document.body.innerHTML = ''
     await mountWithFrame(element => element.sections = [flowSection])
-    expect(triggers()).toEqual([english.general, english.layout, english.toolbar, '流程'])
+    expect(triggers()).toEqual([english.general, english.language, english.layout, english.toolbar, '流程'])
     expect(row('layout.panels').textContent).toContain(english.layoutPanelsHint)
     const table = document.querySelector<HTMLElement>('[data-part="panel-table"]')!
     expect([table.getAttribute('role'), table.getAttribute('aria-label')]).toEqual(['table', english.layoutPanels])
@@ -562,7 +580,7 @@ describe('<xh-designer-settings> 的「布局」页', () => {
 
     element.policy = { 'layout.panels': 'hidden' }
     await element.updateComplete
-    expect(triggers()).toEqual([english.general, english.toolbar])
+    expect(triggers()).toEqual([english.general, english.language, english.toolbar])
 
     element.policy = {}
     frame.layoutPolicy = { panels: { palette: 'locked' } }
@@ -688,7 +706,7 @@ describe('<xh-designer-settings> 的「工具栏」页', () => {
     expect([row('toolbar.layout'), row('toolbar.display') !== null]).toEqual([null, true])
     element.toolbar = false
     await element.updateComplete
-    expect(triggers()).toEqual([english.general])
+    expect(triggers()).toEqual([english.general, english.language])
   })
 })
 
@@ -784,7 +802,7 @@ describe('帮助、快捷键与关于', () => {
       el.shortcuts = shortcutSettingsSource(commands, {})
       el.about = { product: 'Flow', version: '1.0.0', license: 'MIT' }
     })
-    expect(triggers()).toEqual([english.general, english.toolbar, '流程', english.help, english.shortcuts, english.about])
+    expect(triggers()).toEqual([english.general, english.language, english.toolbar, '流程', english.help, english.shortcuts, english.about])
     expect(Array.from(row('help.guide').querySelectorAll('[data-part="note-paragraph"]'), node => node.textContent)).toEqual(['Drag nodes.', 'Connect ports.'])
     expect(row('help.guide').querySelector('[data-part="display-label"]')!.textContent).toBe(english.helpGuide)
     const commandsRun: string[] = []

@@ -828,16 +828,22 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 ## 设置
 
-设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色、状态栏与语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题与主题色落到设计器上，并读写存储。主题色是内置的，宿主不传预设。
+设计器的设置是用户偏好，每人每机一份，不是模板数据：主题、主题色与状态栏，语言，工具栏的显示方式与按钮，面板布局，再加各款与扩展自己的条目。`<xh-designer-settings>` 是设置对话框；`createDesignerSettingsHost` 把主题、主题色与语言落到设计器上，并读写存储。主题色与语言清单都是内置的，宿主不传。
 
 ```ts
 import { collectSettingsSections, createDesignerSettingsHost } from "@xihan-ui/designer-shell";
+import { loadDesignerLocale } from "@xihan-ui/designer-shell/language";
+import { mergeXhConfig } from "@xihan-ui/web-components";
 
 const host = createDesignerSettingsHost({
   root: designerRoot,
+  // 选了语言时：UI 与 designer-shell 的同语言包，再并上本款自己的
+  locale: async language => mergeXhConfig(await loadDesignerLocale(language), productLocales[language]),
+  onLocaleChange: () => designerRoot.requestUpdate(),
   storageKey: "flow-designer:settings",
   onStorageError: detail => console.warn(detail),
 });
+// 设计器根把 host.localeConfig 作为自己的 xhConfig 交出去：get xhConfig() { return host.localeConfig }
 
 const dialog = document.createElement("xh-designer-settings");
 dialog.sections = collectSettingsSections([productSettings, ...extensions]);
@@ -853,20 +859,21 @@ dialog.show();
 
 ### 分区与条目
 
-- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「布局」是 1、「工具栏」是 2，各款从 100 起，扩展从 200 起，900 以后留给内建的「帮助」「快捷键」「关于」，同值按登记顺序。
+- 分区是 `{ id, label, order?, items }`，对话框左边一页。`order` 小的在前，内建的「基础」是 0、「语言」是 1、「布局」是 2、「工具栏」是 3，各款从 100 起，扩展从 200 起，900 以后留给内建的「帮助」「快捷键」「关于」，同值按登记顺序。
 - 条目就是 `@xihan-ui/designer-kit` 的属性描述：`path` 只写一段条目 id，`label` 是标签，`default` 是缺省值，说明写在 `meta.description`。
 - 值是扁平的键值：键是 `<分区 id>.<条目 id>`，没写的键取条目的 `default`。
 - 内建编辑方式与属性面板同一套字段；别的种类交给对话框的 `editors`，被编辑的对象是整份设置。
 
 | 函数 | 说明 |
 | --- | --- |
-| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`layout`、`toolbar`、`help`、`shortcuts`、`about` 留给内建 |
+| `collectSettingsSections(sources)` | 合起各来源（`{ id, settings? }`，扩展的 `settings` 字段就是这个形状）的分区。分区 id 重名时抛 `DesignerExtensionError`，名字空间 `settings-section`；`general`、`language`、`layout`、`toolbar`、`help`、`shortcuts`、`about` 留给内建 |
 | `sortSettingsSections(sections)` | 按 `order` 排好，同值按传入顺序 |
 | `settingKey(section, item)` | 条目的键 |
 | `settingValue(settings, section, item)` | 条目此刻的值：写了用写的，没写取缺省值 |
 | `resolveSettings(sections, settings)` | 此刻生效的设置：写了的键原样保留，各分区里没写的条目取缺省值（没有缺省值的不写）。交给命令、面板与扩展的上下文用这一份；`sections` 通常是 `collectSettingsSections` 合出的分区，基础分区要缺省值时把 `designerGeneralSettings` 的分区也传进来 |
 | `settingPolicy(policy, section, item)` | 条目在宿主管控下的状态：先看条目键，再看分区 id |
 | `designerGeneralSettings(t, options?)` | 内建的「基础」分区；对话框自己会生成，各款要单独拿条目时用 |
+| `designerLanguageSettings(t)` | 内建的「语言」分区（`DESIGNER_LANGUAGE_SETTINGS`）：一条 `locale`；对话框自己生成 |
 | `designerLayoutSettings(t)` | 内建的「布局」分区（`DESIGNER_LAYOUT_SETTINGS`）：一条 `panels`，编辑方式 `PANEL_LAYOUT_CONTROL`；对话框给了 `frame` 时自己生成 |
 | `designerToolbarSettings(t, { layout? })` | 内建的「工具栏」分区（`DESIGNER_TOOLBAR_SETTINGS`）：按钮显示方式、显示工具栏，`layout` 为真时加按钮表（编辑方式 `TOOLBAR_LAYOUT_CONTROL`）；对话框自己生成 |
 
@@ -877,9 +884,20 @@ dialog.show();
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
 | 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
-| 语言 | `general.language` | 下拉 | 不选即跟随页面 | 给了 `languages` |
 
-键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏与语言由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区，语言换成对应的产品语言包。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
+键也在 `DESIGNER_SETTING_KEYS` 里。主题与主题色由 `createDesignerSettingsHost` 落到设计器上；状态栏由各款自己接，例如状态栏关掉时从外框的 `regions` 里去掉 `status` 区。面板布局也存在设置里，键是 `layout.panels`（`DESIGNER_SETTING_KEYS.layout`），对话框里对应「布局」页，见下文与「外框」的「面板布局」。
+
+### 「语言」分区
+
+| 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
+| --- | --- | --- | --- | --- |
+| 界面语言 | `language.locale` | 下拉：跟随页面、跟随系统，再是外壳自带的全部语言 | `follow` | 总有 |
+
+- 语言清单是外壳自带的 `DESIGNER_LANGUAGES`，与 UI 组件库的内建语言包一一对应，名字是各自的本名：简体中文、繁體中文、English、日本語、한국어、Deutsch、Français、Español、Português (Brasil)、Русский。宿主不再传语言清单。
+- 只作用于设计器：设计器根把语言配置作为自己的 `xhConfig` 交出去，根下的元素（含搬进浮层根的对话框、菜单）按它取 `locale` 与文案，页面别处照旧。设计器自己的文案、外壳零件的文案与 UI 元素的文案（日期、分页、确认框之类）一起换。
+- `designerLanguageOf(settings, preferred?)`：设置里的语言此刻落成哪一种。没写、跟随页面或不认识的值是 `undefined`；跟随系统按 `preferred`（缺省取 `navigator.languages`）挑，挑不到用 `en-US`；写了一种语言就是它。
+- `matchDesignerLanguage(preferred)`：按语言偏好的先后挑最接近的一种：完全一致的优先，否则取同一语言的那一种；中文按书写系统定简繁（`Hant` 繁、`Hans` 简），没写书写系统时台湾、香港、澳门是繁体。挑不到是 `undefined`。
+- 语言包按需加载：子入口 `@xihan-ui/designer-shell/language` 的 `loadDesignerLocale(language)` 取这种语言的 UI 组件库与 designer-shell 语言包，并成一份配置（`locale` 与各桶文案）。各款再并上自己这一款的同语言包，交给设置宿主的 `locale` 选项，见下文「落到设计器上」。
 
 ### 「工具栏」分区
 
@@ -962,7 +980,7 @@ settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKey
 | 属性 | 说明 |
 | --- | --- |
 | `sections` | 各款与扩展的设置分区；没有可显示条目的分区不出现 |
-| `general` | 「基础」分区的选项 `{ languages? }`；`false` 不要这一页。主题色是内置的，不用传。文案随对话框的语言 |
+| `general` | `false` 不要「基础」这一页。主题色与语言清单都是内置的，不用传。「语言」页总有，不要时用 `policy` 把 `language` 藏掉 |
 | `frame` | 设计器的外框（`DesignerSettingsFrame`，外框元素本身即可）；给了且有面板时有「布局」页 |
 | `help` | 「帮助」页：几段操作说明与几颗跑命令的钮，见上文 |
 | `shortcuts` | 「快捷键」页：`shortcutSettingsSource` 现算的快捷键表 |
@@ -989,19 +1007,23 @@ settingsDialog.shortcuts = shortcutSettingsSource(commands, context, { commonKey
 
 ### 落到设计器上
 
-`createDesignerSettingsHost(options)` 返回 `{ load, save, apply, dispose }`：
+`createDesignerSettingsHost(options)` 返回 `{ load, save, apply, localeConfig, dispose }`：
 
 | 选项 | 说明 |
 | --- | --- |
 | `root` | 设计器根：主题写成它的 `data-theme`，主题色写成它的 `data-brand`，只作用于设计器 |
+| `locale` | `(language) => 配置或它的 Promise`：选了语言（「语言」分区不是跟随页面）时这台设计器用的配置，通常是 `loadDesignerLocale(language)` 再并上本款的同语言包。不给时语言那一条不生效 |
+| `onLocaleChange` | `localeConfig` 换了时调用（语言换了、跟随系统时系统语言变了、`dispose` 时回到跟随页面），设计器据此重画自己 |
 | `storageKey` | 设置存在根所在窗口 localStorage 的哪个键下；不给就不读写 |
 | `onStorageError` | 读写失败（无痕窗口、配额满、内容不是对象）时回调 `{ operation, key, error }`，设置留在内存里。给了 `storageKey` 就必须给，否则抛 `TypeError` |
 
 - `apply(settings)`：主题跟随页面时把根的 `data-theme` 还原成接手前的值，跟随系统时按 `prefers-color-scheme` 写、系统改了跟着改；主题色是 UI 的预设品牌就直接写它；别的颜色经 `@xihan-ui/tokens` 的 `registerBrand` 在根所在的文档里注册成这台设计器自己的品牌（一份 `[data-brand]` 取值块），换走时撤销；取不出品牌梯度的值不生效，按跟随页面处理。
 - `data-brand` 要与 `data-theme` 在同一个元素上才换得动品牌：主题跟随页面又选了主题色时，根上照抄外层的 `data-theme`（外层没写就是亮色）。根上新写了主题时，语义令牌在这里重新声明，外层的 `data-contrast` 也一并照抄。外层这两个属性变了，根上跟着改。
+- `apply(settings)` 也按语言那一条换 `localeConfig`：跟随页面当场换回空对象；选了语言或跟随系统时调 `locale` 取配置，取到后记下、通知根下的子树重画，再调 `onLocaleChange`；取的期间又换了语言，只落最后要的那一种。跟随系统时盯着窗口的 `languagechange`，浏览器的语言偏好变了跟着换。
+- `localeConfig`：设计器根此刻的语言配置，跟随页面时是空对象。设计器根声明 `xhConfig` 返回它，根下的元素就按它取 `locale` 与文案。
 - `save(settings, sections?)`：`sections` 里标了 `secret` 的文本条目不存。
 - `load()`：没给存储键、没存过或读不出时是空对象。
-- `dispose()`：撤掉跟随系统与外层的监听、注册的主题色，根上的 `data-theme`、`data-brand`、`data-contrast` 还原成接手前的样子。
+- `dispose()`：撤掉跟随系统与外层的监听、注册的主题色，根上的 `data-theme`、`data-brand`、`data-contrast` 还原成接手前的样子，`localeConfig` 回到空对象。
 
 ## 导入字段
 

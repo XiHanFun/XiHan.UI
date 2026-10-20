@@ -3,7 +3,8 @@
 // 标题、字段与对话框自己的文案都取这一层的语言；没有 wc.* 诊断，axe 也没有违规。「工具栏」页的按钮表用真实指针跨组拖命令、
 // 用键盘挪组。
 import type { DiagnosticRecord } from '@xihan-ui/core'
-import type { DesignerSettingsEventMap, DesignerSettingsSection, XhDesignerSettingsElement } from '../../src'
+import type { XhConfig } from '@xihan-ui/web-components'
+import type { DesignerSettingsEventMap, DesignerSettingsHost, DesignerSettingsSection, XhDesignerSettingsElement } from '../../src'
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnosticsDedupe, setDiagnosticsLevel } from '@xihan-ui/core'
 import { expectNoAxeViolations } from '@xihan-ui/testing/a11y'
 import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '@xihan-ui/tokens'
@@ -13,6 +14,7 @@ import { zhCN } from '@xihan-ui/web-components/locale'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp, page, userEvent } from 'vitest/browser'
 import { createDesignerSettingsHost, defineDesignerShell, shortcutSettingsSource, toolbarSettingsSource } from '../../src'
+import { loadDesignerLocale } from '../../src/language'
 import { designerShellZhCN } from '../../src/locale'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -173,6 +175,36 @@ describe('设置对话框', () => {
     const close = dialog.querySelector<HTMLElement>('[data-xh-part="close-trigger"], [data-part="close-trigger"]')!
     expect([dialog.querySelector('[data-xh-part="title"], [data-part="title"]')!.textContent, names.includes('自定义颜色'), close.getAttribute('aria-label')])
       .toEqual(['设置', true, '关闭'])
+  })
+
+  it('设置里选了简体中文：设计器根交出语言配置，搬到浮层根的对话框里外壳文案与 UI 文案都换成中文，页面别处照旧', async () => {
+    class LocaleRoot extends HTMLElement {
+      host: DesignerSettingsHost | undefined
+      get xhConfig(): XhConfig {
+        return this.host?.localeConfig ?? {}
+      }
+    }
+    customElements.define('test-browser-locale-root', LocaleRoot)
+    const designer = document.createElement('test-browser-locale-root') as LocaleRoot
+    root = designer
+    designer.host = createDesignerSettingsHost({ root: designer, locale: loadDesignerLocale })
+    const element = document.createElement('xh-designer-settings')
+    element.sections = [flowSection]
+    designer.append(element)
+    const outside = document.createElement('xh-designer-settings')
+    document.body.append(designer, outside)
+    designer.host.apply({ 'language.locale': 'zh-CN' })
+    await new Promise(resolve => setTimeout(resolve, 50))
+    element.show()
+    await element.updateComplete
+    await settle()
+    const dialog = content()
+    expect(designer.contains(dialog)).toBe(false)
+    const close = dialog.querySelector<HTMLElement>('[data-xh-part="close-trigger"], [data-part="close-trigger"]')!
+    expect([dialog.querySelector('[data-xh-part="title"], [data-part="title"]')!.textContent, close.getAttribute('aria-label')]).toEqual(['设置', '关闭'])
+    await outside.updateComplete
+    expect(outside.querySelector('h2')!.textContent).toBe('Settings')
+    outside.remove()
   })
 
   it('打开时没有 wc.* 诊断，axe 也没有违规', async () => {

@@ -267,6 +267,12 @@ export interface DesignerSettingsTranslations {
   readonly language: string
   /** 语言条目的说明。 */
   readonly languageHint: string
+  /** 「语言」分区里语言那一条的标签。 */
+  readonly languageDisplay: string
+  /** 语言选项：跟随所在页面。 */
+  readonly languageFollow: string
+  /** 语言选项：跟随系统（按浏览器的语言偏好挑）。 */
+  readonly languageSystem: string
   /** 内建「布局」分区的名字。 */
   readonly layout: string
   /** 「布局」分区里面板表的标签。 */

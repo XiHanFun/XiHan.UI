@@ -28,4 +28,4 @@ defineDesignerShell() // 注册全部零件；也可以用 defineDesignerShellEl
 - 坐标只认 `@xihan-ui/designer-kit` 的视口：屏幕 = 世界 × `zoom` + (`x`, `y`)。世界单位由设计器定，`zoom` 就是一个世界单位等于多少屏幕像素；控制柄大小、吸附阈值、标尺厚度等固定尺寸一律按屏幕像素。
 - 事件一律 `CustomEvent`，冒泡并穿过 shadow 边界，名字用短横线、不带前缀。
 - 每个零件都有 `readonly`：只能浏览与选择，不出编辑手势、不派发修改类事件。
-- 文案键是零件的标签名，自带英文缺省；各语言的文案在子入口 `@xihan-ui/designer-shell/locale`，与 UI 的内建语言包一一对应（`jaJP` 对 `designerShellJaJP`），各产品把同一语言的这一份并进自己的语言包。
+- 文案键是零件的标签名，自带英文缺省；各语言的文案在子入口 `@xihan-ui/designer-shell/locale`，与 UI 的内建语言包一一对应（`jaJP` 对 `designerShellJaJP`），各产品把同一语言的这一份并进自己的语言包。设置里选了语言时，子入口 `@xihan-ui/designer-shell/language` 的 `loadDesignerLocale` 按需取这种语言的 UI 与 designer-shell 语言包，设置宿主把它落到设计器根上，只作用于设计器。
