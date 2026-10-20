@@ -3,9 +3,10 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-tour>：设计器的新手引导。库内 xh-tour 包一层：designer-shell 的通用步骤（欢迎、工具栏、物料、画布、属性、
-// 问题、状态栏、设置）加上设计器交进来的各款与扩展的步骤，按 order 排；目标是外框的面板、区、工具栏上的命令或选择器，
+// <xh-designer-tour>：设计器的新手引导。库内 xh-tour 包一层：designer-shell 的通用步骤（欢迎、菜单栏、工具栏、物料、画布、属性、
+// 问题、状态栏、设置）加上设计器交进来的各款与扩展的步骤，按 order 排；目标是外框的面板、区、工具栏上的命令、菜单栏上的菜单或选择器，
 // 目标面板隐藏或不在外框里的那一步跳过，进入一步前让外框把面板亮出来（展开收起的栏、标题条，窄屏时开抽屉）。
+// 设置一步有两个落点：菜单栏显示着时是「文件」菜单的入口，菜单栏关着时是工具栏上的设置钮，说明随之换。
 // 引导限在外框里：遮罩只盖外框，高亮框裁在外框里，页面别处照常可用；同一页只跑一个引导。
 // 收起时派发 tour-end：走完是 complete，跳过或 Esc 是 skip，关闭钮或 stop() 是 close；焦点回到开始时持有它的元素，
 // 那个元素已不在文档里时退回外框画布区里能聚焦的第一个。
@@ -33,6 +34,8 @@ const DEFAULT_TRANSLATIONS: DesignerTourTranslations = {
   progress: (step, count) => `Step ${step} of ${count}`,
   welcomeTitle: 'Welcome',
   welcomeDescription: 'A quick look at the parts of the designer. You can take this tour again from the settings.',
+  menubarTitle: 'Menu bar',
+  menubarDescription: 'Common commands are grouped into menus: File has Save (Ctrl/⌘+S), Open and Settings; Edit has undo and the clipboard; View switches between design and preview and has zoom, panels and appearance; Help has the tour, keyboard shortcuts and About. Press F10 to move into and out of the menu bar.',
   toolbarTitle: 'Toolbar',
   toolbarDescription: 'Frequently used commands. You can choose which buttons to show in the settings.',
   paletteTitle: 'Palette',
@@ -46,7 +49,8 @@ const DEFAULT_TRANSLATIONS: DesignerTourTranslations = {
   statusTitle: 'Status bar',
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
-  settingsDescription: 'Save, settings and help are in the menu bar: change the theme, panel layout and toolbar buttons under File › Settings, and take this tour again from Help. F10 moves focus to the menu bar.',
+  settingsDescription: 'Settings are in the File menu (Ctrl/⌘+,): change the theme, panel layout and toolbar buttons there. To take this tour again, start it from the Help menu.',
+  settingsToolbarDescription: 'With the menu bar turned off, settings and help are back on the toolbar: change the theme, panel layout and toolbar buttons in the settings, and turn the menu bar back on there.',
 }
 
 const TAG = 'xh-designer-tour'
@@ -54,22 +58,28 @@ const SCOPE = 'designer-tour'
 
 type TextKey = { [K in keyof DesignerTourTranslations]: DesignerTourTranslations[K] extends string ? K : never }[keyof DesignerTourTranslations]
 
-/** designer-shell 的通用步骤。 */
+/** designer-shell 的通用步骤；同一 id 写了几份的，取第一份目标此刻能走的。 */
 const BUILTIN_STEPS: readonly { readonly id: string, readonly target?: DesignerTourTarget, readonly order: number, readonly title: TextKey, readonly description: TextKey }[] = [
   { id: 'shell.welcome', order: 0, title: 'welcomeTitle', description: 'welcomeDescription' },
+  { id: 'shell.menubar', target: { region: 'menubar' }, order: 5, title: 'menubarTitle', description: 'menubarDescription' },
   { id: 'shell.toolbar', target: { region: 'toolbar' }, order: 10, title: 'toolbarTitle', description: 'toolbarDescription' },
   { id: 'shell.palette', target: { panel: 'palette' }, order: 20, title: 'paletteTitle', description: 'paletteDescription' },
   { id: 'shell.canvas', target: { region: 'canvas' }, order: 30, title: 'canvasTitle', description: 'canvasDescription' },
   { id: 'shell.properties', target: { panel: 'properties' }, order: 40, title: 'propertiesTitle', description: 'propertiesDescription' },
   { id: 'shell.issues', target: { panel: 'issues' }, order: 50, title: 'issuesTitle', description: 'issuesDescription' },
   { id: 'shell.status', target: { region: 'status' }, order: 60, title: 'statusTitle', description: 'statusDescription' },
-  { id: 'shell.settings', target: { region: 'menubar' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
+  { id: 'shell.settings', target: { menubar: 'file' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
+  { id: 'shell.settings', target: { command: 'settings' }, order: 900, title: 'settingsTitle', description: 'settingsToolbarDescription' },
 ]
 
 /** 每个文档里此刻开着的引导：同一页只跑一个。 */
 const RUNNING = new WeakMap<Document, XhDesignerTourElement>()
 
 const REGION_SELECTOR = '[data-part="region"][data-region]'
+/** 菜单栏上一张菜单的入口，value 是菜单 id。 */
+const MENU_TRIGGER_SELECTOR = '[data-scope="menubar"][data-part="trigger"][value]'
+/** 窄屏时菜单栏收成的那颗「菜单」钮。 */
+const COMPACT_TRIGGER_SELECTOR = '[data-scope="designer-menubar"][data-part="menu-trigger"]'
 
 /** root 下按 selector 找到、attribute 等于 value 的第一个节点；值不拼进选择器，名字里有什么字符都行。 */
 function byAttribute<T extends Element>(root: ParentNode | null | undefined, selector: string, attribute: string, value: string): T | null {
@@ -130,7 +140,10 @@ export class XhDesignerTourElement extends XhReactiveElement {
     return this.#running
   }
 
-  /** 此刻会走的各步：通用步骤（builtin 不为 false 时）与交进来的步骤按 order 排，去掉目标面板隐藏或不在外框里的。 */
+  /**
+   * 此刻会走的各步：通用步骤（builtin 不为 false 时）与交进来的步骤按 order 排，去掉目标面板隐藏或不在外框里的；
+   * 同一 id 剩下几份时留第一份。
+   */
   plannedSteps(): readonly DesignerTourStepView[] {
     const t = this.#translations()
     const builtin: DesignerTourStepView[] = this.builtin === false
@@ -141,6 +154,7 @@ export class XhDesignerTourElement extends XhReactiveElement {
       .sort((a, b) => (a.step.order ?? 0) - (b.step.order ?? 0) || a.index - b.index)
       .map(({ step }) => step)
       .filter(step => this.#available(step.target))
+      .filter((step, index, all) => all.findIndex(other => other.id === step.id) === index)
   }
 
   /**
@@ -355,7 +369,7 @@ export class XhDesignerTourElement extends XhReactiveElement {
       tour!.remeasure?.()
   }
 
-  /** 这一步此刻能不能走：面板与区要在外框里且显示着，命令要有它的按钮。 */
+  /** 这一步此刻能不能走：面板与区要在外框里且显示着，命令要有它的按钮，菜单要在显示着的菜单栏上。 */
   #available(target: DesignerTourTarget | undefined): boolean {
     if (target === undefined)
       return true
@@ -366,14 +380,24 @@ export class XhDesignerTourElement extends XhReactiveElement {
       return frame?.showsPanel(target.region) ?? false
     if ('command' in target)
       return this.#commandButton(target.command) !== null
+    if ('menubar' in target)
+      return (frame?.showsPanel('menubar') ?? false) && this.#menuTrigger(target.menubar) !== null
     return true
+  }
+
+  #menubarRegion(): HTMLElement | null {
+    return byAttribute<HTMLElement>(this.frame, REGION_SELECTOR, 'data-region', 'menubar')
+  }
+
+  #menuTrigger(menu: string): HTMLElement | null {
+    return byAttribute<HTMLElement>(this.#menubarRegion(), MENU_TRIGGER_SELECTOR, 'value', menu)
   }
 
   #commandButton(command: string): HTMLButtonElement | null {
     return byAttribute<HTMLButtonElement>(this.frame ?? this.parentElement, 'xh-toolbar button[value]', 'value', command)
   }
 
-  /** 目标此刻的节点：工具栏上收进「更多」的命令指向「更多」钮。 */
+  /** 目标此刻的节点：工具栏上收进「更多」的命令指向「更多」钮，窄屏时菜单栏上的菜单指向「菜单」钮。 */
   #resolve(target: DesignerTourTarget): HTMLElement | null {
     const frame = this.frame
     if ('panel' in target) {
@@ -387,6 +411,10 @@ export class XhDesignerTourElement extends XhReactiveElement {
       if (button?.hidden)
         return button.closest('xh-toolbar')?.querySelector<HTMLElement>('[data-part="overflow-trigger"], [data-xh-part="overflow-trigger"]') ?? null
       return button
+    }
+    if ('menubar' in target) {
+      const compact = frame?.narrow ? this.#menubarRegion()?.querySelector<HTMLElement>(COMPACT_TRIGGER_SELECTOR) : null
+      return compact ?? this.#menuTrigger(target.menubar)
     }
     return (this.parentElement ?? this.ownerDocument).querySelector<HTMLElement>(target.selector)
   }

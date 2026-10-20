@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `Schritt ${step} von ${count}`,
     welcomeTitle: 'Willkommen',
     welcomeDescription: 'Ein kurzer Rundgang durch den Designer. Sie können ihn jederzeit in den Einstellungen erneut starten.',
+    menubarTitle: 'Menüleiste',
+    menubarDescription: 'Häufige Befehle sind in Menüs gruppiert: Datei enthält Speichern (Ctrl/⌘+S), Öffnen und Einstellungen; Bearbeiten enthält Rückgängig und die Zwischenablage; unter Ansicht wechseln Sie zwischen Entwurf und Vorschau und finden Zoom, Bereiche und Darstellung; Hilfe enthält die Tour, Tastenkürzel und Info. Mit F10 wechseln Sie in die Menüleiste und zurück.',
     toolbarTitle: 'Symbolleiste',
     toolbarDescription: 'Häufig verwendete Befehle. Welche Schaltflächen erscheinen, legen Sie in den Einstellungen fest.',
     paletteTitle: 'Palette',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: 'Statusleiste',
     statusDescription: 'Zeigt die Auswahl und die aktuelle Zoomstufe.',
     settingsTitle: 'Einstellungen',
-    settingsDescription: 'Speichern, Einstellungen und Hilfe finden Sie in der Menüleiste: Design, Bereichslayout und Symbolleiste ändern Sie unter Datei › Einstellungen, diese Tour starten Sie unter Hilfe erneut. F10 springt zur Menüleiste.',
+    settingsDescription: 'Die Einstellungen finden Sie im Menü Datei (Ctrl/⌘+,): Dort ändern Sie Design, Bereichslayout und Symbolleiste. Diese Tour starten Sie im Menü Hilfe erneut.',
+    settingsToolbarDescription: 'Ist die Menüleiste ausgeschaltet, liegen Einstellungen und Hilfe wieder in der Symbolleiste: Design, Bereichslayout und Symbolleiste ändern Sie in den Einstellungen, und dort schalten Sie auch die Menüleiste wieder ein.',
   },
   'xh-designer-commands': {
     toolbar: 'Designer-Aktionen',

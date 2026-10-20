@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
     welcomeTitle: '歡迎',
     welcomeDescription: '花一分鐘認識設計器的幾個區域。之後想再看，可以在設定裡重新開始。',
+    menubarTitle: '選單列',
+    menubarDescription: '常用的功能依選單分好：「檔案」裡有儲存（Ctrl/⌘+S）、開啟與設定，「編輯」裡是復原與剪貼，「檢視」裡切換設計與預覽，還有縮放、面板與外觀，「說明」裡有導覽、快速鍵與關於。按 F10 進出選單列。',
     toolbarTitle: '工具列',
     toolbarDescription: '常用的命令都在這裡；要顯示哪些按鈕，可以在設定裡改。',
     paletteTitle: '物料',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: '狀態列',
     statusDescription: '顯示選取了什麼與縮放比例。',
     settingsTitle: '設定',
-    settingsDescription: '儲存、設定與說明都在選單列裡：佈景主題、面板版面與工具列按鈕在「檔案」→「設定」裡改，「說明」裡能重新開始導覽；按 F10 用鍵盤進入選單列。',
+    settingsDescription: '設定在「檔案」選單裡（Ctrl/⌘+,）：佈景主題、面板版面與工具列按鈕都在那裡改。想再看一次導覽，從「說明」選單重新開始。',
+    settingsToolbarDescription: '選單列關閉時，設定與說明回到工具列上：佈景主題、面板版面與工具列按鈕在設定裡改，選單列也可以在那裡重新開啟。',
   },
   'xh-designer-commands': {
     toolbar: '設計器操作',

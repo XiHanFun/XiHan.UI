@@ -204,6 +204,8 @@ const translations: DesignerShellLocaleTranslations = {
     progress: (step, count) => `${count}단계 중 ${step}단계`,
     welcomeTitle: '환영합니다',
     welcomeDescription: '디자이너의 각 영역을 간단히 소개합니다. 설정에서 언제든 다시 볼 수 있습니다.',
+    menubarTitle: '메뉴 모음',
+    menubarDescription: '자주 쓰는 기능이 메뉴별로 나뉘어 있습니다. [파일]에는 저장(Ctrl/⌘+S), 열기, 설정이, [편집]에는 실행 취소와 클립보드가, [보기]에는 디자인과 미리 보기 전환, 확대/축소, 패널, 모양이, [도움말]에는 둘러보기, 바로 가기 키, 정보가 있습니다. F10으로 메뉴 모음에 들어가고 나옵니다.',
     toolbarTitle: '도구 모음',
     toolbarDescription: '자주 쓰는 명령이 모여 있습니다. 표시할 버튼은 설정에서 바꿀 수 있습니다.',
     paletteTitle: '팔레트',
@@ -217,7 +219,8 @@ const translations: DesignerShellLocaleTranslations = {
     statusTitle: '상태 표시줄',
     statusDescription: '선택한 항목과 현재 확대/축소 비율을 보여 줍니다.',
     settingsTitle: '설정',
-    settingsDescription: '저장, 설정, 도움말은 메뉴 모음에 있습니다. 테마, 패널 레이아웃, 도구 모음 버튼은 [파일] → [설정]에서 바꾸고, 둘러보기는 [도움말]에서 다시 시작할 수 있습니다. F10을 누르면 메뉴 모음으로 이동합니다.',
+    settingsDescription: '설정은 [파일] 메뉴에 있습니다(Ctrl/⌘+,). 테마, 패널 레이아웃, 도구 모음 버튼을 여기서 바꿉니다. 둘러보기는 [도움말] 메뉴에서 다시 시작할 수 있습니다.',
+    settingsToolbarDescription: '메뉴 모음을 끄면 설정과 도움말이 도구 모음으로 돌아옵니다. 테마, 패널 레이아웃, 도구 모음 버튼은 설정에서 바꾸고, 메뉴 모음도 거기서 다시 켤 수 있습니다.',
   },
   'xh-designer-commands': {
     toolbar: '디자이너 작업',

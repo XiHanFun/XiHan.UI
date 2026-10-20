@@ -1122,13 +1122,13 @@ if (autoTour && !tourDoneOf(settings))
 | 字段 | 说明 |
 | --- | --- |
 | `id` | 全局唯一：designer-shell 的写 `shell.<名>`，各款写 `<产品>.<名>`，扩展写扩展 id 加点 |
-| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`menubar`、`toolbar`、`canvas`、`status`）；`{ selector }` 设计器里的任意节点 |
+| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`menubar`、`toolbar`、`canvas`、`status`）；`{ menubar }` 菜单栏上这张菜单的入口（菜单 id，如 `file`，或各款自己的 `insert`、`data`），窄屏菜单栏收成「菜单」钮时是那颗钮，菜单栏上没有这张菜单或菜单栏没显示时那一步跳过；`{ selector }` 设计器里的任意节点 |
 | `title`、`description` | 标题与说明，可以是按上下文现算的函数 |
 | `placement` | 浮层相对目标的首选位置，缺省 `bottom` |
 | `order` | 排序：designer-shell 的通用步骤 0–60 与收尾的 900，各款 100 起，扩展 200 起；同值按登记顺序 |
 | `when` | 返回 `false` 时跳过，如只读模式下的编辑步骤 |
 
-通用步骤：`shell.welcome`（居中，0）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（菜单栏区，900，排在各款与扩展的步骤之后收尾：设置在「文件」菜单里，引导能从「帮助」重新开始，F10 进菜单栏），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮的那一步跳过，所以没有物料面板的报表自然少一步，各款补自己的步骤即可。
+通用步骤：`shell.welcome`（居中，0）、`shell.menubar`（菜单栏区，5：各张菜单里有什么，F10 进出菜单栏）、`shell.toolbar`（工具栏区，10）、`shell.palette`（物料面板，20）、`shell.canvas`（画布区，30）、`shell.properties`（属性面板，40）、`shell.issues`（问题面板，50）、`shell.status`（状态栏，60）、`shell.settings`（900，排在各款与扩展的步骤之后收尾：菜单栏显示着时指向「文件」菜单的入口，说设置在「文件」菜单里、引导能从「帮助」重新开始；菜单栏关着时指向工具栏上的设置钮，说设置与帮助回到了工具栏、菜单栏能在设置里重新打开；两处都没有就跳过），文案在 `xh-designer-tour` 那一桶。目标面板隐藏、区不在外框里或没有内容、命令没有按钮、菜单不在菜单栏上的那一步跳过，所以没有物料面板的报表自然少一步，菜单栏关掉时也没有菜单栏那一步，各款补自己的步骤即可；各款自己的菜单（如打印的「插入」「页面」、报表的「数据」）用 `{ menubar: "<菜单 id>" }` 指到它的入口。
 
 | 函数 | 说明 |
 | --- | --- |
