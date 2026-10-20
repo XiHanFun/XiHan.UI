@@ -47,7 +47,7 @@ export interface DesignerShortcutGroup {
 }
 
 /** DESIGNER_COMMON_KEYS 里的 id：这几种的名字由设置对话框按语言取。 */
-export type DesignerCommonKeyId = 'nudge' | 'nudgeLarge' | 'pan' | 'selectionToolbar' | 'cancel'
+export type DesignerCommonKeyId = 'nudge' | 'nudgeLarge' | 'pan' | 'menubar' | 'selectionToolbar' | 'cancel'
 
 /**
  * 快捷键表「通用」组末尾的一行按键。id 是 DESIGNER_COMMON_KEYS 里的几种时可以不写名字，由设置对话框按语言取；
@@ -72,6 +72,7 @@ export const DESIGNER_COMMON_KEYS = [
   { id: 'nudge', keys: [['ArrowUp'], ['ArrowDown'], ['ArrowLeft'], ['ArrowRight']] },
   { id: 'nudgeLarge', keys: [['Shift', 'ArrowUp'], ['Shift', 'ArrowDown'], ['Shift', 'ArrowLeft'], ['Shift', 'ArrowRight']] },
   { id: 'pan', keys: [['Space']] },
+  { id: 'menubar', keys: [['F10']] },
   { id: 'selectionToolbar', keys: [['Alt', 'F10']] },
   { id: 'cancel', keys: [['Escape']] },
 ] as const satisfies readonly { readonly id: DesignerCommonKeyId, readonly keys: readonly (readonly string[])[] }[]

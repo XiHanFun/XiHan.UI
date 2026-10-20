@@ -14,6 +14,17 @@ export type { DesignerPanelCommandsOptions, DesignerShellCommandsOptions } from 
 export { arrangeCommands, commandEnabled, commandLabel, commandShortLabel, createCommandToolbar, renderCommandMenu, runCommand } from './extensions/commands'
 export type { CommandToolbar, CommandToolbarDisplay, CommandToolbarOptions, CommandToolbarOrientation, DesignerCommandLayout, DesignerCommandTable } from './extensions/commands'
 export { importSources } from './extensions/importers'
+export { arrangeMenubar, collectMenubarMenus, createCommandMenubar, DESIGNER_MENUBAR_MENUS, designerMenubarLayout, designerMenubarMenus } from './extensions/menubar'
+export type {
+  ArrangedMenubarMenu,
+  CommandMenubar,
+  CommandMenubarLabels,
+  CommandMenubarOptions,
+  DesignerMenubarLayout,
+  DesignerMenubarMenu,
+  DesignerMenubarMenusOptions,
+  DesignerMenubarMenuSource,
+} from './extensions/menubar'
 export { createPanelActions, createPanelHost } from './extensions/panels'
 export type { DesignerPanel, DesignerPanelActions, DesignerPanelHost, DesignerPanelHostOptions, DesignerPanelInstance, DesignerShellExtension } from './extensions/panels'
 export { applyToolbarCustomization, mergeToolbarCustomization, toolbarCustomizationOf } from './extensions/toolbar-customization'
@@ -117,6 +128,7 @@ export {
   designerLayoutSettings,
   designerShortcutSettings,
   designerToolbarSettings,
+  menubarVisibleOf,
   PANEL_LAYOUT_CONTROL,
   resolveSettings,
   settingKey,

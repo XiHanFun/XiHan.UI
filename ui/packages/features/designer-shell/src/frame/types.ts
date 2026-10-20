@@ -8,10 +8,10 @@
 import type { IconRecord } from '@xihan-ui/core'
 
 /**
- * 区的位置：最上一条、中间一行的左、中、右、中间一列的下方、最下的状态栏，以及画布浮动件。
+ * 区的位置：最上的菜单栏、下面一条（工具栏）、中间一行的左、中、右、中间一列的下方、最下的状态栏，以及画布浮动件。
  * 左、右、下三个位置上的区是面板，这里写的是它缺省停的栏，用户可以挪。
  */
-export type DesignerFramePosition = 'top' | 'start' | 'center' | 'end' | 'bottom' | 'status' | 'overlay'
+export type DesignerFramePosition = 'menubar' | 'top' | 'start' | 'center' | 'end' | 'bottom' | 'status' | 'overlay'
 
 /** 画布上此刻的工具：select 是点选与框选（缺省），pan 是按住拖动平移画布。 */
 export type DesignerCanvasTool = 'select' | 'pan'

@@ -13,6 +13,7 @@ import type { DesignerPaletteSource } from '../palette/palette-sources'
 import type { DesignerSettingsSection } from '../settings/model'
 import type { DesignerTourStep } from '../tour/tour'
 import type { CommandToolbar, DesignerCommandTable } from './commands'
+import type { DesignerMenubarMenu } from './menubar'
 import { DesignerExtensionError } from '@xihan-ui/designer-kit'
 import { DESIGNER_FRAME_REGIONS } from '../frame/frame-element'
 import { createCommandToolbar } from './commands'
@@ -50,6 +51,8 @@ export interface DesignerShellExtension<Ctx = unknown, Editor = PropertyEditor, 
   readonly paletteSources?: readonly DesignerPaletteSource<Ctx, At>[]
   /** 「关于」页里的几行，如附加包的版本与授权；各款把它们接在自己那几行后面。 */
   readonly about?: readonly { readonly label: string, readonly value: string }[]
+  /** 菜单栏上加的菜单：id 不能与内置的文件、编辑、视图、帮助或别的扩展的重名，见 collectMenubarMenus；命令经 placement 的 menubar:<id> 落进去。 */
+  readonly menubarMenus?: readonly DesignerMenubarMenu<Ctx>[]
 }
 
 /** 管一台外框上扩展登记的面板。 */

@@ -70,6 +70,8 @@ export const DESIGNER_SETTING_KEYS = {
   toolbarDisplay: 'toolbar.display',
   /** 显示顶部工具栏，缺省 true。 */
   toolbarVisible: 'toolbar.visible',
+  /** 显示菜单栏，缺省 true。 */
+  toolbarMenubar: 'toolbar.menubar',
   /** 用户改过的工具栏（DesignerToolbarCustomization）；宿主用 settingsPolicy 的 toolbar.layout 锁定或藏掉这张表。 */
   toolbarLayout: 'toolbar.layout',
   /** 面板布局，值是 DesignerLayout；宿主用 settingsPolicy 的 layout.panels 锁整份、layout.panels.<面板 id> 管一块面板。 */
@@ -190,7 +192,7 @@ export interface DesignerToolbarSettingsOptions {
   readonly layout?: boolean
 }
 
-/** 内建的「工具栏」分区：按钮的显示方式、显示工具栏，以及给了命令表时的「按钮」表。 */
+/** 内建的「工具栏」分区：按钮的显示方式、显示工具栏、显示菜单栏，以及给了命令表时的「按钮」表。 */
 export function designerToolbarSettings(t: DesignerSettingsTranslations, options: DesignerToolbarSettingsOptions = {}): DesignerSettingsSection {
   const items: DesignerSettingItem[] = [
     {
@@ -209,6 +211,7 @@ export function designerToolbarSettings(t: DesignerSettingsTranslations, options
       meta: { description: t.toolbarDisplayHint },
     },
     { path: ['visible'], label: t.toolbarVisible, control: { kind: 'boolean' }, default: true, meta: { description: t.toolbarVisibleHint } },
+    { path: ['menubar'], label: t.toolbarMenubar, control: { kind: 'boolean' }, default: true, meta: { description: t.toolbarMenubarHint } },
   ]
   if (options.layout)
     items.push({ path: ['layout'], label: t.toolbarLayout, control: { kind: TOOLBAR_LAYOUT_CONTROL }, meta: { description: t.toolbarLayoutHint } })
@@ -243,7 +246,7 @@ export function designerHelpSettings(t: DesignerSettingsTranslations, help: Desi
 /** 内建的「快捷键」分区：一张快捷键表，「通用」那一组补上四款都有的按键（DESIGNER_COMMON_KEYS，各款经 commonKeys 换掉的按它）。 */
 export function designerShortcutSettings(t: DesignerSettingsTranslations, source: DesignerShortcutsSource): DesignerSettingsSection {
   const names = { common: t.shortcutsCommon, edit: t.shortcutsEdit, designer: t.shortcutsDesigner, extensions: t.shortcutsExtensions }
-  const keyNames: Readonly<Record<DesignerCommonKeyId, string>> = { nudge: t.keyNudge, nudgeLarge: t.keyNudgeLarge, pan: t.keyPan, selectionToolbar: t.keySelectionToolbar, cancel: t.keyCancel }
+  const keyNames: Readonly<Record<DesignerCommonKeyId, string>> = { nudge: t.keyNudge, nudgeLarge: t.keyNudgeLarge, pan: t.keyPan, menubar: t.keyMenubar, selectionToolbar: t.keySelectionToolbar, cancel: t.keyCancel }
   const keys: readonly DesignerCommonKey[] = source.commonKeys ?? DESIGNER_COMMON_KEYS
   // 不写名字的行只能是内建的几种（类型与 shortcutSettingsSource 都拦着）
   const common = keys.map(key => ({ label: key.label ?? keyNames[key.id as DesignerCommonKeyId], keys: key.keys }))
@@ -280,6 +283,11 @@ export function toolbarDisplayOf(settings: DesignerSettings | undefined): Comman
 /** 设置里的显示工具栏（toolbar.visible），只有写了 false 才不显示。 */
 export function toolbarVisibleOf(settings: DesignerSettings | undefined): boolean {
   return settings?.[DESIGNER_SETTING_KEYS.toolbarVisible] !== false
+}
+
+/** 设置里的显示菜单栏（toolbar.menubar），只有写了 false 才不显示；不显示时外框不登记菜单栏区。 */
+export function menubarVisibleOf(settings: DesignerSettings | undefined): boolean {
+  return settings?.[DESIGNER_SETTING_KEYS.toolbarMenubar] !== false
 }
 
 /** 条目在宿主管控下的状态：所在分区或条目本身被隐藏、锁定。 */

@@ -152,6 +152,8 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbar: 'Toolbar',
   toolbarVisible: 'Show toolbar',
   toolbarVisibleHint: 'Commands stay available from shortcuts and menus.',
+  toolbarMenubar: 'Show menu bar',
+  toolbarMenubarHint: 'Commands stay available from shortcuts and the toolbar; Ctrl+, (⌘, on macOS) opens the settings.',
   toolbarLayout: 'Buttons',
   toolbarLayoutHint: 'Choose which buttons to show; drag to reorder and regroup.',
   toolbarGroups: 'Toolbar groups',
@@ -171,6 +173,7 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   keyNudge: 'Nudge the selection',
   keyNudgeLarge: 'Nudge further',
   keyPan: 'Hold Space to pan the canvas',
+  keyMenubar: 'Move focus to the menu bar and back',
   keySelectionToolbar: 'Focus the selection toolbar',
   keyCancel: 'Cancel the current action',
   about: 'About',
@@ -202,7 +205,7 @@ export const DESIGNER_TOUR_EN_US: DesignerShellLocaleTranslations['xh-designer-t
   statusTitle: 'Status bar',
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
-  settingsDescription: 'Change the theme, panel layout and toolbar buttons here, or take this tour again.',
+  settingsDescription: 'Save, settings and help are in the menu bar: change the theme, panel layout and toolbar buttons under File › Settings, and take this tour again from Help. F10 moves focus to the menu bar.',
 }
 
 export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-designer-commands'] = {
@@ -246,6 +249,18 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   help: 'Help',
   importFields: 'Import fields',
   editJson: 'Edit JSON',
+  save: 'Save',
+  shortcuts: 'Keyboard shortcuts',
+  about: 'About',
+  showToolbar: 'Toolbar',
+  showStatusBar: 'Status bar',
+  showMenubar: 'Menu bar',
+  menubar: 'Designer menu bar',
+  menu: 'Menu',
+  menuFile: 'File',
+  menuEdit: 'Edit',
+  menuView: 'View',
+  menuHelp: 'Help',
 }
 
 export const DESIGNER_FIELD_IMPORT_EN_US: DesignerShellLocaleTranslations['xh-designer-field-import'] = {

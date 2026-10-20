@@ -3,17 +3,22 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// designer-shell 内置的命令：开关外框的面板、显示或隐藏所有面板、还原面板显隐、恢复默认布局、打开设置对话框、
-// 打开各款文档站的帮助页、打开导入字段对话框、打开 JSON 编辑框、开始新手引导，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
-// 各款把它们并进自己的内置扩展，排在工具栏末组。
+// designer-shell 内置的命令：保存、开关外框的面板、显示或隐藏所有面板、还原面板显隐、恢复默认布局、拖动工具、
+// 打开设置对话框（及它的快捷键页、关于页）、打开各款文档站的帮助页、打开导入字段对话框、打开 JSON 编辑框、开始新手引导、
+// 显示或隐藏工具栏、状态栏与菜单栏，以及每块面板一条的开关命令。文案取 xh-designer-commands 那一桶，图标由各款从 @xihan-ui/icons 传入；
+// 各款把它们并进自己的内置扩展，缺省落在菜单栏的各张菜单里，面板与拖动也上工具栏。
 
 import type { IconRecord } from '@xihan-ui/core'
+import type { JsonValue } from '@xihan-ui/core/json'
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import type { XhDesignerFrameElement } from '../frame/frame-element'
+import type { DesignerSettings, DesignerSettingsPolicy } from '../settings/model'
 import type { DesignerCommandsTranslations } from '../translations'
+import { DESIGNER_ABOUT_SETTINGS, DESIGNER_SETTING_KEYS, DESIGNER_SHORTCUT_SETTINGS } from '../settings/model'
 
 /** 内置命令的 id。 */
 export const DESIGNER_SHELL_COMMANDS = {
+  save: 'save',
   panels: 'panels',
   panelsToggleAll: 'panels-toggle-all',
   panelsRestore: 'panels-restore',
@@ -24,6 +29,11 @@ export const DESIGNER_SHELL_COMMANDS = {
   editJson: 'edit-json',
   startTour: 'start-tour',
   panTool: 'pan-tool',
+  shortcuts: 'shortcuts',
+  about: 'about',
+  showToolbar: 'show-toolbar',
+  showStatusBar: 'show-status-bar',
+  showMenubar: 'show-menubar',
 } as const
 
 /** 一块面板的开关命令的 id：panel:<面板 id>。 */
@@ -43,8 +53,13 @@ export interface DesignerShellCommandsOptions<Ctx> {
    * panels 点开一张菜单，逐块面板一项（勾选的显示），分隔线后是另外三条命令。返回 undefined 时这几条命令不可用。
    */
   readonly frame?: (context: Ctx) => FrameForCommands | undefined
-  /** 打开设置对话框；给了才有 settings 命令。 */
-  readonly openSettings?: (context: Ctx) => void
+  /** 保存：给了才有 save 命令（Mod+S），通常派发各款的 save 事件。 */
+  readonly save?: (context: Ctx) => void
+  /**
+   * 打开设置对话框，section 是要翻到的分区 id（不给是上次那页）；给了才有 settings（Mod+,）与翻到快捷键页的 shortcuts、
+   * 翻到关于页的 about 三条命令。
+   */
+  readonly openSettings?: (context: Ctx, section?: string) => void
   /** 帮助页的地址；给了才有 help 命令，在新窗口打开它。返回 undefined 时这条命令不可用。 */
   readonly helpUrl?: (context: Ctx) => string | undefined
   /** 打开导入字段对话框；给了才有 import-fields 命令。 */
@@ -53,23 +68,43 @@ export interface DesignerShellCommandsOptions<Ctx> {
   readonly fieldImportDisabled?: (context: Ctx) => boolean
   /** 打开 JSON 编辑框；给了才有 edit-json 命令（Mod+Shift+J），不上工具栏。只读时也能打开，编辑框里只能看与复制。 */
   readonly openJsonEditor?: (context: Ctx) => void
-  /** 开始新手引导；给了才有 start-tour 命令，不上工具栏。返回 false 表示这次没有能走的步骤。 */
+  /** 开始新手引导；给了才有 start-tour 命令，落在帮助菜单，不上工具栏。返回 false 表示这次没有能走的步骤。 */
   readonly startTour?: (context: Ctx) => unknown
+  /**
+   * 设置的读写；给了才有 show-toolbar、show-status-bar、show-menubar 三条开关命令，改的是 toolbar.visible、general.statusBar
+   * 与 toolbar.menubar。policy 里把某一条（或它所在的分区）藏起或锁定时，那条命令不可用。
+   */
+  readonly settings?: {
+    readonly read: (context: Ctx) => DesignerSettings | undefined
+    readonly change: (context: Ctx, key: string, value: JsonValue) => void
+    readonly policy?: (context: Ctx) => DesignerSettingsPolicy | undefined
+  }
   /** 各命令的图标，键是命令 id。 */
   readonly icons?: Readonly<Partial<Record<keyof typeof DESIGNER_SHELL_COMMANDS, IconRecord>>>
 }
 
 /**
- * 建 designer-shell 的内置命令：给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、layout-reset、
- * pan-tool（H，开关式：切换外框的 canvasTool），
- * 给了 openSettings 有 settings，给了 helpUrl 有 help，给了 openFieldImport 有 import-fields，给了 openJsonEditor 有 edit-json（Mod+Shift+J），
- * 给了 startTour 有 start-tour。panels、settings、help 缺省放在工具栏上，另外三条在 panels 菜单里与快捷键上；import-fields、edit-json
- * 不排位置，各款放进面板头或菜单；
- * start-tour 只经 commandLayout、帮助页与扩展出现。
+ * 建 designer-shell 的内置命令：给了 save 有 save（Mod+S）；给了 frame 有 panels、panels-toggle-all（Mod+\）、panels-restore（Mod+Shift+\）、
+ * layout-reset、pan-tool（H，开关式：切换外框的 canvasTool）；给了 openSettings 有 settings（Mod+,）、shortcuts、about；
+ * 给了 helpUrl 有 help；给了 openFieldImport 有 import-fields；给了 openJsonEditor 有 edit-json（Mod+Shift+J）；
+ * 给了 startTour 有 start-tour；给了 settings 有 show-toolbar、show-status-bar、show-menubar（开关式）。
+ * 落点：save、settings 在文件菜单，edit-json 在编辑菜单，panels、pan-tool 与三条显示开关在视图菜单（panels、pan-tool 也上工具栏），
+ * start-tour、help、shortcuts、about 在帮助菜单；panels-toggle-all、panels-restore、layout-reset 在 panels 菜单里与快捷键上；
+ * import-fields 不排位置，各款放进面板头或菜单。
  */
 export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions<Ctx>): DesignerCommand<Ctx>[] {
   const commands: DesignerCommand<Ctx>[] = []
-  const { frame, openSettings, helpUrl, openFieldImport, openJsonEditor, startTour, icons } = options
+  const { save, frame, openSettings, helpUrl, openFieldImport, openJsonEditor, startTour, settings, icons } = options
+  if (save) {
+    commands.push({
+      id: DESIGNER_SHELL_COMMANDS.save,
+      label: context => options.translations(context).save,
+      ...(icons?.save ? { icon: icons.save } : {}),
+      shortcut: ['Mod', 'S'],
+      placement: ['menubar:file'],
+      run: save,
+    })
+  }
   if (frame) {
     const usable = (context: Ctx): boolean => (frame(context)?.panelEntries().some(entry => !entry.locked) ?? false)
     commands.push(
@@ -77,7 +112,7 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
         id: DESIGNER_SHELL_COMMANDS.panels,
         label: context => options.translations(context).panels,
         ...(icons?.panels ? { icon: icons.panels } : {}),
-        placement: ['toolbar'],
+        placement: ['toolbar', 'menubar:view'],
         enabled: context => (frame(context)?.panelEntries().length ?? 0) > 0,
         menu: context => [
           ...(frame(context)?.panelEntries().map(entry => ({
@@ -122,7 +157,7 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
         label: context => options.translations(context).panTool,
         ...(icons?.panTool ? { icon: icons.panTool } : {}),
         shortcut: ['H'],
-        placement: ['toolbar'],
+        placement: ['toolbar', 'menubar:view'],
         enabled: context => frame(context) !== undefined,
         checked: context => frame(context)?.canvasTool === 'pan',
         run: (context) => {
@@ -134,13 +169,30 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
     )
   }
   if (openSettings) {
-    commands.push({
-      id: DESIGNER_SHELL_COMMANDS.settings,
-      label: context => options.translations(context).settings,
-      ...(icons?.settings ? { icon: icons.settings } : {}),
-      placement: ['toolbar'],
-      run: openSettings,
-    })
+    commands.push(
+      {
+        id: DESIGNER_SHELL_COMMANDS.settings,
+        label: context => options.translations(context).settings,
+        ...(icons?.settings ? { icon: icons.settings } : {}),
+        shortcut: ['Mod', ','],
+        placement: ['menubar:file'],
+        run: context => openSettings(context),
+      },
+      {
+        id: DESIGNER_SHELL_COMMANDS.shortcuts,
+        label: context => options.translations(context).shortcuts,
+        ...(icons?.shortcuts ? { icon: icons.shortcuts } : {}),
+        placement: ['menubar:help'],
+        run: context => openSettings(context, DESIGNER_SHORTCUT_SETTINGS),
+      },
+      {
+        id: DESIGNER_SHELL_COMMANDS.about,
+        label: context => options.translations(context).about,
+        ...(icons?.about ? { icon: icons.about } : {}),
+        placement: ['menubar:help'],
+        run: context => openSettings(context, DESIGNER_ABOUT_SETTINGS),
+      },
+    )
   }
   if (openFieldImport) {
     commands.push({
@@ -157,6 +209,7 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       label: context => options.translations(context).editJson,
       ...(icons?.editJson ? { icon: icons.editJson } : {}),
       shortcut: ['Mod', 'Shift', 'J'],
+      placement: ['menubar:edit'],
       run: openJsonEditor,
     })
   }
@@ -165,7 +218,7 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       id: DESIGNER_SHELL_COMMANDS.help,
       label: context => options.translations(context).help,
       ...(icons?.help ? { icon: icons.help } : {}),
-      placement: ['toolbar'],
+      placement: ['menubar:help'],
       enabled: context => helpUrl(context) !== undefined,
       run: (context) => {
         const url = helpUrl(context)
@@ -179,8 +232,31 @@ export function designerShellCommands<Ctx>(options: DesignerShellCommandsOptions
       id: DESIGNER_SHELL_COMMANDS.startTour,
       label: context => options.translations(context).startTour,
       ...(icons?.startTour ? { icon: icons.startTour } : {}),
+      placement: ['menubar:help'],
       run: context => void startTour(context),
     })
+  }
+  if (settings) {
+    const toggles = [
+      { id: DESIGNER_SHELL_COMMANDS.showToolbar, key: DESIGNER_SETTING_KEYS.toolbarVisible, section: 'toolbar', text: 'showToolbar' },
+      { id: DESIGNER_SHELL_COMMANDS.showStatusBar, key: DESIGNER_SETTING_KEYS.statusBar, section: 'general', text: 'showStatusBar' },
+      { id: DESIGNER_SHELL_COMMANDS.showMenubar, key: DESIGNER_SETTING_KEYS.toolbarMenubar, section: 'toolbar', text: 'showMenubar' },
+    ] as const
+    for (const toggle of toggles) {
+      const shown = (context: Ctx): boolean => settings.read(context)?.[toggle.key] !== false
+      commands.push({
+        id: toggle.id,
+        label: context => options.translations(context)[toggle.text],
+        ...(icons?.[toggle.text] ? { icon: icons[toggle.text] } : {}),
+        placement: ['menubar:view'],
+        enabled: (context) => {
+          const policy = settings.policy?.(context)
+          return (policy?.[toggle.key] ?? policy?.[toggle.section]) === undefined
+        },
+        checked: shown,
+        run: context => settings.change(context, toggle.key, !shown(context)),
+      })
+    }
   }
   return commands
 }

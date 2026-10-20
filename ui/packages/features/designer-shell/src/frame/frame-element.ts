@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-frame>：设计器外框。按命名区布局：最上一条（工具栏），中间一行左、中、右三栏，
-// 中间一列的下方一栏，最下一条状态栏。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
+// <xh-designer-frame>：设计器外框。按命名区布局：最上的菜单栏，下面一条（工具栏），中间一行左、中、右三栏，
+// 中间一列的下方一栏，最下一条状态栏。F10 把焦点交给菜单栏，再按 F10 或 Esc 回到进来前的地方。区名由产品登记，作者内容用 slot="<区名>" 放进对应的区，没写 slot 的放进中间区。
 // 左、右、下三栏里的区是面板：按布局（layout）停在哪一栏、先后、显隐、收成标题条、浮出成小窗，改了就派发 layout-change。
 // 给了标题的面板画成卡片：面板头写标题与副标题，右侧是操作区、帮助、收起、「更多」与关闭；按住面板头可以拖到别的栏或画布上。
 // 画布浮动件（position 为 overlay）按 anchor 放进画布区的角上，只能显示或隐藏。
@@ -132,8 +132,9 @@ export interface DesignerFrameEventMap {
   'canvas-tool-change': CustomEvent<{ tool: DesignerCanvasTool }>
 }
 
-/** 缺省的命名区：工具栏、物料、画布、属性、问题、状态栏。 */
+/** 缺省的命名区：菜单栏、工具栏、物料、画布、属性、问题、状态栏。 */
 export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
+  { name: 'menubar', position: 'menubar' },
   { name: 'toolbar', position: 'top' },
   { name: 'palette', position: 'start', size: 18 },
   { name: 'canvas', position: 'center' },
@@ -142,13 +143,18 @@ export const DESIGNER_FRAME_REGIONS: readonly DesignerFrameRegion[] = [
   { name: 'status', position: 'status' },
 ]
 
-/** 状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
+/** 菜单栏与状态栏的分段：作者内容写 slot="<区名>-<段名>"，只写 slot="<区名>" 的放进第一个缺省段。 */
 const ZONES: Readonly<Partial<Record<DesignerFramePosition, readonly string[]>>> = {
+  menubar: ['start', 'end'],
   status: ['start', 'end'],
 }
 
 /** 只写区名的作者内容放进哪一段。 */
-const DEFAULT_ZONE: Readonly<Partial<Record<DesignerFramePosition, string>>> = { status: 'start' }
+const DEFAULT_ZONE: Readonly<Partial<Record<DesignerFramePosition, string>>> = { menubar: 'start', status: 'start' }
+
+/** 分段的两条：按内容显示，两段都空时收起。 */
+type ZonedPosition = 'menubar' | 'status'
+const ZONED_POSITIONS: readonly ZonedPosition[] = ['menubar', 'status']
 
 /** 画布区上浮动条的落点：作者内容写 slot="<中间区名>-<落点>"，画布浮动件也落在这里。 */
 const OVERLAYS: readonly DesignerFrameOverlayAnchor[] = ['top-start', 'top-end', 'bottom-start', 'bottom-end', 'end']
@@ -239,6 +245,7 @@ type PanelDrop
     | { readonly kind: 'float', readonly rect: DesignerLayoutRect }
 
 interface Parts {
+  readonly menubar: HTMLElement
   readonly top: HTMLElement
   readonly body: HTMLElement
   readonly status: HTMLElement
@@ -283,6 +290,7 @@ interface CardParts {
 
 /** 一轮排版：各位置此刻显示的区。 */
 interface Plan {
+  readonly menubar: readonly DesignerFrameRegion[]
   readonly top: readonly DesignerFrameRegion[]
   readonly center: readonly DesignerFrameRegion[]
   readonly status: readonly DesignerFrameRegion[]
@@ -408,10 +416,30 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   /** 正按着分隔条拖：拖动中的大小等松手再派发。 */
   #resizing = false
   #canvasTool: DesignerCanvasTool = 'select'
+  /** 按 F10 进菜单栏之前持有焦点的元素，出菜单栏时回到它。 */
+  #menubarReturn: HTMLElement | undefined
+  /** 宽窄切换前焦点在菜单栏里：重排后落到此刻看得见的入口上。 */
+  #menubarRefocus = false
 
-  /** 拖动工具开着时，外框里按 Esc（里面的元件没接走）退回点选。 */
+  /**
+   * 外框里的按键（里面的元件没接走的）：F10 进出菜单栏；焦点在菜单栏里时 Esc 回到进来前的地方；
+   * 拖动工具开着时 Esc 退回点选。
+   */
   readonly #onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape' || event.defaultPrevented || this.#canvasTool !== 'pan')
+    if (event.defaultPrevented)
+      return
+    if (event.key === 'F10' && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      if (this.#toggleMenubarFocus())
+        event.preventDefault()
+      return
+    }
+    if (event.key !== 'Escape')
+      return
+    if (this.#leaveMenubar()) {
+      event.preventDefault()
+      return
+    }
+    if (this.#canvasTool !== 'pan')
       return
     this.canvasTool = 'select'
     event.preventDefault()
@@ -423,6 +451,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       return
     this.#narrow = narrow
     this.#drawer = undefined
+    this.#menubarRefocus = this.#inMenubar(this.#activeElement())
     this.requestUpdate()
   }
 
@@ -501,6 +530,55 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
   }
 
+  /** 外框所在文档或影子根里此刻持有焦点的元素。 */
+  #activeElement(): Element | null {
+    return (this.getRootNode() as Document | ShadowRoot).activeElement
+  }
+
+  /** 元素在菜单栏区里。 */
+  #inMenubar(element: Element | null): boolean {
+    if (element === null)
+      return false
+    return this.#regionList().some(region => region.position === 'menubar' && this.#regions.get(region.name)?.element.contains(element) === true)
+  }
+
+  /** 菜单栏里第一个看得见、能用 Tab 走到的元素（菜单栏本身，窄屏时是那颗「菜单」钮）；菜单栏没显示时没有。 */
+  #menubarEntry(): HTMLElement | undefined {
+    for (const region of this.#plan().menubar) {
+      const element = this.#regions.get(region.name)?.element
+      const candidates = element?.querySelectorAll<HTMLElement>('button, [tabindex], a[href], input, select, textarea') ?? []
+      const entry = [...candidates].find(item => item.tabIndex >= 0 && !(item as HTMLButtonElement).disabled && (typeof item.checkVisibility !== 'function' || item.checkVisibility()))
+      if (entry)
+        return entry
+    }
+    return undefined
+  }
+
+  /** F10：焦点不在菜单栏里就交给它的入口、记下原处；已经在菜单栏里就回到原处。菜单栏没显示时什么都不做，返回 false。 */
+  #toggleMenubarFocus(): boolean {
+    const active = this.#activeElement()
+    if (this.#inMenubar(active))
+      return this.#leaveMenubar()
+    const entry = this.#menubarEntry()
+    if (!entry)
+      return false
+    this.#menubarReturn = active instanceof HTMLElement && active !== this.ownerDocument.body ? active : undefined
+    entry.focus()
+    return true
+  }
+
+  /** 焦点在菜单栏里时回到按 F10 进来前的地方；没有可回的地方（Tab 进来的，或原处已经不在了）时返回 false。 */
+  #leaveMenubar(): boolean {
+    const target = this.#menubarReturn
+    if (!this.#inMenubar(this.#activeElement()) || target === undefined)
+      return false
+    this.#menubarReturn = undefined
+    if (!target.isConnected)
+      return false
+    target.focus()
+    return true
+  }
+
   /** 视口窄于断点（--xh-breakpoint-md）时为真：中间一列占满整行，左右两栏收进抽屉。 */
   get narrow(): boolean {
     return this.#narrow
@@ -564,14 +642,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return resolveDesignerLayout(this.#regionList(), this.layout, this.defaultLayout, this.layoutPolicy)
   }
 
-  /** 这个区是否显示：中间区与工具栏总是显示；状态栏看有没有内容；面板与画布浮动件看布局（浮出的也算）。 */
+  /** 这个区是否显示：中间区与工具栏总是显示；菜单栏与状态栏看有没有内容；面板与画布浮动件看布局（浮出的也算）。 */
   showsPanel(name: string): boolean {
     const region = this.#regionList().find(item => item.name === name)
     if (region === undefined)
       return false
     if (region.position === 'center' || region.position === 'top')
       return true
-    if (region.position === 'status')
+    if (region.position === 'menubar' || region.position === 'status')
       return this.#hasContent(name)
     if (this.layoutPolicy?.panels?.[name] === 'hidden')
       return false
@@ -647,6 +725,11 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     for (const { element, triggers } of this.#splitters)
       element.translations = { root: t.layout, resizeTrigger: index => nameOf(triggers[index]) }
     this.toggleAttribute('data-narrow', this.#narrow)
+    if (this.#menubarRefocus) {
+      // 宽窄一换，原来持有焦点的入口可能藏起来了：落到此刻看得见的那个
+      this.#menubarRefocus = false
+      this.#menubarEntry()?.focus()
+    }
     for (const position of ['start', 'end'] as const) {
       const drawer = this.#drawers[position]
       if (!drawer)
@@ -720,7 +803,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return this.#regionList().find(region => region.name === name)
   }
 
-  /** 状态栏的某一段有没有元素。 */
+  /** 菜单栏或状态栏的某一段有没有元素。 */
   #hasContent(name: string): boolean {
     const zones = this.#regions.get(name)?.zones ?? {}
     return Object.values(zones).some(zone => zone.childElementCount > 0)
@@ -730,6 +813,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     if (this.#parts?.top.parentElement === this)
       return this.#parts
     const doc = this.ownerDocument
+    const menubar = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'menubar' })
     const top = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'top' })
     const body = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'body' })
     const status = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'status' })
@@ -752,8 +836,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const floats = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'floats' })
     const menus = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'menus' })
     const parked = createGeneratedElement(doc, 'div', { 'data-scope': SCOPE, 'data-part': 'parked', 'hidden': '' })
-    this.append(top, body, status, probeBox, drop, floats, menus, parked)
-    this.#parts = { top, body, status, probes, drop, dropLine, floats, menus, parked }
+    this.append(menubar, top, body, status, probeBox, drop, floats, menus, parked)
+    this.#parts = { menubar, top, body, status, probes, drop, dropLine, floats, menus, parked }
     return this.#parts
   }
 
@@ -1440,6 +1524,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       docks[dock] = layout.docks[dock].filter(name => shown(name) && (this.#narrow || !Object.hasOwn(layout.floating, name))).map(name => byName.get(name)!)
     const byPosition = (position: DesignerFramePosition): DesignerFrameRegion[] => regions.filter(region => region.position === position)
     return {
+      menubar: byPosition('menubar').filter(region => this.#hasContent(region.name)),
       top: byPosition('top'),
       center: byPosition('center'),
       status: byPosition('status').filter(region => this.#hasContent(region.name)),
@@ -1601,7 +1686,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   #build(parts: Parts, plan: Plan): void {
     this.#splitters = []
-    for (const position of ['top', 'center', 'status'] as const) {
+    for (const position of ['menubar', 'top', 'center', 'status'] as const) {
       for (const region of plan[position])
         this.#regions.get(region.name)!.element.setAttribute('data-position', position)
     }
@@ -1611,17 +1696,19 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     parts.top.replaceChildren(...plan.top.map(region => this.#regions.get(region.name)!.element))
     parts.top.hidden = plan.top.length === 0
-    parts.status.replaceChildren(...plan.status.map(region => this.#regions.get(region.name)!.element))
-    parts.status.hidden = plan.status.length === 0
-    // 不显示的状态栏区仍要在文档里，作者内容搬进它的段里才看得到有没有内容
-    const parked = [...this.#regionList()].filter(region => ZONES[region.position] !== undefined && !plan.status.includes(region))
-    for (const region of parked) {
-      const element = this.#regions.get(region.name)!.element
-      element.hidden = true
-      parts.status.append(element)
+    for (const position of ZONED_POSITIONS) {
+      const strip = parts[position]
+      strip.replaceChildren(...plan[position].map(region => this.#regions.get(region.name)!.element))
+      strip.hidden = plan[position].length === 0
+      // 不显示的分段区仍要在文档里，作者内容搬进它的段里才看得到有没有内容
+      for (const region of this.#regionList().filter(item => item.position === position && !plan[position].includes(item))) {
+        const element = this.#regions.get(region.name)!.element
+        element.hidden = true
+        strip.append(element)
+      }
+      for (const region of plan[position])
+        this.#regions.get(region.name)!.element.hidden = false
     }
-    for (const region of plan.status)
-      this.#regions.get(region.name)!.element.hidden = false
     this.#placeOverlays(parts, plan)
 
     const height = this.#bodyHeight

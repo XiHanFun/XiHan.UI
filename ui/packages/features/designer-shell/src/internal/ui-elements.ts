@@ -25,6 +25,7 @@ import {
   XhIconElement,
   XhKbdElement,
   XhListboxElement,
+  XhMenubarElement,
   XhMenuElement,
   XhNumberFieldElement,
   XhPasswordInputElement,
@@ -160,5 +161,12 @@ export function defineCommandElements(): void {
   defineXhElement('xh-menu', XhMenuElement)
   defineXhElement('xh-context-menu', XhContextMenuElement)
   defineXhElement('xh-tooltip', XhTooltipElement)
+  defineXhElement('xh-icon', XhIconElement)
+}
+
+/** 命令菜单栏用到的元素：菜单栏，窄屏时那颗钮点开的菜单与条目图标。 */
+export function defineMenubarElements(): void {
+  defineXhElement('xh-menubar', XhMenubarElement)
+  defineXhElement('xh-menu', XhMenuElement)
   defineXhElement('xh-icon', XhIconElement)
 }

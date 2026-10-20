@@ -17,6 +17,7 @@ afterEach(() => {
 })
 
 const REGIONS: readonly DesignerFrameRegion[] = [
+  { name: 'menubar', position: 'menubar' },
   { name: 'toolbar', position: 'top' },
   { name: 'palette', position: 'start', title: '物料' },
   { name: 'canvas', position: 'center' },
@@ -91,15 +92,31 @@ describe('<xh-designer-tour>', () => {
     expect(tour.plannedSteps().map(step => step.id)).toEqual(['flow.end'])
   })
 
-  it('工具栏上有设置命令的按钮时才有 shell.settings；按钮收进「更多」时目标是「更多」钮', async () => {
+  it('菜单栏显示着时才有 shell.settings，目标是菜单栏区', async () => {
+    expect((await mount()).tour.plannedSteps().at(-1)!.id).toBe('shell.status')
+    document.body.replaceChildren()
     const { tour } = await mount((_, frame) => {
-      const toolbar = frame.querySelector('[slot="toolbar"]')!
-      toolbar.innerHTML = '<xh-toolbar><div data-xh-part="root"><button value="settings">设置</button><button data-xh-part="overflow-trigger"></button></div></xh-toolbar>'
+      const menubar = document.createElement('div')
+      menubar.slot = 'menubar'
+      menubar.textContent = '文件'
+      frame.append(menubar)
     })
+    await tour.frame!.updateComplete
     expect(tour.plannedSteps().at(-1)!.id).toBe('shell.settings')
     expect(tour.start()).toBe(true)
+    expect(host(tour).steps!.at(-1)!.target!()).toBe(tour.frame!.querySelector('[data-part="region"][data-region="menubar"]'))
+  })
+
+  it('目标是命令的步骤：工具栏上有它的按钮时才走；按钮收进「更多」时目标是「更多」钮', async () => {
+    const { tour } = await mount((element, frame) => {
+      element.steps = [{ id: 'acme.save', target: { command: 'save' }, order: 950, title: '保存', description: '保存模板' }]
+      const toolbar = frame.querySelector('[slot="toolbar"]')!
+      toolbar.innerHTML = '<xh-toolbar><div data-xh-part="root"><button value="save">保存</button><button data-xh-part="overflow-trigger"></button></div></xh-toolbar>'
+    })
+    expect(tour.plannedSteps().at(-1)!.id).toBe('acme.save')
+    expect(tour.start()).toBe(true)
     const steps = host(tour).steps!
-    const button = tour.frame!.querySelector<HTMLButtonElement>('button[value="settings"]')!
+    const button = tour.frame!.querySelector<HTMLButtonElement>('button[value="save"]')!
     expect(steps.at(-1)!.target!()).toBe(button)
     button.hidden = true
     expect(steps.at(-1)!.target!()?.matches('[data-xh-part="overflow-trigger"], [data-part="overflow-trigger"]')).toBe(true)
@@ -168,7 +185,7 @@ describe('内置命令 start-tour', () => {
     const startTour = vi.fn()
     const commands = designerShellCommands({ translations: () => DESIGNER_COMMANDS_EN_US, startTour })
     const command = commands.find(item => item.id === 'start-tour')!
-    expect([typeof command.label === 'function' ? command.label({}) : command.label, command.placement]).toEqual([DESIGNER_COMMANDS_EN_US.startTour, undefined])
+    expect([typeof command.label === 'function' ? command.label({}) : command.label, command.placement]).toEqual([DESIGNER_COMMANDS_EN_US.startTour, ['menubar:help']])
     command.run!({})
     expect(startTour).toHaveBeenCalledTimes(1)
     expect(designerShellCommands({ translations: () => DESIGNER_COMMANDS_EN_US }).some(item => item.id === 'start-tour')).toBe(false)

@@ -1824,6 +1824,35 @@
     block-size: var(--xh-designer-frame-bottom-min);
   }
 
+  /* 菜单栏：整宽一条，在工具栏上面；区里按段排开，菜单栏本身在行首一段，宿主的内容在行尾一段，放不下时行尾一段先收窄 */
+  xh-designer-frame > [data-scope='designer-frame'][data-part='menubar'] {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] {
+    display: flex;
+    flex-direction: row;
+    gap: var(--xh-space-3);
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--xh-space-1) var(--xh-designer-frame-panel-px);
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] > [data-scope='designer-frame'][data-part='zone'][data-zone='start'] {
+    flex: none;
+  }
+
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='menubar'] > [data-scope='designer-frame'][data-part='zone'][data-zone='end'] {
+    flex: 1 1 auto;
+    overflow: hidden;
+    color: var(--xh-fg-muted);
+    font-size: var(--xh-font-size-sm);
+    white-space: nowrap;
+  }
+
   /* 状态栏：整宽一条，区里按段排开 */
   xh-designer-frame > [data-scope='designer-frame'][data-part='status'] {
     display: flex;
@@ -2213,6 +2242,56 @@
   }
 
   /* 命令工具栏的外壳：委托提示包着那条工具栏，布局上不占盒子，工具栏直接排进调用方的容器 */
+  /* 命令菜单栏：宽屏是一条菜单栏，窄屏（外框写着 data-narrow）收成一颗「菜单」钮 */
+  [data-scope='designer-menubar']:is([data-part='root'], [data-part='bar'], [data-part='compact']) {
+    display: flex;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  [data-scope='designer-menubar'][data-part='compact'],
+  xh-designer-frame[data-narrow] [data-scope='designer-menubar'][data-part='bar'] {
+    display: none;
+  }
+
+  xh-designer-frame[data-narrow] [data-scope='designer-menubar'][data-part='compact'] {
+    display: flex;
+  }
+
+  /* 「菜单」钮：静息透明，悬停与按下换淡底，展开时停在按下的面上 */
+  [data-scope='designer-menubar'][data-part='menu-trigger'] {
+    display: inline-flex;
+    flex: none;
+    gap: var(--xh-space-1);
+    align-items: center;
+    block-size: var(--xh-control-h-sm);
+    margin: 0;
+    border: 0;
+    border-radius: var(--xh-shape-control);
+    background: transparent;
+    padding-inline: var(--xh-space-2);
+    color: var(--xh-fg-default);
+    font: inherit;
+    font-size: var(--xh-font-size-sm);
+    cursor: pointer;
+    transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  }
+
+  [data-scope='designer-menubar'][data-part='menu-trigger']:hover {
+    background: var(--xh-bg-subtle);
+  }
+
+  [data-scope='designer-menubar'][data-part='menu-trigger']:is(:active, [aria-expanded='true']) {
+    background: var(--xh-bg-subtle-hover);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  [data-scope='designer-menubar'][data-part='menu-trigger']:focus-visible {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+  }
+
   xh-tooltip[data-scope='designer-commands'] {
     display: contents;
   }
