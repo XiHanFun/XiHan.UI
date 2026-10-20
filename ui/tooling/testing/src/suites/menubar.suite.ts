@@ -1060,5 +1060,21 @@ export const menubarSuite: ConformanceSuite = {
         nestedChoiceState({ outline: 'false', history: 'true', comfortable: 'true', compact: 'false' }),
       ],
     },
+    {
+      name: '作者不写结构：条目写 keyshortcuts 即落 aria-keyshortcuts，读屏念得出快捷键；快捷键提示照旧只是看的，换数据跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: [{ value: 'file', label: '文件', items: [{ value: 'save', label: '保存', shortcut: 'Ctrl+S', keyshortcuts: 'Control+S' }, { value: 'close', label: '关闭' }] }] },
+      initial: {
+        parts: {
+          'item[0]': { 'aria-keyshortcuts': 'Control+S' },
+          'item[1]': { 'aria-keyshortcuts': null },
+          'item-shortcut': { 'aria-hidden': 'true' },
+        },
+      },
+      steps: [
+        { kind: 'setProps', props: { collection: [{ value: 'file', label: '文件', items: [{ value: 'save', label: '保存', shortcut: 'Ctrl+S' }, { value: 'close', label: '关闭', keyshortcuts: 'Control+W' }] }] }, expect: { parts: { 'item[0]': { 'aria-keyshortcuts': null }, 'item[1]': { 'aria-keyshortcuts': 'Control+W' } } } },
+      ],
+    },
   ],
 }

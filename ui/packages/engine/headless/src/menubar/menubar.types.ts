@@ -79,6 +79,11 @@ export interface MenubarNode {
    * 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。
    */
   shortcut?: string
+  /**
+   * 条目的 aria-keyshortcuts：读屏念的快捷键，写法照 ARIA（修饰键在前，如 `Control+S`、`Meta+Shift+Z`，几组用空格隔开），
+   * 未提供时不写。与 shortcut 各管各：shortcut 是看得见的提示、读屏不念，这一项只给读屏，两处说的应是同一组键。
+   */
+  keyshortcuts?: string
   /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
   /**
@@ -124,6 +129,8 @@ export interface MenubarNodeMeta {
   description: string | null
   /** 快捷键提示；未提供时为 null。 */
   shortcut: string | null
+  /** 条目的 aria-keyshortcuts；未提供时为 null。 */
+  keyshortcuts: string | null
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。顶层入口恒为 null 的读法见 MenubarNode。 */
   tone: Tone | null

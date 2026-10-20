@@ -79,6 +79,7 @@ export function connectContextMenu<T extends PropTypes>(
       icon: node.icon ?? null,
       description: node.description ?? null,
       shortcut: node.shortcut ?? null,
+      keyshortcuts: node.keyshortcuts ?? null,
       group: node.group ?? null,
       groupLabel: node.groupLabel ?? null,
       separatorBefore: !!node.separatorBefore,
@@ -101,6 +102,10 @@ export function connectContextMenu<T extends PropTypes>(
    */
   const itemTone = (item: ContextMenuItemProps): string | undefined =>
     metaOf.get(item.value)?.tone ?? undefined
+
+  /** 条目在数据里写的 aria-keyshortcuts；手写部件时作者直接写在节点上，这里不给。 */
+  const itemKeyshortcuts = (item: ContextMenuItemProps): string | undefined =>
+    metaOf.get(item.value)?.keyshortcuts ?? undefined
 
   // 条目的按压通道：真源是机器 context 里「正被按住的那条」，每条条目各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -200,6 +205,7 @@ export function connectContextMenu<T extends PropTypes>(
       'data-xh-collection-size': prop('size') ?? 'md',
       'data-xh-collection-context': 'overlay',
       'data-tone': itemTone(item),
+      'aria-keyshortcuts': itemKeyshortcuts(item),
       [ITEM_VALUE_ATTR]: item.value,
       'role': kind === 'checkbox' ? 'menuitemcheckbox' : kind === 'radio' ? 'menuitemradio' : 'menuitem',
       'aria-checked': kind === 'item' ? undefined : checked ? 'true' : 'false',

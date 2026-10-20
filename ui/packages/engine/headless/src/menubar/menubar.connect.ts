@@ -75,6 +75,7 @@ export function connectMenubar<T extends PropTypes>(
       icon: node.icon ?? null,
       description: node.description ?? null,
       shortcut: node.shortcut ?? null,
+      keyshortcuts: node.keyshortcuts ?? null,
       disabled: !!node.disabled,
       tone: node.tone ?? null,
       group: node.group ?? null,
@@ -112,6 +113,10 @@ export function connectMenubar<T extends PropTypes>(
    */
   const itemTone = (item: MenubarItemProps): string | undefined =>
     itemMetaOf.get(item.value)?.tone ?? undefined
+
+  /** 条目在数据里写的 aria-keyshortcuts；手写部件时作者直接写在节点上，这里不给。 */
+  const itemKeyshortcuts = (item: MenubarItemProps): string | undefined =>
+    itemMetaOf.get(item.value)?.keyshortcuts ?? undefined
 
   // 按压通道：真源是机器 context 里「正被按住的那颗」（trigger / item 按 value 记），每颗各自合成一份跟踪器；
   // Space / Enter 与触屏按住投影 data-pressed，指针按住由 :active 表出，家族配方两者同一档。
@@ -283,6 +288,7 @@ export function connectMenubar<T extends PropTypes>(
       'data-xh-collection-size': prop('size') ?? 'md',
       'data-xh-collection-context': 'overlay',
       'data-tone': itemTone(item),
+      'aria-keyshortcuts': itemKeyshortcuts(item),
       [ITEM_VALUE_ATTR]: item.value,
       'role': kind === 'checkbox' ? 'menuitemcheckbox' : kind === 'radio' ? 'menuitemradio' : 'menuitem',
       'aria-checked': kind === 'item' ? undefined : checked ? 'true' : 'false',
