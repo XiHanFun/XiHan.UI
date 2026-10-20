@@ -5,7 +5,6 @@ import {
   XhMenubarGroup,
   XhMenubarGroupLabel,
   XhMenubarItem,
-  XhMenubarItemIndicator,
   XhMenubarItemText,
   XhMenubarPositioner,
   XhMenubarRoot,
@@ -22,7 +21,6 @@ export default function Demo(): ReactNode {
           <XhMenubarGroup value="theme">
             <XhMenubarGroupLabel>主题</XhMenubarGroupLabel>
             <XhMenubarItem value="light">
-              <XhMenubarItemIndicator />
               <XhMenubarItemText>浅色</XhMenubarItemText>
             </XhMenubarItem>
             <XhMenubarItem value="dark"><XhMenubarItemText>深色</XhMenubarItemText></XhMenubarItem>

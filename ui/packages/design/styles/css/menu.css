@@ -215,7 +215,7 @@
     display: none;
   }
 
-  /* 标记位（前导标记 / 勾选与单选的对号，对号排到行尾，见下文）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
+  /* 对号（只在勾选与单选条目上，排到行尾，见下文）：定宽占位，切换内容不引起行宽抖动。盒是指示符：按指示符档取尺，
      与 Cascader / Select 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
      按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      作者塞进标记位的 XhIcon 与盒同尺；条目上那支只管作者直接放进条目里的图标 */
@@ -239,9 +239,9 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 勾选与单选条目的对号排到行尾，与子菜单箭头同一列；快捷键与行尾那一格（item-suffix）在它之前，DOM 顺序不动。
-     行首只留前导标记与图标，勾选条目的图标因此与普通条目左缘对齐；没勾时对号只是看不见，占位不塌 */
-  [data-scope='menu'][data-part='item-indicator'][data-xh-menu-choice-indicator] {
+  /* 对号排在行尾，与子菜单箭头同一列；快捷键与行尾那一格（item-suffix）在它之前。标准结构里它本来就是最后一个部件，
+     手写部件时写在哪都排到这里。行首只有 item-icon，勾选条目的图标因此与普通条目左缘对齐；没勾时对号只是看不见，占位不塌 */
+  [data-scope='menu'][data-part='item-indicator'] {
     order: 1;
     margin-inline-start: auto;
   }

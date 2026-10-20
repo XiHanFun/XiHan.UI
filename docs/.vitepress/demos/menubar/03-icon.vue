@@ -5,7 +5,7 @@ import {
   XhIcon,
   XhMenubarContent,
   XhMenubarItem,
-  XhMenubarItemIndicator,
+  XhMenubarItemIcon,
   XhMenubarItemShortcut,
   XhMenubarItemText,
   XhMenubarPositioner,
@@ -21,10 +21,10 @@ import {
     <XhMenubarTrigger value="edit"><XhIcon :icon="PencilIcon" size="sm" />编辑</XhMenubarTrigger>
     <XhMenubarPositioner value="file">
       <XhMenubarContent>
-        <XhMenubarItem value="new"><XhMenubarItemIndicator><XhIcon :icon="PlusIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>新建</XhMenubarItemText><XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut></XhMenubarItem>
-        <XhMenubarItem value="open"><XhMenubarItemIndicator><XhIcon :icon="FolderIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>打开</XhMenubarItemText><XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="new"><XhMenubarItemIcon><XhIcon :icon="PlusIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>新建</XhMenubarItemText><XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="open"><XhMenubarItemIcon><XhIcon :icon="FolderIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>打开</XhMenubarItemText><XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut></XhMenubarItem>
         <XhMenubarSeparator />
-        <XhMenubarItem value="save"><XhMenubarItemIndicator><XhIcon :icon="SaveIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>保存</XhMenubarItemText><XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="save"><XhMenubarItemIcon><XhIcon :icon="SaveIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>保存</XhMenubarItemText><XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut></XhMenubarItem>
       </XhMenubarContent>
     </XhMenubarPositioner>
     <XhMenubarPositioner value="edit">

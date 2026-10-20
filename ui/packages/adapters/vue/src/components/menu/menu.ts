@@ -342,7 +342,7 @@ export const XhMenuItemText = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 条目中的标记位（勾选、图标），纯装饰 */
+/** 勾选与单选条目的对号，排在条目最后，纯装饰；行首的图标写在 XhMenuItemIcon 里 */
 export const XhMenuItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemIndicator',
   setup(_, { slots }) {

@@ -18105,7 +18105,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；aria-hidden",
+              "description": "勾选与单选条目的对号，排在条目最后；aria-hidden",
               "name": "item-indicator"
             },
             {
@@ -18113,7 +18113,7 @@
               "name": "item-description"
             },
             {
-              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon，slot=\"item-prefix:<值>\" 的内容也落这里",
               "name": "item-icon"
             },
             {
@@ -45421,7 +45421,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目中的标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；对读屏隐藏",
+              "description": "勾选与单选条目的对号，排在条目最后；aria-hidden",
               "name": "item-indicator"
             },
             {
@@ -45429,7 +45429,7 @@
               "name": "item-description"
             },
             {
-              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon，slot=\"item-prefix:<值>\" 的内容也落这里",
               "name": "item-icon"
             },
             {
@@ -46426,7 +46426,7 @@
               "name": "item-text"
             },
             {
-              "description": "条目标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；aria-hidden",
+              "description": "勾选与单选条目的对号，排在条目最后；aria-hidden",
               "name": "item-indicator"
             },
             {
@@ -46434,7 +46434,7 @@
               "name": "item-description"
             },
             {
-              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon",
+              "description": "条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon，slot=\"item-prefix:<值>\" 的内容也落这里",
               "name": "item-icon"
             },
             {

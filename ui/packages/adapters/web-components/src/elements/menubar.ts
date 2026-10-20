@@ -66,9 +66,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart content - role=menu 容器，须自带 value 与同项 trigger 配对；收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性；禁用写 aria-disabled="true"
  * @csspart item-text - 条目文本（连打检索取自它），对读屏透明
- * @csspart item-indicator - 条目标记位：勾选与单选条目的对号排在条目最后，普通条目的标记排在行首；aria-hidden
+ * @csspart item-indicator - 勾选与单选条目的对号，排在条目最后；aria-hidden
  * @csspart item-description - 条目副文本，排在文字下一行
- * @csspart item-icon - 条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon
+ * @csspart item-icon - 条目文字之前的图标格（aria-hidden，读屏从条目文字取意）；按数据铺时里面是一枚 xh-icon，slot="item-prefix:<值>" 的内容也落这里
  * @csspart item-shortcut - 条目中的快捷键提示（aria-hidden，读屏从条目文字取意）
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标、次级图标）
  * @csspart separator - 分隔线（role=separator，不进入方向键导航）

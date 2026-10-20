@@ -66,8 +66,6 @@ export interface MenuNode {
    * 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。
    */
   tone?: Tone
-  /** 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 */
-  indicator?: string
   /**
    * 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。
    * 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。
@@ -117,8 +115,6 @@ export interface MenuNodeMeta {
   disabled: boolean
   /** 该条命令自身的语气；未提供时为 null。 */
   tone: Tone | null
-  /** 标记位文字；未提供时为 null。 */
-  indicator: string | null
   /** 图标；未提供时为 null。 */
   icon: IconRecord | null
   /** 副文本；未提供时为 null。 */
@@ -351,7 +347,7 @@ export interface MenuStructureOptions {
   /** 根菜单锚在外部元素上（写了 anchor）：不铺触发按钮。 */
   anchored?: boolean
   /**
-   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（标记位：普通条目在行首，勾选与单选条目是对号、排在最后）、
+   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首那一格 item-icon，压过 icon）、
    * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。
    */
   slotted?: StructureSlotted

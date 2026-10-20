@@ -38,3 +38,19 @@ export function choicePartOrder(scope: string, expected: Readonly<Record<string,
     },
   }
 }
+
+const LINE = { name: 'line', viewBox: '0 0 24 24', nodes: [{ tag: 'path', attrs: { d: 'M4 12h16' } }] } as const
+
+/** 行首内容只归 item-icon：普通条目带图标、还写着旧的 indicator 文字，勾选条目带图标，另一条什么都不带。 */
+export const LEADING_ITEMS = [
+  { value: 'open', label: '打开', icon: LINE, indicator: '✓', shortcut: 'Ctrl+O' },
+  { value: 'bold', label: '粗体', kind: 'checkbox', icon: LINE },
+  { value: 'plain', label: '纯文本' },
+] as const
+
+/** 上面那组条目的部件次序：数据里的 indicator 不再铺标记位，对号只在勾选条目上、排在最后。 */
+export const LEADING_EXPECTED: Readonly<Record<string, readonly string[]>> = {
+  open: ['item-icon', 'item-text', 'item-shortcut'],
+  bold: ['item-icon', 'item-text', 'item-indicator'],
+  plain: ['item-text'],
+}

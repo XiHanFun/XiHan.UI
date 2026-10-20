@@ -239,7 +239,7 @@ describe('条目高亮标记', () => {
     expect((h.api().getItemProps({ value: 'copy' }) as Dict)['aria-selected']).toBeUndefined()
     expect((h.api().getItemTextProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('text')
     // 标记位是常显的前导图标槽，不是选中对号
-    expect((h.api().getItemIndicatorProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('prefix')
+    expect((h.api().getItemIndicatorProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('indicator')
     expect((h.api().getItemDescriptionProps({ value: 'copy' }) as Dict)['data-xh-collection-slot']).toBe('description')
     expect((h.api().getSeparatorProps() as Dict)['data-xh-collection-separator']).toBe('')
 
@@ -263,16 +263,16 @@ describe('条目高亮标记', () => {
     expect((h.api().getItemProps({ value: 'copy' }) as Dict)['data-tone']).toBeUndefined()
   })
 
-  it('标记位、说明与快捷键原样进元信息，未写时为 null', () => {
+  it('说明与快捷键原样进元信息，未写时为 null', () => {
     const h = mount({
       collection: [
-        { value: 'copy', label: '复制', indicator: '✓', description: '连同格式', shortcut: '⌘ C' },
+        { value: 'copy', label: '复制', description: '连同格式', shortcut: '⌘ C' },
         { value: 'paste', label: '粘贴' },
       ],
     })
-    expect(h.api().collection.map(node => [node.indicator, node.description, node.shortcut])).toEqual([
-      ['✓', '连同格式', '⌘ C'],
-      [null, null, null],
+    expect(h.api().collection.map(node => [node.description, node.shortcut])).toEqual([
+      ['连同格式', '⌘ C'],
+      [null, null],
     ])
   })
 

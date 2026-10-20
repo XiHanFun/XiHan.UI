@@ -1,6 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
-import { CHOICE_ORDER_ITEMS, choicePartOrder } from './shared/choice-order'
+import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS } from './shared/choice-order'
 import { clickExternalAnchor, externalAnchorAria, focusReturnsToExternalAnchor, mountExternalAnchor, removeExternalAnchor, withoutTrigger } from './shared/external-anchor'
 import { focusByValue, nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -644,6 +644,13 @@ export const menuSuite: ConformanceSuite = {
       steps: [
         { kind: 'setProps', props: { collection: [{ value: 'save', label: '保存' }], label: '文件', fitAvailableHeight: false }, expect: { parts: { content: { 'data-fit-available-height': null } } } },
       ],
+    },
+    {
+      name: '作者不写结构：行首内容只在 item-icon，数据里的 indicator 不再铺标记位；对号只在勾选与单选条目上、排在最后',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: LEADING_ITEMS.map(node => ({ ...node })), label: '视图' },
+      steps: [choicePartOrder('menu', LEADING_EXPECTED)],
     },
   ],
 }

@@ -63,7 +63,7 @@ export interface ContextMenuItemSelectDetails {
   value: string
 }
 
-/** 条目数据。提供 collection 时，显示文本、禁用、语气、标记位与分组以它为准。 */
+/** 条目数据。提供 collection 时，显示文本、禁用、语气、图标与分组以它为准。 */
 export interface ContextMenuNode {
   value: string
   kind?: MenuChoiceKind
@@ -77,8 +77,6 @@ export interface ContextMenuNode {
    * 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。
    */
   tone?: Tone
-  /** 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 */
-  indicator?: string
   /**
    * 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。
    * 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。
@@ -128,8 +126,6 @@ export interface ContextMenuNodeMeta {
   disabled: boolean
   /** 该条命令自身的语气；未提供时为 null。 */
   tone: Tone | null
-  /** 标记位文字；未提供时为 null。 */
-  indicator: string | null
   /** 图标；未提供时为 null。 */
   icon: IconRecord | null
   /** 副文本；未提供时为 null。 */
@@ -181,7 +177,7 @@ export interface ContextMenuTranslations {
 export interface ContextMenuSchema extends MachineSchema {
   props: {
     /**
-     * 条目数据，显示文本、禁用、标记位与分组的事实源。提供后条目部件只需声明 value。
+     * 条目数据，显示文本、禁用、图标与分组的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用全部写在条目部件上的方式。
      */
     collection?: ContextMenuNode[]

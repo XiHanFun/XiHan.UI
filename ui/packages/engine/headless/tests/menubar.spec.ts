@@ -433,7 +433,7 @@ describe('menubar 初态与 ARIA', () => {
     expect((api.getItemProps(decl) as Record<string, unknown>)['aria-selected']).toBeUndefined()
     expect((api.getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
     // 标记位是常显的前导图标槽，不是选中对号
-    expect((api.getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('prefix')
+    expect((api.getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('indicator')
     expect((api.getItemDescriptionProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('description')
     expect((api.getSeparatorProps() as Record<string, unknown>)['data-xh-collection-separator']).toBe('')
     expect((mount().api().getItemProps(decl) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')

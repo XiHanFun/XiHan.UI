@@ -64,7 +64,7 @@
 
 - 菜单默认贴近指针位置。
 - 不写结构时照标准结构铺：触发区（内容归作者），定位层里的条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里触发区的内容与条目文字可用宿主直接子节点 `slot="trigger"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
-- 支持分组、分隔线、标记位和子菜单。数据驱动时节点写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
+- 支持分组、分隔线、勾选与单选条目和子菜单。数据驱动时节点写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 条目可逐条声明语气，删除一类命令自带该族字色与高亮底。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
@@ -83,7 +83,7 @@
 - 右键菜单只作为快捷入口，不替代页面上的主要操作。
 - 条目较多时按功能分组。
 - 仅为有意义的命令添加图标或快捷键提示。
-- 持久设置使用选择型条目，不把勾选状态塞进装饰性的标记位文字。
+- 持久设置使用勾选或单选条目，对号由库画在行尾，不在普通条目里另画装饰性的勾。
 
 ### 反模式
 
@@ -106,7 +106,7 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用全部写在条目部件上的方式。 |
+| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、图标与分组的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用全部写在条目部件上的方式。 |
 | `checkboxValue` | `string[]` |  |  |
 | `defaultCheckboxValue` | `string[]` |  |  |
 | `radioValue` | `MenuRadioValue` |  |  |
@@ -139,7 +139,6 @@
 | `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不改字重与缩进，也不表达选中或校验；禁用压过它。 红字不是唯一通道，破坏性命令仍要配图标。整张菜单的 tone 不下发给条目。 |
-| `indicator` | `string` |  | 标记位文字（勾选符号等装饰）；未提供时本条不铺 item-indicator。 |
 | `icon` | `IconRecord` |  | 图标，写入 item-icon 部件，排在条目文字之前；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
@@ -364,7 +363,7 @@
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-collection-slot` | 'indicator' \| 'prefix' |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |

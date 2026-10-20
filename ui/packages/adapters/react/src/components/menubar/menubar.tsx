@@ -467,7 +467,7 @@ export function XhMenubarItemText({ children, ...rest }: XhMenubarItemTextProps)
 }
 
 export interface XhMenubarItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 条目中的标记位（勾选、图标），纯装饰。 */
+/** 勾选与单选条目的对号，排在条目最后，纯装饰；行首的图标写在 XhMenubarItemIcon 里。 */
 export function XhMenubarItemIndicator({ children, ...rest }: XhMenubarItemIndicatorProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()

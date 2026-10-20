@@ -136,7 +136,7 @@ describe('menu 条目接入 Collection Item', () => {
     expect(getComputedStyle(more).borderInlineStartWidth).toBe('0px')
 
     const indicator = copy.querySelector<HTMLElement>('[data-part="item-indicator"]')!
-    expect(indicator.getAttribute('data-xh-collection-slot')).toBe('prefix')
+    expect(indicator.getAttribute('data-xh-collection-slot')).toBe('indicator')
     expect(getComputedStyle(indicator).visibility).toBe('visible')
     // 标记位是指示符：与指示符档同尺，不随家族按档下发的 --xh-icon-size（20px）；字形尺寸的契约由 menu-glyph-size.spec 管
     expect(getComputedStyle(indicator).width).toBe('16px')

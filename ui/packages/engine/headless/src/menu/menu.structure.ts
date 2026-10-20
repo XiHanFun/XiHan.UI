@@ -40,8 +40,8 @@ type MenuStructureNode = StructureNode<(typeof MENU_STRUCTURE_PARTS)[number]>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
-/** 按数据铺条目要读的元信息：菜单栏的条目没有标记位文字。 */
-export type MenuNodesStructureMeta = Omit<MenuNodeMeta, 'indicator'> & { readonly indicator?: string | null }
+/** 按数据铺条目要读的元信息：菜单、右键菜单与菜单栏的条目是同一份字段。 */
+export type MenuNodesStructureMeta = MenuNodeMeta
 
 /** 按数据铺条目时的选项。 */
 export interface MenuNodesStructureOptions {
@@ -70,16 +70,10 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
   if (itemSlotted && options.itemSlot !== 'item-text')
     return { ...base, slot: { name: 'item', key: meta.value }, data: meta }
   const children: MenuStructureNode[] = []
-  const indicator: MenuStructureNode | null = slotted('item-prefix', meta.value)
-    ? { key: 'indicator', tag: 'span', part: 'item-indicator', slot: { name: 'item-prefix', key: meta.value }, data: meta }
-    : meta.indicator != null
-      ? { key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator }
-      : meta.kind !== 'item' ? { key: 'indicator', tag: 'span', part: 'item-indicator' } : null
-  // 勾选与单选条目的标记位是对号，排在最后；普通条目的标记位是行首那一格
-  const trailing = meta.kind !== 'item'
-  if (indicator && !trailing)
-    children.push(indicator)
-  if (meta.icon != null)
+  // 行首那一格只有 item-icon：item-prefix 插槽压过数据里的 icon
+  if (slotted('item-prefix', meta.value))
+    children.push({ key: 'icon', tag: 'span', part: 'item-icon', slot: { name: 'item-prefix', key: meta.value }, data: meta })
+  else if (meta.icon != null)
     children.push({ key: 'icon', tag: 'span', part: 'item-icon', children: [structureInstance('glyph', 'icon', { icon: meta.icon })] })
   children.push(itemSlotted
     ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: meta.value }, data: meta }
@@ -90,8 +84,9 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
     children.push({ key: 'shortcut', tag: 'span', part: 'item-shortcut', text: meta.shortcut })
   if (slotted('item-suffix', meta.value))
     children.push({ key: 'suffix', tag: 'span', part: 'item-suffix', slot: { name: 'item-suffix', key: meta.value }, data: meta })
-  if (indicator && trailing)
-    children.push(indicator)
+  // 对号只在勾选与单选条目上，是条目的最后一个部件
+  if (meta.kind !== 'item')
+    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
   return { ...base, children }
 }
 

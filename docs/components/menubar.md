@@ -384,7 +384,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-collection-slot` | 'indicator' \| 'prefix' |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
