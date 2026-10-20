@@ -174,7 +174,7 @@ describe('createCommandMenubar', () => {
     select: value => ran.push(`panels:${value}`),
   })
   const commands = table(
-    cmd('save', { icon: GLYPH, shortcut: ['Mod', 'S'] }),
+    cmd('save', { icon: GLYPH, shortcut: ['Mod', 'S'], alternateShortcuts: [['F2']] }),
     cmd('settings'),
     cmd('undo', { label: ctx => `Undo ${ctx.selected}`, enabled: ctx => ctx.selected > 0 }),
     cmd('pan-tool', { checked: ctx => ctx.selected > 1 }),
@@ -192,7 +192,7 @@ describe('createCommandMenubar', () => {
     return bar
   }
 
-  it('一条 <xh-menubar>：每张菜单一个入口，条目带图标、快捷键提示（按平台写）与不可用，组与组之间一道分隔线；整条的名字取 labels.menubar', () => {
+  it('一条 <xh-menubar>：每张菜单一个入口，条目带图标、快捷键提示、读屏念的 aria-keyshortcuts（都按平台写，后者含第二快捷键）与不可用，组与组之间一道分隔线；整条的名字取 labels.menubar', () => {
     const bar = mount()
     const host = bar.menubar as MenubarHost
     expect([bar.element.getAttribute('data-scope'), bar.element.getAttribute('data-part'), host.localName]).toEqual(['designer-menubar', 'root', 'xh-menubar'])
@@ -200,13 +200,13 @@ describe('createCommandMenubar', () => {
     const collection = host.collection!
     expect(collection.map(menu => [menu.value, menu.label])).toEqual([['file', 'File'], ['edit', 'Edit'], ['view', 'View']])
     expect(collection[0]!.items).toEqual([
-      { value: 'file/save', label: 'SAVE', icon: GLYPH, shortcut: 'Ctrl+S' },
+      { value: 'file/save', label: 'SAVE', icon: GLYPH, shortcut: 'Ctrl+S', keyshortcuts: 'Control+S F2' },
       { value: 'file/settings', label: 'SETTINGS', separatorBefore: true },
     ])
     expect(collection[1]!.items).toEqual([{ value: 'edit/undo', label: 'Undo 0', disabled: true }])
     const mac = createCommandMenubar<Ctx>(document, { platform: 'mac' })
     mac.update(arranged(), commands, { selected: 0 }, LABELS)
-    expect((mac.menubar as MenubarHost).collection![0]!.items![0]!.shortcut).toBe('⌘S')
+    expect((mac.menubar as MenubarHost).collection![0]!.items![0]).toMatchObject({ shortcut: '⌘S', keyshortcuts: 'Meta+S F2' })
   })
 
   it('开关式命令是勾选条目（选中即收起），勾不勾随上下文；菜单命令是子菜单，里面的条目与写成命令 id 的项照菜单命令的铺，写成 id 的开关式命令也是勾选条目', () => {

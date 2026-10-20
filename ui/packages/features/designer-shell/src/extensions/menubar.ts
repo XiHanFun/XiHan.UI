@@ -16,7 +16,7 @@ import { DIAGNOSTIC_WARN, isDev, reportDiagnostic } from '@xihan-ui/core'
 import { DesignerExtensionError, formatShortcut } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 import { defineMenubarElements } from '../internal/ui-elements'
-import { commandEnabled, commandLabel, commandMenuData, MENU_COMMAND_PREFIX, MENU_ITEM_PREFIX, resolvePlatform, runCommand } from './commands'
+import { commandEnabled, commandKeyshortcuts, commandLabel, commandMenuData, MENU_COMMAND_PREFIX, MENU_ITEM_PREFIX, resolvePlatform, runCommand } from './commands'
 
 /** 内置四张菜单的 id。 */
 export const DESIGNER_MENUBAR_MENUS = {
@@ -173,7 +173,7 @@ export interface CommandMenubar<Ctx> {
   /** 里面那条 <xh-menubar>。 */
   readonly menubar: HTMLElement
   /**
-   * 换上排好的菜单与此刻的状态：文字、图标、快捷键提示、可用与勾选每次都刷新，数据没变时不重设；
+   * 换上排好的菜单与此刻的状态：文字、图标、快捷键提示与读屏念的快捷键（aria-keyshortcuts，含第二快捷键）、可用与勾选每次都刷新，数据没变时不重设；
    * 之后每次打开菜单（含窄屏那张）都用这一份命令表与上下文按此刻的状态重算一遍。
    * 普通命令是一条，开关式命令是勾选条目（选中即收起），菜单命令是子菜单（勾选与单选值交给子层，勾选条目同样选中即收起）；
    * 弹层命令不进菜单栏，开发期报一条告警。
@@ -265,6 +265,9 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
       }
       if (command.shortcut)
         node.shortcut = formatShortcut(command.shortcut, platform)
+      const keyshortcuts = commandKeyshortcuts(command, platform)
+      if (keyshortcuts !== undefined)
+        node.keyshortcuts = keyshortcuts
     }
     if (!commandEnabled(command, context))
       node.disabled = true
