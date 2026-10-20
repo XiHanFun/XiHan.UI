@@ -38,21 +38,22 @@
 - **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
 - **ColorPicker**：单选给空数组改为未选（色块画斜线、值文字显示 `placeholder`、`value` 为空数组），不再按 `#000000` 显示；要黑色的改写 `['#000000']`
 - **树**：`multiple` 改为选择模式 `selectionMode`（Web Components 为 `selection-mode`），`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变
-- **菜单族的选中事件**：Menu、ContextMenu、Menubar、Command、Mention 的 `select` 改名 `item-select`，不再与原生 `select`（输入框里选中文字时冒泡上来）同名：Vue 写 `@item-select`，React 写 `onItemSelect`，Web Components 监听 `item-select`；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变
+- **菜单族的选中事件**：Menu、ContextMenu、Menubar、Command、Mention 的 `select` 改名 `item-select`，不再与原生 `select`（输入框里选中文字时冒泡上来）同名：Vue 的 `<XhMenuRoot @select="run">` 改写 `<XhMenuRoot @item-select="run">`，React 的 `onSelect={run}` 改写 `onItemSelect={run}`，Web Components 的 `menu.addEventListener('select', run)` 改监听 `'item-select'`，`event.detail` 不变；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变
+- **designer-kit 与 designer-shell（首发）**：5.0.0 是这两个包的第一版，没有已发布的写法要迁移，接法见文档站的「设计器内核」「设计器零件」两页。开发期按 link 接过 dev 的使用方对一下这几处：变换覆盖层去掉 `formatMeasure`，改给 `measureOptions`（如 `{ unit: 'mm' }`），宽高的改动经 `measure-change` 交回设计器；历史栈的说明类型是 `HistoryLabel`（字符串，或换语言后现取的函数）；`BUILTIN_CONTROL_KINDS` 已含 `options` 与 `treeOptions`，产品自己登记的同名编辑方式要去掉；零件里的菜单命令改听 `item-select`，复选条目经 `checkbox-value-change` 回报；配无层皮肤 `@xihan-ui/styles/index.unlayered.css` 时改引 `@xihan-ui/designer-shell/style.unlayered.css`
 :::
 
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
-- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框、属性面板、物料面板、问题列表、小地图、变换覆盖层与它的上下文工具条、标尺、设置对话框、命令工具栏与状态栏项，附与 UI 内建语言包对应的十种语言文案）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
-- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`（含与 `aria-keyshortcuts` 互转的 `ariaKeyshortcut` / `parseAriaKeyshortcuts` 与按平台显示的 `formatHotkeyLabel`）、`color`（颜色换算，按 CSS Color 4 的语法解析，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）；`core/date` 新增墙上时间与分桶键
+- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框与面板布局（停靠、浮出、收成标题条，整份布局存进设置）、属性面板、物料面板、页面结构、历史面板、问题列表、小地图、变换覆盖层与它的上下文工具条和尺寸徽标、标尺、设置对话框（含帮助、快捷键与关于）、JSON 编辑框、导入字段对话框、新手引导、命令工具栏与状态栏项，附与 UI 内建语言包对应的十种语言文案；另有配无层皮肤用的 `style.unlayered.css`）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
+- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`（含与 `aria-keyshortcuts` 互转的 `ariaKeyshortcut` / `parseAriaKeyshortcuts` 与按平台显示的 `formatHotkeyLabel`）、`color`（颜色换算，按 CSS Color 4 的语法解析，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）、`clipboard`（往系统剪贴板写文本的 `writeToClipboard`）、`options`（选项与选项树的结构校验 `findOptionViolation`）；`core/json` 新增出错时报行列的 `parseJsonText` 与按路径定位的 `locateJsonPath`；`core/date` 新增墙上时间与分桶键
 - **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
 - **新增** FileUpload 远程附件的文件名铺成链接（部件 `item-link`，打开方式 `linkTarget`），地址不安全时退回纯文字
 - **新增** ColorPicker 单选的未选状态（`placeholder`）与清空钮 `clear-trigger`（`clear` 事件）
-- **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可；列的 `minWidth` 给出下限，放不下时表格区横向滚动，行号与把手钉在两侧
+- **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可；列的 `minWidth` 给出下限，放不下时表格区横向滚动，行号与把手钉在两侧，窄容器里可写 `stickyActions: false` 让把手随行滚动；开了 `movable` 每行多一颗拖动把手 `item-drag-trigger`，按住拖到别处换位，键盘与读屏照旧用上移、下移
 - **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`（也可按行给函数）、表尾单元格合并 `footerCellSpan`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
 - **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`、TreeSelect 搜索框的占位文字 `translations.searchPlaceholder`；日历翻页钮带上按视图的缺省读屏名
 - **新增** Tree 分支行的说明部件 `branch-description`，带说明的分支与叶子一样折成两行，说明在名称下面
-- **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
+- **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Toolbar 的条目可声明只放图标（Vue / React 的 `iconOnly`，Web Components 写 `data-icon-only`），按方钮画；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
 - **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
 - **新增** Tree 节点数据的 `draggable: false`：这一个节点拖不起来，照常能选、能展开、能当落点
 - **新增** Tree 的选择模式 `extended`：照文件管理器，点击换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 加选与取消，按住 Shift 点击选一段；两种多选模式下 Ctrl / Cmd + Space 都只切换焦点节点；选中从外面换了（宿主另写了值、调了 `setSelection`、挂载时就带着选中），Shift 点击从新选中里多出来的最后一项连起
@@ -62,6 +63,9 @@
 - **新增** FloatingPanel 的拖动起止事件 `onDragStart` / `onDragEnd`（Web Components 为 `drag-start` / `drag-end`），带指针位置与是否取消
 - **新增** Table 单元格级导航 `navigation="cell"`：照 WAI-ARIA treegrid，整张表只占一个 Tab 位，方向键在格子之间走，Enter 或 F2 进格内控件编辑、编辑中 Tab 只在这一格里走、Esc 退回格子，换位、改层级与拖动照常可用
 - **新增** Tooltip 的委托模式 `delegate`：一个提示管一整个容器里的锚点，文字取锚点的 `data-xh-tooltip` 或可及名，快捷键取 `aria-keyshortcuts` 并按平台显示；提示新增 `translations.keyLabel`
+- **新增** Menu 与 Popover 的 `anchor`：外部的一颗按钮可以当锚点，由它受控打开，浮层贴着它定位、收起时焦点还给它，展开期间它带上弹出关系；写了 `anchor` 时可以不写触发器
+- **新增** Virtualizer 的 `estimateFromMeasured`（Web Components 为 `estimate-from-measured`）：没量过的条目按已量条目的平均尺寸估算，行高随尺寸、密度与皮肤变化的列表不必写死 `estimateSize`
+- **新增** Tour 的 `boundary`：把引导限在一块区域里，遮罩与高亮框只盖这块区域、气泡以它为界避让，区域外照常可读可点；定位引擎与层栈各补了配套的 `boundary`、`covers`
 - **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`）与各档代表色 `BRAND_PRESET_COLORS`，`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
 - **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
 - **新增** 设计器画布与表格编辑命令用的一批图标（编辑、对齐与分布、层级、表格行列与合并等）
@@ -76,6 +80,9 @@
 - **修复** Tree 的 Web Components 版：分支行里摆的 `item-indicator` 跟着分支的选中亮出对号，不再一直不亮，与叶子行、Vue 与 React 一致
 - **修复** FieldArray 表格排布横向放不下时表格本体进 Tab 序列，一行都没有也能用键盘横向滚动，放得下时不占 Tab 位
 - **修复** 亮色下警告色文字加深一档，达到正文对比度：`--xh-fg-warning` 改指 `--xh-color-warning-800`（对白底 4.98:1，原来 3.75:1），表达式输入框的警告提示、日志 warn 级、字数到上限等小字都够得上 4.5:1；暗色不变
+- **修复** 对话框、抽屉、弹出层这类带焦点域的浮层落焦时，只整段选中单行文本类输入框；第一个可聚焦元素是多行文本框时只落焦、不再全选里面的字
+- **修复** Web Components 里用 `XhConfigController` 取配置的元素断开期间换了语言、或被挪到另一个 `<xh-config>` 下，重新连上时按新的配置重渲，不再停在旧的文案上
+- **修复** FieldArray 表格排布的格子里放 Field 时，文本框的原生宽不再把这一列撑出去压到相邻的格上；设计器属性面板里放不下的选项表改为横向滚动，不再裁掉行尾的把手
 - **修复** Table 树形表换位后的读屏播报说放进了哪一层，位次与总数按那一层的兄弟行算，不再拿层内位次配全部可见行的总数
 - **修复** Sortable 嵌套时（项里再放一个排序列表），指针按住里层条目或它的手柄不再连外层那一项一起拖起来
 - **修复** 开着的下拉被外面的点击收起、同一次点击又打开抽屉或对话框时，控制台不再报 `core.layer.dispose-not-top`；这条诊断只在父层先于开在它里面的层释放时报，明细新增 `nested`
