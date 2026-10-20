@@ -203,7 +203,7 @@
     "name": "designer-shell",
     "path": "packages/features/designer-shell/dist/index.js",
     "gzip": true,
-    "limit": "370 kB"
+    "limit": "370.3 kB"
   },
   {
     "name": "designer-shell/locale",
@@ -221,7 +221,7 @@
     "name": "designer-shell/style.unlayered.css（无层）",
     "path": "packages/features/designer-shell/dist/style.unlayered.css",
     "gzip": true,
-    "limit": "7.4 kB"
+    "limit": "7.5 kB"
   },
   {
     "name": "xlsx",

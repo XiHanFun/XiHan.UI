@@ -232,7 +232,7 @@ map.addEventListener("navigate", event => setViewport(centerOn(viewport, event.d
 
 ## 物料面板与拖放
 
-`<xh-designer-palette>` 按分组列出物料。点击、回车、空格或触屏轻点派发 `item-activate`，设计器一般把物料加到视口中央；按下拖动（触屏长按）经下面的通用拖放拖向画布。
+`<xh-designer-palette>` 按分组列出物料：每组是组名一行、下面是物料的方形小卡片，图标在上、名称在下，按面板宽度自动排成几列。点击、回车、空格或触屏轻点派发 `item-activate`，设计器一般把物料加到视口中央；按下拖动（触屏长按）经下面的通用拖放拖向画布。
 
 ```ts
 const palette = document.createElement("xh-designer-palette");
@@ -242,7 +242,7 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 
 | 属性 | 说明 |
 | --- | --- |
-| `groups` | `{ id, label, items }[]`，物料为 `{ id, label, icon?, description?, disabled?, browseOnly?, payload?, children? }`；`icon` 是图标记录，`description` 是名称之外的一行说明，`children` 是下级物料 |
+| `groups` | `{ id, label, items }[]`，物料为 `{ id, label, icon?, description?, disabled?, browseOnly?, payload?, children? }`；`icon` 是卡片上的图标，`description` 是名称之外的一句说明（卡片上不显示，悬停提示里与名称一起显示，读屏作为说明念出），`children` 是下级物料 |
 | `searchable` | 显示搜索框，按名称与说明过滤；命中的条目连同它的上级一起展开显示 |
 | `collapsible` | 分组可折叠，折叠状态按分组 id 保留；搜索时匹配的分组一律展开 |
 | `readonly` | 物料只能浏览，不派发 `item-activate`、不能拖出 |
@@ -252,14 +252,17 @@ palette.addEventListener("item-activate", event => addAtCenter(event.detail.payl
 | --- | --- |
 | `item-activate` | `{ id, payload }` |
 
-- 方向键、Home、End 在物料间移动焦点，禁用的物料也能停留，读屏照样念出。
+- 卡片的边长不小于两倍 md 控件高（随密度变），列宽按面板宽度均分；名称只占一行，放不下就截断。悬停或用键盘走到一张卡片时，提示显示「名称 · 说明」，没有说明的只显示名称。
+- 读屏照旧是带组名的一组按钮，整块一个 Tab 位：卡片的名字只有名称，说明另行念出。没有改用 grid 角色：列数随面板宽度变，网格的行列不是物料本身的结构，读屏念「第几行第几列」没有意义。
+- 左右键按排列的先后走（右到左排列时对调），上下键走到上一行、下一行里与当前卡片对得最齐的那张，跨组也是；Home、End 到第一张、最后一张。禁用的物料也能停留，读屏照样念出。
+- 搜索时平铺的组只留命中的卡片，照样排成网格；一张都没命中的组整组不显示。
 - 从物料拖出时的载荷是 `{ source: "palette", id, payload }`。
 - 扩展往面板里加的分组（如「我的物料」）经物料来源接进来，见下文「扩展的面板与命令」的「物料来源」。
 - `disabled` 是用不了的物料：显示为禁用，不派发 `item-activate`、不能拖出。`browseOnly` 是只作浏览的物料：照常显示、能用方向键走到，同样不派发、不能拖出，用于只起分组作用的上级与只供查看的下级。
 
 ### 带下级的物料
 
-组里有物料带了 `children` 时，这一组用 [`<xh-tree>`](../components/tree) 显示，没有下级的组仍是一列按钮。适合字段树这类有层级的物料：
+组里有物料带了 `children` 时，这一组用 [`<xh-tree>`](../components/tree) 一行一个地显示，不排成卡片：层级与展开收起要靠缩进与箭头读出来，字段名通常也比卡片放得下的长。没有下级的组照样是卡片。适合字段树这类有层级的物料：
 
 ```ts
 palette.groups = [{

@@ -960,6 +960,9 @@
   /* —— 物料面板 —— */
 
   xh-designer-palette {
+    /* 卡片的最小边长：两倍 md 控件高，随密度一起变 */
+    --xh-_palette-card: calc(var(--xh-control-h-md) * 2);
+
     display: flex;
     flex-direction: column;
     min-block-size: 0;
@@ -984,6 +987,11 @@
     font-weight: var(--xh-font-weight-semibold);
   }
 
+  /* 委托提示包着各组，自己不占盒子：各组照旧是正文的直接排布项 */
+  xh-designer-palette > [data-part='body'] > xh-tooltip[data-part='item-tip'] {
+    display: contents;
+  }
+
   xh-designer-palette > [data-part='body'] {
     display: flex;
     flex: 1;
@@ -1006,27 +1014,31 @@
     font-size: var(--xh-font-size-xs);
   }
 
+  /* 平铺的组：方形小卡片按面板宽度自动排成几列，列宽不小于卡片最小边长，余下的宽度均分 */
   xh-designer-palette [data-part='group-items'] {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--xh-_palette-card), 1fr));
     gap: var(--xh-space-1_5);
   }
 
+  /* 一张卡片：图标在上、名称在下，宽高相等 */
   xh-designer-palette button[data-part='item'] {
     display: flex;
-    flex-wrap: wrap;
-    column-gap: var(--xh-space-2);
+    flex-direction: column;
+    gap: var(--xh-space-1);
     align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    min-block-size: var(--xh-control-h-sm);
+    aspect-ratio: 1;
+    min-inline-size: 0;
     margin: 0;
     border: var(--xh-stroke-thin) dashed var(--xh-border-default);
     border-radius: var(--xh-shape-control);
     background: var(--xh-bg-surface);
-    padding: var(--xh-space-1) var(--xh-space-2);
+    padding: var(--xh-space-1);
     color: inherit;
     font: inherit;
-    text-align: start;
+    text-align: center;
     cursor: grab;
     user-select: none;
     transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
@@ -1056,15 +1068,14 @@
     cursor: not-allowed;
   }
 
-  xh-designer-palette button[data-part='item'] > [data-part='item-label'] {
-    flex: 1;
-    min-inline-size: 0;
+  xh-designer-palette button[data-part='item'] > [data-part='item-icon'] {
+    flex: none;
   }
 
-  xh-designer-palette button[data-part='item'] > [data-part='item-description'] {
-    flex-basis: 100%;
+  /* 名称只占一行，放不下就截断；完整名称与说明在悬停提示里 */
+  xh-designer-palette button[data-part='item'] > [data-part='item-label'] {
+    max-inline-size: 100%;
     overflow: hidden;
-    color: var(--xh-fg-muted);
     font-size: var(--xh-font-size-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1084,12 +1095,6 @@
     padding-inline: var(--xh-space-3);
     padding-block-end: var(--xh-space-3);
     color: var(--xh-fg-muted);
-  }
-
-  @media (pointer: coarse) {
-    xh-designer-palette button[data-part='item'] {
-      min-block-size: var(--xh-control-hit-coarse);
-    }
   }
 
   /* —— 页面结构 —— */

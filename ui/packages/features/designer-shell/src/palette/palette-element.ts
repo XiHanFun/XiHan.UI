@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// <xh-designer-palette>：物料面板。按分组列出物料，可按名称与说明搜索、分组可折叠；有条目带下级时这一组按树显示。
-// 点击、回车、空格或触屏轻点派发 item-activate；按下拖动（触屏长按）经 startDrag 拖向放置目标。
+// <xh-designer-palette>：物料面板。按分组列出物料，可按名称与说明搜索、分组可折叠；平铺的组排成方形小卡片的网格，
+// 有条目带下级时这一组按树显示。点击、回车、空格或触屏轻点派发 item-activate；按下拖动（触屏长按）经 startDrag 拖向放置目标。
 
 import type { IconRecord } from '@xihan-ui/core'
 import type { PropertyValues } from '@xihan-ui/web-components/authoring'
@@ -125,8 +125,16 @@ interface Parts {
   readonly search: HTMLElement & { value?: string }
   readonly searchInput: HTMLInputElement
   readonly body: HTMLElement
+  /** 包着各组的委托提示的容器：悬停或聚焦到卡片时提示「名称 · 说明」。 */
+  readonly groups: HTMLElement
   readonly empty: HTMLElement
 }
+
+/** 卡片里的说明前面垫的分隔，只进提示的文字（委托提示取 textContent），不显示、不进可及名。 */
+const DESCRIPTION_SEPARATOR = ' · '
+
+/** 同一行的判据：两张卡片的顶边相差不到这么多像素。 */
+const SAME_ROW = 1
 
 export class XhDesignerPaletteElement extends XhReactiveElement {
   static override properties = {
@@ -224,13 +232,20 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       this.requestUpdate()
     })
     const header = createGeneratedElement(doc, 'div', { 'data-part': 'header' }, [title, search])
-    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body' })
+    const groups = createAuthoredElement(doc, 'div', { 'data-xh-part': 'trigger' })
+    const tip = createAuthoredElement(doc, 'xh-tooltip', { 'data-part': 'item-tip', 'delegate': 'button[data-part="item"]', 'size': 'sm' }, [
+      groups,
+      createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [
+        createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [createAuthoredElement(doc, 'div', { 'data-xh-part': 'arrow' })]),
+      ]),
+    ])
+    const body = createGeneratedElement(doc, 'div', { 'data-part': 'body' }, [tip])
     const empty = createGeneratedElement(doc, 'div', { 'data-part': 'empty' })
     body.addEventListener('pointerdown', this.#onPointerDown)
     body.addEventListener('click', this.#onClick)
     body.addEventListener('keydown', this.#onKeyDown)
     this.prepend(header, body, empty)
-    this.#parts = { header, title, search, searchInput, body, empty }
+    this.#parts = { header, title, search, searchInput, body, groups, empty }
     this.#rendered = []
     return this.#parts
   }
@@ -276,15 +291,15 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
             this.#collapsed.add(group.id)
         }
       })
-      parts.body.replaceChildren(accordion)
+      parts.groups.replaceChildren(accordion)
     }
     else {
-      parts.body.replaceChildren(...sections)
+      parts.groups.replaceChildren(...sections)
     }
     this.#rove(focused, focused !== undefined)
   }
 
-  #icon(item: DesignerPaletteItem): HTMLElement[] {
+  #icon(item: DesignerPaletteItem, size: 'sm' | 'md' = 'sm'): HTMLElement[] {
     if (!item.icon)
       return []
     const doc = this.ownerDocument
@@ -293,7 +308,7 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     const glyph = doc.createElementNS(SVG_NS, 'g')
     glyph.setAttribute('data-xh-part', 'glyph')
     svg.append(glyph)
-    const icon: HTMLElement & { icon?: IconRecord } = createAuthoredElement(doc, 'xh-icon', { 'size': 'sm', 'data-part': 'item-icon' }, [svg])
+    const icon: HTMLElement & { icon?: IconRecord } = createAuthoredElement(doc, 'xh-icon', { 'size': size, 'data-part': 'item-icon' }, [svg])
     icon.icon = item.icon
     return [icon]
   }
@@ -367,15 +382,19 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     ])
   }
 
+  /** 平铺的组里的一张卡片：图标在上、名称在下；说明不显示，由 aria-describedby 念出、由悬停提示显示。 */
   #item(item: DesignerPaletteItem): HTMLElement {
     const doc = this.ownerDocument
     const inert = this.readonly === true || item.disabled === true
-    const children: Node[] = [...this.#icon(item)]
+    const children: Node[] = [...this.#icon(item, 'md')]
     children.push(createAuthoredElement(doc, 'span', { 'data-part': 'item-label' }, [item.label]))
     let describedBy: string | undefined
     if (item.description !== undefined) {
       describedBy = this.#ids.scopeId()
-      children.push(createAuthoredElement(doc, 'span', { 'data-part': 'item-description', 'id': describedBy }, [item.description]))
+      children.push(
+        createAuthoredElement(doc, 'span', { 'data-part': 'item-separator', 'hidden': true }, [DESCRIPTION_SEPARATOR]),
+        createAuthoredElement(doc, 'span', { 'data-part': 'item-description', 'id': describedBy, 'hidden': true }, [item.description]),
+      )
     }
     return createAuthoredElement(doc, 'button', {
       'data-part': 'item',
@@ -470,6 +489,27 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
       emitEvent(this, 'item-activate', { id: item.id, payload: item.payload })
   }
 
+  /**
+   * 上一行或下一行里与这张卡片横向中心最近的那张：行按顶边分，跨组也算；同样近时取排列上离它近的。没有那一行时停在原处。
+   */
+  #vertical(items: readonly HTMLElement[], index: number, down: boolean): number {
+    const current = items[index]!.getBoundingClientRect()
+    const middle = current.left + current.width / 2
+    const candidates = items
+      .map((item, at) => ({ at, rect: item.getBoundingClientRect() }))
+      .filter(({ at, rect }) => (down ? at > index && rect.top > current.top - SAME_ROW : at < index && rect.top < current.top + SAME_ROW))
+      .filter(({ rect }) => Math.abs(rect.top - current.top) >= SAME_ROW || rect.height === 0)
+    if (candidates.length === 0)
+      return index
+    const rowTop = down ? Math.min(...candidates.map(({ rect }) => rect.top)) : Math.max(...candidates.map(({ rect }) => rect.top))
+    const row = candidates.filter(({ rect }) => Math.abs(rect.top - rowTop) < SAME_ROW)
+    const distance = ({ rect }: { rect: DOMRect }): number => Math.abs(rect.left + rect.width / 2 - middle)
+    return row.reduce((best, item) => {
+      const gap = distance(item) - distance(best)
+      return gap < 0 || (gap === 0 && Math.abs(item.at - index) < Math.abs(best.at - index)) ? item : best
+    }).at
+  }
+
   readonly #onKeyDown = (event: KeyboardEvent): void => {
     const element = this.#itemOf(event)
     if (!element)
@@ -481,13 +521,17 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
     const backward = rtl ? 'ArrowRight' : 'ArrowLeft'
     let next: number
     switch (event.key) {
-      case 'ArrowDown':
       case forward:
         next = Math.min(items.length - 1, index + 1)
         break
-      case 'ArrowUp':
       case backward:
         next = Math.max(0, index - 1)
+        break
+      case 'ArrowDown':
+        next = this.#vertical(items, index, true)
+        break
+      case 'ArrowUp':
+        next = this.#vertical(items, index, false)
         break
       case 'Home':
         next = 0
