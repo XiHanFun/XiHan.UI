@@ -6,6 +6,7 @@ import {
   checkExtensionData,
   commandForShortcut,
   commandShortcuts,
+  commandVisible,
   createExtensionHost,
   DesignerExtensionError,
   extensionCommands,
@@ -205,6 +206,10 @@ describe('快捷键', () => {
     expect(commandForShortcut([setup], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBeUndefined()
     const opener = { ...setup, run: () => {} }
     expect(commandForShortcut([opener], key({ key: 'p', ctrlKey: true }), { n: 0 }, 'other')).toBe(opener)
+    // 此刻不存在（visible 返回 false）的命令不由快捷键触发
+    const hidden: DesignerCommand<{ readonly n: number }> = { ...command('json', ['Mod', 'J']), visible: context => context.n > 0 }
+    expect([commandForShortcut([hidden], key({ key: 'j', ctrlKey: true }), { n: 0 }, 'other'), commandForShortcut([hidden], key({ key: 'j', ctrlKey: true }), { n: 1 }, 'other')]).toEqual([undefined, hidden])
+    expect([commandVisible(hidden, { n: 0 }), commandVisible(hidden, { n: 1 }), commandVisible(save, { n: 0 })]).toEqual([false, true, true])
   })
 
   it('第二快捷键：按下任一组都命中，快捷键表按先后列出全部', () => {

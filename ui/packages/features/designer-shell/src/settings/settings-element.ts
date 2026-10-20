@@ -19,7 +19,7 @@ import type { DesignerAboutSettings, DesignerHelpSettings, DesignerSettingItem, 
 import type { DesignerSettingsFrame } from './panel-layout'
 import type { DesignerToolbarSettingsSource } from './toolbar-layout'
 import { createCounterIdGenerator } from '@xihan-ui/core'
-import { BUILTIN_CONTROL_KINDS } from '@xihan-ui/designer-kit/properties'
+import { BUILTIN_CONTROL_KINDS, isPropertyEnabled } from '@xihan-ui/designer-kit/properties'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { defineSettingsElements } from '../internal/ui-elements'
 import { createPropertyField } from '../properties/field'
@@ -27,7 +27,7 @@ import { createFieldRow, placeAsGroup, refreshFieldRow } from '../properties/fie
 import { createDisplayContent } from './display'
 import { isDesignerDisplayControl } from './display-model'
 import { designerLanguageSettings } from './language'
-import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerAboutSettings, designerGeneralSettings, designerHelpSettings, designerLayoutSettings, designerShortcutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
+import { DESIGNER_LAYOUT_SETTINGS, DESIGNER_TOOLBAR_SETTINGS, designerAboutSettings, designerGeneralSettings, designerHelpSettings, designerLayoutSettings, designerShortcutSettings, designerToolbarSettings, PANEL_LAYOUT_CONTROL, resolveSettings, settingKey, settingPolicy, settingValue, sortSettingsSections, TOOLBAR_LAYOUT_CONTROL } from './model'
 import { createPanelLayoutEditor } from './panel-layout'
 import { createToolbarLayoutEditor } from './toolbar-layout'
 
@@ -73,6 +73,8 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   toolbarDisplayBoth: 'Icons and text',
   statusBar: 'Status bar',
   statusBarHint: 'Show the status bar at the bottom of the designer.',
+  developer: 'Developer mode',
+  developerHint: 'When off, JSON and Blob debug viewers are hidden.',
   language: 'Language',
   languageHint: 'Applies to this designer only, not the rest of the page. Follow system picks the closest match to your browser’s language preferences.',
   languageDisplay: 'Display language',
@@ -252,6 +254,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
     parts.list.setAttribute('aria-label', t.sections)
     const sections = this.#visibleSections(t)
     this.#syncPages(parts, sections)
+    const resolved = resolveSettings(sections, this.settings)
     const active = sections.some(section => section.id === this.section) ? this.section! : sections[0]?.id
     if (active !== undefined && parts.tabs.value !== active)
       parts.tabs.value = active
@@ -266,7 +269,7 @@ export class XhDesignerSettingsElement extends XhReactiveElement {
           value: settingValue(this.settings, section, item),
           label: item.label ?? key,
           hint: policy === 'locked' ? t.locked : typeof description === 'string' ? description : undefined,
-          readonly: policy === 'locked',
+          readonly: policy === 'locked' || !isPropertyEnabled(item, resolved),
         })
       }
     }

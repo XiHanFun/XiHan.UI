@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: '아이콘과 텍스트',
     statusBar: '상태 표시줄',
     statusBarHint: '디자이너 하단에 상태 표시줄을 표시합니다.',
+    developer: '개발자 모드',
+    developerHint: '끄면 JSON / Blob 디버그 보기 항목이 숨겨집니다.',
     language: '언어',
     languageHint: '이 디자이너에만 적용되며 페이지의 다른 부분에는 영향을 주지 않습니다. 시스템 따르기는 브라우저의 언어 설정에 가장 가까운 언어를 고릅니다.',
     languageDisplay: '표시 언어',

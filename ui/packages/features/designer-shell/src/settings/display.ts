@@ -8,7 +8,7 @@
 
 import type { DesignerCommandTable } from '../extensions/commands'
 import type { DesignerCommonKey, DesignerDisplayControl, DesignerShortcutGroupId, DesignerShortcutRow, DesignerShortcutsSource } from './display-model'
-import { commandShortcuts } from '@xihan-ui/designer-kit'
+import { commandShortcuts, commandVisible } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 import { DESIGNER_SHELL_COMMANDS } from '../extensions/builtin-commands'
 import { commandShortLabel } from '../extensions/commands'
@@ -41,7 +41,7 @@ export function shortcutSettingsSource<Ctx>(commands: DesignerCommandTable<Ctx>,
   const rows: Record<DesignerShortcutGroupId, DesignerShortcutRow[]> = { common: [], edit: [], designer: [], extensions: [] }
   for (const command of commands.values()) {
     const keys = commandShortcuts(command)
-    if (keys.length === 0)
+    if (keys.length === 0 || !commandVisible(command, context))
       continue
     const group: DesignerShortcutGroupId = extensions.has(command.id) ? 'extensions' : shell.has(command.id) ? 'common' : edit.has(command.id) ? 'edit' : 'designer'
     rows[group].push({ label: commandShortLabel(command, context), keys })

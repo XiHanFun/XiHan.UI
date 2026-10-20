@@ -13,7 +13,7 @@ import type { XhMenubarElement, XhMenuElement } from '@xihan-ui/web-components/d
 import type { DesignerCommandsTranslations } from '../translations'
 import type { DesignerCommandLayout, DesignerCommandTable, MenuNode } from './commands'
 import { DIAGNOSTIC_WARN, isDev, reportDiagnostic } from '@xihan-ui/core'
-import { DesignerExtensionError, formatShortcut } from '@xihan-ui/designer-kit'
+import { commandVisible, DesignerExtensionError, formatShortcut } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
 import { defineMenubarElements } from '../internal/ui-elements'
 import { commandEnabled, commandKeyshortcuts, commandLabel, commandMenuData, MENU_COMMAND_PREFIX, MENU_ITEM_PREFIX, resolvePlatform, runCommand } from './commands'
@@ -287,6 +287,8 @@ export function createCommandMenubar<Ctx>(doc: Document, options: CommandMenubar
           const command = commands.get(id)
           if (!command)
             throw new TypeError(`[xh] 菜单栏里的 ${id} 不是登记过的命令`)
+          if (!commandVisible(command, context))
+            continue
           const node = itemOf(command, `${entry.id}/${id}`, context, commands, actions)
           if (!node)
             continue

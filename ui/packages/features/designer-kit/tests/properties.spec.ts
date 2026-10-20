@@ -10,6 +10,7 @@ import {
   findPropertyValueIssue,
   groupProperties,
   isFilled,
+  isPropertyEnabled,
   isPropertyVisible,
   nestProperties,
   resolvePropertyEditor,
@@ -53,16 +54,25 @@ describe('evaluateCondition / isPropertyVisible', () => {
   })
 })
 
+describe('isPropertyEnabled', () => {
+  it('没写 enabledWhen 总是可用；写了按被编辑的对象求值，键里带点的扁平对象（设置）也能按一段路径取', () => {
+    expect(isPropertyEnabled({ path: ['x'], control: { kind: 'text' } }, undefined)).toBe(true)
+    const debug: PropertyDescriptor = { path: ['debug'], control: { kind: 'boolean' }, enabledWhen: { path: ['general.developer'], equals: true } }
+    expect([isPropertyEnabled(debug, {}), isPropertyEnabled(debug, { 'general.developer': false }), isPropertyEnabled(debug, { 'general.developer': true })]).toEqual([false, false, true])
+  })
+})
+
 describe('nestProperties', () => {
-  it('path 与显示条件里的 path 都接上前缀，组合条件逐层改写，其余字段原样保留', () => {
+  it('path 与显示条件、可用条件里的 path 都接上前缀，组合条件逐层改写，其余字段原样保留', () => {
     type Extended = PropertyDescriptor & { readonly present: boolean }
     const descriptors: Extended[] = [
       { path: ['visible'], control: { kind: 'boolean' }, group: 'table', present: true },
-      { path: ['height'], control: { kind: 'number', min: 0 }, present: false, visibleWhen: { all: [{ path: ['visible'], equals: true }, { not: { path: ['style'], filled: false } }, { any: [{ path: ['mode'], oneOf: ['a', 'b'] }] }] } },
+      { path: ['height'], control: { kind: 'number', min: 0 }, present: false, visibleWhen: { all: [{ path: ['visible'], equals: true }, { not: { path: ['style'], filled: false } }, { any: [{ path: ['mode'], oneOf: ['a', 'b'] }] }] }, enabledWhen: { path: ['locked'], equals: false } },
     ]
     const nested = nestProperties(['header'], descriptors)
     expect(nested[0]).toEqual({ path: ['header', 'visible'], control: { kind: 'boolean' }, group: 'table', present: true })
     expect(nested[1]!.visibleWhen).toEqual({ all: [{ path: ['header', 'visible'], equals: true }, { not: { path: ['header', 'style'], filled: false } }, { any: [{ path: ['header', 'mode'], oneOf: ['a', 'b'] }] }] })
+    expect(nested[1]!.enabledWhen).toEqual({ path: ['header', 'locked'], equals: false })
     expect(nested[1]!.present).toBe(false)
     expect(descriptors[0]!.path).toEqual(['visible'])
     const target = { header: { visible: true, style: { a: 1 }, mode: 'a' } }

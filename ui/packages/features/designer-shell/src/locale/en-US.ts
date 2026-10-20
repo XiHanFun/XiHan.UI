@@ -145,6 +145,8 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   toolbarDisplayBoth: 'Icons and text',
   statusBar: 'Status bar',
   statusBarHint: 'Show the status bar at the bottom of the designer.',
+  developer: 'Developer mode',
+  developerHint: 'When off, JSON and Blob debug viewers are hidden.',
   language: 'Language',
   languageHint: 'Applies to this designer only, not the rest of the page. Follow system picks the closest match to your browser’s language preferences.',
   languageDisplay: 'Display language',

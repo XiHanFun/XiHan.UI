@@ -263,6 +263,10 @@ export interface DesignerSettingsTranslations {
   readonly statusBar: string
   /** 状态栏条目的说明。 */
   readonly statusBarHint: string
+  /** 「基础」里开发者模式的标签。 */
+  readonly developer: string
+  /** 开发者模式的说明。 */
+  readonly developerHint: string
   /** 语言条目的标签。 */
   readonly language: string
   /** 语言条目的说明。 */

@@ -15,7 +15,7 @@ import type { FieldContext, FieldInstance } from './editors'
 import type { FieldRow } from './field-row'
 import { createCounterIdGenerator } from '@xihan-ui/core'
 import { formatJsonPath, getJsonAt, jsonEquals } from '@xihan-ui/core/json'
-import { groupProperties, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
+import { groupProperties, isPropertyEnabled, isPropertyVisible, resolvePropertyEditor } from '@xihan-ui/designer-kit/properties'
 import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { placeChildren } from '../internal/dom'
 import { adoptSlots } from '../internal/slots'
@@ -470,13 +470,14 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
     const mixed = values.some(value => !jsonEquals(value, values[0]))
     const refs = targets.map(({ kind, id }) => ({ kind, id }))
     const merge = `property:${formatJsonPath(descriptor.path)}:${refs.map(ref => `${ref.kind}/${ref.id}`).join(',')}`
+    const readonly = this.#readonlyFor(descriptor, targets)
     return {
       ownerDocument: this.ownerDocument,
       value: mixed ? undefined : values[0],
       descriptor,
       issues: this.#issuesOf(row, targets),
       target: targets,
-      readonly: this.readonly === true,
+      readonly,
       mixed,
       translations: this.#t,
       optionLabel: option => this.optionLabel?.(descriptor, option) ?? option.label ?? String(option.value),
@@ -484,11 +485,11 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       toggleLimit: this.toggleLimit ?? 0,
       dataFields: this.dataFields,
       setValue: (value) => {
-        if (!this.readonly)
+        if (!readonly)
           emitEvent(this, 'property-change', { path: descriptor.path, value, targets: refs, merge })
       },
       commit: () => {
-        if (!this.readonly)
+        if (!readonly)
           emitEvent(this, 'property-commit', { path: descriptor.path })
       },
       setLocalError: (message) => {
@@ -507,9 +508,14 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       hint: this.hintOf?.(descriptor),
       error: this.#message(row, targets),
       required: descriptor.required === true,
-      readonly: this.readonly === true,
+      readonly: this.#readonlyFor(descriptor, targets),
     })
     row.control.update?.(this.#context(row, targets))
+  }
+
+  /** 这一行此刻只读：面板只读，或任一对象不满足属性的可用条件。 */
+  #readonlyFor(descriptor: DesignerPropertyDescriptor, targets: readonly DesignerPropertyTarget[]): boolean {
+    return this.readonly === true || !targets.every(target => isPropertyEnabled(descriptor, target.value))
   }
 
   /** 换了分组方式：丢掉现有的分组与字段，下一次全部重建。 */

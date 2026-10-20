@@ -16,7 +16,7 @@ import type { DesignerSettingsTranslations } from '../translations'
 import { detectKbdPlatform } from '@xihan-ui/core/hotkey'
 import { formatShortcut } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setText } from '@xihan-ui/web-components/authoring'
-import { commandShortLabel } from '../extensions/commands'
+import { commandShortLabel, visibleGroups } from '../extensions/commands'
 import { mergeToolbarCustomization, toolbarCustomizationOf } from '../extensions/toolbar-customization'
 import { DESIGNER_SETTING_KEYS } from './model'
 
@@ -36,7 +36,7 @@ export interface DesignerToolbarSettingsSource {
 
 /** 从命令表现算按钮表要的数据：defaults 里的命令取短文字（commandShortLabel：撤销这类文字随下一步变的命令写固定的短名），命令表里没有的跳过。各款每轮更新时交给设置对话框的 toolbar。 */
 export function toolbarSettingsSource<Ctx>(defaults: readonly (readonly string[])[], commands: DesignerCommandTable<Ctx>, context: Ctx): DesignerToolbarSettingsSource {
-  const known = defaults.map(group => group.filter(id => commands.has(id))).filter(group => group.length > 0)
+  const known = visibleGroups(defaults, commands, context).map(group => group.filter(id => commands.has(id))).filter(group => group.length > 0)
   return {
     defaults: known,
     commands: known.flat().flatMap((id) => {

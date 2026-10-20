@@ -139,6 +139,8 @@ const translations: DesignerShellLocaleTranslations = {
     toolbarDisplayBoth: 'Iconos y texto',
     statusBar: 'Barra de estado',
     statusBarHint: 'Mostrar la barra de estado en la parte inferior del diseñador.',
+    developer: 'Modo de desarrollador',
+    developerHint: 'Si está desactivado, se ocultan los accesos de depuración de JSON / Blob.',
     language: 'Idioma',
     languageHint: 'Solo se aplica a este diseñador, no al resto de la página. «Seguir el sistema» elige el idioma más cercano a las preferencias de tu navegador.',
     languageDisplay: 'Idioma de la interfaz',

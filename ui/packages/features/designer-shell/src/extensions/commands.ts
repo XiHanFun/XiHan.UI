@@ -12,7 +12,7 @@ import type { DesignerCommand, DesignerCommandMenuEntry, DesignerCommandPanel, D
 import type { XhMenuElement, XhPopoverElement } from '@xihan-ui/web-components/define'
 import { DIAGNOSTIC_WARN, isDev, reportDiagnostic } from '@xihan-ui/core'
 import { ariaKeyshortcut, detectKbdPlatform, resolveKbdPlatform } from '@xihan-ui/core/hotkey'
-import { commandShortcuts, formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
+import { commandShortcuts, commandVisible, formatShortcut, isCommandMenuSeparator } from '@xihan-ui/designer-kit'
 import { createAuthoredElement, setAttributes, setText } from '@xihan-ui/web-components/authoring'
 import { defineCommandElements } from '../internal/ui-elements'
 
@@ -62,10 +62,10 @@ export function commandEnabled<Ctx>(command: DesignerCommand<Ctx>, context: Ctx)
   return command.enabled?.(context) ?? true
 }
 
-/** 执行一条命令：命令存在、有 run 且此刻可用才执行，返回是否执行了。没给 run 的弹层命令与菜单命令由命令工具栏打开。 */
+/** 执行一条命令：命令存在、有 run、此刻存在且可用才执行，返回是否执行了。没给 run 的弹层命令与菜单命令由命令工具栏打开。 */
 export function runCommand<Ctx>(commands: DesignerCommandTable<Ctx>, id: string, context: Ctx): boolean {
   const command = commands.get(id)
-  if (!command?.run || !commandEnabled(command, context))
+  if (!command?.run || !commandVisible(command, context) || !commandEnabled(command, context))
     return false
   command.run(context)
   return true
@@ -229,6 +229,8 @@ export function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[
       const command = commands.get(entry)
       if (!command)
         throw new TypeError(`[xh] 菜单命令里的 ${entry} 不是登记过的命令`)
+      if (!commandVisible(command, context))
+        continue
       const value = `${prefix}${MENU_COMMAND_PREFIX}${entry}`
       collection.push({
         ...base,
@@ -267,6 +269,16 @@ export function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[
     }
   }
   return { collection, checkboxValue, radioValue }
+}
+
+/** 分组里去掉此刻不存在（visible 返回 false）的命令，空组也去掉；没登记的 id 原样留着，由用到的地方报错。 */
+export function visibleGroups<Ctx>(groups: readonly (readonly string[])[], commands: DesignerCommandTable<Ctx>, context: Ctx): string[][] {
+  return groups
+    .map(group => group.filter((id) => {
+      const command = commands.get(id)
+      return command === undefined || commandVisible(command, context)
+    }))
+    .filter(group => group.length > 0)
 }
 
 /** 弹层与菜单在按钮的哪一侧：横排在下方，竖排在行首一侧（从左往右写时是左边）。 */
@@ -500,8 +512,9 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
     opened: () => popup?.id,
     overflowed,
     activate,
-    update(groups, commands, context, label) {
+    update(all, commands, context, label) {
       current = { commands, context }
+      const groups = visibleGroups(all, commands, context)
       const key = JSON.stringify(groups)
       if (key !== layoutKey) {
         layoutKey = key
@@ -593,7 +606,7 @@ export function renderCommandMenu<Ctx>(
   const doc = content.ownerDocument
   const platform = options.platform ?? 'other'
   const children: HTMLElement[] = []
-  groups.forEach((group, index) => {
+  visibleGroups(groups, commands, context).forEach((group, index) => {
     if (index > 0)
       children.push(createAuthoredElement(doc, 'div', { 'data-xh-part': 'separator' }))
     for (const id of group) {

@@ -161,6 +161,24 @@ describe('<xh-designer-properties>', () => {
     expect(row(panel, 'data.note')).not.toBeNull()
   })
 
+  it('写了 enabledWhen 的属性条件不满足时只读（仍显示），满足了照常可改；多选时任一对象不满足就只读', async () => {
+    const gated: DesignerPropertyTarget = {
+      kind: 'task',
+      id: 'g1',
+      value: { label: 'x', locked: true },
+      descriptors: [{ path: ['label'], control: { kind: 'text' }, label: '名称', enabledWhen: { path: ['locked'], equals: false } }],
+    }
+    const panel = await mount(element => element.targets = [gated])
+    const field = (): Element => row(panel, 'label').querySelector('xh-field')!
+    expect(field().hasAttribute('read-only')).toBe(true)
+    panel.targets = [{ ...gated, value: { label: 'x', locked: false } }]
+    await panel.updateComplete
+    expect(field().hasAttribute('read-only')).toBe(false)
+    panel.targets = [{ ...gated, value: { label: 'x', locked: false } }, { ...gated, id: 'g2' }]
+    await panel.updateComplete
+    expect(field().hasAttribute('read-only')).toBe(true)
+  })
+
   it('多选只显示共同属性，取值不同时显示占位「多个值」，写入对每个对象各一份', async () => {
     const other: DesignerPropertyTarget = {
       kind: 'task',
