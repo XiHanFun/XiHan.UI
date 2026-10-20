@@ -51,7 +51,7 @@ describe('web Components 菜单族子菜单 owner', () => {
       </div>
     `
     const select = vi.fn()
-    host.addEventListener('select', select)
+    host.addEventListener('item-select', select)
     document.body.appendChild(host)
     await settle()
     const trigger = submenuTrigger()
@@ -90,7 +90,7 @@ describe('web Components 菜单族子菜单 owner', () => {
       </div>
     `
     const select = vi.fn()
-    host.addEventListener('select', select)
+    host.addEventListener('item-select', select)
     document.body.appendChild(host)
     await settle()
     const trigger = submenuTrigger()

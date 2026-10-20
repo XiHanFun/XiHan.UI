@@ -62,7 +62,7 @@ function mountThreeLevels(): { select: ReturnType<typeof vi.fn> } {
   const host = document.createElement('div')
   document.body.appendChild(host)
   const app = createApp({
-    setup: () => () => h(XhMenuRoot, { onSelect: select }, () => [
+    setup: () => () => h(XhMenuRoot, { onItemSelect: select }, () => [
       h(XhMenuTrigger, () => '文件操作'),
       h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => [
         h(XhMenuItem, { value: 'open' }, () => '打开'),

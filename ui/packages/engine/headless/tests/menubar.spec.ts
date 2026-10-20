@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { Anchor, PositionEnginePort, PositionOptions, PositionRect, Service } from '@xihan-ui/core'
 import type { ExitLease } from '@xihan-ui/core/presence'
-import type { MenubarApi, MenubarSchema, MenubarSelectDetails, MenubarValueChangeDetails } from '../src/menubar'
+import type { MenubarApi, MenubarItemSelectDetails, MenubarSchema, MenubarValueChangeDetails } from '../src/menubar'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
@@ -123,7 +123,7 @@ interface Harness {
   service: Service<MenubarSchema>
   engine: FakeEngine
   valueChanges: MenubarValueChangeDetails[]
-  selects: MenubarSelectDetails[]
+  selects: MenubarItemSelectDetails[]
   state: () => string
   value: () => string | null
   setProps: (next: Partial<Props>) => void
@@ -136,7 +136,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const { disabledMenu, disabledItem, layers = false, noEngine = false } = options
   const props: Partial<Props> = { ...initial }
   const valueChanges: MenubarValueChangeDetails[] = []
-  const selects: MenubarSelectDetails[] = []
+  const selects: MenubarItemSelectDetails[] = []
 
   const runtime = createVanillaRuntime()
   // 受控的 value 必须由 signal 承载：宿主写回要能把 watch 唤醒，
@@ -147,7 +147,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       ...props,
       value: valueSignal.get(),
       onValueChange: d => valueChanges.push(d),
-      onSelect: d => selects.push(d),
+      onItemSelect: d => selects.push(d),
     }),
     runtime,
   })

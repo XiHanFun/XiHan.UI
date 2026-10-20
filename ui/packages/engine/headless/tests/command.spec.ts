@@ -1,4 +1,4 @@
-import type { CommandInputValueChangeDetails, CommandOpenChangeDetails, CommandSchema, CommandSelectDetails } from '../src/command'
+import type { CommandInputValueChangeDetails, CommandItemSelectDetails, CommandOpenChangeDetails, CommandSchema } from '../src/command'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
@@ -201,9 +201,9 @@ describe('commandMachine 非受控', () => {
   })
 
   it('选中命令：发一次 select 并收起；closeOnSelect 关掉即只发不收', () => {
-    const picked: CommandSelectDetails[] = []
+    const picked: CommandItemSelectDetails[] = []
     const closed: CommandOpenChangeDetails[] = []
-    const c = makeCommand({ defaultOpen: true, onSelect: d => picked.push(d), onOpenChange: d => closed.push(d) })
+    const c = makeCommand({ defaultOpen: true, onItemSelect: d => picked.push(d), onOpenChange: d => closed.push(d) })
 
     c.api().select('export')
     expect(picked).toEqual([{ value: 'export', label: '导出报表' }])
@@ -211,14 +211,14 @@ describe('commandMachine 非受控', () => {
     // 选完自动收起也算「用户操作」，原因是 selection 不是 programmatic
     expect(closed).toEqual([{ open: false, reason: 'selection' }])
 
-    const keep = makeCommand({ defaultOpen: true, closeOnSelect: false, onSelect: d => picked.push(d) })
+    const keep = makeCommand({ defaultOpen: true, closeOnSelect: false, onItemSelect: d => picked.push(d) })
     keep.api().select('users')
     expect(keep.state()).toBe('open')
   })
 
   it('禁用的命令选不动：不发 select、不收起', () => {
-    const picked: CommandSelectDetails[] = []
-    const c = makeCommand({ defaultOpen: true, onSelect: d => picked.push(d) })
+    const picked: CommandItemSelectDetails[] = []
+    const c = makeCommand({ defaultOpen: true, onItemSelect: d => picked.push(d) })
     c.api().select('roles')
     expect(picked).toEqual([])
     expect(c.state()).toBe('open')

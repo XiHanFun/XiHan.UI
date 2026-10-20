@@ -39,7 +39,7 @@ function mountMenu(): Handles {
   document.body.appendChild(host)
   const app = createApp({
     setup: () => () =>
-      h(XhMenuRoot, { onSelect: select }, {
+      h(XhMenuRoot, { onItemSelect: select }, {
         default: (scope: { open: boolean, setOpen: (v: boolean) => void }) => {
           rootScope = scope
           return [
@@ -109,7 +109,7 @@ describe('menu 子菜单', () => {
     expect(t.select).not.toHaveBeenCalled()
   })
 
-  it('子层选中汇到根：发根的 select 并整链关闭', async () => {
+  it('子层选中汇到根：发根的 item-select 并整链关闭', async () => {
     const t = mountMenu()
     await openRoot()
     el(SUB_TRIGGER).click()

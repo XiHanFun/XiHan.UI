@@ -36,7 +36,7 @@ export interface MenubarContext {
 export function useMenubar(
   props: MenubarSchema['props'],
   onValueChange?: MenubarSchema['props']['onValueChange'],
-  onSelect?: MenubarSchema['props']['onSelect'],
+  onItemSelect?: MenubarSchema['props']['onItemSelect'],
   onCheckboxValueChange?: MenubarSchema['props']['onCheckboxValueChange'],
   onRadioValueChange?: MenubarSchema['props']['onRadioValueChange'],
 ): MenubarContext {
@@ -62,10 +62,10 @@ export function useMenubar(
     onRootSelect: (details) => {
       const menu = service?.context.get('value') ?? null
       if (menu != null)
-        onSelect?.({ menu, value: details.value })
+        onItemSelect?.({ menu, value: details.value })
     },
   })
-  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onSelect, onCheckboxValueChange, onRadioValueChange }), scope)
+  service = useMachine(menubarMachine, () => ({ ...props, onValueChange, onItemSelect, onCheckboxValueChange, onRadioValueChange }), scope)
 
   const put = (table: Map<string, HTMLElement>): MenubarPartRegistry => (value, el) => {
     if (el)

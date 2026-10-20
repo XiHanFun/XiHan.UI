@@ -66,7 +66,7 @@ interface ContextMenuItemRenderers {
   suffix?: (node: ContextMenuNodeMeta) => ReactNode
 }
 
-export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onSelect'> {
+export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
   /** 条目数据；提供后不必逐条放置部件。 */
   collection?: ContextMenuNode[]
   checkboxValue?: string[]
@@ -97,7 +97,7 @@ export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'
   /** 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 */
   renderItemSuffix?: (node: ContextMenuNodeMeta) => ReactNode
   onOpenChange?: ContextMenuProps['onOpenChange']
-  onSelect?: ContextMenuProps['onSelect']
+  onItemSelect?: ContextMenuProps['onItemSelect']
   onCheckboxValueChange?: ContextMenuProps['onCheckboxValueChange']
   onRadioValueChange?: ContextMenuProps['onRadioValueChange']
   children?: SlotChildren<ContextMenuRootSlotProps>
@@ -126,7 +126,7 @@ export function XhContextMenuRoot({
   renderItemPrefix,
   renderItemSuffix,
   onOpenChange,
-  onSelect,
+  onItemSelect,
   onCheckboxValueChange,
   onRadioValueChange,
   children,
@@ -151,7 +151,7 @@ export function XhContextMenuRoot({
     tone,
     size,
     onOpenChange,
-    onSelect,
+    onItemSelect,
     onCheckboxValueChange,
     onRadioValueChange,
   }) as ContextMenuProps)
@@ -176,7 +176,7 @@ export function XhContextMenuRoot({
   )
 }
 
-XhContextMenuRoot.xhEvents = ['open-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
+XhContextMenuRoot.xhEvents = ['open-change', 'item-select', 'checkbox-value-change', 'radio-value-change'] as const
 
 export interface XhContextMenuTriggerProps extends ComponentPropsWithRef<'div'>, AsChildProps {}
 /** 触发区渲染为 div，语义由 connect 写入的 ARIA 属性给出。 */

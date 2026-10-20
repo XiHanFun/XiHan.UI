@@ -39,7 +39,7 @@ const PUBLIC_EVENTS = {
   'radio-value-change': 'onRadioValueChange',
   'recent-colors-change': 'onRecentColorsChange',
   'row-move': 'onRowMove',
-  'select': 'onSelect',
+  'item-select': 'onItemSelect',
   'sort': 'onSort',
   'transfer': 'onTransfer',
   'status-change': 'onStatusChange',

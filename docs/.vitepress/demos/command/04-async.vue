@@ -63,7 +63,7 @@ function onSelect(details: { label: string }) {
     :filter="false"
     :loading="loading"
     placeholder="搜同事…"
-    @select="onSelect"
+    @item-select="onSelect"
   >
     <template #default>
       <XhCommandTrigger>找一个人</XhCommandTrigger>

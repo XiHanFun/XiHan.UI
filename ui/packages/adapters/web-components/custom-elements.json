@@ -17198,7 +17198,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelect",
+              "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
             },
@@ -17462,9 +17462,9 @@
             },
             {
               "description": "选中一条命令；detail 为 `{ value: string, label: string }`",
-              "name": "select",
+              "name": "item-select",
               "type": {
-                "text": "CommandSelectDetails"
+                "text": "CommandItemSelectDetails"
               }
             }
           ],
@@ -18457,7 +18457,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelect",
+              "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
             },
@@ -18668,9 +18668,9 @@
             },
             {
               "description": "条目被选中（菜单随之关闭）；detail 为 `{ value: string }`",
-              "name": "select",
+              "name": "item-select",
               "type": {
-                "text": "ContextMenuSelectDetails"
+                "text": "ContextMenuItemSelectDetails"
               }
             },
             {
@@ -44865,7 +44865,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelect",
+              "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
             },
@@ -45037,9 +45037,9 @@
             },
             {
               "description": "候选被插入正文；detail 为 `{ value, label, prefix }`",
-              "name": "select",
+              "name": "item-select",
               "type": {
-                "text": "MentionSelectDetails"
+                "text": "MentionItemSelectDetails"
               }
             },
             {
@@ -45855,7 +45855,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelect",
+              "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
             },
@@ -46072,9 +46072,9 @@
             },
             {
               "description": "条目被选中（菜单随之关闭）；detail 为 `{ value: string }`",
-              "name": "select",
+              "name": "item-select",
               "type": {
-                "text": "MenuSelectDetails"
+                "text": "MenuItemSelectDetails"
               }
             },
             {
@@ -46776,7 +46776,7 @@
             },
             {
               "kind": "field",
-              "name": "notifySelect",
+              "name": "notifyItemSelect",
               "privacy": "private",
               "readonly": true
             },
@@ -47006,9 +47006,9 @@
             },
             {
               "description": "条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`",
-              "name": "select",
+              "name": "item-select",
               "type": {
-                "text": "MenubarSelectDetails"
+                "text": "MenubarItemSelectDetails"
               }
             },
             {

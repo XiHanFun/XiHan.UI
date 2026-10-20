@@ -179,7 +179,7 @@ describe('web Components Menu 子菜单 Portal', () => {
   it('叶项选择经逻辑所有权只向根上报一次，并按叶到根关闭', async () => {
     const handles = mount()
     const select = vi.fn()
-    handles.root.addEventListener('select', select)
+    handles.root.addEventListener('item-select', select)
     await settle()
     await openSubmenu(handles)
     handles.content.querySelector<HTMLElement>('[value="sms"]')!.click()

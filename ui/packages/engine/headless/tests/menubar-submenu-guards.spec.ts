@@ -13,30 +13,30 @@ const collection = [
 
 function menubar(props: Partial<MenubarSchema['props']> = {}) {
   const runtime = createVanillaRuntime()
-  const onSelect = vi.fn()
+  const onItemSelect = vi.fn()
   const service = createService(menubarMachine, {
-    props: () => ({ collection, defaultValue: 'file', onSelect, ...props }),
+    props: () => ({ collection, defaultValue: 'file', onItemSelect, ...props }),
     runtime,
   })
   runtime.start()
-  return { onSelect, api: () => connectMenubar(service, normalizeProps) }
+  return { onItemSelect, api: () => connectMenubar(service, normalizeProps) }
 }
 
 describe('子菜单入口不当普通条目', () => {
   it('点子菜单入口不发选中——它自己管展开', () => {
-    const { onSelect, api } = menubar()
+    const { onItemSelect, api } = menubar()
     const props = api().getItemProps({ value: 'share' }) as Record<string, unknown>
     const el = document.createElement('div')
     el.setAttribute('aria-haspopup', 'menu')
     ;(props.onClick as (e: unknown) => void)({ currentTarget: el })
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onItemSelect).not.toHaveBeenCalled()
   })
 
   it('普通条目照常发选中', () => {
-    const { onSelect, api } = menubar()
+    const { onItemSelect, api } = menubar()
     const props = api().getItemProps({ value: 'open' }) as Record<string, unknown>
     ;(props.onClick as (e: unknown) => void)({ currentTarget: document.createElement('div') })
-    expect(onSelect).toHaveBeenCalled()
+    expect(onItemSelect).toHaveBeenCalled()
   })
 })
 

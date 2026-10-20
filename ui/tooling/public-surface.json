@@ -6828,12 +6828,12 @@
       "CommandGroupProps",
       "CommandInputValueChangeDetails",
       "CommandItemProps",
+      "CommandItemSelectDetails",
       "CommandNode",
       "CommandNodeMeta",
       "CommandOpenChangeDetails",
       "CommandRefs",
       "CommandSchema",
-      "CommandSelectDetails",
       "CommandStructureOptions",
       "CommandTranslations",
       "CompileFormPatternOptions",
@@ -6847,6 +6847,7 @@
       "ContextMenuFocusIntent",
       "ContextMenuGroupProps",
       "ContextMenuItemProps",
+      "ContextMenuItemSelectDetails",
       "ContextMenuNode",
       "ContextMenuNodeMeta",
       "ContextMenuOpenChangeDetails",
@@ -6856,7 +6857,6 @@
       "ContextMenuRadioValueChangeDetails",
       "ContextMenuRefs",
       "ContextMenuSchema",
-      "ContextMenuSelectDetails",
       "ContextMenuStructureOptions",
       "ContextMenuTranslations",
       "CropConstraints",
@@ -7588,6 +7588,7 @@
       "MentionInputHost",
       "MentionInputProps",
       "MentionItemProps",
+      "MentionItemSelectDetails",
       "MentionNode",
       "MentionNodeMeta",
       "MentionOpenChangeDetails",
@@ -7595,7 +7596,6 @@
       "MentionRange",
       "MentionRefs",
       "MentionSchema",
-      "MentionSelectDetails",
       "MentionStructureOptions",
       "MentionTranslations",
       "MentionTrigger",
@@ -7608,6 +7608,7 @@
       "MenuFocusIntent",
       "MenuGroupProps",
       "MenuItemProps",
+      "MenuItemSelectDetails",
       "MenuNode",
       "MenuNodeMeta",
       "MenuNodesStructureMeta",
@@ -7618,7 +7619,6 @@
       "MenuRadioValueChangeDetails",
       "MenuRefs",
       "MenuSchema",
-      "MenuSelectDetails",
       "MenuStructureOptions",
       "MenuTranslations",
       "MenuTreeNode",
@@ -7631,6 +7631,7 @@
       "MenubarFocusIntent",
       "MenubarGroupProps",
       "MenubarItemProps",
+      "MenubarItemSelectDetails",
       "MenubarNode",
       "MenubarNodeMeta",
       "MenubarRadioItemProps",
@@ -7638,7 +7639,6 @@
       "MenubarRadioValueChangeDetails",
       "MenubarRefs",
       "MenubarSchema",
-      "MenubarSelectDetails",
       "MenubarStructureOptions",
       "MenubarTranslations",
       "MenubarTriggerProps",
@@ -13629,8 +13629,8 @@
       "loop",
       "modal",
       "onInputValueChange",
+      "onItemSelect",
       "onOpenChange",
-      "onSelect",
       "open",
       "placeholder",
       "restoreFocus",
@@ -13650,9 +13650,9 @@
       "loop",
       "offset",
       "onCheckboxValueChange",
+      "onItemSelect",
       "onOpenChange",
       "onRadioValueChange",
-      "onSelect",
       "open",
       "placement",
       "radioValue",
@@ -14481,9 +14481,9 @@
       "loop",
       "name",
       "offset",
+      "onItemSelect",
       "onOpenChange",
       "onQueryChange",
-      "onSelect",
       "onValueChange",
       "placeholder",
       "placement",
@@ -14509,9 +14509,9 @@
       "loop",
       "offset",
       "onCheckboxValueChange",
+      "onItemSelect",
       "onOpenChange",
       "onRadioValueChange",
-      "onSelect",
       "open",
       "openOnHover",
       "placement",
@@ -14533,8 +14533,8 @@
       "loop",
       "offset",
       "onCheckboxValueChange",
+      "onItemSelect",
       "onRadioValueChange",
-      "onSelect",
       "onValueChange",
       "orientation",
       "placement",
@@ -22305,8 +22305,8 @@
       ],
       "events": [
         "input-value-change",
-        "open-change",
-        "select"
+        "item-select",
+        "open-change"
       ]
     },
     "xh-config": {
@@ -22340,9 +22340,9 @@
       ],
       "events": [
         "checkbox-value-change",
+        "item-select",
         "open-change",
-        "radio-value-change",
-        "select"
+        "radio-value-change"
       ]
     },
     "xh-date-field": {
@@ -23224,9 +23224,9 @@
         "variant"
       ],
       "events": [
+        "item-select",
         "open-change",
         "query-change",
-        "select",
         "value-change"
       ]
     },
@@ -23251,9 +23251,9 @@
       ],
       "events": [
         "checkbox-value-change",
+        "item-select",
         "open-change",
-        "radio-value-change",
-        "select"
+        "radio-value-change"
       ]
     },
     "xh-menubar": {
@@ -23272,8 +23272,8 @@
       ],
       "events": [
         "checkbox-value-change",
+        "item-select",
         "radio-value-change",
-        "select",
         "value-change"
       ]
     },

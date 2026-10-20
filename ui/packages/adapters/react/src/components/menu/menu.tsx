@@ -90,7 +90,7 @@ export interface XhMenuRootProps {
   /** 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 */
   renderItemSuffix?: (node: MenuNodeMeta) => ReactNode
   onOpenChange?: MenuProps['onOpenChange']
-  onSelect?: MenuProps['onSelect']
+  onItemSelect?: MenuProps['onItemSelect']
   onCheckboxValueChange?: MenuProps['onCheckboxValueChange']
   onRadioValueChange?: MenuProps['onRadioValueChange']
   children?: SlotChildren<MenuRootSlotProps>
@@ -132,7 +132,7 @@ export function XhMenuRoot({
   )
 }
 
-XhMenuRoot.xhEvents = ['open-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
+XhMenuRoot.xhEvents = ['open-change', 'item-select', 'checkbox-value-change', 'radio-value-change'] as const
 
 export interface XhMenuTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 export function XhMenuTrigger({ children, asChild, ...rest }: XhMenuTriggerProps): ReactNode {

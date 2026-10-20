@@ -6,7 +6,7 @@
 // 提供 context menu 相关实现。
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema, ContextMenuSelectDetails } from '@xihan-ui/headless'
+import type { ContextMenuAnyItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuItemSelectDetails, ContextMenuNode, ContextMenuOpenChangeDetails, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
@@ -56,7 +56,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
+ * @fires item-select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @fires checkbox-value-change - checkbox 选中集合变化
  * @fires radio-value-change - RadioGroup 选中映射变化
  * @csspart root - 组件根容器（承载 data-state）
@@ -165,7 +165,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
     isOpen: () => this.ctrl.service.state.get() === 'open',
     close: () => this.ctrl.service.send({ type: 'CLOSE' }),
     isRoot: () => true,
-    onRootSelect: details => this.notifySelect(details),
+    onRootSelect: details => this.notifyItemSelect(details),
   })
 
   private readonly submenuOwner: MenuSubmenuOwner = {
@@ -189,8 +189,8 @@ export class XhContextMenuElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('open-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelect = (details: ContextMenuSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyItemSelect = (details: ContextMenuItemSelectDetails): void => {
+    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyCheckboxValue = (details: ContextMenuCheckboxValueChangeDetails): void => {
@@ -291,7 +291,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       tone: this.tone,
       size: this.size,
       onOpenChange: this.notifyOpen,
-      onSelect: this.notifySelect,
+      onItemSelect: this.notifyItemSelect,
       onCheckboxValueChange: this.notifyCheckboxValue,
       onRadioValueChange: this.notifyRadioValue,
     }

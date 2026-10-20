@@ -148,7 +148,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
 | `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
 | `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报告 null。 |
-| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
+| `onItemSelect` | `(details: MentionItemSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
 ### MentionNode
@@ -171,7 +171,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | --- | --- | --- |
 | `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
 | `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null |
-| `select` | `MentionSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
+| `item-select` | `MentionItemSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
 | `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
 
 ### 插槽

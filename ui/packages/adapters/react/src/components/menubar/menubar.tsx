@@ -61,8 +61,8 @@ function useMenubarPart(register: MenubarPartRegistry, value: string): (el: HTML
 /** 函数式 children 的载荷：当前展开的菜单项、是否有菜单展开，以及切换展开项的命令。 */
 export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
-/** 根上自有的取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 /** 代铺条目时可逐槽接管的三处渲染；三处都不给即完全按数据铺。 */
 interface MenubarItemRenderers {
@@ -91,7 +91,7 @@ export interface XhMenubarRootProps extends RootElementProps {
   size?: Size
   translations?: Partial<MenubarTranslations>
   onValueChange?: MenubarProps['onValueChange']
-  onSelect?: MenubarProps['onSelect']
+  onItemSelect?: MenubarProps['onItemSelect']
   onCheckboxValueChange?: MenubarProps['onCheckboxValueChange']
   onRadioValueChange?: MenubarProps['onRadioValueChange']
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
@@ -123,7 +123,7 @@ export function XhMenubarRoot({
   size,
   translations,
   onValueChange,
-  onSelect,
+  onItemSelect,
   onCheckboxValueChange,
   onRadioValueChange,
   children,
@@ -151,7 +151,7 @@ export function XhMenubarRoot({
     size,
     translations,
     onValueChange,
-    onSelect,
+    onItemSelect,
     onCheckboxValueChange,
     onRadioValueChange,
   }
@@ -189,7 +189,7 @@ export function XhMenubarRoot({
   )
 }
 
-XhMenubarRoot.xhEvents = ['value-change', 'select', 'checkbox-value-change', 'radio-value-change'] as const
+XhMenubarRoot.xhEvents = ['value-change', 'item-select', 'checkbox-value-change', 'radio-value-change'] as const
 
 export interface XhMenubarTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'>, AsChildProps {
   value: string

@@ -32,7 +32,7 @@ export interface CommandContext {
 
 export function useCommand(
   props: CommandSchema['props'],
-  handlers: Pick<CommandSchema['props'], 'onOpenChange' | 'onInputValueChange' | 'onSelect'> = {},
+  handlers: Pick<CommandSchema['props'], 'onOpenChange' | 'onInputValueChange' | 'onItemSelect'> = {},
 ): CommandContext {
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)

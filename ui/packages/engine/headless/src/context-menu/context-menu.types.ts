@@ -59,7 +59,7 @@ export interface ContextMenuOpenChangeDetails {
   reason?: OverlayCloseReason
 }
 
-export interface ContextMenuSelectDetails {
+export interface ContextMenuItemSelectDetails {
   value: string
 }
 
@@ -204,7 +204,7 @@ export interface ContextMenuSchema extends MachineSchema {
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ContextMenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */
-    onSelect?: (details: ContextMenuSelectDetails) => void
+    onItemSelect?: (details: ContextMenuItemSelectDetails) => void
     onCheckboxValueChange?: (details: MenuCheckboxValueChangeDetails) => void
     onRadioValueChange?: (details: MenuRadioValueChangeDetails) => void
   }
@@ -272,7 +272,7 @@ export interface ContextMenuSchema extends MachineSchema {
   action:
     | 'invokeOnOpen'
     | 'invokeOnClose'
-    | 'invokeOnSelect'
+    | 'invokeOnItemSelect'
     | 'syncOpen'
     | 'setPoint'
     | 'setPointFromPress'

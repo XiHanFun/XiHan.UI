@@ -117,7 +117,7 @@ export interface MentionQueryChangeDetails {
   prefix: string | null
 }
 
-export interface MentionSelectDetails {
+export interface MentionItemSelectDetails {
   /** 被选中候选的值。 */
   value: string
   /** 实际插入正文的文本。 */
@@ -202,7 +202,7 @@ export interface MentionSchema extends MachineSchema {
     /** 查询串变化回调：调用方据此重新过滤候选。收起时报告 null。 */
     onQueryChange?: (details: MentionQueryChangeDetails) => void
     /** 候选被插入正文时回调，附带是哪一条。 */
-    onSelect?: (details: MentionSelectDetails) => void
+    onItemSelect?: (details: MentionItemSelectDetails) => void
     /** 浮层开合回调。 */
     onOpenChange?: (details: MentionOpenChangeDetails) => void
   }

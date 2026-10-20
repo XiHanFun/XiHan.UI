@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { MenuSelectDetails } from '../src'
+import type { MenuItemSelectDetails } from '../src'
 import { describe, expect, it, vi } from 'vitest'
 import { createMenuTreeNode } from '../src'
 
@@ -11,7 +11,7 @@ interface Harness {
 
 function layer(name: string, log: string[], options: {
   root?: boolean
-  onRootSelect?: (details: MenuSelectDetails) => void
+  onRootSelect?: (details: MenuItemSelectDetails) => void
 } = {}): Harness {
   const positioner = document.createElement('div')
   positioner.dataset.layer = name
@@ -78,7 +78,7 @@ describe('menu 逻辑树', () => {
 
   it('三级叶项按叶到根收链，根选择只上报一次', () => {
     const log: string[] = []
-    const selected = vi.fn((details: MenuSelectDetails) => log.push(`select:${details.value}`))
+    const selected = vi.fn((details: MenuItemSelectDetails) => log.push(`select:${details.value}`))
     const root = layer('root', log, { root: true, onRootSelect: selected })
     const middle = layer('middle', log)
     const leaf = layer('leaf', log)
@@ -96,8 +96,8 @@ describe('menu 逻辑树', () => {
   })
 
   it('根菜单直接选择不重复关闭，根出口可映射 ContextMenu 与 Menubar 载荷', () => {
-    const menu: MenuSelectDetails[] = []
-    const contextMenu: MenuSelectDetails[] = []
+    const menu: MenuItemSelectDetails[] = []
+    const contextMenu: MenuItemSelectDetails[] = []
     const menubar: Array<{ menu: string, value: string }> = []
     const direct = layer('menu', [], { root: true, onRootSelect: details => menu.push(details) })
     const context = layer('context-menu', [], { root: true, onRootSelect: details => contextMenu.push(details) })

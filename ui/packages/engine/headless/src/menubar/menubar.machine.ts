@@ -160,8 +160,8 @@ export const menubarMachine = createMachine({
         ],
         // 选中即收起：先发选中详情再清 value
         'ITEM.SELECT': [
-          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnSelect'] },
-          { actions: ['selectChoice', 'invokeOnSelect', 'setReturnFocus', 'clearValue'] },
+          { guard: 'keepsMenuOpen', actions: ['selectChoice', 'invokeOnItemSelect'] },
+          { actions: ['selectChoice', 'invokeOnItemSelect', 'setReturnFocus', 'clearValue'] },
         ],
         'ITEM.FOCUS': { actions: ['setFocusedItem'] },
         // 焦点条目被移出 DOM 时重挑锚点
@@ -396,11 +396,11 @@ export const menubarMachine = createMachine({
         focusItem(queryItems(root, menubarTriggerQuery).find(el => itemValue(el) === value) ?? null)
       },
 
-      invokeOnSelect: ({ prop, context, event }) => {
+      invokeOnItemSelect: ({ prop, context, event }) => {
         const e = event.current()
         const menu = context.get('value') ?? null
         if (e.type === 'ITEM.SELECT' && menu != null && (e.kind === 'item' || e.close))
-          prop('onSelect')?.({ menu, value: e.value })
+          prop('onItemSelect')?.({ menu, value: e.value })
       },
       selectChoice: ({ context, event }) => {
         const e = event.current()

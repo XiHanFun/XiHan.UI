@@ -670,7 +670,7 @@ export const menubarSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '点击条目：派发 select 后收起，焦点归还 trigger',
+      name: '点击条目：派发 item-select 后收起，焦点归还 trigger',
       spec: { apg: APG },
       steps: [
         { kind: 'click', part: 'trigger[0]' },
@@ -685,7 +685,7 @@ export const menubarSuite: ConformanceSuite = {
             },
             // 先选中详情、后开合意图
             events: [
-              { type: 'select', detail: { menu: 'file', value: 'open' } },
+              { type: 'item-select', detail: { menu: 'file', value: 'open' } },
               { type: 'value-change', detail: { value: null } },
             ],
           },
@@ -714,7 +714,7 @@ export const menubarSuite: ConformanceSuite = {
               'content[1]': { hidden: '' },
             },
             events: [
-              { type: 'select', detail: { menu: 'edit', value: 'cut' } },
+              { type: 'item-select', detail: { menu: 'edit', value: 'cut' } },
               { type: 'value-change', detail: { value: null } },
             ],
           },

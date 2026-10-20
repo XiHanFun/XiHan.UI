@@ -108,7 +108,7 @@ export interface CommandInputValueChangeDetails {
   inputValue: string
 }
 
-export interface CommandSelectDetails {
+export interface CommandItemSelectDetails {
   /** 选中命令的 value。 */
   value: string
   /** 选中时的显示文本。 */
@@ -154,7 +154,7 @@ export interface CommandSchema extends MachineSchema {
     /** 检索串变化意图回调。 */
     onInputValueChange?: (details: CommandInputValueChangeDetails) => void
     /** 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 */
-    onSelect?: (details: CommandSelectDetails) => void
+    onItemSelect?: (details: CommandItemSelectDetails) => void
   }
   context: {
     /**
@@ -213,7 +213,7 @@ export interface CommandSchema extends MachineSchema {
     | 'highlightFirst'
     | 'highlightIfDangling'
     | 'highlightVisibleIfDangling'
-    | 'invokeOnSelect'
+    | 'invokeOnItemSelect'
     | 'syncModalResources'
     | 'startPress'
     | 'endPress'

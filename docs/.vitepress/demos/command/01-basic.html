@@ -60,7 +60,7 @@
   ];
 
   const readout = document.getElementById("command-basic-readout");
-  host.addEventListener("select", (event) => {
+  host.addEventListener("item-select", (event) => {
     readout.textContent = `执行了：${event.detail.label}`;
   });
 </script>

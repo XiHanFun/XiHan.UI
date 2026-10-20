@@ -341,7 +341,7 @@ describe('toolbar 「更多」菜单的条目', () => {
     const bar = mountToolbar(FOUR, {}, 130)
     const onClick = vi.fn()
     bar.items[3]!.addEventListener('click', onClick)
-    toolbarOverflowMenuProps(bar.service).onSelect?.({ value: 'd' })
+    toolbarOverflowMenuProps(bar.service).onItemSelect?.({ value: 'd' })
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 })

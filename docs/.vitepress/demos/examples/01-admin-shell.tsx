@@ -161,7 +161,7 @@ export default function Demo(): ReactNode {
                   <XhAvatarFallback>曦</XhAvatarFallback>
                 </XhAvatarRoot>
               )}
-              onSelect={details => setLastCommand(`账户 · ${details.value}`)}
+              onItemSelect={details => setLastCommand(`账户 · ${details.value}`)}
             />
           </div>
         </XhLayoutHeader>

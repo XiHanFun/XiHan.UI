@@ -6,7 +6,7 @@
 // 提供 menu.tree 相关实现。
 
 import type { Cleanup } from '@xihan-ui/core'
-import type { MenuSelectDetails } from './menu.types'
+import type { MenuItemSelectDetails } from './menu.types'
 
 /**
  * 一层菜单在逻辑树中的行为端口。DOM 结构可以经 Portal 分离，父子关系仍由本节点维护。
@@ -19,7 +19,7 @@ export interface MenuTreeNode {
   /** 当前展开后代经 Portal 搬离本层 content 的全部 positioner。 */
   getHoverBranches: () => readonly HTMLElement[]
   /** 本层菜单完成叶项选择后调用；选择会沿逻辑父链汇到唯一根。 */
-  select: (details: MenuSelectDetails) => void
+  select: (details: MenuItemSelectDetails) => void
 }
 
 export interface MenuTreeNodeOptions {
@@ -35,7 +35,7 @@ export interface MenuTreeNodeOptions {
    */
   isRoot: () => boolean
   /** 根选择出口。Menu/ContextMenu 原样上报，Menubar 在这里补所属菜单值。 */
-  onRootSelect?: (details: MenuSelectDetails) => void
+  onRootSelect?: (details: MenuItemSelectDetails) => void
 }
 
 interface MenuTreeState {
@@ -67,7 +67,7 @@ function assertCanAttach(parent: MenuTreeNode, child: MenuTreeNode): void {
 }
 
 /** 后代已经先收起；沿父链逐层关闭，抵达根时只上报一次并最后关闭根。 */
-function acceptDescendantSelection(node: MenuTreeNode, details: MenuSelectDetails): void {
+function acceptDescendantSelection(node: MenuTreeNode, details: MenuItemSelectDetails): void {
   const state = stateOf(node)
   if (state.parent) {
     state.options.close()

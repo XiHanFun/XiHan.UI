@@ -59,7 +59,7 @@ export default function Demo(): ReactNode {
         filter={false}
         loading={loading}
         placeholder="搜同事…"
-        onSelect={details => setPicked(`选了：${details.label}`)}
+        onItemSelect={details => setPicked(`选了：${details.label}`)}
       >
         <XhCommandTrigger>找一个人</XhCommandTrigger>
         <XhCommandContent>

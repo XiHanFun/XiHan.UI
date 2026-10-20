@@ -361,7 +361,7 @@ export const mentionSuite: ConformanceSuite = {
             // 先正文、再是哪一条、最后开合
             events: [
               { type: 'value-change', detail: { value: '请 @Lilei  看一下' } },
-              { type: 'select', detail: { value: 'lilei', label: 'Lilei', prefix: '@' } },
+              { type: 'item-select', detail: { value: 'lilei', label: 'Lilei', prefix: '@' } },
               { type: 'open-change', detail: { open: false } },
             ],
           },
@@ -438,7 +438,7 @@ export const mentionSuite: ConformanceSuite = {
             parts: { content: { hidden: '' } },
             events: [
               { type: 'value-change', detail: { value: '@Poly ' } },
-              { type: 'select', detail: { value: 'poly', label: 'Poly', prefix: '@' } },
+              { type: 'item-select', detail: { value: 'poly', label: 'Poly', prefix: '@' } },
               { type: 'open-change', detail: { open: false } },
             ],
           },

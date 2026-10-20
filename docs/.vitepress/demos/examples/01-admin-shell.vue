@@ -109,7 +109,7 @@ const lastCommand = ref("（无）");
         <XhSeparator orientation="vertical" />
 
         <!-- 触发器是作者写的内容，菜单只接管展开与键盘 -->
-        <XhMenuRoot :collection="account" @select="lastCommand = `账户 · ${$event.value}`">
+        <XhMenuRoot :collection="account" @item-select="lastCommand = `账户 · ${$event.value}`">
           <template #trigger>
             <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
               <XhAvatarImage />

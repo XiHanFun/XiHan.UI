@@ -379,8 +379,8 @@ export function createCommandToolbar<Ctx>(doc: Document, options: CommandToolbar
       if (popup?.kind === 'menu' && host.open && current)
         paintMenu(host, command, current.commands, current.context)
     }
-    // 普通条目、命令与单选条目（选中即收起）派发 select
-    host.addEventListener('select', event => choose((event as CustomEvent<{ value: string }>).detail.value))
+    // 普通条目、命令与单选条目（选中即收起）派发 item-select
+    host.addEventListener('item-select', event => choose((event as CustomEvent<{ value: string }>).detail.value))
     // 复选条目选中后菜单不收起，只派发 checkbox-value-change：与此刻的勾选比出点的是哪一条
     host.addEventListener('checkbox-value-change', (event) => {
       const next = new Set((event as CustomEvent<{ value: string[] }>).detail.value)

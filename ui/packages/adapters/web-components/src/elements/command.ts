@@ -12,11 +12,11 @@ import type {
   CommandGroupMeta,
   CommandInputValueChangeDetails,
   CommandItemProps,
+  CommandItemSelectDetails,
   CommandNode,
   CommandNodeMeta,
   CommandOpenChangeDetails,
   CommandSchema,
-  CommandSelectDetails,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
@@ -67,7 +67,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: string }`
  * @fires input-value-change - 检索串变化；detail 为 `{ inputValue: string }`
- * @fires select - 选中一条命令；detail 为 `{ value: string, label: string }`
+ * @fires item-select - 选中一条命令；detail 为 `{ value: string, label: string }`
  * @csspart trigger - 打开面板的按钮，须是原生 button；焦点关闭后归还给它
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器，由皮肤的 inset 直接摆放
@@ -187,8 +187,8 @@ export class XhCommandElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('input-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelect = (details: CommandSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyItemSelect = (details: CommandItemSelectDetails): void => {
+    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<CommandSchema>(
@@ -282,7 +282,7 @@ export class XhCommandElement extends XhPortalHostElement {
       variant: this.variant,
       onOpenChange: this.notifyOpen,
       onInputValueChange: this.notifyInputValue,
-      onSelect: this.notifySelect,
+      onItemSelect: this.notifyItemSelect,
     }
   }
 

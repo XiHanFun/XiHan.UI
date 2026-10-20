@@ -58,7 +58,7 @@
     mention.value = event.detail.value;
   });
   // 名单按值去重；正文里被删掉的提及不在这里回收，需要的话按正文重新扫一遍
-  mention.addEventListener("select", (event) => {
+  mention.addEventListener("item-select", (event) => {
     if (!mentioned.includes(event.detail.value)) {
       mentioned = [...mentioned, event.detail.value];
       showMentioned();

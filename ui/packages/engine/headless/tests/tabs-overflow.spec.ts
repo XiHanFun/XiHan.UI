@@ -328,10 +328,10 @@ describe('标签页 · 「更多」下拉的菜单 props', () => {
     expect(rtl.size).toBe('lg')
   })
 
-  it('菜单的 onSelect 即「更多」下拉里选中：选中那个标签', async () => {
+  it('菜单的 onItemSelect 即「更多」下拉里选中：选中那个标签', async () => {
     const t = mount()
     await t.measure()
-    tabsOverflowMenuProps(t.service).onSelect?.({ value: 'd' })
+    tabsOverflowMenuProps(t.service).onItemSelect?.({ value: 'd' })
     expect(t.api().value).toBe('d')
   })
 })

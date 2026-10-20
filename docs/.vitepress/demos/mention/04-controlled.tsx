@@ -39,7 +39,7 @@ export default function Demo(): ReactNode {
         placeholder="输入 @ 提及同事"
         translations={{ input: "会议纪要", content: "提及谁" }}
         onQueryChange={details => setQuery(details.query)}
-        onSelect={onSelect}
+        onItemSelect={onSelect}
       />
       <XhButton variant="outline" size="sm" onClick={reset}>清空</XhButton>
       <p data-demo-output>{`已提及：${mentioned.join("、") || "（无）"}`}</p>

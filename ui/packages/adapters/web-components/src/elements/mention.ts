@@ -10,12 +10,12 @@ import type {
   FormControlState,
   MentionInputEl,
   MentionItemProps,
+  MentionItemSelectDetails,
   MentionNode,
   MentionOpenChangeDetails,
   MentionQueryChangeDetails,
   MentionRange,
   MentionSchema,
-  MentionSelectDetails,
   MentionTranslations,
   MentionValueChangeDetails,
 } from '@xihan-ui/headless'
@@ -76,7 +76,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 正文变化；detail 为 `{ value: string }`
  * @fires query-change - 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null
- * @fires select - 候选被插入正文；detail 为 `{ value, label, prefix }`
+ * @fires item-select - 候选被插入正文；detail 为 `{ value, label, prefix }`
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
  * @csspart root - 组件根容器（承载 data-state / data-disabled 与三个视觉轴）
  * @csspart label - 标题；`for` 恒指向输入框，因此须是原生 `<label>` 才可点击
@@ -180,8 +180,8 @@ export class XhMentionElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('query-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifySelect = (details: MentionSelectDetails): void => {
-    this.dispatchEvent(new CustomEvent('select', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyItemSelect = (details: MentionItemSelectDetails): void => {
+    this.dispatchEvent(new CustomEvent('item-select', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyOpen = (details: MentionOpenChangeDetails): void => {
@@ -241,7 +241,7 @@ export class XhMentionElement extends XhPortalHostElement {
       size: this.size,
       onValueChange: this.notifyValue,
       onQueryChange: this.notifyQuery,
-      onSelect: this.notifySelect,
+      onItemSelect: this.notifyItemSelect,
       onOpenChange: this.notifyOpen,
     }
   }
