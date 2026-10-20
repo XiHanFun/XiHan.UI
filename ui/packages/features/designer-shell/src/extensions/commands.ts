@@ -209,7 +209,8 @@ export interface CommandMenuData {
 
 /**
  * 把菜单命令的各项换成 <xh-menu> 的数据：分隔线落到下一项的 separatorBefore 上，打头与收尾的分隔线不画；
- * 写成命令 id 的项按那条命令的文字、图标、可用与语气铺；可勾选的条目按 group 分复选与单选。
+ * 写成命令 id 的项按那条命令的文字、图标、可用与语气铺，开关式命令（有 checked）是复选条目，勾照它此刻的状态；
+ * 可勾选的条目按 group 分复选与单选。
  * 条目的值是 prefix 加 item:<条目值> 或 command:<命令 id>。
  */
 export function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[], commands: DesignerCommandTable<Ctx>, context: Ctx, prefix = ''): CommandMenuData {
@@ -228,14 +229,18 @@ export function commandMenuData<Ctx>(entries: readonly DesignerCommandMenuEntry[
       const command = commands.get(entry)
       if (!command)
         throw new TypeError(`[xh] 菜单命令里的 ${entry} 不是登记过的命令`)
+      const value = `${prefix}${MENU_COMMAND_PREFIX}${entry}`
       collection.push({
         ...base,
-        value: `${prefix}${MENU_COMMAND_PREFIX}${entry}`,
+        value,
         label: commandLabel(command, context),
         disabled: !commandEnabled(command, context),
         ...(command.icon ? { icon: command.icon } : {}),
         ...(command.tone ? { tone: command.tone } : {}),
+        ...(command.checked ? { kind: 'checkbox' as const } : {}),
       })
+      if (command.checked?.(context))
+        checkboxValue.push(value)
       continue
     }
     const value = `${prefix}${MENU_ITEM_PREFIX}${entry.value}`

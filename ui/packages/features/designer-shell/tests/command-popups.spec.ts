@@ -169,6 +169,23 @@ describe('菜单命令', () => {
     expect(log).toEqual(['select grid'])
   })
 
+  it('写成 id 的开关式命令是复选条目：勾照那条命令此刻的状态，点了执行那条命令，菜单开着就按新状态重铺', () => {
+    const log: string[] = []
+    let snap = true
+    const t = mount({ page: 1, log })
+    const commands = new Map(t.commands)
+      .set('snap', { id: 'snap', label: '吸附', checked: () => snap, run: () => {
+        snap = !snap
+        log.push('snap')
+      } })
+      .set('view-menu', { id: 'view-menu', label: '视图', menu: () => ['snap'] })
+    t.bar.update([['view-menu']], commands, { page: 1, log }, '页面')
+    t.button('view-menu').click()
+    expect([t.menu().collection, t.menu().checkboxValue]).toEqual([[{ value: 'command:snap', label: '吸附', disabled: false, kind: 'checkbox' }], ['command:snap']])
+    t.menu().dispatchEvent(new CustomEvent('checkbox-value-change', { detail: { value: [] } }))
+    expect([log, t.menu().checkboxValue]).toEqual([['snap'], []])
+  })
+
   it('菜单命令的项写了没登记的命令 id 时抛错；没有 run 的弹层与菜单命令放进右键菜单时抛错', () => {
     const t = mount({ page: 0, log: [] })
     const broken = new Map(t.commands).set('page-menu', { ...t.commands.get('page-menu')!, menu: () => ['nope'] })

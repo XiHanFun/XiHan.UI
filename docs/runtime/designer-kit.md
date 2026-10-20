@@ -674,7 +674,7 @@ const request: DesignerFieldSource = {
 命令除了直接执行，还可以在工具栏上点开一块锚在按钮上的面板或一张菜单，两者只能给一个：
 
 - **弹层命令**给 `panel(context) => { element, update?, destroy? }`：每次打开建一份，`element` 放进锚在按钮上的弹层，弹层开着时设计器状态变了调 `update`，关掉后调 `destroy`。打印的「页面设置」就这样做。
-- **菜单命令**给 `menu(context)` 与 `select(value, context)`：`menu` 每次刷新现算各项，一项是条目 `{ value, label, icon?, checked?, group?, disabled?, tone? }`、另一条命令的 id（按那条命令的文字、图标、可用与语气铺，选中即执行它），或 `'separator'`。条目选中时调 `select`。给了 `checked` 是可勾选的条目：写了 `group` 是同组单选，选中后菜单收起；没写是复选，选中后菜单不收起。
+- **菜单命令**给 `menu(context)` 与 `select(value, context)`：`menu` 每次刷新现算各项，一项是条目 `{ value, label, icon?, checked?, group?, disabled?, tone? }`、另一条命令的 id（按那条命令的文字、图标、可用与语气铺，开关式命令带勾，选中即执行它），或 `'separator'`。条目选中时调 `select`。给了 `checked` 是可勾选的条目：写了 `group` 是同组单选，选中后菜单收起；没写是复选，选中后菜单不收起。
 - 这两类命令可以不给 `run`：工具栏上点它们是打开弹层或菜单，不调 `run`。要让快捷键也能打开，给一个 `run`，在里面调命令工具栏的 `open(id)`。
 - 收进「更多」时，点了打开同一块面板或同一张菜单，锚在「更多」钮上。界面的部分见 designer-shell 那一页的「命令」。
 

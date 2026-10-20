@@ -74,6 +74,7 @@ describe('内置菜单与缺省排列', () => {
       'show-toolbar',
       'show-status-bar',
       'show-menubar',
+      'appearance',
       'start-tour',
       'help',
       'shortcuts',
@@ -82,7 +83,7 @@ describe('内置菜单与缺省排列', () => {
     expect(designerMenubarLayout(all)).toEqual({
       file: [['save'], ['open-file'], ['settings']],
       edit: [['undo', 'redo'], ['cut', 'copy', 'paste', 'delete', 'duplicate'], ['select-all'], ['edit-json']],
-      view: [['design', 'preview'], ['zoom-in', 'zoom-out', 'zoom-to-fit', 'zoom-to-actual'], ['pan-tool'], ['panels'], ['show-toolbar', 'show-status-bar', 'show-menubar']],
+      view: [['design', 'preview'], ['zoom-in', 'zoom-out', 'zoom-to-fit', 'zoom-to-actual'], ['pan-tool'], ['panels', 'appearance']],
       help: [['start-tour', 'help', 'shortcuts'], ['about']],
     })
     expect(designerMenubarLayout(table(cmd('undo'), cmd('delete'), cmd('settings')))).toEqual({
@@ -157,7 +158,7 @@ describe('collectMenubarMenus', () => {
 })
 
 interface MenubarHost extends HTMLElement {
-  collection?: { value: string, label?: string, items?: { value: string, label?: string, kind?: string, icon?: unknown, shortcut?: string, disabled?: boolean, separatorBefore?: boolean, closeOnSelect?: boolean, children?: { value: string, label?: string, kind?: string, separatorBefore?: boolean }[] }[] }[]
+  collection?: { value: string, label?: string, items?: { value: string, label?: string, kind?: string, icon?: unknown, shortcut?: string, disabled?: boolean, separatorBefore?: boolean, closeOnSelect?: boolean, checkboxValue?: string[], children?: { value: string, label?: string, kind?: string, separatorBefore?: boolean }[] }[] }[]
   checkboxValue?: string[]
   translations?: { root?: string }
 }
@@ -178,8 +179,10 @@ describe('createCommandMenubar', () => {
     cmd('undo', { label: ctx => `Undo ${ctx.selected}`, enabled: ctx => ctx.selected > 0 }),
     cmd('pan-tool', { checked: ctx => ctx.selected > 1 }),
     panels(true),
+    cmd('ruler', { checked: ctx => ctx.selected > 0 }),
+    cmd('appearance', { run: undefined, menu: () => ['ruler'] }),
   )
-  const arranged = (): ReturnType<typeof arrangeMenubar<Ctx>> => arrangeMenubar(MENUS, commands, { file: [['save'], ['settings']], edit: [['undo']], view: [['pan-tool'], ['panels']] })
+  const arranged = (): ReturnType<typeof arrangeMenubar<Ctx>> => arrangeMenubar(MENUS, commands, { file: [['save'], ['settings']], edit: [['undo']], view: [['pan-tool'], ['panels', 'appearance']] })
   const LABELS = { menubar: 'Menu bar', menu: 'Menu' }
 
   function mount(context: Ctx = { selected: 0 }): ReturnType<typeof createCommandMenubar<Ctx>> {
@@ -206,7 +209,7 @@ describe('createCommandMenubar', () => {
     expect((mac.menubar as MenubarHost).collection![0]!.items![0]!.shortcut).toBe('⌘S')
   })
 
-  it('开关式命令是勾选条目（选中即收起），勾不勾随上下文；菜单命令是子菜单，里面的条目与写成命令 id 的项照菜单命令的铺', () => {
+  it('开关式命令是勾选条目（选中即收起），勾不勾随上下文；菜单命令是子菜单，里面的条目与写成命令 id 的项照菜单命令的铺，写成 id 的开关式命令也是勾选条目', () => {
     const bar = mount({ selected: 2 })
     const host = bar.menubar as MenubarHost
     const view = host.collection![2]!.items!
@@ -223,8 +226,17 @@ describe('createCommandMenubar', () => {
       checkboxValue: ['view/panels/item:palette'],
       radioValue: {},
     })
+    expect(view[2]).toEqual({
+      value: 'view/appearance',
+      label: 'APPEARANCE',
+      children: [{ value: 'view/appearance/command:ruler', label: 'RULER', disabled: false, kind: 'checkbox', closeOnSelect: true }],
+      checkboxValue: ['view/appearance/command:ruler'],
+      radioValue: {},
+    })
     bar.update(arranged(), commands, { selected: 1 }, LABELS)
     expect(host.checkboxValue).toEqual([])
+    bar.update(arranged(), commands, { selected: 0 }, LABELS)
+    expect(host.collection![2]!.items![2]!.checkboxValue).toEqual([])
   })
 
   it('选中条目执行：普通与开关式命令跑命令（不可用的不跑），子菜单的条目交给菜单命令的 select，写成命令 id 的项跑那条命令', () => {
@@ -239,8 +251,9 @@ describe('createCommandMenubar', () => {
     select('view', 'view/panels/item:palette')
     bar.update(arranged(), commands, { selected: 3 }, LABELS)
     select('view', 'view/panels/command:undo')
+    select('view', 'view/appearance/command:ruler')
     select('view', 'view/nothing')
-    expect(ran).toEqual(['save', 'pan-tool', 'panels:palette', 'undo'])
+    expect(ran).toEqual(['save', 'pan-tool', 'panels:palette', 'undo', 'ruler'])
   })
 
   it('数据没变时不重设 collection；文字、可用或排列变了才换', () => {
@@ -285,7 +298,7 @@ describe('createCommandMenubar', () => {
     expect(menu.collection!.map(node => [node.value, node.label, node.children!.map(child => child.value)])).toEqual([
       ['menu:file', 'File', ['file/save', 'file/settings']],
       ['menu:edit', 'Edit', ['edit/undo']],
-      ['menu:view', 'View', ['view/pan-tool', 'view/panels']],
+      ['menu:view', 'View', ['view/pan-tool', 'view/panels', 'view/appearance']],
     ])
     expect(menu.collection!.map(node => node.checkboxValue)).toEqual([[], [], ['view/pan-tool']])
     menu.dispatchEvent(new CustomEvent('item-select', { detail: { value: 'edit/undo' }, bubbles: true }))

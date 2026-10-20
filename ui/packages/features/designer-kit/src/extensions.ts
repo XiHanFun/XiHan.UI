@@ -61,7 +61,7 @@ export interface DesignerCommandMenuItem {
 }
 
 /**
- * 菜单命令的一项：条目；另一条命令的 id，按那条命令的文字、图标、可用与语气铺，选中即执行它；
+ * 菜单命令的一项：条目；另一条命令的 id，按那条命令的文字、图标、可用与语气铺，开关式命令（有 checked）带勾，选中即执行它；
  * 或者 'separator'，一条分隔线。
  */
 export type DesignerCommandMenuEntry = DesignerCommandMenuItem | string

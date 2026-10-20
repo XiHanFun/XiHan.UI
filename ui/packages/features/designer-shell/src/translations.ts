@@ -486,6 +486,8 @@ export interface DesignerCommandsTranslations {
   readonly showStatusBar: string
   /** 内置命令：显示或隐藏菜单栏（开关式）。 */
   readonly showMenubar: string
+  /** 内置命令：视图菜单里收着三条显示开关的「外观」子菜单。 */
+  readonly appearance: string
   /** 菜单栏的无障碍名称。 */
   readonly menubar: string
   /** 窄屏时菜单栏收成的那颗钮上的字。 */

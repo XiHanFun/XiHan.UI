@@ -26,6 +26,7 @@ function command(id: string, extra: Partial<DesignerCommand<Ctx>> = {}): Designe
 let grid = false
 let palette = false
 let tourReady = false
+let ruler = false
 const COMMANDS = new Map<string, DesignerCommand<Ctx>>([
   ['save', command('save', { label: 'Save', shortcut: ['Mod', 'S'] })],
   ['settings', command('settings', { label: 'Settings' })],
@@ -34,6 +35,8 @@ const COMMANDS = new Map<string, DesignerCommand<Ctx>>([
   ['help', command('help', { label: 'Help' })],
   ['tour', command('tour', { label: 'Start tour', enabled: () => tourReady })],
   ['about', command('about', { label: 'About' })],
+  ['ruler', command('ruler', { label: 'Show ruler', checked: () => ruler, run: () => void (ruler = !ruler) })],
+  ['appearance', command('appearance', { label: 'Appearance', run: undefined, menu: () => ['ruler'] })],
   ['panels', command('panels', {
     label: 'Panels',
     run: undefined,
@@ -45,7 +48,7 @@ const COMMANDS = new Map<string, DesignerCommand<Ctx>>([
   })],
 ])
 const MENUS = designerMenubarMenus<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US })
-const LAYOUT = { file: [['save'], ['settings']], edit: [['undo']], view: [['grid'], ['panels']], help: [['help', 'tour', 'about']] }
+const LAYOUT = { file: [['save'], ['settings']], edit: [['undo']], view: [['grid'], ['panels', 'appearance']], help: [['help', 'tour', 'about']] }
 
 let bar: ReturnType<typeof createCommandMenubar<Ctx>>
 
@@ -86,6 +89,7 @@ beforeEach(async () => {
   grid = false
   palette = false
   tourReady = false
+  ruler = false
   context = { count: 0 }
   frame = document.createElement('xh-designer-frame')
   frame.style.cssText = 'position:fixed;inset:0'
@@ -170,6 +174,26 @@ describe('菜单栏（Chromium）', () => {
       .filter(content => content.checkVisibility())
       .flatMap(content => [...content.querySelectorAll<HTMLElement>('[role^="menuitem"]')])
     await until(() => inner().length === 2)
+    expect(inner()[0]!.getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('「外观」这样只列命令 id 的子菜单：开关式命令是带勾的条目，点了收起并执行，再打开勾跟着命令的状态', async () => {
+    const inner = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="content"]')]
+      .filter(content => content.checkVisibility())
+      .flatMap(content => [...content.querySelectorAll<HTMLElement>('[role^="menuitem"]')])
+    const openAppearance = async (): Promise<void> => {
+      await userEvent.click(trigger('View'))
+      const sub = (): HTMLElement => openMenuItems().find(item => item.textContent?.trim().startsWith('Appearance'))!
+      await until(() => sub() !== undefined)
+      await userEvent.click(sub())
+      await until(() => inner().length === 1)
+    }
+    await openAppearance()
+    expect([inner()[0]!.textContent?.trim(), inner()[0]!.getAttribute('role'), inner()[0]!.getAttribute('aria-checked')]).toEqual(['Show ruler', 'menuitemcheckbox', 'false'])
+    await userEvent.click(inner()[0]!)
+    await until(() => openMenuItems().length === 0)
+    expect(ruler).toBe(true)
+    await openAppearance()
     expect(inner()[0]!.getAttribute('aria-checked')).toBe('true')
   })
 
