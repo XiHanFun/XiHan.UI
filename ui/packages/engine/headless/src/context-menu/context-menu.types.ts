@@ -91,6 +91,11 @@ export interface ContextMenuNode {
    * 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。
    */
   shortcut?: string
+  /**
+   * 条目的 aria-keyshortcuts：读屏念的快捷键，写法照 ARIA（修饰键在前，如 `Control+S`、`Meta+Shift+Z`，几组用空格隔开），
+   * 未提供时不写。与 shortcut 各管各：shortcut 是看得见的提示、读屏不念，这一项只给读屏，两处说的应是同一组键。
+   */
+  keyshortcuts?: string
   /** 归属分组的身份值；相邻同值的条目收进同一个 group 部件。未提供时本条直接落在 content 上。 */
   group?: string
   /** 分组标题文字，取本组首个提供它的条目；本组无人提供时不铺 group-label。 */
@@ -131,6 +136,8 @@ export interface ContextMenuNodeMeta {
   description: string | null
   /** 快捷键提示；未提供时为 null。 */
   shortcut: string | null
+  /** 条目的 aria-keyshortcuts；未提供时为 null。 */
+  keyshortcuts: string | null
   /** 分组身份；未提供时为 null。 */
   group: string | null
   /** 分组标题；未提供时为 null。 */

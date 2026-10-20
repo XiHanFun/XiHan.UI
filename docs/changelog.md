@@ -43,6 +43,7 @@
 - **designer-kit 与 designer-shell（首发）**：5.0.0 是这两个包的第一版，没有已发布的写法要迁移，接法见文档站的「设计器内核」「设计器零件」两页。开发期按 link 接过 dev 的使用方对一下这几处：变换覆盖层去掉 `formatMeasure`，改给 `measureOptions`（如 `{ unit: 'mm' }`），宽高的改动经 `measure-change` 交回设计器；历史栈的说明类型是 `HistoryLabel`（字符串，或换语言后现取的函数）；`BUILTIN_CONTROL_KINDS` 已含 `options` 与 `treeOptions`，产品自己登记的同名编辑方式要去掉；零件里的菜单命令改听 `item-select`，复选条目经 `checkbox-value-change` 回报；配无层皮肤 `@xihan-ui/styles/index.unlayered.css` 时改引 `@xihan-ui/designer-shell/style.unlayered.css`
 :::
 
+- **新增** Menu、ContextMenu、Menubar 按数据铺时，条目可写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`，读屏念得出快捷键；看得见的快捷键提示照旧是装饰
 - **新增** Menu、ContextMenu、Menubar 按数据铺时，带 `children` 的条目可写子菜单那一层的勾选值与单选值（`checkboxValue` / `radioValue`），子层里的勾选与单选条目照它显示；Vue / React 的 `XhMenubarSub`、`XhContextMenuSub` 同 `XhMenuSub` 一样收这一层的勾选与单选并派发改动
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
