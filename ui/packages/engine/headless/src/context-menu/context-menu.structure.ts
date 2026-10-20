@@ -40,7 +40,7 @@ type ContextMenuStructureNode = StructureNode<(typeof CONTEXT_MENU_STRUCTURE_PAR
 /** 结构里要铺哪几处作者内容。 */
 export interface ContextMenuStructureOptions {
   /**
-   * 作者给了哪些插槽的内容：trigger（触发区里的内容）；item（条目文字）、item-prefix（行首标记位）、
+   * 作者给了哪些插槽的内容：trigger（触发区里的内容）；item（条目文字）、item-prefix（标记位：普通条目在行首，勾选与单选条目是对号、排在最后）、
    * item-suffix（行尾），后三个按条目的值带 key。子菜单那一层按数据铺，不认这几个插槽。
    */
   slotted?: StructureSlotted

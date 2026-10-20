@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
+import { CHOICE_ORDER_ITEMS, choicePartOrder } from './shared/choice-order'
 import { clickExternalAnchor, externalAnchorAria, focusReturnsToExternalAnchor, mountExternalAnchor, removeExternalAnchor, withoutTrigger } from './shared/external-anchor'
 import { focusByValue, nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
@@ -519,12 +520,12 @@ export const menuSuite: ConformanceSuite = {
           'group',
           'group-label',
           'item[2]',
-          'item-indicator[0]',
           'item-icon[1]',
           'item-text[2]',
+          'item-indicator[0]',
           'item[3]',
-          'item-indicator[1]',
           'item-text[3]',
+          'item-indicator[1]',
         ],
         parts: {
           'trigger': { 'type': 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false' },
@@ -626,6 +627,13 @@ export const menuSuite: ConformanceSuite = {
       steps: [
         { kind: 'setProps', props: { collection: [{ value: 'save', label: '保存', shortcut: 'Ctrl+S' }, { value: 'close', label: '关闭', keyshortcuts: 'Control+W' }], label: '文件' }, expect: { parts: { 'item[0]': { 'aria-keyshortcuts': null }, 'item[1]': { 'aria-keyshortcuts': 'Control+W' } } } },
       ],
+    },
+    {
+      name: '作者不写结构：勾选与单选条目的对号是条目的最后一个部件，排在正文、说明与快捷键之后',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      props: { collection: CHOICE_ORDER_ITEMS.map(node => ({ ...node })), label: '视图' },
+      steps: [choicePartOrder('menu')],
     },
   ],
 }

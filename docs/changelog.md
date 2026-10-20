@@ -40,6 +40,7 @@
 - **树**：`multiple` 改为选择模式 `selectionMode`（Web Components 为 `selection-mode`），`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变
 - **菜单族的选中事件**：Menu、ContextMenu、Menubar、Command、Mention 的 `select` 改名 `item-select`，不再与原生 `select`（输入框里选中文字时冒泡上来）同名：Vue 的 `<XhMenuRoot @select="run">` 改写 `<XhMenuRoot @item-select="run">`，React 的 `onSelect={run}` 改写 `onItemSelect={run}`，Web Components 的 `menu.addEventListener('select', run)` 改监听 `'item-select'`，`event.detail` 不变；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变
 - **Popconfirm 的取消事件**：`cancel` 改名 `cancel-press`，不再与原生 `cancel`（文件输入框取消选择时冒泡上来）同名：Vue 的 `<XhPopconfirmRoot @cancel="undo">` 改写 `<XhPopconfirmRoot @cancel-press="undo">`，React 的 `onCancel={undo}` 改写 `onCancelPress={undo}`，Web Components 的 `popconfirm.addEventListener('cancel', undo)` 改监听 `cancel-press`，headless 的 `onCancel` 改为 `onCancelPress`；确认事件 `confirm`、方法 `cancel()` 与部件 `cancel-trigger` 不变
+- **菜单族的对号**：Menu、ContextMenu、Menubar 标准结构里勾选与单选条目的 `item-indicator` 挪到条目最后（正文、说明、快捷键与 `item-suffix` 之后），并改落 Collection Item 的 `indicator` 列；自己写样式按位置选部件的（如 `[data-part='item'] > :first-child`）改按 `data-part` 选，读 `data-xh-collection-slot="prefix"` 找对号的改读 `indicator`。手写部件时对号写在哪，皮肤都排到行尾
 - **designer-kit 与 designer-shell（首发）**：5.0.0 是这两个包的第一版，没有已发布的写法要迁移，接法见文档站的「设计器内核」「设计器零件」两页。开发期按 link 接过 dev 的使用方对一下这几处：变换覆盖层去掉 `formatMeasure`，改给 `measureOptions`（如 `{ unit: 'mm' }`），宽高的改动经 `measure-change` 交回设计器；历史栈的说明类型是 `HistoryLabel`（字符串，或换语言后现取的函数）；`BUILTIN_CONTROL_KINDS` 已含 `options` 与 `treeOptions`，产品自己登记的同名编辑方式要去掉；零件里的菜单命令改听 `item-select`，复选条目经 `checkbox-value-change` 回报；配无层皮肤 `@xihan-ui/styles/index.unlayered.css` 时改引 `@xihan-ui/designer-shell/style.unlayered.css`
 :::
 
@@ -78,7 +79,7 @@
 - **调整** Web Components 的 `<xh-notification-item>` 标题文案改写 `title-text`，宿主上不再带 `title`（详见升级须知）
 - **调整** Menu、ContextMenu、Menubar、Command、Mention 的选中事件改名 `item-select`（`onItemSelect`），不再与原生 `select` 同名（详见升级须知）
 - **调整** Popconfirm 的取消事件改名 `cancel-press`（`onCancelPress`），不再与原生 `cancel` 同名（详见升级须知）
-- **调整** Menu、ContextMenu、Menubar 的勾选与单选对号排到行尾，与子菜单箭头同列、快捷键在它之前，与 Select、Tree 等集合的对号同位；勾选条目的图标与普通条目左缘对齐，同一层有勾选条目时整张菜单的快捷键同列
+- **调整** Menu、ContextMenu、Menubar 的勾选与单选对号排到行尾，与子菜单箭头同列、快捷键在它之前，与 Select、Tree 等集合的对号同位；标准结构里对号也挪到条目最后，读屏先念正文（详见升级须知）。勾选条目的图标与普通条目左缘对齐，同一层有勾选条目时整张菜单的快捷键同列
 - **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
 - **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
 - **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`

@@ -346,7 +346,7 @@ export interface MenuStructureOptions {
   /** 根菜单锚在外部元素上（写了 anchor）：不铺触发按钮。 */
   anchored?: boolean
   /**
-   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（行首标记位）、
+   * 作者给了哪些插槽的内容：trigger（根菜单的触发按钮）；item（整条接管）、item-prefix（标记位：普通条目在行首，勾选与单选条目是对号、排在最后）、
    * item-suffix（行尾），后三个按条目的值带 key。子菜单的触发条目也认 item。
    */
   slotted?: StructureSlotted

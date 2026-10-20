@@ -31,17 +31,17 @@ const radioValue = ref({ density: "comfortable" });
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuCheckboxItem value="wrap">
-          <XhMenuItemIndicator />
           <XhMenuItemText>自动换行</XhMenuItemText>
+          <XhMenuItemIndicator />
         </XhMenuCheckboxItem>
         <XhMenuRadioGroup value="density">
           <XhMenuRadioItem value="comfortable">
-            <XhMenuItemIndicator />
             <XhMenuItemText>宽松</XhMenuItemText>
+            <XhMenuItemIndicator />
           </XhMenuRadioItem>
           <XhMenuRadioItem value="compact">
-            <XhMenuItemIndicator />
             <XhMenuItemText>紧凑</XhMenuItemText>
+            <XhMenuItemIndicator />
           </XhMenuRadioItem>
         </XhMenuRadioGroup>
       </XhMenuContent>

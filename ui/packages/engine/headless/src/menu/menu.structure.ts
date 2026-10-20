@@ -70,12 +70,15 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
   if (itemSlotted && options.itemSlot !== 'item-text')
     return { ...base, slot: { name: 'item', key: meta.value }, data: meta }
   const children: MenuStructureNode[] = []
-  if (slotted('item-prefix', meta.value))
-    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', slot: { name: 'item-prefix', key: meta.value }, data: meta })
-  else if (meta.indicator != null)
-    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator })
-  else if (meta.kind !== 'item')
-    children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
+  const indicator: MenuStructureNode | null = slotted('item-prefix', meta.value)
+    ? { key: 'indicator', tag: 'span', part: 'item-indicator', slot: { name: 'item-prefix', key: meta.value }, data: meta }
+    : meta.indicator != null
+      ? { key: 'indicator', tag: 'span', part: 'item-indicator', text: meta.indicator }
+      : meta.kind !== 'item' ? { key: 'indicator', tag: 'span', part: 'item-indicator' } : null
+  // 勾选与单选条目的标记位是对号，排在最后；普通条目的标记位是行首那一格
+  const trailing = meta.kind !== 'item'
+  if (indicator && !trailing)
+    children.push(indicator)
   if (meta.icon != null)
     children.push({ key: 'icon', tag: 'span', part: 'item-icon', children: [structureInstance('glyph', 'icon', { icon: meta.icon })] })
   children.push(itemSlotted
@@ -87,6 +90,8 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
     children.push({ key: 'shortcut', tag: 'span', part: 'item-shortcut', text: meta.shortcut })
   if (slotted('item-suffix', meta.value))
     children.push({ key: 'suffix', tag: 'span', part: 'item-suffix', slot: { name: 'item-suffix', key: meta.value }, data: meta })
+  if (indicator && trailing)
+    children.push(indicator)
   return { ...base, children }
 }
 

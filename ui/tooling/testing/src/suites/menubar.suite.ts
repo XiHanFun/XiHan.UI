@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { menubarAnatomy, menubarKeyboard } from '@xihan-ui/headless'
+import { CHOICE_ORDER_ITEMS, choicePartOrder } from './shared/choice-order'
 import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
@@ -980,12 +981,12 @@ export const menubarSuite: ConformanceSuite = {
           'group',
           'group-label',
           'item[2]',
-          'item-indicator[0]',
           'item-icon[1]',
           'item-text[2]',
+          'item-indicator[0]',
           'item[3]',
-          'item-indicator[1]',
           'item-text[3]',
+          'item-indicator[1]',
         ],
         parts: {
           'trigger[0]': { 'aria-haspopup': 'menu', 'aria-controls': '@part(content[0])' },
@@ -1075,6 +1076,13 @@ export const menubarSuite: ConformanceSuite = {
       steps: [
         { kind: 'setProps', props: { collection: [{ value: 'file', label: '文件', items: [{ value: 'save', label: '保存', shortcut: 'Ctrl+S' }, { value: 'close', label: '关闭', keyshortcuts: 'Control+W' }] }] }, expect: { parts: { 'item[0]': { 'aria-keyshortcuts': null }, 'item[1]': { 'aria-keyshortcuts': 'Control+W' } } } },
       ],
+    },
+    {
+      name: '作者不写结构：勾选与单选条目的对号是条目的最后一个部件，排在正文、说明与快捷键之后',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: [{ value: 'view', label: '视图', items: CHOICE_ORDER_ITEMS.map(node => ({ ...node })) }] },
+      steps: [choicePartOrder('menubar')],
     },
   ],
 }
