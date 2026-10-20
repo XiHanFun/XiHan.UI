@@ -1972,22 +1972,30 @@
     white-space: nowrap;
   }
 
+  /* 标题第一行与面板头的钮同一中线：行高取正文行距，上面补到钮高；副标题紧跟在下面一行。
+     级联兜底：先写字号 × 行距的算式，再写 1lh，取不到 1lh 的引擎留下前一条 */
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-title'] {
+    padding-block-start: calc((var(--xh-control-h-sm) - var(--xh-font-size-sm) * var(--xh-leading-normal)) / 2);
+    padding-block-start: calc((var(--xh-control-h-sm) - 1lh) / 2);
     color: var(--xh-fg-default);
     font-size: var(--xh-font-size-sm);
     font-weight: var(--xh-font-weight-semibold);
+    line-height: var(--xh-leading-normal);
   }
 
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-subtitle'] {
     color: var(--xh-fg-muted);
     font-size: var(--xh-font-size-xs);
+    line-height: var(--xh-leading-normal);
   }
 
+  /* 操作区至少一颗钮高，里面矮一些的内容也落在钮的中线上 */
   xh-designer-frame [data-scope='designer-frame'][data-part='panel-actions'] {
     display: flex;
     flex: 0 1 auto;
     gap: var(--xh-space-1);
     align-items: center;
+    min-block-size: var(--xh-control-h-sm);
     min-inline-size: 0;
   }
 
@@ -2107,6 +2115,12 @@
 
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-floating] > [data-scope='designer-frame'][data-part='panel-header'] > [data-scope='designer-frame'][data-part='panel-heading'] > [data-scope='designer-frame'][data-part='panel-title'] {
     display: none;
+  }
+
+  /* 标题收起后副标题是面板头的第一行，与操作区同一中线 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-floating] > [data-scope='designer-frame'][data-part='panel-header'] > [data-scope='designer-frame'][data-part='panel-heading'] > [data-scope='designer-frame'][data-part='panel-subtitle'] {
+    padding-block-start: calc((var(--xh-control-h-sm) - var(--xh-font-size-xs) * var(--xh-leading-normal)) / 2);
+    padding-block-start: calc((var(--xh-control-h-sm) - 1lh) / 2);
   }
 
   /* 小窗与面板「更多」菜单的宿主：贴在外框左上角、不占排版，小窗与菜单自己定位；
