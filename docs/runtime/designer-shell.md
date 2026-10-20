@@ -611,7 +611,7 @@ ruler.addEventListener("guides-change", event => setGuides(event.detail.guides))
 
 ## 外框
 
-`<xh-designer-frame>` 是设计器的整体版式：最上一条顶栏，下面一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一栏，最下一条状态栏。版式按命名区排，缺省登记顶栏 `header`、工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 七个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。
+`<xh-designer-frame>` 是设计器的整体版式：最上一条工具栏，中间一行左、中、右三栏，中间一栏的下方再分一栏，最下一条状态栏。版式按命名区排，缺省登记工具栏 `toolbar`、物料 `palette`、画布 `canvas`、属性 `properties`、问题 `issues`、状态栏 `status` 六个区。作者内容用 `slot="<区名>"` 标在直接子节点上，没写 `slot` 的进中间区。
 
 左、右、下三栏里的区是面板：停在哪一栏、先后、显隐、收成标题条、浮出成小窗，都记在一份布局 `layout` 里。外框改了布局就换成改完的整份，并派发 `layout-change`；设计器把它存进设置的 `layout.panels`。栏与栏、同一栏的面板之间是 `<xh-splitter>` 的分隔条，可以拖动或用键盘调整大小。
 
@@ -636,7 +636,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 方法 | 说明 |
 | --- | --- |
-| `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，顶栏、状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
+| `showsPanel(name)` | 这个区是否显示：中间区与工具栏总是显示，状态栏看有没有内容，面板与画布浮动件看布局（浮出的也算），没登记的区为否 |
 | `panelEntries()` | 面板菜单的数据：能停靠的面板与画布浮动件，按登记顺序，`closable: false` 的不列。每项 `{ name, label, icon?, shown, dock?, minimized, floating, locked, movable, floatable, minimizable }`（后三项是此刻能不能换栏、浮出、收起，算上了管控）；`label` 依次取 `title`、`label`、`name`，`shown` 是它此刻看得见：没隐藏，所在栏没在分隔条上收起，窄屏时左右两栏的面板还要它所在的抽屉开着 |
 | `togglePanel(name)` | 开关一块面板：显示着就隐藏、隐藏着就显示。所在栏在分隔条上收起着时是把那一栏放回收起前的大小；窄屏时左右两栏的面板是开关它所在那一侧的抽屉 |
 | `setPanelVisible(name, visible)` | 显示或隐藏一块面板 |
@@ -658,7 +658,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
 
-- `position` 取 `header`、`top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
+- `position` 取 `top`、`start`、`center`、`end`、`bottom`、`status`、`overlay`。`start`、`end`、`bottom` 上的区是面板，这里写的是它缺省停的栏；同一栏的多块面板按登记顺序上下排列，共用一栏的大小，之间有分隔条，可拖动，也可聚焦后用上下方向键调整（Shift 加大步长）。`overlay` 是画布浮动件，见下文「画布区的浮动条」。
 - `size` 是那一栏的缺省大小：左右两栏占中间一行的宽度，下栏占中间一栏的高度；`minSize` 是拖动的下限，缺省 10。都取那一栏第一块面板的值。中间区至少留 20。外框还按尺寸槽给的像素下限折算，两者取大的，见下文「尺寸槽」。
 - `label` 是一栏里两块面板之间那条分隔条名称里的区名，缺省用 `title`，再缺省用 `name`，名称取文案 `resize`；左右两栏与画布之间、下栏与画布之间的分隔条按栏命名，取文案 `resizeLeft`、`resizeRight`、`resizeBottom`（左右按看到的方向，从右往左书写时开头那一栏在右边）；分隔条所在的布局取文案 `layout`。
 - `icon` 是面板菜单与浮出小窗标题栏里的图标。`defaultHidden` 的面板缺省不显示。`closable`、`movable`、`floatable`、`minimizable` 缺省都是 `true`，写 `false` 就不出对应的钮与菜单项；没给 `title` 的区没有面板头，只能显示或隐藏。
@@ -706,18 +706,16 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `designerPanelDock(layout, id)` | 面板停在哪一栏 |
 | `withDesignerPanelVisible`、`withDesignerPanelMoved`、`withDesignerPanelMinimized`、`withDesignerPanelFloating`、`withDesignerDockSize`、`withDesignerPanelShares` | 几种改法，返回新的一份 |
 
-### 顶栏与状态栏
+### 状态栏
 
-顶栏与状态栏是整宽的一条，不可拖动，不是面板，按段放内容：
+状态栏是最下整宽的一条，不可拖动，不是面板，按段放内容：
 
 | 区 | 段与插槽 | 只写区名时进 |
 | --- | --- | --- |
-| `header` | `header-start`（标志与名称）、`header-center`（插入快捷按钮）、`header-end`（主操作） | `header-center` |
 | `status` | `status-start`（选中对象的信息）、`status-end`（缩放、保存与连接状态） | `status-start` |
 
-- 各段有内容才显示这一条，内容拿走就收起。不要状态栏（比如设置里关掉了）时从 `regions` 里去掉 `status` 区，里面的状态项回到外框下面，再登记时放回。
-- 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、中段居中、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。
-- 顶栏中段放 `placement` 含 `header` 的命令：另建一条 `display: "stacked"` 的命令工具栏，写上 `slot="header-center"` 交给外框，见下文「命令」。
+- 各段有内容才显示这一条，内容拿走就收起。不要状态栏（比如设置里关掉了）时从 `regions` 里去掉 `status` 区，里面的状态项收进停放处不显示，再登记时放回。
+- 段用 `data-part="zone"` 与 `data-zone` 标出，左段贴左、右段贴右；状态栏的文字取弱一档的颜色与小一号的字。
 - 状态栏上的每一项用 `createStatusItem` 建，标签、值与分隔四款一致：
 
   ```ts
@@ -784,7 +782,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `--xh-designer-frame-end-min` | `--xh-layout-col-min-md` | 右栏拖动的下限 |
 | `--xh-designer-frame-bottom-min` | `--xh-layout-col-min-xs` | 下栏拖动的下限 |
 | `--xh-designer-frame-gap` | `--xh-space-2` | 卡片与四周、画布浮动条与边缘的间距 |
-| `--xh-designer-frame-panel-px` / `-py` | `--xh-space-3` / `--xh-space-2` | 面板头、顶栏与状态栏的内边距 |
+| `--xh-designer-frame-panel-px` / `-py` | `--xh-space-3` / `--xh-space-2` | 面板头与状态栏的内边距 |
 | `--xh-designer-frame-status-h` | `--xh-control-h-sm` | 状态栏的最小高度 |
 
 - 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。收成标题条的面板同样按量出的面板头高度折算。
@@ -872,7 +870,7 @@ dialog.show();
 
 工具栏只走设置，各款不另设属性：`toolbarDisplayOf(settings)` 取显示方式（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`；`toolbarVisibleOf(settings)` 只有写了 `false` 才是不显示，各款这时从外框的 `regions` 里去掉工具栏的区，命令照样能经快捷键与菜单执行。
 
-按钮表只管顶部工具栏：顶栏的插入钮、右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
+按钮表只管顶部工具栏：右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
 
 - **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令的短文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字取 `commandShortLabel`（撤销这类文字随下一步变的命令写固定的短名），按此刻的语言取，所以每编辑一步算出来的数据不变、表不重铺。
 - **样子**：一组一块，组头是三态勾选框（全选、部分、全不选）与拖动把手，下面每条命令一行：勾选框（图标与名字）、快捷键、拖动把手。组与组之间、组里的命令都能拖，命令能从一组拖进另一组；键盘在把手上用空格拿起、方向键挪、空格放下（竖排的命令列表用左右键挪到相邻的组）。表下一颗「恢复默认」删掉这个键。组这一层是一个 `<xh-sortable>`，组里的命令各是一个同 `group` 的 `<xh-sortable>`。
@@ -1096,7 +1094,7 @@ if (autoTour && !tourDoneOf(settings))
 | 字段 | 说明 |
 | --- | --- |
 | `id` | 全局唯一：designer-shell 的写 `shell.<名>`，各款写 `<产品>.<名>`，扩展写扩展 id 加点 |
-| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`toolbar`、`canvas`、`status`、`header`）；`{ selector }` 设计器里的任意节点 |
+| `target` | 要高亮的目标，不给就不锚定、浮层居中：`{ panel, part? }` 面板卡片（给了 `part` 就是面板里 `data-part` 为它的节点）；`{ command }` 工具栏上这条命令的按钮，收在「更多」里时是「更多」钮；`{ region }` 外框的区（`toolbar`、`canvas`、`status`）；`{ selector }` 设计器里的任意节点 |
 | `title`、`description` | 标题与说明，可以是按上下文现算的函数 |
 | `placement` | 浮层相对目标的首选位置，缺省 `bottom` |
 | `order` | 排序：designer-shell 的通用步骤 0–60 与收尾的 900，各款 100 起，扩展 200 起；同值按登记顺序 |
@@ -1175,8 +1173,8 @@ menu.addEventListener("item-select", event => runCommand(commands, event.detail.
 
 | 函数 | 说明 |
 | --- | --- |
-| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、顶栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
-| `createCommandToolbar(document, { display?, orientation?, platform?, overflow? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text`、`both` 或 `stacked`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`stacked` 是图标在上、短文字（`shortLabel`）在下、钮高随内容，给顶栏的插入快捷钮用，名字仍是全名，每个按钮都给提示；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。`overflow` 缺省 `menu`；写 `external` 时放不下的钮由调用方列在别处，自己的「更多」钮不占位、看不见（只留作弹层与菜单的锚点），收起的条目变了时外壳派发冒泡的 `overflow-change`；`overflowed()` 是此刻收起的命令 `{ id, label, disabled }`，`activate(id)` 照点按钮那样执行一条。弹层命令与菜单命令见下文 |
+| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
+| `createCommandToolbar(document, { display?, orientation?, platform?, overflow? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text` 或 `both`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。`overflow` 缺省 `menu`；写 `external` 时放不下的钮由调用方列在别处，自己的「更多」钮不占位、看不见（只留作弹层与菜单的锚点），收起的条目变了时外壳派发冒泡的 `overflow-change`；`overflowed()` 是此刻收起的命令 `{ id, label, disabled }`，`activate(id)` 照点按钮那样执行一条。弹层命令与菜单命令见下文 |
 | `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |

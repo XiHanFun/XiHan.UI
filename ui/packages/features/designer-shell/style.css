@@ -1824,29 +1824,17 @@
     block-size: var(--xh-designer-frame-bottom-min);
   }
 
-  /* 顶栏与状态栏：整宽一条，区里按段排开 */
-  xh-designer-frame > [data-scope='designer-frame']:is([data-part='header'], [data-part='status']) {
+  /* 状态栏：整宽一条，区里按段排开 */
+  xh-designer-frame > [data-scope='designer-frame'][data-part='status'] {
     display: flex;
     flex: none;
     flex-direction: column;
-  }
-
-  xh-designer-frame > [data-scope='designer-frame'][data-part='header'] {
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle);
   }
 
   xh-designer-frame > [data-scope='designer-frame'][data-part='status'] {
     border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle);
     color: var(--xh-fg-muted);
     font-size: var(--xh-font-size-xs);
-  }
-
-  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='header'] {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    gap: var(--xh-space-3);
-    align-items: center;
-    padding: var(--xh-designer-frame-panel-py) var(--xh-designer-frame-panel-px);
   }
 
   xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-position='status'] {
@@ -1864,10 +1852,6 @@
     gap: var(--xh-space-2);
     align-items: center;
     min-inline-size: 0;
-  }
-
-  xh-designer-frame [data-scope='designer-frame'][data-part='zone'][data-zone='center'] {
-    justify-content: center;
   }
 
   xh-designer-frame [data-scope='designer-frame'][data-part='zone'][data-zone='end'] {
@@ -2238,7 +2222,7 @@
     visibility: hidden;
   }
 
-  /* 放进弹性容器（如顶栏的一段）时工具栏能缩到容器的宽度，量得出放不下，多的收进「更多」 */
+  /* 放进弹性容器（如面板头的操作区）时工具栏能缩到容器的宽度，量得出放不下，多的收进「更多」 */
   xh-tooltip[data-scope='designer-commands'] > [data-scope='tooltip'][data-part='trigger'] > xh-toolbar {
     min-inline-size: 0;
   }
@@ -2249,17 +2233,6 @@
   xh-tooltip[data-scope='designer-commands'][data-display='text'] [data-scope='toolbar'][data-part='item'] > [data-scope='designer-commands'][data-part='icon'],
   [data-scope='toolbar'][data-part='item']:not([data-icon]) > [data-scope='designer-commands'][data-part='icon'] {
     display: none;
-  }
-
-  /* 叠放（顶栏的插入快捷钮）：图标在上、短文字在下，钮高随内容，文字取说明一档 */
-  xh-tooltip[data-scope='designer-commands'][data-display='stacked'] [data-scope='toolbar'][data-part='item'] {
-    --xh-toolbar-item-h: auto;
-    --xh-toolbar-item-px: var(--xh-space-2);
-    --xh-toolbar-item-gap: var(--xh-space-0_5);
-    --xh-toolbar-item-font-size: var(--xh-text-caption-size);
-
-    flex-direction: column;
-    padding-block: var(--xh-space-1);
   }
 
   /* 竖排：从外壳到工具条的根一路随所在容器的高度收缩，放不下的由工具条按高度收进「更多」 */

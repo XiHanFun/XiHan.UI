@@ -161,28 +161,6 @@ describe('命令工具栏（Chromium）', () => {
     expect(button('grid').getAttribute('aria-pressed')).toBe('true')
     expect(pressed).not.toBe(idle)
   })
-
-  it('stacked：图标在上、短文字在下，钮比常规的高；同一条里各钮一样高', async () => {
-    const insert = new Map<string, DesignerCommand<null>>([
-      ['add-task', command('add-task', { label: 'Add task node', shortLabel: 'Task' })],
-      ['add-gateway', command('add-gateway', { label: 'Add exclusive gateway', shortLabel: 'Gateway' })],
-    ])
-    host = document.createElement('div')
-    host.style.cssText = 'inline-size: 640px; padding: 96px 48px'
-    const bar = createCommandToolbar<null>(document, { display: 'stacked' })
-    host.append(bar.element)
-    document.body.append(host)
-    bar.update([['add-task', 'add-gateway']], insert, null, 'Insert')
-    await settle()
-    const item = button('add-task')
-    const icon = item.querySelector('[data-part="icon"]')!.getBoundingClientRect()
-    const label = item.querySelector('[data-part="label"]')!.getBoundingClientRect()
-    expect([label.width > 0, icon.bottom <= label.top + 1, label.height > 0]).toEqual([true, true, true])
-    expect(item.querySelector('[data-part="label"]')!.textContent).toBe('Task')
-    const rest = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--xh-control-h-sm'))
-    expect(item.getBoundingClientRect().height).toBeGreaterThan(rest)
-    expect(Math.abs(button('add-gateway').getBoundingClientRect().height - item.getBoundingClientRect().height)).toBeLessThanOrEqual(1)
-  })
 })
 
 /** 视图菜单的状态与选中记录：菜单按它现算勾选，select 记下点了哪一项。 */

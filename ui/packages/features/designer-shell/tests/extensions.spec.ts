@@ -67,7 +67,7 @@ describe('createPanelHost', () => {
     host.assign(extensions, { selected: 1 })
     await frame.updateComplete
 
-    expect(frame.regions!.map(region => region.name)).toEqual(['header', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status', 'layers', 'simulation'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status', 'layers', 'simulation'])
     expect(frame.querySelector('[data-region="layers"]')!.textContent).toBe('layers')
     expect(log.splice(0)).toEqual(['create layers 1', 'create simulation 1'])
 
@@ -82,7 +82,7 @@ describe('createPanelHost', () => {
     host.dispose()
     await frame.updateComplete
     expect(log.splice(0)).toEqual(['destroy layers'])
-    expect(frame.regions!.map(region => region.name)).toEqual(['header', 'toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
+    expect(frame.regions!.map(region => region.name)).toEqual(['toolbar', 'palette', 'canvas', 'properties', 'issues', 'status'])
   })
 
   it('区名与内置区或别的扩展重名时抛错，什么都不变', async () => {
@@ -254,28 +254,6 @@ describe('命令', () => {
     expect([bar.display(), bar.element.getAttribute('data-display'), bar.element.getAttribute('delegate')]).toEqual(['both', 'both', 'button[data-xh-part=\'item\'][aria-keyshortcuts]'])
     expect(bar.toolbar.querySelector('[data-xh-part="item"]')).toBe(first)
     expect(createCommandToolbar<Ctx>(document, { display: 'text' }).element.getAttribute('data-display')).toBe('text')
-  })
-
-  it('顶栏位置 header 与工具栏一样排；短文字没给时用 label，可以是函数', () => {
-    const header = new Map<string, DesignerCommand<Ctx>>([
-      ['add-task', cmd('add-task', { placement: ['header'], label: '添加任务节点', shortLabel: '任务' })],
-      ['add-end', cmd('add-end', { placement: ['header'], shortLabel: ctx => `结束 ${ctx.selected}` })],
-      ['undo', cmd('undo', { placement: ['toolbar'] })],
-    ])
-    expect(arrangeCommands('header', header, [])).toEqual([['add-task', 'add-end']])
-    expect([...header.values()].map(command => commandShortLabel(command, { selected: 2 }))).toEqual(['任务', '结束 2', 'UNDO'])
-  })
-
-  it('工具栏 stacked：按钮上看得见的是短文字，名字仍是全名，提示管每个按钮；换回 both 显示全名', () => {
-    const header = new Map<string, DesignerCommand<Ctx>>([['add-task', cmd('add-task', { icon: GLYPH, label: '添加任务节点', shortLabel: '任务' })]])
-    const bar = createCommandToolbar<Ctx>(document, { display: 'stacked', platform: 'other' })
-    document.body.append(bar.element)
-    bar.update([['add-task']], header, { selected: 0 }, '插入')
-    const item = bar.toolbar.querySelector<HTMLButtonElement>('[data-xh-part="item"]')!
-    const label = item.querySelector('[data-part="label"]')!
-    expect([label.textContent, item.getAttribute('aria-label'), bar.element.getAttribute('delegate')]).toEqual(['任务', '添加任务节点', 'button[data-xh-part=\'item\']'])
-    bar.setDisplay('both')
-    expect(label.textContent).toBe('添加任务节点')
   })
 
   it('工具栏 icon：没有图标的按钮写短文字，名字仍是全名；有图标的、换成 text 档写全名', () => {
