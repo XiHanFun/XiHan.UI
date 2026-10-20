@@ -77,6 +77,7 @@ export function definePaletteElements(): void {
   defineXhElement('xh-accordion', XhAccordionElement)
   defineXhElement('xh-tree', XhTreeElement)
   defineXhElement('xh-icon', XhIconElement)
+  defineXhElement('xh-tooltip', XhTooltipElement)
 }
 
 /** 页面结构的搜索框、树与图标用到的元素。 */
