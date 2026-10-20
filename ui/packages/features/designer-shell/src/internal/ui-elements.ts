@@ -40,6 +40,7 @@ import {
   XhTagElement,
   XhTagsInputElement,
   XhTextFieldElement,
+  XhToggleElement,
   XhToggleGroupElement,
   XhToolbarElement,
   XhTooltipElement,
@@ -60,6 +61,7 @@ export function definePropertyFieldElements(): void {
   defineXhElement('xh-color-field', XhColorFieldElement)
   defineXhElement('xh-color-swatch-picker', XhColorSwatchPickerElement)
   defineXhElement('xh-password-input', XhPasswordInputElement)
+  defineXhElement('xh-toggle', XhToggleElement)
   defineXhElement('xh-toggle-group', XhToggleGroupElement)
   defineXhElement('xh-tree-select', XhTreeSelectElement)
   defineXhElement('xh-format-input', XhFormatInputElement)

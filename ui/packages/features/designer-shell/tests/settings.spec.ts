@@ -430,6 +430,12 @@ describe('createDesignerSettingsHost', () => {
     expect([element.hasAttribute('data-brand'), document.head.querySelector('style[data-xh-brand^="xh-designer-brand-"]')]).toEqual([false, null])
   })
 
+  it('对话框里用到的 xh-* 元素都随 defineDesignerShell 按需注册了（含主题色那一行的「跟随页面」钮）', async () => {
+    const element = await mount(() => {})
+    const tags = new Set([...element.querySelectorAll('*')].map(node => node.localName).filter(name => name.startsWith('xh-')))
+    expect([tags.has('xh-toggle'), [...tags].filter(name => customElements.get(name) === undefined)]).toEqual([true, []])
+  })
+
   it('主题色那一行：「跟随页面」开关钮在色板前，没写值时按下；选了色以后按它删掉这个键、回到跟随页面', async () => {
     const element = await mount((el) => {
       el.settings = { 'general.brand': 'teal' }
