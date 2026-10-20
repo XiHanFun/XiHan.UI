@@ -53,6 +53,8 @@ export function useTour(props: TourSchema['props'], container?: () => Element | 
       kind: 'modal',
       branches: () => [],
       isModal: () => true,
+      // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上。
+      visuals: () => [contentRef.current, positionerRef.current, backdropRef.current, spotlightRef.current].filter(Boolean) as Element[],
       // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下。
       covers: () => resolveTourBoundary(scope, serviceRef.current?.prop('boundary')),
     }),

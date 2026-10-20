@@ -230,6 +230,8 @@ export class XhTourElement extends XhPortalHostElement {
       isModal: () => true,
       // 遮罩是"点它就该关本层"的表面；关不关仍由 closeOnInteractOutside 说了算（缺省不关）
       surfaces: () => [this.backdropNode].filter(Boolean) as Element[],
+      // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上
+      visuals: () => [this.contentNode, this.getPart('positioner'), this.backdropNode, this.getPart('spotlight')].filter(Boolean) as Element[],
       // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
       covers: () => resolveTourBoundary(this.tourScope, this.boundary),
     })

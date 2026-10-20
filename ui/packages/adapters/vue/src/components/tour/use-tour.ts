@@ -69,6 +69,8 @@ export function useTour(
       isModal: () => true,
       // 遮罩登记为可点关闭的表面，是否真关由 closeOnInteractOutside 决定
       surfaces: () => [backdropRef.value].filter(Boolean) as Element[],
+      // 写本层层号的节点：内容、定位层、遮罩，还有高亮框：它的暗幕与描边与遮罩同层，开在别的层里时也排在那一层之上
+      visuals: () => [contentRef.value, positionerRef.value, backdropRef.value, spotlightRef.value].filter(Boolean) as Element[],
       // 限定在区域里时罩住那块区域：引导途中区域里新开的层（如抽屉）排在引导之下
       covers: () => resolveTourBoundary(scope, service.prop('boundary')),
     })
