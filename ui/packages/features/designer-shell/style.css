@@ -1858,6 +1858,11 @@
     justify-content: flex-end;
   }
 
+  /* 拖动工具开着：画布区显示手形光标；画布里的内容由各款按 data-canvas-tool 跟着换，拖动中换成握拳 */
+  xh-designer-frame [data-scope='designer-frame'][data-part='region'][data-canvas-tool='pan'] {
+    cursor: grab;
+  }
+
   /* 状态项：标签弱一档、值取正常字色并按语气着色；相邻两项之间一道细分隔 */
   [data-scope='designer-frame'][data-part='status-item'] {
     display: inline-flex;

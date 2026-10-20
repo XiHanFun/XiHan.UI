@@ -252,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     panelsRestore: 'パネルの表示を元に戻す',
     layoutReset: 'レイアウトを既定に戻す',
     startTour: 'ツアーを開始',
+    panTool: '手のひらツール',
     settings: '設定',
     help: 'ヘルプ',
     importFields: 'フィールドのインポート',

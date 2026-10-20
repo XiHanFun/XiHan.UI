@@ -458,6 +458,8 @@ export interface DesignerCommandsTranslations {
   readonly layoutReset: string
   /** 内置命令：开始新手引导。 */
   readonly startTour: string
+  /** 内置命令：拖动工具，开着时在画布上按住拖动平移画布。 */
+  readonly panTool: string
   /** 内置命令：打开设置。 */
   readonly settings: string
   /** 内置命令：打开帮助。 */

@@ -252,6 +252,7 @@ const translations: DesignerShellLocaleTranslations = {
     panelsRestore: '还原面板显隐',
     layoutReset: '恢复默认布局',
     startTour: '开始引导',
+    panTool: '拖动',
     settings: '设置',
     help: '帮助',
     importFields: '导入字段',

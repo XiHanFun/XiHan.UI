@@ -633,6 +633,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `resolvedLayout` | 只读：此刻的整份布局，每个字段都在 |
 | `narrow` | 只读：视口窄于断点、左右两栏收进抽屉时为 `true`，见下文「窄屏」 |
 | `openDrawer` | 窄屏时开着的那侧抽屉（`start` 或 `end`），都收着时为 `undefined`；赋值开、关抽屉，不是窄屏时读出 `undefined`、赋值不起作用 |
+| `canvasTool` | 画布上此刻的工具：`select`（缺省，点选与框选）或 `pan`（拖动：按住拖动平移画布）。拖动时画布区标上 `data-canvas-tool="pan"`、显示手形光标；外框里按 Esc（里面的元件没接走）退回 `select`；换了就派发 `canvas-tool-change`。怎么平移由各款在自己的画布上接，见下文「拖动工具」 |
 
 | 方法 | 说明 |
 | --- | --- |
@@ -654,6 +655,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 事件 | detail |
 | --- | --- |
+| `canvas-tool-change` | `{ tool }`：画布上的工具换了（写 `canvasTool`、`pan-tool` 命令或按 Esc 退出拖动）。设计器收到时重画工具栏，让「拖动」钮的按下状态跟上 |
 | `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；拖小窗的标题栏挪动在松手时派发，用键盘挪动与改尺停 300 毫秒后派发。调方法改布局时先按新布局排好再派发：新的分隔条在随后的微任务里接好线，在这个事件里排下的更新量到的就是排好以后的大小。重排前后焦点留在原来持有它的元素上 |
 
 命名区就是面板的登记，是 `{ name, position, size?, minSize?, label?, title?, subtitle?, help?, icon?, anchor?, defaultHidden?, closable?, movable?, floatable?, minimizable? }`：
@@ -788,6 +790,15 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 三个下限是像素宽度，外框量出后按自己当前的宽高折成百分比交给分隔条，外框变宽变窄时重新折算。收成标题条的面板同样按量出的面板头高度折算。
 - 三栏在分隔条上可以收起：双击分隔条，或聚焦后按 Enter，收起它旁边那一栏，再来一次按收起前的大小放回；左边那条管左栏，右边那条管右栏，中间一栏下方那条管下栏。
 - 收着期间外框重排（换了显示的面板、外框变宽变窄、窄屏来回）后仍收着，再双击或按 Enter 照样放回收起前的大小，焦点留在那条分隔条上。布局的 `sizes` 记的是收起前的大小，不记 0，收起的栏记在 `collapsed` 里。
+
+### 拖动工具
+
+工具栏上的「拖动」（内置命令 `pan-tool`，快捷键 `H`）把外框的 `canvasTool` 切成 `pan`，再按一次或按 Esc 退回 `select`。外框只管模式、光标与 Esc，平移由各款在自己的画布上接：
+
+- 拖动开着时，在画布任意处（节点、元素上也一样）按住拖动都是平移画布，不选中、不挪对象；只点一下什么都不改。
+- 画布区的光标是手形（`grab`）；画布里自己设了光标的内容（节点、控制柄）按 `[data-canvas-tool="pan"]` 改回手形，拖动中换成握拳（`grabbing`）。
+- 滚轮、缩放与键盘照旧；画布浮动件（小地图、翻页条）照旧能点。
+- 收到 `canvas-tool-change` 时重画工具栏，「拖动」钮的按下状态跟着变。
 
 ### 窄屏
 
@@ -1179,7 +1190,7 @@ menu.addEventListener("item-select", event => runCommand(commands, event.detail.
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有四条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, icons? })` | designer-shell 内置的命令。给了 `frame`（返回设计器的外框）有五条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用；`pan-tool`（拖动，`H`）是开关式，上工具栏，按下状态跟着外框的 `canvasTool`，执行时在 `select` 与 `pan` 之间切换。给了 `openSettings` 有 `settings`（打开设置对话框），给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制），给了 `startTour` 有 `start-tour`（开始新手引导）；`import-fields`、`edit-json`、`start-tour` 不排位置，各款放进面板头、菜单或帮助页。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入，`panels`、`settings`、`help` 缺省放在工具栏上。各款把它们并进自己的内置扩展，排在工具栏末组；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。

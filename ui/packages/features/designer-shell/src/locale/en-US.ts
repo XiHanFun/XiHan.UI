@@ -241,6 +241,7 @@ export const DESIGNER_COMMANDS_EN_US: DesignerShellLocaleTranslations['xh-design
   panelsRestore: 'Restore panel visibility',
   layoutReset: 'Reset layout',
   startTour: 'Start tour',
+  panTool: 'Hand tool',
   settings: 'Settings',
   help: 'Help',
   importFields: 'Import fields',
