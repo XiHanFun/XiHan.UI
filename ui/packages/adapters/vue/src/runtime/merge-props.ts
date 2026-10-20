@@ -5,8 +5,8 @@
 
 // 提供 merge props 相关实现。
 
-import { isEventHandlerKey } from '@xihan-ui/core'
-import { mergeProps as mergeVueProps } from 'vue'
+import { isEventHandlerKey, stripScopeClass } from '@xihan-ui/core'
+import { mergeProps as mergeVueProps, normalizeClass } from 'vue'
 
 type Props = Record<string, unknown>
 
@@ -41,4 +41,24 @@ export function mergePartProps(part: Props, author: Props): Props {
     }
   }
   return merged
+}
+
+/**
+ * 去掉一份连接层产出里的皮肤挂载类（xh-scope-*），别的类照留。
+ * 两层的产出合到同一个节点上、节点只认外层那一个 scope 时用（如子菜单入口：data-scope 取父层）。
+ */
+export function withoutScopeClass(props: Props): Props {
+  if (props.class == null)
+    return props
+  const { class: value, ...others } = props
+  const rest = stripScopeClass(normalizeClass(value))
+  return rest ? { ...others, class: rest } : others
+}
+
+/**
+ * 去掉值为 undefined 的键。两层的产出合到同一个节点上时套在后合的那一层上：它没给的键不盖掉先合那一层给的，
+ * 与 Web Components 的属性铺设同一口径（连接层给 undefined 只表示这一条不给）。
+ */
+export function withoutUndefined<T extends Record<string, unknown>>(props: T): T {
+  return Object.fromEntries(Object.entries(props).filter(([, value]) => value !== undefined)) as T
 }

@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode, StructureNode } from '@xihan-ui/headless'
+import type { MenubarAnyItemProps, MenubarApi, MenubarContentProps, MenubarGroupProps, MenubarNode, MenubarNodeMeta, MenubarRadioValue, MenubarSchema, MenuNode, MenuSchema, StructureNode } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { MenubarPartRegistry } from './use-menubar'
@@ -16,7 +16,8 @@ import { menubarStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
-import { mergePartProps } from '../../runtime/merge-props'
+import { liveProps } from '../../runtime/live-props'
+import { mergePartProps, withoutScopeClass, withoutUndefined } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -480,6 +481,10 @@ export const XhMenubarSub = defineComponent({
     disabled: { type: Boolean, default: undefined },
     /** 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 */
     collection: { type: Array as PropType<MenuNode[]> },
+    checkboxValue: { type: Array as PropType<string[]> },
+    defaultCheckboxValue: { type: Array as PropType<string[]> },
+    radioValue: { type: Object as PropType<MenubarRadioValue> },
+    defaultRadioValue: { type: Object as PropType<MenubarRadioValue> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
@@ -493,25 +498,32 @@ export const XhMenubarSub = defineComponent({
     /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
   },
+  emits: {
+    'checkbox-value-change': (_details: PayloadOf<MenuSchema['props'], 'onCheckboxValueChange'>) => true,
+    'radio-value-change': (_details: PayloadOf<MenuSchema['props'], 'onRadioValueChange'>) => true,
+  },
   slots: Object as SlotsType<{
     default?: (props: MenubarSubSlotProps) => VNode[]
   }>,
-  setup(props, { slots }) {
+  setup(props, { slots, emit }) {
     const parent = useMenubarContext()
     const owner = useMenubarMenuContext()
     if (!owner)
       throw new Error('[xh] MenubarSub 必须用在 XhMenubarPositioner 内')
     // 子层跑的是一台子菜单模式的 menu 机器：菜单栏那台是单机器单锚点，装不下第二层
     const sub = useMenuWithParent(
-      {
+      // 子层的 props 按 getter 现取：宿主换数据（子层的 collection、勾选与单选值）时子机器跟着变
+      liveProps(() => ({
         ...props,
         submenu: true,
         dir: props.dir ?? parent.service.prop('dir'),
         tone: props.tone ?? parent.service.prop('tone'),
         size: props.size ?? parent.service.prop('size'),
-      },
+      })),
       undefined,
       parent.tree,
+      details => emit('checkbox-value-change', details),
+      details => emit('radio-value-change', details),
     )
     // 子树内的 XhMenu 系部件都归子机器
     provideMenu(sub)
@@ -535,9 +547,11 @@ export const XhMenubarSubTrigger = defineComponent({
     return () => h('div', {
       // 合并序=子先父后：父层的 data-scope/data-part 胜出，菜单栏的方向键与选中照常认它。
       // 反过来写会让节点带上 data-scope="menu"，菜单栏按自己的 scope 查条目就一条都找不到
+      // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
       ...mergeProps(
-        sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
-        handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>,
+        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
+        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
       ),
       // 子菜单的定位锚点就是这一条
       ref: (el: unknown) => {

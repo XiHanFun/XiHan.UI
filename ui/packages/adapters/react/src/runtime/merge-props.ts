@@ -7,7 +7,7 @@
 
 import type { Dict } from '@xihan-ui/core'
 import type { Ref } from 'react'
-import { isEventHandlerKey, mergeProps } from '@xihan-ui/core'
+import { isEventHandlerKey, mergeProps, stripScopeClass } from '@xihan-ui/core'
 
 /** React 19 的 ref 是普通 prop，同名合并时两边都要收到节点。 */
 type AnyRef = Ref<unknown> | undefined
@@ -73,4 +73,24 @@ export function mergePartProps<T extends Dict>(part: Partial<T>, author: Partial
     }
   }
   return merged as T
+}
+
+/**
+ * 去掉一份连接层产出里的皮肤挂载类（xh-scope-*），别的类照留。
+ * 两层的产出合到同一个节点上、节点只认外层那一个 scope 时用（如子菜单入口：data-scope 取父层）。
+ */
+export function withoutScopeClass<T extends Dict>(props: T): T {
+  if (typeof props.className !== 'string')
+    return props
+  const { className, ...others } = props
+  const rest = stripScopeClass(className)
+  return (rest ? { ...others, className: rest } : others) as unknown as T
+}
+
+/**
+ * 去掉值为 undefined 的键。两层的产出合到同一个节点上时套在后合的那一层上：它没给的键不盖掉先合那一层给的，
+ * 与 Web Components 的属性铺设同一口径（连接层给 undefined 只表示这一条不给）。
+ */
+export function withoutUndefined<T extends Record<string, unknown>>(props: T): T {
+  return Object.fromEntries(Object.entries(props).filter(([, value]) => value !== undefined)) as T
 }

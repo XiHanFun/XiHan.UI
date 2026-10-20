@@ -18,6 +18,7 @@ import type {
   ContextMenuSchema,
   MenuApi,
   MenuNode,
+  MenuSchema,
   StructureNode,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -29,7 +30,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
-import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
+import { mergePartProps, mergeReactProps, withoutScopeClass, withoutUndefined } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
@@ -422,6 +423,10 @@ export interface XhContextMenuSubProps {
   label?: string
   disabled?: boolean
   collection?: MenuNode[]
+  checkboxValue?: string[]
+  defaultCheckboxValue?: string[]
+  radioValue?: ContextMenuRadioValue
+  defaultRadioValue?: ContextMenuRadioValue
   placement?: Placement
   offset?: number
   loop?: boolean
@@ -434,6 +439,8 @@ export interface XhContextMenuSubProps {
   tone?: Tone
   /** 尺寸；默认继承父层，理由同 tone。 */
   size?: Size
+  onCheckboxValueChange?: MenuSchema['props']['onCheckboxValueChange']
+  onRadioValueChange?: MenuSchema['props']['onRadioValueChange']
   children?: SlotChildren<ContextMenuSubSlotProps>
 }
 
@@ -493,8 +500,10 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
   // 指针划过与聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
     mergeProps(
-      sub.api.getSubmenuTriggerProps(item) as Record<string, unknown>,
-      handle.parent.api.getItemProps(item) as Record<string, unknown>,
+      // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
+      withoutScopeClass(sub.api.getSubmenuTriggerProps(item) as Record<string, unknown>),
+      // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
+      withoutUndefined(handle.parent.api.getItemProps(item) as Record<string, unknown>),
     ),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )

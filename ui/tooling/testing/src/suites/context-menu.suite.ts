@@ -1,5 +1,6 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { contextMenuAnatomy, contextMenuKeyboard } from '@xihan-ui/headless'
+import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 // 右键菜单没有独立的 APG 模式：浮层展开后的行为逐条对齐 menu，差别只在入口与锚点。
@@ -933,6 +934,21 @@ export const contextMenuSuite: ConformanceSuite = {
             parts: { 'item[0]': { 'data-value': 'rename' }, 'item[1]': { 'data-value': 'delete' } },
           },
         },
+      ],
+    },
+    {
+      name: '作者不写结构：带 children 的条目写着子层的勾选与单选值，子层按它显示，换数据跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { collection: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['outline'], 'compact')] },
+      steps: [
+        { kind: 'raw', why: 'contextmenu 只能手写：坐标即锚点，必须由事件带进来', run: rightClickAt(10, 10) },
+        { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
+        { kind: 'focus', part: 'item[1]' },
+        { kind: 'key', key: 'ArrowRight' },
+        nestedChoiceState({ outline: 'true', history: 'false', comfortable: 'false', compact: 'true' }),
+        { kind: 'setProps', props: { collection: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['history'], 'comfortable')] } },
+        nestedChoiceState({ outline: 'false', history: 'true', comfortable: 'true', compact: 'false' }),
       ],
     },
   ],

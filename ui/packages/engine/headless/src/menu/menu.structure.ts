@@ -61,6 +61,8 @@ function itemStructure(meta: MenuNodesStructureMeta, slotted: StructureSlotted, 
       value: meta.value,
       label: meta.label,
       ...(meta.disabled ? { disabled: true } : {}),
+      ...(meta.checkboxValue ? { checkboxValue: [...meta.checkboxValue] } : {}),
+      ...(meta.radioValue ? { radioValue: { ...meta.radioValue } } : {}),
     })
   }
   const base = { key: `item:${meta.value}`, tag: 'div', part: 'item', attrs: { value: meta.value } } as const

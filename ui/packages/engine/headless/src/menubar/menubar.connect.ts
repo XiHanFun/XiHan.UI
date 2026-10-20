@@ -83,6 +83,8 @@ export function connectMenubar<T extends PropTypes>(
       closeOnSelect: menuChoiceCloses(kind, node.closeOnSelect),
       items: (node.items ?? []).map(child => toMeta(child, true)),
       children: item && node.children?.length ? node.children : null,
+      checkboxValue: item && node.children?.length ? node.checkboxValue ?? null : null,
+      radioValue: item && node.children?.length ? node.radioValue ?? null : null,
     }
   }
   const collection: MenubarNodeMeta[] = (prop('collection') ?? []).map(node => toMeta(node, false))

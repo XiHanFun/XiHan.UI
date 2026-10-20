@@ -65,7 +65,7 @@ checkbox 与 radio 的值独立于当前展开菜单
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
 - 不写结构时照标准结构铺：一排入口按钮（文字取入口的 `label`），其后是各自菜单的定位层，里面按这张菜单的 `items` 铺条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里条目文字、行首、行尾可用宿主直接子节点 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
-- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。
+- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
 - 条目可组合图标、文字、说明和快捷键提示。
@@ -146,6 +146,8 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单栏；checkbox / radio 默认 false。 |
 | `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
 | `children` | `MenuNode[]` |  | 子菜单的条目：只在条目上读取。给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层，深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到菜单栏上。 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。 |
+| `checkboxValue` | `string[]` |  | 子菜单那一层的勾选值：只在带 children 的条目上读取，交给按数据铺出的那一层，与子菜单自己的 checkboxValue 同义， 写了即受控。按数据铺时子层的勾选改动不另外上报，勾选条目写 closeOnSelect，由根上的 item-select 得知。 |
+| `radioValue` | `MenuRadioValue` |  | 子菜单那一层的单选值（组 → 选中的值）：只在带 children 的条目上读取，其余同 checkboxValue。 |
 
 ### 事件
 
@@ -191,6 +193,10 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `XhMenubarSub` | `label` | `string` |  | 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 |
 | `XhMenubarSub` | `disabled` | `boolean` |  |  |
 | `XhMenubarSub` | `collection` | `MenuNode[]` |  | 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 |
+| `XhMenubarSub` | `checkboxValue` | `string[]` |  |  |
+| `XhMenubarSub` | `defaultCheckboxValue` | `string[]` |  |  |
+| `XhMenubarSub` | `radioValue` | `MenubarRadioValue` |  |  |
+| `XhMenubarSub` | `defaultRadioValue` | `MenubarRadioValue` |  |  |
 | `XhMenubarSub` | `placement` | `Placement` |  |  |
 | `XhMenubarSub` | `offset` | `number` |  |  |
 | `XhMenubarSub` | `loop` | `boolean` |  |  |
@@ -200,6 +206,8 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `XhMenubarSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenubarSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenubarSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenubarSub` | `onCheckboxValueChange` | `MenuSchema['props']['onCheckboxValueChange']` |  |  |
+| `XhMenubarSub` | `onRadioValueChange` | `MenuSchema['props']['onRadioValueChange']` |  |  |
 | `XhMenubarSub` | `children` | `SlotChildren<MenubarSubSlotProps>` |  |  |
 | `XhMenubarTrigger` | `value` | `string` | 是 |  |
 | `XhMenubarTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |

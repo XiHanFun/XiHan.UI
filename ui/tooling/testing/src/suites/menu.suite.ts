@@ -1,6 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { menuAnatomy, menuKeyboard } from '@xihan-ui/headless'
 import { clickExternalAnchor, externalAnchorAria, focusReturnsToExternalAnchor, mountExternalAnchor, removeExternalAnchor, withoutTrigger } from './shared/external-anchor'
+import { focusByValue, nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/'
@@ -593,6 +594,21 @@ export const menuSuite: ConformanceSuite = {
       steps: [
         mountExternalAnchor({ counts: { trigger: 0, positioner: 1, content: 1, item: 4 } }),
         removeExternalAnchor,
+      ],
+    },
+    {
+      name: '作者不写结构：带 children 的条目写着子层的勾选与单选值，子层按它显示，换数据跟着变',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ defaultStructure: true }),
+      // 一开始就展开：子层与本层同为 menu，部件下标会落到子层的条目上，入口按 value 找
+      props: { collection: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['outline'], 'compact')], label: '视图', open: true },
+      skipParity: '子层的定位层搬进 portal 的时机三端不同，同为 menu 的部件文档序对不齐，逐帧比对没有意义',
+      steps: [
+        focusByValue('menu', 'panels'),
+        { kind: 'key', key: 'ArrowRight' },
+        nestedChoiceState({ outline: 'true', history: 'false', comfortable: 'false', compact: 'true' }),
+        { kind: 'setProps', props: { collection: [{ value: 'zoom', label: '缩放' }, nestedChoiceItem(['history'], 'comfortable')], label: '视图', open: true } },
+        nestedChoiceState({ outline: 'false', history: 'true', comfortable: 'true', compact: 'false' }),
       ],
     },
   ],

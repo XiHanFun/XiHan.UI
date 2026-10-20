@@ -43,6 +43,7 @@
 - **designer-kit 与 designer-shell（首发）**：5.0.0 是这两个包的第一版，没有已发布的写法要迁移，接法见文档站的「设计器内核」「设计器零件」两页。开发期按 link 接过 dev 的使用方对一下这几处：变换覆盖层去掉 `formatMeasure`，改给 `measureOptions`（如 `{ unit: 'mm' }`），宽高的改动经 `measure-change` 交回设计器；历史栈的说明类型是 `HistoryLabel`（字符串，或换语言后现取的函数）；`BUILTIN_CONTROL_KINDS` 已含 `options` 与 `treeOptions`，产品自己登记的同名编辑方式要去掉；零件里的菜单命令改听 `item-select`，复选条目经 `checkbox-value-change` 回报；配无层皮肤 `@xihan-ui/styles/index.unlayered.css` 时改引 `@xihan-ui/designer-shell/style.unlayered.css`
 :::
 
+- **新增** Menu、ContextMenu、Menubar 按数据铺时，带 `children` 的条目可写子菜单那一层的勾选值与单选值（`checkboxValue` / `radioValue`），子层里的勾选与单选条目照它显示；Vue / React 的 `XhMenubarSub`、`XhContextMenuSub` 同 `XhMenuSub` 一样收这一层的勾选与单选并派发改动
 - **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
 - **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
 - **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框与面板布局（停靠、浮出、收成标题条，整份布局存进设置）、属性面板、物料面板、页面结构、历史面板、问题列表、小地图、变换覆盖层与它的上下文工具条和尺寸徽标、标尺、设置对话框（含帮助、快捷键与关于）、JSON 编辑框、导入字段对话框、新手引导、命令工具栏与状态栏项，附与 UI 内建语言包对应的十种语言文案；另有配无层皮肤用的 `style.unlayered.css`）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
@@ -84,6 +85,7 @@
 - **修复** 亮色下警告色文字加深一档，达到正文对比度：`--xh-fg-warning` 改指 `--xh-color-warning-800`（对白底 4.98:1，原来 3.75:1），表达式输入框的警告提示、日志 warn 级、字数到上限等小字都够得上 4.5:1；暗色不变
 - **修复** Approval 待决的呼吸点取图形色，不随警告文字色变深；写了语气时六族在亮暗两态对承载面都不低于 3:1（`warning` 语气原来在白底上只有 2.69:1）
 - **修复** Web Components 的 Menubar 按 `collection` 铺结构时，数据里写的 `disabled` 照样生效：入口与条目报不可用、方向键跳过，与 Vue / React 一致
+- **修复** Vue 的子菜单（`XhMenuSub`、`XhMenubarSub`、`XhContextMenuSub`）改了属性后子层跟着变，不再只认挂载时那一份；Vue / React 的子菜单入口不再同时挂着菜单的皮肤挂载类，也照旧带着子层的展开态（`data-state`）
 - **修复** 对话框、抽屉、弹出层这类带焦点域的浮层落焦时，只整段选中单行文本类输入框；第一个可聚焦元素是多行文本框时只落焦、不再全选里面的字
 - **修复** Web Components 里用 `XhConfigController` 取配置的元素断开期间换了语言、或被挪到另一个 `<xh-config>` 下，重新连上时按新的配置重渲，不再停在旧的文案上
 - **修复** FieldArray 表格排布的格子里放 Field 时，文本框的原生宽不再把这一列撑出去压到相邻的格上；设计器属性面板里放不下的选项表改为横向滚动，不再裁掉行尾的把手

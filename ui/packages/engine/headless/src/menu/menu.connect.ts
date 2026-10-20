@@ -60,6 +60,8 @@ export function connectMenu<T extends PropTypes>(
       separatorBefore: !!node.separatorBefore,
       closeOnSelect: menuChoiceCloses(kind, node.closeOnSelect),
       children: node.children?.length ? node.children : null,
+      checkboxValue: node.children?.length ? node.checkboxValue ?? null : null,
+      radioValue: node.children?.length ? node.radioValue ?? null : null,
     }
   })
   const metaOf = new Map(collection.map(meta => [meta.value, meta]))
