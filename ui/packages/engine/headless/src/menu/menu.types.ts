@@ -200,6 +200,11 @@ export interface MenuSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 */
     size?: Size
+    /**
+     * 内容只按落定那一侧的可用高度封顶，不叠菜单的固定上限（20rem 一档）；作者写的 `--xh-menu-max-h` 照样生效。
+     * 菜单栏的子菜单由菜单栏传入，再往下一层跟着上一层；单独用的菜单一般不写。
+     */
+    fitAvailableHeight?: boolean
     /** 首字符连打检索，默认开启。 */
     typeahead?: boolean
     /** 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 */

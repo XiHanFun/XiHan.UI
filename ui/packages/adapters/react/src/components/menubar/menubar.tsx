@@ -573,6 +573,8 @@ export function XhMenubarSub({ value, label, disabled, children, ...props }: XhM
     dir: props.dir ?? parent.service.prop('dir'),
     tone: props.tone ?? parent.service.prop('tone'),
     size: props.size ?? parent.service.prop('size'),
+    // 菜单栏的子菜单与下拉同一种上限：只按可用高度封顶
+    fitAvailableHeight: true,
   } as MenuProps, parent.tree)
 
   const handle = useMemo(() => ({ parent, value, disabled }), [parent, value, disabled])

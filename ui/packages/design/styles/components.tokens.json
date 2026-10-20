@@ -22734,7 +22734,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-max-h"
+        "--xh-_context-menu-max-h"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 max-block-size 覆盖槽。"
@@ -52208,7 +52208,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-max-h"
+        "--xh-_menu-max-h"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 max-block-size 覆盖槽。"
@@ -53122,7 +53122,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-overlay-menu-max-h"
+        "--xh-_menubar-max-h"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 max-block-size 覆盖槽。"

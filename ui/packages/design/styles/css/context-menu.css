@@ -94,6 +94,8 @@
     --xh-frosted-shadow: var(--xh-context-menu-content-shadow, var(--xh-_material-shadow));
     --xh-frosted-backdrop: var(--xh-context-menu-backdrop, var(--xh-_material-backdrop));
     --xh-frosted-highlight: var(--xh-context-menu-highlight, var(--xh-_material-highlight));
+    /* 固定的高度上限：20rem 一档，与菜单同一种写法 */
+    --xh-_context-menu-max-h: var(--xh-overlay-menu-max-h);
 
     position: relative;
     display: flex;
@@ -103,7 +105,7 @@
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
     max-inline-size: min(var(--xh-context-menu-max-w, var(--xh-overlay-max-w)), var(--xh-_context-menu-available-w));
     /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。 */
-    max-block-size: min(var(--xh-context-menu-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_context-menu-available-h));
+    max-block-size: min(var(--xh-context-menu-max-h, var(--xh-_context-menu-max-h)), var(--xh-_context-menu-available-h));
     padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-context-menu-content-px, 0);
     border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-overlay));

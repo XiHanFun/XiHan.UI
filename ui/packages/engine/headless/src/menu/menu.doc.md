@@ -21,6 +21,7 @@
 - 快捷键提示贴行尾，与说明同档同色；它是纯装饰，读屏从命令文字取意。要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。
 - 支持方向键、首字符检索、禁用条目和多级子菜单。数据驱动时节点写 `children` 即为子菜单入口，Vue / React 的默认树按 `children` 递归铺出下一层，深度不限，路由菜单这类按数据生成的多级菜单不必手写 `Sub` 部件；子层与本层同用 `item` / `item-prefix` / `item-suffix` 插槽，叶子的选中汇到根级 `item-select`。入口只能是普通条目，勾选与单选条目带 `children` 直接报错。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 子菜单使用安全三角避免指针斜向移动时误关闭。
+- 内容高度缺省以 20rem 一档封顶，`--xh-menu-max-h` 可改；写 `fitAvailableHeight` 则只按落定那一侧的可用高度封顶，菜单栏的子菜单由菜单栏自动带上。
 - 条目可组合图标、文字、说明和快捷键提示。
 - `CheckboxItem` 与 `RadioGroup / RadioItem` 表达菜单内的持久选项，值分别由 `checkboxValue` 与 `radioValue` 控制；默认切换后保持展开，逐条可用 `closeOnSelect` 改为收起。
 - 行首与行尾两格各有逐条钩子，只想加个图标不必把整条重搭；`item` 插槽仍是整条的接管口。

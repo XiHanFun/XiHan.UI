@@ -417,7 +417,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - 新组件先在下表找同类，按同类取档；没有对应档时先加语义令牌，再在皮肤里引用，不在皮肤写字面尺寸。
 - 有上限就必须有去处：面内滚动（按 §6.6 的两档滚动条）或条目截断。
-- 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`。按 px 定高的面板（日期面板、时间面板）不再叠 rem 上限。
+- 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`（Menubar 的下拉与子菜单例外，只按可用区封顶）。按 px 定高的面板（日期面板、时间面板）不再叠 rem 上限。
 - 尺寸不随断点换档；粗指针命中区至少 44×44px（`--xh-control-hit-coarse`），经伪元素外扩，不改表里的视觉尺寸。外扩不越过相邻目标与标签：朝标签那一侧最多扩到标签间距，少扩的一截挪到另一侧补齐。日历网格格子首尾相接，改由粗指针下加大行距与列宽兑现（见下表 CalendarPicker 一行）。
 - 表中 sm / md / lg 并列时以「/」分隔；compact 列为空表示不随密度换档。
 
@@ -513,7 +513,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Popover、Popconfirm、HoverCard | 内容宽，上限随 size 16 / 20 / 24rem | 上限 `overlay-max-h` |
 | Tour | 内容宽，上限 24rem | 上限 `overlay-max-h` |
 | Citation 预览 | 上限 20rem | 上限 `overlay-max-h` |
-| Menu、ContextMenu、Menubar、SideNav 弹出层 | 条目自然宽，下限 10rem，上限 20rem | 上限 `overlay-menu-max-h` |
+| Menu、ContextMenu、SideNav 弹出层 | 条目自然宽，下限 10rem，上限 20rem | 上限 `overlay-menu-max-h` |
+| Menubar 的下拉与它的子菜单 | 条目自然宽，下限 10rem，上限 20rem | 只按落定那一侧的可用高度封顶，与桌面应用的菜单栏一致，不叠 `overlay-menu-max-h`；Menu 写 `fitAvailableHeight` 同此 |
 | NavigationMenu | 下限 10rem，上限 48rem | 内容高 |
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |

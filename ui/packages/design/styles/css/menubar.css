@@ -179,6 +179,8 @@
     --xh-frosted-shadow: var(--xh-menubar-content-shadow, var(--xh-_material-shadow));
     --xh-frosted-backdrop: var(--xh-menubar-backdrop, var(--xh-_material-backdrop));
     --xh-frosted-highlight: var(--xh-menubar-highlight, var(--xh-_material-highlight));
+    /* 没有固定的高度上限：和桌面应用的菜单栏一样只按可用高度封顶，不叠菜单族 20rem 那一档 */
+    --xh-_menubar-max-h: var(--xh-_menubar-available-h);
 
     position: relative;
     display: flex;
@@ -187,9 +189,9 @@
     min-inline-size: var(--xh-menubar-min-w, var(--xh-overlay-menu-min-w));
     /* 静态档与落位后的可用宽度取小：窄视口下面板伸出去，最右侧的内容就点不到了 */
     max-inline-size: min(var(--xh-menubar-max-w, var(--xh-overlay-max-w)), var(--xh-_menubar-available-w));
-    /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。
-       列表族的 16rem 对命令菜单偏矮，这里另给一档 */
-    max-block-size: min(var(--xh-menubar-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_menubar-available-h));
+    /* 两道上限取更小的那道：自己的高度上限（缺省就是可用高度），以及落定那一侧真正剩下的空间。
+       子菜单由菜单栏传 fitAvailableHeight，同一种上限 */
+    max-block-size: min(var(--xh-menubar-max-h, var(--xh-_menubar-max-h)), var(--xh-_menubar-available-h));
     padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-menubar-content-px, 0);
     border-radius: var(--xh-menubar-content-radius, var(--xh-shape-overlay));

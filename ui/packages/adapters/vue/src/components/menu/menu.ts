@@ -60,6 +60,7 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     dir: { type: String as PropType<Direction> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
+    fitAvailableHeight: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<MenuTranslations>> },
@@ -270,6 +271,8 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     tone: { type: String as PropType<Tone> },
     /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
+    /** 只按可用高度封顶；默认继承父层，理由同 tone。 */
+    fitAvailableHeight: { type: Boolean, default: undefined },
     hoverCloseDelay: { type: Number },
   },
   emits: {
@@ -289,6 +292,7 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
         dir: props.dir ?? parent.service.prop('dir'),
         tone: props.tone ?? parent.service.prop('tone'),
         size: props.size ?? parent.service.prop('size'),
+        fitAvailableHeight: props.fitAvailableHeight ?? parent.service.prop('fitAvailableHeight'),
       }) as MenuProps),
       undefined,
       parent.tree,

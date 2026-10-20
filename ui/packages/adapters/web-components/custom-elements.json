@@ -45697,6 +45697,16 @@
             },
             {
               "kind": "field",
+              "name": "fitAvailableHeight",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "内容只按可用高度封顶，不叠 20rem 的固定上限；子菜单没写时跟着所属的菜单或菜单栏（菜单栏的子菜单为真）。",
+              "attribute": "fit-available-height"
+            },
+            {
+              "kind": "field",
               "name": "currentCheckboxValue",
               "type": {
                 "text": "string[]"
@@ -45829,7 +45839,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
+              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), fitAvailableHeight: () => this.ctrl.service.prop('fitAvailableHeight'), }"
             },
             {
               "kind": "field",
@@ -46216,6 +46226,14 @@
                 "text": "number | undefined"
               },
               "fieldName": "hoverCloseDelay"
+            },
+            {
+              "name": "fit-available-height",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "内容只按可用高度封顶，不叠 20rem 的固定上限；子菜单没写时跟着所属的菜单或菜单栏（菜单栏的子菜单为真）。",
+              "fieldName": "fitAvailableHeight"
             }
           ],
           "superclass": {
@@ -46792,7 +46810,7 @@
               },
               "privacy": "private",
               "readonly": true,
-              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), }"
+              "default": "{ tree: this.menuTree, registerSubmenu: child => this.registerSubmenu(child), // 菜单栏的子菜单与下拉同一种上限：只按可用高度封顶 fitAvailableHeight: () => true, }"
             },
             {
               "kind": "field",
