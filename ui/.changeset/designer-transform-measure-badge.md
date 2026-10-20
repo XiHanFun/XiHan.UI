@@ -1,9 +1,0 @@
----
-'@xihan-ui/designer-shell': minor
----
-
-变换覆盖层 `<xh-designer-transform>` 的尺寸标签改为尺寸徽标：新增 `measure`（`gesture` 只在拖动、缩放中只读显示，`selection` 选中即常驻）与 `measureOptions`（模型单位、显示单位、单位文字、小数位与步长），单选能缩放时宽高各一个数字框，加减钮、方向键、输入后确认都派发 `measure-change { id, rect, axis, source }`，由设计器改模型；新增 `focusMeasure()`、文案桶 `xh-designer-transform`。上下文工具条翻到下方时排在徽标下面。
-
-尺寸文字由覆盖层按 locale 与 `xh-designer-transform` 的 `measureText` 写出，单位经 `measureOptions` 给（如 `{ unit: 'mm' }`）。开发期按 link 用过 `formatMeasure` 的：它已去掉，改给 `measureOptions`（designer-shell 是 5.0.0 首发，没有已发布的写法要迁移）。
-
-`measureOptions` 另加 `convert: { toDisplay(value, axis), toModel(value, axis) }`（类型 `DesignerMeasureConvert`），给模型与显示值逐轴换算不同的设计器用，如按格计的看板：给了它时数值只按它换算，步进、取整与下限都在显示值上算，交出的矩形按 `toModel` 换回；不给时照旧按 `unit`、`displayUnit` 换算。
