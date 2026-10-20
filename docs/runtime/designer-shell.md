@@ -885,11 +885,36 @@ dialog.show();
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
 | 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
+| 自动保存 | `general.autoSave` | 开关：有未保存的修改时停手约一秒，在这台浏览器里存一份草稿 | `false` | 总有 |
 | 开发者模式 | `general.developer` | 开关：关闭后将隐藏 JSON / Blob 调试查看入口 | `false` | 总有 |
 | 分页调试日志 | `general.debugPagination` | 开关：开启后在控制台输出分页拆分与回流日志，建议仅在排查问题时使用 | `false` | 总有，开发者模式开着才能改 |
 | 渲染调试日志 | `general.debugRender` | 开关：开启后在控制台输出各渲染环节的耗时，用于性能优化 | `false` | 总有，开发者模式开着才能改 |
 
 开发者模式是调试总开关，本身不加功能：`developerModeOf(settings)` 只有写了 `true` 才为真，各款的调试查看入口（如编辑 JSON、查看生成的打印数据）写成 `visible` 跟着它的命令；宿主可以在 `settings` 里预先写开，或用 `settingsPolicy` 锁住。
+
+自动保存只存这台浏览器里的草稿（localStorage），宿主不参与；Ctrl / ⌘ + S 照旧派发 `save`，与它无关。外壳出 `createDesignerAutosave`，各款接上：
+
+```ts
+import { autoSaveOf, createDesignerAutosave } from "@xihan-ui/designer-shell";
+
+const autosave = createDesignerAutosave({
+  root: designerRoot,
+  kind: "xh-flow-designer",
+  key: () => designerRoot.draftKey, // 宿主给的草稿键；不给按页面地址区分
+  enabled: () => autoSaveOf(resolvedSettings),
+  snapshot: () => designerRoot.schema,
+  restore: document => designerRoot.replaceDocument(document), // 整份替换，进撤销栈
+  confirm: options => dialogService.confirm(options),
+  translations: () => commandTranslations,
+});
+autosave.changed(designerRoot.dirty); // 模板或保存状态每次变了都调
+await autosave.loaded(designerRoot.schema); // 宿主载入一份模板时调
+```
+
+- `changed(dirty)`：有未保存的修改且开着自动保存，停手约一秒（`delay`，缺省 1000 毫秒）把整份模板写成草稿，连着改只写最后一次；变干净了（宿主存完把 dirty 置回，或撤销回到保存点）删掉草稿；关着自动保存时不写，也不删已有的草稿。
+- 草稿的键是 `xh-designer-draft:<kind>:<草稿键>`；`key()` 返回 `undefined` 时用页面地址（路径、查询与锚点）。读写都包在 try/catch 里，存不了就安静跳过，不影响编辑。
+- `loaded(document)`：同一个草稿键下有和它不一样的草稿就调 `confirm` 问，标题是「发现未保存的草稿（时间）」（时间按设计器那棵子树的语言写），确认按钮是恢复、取消按钮是丢弃；恢复交给 `restore`，丢弃即删掉草稿；一样就悄悄删掉。问着的时候再调不会再问一次。
+- 文案在 `xh-designer-commands` 那一桶：`draftFound(time)`、`draftFoundDescription`、`draftRestore`、`draftDiscard`。
 
 两条调试日志只在开发者模式开着时生效，关掉开发者模式随即都停。四款都显示这两个开关；没有分页的款开了也没有分页日志。日志内容写在各款里，外壳出记日志的小工具：
 

@@ -73,6 +73,8 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   toolbarDisplayBoth: 'Icons and text',
   statusBar: 'Status bar',
   statusBarHint: 'Show the status bar at the bottom of the designer.',
+  autoSave: 'Auto-save',
+  autoSaveHint: 'When on, unsaved changes are kept as a draft in this browser about a second after you stop editing; open the same template again to restore it.',
   developer: 'Developer mode',
   developerHint: 'When off, JSON and Blob debug viewers are hidden.',
   debugPagination: 'Pagination debug log',

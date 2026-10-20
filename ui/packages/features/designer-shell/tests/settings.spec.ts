@@ -130,7 +130,7 @@ describe('设置模型', () => {
   it('「基础」分区：主题、主题色与状态栏，语言不在这里；主题色内置：跟随页面（缺省，不写值）、UI 的 8 个预设（带名字）、自定义颜色', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const full = designerGeneralSettings(english)
-    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.developer, DESIGNER_SETTING_KEYS.debugPagination, DESIGNER_SETTING_KEYS.debugRender])
+    expect(keys(full)).toEqual([DESIGNER_SETTING_KEYS.theme, DESIGNER_SETTING_KEYS.brand, DESIGNER_SETTING_KEYS.statusBar, DESIGNER_SETTING_KEYS.autoSave, DESIGNER_SETTING_KEYS.developer, DESIGNER_SETTING_KEYS.debugPagination, DESIGNER_SETTING_KEYS.debugRender])
     const names = [english.brandBlue, english.brandCyan, english.brandTeal, english.brandGreen, english.brandOrange, english.brandRed, english.brandPink, english.brandPurple]
     expect(full.items[1]!.control).toEqual({
       kind: 'swatch',
@@ -139,6 +139,8 @@ describe('设置模型', () => {
       none: english.brandFollow,
     })
     expect([full.items[1]!.default, new Set(names).size]).toEqual([undefined, 8])
+    const autoSave = full.items.find(item => settingKey(full, item) === DESIGNER_SETTING_KEYS.autoSave)!
+    expect([autoSave.label, autoSave.control, autoSave.default, autoSave.meta?.description]).toEqual([english.autoSave, { kind: 'boolean' }, false, english.autoSaveHint])
     const developer = full.items.find(item => settingKey(full, item) === DESIGNER_SETTING_KEYS.developer)!
     expect([developer.label, developer.control, developer.default, developer.meta?.description]).toEqual([english.developer, { kind: 'boolean' }, false, english.developerHint])
     // 两条调试日志：开关，缺省关，开发者模式开着才能改
