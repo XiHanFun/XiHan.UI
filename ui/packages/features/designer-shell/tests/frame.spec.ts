@@ -5,7 +5,7 @@
 // 面板头的收起、「更多」菜单（换栏、调序、浮出、隐藏），浮出与吸回，全部显隐、还原与恢复默认，画布浮动件，宿主的缺省布局与管控。
 import type { DesignerFrameEventMap, DesignerFrameRegion, DesignerLayoutChangeReason, ResolvedDesignerLayout, XhDesignerFrameElement } from '../src'
 import { afterEach, describe, expect, it } from 'vitest'
-import { defineDesignerShell, DESIGNER_FRAME_REGIONS } from '../src'
+import { defineDesignerShell, DESIGNER_FRAME_REGIONS, forwardFrameSlots } from '../src'
 
 defineDesignerShell()
 
@@ -118,6 +118,33 @@ describe('<xh-designer-frame>', () => {
     await frame.updateComplete
     const parked = frame.querySelector('[data-part="parked"]')
     expect([strip.hidden, frame.showsPanel('menubar'), bar.parentElement, title.parentElement]).toEqual([true, false, parked, parked])
+  })
+
+  it('forwardFrameSlots：宿主上 slot 在名单里的直接子元素搬进外框，后来加的跟着搬，别的不动；停止后不再搬', async () => {
+    const host = document.createElement('div')
+    frame = document.createElement('xh-designer-frame')
+    const title = document.createElement('span')
+    title.slot = 'menubar-end'
+    const other = document.createElement('span')
+    other.slot = 'status'
+    host.append(frame, title, other)
+    document.body.append(host)
+    const stop = forwardFrameSlots(host, frame, ['menubar-end'])
+    await settle()
+    const zone = (element: Element): string | null => element.parentElement!.getAttribute('data-zone')
+    expect([zone(title), title.closest('[data-region]')!.getAttribute('data-region'), other.parentElement]).toEqual(['end', 'menubar', host])
+    const state = document.createElement('span')
+    state.slot = 'menubar-end'
+    host.append(state)
+    await settle()
+    expect([zone(state), frame.showsPanel('menubar')]).toEqual(['end', true])
+    stop()
+    const late = document.createElement('span')
+    late.slot = 'menubar-end'
+    host.append(late)
+    await settle()
+    expect(late.parentElement).toBe(host)
+    host.remove()
   })
 
   it('三栏的区给了标题就是卡片：面板头写标题、副标题，帮助、收起、更多与关闭钮，操作区按 slot 放内容；点关闭隐藏这块并派发 layout-change', async () => {

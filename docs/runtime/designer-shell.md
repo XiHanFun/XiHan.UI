@@ -719,6 +719,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 各段有内容才显示这一条，内容拿走就收起。不要菜单栏（比如设置里关掉了）时从 `regions` 里去掉 `menubar` 区，里面的内容收进停放处不显示，再登记时放回；菜单里的命令照样能用快捷键。
 - 行首一段按内容宽，行尾一段占剩下的宽度、贴右，放不下时先收窄，里面的作者内容自己截断（如写 `text-overflow: ellipsis`）；行尾一段的文字取弱一档的颜色。
 - 键盘：设计器里有焦点时按 F10（不带修饰键），焦点交给菜单栏里第一个看得见、能用 Tab 走到的元素（宽屏是菜单栏，窄屏是那颗「菜单」钮）；再按 F10，或在菜单栏里按 Esc（菜单收着时），回到按 F10 之前持有焦点的地方。用 Tab 走进菜单栏的，Esc 不带回去。Shift+F10 仍是右键菜单，Alt+F10 仍是选中工具条。外框在自己身上接这个键，各款不用另接；里面的元件已经接走（`preventDefault`）的 F10 与 Esc 外框不管。
+- 外框由设计器自己建在设计器元素里，宿主够不着它的段：设计器用 `forwardFrameSlots(设计器元素, 外框, ["menubar-end"])` 把宿主写在设计器元素上的 `slot="menubar-end"` 子元素搬进外框，后来加的跟着搬，宿主就能往菜单栏右边放模板标题与保存状态。名单里只写要转交的段，别的子元素不动；返回停止转交的函数，已经搬过去的不搬回来。
 - 菜单栏本身怎么从命令表铺，见下文「扩展的面板与命令」的「菜单栏」。
 
 ### 状态栏
@@ -1260,7 +1261,7 @@ menubar.update(arrangeMenubar(menus, commands, designerMenubarLayout(commands), 
 - 窄屏（外框写着 `data-narrow`）时这一条收起，换成一颗「菜单」钮（`menu-trigger` 部件，文字取 `labels.menu`，给了 `menuIcon` 在前面铺图标），点开一张 `<xh-menu>`，每张菜单是它的一个子菜单，选中照样执行。
 - 键盘照 `<xh-menubar>`：整条一个 Tab 位，左右键在菜单之间走，下键、Enter、Space 展开，展开后左右键换到相邻的菜单，Esc 收起回到入口；F10 进出菜单栏由外框接，见「外框」的「菜单栏」。
 
-宿主自己的操作（新建、预览、打印、返回列表）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题与保存状态放进外框的 `slot="menubar-end"`。这样设计器外面不必另起一条操作条。
+宿主自己的操作（新建、预览、打印、返回列表）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题与保存状态写成设计器元素的子元素 `slot="menubar-end"`，各款经 `forwardFrameSlots` 转进外框。这样设计器外面不必另起一条操作条。
 
 ```ts
 designer.extensions = [...presets, {
