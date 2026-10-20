@@ -110,6 +110,7 @@ const EXPECTED = [
   'globe',
   'grid',
   'grip-vertical',
+  'hand',
   'hash',
   'headphones',
   'heart',
