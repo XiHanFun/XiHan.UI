@@ -6,7 +6,6 @@
 // <xh-designer-tour>：设计器的新手引导。库内 xh-tour 包一层：designer-shell 的通用步骤（欢迎、菜单栏、工具栏、物料、画布、属性、
 // 问题、状态栏、设置）加上设计器交进来的各款与扩展的步骤，按 order 排；目标是外框的面板、区、工具栏上的命令、菜单栏上的菜单或选择器，
 // 目标面板隐藏或不在外框里的那一步跳过，进入一步前让外框把面板亮出来（展开收起的栏、标题条，窄屏时开抽屉）。
-// 设置一步有两个落点：菜单栏显示着时是「文件」菜单的入口，菜单栏关着时是工具栏上的设置钮，说明随之换。
 // 引导限在外框里：遮罩只盖外框，高亮框裁在外框里，页面别处照常可用；同一页只跑一个引导。
 // 收起时派发 tour-end：走完是 complete，跳过或 Esc 是 skip，关闭钮或 stop() 是 close；焦点回到开始时持有它的元素，
 // 那个元素已不在文档里时退回外框画布区里能聚焦的第一个。
@@ -50,7 +49,6 @@ const DEFAULT_TRANSLATIONS: DesignerTourTranslations = {
   statusDescription: 'What is selected and the current zoom.',
   settingsTitle: 'Settings',
   settingsDescription: 'Settings are in the File menu (Ctrl/⌘+,): change the theme, panel layout and toolbar buttons there. To take this tour again, start it from the Help menu.',
-  settingsToolbarDescription: 'With the menu bar turned off, settings and help are back on the toolbar: change the theme, panel layout and toolbar buttons in the settings, and turn the menu bar back on there.',
 }
 
 const TAG = 'xh-designer-tour'
@@ -58,7 +56,7 @@ const SCOPE = 'designer-tour'
 
 type TextKey = { [K in keyof DesignerTourTranslations]: DesignerTourTranslations[K] extends string ? K : never }[keyof DesignerTourTranslations]
 
-/** designer-shell 的通用步骤；同一 id 写了几份的，取第一份目标此刻能走的。 */
+/** designer-shell 的通用步骤。 */
 const BUILTIN_STEPS: readonly { readonly id: string, readonly target?: DesignerTourTarget, readonly order: number, readonly title: TextKey, readonly description: TextKey }[] = [
   { id: 'shell.welcome', order: 0, title: 'welcomeTitle', description: 'welcomeDescription' },
   { id: 'shell.menubar', target: { region: 'menubar' }, order: 5, title: 'menubarTitle', description: 'menubarDescription' },
@@ -69,7 +67,6 @@ const BUILTIN_STEPS: readonly { readonly id: string, readonly target?: DesignerT
   { id: 'shell.issues', target: { panel: 'issues' }, order: 50, title: 'issuesTitle', description: 'issuesDescription' },
   { id: 'shell.status', target: { region: 'status' }, order: 60, title: 'statusTitle', description: 'statusDescription' },
   { id: 'shell.settings', target: { menubar: 'file' }, order: 900, title: 'settingsTitle', description: 'settingsDescription' },
-  { id: 'shell.settings', target: { command: 'settings' }, order: 900, title: 'settingsTitle', description: 'settingsToolbarDescription' },
 ]
 
 /** 每个文档里此刻开着的引导：同一页只跑一个。 */
@@ -140,10 +137,7 @@ export class XhDesignerTourElement extends XhReactiveElement {
     return this.#running
   }
 
-  /**
-   * 此刻会走的各步：通用步骤（builtin 不为 false 时）与交进来的步骤按 order 排，去掉目标面板隐藏或不在外框里的；
-   * 同一 id 剩下几份时留第一份。
-   */
+  /** 此刻会走的各步：通用步骤（builtin 不为 false 时）与交进来的步骤按 order 排，去掉目标面板隐藏或不在外框里的。 */
   plannedSteps(): readonly DesignerTourStepView[] {
     const t = this.#translations()
     const builtin: DesignerTourStepView[] = this.builtin === false
@@ -154,7 +148,6 @@ export class XhDesignerTourElement extends XhReactiveElement {
       .sort((a, b) => (a.step.order ?? 0) - (b.step.order ?? 0) || a.index - b.index)
       .map(({ step }) => step)
       .filter(step => this.#available(step.target))
-      .filter((step, index, all) => all.findIndex(other => other.id === step.id) === index)
   }
 
   /**

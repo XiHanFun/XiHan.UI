@@ -129,7 +129,6 @@ export {
   designerLayoutSettings,
   designerShortcutSettings,
   designerToolbarSettings,
-  menubarVisibleOf,
   PANEL_LAYOUT_CONTROL,
   resolveSettings,
   settingKey,

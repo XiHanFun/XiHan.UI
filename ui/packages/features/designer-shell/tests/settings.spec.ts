@@ -21,7 +21,6 @@ import {
   designerShortcutSettings,
   designerToolbarSettings,
   isDesignerDisplayControl,
-  menubarVisibleOf,
   resolveSettings,
   settingKey,
   settingPolicy,
@@ -32,6 +31,7 @@ import {
   toolbarSettingsSource,
   toolbarVisibleOf,
 } from '../src'
+import * as shell from '../src'
 import { designerShellZhCN } from '../src/locale'
 import { DESIGNER_SETTINGS_EN_US } from '../src/locale/en-US'
 
@@ -131,19 +131,18 @@ describe('设置模型', () => {
     expect([full.id, full.order, full.items[0]!.default, full.items[2]!.default]).toEqual(['general', 0, 'follow', true])
   })
 
-  it('「工具栏」分区：按钮显示方式、显示工具栏与显示菜单栏总有，给了 layout 才有按钮表', () => {
+  it('「工具栏」分区：按钮显示方式与显示工具栏总有，给了 layout 才有按钮表；菜单栏常开，没有显示菜单栏这一条', () => {
     const keys = (section: DesignerSettingsSection): string[] => section.items.map(item => settingKey(section, item))
     const plain = designerToolbarSettings(english)
-    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible, DESIGNER_SETTING_KEYS.toolbarMenubar]])
-    expect(DESIGNER_SETTING_KEYS.toolbarMenubar).toBe('toolbar.menubar')
-    expect([plain.items[0]!.default, plain.items[1]!.default, plain.items[2]!.default, plain.items[2]!.label, plain.items[2]!.control]).toEqual(['icon', true, true, english.toolbarMenubar, { kind: 'boolean' }])
+    expect([plain.id, plain.order, keys(plain)]).toEqual(['toolbar', 2, [DESIGNER_SETTING_KEYS.toolbarDisplay, DESIGNER_SETTING_KEYS.toolbarVisible]])
+    expect([Object.values(DESIGNER_SETTING_KEYS).includes('toolbar.menubar' as never), 'menubarVisibleOf' in shell]).toEqual([false, false])
+    expect([plain.items[0]!.default, plain.items[1]!.default]).toEqual(['icon', true])
     expect(plain.items[0]!.control).toMatchObject({ kind: 'select', appearance: 'toggle', options: [{ value: 'icon' }, { value: 'text' }, { value: 'both' }] })
     const full = designerToolbarSettings(english, { layout: true })
     expect([keys(full).at(-1), full.items.at(-1)!.control]).toEqual([DESIGNER_SETTING_KEYS.toolbarLayout, { kind: 'toolbarLayout' }])
   })
 
-  it('toolbarDisplayOf 取工具栏按钮的显示方式，没写或不认识的值是 icon；toolbarVisibleOf、menubarVisibleOf 只有写了 false 才不显示', () => {
-    expect([menubarVisibleOf(undefined), menubarVisibleOf({ 'toolbar.menubar': false }), menubarVisibleOf({ 'toolbar.menubar': 0 })]).toEqual([true, false, true])
+  it('toolbarDisplayOf 取工具栏按钮的显示方式，没写或不认识的值是 icon；toolbarVisibleOf 只有写了 false 才不显示', () => {
     expect([toolbarDisplayOf(undefined), toolbarDisplayOf({ 'toolbar.display': 'both' }), toolbarDisplayOf({ 'toolbar.display': 'text' }), toolbarDisplayOf({ 'toolbar.display': 'large' })]).toEqual(['icon', 'both', 'text', 'icon'])
     expect([toolbarVisibleOf(undefined), toolbarVisibleOf({ 'toolbar.visible': false }), toolbarVisibleOf({ 'toolbar.visible': 0 })]).toEqual([true, false, true])
   })

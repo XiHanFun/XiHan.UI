@@ -134,7 +134,7 @@ describe('<xh-designer-tour>', () => {
     expect(steps.at(-1)!.target!()).toBe(frame.querySelector('button[data-part="trigger"][value="file"]'))
   })
 
-  it('菜单栏关着（外框不登记它）时跳过 shell.menubar；shell.settings 改指工具栏上的设置钮，说明换成设置在工具栏上的那一句', async () => {
+  it('外框没有菜单栏（不登记它）时 shell.menubar 与 shell.settings 都跳过：设置一步只落在「文件」菜单上，工具栏上有设置钮也不改指它', async () => {
     const { tour, frame } = await mount((_, frame) => {
       frame.regions = REGIONS.filter(region => region.name !== 'menubar')
       frame.append(menubarOf(['file', 'help']))
@@ -142,10 +142,8 @@ describe('<xh-designer-tour>', () => {
     })
     await frame.updateComplete
     const planned = tour.plannedSteps()
-    expect(planned.map(step => step.id)).toEqual(['shell.welcome', 'shell.toolbar', 'shell.palette', 'shell.canvas', 'shell.properties', 'shell.issues', 'shell.status', 'shell.settings'])
-    expect([planned.at(-1)!.target, planned.at(-1)!.description]).toEqual([{ command: 'settings' }, DESIGNER_TOUR_EN_US.settingsToolbarDescription])
-    expect(tour.start()).toBe(true)
-    expect(host(tour).steps!.at(-1)!.target!()).toBe(frame.querySelector('button[value="settings"]'))
+    expect(planned.map(step => step.id)).toEqual(['shell.welcome', 'shell.toolbar', 'shell.palette', 'shell.canvas', 'shell.properties', 'shell.issues', 'shell.status'])
+    expect('settingsToolbarDescription' in DESIGNER_TOUR_EN_US).toBe(false)
   })
 
   it('目标 { menubar: <菜单 id> } 指到那张菜单的入口；菜单栏上没有这张菜单、或菜单栏关着时那一步跳过', async () => {
