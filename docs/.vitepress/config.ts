@@ -352,7 +352,10 @@ const nav: DefaultTheme.NavItem[] = [
   },
   {
     text: `v${version}`,
-    items: [{ text: "更新日志", link: "/changelog" }],
+    items: [
+      { text: "更新日志", link: "/changelog" },
+      { text: "npm", link: "https://www.npmjs.com/org/xihan-ui" },
+    ],
   },
 ];
 
