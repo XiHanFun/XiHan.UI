@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/expression",
   "type": "module",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "XiHan.UI restricted expression language — parse to a serializable AST, check statically, evaluate deterministically with exact decimals, no eval.",
   "author": {
     "name": "XiHanFun",

@@ -1,5 +1,212 @@
 # @xihan-ui/core
 
+## 5.0.0
+
+### Major Changes
+
+- d4f17ae: 全部包统一升到 5.0.0。
+
+  4.2.0 之后，组件库为打印、流程、表单、报表四款设计器补齐了一批能力：多数组件改用标准结构（Vue 不写默认插槽、React 不给 children、Web Components 不写部件时，三端照同一个结构函数铺出整套部件），库内表单控件统一了命名（`ariaLabel`）与表单状态继承，新增条件编辑器、格式输入、表达式输入框，以及首发的 `@xihan-ui/designer-kit`、`@xihan-ui/designer-shell`、`@xihan-ui/expression`、`@xihan-ui/xlsx`。其中下列改动不兼容 4.x 的写法，按版本政策整组升 major，全部包同号发布。
+
+  升级前逐条对照：
+
+  1. **日历族周期视图按行渲染**（CalendarPicker、CalendarRangePicker、DatePicker、DateRangePicker）：面板与 `buildPeriodGrid` 返回值的 `cells` 改为按列数切好的 `rows`，网格底下必须是 `week-row`、格子放进行里。手写周、月、季度、年视图的，把 `panel.cells`（或平铺的 `periods`）换成 `panel.rows` / `rows`，一行写一个 `week-row`；自备格子列表的用 `calendarPeriodRows(periods, view)` 切行。
+  2. **热力图事件与类型对齐图表家族**：`cell-press` / `onCellPress` → `datum-press` / `onDatumPress`，`cell-active` / `onCellActive` → `datum-active` / `onDatumActive`；删除 `cell-focus` / `onCellFocus`（改听 `datum-active`）；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`；`translations.cellLabel` / `matrixCellLabel` 的参数随之换类型。
+  3. **表格表尾支持多行**：删除 `footer`（WC 属性 `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾的每一行写 `level`。
+  4. **快捷键工具移到 core**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与类型 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 不再从 `@xihan-ui/headless` 导出，改从 `@xihan-ui/core/hotkey` 引入。
+  5. **语言包删掉两句、改用一句**：Citation 的 `translations.openSource`、`translations.source` 删除，覆盖过的直接去掉。FileUpload 的 `translations.dropzone` 从「投放区的兜底可及名」改为标准结构里投放区那句看得见的说明（也是名字的后半句），覆盖过它的按新用途改写文字；手写结构的投放区不再取它，改由标题接上投放区里看得见的说明命名，请在投放区里写一句说明。
+  6. **删除组件覆盖槽** `--xh-command-list-busy-opacity`：命令面板刷新时不再淡化列表，设过它的直接去掉。
+  7. **HoverCard 在场判断改用 `parts`**：`HoverCardRefs` 删去 `getTitleEl`、`getDescriptionEl`；Vue 的 `HoverCardContext` 删去 `titleRef`、`descriptionRef`，React 的 `HoverCardContext`（`useHoverCardContext`）删去 `setTitleEl`、`setDescriptionEl`。用库内的 `XhHoverCardTitle` / `XhHoverCardDescription` 的不受影响；自写标题、说明部件的改为向 `parts` 报告在场。
+  8. **表单必填的空值范围扩大**：只含空白的字符串、元素全为空的数组（如 `[null, null]`）算空，`required` 会拦下。确实允许只填空格的字段不要加 `required`，改在 `validator` 里判断。
+  9. **表单规则的字符串长度按字素计数**：`min` / `max` 对字符串改按用户看到的字数（组合 emoji、国旗各算一个）。依赖 UTF-16 码元计数的（如贴合数据库列宽），改在 `validator` 里自行计数，并保留后端校验。
+  10. **React `XhCardRoot` 的 `title`、`content`** 改为卡片的标题与正文（取 ReactNode），不再作为原生属性写到根节点上。原先拿 `title` 当原生提示的，改用 Tooltip 或写到外层节点。
+  11. **Web Components `xh-file-upload` 的条目改按 `allFiles` 对应**：远程附件在前、本地文件在后，与 Vue / React 同一口径；`deleteFile` 也收远程附件。原先按 `acceptedFiles` 铺条目、远程附件另行自绘的，改成按 `allFiles` 每个文件铺一行；没有 `remoteFiles` 时写法不用改。
+  12. **Web Components 的布尔 attribute 全部改为三态**：原先约一百三十个布尔属性（`disabled`、`default-open`、`loading`、`multiple`、`lazy-mount` 等）按 HTML 原生规矩，写出即为真；现在与其余属性一样，显式写 `="false"` 为假，不写交给组件缺省，写空串或别的值仍为真。写过 `disabled="false"` 这类「写了 false 却想要真」的地方改成 `disabled` 或 `disabled=""`；只有显式写成 `"false"` 才受影响。移除属性也改为回到组件缺省，不再固定为假：缺省为真的开关（如 `xh-citation` 的 `loop`）移除后回到开。自己写元素的，布尔属性改用 `@xihan-ui/web-components/authoring` 新导出的 `BOOLEAN_CONVERTER`。
+  13. **ColorPicker 单选的空值改为未选**：原先单选给空数组按缺省色 `#000000` 显示、值是 `['#000000']`；现在是未选：色块画斜线、值文字显示 `placeholder`，`value` 为空数组、表单影子为空串，`required` 会拦下。依赖空数组得到黑色的改写 `['#000000']`；`value` 与 `defaultValue` 都不给时照旧从 `#000000` 起。单选有值时新增清空钮 `clear-trigger`，按下派 `clear`。
+  14. **颜色换算函数挪到 core**：`colorParse`、`colorToString`、`colorCss`、`colorSameColor`、`colorSameRgba`、`colorHexToRgba`、`colorRgbaToHex`、`colorRgbaToHsva`、`colorHsvaToRgba`、`colorRgbaToHsla`、`colorHslaToRgba`、`colorRgbaToOklch`、`colorOklchToRgba`、`colorNormalizeRgba`、`colorNormalizeHsva` 与类型 `ColorFormat`、`ColorRgba`、`ColorHsva`、`ColorHsla`、`ColorOklch` 不再从 `@xihan-ui/headless` 导出，改从 `@xihan-ui/core/color` 引入，函数名不变。`colorParse` 改按 CSS Color 4 的语法认写法：分隔符混写（`rgb(1, 2 3)`）、逗号写法里数与百分数混用（`rgb(50%, 0, 0)`）、不带 `#` 的十六进制、色相写百分数这类浏览器不认的写法返回 `null`，此前会认下；依赖这些写法的改写成规范写法。取色器专用的通道与兜底色（`COLOR_CHANNELS`、`colorChannelRange`、`COLOR_FALLBACK` 等）留在 headless。
+  15. **令牌的颜色换算改由 core 提供**：`@xihan-ui/tokens`（根入口与 `./runtime`）不再导出下表左列的名字，改从 `@xihan-ui/core/color` 引入右列。`colorParseOklch` 解析不了时返回 `null`，原 `parseColorToOklch` 是抛错；分量越界的写法（如 `oklch(120% 0.1 30)`、透明度大于 1）不再夹回范围，`colorParseOklch` 返回 `null`，令牌里其余颜色函数（`contrastRatio`、`mixColors`、`deriveBrandScale` 等）抛错。无彩色的色相取 0，白色写出 `oklch(1 0 0)`（原先 `oklch(1 0 89.88)`），颜色本身不变。合成、亮度、对比度、择色、混色与深浅函数照旧从 `@xihan-ui/tokens` 引入。
+
+      | 4.x（`@xihan-ui/tokens`） | 5.0（`@xihan-ui/core/color`） |
+      | ------------------------- | ----------------------------- |
+      | `srgbToLinear`            | `colorSrgbToLinear`           |
+      | `linearToSrgb`            | `colorLinearToSrgb`           |
+      | `linearRgbToOklch`        | `colorLinearRgbToOklch`       |
+      | `oklchToLinearRgb`        | `colorOklchToLinearRgb`       |
+      | `parseColorToOklch`       | `colorParseOklch`             |
+      | `inSrgbGamut`             | `colorInSrgbGamut`            |
+      | `clampChroma`             | `colorClampChroma`            |
+      | `formatOklch`             | `colorFormatOklch`            |
+      | `Oklch`（类型）           | `ColorOklch`（字段相同）      |
+
+  16. **Web Components 对话框与抽屉的语义角色改写 `dialog-role`**：`<xh-dialog>`、`<xh-drawer>` 不再把 `role` 当作配置，角色只落在 content 上，宿主不带 `role`。写过 `role="alertdialog"` 的改成 `dialog-role="alertdialog"`，代码里设 `role` 的改设 `dialogRole`；Vue 与 React 的 `role` 不变。
+  17. **Web Components 通知条目的标题改写 `title-text`**：`<xh-notification-item>` 不再把 `title` 当作配置，宿主不带 `title`，悬停不出原生提示，读屏不再把标题念两遍。写过 `title="…"` 的改成 `title-text="…"`；property `titleText` 与通知服务不用改，Vue 与 React 的 `title` 不变。
+  18. **树的多选改为选择模式 `selectionMode`**（Tree）：删除 `multiple`，改写 `selectionMode`（Web Components 为 `selection-mode`），取值与 Listbox 相同：`'single'`（缺省，单选不变）、`'multiple'`、新增的 `'extended'`（照文件管理器）。`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变。
+  19. **菜单族的选中事件改名 `item-select`**（Menu、ContextMenu、Menubar、Command、Mention）：原名 `select` 与原生 `select` 同名，输入框里选中文字时原生事件冒泡上来，Web Components 的监听会收到不带 `detail` 的「选中」。Vue 的 `@select` 改写 `@item-select`，React 的 `onSelect` 改写 `onItemSelect`，Web Components 的 `addEventListener('select', …)` 改监听 `item-select`；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变。
+  20. **Popconfirm 的取消事件改名 `cancel-press`**：原名 `cancel` 与原生 `cancel` 同名，文件输入框取消选择时原生事件冒泡上来，会被当成按了取消。Vue 的 `@cancel` 改写 `@cancel-press`，React 的 `onCancel` 改写 `onCancelPress`，Web Components 的 `addEventListener('cancel', …)` 改监听 `cancel-press`；headless 的 `onCancel` 改为 `onCancelPress`。React 根上不再拦原生 `onCancel`。确认事件 `confirm`、方法 `cancel()` 与部件 `cancel-trigger` 不变。
+  21. **菜单族的 `item-indicator` 只当对号，行首归 `item-icon`**（Menu、ContextMenu、Menubar）：`item-indicator` 只在勾选与单选条目上出现，标准结构里由条目的第一个部件挪到最后（正文、说明、快捷键与 `item-suffix` 之后），落 Collection Item 的 `indicator` 列（`data-xh-collection-slot="indicator"`），与 Listbox、Tree 一致；`item-prefix` 插槽改落 `item-icon`，图标随条目字色走；删去条目数据里的 `indicator` 文字。迁移：给 `item-prefix` 内容写样式的改按 `item-icon` 选；手写 `ItemIndicator` 当行首图标的改用 `ItemIcon`；给 `item-indicator` 写样式改图标颜色的改写到 `item-icon`；数据里写 `indicator` 文字的改写 `icon`，要表达选中改用勾选或单选条目；按位置选部件的改按 `data-part` 选。
+
+  另有几处不改 API、但升级后看得出来的变化：
+
+  - 右键菜单（ContextMenu）的触发区里已有可聚焦的内容（画布、列表）时，触发区不再另占一个 Tab 位：菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到它。内容里没有 Tab 位时照旧由触发区占一个。
+  - Web Components 的 `<xh-checkbox>`、`<xh-switch>` 宿主不再占一层盒子（`display: contents`），与 Vue / React 一样按行内排：原先在块级容器里一个宿主独占一行，要逐行排的给外层容器写排布，或给宿主写 `display`。
+  - Web Components 放在 `<xh-config>` 里的对话框、抽屉与下拉，内容搬进 Portal 后照原位取配置：原先里面的元素只取全局的 `locale`、`size` 与文案，现在取包着浮层的那一层；浮层里的 `<xh-config>` 原先按系统偏好重算主题，现在承接外层的主题。
+  - 组件根不写默认插槽 / 不给 children 时，原先渲出空的根，现在铺出整套缺省结构；Web Components 的元素不写部件时同样自己生成；`<xh-icon>` 只写一个空的 `root` 时也在里面生成图形，原先什么都不画。
+  - Vue 的表单控件上写 `aria-label` 现在落到承担名字的部件（输入框、触发钮等）上，不再透传到根节点。
+  - 渲染成 `<button>` 的部件由皮肤的 reset 层清掉浏览器缺省样式；Web Components 作者自写的 `<button data-xh-part="trigger">` 接线后同样是无壳样子，要按钮外观时把按钮（Button）当作这个部件写进去。
+  - 十种内建语言包新增了若干键（如 `confirmTrigger`、`loading`、`empty`、`addTrigger`、`searchPlaceholder`）；自建语言包缺这些键时对应的字退回英文，照内建包补上即可。
+  - FileUpload 点标题不再经原生激活直接弹出选择框，改为把焦点交给投放区（没写投放区时交给选择钮）；`label` 的 `for` 仍指向隐藏输入。
+  - Fieldset 整组禁用时，组内 Field 的标题与说明随控件一起变淡；Scrollbar 不再随整组禁用，组内与选择器列表里的滚动条照常可用。
+
+### Minor Changes
+
+- 7afc700: 新增 `caretClientRect(element, index)`：给出 `<input>` / `<textarea>` 里某个字符位置的光标矩形（视口坐标，纵向是光标所在那一行，扣掉输入框自己的滚动），可以直接当浮层的虚拟锚点。多行输入按当前内容宽度软换行。
+
+  新增表达式输入框的宿主端口类型：`ExpressionCheck`（检查函数）、`ExpressionInputIssue`，以及宿主补全来源 `ExpressionCompletionSource`、`ExpressionCompletion`、`ExpressionCompletionQuery`、`ExpressionCompletionKind`。
+
+- 12026b1: 新子入口 `@xihan-ui/core/clipboard`：`writeToClipboard(source, text)` 往系统剪贴板写一段文本，只走 `navigator.clipboard.writeText`，接口缺席、同步抛错都翻成 promise 拒绝。`source` 给 window，或给能取出 window 的对象（`ClipboardWindowSource`，状态机的 scope 就是），设计器零件这类不在状态机里的代码也能直接用。`@xihan-ui/headless` 的 `writeToClipboard` 改为转出这一份，原来的写法照用。
+- 0597fe4: `@xihan-ui/core/color` 新增不取整的浮点层：`colorSrgbToLinear`、`colorLinearToSrgb`、`colorLinearRgbToOklch`、`colorOklchToLinearRgb` 在 sRGB 编码、线性光与 OKLCH 之间换算，不取整到 8 位、不截断；`colorParseOklch` 把颜色串解析成 OKLCH，写法与越界规则同 `colorParse`，解析不了返回 `null`；`colorInSrgbGamut` 与 `colorClampChroma` 固定明度与色相、只收彩度，把颜色收进 sRGB 色域；`colorFormatOklch` 写出收过彩度的 `oklch()` 串。8 位那一层（`colorParse`、`colorRgbaToOklch`、`colorOklchToRgba` 等）改为建在浮点层上，结果不变，超出色域照旧按通道裁剪。
+
+  `colorParse` 与 `colorParseOklch` 按 CSS Color 4 的语法认写法：rgb、hsl 的旧式写法分隔符全是逗号，rgb 三路同为数或同为百分数，hsl 的饱和度与明度写百分数；新式写法分量之间用空白、透明度写在 `/` 后面，数与百分数可混用，分量可写 `none`；oklch、oklab、color() 只有新式写法；色相写数或 `deg`、`grad`、`rad`、`turn`；十六进制要带 `#`。浏览器不认的写法返回 `null`，此前 `colorParse` 认下的分隔符混写（`rgb(1, 2 3)`）、逗号写法里数与百分数混用（`rgb(50%, 0, 0)`）、不带 `#` 的十六进制、色相写百分数、分量带别的单位与 `0x` 写法都不再认；取色器、颜色字段与颜色滑块收到这类写法照旧当作解析不出，保留草稿。颜色字段（`colorFieldNormalize`）的输入框仍认不带 `#` 的十六进制（`f00`、`ff0000`）。
+
+  `@xihan-ui/tokens` 的颜色换算改用 core 这一份，删掉自带的那套，根入口与 `./runtime` 不再导出下表左列的名字：
+
+  | 4.x（`@xihan-ui/tokens`） | 5.0（`@xihan-ui/core/color`） |
+  | ------------------------- | ----------------------------- |
+  | `srgbToLinear`            | `colorSrgbToLinear`           |
+  | `linearToSrgb`            | `colorLinearToSrgb`           |
+  | `linearRgbToOklch`        | `colorLinearRgbToOklch`       |
+  | `oklchToLinearRgb`        | `colorOklchToLinearRgb`       |
+  | `parseColorToOklch`       | `colorParseOklch`             |
+  | `inSrgbGamut`             | `colorInSrgbGamut`            |
+  | `clampChroma`             | `colorClampChroma`            |
+  | `formatOklch`             | `colorFormatOklch`            |
+  | `Oklch`（类型）           | `ColorOklch`（字段相同）      |
+
+  随之变化的行为：
+
+  - `colorParseOklch` 解析不了时返回 `null`，原 `parseColorToOklch` 是抛错。
+  - 分量越界的写法（如 `oklch(120% 0.1 30)`、`rgb(300 0 0)`、透明度小于 0 或大于 1）不再夹回范围：`colorParseOklch` 返回 `null`，令牌里其余颜色函数（`contrastRatio`、`relativeLuminance`、`mixColors`、`deriveBrandScale` 等）抛错。
+  - 无彩色（白、灰、黑）的色相取 0，不再是一个无意义的角度：白色写出 `oklch(1 0 0)`，原先是 `oklch(1 0 89.88)`，颜色本身不变。`colorLinearRgbToOklch` 的明度夹进 0–1，并多一个可选参数 `hueHint`。
+  - 写法按 CSS Color 4 校验（见上文），多认 `oklab()`、`color(srgb …)` / `color(srgb-linear …)`、新式写法里的 `none` 与新式 hsl 里写数的饱和度、明度；浏览器不认的写法照旧抛错。
+
+  迁移：把上表左列的导入改成从 `@xihan-ui/core/color` 引入右列；用到 `parseColorToOklch` 抛错的，改为判断 `colorParseOklch` 的返回值是否为 `null`。令牌的合成、亮度、对比度、择色、混色与深浅函数（`compositeColors`、`relativeLuminance`、`contrastRatio`、`meetsContrast`、`pickOnColor`、`pickAwayColor`、`mixColors`、`lighten`、`darken`、`withAlpha`、`CONTRAST_MIN`、`ON_COLOR_CROSSOVER`）照旧从 `@xihan-ui/tokens` 引入。
+
+- b2d035f: 新增子入口 `@xihan-ui/core/color`：颜色换算的纯函数从 headless 挪到 core，`colorParse`、`colorToString`、`colorCss`、`colorSameColor`、`colorSameRgba`、`colorHexToRgba`、`colorRgbaToHex`、`colorRgbaToHsva`、`colorHsvaToRgba`、`colorRgbaToHsla`、`colorHslaToRgba`、`colorRgbaToOklch`、`colorOklchToRgba`、`colorNormalizeRgba`、`colorNormalizeHsva` 与类型 `ColorFormat`、`ColorRgba`、`ColorHsva`、`ColorHsla`、`ColorOklch` 改从这里导入，headless 不再导出它们。`colorParse` 另外认 `oklab()`、`color(srgb …)` 与 `color(srgb-linear …)`，分量写 `none` 时取 0；超出 sRGB 色域的颜色照旧按通道裁剪。取色器专用的通道、工作色与兜底色（`COLOR_CHANNELS`、`colorChannelRange`、`colorResolveHsva`、`colorHueCss`、`COLOR_FALLBACK` 等）留在 headless。
+
+  `standaloneSvg` 导出的 SVG：会继承的表现属性与父元素的值相同时不再逐个重复，交给继承（与父元素不同时照写，哪怕等于初始值）；`fill` 与 `stroke` 的颜色换成 sRGB 的 `#rrggbb`，颜色自带的透明度乘进 `fill-opacity` / `stroke-opacity`，办公软件与矢量编辑器也能打开；认不出的颜色写法原样保留。
+
+  迁移：从 `@xihan-ui/headless` 导入上面那些颜色函数与类型的，改为从 `@xihan-ui/core/color` 导入，函数名与行为不变。
+
+- 8e5cb14: `@xihan-ui/core/date` 新增混合日期值的墙上时间与分桶键，报表、图表与列表按同一规则处理 ISO 字符串、毫秒数与 Date：
+
+  - `wallClockParts(value, { timeZone? })`：读成某个时区里的年月日时分秒毫秒；字符串可以只写到年或月，没写到的部分为 null。
+  - `wallClock(value, 'date' | 'datetime', { timeZone? })`：写成可按字符串比较的墙上时间，没写到的部分取最小值。
+  - `bucketKey(value, unit, { timeZone? })`：按 `DATE_BUCKET_UNITS`（year、quarter、month、week、day、hour）取分桶键，如 `2026-Q4`、`2026-W42`（ISO 周），键按字符串排序即按时间排序。
+
+  不带偏移的字符串按写下的墙上时间取；带 `Z` 或偏移的字符串、毫秒数与 Date 换算到 `timeZone`，不给时取运行环境所在的时区。缺失值得 null，不合法的值抛 `RangeError` 或 `TypeError`。
+
+- a2eff7c: **新增** `@xihan-ui/core/hotkey` 的 `ariaKeyshortcut` 与 `parseAriaKeyshortcuts`：一组键与 `aria-keyshortcuts` 的规范写法互转。写出时修饰键用 `Alt` / `Control` / `Meta` / `Shift` 排在前面，`Mod` 按平台落成 `Meta`（macOS）或 `Control`，单个字母写大写，空格写 `Space`、加号写 `Plus`；读回来的键可以直接交给 `formatHotkey` 与 `matchesHotkey`。
+
+  **新增** `formatHotkeyLabel`：一组键显示成的一串字，macOS 上键帽字连写（⌘⇧Z），其余平台用 + 连（Ctrl+Shift+Z）；键帽字可以换一张表。
+
+- 618b354: `@xihan-ui/core/json` 新增 `locateJsonPath(text, path)`：在 JSON 文本里找路径指向的值，返回它在文本里的起止下标与起点的行号、列号，便于编辑框把光标移到某条问题所在的位置。路径写法同 `getJsonAt`，空路径指整个值；文本不是合法 JSON 或路径走不通时返回 `undefined`；对象里键重复时取最后一个，与 `JSON.parse` 一致。
+- 6c6a669: `@xihan-ui/core/json` 新增路径文字的解析，与 `formatJsonPath` 互逆，作为整个生态唯一的路径文本语法。
+
+  - `parseJsonPath(text)`：把 `order.items[0].name`、`[0].字段["a b"].$page` 这样的文字解析成 `JsonPath`；`parseJsonPath(formatJsonPath(path))` 总是得到原路径。首段是标识符或方括号段，其后每段是「. 标识符」或方括号段；方括号里是不带前导零的非负整数（数组下标），或 JSON 字符串（对象键）。标识符同 JavaScript，含中文与 `$`、`_` 开头（如 `$page`、`$row`）。空串解析为空路径。
+  - 文字不合法、下标超出安全整数、出现 `__proto__` / `prototype` / `constructor` 时抛 `JsonPathError`，`code` 为 `invalid-path`。
+  - `isJsonPathText(text)`：同一文法的格式检查，不抛异常，供字段输入框等处校验。
+
+- 2f1f032: `@xihan-ui/core/json` 新增 `parseJsonText(text)`：按 RFC 8259 严格解析 JSON 文本，接受的写法与 `JSON.parse` 相同，失败时不抛异常，而是返回原因码（`unexpected-end`、`unexpected-token`、`invalid-string`、`invalid-number`）与出错处的下标、行号和列号，便于在编辑框里标出第几行第几列出了什么错、按语言生成提示。
+- 88a9bfa: `@xihan-ui/core/json` 新增按路径读写与几个通用小工具，供读写模板、表单值这类纯 JSON 数据的地方共用。
+
+  - 路径：`JsonPath` 由对象键（只认自有属性）与数组下标组成；负数、小数与 `__proto__` / `prototype` / `constructor` 段一律视为不合法。
+  - `getJsonAt(root, path)`：读取路径处的值，路径不存在时为 `undefined`。
+  - `setJsonAt(root, path, value, { createMissing? })`：以不修改原值的方式写入，返回新根与原值，未改动的部分沿用原引用；`value` 为 `undefined` 时删除对象键；没有变化时返回同一个根。缺少中间层时默认报错，显式传 `createMissing` 才补成空对象。失败时抛 `JsonPathError`，`code` 为 `invalid-path`、`path-not-found` 或 `invalid-value`。
+  - `isJsonPathPrefix(path, prefix)`、`formatJsonPath(path)`（写成 `lines[1].price` 这样的文字）。
+  - `changedJsonPaths(before, after)`：列出两个值之间变化的最小路径集合。
+  - `isJsonValue(value)`：类型守卫；`deepFreeze(value)`：深冻结并返回同一个值；`appendJsonPointer(pointer, token)`：按规范转义并追加 JSON Pointer 片段。
+
+- 6c7b077: 新增子入口 `@xihan-ui/core/json`：JSON 值的类型与纯函数，零依赖，供读写模板、配置这类纯 JSON 数据的地方共用。
+
+  - 类型：`JsonPrimitive`、`JsonArray`、`JsonObject`、`JsonValue`。
+  - `isPlainObject(value)`：原型为 `Object.prototype` 或 `null` 的普通对象（数组不算）。
+  - `findJsonViolation(value, pointer?)`：找出第一处不是 JSON 的位置，返回它的 JSON Pointer；非有限数字、`undefined`、函数、`Date` 等非普通对象与循环引用都算非法，同一对象被多处引用不算循环。
+  - `cloneJson(value)`：深拷贝，结果不与输入共享对象或数组。
+  - `jsonEquals(a, b)`：按值比较，对象与键顺序无关。
+
+- e97f80a: **新增** `@xihan-ui/core` 子入口 `./options`：选项与选项树的结构校验 `findOptionViolation` 与类型 `OptionViolation`、`OptionViolationCode`、`OptionViolationOptions`。这几个名字本周期先加在 `@xihan-ui/headless`，发版前挪到 core，headless 不再导出（4.2.0 没有发过它们，没有要迁移的写法）。
+- 26c5a1f: Core 新增页面级的礼貌播报器 `announce(message, { document? })`：整页一个视觉隐藏的 `role="status"` 播报区，第一次播报时挂到 `body` 末尾；每次先清空、隔一拍再写，同一句话连播两次也会再读，写下约 7 秒后清空；挂在 `body` 下，模态浮层打开时照旧可读；页面上装了几份 core 也共用同一个。组件自带的播报（剪贴板、走马灯、审批）不变，不属于某一个组件的页面级播报改用它。视觉隐藏的内联样式 `VISUALLY_HIDDEN_STYLE` 的真源移到 core 并从 core 导出，headless 照旧转出同一个值。
+- 0ad19a5: 新增子入口 `@xihan-ui/core/rich-text` 与 `@xihan-ui/core/rich-text-dom`：结构化的富文本模型，整份是 JSON，不含 HTML。
+
+  - 模型：块有段落、标题（1–3 级）、列表（有序或无序，最多嵌套三层）与分隔线；行内有文字、行内字段与换行；行内样式有粗体、斜体、下划线、删除线、颜色、底色、字号（pt）、字体、上下标与链接。
+  - `parseRichTextHtml(html)`：不依赖 DOM，按白名单把 HTML 换成模型，标签写法按浏览器的宽松规则读；不认识的标签去掉标签、保留文字，script、style、iframe、img 等连同内容去掉，没过 `toSafeLinkHref` 的链接只留文字，丢掉的东西按类别与名字计数记在 `dropped` 里。
+  - `checkRichTextDocument(value)`：不抛异常，返回全部问题 `{ code, path }`；不认识的块、行内类型、样式键与多余的键都报出来。
+  - `serializeRichTextHtml(document)` 写出转义后的 HTML，读回得到同一份模型；`richTextPlainText(document)` 给出纯文字。
+  - `renderRichText(doc, document, { field? })`（`rich-text-dom`）按模型生成 `DocumentFragment`，只用 `createElement`、文字节点与 `setAttribute`，样式只写合法的值。
+
+- ee8a148: `@xihan-ui/core/url` 新增 `toSafeLinkHref(value)`：把一个值收成可以当链接地址用的串，放行 http、https、`mailto:`、`tel:` 与不带协议的相对地址（含 `#锚点` 与 `?查询`），`javascript:`、`data:`、`blob:`、`file:` 等其余协议、非字符串与空串返回 `undefined`。去掉首尾空白与控制字符、删去串中制表与换行的规则与 `toSafeImageSource` 相同，返回处理后的串。
+- 9553398: 新增子入口 `@xihan-ui/core/svg-export`：`standaloneSvg` 把页面上的 SVG 克隆成能单独打开的一份，计算出的填充、描边、字体等写成属性，设计令牌与 `currentColor` 换成具体值；`serializeSvg` 写成 `.svg` 文本；`rasterizeSvg` 按倍率与底色栅格化成 PNG `Blob`。图表、流程图这类用 SVG 画的内容导出图片共用这一套。
+- 2dd6d2f: `@xihan-ui/core` 新增子入口 `@xihan-ui/core/template`，提供 `{{path}}` 文本模板。占位里只写数据路径，不写表达式。
+
+  - 路径写法与 `@xihan-ui/core/json` 的 `formatJsonPath` 相同，由 `parseJsonPath` 解析：标识符之间用 `.` 连接，下标写成 `[0]`，不是标识符的键写成 `["unit price"]`。以 `$` 开头的宿主变量（例如页码 `{{$page}}` / `{{$pages}}`）按普通键处理。
+  - `parseTextTemplate(source)` 切出原样文本与路径占位，问题一次全部给出，有三种：
+    - `unclosed-placeholder`：占位没有闭合。
+    - `empty-placeholder`：占位为空。
+    - `invalid-path`：路径不合法，在占位里写表达式也报这一条；与 core/json 的 `JsonPathError` 同名同义。
+      有问题的占位按原样文本保留。
+  - `fillTextTemplate(template, data, { display? })` 按数据替换占位，也可以直接传入已解析的模板。读值方式与 `getJsonAt` 相同。读到对象或数组时，占位得到空串，路径记进 `nonScalar`。
+  - `displayText(value)` 是缺省的显示规则，单独公开，宿主在模板之外显示单个数据值时与模板保持一致：`null` 与 `undefined` 为空串，字符串原样，有限数字、布尔与 `bigint` 转字符串，非有限数字与无效日期为空串，`Date` 转 ISO 文本；对象、数组等不能直接显示的值返回 `undefined`。
+
+- 89fa2e4: `@xihan-ui/core` 新增子入口 `@xihan-ui/core/url`，提供 `toSafeImageSource(value)`：把一个值收成可以安全当图片地址用的串，放行 http(s)、`blob:`、以 `data:image/` 开头的内联图片与不带协议的相对地址，其余协议（如 `javascript:`、非图片的 `data:`）、非字符串与空串返回 `undefined`。判定前按浏览器解析 URL 的规则去掉首尾的控制字符与空格、删去串中的制表与换行，`java\nscript:` 这类写法拼不出被挡的协议。
+
+  `@xihan-ui/headless` 的 Watermark 改用它判定 `image`：串中夹着制表或换行、去掉后是被挡协议的地址，现在同样不印也不去取。
+
+- e5bef70: core 新增页面级窗口叠放序 `getWindowStack(doc)` 与类型 `WindowStack`：`raise(key)` 提到最上面、`remove(key)` 移出、`depthOf(key)` 从上往下数第几扇（最上 0，不在栈里 -1）、`subscribe(fn)` 订阅变化；按 Document 各一份，页面上几份 core 共用，不进层栈。
+
+  浮动面板（Floating Panel）接上叠放序：几个面板同时开着时，后展开的在上面，在哪个面板上按下或焦点进到哪个面板里，哪个就提到最上；收起或卸载时移出。定位层的私有层号 `--xh-_layer` 取抽屉层减去从上往下数的序号（最上面的就在抽屉层上，往下每一扇减一），最上面的面板仍在模态层之下；写了 `--xh-floating-panel-layer` 就按写的来。
+
+- fc568ed: 诊断码表新增 `designerExtensionConflict`（`designer.extension-conflict`）：设计器扩展的 id、命令、快捷键、编辑方式或导入导出 id 重名时报。
+- c151baf: **新增** `@xihan-ui/core/options` 的 `findOptionViolation` 新增选项 `isValue`，换掉缺省只收字符串的 `value` 检查，不合要求报 `invalid-value`；重复按 `Object.is` 判。供取值不是文字的选项列表（如报表参数候选项）用。
+- 3170011: **新增** 字段数组开了 `movable` 时每行多一颗拖动把手 `item-drag-trigger`，按住把这一行拖到别处换位。
+
+  - 拖动由排序（sortable）的状态机驱动：其余各行实时让位，拖到边缘自动滚动，松手后这一行从松手处收进新位置，值按 `{ type: 'move', from, to }` 换位，与上移、下移走同一条路径，同受 `movable`、禁用与只读约束。列表与表格两种排布都能拖。
+  - 把手只接指针：不占 Tab 位、对读屏隐藏，键盘与读屏照旧用上移、下移。
+  - 删掉的行在原处淡出时照常拖别的行：淡出的替身不算一项，照样播完退场。
+  - 新部件：Vue / React 的 `XhFieldArrayItemDragTrigger`，Web Components 的 `item-drag-trigger` 部件。标准结构开了 `movable` 时把手依次是拖动、上移、下移、删除。`FieldArrayApi` 加 `dragging` 与 `getItemDragTriggerProps`，`FieldArrayItem` 加 `canDrag`。
+  - 自己组装时：`connectFieldArray(service, normalize, drag)` 的第三个参数是按 `fieldArrayDragProps(service)` 跑的 sortable 机器，容器与项用 `fieldArrayDragContainer`、`fieldArrayDragItems` 接到它的 refs 上。
+  - sortable 的 refs 加 `getItemEls`：嵌在别的组件里、项是那个组件的部件时由适配器给出项节点；离场替身一律不算一项。
+  - core 的 `trackListMotion` 的 `reflow` 可以给函数，每批变更现问一次：拖动放下的那一批换位由拖动那一套滑过去，列表动效这一批不再补偿。
+  - 皮肤：`field-array.css` 加拖动把手的抓手字形与手型、拖着的那一行（承载面底色、lifted 海拔，高对比档描一圈 Highlight 轮廓）与让位过渡，新增覆盖槽 `--xh-field-array-item-bg-dragging`、`--xh-field-array-item-shadow-dragging`、`--xh-field-array-drag-grip-w`、`--xh-field-array-drag-grip-h`。这份皮肤去注释压空白后从 14463 字节涨到 16690 字节。
+
+- 8e8108e: 快捷键工具移到 core 的新子入口 `@xihan-ui/core/hotkey`：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与类型 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 从 `@xihan-ui/headless` 移过去，headless 不再导出它们，改从 `@xihan-ui/core/hotkey` 引入。子入口另有键名表的查法 `keyText` / `KeyTextTable`、英文键名与键帽字 `HOTKEY_TEXT_EN_US` 与类型 `HotkeyText`。`matchesHotkey` 只读按键的 `key`、`code` 与四个修饰键（类型 `HotkeyEvent`），不要求是 `KeyboardEvent`。
+- 1c1616d: 列表删掉一行时，原处淡出的替身显示删除前的内容：替身里克隆出来的库内元素不再接线、不再重建标准结构，经属性写入的值（如只写宿主、由元素铺出结构的 `xh-text-field`）不会被新实例写回空。字段数组的列表排布与表格排布、标签输入、标签组等用列表动效放替身的组件一样受益。
+
+  - core：新增导出 `GHOST_ATTR`（`data-xh-ghost`），`trackListMotion` 在离场替身插进文档之前写上它。
+  - web-components：元素在 `GHOST_ATTR` 标记的替身里时不接线。
+
+- 85f6ab9: 新增诊断码 `wc.structure-takeover-order`（标准结构里可接管的部件没有排在 root 末尾）与 `wc.unregistered-element`（标准结构生成了还没注册的库内元素）。
+- 1ac7d41: 引导新增 `boundary`，把引导限在一块区域里，写法同步骤的 `target`（选择器、元素或返回元素的函数；Web Components 的同名属性只收选择器）。遮罩只盖这块区域，高亮框连同暗幕裁在区域里，居中步摆在区域中间，气泡以区域为界避让。区域外照常可读可点，焦点不困在气泡里，对话框也不标 `aria-modal`。引导途中，区域里新开的层（如抽屉）排在引导之下，Esc 仍先收起引导。不给或取不到时照旧是整个视口。
+
+  配套的两处底层能力：
+
+  - 定位引擎的选项加 `boundary`：可用区域再与这块区域的矩形取交集，翻面、避让与可用空间都以交集为界。
+  - 层栈的层加 `covers`：之后在这块区域里新开、又不开在本层内容里的层，排在本层之下。
+
+- c833fbd: Web Components 的 `<xh-config>` 作用域跟着浮层走：对话框、抽屉、下拉面板等打开后内容搬进 Portal 落点，里面的元素照它们在原来 DOM 里的位置取配置，读到包着浮层的那一层 `<xh-config>` 的 `locale`、`size`、`translations`、`scrollRoot` 与 `portalContainer`，与 Vue / React 浮层沿组件树取配置一致；打开期间改这一层的配置，搬走的元素跟着更新。浮层里再放的 `<xh-config>` 承接外层的视觉环境，只改自己声明的轴；禁用的 `xh-fieldset` 压进组里开的浮层内容，legend 里开的不受。此前搬走的元素只剩全局配置：局部文案与尺寸在对话框里回到全局，浮层里的 `<xh-config>` 按系统偏好重算主题、盖掉外层的深色。
+
+  Core 的 Portal 视觉桥活着期间把实例壳登记为来源的逻辑子节点，新增 `logicalParentElement(node)`（走到实例壳时返回它的来源，其余节点返回 `parentElement`）与 `logicallyContains(ancestor, node)`（DOM 上包含，或经实例壳在逻辑上包含）。登记挂在 Document 上，页面上装了几份 core 时读到的是同一份。
+
+### Patch Changes
+
+- b1cec7e: 浮层落焦时只整段选中单行文本类输入框（text、search、url、tel、email、password、number）的内容：第一个可聚焦元素是多行的 textarea 时只把焦点放上去，不再全选里面的文字，勾选框这类 input 也不再调 `select()`。对话框、抽屉、弹出层等用焦点作用域的组件三端一样。
+- b977c24: 浮层层级栈的先后不再只看登记先后：新登记的层如果开在另一层的内容里（它的根节点或某个分支，比如触发器、输入框，落在那一层的根节点之内），就排在那一层之上；已登记的层开在新层的内容里时，新层排到它们之下，不管谁先登记。对话框和里面缺省展开的下拉、或一打开就弹出候选的输入框同一刻打开时，浮层先登记，原先会排在对话框下面、被对话框盖住，Esc 先关对话框；现在浮层在上，Esc 先关浮层。没有嵌套关系的层照旧按登记先后排。
+- bd8c498: 浮层层级栈（`getLayerRegistry`）、Esc 与外部点击的派发、焦点域与焦点哨兵、滚动锁、`aria-hidden` 引用计数改为页面级单例：实例挂在 Document 上，页面上同时装了几份 `@xihan-ui/core`（应用与设计器各自打包、或装了两个版本）时，Vue、React 与 Web Components 的浮层仍在同一个栈里，谁后打开谁在上面，焦点与 Esc 只作用在最上层，滚动锁与 `aria-hidden` 不会被另一份提前放开。此前每份 core 各有一份，各自从 0 数层级，后开的对话框可能被先开的盖住。
+- 9e56caf: 滚动锁（`acquireScrollLock`）在同一页面里允许不同目标同时锁住：同一个规范化目标的并行锁照旧共用一把、按句柄计数；不同目标各锁各的，谁先释放都只还原自己那处。此前已锁住一个目标时再锁另一个会直接抛错。应用经配置给了 `scrollRoot`（锁布局里的滚动容器）、另一份配置（如 Web Components 的全局配置）没给时，外层对话框锁滚动容器、里层对话框锁页面，里层的整套浮层初始化因此失败：没有层级、焦点与 Esc，被外层盖住，从触发钮点开会立刻收起。
+- def27eb: 快捷键的符号键命中按键盘实际行为判定：没写 Shift 的符号键（如 `['+']`、`['Mod', '=']`）只比按出来的字，Shift 按没按下都算，美式键盘上按 Shift 加 = 得到的 `+` 能命中 `['+']`；写了 Shift 的符号键（如 `['Mod', 'Shift', ']']`）按美式键盘上的物理键位比并要求按着 Shift，按出来是 `}` 也命中。字母与数字的命中不变，`formatHotkey` 的显示不变。`<xh-kbd>` 的注册与设计器扩展的命令快捷键都随之生效。
+- 2b8f101: 层级栈的乱序诊断 `core.layer.dispose-not-top` 不再误报。开着的下拉被外面的一次点击收起、同一次点击又打开了抽屉或对话框时，下拉的层要等退场播完才释放，这时它已经压在新层下面，原先只要释放的不是栈顶就报一条 error；现在只在释放的层上面还压着开在它里面的层时才报，诊断明细新增 `nested`，列出那几层的 id。谁开在谁里面按登记那一刻的 DOM 记下，释放时节点已经卸掉也照样判得出。
+- Updated dependencies [d4f17ae]
+  - @xihan-ui/motion@5.0.0
+
 ## 4.2.0
 
 ### Patch Changes
