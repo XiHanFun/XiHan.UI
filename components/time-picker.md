@@ -1915,6 +1915,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 
 ### 特性
 
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字，是原生 `label`），盒里的段组（时、分、秒之间是冒号，挨着上下午段的是空格；多选时换成带删除钮的标签行）、清空钮与日历钮，表单影子，浮层里依次是快捷选项列、按精度与小时制铺的各列，多选时再加底栏的「添加」（文字取 `translations.confirmTrigger`）。精度、小时制与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - `timeStep` 按单位设定时、分、秒各列的步长（`{ minute: 15 }`）。
 - `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
 - `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
@@ -1935,6 +1936,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 ### 组合
 
 - 与[日期选择器](./date-picker)配合组成日期时间选择。
+- 直接放入[表单字段](./field)：字段的标题并进时钟钮的名字，说明与错误文案进描述链；只读、必填与校验由各段报告，时钟钮是普通按钮，不带 aria-readonly / aria-required。有值时清空钮顶替时钟钮，点字段标题焦点落在第一段。
 
 ### 最佳实践
 
@@ -1964,6 +1966,8 @@ const value = ref<string[]>(["09:00", "14:30"]);
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| string[]` |  | 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组（空串即空数组）。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `TimePickerSelectionMode` |  | 选择模式，默认 single。 |
@@ -1983,6 +1987,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
+| `placeholder` | `string` |  | 整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择开始时间」），焦点进到段上即换回段位。 多选时没有选中值，标签行显示这句文字。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
@@ -2025,6 +2030,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `XhTimePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhTimePickerPresetGroup` | `default` | `TimePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimePickerRoot` | `default` | `TimePickerRootSlotProps` |  |
+| `XhTimePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 
 ### React 适配器 props
 
@@ -2038,7 +2044,8 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `XhTimePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhTimePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhTimePickerPresetGroup` | `children` | `SlotChildren<TimePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  |  |
+| `XhTimePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTimePickerRoot` | `children` | `SlotChildren<TimePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhTimePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明。 |
 | `XhTimePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
 
@@ -2094,6 +2101,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `tags` | `TimePickerTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
+| `translations` | `TimePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getSegmentText` | `(props: TimePickerSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimePickerItemProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimePickerItemProps) => boolean` |  |
@@ -2168,7 +2176,8 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | 'true' \| 'false' |
 | `segment` | `aria-invalid` | 'true' \| 'false' |
@@ -2183,10 +2192,12 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
@@ -2241,9 +2252,13 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `control` | `data-xh-field-size` | props.size |
 | `tag-list` | `data-disabled` | ''（条件成立时才出现） |
 | `tag-list` | `data-instant` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `tag-list` | `data-placeholder-text` | props.placeholder \| undefined \| undefined |
 | `tag-list` | `data-xh-tag-list` | '' |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.placeholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -2384,7 +2399,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 | `--xh-time-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | time-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-time-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-time-picker-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-picker 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-picker-placeholder-fg` | `segment`<br>`segment-group`<br>`tag-list` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | time-picker 的 segment、segment-group、tag-list 部件 color 覆盖槽。 |
 | `--xh-time-picker-preset-bg` | `preset` | `background-color` | `default`<br>`disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-active` | time-picker 的 preset 部件 background-color 覆盖槽。 |

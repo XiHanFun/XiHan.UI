@@ -1,0 +1,36 @@
+var e=`<!-- 行尾扩展位 | 给了 createId 的条件带 id，行尾留一个扩展位放宿主自己的控件，参数带上条件与路径 -->
+<!-- 扩展位的内容写在宿主的直接子节点上：slot="condition-extra:<条件 id>"，元素把它搬进那一行 -->
+<xh-filter-builder id="filter-builder-extra" aria-label="订单筛选">
+  <xh-tag slot="condition-extra:c1" size="sm"><span data-xh-part="root"><span data-xh-part="label">c1</span></span></xh-tag>
+  <xh-tag slot="condition-extra:c2" size="sm"><span data-xh-part="root"><span data-xh-part="label">c2</span></span></xh-tag>
+</xh-filter-builder>
+<p id="filter-builder-extra-output" data-demo-output></p>
+
+<script type="module">
+  const builder = document.getElementById("filter-builder-extra");
+  const output = document.getElementById("filter-builder-extra-output");
+  let seq = 2;
+
+  builder.fields = [
+    { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
+    { name: "customer", type: "string", label: "客户" },
+    { name: "amount", type: "number", label: "金额" },
+    { name: "orderedAt", type: "date", label: "下单日期" },
+    { name: "paid", type: "boolean", label: "已付款" },
+  ];
+  // 新建的条件与组按这个函数取 id；新条件的扩展位要宿主补上同名 slot 的节点才有内容
+  builder.createId = kind => \`\${kind === "condition" ? "c" : "g"}\${++seq}\`;
+  builder.value = {
+    logic: "and",
+    conditions: [
+      { id: "c1", field: "region", operator: "eq", value: "east" },
+      { id: "c2", field: "amount", operator: "gt", value: 1000 },
+    ],
+  };
+  output.textContent = \`值：\${JSON.stringify(builder.value)}\`;
+  builder.addEventListener("value-change", (event) => {
+    builder.value = event.detail.value;
+    output.textContent = \`值：\${JSON.stringify(event.detail.value)}\`;
+  });
+<\/script>
+`;export{e as default};

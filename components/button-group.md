@@ -403,6 +403,62 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 </xh-button-group>
 ```
 
+### 分体按钮
+
+主操作旁接一个下拉菜单
+
+```vue
+<script setup lang="ts">
+import { ChevronDownIcon } from "@xihan-ui/icons";
+import { XhButton, XhButtonGroup, XhIcon, XhMenuRoot } from "@xihan-ui/vue";
+
+const more = [
+  { value: "save-as", label: "另存为" },
+  { value: "save-template", label: "存为模板" },
+  { value: "save-copy", label: "保存副本" },
+];
+</script>
+
+<template>
+  <XhButtonGroup variant="solid">
+    <XhButton>保存</XhButton>
+    <XhMenuRoot :collection="more" placement="bottom-end" trigger-as-child>
+      <template #trigger>
+        <XhButton icon-only aria-label="更多保存方式">
+          <XhIcon :icon="ChevronDownIcon" />
+        </XhButton>
+      </template>
+    </XhMenuRoot>
+  </XhButtonGroup>
+</template>
+```
+
+```html
+<xh-button-group variant="solid">
+  <div data-xh-part="root">
+    <xh-button>
+      <button data-xh-part="root">保存</button>
+    </xh-button>
+    <xh-menu placement="bottom-end">
+      <xh-button data-xh-part="trigger" icon-only>
+        <button data-xh-part="root" aria-label="更多保存方式">
+          <xh-icon>
+            <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9L12 15L18 9" /></svg>
+          </xh-icon>
+        </button>
+      </xh-button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div data-xh-part="item" value="save-as">另存为</div>
+          <div data-xh-part="item" value="save-template">存为模板</div>
+          <div data-xh-part="item" value="save-copy">保存副本</div>
+        </div>
+      </div>
+    </xh-menu>
+  </div>
+</xh-button-group>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -427,7 +483,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 ### 组合
 
 - 在组内直接放置[按钮](./button)。
-- 将菜单触发器放在末尾，可组成分裂按钮。
+- 将[菜单](./menu)放在主按钮之后、用一枚 icon-only 按钮作触发器，组成分体按钮（如「保存 ▾」）：两段连成一条，组的形态、颜色、尺寸与禁用同样落到触发器上，相接处照常是一条分隔线。
 
 ### 最佳实践
 

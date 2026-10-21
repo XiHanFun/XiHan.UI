@@ -50,6 +50,7 @@ function toggle(value: string) {
         <XhToolbarItem
           :value="format.value"
           type="button"
+          icon-only
           :aria-label="format.label"
           :aria-pressed="selected.has(format.value)"
           @click="toggle(format.value)"
@@ -60,11 +61,11 @@ function toggle(value: string) {
     </XhToolbarGroup>
     <XhToolbarSeparator />
     <XhToolbarGroup>
-      <XhToolbarItem value="copy" type="button" aria-label="复制">
+      <XhToolbarItem value="copy" type="button" icon-only aria-label="复制">
         <XhIcon :icon="CopyIcon" />
       </XhToolbarItem>
       <XhToolbarSeparator />
-      <XhToolbarItem value="paste" type="button" aria-label="粘贴">
+      <XhToolbarItem value="paste" type="button" icon-only aria-label="粘贴">
         <XhIcon :icon="ClipboardIcon" />
       </XhToolbarItem>
     </XhToolbarGroup>
@@ -76,25 +77,25 @@ function toggle(value: string) {
 <xh-toolbar>
   <div data-xh-part="root" aria-label="文本编辑">
     <div data-xh-part="group">
-      <button data-format data-xh-part="item" type="button" value="bold" aria-label="加粗" aria-pressed="true">
+      <button data-format data-xh-part="item" type="button" value="bold" data-icon-only aria-label="加粗" aria-pressed="true">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 5H13A4 4 0 0 1 13 13H7Z"/><path d="M7 13H14A4 4 0 0 1 14 21H7Z"/></svg>
       </button>
       <div data-xh-part="separator"></div>
-      <button data-format data-xh-part="item" type="button" value="italic" aria-label="斜体" aria-pressed="false">
+      <button data-format data-xh-part="item" type="button" value="italic" data-icon-only aria-label="斜体" aria-pressed="false">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
       </button>
       <div data-xh-part="separator"></div>
-      <button data-format data-xh-part="item" type="button" value="underline" aria-label="下划线" aria-pressed="false">
+      <button data-format data-xh-part="item" type="button" value="underline" data-icon-only aria-label="下划线" aria-pressed="false">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4V11A6 6 0 0 0 18 11V4"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
       </button>
     </div>
     <div data-xh-part="separator"></div>
     <div data-xh-part="group">
-      <button data-xh-part="item" type="button" value="copy" aria-label="复制">
+      <button data-xh-part="item" type="button" value="copy" data-icon-only aria-label="复制">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       </button>
       <div data-xh-part="separator"></div>
-      <button data-xh-part="item" type="button" value="paste" aria-label="粘贴">
+      <button data-xh-part="item" type="button" value="paste" data-icon-only aria-label="粘贴">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/></svg>
       </button>
     </div>
@@ -318,6 +319,7 @@ function toggle(value: string) {
           :key="format.value"
           :value="format.value"
           type="button"
+          icon-only
           :aria-label="format.label"
           :aria-pressed="pressed.has(format.value)"
           @click="toggle(format.value)"
@@ -332,6 +334,7 @@ function toggle(value: string) {
           :key="item.value"
           :value="item.value"
           type="button"
+          icon-only
           :aria-label="item.label"
           :aria-pressed="align === item.value"
           @click="align = item.value"
@@ -345,6 +348,7 @@ function toggle(value: string) {
         :key="item.value"
         :value="item.value"
         type="button"
+        icon-only
         :aria-label="item.label"
       >
         <XhIcon :icon="item.icon" />
@@ -360,36 +364,36 @@ function toggle(value: string) {
   <xh-toolbar>
     <div data-xh-part="root" aria-label="文本编辑">
       <div data-xh-part="group">
-        <button data-format data-xh-part="item" type="button" value="bold" aria-label="加粗" aria-pressed="true">
+        <button data-format data-xh-part="item" type="button" value="bold" data-icon-only aria-label="加粗" aria-pressed="true">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V4h6a4 4 0 0 1 0 8H6"/><path d="M6 12h8a4 4 0 0 1 0 8H6"/></svg>
         </button>
-        <button data-format data-xh-part="item" type="button" value="italic" aria-label="斜体" aria-pressed="false">
+        <button data-format data-xh-part="item" type="button" value="italic" data-icon-only aria-label="斜体" aria-pressed="false">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5h9"/><path d="M5 19h9"/><path d="M15 5L9 19"/></svg>
         </button>
-        <button data-format data-xh-part="item" type="button" value="underline" aria-label="下划线" aria-pressed="false">
+        <button data-format data-xh-part="item" type="button" value="underline" data-icon-only aria-label="下划线" aria-pressed="false">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v6a5 5 0 0 0 10 0V4"/><path d="M5 20h14"/></svg>
         </button>
       </div>
       <div data-xh-part="separator"></div>
       <div data-xh-part="group">
-        <button data-align data-xh-part="item" type="button" value="left" aria-label="左对齐" aria-pressed="true">
+        <button data-align data-xh-part="item" type="button" value="left" data-icon-only aria-label="左对齐" aria-pressed="true">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16"/><path d="M4 9.5h11"/><path d="M4 14.5h16"/><path d="M4 19.5h11"/></svg>
         </button>
-        <button data-align data-xh-part="item" type="button" value="center" aria-label="居中" aria-pressed="false">
+        <button data-align data-xh-part="item" type="button" value="center" data-icon-only aria-label="居中" aria-pressed="false">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16"/><path d="M6.5 9.5h11"/><path d="M4 14.5h16"/><path d="M6.5 19.5h11"/></svg>
         </button>
-        <button data-align data-xh-part="item" type="button" value="right" aria-label="右对齐" aria-pressed="false">
+        <button data-align data-xh-part="item" type="button" value="right" data-icon-only aria-label="右对齐" aria-pressed="false">
           <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16"/><path d="M9 9.5h11"/><path d="M4 14.5h16"/><path d="M9 19.5h11"/></svg>
         </button>
       </div>
       <div data-xh-part="separator"></div>
-      <button data-xh-part="item" type="button" value="link" aria-label="插入链接">
+      <button data-xh-part="item" type="button" value="link" data-icon-only aria-label="插入链接">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7.5H8a4.5 4.5 0 0 0 0 9h2"/><path d="M14 7.5h2a4.5 4.5 0 0 1 0 9h-2"/><path d="M8.5 12h7"/></svg>
       </button>
-      <button data-xh-part="item" type="button" value="image" aria-label="插入图片">
+      <button data-xh-part="item" type="button" value="image" data-icon-only aria-label="插入图片">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15L16 10L5 21"/></svg>
       </button>
-      <button data-xh-part="item" type="button" value="quote" aria-label="引用">
+      <button data-xh-part="item" type="button" value="quote" data-icon-only aria-label="引用">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12H6a1.5 1.5 0 0 1-1.5-1.5v-3A1.5 1.5 0 0 1 6 6h2.5A1.5 1.5 0 0 1 10 7.5V13c0 2.6-1.5 4.4-4 5"/><path d="M19.5 12h-4a1.5 1.5 0 0 1-1.5-1.5v-3A1.5 1.5 0 0 1 15.5 6H18a1.5 1.5 0 0 1 1.5 1.5V13c0 2.6-1.5 4.4-4 5"/></svg>
       </button>
       <button data-xh-part="overflow-trigger"></button>
@@ -431,6 +435,7 @@ function toggle(value: string) {
 - `outline` 形态提供带内距、描边与背景的附着式工具面；`subtle` 为淡底。
 - `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
 - 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
+- 条目只放图标时声明 `iconOnly`（Web Components 在条目上写 `data-icon-only`）：条目按方钮画，宽等于高，三种尺寸都一样。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
 - 放了 `overflow-trigger` 时不折行：宽度不够时，放不下的条目按次序收进行尾的「更多」按钮，点开是一张菜单，选中其中一项即触发该条目自己的点击；宽度够时「更多」按钮收起。容器变宽变窄、条目增减或改写后自动重新计算。
@@ -439,12 +444,12 @@ function toggle(value: string) {
 
 - 使用 `group` 收紧相关操作。
 - 使用 `separator` 区分操作组。
-- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，工具条上的分组与分隔线在菜单里画成分隔线。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
+- 使用 `overflow-trigger` 放在 `root` 的最后，承接放不下的条目。菜单里的文字取条目的 `aria-label`（没有时取条目文字），写了 `aria-pressed` 的开关条目在菜单里显示为勾选项，条目上写的 `data-tone`（如破坏性操作的 `danger`）随条目带进菜单项，工具条上的分组与分隔线在菜单里画成分隔线。`itemIcons` 按条目的 `value` 给图标记录，收起的条目带着它进菜单，排在文字之前；工具条上那颗按钮里放不放图标归作者。不写内容时由皮肤画一枚横排三点，可及名缺省为 `More`，用 `translations.overflowTrigger` 换成本地文案。
 - Web Components 只写一颗空的 `<button data-xh-part="overflow-trigger">`，菜单的浮层与条目由元素自己建。
 
 ### 最佳实践
 
-- 仅图标条目必须提供 `aria-label`：它也是条目收进菜单后显示的文字。
+- 仅图标条目声明 `iconOnly`，并且必须提供 `aria-label`：它也是条目收进菜单后显示的文字。
 - 使用 `aria-pressed` 表示可切换工具的当前状态。
 - 常用的操作排在前面：收纳从尾部开始，排在最后的最先收进菜单。
 
@@ -477,6 +482,7 @@ function toggle(value: string) {
 | `variant` | `ControlVariant` |  | 形态：ghost 只组织控件不画面（默认），outline 为附着式工具面，subtle 为淡底。默认 ghost。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
 | `translations` | `Partial<ToolbarTranslations>` |  | 读屏文案：「更多」钮的可及名，缺省 More。 |
+| `itemIcons` | `Readonly<Record<string, IconRecord>>` |  | 条目的图标，键是条目的 value：收起进「更多」菜单的条目带着它，排在文字之前。条目自己（工具条上的那颗按钮）里放不放图标归作者。 |
 
 ### 插槽
 
@@ -494,6 +500,7 @@ function toggle(value: string) {
 | --- | --- | --- | --- | --- |
 | `XhToolbarItem` | `value` | `string` | 是 |  |
 | `XhToolbarItem` | `disabled` | `boolean` |  |  |
+| `XhToolbarItem` | `iconOnly` | `boolean` |  | 只放图标、没有看得见的文字：按方钮画，宽等于高；名字由 aria-label 给。 |
 | `XhToolbarItem` | `as` | `ElementType` |  | 条目渲染为哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 |
 | `XhToolbarRoot` | `children` | `SlotChildren<ToolbarRootSlotProps>` |  |  |
 
@@ -579,10 +586,11 @@ function toggle(value: string) {
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-orientation` | props.orientation |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-icon-only` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
-| `item` | `data-xh-action-profile` | 'text' |
+| `item` | `data-xh-action-profile` | 'icon' \| 'text' |
 | `item` | `data-xh-action-size` | props.size |
 | `item` | `data-xh-action-variant` | 'ghost' |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
@@ -619,7 +627,7 @@ function toggle(value: string) {
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-_action-profile-gap` | toolbar 的 item 部件 gap 覆盖槽。 |
-| `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`icon-only`<br>`orientation=vertical`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`not(:has(~ [data-scope='toolbar'][data-part='item']:not([hidden])`<br>`not([hidden])`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |

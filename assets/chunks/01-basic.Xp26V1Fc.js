@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{eu as i}from"./theme.x3bdcchs.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(r(),t(e(i),{value:`https://ui.xihanfun.com`}))}});export{a as default};

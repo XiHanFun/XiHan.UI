@@ -353,7 +353,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
 - 必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前（`::before`，带空替代文本、不进控件可及名，必填由 `aria-required` 表达），取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不得各画一套。
-- 表单项距 `--xh-space-5`，字段的辅助行算在项距里：带说明或给错误文案留了一行的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距同一套（`--xh-space-5`，组里字段的辅助行同样算在项距里），组标题取 heading-3 + `--xh-fg-default`、与组内首项隔 `--xh-space-4`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
+- 表单项距 `--xh-space-5`：给错误文案留了一行、那一行空着的字段，那一行（最小高 `--xh-space-5`）就是项距，不再另留；说明是字、不算留白，带说明的字段在说明下面照常留项距，带说明与不带说明的字段交替排，上一项看得见的内容到下一项标签都隔一段项距；无效时错误文案顶替说明那一行，项距不变；一行流档列距 `--xh-space-6`、行距 `--xh-space-2`；字段集组内项距同一套（`--xh-space-5`，组里字段留不留项距的判据与表单相同），组标题取 heading-3 + `--xh-fg-default`、与组内首项隔 `--xh-space-4`。出错的字段不另画起始缘色带，错误由警示色标签与错误文案承担。
 - 字段标签与字段说明禁用不另变色（标签仍取 `--xh-fg-muted`、说明仍取 `--xh-fg-subtle`）：再淡一档与静息分不出，`--xh-fg-disabled` 只有 2.66:1，无障碍扫描把关联禁用控件的标签当正文判对比度；禁用由控件自己的禁用面表出。其余标签禁用取 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 - 层级通过字号、字重、行高和间距共同表达，不能只调颜色。
 - 不使用极小字号换取信息密度。
@@ -417,7 +417,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - 新组件先在下表找同类，按同类取档；没有对应档时先加语义令牌，再在皮肤里引用，不在皮肤写字面尺寸。
 - 有上限就必须有去处：面内滚动（按 §6.6 的两档滚动条）或条目截断。
-- 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`。按 px 定高的面板（日期面板、时间面板）不再叠 rem 上限。
+- 限高只取 `--xh-viewport-h-sm` / `md` / `lg`、`--xh-viewport-max-h`，浮层另取 `--xh-overlay-max-h` / `--xh-overlay-menu-max-h`（Menubar 的下拉与子菜单例外，只按可用区封顶）。按 px 定高的面板（日期面板、时间面板）不再叠 rem 上限。
 - 尺寸不随断点换档；粗指针命中区至少 44×44px（`--xh-control-hit-coarse`），经伪元素外扩，不改表里的视觉尺寸。外扩不越过相邻目标与标签：朝标签那一侧最多扩到标签间距，少扩的一截挪到另一侧补齐。日历网格格子首尾相接，改由粗指针下加大行距与列宽兑现（见下表 CalendarPicker 一行）。
 - 表中 sm / md / lg 并列时以「/」分隔；compact 列为空表示不随密度换档。
 
@@ -513,7 +513,8 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Popover、Popconfirm、HoverCard | 内容宽，上限随 size 16 / 20 / 24rem | 上限 `overlay-max-h` |
 | Tour | 内容宽，上限 24rem | 上限 `overlay-max-h` |
 | Citation 预览 | 上限 20rem | 上限 `overlay-max-h` |
-| Menu、ContextMenu、Menubar、SideNav 弹出层 | 条目自然宽，下限 10rem，上限 20rem | 上限 `overlay-menu-max-h` |
+| Menu、ContextMenu、SideNav 弹出层 | 条目自然宽，下限 10rem，上限 20rem | 上限 `overlay-menu-max-h` |
+| Menubar 的下拉与它的子菜单 | 条目自然宽，下限 10rem，上限 20rem | 只按落定那一侧的可用高度封顶，与桌面应用的菜单栏一致，不叠 `overlay-menu-max-h`；Menu 写 `fitAvailableHeight` 同此 |
 | NavigationMenu | 下限 10rem，上限 48rem | 内容高 |
 | Select、Combobox、TreeSelect | 与字段盒等宽，下限 10rem，缺省无上限 | 下限一行 `control-h`，上限 `overlay-menu-max-h` |
 | Mention | 下限 12rem，上限 20rem | 下限一行 `control-h`，上限 `overlay-max-h` |
@@ -654,15 +655,16 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 槽 | 归属 | 内容来源 |
 | --- | --- | --- |
-| `prefix` | 菜单族是前导图标（`item-indicator`）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
+| `prefix` | 菜单族是行首图标（`item-icon`，数据里的 `icon` 与 `item-prefix` 插槽都落这里）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
 | `text` | `item-text`，也是连打检索的取字来源 | `label` |
 | `description` | 第 2 行，跨 text 列 | 数据 |
 | `shortcut` | 行尾，菜单族与 Command 才有 | 数据 |
 | `suffix` | 行尾，排在快捷键之后、对号之前 | 适配器的逐条钩子 |
-| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠 | 库 |
+| `indicator` | 选中对号，由库按 `aria-selected` 显隐；分支行按标记自身的 `data-selected` / `data-indeterminate` 显形，半选画横杠。菜单族的 `item-indicator` 只当对号、只在勾选与单选条目上，标准结构里是条目的最后一个部件、落这一列（手写结构写在哪，皮肤都按 `order` 排来），与子菜单箭头同列，没勾时只隐不塌；同一层有勾选条目时，普通条目在行尾留出同宽的一格，快捷键同列 | 库 |
 
 - 行首与行尾两格承载任意节点（图标、头像、计数、徽标），家族只管落位，不规定字号与颜色——它们不是文字。
 - 行首那一格是装饰：可及名由 `text` 承担，该格一律 `aria-hidden`。
+- 行首图标列整层对齐：同一个弹出层或列表层（跨分组与分隔线，子菜单与级联的每一列各算一层）里只要有一条带行首格，所有条目都空出这一格（宽度取图标格加间距），正文左缘对齐；整层都没有就不留。菜单族的 `item-icon` 宽高都取图标尺寸，候选列表的 `item-prefix` 至少一个图标宽；格里的图标上下居中，与正文中线对齐，盒高不靠行高撑。树没有行首图标格（行首是展开箭头与缩进），不适用。
 - 导航族（Tabs、Anchor、Breadcrumb、NavigationMenu、SideNav）不接这套槽：那里的条目表达位置，不是一条可配置的数据行。
 
 一行里最多两处次级文字：跨 text 槽第 2 行的说明，和行尾跨两行居中的快捷键提示。两者同档、同色，只是落位不同。
@@ -1131,7 +1133,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 相位 | 条件 | 画面 |
 | --- | --- | --- |
 | 加载 | 还没有数据、正在取 | 一枚加载环排在一句文案之前。环走加载环家族配方（`family/loading-ring.css`，与 Spinner 环档同一副画法：一段 270° 的弧、不画轨道、起始边留缺口，`--xh-stroke-thick`，弧取 `--xh-fg-brand`）；连接层在占位部件上投影 `data-xh-loading-ring` 与 `data-loading`，环随之按 `micro` 淡入淡出、转与停 |
-| 刷新 | 已有数据、后台在取 | 不换成占位：保留上一帧的内容，容器报 `aria-busy`，内容按 `micro` 淡到 `--xh-state-disabled-opacity`，数据到了再淡回；加载占位在这一相位让位 |
+| 刷新 | 已有数据、后台在取 | 不换成占位：保留上一帧的内容，容器报 `aria-busy`；加载占位在这一相位让位。内容在刷新期间仍可操作（Select、Combobox、Listbox、Mention、Cascader、TreeSelect、Command、Transfer 的条目，Table 的表体）时不淡化——淡到禁用透明度会把文字压到 4.5:1 以下，WCAG 1.4.3 只豁免失效控件；刷新期间不接交互的内容（Tree 与 GridList 的行）才按 `micro` 淡到 `--xh-state-disabled-opacity`，数据到了再淡回 |
 | 空 | 取完没有条目、筛完没有匹配 | 一句文案，由作者或 `translations` 供给；没给文案时不渲染一块空白 |
 | 错误 | 取数或载入失败 | 一枚 `--xh-glyph-mark-warning` 字形（`--xh-fg-danger`，非颜色通道）排在一句说明之前；有重试能力时另给重试入口。媒体在画面正中画同一枚字形，不露浏览器的破图 |
 

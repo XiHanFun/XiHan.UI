@@ -64,7 +64,7 @@ const items = [
 
 加粗的是必需部件。
 
-`data-scope="checkbox-group"`：**`root`** · `label` · **`item`** · `indicator` · `item-text` · `item-description` · `hidden-input` · `select-all-trigger`
+`data-scope="checkbox-group"`：**`root`** · `label` · `item` · `indicator` · `item-text` · `item-description` · `hidden-input` · `select-all-trigger`
 
 ## 示例
 
@@ -480,6 +480,7 @@ const items = [
 ### 特性
 
 - `collection` 提供选项文本与禁用状态。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，每个条目带表单影子、方框、文字与说明；全选格要用时手写结构。Web Components 里标题与条目文字可以写在宿主的直接子节点上接管：`slot="label"`、`slot="item:<值>"`。
 - 全选触发器自动计算全选与半选状态。
 - `min` / `max` 约束选中数：选满 `max` 时没选的条目报 `aria-disabled` 并置灰、点不动，降到 `min` 时已选的条目摘不掉；全选只补到 `max` 为止，已满时再按是全不选（仍保住 `min`）。被下限锁住的已选项照常随表单提交。约束只落在用户的点选与全选上，程序化的 `setValue` 与初值原样落地；`min` 大于 `max` 或不是非负整数时立即报错。插槽载荷与元素上的 `atMax` / `atMin` 报此刻是否顶到了上下限。
 - `orientation` 设置横向或纵向排列。
@@ -531,12 +532,14 @@ const items = [
 | `disabled` | `boolean` |  | 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户不可修改。 |
 | `invalid` | `boolean` |  | 校验失败标注，写入每个条目的 aria-invalid。 |
+| `required` | `boolean` |  | 必填：至少选一项。根与标题写 data-required（标题据此画星号）；一项都没选时每份表单影子带原生 required， 拦下空表单的提交，选了任何一项就都撤掉。影子是 inert 的、不可聚焦，浏览器的校验气泡落不到它上面， 提交照样被拦下，错误文案交给字段给出。组根是 role=group，不收 aria-required； 条目的 aria-required 说的是「这一项必须勾上」，也不对，读屏经字段的描述链得知必填。 |
 | `name` | `string` |  | 表单字段名；提供后每个条目的隐藏输入才带 name，同名多值一并提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只输出 data-orientation，不输出 aria-orientation。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
@@ -613,6 +616,7 @@ const items = [
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `atMax` | `boolean` | 选中数到了 max：未选的条目改不动。未设 max 时恒为 false。 |
 | `atMin` | `boolean` | 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 |
 | `isChecked` | `(value: string) => boolean` |  |
@@ -646,6 +650,7 @@ const items = [
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `item` | `aria-checked` | 'true' \| 'false' |
@@ -679,9 +684,11 @@ const items = [
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |

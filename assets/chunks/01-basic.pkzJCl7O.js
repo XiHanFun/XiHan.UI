@@ -1,0 +1,38 @@
+var e=`<!-- 基础用法 | 一整年铺为周列 × 星期行的方格阵，颜色深浅表示当天数值所在的档位 -->
+<!-- 只写 root：月份行、七行星期、空态与图例由元素按区间生成。
+     装热力图的这一层是 flex / grid 项时，会被一整年的网格撑到内容宽；
+     给它 min-width: 0，网格才收进容器宽度、自己横着滚 -->
+<div style="min-width: 0">
+  <xh-heatmap id="heatmap-basic" start-date="2024-01-01" end-date="2024-12-31">
+    <div data-xh-part="root"></div>
+  </xh-heatmap>
+</div>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  // 一整年的提交量：工作日多、周末少，三月与十月各有一波冲刺，八月是长假的空档。
+  // 数值由天序号哈希出来，同一年恒出同一份数据，示例每次打开都长一样
+  function buildYear(year) {
+    const days = [];
+    let index = 0;
+    for (let time = Date.UTC(year, 0, 1); time <= Date.UTC(year, 11, 31); time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const month = at.getUTCMonth();
+      // 冲刺月的量翻倍，八月压到最低；周末一律减半
+      const peak = month === 2 || month === 9 ? 16 : month === 7 ? 3 : 8;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? peak / 2 : peak;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.16 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  // 数据是数组，只走 property：HTML 属性装不下它
+  document.getElementById("heatmap-basic").value = buildYear(2024);
+<\/script>
+`;export{e as default};

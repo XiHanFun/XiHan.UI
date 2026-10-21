@@ -1,0 +1,50 @@
+var e=`<!-- 不写结构 | 只给每一行的内容：行号、删除与新增把手由组件铺，每行的内容按行交给组件 -->
+<xh-field-array id="field-array-generated" style="display: block; inline-size: 100%; max-inline-size: 420px"></xh-field-array>
+
+<script type="module">
+  const host = document.getElementById("field-array-generated");
+  let links = ["https://xihan.fun", ""];
+
+  // 删掉的行的内容等行离场、回到宿主（宿主的直接子节点）之后再删：淡出的替身要带着它
+  function dropOrphans() {
+    const slots = new Set(host.items.map((item) => \`item-content:\${item.key}\`));
+    for (const node of host.querySelectorAll(':scope > [slot^="item-content:"]')) {
+      if (!slots.has(node.getAttribute("slot"))) node.remove();
+    }
+  }
+
+  // 按 items 补上每行的内容：每行一个 slot="item-content:<行 key>" 的文本框
+  function addMissing() {
+    for (const item of host.items) {
+      const slot = \`item-content:\${item.key}\`;
+      if (host.querySelector(\`[slot="\${slot}"]\`)) continue;
+      const field = document.createElement("xh-text-field");
+      field.setAttribute("slot", slot);
+      field.setAttribute("placeholder", "填一个链接");
+      field.value = item.value;
+      // 文本框的 value-change 会冒泡到字段数组上，这里截住；行号随换序会变，按行 key 现查
+      field.addEventListener("value-change", (event) => {
+        event.stopPropagation();
+        field.value = event.detail.value;
+        const index = host.items.findIndex((row) => row.key === item.key);
+        links = links.map((value, i) => (i === index ? event.detail.value : value));
+        host.value = links;
+      });
+      host.append(field);
+    }
+  }
+
+  customElements.whenDefined("xh-field-array").then(() => {
+    host.createItem = () => "";
+    host.value = links;
+    // 值给了即受控：先写回值，再按新的 items 补内容，新行在同一帧就带上文本框；删掉的行下一帧再清
+    host.addEventListener("value-change", (event) => {
+      links = event.detail.value;
+      host.value = links;
+      addMissing();
+      requestAnimationFrame(dropOrphans);
+    });
+    addMissing();
+  });
+<\/script>
+`;export{e as default};

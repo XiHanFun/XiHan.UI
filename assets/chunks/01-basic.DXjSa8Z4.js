@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`format-input-basic`),t=document.getElementById(`format-input-basic-output`);e.value={kind:`number`,decimals:2,grouping:!0},e.addEventListener(`value-change`,n=>{e.value=n.detail.value,t.textContent=`值：${n.detail.value===null?`（不设格式）`:JSON.stringify(n.detail.value)}`})}export{e as default};

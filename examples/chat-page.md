@@ -214,7 +214,7 @@ function onSubmit({ value }: { value: string }): void {
 
     <XhPromptInputRoot :translations="{ input: '接着问点什么' }" @submit="onSubmit">
       <XhPromptInputInput rows="1" placeholder="接着问点什么…" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 
@@ -397,7 +397,7 @@ function onSubmit({ value }: { value: string }): void {
   <xh-prompt-input id="chat-page-input">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="接着问点什么…"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>

@@ -901,6 +901,7 @@ import {
 ### 特性
 
 - `step` 与 `largeStep` 分别对应方向键和 PageUp / PageDown。
+- 不写结构时按标准结构铺出标题与盒里的减号、输入框、加号（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数，`label` 给标题文字。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 长按加减按钮连续步进，按住越久越快：先等 `changeDelay`（300ms），随后从 `changeInterval`（50ms）一拍起，每连发一次间隔缩到上一拍的 0.85，约半秒后收到 `minChangeInterval`（10ms）。把 `minChangeInterval` 写成与 `changeInterval` 相同即按固定节奏连发。
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间；`clampValueOnBlur` 关掉后越界值原样留在框里（仍按 `format` 补格式），由 `outOfRange` 与根上的 `data-out-of-range` 报出来，交给表单层提示。步进在两种情形下都不会越界。
@@ -951,6 +952,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string` |  |  |
 | `defaultValue` | `string` |  |  |
 | `min` | `number` |  |  |
@@ -962,6 +965,7 @@ import {
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后才参与提交。 |
+| `placeholder` | `string` |  | 值为空时输入框显示的提示文字。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
 | `changeInterval` | `number` |  | 连发开始时的间隔，默认 50ms；按住越久间隔越短，逐次收到 minChangeInterval。 |
 | `minChangeInterval` | `number` |  | 连发加速后的最短间隔，默认 10ms：按住越久步进越快，每连发一次间隔缩到上一次的 0.85，缩到这里为止。 写成与 changeInterval 相同的数即关掉加速，按固定节奏连发。 |
@@ -988,6 +992,7 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhNumberFieldRoot` | `default` | `NumberFieldRootSlotProps` |  |
+| `XhNumberFieldRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -995,6 +1000,7 @@ import {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhNumberFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhNumberFieldRoot` | `children` | `SlotChildren<NumberFieldRootSlotProps>` |  |  |
 
 ### 状态
@@ -1058,7 +1064,8 @@ import {
 | --- | --- | --- |
 | `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-valuemax` | props.max |
 | `input` | `aria-valuemin` | props.min |
 | `input` | `aria-valuenow` | undefined \| decodeNumber(value, { parse: prop('parse'), format: p… |

@@ -1175,7 +1175,11 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 
 - `validateOn` 设置输入、失焦或提交时校验。
 - 支持声明式规则、自定义校验和异步校验。
+- 必填按空值判定：`undefined`、`null`、只含空白的字符串（含不换行空格与全角空格）、空数组与元素全为空的数组算空，`false` 与 `0` 不算空。「必须勾选同意」这类要求写 `validator`，判断值是否为 `true`。
+- `min` / `max` 对字符串按字素计数：组合 emoji、国旗、带变音符的字母各算一个字，与[文本框](./text-field)的计数和 `maxLength` 同一口径，`@xihan-ui/headless` 导出的 `graphemeLength` 就是这把尺子；数组按元素个数，数值比较大小。数据库按列长限制时（如 PostgreSQL 的 `varchar(n)` 按码点计），后端仍要自己校验长度；.NET 端用 `StringInfo.LengthInTextElements` 得到同样的字数。
+- 正则以字符串保存时（模板、服务端下发的规则），用 `compileFormPattern(source, { flags?, fullMatch?, maxLength? })` 编译成 `pattern` 所需的 `RegExp`：标志缺省只允许 `imsu`，源码缺省不超过 1000 个字符，失败时返回原因而不抛异常，`fullMatch` 包成整串匹配。它只检查语法，不判断回溯开销，来自不受信方的正则仍要在服务端限时执行。
 - 字段值、错误和校验状态均可受控。
+- 值表变化来自某个字段组的行变更时，`onValuesChange`（事件名 `values-change`）的载荷另带 `arrayMutation: { name, mutation }`：是哪一个字段组、哪一种行变更，与字段组的 `value-change` 同一份。
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
 - 嵌套字段与字段数组使用显式 `FormPath`。
@@ -1246,7 +1250,7 @@ function save({ values }: FormSubmitDetails): Promise<void> {
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `values-change` | `FormValuesChangeDetails` | 值表变化；detail 为 `{ values }` |
+| `values-change` | `FormValuesChangeDetails` | 值表变化；detail 为 `{ values, arrayMutation? }`，来自字段组的行变更时 arrayMutation 是 `{ name, mutation }` |
 | `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
 | `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }`。异步提交门经 submitAction 属性：事件拿不到监听函数的返回值， 给元素赋 `submitAction = details =&gt; thenable` 即在提交通过校验后调用它，期间 submitting 为真、提交钮报在途 |
 | `submit-error` | `FormSubmitErrorDetails` | submitAction 返回的 thenable 拒绝；detail 为 `{ cause, values }`，保留原始原因 |

@@ -1,0 +1,31 @@
+var e=`<!-- 基础用法 | 组里是条件，每个条件是字段、运算符与值；运算符按字段类型给出，值的控件随运算符换，增删改都派发一棵新树 -->
+<!-- 不写部件：组、条件行与组尾由元素按值铺在里面 -->
+<xh-filter-builder id="filter-builder-basic" aria-label="订单筛选"></xh-filter-builder>
+<p id="filter-builder-basic-output" data-demo-output></p>
+
+<script type="module">
+  const builder = document.getElementById("filter-builder-basic");
+  const output = document.getElementById("filter-builder-basic-output");
+
+  // 字段、参数与值都是对象，只能经 property 赋值；受控时由宿主写回
+  builder.fields = [
+    { name: "region", type: "string", label: "区域", options: [{ value: "east", label: "华东" }, { value: "south", label: "华南" }, { value: "north", label: "华北" }] },
+    { name: "customer", type: "string", label: "客户" },
+    { name: "amount", type: "number", label: "金额" },
+    { name: "orderedAt", type: "date", label: "下单日期" },
+    { name: "paid", type: "boolean", label: "已付款" },
+  ];
+  builder.value = {
+    logic: "and",
+    conditions: [
+      { field: "region", operator: "eq", value: "east" },
+      { field: "amount", operator: "between", value: [1000, 5000] },
+    ],
+  };
+  output.textContent = \`值：\${JSON.stringify(builder.value)}\`;
+  builder.addEventListener("value-change", (event) => {
+    builder.value = event.detail.value;
+    output.textContent = \`值：\${JSON.stringify(event.detail.value)}\`;
+  });
+<\/script>
+`;export{e as default};

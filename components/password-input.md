@@ -580,6 +580,7 @@ import {
 - 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
 - `autoComplete` 默认 `current-password`，注册表单应显式改为 `new-password`。
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，盒里依次是输入框、大写锁定提示与明暗切换钮，给了 `strength` 再铺强度条。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
 - 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
@@ -625,6 +626,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string` |  | 受控值；提供后由宿主决定，状态机不自行修改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
 | `revealed` | `boolean` |  | 受控的显隐态：明文是否显示；提供后由宿主决定。 |
@@ -660,6 +663,7 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPasswordInputRoot` | `default` | `PasswordInputRootSlotProps` |  |
+| `XhPasswordInputRoot` | `label` | — | 不写默认插槽时标题的内容，代替 label 文字。 |
 
 ### React 适配器 props
 
@@ -667,6 +671,7 @@ import {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhPasswordInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhPasswordInputRoot` | `children` | `SlotChildren<PasswordInputRootSlotProps>` |  |  |
 
 ### 状态
@@ -733,7 +738,8 @@ import {
 | --- | --- | --- |
 | `input` | `aria-describedby` | `capsLock` 部件的 id \| undefined |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `visibility-trigger` | `aria-controls` | `password-input-input` 部件的 id |
 | `visibility-trigger` | `aria-label` | label.visibilityTriggerHide \| label.visibilityTriggerShow |
 | `caps-lock-indicator` | `aria-atomic` | 'true' |

@@ -78,7 +78,7 @@ const fruits = [
 
 加粗的是必需部件。
 
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `hidden-select`
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-prefix` · `item-text` · `item-description` · `item-suffix` · `item-indicator` · `empty` · `loading` · `error` · `retry-trigger` · `hidden-select`
 
 ## 示例
 
@@ -2871,15 +2871,18 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 ### 特性
 
 - 通过 `hidden-select` 参与表单。
-- 多选值在触发器里排成标签（Vue / React 的自动结构直接铺出），超出 `maxTagCount` 后合并为 `+N`；组合框、树选择与级联选择的多选用同一套呈现。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数；`label` 给标题文字、`clearable` 带清空按钮。浮层里列表之后铺空态、在途、取数失败的提示与重试钮，露哪一种按 `loading`、`error` 与条数收放；文字取 `translations`，空态文字可由 `empty` 给出。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`；Vue 用同名插槽，React 给 `empty` 一个节点。
+- 多选值在触发器里排成标签（不写结构时直接铺出），超出 `maxTagCount` 后合并为 `+N`；组合框、树选择与级联选择的多选用同一套呈现。
 - 支持分组、加载、空状态、底部操作区和滚动加载。
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
+- 选项来自模板或宿主数据时，用 `@xihan-ui/core/options` 导出的 `findOptionViolation(collection, { tree?, unique?, requireLabel?, strict?, isValue? })` 先校验结构（`isValue` 换掉缺省只收字符串的 `value` 检查，供取值是数字、布尔的选项列表用），返回第一处问题的 JSON Pointer 与原因；单选组、复选组、组合框、树选择与级联吃同一套节点形状，同样适用。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 控件使用 Field Chrome，浮层使用 M2 磨砂表面；候选面板与字段盒等宽，长选项在条目里截断。
 - 选中项保留普通文字，通过末端对号表示状态。
 - 关闭时立即退出交互，资源在退场动画结束后释放。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
 
 ### 组合
@@ -2906,7 +2909,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-select>` |
-| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
+| Vue 组件 | `XhSelectClearTrigger` `XhSelectContent` `XhSelectControl` `XhSelectEmpty` `XhSelectError` `XhSelectFooter` `XhSelectGroup` `XhSelectGroupLabel` `XhSelectIndicator` `XhSelectItem` `XhSelectItemDeleteTrigger` `XhSelectItemDescription` `XhSelectItemIndicator` `XhSelectItemPrefix` `XhSelectItemSuffix` `XhSelectItemText` `XhSelectLabel` `XhSelectList` `XhSelectLoading` `XhSelectOverflowTag` `XhSelectPositioner` `XhSelectRetryTrigger` `XhSelectRoot` `XhSelectTag` `XhSelectTagLabel` `XhSelectTagList` `XhSelectTrigger` `XhSelectValueText` |
 | 组合式函数 | `useSelect` |
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
@@ -2915,6 +2918,8 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
@@ -2927,6 +2932,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
 | `loading` | `boolean` |  | 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `error` | `boolean` |  | 整表取数失败：浮层里露出 error 部件（role=alert）与 retry-trigger，空态占位让位；loading 同时为真时在途占位优先。 点重试钮、或浮层里没有高亮条目时按 Enter / Space，派发 onRetry；宿主重新取数时撤掉 error、置上 loading。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏文案，默认英文。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦截。 |
@@ -2942,6 +2948,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onRetry` | `() => void` |  | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 |
 
 ### SelectNode
 
@@ -2964,6 +2971,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `retry` | `` | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
 
 ### 插槽
 
@@ -2973,6 +2981,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | --- | --- | --- | --- |
 | `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
 | `XhSelectRoot` | `label` | — |  |
+| `XhSelectRoot` | `empty` | — | 自动渲染树中空态占位的内容 |
 | `XhSelectRoot` | `item` | `SelectNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
 | `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
@@ -2988,6 +2997,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhSelectRoot` | `empty` | `ReactNode` |  | 自动渲染树中的空态内容，没给时取 translations.empty。 |
 | `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
 | `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
 | `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
@@ -3017,6 +3027,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `item-indicator` | 'checked' \| 'unchecked' |
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
+| `error` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
@@ -3039,6 +3050,8 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
 | `invalid` | `boolean` | 校验错误态。 |
+| `error` | `boolean` | 整表取数失败。 |
+| `translations` | `SelectTranslations` | 解析后的读屏文案；error 与 retry-trigger 没写内容时显示其中的 loadError 与 retry。 |
 | `readOnly` | `boolean` | 只读态。 |
 | `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
 | `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
@@ -3068,6 +3081,8 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
+| `getErrorProps` | `() => T['element']` | 整表取数失败的提示：与空态、在途占位同一位置，role=alert；error 为真且不在途时露出。 |
+| `getRetryTriggerProps` | `() => T['button']` | 整表取数失败后的重试按钮：不占 Tab 位，键盘从浮层里按 Enter / Space 重试；点击派发 onRetry。 |
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
@@ -3100,6 +3115,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `Enter` / `Space` | open, 单选, 高亮条目未禁用 | 选中高亮条目并关闭列表，焦点归还 trigger |
 | `Enter` / `Space` | held in item / clear-trigger, 未禁用、未只读 | 按住期间该部件投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，条目随浮层收起一并撤下；没有值可清时清空按钮不进 |
 | `Enter` / `Space` | open, 多选, 高亮条目未禁用 | 切换高亮条目的选中态，列表不收起、焦点留在条目上 |
+| `Enter` / `Space` | open, 整表取数失败（error）且没有高亮条目 | 派发重试，浮层不收起；重试钮不占 Tab 位，键盘从这里重试 |
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
 
@@ -3113,7 +3129,8 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
@@ -3121,7 +3138,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `content` | `aria-hidden` | !open \|\| undefined |
 | `list` | `aria-busy` | 'true' \| undefined |
 | `list` | `aria-label` | translations.content |
-| `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `list` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -3131,6 +3148,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `item` | `role` | 'option' |
 | `item-prefix` | `aria-hidden` | 'true' |
 | `item-indicator` | `aria-hidden` | 'true' |
+| `error` | `role` | 'alert' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
 ## 样式参考
@@ -3223,6 +3241,12 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `error` | `data-state` | 'open' \| 'closed' |
+| `retry-trigger` | `data-xh-action-control` | '' |
+| `retry-trigger` | `data-xh-action-display` | 'always' |
+| `retry-trigger` | `data-xh-action-profile` | 'text' |
+| `retry-trigger` | `data-xh-action-size` | props.size |
+| `retry-trigger` | `data-xh-action-variant` | 'ghost' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | v |
 
@@ -3273,6 +3297,10 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |
 | `--xh-select-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | select 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-select-error-fg` | `error` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 error 部件 color 覆盖槽。 |
+| `--xh-select-error-font-size` | `error` | `font-size` | `default` | `--xh-_select-font-size` | select 的 error 部件 font-size 覆盖槽。 |
+| `--xh-select-error-px` | `error` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 error 部件 padding-inline 覆盖槽。 |
+| `--xh-select-error-py` | `error` | `padding-block` | `default` | `--xh-space-3` | select 的 error 部件 padding-block 覆盖槽。 |
 | `--xh-select-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-frosted-separator` | select 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-select-footer-fg` | `footer` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 footer 部件 color 覆盖槽。 |
 | `--xh-select-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 footer 部件 font-size 覆盖槽。 |
@@ -3297,7 +3325,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
 | `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | select 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-select-item-h` | `item` | `min-block-size` | `default` | `--xh-_select-item-h` | select 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
@@ -3326,7 +3354,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

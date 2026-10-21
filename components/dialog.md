@@ -198,7 +198,7 @@ import {
 
 ```html
 <!-- alertdialog 一律不许点遮罩关闭，再关掉 Esc 就只剩里面两颗按钮这一条出路 -->
-<xh-dialog id="dialog-alert" role="alertdialog" close-on-escape="false">
+<xh-dialog id="dialog-alert" dialog-role="alertdialog" close-on-escape="false">
   <button data-xh-part="trigger">删除这台设备</button>
   <div data-xh-part="backdrop"></div>
   <div data-xh-part="positioner">
@@ -956,6 +956,7 @@ async function remove(): Promise<void> {
 
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`；没给时落在内容里第一个可聚焦的控件上，越过关闭钮与拖动把手（除它们之外没有可聚焦的才落在关闭钮上），`alertdialog` 落在内容容器本身。关闭后归还触发器。
+- `role` 写成 `alertdialog` 时内容是警示对话框：读屏用更强的语气，点外面不关。Web Components 侧的属性是 `dialog-role`：`role` 是 HTML 全局属性，写在宿主上宿主本身就成了对话框，连同里面的触发钮。
 - `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
 - 内容区可以内部滚动。Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道。
 - `draggable` 让面板可以挪走：指针按住标题栏（header，没写 header 时是 title）即跟手，落在标题栏里的按钮、链接与表单控件照常点；面板四边始终夹在视口内，每次打开都从居中落点起。键盘经 `drag-trigger` 挪：它是一块透明的把手，放在 header 里时铺满标题栏，焦点落在它上面时方向键挪一步（10px）、Shift 挪一大步（50px）、Enter / Space 回到居中；初始焦点越过它，落到第一个真正的控件上。位移写成 content 上的两个私有槽、按 transform 平移，与进出场的 translate / scale 叠加，拖过的面板从拖到的位置退场。Web Components 侧的属性是 `panel-draggable`：`draggable` 是 HTML 全局属性，写在宿主上会把它变成原生拖放源。
@@ -1011,6 +1012,7 @@ async function remove(): Promise<void> {
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `draggable` | `boolean` |  | 可拖动：指针按住标题栏（header，没有 header 时是 title）或 drag-trigger 把面板挪走， 键盘在 drag-trigger 上用方向键挪；面板始终夹在视口内。默认 false。每次打开都从居中落点起。 |
 | `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的浮层。 |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label； description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<DialogTranslations>` |  |  |
 | `onOpenChange` | `(details: DialogOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onExitComplete` | `() => void` |  | 退出动画结束或取消，且本层资源全部释放后通知；卸载和重新打开不通知。 |
@@ -1110,9 +1112,9 @@ async function remove(): Promise<void> {
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |

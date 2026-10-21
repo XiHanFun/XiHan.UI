@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`image-cropper-flip`).translations={flipHorizontal:`左右翻转`,flipVertical:`上下翻转`}}export{e as default};

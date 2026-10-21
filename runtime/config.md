@@ -97,6 +97,8 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 
 `locale` 与 `size` 两条属性写在标签上即可；`translations` 是对象、`scrollRoot` 是函数，只能通过 property 设置。子树中每个元素都沿祖先链解析，运行状态机与不运行状态机的组件一致；`scrollRoot` 由 `xh-dialog` / `xh-drawer` / `xh-image-viewer` / `xh-command` 开启模态时读取，修改后下一次打开生效。`<xh-config>` 自身不渲染任何内容，也不接线任何角色节点：它是 `display: contents`，布局上完全让开。
 
+浮层打开后内容搬进 Portal 落点，里面的元素照它们在原来 DOM 里的位置解析：Portal 实例壳登记了来源，解析走到壳时跳回来源接着往上找，与 Vue 侧浮层沿组件树取配置一致。包着对话框的 `<xh-config>` 因此照样管得到对话框里的下拉、开关与文案，打开期间改它，搬走的元素跟着更新；浮层里再放的 `<xh-config>` 承接外层的视觉环境，禁用的 `xh-fieldset` 也压进组里开的浮层内容。
+
 `setXhConfig` 是整份替换（不深合并），修改一处需要传入整份配置；`<xh-config>` 之间以及它与全局配置之间才是逐键合并。
 
 运行状态机的元素把沿祖先链解析到的那份结果缓存起来：状态机每读一个 prop 都要经过这一步，而解析一次要逐层往上找配置作用域。缓存在全局那份改了、任一 `<xh-config>` 改了或进出文档时整体作废，元素自己被搬到另一棵子树时随断开重连作废。因此**改配置要走 `setXhConfig` 或 `<xh-config>` 的 property**，就地改写已经交出去的那个配置对象不会被看见——这一条本来就成立（子树里已挂载的元素也不会因此重渲），缓存只是让它更明显。

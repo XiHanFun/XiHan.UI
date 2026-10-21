@@ -980,11 +980,12 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 - `granularity` 决定周期格的生成方式，`selectionMode` 独立决定单选或多选；两个维度互不绑定。
 - 五种粒度统一产出 `CalendarPeriod`：稳定键、周期首尾、标签与相邻容器标记都来自同一份数据。
 - `week` 是一级粒度，使用一行一个整周的网格；不通过日格高亮模拟整周选择。
+- 周、月、季度与年这几层同样按行渲染：插槽里的 `rows`（多面板读 `panels[i].rows`）已按列数切好——周一行一格，月与年一行三格，季度一行四格；一行写一个 `week-row`，格子放进行里。网格是 `role=grid`，行承担 `role=row`，格子不直接铺进网格。
 - `isDateUnavailable` 与 `min` / `max` 只阻止取值，不阻止聚焦；粗粒度周期越过任一边界时整格不可选。
 - 多选时 `maxSelected` 限定最多选几个周期：选满后没选中的格子转为不可用（仍可聚焦），已选的点掉一个即腾出名额。它只拦用户的加选，`setValue` 与受控值原样收下。
 - 支持固定六行与显式多面板；翻页时整个视窗一起移动。
 - 日期是 24px 见方的圆，月份、季度与年份格铺满格宽；按下只换底色，命中区铺满整格，点在格子边缘同样选中。
-- 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
+- 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义；自备的年份列表用 `calendarPeriodRows` 切成行。
 - `calendarPeriodValue` 将选中的周期转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
 - 切换粒度会清空旧选择并保留浏览锚点，避免不同周期键之间发生隐式转换。
 - 周首日、月份名与星期名跟随 `locale`：`en-US` 周日起、`zh-CN` 周一起。未提供 `locale` 时跟随宿主浏览器语言，读取失败时使用 `en-US`；需要固定排法时显式传入 `locale`。
@@ -1006,6 +1007,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 
 ### 反模式
 
+- 把周、月、季度或年的格子直接铺进网格：网格底下没有行，读屏报不出格子落在第几行第几列。
 - 不可选的日期无法聚焦，键盘用户无从知道该位置的内容。
 - 将它用作日期输入框。
 - 用多选模拟区间：中间的日期不会自动补齐，也没有拖选与预览。
@@ -1128,6 +1130,10 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prev-year-trigger` | `aria-label` | translations.prevYearTrigger(view) |
+| `prev-trigger` | `aria-label` | translations.prevTrigger(view) |
+| `next-trigger` | `aria-label` | translations.nextTrigger(view) |
+| `next-year-trigger` | `aria-label` | translations.nextYearTrigger(view) |
 | `grid` | `aria-disabled` | 'true' \| 'false' |
 | `grid` | `aria-labelledby` | frame.headingId(panel.index) |
 | `grid` | `aria-multiselectable` | 'true' \| 'false' |
@@ -1215,6 +1221,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 | `grid` | `data-index` | frame.panelOf(panel).index |
 | `grid` | `data-readonly` | ''（条件成立时才出现） |
 | `grid` | `data-view` | view |
+| `week-row` | `data-view` | view |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-focus` | ''（条件成立时才出现） |
 | `cell` | `data-outside-month` | ''（条件成立时才出现） |
@@ -1282,7 +1289,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
 | `--xh-calendar-picker-nav-fg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-picker-nav-radius` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `border-radius` | `default` | `--xh-shape-circle` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-picker-nav-size` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | calendar-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-calendar-picker-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-0` | calendar-picker 的 grid 部件 gap 覆盖槽。 |
+| `--xh-calendar-picker-period-gap` | `grid`<br>`week-row` | `column-gap`<br>`gap` | `is([data-view='month'], [data-view='year'])`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-0` | calendar-picker 的 grid、week-row 部件 column-gap、gap 覆盖槽。 |
 | `--xh-calendar-picker-period-px` | `cell` | `padding-inline` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-1` | calendar-picker 的 cell 部件 padding-inline 覆盖槽。 |
 | `--xh-calendar-picker-period-radius` | `cell-trigger` | `border-radius` | `default` | `--xh-shape-control` | calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-picker-row-gap` | `grid-body`<br>`grid-head` | `gap` | `default` | `--xh-space-0` | calendar-picker 的 grid-body、grid-head 部件 gap 覆盖槽。 |

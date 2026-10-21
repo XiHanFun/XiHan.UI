@@ -50,7 +50,7 @@ const menus = [
 
 加粗的是必需部件。
 
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `item-shortcut` · `item-suffix` · `separator` · `group` · `group-label` · `arrow`
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-icon` · `item-text` · `item-description` · `item-shortcut` · `item-suffix` · `item-indicator` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
@@ -65,7 +65,6 @@ import {
   XhMenubarGroup,
   XhMenubarGroupLabel,
   XhMenubarItem,
-  XhMenubarItemIndicator,
   XhMenubarItemText,
   XhMenubarPositioner,
   XhMenubarRoot,
@@ -81,7 +80,7 @@ import {
       <XhMenubarContent>
         <XhMenubarGroup value="theme">
           <XhMenubarGroupLabel>主题</XhMenubarGroupLabel>
-          <XhMenubarItem value="light"><XhMenubarItemIndicator /><XhMenubarItemText>浅色</XhMenubarItemText></XhMenubarItem>
+          <XhMenubarItem value="light"><XhMenubarItemText>浅色</XhMenubarItemText></XhMenubarItem>
           <XhMenubarItem value="dark"><XhMenubarItemText>深色</XhMenubarItemText></XhMenubarItem>
         </XhMenubarGroup>
         <XhMenubarSeparator />
@@ -104,7 +103,7 @@ import {
       <div data-xh-part="content" value="view">
         <div data-xh-part="group" value="theme">
           <span data-xh-part="group-label">主题</span>
-          <div data-xh-part="item" value="light"><span data-xh-part="item-indicator"></span><span data-xh-part="item-text">浅色</span></div>
+          <div data-xh-part="item" value="light"><span data-xh-part="item-text">浅色</span></div>
           <div data-xh-part="item" value="dark"><span data-xh-part="item-text">深色</span></div>
         </div>
         <div data-xh-part="separator"></div>
@@ -130,7 +129,7 @@ import {
   XhIcon,
   XhMenubarContent,
   XhMenubarItem,
-  XhMenubarItemIndicator,
+  XhMenubarItemIcon,
   XhMenubarItemShortcut,
   XhMenubarItemText,
   XhMenubarPositioner,
@@ -146,10 +145,10 @@ import {
     <XhMenubarTrigger value="edit"><XhIcon :icon="PencilIcon" size="sm" />编辑</XhMenubarTrigger>
     <XhMenubarPositioner value="file">
       <XhMenubarContent>
-        <XhMenubarItem value="new"><XhMenubarItemIndicator><XhIcon :icon="PlusIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>新建</XhMenubarItemText><XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut></XhMenubarItem>
-        <XhMenubarItem value="open"><XhMenubarItemIndicator><XhIcon :icon="FolderIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>打开</XhMenubarItemText><XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="new"><XhMenubarItemIcon><XhIcon :icon="PlusIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>新建</XhMenubarItemText><XhMenubarItemShortcut>⌘ N</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="open"><XhMenubarItemIcon><XhIcon :icon="FolderIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>打开</XhMenubarItemText><XhMenubarItemShortcut>⌘ O</XhMenubarItemShortcut></XhMenubarItem>
         <XhMenubarSeparator />
-        <XhMenubarItem value="save"><XhMenubarItemIndicator><XhIcon :icon="SaveIcon" size="sm" /></XhMenubarItemIndicator><XhMenubarItemText>保存</XhMenubarItemText><XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut></XhMenubarItem>
+        <XhMenubarItem value="save"><XhMenubarItemIcon><XhIcon :icon="SaveIcon" size="sm" /></XhMenubarItemIcon><XhMenubarItemText>保存</XhMenubarItemText><XhMenubarItemShortcut>⌘ S</XhMenubarItemShortcut></XhMenubarItem>
       </XhMenubarContent>
     </XhMenubarPositioner>
     <XhMenubarPositioner value="edit">
@@ -169,10 +168,10 @@ import {
     <button data-xh-part="trigger" value="edit">编辑</button>
     <div data-xh-part="positioner" value="file">
       <div data-xh-part="content" value="file">
-        <div data-xh-part="item" value="new"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span data-xh-part="item-text">新建</span><span data-xh-part="item-shortcut">⌘ N</span></div>
-        <div data-xh-part="item" value="open"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h7l2 3h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span data-xh-part="item-text">打开</span><span data-xh-part="item-shortcut">⌘ O</span></div>
+        <div data-xh-part="item" value="new"><span data-xh-part="item-icon"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span data-xh-part="item-text">新建</span><span data-xh-part="item-shortcut">⌘ N</span></div>
+        <div data-xh-part="item" value="open"><span data-xh-part="item-icon"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h7l2 3h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span data-xh-part="item-text">打开</span><span data-xh-part="item-shortcut">⌘ O</span></div>
         <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="save"><span data-xh-part="item-indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5zM8 4v6h8M8 20v-6h8v6"/></svg></span><span data-xh-part="item-text">保存</span><span data-xh-part="item-shortcut">⌘ S</span></div>
+        <div data-xh-part="item" value="save"><span data-xh-part="item-icon"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5zM8 4v6h8M8 20v-6h8v6"/></svg></span><span data-xh-part="item-text">保存</span><span data-xh-part="item-shortcut">⌘ S</span></div>
       </div>
     </div>
     <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
@@ -297,15 +296,15 @@ const collection: MenubarNode[] = [{
     <div data-xh-part="positioner" value="view">
       <div data-xh-part="content" value="view">
         <div data-xh-part="item" kind="checkbox" value="status">
-          <span data-xh-part="item-indicator"></span><span data-xh-part="item-text">状态栏</span>
+          <span data-xh-part="item-text">状态栏</span><span data-xh-part="item-indicator"></span>
         </div>
         <div data-xh-part="group" kind="radio" value="density">
           <span data-xh-part="group-label">密度</span>
           <div data-xh-part="item" kind="radio" value="comfortable">
-            <span data-xh-part="item-indicator"></span><span data-xh-part="item-text">宽松</span>
+            <span data-xh-part="item-text">宽松</span><span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="item" kind="radio" value="compact">
-            <span data-xh-part="item-indicator"></span><span data-xh-part="item-text">紧凑</span>
+            <span data-xh-part="item-text">紧凑</span><span data-xh-part="item-indicator"></span>
           </div>
         </div>
       </div>
@@ -336,10 +335,12 @@ const collection: MenubarNode[] = [{
 
 - 同一时间只展开一个顶层菜单。
 - 展开后移向相邻入口会直接切换菜单。
-- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。
+- 不写结构时照标准结构铺：一排入口按钮（文字取入口的 `label`），其后是各自菜单的定位层，里面按这张菜单的 `items` 铺条目、分组与分隔线；条目的 `item` 插槽只接管条目文字，带 `children` 的条目是一个嵌套的子菜单，入口与普通条目一样铺图标（`icon`）与文字。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；Web Components 里条目文字、行首、行尾可用宿主直接子节点 `slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出，子菜单生成嵌套的 `<xh-menu submenu>`。指向锚点的箭头要手写结构时自己摆。
+- 支持方向键、首字符检索、禁用项、分组与子菜单。数据驱动时菜单里的条目写 `children`（一组菜单条目）即为子菜单入口，默认树按 `children` 递归铺出下一层，深度不限；子层条目按数据铺，不经本层的插槽。手写时用 `XhMenubarSub`。子菜单那一层的勾选值与单选值写在带 `children` 的条目上（`checkboxValue` / `radioValue`），与子菜单自己的同名属性同义，写了即受控；按数据铺时子层的勾选改动不另外上报，勾选条目写 `closeOnSelect`，由根上的 `item-select` 得知。
 - 条目可逐条声明语气；顶层入口表达的是位置，不接语气。
-- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。
-- 条目可组合图标、文字、说明和快捷键提示。
+- 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
+- 条目可组合图标、文字、说明和快捷键提示。同一层（跨分组与分隔线，子菜单另算）里只要有一条带图标，所有条目都空出图标那一格，正文左缘对齐；整层都没有图标就不留。
+- 下拉与它的子菜单只按落定那一侧的可用高度封顶（留出与视口边缘的间距），和桌面应用的菜单栏一样，不叠菜单 20rem 那一档；要收矮写 `--xh-menubar-max-h`。
 - 菜单内支持 `CheckboxItem` 与 `RadioGroup / RadioItem`；选择值独立于当前展开的顶层菜单，切换后默认保持菜单栏展开。
 - 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
 
@@ -366,7 +367,7 @@ const collection: MenubarNode[] = [{
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-menubar>` |
-| Vue 组件 | `XhMenubarArrow` `XhMenubarCheckboxItem` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRadioGroup` `XhMenubarRadioItem` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
+| Vue 组件 | `XhMenubarArrow` `XhMenubarCheckboxItem` `XhMenubarContent` `XhMenubarGroup` `XhMenubarGroupLabel` `XhMenubarItem` `XhMenubarItemDescription` `XhMenubarItemIcon` `XhMenubarItemIndicator` `XhMenubarItemShortcut` `XhMenubarItemSuffix` `XhMenubarItemText` `XhMenubarPositioner` `XhMenubarRadioGroup` `XhMenubarRadioItem` `XhMenubarRoot` `XhMenubarSeparator` `XhMenubarSub` `XhMenubarSubTrigger` `XhMenubarTrigger` |
 | 组合式函数 | `useMenubar` |
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
@@ -393,7 +394,7 @@ const collection: MenubarNode[] = [{
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<MenubarTranslations>` |  |  |
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
-| `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
+| `onItemSelect` | `(details: MenubarItemSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 | `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
 | `onRadioValueChange` | `(details: MenuRadioValueChangeDetails) => void` |  |  |
 
@@ -406,8 +407,10 @@ const collection: MenubarNode[] = [{
 | `value` | `string` | 是 |  |
 | `kind` | `MenuChoiceKind` |  | items 中的条目语义；顶层入口忽略该字段。 |
 | `label` | `string` |  | 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 |
+| `icon` | `IconRecord` |  | 图标，写入 item-icon 部件，排在条目文字之前；只在条目上读取，未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它。勾选与单选条目的勾仍在 item-indicator，两者各占一格。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；只在条目上读取。 |
 | `shortcut` | `string` |  | 快捷键提示，写入 item-shortcut 部件；未提供时本条不铺该部件。 纯装饰：读屏从条目文字取意，不念它；只为真正注册了的组合写提示。 |
+| `keyshortcuts` | `string` |  | 条目的 aria-keyshortcuts：读屏念的快捷键，写法照 ARIA（修饰键在前，如 `Control+S`、`Meta+Shift+Z`，几组用空格隔开）， 未提供时不写。与 shortcut 各管各：shortcut 是看得见的提示、读屏不念，这一项只给读屏，两处说的应是同一组键。 |
 | `disabled` | `boolean` |  | 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条命令自身动作的性质：删除写 danger、停用写 warning。只在条目上读取—— 顶层入口表达的是位置不是动作，写了也不产出语气面。 只换字色与悬停 / 按下的面，不改字重与缩进；禁用压过它，破坏性命令仍要配图标。 |
 | `group` | `string` |  | 所属分组的身份；相邻同值的条目合并为一个 group。只在条目上读取。 |
@@ -416,6 +419,8 @@ const collection: MenubarNode[] = [{
 | `closeOnSelect` | `boolean` |  | 选择型条目激活后是否关闭菜单栏；checkbox / radio 默认 false。 |
 | `items` | `MenubarNode[]` |  | 该菜单中的条目；只在顶层节点上读取。 |
 | `children` | `MenuNode[]` |  | 子菜单的条目：只在条目上读取。给了 children 这一条就是子菜单的入口，Vue / React 的默认树按 children 递归铺出下一层，深度不限；本条只能是普通条目（kind 为 item）。子层的选中经菜单树汇到菜单栏上。 手写部件时改用 XhMenubarSub；Web Components 由作者写 Light DOM，不读这一项。 |
+| `checkboxValue` | `string[]` |  | 子菜单那一层的勾选值：只在带 children 的条目上读取，交给按数据铺出的那一层，与子菜单自己的 checkboxValue 同义， 写了即受控。按数据铺时子层的勾选改动不另外上报，勾选条目写 closeOnSelect，由根上的 item-select 得知。 |
+| `radioValue` | `MenuRadioValue` |  | 子菜单那一层的单选值（组 → 选中的值）：只在带 children 的条目上读取，其余同 checkboxValue。 |
 
 ### 事件
 
@@ -424,7 +429,7 @@ const collection: MenubarNode[] = [{
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `MenubarValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
-| `select` | `MenubarSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
+| `item-select` | `MenubarItemSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
 | `checkbox-value-change` | `MenubarCheckboxValueChangeDetails` | checkbox 选中集合变化 |
 | `radio-value-change` | `MenubarRadioValueChangeDetails` | RadioGroup 选中映射变化 |
 
@@ -458,8 +463,14 @@ const collection: MenubarNode[] = [{
 | `XhMenubarRoot` | `renderItemSuffix` | `(node: MenubarNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
 | `XhMenubarRoot` | `children` | `SlotChildren<MenubarRootSlotProps>` |  |  |
 | `XhMenubarSub` | `value` | `string` | 是 | 它在所属菜单中的条目身份。 |
+| `XhMenubarSub` | `label` | `string` |  | 按数据铺设时触发条目的文字；缺省取所属菜单 items 里这一条的 label。 |
+| `XhMenubarSub` | `icon` | `IconRecord` |  | 按数据铺设时触发条目的图标；缺省取所属菜单 items 里这一条的 icon。 |
 | `XhMenubarSub` | `disabled` | `boolean` |  |  |
 | `XhMenubarSub` | `collection` | `MenuNode[]` |  | 子层的条目数据：显示文本与禁用的事实源，按数据铺子层时由默认树代填。 |
+| `XhMenubarSub` | `checkboxValue` | `string[]` |  |  |
+| `XhMenubarSub` | `defaultCheckboxValue` | `string[]` |  |  |
+| `XhMenubarSub` | `radioValue` | `MenubarRadioValue` |  |  |
+| `XhMenubarSub` | `defaultRadioValue` | `MenubarRadioValue` |  |  |
 | `XhMenubarSub` | `placement` | `Placement` |  |  |
 | `XhMenubarSub` | `offset` | `number` |  |  |
 | `XhMenubarSub` | `loop` | `boolean` |  |  |
@@ -469,6 +480,8 @@ const collection: MenubarNode[] = [{
 | `XhMenubarSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenubarSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenubarSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
+| `XhMenubarSub` | `onCheckboxValueChange` | `MenuSchema['props']['onCheckboxValueChange']` |  |  |
+| `XhMenubarSub` | `onRadioValueChange` | `MenuSchema['props']['onRadioValueChange']` |  |  |
 | `XhMenubarSub` | `children` | `SlotChildren<MenubarSubSlotProps>` |  |  |
 | `XhMenubarTrigger` | `value` | `string` | 是 |  |
 | `XhMenubarTrigger` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
@@ -521,6 +534,7 @@ const collection: MenubarNode[] = [{
 | `getItemProps` | `(props: MenubarItemProps) => T['element']` |  |
 | `getCheckboxItemProps` | `(props: MenubarCheckboxItemProps) => T['element']` |  |
 | `getRadioItemProps` | `(props: MenubarRadioItemProps) => T['element']` |  |
+| `getItemIconProps` | `(props: MenubarAnyItemProps) => T['element']` | 条目文字之前的图标格；装饰态，读屏不念。 |
 | `getItemTextProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenubarAnyItemProps) => T['element']` |  |
@@ -575,8 +589,9 @@ const collection: MenubarNode[] = [{
 | `content` | `aria-hidden` | !isOpen \|\| undefined |
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'menu' |
-| `item-indicator` | `aria-hidden` | 'true' |
+| `item-icon` | `aria-hidden` | 'true' |
 | `item-shortcut` | `aria-hidden` | 'true' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `separator` | `aria-orientation` | 'horizontal' |
 | `separator` | `role` | 'separator' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
@@ -623,14 +638,12 @@ const collection: MenubarNode[] = [{
 | `content` | `data-xh-material` | 'frosted' |
 | `item` | `data-xh-collection-context` | 'overlay' |
 | `item` | `data-xh-collection-item` | '' |
+| `item-icon` | `data-disabled` | ''（条件成立时才出现） |
+| `item-icon` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-icon` | `data-xh-collection-slot` | 'icon' |
 | `item-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-text` | `data-xh-collection-slot` | 'text' |
-| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
-| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
-| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
-| `item-indicator` | `data-xh-collection-slot` | 'prefix' |
-| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `item-description` | `data-disabled` | ''（条件成立时才出现） |
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
@@ -640,6 +653,11 @@ const collection: MenubarNode[] = [{
 | `item-suffix` | `data-disabled` | ''（条件成立时才出现） |
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
+| `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
+| `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
+| `item-indicator` | `data-state` | 'checked' \| 'unchecked' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `item-indicator` | `data-xh-menu-choice-indicator` | item.kind \| undefined |
 | `separator` | `data-xh-collection-separator` | '' |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 | `radio-group` | `data-value` | group.value |
@@ -683,13 +701,13 @@ const collection: MenubarNode[] = [{
 | `--xh-menubar-item-gap` | `item` | `gap` | `default` | `--xh-_menubar-item-gap` | menubar 的 item 部件 gap 覆盖槽。 |
 | `--xh-menubar-item-h` | `item` | `min-block-size` | `default` | `--xh-_menubar-item-h` | menubar 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-menubar-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone` | menubar 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-menubar-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menubar 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-menubar-item-indicator-size` | `content`<br>`group`<br>`item`<br>`item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`has(> [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator], > [data-scope='menubar'][data-part='group'] > [data-scope='menubar'][data-part='item'] > [data-xh-menu-choice-indicator])`<br>`not([aria-haspopup='menu'], [aria-checked])`<br>`xh-menu-choice-indicator` | `--xh-control-indicator-size` | menubar 的 content、group、item、item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-menubar-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | menubar 的 item 部件 line-height 覆盖槽。 |
 | `--xh-menubar-item-px` | `item` | `padding-inline` | `default` | `--xh-_menubar-item-px` | menubar 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-item-py` | `item` | `padding-block` | `default` | `--xh-_menubar-item-py` | menubar 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-menubar-item-radius` | `item` | `border-radius` | `default` | `0` | menubar 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | menubar 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
+| `--xh-menubar-max-h` | `content` | `max-block-size` | `default` | `--xh-_menubar-max-h` | menubar 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menubar-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menubar 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-menubar-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | menubar 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-menubar-px` | `root` | `padding-inline` | `default` | `--xh-space-1` | menubar 的 root 部件 padding-inline 覆盖槽。 |

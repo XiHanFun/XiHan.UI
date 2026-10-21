@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`tree-item-description`);e.collection=[{value:`order`,label:`订单`,description:`一笔订单抬头上的字段`,children:[{value:`no`,label:`订单号`,description:`系统生成的唯一编号，打印在单据抬头与条码里`},{value:`date`,label:`下单日期`,description:`按下单时所在时区记`},{value:`amount`,label:`实付金额`}]}],e.defaultExpandedValue=[`order`]}export{e as default};

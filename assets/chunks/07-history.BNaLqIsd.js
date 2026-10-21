@@ -1,0 +1,1 @@
+async function e(){document.getElementById(`xh-signature-history`).translations={undoTrigger:`撤销上一笔`,redoTrigger:`重做一笔`,clearTrigger:`清空签名`}}export{e as default};

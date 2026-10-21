@@ -97,7 +97,7 @@ function remove({ value }: { value: string }) {
 
 加粗的是必需部件。
 
-`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`** · `item-indicator`
+`data-scope="tag-group"`：`root` · `label` · **`list`** · `cell` · `item-indicator`
 
 ## 示例
 
@@ -455,12 +455,14 @@ const avatar
 - 移除一个之后焦点交给前一个；前面没有则交给后一个，没有剩余时交给列表容器。
 - `collection` 是文本、禁用与可移除的事实源；也可以逐个编写。
 - 连续输入按首字母跳转，只移动焦点、不改变选中值。
+- `invalid` 时标签列表报 `aria-invalid`，根与列表带 `data-invalid`；`required` 在根与列表上带 `data-required`。`grid` 角色不收 `aria-required`，放进[表单字段](./field)时必填由字段标题的星号与错误文案告知。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是标签列表，`collection` 的每条数据一枚标签，格子里依次是文字、选中标记与移除按钮；没给 `collection` 时列表是空的，移除标签由宿主改 `collection`。Web Components 里标题与标签文字可以写在宿主的直接子节点 `slot="label"`、`slot="item:<值>"` 上接管。
 
 ### 组合
 
 - 每一个标签就是[标签](./tag)本身：形态、语气、尺寸三轴写在组上，逐个落到每个标签的 `root`，外观全部由 `tag.css` 决定，`--xh-tag-*` 覆盖槽在组内同样生效。
 - 标签内的图元使用[图标](./icon)。
-- 外层放[表单字段](./field)，为标题提供位置。
+- 直接放进[表单字段](./field)即可：字段的标题并进标签列表的名字、说明与错误文案进描述链，读屏进列表时一起念出；点字段标题，焦点落到当前标签。
 
 ### 最佳实践
 
@@ -491,6 +493,8 @@ const avatar
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `TagGroupNode[]` |  | 条目数据，显示文本、禁用与可移除的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
@@ -498,6 +502,8 @@ const avatar
 | `deletable` | `boolean` |  | 是否提供移除按钮，默认 false。false 时该按钮同时被禁用与收起。 |
 | `disabled` | `boolean` |  | 整组禁用：键盘与点击都不再修改选中值，也不可移除任何标签。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、可导航与朗读，但选中值不可修改、标签也不可移除。 |
+| `invalid` | `boolean` |  | 校验失败：标签列表报告 aria-invalid，根与列表带 data-invalid。 |
+| `required` | `boolean` |  | 必填：根与列表带 data-required。grid 角色不收 aria-required，必填由字段的标题与错误文案告知。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal：标签成排出现。 |
@@ -574,6 +580,8 @@ const avatar
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在组内时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `deletable` | `boolean` | 整组是否提供移除按钮。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
@@ -585,7 +593,7 @@ const avatar
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TagGroupItemProps) => T['element']` | 一个标签：库内 tag 的 root（data-scope="tag"），三轴与置灰由 tag 提供； row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠加在它上面。 |
 | `getCellProps` | `(props: TagGroupItemProps) => T['element']` | 标签内的格子；移除按钮必须落在它之内。 |
-| `getItemIndicatorProps` | `(props: TagGroupItemProps) => T['element']` | 选中标记：落在格子内、文字之前，选中时展示、未选中时以 hidden 收起； 对读屏隐藏，选中态由标签上的 aria-selected 表达。内容留空时由皮肤绘制对号，也可放入图标。 |
+| `getItemIndicatorProps` | `(props: TagGroupItemProps) => T['element']` | 选中标记：落在格子内、文字之后与摘除钮之前，选中时展示、未选中时以 hidden 收起； 对读屏隐藏，选中态由标签上的 aria-selected 表达。内容留空时由皮肤绘制对号，也可放入图标。 |
 | `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在该层。 |
 | `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 移除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 提供。 |
 
@@ -615,8 +623,9 @@ const avatar
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `list` | `aria-disabled` | 'true' \| 'false' |
-| `list` | `aria-label` | label.list |
-| `list` | `aria-labelledby` | `label` 部件的 id |
+| `list` | `aria-invalid` | 'true' \| 'false' |
+| `list` | `aria-label` | props.ariaLabel |
+| `list` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
 | `list` | `role` | 'grid' |
@@ -643,12 +652,16 @@ const avatar
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
 | `list` | `data-instant` | ''（条件成立时才出现） |
+| `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-orientation` | props.orientation |
+| `list` | `data-required` | ''（条件成立时才出现） |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
 | `cell` | `data-selected` | ''（条件成立时才出现） |
@@ -672,6 +685,7 @@ const avatar
 | `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-hover`<br>`--xh-bg-subtle`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-tone])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=ghost`<br>`variant=solid` | `--xh-_tone-subtle-active`<br>`--xh-bg-subtle-active`<br>`--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
 | `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`tone`<br>`variant=solid` | `--xh-_tone-active`<br>`--xh-bg-brand-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-border-invalid` | `list`<br>`root` | `--xh-tag-border` | `invalid` | `--xh-border-invalid` | tag-group 的 list、root 部件 --xh-tag-border 覆盖槽。 |
 | `--xh-tag-group-item-indicator-fg` | `item-indicator`<br>`root` | `color` | `default`<br>`variant=solid` | `--xh-_tone-fg`<br>`currentColor` | tag-group 的 item-indicator、root 部件 color 覆盖槽。 |
 | `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |

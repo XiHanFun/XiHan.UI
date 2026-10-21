@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`format-input-kinds-template`).content.cloneNode(!0),t=e.querySelector(`xh-format-input`);t.kinds=[`number`,`percent`],t.defaultValue={kind:`percent`,decimals:1},document.getElementById(`format-input-kinds-mount`).append(e)}export{e as default};

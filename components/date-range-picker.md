@@ -178,7 +178,7 @@ import {
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -199,8 +199,12 @@ import {
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -354,9 +358,11 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
                 </XhDateRangePickerWeekRow>
               </XhDateRangePickerGridBody>
             </template>
-            <XhDateRangePickerCell v-for="cell in panel.cells" v-else :key="cell.start" :value="cell.start">
-              <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
-            </XhDateRangePickerCell>
+            <XhDateRangePickerWeekRow v-for="row in panel.rows" v-else :key="row[0].start">
+              <XhDateRangePickerCell v-for="cell in row" :key="cell.start" :value="cell.start">
+                <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
+              </XhDateRangePickerCell>
+            </XhDateRangePickerWeekRow>
           </XhDateRangePickerGrid>
         </XhDateRangePickerCalendar>
       </XhDateRangePickerContent>
@@ -443,7 +449,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -464,8 +470,12 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -719,7 +729,7 @@ const presets = computed(() => [
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -740,8 +750,12 @@ const presets = computed(() => [
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -968,7 +982,7 @@ function isWeekend(value: string): boolean {
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -989,8 +1003,12 @@ function isWeekend(value: string): boolean {
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -1138,9 +1156,11 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
                   </XhDateRangePickerWeekRow>
                 </XhDateRangePickerGridBody>
               </template>
-              <XhDateRangePickerCell v-for="cell in panel.cells" v-else :key="cell.start" :value="cell.start">
-                <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
-              </XhDateRangePickerCell>
+              <XhDateRangePickerWeekRow v-for="row in panel.rows" v-else :key="row[0].start">
+                <XhDateRangePickerCell v-for="cell in row" :key="cell.start" :value="cell.start">
+                  <XhDateRangePickerCellTrigger>{{ cell.label }}</XhDateRangePickerCellTrigger>
+                </XhDateRangePickerCell>
+              </XhDateRangePickerWeekRow>
             </XhDateRangePickerGrid>
           </XhDateRangePickerCalendar>
         </XhDateRangePickerContent>
@@ -1227,7 +1247,7 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -1248,8 +1268,12 @@ const kinds: { key: string; label: string; granularity: CalendarGranularity }[] 
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -1756,7 +1780,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
     const grid = node("div", "grid");
     grid.setAttribute("index", panel.index);
-    // 日视图铺周行，粗粒度视图把格子直接铺进网格
+    // 日视图铺周行；粗粒度视图照切好的 rows 一行写一个 week-row，格子落在行里
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
@@ -1777,8 +1801,12 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
       }
       grid.append(head, body);
     } else {
-      for (const cell of panel.cells) {
-        grid.append(dayCell(cell.start, cell.label));
+      for (const periods of panel.rows) {
+        const row = node("div", "week-row");
+        for (const cell of periods) {
+          row.append(dayCell(cell.start, cell.label));
+        }
+        grid.append(row);
       }
     }
 
@@ -1862,11 +1890,13 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 ### 特性
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的起止两组段位、分隔符、清空钮与日历钮，起止两份表单影子，浮层里依次是快捷选项列、每个面板一份日历、`showTime` 的起止两组时间列（各带小标题）与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。自己写结构时，Vue / React 的时间列可以用 `XhDateRangePickerTimePanel` 整组铺，也可以逐组写 `XhDateRangePickerColumnGroup`（`index`），组里不写内容时铺小标题 `XhDateRangePickerColumnGroupLabel` 与各列 `XhDateRangePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDateRangePickerTimeItem`。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
 - 输入行与别的字段同取缺省宽 `--xh-control-w`。起止两组按日带时刻放不进时，两组按各自内容宽一起收、各在组内裁掉放不下的段位，键盘走到被裁的段位时组跟着滚过去；分隔符与日历钮始终留在框里。要整段露出，经 `--xh-date-range-picker-control-w` 钉宽。
 - `startPlaceholder` / `endPlaceholder` 是两组段位各自的整条占位：哪一端一段都没填、焦点也不在它的段上，就在那一组显示这句文字（「开始日期」「结束日期」）；`placeholder` 是两端共用的逐段占位串。
 - 浮层内是[日历范围选择器](./calendar-range-picker)：先选起点再选终点，两端都落定后才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
 - `granularity` 支持 day / week / month / quarter / year，输入段、网格和周期边界一起切换。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
+- 浮层里的日历由作者照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历范围选择器](./calendar-range-picker)。
 - `min`、`max`、`isDateUnavailable`（第二个参数是当前起点）与 `allowsNonContiguousRanges` 一并转给日历。
 - `presets` 提供“近 7 天”“本月”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端；每项是一颗淡底小钮，当前值落在哪一项就在它末端画对号。
 - 终点早于起点、任一端越界或不可用时整个字段标为不合法，也可以用 `invalid` 显式声明。
@@ -1884,6 +1914,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 - 浮层内嵌[日历范围选择器](./calendar-range-picker)，翻月、层级切换、拖选与键盘导航由它负责。
 - 输入行内嵌两组[日期字段](./date-field)的段位，逐段键入与加减由它负责。
+- 直接放入[表单字段](./field)：字段的标题并进日历钮的名字，说明与错误文案进描述链；只读、必填与校验由各段报告，日历钮是普通按钮，不带 aria-readonly / aria-required。有值时清空钮顶替日历钮，点字段标题焦点落在第一段。
 
 ### 最佳实践
 
@@ -1907,7 +1938,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-range-picker>` |
-| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerFooter` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
+| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerColumnGroup` `XhDateRangePickerColumnGroupLabel` `XhDateRangePickerConfirmTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerFooter` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTimeColumn` `XhDateRangePickerTimeItem` `XhDateRangePickerTimePanel` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
 | 组合式函数 | `useDateRangePicker` |
 | 状态机 | `dateRangePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-range-picker.css` |
@@ -1916,6 +1947,8 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 区间两端，ISO 串。提供即受控：读取直取 prop，写入只发 onValueChange 不落内部值。 按位存放，空缺的一端为空串。 |
 | `defaultValue` | `string[]` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
@@ -1984,10 +2017,15 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
+| `XhDateRangePickerColumnGroup` | `default` | — | 自行铺小标题与各列；未写时按这一端的列自动铺。 |
+| `XhDateRangePickerColumnGroupLabel` | `default` | — | 小标题的内容；未写时显示这一端的名字。 |
 | `XhDateRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhDateRangePickerPresetGroup` | `default` | `DateRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhDateRangePickerRoot` | `default` | `DateRangePickerRootSlotProps` |  |
+| `XhDateRangePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 | `XhDateRangePickerSegment` | `default` | `DateRangePickerSegmentSlotProps` |  |
+| `XhDateRangePickerTimeColumn` | `default` | — | 自行铺 XhDateRangePickerTimeItem；未写时按这一列的可选值自动铺。 |
+| `XhDateRangePickerTimeItem` | `default` | — | 格里的内容；未写时显示按 locale 译好的文字。 |
 
 ### React 适配器 props
 
@@ -1998,6 +2036,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `XhDateRangePickerCalendar` | `index` | `number \| string` |  | 并排的第几张面板，默认 0。写在这里，面板内的标题、网格与格子就不必各写一遍。 |
 | `XhDateRangePickerCell` | `value` | `string` | 是 | ISO 日期串。 |
 | `XhDateRangePickerCell` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。同一天会同时出现在两个面板中 （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。 |
+| `XhDateRangePickerColumnGroup` | `index` | `number \| string` |  | 0 起点、1 终点，兼收字符串。 |
 | `XhDateRangePickerGrid` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
 | `XhDateRangePickerHeading` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
 | `XhDateRangePickerHeadingMonthTrigger` | `index` | `number \| string` |  | 属于第几个面板；未写时跟随所在的日历。 |
@@ -2006,11 +2045,14 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `XhDateRangePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhDateRangePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhDateRangePickerPresetGroup` | `children` | `SlotChildren<DateRangePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhDateRangePickerRoot` | `children` | `SlotChildren<DateRangePickerRootSlotProps>` |  |  |
+| `XhDateRangePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhDateRangePickerRoot` | `children` | `SlotChildren<DateRangePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhDateRangePickerSegment` | `index` | `number \| string` |  | 段位下标，兼收字符串。 |
 | `XhDateRangePickerSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
 | `XhDateRangePickerSegment` | `children` | `SlotChildren<DateRangePickerSegmentSlotProps>` |  |  |
 | `XhDateRangePickerSegmentGroup` | `index` | `number \| string` |  | 组号：0 起点、1 终点，兼收字符串。 |
+| `XhDateRangePickerTimeColumn` | `unit` | `DatePickerTimeUnit` | 是 | 这一列的单位：hour、minute、second 或 dayPeriod。 |
+| `XhDateRangePickerTimeItem` | `value` | `string` | 是 | 这一格的值，与时间列的可选值逐字对应：两位补零（上下午列写 '00' / '01'）。 |
 | `XhDateRangePickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
 | `XhDateRangePickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |
 
@@ -2072,6 +2114,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `calendar` | `CalendarRangePickerApi<T>` | 内嵌日历：选区间、翻月、键盘导航都在它身上。 |
 | `field` | `DateRangePickerFieldApi<T>` | 起点分段输入。 |
 | `fieldEnd` | `DateRangePickerFieldApi<T>` | 终点分段输入。 |
+| `translations` | `DateRangePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
@@ -2123,10 +2166,12 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |

@@ -1,0 +1,32 @@
+var e=`<!-- 基础用法 | 输入名字弹出可引用的字段与函数；检查报出的问题在框下逐条列出，问题区间画波浪线 -->
+<!-- 只写元素本身：标题、外框、补全浮层与问题列表由元素照标准结构铺出 -->
+<xh-expression-input
+  id="expression-input-basic"
+  label="合计公式"
+  placeholder="如 amount * quantity"
+  default-value="ROUND(amount * quantity, 2) + amont"
+></xh-expression-input>
+<p id="expression-input-basic-output" data-demo-output>值：ROUND(amount * quantity, 2) + amont</p>
+
+<script type="module">
+  import { createExpressionCheck, createExpressionEngine } from "@xihan-ui/expression";
+
+  const fields = [
+    { label: "amount", kind: "variable", detail: "数字", description: "报销金额" },
+    { label: "quantity", kind: "variable", detail: "数字", description: "数量" },
+    { label: "applicant", kind: "variable", detail: "文本", description: "申请人" },
+  ];
+
+  const input = document.getElementById("expression-input-basic");
+  const output = document.getElementById("expression-input-basic-output");
+
+  input.completions = fields;
+  // 检查与补全用同一份名字：补全给出的名字，检查时不会被判为未知
+  input.check = createExpressionCheck(createExpressionEngine(), {
+    identifiers: fields.map((field) => field.label),
+  });
+  input.addEventListener("value-change", (event) => {
+    output.textContent = \`值：\${event.detail.value || "（空）"}\`;
+  });
+<\/script>
+`;export{e as default};

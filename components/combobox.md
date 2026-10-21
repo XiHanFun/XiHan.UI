@@ -997,16 +997,18 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 ### 特性
 
 - 支持单选、多选、分组和自定义值。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，空态之后是在途占位（文字取 `translations.loading`，展开、在途且没有候选时露出），末尾一份表单影子，给了 `name` 才参与提交。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
 - 多选的已选项在输入框前排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签带删除钮，输入串为空时退格删掉最后一个；已选项被筛出候选后标签仍显示选中那一刻的文字。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 支持自定义过滤、异步候选和自定义条目内容。
 - 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -1042,6 +1044,8 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
@@ -1057,6 +1061,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
 | `invalid` | `boolean` |  | 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：输入框报告 aria-required，根与标题带 data-required（标题据此画星号）。 一个选中值一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `placeholder` | `string` |  | 输入框占位文字。 |
@@ -1167,6 +1172,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
+| `translations` | `ComboboxTranslations` | 解析后的读屏文案；loading 没写内容时显示其中的 loading。 |
 | `collection` | `readonly ComboboxNodeMeta[]` | 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 |
 | `inputValue` | `string` | 输入框中的字符串。 |
@@ -1176,6 +1182,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `ComboboxTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
@@ -1210,7 +1217,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
-| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
+| `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 |
 
 ## 无障碍
 
@@ -1248,14 +1255,17 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `input` | `aria-required` | 'true' \| 'false' |
 | `input` | `role` | undefined \| 'combobox' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-label` | translations.trigger |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `role` | 'listbox' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
@@ -1267,6 +1277,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `group` | `role` | 'group' |
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
+| `hidden-input` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -1286,11 +1297,13 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
@@ -1438,7 +1451,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 | `--xh-combobox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-combobox-item-fg` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-font-size` | `item` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 item 部件 font-size 覆盖槽。 |
 | `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | combobox 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-combobox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_combobox-gap` | combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-combobox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_combobox-gap` | combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-combobox-item-h` | `item` | `min-block-size` | `default` | `--xh-_combobox-item-h` | combobox 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-combobox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_combobox-accent` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
@@ -1464,7 +1477,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C_GYr3Wu.js";import{o as t,t as n}from"./context.CDcDL83y.js";var r=e();function i({children:e}){return(0,r.jsx)(t,{value:void 0,children:(0,r.jsx)(n,{value:void 0,children:e})})}export{i as t};

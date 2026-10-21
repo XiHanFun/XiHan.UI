@@ -649,13 +649,12 @@ const links = [
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
 | `legend-swatch` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
-| `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
-- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
+- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个节点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「名字, 流量」），务必按本地语言改写。流带对读屏隐藏，也不占焦点：它们的数据全部在数据表里。
 - 绘图区只占一个 Tab 位，焦点落在节点上：上下键在同一列里走，左右键沿流向跨到相邻的列，取与当前节点流量最大的相连节点，没有相连的就取位置最近的；竖排时两组键对调。Home / End 到第一列与最后一列。焦点环画在节点之外，只在键盘聚焦时出现。
 - 节点名、流带与焦点环一律 `aria-hidden`；提示框同样 `aria-hidden`。

@@ -36,7 +36,7 @@ const answer = ref("还没答复");
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
-    <XhPopconfirmRoot @confirm="answer = '已删除'" @cancel="answer = '已取消'">
+    <XhPopconfirmRoot @confirm="answer = '已删除'" @cancel-press="answer = '已取消'">
       <XhPopconfirmTrigger>删除这条记录</XhPopconfirmTrigger>
       <XhPopconfirmPositioner>
         <XhPopconfirmContent>
@@ -81,7 +81,7 @@ const answer = ref("还没答复");
   host.addEventListener("confirm", () => {
     answer.textContent = "已删除";
   });
-  host.addEventListener("cancel", () => {
+  host.addEventListener("cancel-press", () => {
     answer.textContent = "已取消";
   });
 </script>
@@ -511,11 +511,12 @@ function onConfirm() {
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `disabled` | `boolean` |  | 浮层不可打开：触发器转原生 disabled，点按与命令式 setOpen(true) 都不展开；展开途中转为禁用即收起。 与 Tooltip、HoverCard 的 disabled 同名同义：关掉的是浮层这件事。受控写回 open 仍按宿主的意思来。 |
 | `offset` | `number` |  |  |
-| `onCancel` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
+| `onCancelPress` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
 | `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点击了确认按钮。返回 thenable 即挂起确认门：浮层等待它兑现才收起、 确认按钮转圈且再次点击无效，拒绝则留在原地并报告确认错误。同步返回照常立即收起。 |
 | `onConfirmError` | `(details: PopconfirmConfirmErrorDetails) => void` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label； description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `placement` | `Placement` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定面板的内边距档位。 |
 
@@ -528,7 +529,7 @@ function onConfirm() {
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `confirm` | `` | 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
 | `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
-| `cancel` | `` | 点击了取消按钮；随后浮层收起 |
+| `cancel-press` | `` | 点击了取消按钮；随后浮层收起。Escape 与层外交互只发 open-change |
 
 ### 插槽
 
@@ -603,9 +604,9 @@ function onConfirm() {
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `content` | `aria-describedby` | `description` 部件的 id |
+| `content` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `title` 部件的 id |
+| `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `role` | 'dialog' |
 | `confirm-trigger` | `aria-busy` | 'true' \| undefined |
 | `confirm-trigger` | `aria-disabled` | 'true' \| undefined |

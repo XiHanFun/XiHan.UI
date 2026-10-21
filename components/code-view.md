@@ -187,6 +187,9 @@ const sample = Array.from(
   { length: 24 },
   (_, i) => `const step${i + 1} = pipeline.at(${i})`,
 ).join("\n");
+
+// 读屏名由组件按折叠态取 translations 里的一句，钮上的字由作者写：两边取同一张表，看到的与读到的才对得上
+const translations = { expand: "展开全部 24 行", collapse: "收起" };
 </script>
 
 <template>
@@ -197,14 +200,15 @@ const sample = Array.from(
     complete
     line-numbers
     :clamp="8"
+    :translations="translations"
     style="inline-size: 100%;"
   >
     <XhCodeViewPre>
       <XhCodeViewCode />
     </XhCodeViewPre>
-    <!-- 按钮的文案与 aria-expanded 由组件按折叠态翻面 -->
+    <!-- 读屏名与 aria-expanded 由组件按折叠态翻面，钮上的字照同一张表跟着翻 -->
     <XhCodeViewFoldTrigger>
-      {{ clamped ? `展开全部 24 行` : "收起" }}
+      {{ clamped ? translations.expand : translations.collapse }}
     </XhCodeViewFoldTrigger>
   </XhCodeViewRoot>
 </template>
@@ -269,7 +273,7 @@ const step21 = pipeline.at(20)
 const step22 = pipeline.at(21)
 const step23 = pipeline.at(22)
 const step24 = pipeline.at(23)</code></pre>
-    <!-- 按钮的文案与 aria-expanded 由元素按折叠态翻面 -->
+    <!-- 读屏名与 aria-expanded 由元素按折叠态翻面，钮上的字照同一张表跟着翻 -->
     <button data-xh-part="fold-trigger">展开全部 24 行</button>
   </div>
 </xh-code-view>
@@ -278,9 +282,12 @@ const step24 = pipeline.at(23)</code></pre>
   // 折叠态纯受控：元素只发意图，宿主自己写回属性
   const view = document.getElementById("code-view-fold");
   const trigger = view.querySelector('[data-xh-part="fold-trigger"]');
+  // 读屏名由元素按折叠态取 translations 里的一句，钮上的字由作者写：两边取同一张表，看到的与读到的才对得上
+  const translations = { expand: "展开全部 24 行", collapse: "收起" };
+  view.translations = translations;
   view.addEventListener("clamp-toggle", (event) => {
     view.toggleAttribute("clamped", event.detail.clamped);
-    trigger.textContent = event.detail.clamped ? "展开全部 24 行" : "收起";
+    trigger.textContent = event.detail.clamped ? translations.expand : translations.collapse;
   });
 </script>
 ```

@@ -1,0 +1,74 @@
+var e=`<!-- 服务器附件回显 | remote-files 承载编辑表单中已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占用 max-files 名额，删除经 remote-files-change 由宿主落库 -->
+<xh-file-upload id="file-upload-remote" max-files="4">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <label data-xh-part="label">附件</label>
+    <div data-xh-part="dropzone">拖进来或点击选择</div>
+    <button data-xh-part="trigger">选择文件</button>
+    <input data-xh-part="hidden-input" />
+    <div data-xh-part="list"></div>
+  </div>
+</xh-file-upload>
+<p>剩余名额与新选文件共享；删除服务器附件只改 remote-files，落库由宿主决定。</p>
+
+<script type="module">
+  const upload = document.getElementById("file-upload-remote");
+  const group = upload.querySelector('[data-xh-part="list"]');
+  const label = upload.querySelector('[data-xh-part="label"]');
+
+  // 编辑场景：这两条是服务端返回的既有附件，不是本地 File
+  let remoteFiles = [
+    {
+      id: "a1",
+      name: "合同扫描件.pdf",
+      size: 382_000,
+      type: "application/pdf",
+      url: "https://cdn.example.com/a1.pdf",
+    },
+    {
+      id: "a2",
+      name: "报价单.xlsx",
+      size: 51_200,
+      url: "https://cdn.example.com/a2.xlsx",
+    },
+  ];
+  upload.remoteFiles = remoteFiles;
+
+  // 每个文件一行角色节点，按 allFiles 的顺序（远程在前、本地在后）：
+  // 文件名、大小与删除钮的名字由元素代填，远程那几条另带一个查看链接
+  function row(file) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.innerHTML =
+      '<span data-xh-part="item-name"></span>' +
+      '<span data-xh-part="item-size-text"></span>';
+    if ("url" in file && file.url) {
+      const link = document.createElement("a");
+      link.href = file.url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.textContent = "查看";
+      item.append(link);
+    }
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    item.append(remove);
+    return item;
+  }
+
+  function render() {
+    label.textContent = \`附件（最多 4 个，已有 \${remoteFiles.length} 个在服务器上）\`;
+    group.replaceChildren(...upload.allFiles.map(row));
+  }
+
+  upload.addEventListener("files-change", render);
+
+  // 远程列表是受控的：删除意图由这里落回宿主那份数组，真要落库也在这一处
+  upload.addEventListener("remote-files-change", (event) => {
+    remoteFiles = event.detail.files;
+    upload.remoteFiles = remoteFiles;
+    render();
+  });
+
+  render();
+<\/script>
+`;export{e as default};

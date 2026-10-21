@@ -231,13 +231,13 @@ const collection = [
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-description` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
 ### 多选
 
-multiple 关闭时是单选，开启后点击与确认键都变为切换，选中集合形状不变仍是数组
+选择模式缺省是单选，写 multiple 后点击与确认键都变为切换，选中集合形状不变仍是数组
 
 ```vue
 <script setup lang="ts">
@@ -285,7 +285,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['cn', 'north']"
-      multiple
+      selection-mode="multiple"
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>
@@ -337,7 +337,7 @@ const selected = ref<string[]>(["hz"]);
 
 ```html
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-  <xh-tree id="tree-multiple" multiple>
+  <xh-tree id="tree-multiple" selection-mode="multiple">
     <div data-xh-part="root">
       <span data-xh-part="label">投放城市</span>
       <div data-xh-part="tree">
@@ -1497,7 +1497,7 @@ function onSelectionChange(details: { value: string[] }): void {
       :collection="collection"
       :selection="selected"
       :default-expanded-value="['src']"
-      multiple
+      selection-mode="multiple"
       @selection-change="onSelectionChange"
     >
       <XhTreeLabel>要提交的文件</XhTreeLabel>
@@ -1523,7 +1523,7 @@ function onSelectionChange(details: { value: string[] }): void {
 
 ```html
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
-  <xh-tree id="tree-leaf-only" multiple>
+  <xh-tree id="tree-leaf-only" selection-mode="multiple">
     <div data-xh-part="root">
       <span data-xh-part="label">要提交的文件</span>
       <div data-xh-part="tree">
@@ -1660,7 +1660,7 @@ const selected = ref<string[]>(["hz"]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['east', 'north']"
-      multiple
+      selection-mode="multiple"
       cascade
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
@@ -1687,7 +1687,7 @@ const selected = ref<string[]>(["hz"]);
 
 ```html
 <div style="display: grid; gap: 8px; justify-items: start">
-  <xh-tree id="tree-checkable" multiple cascade>
+  <xh-tree id="tree-checkable" selection-mode="multiple" cascade>
     <div data-xh-part="root">
       <span data-xh-part="label">投放城市</span>
       <div data-xh-part="tree">
@@ -2117,7 +2117,7 @@ const selection = ref<string[]>(["user:add"]);
       :collection="collection"
       :leaf-orientation="wide ? 'horizontal' : 'vertical'"
       :default-expanded-value="['system', 'user', 'role', 'log']"
-      multiple
+      selection-mode="multiple"
       cascade
     >
       <XhTreeLabel>菜单授权</XhTreeLabel>
@@ -2161,7 +2161,7 @@ const selection = ref<string[]>(["user:add"]);
     按钮那层横排
   </label>
 
-  <xh-tree id="tree-orientation" multiple cascade leaf-orientation="horizontal">
+  <xh-tree id="tree-orientation" selection-mode="multiple" cascade leaf-orientation="horizontal">
     <div data-xh-part="root">
       <span data-xh-part="label">菜单授权</span>
       <div data-xh-part="tree">
@@ -2361,7 +2361,7 @@ const selected = ref<string[]>([]);
       v-model:selection="selected"
       :collection="collection"
       :default-expanded-value="['cn', 'north']"
-      multiple
+      selection-mode="multiple"
     >
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>
@@ -2417,7 +2417,7 @@ const selected = ref<string[]>([]);
     点「上海」，再<strong>按住 Shift</strong> 点「北京」 —— 中间整段一起选上。
     再按住 Shift 点「南京」，选区往回收，起点不变。
   </p>
-  <xh-tree id="tree-range" multiple>
+  <xh-tree id="tree-range" selection-mode="multiple">
     <div data-xh-part="root">
       <span data-xh-part="label">投放城市</span>
       <div data-xh-part="tree">
@@ -3160,6 +3160,317 @@ const sizes = [
 </script>
 ```
 
+### 条目说明
+
+一句名称说不清的解释写进说明，叶子与分支都可以带，落在名称下面一行；窄的时候截断，不把树撑宽
+
+```vue
+<script setup lang="ts">
+import {
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchDescription,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeItem,
+  XhTreeItemDescription,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeRoot,
+  XhTreeTree,
+} from "@xihan-ui/vue";
+
+const collection = [
+  {
+    value: "order",
+    label: "订单",
+    description: "一笔订单抬头上的字段",
+    children: [
+      { value: "no", label: "订单号", description: "系统生成的唯一编号，打印在单据抬头与条码里" },
+      { value: "date", label: "下单日期", description: "按下单时所在时区记" },
+      { value: "amount", label: "实付金额" },
+    ],
+  },
+];
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 240px">
+    <XhTreeRoot :collection="collection" :default-expanded-value="['order']">
+      <XhTreeLabel>字段</XhTreeLabel>
+      <XhTreeTree>
+        <XhTreeBranch v-for="group in collection" :key="group.value" :value="group.value">
+          <XhTreeBranchControl>
+            <XhTreeBranchTrigger />
+            <XhTreeBranchText>{{ group.label }}</XhTreeBranchText>
+            <XhTreeBranchDescription>{{ group.description }}</XhTreeBranchDescription>
+          </XhTreeBranchControl>
+          <XhTreeBranchContent>
+            <XhTreeItem v-for="field in group.children" :key="field.value" :value="field.value">
+              <XhTreeItemText>{{ field.label }}</XhTreeItemText>
+              <XhTreeItemDescription v-if="field.description">{{ field.description }}</XhTreeItemDescription>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+          </XhTreeBranchContent>
+        </XhTreeBranch>
+      </XhTreeTree>
+    </XhTreeRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; max-width: 240px">
+  <xh-tree id="tree-item-description">
+    <div data-xh-part="root">
+      <span data-xh-part="label">字段</span>
+      <div data-xh-part="tree">
+        <div data-xh-part="branch" value="order">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">订单</span>
+            <span data-xh-part="branch-description">一笔订单抬头上的字段</span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="no">
+              <span data-xh-part="item-text">订单号</span>
+              <span data-xh-part="item-description">系统生成的唯一编号，打印在单据抬头与条码里</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="date">
+              <span data-xh-part="item-text">下单日期</span>
+              <span data-xh-part="item-description">按下单时所在时区记</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="amount">
+              <span data-xh-part="item-text">实付金额</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree>
+</div>
+
+<script type="module">
+  const tree = document.getElementById("tree-item-description");
+
+  tree.collection = [
+    {
+      value: "order",
+      label: "订单",
+      description: "一笔订单抬头上的字段",
+      children: [
+        { value: "no", label: "订单号", description: "系统生成的唯一编号，打印在单据抬头与条码里" },
+        { value: "date", label: "下单日期", description: "按下单时所在时区记" },
+        { value: "amount", label: "实付金额" },
+      ],
+    },
+  ];
+  tree.defaultExpandedValue = ["order"];
+</script>
+```
+
+### 文件管理器式多选
+
+选择模式写 extended：点击换成这一项，按住 Ctrl（macOS 为 ⌘）点击加选或取消，按住 Shift 点击从锚点选一段
+
+```vue
+<script setup lang="ts">
+import {
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeItem,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeRoot,
+  XhTreeTree,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const collection = [
+  {
+    value: "cn",
+    label: "华东",
+    children: [
+      { value: "sh", label: "上海" },
+      { value: "hz", label: "杭州" },
+      { value: "nj", label: "南京" },
+    ],
+  },
+  {
+    value: "north",
+    label: "华北",
+    children: [
+      { value: "bj", label: "北京" },
+      { value: "tj", label: "天津" },
+    ],
+  },
+];
+
+const selected = ref<string[]>([]);
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
+    <p style="color: var(--xh-fg-muted)">
+      点「上海」，再<strong>按住 Ctrl</strong>（macOS 为 ⌘）点「北京」把它加进来；<strong>按住 Shift</strong> 点「南京」，从「北京」到「南京」那一段换成新的选中；不按键直接点，只留这一项。
+    </p>
+    <XhTreeRoot
+      v-model:selection="selected"
+      :collection="collection"
+      :default-expanded-value="['cn', 'north']"
+      selection-mode="extended"
+    >
+      <XhTreeLabel>投放城市</XhTreeLabel>
+      <XhTreeTree>
+        <XhTreeBranch value="cn">
+          <XhTreeBranchControl>
+            <XhTreeBranchTrigger />
+            <XhTreeBranchText>华东</XhTreeBranchText>
+            <XhTreeItemIndicator />
+          </XhTreeBranchControl>
+          <XhTreeBranchContent>
+            <XhTreeItem value="sh">
+              <XhTreeItemText>上海</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+            <XhTreeItem value="hz">
+              <XhTreeItemText>杭州</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+            <XhTreeItem value="nj">
+              <XhTreeItemText>南京</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+          </XhTreeBranchContent>
+        </XhTreeBranch>
+
+        <XhTreeBranch value="north">
+          <XhTreeBranchControl>
+            <XhTreeBranchTrigger />
+            <XhTreeBranchText>华北</XhTreeBranchText>
+            <XhTreeItemIndicator />
+          </XhTreeBranchControl>
+          <XhTreeBranchContent>
+            <XhTreeItem value="bj">
+              <XhTreeItemText>北京</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+            <XhTreeItem value="tj">
+              <XhTreeItemText>天津</XhTreeItemText>
+              <XhTreeItemIndicator />
+            </XhTreeItem>
+          </XhTreeBranchContent>
+        </XhTreeBranch>
+      </XhTreeTree>
+    </XhTreeRoot>
+    <span data-demo-output>选中：{{ selected.length ? selected.join("、") : "（无）" }}</span>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
+  <p style="color: var(--xh-fg-muted)">
+    点「上海」，再<strong>按住 Ctrl</strong>（macOS 为 ⌘）点「北京」把它加进来；
+    <strong>按住 Shift</strong> 点「南京」，从「北京」到「南京」那一段换成新的选中；不按键直接点，只留这一项。
+  </p>
+  <xh-tree id="tree-extended" selection-mode="extended">
+    <div data-xh-part="root">
+      <span data-xh-part="label">投放城市</span>
+      <div data-xh-part="tree">
+        <div data-xh-part="branch" value="cn">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">华东</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="sh">
+              <span data-xh-part="item-text">上海</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="hz">
+              <span data-xh-part="item-text">杭州</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="nj">
+              <span data-xh-part="item-text">南京</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+
+        <div data-xh-part="branch" value="north">
+          <div data-xh-part="branch-control">
+            <span data-xh-part="branch-trigger"></span>
+            <span data-xh-part="branch-text">华北</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="branch-content">
+            <div data-xh-part="item" value="bj">
+              <span data-xh-part="item-text">北京</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+            <div data-xh-part="item" value="tj">
+              <span data-xh-part="item-text">天津</span>
+              <span data-xh-part="item-indicator"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-tree>
+  <span data-demo-output>选中：<span id="tree-extended-value">（无）</span></span>
+</div>
+
+<script type="module">
+  const tree = document.getElementById("tree-extended");
+  const readout = document.getElementById("tree-extended-value");
+
+  tree.collection = [
+    {
+      value: "cn",
+      label: "华东",
+      children: [
+        { value: "sh", label: "上海" },
+        { value: "hz", label: "杭州" },
+        { value: "nj", label: "南京" },
+      ],
+    },
+    {
+      value: "north",
+      label: "华北",
+      children: [
+        { value: "bj", label: "北京" },
+        { value: "tj", label: "天津" },
+      ],
+    },
+  ];
+
+  // 展开集合与选中集合都是数组，只走属性；宿主写回它们才动
+  tree.expandedValue = ["cn", "north"];
+  tree.addEventListener(
+    "expanded-value-change",
+    (event) => (tree.expandedValue = event.detail.value),
+  );
+
+  tree.selection = [];
+  tree.addEventListener("selection-change", (event) => {
+    tree.selection = event.detail.value;
+    readout.textContent = event.detail.value.join("、") || "（无）";
+  });
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -3178,12 +3489,14 @@ const sizes = [
 - 展开集合与选中集合两套值各自可受控。
 - `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
+- 选择模式 `selectionMode`：缺省 `single` 单选；`multiple` 点击与确认键切换，按住 Shift 点击把锚点到这一项那一段并进来；`extended` 照文件管理器，点击与确认键换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 切换这一项，按住 Shift 点击选锚点到这一项那一段（同时按 Ctrl / Cmd 则并进）。锚点是最近一次点击或切换的那一项；选中从外面换了（受控时宿主另写了值、`setSelection`、初始的选中），锚点落到多出来的最后一项，清空了就没有锚点。级联勾选只在 `multiple` 下生效。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面，单选、多选与级联都只在行尾画对号；分支行也摆 `item-indicator`，级联下的半选画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。拖放与 Alt + 方向键落下之后，宿主写回 `collection` 的那一次重排里，行从旧位置滑到新位置（换了父被重建的节点按节点值认回）；落点线取品牌实心色，与表格、排序同一种。
 - 展开与选中分开：点行只选中，展开归箭头与左右方向键；`expandOnClick` 打开后点整行才顺带展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
+- 开着 `nodeDraggable` 时，节点数据写 `draggable: false` 的那一个拖不起来：指针按住、Alt + 方向键都不搬它，行上不写 `data-draggable`，它的拖拽把手报禁用；它照常能选、能展开，也照样是别的节点的落点。不向下传导，它的子节点各自照常可拖。大纲里的区域、页、页眉这类「能选能当容器、自己不能挪」的行用它，不必禁用。
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
@@ -3214,7 +3527,7 @@ const sizes = [
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchDescription` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -3223,6 +3536,7 @@ const sizes = [
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须等于当前 visibleNodes.length。 |
 | `variant` | `ControlVariant` |  | 外框形态：ghost 去掉描边与底色只保留行（默认），outline 带描边与底色，subtle 淡底无描边。 |
@@ -3232,8 +3546,8 @@ const sizes = [
 | `defaultExpandedValue` | `string[]` |  |  |
 | `selection` | `string[]` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `multiple` | `boolean` |  | 复选：点击与确认键都是切换，tree 带 aria-multiselectable=true。默认 false（单选）。 |
-| `cascade` | `boolean` |  | multiple 下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
+| `selectionMode` | `TreeSelectionMode` |  | 选择模式，默认 single；multiple 与 extended 下 tree 带 aria-multiselectable=true。 |
+| `cascade` | `boolean` |  | selectionMode 为 multiple 时父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 与 extended 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
@@ -3259,8 +3573,9 @@ const sizes = [
 | `value` | `string` | 是 |  |
 | `label` | `string` |  | 展示名，也是连打检索与分支可及名的取字来源；默认回退为 value。 |
 | `disabled` | `boolean` |  | 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 |
+| `draggable` | `boolean` |  | 写 false 时这一个节点拖不起来（nodeDraggable 开着时指针按住、Alt + 方向键都不搬它）， 照常能选、能展开、能当别的节点的落点。缺省可拖。不向下传导给子节点。 |
 | `tone` | `Tone` |  | 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进， 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
-| `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
+| `description` | `string` |  | 副文本：叶子写入 item-description、分支写入 branch-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
 | `children` | `TreeNode[]` |  | 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。 |
 | `childrenOrientation` | `Orientation` |  | 该层子节点的排布方式，由作者在数据上标注。提供后以它为准，`vertical` 也优先于树级的 `leafOrientation`；未提供时才回退为 `leafOrientation` 加子节点全是叶子的结构判据。 标注在哪一层，横向排布就只落在哪一层：菜单授权中标注在按钮的父菜单上，其他目录不受影响， 也不随子节点增减漂移。只影响排布，不改变键盘。 |
 
@@ -3303,6 +3618,7 @@ const sizes = [
 | `branch-trigger` | 'open' \| 'closed' |
 | `branch-indicator` | 'open' \| 'closed' |
 | `branch-text` | 'open' \| 'closed' |
+| `branch-description` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
@@ -3326,7 +3642,7 @@ const sizes = [
 | `expandedValue` | `string[]` |  |
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
-| `multiple` | `boolean` | 生效的是否为复选。 |
+| `selectionMode` | `TreeSelectionMode` | 生效的选择模式。 |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -3335,7 +3651,7 @@ const sizes = [
 | `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
-| `select` | `(value: string, options?: { extend?: boolean }) => void` | 选中某个节点。extend 为真时选中锚点到该节点的范围（仅复选、且非级联）。 |
+| `select` | `(value: string, options?: { extend?: boolean, additive?: boolean }) => void` | 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认）， additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
@@ -3353,6 +3669,7 @@ const sizes = [
 | `getBranchTriggerProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchTextProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getBranchDescriptionProps` | `(props: TreeNodeProps) => T['element']` | 分支行的第 2 行副文本，与叶子的 item-description 同一档。 |
 | `getBranchContentProps` | `(props: TreeNodeProps) => T['element']` |  |
 
 ## 无障碍
@@ -3370,7 +3687,8 @@ const sizes = [
 | `End` | focus in tree | 焦点移到末个可见行（展开着的子树也算行） |
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
-| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Ctrl+Space` / `Cmd+Space` | focus on node, selectionMode 为 multiple 或 extended、节点未禁用 | 只切换焦点节点的选中态，其余选中不动，不改展开态 |
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
@@ -3385,7 +3703,7 @@ const sizes = [
 | --- | --- | --- |
 | `tree` | `aria-busy` | 'true' \| undefined |
 | `tree` | `aria-disabled` | 'true' \| 'false' |
-| `tree` | `aria-labelledby` | `label` 部件的 id |
+| `tree` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `tree` | `aria-multiselectable` | 'true' \| 'false' |
 | `tree` | `aria-orientation` | 'vertical' |
 | `tree` | `role` | 'tree' |
@@ -3401,7 +3719,6 @@ const sizes = [
 | `branch` | `aria-checked` | 'true' \| 'mixed' \| 'false' \| undefined |
 | `branch` | `aria-disabled` | 'true' \| 'false' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-label` | metaOf(node.value)?.label |
 | `branch` | `aria-level` | meta?.level |
 | `branch` | `aria-posinset` | meta?.posInSet |
 | `branch` | `aria-selected` | 'true' \| 'false' |
@@ -3508,6 +3825,12 @@ const sizes = [
 | `branch-text` | `data-selected` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-xh-collection-slot` | 'text' |
+| `branch-description` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-description` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-description` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-description` | `data-selected` | ''（条件成立时才出现） |
+| `branch-description` | `data-state` | 'open' \| 'closed' |
+| `branch-description` | `data-xh-collection-slot` | 'description' |
 | `branch-content` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-content` | `data-indeterminate` | ''（条件成立时才出现） |
@@ -3554,7 +3877,7 @@ const sizes = [
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tree-indent` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indent` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
-| `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-description`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`has(> [data-scope='tree'][data-part='branch-trigger']:first-child)`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree 的 label 部件 color 覆盖槽。 |
@@ -3576,7 +3899,7 @@ const sizes = [
 | `--xh-tree-row-fg` | `branch-control`<br>`item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-row-fg-selected` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-tree-row-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-row-font-size` | `branch-control`<br>`item` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 branch-control、item 部件 font-size 覆盖槽。 |
-| `--xh-tree-row-gap` | `branch-control`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、item 部件 gap、padding-inline-start 覆盖槽。 |
+| `--xh-tree-row-gap` | `branch-control`<br>`branch-description`<br>`item` | `gap`<br>`padding-inline-start` | `default`<br>`has(> [data-scope='tree'][data-part='branch-trigger']:first-child)`<br>`orientation=vertical` | `--xh-_tree-row-gap` | tree 的 branch-control、branch-description、item 部件 gap、padding-inline-start 覆盖槽。 |
 | `--xh-tree-row-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-row-loading-opacity` | `branch-control`<br>`item`<br>`tree` | `opacity` | `is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])`<br>`loading` | `--xh-state-disabled-opacity` | tree 的 branch-control、item、tree 部件 opacity 覆盖槽。 |
 | `--xh-tree-row-px` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-row-px` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline、padding-inline-start 覆盖槽。 |

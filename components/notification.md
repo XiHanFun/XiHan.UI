@@ -1312,7 +1312,7 @@ onBeforeUnmount(() => watcher?.disconnect());
 <span id="notification-pause-readout" data-demo-output></span>
 
 <template id="notification-pause-template">
-  <xh-notification-item preset="toast" title="6 秒后自动收走" duration="6000">
+  <xh-notification-item preset="toast" title-text="6 秒后自动收走" duration="6000">
     <div data-xh-part="item">
       <span data-xh-part="item-indicator"></span>
       <div data-xh-part="item-content">
@@ -1479,6 +1479,7 @@ function onAction(details: { id: string }): void {
 ### 组合
 
 - 卡片的文本列是 `item-content`，内部组合 `item-title` 与可选的 `item-description`。
+- 作者没在 `item-title` 里写内容时，标题文案取 `title`。Web Components 侧的属性是 `title-text`（property `titleText`）：`title` 是 HTML 全局属性，写在宿主上会出浏览器原生提示，还会进宿主的可及描述。
 - 卡片可以放一个操作按钮（查看详情、撤销），按下即退场。
 - 队列的增删改由根插槽统一给出，业务代码不需要自行维护数组；命令式服务 `createNotificationService` 自带宿主，`preset` 传给它即得到同一种形态。
 
@@ -1640,8 +1641,8 @@ function onAction(details: { id: string }): void {
 | `group` | `aria-label` | translations.region |
 | `group` | `role` | 'region' |
 | `item` | `aria-atomic` | 'true' |
-| `item` | `aria-describedby` | `description` 部件的 id |
-| `item` | `aria-labelledby` | `title` 部件的 id |
+| `item` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `item` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `item` | `aria-live` | 'assertive' \| 'polite' |
 | `item` | `role` | 'alert' \| 'status' |
 | `item-indicator` | `aria-hidden` | 'true' |

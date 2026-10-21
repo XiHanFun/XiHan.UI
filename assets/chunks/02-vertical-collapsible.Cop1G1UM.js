@@ -1,0 +1,21 @@
+var e=`<!-- 垂直与折叠 | 垂直调整；中间那块可折叠：双击它上下任一条分隔条，或聚焦分隔条按 Enter，折叠后再来一次回到原来的大小 -->
+<xh-splitter
+  panels='[{"id":"top","min":10},{"id":"middle","min":10,"collapsible":true,"collapsedSize":0},{"id":"bottom","min":10}]'
+  orientation="vertical"
+  style="display: contents"
+>
+  <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 240px">
+    <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
+    </div>
+    <div data-xh-part="resize-trigger" index="0"></div>
+    <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
+    </div>
+    <div data-xh-part="resize-trigger" index="1"></div>
+    <div data-xh-part="panel" index="2" style="background: var(--xh-bg-subtle)">
+      <span data-demo-block data-tone="success" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px"></span>
+    </div>
+  </div>
+</xh-splitter>
+`;export{e as default};

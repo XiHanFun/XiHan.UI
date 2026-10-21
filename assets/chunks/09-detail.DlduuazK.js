@@ -1,0 +1,48 @@
+var e=`<!-- 悬停详情 | 指针悬停与键盘聚焦经同一条路径：详情条跟随该格，Escape 收起 -->
+<!-- 详情条要作者自己写进 root；一整年的网格、空态与图例由元素生成 -->
+<div style="min-width: 0">
+  <xh-heatmap id="heatmap-detail" start-date="2024-01-01" end-date="2024-12-31">
+    <div data-xh-part="root">
+      <div data-xh-part="tooltip"></div>
+    </div>
+  </xh-heatmap>
+</div>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  function buildYear(year) {
+    const days = [];
+    let index = 0;
+    for (let time = Date.UTC(year, 0, 1); time <= Date.UTC(year, 11, 31); time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const month = at.getUTCMonth();
+      const peak = month === 2 || month === 9 ? 16 : month === 7 ? 3 : 8;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? peak / 2 : peak;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.16 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  // 详情条里那一句
+  const readout = (details) =>
+    details ? \`\${details.date}：\${details.formatted.value} 次（第 \${details.level} 档）\` : "";
+
+  const heatmap = document.getElementById("heatmap-detail");
+  const tip = heatmap.querySelector('[data-xh-part="tooltip"]');
+  // 详情条对读屏是藏起来的，同一句必须同时当每格的可及名字，两处才不会各说各的
+  heatmap.translations = { cellLabel: readout };
+  // 数据是数组，只走 property：HTML 属性装不下它
+  heatmap.value = buildYear(2024);
+
+  // 详情该显示哪一格经 datum-active 事件回来，收起时 detail 为 null
+  heatmap.addEventListener("datum-active", (event) => {
+    tip.textContent = readout(event.detail);
+  });
+<\/script>
+`;export{e as default};

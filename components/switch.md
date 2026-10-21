@@ -654,6 +654,7 @@ function onSubmit(event: Event) {
 
 - `loading` 表达在途并锁住再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；受控宿主仍可写回 `checked` 完成事务，失败时保持原值。loading 不伪装为 disabled。
 - `readOnly` 与 `disabled` 分开：只读仍可聚焦。
+- 按钮里的一段照标准结构铺：一个滑块，给了 `name` 再带一份表单影子；Vue / React 的组件与 Web Components 不写部件（或只写一颗原生按钮当 `root`）时生成的节点出自同一个结构函数。带文字时 label 包在按钮外面，Web Components 要手写 label、root 与 text。
 - 轨道保持实体表单控件：未选中使用中性底和明确内边界，选中使用实心语气色，只读选中回到中性底；不使用 backdrop 或透明材质。
 - 滑块是 raised 抬起面：surface-raised 底 + border-default 描边 + raised 影，无顶光；静息即抬起，悬停不再升档，按住时沿行进方向拉长并在释放时回圆。loading、只读与禁用不产生按压反馈。
 - 滑块可以拖：横向拖过中点松手即切换，拖出两端越拉越沉，松手后滑块带着松手速度落到那一端；纵向划动留给页面滚动，不拖的点按照常切换。
@@ -698,6 +699,7 @@ function onSubmit(event: Event) {
 | --- | --- | --- | --- |
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  | 只读：不可切换，但仍可聚焦、仍参与提交，对比度不降低。 |
 | `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
@@ -779,6 +781,7 @@ function onSubmit(event: Event) {
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-checked` | 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'switch' |

@@ -1209,7 +1209,8 @@ const filter: CascaderFilter = (candidate, query) =>
 - 选中项使用末端标记，半选项使用横线。
 - 浮层锚在字段盒上、与盒起始缘对齐，宽度按内容定：每一列按条目的自然宽度，不随字段盒拉伸，长选项撑到条目上限为止、余下的在条目里截断；搜索框不参与定宽，铺满列撑出的宽度；面板随列数伸展，宽过可用区时收成可用宽度并在面内横滚。
 - 面板含多列，取不透景的实体浮起面，与时间选择同一档。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是盒（触发钮，`clearable` 时带清空钮）与浮层。触发钮里是值串、多选的标签行（只作展示，摆不下的折进 +N）与展开箭头；浮层里开了 `searchable` 时先是搜索框与候选列表，再是当前展开的各列（懒分支那一列末尾带在途、失败与重试三块），末尾是空态与在途占位。分组、条目行尾与底部操作区不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -1243,6 +1244,8 @@ const filter: CascaderFilter = (candidate, query) =>
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支。默认为空树。 |
 | `loadChildren` | `(request: CascaderLoadChildrenRequest) => Promise<CascaderNode[] \| undefined \| void> \| CascaderNode[] \| undefined \| void` |  | 取回懒分支的直接子项：展开路径走到它时自动调用，结果留在组件里，宿主不必为此重建 collection。 失败后在它那一列里给出重试入口；旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
 | `value` | `CascaderValue` |  | 选中路径。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一为路径集合。 |
@@ -1262,6 +1265,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，浮层不可展开。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：trigger 报告 aria-required，根与标题带 data-required（标题据此画星号）。 一条完整路径一份表单影子，没选值时没有影子；此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位。 |
 | `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 |
@@ -1314,6 +1318,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
+| `XhCascaderRoot` | `label` | — |  |
 | `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
 
 ### React 适配器 props
@@ -1327,6 +1332,8 @@ const filter: CascaderFilter = (candidate, query) =>
 | `XhCascaderGroup` | `value` | `string` | 是 |  |
 | `XhCascaderItem` | `value` | `string` | 是 |  |
 | `XhCascaderPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhCascaderRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhCascaderRoot` | `clearable` | `boolean` |  | 不给 children 时盒里带清空按钮；给了 children 时放 clear-trigger 部件即可清空。 |
 | `XhCascaderRoot` | `children` | `SlotChildren<CascaderRootSlotProps>` |  |  |
 | `XhCascaderSearchList` | `renderItem` | `(result: CascaderSearchResult) => ReactNode` |  | 每条候选的自定义内容；未提供时把整条路径连缀为一行。 |
 | `XhCascaderTag` | `value` | `string` | 是 | 它代表哪条选中路径：写路径的比较键，即 tags 里的 key。 |
@@ -1380,6 +1387,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `CascaderTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
@@ -1404,7 +1412,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `retryBranch` | `(value: string) => void` | 重新取这个懒分支的直接子项，与失败提示里的重试按钮同一语义。 |
 | `deselect` | `(path: readonly string[]) => void` | 移除一条选中路径，其余保持选中先后。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
+| `getHiddenInputProps` | `(props?: { path: readonly string[] }) => T['input']` | 一条完整路径的表单影子；不给 path 是必填且没选值时的空值占位，带原生 required。 |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
@@ -1479,12 +1487,15 @@ const filter: CascaderFilter = (candidate, query) =>
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `hidden-input` | `aria-hidden` | 'true' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'listbox' |
 | `trigger` | `aria-invalid` | 'true' \| 'false' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id |
 | `trigger` | `aria-readonly` | 'true' \| 'false' |
+| `trigger` | `aria-required` | 'true' \| 'false' |
 | `trigger` | `role` | 'combobox' |
 | `indicator` | `aria-hidden` | 'true' |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
@@ -1504,7 +1515,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `column` | `aria-busy` | 'true' \| undefined |
 | `column` | `aria-disabled` | 'true' \| 'false' \| undefined |
 | `column` | `aria-label` | translations.column \| undefined |
-| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `item` 部件的 id |
+| `column` | `aria-labelledby` | undefined \| `label` 部件的 id `value-text` 部件的 id \| `trigger` 部件的 id `value-text` 部件的 id \| `value-text` 部件的 id \| `item` 部件的 id |
 | `column` | `aria-multiselectable` | 'true' \| 'false' \| undefined |
 | `column` | `aria-orientation` | 'vertical' \| undefined |
 | `column` | `role` | 'listbox' \| undefined |
@@ -1540,11 +1551,13 @@ const filter: CascaderFilter = (candidate, query) =>
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |

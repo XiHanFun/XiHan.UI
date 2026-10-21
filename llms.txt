@@ -6,9 +6,9 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 202 页正文，示例已按适配器内联为代码块
-- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 141 页组件参考
-- [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 30 页核心概念、适配器与运行时
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 211 页正文，示例已按适配器内联为代码块
+- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 144 页组件参考
+- [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 36 页核心概念、适配器与运行时
 - [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 803 支设计令牌的名字、类型与缺省取值
 - [design.md](https://ui.docs.xihanfun.com/design.md): 缺省主题的设计语言（design.md 格式）：颜色、排版、间距、圆角与组件样式令牌，以及视觉规则
 - [ai/SKILL.md](https://ui.docs.xihanfun.com/ai/SKILL.md): 给 AI 编程工具的 XiHan.UI 使用规范，可放进项目的技能目录
@@ -84,9 +84,15 @@
 
 - [代码着色](https://ui.docs.xihanfun.com/runtime/code-highlight): `@xihan-ui/code-highlight` 是 `HighlighterPort` 的自研实现：粗粒度词法着色，零第三方依赖。
 - [全局配置](https://ui.docs.xihanfun.com/runtime/config): 组件的内建文案默认是英文，日期时间类组件另接受 `locale`，尺寸档默认为 `md`，浮层默认挂在 portal 落点上。
+- [设计器内核](https://ui.docs.xihanfun.com/runtime/designer-kit): `@xihan-ui/designer-kit` 是画布式设计器的公共内核：撤销重做历史栈、按 JSON 路径的编辑操作、文档内唯一 id、网格布局、视口平移缩放、对齐吸附与参考线、多选对齐与等距分布、框选与命中、变换控制柄、标尺刻度、长度单位与纸张预设，以及属性面板的自定义编辑器接口。
+- [设计器零件](https://ui.docs.xihanfun.com/runtime/designer-shell): `@xihan-ui/designer-shell` 是画布式设计器共用的界面零件：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、页面结构、历史记录、问题列表、小地图、外框、设置对话框、导入字段对话框与新手引导。
+- [受限表达式](https://ui.docs.xihanfun.com/runtime/expression): `@xihan-ui/expression` 是一门受限的表达式语言：源码解析成可 JSON 序列化的语法树，静态检查后对数据求值。
 - [服务与运行时](https://ui.docs.xihanfun.com/runtime/): 组件册收录有解剖、有部件、可放置在页面上的组件。
 - [流式 Markdown](https://ui.docs.xihanfun.com/runtime/markdown): `@xihan-ui/markdown` 解决一个具体问题：AI 逐 token 输出 Markdown，需要边接收边渲染，且不能每帧重建整段 DOM：重建一次，用户的选区和滚动位置即丢失。
+- [富文本模型](https://ui.docs.xihanfun.com/runtime/rich-text): `@xihan-ui/core/rich-text` 是结构化的富文本：段落、标题、列表、分隔线与带样式的文字，整份是 JSON，不含 HTML。
 - [命令式服务](https://ui.docs.xihanfun.com/runtime/services): 部分反馈不适合写成模板：删除前确认、保存后提示，这类反馈没有挂载位置的问题，适合一次调用弹出。
+- [SVG 导出](https://ui.docs.xihanfun.com/runtime/svg-export): `@xihan-ui/core/svg-export` 把页面上的 SVG 导出成文件：克隆成能单独打开的一份，序列化成文本，再按倍率与底色栅格化成 PNG。
+- [表格导出](https://ui.docs.xihanfun.com/runtime/xlsx): `@xihan-ui/xlsx` 把表格写成 Excel 文件（.xlsx）。
 
 ## 场景
 
@@ -141,14 +147,17 @@
 - [Drawer 抽屉](https://ui.docs.xihanfun.com/components/drawer): 从屏幕某一边滑出的面板。
 - [Editable 就地编辑](https://ui.docs.xihanfun.com/components/editable): 用于在当前位置查看和编辑短文本。
 - [EmptyState 空状态](https://ui.docs.xihanfun.com/components/empty-state): 没有数据时的占位区域：说明为什么为空，以及可以做什么。
+- [ExpressionInput 表达式输入框](https://ui.docs.xihanfun.com/components/expression-input): 输入受限表达式，边输入边报出问题，并补全可引用的名字与函数。
 - [FieldArray 字段数组](https://ui.docs.xihanfun.com/components/field-array): 用于管理可添加、删除和排序的重复字段。
 - [Field 表单字段](https://ui.docs.xihanfun.com/components/field): 为表单控件提供标签、说明、错误信息和状态关联。
 - [Fieldset 字段集](https://ui.docs.xihanfun.com/components/fieldset): 把若干相关字段收成一组，组标题由 `legend` 提供，禁用与无效沿这一组下发。
 - [FileUpload 文件上传](https://ui.docs.xihanfun.com/components/file-upload): 选择文件、拖放文件，并列出已选与已上传的文件。
+- [FilterBuilder 条件编辑器](https://ui.docs.xihanfun.com/components/filter-builder): 可视化编辑一棵「全部满足 / 任一满足」的条件树，每个条件是「字段 + 运算符 + 值」，值可以是字面值，也可以是参数引用。
 - [Flex 弹性布局](https://ui.docs.xihanfun.com/components/flex): 沿水平或垂直方向排列内容。
 - [FloatButton 浮动按钮](https://ui.docs.xihanfun.com/components/float-button): 用于在视口边缘提供持续可见的操作入口。
 - [FloatingPanel 浮动面板](https://ui.docs.xihanfun.com/components/floating-panel): 浮在页面上、可移动、可调整大小、可收拢与铺满的非模态面板。
 - [Form 表单](https://ui.docs.xihanfun.com/components/form): 管理一组字段的值、校验、提交和重置。
+- [FormatInput 格式输入](https://ui.docs.xihanfun.com/components/format-input): 编辑一份格式说明：先选种类，再填这一种的参数，下方即时显示样例效果。
 - [FunnelChart 漏斗图](https://ui.docs.xihanfun.com/components/funnel-chart): 看一个流程里各阶段的保留量与逐级转化率。
 - [GraphChart 关系图](https://ui.docs.xihanfun.com/components/graph-chart): 看实体之间的连接关系、聚类与层级结构。
 - [GridList 网格列表](https://ui.docs.xihanfun.com/components/grid-list): 排列一组可选择、可执行主操作，并且每行还能放独立按钮的记录。

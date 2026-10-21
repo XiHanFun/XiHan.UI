@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`format-input-states-template`).content.cloneNode(!0),[t,n]=e.querySelectorAll(`xh-format-input`);t.defaultValue={kind:`number`,decimals:2,grouping:!0},n.defaultValue={kind:`percent`,decimals:1},document.getElementById(`format-input-states-mount`).append(e)}export{e as default};

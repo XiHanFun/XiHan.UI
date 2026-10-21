@@ -1,0 +1,43 @@
+var e=`<!-- 色板换色 | palette 直接按颜色指定，取基础色板同名色相的满档一端；分档与空格底色都不变 -->
+<div id="heatmap-palette-mount" style="display: flex; flex-wrap: wrap; gap: 20px"></div>
+
+<!-- 只写 root，结构由元素生成；只写 palette：色板管的只有满档实心底那一端，档位怎么分与它无关 -->
+<template id="heatmap-palette-template">
+  <div style="display: grid; gap: 4px">
+    <span style="color: var(--xh-fg-subtle); font-size: 12px"></span>
+    <xh-heatmap start-date="2024-01-01" end-date="2024-01-28">
+      <div data-xh-part="root"></div>
+    </xh-heatmap>
+  </div>
+</template>
+
+<script type="module">
+  // 同一份数据按色板各铺一遍，肉眼比的就只有颜色这一件事
+  const activity = [
+    { date: "2024-01-02", count: 1 },
+    { date: "2024-01-04", count: 3 },
+    { date: "2024-01-08", count: 6 },
+    { date: "2024-01-11", count: 2 },
+    { date: "2024-01-15", count: 9 },
+    { date: "2024-01-17", count: 4 },
+    { date: "2024-01-22", count: 12 },
+    { date: "2024-01-25", count: 7 },
+    { date: "2024-01-27", count: 2 },
+  ];
+
+  const palettes = ["red", "orange", "amber", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "purple", "pink", "gray"];
+
+  const mount = document.getElementById("heatmap-palette-mount");
+  const template = document.getElementById("heatmap-palette-template");
+
+  for (const palette of palettes) {
+    const fragment = template.content.cloneNode(true);
+    fragment.querySelector("span").textContent = palette;
+    const heatmap = fragment.querySelector("xh-heatmap");
+    heatmap.setAttribute("palette", palette);
+    mount.append(fragment);
+    // 数据是数组，只走 property：HTML 属性装不下它
+    heatmap.value = activity;
+  }
+<\/script>
+`;export{e as default};

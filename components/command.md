@@ -18,7 +18,7 @@
 
 ```vue
 <script setup lang="ts">
-import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
+import type { CommandItemSelectDetails, CommandNode } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -39,7 +39,7 @@ const groups = [
 
 const last = ref("还没执行过命令");
 
-function run(details: CommandSelectDetails) {
+function run(details: CommandItemSelectDetails) {
   last.value = `执行了：${details.label}`;
 }
 </script>
@@ -50,7 +50,7 @@ function run(details: CommandSelectDetails) {
     :groups="groups"
     placeholder="搜命令…"
     empty="没有匹配的命令"
-    @select="run"
+    @item-select="run"
   >
     <template #trigger>打开命令面板</template>
     <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
@@ -121,7 +121,7 @@ function run(details: CommandSelectDetails) {
   ];
 
   const readout = document.getElementById("command-basic-readout");
-  host.addEventListener("select", (event) => {
+  host.addEventListener("item-select", (event) => {
     readout.textContent = `执行了：${event.detail.label}`;
   });
 </script>
@@ -482,7 +482,7 @@ function onSelect(details: { label: string }) {
     :filter="false"
     :loading="loading"
     placeholder="搜同事…"
-    @select="onSelect"
+    @item-select="onSelect"
   >
     <template #default>
       <XhCommandTrigger>找一个人</XhCommandTrigger>
@@ -569,7 +569,7 @@ function onSelect(details: { label: string }) {
     }, 400);
   });
 
-  host.addEventListener("select", (event) => {
+  host.addEventListener("item-select", (event) => {
     picked.textContent = `选了：${event.detail.label}`;
   });
 </script>
@@ -591,6 +591,7 @@ function onSelect(details: { label: string }) {
 
 ### 特性
 
+- 不写结构时照标准结构铺：触发按钮（给了内容才铺）、遮罩，定位层里的面板依次是检索框、按整份清单铺的结果列表（分组与没归组的命令）、空态与在途占位、页脚（给了内容才铺）。过滤只给结果之外的条目与筛空的分组写 `hidden`，不增删节点。Vue / React 不写默认插槽与 Web Components 不写部件时生成的节点出自同一个结构函数；Web Components 的部件直接长在 `<xh-command>` 里，触发按钮、空态、页脚的内容与条目文字、行首、行尾可用宿主直接子节点 `slot="trigger"`、`slot="empty"`、`slot="footer"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 给出。
 - 内置过滤：传入清单后按检索串逐词筛选、按 `group` 归组，空组自动移除。`keywords` 让一条命令同时匹配英文名、拼音与旧称。
 - 过滤可以关闭（`filter` 置否），改由调用方筛选；远端检索使用这一档。
 - 结果随输入即时换：检索过滤筛掉又露出来的命令直接呈现，不逐键重播入场；只有新插进列表的命令（宿主追加、远端取回的一批）才逐条上浮、按到达顺序错开。打开时已有的结果同样直接呈现。
@@ -598,6 +599,7 @@ function onSelect(details: { label: string }) {
 - 命令可写副文本，第 2 行放一句解释，不进检索串。
 - 命令可写快捷键提示，贴行尾、与说明同档同色；纯装饰，不进检索串。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 面板默认是模态浮层：捕获焦点、锁定滚动、背景失活，Escape 与点击遮罩收起，收起后焦点归还触发按钮。`modal=false` 时不渲染遮罩、不拦截页面指针，也不启用这些模态约束；展开期间切换会立即同步。
 - 检索框是面板内嵌的搜索框，与级联选择、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 焦点全程在检索框，活动候选经 `aria-activedescendant` 报告给读屏；活动候选同步 `aria-selected=true`，其余候选显式为 `false`，输入后活动候选自动回到首条。
@@ -606,7 +608,7 @@ function onSelect(details: { label: string }) {
 - 零可见命令时列表不保留额外空白行；搜索输入和作者提供的状态、底栏仍然在场。未提供 Empty / Loading 文案时不显示空白占位，也不自动生成提示文字。
 - `collection` 与过滤结果保持数据语义；已挂载节点上的 `hidden` 会排除对应条目或分组的交互与 ARIA 高亮。未挂载或虚拟候选不按隐藏推断；展开期间替换列表节点后，可见性观察会切换到新节点。
 - `closeOnSelect` 决定选中后是否收起；连续执行多条命令时关闭它。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 
 ### 组合
 
@@ -665,7 +667,7 @@ function onSelect(details: { label: string }) {
 | `translations` | `Partial<CommandTranslations>` |  |  |
 | `onOpenChange` | `(details: CommandOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
-| `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
+| `onItemSelect` | `(details: CommandItemSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
 
 ### CommandNode
 
@@ -699,7 +701,7 @@ function onSelect(details: { label: string }) {
 | --- | --- | --- |
 | `open-change` | `CommandOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: string }` |
 | `input-value-change` | `CommandInputValueChangeDetails` | 检索串变化；detail 为 `{ inputValue: string }` |
-| `select` | `CommandSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
+| `item-select` | `CommandItemSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
 
 ### 插槽
 
@@ -946,7 +948,6 @@ function onSelect(details: { label: string }) {
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-command-list-busy-opacity` | `list` | `opacity` | `default` | `--xh-state-disabled-opacity` | command 的 list 部件 opacity 覆盖槽。 |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
 | `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | command 的 list 部件 padding-block 覆盖槽。 |
@@ -967,7 +968,7 @@ function onSelect(details: { label: string }) {
 
 动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

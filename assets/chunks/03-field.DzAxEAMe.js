@@ -1,0 +1,26 @@
+var e=`<!-- 放进表单字段 | 字段的标题与说明接到组上；日期模式可从预设里挑，也可以自由输入 -->
+<div id="format-input-field-mount"></div>
+
+<template id="format-input-field-template">
+  <xh-field>
+    <div data-xh-part="root">
+      <label data-xh-part="label">下单时间的显示格式</label>
+      <xh-format-input clearable="false"></xh-format-input>
+      <p data-xh-part="description">列表与详情页都按这里的格式显示</p>
+    </div>
+  </xh-field>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-field-template").content.cloneNode(true);
+  const input = fragment.querySelector("xh-format-input");
+
+  input.kinds = ["date"];
+  input.datePatterns = ["yyyy-MM-dd", "yyyy年MM月dd日", "yyyy-MM-dd HH:mm"];
+  // 样例固定一个时刻，换模式时只看格式的差别
+  input.sample = new Date(2026, 8, 18, 14, 30);
+  // 非受控初值只在建立时读一次：赋好了再入页
+  input.defaultValue = { kind: "date", pattern: "yyyy-MM-dd" };
+  document.getElementById("format-input-field-mount").append(fragment);
+<\/script>
+`;export{e as default};

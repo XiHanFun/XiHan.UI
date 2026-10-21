@@ -4,6 +4,123 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v5.0.0 (2026-10-21)
+
+本版为打印、流程、表单、报表四款设计器补齐组件能力：多数组件改用标准结构，不写结构就能用；库内表单控件统一命名与表单状态继承；新增条件编辑器、格式输入、表达式输入框，首发设计器内核、设计器界面零件、受限表达式与 xlsx 写出四个包。少数事件、属性、类型、语言包键与覆盖槽有改动，全部包同号升到 5.0.0，升级前请看升级须知。
+
+::: warning 升级须知
+- **日历族**：周、月、季度、年视图改为按行渲染，面板与 `buildPeriodGrid` 的 `cells` 改为 `rows`，网格底下写 `week-row`、格子放进行里；自备格子列表用 `calendarPeriodRows(periods, view)` 切行
+- **热力图**：`cell-press` / `cell-active` 改名 `datum-press` / `datum-active`（`onCellPress` / `onCellActive` → `onDatumPress` / `onDatumActive`），删除 `cell-focus` / `onCellFocus`；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`
+- **表格**：删除 `footer`（WC `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾每行写 `level`
+- **颜色换算**：`colorParse`、`colorToString`、`colorRgbaToHex` 等 15 个颜色函数与 `ColorRgba`、`ColorHsva`、`ColorHsla`、`ColorOklch`、`ColorFormat` 改从 `@xihan-ui/core/color` 引入，`@xihan-ui/headless` 不再导出；`colorParse` 改按 CSS Color 4 的语法，分隔符混写、逗号写法里数与百分数混用、十六进制不带 `#` 这类浏览器不认的写法返回 `null`
+- **令牌的颜色换算**：`@xihan-ui/tokens` 不再导出下表左列的名字，改从 `@xihan-ui/core/color` 引入右列；`colorParseOklch` 解析不了时返回 `null`（原先抛错）；分量越界的颜色（如 `oklch(120% 0.1 30)`、透明度大于 1）不再夹回范围，令牌其余颜色函数遇到时抛错；白、灰、黑的色相写成 0
+  | 4.x（`@xihan-ui/tokens`） | 5.0（`@xihan-ui/core/color`） |
+  | --- | --- |
+  | `srgbToLinear` | `colorSrgbToLinear` |
+  | `linearToSrgb` | `colorLinearToSrgb` |
+  | `linearRgbToOklch` | `colorLinearRgbToOklch` |
+  | `oklchToLinearRgb` | `colorOklchToLinearRgb` |
+  | `parseColorToOklch` | `colorParseOklch` |
+  | `inSrgbGamut` | `colorInSrgbGamut` |
+  | `clampChroma` | `colorClampChroma` |
+  | `formatOklch` | `colorFormatOklch` |
+  | `Oklch`（类型） | `ColorOklch`（字段相同） |
+- **快捷键**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 改从 `@xihan-ui/core/hotkey` 引入，`@xihan-ui/headless` 不再导出
+- **语言包**：删除 Citation 的 `openSource`、`source`，覆盖过的直接去掉；FileUpload 的 `dropzone` 改作标准结构里投放区那句看得见的说明，手写结构的投放区改由标题接上投放区里看得见的说明命名
+- **覆盖槽**：删除 `--xh-command-list-busy-opacity`
+- **HoverCard**：`HoverCardRefs` 删去 `getTitleEl` / `getDescriptionEl`，Vue 的 `HoverCardContext` 删去 `titleRef` / `descriptionRef`，React 的删去 `setTitleEl` / `setDescriptionEl`；自写标题、说明部件的改为经 `parts` 报告在场
+- **表单校验**：只含空白的字符串与元素全为空的数组算空，`required` 会拦下；`min` / `max` 对字符串改按字素计数。依赖原行为的改在 `validator` 里自行判断
+- **React Card**：`XhCardRoot` 的 `title`、`content` 改为卡片的标题与正文，不再作为原生属性写到根上
+- **Web Components FileUpload**：条目改按 `allFiles` 对应（远程附件在前、本地文件在后）；用了 `remoteFiles` 的改按 `allFiles` 铺行
+- **Web Components 布尔属性**：全部改为三态（含 designer-shell 的零件），显式写 `="false"` 为假、不写交给缺省；写过 `disabled="false"` 却想要真的改成 `disabled`，移除属性改为回到组件缺省
+- **Web Components 对话框与抽屉**：`<xh-dialog>`、`<xh-drawer>` 的语义角色改写 `dialog-role`（property `dialogRole`），`role` 不再当作配置；写过 `role="alertdialog"` 的改成 `dialog-role="alertdialog"`。`role` 写在宿主上，宿主本身就成了对话框，里面的触发钮也被读成在对话框里。Vue 与 React 的 `role` 不变
+- **Web Components 通知条目**：`<xh-notification-item>` 的标题文案改写 `title-text`（property 仍是 `titleText`），`title` 不再当作配置；写过 `title="已保存"` 的改成 `title-text="已保存"`。`title` 写在宿主上，悬停会出浏览器原生提示，读屏还会把标题当描述再念一遍。通知服务与 Vue、React 的 `title` 不用改
+- **缺省结构**：根组件不写默认插槽 / 不给 children、Web Components 元素不写部件时，原先渲出空的根，现在铺出整套部件
+- **外观**：渲染成 `<button>` 的部件清掉浏览器缺省样式，WC 作者自写的按钮部件接线后同样无壳，要按钮外观时把 Button 当作这个部件写进去
+- **FileUpload**：点标题改为把焦点交给投放区，不再直接弹出选择框
+- **ColorPicker**：单选给空数组改为未选（色块画斜线、值文字显示 `placeholder`、`value` 为空数组），不再按 `#000000` 显示；要黑色的改写 `['#000000']`
+- **树**：`multiple` 改为选择模式 `selectionMode`（Web Components 为 `selection-mode`），`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变
+- **菜单族的选中事件**：Menu、ContextMenu、Menubar、Command、Mention 的 `select` 改名 `item-select`，不再与原生 `select`（输入框里选中文字时冒泡上来）同名：Vue 的 `<XhMenuRoot @select="run">` 改写 `<XhMenuRoot @item-select="run">`，React 的 `onSelect={run}` 改写 `onItemSelect={run}`，Web Components 的 `menu.addEventListener('select', run)` 改监听 `'item-select'`，`event.detail` 不变；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变
+- **Popconfirm 的取消事件**：`cancel` 改名 `cancel-press`，不再与原生 `cancel`（文件输入框取消选择时冒泡上来）同名：Vue 的 `<XhPopconfirmRoot @cancel="undo">` 改写 `<XhPopconfirmRoot @cancel-press="undo">`，React 的 `onCancel={undo}` 改写 `onCancelPress={undo}`，Web Components 的 `popconfirm.addEventListener('cancel', undo)` 改监听 `cancel-press`，headless 的 `onCancel` 改为 `onCancelPress`；确认事件 `confirm`、方法 `cancel()` 与部件 `cancel-trigger` 不变
+- **菜单族的对号与行首**：Menu、ContextMenu、Menubar 的 `item-indicator` 只当对号，只在勾选与单选条目上出现，标准结构里挪到条目最后（正文、说明、快捷键与 `item-suffix` 之后），改落 Collection Item 的 `indicator` 列；行首内容全部归 `item-icon`，条目数据删去 `indicator` 文字。三种写法要改：`item-prefix` 插槽的内容现在落在 `item-icon`，给它写样式的改按 `item-icon` 选；手写 `ItemIndicator` 当行首图标的改用 `ItemIcon`（Web Components 写 `data-xh-part="item-icon"`）；给 `item-indicator` 写样式改图标颜色的改写到 `item-icon`（它本来就随条目字色走）。数据里写 `indicator` 文字的改写 `icon`，要表达选中改用勾选或单选条目；按位置选部件的（如 `[data-part='item'] > :first-child`）改按 `data-part` 选
+- **designer-kit 与 designer-shell（首发）**：5.0.0 是这两个包的第一版，没有已发布的写法要迁移，接法见文档站的「设计器内核」「设计器零件」两页。开发期按 link 接过 dev 的使用方对一下这几处：变换覆盖层去掉 `formatMeasure`，改给 `measureOptions`（如 `{ unit: 'mm' }`），宽高的改动经 `measure-change` 交回设计器；历史栈的说明类型是 `HistoryLabel`（字符串，或换语言后现取的函数）；`BUILTIN_CONTROL_KINDS` 已含 `options` 与 `treeOptions`，产品自己登记的同名编辑方式要去掉；零件里的菜单命令改听 `item-select`，复选条目经 `checkbox-value-change` 回报；配无层皮肤 `@xihan-ui/styles/index.unlayered.css` 时改引 `@xihan-ui/designer-shell/style.unlayered.css`
+:::
+
+- **新增** Menu、ContextMenu、Menubar 按数据铺时，条目可写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`，读屏念得出快捷键；看得见的快捷键提示照旧是装饰
+- **新增** Menu 的 `fitAvailableHeight`（Web Components 为 `fit-available-height`）：内容只按可用高度封顶，不叠 20rem 的固定上限；菜单栏的子菜单由菜单栏自动带上
+- **新增** `@xihan-ui/web-components/authoring` 导出 `notifyXhConfigChange` 与类型 `XhConfigScope`、`XhConfig`：自定义元素声明 `xhConfig` 即可当一层配置作用域（如设计器单独设语言），改了它就调 `notifyXhConfigChange(this)`，子树里已渲染的元素（含浮层内容）照新配置重画
+- **新增** Menu、ContextMenu、Menubar 按数据铺时，带 `children` 的条目可写子菜单那一层的勾选值与单选值（`checkboxValue` / `radioValue`），子层里的勾选与单选条目照它显示；Vue / React 的 `XhMenubarSub`、`XhContextMenuSub` 同 `XhMenuSub` 一样收这一层的勾选与单选并派发改动
+- **新增** 标准结构：Select、Combobox、TreeSelect、Cascader、Menu、ContextMenu、Menubar、Accordion、Tabs、ToggleGroup、RadioGroup、CheckboxGroup、Checkbox、Switch、Slider、Rating、TextField、NumberField、PasswordInput、PinInput、DateField、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorField、ColorPicker、TagsInput、TagGroup、Listbox、Transfer、SignaturePad、Field、Fieldset、FieldArray、FileUpload、Mention、Command、ColorSwatchPicker、Breadcrumb、NavigationMenu、Card、Separator、Heatmap 等不写结构即可使用，Vue、React 与 Web Components 照同一个结构函数铺出同一棵树；Web Components 用 `slot="<名>"` / `slot="<名>:<键>"` 把作者内容放进对应部件
+- **新增** 条件编辑器 FilterBuilder、格式输入 FormatInput、表达式输入框 ExpressionInput，三端同时可用
+- **新增** 包 `@xihan-ui/designer-kit`（画布式设计器的公共内核：历史栈、视口、命中与变换、属性描述、扩展机制、表格与网格几何、剪贴板）、`@xihan-ui/designer-shell`（设计器界面零件：外框与面板布局（停靠、浮出、收成标题条，整份布局存进设置）、属性面板、物料面板、页面结构、历史面板、问题列表、小地图、变换覆盖层与它的上下文工具条和尺寸徽标、标尺、设置对话框（含帮助、快捷键与关于）、JSON 编辑框、导入字段对话框、新手引导、命令工具栏与状态栏项，附与 UI 内建语言包对应的十种语言文案；另有配无层皮肤用的 `style.unlayered.css`）、`@xihan-ui/expression`（受限表达式与格式化）、`@xihan-ui/xlsx`（零依赖的 xlsx 写出）
+- **新增** `@xihan-ui/core` 子入口 `json`、`rich-text`、`rich-text-dom`、`url`、`template`、`hotkey`（含与 `aria-keyshortcuts` 互转的 `ariaKeyshortcut` / `parseAriaKeyshortcuts` 与按平台显示的 `formatHotkeyLabel`）、`color`（颜色换算，按 CSS Color 4 的语法解析，另认 `oklab()`、`color(srgb …)` 与色相单位 grad、rad、turn；不取整的 OKLCH 换算与按色域收彩度）、`svg-export`（SVG 导出成能单独打开的一份，并可栅格化成 PNG）、`clipboard`（往系统剪贴板写文本的 `writeToClipboard`）、`options`（选项与选项树的结构校验 `findOptionViolation`）；`core/json` 新增出错时报行列的 `parseJsonText` 与按路径定位的 `locateJsonPath`；`core/date` 新增墙上时间与分桶键
+- **新增** 库内表单控件统一新增 `ariaLabel`；ToggleGroup、Combobox、ColorPicker、Transfer、CheckboxGroup、Slider、TreeSelect、Cascader、FileUpload 补齐 `required` / `readOnly` / `invalid`，放进字段或表单时自动继承；字段标题点击聚焦库内控件，Web Components 的字段接线落到控件真正可聚焦的部件上
+- **新增** FileUpload 远程附件的文件名铺成链接（部件 `item-link`，打开方式 `linkTarget`），地址不安全时退回纯文字
+- **新增** ColorPicker 单选的未选状态（`placeholder`）与清空钮 `clear-trigger`（`clear` 事件）
+- **新增** FieldArray 表格排布 `layout="table"`、`insert` / `move`、`value-change` 带行变更；不写结构时只给每行内容即可；列的 `minWidth` 给出下限，放不下时表格区横向滚动，行号与把手钉在两侧，窄容器里可写 `stickyActions: false` 让把手随行滚动；开了 `movable` 每行多一颗拖动把手 `item-drag-trigger`，按住拖到别处换位，键盘与读屏照旧用上移、下移
+- **新增** Table 多行表尾 `footerRows` 与吸底 `stickyFooter`、行主操作 `onAction`、列的 `rowHeader`（也可按行给函数）、表尾单元格合并 `footerCellSpan`，Web Components 新增 `visibleRows`；Select 新增取数失败状态与重试，Combobox 新增在途占位；Heatmap 新增受控联动键 `activeKey`、`pending`、`empty` 与 `format`
+- **新增** TextField `multiline`、NumberField 与 TimePicker 的 `placeholder`、TimeRangePicker 的 `startPlaceholder` / `endPlaceholder`、Grid `ruled`、Accordion `contentRole`、TreeSelect 搜索框的占位文字 `translations.searchPlaceholder`；日历翻页钮带上按视图的缺省读屏名
+- **新增** Tree 分支行的说明部件 `branch-description`，带说明的分支与叶子一样折成两行，说明在名称下面
+- **新增** Menu、ContextMenu、Menubar 的条目图标（条目的 `icon`，部件 `item-icon`）；Toolbar 的 `itemIcons`，收进「更多」的条目带着各自的图标；Toolbar 的条目可声明只放图标（Vue / React 的 `iconOnly`，Web Components 写 `data-icon-only`），按方钮画；Web Components 的 `<xh-icon>` 一个部件都不写、或只写一个空的 `root` 时自己生成图形，只给 `icon` 即可
+- **新增** Splitter 双击分隔条折叠它一侧可折叠的面板，再双击回到折叠前的尺寸；Enter 与双击同一件事，前一块不可折叠时管到可折叠的后一块
+- **新增** Tree 节点数据的 `draggable: false`：这一个节点拖不起来，照常能选、能展开、能当落点
+- **新增** Tree 的选择模式 `extended`：照文件管理器，点击换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 加选与取消，按住 Shift 点击选一段；两种多选模式下 Ctrl / Cmd + Space 都只切换焦点节点；选中从外面换了（宿主另写了值、调了 `setSelection`、挂载时就带着选中），Shift 点击从新选中里多出来的最后一项连起
+- **新增** `@xihan-ui/core` 的页面级窗口叠放序 `getWindowStack(doc)`；浮动面板几个同时开着时，点到或聚焦哪个哪个到最上面，最上面的仍在模态层之下
+- **新增** `@xihan-ui/core` 的页面级礼貌播报器 `announce(message)`：整页一个播报区挂在 `body` 末尾，同一句话连播也会再读，模态浮层打开时照旧可读；不属于某一个组件的播报用它，设计器外框的 `announce` 改经它；视觉隐藏的内联样式 `VISUALLY_HIDDEN_STYLE` 也从 core 导出
+- **新增** Table 的 `tree`：声明这是一棵树，一行 `parentId` 都没有时也报 treegrid、Alt + 左右键改层级、任何一行都能接受「放进去」，叶子行不写 `aria-expanded`
+- **新增** FloatingPanel 的拖动起止事件 `onDragStart` / `onDragEnd`（Web Components 为 `drag-start` / `drag-end`），带指针位置与是否取消
+- **新增** Table 单元格级导航 `navigation="cell"`：照 WAI-ARIA treegrid，整张表只占一个 Tab 位，方向键在格子之间走，Enter 或 F2 进格内控件编辑、编辑中 Tab 只在这一格里走、Esc 退回格子，换位、改层级与拖动照常可用
+- **新增** Tooltip 的委托模式 `delegate`：一个提示管一整个容器里的锚点，文字取锚点的 `data-xh-tooltip` 或可及名，快捷键取 `aria-keyshortcuts` 并按平台显示；提示新增 `translations.keyLabel`
+- **新增** Menu 与 Popover 的 `anchor`：外部的一颗按钮可以当锚点，由它受控打开，浮层贴着它定位、收起时焦点还给它，展开期间它带上弹出关系；写了 `anchor` 时可以不写触发器
+- **新增** Virtualizer 的 `estimateFromMeasured`（Web Components 为 `estimate-from-measured`）：没量过的条目按已量条目的平均尺寸估算，行高随尺寸、密度与皮肤变化的列表不必写死 `estimateSize`
+- **新增** Tour 的 `boundary`：把引导限在一块区域里，遮罩与高亮框只盖这块区域、气泡以它为界避让，区域外照常可读可点；定位引擎与层栈各补了配套的 `boundary`、`covers`
+- **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`）与各档代表色 `BRAND_PRESET_COLORS`，`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
+- **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
+- **新增** 设计器画布与表格编辑命令用的一批图标（编辑、拖动、对齐与分布、层级、表格行列与合并等）
+- **新增** `@xihan-ui/pointer` 的 `wheelPixels`：把按行、按页计量的滚轮滚动量折成像素（缺省一行 16、一页 400），Tabs 的滚轮滚动与图表的滚轮缩放改用它，换算值不变
+- **新增** `@xihan-ui/viz` 有向图算法、分层布局与直角连线、折线工具、多样式折行 `wrapRuns`、表格数据处理与 `pivotWider`
+- **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
+- **调整** Web Components 的 `<xh-dialog>`、`<xh-drawer>` 语义角色改写 `dialog-role`，宿主上不再带 `role`（详见升级须知）
+- **调整** Web Components 的 `<xh-notification-item>` 标题文案改写 `title-text`，宿主上不再带 `title`（详见升级须知）
+- **调整** Menu、ContextMenu、Menubar、Command、Mention 的选中事件改名 `item-select`（`onItemSelect`），不再与原生 `select` 同名（详见升级须知）
+- **调整** Popconfirm 的取消事件改名 `cancel-press`（`onCancelPress`），不再与原生 `cancel` 同名（详见升级须知）
+- **调整** Menu、ContextMenu、Menubar 的勾选与单选对号排到行尾，与子菜单箭头同列、快捷键在它之前，与 Select、Tree 等集合的对号同位；`item-indicator` 只当对号、在标准结构里挪到条目最后，行首内容全部归 `item-icon`、随条目字色走（详见升级须知）。勾选条目的图标与普通条目左缘对齐，同一层有勾选条目时整张菜单的快捷键同列
+- **调整** Menubar 的下拉与它的子菜单只按可用高度封顶，和桌面应用的菜单栏一样，可用高度够时整张菜单一次铺开、不出滚动条；要收矮写 `--xh-menubar-max-h`。Menu 与 ContextMenu 照旧以 20rem 一档封顶
+- **调整** 菜单族的下拉与子菜单、Listbox、Select、Combobox、Command、Mention：同一层里只要有一条带行首图标，所有条目都空出图标那一格，正文左缘对齐；整层都没有图标就不留
+- **修复** 弹层、提示与图表族只引用实际渲染了的标题与说明（Dialog、Drawer、Popover、Popconfirm、Tour、Alert、Approval、Notification、FloatingPanel、Fieldset、Field、Table、图表），不再挂落空的 id
+- **修复** Tree、TreeSelect、JsonViewer、Citation、FileUpload 的可访问名包含看得见的字；危险色文字与刷新中的集合在所有表面上达到 4.5:1 对比度；Tabs 横线档的当前页悬停、键盘高亮与按下时字深一档，在页面底与面上同样达到 4.5:1，带语气时不再退回品牌色；条件编辑器的删除钮在高对比档里按所在的面取字形色，悬停与禁用都分得开
+- **修复** Tree 叶子行的说明落在名称下面一行，窄的时候截断；Listbox、TagGroup、SignaturePad、Transfer 放进表单字段时接上字段的标题与说明；日期、时间选择器有值时点字段标题焦点落在第一段，放进字段时日历钮不再带按钮不允许的 `aria-readonly`
+- **修复** Tree 的 Web Components 版：分支行里摆的 `item-indicator` 跟着分支的选中亮出对号，不再一直不亮，与叶子行、Vue 与 React 一致
+- **修复** FieldArray 表格排布横向放不下时表格本体进 Tab 序列，一行都没有也能用键盘横向滚动，放得下时不占 Tab 位
+- **修复** 亮色下警告色文字加深一档，达到正文对比度：`--xh-fg-warning` 改指 `--xh-color-warning-800`（对白底 4.98:1，原来 3.75:1），表达式输入框的警告提示、日志 warn 级、字数到上限等小字都够得上 4.5:1；暗色不变
+- **修复** Menu、ContextMenu、Menubar 按数据铺时，子菜单入口（带 `children` 的条目）写了 `icon` 却不画图标：入口与普通条目一样铺 `item-icon` 与 `item-text`；子菜单组件与 `<xh-menu submenu>` 新增 `icon`
+- **修复** 菜单族与 Listbox、Select、Combobox、Command、Mention 的行首图标与正文上下居中：菜单族的 `item-icon` 按图标尺取高、图标在里面居中，候选列表 `item-prefix` 里的图标居中，图标比行高矮时不再贴着上沿、比正文高出约 2px；Web Components 的 `<xh-icon>` 宿主改为只包住图标的行内块（行高归 0），放进弹性或网格容器时与 Vue / React 一样居中
+- **修复** Tour 开在模态对话框或抽屉里时，锚定步的高亮框与遮罩、气泡同在引导这一层，排在外层对话框之上，周围照常压暗、目标照常框出；原先高亮框落回模态层的基数，被外层对话框盖住
+- **修复** Form 与 Fieldset 里带说明的字段在说明下面照常留一段项距，与只给错误文案留了一行的字段、普通字段交替排时留白一致，说明文字不再贴着下一项的标签；Web Components 里字段直接放进表单或字段集时（直接子项是 `<xh-field>`），只留了错误行的字段不再多留一段项距
+- **修复** Approval 待决的呼吸点取图形色，不随警告文字色变深；写了语气时六族在亮暗两态对承载面都不低于 3:1（`warning` 语气原来在白底上只有 2.69:1）
+- **修复** Web Components 的 Menubar 按 `collection` 铺结构时，数据里写的 `disabled` 照样生效：入口与条目报不可用、方向键跳过，与 Vue / React 一致
+- **修复** Vue 的子菜单（`XhMenuSub`、`XhMenubarSub`、`XhContextMenuSub`）改了属性后子层跟着变，不再只认挂载时那一份；Vue / React 的子菜单入口不再同时挂着菜单的皮肤挂载类，也照旧带着子层的展开态（`data-state`）
+- **修复** 对话框、抽屉、弹出层这类带焦点域的浮层落焦时，只整段选中单行文本类输入框；第一个可聚焦元素是多行文本框时只落焦、不再全选里面的字
+- **修复** Web Components 里用 `XhConfigController` 取配置的元素断开期间换了语言、或被挪到另一个 `<xh-config>` 下，重新连上时按新的配置重渲，不再停在旧的文案上
+- **修复** FieldArray 表格排布的格子里放 Field 时，文本框的原生宽不再把这一列撑出去压到相邻的格上；设计器属性面板里放不下的选项表改为横向滚动，不再裁掉行尾的把手
+- **修复** Table 树形表换位后的读屏播报说放进了哪一层，位次与总数按那一层的兄弟行算，不再拿层内位次配全部可见行的总数
+- **修复** Sortable 嵌套时（项里再放一个排序列表），指针按住里层条目或它的手柄不再连外层那一项一起拖起来
+- **修复** 开着的下拉被外面的点击收起、同一次点击又打开抽屉或对话框时，控制台不再报 `core.layer.dispose-not-top`；这条诊断只在父层先于开在它里面的层释放时报，明细新增 `nested`
+- **修复** Table 接了虚拟滚动时表体画出行间线，与普通表体同一条线，滚动换批时每一行的高度不变；条目里的详情行也画
+- **修复** Table 键盘换位之后，宿主写回时挪动了持有焦点的行节点，焦点不再掉回页面，回到搬走的那一行，可以接着再挪
+- **修复** Table 表尾里的冻结格补上不透明底，横向滚动时压住的格子不再透出来；树形表里有子行的行不再写指向不存在详情行的 `aria-controls`；纵向合并格按行的内容盒铺开，行间线画在行下边框上时起点行不再被一次次撑高；ButtonGroup 里的分体按钮，Web Components 的下拉钮跟着组的形态与尺寸，与主按钮连成一条
+- **修复** FieldArray 表格排布里一行的格子按这一行字段的尺寸档占一条控件高并居中，复选框、开关与文本框落在同一条中线上；Web Components 的复选框与开关宿主不再占一层盒子，与 Vue / React 一样直接参与外层排布
+- **修复** 滚动锁在同一页面里允许不同目标同时锁住：外层对话框锁着布局里的滚动容器、里层对话框锁页面时（两份配置的 `scrollRoot` 不同），里层不再初始化失败、被外层盖住或点开即收起
+- **修复** 浮层层级栈的先后看嵌套：对话框和里面缺省展开的下拉、或一打开就弹出候选的输入框同一刻打开时，浮层排在对话框之上、Esc 先关浮层
+- **修复** 浮层层级栈、Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数改为页面级单例：页面上装了几份 `@xihan-ui/core`（应用与设计器各自打包）时，Vue、React 与 Web Components 的对话框、菜单、Popover 与提示仍在同一个栈里，后打开的在上面，焦点与 Esc 只作用在最上层
+- **修复** Web Components 的 `<xh-config>` 管到搬进 Portal 的浮层内容：对话框、抽屉与下拉面板里的元素照它们在原来位置取 `locale`、`size` 与文案，打开期间改配置跟着更新；浮层里的 `<xh-config>` 承接外层的主题，禁用的 Fieldset 压进组里开的浮层。`@xihan-ui/core` 新增穿过 Portal 实例壳走逻辑祖先链的 `logicalParentElement` 与 `logicallyContains`
+- **修复** Web Components 的元素插入后、或往已连接的元素里放进新部件后紧接着有代码读布局时，部件不再先露出浏览器缺省样式、再从那里播过渡到皮肤色（插进来先带一圈深色边框，过一会儿才恢复）；新建插入、移出再插回、往已连接的元素里追加或整批换掉部件都是如此
+- **修复** ContextMenu 的触发区里已有自带 Tab 位的内容（可聚焦的画布、列表）时，触发区不再另占一个 Tab 位；菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到它
+- **修复** 工具条与标签页的「更多」菜单在收起的条目换上或去掉图标、条目之间拿掉分隔线时，不再报 `NotFoundError`、整轮更新失败
+- **修复** Menubar 持有焦点的入口随数据删掉时，React 与 Web Components 的菜单栏不再整条退出 Tab 序列，与 Vue 一样由根节点留住 Tab 位
+- **修复** 列表删行时淡出的替身显示删除前的值；条目禁用随作者的修改来回切换；多行文本自动增高在无排版环境里安静跳过
+- **修复** Fieldset 整组禁用时组内 Field 的标题与说明一起变淡，Scrollbar 不再随之禁用；React 的 Tooltip、Popover、Menu、DownloadTrigger 放进禁用的 Fieldset 时一并禁用，Tooltip 跟随全局 `size`；Web Components 的 FloatButton 接上全局 `size` 与文案
+
 ## v4.2.0 (2026-10-15)
 
 JsonViewer 新增按需打开的工具条与原文着色，图表配色整体改为浅色调，并新增命令行与 MCP 服务端 `@xihan-ui/cli`。

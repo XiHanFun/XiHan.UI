@@ -1,0 +1,1 @@
+async function e(){let e={clearTrigger:`清空签名`};document.getElementById(`xh-signature-readonly`).translations=e,document.getElementById(`xh-signature-disabled`).translations=e}export{e as default};

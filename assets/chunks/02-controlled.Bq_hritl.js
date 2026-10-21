@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./react.CbNV8_UV.js";import{n}from"./toggle-group.CAuhl-Eq.js";var r=t(),i=e(),a=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];function o(){let[e,t]=(0,r.useState)(`week`);return(0,i.jsx)(n,{value:e,collection:a,disallowEmpty:!0,onValueChange:e=>t(e.value)})}export{o as default};

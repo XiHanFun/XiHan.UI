@@ -1,0 +1,22 @@
+var e=`<!-- 只读与禁用 | 只读时里面的控件可聚焦、可复制，不可修改；禁用时整组不可操作 -->
+<div id="format-input-states-mount"></div>
+
+<template id="format-input-states-template">
+  <xh-format-input read-only>
+    <div data-xh-part="root" aria-label="只读的金额格式"></div>
+  </xh-format-input>
+  <xh-format-input disabled>
+    <div data-xh-part="root" aria-label="禁用的占比格式"></div>
+  </xh-format-input>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-states-template").content.cloneNode(true);
+  const [readOnly, disabled] = fragment.querySelectorAll("xh-format-input");
+
+  // 非受控初值只在建立时读一次：赋好了再入页
+  readOnly.defaultValue = { kind: "number", decimals: 2, grouping: true };
+  disabled.defaultValue = { kind: "percent", decimals: 1 };
+  document.getElementById("format-input-states-mount").append(fragment);
+<\/script>
+`;export{e as default};

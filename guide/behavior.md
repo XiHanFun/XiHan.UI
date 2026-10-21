@@ -34,6 +34,36 @@ bridge.dispose();
 
 桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone` 与材质轴 `data-material`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
+### 逻辑父子
+
+浮层打开后内容搬进 Portal 落点，在 DOM 里已经不在来源的子树中，沿 `parentElement` 往上找不到原来包着它的作用域。视觉桥活着期间把实例壳登记为来源的逻辑子节点，`dispose()` 时撤销；三端的 Portal 都经视觉桥，所以 Vue、React 与 Web Components 的浮层都有这层关系。
+
+- `logicalParentElement(node)`：走到实例壳时返回它的来源，其余节点返回 `parentElement`，到文档根为 `null`。
+- `logicallyContains(ancestor, node)`：`node` 在 DOM 上落在 `ancestor` 里，或沿 `logicalParentElement` 穿过实例壳后落在里面；`node` 就是 `ancestor` 时也算。
+
+沿 DOM 找作用域、判定子树的一方用它们穿过 Portal。Web Components 的 `<xh-config>` 与字段集作用域就是这样管到搬进落点的浮层内容的，与 Vue / React 浮层沿组件树取配置一致；自己写的作用域元素照同一写法：
+
+```ts
+import { logicallyContains, logicalParentElement } from "@xihan-ui/core";
+
+// 从节点往上找最近的作用域，浮层里的节点也能找到包着浮层来源的那一层
+function closestScope(node: Element): Element | null {
+  for (let el: Element | null = node; el; el = logicalParentElement(el)) {
+    if (el.matches("my-scope"))
+      return el;
+  }
+  return null;
+}
+
+// 作用域变化时只通知它逻辑子树里的订阅者，含已经搬进 Portal 的
+for (const [listener, host] of subscribers) {
+  if (logicallyContains(scope, host))
+    listener();
+}
+```
+
+登记挂在 Document 上，页面上装了几份 core 时读到的是同一份。
+
 ## 在 Vue 中使用
 
 原语都是框架无关的：接收一份配置与几个元素 getter，返回一个需要自行释放的句柄。接入 Vue 只是把释放挂到作用域结束，这层包装位于 `@xihan-ui/vue/behavior`：
@@ -105,7 +135,11 @@ export interface LayerRegistry {
 - `branches`（分支）：嵌套 portal 出去的子层。菜单开在对话框中、子菜单再 portal 到 body，DOM 上它们是兄弟，逻辑上是父子。漏登记分支会使点击子菜单被判定为点击外部，父层随之关闭。
 - `surfaces`（表面）：遮罩这类点击即应关闭的元素。它属于本层，但点击它的语义是关闭而不是点击层内。
 
-默认情况下同一 Document 共用一个注册表；自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
+默认情况下同一 Document 共用一个注册表，Vue、React 与 Web Components 的浮层都登记在这里；注册表挂在 Document 上，页面上同时装了几份 `@xihan-ui/core`（应用与设计器各自打包、或装了两个版本）时取到的也是同一个。Esc 与外部点击的派发、焦点域、滚动锁与 `aria-hidden` 计数同样是每个 Document 一份。自定义注册表也会在创建时固化唯一的 `ownerDocument`，公共记录本身被冻结。不同 Document（iframe、画中画窗口）的注册表不能混用。
+
+栈的先后缺省按登记先后排；新登记的层如果开在另一层的内容里（它的根节点或某个分支，比如触发器、输入框，落在那一层的根节点之内），就排在那一层之上，不管谁先登记：对话框和里面缺省展开的下拉同一刻打开、下拉先登记时，下拉照样在上，Esc 先关它。
+
+层可以从栈中间释放。浮层逻辑收起之后还要播退场，层留在栈里直到退场播完；这期间打开的新层（比如点在下拉外面的那一下正好打开了抽屉）压在它上面，它播完退场就从新层下面释放，这是正常的先后。真正乱序的是父层先走：开在它内容里的层还压在上面时就释放它，注册表报 `core.layer.dispose-not-top`，明细里的 `nested` 列出还压着的那几层。谁开在谁里面按登记那一刻的 DOM 记下，释放时节点已经卸掉也照样判得出。
 
 视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
 `visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
@@ -116,13 +150,33 @@ popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍�
 
 `list()` 与订阅回调拿到的都是冻结状态快照，Layer 记录本身也被冻结；节点、分支和模态性仍由记录里的 getter 返回当前值。注册与释放会固定这一轮的订阅者名单并通知完所有人，单个订阅者抛错不会截断后续通知，多项异常会按订阅顺序聚合。
 
-登记与释放采用不同提交点。`register()` 的通知失败表示登记失败：注册表先恢复登记前的同一份快照，再向见过临时新状态的同一批订阅者发布补偿通知；中途退订的人仍会收到补偿，中途新增的人不会凭空收到补偿。变更通知和补偿通知都失败时，两阶段异常会一起上抛，失败登记已经分配的 layer id 不会复用。`dispose()` 会先在旧状态上报告非栈顶诊断，再永久移除 Layer、终结 cleanup，并发布通知；即使诊断输出或通知抛错，移除也不会撤销，两个阶段的异常会完整聚合。这样不会把已经释放且上层不再持有 cleanup 的 Layer 复活；重复释放保持幂等。
+登记与释放采用不同提交点。`register()` 的通知失败表示登记失败：注册表先恢复登记前的同一份快照，再向见过临时新状态的同一批订阅者发布补偿通知；中途退订的人仍会收到补偿，中途新增的人不会凭空收到补偿。变更通知和补偿通知都失败时，两阶段异常会一起上抛，失败登记已经分配的 layer id 不会复用。`dispose()` 会先在旧状态上报告乱序诊断（上面还压着开在它里面的层时），再永久移除 Layer、终结 cleanup，并发布通知；即使诊断输出或通知抛错，移除也不会撤销，两个阶段的异常会完整聚合。这样不会把已经释放且上层不再持有 cleanup 的 Layer 复活；重复释放保持幂等。
 
 订阅回调可以读取当前快照、订阅或退订，但不能同步嵌套调用 `register()`，也不能释放仍在注册表里的 Layer。嵌套状态变更会明确抛错，避免外层通知观察到一半又被另一轮变更改写；已经成功终结的 cleanup 仍可重复调用并保持无操作。
 
 注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
 
 单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
+
+## 窗口叠放序
+
+```ts
+import { getWindowStack } from "@xihan-ui/core";
+
+const stack = getWindowStack(document);
+const panel = {};
+const stop = stack.subscribe(() => render(stack.depthOf(panel)));
+stack.raise(panel); // 展开、按下、聚焦时提到最上面
+stack.remove(panel); // 收起时移出
+```
+
+`getWindowStack(doc)` 给出一份页面级的窗口叠放序，管非模态、能同时开着几个的浮动窗口谁在上面，比如浮动面板（Floating Panel）。它与层栈分开：不登记成层，不参与 Esc、外部点击、焦点域与背景失活，模态浮层照旧由层栈排在所有浮动窗口之上。
+
+- 键是调用方自己的任意对象，叠放序只记先后。`raise(key)` 把它放到最上面，还不在栈里就加进来；已经在最上面时不变、不通知。`remove(key)` 移出，不在栈里时不做事。
+- `depthOf(key)` 从上往下数：最上面是 0，往下 1、2…，增删之后序号收紧；不在栈里为 -1。叠放序每变一次通知订阅者一次，单个订阅者抛错不截断后面的订阅者。
+- 按 Document 各一份，存在 Document 上：页面上装了几份 `@xihan-ui/core`、Vue / React / Web Components 混用时，所有浮动面板排在同一个序里。
+
+浮动面板展开时提到最上面，在面板上按下或焦点进到面板里再提一次，收起或卸载时移出；定位层的私有层号 `--xh-_layer` 取抽屉层减去 `depthOf`：最上面的面板就在抽屉层上，往下每一扇减一，所以不会高过模态层，面板里弹出的下拉、提示照旧盖在面板上面。皮肤照层级链取 `--xh-floating-panel-layer` → `--xh-_layer` → `--xh-layer-drawer`，写了 `--xh-floating-panel-layer` 就按写的来，不再排叠放序。
 
 ## 消隐层
 
@@ -217,7 +271,7 @@ lock.dispose();
 
 锁定的元素由 `config.scrollRoot()` 明确决定。返回 `null`、`body`、`documentElement` 或 `scrollingElement` 都锁定页面；返回其他节点则锁定该容器，节点必须是所属 Scope Document 内已连接的原生 HTMLElement。内容容器承担滚动时应显式返回它，滚动锁不扫描页面猜测目标。
 
-同一 Document 的并行锁共享同一个规范化目标，混用不同目标会明确失败；最后一把锁释放后，下一次获取可以使用新目标。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量。初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复；业务期间主动改写的样式不会被旧锁覆盖。页面位置按 instant 行为恢复，避免受 smooth 滚动影响。
+同一 Document 里同一个规范化目标的并行锁共用一把锁、按句柄计数，最后一个句柄释放时才还原；不同目标各锁各的，比如外层对话框锁着布局里的滚动容器、里层对话框（另一份配置没给 `scrollRoot`）锁页面，两处都锁住，谁先释放都只还原自己那处。每轮保存双轴滚动位置、内联样式值与优先级及原 gutter 变量。初始化失败逆序回滚，最终释放先终结状态再尝试全部恢复；业务期间主动改写的样式不会被旧锁覆盖。页面位置按 instant 行为恢复，避免受 smooth 滚动影响。
 
 加锁期间让出来的滚动条宽度写在文档根的 `--xh-scroll-lock-gutter` 上，供 `fixed` 定位的元素让位。没让出宽度（页面没有滚动条、或已用 `scrollbar-gutter: stable` 预留）且根上原本没有这个变量时不写——根上的自定义属性一变整份文档都要重算样式，所以消费时总要带 `0px` 回退值：
 
@@ -254,6 +308,22 @@ const restore = hideOutside(() => [
 带 `data-xh-inert-exempt` 的元素默认豁免。
 
 `hideOutside` 的目标、`body`、层栈、`MutationObserver` 与 `aria-hidden` 引用计数严格属于 Scope 的同一 Document。iframe 与画中画窗口中的后挂节点会由各自 Window 的观察器重新计算；从其他窗口 adopt 进来的豁免节点也按当前所属 Document 生效。注册表或目标来自其他 Document、Document 没有活动 Window 或宿主缺少 `MutationObserver` 时会明确报错，初始化失败不会留下半施加的 `aria-hidden`。
+
+## 页面级播报
+
+```ts
+import { announce } from "@xihan-ui/core";
+
+announce("属性面板已移到左栏第 2 位");
+```
+
+`announce(message, { document? })` 以礼貌级读一句话，不打断读屏正在读的内容。整页只有一个播报区：第一次播报时在 `body` 末尾建一个视觉隐藏的 `role="status"`（`aria-live="polite"`、`aria-atomic="true"`，带 `data-xh-announcer`），之后的播报都写进它。
+
+- 每次先清空、隔一拍再写，同一句话连播两次读屏也会再读；一拍之内连着播几句只留最后一句；写下约 7 秒后清空，读屏翻到页尾时读不到过时的话。`message` 为空字符串时只清空。
+- 播报区挂在 `body` 下，不在任何组件里：模态浮层打开、背景被 `hideOutside` 藏起时它照旧可读。被宿主从 DOM 里摘掉了，下次播报时挂回去。
+- 按 Document 各一个，iframe 或画中画窗口里的播报传 `document`；页面上装了几份 `@xihan-ui/core` 也共用同一个。没有 `document`（服务端渲染）时不做事。
+
+分工：组件自己的状态变化由组件自带的播报区负责，比如剪贴板（Clipboard）复制后的「已复制」、走马灯（Carousel）的换页、审批（Approval）的批准与拒绝，读的时机和文案跟着组件走，不经这里。不属于某一个组件的页面级播报用 `announce`，比如设计器外框挪动面板后的提示、历史面板跳转后的「跳到哪一步」。
 
 ## 进出场
 
@@ -331,6 +401,21 @@ stick.retarget(); // 节点更换后解绑重绑
 ```
 
 会话线程组件使用的就是它。
+
+## 光标矩形
+
+浮层要贴着输入框里的光标弹出时（如表达式补全），把光标矩形当作虚拟锚点：
+
+```ts
+import { caretClientRect } from "@xihan-ui/core";
+
+const anchor = {
+  getBoundingClientRect: () =>
+    caretClientRect(textarea, textarea.selectionEnd ?? 0) ?? textarea.getBoundingClientRect(),
+};
+```
+
+矩形是视口坐标，宽度为 0，纵向是光标所在那一行，已经扣掉输入框自己的滚动。`<textarea>` 按当前内容宽度软换行，`<input>` 取内容区里居中的那一行。元素不在文档里或没有布局时返回 `null`。
 
 ## 其他
 

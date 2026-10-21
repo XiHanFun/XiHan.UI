@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C_GYr3Wu.js";import{n as t}from"./toggle-group.CAuhl-Eq.js";var n=e(),r=[{value:`left`,label:`左对齐`},{value:`center`,label:`居中`,disabled:!0},{value:`right`,label:`右对齐`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`center`})}export{i as default};

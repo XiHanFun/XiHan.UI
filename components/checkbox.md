@@ -256,6 +256,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 - `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
 - 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
 - `name` 与 `value` 通过隐藏字段参与原生表单。
+- 方框里的一段照标准结构铺：勾选标记，给了 `name` 再带一份表单影子；Vue / React 的组件与 Web Components 不写部件（或只写一颗原生按钮当 `root`）时生成的节点出自同一个结构函数。带文字时 label 包在方框外面，Web Components 要手写 label、root 与 text。
 
 ### 组合
 
@@ -290,6 +291,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 | --- | --- | --- | --- |
 | `checked` | `CheckboxCheckedState` |  |  |
 | `defaultChecked` | `CheckboxCheckedState` |  |  |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  | 只读：不可勾选，但仍可聚焦、仍参与提交，对比度不降低。 |
 | `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
@@ -378,6 +380,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 | --- | --- | --- |
 | `root` | `aria-checked` | 'mixed' \| 'true' \| 'false' |
 | `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |
 | `root` | `role` | 'checkbox' |

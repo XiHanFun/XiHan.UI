@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C_GYr3Wu.js";import{i as t,n,r,t as i}from"./rating.BTMY6vRX.js";var a=e();function o(){return(0,a.jsx)(t,{defaultValue:3,children:({items:e})=>(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(r,{children:`整体满意度`}),(0,a.jsx)(i,{children:e.map(e=>(0,a.jsx)(n,{value:e},e))})]})})}export{o as default};

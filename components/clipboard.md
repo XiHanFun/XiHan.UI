@@ -222,6 +222,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `value` | `string` |  | 要复制的文本；未提供时复制空串。 |
 | `timeout` | `number` |  | 复制成功后指示器保持多久（毫秒），默认 3000；&lt;=0 或非有限数表示不自动回落。 |
 | `disabled` | `boolean` |  | 禁用：复制按钮不可点击，作者调用 api.copy() 也无效（守卫在状态机层）。 |
@@ -316,7 +317,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `copy-trigger` | `aria-busy` | 'true' \| undefined |
 | `copy-trigger` | `aria-disabled` | 'true' \| undefined |
 | `copy-trigger` | `aria-label` | translations.copy |

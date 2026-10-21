@@ -150,6 +150,27 @@ weeksInMonth(PlainDate.from("2026-08-01"), "en-US"); // 6
 
 边界函数对 `PlainDateTime` 只挪日期，保留时间部分。
 
+## 数据里的日期值与分桶
+
+报表、图表与列表拿到的日期常是 ISO 字符串、毫秒数与 `Date` 混在一起，字符串还可能只写到年或月。下面三个函数把它们统一读成某个时区里的墙上时间：
+
+```ts
+import { bucketKey, wallClock } from "@xihan-ui/core/date";
+
+bucketKey("2026-10-16", "quarter"); // '2026-Q4'
+bucketKey(Date.UTC(2026, 9, 15, 20), "day", { timeZone: "Asia/Shanghai" }); // '2026-10-16'
+wallClock("2026-10", "datetime"); // '2026-10-01T00:00:00.000'
+```
+
+| 导出 | 说明 |
+| --- | --- |
+| `wallClockParts(value, { timeZone? })` | 年月日时分秒毫秒各部分，字符串没写到的部分为 null |
+| `wallClock(value, 'date' \| 'datetime', { timeZone? })` | 可按字符串比较的墙上时间，没写到的部分取最小值 |
+| `bucketKey(value, unit, { timeZone? })` | 分桶键：`2026`、`2026-Q4`、`2026-10`、`2026-W42`（ISO 周年与周）、`2026-10-16`、`2026-10-16T08`，按字符串排序即按时间排序 |
+| `DATE_BUCKET_UNITS` | 全部分桶粒度，由粗到细 |
+
+不带偏移的字符串按写下的墙上时间取，与时区无关；带 `Z` 或偏移（`+08`、`+0800`、`+08:00`）的字符串、毫秒数与 `Date` 是时刻，换算到 `timeZone` 的墙上时间，不给时取运行环境所在的时区。`null`、`undefined`、`NaN` 与无效 `Date` 得 null。字符串不合法、毫秒数不是有限数、时区不认识、或字符串没写到分桶所需的部分时抛 `RangeError`，其它类型的值抛 `TypeError`。
+
 ## 格式化
 
 ```ts

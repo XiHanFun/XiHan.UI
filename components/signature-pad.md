@@ -126,7 +126,7 @@ import {
     <XhSignaturePadRoot
       name="signature"
       required
-      :translations="{ statusEmpty: '尚未签名', statusSigned: '已签名' }"
+      :translations="{ clearTrigger: '清空签名', statusEmpty: '尚未签名', statusSigned: '已签名' }"
     >
       <XhSignaturePadLabel>验收签名（必填）</XhSignaturePadLabel>
       <XhSignaturePadControl>
@@ -179,8 +179,9 @@ import {
     .getElementById("xh-signature-form")
     .addEventListener("submit", (event) => event.preventDefault());
 
-  // 文案是对象，只走 property；属性装不下它
+  // 文案是对象，只走 property；属性装不下它。钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
   document.getElementById("xh-signature-form-pad").translations = {
+    clearTrigger: "清空签名",
     statusEmpty: "尚未签名",
     statusSigned: "已签名",
   };
@@ -258,11 +259,14 @@ import {
   XhSignaturePadPath,
   XhSignaturePadRoot,
 } from "@xihan-ui/vue";
+
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { clearTrigger: "清空签名" };
 </script>
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 16px; max-inline-size: 22rem">
-    <XhSignaturePadRoot read-only>
+    <XhSignaturePadRoot read-only :translations="translations">
       <XhSignaturePadLabel>只读</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
@@ -270,7 +274,7 @@ import {
       </XhSignaturePadControl>
       <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
     </XhSignaturePadRoot>
-    <XhSignaturePadRoot disabled>
+    <XhSignaturePadRoot disabled :translations="translations">
       <XhSignaturePadLabel>禁用</XhSignaturePadLabel>
       <XhSignaturePadControl>
         <XhSignaturePadGuide />
@@ -284,7 +288,7 @@ import {
 
 ```html
 <div style="display: flex; flex-direction: column; gap: 16px; max-inline-size: 22rem">
-  <xh-signature-pad read-only>
+  <xh-signature-pad id="xh-signature-readonly" read-only>
     <div data-xh-part="root">
       <span data-xh-part="label">只读</span>
       <svg data-xh-part="control">
@@ -294,7 +298,7 @@ import {
       <button data-xh-part="clear-trigger">清空</button>
     </div>
   </xh-signature-pad>
-  <xh-signature-pad disabled>
+  <xh-signature-pad id="xh-signature-disabled" disabled>
     <div data-xh-part="root">
       <span data-xh-part="label">禁用</span>
       <svg data-xh-part="control">
@@ -305,6 +309,13 @@ import {
     </div>
   </xh-signature-pad>
 </div>
+
+<script type="module">
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  const translations = { clearTrigger: "清空签名" };
+  document.getElementById("xh-signature-readonly").translations = translations;
+  document.getElementById("xh-signature-disabled").translations = translations;
+</script>
 ```
 
 ### 取出签名
@@ -332,7 +343,13 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 </script>
 
 <template>
-  <XhSignaturePadRoot v-slot="{ empty }" style="max-inline-size: 22rem" @draw-end="onDrawEnd">
+  <!-- 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文 -->
+  <XhSignaturePadRoot
+    v-slot="{ empty }"
+    :translations="{ clearTrigger: '清空签名' }"
+    style="max-inline-size: 22rem"
+    @draw-end="onDrawEnd"
+  >
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />
@@ -369,6 +386,8 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
   const host = document.getElementById("xh-signature-export");
   const submit = document.getElementById("xh-signature-submit");
   const size = document.getElementById("xh-signature-size");
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  host.translations = { clearTrigger: "清空签名" };
   // 清空与表单重置同样发 draw-end，一个监听器就够，不必去嗅探清空按钮
   host.addEventListener("draw-end", (event) => {
     size.textContent = `SVG ${event.detail.svg.length} 字节`;
@@ -392,10 +411,13 @@ import {
   XhSignaturePadRoot,
   XhSignaturePadUndoTrigger,
 } from "@xihan-ui/vue";
+
+// 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文
+const translations = { undoTrigger: "撤销上一笔", redoTrigger: "重做一笔", clearTrigger: "清空签名" };
 </script>
 
 <template>
-  <XhSignaturePadRoot style="max-inline-size: 22rem">
+  <XhSignaturePadRoot :translations="translations" style="max-inline-size: 22rem">
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />
@@ -411,7 +433,7 @@ import {
 ```
 
 ```html
-<xh-signature-pad>
+<xh-signature-pad id="xh-signature-history">
   <div data-xh-part="root" style="max-inline-size: 22rem">
     <svg data-xh-part="control">
       <line data-xh-part="guide"></line>
@@ -425,6 +447,15 @@ import {
     </div>
   </div>
 </xh-signature-pad>
+
+<script type="module">
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  document.getElementById("xh-signature-history").translations = {
+    undoTrigger: "撤销上一笔",
+    redoTrigger: "重做一笔",
+    clearTrigger: "清空签名",
+  };
+</script>
 ```
 
 ### 回显已存的签名
@@ -465,7 +496,13 @@ function onValueChange(details: { value: SignaturePadValue }) {
 </script>
 
 <template>
-  <XhSignaturePadRoot :default-value="saved" style="max-inline-size: 22rem" @value-change="onValueChange">
+  <!-- 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文 -->
+  <XhSignaturePadRoot
+    :default-value="saved"
+    :translations="{ undoTrigger: '撤销上一笔' }"
+    style="max-inline-size: 22rem"
+    @value-change="onValueChange"
+  >
     <XhSignaturePadControl>
       <XhSignaturePadGuide />
       <XhSignaturePadPath />
@@ -491,6 +528,8 @@ function onValueChange(details: { value: SignaturePadValue }) {
 <script type="module">
   const host = document.getElementById("xh-signature-restore");
   const count = document.getElementById("xh-signature-restore-count");
+  // 钮上的字要包含在读屏名里：名字取 translations，给一句以可见字开头的中文；对象只走 property
+  host.translations = { undoTrigger: "撤销上一笔" };
   function line(points) {
     return { points: points.map(([x, y]) => ({ x, y, pressure: 0.5 })) };
   }
@@ -538,10 +577,11 @@ function onValueChange(details: { value: SignaturePadValue }) {
 - 标签走字段标签档（14 / 500 / `--xh-fg-default`），贴画布 `--xh-space-1`；状态句是说明角色（13 / `--xh-fg-muted`）。
 - 清空按钮走 Action Control text 档 sm：缺省 `outline` 描边，白底承载阶梯悬停 100 → 按下 200，按下缩放并换底；空画布时只把静息前景压淡，按钮照常可按。
 - 撤销与重做按钮与清空按钮同一身份；没有可撤销、可重做的一步时投影 `aria-disabled` 与家族置灰面，焦点仍留在钮上。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是画布（基准线与笔迹）、清空按钮与状态，给了 `name` 再带表单影子；清空按钮的字与状态句取 translations。撤销与重做按钮不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
-- 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只负责画布。
+- 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只负责画布。直接放进字段时，字段的标题并进画布的名字，说明与错误文案进描述链；点字段标题，焦点交给签名板里第一颗可聚焦的按钮（画布本身不可聚焦，一笔都没有时按钮都不可用，焦点不动）。
 - 放入[表单](./form)，提供 `name` 后随表单提交与重置。
 - 与[对话框](./dialog)搭配做签名确认：确认按钮的可用状态读取 `empty`。
 
@@ -593,6 +633,8 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整块不可交互：不响应落笔，清空、撤销与重做按钮也不可按下。 |
 | `readOnly` | `boolean` |  | 只读：已绘制的签名照常显示，但不可修改。 |
 | `required` | `boolean` |  |  |
@@ -625,6 +667,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSignaturePadRoot` | `default` | `SignaturePadRootSlotProps` |  |
+| `XhSignaturePadRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -632,6 +675,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhSignaturePadRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhSignaturePadRoot` | `children` | `SlotChildren<SignaturePadRootSlotProps>` |  |  |
 
 ### 状态
@@ -659,6 +703,7 @@ function onValueChange(details: { value: SignaturePadValue }) {
 | `canUndo` | `boolean` | 有可撤销的一步：上一笔、上一次清空或上一次重做。 |
 | `canRedo` | `boolean` | 有被撤销、还能重做的一步。 |
 | `statusText` | `string` | 是否已签名的文案，写入 status 部件；适配器在作者未自行编写文字时把它填入节点。 |
+| `translations` | `SignaturePadTranslations` | 合上作者覆盖后的文案。 |
 | `toSvg` | `() => string` | 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 |
 | `clear` | `() => void` |  |
 | `undo` | `() => void` | 撤销最近一步（一笔、一次清空或一次重做）；没有可撤销的就什么都不做。 |
@@ -693,8 +738,8 @@ function onValueChange(details: { value: SignaturePadValue }) {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `control` | `aria-label` | translations.label |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'img' |
 | `guide` | `aria-hidden` | 'true' |
 | `undo-trigger` | `aria-disabled` | 'true' \| undefined |

@@ -102,6 +102,14 @@ interface DomSnapshot {
 
 键盘测试只能通过补充用例通过，不能修改分母。
 
+### 全局配置与逐实例等价
+
+`runConfigParity` 用同一批规格核对全局配置：组件根上声明了 `size`、`locale`、`disabled`、`translations` 中的哪几个，就把它们各写一次在实例上、再经全局配置（Vue 的 `provideXhConfig`、React 的 `XhConfigProvider`、Web Components 外包的 `<xh-config>`）给一次，两次渲出的文档必须逐字相同。哪些组件声明了哪些键取公开面基线的 `componentProps`；文案用英文包每一条换成带键名的标记。作者写结构与组件铺标准结构各比一次。`size` 同名不同义的组件（`SIZE_IS_NOT_AXIS`）不比 size，不吃作用域禁用的组件（`DISABLED_IS_NOT_SCOPED`，即滚动条）不比 disabled。
+
+组件没把全局配置接进来时，全局值到不了它，两边在这里分岔：没经 `withXhConfig`（Web Components 是 `this.configured`）、桶名写错、读了原始 props，或者 React 交出去的 props 里缺了那个键（React 的 props 只有作者写了的键，全局值只垫进已有的键）。这一项比整份文档而不是 `DomSnapshot`：文案与按 locale 写的数字只在文本里。夹具看不出某个键（收起的浮层）时无从比较，按通过处理；还没定论的分歧登记在豁免表里，两边一致后豁免判过期。
+
+Web Components 有两处与另两端不同：`<xh-config>` 不收 `disabled`，作用域禁用由字段集这类作用域经 `xhConfig` 沿祖先链压下来，harness 给外包的那一层补上 `disabled` 代替字段集；写在实例上的值会落成宿主的同名 attribute，那是作者写的标记，比较前从宿主的开头标签里去掉，外包的 `<xh-config>` 也不进快照。
+
 ## 无障碍
 
 把一致性套件的 fixture 挂载到真实 Chromium，对初始态与各用例终态运行 axe，终态按形态签名去重。
@@ -227,7 +235,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 134 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 135 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -290,7 +298,7 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-49 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+72 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
 
 
 ## 相关

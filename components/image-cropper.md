@@ -374,6 +374,8 @@ import {
 } from "@xihan-ui/vue";
 
 const handles = ["nw", "ne", "se", "sw"] as const;
+// 两颗钮写的字就是它们的读屏名：名字取 translations，与钮上的字给成同一句
+const translations = { flipHorizontal: "左右翻转", flipVertical: "上下翻转" };
 </script>
 
 <template>
@@ -382,6 +384,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
     alt="山谷与湖泊风景图"
     :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
     :min-width="40"
+    :translations="translations"
     style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
@@ -404,6 +407,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ```html
 <xh-image-cropper
+  id="image-cropper-flip"
   src="/images/image-cropper-landscape.svg"
   alt="山谷与湖泊风景图"
   default-value="96,64,448,280"
@@ -425,6 +429,14 @@ const handles = ["nw", "ne", "se", "sw"] as const;
     </div>
   </div>
 </xh-image-cropper>
+
+<script type="module">
+  // 两颗钮写的字就是它们的读屏名：名字取 translations，与钮上的字给成同一句；对象只走 property
+  document.getElementById("image-cropper-flip").translations = {
+    flipHorizontal: "左右翻转",
+    flipVertical: "上下翻转",
+  };
+</script>
 ```
 
 ### 导出裁切结果
@@ -607,6 +619,7 @@ function exportAvatar(toCanvas: (options?: { width?: number }) => HTMLCanvasElem
 | `flip` | `ImageCropperFlip` |  | 翻转，默认两条轴都不翻。提供即受控：setFlip / toggleFlip 只发 onFlipChange。 |
 | `defaultFlip` | `ImageCropperFlip` |  |  |
 | `shape` | `ImageCropperShape` |  | 裁切框外形，默认 rect。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 禁用：裁切框与把手退出 Tab 序列，指针与键盘都不可修改，也不参与表单提交。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦与被读屏朗读，不可修改。 |
 | `name` | `string` |  | 表单字段名；提供后才参与提交，值序列化为 `x,y,width,height`。 |
@@ -719,7 +732,7 @@ function exportAvatar(toCanvas: (options?: { width?: number }) => HTMLCanvasElem
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `crop-area` | `aria-disabled` | 'true' \| 'false' |
-| `crop-area` | `aria-label` | label.cropArea |
+| `crop-area` | `aria-label` | props.ariaLabel |
 | `crop-area` | `role` | 'application' |
 | `crop-handle` | `aria-disabled` | 'true' \| 'false' |
 | `crop-handle` | `aria-label` | label.handle(position) |

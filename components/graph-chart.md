@@ -1178,13 +1178,12 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
 | `legend-swatch` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
-| `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
-- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
+- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个节点是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「名字, 数值, 连线数」），务必按本地语言改写。连线与箭头对读屏隐藏，也不占焦点：它们全部在数据表里。
 - 节点在 DOM 里按阅读序排列：树与径向树是深度优先的先序，其余按分组再按名字，读屏逐个念时有稳定的次序。
 - 绘图区只占一个 Tab 位，焦点落在节点上：方向键朝那个方向左右各 45° 的锥形里找离得近、偏得少的节点，Home / End 到阅读序的头尾；`zoom` 开着时 + / − / 0 缩放。焦点环画在节点之外，只在键盘聚焦时出现。

@@ -800,6 +800,7 @@ function denyAll(): void {
 | `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
 | `onDecision` | `(details: ApprovalDecisionDetails) => void` |  |  |
 | `onGrantedScopesChange` | `(details: ApprovalScopesChangeDetails) => void` |  |  |
@@ -931,8 +932,8 @@ function denyAll(): void {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-describedby` | `description` 部件的 id |
-| `root` | `aria-labelledby` | `title` 部件的 id |
+| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `pending-indicator` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
@@ -1084,7 +1085,7 @@ function denyAll(): void {
 | `--xh-approval-note-py` | `note` | `padding-block` | `default` | `--xh-space-1_5` | approval 的 note 部件 padding-block 覆盖槽。 |
 | `--xh-approval-note-radius` | `note` | `border-radius` | `default` | `--xh-shape-control` | approval 的 note 部件 border-radius 覆盖槽。 |
 | `--xh-approval-p` | `pending-indicator`<br>`root` | `inset-block-start`<br>`inset-inline-end`<br>`padding` | `default` | `--xh-_approval-p` | approval 的 pending-indicator、root 部件 inset-block-start、inset-inline-end、padding 覆盖槽。 |
-| `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone` | approval 的 pending-indicator 部件 background 覆盖槽。 |
+| `--xh-approval-pending-indicator-color` | `pending-indicator` | `background` | `default` | `--xh-_tone-soft` | approval 的 pending-indicator 部件 background 覆盖槽。 |
 | `--xh-approval-pending-indicator-radius` | `pending-indicator` | `border-radius` | `default` | `--xh-shape-circle` | approval 的 pending-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-approval-pending-indicator-size` | `pending-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | approval 的 pending-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-approval-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | approval 的 root 部件 border-radius 覆盖槽。 |

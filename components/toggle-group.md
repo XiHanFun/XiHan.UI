@@ -47,7 +47,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 加粗的是必需部件。
 
-`data-scope="toggle-group"`：**`root`** · **`item`** · `hidden-input`
+`data-scope="toggle-group"`：**`root`** · `item` · `hidden-input`
 
 ## 示例
 
@@ -381,6 +381,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 - 使用 roving tabindex 管理组内键盘导航。
 - `disallowEmpty` 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
+- 不写结构时按标准结构铺出整组（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`）：每一条一个按钮，末尾一份表单影子，给了 `name` 才参与提交。Web Components 里某一条的内容可以写在宿主的直接子节点上接管：`slot="item:<值>"`。
 
 ### 组合
 
@@ -418,7 +419,11 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `value` | `ToggleGroupValue` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `ToggleGroupValue` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即替换其余。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
+| `readOnly` | `boolean` |  | 只读：条目仍可聚焦、方向键照常走，点击与 Space / Enter 不改选中，也不进按压面。 |
+| `invalid` | `boolean` |  | 校验失败标注：单选组写 aria-invalid；多选是 role=group，只写 data-invalid。 |
+| `required` | `boolean` |  | 必填：单选组写 aria-required，表单影子写原生 required；多选只写 data-required 与原生 required。 |
 | `disallowEmpty` | `boolean` |  | 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。 默认 false（可以点击为无选中）。 |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
@@ -475,7 +480,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 **事件**：`VALUE.SET` · `ITEM.TOGGLE` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET` · `PRESS.START` · `PRESS.END`
 
-**判据**：`canPress`
+**判据**：`canPress` · `canToggle`
 
 ### connect API
 
@@ -488,6 +493,9 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `orientation` | `Orientation` |  |
 | `separators` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
@@ -518,12 +526,17 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-invalid` | undefined \| 'true' \| 'false' |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-orientation` | undefined \| props.orientation |
+| `root` | `aria-readonly` | undefined \| 'true' \| 'false' |
+| `root` | `aria-required` | undefined \| 'true' \| 'false' |
 | `root` | `role` | 'group' \| 'radiogroup' |
 | `item` | `aria-checked` | undefined \| 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-pressed` | 'true' \| 'false' \| undefined |
 | `item` | `role` | undefined \| 'radio' |
+| `hidden-input` | `aria-hidden` | 'true' |
 
 ## 样式参考
 
@@ -541,12 +554,17 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-full-width` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
+| `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'on' \| 'off' |
 | `item` | `data-xh-action-control` | '' |
 | `item` | `data-xh-action-display` | 'always' |
@@ -561,11 +579,12 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toggle-group-item-bg` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`focus-visible`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-toggle-group-border-invalid` | `root` | `border` | `invalid` | `--xh-border-invalid` | toggle-group 的 root 部件 border 覆盖槽。 |
+| `--xh-toggle-group-item-bg` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_toggle-group-item-bg-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-disabled` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-bg-muted` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_toggle-group-item-bg-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toggle-group-item-bg-on` | `item` | `--xh-ink-surface`<br>`background-color` | `focus-visible`<br>`state=on`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-toggle-group-item-bg-on` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`readonly`<br>`state=on`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-on-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-bg-on-active` | toggle-group 的 item 部件 background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-on-disabled` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`state=on`<br>`xh-ink-surface` | `--xh-_toggle-group-item-bg-on` | toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-group-item-bg-on-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_toggle-group-item-bg-on-hover` | toggle-group 的 item 部件 background-color 覆盖槽。 |
@@ -582,7 +601,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `--xh-toggle-group-item-gap` | `item` | `gap` | `default` | `--xh-_toggle-group-gap` | toggle-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`invalid`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-highlight-on` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | toggle-group 的 root 部件 border 覆盖槽。 |
 | `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` | toggle-group 的 root 部件 background 覆盖槽。 |

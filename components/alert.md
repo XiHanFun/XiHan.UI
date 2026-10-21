@@ -405,6 +405,7 @@ import {
 | `open` | `boolean` |  | 受控显隐；未提供该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
 | `onOpenChange` | `(details: AlertOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时不写 aria-labelledby；description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
 | `translations` | `Partial<AlertTranslations>` |  |  |
 
 ### 事件
@@ -476,8 +477,8 @@ import {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-atomic` | 'true' |
-| `root` | `aria-describedby` | `description` 部件的 id |
-| `root` | `aria-labelledby` | `title` 部件的 id |
+| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
+| `root` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `root` | `aria-live` | live |
 | `root` | `role` | role |
 | `indicator` | `aria-hidden` | 'true' |

@@ -11,10 +11,21 @@
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 144 个 xh-* 元素
+defineXhElements(); // 注册全部 147 个 xh-* 元素
 ```
 
 主入口的 `import` 本身不注册，必须显式调用这一行。注册是幂等的：同版本重复调用直接返回；同标签不同版本，或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
+
+只用到其中几个元素时逐个注册。每个元素类都从 `./define` 导出，`defineXhElement` 与全量注册走同一张注册表，幂等与冲突规则相同；标签与元素类由 `XhElementTagMap` 约束，写错一侧类型检查不通过：
+
+```ts
+import { defineXhElement, XhStatisticElement, XhTableElement } from "@xihan-ui/web-components/define";
+
+defineXhElement("xh-statistic", XhStatisticElement);
+defineXhElement("xh-table", XhTableElement);
+```
+
+标记里嵌套的其它 `xh-*` 元素要各自注册，没注册的标签只是普通的未知元素。元素自己接线的内嵌部件（日期选择器里的日期输入与日历、选择器里的标签、侧边导航的名称提示）不在此列：它们的状态机跑在宿主身上，不用注册对应的元素。
 
 背景层单独注册，不引入就不会把 WebGL 引擎打进包：
 
@@ -68,6 +79,22 @@ Shadow DOM 会封闭结构：无法更换标签、无法插入自定义节点、
 代价是需要自行编写结构，因此必备部件的校验必须存在。
 :::
 
+### 不写结构：按标准结构生成
+
+有标准结构的元素（目前是热力图、选择器、切换按钮组、组合框、文本框、数字输入框、开关、标签输入框、日期输入框、手风琴、标签页、树选择、菜单、单选组、复选组、密码框、滑块、评分、颜色输入框、分隔线、卡片、复选框、分格输入、字段组、签名板、字段、取色器、穿梭框、级联选择、列表框、右键菜单、标签组、菜单栏、提及、颜色色块选择器、命令面板、导航菜单、面包屑与文件上传，逐批扩到表单控件与容器）可以不写结构，元素按组件的标准结构自己生成部件树。标准结构与 Vue / React 不写插槽时的缺省树出自同一个结构函数，三端的 DOM 一致。
+
+```html
+<xh-heatmap start-date="2024-01-01" end-date="2024-03-31"></xh-heatmap>
+```
+
+生成按下面几条规则：
+
+- 宿主里没有作者写的部件节点时连 root 一起生成；只写了 `root` 时生成在它里面。
+- 作者写了 root 以外的部件，整棵结构就归作者，元素撤掉生成过的节点，与手写结构的写法完全一样。少数部件可以单独接管：写在 root 里，其余照常生成，如热力图的 `tooltip`、`empty`、`legend`。各组件页写明有哪些。能接管的只有排在 root 末尾或经 Portal 脱离文档流的部件，作者写的这些部件由元素按缺省结构的先后排到 root 末尾，DOM 序与 Tab 序和不写时一致。
+- 生成的节点带 `data-xh-gen="structure"`，按身份复用：数据变化时只改动变了的节点，换序时焦点所在的节点照旧有焦点。经 Portal 搬走的浮层节点留在落点，收起后由 Portal 放回原位。段与段之间的分隔符这类装饰文字生成为只装这段文字的 `span`，不带部件名。
+- 部件里要放作者内容的（标签页的面板、手风琴的内容等），作者在宿主的直接子节点上写 `slot`，元素把它搬进对应的部件。单个的部件写 `slot="<名>"`，按条目重复的部件写 `slot="<名>:<条目键>"`。搬进去以后内容归作者，元素不改写；对应的部件没了时节点回到宿主，由作者自己移除。
+- 结构里组合了另一个库内组件的实例（如条件行里的下拉），元素生成那个组件的元素（`<xh-select>`），由它按自己的标准结构生成内部结构。外层给它的数据按 property 赋值（数组、对象不写成 attribute），值没变就不重设；外层要接的事件由外层监听，不会冒出外层宿主。宿主元素类在 `static dependencies` 里登记这些组件，按需注册宿主（`defineXhElement`）时连带注册。委派给内嵌组件、只在自己的 Light DOM 里接线的部件不在其列，不连带注册。开发期生成了还没注册的库内元素时报 `wc.unregistered-element`；可接管部件没排在末尾的结构报 `wc.structure-takeover-order`，这一条是组件自身的问题。
+
 ## 部件契约校验
 
 元素接线时比对作者编写的 DOM 与组件解剖，三种问题报告到[诊断通道](../guide/diagnostics)：
@@ -87,7 +114,7 @@ Shadow DOM 会封闭结构：无法更换标签、无法插入自定义节点、
 属性遵循自定义元素惯例：kebab-case 的 HTML attribute ↔ camelCase 的 JS property。
 
 ```html
-<xh-dialog default-open modal="false" role="alertdialog">
+<xh-dialog default-open modal="false" dialog-role="alertdialog">
 ```
 
 ```ts
@@ -148,9 +175,112 @@ document.querySelector("xh-dialog")
 
 自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
+## 编写自己的元素
+
+`@xihan-ui/web-components/authoring` 公开库内元素所用的那套基础件，供设计器等第三方编写同样形态的 Light DOM 元素：自研的响应式基类、布尔属性的三态转换器、按 key 复用生成节点、事件派发、元素注册、读取全局配置与文案的控制器，以及元素自己当配置作用域时用的接口与变更通知。这个子入口不含库内的元素类，Node 下可以安全 import。
+
+```ts
+import type { KeyedChildren, PropertyValues } from "@xihan-ui/web-components/authoring";
+import {
+  BOOLEAN_CONVERTER,
+  createGeneratedElement,
+  emitEvent,
+  reconcile,
+  registerElement,
+  setAttributes,
+  setText,
+  XhConfigController,
+  XhReactiveElement,
+} from "@xihan-ui/web-components/authoring";
+
+interface Step {
+  id: string;
+  label: string;
+}
+
+class XhStepList extends XhReactiveElement {
+  static override properties = {
+    steps: { attribute: false },
+    compact: { converter: BOOLEAN_CONVERTER },
+  };
+
+  declare steps: Step[] | undefined;
+  declare compact: boolean | undefined;
+
+  private readonly config = new XhConfigController(this);
+  private readonly keys: KeyedChildren = new WeakMap();
+
+  protected override update(changed: PropertyValues): void {
+    super.update(changed);
+    const t = this.config.translations("xh-step-list", { empty: "No steps" });
+    this.dataset.empty = t.empty;
+    reconcile(this, this.steps ?? [], this.keys, step => step.id, (step, reuse) => {
+      const node = reuse ?? createGeneratedElement(this.ownerDocument, "button", { type: "button" });
+      setAttributes(node, { "data-compact": this.compact });
+      setText(node, step.label);
+      node.onclick = () => emitEvent(this, "step-select", { id: step.id });
+      return node;
+    });
+  }
+}
+
+registerElement("xh-step-list", XhStepList);
+```
+
+| 导出 | 说明 |
+| --- | --- |
+| `XhReactiveElement` | 响应式基类。渲染根就是元素自身（Light DOM）；`static properties` 声明字段，声明键只认 `attribute`（`false` 不观察，字符串指定属性名，缺省为字段名转小写）、`type`（`Boolean` / `Number` / `Object` / `Array`，其余按字符串）与 `converter`；布尔属性写 `converter: BOOLEAN_CONVERTER`，不写 `type: Boolean`（后者按 HTML 原生规矩，`="false"` 也是真）；属性单向转成字段，不回写；同一拍里的多次写入合并成一轮更新；生命周期为 `update(changed)`（覆盖时必须调 `super.update(changed)`）、`firstUpdated`、`updated`，另有 `requestUpdate()`、`updateComplete` 与控制器；元素升级前就赋在实例上的值在连上文档时经访问器写回，先写声明的字段，再按赋值次序写子类手写的带 set 的访问器 |
+| `BOOLEAN_CONVERTER` | 布尔属性的三态转换器，与库内元素同一个：没写这个 attribute 为 `undefined`（交给缺省值），写 `"false"` 为 `false`，其余写法（空串、`"true"` 与别的值）为 `true`。缺省为真的开关因此写得出「关」，移除 attribute 回到缺省 |
+| `reconcile(parent, items, keys, keyOf, make, mark?)` | 按 key 把一组节点排进父节点：已有的复用、缺的新建、多的移除，次序与输入一致；作者写在父节点里的节点不动，生成的节点排在它们之后。给了 `mark` 时只认、只摘生成标记等于它的节点，同一父节点里另一套生成逻辑写的节点不动 |
+| `createGeneratedElement(doc, tag, attributes?, children?)` / `generatedChildren(parent)` | 建一个带生成标记（`GEN_ATTR`，即 `data-xh-gen`）的 HTML 节点，可同时按属性表写上属性、依次放入子节点（字符串作为文本） / 取父节点里生成的直接子节点（给了第二个参数时只取生成标记等于它的）；SVG 节点用 `createElementNS(SVG_NS, tag)` 建好后自己加 `GEN_ATTR` |
+| `createAuthoredElement(doc, tag, attributes?, children?)` | 同上，但不带生成标记，节点就像作者手写的：用代码搭库内元素的 Light DOM 结构（`data-xh-part` 角色节点、空状态与提示框里的自定义内容）时用它。带生成标记的子节点会被宿主当作自己生成的节点——补结构时收走，判断有没有作者内容时略过 |
+| `setAttributes(element, attributes)` / `setText(element, text)` | 按属性表更新属性、改写文本，值没变时不写。属性表 `ElementAttributes` 里 `false` 与 `undefined` 删除该属性，`true` 写成空串。库内元素监听子树里角色节点的增删与声明属性的改写来重新接线，每轮更新都重写同样的值会白白触发重新接线 |
+| `emitEvent(target, type, detail, { cancelable? })` | 与库内元素同一约定派发 `CustomEvent`（`bubbles: true, composed: true`），返回 `false` 表示被 `preventDefault` |
+| `registerElement(tag, ctor)` | 注册元素：同一构造器重复注册不报错，标签被别的构造器占用时抛错，没有 `customElements` 的环境跳过；不写任何全局登记表 |
+| `XhConfigController` | 元素连上文档后订阅所在子树的配置，`setXhConfig` 或祖先 `<xh-config>` 变化时自动请求更新；`config`、`locale` 现解析，`translations(component, defaults, own?)` 按 defaults < 配置里那一桶 < 元素自己的顺序叠加，值为 `undefined` 的键视为没给 |
+| `XhConfigScope` / `XhConfig` | 配置作用域的接口与配置的类型：元素带一个 `xhConfig` 字段就是一层作用域（`<xh-config>` 也是这样认的），子树里的元素沿逻辑祖先链逐层并入它；同一个作用域要对子树里不同节点给不同配置时再实现 `xhConfigFor(node)` |
+| `notifyXhConfigChange(root?)` | 配置变了通知订阅者重画。自定义元素当作用域时，改了它的 `xhConfig` 就调 `notifyXhConfigChange(this)`：它子树里已渲染的元素（含搬进 Portal 的浮层内容）照新配置重画，不调则照旧。不给 `root` 时通知整页 |
+
+第三方元素的文案与内建组件走同一条路：元素自带语言包，形状与内建语言包相同，应用合并后交给全局配置，或用 `<xh-config>` 只作用于一棵子树。
+
+```ts
+import { mergeXhConfig, setXhConfig } from "@xihan-ui/web-components";
+import { zhCN } from "@xihan-ui/web-components/locale";
+
+const stepListZhCN = { translations: { "xh-step-list": { empty: "暂无步骤" } } };
+
+setXhConfig(mergeXhConfig(zhCN, stepListZhCN));
+```
+
+文案桶的类型用声明合并补进 `XhTranslationOverrides`：
+
+```ts
+declare module "@xihan-ui/web-components" {
+  interface XhTranslationOverrides {
+    "xh-step-list"?: { empty?: string };
+  }
+}
+```
+
+元素自己也能当一层配置作用域，比如设计器单独设语言：声明 `xhConfig` 字段，改了它就调 `notifyXhConfigChange(this)`。
+
+```ts
+import type { XhConfig, XhConfigScope } from "@xihan-ui/web-components/authoring";
+import { notifyXhConfigChange, XhReactiveElement } from "@xihan-ui/web-components/authoring";
+
+class XhMyDesigner extends XhReactiveElement implements XhConfigScope {
+  xhConfig: XhConfig = {};
+
+  setLanguage(pack: XhConfig): void {
+    this.xhConfig = pack;
+    notifyXhConfigChange(this);
+  }
+}
+```
+
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），包含 144 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），包含 147 个元素的标签名、属性、事件、CSS part。编辑器与框架的自定义元素支持可以直接读取它获得补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重新生成后比对，修改元素后未重新生成会被拦截。
 

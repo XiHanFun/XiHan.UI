@@ -703,6 +703,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 - `onValueComplete` 在填满时发出一次，用于自动提交。
 - `group` 与 `separator` 把格子分段排列（123-456），下标仍按文档序计算。
 - `readOnly` 让格子只能查看与复制，`required` 为每格补上原生必填。
+- 不写结构时三端照同一份标准结构铺出标题、一段装下 `length` 个格子的分段，给了 `name` 再带表单影子；要分段（123-456）时手写结构。
 
 ### 组合
 
@@ -734,6 +735,8 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 逐格的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `length` | `number` |  | 格数，默认 6。值的长度恒归一到它。 |
@@ -771,6 +774,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
+| `XhPinInputRoot` | `label` | — | 不写默认插槽时标题的内容，代替 label 文字。 |
 
 ### React 适配器 props
 
@@ -779,6 +783,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhPinInputInput` | `index` | `number \| string` | 是 | 下标由作者声明；兼收字符串，与另外两个适配器读取的是同一份声明。 |
+| `XhPinInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhPinInputRoot` | `children` | `SlotChildren<PinInputRootSlotProps>` |  |  |
 
 ### 状态
@@ -835,7 +840,8 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-label` | props.ariaLabel |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
 | `input` | `aria-label` | label.input(index + 1, length) |

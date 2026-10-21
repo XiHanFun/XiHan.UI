@@ -1,0 +1,19 @@
+var e=`<!-- 限定种类 | kinds 只留数字与百分比；连同「不设格式」不超过三项时，种类改用分段切换 -->
+<div id="format-input-kinds-mount"></div>
+
+<template id="format-input-kinds-template">
+  <xh-format-input>
+    <div data-xh-part="root" aria-label="占比格式"></div>
+  </xh-format-input>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-kinds-template").content.cloneNode(true);
+  const input = fragment.querySelector("xh-format-input");
+
+  // 非受控初值只在建立时读一次：赋好了再入页
+  input.kinds = ["number", "percent"];
+  input.defaultValue = { kind: "percent", decimals: 1 };
+  document.getElementById("format-input-kinds-mount").append(fragment);
+<\/script>
+`;export{e as default};

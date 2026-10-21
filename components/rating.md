@@ -637,6 +637,7 @@ const sticky = ref(3);
 - `allowHalf` 支持半档，`allowClear` 允许再次点击清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
 - 条目留空时使用库内置的星形图标；也可传入自定义图标与颜色。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，星星带里每档一颗星，给了 `name` 再带表单影子。星星带旁的分值文本不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -668,6 +669,8 @@ const sticky = ref(3);
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `number` |  | 受控评分。提供即受控：内部不再自行落值，只发 onValueChange。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0（尚未评分）。 |
 | `count` | `number` |  | 星星颗数，默认 5。 |
@@ -676,6 +679,7 @@ const sticky = ref(3);
 | `disabled` | `boolean` |  | 完全不可交互：退出 Tab 序列，指针与键盘都不响应。 |
 | `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 |
 | `required` | `boolean` |  |  |
+| `invalid` | `boolean` |  | 校验失败标注：radiogroup 写 aria-invalid，各部件写 data-invalid。 |
 | `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
 | `dir` | `Direction` |  | 文字方向，默认 'ltr'。只改写左右方向键与指针落在哪半边的语义。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
@@ -701,6 +705,7 @@ const sticky = ref(3);
 | --- | --- | --- | --- |
 | `XhRatingItem` | `default` | `RatingItemSlotProps` |  |
 | `XhRatingRoot` | `default` | `RatingRootSlotProps` |  |
+| `XhRatingRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -710,6 +715,7 @@ const sticky = ref(3);
 | --- | --- | --- | --- | --- |
 | `XhRatingItem` | `value` | `number \| string` | 是 | 星序号，兼收字符串；向下传递前统一归为数字。 |
 | `XhRatingItem` | `children` | `SlotChildren<RatingItemSlotProps>` |  |  |
+| `XhRatingRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhRatingRoot` | `children` | `SlotChildren<RatingRootSlotProps>` |  |  |
 
 ### 状态
@@ -742,6 +748,7 @@ const sticky = ref(3);
 | `empty` | `boolean` | 尚未评分（value 为 0）。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
+| `invalid` | `boolean` |  |
 | `items` | `readonly number[]` | 1..count 的序号表，作者直接遍历它渲染星星。 |
 | `getItemState` | `(props: RatingItemProps) => RatingItemState` |  |
 | `setValue` | `(next: number) => void` |  |
@@ -773,7 +780,9 @@ const sticky = ref(3);
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-invalid` | 'true' \| 'false' |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `aria-orientation` | 'horizontal' |
 | `control` | `aria-readonly` | 'true' \| 'false' |
 | `control` | `aria-required` | 'true' \| 'false' |
@@ -781,11 +790,13 @@ const sticky = ref(3);
 | `value-text` | `aria-hidden` | 'true' |
 | `item` | `aria-checked` | 'true' \| 'false' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
-| `item` | `aria-label` | itemLabel?.(item.value, count) |
+| `item` | `aria-label` | undefined \| itemLabel(item.value, count) |
 | `item` | `aria-posinset` | item.value |
 | `item` | `aria-setsize` | ratingMax(prop('count')) |
 | `item` | `role` | 'radio' |
 | `hidden-input` | `aria-hidden` | 'true' |
+
+- 每颗星是 `role=radio`，名字的取法：星里放了作者自己的内容（文字或带名字的节点），或作者直接在星上写了 `aria-label` / `aria-labelledby` 时，以作者的为名，不写缺省名、不盖住作者的标注；都没有时写 `aria-label`，取 `translations.item(分值, 总档数)`，没给时取当前语言包的缺省说法（英文「3 of 5 stars」）。
 
 ## 样式参考
 
@@ -803,18 +814,22 @@ const sticky = ref(3);
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-empty` | ''（条件成立时才出现） |
+| `value-text` | `data-invalid` | ''（条件成立时才出现） |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-half` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
+| `item` | `data-invalid` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
 | `item` | `data-readonly` | ''（条件成立时才出现） |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
@@ -836,6 +851,7 @@ const sticky = ref(3);
 | `--xh-rating-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-hover` | rating 的 item 部件 background-color 覆盖槽。 |
 | `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
 | `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`disabled`<br>`empty`<br>`focus-visible`<br>`half`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not(:empty)`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-invalid` | `item` | `background-color`<br>`color` | `disabled`<br>`empty`<br>`focus-visible`<br>`hover`<br>`invalid`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-invalid` | rating 的 item 部件 background-color、color 覆盖槽。 |
 | `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |

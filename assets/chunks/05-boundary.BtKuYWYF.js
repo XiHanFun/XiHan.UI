@@ -1,0 +1,51 @@
+var e=`<!-- 限定区域 | 引导只在一块区域里进行，区域外照常可读可点 -->
+<xh-tour id="tour-boundary" boundary="#tour-boundary-area">
+  <div data-xh-part="root">
+    <div id="tour-boundary-area" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 16px; border: 1px solid var(--xh-border-default); border-radius: 4px">
+      <xh-button variant="outline"><button id="tour-boundary-search" data-xh-part="root">搜索</button></xh-button>
+      <xh-button variant="outline"><button id="tour-boundary-create" data-xh-part="root">新建</button></xh-button>
+      <xh-button variant="solid"><button id="tour-boundary-start" data-xh-part="root">开始引导</button></xh-button>
+    </div>
+
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="spotlight"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title"></h3>
+        <p data-xh-part="description"></p>
+        <p data-xh-part="progress-text"></p>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button data-xh-part="prev-trigger">上一步</button>
+          <button id="tour-boundary-next" data-xh-part="next-trigger">下一步</button>
+        </div>
+        <button data-xh-part="close-trigger"></button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </div>
+</xh-tour>
+
+<script type="module">
+  const tour = document.getElementById("tour-boundary");
+  const next = document.getElementById("tour-boundary-next");
+
+  tour.steps = [
+    { id: "search", target: "#tour-boundary-search", title: "搜索", description: "遮罩只盖这块区域，区域外照常可读可点。" },
+    { id: "create", target: "#tour-boundary-create", title: "新建", description: "高亮框裁在区域里。" },
+  ];
+  tour.translations = {
+    close: "关闭",
+    progress: (step, count) => \`第 \${step} 步，共 \${count} 步\`,
+  };
+
+  document.getElementById("tour-boundary-start").addEventListener("click", () => {
+    tour.open = true;
+  });
+  tour.addEventListener("open-change", (event) => {
+    tour.open = event.detail.open;
+  });
+  tour.addEventListener("value-change", (event) => {
+    next.textContent = event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
+  });
+<\/script>
+`;export{e as default};

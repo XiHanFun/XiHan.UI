@@ -1,0 +1,66 @@
+var e=`<!-- 数据统计 | 总天数、空白天数与占比、最大值、平均值都从网格模型直接读取，不必再遍历一遍数据 -->
+<div style="display: grid; gap: 12px">
+  <div id="heatmap-stats-mount" style="min-width: 0"></div>
+  <div id="heatmap-stats-readout" style="display: flex; flex-wrap: wrap; gap: 16px"></div>
+</div>
+
+<!-- 只写 root，结构由元素生成；统计从只读的 grid 读取 -->
+<template id="heatmap-stats-template">
+  <xh-heatmap start-date="2024-01-01" end-date="2024-12-31">
+    <div data-xh-part="root"></div>
+  </xh-heatmap>
+</template>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  // 一整年的提交量：数值由天序号哈希出来，同一年恒出同一份数据
+  function buildYear(year) {
+    const days = [];
+    let index = 0;
+    for (let time = Date.UTC(year, 0, 1); time <= Date.UTC(year, 11, 31); time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? 4 : 10;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.22 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  const fragment = document
+    .getElementById("heatmap-stats-template")
+    .content.cloneNode(true);
+  const heatmap = fragment.querySelector("xh-heatmap");
+  const readout = document.getElementById("heatmap-stats-readout");
+
+  document.getElementById("heatmap-stats-mount").append(fragment);
+  // 数据是数组，只走 property：HTML 属性装不下它
+  heatmap.value = buildYear(2024);
+
+  // 只读的 grid 一次取出来用：每读一次都重算一遍整张网格
+  const grid = heatmap.grid;
+
+  const days = grid.cells.size;
+  // 空白 = 值为 0 的格子：没有数据的日子与写了 0 的日子都算。
+  // 它不是「色阶第 0 档的格子数」——这里没给 thresholds，首个下界恒为 1，两个数才恰好相等
+  const empty = grid.emptyCount;
+  const stats = [
+    { label: "总天数", value: \`\${days} 天\` },
+    { label: "空白", value: \`\${empty} 天（\${days ? Math.round((empty / days) * 100) : 0}%）\` },
+    { label: "最多", value: \`\${grid.max} 次\` },
+    { label: "平均", value: \`\${days ? (grid.total / days).toFixed(1) : "0.0"} 次/天\` },
+  ];
+  for (const item of stats) {
+    const line = document.createElement("span");
+    line.append(\`\${item.label}：\`);
+    const strong = document.createElement("strong");
+    strong.textContent = item.value;
+    line.append(strong);
+    readout.append(line);
+  }
+<\/script>
+`;export{e as default};

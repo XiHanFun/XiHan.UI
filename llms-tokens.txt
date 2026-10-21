@@ -1016,10 +1016,10 @@
 | `--xh-fg-segment-selected` | color | `var(--xh-fg-brand-strong)` | dark |
 | `--xh-fg-segment-selected-disabled` | color | `color-mix(in oklab, var(--xh-fg-brand) 50%, var(--xh-bg-surface))` | dark |
 | `--xh-fg-success` | color | `var(--xh-color-success-700)` | dark |
-| `--xh-fg-warning` | color | `var(--xh-color-warning-700)` | dark |
+| `--xh-fg-warning` | color | `var(--xh-color-warning-800)` | dark |
 | `--xh-fg-info` | color | `var(--xh-color-info-700)` | dark |
-| `--xh-fg-danger` | color | `var(--xh-color-danger-600)` | dark |
-| `--xh-fg-danger-hover` | color | `var(--xh-color-danger-700)` | dark |
+| `--xh-fg-danger` | color | `var(--xh-color-danger-700)` | dark |
+| `--xh-fg-danger-hover` | color | `color-mix(in oklab, var(--xh-color-danger-700) 82%, var(--xh-color-neutral-950))` | dark |
 | `--xh-fg-scrollbar-thumb` | color | `color-mix(in oklab, var(--xh-fg-default) 15%, transparent)` | dark |
 | `--xh-fg-scrollbar-thumb-hover` | color | `color-mix(in oklab, var(--xh-fg-default) 25%, transparent)` | dark |
 | `--xh-fg-scrollbar-thumb-active` | color | `color-mix(in oklab, var(--xh-fg-default) 35%, transparent)` | dark |

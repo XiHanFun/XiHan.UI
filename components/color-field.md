@@ -327,6 +327,7 @@ import {
 - 空串是合法的“无颜色”：`clearable` 开启清空按钮与 Escape 清空，空值时色块只绘制棋盘格。
 - 表单出口经 `hidden-input`：提交的是已确认的值，框内未提交的草稿不会随表单提交；提供 `name` 后才参与提交。
 - 视觉盒使用 Field Chrome，色块使用 Swatch 家族，清空按钮使用 Action Control 的 field-inset 档，与文本字段外观一致。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，盒里依次是色块、输入框与清空按钮（开了 `clearable` 才铺），给了 `name` 再带表单影子。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -360,6 +361,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string` |  | 受控的颜色串；提供后由宿主决定，状态机不自行修改。空串表示没有颜色。 |
 | `defaultValue` | `string` |  | 非受控初值，默认空串。 |
 | `format` | `ColorFormat` |  | 值串的写法，默认 hex。手动输入的任何写法接受后都按它重写。 |
@@ -394,6 +397,7 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhColorFieldRoot` | `default` | `ColorFieldRootSlotProps` |  |
+| `XhColorFieldRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -401,6 +405,7 @@ import {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhColorFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhColorFieldRoot` | `children` | `SlotChildren<ColorFieldRootSlotProps>` |  |  |
 
 ### 状态
@@ -463,7 +468,8 @@ import {
 | --- | --- | --- |
 | `swatch` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `clear-trigger` | `aria-label` | label.clearTrigger |

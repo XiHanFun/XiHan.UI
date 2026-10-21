@@ -2008,6 +2008,7 @@ const delimiters = [",", "，", ";", "\n"];
 
 ### 特性
 
+- 不写结构时按标准结构铺出标题、盒里按当前值铺的标签与输入框、清空按钮、计数与表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `editable` 每个标签带编辑框，开了 `showCount` 才铺计数。标签文本缺省就是它的值，Vue 的 `item` 插槽、React 的 `renderItem`、Web Components 宿主直接子节点上的 `slot="item:<值>"` 可以接管；标题在 Web Components 里用 `slot="label"` 接管。
 - `delimiter` 与 `addOnPaste` 一起处理粘贴拆分；`delimiter` 给一组时其中任何一个都断词（如半角与全角逗号），提交串用第一个。
 - `validate` 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里；拒收的标签连同原因（重复、放不下或自定义码）经 `onTagReject` 报告。
 - 标签是一个集合：已有的标签再输入一次照常被消费、值不变，只报一笔 `duplicate`。
@@ -2049,6 +2050,8 @@ const delimiters = [",", "，", ";", "\n"];
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 受控标签集合；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `string[]` |  | 非受控初始标签集合。 |
 | `inputValue` | `string` |  | 受控输入文本；与 value 各自独立受控。 |
@@ -2095,6 +2098,8 @@ const delimiters = [",", "，", ";", "\n"];
 | --- | --- | --- | --- |
 | `XhTagsInputCount` | `default` | `TagsInputCountSlotProps` |  |
 | `XhTagsInputRoot` | `default` | `TagsInputRootSlotProps` |  |
+| `XhTagsInputRoot` | `label` | — |  |
+| `XhTagsInputRoot` | `item` | `{ value: string }` | 只填标签文本，常态部分的删除钮与就地编辑照旧由结构铺 |
 
 ### React 适配器 props
 
@@ -2104,6 +2109,8 @@ const delimiters = [",", "，", ";", "\n"];
 | --- | --- | --- | --- | --- |
 | `XhTagsInputCount` | `children` | `SlotChildren<TagsInputCountSlotProps>` |  |  |
 | `XhTagsInputItem` | `value` | `string` | 是 |  |
+| `XhTagsInputRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTagsInputRoot` | `renderItem` | `(value: string) => ReactNode` |  | 不给 children 时标签文本的内容；未提供时就是标签的值。 |
 | `XhTagsInputRoot` | `children` | `SlotChildren<TagsInputRootSlotProps>` |  |  |
 
 ### 状态
@@ -2187,10 +2194,12 @@ const delimiters = [",", "，", ";", "\n"];
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `item-input` | `aria-label` | label.editTagInput(item.value) |
 | `clear-trigger` | `aria-label` | label.clearTrigger |

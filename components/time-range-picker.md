@@ -985,6 +985,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 ### 特性
 
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字，是原生 `label`），盒里的起止两组段位（时、分、秒之间是冒号，挨着上下午段的是空格）、分隔符、清空钮与触发钮，起止两份表单影子，浮层里依次是快捷选项列与起止两组时间列（小标题取 `translations.startTime` / `endTime`）。精度、小时制与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
 - 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
 - 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格留在原位并标为禁用，列高、滚动位置与焦点节点不跳。
@@ -997,6 +998,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 - 输入行内嵌两组与[时间字段](./time-field)同构的段位，逐段键入与加减由它负责。
 - 要连同日期一起选一段时刻，不必把两个组件拼在一起：[日期范围选择器](./date-range-picker#日期加时间)开启 `showTime` 后起止各带一组时间列，约束与本组件同一份。
+- 直接放入[表单字段](./field)：字段的标题并进时钟钮的名字，说明与错误文案进描述链；只读、必填与校验由各段报告，时钟钮是普通按钮，不带 aria-readonly / aria-required。有值时清空钮顶替时钟钮，点字段标题焦点落在第一段。
 
 ### 最佳实践
 
@@ -1027,6 +1029,8 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string[]` |  | 受控的区间两端 `[start, end]`；空缺的一端用空串占位。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
@@ -1044,6 +1048,8 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name。 |
 | `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
+| `startPlaceholder` | `string` |  | 起点那组段位的整条占位：一段都没填、焦点也不在段上时显示这句文字，焦点进到段上即换回段位。 |
+| `endPlaceholder` | `string` |  | 终点那组段位的整条占位，规则同 startPlaceholder。 |
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
@@ -1087,6 +1093,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `XhTimeRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhTimeRangePickerPresetGroup` | `default` | `TimeRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimeRangePickerRoot` | `default` | `TimeRangePickerRootSlotProps` |  |
+| `XhTimeRangePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 
 ### React 适配器 props
 
@@ -1103,7 +1110,8 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `XhTimeRangePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhTimeRangePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhTimeRangePickerPresetGroup` | `children` | `SlotChildren<TimeRangePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhTimeRangePickerRoot` | `children` | `SlotChildren<TimeRangePickerRootSlotProps>` |  |  |
+| `XhTimeRangePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTimeRangePickerRoot` | `children` | `SlotChildren<TimeRangePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhTimeRangePickerSegment` | `segment` | `TimeSegmentType` | 是 | 段的身份由作者声明；属于哪一端跟随所在的段位容器。 |
 | `XhTimeRangePickerSegmentGroup` | `index` | `number \| string` |  | 端号：0 起点、1 终点，兼收字符串。 |
 
@@ -1157,6 +1165,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `translations` | `TimeRangePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `getSegmentText` | `(props: TimeRangePickerSegmentProps) => string` | 某一端某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `getItemText` | `(props: TimeRangePickerItemTextProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimeRangePickerItemProps) => boolean` |  |
@@ -1224,7 +1233,8 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
 | `control` | `aria-invalid` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment-group` | `aria-disabled` | 'true' \| 'false' |
 | `segment-group` | `aria-label` | endLabel(index, translations) |
@@ -1243,10 +1253,12 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `clear-trigger` | `aria-label` | translations.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |
@@ -1307,6 +1319,8 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `segment-group` | `data-index` | String(index) |
 | `segment-group` | `data-invalid` | ''（条件成立时才出现） |
 | `segment-group` | `data-out-of-range` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-shown` | ''（条件成立时才出现） |
+| `segment-group` | `data-placeholder-text` | props.endPlaceholder \| props.startPlaceholder \| undefined |
 | `segment-group` | `data-readonly` | ''（条件成立时才出现） |
 | `segment` | `data-disabled` | ''（条件成立时才出现） |
 | `segment` | `data-focus` | ''（条件成立时才出现） |
@@ -1434,7 +1448,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 | `--xh-time-range-picker-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | time-range-picker 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-time-range-picker-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | time-range-picker 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-time-range-picker-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-range-picker 的 segment-group 部件 color 覆盖槽。 |
-| `--xh-time-range-picker-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-range-picker 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-range-picker-placeholder-fg` | `segment`<br>`segment-group` | `color` | `placeholder`<br>`placeholder-shown` | `--xh-fg-subtle` | time-range-picker 的 segment、segment-group 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg` | `preset` | `background-color` | `default`<br>`disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg-hover` | `preset` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |
 | `--xh-time-range-picker-preset-bg-pressed` | `preset` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-active` | time-range-picker 的 preset 部件 background-color 覆盖槽。 |

@@ -1012,13 +1012,12 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 | `legend-item` | `aria-pressed` | 'false' \| 'true' |
 | `legend-swatch` | `aria-hidden` | 'true' |
 | `plot` | `aria-describedby` | `summary` 部件的 id |
-| `plot` | `aria-labelledby` | `caption` 部件的 id |
 | `plot` | `aria-roledescription` | translations.chartRoleDescription |
 | `plot` | `role` | 'graphics-document' |
 | `tooltip` | `aria-hidden` | 'true' |
 | `mark` | `aria-hidden` | 'true' |
 
-- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label`。
+- 根是 `<figure>`，可访问名称来自 `caption`；不放标题时在根上写 `aria-label` 或 `aria-labelledby`。绘图区念同一个名字：有 caption 时引用它，没有时沿用根上的那一条。
 - 绘图区是 `role="graphics-document"`，`aria-describedby` 指向组件生成的摘要；每个扇区是 `role="graphics-symbol"`，名称取 `translations.datumLabel`（缺省「名字, 数值, 占比」），务必按本地语言改写。
 - 绘图区只占一个 Tab 位，焦点落在扇区上；右键与下键顺时针走到下一个扇区，左键与上键逆时针，Home / End 到第一个与最后一个。焦点环画在扇区之外，只在键盘聚焦时出现。
 - 引导线、扇区标签与环形中心都 `aria-hidden` 或不在可访问树中：它们的内容已在扇区的名称里；提示框同样 `aria-hidden`。

@@ -398,6 +398,7 @@ const swatches = [
 - 尺寸 sm / md / lg 三档：格子边长跟随控件行高，与旁边的按钮、字段等高。
 - 选中徽标与色块的品牌描边随 `data-tone` 变化；徽标自带一圈画布色描边，落在任何颜色上都可见。
 - 高对比模式下色块保留原色，选中描边与徽标换用系统高亮色；打印时徽标改为实边。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是 `swatches` 的每一格，格里依次是表单影子、色块面与选中标记；没给 `swatches` 时只有标题。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -446,6 +447,7 @@ const swatches = [
 | `tone` | `Tone` |  | 语气：决定选中环与选中标记使用哪族颜色。 |
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby，名字交给 aria-label 的文案：指向未渲染的 id 是悬空引用。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
 ### ColorSwatchPickerNode
@@ -545,7 +547,7 @@ const swatches = [
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-invalid` | 'true' \| 'false' |
-| `root` | `aria-label` | label.group |
+| `root` | `aria-label` | props.ariaLabel |
 | `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `root` | `aria-readonly` | 'true' \| 'false' |
 | `root` | `aria-required` | 'true' \| 'false' |

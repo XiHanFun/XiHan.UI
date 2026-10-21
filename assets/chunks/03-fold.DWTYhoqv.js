@@ -1,0 +1,77 @@
+var e=`<!-- 折叠超长代码 | clamped 是纯受控的：组件只发意图，是否落实由宿主决定，便于全部展开这类操作统一持有 -->
+<xh-code-view
+  id="code-view-fold"
+  code="const step1 = pipeline.at(0)
+const step2 = pipeline.at(1)
+const step3 = pipeline.at(2)
+const step4 = pipeline.at(3)
+const step5 = pipeline.at(4)
+const step6 = pipeline.at(5)
+const step7 = pipeline.at(6)
+const step8 = pipeline.at(7)
+const step9 = pipeline.at(8)
+const step10 = pipeline.at(9)
+const step11 = pipeline.at(10)
+const step12 = pipeline.at(11)
+const step13 = pipeline.at(12)
+const step14 = pipeline.at(13)
+const step15 = pipeline.at(14)
+const step16 = pipeline.at(15)
+const step17 = pipeline.at(16)
+const step18 = pipeline.at(17)
+const step19 = pipeline.at(18)
+const step20 = pipeline.at(19)
+const step21 = pipeline.at(20)
+const step22 = pipeline.at(21)
+const step23 = pipeline.at(22)
+const step24 = pipeline.at(23)"
+  code-lang="typescript"
+  complete
+  line-numbers
+  clamp="8"
+  clamped
+  style="inline-size: 100%"
+>
+  <div data-xh-part="root">
+    <pre data-xh-part="pre"><code data-xh-part="code">const step1 = pipeline.at(0)
+const step2 = pipeline.at(1)
+const step3 = pipeline.at(2)
+const step4 = pipeline.at(3)
+const step5 = pipeline.at(4)
+const step6 = pipeline.at(5)
+const step7 = pipeline.at(6)
+const step8 = pipeline.at(7)
+const step9 = pipeline.at(8)
+const step10 = pipeline.at(9)
+const step11 = pipeline.at(10)
+const step12 = pipeline.at(11)
+const step13 = pipeline.at(12)
+const step14 = pipeline.at(13)
+const step15 = pipeline.at(14)
+const step16 = pipeline.at(15)
+const step17 = pipeline.at(16)
+const step18 = pipeline.at(17)
+const step19 = pipeline.at(18)
+const step20 = pipeline.at(19)
+const step21 = pipeline.at(20)
+const step22 = pipeline.at(21)
+const step23 = pipeline.at(22)
+const step24 = pipeline.at(23)</code></pre>
+    <!-- 读屏名与 aria-expanded 由元素按折叠态翻面，钮上的字照同一张表跟着翻 -->
+    <button data-xh-part="fold-trigger">展开全部 24 行</button>
+  </div>
+</xh-code-view>
+
+<script type="module">
+  // 折叠态纯受控：元素只发意图，宿主自己写回属性
+  const view = document.getElementById("code-view-fold");
+  const trigger = view.querySelector('[data-xh-part="fold-trigger"]');
+  // 读屏名由元素按折叠态取 translations 里的一句，钮上的字由作者写：两边取同一张表，看到的与读到的才对得上
+  const translations = { expand: "展开全部 24 行", collapse: "收起" };
+  view.translations = translations;
+  view.addEventListener("clamp-toggle", (event) => {
+    view.toggleAttribute("clamped", event.detail.clamped);
+    trigger.textContent = event.detail.clamped ? translations.expand : translations.collapse;
+  });
+<\/script>
+`;export{e as default};

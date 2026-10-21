@@ -1,0 +1,31 @@
+var e=`<!-- 成员补全 | 补全写成函数，由宿主按光标处的查询给出：在 $row. 之后只列行内字段 -->
+<xh-expression-input
+  id="expression-input-members"
+  label="行占比"
+  default-value="$row.price * $row.quantity / $total"
+></xh-expression-input>
+
+<script type="module">
+  import { createExpressionCheck, createExpressionEngine } from "@xihan-ui/expression";
+
+  const roots = [
+    { label: "$row", kind: "variable", detail: "对象", description: "当前行" },
+    { label: "$total", kind: "variable", detail: "数字", description: "全表合计" },
+  ];
+  const rowFields = [
+    { label: "price", kind: "variable", detail: "数字", description: "单价" },
+    { label: "quantity", kind: "variable", detail: "数字", description: "数量" },
+  ];
+
+  const input = document.getElementById("expression-input-members");
+
+  // 函数形式由宿主自己过滤：member 是点之前那串名字，word 是光标前正在写的名字
+  input.completions = ({ word, member }) => {
+    const pool = member === null ? roots : member === "$row" ? rowFields : [];
+    return pool.filter((item) => item.label.startsWith(word));
+  };
+  input.check = createExpressionCheck(createExpressionEngine(), {
+    identifiers: roots.map((item) => item.label),
+  });
+<\/script>
+`;export{e as default};

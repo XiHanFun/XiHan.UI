@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: XiHan.UI
-description: 'XiHan.UI 4.2.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
+description: 'XiHan.UI 5.0.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
 colors:
   primary: 'oklch(0.546 0.216 258)'
   primary-hover: 'oklch(0.488 0.196 258)'
@@ -26,9 +26,9 @@ colors:
   outline-control-hover: 'color-mix(in oklab, oklch(0 0 0) 37.9%, transparent)'
   focus-ring: 'oklch(0.546 0.216 258)'
   success: 'oklch(0.51 0.15 149)'
-  warning: 'oklch(0.62 0.15 70)'
+  warning: 'oklch(0.55 0.14 70)'
   info: 'oklch(0.53 0.15 237)'
-  danger: 'oklch(0.577 0.213 25)'
+  danger: 'oklch(0.5 0.2 25)'
   scrim: 'color-mix(in oklab, oklch(0.208 0.006 258) 60%, transparent)'
 typography:
   display:

@@ -1169,10 +1169,11 @@ const note = ref("");
 
 - `type` 覆盖 `text` / `password` / `email` / `tel` / `url` / `search`。
 - `clearable` 显示清空按钮，`maxLength` 设置字数上限。
+- 不写结构时按标准结构铺出标题、盒里的输入框与清空按钮、字数（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，开了 `multiline` 输入框铺 textarea（否则是单行 input），开了 `clearable` 才铺清空按钮，开了 `showCount` 才铺字数。前后缀照旧手写部件。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 输入部件用 `as="textarea"` 切换到多行；`autoSize` 为 `true` 时随内容增高，也可用 `{ minRows, maxRows }` 限定行数。两个边界必须是大于等于 1 的有限整数，且 `minRows` 不得大于 `maxRows`；无效配置会明确失败，不夹取也不沿用旧配置。
 - 自动高度只有一层滚动：顶到上限后由 textarea 自己滚，控件外壳只包住它，不设上限也不滚。给了 `maxRows` 时上限就是 `maxRows`；没给时上限取 textarea 的 `max-block-size` 计算值，默认皮肤为 `--xh-text-field-input-max-h`（依次退到旧槽 `--xh-text-field-control-max-h`、`--xh-viewport-h-sm`）。两种情况都不低于 `minRows`。没给 `maxRows` 时 `max-block-size` 的计算值只接受 `none` 或 px，百分比等要等布局才知道多高的取值会明确失败。
 - 自动高度跟随输入、程序化写值与运行期配置变化重新测量。量高结果写进 `block-size`，`max-block-size` 由自动高度接管为 `none`，`overflow-y` 按是否顶到上限切换。关闭 `autoSize`、换回单行、替换输入节点或卸载组件时，归还启用前的这三项内联声明及其 priority；只移除作者原本没有写的声明。
-- 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。
+- 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。没有排版的环境（jsdom 一类单测环境）里计算样式取不到写入方向、盒模型或行高，或量出的高度为 0，这时安静跳过，不抛错也不改高度；行数配置非法照旧明确失败。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
 - 默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
@@ -1213,6 +1214,8 @@ const note = ref("");
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string` |  | 受控值；提供后由宿主决定，状态机不自行修改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
 | `type` | `TextFieldType` |  | 单行宿主的输入类型，默认 text；as 为 textarea 时不发该属性。 |
@@ -1250,6 +1253,7 @@ const note = ref("");
 | --- | --- | --- | --- |
 | `XhTextFieldCount` | `default` | `TextFieldCountSlotProps` |  |
 | `XhTextFieldRoot` | `default` | `TextFieldRootSlotProps` |  |
+| `XhTextFieldRoot` | `label` | — |  |
 
 ### React 适配器 props
 
@@ -1259,6 +1263,8 @@ const note = ref("");
 | --- | --- | --- | --- | --- |
 | `XhTextFieldCount` | `children` | `SlotChildren<TextFieldCountSlotProps>` |  |  |
 | `XhTextFieldInput` | `as` | `TextFieldInputHost` |  | 输入框渲染为哪个标签，默认 input；写 textarea 即多行宿主，接入 autoSize 自动高度。 |
+| `XhTextFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhTextFieldRoot` | `multiline` | `boolean` |  | 不给 children 时输入框铺 textarea（多行，接入 autoSize 自动高度）；手写部件时由 XhTextFieldInput 的 as 决定。 |
 | `XhTextFieldRoot` | `children` | `SlotChildren<TextFieldRootSlotProps>` |  |  |
 
 ### 状态
@@ -1319,7 +1325,8 @@ const note = ref("");
 | --- | --- | --- |
 | `prefix` | `aria-hidden` | 'true' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `aria-readonly` | 'true' \| 'false' |
 | `input` | `aria-required` | 'true' \| 'false' |
 | `suffix` | `aria-hidden` | 'true' |

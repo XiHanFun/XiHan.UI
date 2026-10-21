@@ -31,11 +31,14 @@ interface DiagnosticRecord {
 export const DIAGNOSTIC_CODES = {
   invariant: "core.invariant", // 断言不成立
   warn: "core.warn", // 条件告警
-  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层不是栈顶
+  layerDisposeNotTop: "core.layer.dispose-not-top", // dispose 的层上面还有开在它里面的层
   machineError: "machine.error", // 机器抛出 MachineError
   wcMissingPart: "wc.missing-part", // 作者未渲染必需的角色节点
   wcUnknownPart: "wc.unknown-part", // 角色节点的 part 名不在组件解剖内
   wcWrongPartTag: "wc.wrong-part-tag", // 角色节点的标签不满足要求，原生语义会静默失效
+  wcStructureTakeoverOrder: "wc.structure-takeover-order", // 标准结构里可接管的部件没有排在 root 的末尾
+  wcUnregisteredElement: "wc.unregistered-element", // 标准结构生成了一个还没注册的库内元素
+  designerExtensionConflict: "designer.extension-conflict", // 设计器扩展在两处登记了同一个名字，给 extensions 赋值时抛错，不在诊断通道里报
   matrixCodeLogoDamage: "matrix-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
   matrixCodeOptionIgnored: "matrix-code.option-ignored", // 二维码收到一个对当前码制没有意义的选项，按没给处理
   barCodeOptionIgnored: "bar-code.option-ignored", // 条形码收到一个对当前码制没有意义的选项，按没给处理

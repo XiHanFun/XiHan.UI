@@ -694,6 +694,7 @@ const branches = [
 - 放了 `overflow-trigger` 时，标签带放不下就在它之后露出一颗「更多」按钮，点开是一张菜单，列出此刻没有整个露在可见区里的标签；选中其中一项即选中那个标签并把它挪进可见区。宽度够时按钮收起。
 - 「更多」与收纳式的工具条不同：标签不会被收起。标签始终留在标签带与 tablist 里，方向键、读屏与翻页钮照样走得到；菜单只是可见区外标签的一份索引。可见区是标签带此刻露出的那一段，两端显示着的翻页钮盖住的那一截不算，半露的标签也列进菜单。所以菜单里的项随位移而换：往后翻一页，前面的标签进了菜单、后面的出来；按钮的有无只取决于全部标签放不放得下，与翻页钮同进同退。
 - `reorderable` 支持指针拖动与 Alt + 方向键换位。
+- 只给 `collection` 时照标准结构铺：标签带里每条一个标签（文字取 `label`），`closable` 时标签后面紧跟它的关闭钮，再是每条一块面板；没有条目时什么都不铺。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数。面板内容由 Vue 的 `panel` 插槽、React 的 `renderPanel` 或 Web Components 宿主直接子节点 `slot="panel:<值>"` 接管；滑条、翻页钮、「更多」钮与拖拽把手要手写结构时自己摆。
 
 ### 组合
 
@@ -985,7 +986,7 @@ const branches = [
 | `--xh-tabs-trigger-border` | `trigger` | `border` | `default` | `--xh-_tabs-trigger-border` | tabs 的 trigger 部件 border 覆盖槽。 |
 | `--xh-tabs-trigger-border-active` | `indicator`<br>`root`<br>`trigger` | `border`<br>`border-color` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-border-active`<br>`--xh-_tone-border` | tabs 的 indicator、root、trigger 部件 border、border-color 覆盖槽。 |
 | `--xh-tabs-trigger-fg` | `root`<br>`trigger` | `color` | `is([data-variant='card'], [data-variant='segment'])`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-fg-muted` | tabs 的 root、trigger 部件 color 覆盖槽。 |
-| `--xh-tabs-trigger-fg-active` | `root`<br>`trigger` | `color` | `current`<br>`disabled`<br>`error`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-active` | `root`<br>`trigger` | `color` | `current`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([data-variant='card'], [data-variant='segment'])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`state=active`<br>`variant=card`<br>`variant=line`<br>`variant=segment`<br>`xh-collection-context=nav` | `--xh-_tabs-accent-text`<br>`--xh-_tabs-accent-text-strong` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`error`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`variant=line`<br>`xh-collection-context=nav` | `--xh-fg-default` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-pressed` | `root`<br>`trigger` | `color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`variant=line`<br>`xh-collection-context=nav` | `--xh-fg-default` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tabs-trigger-font-size` | tabs 的 trigger 部件 font-size 覆盖槽。 |

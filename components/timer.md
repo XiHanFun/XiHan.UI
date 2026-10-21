@@ -80,7 +80,7 @@ const twoMinutes = 2 * 60 * 1000;
 
 ### 起停与归零
 
-自行编写部件：control 是一个原生按钮，按一下即按当前状态前进一步（开始 / 暂停 / 继续 / 重来）
+自行编写部件：control 是一个原生按钮，按一下即按当前状态前进一步（开始 / 暂停 / 继续 / 重置）
 
 ```vue
 <script setup lang="ts">
@@ -91,31 +91,53 @@ import {
   XhTimerRoot,
   XhTimerSeparator,
 } from "@xihan-ui/vue";
+
+// 起停钮的读屏名随动作换；钮里不写内容时组件照当前动作填同一句，看到的字与读到的名字不会对不上
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 </script>
 
 <template>
-  <XhTimerRoot>
+  <XhTimerRoot :translations="translations">
     <XhTimerDisplay>
       <XhTimerItem unit="minutes" />
       <XhTimerSeparator>:</XhTimerSeparator>
       <XhTimerItem unit="seconds" />
     </XhTimerDisplay>
-    <XhTimerControl>起停</XhTimerControl>
+    <XhTimerControl />
   </XhTimerRoot>
 </template>
 ```
 
 ```html
-<xh-timer>
+<xh-timer id="timer-control">
   <div data-xh-part="root">
     <div data-xh-part="display">
       <span data-xh-part="item" unit="minutes"></span>
       <span data-xh-part="separator">:</span>
       <span data-xh-part="item" unit="seconds"></span>
     </div>
-    <button data-xh-part="control">起停</button>
+    <button data-xh-part="control"></button>
   </div>
 </xh-timer>
+
+<script type="module">
+  // 起停钮的读屏名随动作换，钮上的字归作者写：两边取同一张表，元素换 data-action 时照着换字，
+  // 看到的字与读到的名字不会对不上
+  const labels = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
+  const timer = document.getElementById("timer-control");
+  const control = timer.querySelector('[data-xh-part="control"]');
+  timer.translations = labels;
+
+  const paint = () => {
+    const text = labels[control.dataset.action] ?? "";
+    if (control.textContent !== text) control.textContent = text;
+  };
+  new MutationObserver(paint).observe(control, {
+    attributes: true,
+    attributeFilter: ["data-action"],
+  });
+  paint();
+</script>
 ```
 
 ### 带天数的长计时
@@ -181,61 +203,85 @@ import {
 
 const sizes = ["sm", "md", "lg"] as const;
 const oneMinute = 60 * 1000;
+// 起停钮不写内容，组件照当前动作填 translations 里的那句，字与读屏名同一句
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 </script>
 
 <template>
   <div v-for="size in sizes" :key="size" style="margin-block-end: 12px">
-    <XhTimerRoot :size="size" countdown :start-ms="oneMinute">
+    <XhTimerRoot :size="size" countdown :start-ms="oneMinute" :translations="translations">
       <XhTimerDisplay>
         <XhTimerItem unit="minutes" />
         <XhTimerSeparator>:</XhTimerSeparator>
         <XhTimerItem unit="seconds" />
       </XhTimerDisplay>
-      <XhTimerControl>起停</XhTimerControl>
+      <XhTimerControl />
     </XhTimerRoot>
   </div>
 </template>
 ```
 
 ```html
-<div style="margin-block-end: 12px">
-  <xh-timer size="sm" countdown start-ms="60000">
-    <div data-xh-part="root">
-      <div data-xh-part="display">
-        <span data-xh-part="item" unit="minutes"></span>
-        <span data-xh-part="separator">:</span>
-        <span data-xh-part="item" unit="seconds"></span>
+<div id="timer-sizes">
+  <div style="margin-block-end: 12px">
+    <xh-timer size="sm" countdown start-ms="60000">
+      <div data-xh-part="root">
+        <div data-xh-part="display">
+          <span data-xh-part="item" unit="minutes"></span>
+          <span data-xh-part="separator">:</span>
+          <span data-xh-part="item" unit="seconds"></span>
+        </div>
+        <button data-xh-part="control"></button>
       </div>
-      <button data-xh-part="control">起停</button>
-    </div>
-  </xh-timer>
+    </xh-timer>
+  </div>
+
+  <div style="margin-block-end: 12px">
+    <xh-timer size="md" countdown start-ms="60000">
+      <div data-xh-part="root">
+        <div data-xh-part="display">
+          <span data-xh-part="item" unit="minutes"></span>
+          <span data-xh-part="separator">:</span>
+          <span data-xh-part="item" unit="seconds"></span>
+        </div>
+        <button data-xh-part="control"></button>
+      </div>
+    </xh-timer>
+  </div>
+
+  <div style="margin-block-end: 12px">
+    <xh-timer size="lg" countdown start-ms="60000">
+      <div data-xh-part="root">
+        <div data-xh-part="display">
+          <span data-xh-part="item" unit="minutes"></span>
+          <span data-xh-part="separator">:</span>
+          <span data-xh-part="item" unit="seconds"></span>
+        </div>
+        <button data-xh-part="control"></button>
+      </div>
+    </xh-timer>
+  </div>
 </div>
 
-<div style="margin-block-end: 12px">
-  <xh-timer size="md" countdown start-ms="60000">
-    <div data-xh-part="root">
-      <div data-xh-part="display">
-        <span data-xh-part="item" unit="minutes"></span>
-        <span data-xh-part="separator">:</span>
-        <span data-xh-part="item" unit="seconds"></span>
-      </div>
-      <button data-xh-part="control">起停</button>
-    </div>
-  </xh-timer>
-</div>
+<script type="module">
+  // 起停钮的字归作者写：与读屏名取同一张表，元素换 data-action 时照着换字
+  const labels = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 
-<div style="margin-block-end: 12px">
-  <xh-timer size="lg" countdown start-ms="60000">
-    <div data-xh-part="root">
-      <div data-xh-part="display">
-        <span data-xh-part="item" unit="minutes"></span>
-        <span data-xh-part="separator">:</span>
-        <span data-xh-part="item" unit="seconds"></span>
-      </div>
-      <button data-xh-part="control">起停</button>
-    </div>
-  </xh-timer>
-</div>
+  for (const timer of document.getElementById("timer-sizes").querySelectorAll("xh-timer")) {
+    const control = timer.querySelector('[data-xh-part="control"]');
+    timer.translations = labels;
+
+    const paint = () => {
+      const text = labels[control.dataset.action] ?? "";
+      if (control.textContent !== text) control.textContent = text;
+    };
+    new MutationObserver(paint).observe(control, {
+      attributes: true,
+      attributeFilter: ["data-action"],
+    });
+    paint();
+  }
+</script>
 ```
 
 ### 每一拍与到期
@@ -255,6 +301,8 @@ import { ref } from "vue";
 
 const ticks = ref(0);
 const done = ref(false);
+// 起停钮不写内容，组件照当前动作填 translations 里的那句，字与读屏名同一句
+const translations = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
 
 // 按钮本身归组件管起停，这里只把计数一起归零
 function restart(): void {
@@ -267,6 +315,7 @@ function restart(): void {
   <XhTimerRoot
     countdown
     :start-ms="5000"
+    :translations="translations"
     @tick="ticks++"
     @complete="done = true"
   >
@@ -275,7 +324,7 @@ function restart(): void {
       <XhTimerSeparator>:</XhTimerSeparator>
       <XhTimerItem unit="seconds" />
     </XhTimerDisplay>
-    <XhTimerControl @click="restart">起停</XhTimerControl>
+    <XhTimerControl @click="restart" />
   </XhTimerRoot>
 
   <p>已经跳了 {{ ticks }} 拍{{ done ? "，到点了" : "" }}</p>
@@ -290,7 +339,7 @@ function restart(): void {
       <span data-xh-part="separator">:</span>
       <span data-xh-part="item" unit="seconds"></span>
     </div>
-    <button data-xh-part="control" id="timer-notify-control">起停</button>
+    <button data-xh-part="control" id="timer-notify-control"></button>
   </div>
 </xh-timer>
 
@@ -302,6 +351,19 @@ function restart(): void {
   const control = document.getElementById("timer-notify-control");
   let ticks = 0;
   let done = false;
+
+  // 起停钮的字归作者写：与读屏名取同一张表，元素换 data-action 时照着换字
+  const labels = { start: "开始", pause: "暂停", resume: "继续", reset: "重置" };
+  timer.translations = labels;
+  const paintControl = () => {
+    const text = labels[control.dataset.action] ?? "";
+    if (control.textContent !== text) control.textContent = text;
+  };
+  new MutationObserver(paintControl).observe(control, {
+    attributes: true,
+    attributeFilter: ["data-action"],
+  });
+  paintControl();
 
   const paint = () => {
     log.textContent = `已经跳了 ${ticks} 拍${done ? "，到点了" : ""}`;

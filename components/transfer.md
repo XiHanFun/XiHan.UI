@@ -2663,10 +2663,12 @@ const value = ref<string[]>([]);
 - 值内逗号保留原样，使用 `new FormData(form).getAll(name)` 读取数组；目标为空时没有该字段，显式选中的空字符串则是一个有效字段值。
 - `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
 - 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：左侧面板、移到右侧、移回左侧（`oneWay` 时不铺）、右侧面板。每侧依次是头部（标题、计数、全选）、搜索框（`searchable` 时才有）、本侧当前可见的条目（勾选标记、文字与副文本）、空态与在途占位；标题、全选、空态与在途的字取 translations 的 `sourceTitle`、`targetTitle`、`selectAll`、`empty`、`loading`。分组与条目行尾不在其中，要用时手写结构。
 
 ### 组合
 
+- 直接放进[表单字段](./field)：字段的标题并进两侧列表的名字（排在面板标题前，如「抄送人 源列表」），说明与错误文案进两侧的描述链；点字段标题，焦点落在源侧列表。
 - 内层是[列表框](./listbox)；长列表为 source / target 各接一台[虚拟滚动](./virtualizer)，两侧桥分别写入 `virtualizers`，不能共用滚动窗口。
 - 分页时每侧面板里放一台[分页](./pagination)，与虚拟滚动二选一。
 - 树形候选不内置：条目是一维集合（`value` 是扁平的已选集合），父子勾选联动与展开状态属于[树](./tree)。需要按层级选择时用树选择或树 + 列表组合，而不是把树塞进穿梭框的一侧。
@@ -2708,9 +2710,11 @@ const value = ref<string[]>([]);
 | `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
 | `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
 | `pageSize` | `number` |  | 每侧每页几条；给了即分页，两侧各翻各的，缺省不分页。 分页只决定这一页渲染哪些条目、方向键在哪些条目间走；全选、三态、计数与搬运仍按整侧（分侧 + 搜索之后）算。 搜索串一变该侧回到第 1 页；条目搬走后页数变少时页码夹回最后一页。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
 | `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
+| `required` | `boolean` |  | 必填：至少移过去一项。已选一侧（target）的列表报告 aria-required，根带 data-required； 一个值一份表单影子，没有值时没有影子，此时补一份空值的占位影子带原生 required，拦下空表单的提交。 |
 | `loading` | `boolean` |  | 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 |
@@ -2793,8 +2797,10 @@ const value = ref<string[]>([]);
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `required` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
+| `translations` | `TransferTranslations` | 合上作者覆盖后的文案。 |
 | `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索 + 分页之后），顺序恒为 collection 原序。 |
 | `filteredItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧分侧 + 搜索之后的全部条目（不分页）；全选、三态、计数与搬运都按它算。 |
 | `pageSize` | `number \| undefined` | 每页几条；不分页时为 undefined。 |
@@ -2814,7 +2820,7 @@ const value = ref<string[]>([]);
 | `toggleAll` | `(side: TransferSide) => void` |  |
 | `move` | `(to: TransferSide) => void` | 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 |
+| `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。不给 value 是必填且没有值时的空值占位，带原生 required。 |
 | `getPanelProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelHeaderProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getPanelTitleProps` | `(props: TransferPanelProps) => T['element']` |  |
@@ -2861,6 +2867,9 @@ const value = ref<string[]>([]);
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `aria-label` | props.ariaLabel |
+| `root` | `role` | 'group' \| undefined |
+| `hidden-input` | `aria-hidden` | 'true' |
 | `search` | `aria-controls` | listId[panel.side] |
 | `search` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-busy` | 'true' \| undefined |
@@ -2869,6 +2878,7 @@ const value = ref<string[]>([]);
 | `list` | `aria-labelledby` | titleId[panel.side] |
 | `list` | `aria-multiselectable` | 'true' \| 'false' |
 | `list` | `aria-readonly` | 'true' \| 'false' |
+| `list` | `aria-required` | 'true' \| 'false' \| undefined |
 | `list` | `role` | 'listbox' |
 | `group` | `aria-labelledby` | `group-label` 部件的 id |
 | `group` | `role` | 'group' |
@@ -2903,6 +2913,7 @@ const value = ref<string[]>([]);
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-one-way` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `panel-header` | `data-disabled` | ''（条件成立时才出现） |

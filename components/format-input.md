@@ -1,0 +1,407 @@
+来源：https://ui.docs.xihanfun.com/components/format-input
+
+# FormatInput 格式输入
+
+编辑一份格式说明：先选种类，再填这一种的参数，下方即时显示样例效果。值就是 `@xihan-ui/expression` 的 `FormatSpec`，交给 `formatValue` 即可按它输出文字。
+
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/format-input" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/format-input.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/format-input" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/format-input" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/format-input.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
+
+## 用法
+
+先选种类，再填这一种的参数，下方显示样例；派发的值是一份格式说明，交给格式化即可
+
+```vue
+<script setup lang="ts">
+import type { FormatSpec } from "@xihan-ui/expression";
+import { XhFormatInputRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const format = ref<FormatSpec | null>({ kind: "number", decimals: 2, grouping: true });
+</script>
+
+<template>
+  <XhFormatInputRoot v-model:value="format" aria-label="金额格式" />
+  <p data-demo-output>值：{{ format === null ? "（不设格式）" : JSON.stringify(format) }}</p>
+</template>
+```
+
+```html
+<!-- 只写 root：种类、参数行与样例由元素照标准结构铺在里面 -->
+<xh-format-input id="format-input-basic">
+  <div data-xh-part="root" aria-label="金额格式"></div>
+</xh-format-input>
+<p id="format-input-basic-output" data-demo-output>值：{"kind":"number","decimals":2,"grouping":true}</p>
+
+<script type="module">
+  const input = document.getElementById("format-input-basic");
+  const output = document.getElementById("format-input-basic-output");
+
+  // 值是对象，只能经 property 赋值；受控时由宿主写回
+  input.value = { kind: "number", decimals: 2, grouping: true };
+  input.addEventListener("value-change", (event) => {
+    input.value = event.detail.value;
+    output.textContent = `值：${event.detail.value === null ? "（不设格式）" : JSON.stringify(event.detail.value)}`;
+  });
+</script>
+```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="format-input"`：**`root`** · `label` · **`kind`** · `field-group` · `item` · `item-label` · `pattern-description` · `preview` · `error-text`
+
+## 示例
+
+### 限定种类
+
+kinds 只留数字与百分比；连同「不设格式」不超过三项时，种类改用分段切换
+
+```vue
+<script setup lang="ts">
+import { XhFormatInputRoot } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhFormatInputRoot
+    :kinds="['number', 'percent']"
+    :default-value="{ kind: 'percent', decimals: 1 }"
+    aria-label="占比格式"
+  />
+</template>
+```
+
+```html
+<div id="format-input-kinds-mount"></div>
+
+<template id="format-input-kinds-template">
+  <xh-format-input>
+    <div data-xh-part="root" aria-label="占比格式"></div>
+  </xh-format-input>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-kinds-template").content.cloneNode(true);
+  const input = fragment.querySelector("xh-format-input");
+
+  // 非受控初值只在建立时读一次：赋好了再入页
+  input.kinds = ["number", "percent"];
+  input.defaultValue = { kind: "percent", decimals: 1 };
+  document.getElementById("format-input-kinds-mount").append(fragment);
+</script>
+```
+
+### 放进表单字段
+
+字段的标题与说明接到组上；日期模式可从预设里挑，也可以自由输入
+
+```vue
+<script setup lang="ts">
+import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot, XhFormatInputRoot } from "@xihan-ui/vue";
+
+const patterns = ["yyyy-MM-dd", "yyyy年MM月dd日", "yyyy-MM-dd HH:mm"];
+// 样例固定一个时刻，换模式时只看格式的差别
+const sample = new Date(2026, 8, 18, 14, 30);
+</script>
+
+<template>
+  <XhFieldRoot>
+    <XhFieldLabel>下单时间的显示格式</XhFieldLabel>
+    <XhFieldControl>
+      <XhFormatInputRoot
+        :kinds="['date']"
+        :clearable="false"
+        :date-patterns="patterns"
+        :sample="sample"
+        :default-value="{ kind: 'date', pattern: 'yyyy-MM-dd' }"
+      />
+    </XhFieldControl>
+    <XhFieldDescription>列表与详情页都按这里的格式显示</XhFieldDescription>
+  </XhFieldRoot>
+</template>
+```
+
+```html
+<div id="format-input-field-mount"></div>
+
+<template id="format-input-field-template">
+  <xh-field>
+    <div data-xh-part="root">
+      <label data-xh-part="label">下单时间的显示格式</label>
+      <xh-format-input clearable="false"></xh-format-input>
+      <p data-xh-part="description">列表与详情页都按这里的格式显示</p>
+    </div>
+  </xh-field>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-field-template").content.cloneNode(true);
+  const input = fragment.querySelector("xh-format-input");
+
+  input.kinds = ["date"];
+  input.datePatterns = ["yyyy-MM-dd", "yyyy年MM月dd日", "yyyy-MM-dd HH:mm"];
+  // 样例固定一个时刻，换模式时只看格式的差别
+  input.sample = new Date(2026, 8, 18, 14, 30);
+  // 非受控初值只在建立时读一次：赋好了再入页
+  input.defaultValue = { kind: "date", pattern: "yyyy-MM-dd" };
+  document.getElementById("format-input-field-mount").append(fragment);
+</script>
+```
+
+### 只读与禁用
+
+只读时里面的控件可聚焦、可复制，不可修改；禁用时整组不可操作
+
+```vue
+<script setup lang="ts">
+import { XhFormatInputRoot } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhFormatInputRoot read-only :default-value="{ kind: 'number', decimals: 2, grouping: true }" aria-label="只读的金额格式" />
+  <XhFormatInputRoot disabled :default-value="{ kind: 'percent', decimals: 1 }" aria-label="禁用的占比格式" />
+</template>
+```
+
+```html
+<div id="format-input-states-mount"></div>
+
+<template id="format-input-states-template">
+  <xh-format-input read-only>
+    <div data-xh-part="root" aria-label="只读的金额格式"></div>
+  </xh-format-input>
+  <xh-format-input disabled>
+    <div data-xh-part="root" aria-label="禁用的占比格式"></div>
+  </xh-format-input>
+</template>
+
+<script type="module">
+  const fragment = document.getElementById("format-input-states-template").content.cloneNode(true);
+  const [readOnly, disabled] = fragment.querySelectorAll("xh-format-input");
+
+  // 非受控初值只在建立时读一次：赋好了再入页
+  readOnly.defaultValue = { kind: "number", decimals: 2, grouping: true };
+  disabled.defaultValue = { kind: "percent", decimals: 1 };
+  document.getElementById("format-input-states-mount").append(fragment);
+</script>
+```
+
+## 设计指引
+
+### 何时使用
+
+- 让用户配置数字、百分比、日期、人民币大写或数字字形的显示格式：报表的列与坐标轴、打印的文本元素、列表列的显示格式。
+- 只允许一部分种类时传 `kinds`，例如图表数值只给数字与百分比。
+
+### 何时不用
+
+- 只是挑一个固定的显示样式、没有参数可调：用[下拉选择](./select)。
+- 要写一段公式算出值：那是表达式，不是格式。
+
+### 特性
+
+- 种类不超过三项（含「不设格式」）时用分段切换，多了用下拉。
+- 换种类时参数留在草稿里：数字与百分比互换时小数位、千分位与舍入照旧，人民币大写沿用舍入，换回来还是上次填的。
+- 小数位有三种写法：固定位数、位数范围、不舍入；互换时尽量把数字带过去。
+- 输入中途的不完整状态（位数清空、范围下限大于上限、日期模式清空）不派发，根标 `aria-invalid`，行内说明进描述链；改回合法后再派发。派发的值都能通过 `checkFormatSpec`。
+- 样例是 `role="status"`：停止输入一会儿后才换文字，连续输入时读屏不反复播报；样例值套不上格式时显示说明。
+- 不设格式用 `null`；`value` 为 `undefined` 表示非受控。
+- 几个对象一起编辑而取值各不相同时（属性面板多选）传 `mixed`：种类一项都不选、下拉显示「多个值」，参数行与样例不铺；选一个种类（含「不设格式」）即按它新起一份格式说明派发，宿主写回后撤掉 `mixed`。
+
+### 最佳实践
+
+- 放进字段时用字段的标题给整组命名，不另写标题部件；不放进字段时在根上写 `aria-label`。
+- 按字段类型给一个贴切的 `sample`，样例才看得出效果。
+
+## API 参考
+
+### 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-format-input>` |
+| Vue 组件 | `XhFormatInputErrorText` `XhFormatInputFieldGroup` `XhFormatInputItem` `XhFormatInputItemLabel` `XhFormatInputKind` `XhFormatInputLabel` `XhFormatInputPatternDescription` `XhFormatInputPreview` `XhFormatInputRoot` |
+| 组合式函数 | `useFormatInput` |
+| 状态机 | `formatInputMachine` |
+| 皮肤 | `@xihan-ui/styles/format-input.css` |
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `FormatSpec \| null` |  | 受控的格式说明；null 表示不设格式，undefined 表示非受控。 |
+| `defaultValue` | `FormatSpec \| null` |  |  |
+| `kinds` | `readonly FormatInputKind[]` |  | 可选的种类，缺省全部；与 checkFormatSpec 的同名选项一致。 |
+| `clearable` | `boolean` |  | 种类里多一项「不设格式」，选它派发 null；缺省 true。 |
+| `mixed` | `boolean` |  | 几个对象的取值各不相同（属性面板多选时）：种类控件一项都不选，下拉显示「多个值」的占位，参数行与样例不铺。 选一个种类（含「不设格式」）即按它新起一份格式说明并派发，宿主写回后撤掉 mixed。 |
+| `datePatterns` | `readonly string[]` |  | 日期模式的预设，缺省 FORMAT_INPUT_DATE_PATTERNS；也可以自由输入。 |
+| `sample` | `unknown` |  | 样例的输入值；缺省按种类取。 |
+| `locale` | `string` |  | 交给 formatValue，只影响样例。 |
+| `timeZone` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+| `readOnly` | `boolean` |  |  |
+| `invalid` | `boolean` |  |  |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件：根以它为名。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
+| `variant` | `ControlVariant` |  | 视觉轴，传给里面的控件。 |
+| `size` | `Size` |  |  |
+| `translations` | `Partial<FormatInputTranslations>` |  |  |
+| `onValueChange` | `(details: FormatInputValueChangeDetails) => void` |  | 合法的格式说明变了时通知；输入中途不完整时不派发。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `FormatInputValueChangeDetails` | 合法的格式说明变了；detail 为 `{ value: FormatSpec \| null }`。输入中途不完整时不派发 |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhFormatInputRoot` | `default` | `FormatInputRootSlotProps` |  |
+
+### React 适配器 props
+
+只列各组件自己声明的那些：继承自 `ComponentPropsWithRef` 的 DOM 属性不在其中，根组件上与上面 Props 表同名的也不重复列。Vue 的对应物是上面的插槽表。
+
+| React 组件 | 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- | --- |
+| `XhFormatInputItem` | `value` | `FormatInputOption` | 是 | 参数名：decimals-mode、decimals、min-decimals、max-decimals、grouping、rounding、pattern、numeral-style。 |
+| `XhFormatInputItemLabel` | `value` | `FormatInputOption \| 'kind'` | 是 | 名字所属的那一行：参数名，或 kind。 |
+| `XhFormatInputRoot` | `children` | `SlotChildren<FormatInputRootSlotProps>` |  |  |
+
+### 状态
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle` · `settling`
+
+**事件**：`KIND.SET` · `DECIMALS_MODE.SET` · `DECIMALS.SET` · `GROUPING.SET` · `ROUNDING.SET` · `PATTERN.SET` · `STYLE.SET` · `VALUE.SYNC` · `after.announce`
+
+**判据**：`isEditable`
+
+### connect API
+
+`getXxxProps()` 返回对应部件的宿主属性。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `FormatSpec \| null` | 当前的格式说明；不设格式时为 null。 |
+| `kind` | `FormatInputKind \| null` | 种类；不设格式时为 null。 |
+| `draft` | `FormatInputDraft` | 编辑中的草稿。 |
+| `issue` | `FormatInputIssueCode \| null` | 草稿不完整、或格式说明不被接受时的问题码。 |
+| `issueText` | `string` | 问题的说明文字；没有问题时为空串。 |
+| `previewText` | `string` | 样例文字（已带「示例：」前缀）；没有格式时为空串。 |
+| `options` | `readonly FormatInputOption[]` | 当前种类用得到的参数行，次序即排布次序。 |
+| `kindItems` | `readonly { value: FormatInputKindOption, label: string }[]` | 种类下拉的条目：按 kinds 次序，clearable 时最前面是「不设格式」。 |
+| `kindControl` | `'toggle-group' \| 'select'` | 种类控件用分段切换（条目不超过三项）还是下拉。 |
+| `setKind` | `(kind: FormatInputKind \| null) => void` |  |
+| `setDecimalsMode` | `(mode: FormatInputDecimalsMode) => void` |  |
+| `setDecimals` | `(field: FormatInputDecimalsField, text: string) => void` | 改一个小数位输入框的文字；空串表示清空，非整数或越界时草稿不完整。 |
+| `setGrouping` | `(value: boolean) => void` |  |
+| `setRounding` | `(value: FormatRounding) => void` |  |
+| `setPattern` | `(value: string) => void` |  |
+| `setNumeralStyle` | `(value: NumeralStyle) => void` |  |
+| `getRootProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` |  |
+| `getKindProps` | `() => T['element']` |  |
+| `getFieldGroupProps` | `() => T['element']` |  |
+| `getItemProps` | `(option: FormatInputOption) => T['element']` |  |
+| `getItemLabelProps` | `(option: FormatInputOption \| 'kind') => T['element']` | 参数行（含种类）的名字。 |
+| `getPatternDescriptionProps` | `() => T['element']` |  |
+| `getPreviewProps` | `() => T['element']` |  |
+| `getErrorTextProps` | `() => T['element']` |  |
+| `getKindToggleGroupProps` | `() => Partial<StructureInstanceProps['toggle-group']>` | 种类控件的 props，交给组合节点：kindControl 为 toggle-group 时用前者（外包是 fieldset，名字在 legend），否则用后者（标题由下拉自己铺）。 |
+| `getKindSelectProps` | `() => Partial<StructureInstanceProps['select']>` |  |
+| `getDecimalsModeControlProps` | `() => Partial<StructureInstanceProps['toggle-group']>` |  |
+| `getDecimalsControlProps` | `(field: FormatInputDecimalsField) => Partial<StructureInstanceProps['number-field']>` |  |
+| `getGroupingControlProps` | `() => Partial<StructureInstanceProps['switch']>` |  |
+| `getRoundingControlProps` | `() => Partial<StructureInstanceProps['select']>` |  |
+| `getPatternControlProps` | `() => Partial<StructureInstanceProps['combobox']>` |  |
+| `getNumeralStyleControlProps` | `() => Partial<StructureInstanceProps['select']>` |  |
+
+## 无障碍
+
+### 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Tab` / `Shift+Tab` | focus in root | 按种类、参数行的次序经过里面的控件；样例与行内说明不可聚焦；种类一换，参数行随之换，焦点留在种类控件上 |
+| `ArrowUp` / `ArrowDown` / `Enter` / `Space` | focus in a control | 交给里面的下拉、分段切换、数字框、开关与组合框各自的键盘行为 |
+
+### ARIA
+
+以下属性由 `connect` 生成。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-describedby` | undefined \| `error-text` 部件的 id |
+| `root` | `aria-invalid` | 'true' \| undefined |
+| `root` | `aria-label` | props.ariaLabel |
+| `root` | `aria-labelledby` | `label` 部件的 id \| undefined |
+| `root` | `role` | 'group' |
+| `preview` | `aria-live` | 'polite' |
+| `preview` | `role` | 'status' |
+
+## 样式参考
+
+### 皮肤
+
+`@xihan-ui/styles/format-input.css` 按 `[data-scope="format-input"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-format-input` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
+
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-kind` | undefined \| draft.kind |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
+| `item` | `data-value` | option |
+| `item-label` | `data-value` | option |
+
+<!-- xh-component-tokens:start -->
+### CSS 变量
+
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
+
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-format-input-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` | format-input 的 error-text 部件 color 覆盖槽。 |
+| `--xh-format-input-error-font-size` | `error-text` | `font-size` | `default` | `--xh-text-secondary-size` | format-input 的 error-text 部件 font-size 覆盖槽。 |
+| `--xh-format-input-field-group-col-w` | `field-group` | `grid-template-columns` | `default` | `--xh-layout-col-min-sm` | format-input 的 field-group 部件 grid-template-columns 覆盖槽。 |
+| `--xh-format-input-field-group-gap` | `field-group` | `gap` | `default` | `--xh-space-3` | format-input 的 field-group 部件 gap 覆盖槽。 |
+| `--xh-format-input-gap` | `root` | `gap` | `default` | `--xh-space-4` | format-input 的 root 部件 gap 覆盖槽。 |
+| `--xh-format-input-item-gap` | `item` | `gap` | `value=grouping` | `--xh-space-3` | format-input 的 item 部件 gap 覆盖槽。 |
+| `--xh-format-input-item-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | format-input 的 item-label 部件 color 覆盖槽。 |
+| `--xh-format-input-item-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-label-size` | format-input 的 item-label 部件 font-size 覆盖槽。 |
+| `--xh-format-input-item-label-font-weight` | `item-label` | `font-weight` | `default` | `--xh-text-label-weight` | format-input 的 item-label 部件 font-weight 覆盖槽。 |
+| `--xh-format-input-item-label-gap` | `item-label` | `margin-block-end` | `where(legend)` | `--xh-space-2` | format-input 的 item-label 部件 margin-block-end 覆盖槽。 |
+| `--xh-format-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | format-input 的 label 部件 color 覆盖槽。 |
+| `--xh-format-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | format-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-format-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | format-input 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-format-input-pattern-description-fg` | `pattern-description` | `color` | `default` | `--xh-fg-muted` | format-input 的 pattern-description 部件 color 覆盖槽。 |
+| `--xh-format-input-pattern-description-font-size` | `pattern-description` | `font-size` | `default` | `--xh-text-secondary-size` | format-input 的 pattern-description 部件 font-size 覆盖槽。 |
+| `--xh-format-input-preview-fg` | `preview` | `color` | `default` | `--xh-fg-muted` | format-input 的 preview 部件 color 覆盖槽。 |
+| `--xh-format-input-preview-font-size` | `preview` | `font-size` | `default` | `--xh-text-body-size` | format-input 的 preview 部件 font-size 覆盖槽。 |
+<!-- xh-component-tokens:end -->
+
+### 动效
+
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。

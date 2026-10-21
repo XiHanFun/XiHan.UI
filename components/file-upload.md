@@ -101,7 +101,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
+`data-scope="file-upload"`：`root` · `label` · `dropzone` · `trigger` · **`hidden-input`** · `list` · `item` · `item-name` · `item-link` · `item-size-text` · `item-preview` · `item-progress` · `item-delete-trigger` · `clear-trigger`
 
 ## 示例
 
@@ -219,7 +219,7 @@ const translations = {
 
   // 单条删除按钮的可及名字带上文件名，读屏才分得出删的是哪一条
   upload.translations = {
-    deleteFile: (file) => `删除 ${file.name}`,
+    deleteItem: (file) => `删除 ${file.name}`,
     clearTrigger: "清空全部",
   };
 
@@ -458,11 +458,19 @@ const initialFiles = [
   new File(["甲方与乙方就本次合作达成如下条款……"], "合同正文.txt", { type: "text/plain" }),
   new File(["# 交付说明\n\n分三批交付。"], "交付说明.md", { type: "text/markdown" }),
 ];
+
+// 清空钮写了「清空」两个字，读屏名得以它开头：名字取 translations
+const translations = { clearTrigger: "清空全部" };
 </script>
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles }" :default-files="initialFiles" :max-files="4">
+    <XhFileUploadRoot
+      v-slot="{ acceptedFiles }"
+      :default-files="initialFiles"
+      :max-files="4"
+      :translations="translations"
+    >
       <XhFileUploadLabel>随件资料</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>已经带了两份进来</span>
@@ -519,6 +527,8 @@ const initialFiles = [
       <button data-xh-part="clear-trigger">清空</button>
     </div>`;
   upload.defaultFiles = initialFiles;
+  // 清空钮写了「清空」两个字，读屏名得以它开头：名字取 translations；对象只走 property
+  upload.translations = { clearTrigger: "清空全部" };
   document.getElementById("file-upload-default").append(upload);
 
   const group = upload.querySelector('[data-xh-part="list"]');
@@ -680,6 +690,11 @@ function previewUrl(file: File) {
   return url;
 }
 
+// 单条删除钮写了「移除」，读屏名得以它开头，再带上文件名才分得出移的是哪一张
+const translations = {
+  deleteItem: (file: File) => `移除 ${file.name}`,
+};
+
 onBeforeUnmount(() => {
   urls.forEach(url => URL.revokeObjectURL(url));
   urls.clear();
@@ -688,7 +703,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div style="width: 100%; max-width: 480px">
-    <XhFileUploadRoot v-slot="{ acceptedFiles }" accept="image/*" :max-files="6">
+    <XhFileUploadRoot
+      v-slot="{ acceptedFiles }"
+      accept="image/*"
+      :max-files="6"
+      :translations="translations"
+    >
       <XhFileUploadLabel>相册</XhFileUploadLabel>
       <XhFileUploadDropzone>
         <span>把图片拖进来，最多 6 张</span>
@@ -734,6 +754,9 @@ onBeforeUnmount(() => {
   const group = upload.querySelector('[data-xh-part="list"]');
   const card =
     "flex-direction: column; align-items: stretch; --xh-file-upload-preview-size: 96px";
+
+  // 单条删除钮写了「移除」，读屏名得以它开头，再带上文件名才分得出移的是哪一张；对象只走 property
+  upload.translations = { deleteItem: (file) => `移除 ${file.name}` };
 
   // 一批地址用完就交还，重铺时统一换成新的
   let urls = [];
@@ -1330,57 +1353,31 @@ const remoteFiles = ref<FileUploadRemoteFile[]>([
   ];
   upload.remoteFiles = remoteFiles;
 
-  const action = "flex: none; font-size: 12px; color: var(--xh-fg-brand)";
-
-  // 远程那几条没有本地字节，名字与大小由作者自己写；删除交回元素，走的是同一条删除口
-  function remoteRow(file) {
-    const item = document.createElement("div");
-
-    const name = document.createElement("span");
-    name.textContent = file.name;
-
-    const size = document.createElement("span");
-    size.style.cssText = "flex: none; color: var(--xh-fg-subtle); font-size: 12px";
-    size.textContent = `${(file.size / 1024).toFixed(1)} KB`;
-
-    const link = document.createElement("a");
-    link.style.cssText = action;
-    link.href = file.url;
-    link.target = "_blank";
-    link.rel = "noreferrer";
-    link.textContent = "查看";
-
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.style.cssText = action;
-    remove.textContent = "移除";
-    remove.setAttribute("aria-label", `移除 ${file.name}`);
-    remove.addEventListener("click", () => upload.deleteFile(file));
-
-    item.style.cssText =
-      "display: flex; align-items: center; gap: 8px; padding-block: 4px";
-    item.append(name, size, link, remove);
-    return item;
-  }
-
-  // 本地那几条走角色节点，文件名与大小由元素代填
-  function localRow() {
+  // 每个文件一行角色节点，按 allFiles 的顺序（远程在前、本地在后）：
+  // 文件名、大小与删除钮的名字由元素代填，远程那几条另带一个查看链接
+  function row(file) {
     const item = document.createElement("div");
     item.dataset.xhPart = "item";
     item.innerHTML =
       '<span data-xh-part="item-name"></span>' +
-      '<span data-xh-part="item-size-text"></span>' +
-      '<button data-xh-part="item-delete-trigger"></button>';
+      '<span data-xh-part="item-size-text"></span>';
+    if ("url" in file && file.url) {
+      const link = document.createElement("a");
+      link.href = file.url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.textContent = "查看";
+      item.append(link);
+    }
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    item.append(remove);
     return item;
   }
 
-  // 远程在前、本地在后，两段同挂在一个列表容器里
   function render() {
     label.textContent = `附件（最多 4 个，已有 ${remoteFiles.length} 个在服务器上）`;
-    group.replaceChildren(
-      ...remoteFiles.map(remoteRow),
-      ...upload.acceptedFiles.map(localRow)
-    );
+    group.replaceChildren(...upload.allFiles.map(row));
   }
 
   upload.addEventListener("files-change", render);
@@ -1633,7 +1630,11 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 - `validate` 在类型与大小校验之后逐个判定，返回拒绝码即拒收，与内建原因一起进 `onFileReject`。
 - 焦点在组件里时可以直接粘贴文件（`allowPaste`，默认开启），与选择、投放走同一道校验。
 - 上传生命周期（完成、失败、取消）各有回调；`maxConcurrentUploads` 限定同时在传的份数，其余排队。
+- `readOnly` 时列表改不动（选择、拖放、粘贴、删除与清空都不收），已经开始的传输照常；`required` 时标题画星号，列表为空时文件输入带原生 `required`。
 - `cancelUpload` 中止传输但保留文件，`startUpload` 让取消或失败的文件重新开传；删除文件同样中止它的传输。
+- `upload` 返回 `{ id }` 时，传完的文件转成服务器已有附件：从 `files` 移出、追加进 `remoteFiles`，表单值直接是附件记录。`remoteFiles` 受控时宿主写回含这个 id 的列表之后才移出。
+- 点标题只把焦点交给投放区（没写投放区时交给选择钮），不弹出选择框；`label` 的 `for` 仍指向隐藏输入，原生关联与必填提示照旧。禁用时投放区退出 Tab 序列，只读时留在 Tab 序列里，两者都报 `aria-disabled`、不收拖放与粘贴。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是投放区（说明文字取 `translations.dropzone`）、表单影子与文件列表，`clearable` 时末尾带清空钮。投放区是唯一可聚焦的打开入口，不另铺选择钮；列表里 `allFiles` 每个文件一行（缩略图、文件名、大小、进度与删除钮），按 `fileKey` 认行，删掉中间一行时替身留在原处淡出。远程附件的 `url` 经安全判定（只放行 http、https、mailto、tel 与相对地址）后，文件名铺成链接 `item-link`，打开方式取 `linkTarget`（缺省当前页，`_blank` 时带 `rel="noopener noreferrer"`）；地址不安全时文件名是纯文字。只读时链接照常可聚焦、可打开，禁用时退出 Tab 序列。Web Components 里标题与投放区的内容可以写在宿主的直接子节点 `slot="label"`、`slot="dropzone"` 上接管。
 
 ### 组合
 
@@ -1656,7 +1657,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-file-upload>` |
-| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemProgress` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadList` `XhFileUploadRoot` `XhFileUploadTrigger` |
+| Vue 组件 | `XhFileUploadClearTrigger` `XhFileUploadDropzone` `XhFileUploadHiddenInput` `XhFileUploadItem` `XhFileUploadItemDeleteTrigger` `XhFileUploadItemLink` `XhFileUploadItemName` `XhFileUploadItemPreview` `XhFileUploadItemProgress` `XhFileUploadItemSizeText` `XhFileUploadLabel` `XhFileUploadList` `XhFileUploadRoot` `XhFileUploadTrigger` |
 | 组合式函数 | `useFileUpload` |
 | 状态机 | `fileUploadMachine` |
 | 皮肤 | `@xihan-ui/styles/file-upload.css` |
@@ -1665,12 +1666,16 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `accept` | `string \| string[]` |  | 允许的类型，写法与原生 input 的 accept 一致： 接受 'image/*' 这类通配、'.png' 这类扩展名、'application/pdf' 这类精确 MIME， 逗号分隔的整串或数组两种形态均可（属性只能表达整串，数组需通过 property）。 |
 | `maxFiles` | `number` |  | 最多保留的文件数，默认 1。提供 Infinity 即不限。 |
 | `maxFileSize` | `number` |  | 单个文件的字节上限，默认不限。 |
 | `minFileSize` | `number` |  | 单个文件的字节下限，默认 0（拦截 0 字节的空文件可设为 1）。 |
 | `disabled` | `boolean` |  |  |
 | `invalid` | `boolean` |  | 校验失败标注；只作用于样式与 data-invalid，不阻断接收文件。 |
+| `readOnly` | `boolean` |  | 只读：列表改不动——选择、拖放、粘贴、删除与清空都不收，已经开始的传输照常进行。 投放区与三种按钮仍可聚焦，报 aria-disabled="true"。 |
+| `required` | `boolean` |  | 必填：根与标题写 data-required（标题据此画星号）；列表为空时文件输入带原生 required，拦下空表单的提交。 有文件时不带：选完文件输入就被清空，恒带 required 会把已经选了文件的表单也拦下。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才参与提交。 |
 | `files` | `File[]` |  | 已选文件。提供即受控：cell 直读 prop，写入只发 onFilesChange 不落内部值。 |
 | `defaultFiles` | `File[]` |  |  |
@@ -1680,6 +1685,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `maxConcurrentUploads` | `number` |  | 同时在传的文件数上限，默认不限。到了上限的文件报 queued 排队，前面的传完、失败或被取消后按列表顺序补上。 |
 | `directory` | `boolean` |  | 选择目录而不是文件（隐藏输入带 webkitdirectory）。 |
 | `capture` | `'user' \| 'environment'` |  | 移动端直接调用摄像头 / 麦克风采集。 |
+| `linkTarget` | `string` |  | 附件链接（item-link）的打开方式，写到链接的 target 上；缺省在当前页打开。 写 _blank 时链接同时带 rel="noopener noreferrer"。 |
 | `remoteFiles` | `FileUploadRemoteFile[]` |  | 服务器已有附件（编辑表单回显）。提供即受控：cell 直读 prop，删改只发 onRemoteFilesChange 不落内部值。条目计入 maxFiles 总量，与本地文件一起渲染。 |
 | `defaultRemoteFiles` | `FileUploadRemoteFile[]` |  |  |
 | `upload` | `(request: FileUploadRequest) => Promise<FileUploadResult \| undefined \| void> \| FileUploadResult \| undefined \| void` |  | 每个文件的传输实现。提供后组件才是上传器：接受的文件按 autoUpload 自动开始传输， 进度、成败与返回地址都记入该文件的传输快照。未提供时保持纯选择器。 |
@@ -1715,7 +1721,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
-| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url? }` |
+| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传输完成；detail 为 `{ file, url?, id? }`，带 id 时这个文件随后转入 remoteFiles |
 | `upload-error` | `FileUploadErrorDetails` | 单个文件传输失败；detail 为 `{ file, error }` |
 | `upload-cancel` | `FileUploadCancelDetails` | 单个文件的传输被 cancelUpload 取消（文件留在列表里）；detail 为 `{ file }` |
 | `file-accept` | `FileUploadFileAcceptDetails` | 本次接受了哪些文件；detail 为 `{ files: File[] }` |
@@ -1728,6 +1734,8 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFileUploadRoot` | `default` | `FileUploadRootSlotProps` |  |
+| `XhFileUploadRoot` | `label` | — |  |
+| `XhFileUploadRoot` | `dropzone` | — | 不写默认插槽时投放区里的内容；未写时取 translations.dropzone。 |
 
 ### React 适配器 props
 
@@ -1737,6 +1745,9 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | --- | --- | --- | --- | --- |
 | `XhFileUploadItem` | `file` | `FileUploadFile` |  | 该行显示哪个文件（本地或远程附件）。 |
 | `XhFileUploadItem` | `index` | `number \| string` |  | 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串。 |
+| `XhFileUploadRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhFileUploadRoot` | `dropzone` | `ReactNode` |  | 不给 children 时投放区里的内容；未写时取 translations.dropzone。 |
+| `XhFileUploadRoot` | `clearable` | `boolean` |  | 不给 children 时列表之后带清空整份列表的按钮；给了 children 时放 clear-trigger 部件即可清空。 |
 | `XhFileUploadRoot` | `children` | `SlotChildren<FileUploadRootSlotProps>` |  |  |
 
 ### 状态
@@ -1754,7 +1765,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 
 **事件**：`FILES.SET` · `FILES.ADD` · `FILE.DELETE` · `FILES.CLEAR` · `PICKER.OPEN` · `DRAG.OVER` · `DRAG.LEAVE` · `DROP` · `PASTE` · `UPLOAD.CANCEL` · `UPLOAD.START` · `REMOTE.DELETE` · `FORM.RESET` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED` · `PROGRESS.SETTLED`
 
-**判据**：`canChange` · `canDrop` · `canPaste`
+**判据**：`canChange` · `canTransfer` · `canDrop` · `canPaste`
 
 ### connect API
 
@@ -1768,8 +1779,13 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `dragging` | `boolean` | 有内容正悬停在投放区上方。 |
 | `disabled` | `boolean` |  |
 | `invalid` | `boolean` |  |
+| `readOnly` | `boolean` |  |
+| `required` | `boolean` |  |
 | `empty` | `boolean` | 没有任何文件。清空按钮据此写 data-empty，空列表据此显示占位。 |
 | `maxFiles` | `number` | 生效的数量上限（已按默认值与非法值归一）。 |
+| `translations` | `FileUploadTranslations` | 合上作者覆盖后的文案。 |
+| `fileKey` | `(file: FileUploadFile) => string` | 文件在列表里的稳定标识：本地文件取机器发的内部 id，远程附件取 `remote:&lt;id&gt;`。 同名同大小的两份本地文件标识不同；列表增删时据此认出哪一行还是那一行。 |
+| `fileHref` | `(file: FileUploadFile) => string \| undefined` | 文件可打开的地址：远程附件的 url 经安全判定（只放行 http、https、mailto、tel 与相对地址）后的结果； 本地文件、没有 url 或地址不安全时为 undefined，此时标准结构只铺纯文字的文件名。 |
 | `getFileSizeText` | `(file: FileUploadFile) => string` | 字节数格式化为可读形式，供作者渲染 item-size-text；远程附件未报大小时为空串。 |
 | `uploadOf` | `(file: FileUploadFile) => FileUploadSnapshot \| null` | 该条目的传输快照：远程附件恒为 done；本地文件未配置 upload 时为 null， 已配置而尚未开始传输时为 idle。 |
 | `startUpload` | `(file: File) => void` | 手动开始传输（autoUpload 关闭时）、失败或取消后重试；不在列表中或传输中的文件调用无效。 |
@@ -1787,6 +1803,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemNameProps` | `(props: FileUploadItemProps) => T['element']` |  |
+| `getItemLinkProps` | `(props: FileUploadItemProps) => T['element']` | 附件链接：落在文件名里、指向 fileHref 的 &lt;a&gt;。地址不安全时不写 href；target 取 linkTarget，_blank 时带 rel="noopener noreferrer"。只读时照常可聚焦、可打开；禁用时退出 Tab 序列、报 aria-disabled，点了不跳转。 |
 | `getItemSizeTextProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemPreviewProps` | `(props: FileUploadItemProps) => T['element']` |  |
 | `getItemProgressProps` | `(props: FileUploadItemProps) => T['element']` | 该条目的传输进度条，纯装饰；进度比例写在私有槽上供皮肤计算宽度。 |
@@ -1815,15 +1832,21 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `dropzone` | `aria-disabled` | 'true' \| 'false' |
-| `dropzone` | `aria-label` | label.dropzone |
-| `dropzone` | `aria-labelledby` | `label` 部件的 id |
+| `dropzone` | `aria-disabled` | 'false' \| 'true' |
+| `dropzone` | `aria-invalid` | 'true' \| 'false' |
+| `dropzone` | `aria-label` | undefined \| props.ariaLabel |
+| `dropzone` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `dropzone` | `role` | 'button' |
+| `trigger` | `aria-disabled` | 'true' \| undefined |
+| `hidden-input` | `aria-labelledby` | `label` 部件的 id `dropzone` 部件的 id \| `dropzone` 部件的 id |
 | `list` | `role` | 'list' |
 | `item` | `role` | 'listitem' |
+| `item-link` | `aria-disabled` | 'true' \| undefined |
 | `item-preview` | `aria-hidden` | 'true' |
 | `item-progress` | `aria-hidden` | 'true' |
+| `item-delete-trigger` | `aria-disabled` | 'true' \| undefined |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(file) |
+| `clear-trigger` | `aria-disabled` | 'true' \| undefined |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 
 ## 样式参考
@@ -1844,12 +1867,17 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `dropzone` | `data-disabled` | ''（条件成立时才出现） |
 | `dropzone` | `data-dragging` | ''（条件成立时才出现） |
 | `dropzone` | `data-invalid` | ''（条件成立时才出现） |
+| `dropzone` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `trigger` | `data-xh-action-control` | '' |
 | `trigger` | `data-xh-action-display` | 'always' |
 | `trigger` | `data-xh-action-profile` | 'text' |
@@ -1864,6 +1892,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `item` | `data-remote` | ''（条件成立时才出现） |
 | `item` | `data-state` | uploadOf(file)?.status |
 | `item-name` | `data-disabled` | ''（条件成立时才出现） |
+| `item-link` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-disabled` | ''（条件成立时才出现） |
 | `item-size-text` | `data-file-size` | undefined \| String(file.size) \| String(file.size) |
 | `item-preview` | `data-disabled` | ''（条件成立时才出现） |
@@ -1872,6 +1901,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `item-progress` | `data-state` | upload?.status |
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `item-delete-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `item-delete-trigger` | `data-xh-action-control` | '' |
 | `item-delete-trigger` | `data-xh-action-display` | 'always' |
 | `item-delete-trigger` | `data-xh-action-profile` | 'icon' |
@@ -1880,6 +1910,7 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `clear-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-empty` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-control` | '' |
 | `clear-trigger` | `data-xh-action-display` | 'always' |
 | `clear-trigger` | `data-xh-action-profile` | 'text' |
@@ -1911,11 +1942,11 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `--xh-file-upload-dropzone-bg` | `dropzone` | `background` | `default` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-disabled` | `dropzone` | `background` | `disabled` | `--xh-bg-subtle` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-bg-dragging` | `dropzone` | `background` | `dragging` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
-| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
+| `--xh-file-upload-dropzone-bg-hover` | `dropzone` | `background` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-dragging])`<br>`readonly` | `--xh-bg-subtle-hover` | file-upload 的 dropzone 部件 background 覆盖槽。 |
 | `--xh-file-upload-dropzone-border` | `dropzone` | `border` | `default` | `--xh-border-control` | file-upload 的 dropzone 部件 border 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-dragging` | `dropzone` | `border-color` | `dragging` | `--xh-bg-brand` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-focus` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`focus-visible`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-_tone` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
-| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid], [data-dragging])` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
+| `--xh-file-upload-dropzone-border-hover` | `dropzone` | `border-color` | `disabled`<br>`dragging`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-dragging])`<br>`readonly` | `--xh-border-strong` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-border-invalid` | `dropzone` | `border-color` | `invalid` | `--xh-border-invalid` | file-upload 的 dropzone 部件 border-color 覆盖槽。 |
 | `--xh-file-upload-dropzone-fg` | `dropzone` | `color` | `default` | `--xh-fg-default` | file-upload 的 dropzone 部件 color 覆盖槽。 |
 | `--xh-file-upload-dropzone-font-size` | `dropzone` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 dropzone 部件 font-size 覆盖槽。 |
@@ -1936,6 +1967,10 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 | `--xh-file-upload-item-font-size` | `item` | `font-size` | `default` | `--xh-text-body-size` | file-upload 的 item 部件 font-size 覆盖槽。 |
 | `--xh-file-upload-item-gap` | `list` | `gap` | `default` | `--xh-space-3` | file-upload 的 list 部件 gap 覆盖槽。 |
 | `--xh-file-upload-item-inner-gap` | `item` | `gap` | `default` | `--xh-space-3` | file-upload 的 item 部件 gap 覆盖槽。 |
+| `--xh-file-upload-item-link-fg` | `item-link` | `color` | `default` | `--xh-fg-brand` | file-upload 的 item-link 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-link-fg-hover` | `item-link` | `color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-brand-strong` | file-upload 的 item-link 部件 color 覆盖槽。 |
+| `--xh-file-upload-item-link-radius` | `item-link` | `border-radius` | `default` | `--xh-shape-inset` | file-upload 的 item-link 部件 border-radius 覆盖槽。 |
+| `--xh-file-upload-item-link-underline-offset` | `item-link` | `text-underline-offset` | `default` | `--xh-space-0_5` | file-upload 的 item-link 部件 text-underline-offset 覆盖槽。 |
 | `--xh-file-upload-item-mark-size` | `item` | `block-size`<br>`inline-size` | `has(> [data-part='item-progress'][data-state='done'])`<br>`has(> [data-part='item-progress'][data-state='error'])`<br>`state=closed`<br>`state=done`<br>`state=error` | `--xh-control-indicator-size` | file-upload 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-file-upload-item-name-min-w` | `item-name` | `min-inline-size` | `default` | `--xh-control-min-w` | file-upload 的 item-name 部件 min-inline-size 覆盖槽。 |
 | `--xh-file-upload-item-progress-fill` | `item-progress` | `background` | `default` | `--xh-bg-brand` | file-upload 的 item-progress 部件 background 覆盖槽。 |
@@ -1977,9 +2012,13 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

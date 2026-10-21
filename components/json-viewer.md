@@ -52,7 +52,7 @@ const payload = {
 
 加粗的是必需部件。
 
-`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
+`data-scope="json-viewer"`：**`root`** · `tree` · `item` · `item-key` · `item-value` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-summary` · `branch-content` · `preview` · `text` · `token` · `empty` · `mark` · `toolbar` · `expand-trigger` · `wrap-trigger` · `copy-trigger` · `view-trigger` · `status`
 
 ## 示例
 
@@ -805,6 +805,7 @@ const payload = {
 | `branch-trigger` | 'open' \| 'closed' |
 | `branch-indicator` | 'open' \| 'closed' |
 | `branch-text` | 'open' \| 'closed' |
+| `branch-summary` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
 | `preview` | 'open' \| 'closed' |
 | `expand-trigger` | 'open' \| 'closed' |
@@ -830,6 +831,7 @@ const payload = {
 | `isFocusWithin` | `boolean` | 焦点当前是否在树内。行的高亮标记随它变化，锚点不随之变化。 |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `previewText` | `(node: JsonViewerNode) => string` | 分支收起摘要的显示文字（如 `{…} 3`），只用于视觉；叶子行返回空串。 |
+| `branchSummary` | `(node: JsonViewerNode) => string` | 分支的可及名字（键名，根行取 translations.root；收起时带上成员数），铺进 branch-summary。 |
 | `valueText` | `(node: JsonViewerNode) => string` | 值的显示文字；截断占位行返回其余 N 项的文案。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
@@ -870,6 +872,7 @@ const payload = {
 | `getBranchTriggerProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getBranchIndicatorProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getBranchTextProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
+| `getBranchSummaryProps` | `(props: JsonViewerNodeProps) => T['element']` | 视觉隐藏的分支名字，分支行的可及名字即取自它。 |
 | `getBranchContentProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getPreviewProps` | `(props: JsonViewerNodeProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
@@ -914,13 +917,13 @@ const payload = {
 | `item` | `aria-setsize` | node?.setSize |
 | `item` | `role` | 'treeitem' |
 | `branch` | `aria-expanded` | 'true' \| 'false' |
-| `branch` | `aria-label` | branchLabel(node) \| undefined |
 | `branch` | `aria-level` | node?.level |
 | `branch` | `aria-posinset` | node?.posInSet |
 | `branch` | `aria-setsize` | node?.setSize |
 | `branch` | `role` | 'treeitem' |
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
+| `branch-text` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
 | `preview` | `aria-hidden` | 'true' |
 | `text` | `aria-label` | label.text |
@@ -1011,6 +1014,13 @@ const payload = {
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-truncated` | ''（条件成立时才出现） |
 | `branch-text` | `data-value-type` | node?.type |
+| `branch-summary` | `data-circular` | ''（条件成立时才出现） |
+| `branch-summary` | `data-current` | ''（条件成立时才出现） |
+| `branch-summary` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-summary` | `data-match` | ''（条件成立时才出现） |
+| `branch-summary` | `data-state` | 'open' \| 'closed' |
+| `branch-summary` | `data-truncated` | ''（条件成立时才出现） |
+| `branch-summary` | `data-value-type` | node?.type |
 | `branch-content` | `data-circular` | ''（条件成立时才出现） |
 | `branch-content` | `data-current` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |

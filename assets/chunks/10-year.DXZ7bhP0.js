@@ -1,0 +1,82 @@
+var e=`<!-- 年份切换 | 一排按钮切换的是区间，网格、月份段、色阶与锚点全部按新区间重新计算 -->
+<div style="display: grid; gap: 12px">
+  <div id="heatmap-year-tabs" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+  <div id="heatmap-year-mount" style="min-width: 0"></div>
+</div>
+
+<!-- 只写 root：换区间之后元素按新网格重排月份行、七行星期与图例 -->
+<template id="heatmap-year-template">
+  <xh-heatmap>
+    <div data-xh-part="root"></div>
+  </xh-heatmap>
+</template>
+
+<script type="module">
+  const DAY_MS = 86400000;
+
+  // 一段区间的提交量：数值由天序号哈希出来，同一段区间恒出同一份数据
+  function buildRange(start, end) {
+    const days = [];
+    const from = Date.parse(\`\${start}T00:00:00Z\`);
+    const to = Date.parse(\`\${end}T00:00:00Z\`);
+    let index = 0;
+    for (let time = from; time <= to; time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? 4 : 8;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.2 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  // 今天按 UTC 取整到当天零点，「最近一年」从它往回数 364 天
+  const today = Math.floor(Date.now() / DAY_MS) * DAY_MS;
+  const iso = (time) => new Date(time).toISOString().slice(0, 10);
+
+  const ranges = [
+    { key: "recent", label: "最近一年", start: iso(today - 364 * DAY_MS), end: iso(today) },
+    { key: "2024", label: "2024", start: "2024-01-01", end: "2024-12-31" },
+    { key: "2023", label: "2023", start: "2023-01-01", end: "2023-12-31" },
+    { key: "2022", label: "2022", start: "2022-01-01", end: "2022-12-31" },
+  ];
+
+  const fragment = document
+    .getElementById("heatmap-year-template")
+    .content.cloneNode(true);
+  const heatmap = fragment.querySelector("xh-heatmap");
+  const tabs = document.getElementById("heatmap-year-tabs");
+
+  const buttons = ranges.map((range) => {
+    const host = document.createElement("xh-button");
+    host.setAttribute("size", "sm");
+    const button = document.createElement("button");
+    button.dataset.xhPart = "root";
+    button.textContent = range.label;
+    button.addEventListener("click", () => show(range.key));
+    host.append(button);
+    tabs.append(host);
+    return host;
+  });
+
+  /** 换区间：属性与数据一起换，结构由元素按新区间重排。 */
+  function show(key) {
+    const range = ranges.find((item) => item.key === key) ?? ranges[0];
+    buttons.forEach((host, index) => {
+      host.setAttribute("variant", ranges[index].key === key ? "solid" : "outline");
+    });
+    heatmap.setAttribute("start-date", range.start);
+    heatmap.setAttribute("end-date", range.end);
+    // 数据是数组，只走 property：HTML 属性装不下它
+    heatmap.value = buildRange(range.start, range.end);
+  }
+
+  // 换区间不必自己动手清理：上一次聚焦的那一格不在新区间里时，
+  // Tab 位自动退回新网格文档序的头一格
+  document.getElementById("heatmap-year-mount").append(fragment);
+  show(ranges[0].key);
+<\/script>
+`;export{e as default};

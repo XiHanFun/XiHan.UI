@@ -1096,7 +1096,7 @@ granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 ```vue
 <script setup lang="ts">
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
-import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
+import { calendarPeriodOf, calendarPeriodRows, calendarPeriodValue } from "@xihan-ui/headless";
 import {
   XhButton,
   XhDatePickerCalendar,
@@ -1141,8 +1141,12 @@ const granularities: { value: CalendarGranularity; label: string }[] = [
 const granularity = ref<CalendarGranularity>("day");
 const value = ref<string[]>([]);
 
-const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
-  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
+// 按年挑时一页铺开两百年；自备的格子同样按年视图的列数切成行
+const yearRows: CalendarPeriod[][] = calendarPeriodRows(
+  Array.from({ length: 200 }, (_, index) =>
+    calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!),
+  "year",
+);
 
 const summary = computed(() => {
   const period = calendarPeriodValue(granularity.value, "single", value.value, { locale: "zh-CN" });
@@ -1218,14 +1222,15 @@ function changeGranularity(details: { value: string | string[] | null }) {
                 </XhDatePickerWeekRow>
               </XhDatePickerGridBody>
             </template>
-            <XhDatePickerCell
-              v-for="period in granularity === 'year' ? yearCells : panel.cells"
+            <XhDatePickerWeekRow
+              v-for="row in granularity === 'year' ? yearRows : panel.rows"
               v-else
-              :key="period.key"
-              :value="period.start"
+              :key="row[0].key"
             >
-              <XhDatePickerCellTrigger>{{ period.label }}</XhDatePickerCellTrigger>
-            </XhDatePickerCell>
+              <XhDatePickerCell v-for="period in row" :key="period.key" :value="period.start">
+                <XhDatePickerCellTrigger>{{ period.label }}</XhDatePickerCellTrigger>
+              </XhDatePickerCell>
+            </XhDatePickerWeekRow>
           </XhDatePickerGrid>
         </XhDatePickerCalendar>
 
@@ -1301,6 +1306,7 @@ function changeGranularity(details: { value: string | string[] | null }) {
   const control = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control']");
   const clearTrigger = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control'] > [data-xh-part='clear-trigger']");
   const trigger = picker.querySelector(":scope > [data-xh-part='root'] > [data-xh-part='control'] > [data-xh-part='trigger']");
+  // 按年挑时一页铺开两百年；自备的格子同样按年视图一行三格切成行
   const yearCells = Array.from({ length: 200 }, (_, index) => {
     const year = 1900 + index;
     return {
@@ -1311,6 +1317,8 @@ function changeGranularity(details: { value: string | string[] | null }) {
       outside: false,
     };
   });
+  const yearRows = [];
+  for (let i = 0; i < yearCells.length; i += 3) yearRows.push(yearCells.slice(i, i + 3));
   let currentValue = [];
 
   function node(tag, part, text) {
@@ -1379,8 +1387,12 @@ function changeGranularity(details: { value: string | string[] | null }) {
       }
       grid.append(head, body);
     } else {
-      const periods = quickYear ? yearCells : panel.cells;
-      grid.append(...periods.filter(Boolean).map(periodCell));
+      // 周期格按行收进 week-row：grid 底下得是行，格子落在行里
+      for (const periods of quickYear ? yearRows : panel.rows) {
+        const row = node("div", "week-row");
+        row.append(...periods.map(periodCell));
+        grid.append(row);
+      }
     }
     calendar.append(header, grid);
     return calendar;
@@ -2171,6 +2183,8 @@ import {
 ### 特性
 
 - `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的段组（多选时是带删除钮的标签行）、清空钮与日历钮，表单影子，浮层里依次是快捷选项列、每个面板一份日历（标题栏、表头与日期格）、`showTime` 的时间列与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
+- 自己写结构时，浮层里的日历照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历选择器](./calendar-picker)。Vue / React 的时间列可以用 `XhDatePickerTimePanel` 整组铺，也可以逐列写 `XhDatePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDatePickerTimeItem`。
 - 多选（`selectionMode="multiple"`）时选中的日期在输入行里排成标签（库内 [标签](./tag)，与[选择器](./select)多选同一套）：段位收起，日历钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签文字按粒度与 `locale` 排出（日 2026/10/02、月 2026年10月、周 2026-W40、季 2026-Q4），标签是定长文字、不截短，一行放不下就折到下一行，盒随行数长高、到上限后在盒内滚动；超过 `maxTagCount`（默认 3）的折进 +N；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入。
 - `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
@@ -2194,6 +2208,7 @@ import {
 
 - 浮层内嵌[日历选择器](./calendar-picker)，翻月、层级切换与键盘导航由它负责。
 - 输入行内嵌[日期字段](./date-field)的段位，逐段键入与加减由它负责。
+- 直接放入[表单字段](./field)：字段的标题并进日历钮的名字，说明与错误文案进描述链；只读、必填与校验由各段报告，日历钮是普通按钮，不带 aria-readonly / aria-required。有值时清空钮顶替日历钮，点字段标题焦点落在第一段。
 
 ### 最佳实践
 
@@ -2219,7 +2234,7 @@ import {
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerFooter` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerItemDeleteTrigger` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerOverflowTag` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTag` `XhDatePickerTagLabel` `XhDatePickerTagList` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerFooter` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerItemDeleteTrigger` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerOverflowTag` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTag` `XhDatePickerTagLabel` `XhDatePickerTagList` `XhDatePickerTimeColumn` `XhDatePickerTimeItem` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
@@ -2228,6 +2243,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| string[]` |  | 选中值，ISO 串。提供即受控：读取直取 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
@@ -2304,7 +2321,10 @@ import {
 | `XhDatePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
 | `XhDatePickerPresetGroup` | `default` | `DatePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
+| `XhDatePickerRoot` | `label` | — | 不写默认插槽时标题的内容，盖过 label 文字。 |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
+| `XhDatePickerTimeColumn` | `default` | — | 自行铺 XhDatePickerTimeItem；未写时按这一列的可选值自动铺。 |
+| `XhDatePickerTimeItem` | `default` | — | 格里的内容；未写时显示按 locale 译好的文字。 |
 
 ### React 适配器 props
 
@@ -2322,11 +2342,14 @@ import {
 | `XhDatePickerPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhDatePickerPreset` | `value` | `string` | 是 | 该条目的身份，与 presets 数据中的 value 逐字对应。 |
 | `XhDatePickerPresetGroup` | `children` | `SlotChildren<DatePickerPresetsSlotProps>` |  | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
-| `XhDatePickerRoot` | `children` | `SlotChildren<DatePickerRootSlotProps>` |  |  |
+| `XhDatePickerRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhDatePickerRoot` | `children` | `SlotChildren<DatePickerRootSlotProps>` |  | 不给时照标准结构铺整套部件。 |
 | `XhDatePickerSegment` | `index` | `number \| string` |  | 段位下标，兼收字符串。 |
 | `XhDatePickerSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
 | `XhDatePickerSegment` | `children` | `SlotChildren<DatePickerSegmentSlotProps>` |  |  |
 | `XhDatePickerTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
+| `XhDatePickerTimeColumn` | `unit` | `DatePickerTimeUnit` | 是 | 这一列的单位：hour、minute、second 或 dayPeriod。 |
+| `XhDatePickerTimeItem` | `value` | `string` | 是 | 这一格的值，与时间列的可选值逐字对应：两位补零（上下午列写 '00' / '01'）。 |
 | `XhDatePickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
 | `XhDatePickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |
 
@@ -2388,6 +2411,7 @@ import {
 | `getTimeItemText` | `(props: DatePickerTimeItemProps) => string` | 某一格显示的文字：数字列即格值，上下午列按 locale 给出「上午 / 下午」。各适配器都用它填字。 |
 | `isTimeItemDisabled` | `(props: DatePickerTimeItemProps) => boolean` | 某一格按不下去：落在 min / max 之外、被 isTimeUnavailable 判为不可用，或整个控件禁用。 |
 | `calendar` | `CalendarPickerApi<T>` | 内嵌日历：选日期、翻月、键盘导航都在它身上。 |
+| `translations` | `DatePickerTranslations` | 解析后的文案：作者给的 translations 盖在当前语言包上。 |
 | `field` | `DatePickerFieldApi<T>` | 内嵌分段输入。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
@@ -2437,15 +2461,18 @@ import {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `segment-group` | `aria-disabled` | 'true' \| 'false' |
-| `segment-group` | `aria-labelledby` | `label` 部件的 id |
+| `segment-group` | `aria-label` | props.ariaLabel |
+| `segment-group` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `segment-group` | `role` | 'group' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
-| `trigger` | `aria-labelledby` | `label` 部件的 id |
+| `trigger` | `aria-label` | props.ariaLabel |
+| `trigger` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `clear-trigger` | `aria-label` | label.clearTrigger |
 | `content` | `aria-hidden` | !open \|\| undefined |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'false' |
 | `content` | `role` | 'dialog' |
 | `preset-group` | `aria-disabled` | 'true' \| 'false' |

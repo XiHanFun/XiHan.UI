@@ -463,12 +463,15 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 - 条目可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 条目可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 提供空态、加载态与加载更多部件。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是列表、空态与在途占位：`collection` 的每条数据一个条目（文字、有副文本时的副文本与选中标记），没给 `collection` 时列表是空的；空态与在途的文字取 `translations`（`empty`、`loading`），按状态收放。分组与加载更多不在其中，要用时手写结构。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
 
 ### 组合
 
 - 收进浮层即是[选择器](./select)与[组合框](./combobox)的候选列表；常驻时直接铺在面板内。
+- 直接放进[表单字段](./field)即可：字段的标题并进列表的名字、说明与错误文案进描述链，读屏进列表时一起念出；点字段标题，焦点落到当前条目。
 - 长列表接入[虚拟滚动](./virtualizer)只渲染可视区；两侧搬运的场景使用[穿梭框](./transfer)。
 - 接入 Virtualizer 时 collection 仍须是完整集合；方向键、连打检索、全选与区间选择不会退化成只处理当前 DOM 窗口。
 
@@ -500,6 +503,8 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
@@ -515,6 +520,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。 |
+| `translations` | `Partial<ListboxTranslations>` |  |  |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
 ### ListboxNode
@@ -545,6 +551,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | --- | --- | --- | --- |
 | `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
 | `XhListboxRoot` | `label` | — |  |
+| `XhListboxRoot` | `empty` | — | 不写默认插槽时空态占位的内容；未写时取 translations.empty。 |
 | `XhListboxRoot` | `item` | `ListboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
 | `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
@@ -559,6 +566,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `XhListboxItem` | `value` | `string` | 是 |  |
 | `XhListboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhListboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
+| `XhListboxRoot` | `empty` | `ReactNode` |  | 不给 children 时空态占位的内容；未写时取 translations.empty。 |
 | `XhListboxRoot` | `renderItem` | `(node: ListboxNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
 | `XhListboxRoot` | `renderItemPrefix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhListboxRoot` | `renderItemSuffix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
@@ -599,6 +607,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `loading` | `boolean` |  |
+| `translations` | `ListboxTranslations` | 合上作者覆盖后的文案。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `select` | `(value: string) => void` | 只保留该条目；加选使用 toggle。 |
@@ -647,7 +656,8 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-disabled` | 'true' \| 'false' |
 | `content` | `aria-invalid` | 'true' \| 'false' |
-| `content` | `aria-labelledby` | `label` 部件的 id |
+| `content` | `aria-label` | props.ariaLabel |
+| `content` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `content` | `aria-multiselectable` | 'true' \| 'false' |
 | `content` | `aria-orientation` | props.orientation |
 | `content` | `aria-readonly` | 'true' \| 'false' |
@@ -766,7 +776,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 | `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-listbox-item-fg` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
 | `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | listbox 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
@@ -793,9 +803,7 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

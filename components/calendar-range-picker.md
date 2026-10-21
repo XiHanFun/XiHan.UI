@@ -510,7 +510,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 ### 按周选择
 
-granularity=week：一行一个整周，格子直接铺进网格；值是两端两周的周首日；月、季度与年同理
+granularity=week：rows 已按行切好，周视图一行一个整周，每行写一个 week-row；值是两端两周的周首日；月、季度与年同理
 
 ```vue
 <script setup lang="ts">
@@ -523,6 +523,7 @@ import {
   XhCalendarRangePickerNextTrigger,
   XhCalendarRangePickerPrevTrigger,
   XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekRow,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
@@ -534,7 +535,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 <template>
   <XhCalendarRangePickerRoot
-    v-slot="{ periods }"
+    v-slot="{ rows }"
     v-model:value="value"
     locale="zh-CN"
     granularity="week"
@@ -545,11 +546,13 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
       <XhCalendarRangePickerHeading />
       <XhCalendarRangePickerNextTrigger aria-label="下个月" />
     </XhCalendarRangePickerHeader>
-    <!-- 周期视图没有周行那一层：一格就是一整周，格子直接铺进网格 -->
+    <!-- 周期格按行收进 week-row：grid 底下得是行，格子落在行里 -->
     <XhCalendarRangePickerGrid>
-      <XhCalendarRangePickerCell v-for="period in periods" :key="period.key" :value="period.start">
-        <XhCalendarRangePickerCellTrigger>{{ period.label }}</XhCalendarRangePickerCellTrigger>
-      </XhCalendarRangePickerCell>
+      <XhCalendarRangePickerWeekRow v-for="row in rows" :key="row[0].key">
+        <XhCalendarRangePickerCell v-for="period in row" :key="period.key" :value="period.start">
+          <XhCalendarRangePickerCellTrigger>{{ period.label }}</XhCalendarRangePickerCellTrigger>
+        </XhCalendarRangePickerCell>
+      </XhCalendarRangePickerWeekRow>
     </XhCalendarRangePickerGrid>
   </XhCalendarRangePickerRoot>
 
@@ -562,7 +565,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 <span style="font-size: 13px">周区间：<span id="calendar-range-picker-granularity-value">（未选）</span></span>
 
 <!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页。
-     周期视图没有周行那一层：一格就是一整周，格子直接铺进 grid -->
+     周期格按行收进 week-row：grid 底下得是行，格子落在行里 -->
 <template id="calendar-range-picker-granularity-template">
   <xh-calendar-range-picker locale="zh-CN" granularity="week">
     <div data-xh-part="root" style="max-inline-size: 280px">
@@ -590,23 +593,28 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
   function paintBody() {
-    const periods = calendar.periods;
-    const first = periods[0]?.start ?? "";
+    const rows = calendar.rows;
+    const first = rows[0]?.[0]?.start ?? "";
     if (first === month) {
       return;
     }
     month = first;
     heading.textContent = calendar.headingLabel;
     grid.replaceChildren(
-      ...periods.map((period) => {
-        const cell = document.createElement("div");
-        cell.dataset.xhPart = "cell";
-        cell.setAttribute("value", period.start);
-        const trigger = document.createElement("div");
-        trigger.dataset.xhPart = "cell-trigger";
-        trigger.textContent = period.label;
-        cell.append(trigger);
-        return cell;
+      ...rows.map((row) => {
+        const line = document.createElement("div");
+        line.dataset.xhPart = "week-row";
+        for (const period of row) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", period.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = period.label;
+          cell.append(trigger);
+          line.append(cell);
+        }
+        return line;
       }),
     );
   }
@@ -797,6 +805,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 - 落起点后可选范围默认被夹在两侧最近的不可用日之间，`allowsNonContiguousRanges` 允许跨过它们；`isDateUnavailable` 的第二个参数是当前起点，可据此限制区间长度。
 - 已选区间的任一端越界或不可用即标记为不合法，也可以用 `invalid` 显式声明。
 - `granularity` 决定周期格的生成方式；周、月、季度和年区间共用同一套 Period 边界判断。
+- 周、月、季度与年这几层同样按行渲染：插槽里的 `rows`（多面板读 `panels[i].rows`）已按列数切好——周一行一格，月与年一行三格，季度一行四格；一行写一个 `week-row`，格子放进行里。网格是 `role=grid`，行承担 `role=row`，格子不直接铺进网格。
 - `visibleCount` 并排展示连续的月份，翻页时整个视窗一起移动；起止常跨月时建议为 2。多个面板始终联动、一起翻页，不提供解绑（Element Plus 的 `unlink-panels` 那一档）：两张月历各翻各的之后，方向键跨出一张月历时焦点该落到哪一张、另一张跟不跟着走都没有一致的答案，读屏用户也失去「这几张是连续的月」这条线索。起止相隔很远时点标题里的年 / 月直接跳，或在输入行键入；React Aria 的 `visibleDuration` 同样只有联动一种。
 - `calendarPeriodValue` 将两端转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
 - 周首日、月份名与星期名跟随 `locale`，与日历选择器使用同一套解析链；`firstDayOfWeek`（0 = 星期日 … 6 = 星期六）单独改周首日，月份名与星期名仍按 `locale`。星期表头缺省只写一个字（`weekdayFormat` 为 `narrow`），需要缩写时设为 `short`，读屏名称始终是星期全称。
@@ -817,6 +826,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 ### 反模式
 
+- 把周、月、季度或年的格子直接铺进网格：网格底下没有行，读屏报不出格子落在第几行第几列。
 - 用两个日历选择器分别选起止：中间的日期不铺轨道，也没有拖选与预览。
 - 不可选的日期无法聚焦，键盘用户无从知道该位置的内容。
 
@@ -941,6 +951,10 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `prev-year-trigger` | `aria-label` | translations.prevYearTrigger(view) |
+| `prev-trigger` | `aria-label` | translations.prevTrigger(view) |
+| `next-trigger` | `aria-label` | translations.nextTrigger(view) |
+| `next-year-trigger` | `aria-label` | translations.nextYearTrigger(view) |
 | `grid` | `aria-disabled` | 'true' \| 'false' |
 | `grid` | `aria-labelledby` | frame.headingId(panel.index) |
 | `grid` | `aria-multiselectable` | 'true' |
@@ -1031,6 +1045,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 | `grid` | `data-index` | frame.panelOf(panel).index |
 | `grid` | `data-readonly` | ''（条件成立时才出现） |
 | `grid` | `data-view` | view |
+| `week-row` | `data-view` | view |
 | `cell` | `data-disabled` | ''（条件成立时才出现） |
 | `cell` | `data-focus` | ''（条件成立时才出现） |
 | `cell` | `data-in-range` | ''（条件成立时才出现） |
@@ -1108,7 +1123,7 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 | `--xh-calendar-range-picker-nav-fg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-range-picker-nav-radius` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `border-radius` | `default` | `--xh-shape-circle` | calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-nav-size` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | calendar-range-picker 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-calendar-range-picker-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-0` | calendar-range-picker 的 grid 部件 gap 覆盖槽。 |
+| `--xh-calendar-range-picker-period-gap` | `grid`<br>`week-row` | `column-gap`<br>`gap` | `is([data-view='month'], [data-view='year'])`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-0` | calendar-range-picker 的 grid、week-row 部件 column-gap、gap 覆盖槽。 |
 | `--xh-calendar-range-picker-period-px` | `cell` | `padding-inline` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-1` | calendar-range-picker 的 cell 部件 padding-inline 覆盖槽。 |
 | `--xh-calendar-range-picker-period-radius` | `cell-trigger` | `border-radius` | `default` | `--xh-shape-control` | calendar-range-picker 的 cell-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-range-picker-range-bg` | `cell` | `background-color` | `in-range`<br>`not([data-outside-month])`<br>`outside-month` | `--xh-bg-brand-subtle` | calendar-range-picker 的 cell 部件 background-color 覆盖槽。 |

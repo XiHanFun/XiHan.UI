@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C_GYr3Wu.js";import{o as t,r as n,s as r,t as i}from"./list.BbJ5HdC7.js";var a=e(),o=[`设计稿.fig`,`接口文档.md`,`会议纪要.docx`];function s(){return(0,a.jsx)(r,{variant:`outline`,hoverable:!0,split:!0,style:{maxInlineSize:`360px`},children:o.map(e=>(0,a.jsx)(i,{children:(0,a.jsx)(n,{children:(0,a.jsx)(t,{children:e})})},e))})}export{s as default};

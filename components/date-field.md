@@ -606,6 +606,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 ### 特性
 
 - `locale` 决定日期段的顺序和分隔方式。
+- 不写结构时按标准结构铺出标题、段组与清空按钮、表单影子（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：段按当前段序铺，段与段之间的分隔符从 `locale` 现取（zh-CN 是 `2026/07/28`，en-US 到分钟是 `07/28/2026, 13:45`），`label` 给标题文字。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - `min` 与 `max` 限制可输入范围。
 - `placeholder` 给对象是逐段的占位串；给字符串是整条占位，一段都没填、焦点也不在段上时段位与分隔符让位给这句文字，焦点一进来就换回段位。
 - `granularity` 支持日期或精确到分钟的日期时间；`hourCycle={12}` 时小时段收 1-12，时刻段后面多出上下午段，值仍是 24 小时制的 ISO 串。
@@ -648,6 +649,8 @@ const value = ref<string | null>("2026-07-28T21:05");
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。提供即受控。 |
 | `defaultValue` | `string \| null` |  | 非受控初值，同样是 ISO 串。 |
 | `min` | `string` |  | 下界，ISO 串。参与各段区间的收窄，并决定 outOfRange。 |
@@ -686,6 +689,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDateFieldRoot` | `default` | `DateFieldRootSlotProps` |  |
+| `XhDateFieldRoot` | `label` | — |  |
 | `XhDateFieldSegment` | `default` | `DateFieldSegmentSlotProps` |  |
 
 ### React 适配器 props
@@ -694,6 +698,7 @@ const value = ref<string | null>("2026-07-28T21:05");
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhDateFieldRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhDateFieldRoot` | `children` | `SlotChildren<DateFieldRootSlotProps>` |  |  |
 | `XhDateFieldSegment` | `index` | `number \| string` |  | 下标由作者声明，对应哪一段由 locale 与段集计算；兼收字符串。 |
 | `XhDateFieldSegment` | `segment` | `DateSegmentType` |  | 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 |
@@ -765,7 +770,8 @@ const value = ref<string | null>("2026-07-28T21:05");
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `control` | `aria-disabled` | 'true' \| 'false' |
-| `control` | `aria-labelledby` | `label` 部件的 id |
+| `control` | `aria-label` | props.ariaLabel |
+| `control` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `control` | `role` | 'group' |
 | `segment` | `aria-disabled` | undefined \| 'true' \| 'false' |
 | `segment` | `aria-invalid` | undefined \| 'true' \| 'false' |

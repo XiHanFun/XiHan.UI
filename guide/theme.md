@@ -163,13 +163,25 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | DOM 轴 | 说明 |
 | --- | --- |
 | `data-theme` | 明暗两值各有整套语义取值 |
-| `data-brand` | 注册品牌梯度后切换品牌色 |
+| `data-brand` | 切换品牌色：预设品牌直接可用，自定义品牌先 `registerBrand` |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
 | `data-contrast` | `more` 加强边界；`default` 显式回到常规档 |
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
+
+## 预设品牌
+
+`@xihan-ui/tokens` 自带几档有名字的品牌，清单是 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`），类型是 `BrandPreset`；`BRAND_PRESET_COLORS` 给每档一个代表色（那一档的品牌 600），画色板格子、预设清单时用。每档在 `tokens.css` 里是一个 `[data-brand='<id>']` 取值块，只换品牌原语，不必 `registerBrand`：
+
+```ts
+visual.setPreference({ brand: brandId("green") });
+```
+
+各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
+
+`data-brand` 要与 `data-theme` 落在同一个元素上才换得动品牌：语义令牌在主题边界上声明，只在子元素上换品牌原语，语义令牌仍是外层解好的值。可视环境控制器的根总是同时写这两个属性；手写时在同一个元素上一并写 `data-theme`。
 
 ## 父作用域、Portal 与回收
 

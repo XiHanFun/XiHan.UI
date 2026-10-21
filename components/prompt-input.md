@@ -30,7 +30,7 @@ const sent = ref<string[]>([]);
     @submit="sent.push($event.value)"
   >
     <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+    <XhPromptInputSubmitTrigger />
   </XhPromptInputRoot>
   <p data-demo-output>已发出：{{ sent.join(" / ") || "（无）" }}</p>
 </template>
@@ -40,7 +40,7 @@ const sent = ref<string[]>([]);
 <xh-prompt-input id="prompt-input-basic">
   <div data-xh-part="root">
     <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
-    <button data-xh-part="submit-trigger">发送</button>
+    <button data-xh-part="submit-trigger"></button>
   </div>
 </xh-prompt-input>
 <p id="prompt-input-basic-sent" data-demo-output>已发出：（无）</p>
@@ -163,7 +163,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
       @stop="onStop"
     >
       <XhPromptInputInput rows="1" placeholder="给助手写点什么…" />
-      <XhPromptInputSubmitTrigger>{{ loading ? "停止" : "发送" }}</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 </template>
@@ -189,7 +189,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
   <xh-prompt-input id="chat-input">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="给助手写点什么…"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>
@@ -198,7 +198,6 @@ onBeforeUnmount(() => window.clearTimeout(timer));
   const feed = document.getElementById("chat-feed");
   const input = document.getElementById("chat-input");
   const list = feed.querySelector('[data-xh-part="list"]');
-  const button = input.querySelector('[data-xh-part="submit-trigger"]');
   input.translations = { input: "给助手写点什么" };
 
   let seq = 0;
@@ -222,7 +221,6 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
   const setBusy = (loading) => {
     input.toggleAttribute("loading", loading);
-    button.textContent = loading ? "停止" : "发送";
   };
 
   input.addEventListener("submit", (event) => {
@@ -414,7 +412,7 @@ const log = ref("（还没发过）");
       @submit="log = `enter 档发出：${$event.value}`"
     >
       <XhPromptInputInput rows="1" placeholder="Enter 就发出去" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- Enter 留给换行，提交收到组合键上：长文起草时不会敲一半被发出去 -->
@@ -424,7 +422,7 @@ const log = ref("（还没发过）");
       @submit="log = `mod-enter 档发出：${$event.value}`"
     >
       <XhPromptInputInput rows="2" placeholder="Enter 换行，Ctrl/Cmd+Enter 才发" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- 键盘一个提交出口都不留：Enter 与 Mod+Enter 都原样交回浏览器插换行 -->
@@ -434,7 +432,7 @@ const log = ref("（还没发过）");
       @submit="log = `none 档发出：${$event.value}`"
     >
       <XhPromptInputInput rows="2" placeholder="键盘怎么按都只换行" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <span data-demo-output>{{ log }}</span>
@@ -448,7 +446,7 @@ const log = ref("（还没发过）");
   <xh-prompt-input id="prompt-input-key-enter">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="Enter 就发出去"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -456,7 +454,7 @@ const log = ref("（还没发过）");
   <xh-prompt-input id="prompt-input-key-mod" submit-key="mod-enter">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="2" placeholder="Enter 换行，Ctrl/Cmd+Enter 才发"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -464,7 +462,7 @@ const log = ref("（还没发过）");
   <xh-prompt-input id="prompt-input-key-none" submit-key="none">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="2" placeholder="键盘怎么按都只换行"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -508,19 +506,19 @@ import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } fro
       :translations="{ input: '已禁用的输入框' }"
     >
       <XhPromptInputInput rows="1" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- 空值：按钮转灰，敲进第一个非空白字符就亮 -->
     <XhPromptInputRoot :translations="{ input: '给助手写点什么' }">
       <XhPromptInputInput rows="1" placeholder="空着时发送按钮是灰的" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- 有附件时正文可以为空：allowEmptySubmit 一置真，空值也发得出去 -->
     <XhPromptInputRoot allow-empty-submit :translations="{ input: '带附件的输入框' }">
       <XhPromptInputInput rows="1" placeholder="空着也能发（当作已经挂了附件）" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 </template>
@@ -532,7 +530,7 @@ import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } fro
   <xh-prompt-input id="prompt-input-disabled-off" disabled default-value="这一台是禁用的">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -540,7 +538,7 @@ import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } fro
   <xh-prompt-input id="prompt-input-disabled-empty">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="空着时发送按钮是灰的"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -548,7 +546,7 @@ import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } fro
   <xh-prompt-input id="prompt-input-disabled-allow-empty" allow-empty-submit>
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="空着也能发（当作已经挂了附件）"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>
@@ -596,7 +594,7 @@ const log = ref("（还没发过）");
     <XhButton variant="ghost" size="sm" :disabled="value === ''" @click="setValue('')">
       清空
     </XhButton>
-    <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+    <XhPromptInputSubmitTrigger />
   </XhPromptInputRoot>
   <span data-demo-output>{{ log }}</span>
 </template>
@@ -619,7 +617,7 @@ const log = ref("（还没发过）");
     <xh-button id="prompt-input-extras-clear" variant="ghost" size="sm">
       <button data-xh-part="root">清空</button>
     </xh-button>
-    <button data-xh-part="submit-trigger">发送</button>
+    <button data-xh-part="submit-trigger"></button>
   </div>
 </xh-prompt-input>
 <span id="prompt-input-extras-log" data-demo-output>（还没发过）</span>
@@ -665,13 +663,13 @@ const draft = "第一行\n第二行\n第三行\n再多敲几行，框会继续�
     <!-- 起始一行：敲到第二行时框自己变高 -->
     <XhPromptInputRoot :translations="{ input: '给助手写点什么' }">
       <XhPromptInputInput rows="1" placeholder="按 Shift+Enter 换行试试" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- 初值就是好几行，挂载时框已经是撑开的 -->
     <XhPromptInputRoot :default-value="draft" :translations="{ input: '已经有草稿的输入框' }">
       <XhPromptInputInput rows="1" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 </template>
@@ -683,7 +681,7 @@ const draft = "第一行\n第二行\n第三行\n再多敲几行，框会继续�
   <xh-prompt-input id="prompt-input-autosize-one">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="按 Shift+Enter 换行试试"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -694,7 +692,7 @@ const draft = "第一行\n第二行\n第三行\n再多敲几行，框会继续�
   >
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>
@@ -740,7 +738,7 @@ function onSubmit(details: { value: string }): void {
   <div style="display: grid; gap: 12px">
     <XhPromptInputRoot :translations="{ input: '给助手写点什么' }" @submit="onSubmit">
       <XhPromptInputInput :ref="bindInput" rows="1" placeholder="发一条，焦点会自己回来" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <div style="display: flex; gap: 8px">
@@ -758,7 +756,7 @@ function onSubmit(details: { value: string }): void {
   <xh-prompt-input id="prompt-input-focus">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="发一条，焦点会自己回来"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -836,7 +834,7 @@ function onSubmit(details: { value: string }): void {
         rows="1"
         placeholder="发一条试试"
       />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
 
     <!-- 节点常挂、靠 hidden 显隐：翻出来的那一刻读屏把原因念出来 -->
@@ -863,7 +861,7 @@ function onSubmit(details: { value: string }): void {
         rows="1"
         placeholder="发一条试试"
       ></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 
@@ -925,7 +923,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
       :translations="{ input: '给助手写点什么' }"
     >
       <XhPromptInputInput rows="1" :placeholder="`${tone} 档`" />
-      <XhPromptInputSubmitTrigger>发送</XhPromptInputSubmitTrigger>
+      <XhPromptInputSubmitTrigger />
     </XhPromptInputRoot>
   </div>
 </template>
@@ -936,37 +934,37 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
   <xh-prompt-input class="prompt-input-tone" tone="brand">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="brand 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
   <xh-prompt-input class="prompt-input-tone" tone="neutral">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="neutral 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
   <xh-prompt-input class="prompt-input-tone" tone="success">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="success 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
   <xh-prompt-input class="prompt-input-tone" tone="warning">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="warning 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
   <xh-prompt-input class="prompt-input-tone" tone="danger">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="danger 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
   <xh-prompt-input class="prompt-input-tone" tone="info">
     <div data-xh-part="root">
       <textarea data-xh-part="input" rows="1" placeholder="info 档"></textarea>
-      <button data-xh-part="submit-trigger">发送</button>
+      <button data-xh-part="submit-trigger"></button>
     </div>
   </xh-prompt-input>
 </div>

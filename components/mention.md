@@ -397,7 +397,7 @@ function reset(): void {
     placeholder="输入 @ 提及同事"
     :translations="{ input: '会议纪要', content: '提及谁' }"
     @query-change="query = $event.query"
-    @select="onSelect"
+    @item-select="onSelect"
   />
   <XhButton variant="outline" size="sm" @click="reset">清空</XhButton>
   <p data-demo-output>已提及：{{ mentioned.join("、") || "（无）" }}</p>
@@ -464,7 +464,7 @@ function reset(): void {
     mention.value = event.detail.value;
   });
   // 名单按值去重；正文里被删掉的提及不在这里回收，需要的话按正文重新扫一遍
-  mention.addEventListener("select", (event) => {
+  mention.addEventListener("item-select", (event) => {
     if (!mentioned.includes(event.detail.value)) {
       mentioned = [...mentioned, event.detail.value];
       showMentioned();
@@ -843,13 +843,14 @@ const filtered = computed(() => {
 
 ### 特性
 
-- 输入框缺省单行，与其他输入控件使用同一档行高与内衬；`input` 部件写 `as="textarea"` 即多行形态，正文可以换行，候选浮层贴着整个输入框落位。
+- 输入框缺省单行，与其他输入控件使用同一档行高与内衬；`input` 部件写 `as="textarea"`（不写结构时开 `multiline`）即多行形态，正文可以换行，候选浮层锚在这条提及的前缀处、随前缀所在的行与列落位，单行时贴着整个输入框。
 - 多种前缀各自映射一份候选。
 - 插入后的引用是一个整体：光标紧贴它时 Backspace（在它之后）或 Delete（在它之前）整条删掉，不逐字退格；在它内部改字即退回普通文字。光标停在一条插完的引用里不再弹候选。
 - `api.mentions` 列出正文里仍然完整的引用（值、文本、前缀与起止下标），宿主据此取出被 @ 到的是哪几条。
 - 候选可逐条声明语气，已停用或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放职位、handle 一类的补充信息。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
+- 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - `onQueryChange` 给出当前查询串，异步候选据此拉取。
 - 正文可受控，选中时另有回调。
 - `label` 部件为输入框提供可点击的标题；提供 `translations.input` 时仍使用 `aria-label`。
@@ -859,7 +860,8 @@ const filtered = computed(() => {
 - 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后清除 `aria-activedescendant`，不提交不可见的旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
 - 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
-- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、列表按 micro 淡下，在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字（原生 `<label>`），接着是输入框（缺省单行，开了 `multiline` 是 textarea）与浮层，浮层里是 `collection` 的候选（文字、有副文本时的副文本）、空态与在途占位（文字取 `translations.empty`、`translations.loading`，按状态收放）；过滤仍由宿主改 `collection`。Web Components 里标题、空态、候选文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
 
 ### 组合
 
@@ -893,6 +895,8 @@ const filtered = computed(() => {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `triggerPrefix` | `string \| string[]` |  | 打开候选的前缀字符，默认 '@'。提供数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址中的 @ 因此不会误触发。 |
 | `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 组件不负责筛选，只负责交出查询串。 |
 | `value` | `string` |  | 整段正文。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
@@ -913,7 +917,7 @@ const filtered = computed(() => {
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
 | `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
 | `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报告 null。 |
-| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
+| `onItemSelect` | `(details: MentionItemSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
 ### MentionNode
@@ -936,7 +940,7 @@ const filtered = computed(() => {
 | --- | --- | --- |
 | `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
 | `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null |
-| `select` | `MentionSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
+| `item-select` | `MentionItemSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
 | `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -946,6 +950,7 @@ const filtered = computed(() => {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
+| `XhMentionRoot` | `label` | — |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
 | `XhMentionRoot` | `item-prefix` | `MentionNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
 | `XhMentionRoot` | `item-suffix` | `MentionNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
@@ -961,6 +966,8 @@ const filtered = computed(() => {
 | `XhMentionItem` | `value` | `string` | 是 |  |
 | `XhMentionItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhMentionPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhMentionRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
+| `XhMentionRoot` | `multiline` | `boolean` |  | 不给 children 时输入框铺成多行的 textarea；给了 children 时在 XhMentionInput 上写 as="textarea"。 |
 | `XhMentionRoot` | `renderItem` | `(node: MentionNodeMeta) => ReactNode` |  | 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 |
 | `XhMentionRoot` | `renderItemPrefix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhMentionRoot` | `renderItemSuffix` | `(node: MentionNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
@@ -1004,6 +1011,7 @@ const filtered = computed(() => {
 | `disabled` | `boolean` |  |
 | `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
 | `emptyText` | `string` | 空态部件的缺省文字，取自 translations.empty；作者自己往空态里写了内容就不用它。 |
+| `loadingText` | `string` | 在途占位的缺省文字，取自 translations.loading；作者自己往在途占位里写了内容就不用它。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |
@@ -1051,8 +1059,8 @@ const filtered = computed(() => {
 | `input` | `aria-expanded` | undefined \| 'true' \| 'false' |
 | `input` | `aria-haspopup` | 'listbox' |
 | `input` | `aria-invalid` | 'true' \| 'false' |
-| `input` | `aria-label` | translations.input |
-| `input` | `aria-labelledby` | `label` 部件的 id |
+| `input` | `aria-label` | props.ariaLabel |
+| `input` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `input` | `role` | undefined \| 'combobox' |
 | `content` | `aria-busy` | 'true' \| undefined |
 | `content` | `aria-hidden` | !open \|\| undefined |
@@ -1176,7 +1184,7 @@ const filtered = computed(() => {
 | `--xh-mention-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
 | `--xh-mention-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
 | `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
-| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-mention-item-h` | `item` | `min-block-size` | `default` | `--xh-_mention-item-h` | mention 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |

@@ -1223,6 +1223,7 @@ import {
 - `inverted` 把 min 放到轨道末端（横排在行尾、竖排在顶端），已选区间从末端画起；方向键跟随屏幕方向，拇指在屏幕上往哪边挪就按哪个键。插槽里的 `thumbs[i].percent` 与 `range` 仍按值的位置报，自绘内容反向时自己取 `1 - percent`。
 - `draggableRange`：多拇指时按住两端拇指之间的轨道拖动，整段区间一起平移、宽度不变，挪到头就停；按在拇指上仍只推那一个，按在区间外照旧抓最近的拇指。只认刻度落点（`snapToMarks`）时不生效。键盘仍按拇指逐个调整。
 - `trackFill` 关掉后不画已选区间、刻度也不按区间上色，只留底槽与拇指：取值没有「多少」之分（声道平衡、色温中点）时用它，免得从一端画起的区间暗示大小。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，控制区里依次是轨道与已选区间、刻度（给了 `marks` 才铺）、每个值一个拇指（给了 `name` 再带表单影子）。拖动时的值气泡不在其中，要用时手写结构。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 
 ### 组合
 
@@ -1254,6 +1255,8 @@ import {
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
+| `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `number[]` |  |  |
 | `defaultValue` | `number[]` |  |  |
 | `min` | `number` |  |  |
@@ -1265,6 +1268,7 @@ import {
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
+| `required` | `boolean` |  | 必填：根与标题带 data-required（标题据此画星号）。拇指是 role=slider，不收 aria-required； 滑块恒有值，表单影子不带原生 required。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度 |
 | `name` | `string` |  | 表单字段名；多滑块时逐个 append。 |
@@ -1303,6 +1307,7 @@ import {
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSliderRoot` | `default` | `SliderRootSlotProps` |  |
+| `XhSliderRoot` | `label` | — |  |
 | `XhSliderTickGroup` | `tick` | `SliderTickGroupTickSlotProps` |  |
 
 ### React 适配器 props
@@ -1311,6 +1316,7 @@ import {
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
+| `XhSliderRoot` | `label` | `ReactNode` |  | 标题。不给 children 时铺 label 部件。 |
 | `XhSliderRoot` | `children` | `SlotChildren<SliderRootSlotProps>` |  |  |
 | `XhSliderThumb` | `index` | `number \| string` |  | 第几个滑块，多滑块时必须逐个写明；兼收字符串。 |
 | `XhSliderTickGroup` | `tick` | `SlotChildren<SliderTickSlotProps>` |  | 逐档刻度的文案接管口；未提供时填入刻度自带的 label。 |
@@ -1375,7 +1381,8 @@ import {
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `thumb` | `aria-disabled` | 'true' \| 'false' |
-| `thumb` | `aria-labelledby` | `label` 部件的 id |
+| `thumb` | `aria-label` | props.ariaLabel |
+| `thumb` | `aria-labelledby` | `label` 部件的 id \| undefined |
 | `thumb` | `aria-orientation` | props.orientation |
 | `thumb` | `aria-valuemax` | String(thumb.max) |
 | `thumb` | `aria-valuemin` | String(thumb.min) |
@@ -1402,6 +1409,7 @@ import {
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
@@ -1409,6 +1417,7 @@ import {
 | `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-orientation` | props.orientation |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
+| `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |

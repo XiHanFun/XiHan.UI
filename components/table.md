@@ -1046,9 +1046,9 @@ const rows = computed(() => tasks.value.map(t => ({ id: t.id })));
 </script>
 ```
 
-### 脚注合计
+### 多行表尾
 
-footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用
+footerRows 把行号空间的最后几行留给表尾，每一行表尾写明 level；表尾单元格不属于任何数据行，也就没有选中与禁用
 
 ```vue
 <script setup lang="ts">
@@ -1081,11 +1081,12 @@ const rows = lines.map(l => ({ id: l.id }));
 
 const totalCount = computed(() => lines.reduce((sum, l) => sum + l.count, 0));
 const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
+const averagePrice = computed(() => Math.round(totalAmount.value / totalCount.value));
 </script>
 
 <template>
   <div style="width: 100%; max-width: 560px">
-    <XhTableRoot :columns="columns" :rows="rows" footer>
+    <XhTableRoot :columns="columns" :rows="rows" :footer-rows="2">
       <XhTableCaption>采购清单</XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
@@ -1102,11 +1103,16 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
         </XhTableRow>
       </XhTableBody>
       <XhTableFooter>
-        <!-- 脚注行不给 value：它占的是行号空间的最后一行 -->
-        <XhTableRow>
+        <!-- 表尾行不给 value，写明是第几行表尾：它们占的是行号空间的最后几行 -->
+        <XhTableRow :level="1">
           <XhTableCell value="item">合计</XhTableCell>
           <XhTableCell value="count">{{ totalCount }}</XhTableCell>
           <XhTableCell value="amount">¥ {{ totalAmount }}</XhTableCell>
+        </XhTableRow>
+        <XhTableRow :level="2">
+          <XhTableCell value="item">均价</XhTableCell>
+          <XhTableCell value="count"></XhTableCell>
+          <XhTableCell value="amount">¥ {{ averagePrice }}</XhTableCell>
         </XhTableRow>
       </XhTableFooter>
     </XhTableRoot>
@@ -1116,7 +1122,7 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
 
 ```html
 <div style="width: 100%; max-width: 560px">
-  <xh-table id="table-footer" footer>
+  <xh-table id="table-footer" footer-rows="2">
     <div data-xh-part="root">
       <div data-xh-part="caption">采购清单</div>
       <div data-xh-part="header">
@@ -1144,11 +1150,16 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
         </div>
       </div>
       <div data-xh-part="footer">
-        <!-- 脚注行不给 value：它占的是行号空间的最后一行 -->
-        <div data-xh-part="row">
+        <!-- 表尾行不给 value，写明是第几行表尾：它们占的是行号空间的最后几行 -->
+        <div data-xh-part="row" level="1">
           <div data-xh-part="cell" value="item">合计</div>
           <div data-xh-part="cell" value="count">6</div>
           <div data-xh-part="cell" value="amount">¥ 2047</div>
+        </div>
+        <div data-xh-part="row" level="2">
+          <div data-xh-part="cell" value="item">均价</div>
+          <div data-xh-part="cell" value="count"></div>
+          <div data-xh-part="cell" value="amount">¥ 341</div>
         </div>
       </div>
     </div>
@@ -1167,9 +1178,9 @@ const totalAmount = computed(() => lines.reduce((sum, l) => sum + l.amount, 0));
 </script>
 ```
 
-### 表头吸顶与列吸附
+### 表头吸顶、表尾吸底与列吸附
 
-root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列
+root 自身就是滚动容器：stickyHeader 固定表头，stickyFooter 固定表尾，列上标注 sticky 的固定该列
 
 ```vue
 <script setup lang="ts">
@@ -1178,6 +1189,7 @@ import {
   XhTableCell,
   XhTableColumnHeader,
   XhTableColumnLabel,
+  XhTableFooter,
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
@@ -1209,7 +1221,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 <template>
   <div style="width: 100%; max-width: 420px">
-    <XhTableRoot :columns="columns" :rows="rows" sticky-header>
+    <XhTableRoot :columns="columns" :rows="rows" sticky-header sticky-footer :footer-rows="1">
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
@@ -1226,6 +1238,15 @@ const rows = members.map(m => ({ id: m.id }));
           <XhTableCell value="mail">{{ m.mail }}</XhTableCell>
         </XhTableRow>
       </XhTableBody>
+      <XhTableFooter>
+        <XhTableRow>
+          <XhTableCell value="name">共 {{ members.length }} 人</XhTableCell>
+          <XhTableCell value="dept"></XhTableCell>
+          <XhTableCell value="city"></XhTableCell>
+          <XhTableCell value="ext"></XhTableCell>
+          <XhTableCell value="mail"></XhTableCell>
+        </XhTableRow>
+      </XhTableFooter>
     </XhTableRoot>
   </div>
 </template>
@@ -1233,7 +1254,7 @@ const rows = members.map(m => ({ id: m.id }));
 
 ```html
 <div style="width: 100%; max-width: 420px">
-  <xh-table id="table-sticky" sticky-header>
+  <xh-table id="table-sticky" sticky-header sticky-footer footer-rows="1">
     <div data-xh-part="root">
       <div data-xh-part="header">
         <div data-xh-part="row">
@@ -1245,6 +1266,15 @@ const rows = members.map(m => ({ id: m.id }));
         </div>
       </div>
       <div data-xh-part="body"></div>
+      <div data-xh-part="footer">
+        <div data-xh-part="row">
+          <div data-xh-part="cell" value="name">共 16 人</div>
+          <div data-xh-part="cell" value="dept"></div>
+          <div data-xh-part="cell" value="city"></div>
+          <div data-xh-part="cell" value="ext"></div>
+          <div data-xh-part="cell" value="mail"></div>
+        </div>
+      </div>
     </div>
   </xh-table>
 </div>
@@ -2695,25 +2725,23 @@ const people = Array.from({ length: 10000 }, (_, i) => ({
 
 // 行号与总数按全量算，与挂了哪几行无关
 const rows = people.map(p => ({ id: p.id }));
-
-// 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
 </script>
 
 <template>
-  <!-- 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体 -->
+  <!-- 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位 -->
+  <!-- 行高不写死：estimateFromMeasured 按量到的行高估算还没渲染的行，换尺寸、密度或皮肤都跟得上 -->
   <XhVirtualizerRoot
     v-slot="{ virtualItems, collectionVirtualizer }"
     :count="people.length"
-    :estimate-size="36"
-    :viewport-tab-index="-1"
+    estimate-from-measured
+    scroll-container="ancestor"
     style="inline-size: 100%; max-inline-size: 520px"
   >
     <XhTableRoot
       :columns="columns"
       :rows="rows"
       :virtualizer="collectionVirtualizer"
-      style="max-block-size: none; overflow: visible"
+      sticky-header
     >
       <XhTableHeader>
         <XhTableRow>
@@ -2723,10 +2751,10 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
         </XhTableRow>
       </XhTableHeader>
       <XhTableBody>
-        <XhVirtualizerViewport style="block-size: 320px">
+        <XhVirtualizerViewport>
           <XhVirtualizerContent>
-            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index">
-              <XhTableRow :value="people[item.index]!.id" :style="rowStyle">
+            <XhVirtualizerItem v-for="item in virtualItems" :key="item.key" :value="item.index" measure>
+              <XhTableRow :value="people[item.index]!.id">
                 <XhTableCell value="no">{{ people[item.index]!.no }}</XhTableCell>
                 <XhTableCell value="name">{{ people[item.index]!.name }}</XhTableCell>
                 <XhTableCell value="dept">{{ people[item.index]!.dept }}</XhTableCell>
@@ -2741,9 +2769,9 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
 ```
 
 ```html
-<!-- 表体里的视口负责滚动：表格自己不再定高、不再滚；视口不占 Tab 位，键盘归表体 -->
-<xh-table id="table-virtual-rows" style="display: block; inline-size: 100%; max-inline-size: 520px">
-  <div data-xh-part="root" style="max-block-size: none; overflow: visible">
+<!-- 表格根节点自己滚：虚拟滚动取最近的可滚动祖先（ancestor），吸顶表头、横向溢出与行在同一个滚动面里；视口不定高、不滚动，也不占 Tab 位 -->
+<xh-table id="table-virtual-rows" sticky-header style="display: block; inline-size: 100%; max-inline-size: 520px">
+  <div data-xh-part="root">
     <div data-xh-part="header">
       <div data-xh-part="row">
         <div data-xh-part="column-header" value="no"><span data-xh-part="column-label">编号</span></div>
@@ -2752,9 +2780,10 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
       </div>
     </div>
     <div data-xh-part="body">
-      <xh-virtualizer id="table-virtual-rows-virtualizer" count="10000" estimate-size="36" viewport-tab-index="-1">
+      <!-- 行高不写死：estimateFromMeasured 按量到的行高估算还没渲染的行，换尺寸、密度或皮肤都跟得上 -->
+      <xh-virtualizer id="table-virtual-rows-virtualizer" count="10000" estimate-from-measured scroll-container="ancestor">
         <div data-xh-part="root">
-          <div data-xh-part="viewport" style="block-size: 320px">
+          <div data-xh-part="viewport">
             <div data-xh-part="content"></div>
           </div>
         </div>
@@ -2795,8 +2824,6 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
     el.dataset.xhPart = "row";
     el.dataset.xhPartOwner = "table";
     el.setAttribute("value", p.id);
-    // 行之间的分隔线：每行装在各自的虚拟条目里，彼此不是兄弟节点，分隔线写在行上
-    el.style.cssText = "block-size: 36px; border-block-end: var(--xh-stroke-thin) solid var(--xh-border-subtle)";
     el.append(...columns.map((col) => {
       const cell = document.createElement("div");
       cell.dataset.xhPart = "cell";
@@ -2812,6 +2839,8 @@ const rowStyle = "block-size: 36px; border-block-end: var(--xh-stroke-thin) soli
       const shell = document.createElement("div");
       shell.dataset.xhPart = "item";
       shell.setAttribute("value", item.index);
+      // 量出真实行高交给 virtualizer，还没渲染的行按它估算
+      shell.setAttribute("measure", "");
       shell.append(row(people[item.index]));
       return shell;
     }));
@@ -4528,19 +4557,20 @@ const selection = ref<TableSelection>([]);
     { id: "ops-sre", label: "稳定性组", owner: "吴六", parentId: "ops" },
   ];
 
-  let expanded = ["rd", "ops"];
   table.columns = [
     { id: "select", width: "3rem" },
     { id: "name", label: "组织", width: "13rem" },
     { id: "owner", label: "负责人" },
   ];
   table.rows = units.map(unit => ({ id: unit.id, parentId: unit.parentId, disabled: unit.disabled }));
+  table.defaultExpandedValue = ["rd", "ops"];
+  const unitOf = new Map(units.map(unit => [unit.id, unit]));
 
-  // 收起的那一枝整段不渲：可见序与层级都照 parentId 与展开集合算
+  // 按元素给的可见行铺表体：收起的那一枝不在其中，层级也由它给出
   function render() {
-    table.expandedValue = expanded;
-    const visible = units.filter(unit => unit.parentId == null || expanded.includes(unit.parentId));
-    body.replaceChildren(...visible.map((unit) => {
+    const visible = table.visibleRows.filter(meta => meta.kind === "data");
+    body.replaceChildren(...visible.map((meta) => {
+      const unit = unitOf.get(meta.id);
       const row = document.createElement("div");
       row.dataset.xhPart = "row";
       row.setAttribute("value", unit.id);
@@ -4553,8 +4583,8 @@ const selection = ref<TableSelection>([]);
       const name = document.createElement("div");
       name.dataset.xhPart = "cell";
       name.setAttribute("value", "name");
-      name.style.paddingInlineStart = `${unit.parentId == null ? 16 : 32}px`;
-      if (unit.parentId == null) {
+      name.style.paddingInlineStart = `${meta.level * 16}px`;
+      if (meta.expandable) {
         const expand = document.createElement("span");
         expand.dataset.xhPart = "expand-trigger";
         name.append(expand);
@@ -4569,8 +4599,9 @@ const selection = ref<TableSelection>([]);
     }));
   }
 
-  table.addEventListener("expanded-value-change", (event) => {
-    expanded = event.detail.value;
+  // 展开集合变了就按新的可见行重铺
+  table.addEventListener("expanded-value-change", async () => {
+    await table.updateComplete;
     render();
   });
   table.addEventListener("selection-change", (event) => {
@@ -4578,6 +4609,7 @@ const selection = ref<TableSelection>([]);
     log.textContent = `选中：${value === "all" ? "全部" : value.length ? value.join("、") : "（无）"}`;
   });
 
+  await table.updateComplete;
   render();
 </script>
 ```
@@ -4955,6 +4987,287 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 </script>
 ```
 
+### 行主操作
+
+点一行报告行与点中的那一列，焦点停在行上按 Enter 报告行：据此下钻或联动
+
+```vue
+<script setup lang="ts">
+import type { TableActionDetails } from "@xihan-ui/headless";
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const columns = [
+  { id: "region", label: "大区", width: "8rem" },
+  { id: "orders", label: "订单", align: "end" as const },
+  { id: "amount", label: "金额", align: "end" as const },
+];
+
+const sales = [
+  { id: "north", region: "华北", orders: "1,204", amount: "¥ 386,200" },
+  { id: "east", region: "华东", orders: "2,318", amount: "¥ 742,900" },
+  { id: "south", region: "华南", orders: "1,876", amount: "¥ 590,400" },
+];
+
+const rows = sales.map(s => ({ id: s.id }));
+const picked = ref<TableActionDetails | null>(null);
+</script>
+
+<template>
+  <div style="width: 100%; max-width: 560px; display: grid; gap: 8px">
+    <XhTableRoot :columns="columns" :rows="rows" @action="picked = $event">
+      <XhTableHeader>
+        <XhTableRow>
+          <XhTableColumnHeader v-for="col in columns" :key="col.id" :value="col.id">
+            <XhTableColumnLabel>{{ col.label }}</XhTableColumnLabel>
+          </XhTableColumnHeader>
+        </XhTableRow>
+      </XhTableHeader>
+      <XhTableBody>
+        <XhTableRow v-for="s in sales" :key="s.id" :value="s.id">
+          <XhTableCell value="region">{{ s.region }}</XhTableCell>
+          <XhTableCell value="orders">{{ s.orders }}</XhTableCell>
+          <XhTableCell value="amount">{{ s.amount }}</XhTableCell>
+        </XhTableRow>
+      </XhTableBody>
+    </XhTableRoot>
+    <span data-demo-output>
+      {{ picked ? `行 ${picked.value}，列 ${picked.column ?? "（键盘）"}` : "点一行，或焦点停在行上按 Enter" }}
+    </span>
+  </div>
+</template>
+```
+
+```html
+<div style="width: 100%; max-width: 560px; display: grid; gap: 8px">
+  <xh-table id="table-row-action">
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="region"><span data-xh-part="column-label">大区</span></div>
+          <div data-xh-part="column-header" value="orders"><span data-xh-part="column-label">订单</span></div>
+          <div data-xh-part="column-header" value="amount"><span data-xh-part="column-label">金额</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body">
+        <div data-xh-part="row" value="north">
+          <div data-xh-part="cell" value="region">华北</div>
+          <div data-xh-part="cell" value="orders">1,204</div>
+          <div data-xh-part="cell" value="amount">¥ 386,200</div>
+        </div>
+        <div data-xh-part="row" value="east">
+          <div data-xh-part="cell" value="region">华东</div>
+          <div data-xh-part="cell" value="orders">2,318</div>
+          <div data-xh-part="cell" value="amount">¥ 742,900</div>
+        </div>
+        <div data-xh-part="row" value="south">
+          <div data-xh-part="cell" value="region">华南</div>
+          <div data-xh-part="cell" value="orders">1,876</div>
+          <div data-xh-part="cell" value="amount">¥ 590,400</div>
+        </div>
+      </div>
+    </div>
+  </xh-table>
+  <span id="table-row-action-output" data-demo-output>点一行，或焦点停在行上按 Enter</span>
+</div>
+
+<script type="module">
+  // 两份定义都是数组，只能走 property
+  const table = document.getElementById("table-row-action");
+  table.columns = [
+    { id: "region", label: "大区", width: "8rem" },
+    { id: "orders", label: "订单", align: "end" },
+    { id: "amount", label: "金额", align: "end" },
+  ];
+  table.rows = [{ id: "north" }, { id: "east" }, { id: "south" }];
+
+  // 指针给出点中的那一列，键盘触发时列为 null
+  const output = document.getElementById("table-row-action-output");
+  table.addEventListener("action", (event) => {
+    const { value, column } = event.detail;
+    output.textContent = `行 ${value}，列 ${column ?? "（键盘）"}`;
+  });
+</script>
+```
+
+### 单元格导航
+
+navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，右键进到格子，方向键在格子之间走、上下键走同一列；Enter 或 F2 进格内的输入框编辑，编辑时方向键归输入框，Esc 退回格子
+
+```vue
+<script setup lang="ts">
+import {
+  XhTableBody,
+  XhTableCell,
+  XhTableColumnHeader,
+  XhTableColumnLabel,
+  XhTableExpandTrigger,
+  XhTableHeader,
+  XhTableRoot,
+  XhTableRow,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+
+const columns = [
+  { id: "label", label: "显示名", width: "16rem" },
+  { id: "value", label: "取值" },
+];
+
+// 选项树：父子由 parentId 定
+const options = [
+  { id: "east", label: "华东", value: "east" },
+  { id: "sh", label: "上海", value: "shanghai", parentId: "east" },
+  { id: "hz", label: "杭州", value: "hangzhou", parentId: "east" },
+  { id: "south", label: "华南", value: "south" },
+  { id: "gz", label: "广州", value: "guangzhou", parentId: "south" },
+];
+
+const byId = new Map(options.map(option => [option.id, option]));
+const rows = options.map(option => ({ id: option.id, parentId: option.parentId }));
+</script>
+
+<template>
+  <XhTableRoot
+    v-slot="{ visibleRows }"
+    :columns="columns"
+    :rows="rows"
+    :default-expanded-value="['east', 'south']"
+    navigation="cell"
+    aria-label="地区选项"
+    style="width: 100%; max-width: 560px"
+  >
+    <XhTableHeader>
+      <XhTableRow>
+        <XhTableColumnHeader value="label"><XhTableColumnLabel>显示名</XhTableColumnLabel></XhTableColumnHeader>
+        <XhTableColumnHeader value="value"><XhTableColumnLabel>取值</XhTableColumnLabel></XhTableColumnHeader>
+      </XhTableRow>
+    </XhTableHeader>
+    <XhTableBody>
+      <XhTableRow
+        v-for="row in visibleRows.filter((item) => item.kind === 'data')"
+        :key="row.id"
+        :value="row.id"
+      >
+        <XhTableCell value="label" :style="{ paddingInlineStart: `${row.level * 16}px` }">
+          <XhTableExpandTrigger v-if="row.level === 1" />
+          <XhTextFieldRoot size="sm" :default-value="byId.get(row.id)?.label" :aria-label="`${byId.get(row.id)?.label}的显示名`" />
+        </XhTableCell>
+        <XhTableCell value="value">
+          <XhTextFieldRoot size="sm" :default-value="byId.get(row.id)?.value" :aria-label="`${byId.get(row.id)?.label}的取值`" />
+        </XhTableCell>
+      </XhTableRow>
+    </XhTableBody>
+  </XhTableRoot>
+</template>
+```
+
+```html
+<div id="table-cell-navigation" style="width: 100%; max-width: 560px">
+  <xh-table data-host navigation="cell" aria-label="地区选项">
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <div data-xh-part="row">
+          <div data-xh-part="column-header" value="label"><span data-xh-part="column-label">显示名</span></div>
+          <div data-xh-part="column-header" value="value"><span data-xh-part="column-label">取值</span></div>
+        </div>
+      </div>
+      <div data-xh-part="body" data-body></div>
+    </div>
+  </xh-table>
+</div>
+
+<script type="module">
+  const scope = document.getElementById("table-cell-navigation");
+  const table = scope.querySelector("[data-host]");
+  const body = scope.querySelector("[data-body]");
+
+  table.columns = [
+    { id: "label", label: "显示名", width: "16rem" },
+    { id: "value", label: "取值" },
+  ];
+
+  // 选项树：父子由 parentId 定
+  const options = [
+    { id: "east", label: "华东", value: "east" },
+    { id: "sh", label: "上海", value: "shanghai", parentId: "east" },
+    { id: "hz", label: "杭州", value: "hangzhou", parentId: "east" },
+    { id: "south", label: "华南", value: "south" },
+    { id: "gz", label: "广州", value: "guangzhou", parentId: "south" },
+  ];
+
+  let expanded = ["east", "south"];
+
+  function textField(value, label) {
+    const field = document.createElement("xh-text-field");
+    field.setAttribute("size", "sm");
+    field.setAttribute("default-value", value);
+    field.setAttribute("aria-label", label);
+    field.innerHTML =
+      '<div data-xh-part="root"><div data-xh-part="control"><input data-xh-part="input" /></div></div>';
+    return field;
+  }
+
+  function rowNode(option) {
+    const level = option.parentId ? 2 : 1;
+    const el = document.createElement("div");
+    el.dataset.xhPart = "row";
+    el.setAttribute("value", option.id);
+
+    const label = document.createElement("div");
+    label.dataset.xhPart = "cell";
+    label.setAttribute("value", "label");
+    label.style.paddingInlineStart = `${level * 16}px`;
+    if (level === 1) {
+      const trigger = document.createElement("span");
+      trigger.dataset.xhPart = "expand-trigger";
+      label.append(trigger);
+    }
+    label.append(textField(option.label, `${option.label}的显示名`));
+
+    const value = document.createElement("div");
+    value.dataset.xhPart = "cell";
+    value.setAttribute("value", "value");
+    value.append(textField(option.value, `${option.label}的取值`));
+
+    el.append(label, value);
+    return el;
+  }
+
+  // 行节点建一次留着用：收起再展开，格里改过的内容还在
+  const nodes = new Map(options.map((option) => [option.id, rowNode(option)]));
+
+  // 收起的父行连着子行整段不出现。只插入、摘掉子行，不挪父行：挪动持有焦点的节点会丢焦点
+  function render() {
+    table.expandedValue = expanded;
+    table.rows = options.map((option) => ({ id: option.id, parentId: option.parentId }));
+    const visible = options
+      .filter((option) => !option.parentId || expanded.includes(option.parentId))
+      .map((option) => nodes.get(option.id));
+    for (const node of [...body.children]) {
+      if (!visible.includes(node)) node.remove();
+    }
+    visible.forEach((node, index) => {
+      if (body.children[index] !== node) body.insertBefore(node, body.children[index] ?? null);
+    });
+  }
+
+  table.addEventListener("expanded-value-change", (event) => {
+    expanded = event.detail.value;
+    render();
+  });
+
+  render();
+</script>
+```
+
 ## 设计指引
 
 ### 何时使用
@@ -4971,6 +5284,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 - 排序、选择、展开三套状态各自可受控。
 - 列名放在 `column-label` 里，它是列头里唯一可收窄的一格：列名太长时由它出省略号。排序钮、列宽把手与列拖拽把手都是它的兄弟，不装进它里面。列头是 flex 行，裸写的文本是匿名 flex item、缩不下去，窄列上会把定尺的把手连同外边距一起挤出列头盒，所以不可排序、不可改宽的列也要用它。
+- 列定义中的 `rowHeader` 把这一列标成行表头：表体与脚注里这一列的格子写 `role="rowheader"`，读屏报某一格时连着念出它所在行的表头。交叉表把行维度的各列标上；分组标题行用 `cellSpan` 横跨时起点格在第一列，也就是行表头；合计行的标题格同理。列头仍是 `columnheader`，外观不变。`rowHeader` 也可以给函数 `(row, rowIndex) => boolean`，按行决定这一格是不是行表头：分组报表只让组头行与小计行的分组格报行表头，明细行里空着的分组格照旧是 `gridcell`，读屏不会念出一串空表头。`rowIndex` 是这一行在可见数据行里的序号，与 `cellSpan` 的相同；表尾格子没有行定义，函数不调用、按行表头处理。
 - 列定义中的 `align` 控制该列所有格子（列头与数据格）的内容对齐方向：`start`（默认）、`center`、`end`，对应列头与单元格上的 `data-align` 属性。
 - 排序钮（`sort-trigger`）是列头里独立的定尺图标钮，不包列名：列名留在 `column-label` 上，钮写在列名之后、被推到行尾侧与列宽把手并排；点列头文字不排序，点钮才排序。
 - 选中行铺品牌淡底行面并由行首的勾选方框标记；悬停与按下只换面，行的几何与吸附列不动。
@@ -4980,14 +5294,20 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 - 表头分组：列给出 `children` 即为分组，只在表头占一格、横跨它的全部叶子列，不进列号空间，也不承载数据、排序、改宽与冻结。嵌套几层就有几行表头，按 `headerRows` 逐层渲染：表头行写明 `level`，列头按所在的行定位自己是哪一格；较浅的叶子列（含前缀列）在它起始的那一行出列头、纵向跨到最后一行（`aria-rowspan`），下面各行那一格是对读屏隐藏的占位，照样渲染以保住列宽。行号空间把各层表头都算进去，数据行从表头之后起算。分组内的叶子列要给出宽度，分组格的宽度按它们相加；列偏好把一个分组的叶子列拆开时，分组格按连续的段各出一格。
 - 单元格合并用 `cellSpan`，与 antd 的 `spanMethod` 同一种写法：逐格询问合并区的大小（`rowSpan` / `colSpan`）。表格按它算出起点格的 `aria-rowspan` / `aria-colspan`：与起点同一行、被横向跨过的格子不渲染（`hidden`）；下面行里被纵向跨过的，在合并区最左那一列留一格占位（`data-covered`，对读屏隐藏、只保住宽度），其余不渲染。作者照常逐格渲染，谁显谁藏由表格决定；`cellSpanOf(行, 列)` 可查某一格的合并情形。合并只在可见数据行之间，遇到展开的详情行截断。
 - 纵向合并的起点格（`data-row-span`）挂载后按实测行位铺满合并的几行，压在下面几行之上、底色随起点行；量到之前按普通格子排。
+- 只渲了一段行时（接了虚拟滚动，或宿主只渲了一页），合并区只按在场的行铺开；起点行滚出窗口时，合并区里第一条在场的行接替起点：它的那一格露出内容、报剩下的行数作 `aria-rowspan`，`cellSpanOf` 对它报 `covered: false`。所以被合并掉的格子也照常写内容，接替时才有东西可显示。
 - 横向滚过之后，冻结列与滚动区之间只在确有内容被压住时出现一道描边：行首冻结列滚离起始端后画在紧挨滚动区那一列的行尾侧，行尾冻结列没滚到末端时画在它的行首侧（`data-frozen-edge` 标出那一列，`root` 以 `data-at-min-horizontal` / `data-at-max-horizontal` 报两端）。滚动容器是 `root` 自己；放进滚动区的表格不画这道边界。
-- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。
+- 行换位（拖放与 Alt + 方向键）提交之后，宿主按 `ids` 重排的那一次里行从旧位置滑到新位置，详情行随它的数据行一起走；落点线取品牌实心色，与树、排序同一种。键盘换位时宿主写回若挪动了持有焦点的行节点（Web Components 下把行节点按新次序排回表体就是这样），焦点仍回到搬走的那一行，可以接着再挪。
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
-- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，表体里放它的视口，每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。
+- 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行间线与普通表体一样画在行与行之间：按完整行序判，第一行不画，滚动换批时每一行的高度不变。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
+- 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
+- `tree` 声明这是一棵树，不必等某一行带上 `parentId`：一开始平铺的选项表也报 `treegrid`、每行写 `aria-level`，Alt + 左右键改层级归表格（平表不开时这两个键放行给页面），任何一行都能接受「放进去」（指针拖到一行中段，仍经 `allowRowDrop` 把关），叶子行不写 `aria-expanded`，读屏不会把它念成「已收起」。不开时照旧按行有没有 `parentId` 推断。用户先平铺加了几项、再把后面几项挪到第一项下面，开着它就做得到。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
+- 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
+- 单元格级导航：`navigation="cell"` 让表体的格子也成为焦点落点，照 WAI-ARIA treegrid 的键盘。焦点在行上时左右键照旧展开 / 收起，已展开或不可展开的行再按右键进到首格，已收起的行或叶子行按左键回到父行，Ctrl + Home / End 到首末行；焦点在格子上时左右键在格子之间走（首格再按左键回到行），上下键在可见数据行之间走同一列（禁用行跳过），Home / End 到本行首末格，Ctrl + Home / End 到本列首末行。Enter 或 F2 进到格内第一个可聚焦的控件，之后按键都归控件，Esc 或 F2 退回格子（控件自己用掉了 Esc 的不退）；格内没有控件时 Enter 触发行主操作，`column` 报这一格的列 id。选中（Space）、Alt + 方向键换位与改层级、拖动照常可用，换位之后焦点仍在原来那一格。整张表只有一个 Tab 位，落在锚点所在的行或格子上：表体数据行格子里原本能 Tab 到的控件平时写 `tabindex="-1"`，由表格记下原值，焦点进到哪一格的控件里（Enter、F2，或指针点进去）才放开那一格，焦点离开那一格就收回；后来插入的控件、宿主改写的 tabindex 同样接得住，改写成什么就记成什么。编辑中 Tab / Shift + Tab 照 APG 允许的「在一格之内回绕」只在这一格的控件之间走，不离开这一格，要离开先按 Esc 回到格子；控件自己用掉了 Tab 的不管。表头、表尾与详情行里的控件不归它管。被合并掉的格子不是落点，上下键走到那一行时落在行上。缺省 `row` 是行级焦点。
+- 表尾可以有多行：`footerRows` 声明表尾行数，行号空间的最后几行留给它们，每一行表尾写明 `level`（与多级表头同一写法，只有一行时可省）；`aria-rowcount` 把它们都计入。表尾的格子合并用 `footerCellSpan`，与 `cellSpan` 同一种写法，逐格询问第几行表尾（`level`）的哪一格：总计的标题格可以横跨行表头的几列、纵跨几行表尾，被跨过的格子同样由表格藏起或留占位，表尾格子照常逐格渲染。纵向只在表尾行之间。`stickyFooter` 把表尾钉在滚动容器的下沿（`data-fixed`），与 `stickyHeader` 对称，滚动之后总计行仍看得见；接了虚拟滚动、滚动面在根节点上时同样钉在根的下沿。
 - 三种非条目相位各有部件：空（`empty`）、在途（`loading`）、还有更多（`load-more-trigger`）。取下一页按钮的行为由作者决定，取数在途时自动停用。
-- 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾保留上一帧淡下，取完再淡回。两种都由 `root` 报告 `aria-busy`。
+- 在途分两种：表体为空时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数（排序、翻页、筛选）不换成占位，表体与表尾原样保留、照常可操作，不淡化（淡到禁用透明度会把文字压到 4.5:1 以下）。两种都由 `root` 报告 `aria-busy`。
 
 ### 组合
 
@@ -5020,6 +5340,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `captioned` | `boolean` |  | 作者渲染了 caption 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 是无效引用，作者写在根上的 aria-label / aria-labelledby 也会被它压住。 |
 | `columns` | `TableColumnDef[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
 | `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。默认为空表。 |
 | `sort` | `TableSortDescriptor[]` |  | 排序链。提供即受控：cell 直读 prop，写入只发 onSortChange 不落内部值。 |
@@ -5031,21 +5352,25 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 与 Virtualizer 的正式接线口（Virtualizer 的 `collectionVirtualizer`）：count 必须等于可见数据行的条数， 每个虚拟条目装一行数据行（展开的详情行跟在同一个条目里）。接上后上下键与 Home / End 按完整行序计算， 落点不在窗口里时先把它滚进来再交焦点；行号照旧按完整行序报；行拖动换位不可用（窗口外的行没有落点）。 |
 | `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
+| `footerCellSpan` | `(details: TableFooterCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 表尾单元格合并，与 cellSpan 同一种写法：逐格询问第几行表尾的哪一格，返回合并区的大小。 起点格报 aria-colspan / aria-rowspan，同一行里被横向合并的格子不渲染（hidden），下面的表尾行里被纵向跨过的 在那一列留一格占位、对读屏隐藏。纵向只在表尾行之间，不跨进表体。表尾格子须写明所在的第几行（getCellProps 的 footer）。 |
 | `cascade` | `boolean` |  | 树形表（行声明了 parentId）在 multiple 下父子级联勾选，与 Tree 的 cascade 同一套算法： 勾父整枝传导、子全勾父勾、部分勾选的父行把手显示半选，禁用行的子树整棵冻结。 级联下不接 Shift 范围选。默认 false；平表与 single 下无效。 |
+| `tree` | `boolean` |  | 声明这是一棵树，不必等某一行带上 parentId：根节点报 treegrid、行写 aria-level， Alt + 左右键改层级归表格，任何一行都能接受「放进去」（仍经 allowRowDrop 把关）， 叶子行不写 aria-expanded。缺省 false：按行有没有 parentId 推断。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外选中值的收敛策略，默认 child（只收叶行）；parent = 最高整枝，all = 全部勾中的行。与 Tree 同义。 |
 | `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
 | `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
 | `page` | `number` |  | 当前页码与每页条数，只用于计算序号，不参与切片：切片归调用方 （或分页组件的 `api.slice`）。都未提供时序号回退为可见序。 |
 | `pageSize` | `number` |  |  |
-| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体保留上一帧淡下。 |
+| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy；表体为空时加载态节点显示，已有行时表体原样保留、照常可操作。 |
 | `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
 | `variant` | `ControlVariant` |  | 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 |
 | `ruled` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
-| `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 |
+| `footerRows` | `number` |  | 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入； 每一行表尾经 getFooterRowProps 写明第几行（level）。 |
+| `stickyFooter` | `boolean` |  | 表尾吸底：只写 data-fixed（布尔），钉在滚动容器下沿的实现归皮肤，与 stickyHeader 对称。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `navigation` | `TableNavigation` |  | 表体的键盘导航粒度，缺省 row（只落在行上）；cell 时格子也是焦点落点，见 TableNavigation。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `size` | `Size` |  | 密度：sm / md / lg。只影响单元格的纵向内边距与字号，列宽算法不受影响。 |
 | `translations` | `Partial<TableTranslations>` |  |  |
@@ -5056,6 +5381,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TableExpandedValueChangeDetails) => void` |  |  |
+| `onAction` | `(details: TableActionDetails) => void` |  | 行主操作：指针主键点在数据行上（column 是点中那一格的列 id），或焦点停在行上按 Enter（column 为 null）。 点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发； 选中、展开与 Space 的语义不变。 |
 
 ### TableColumnDef
 
@@ -5074,6 +5400,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
 | `align` | `'start' \| 'center' \| 'end'` |  | 列内容的对齐方向，写为列头与数据格上的 data-align。 不提供时由皮肤决定（默认 start）。 |
+| `rowHeader` | `boolean \| ((row: TableRowDef, rowIndex: number) => boolean)` |  | 行表头列：表体与脚注里这一列的格子写 role="rowheader"，读屏报某一格时连着念出它所在行的表头 （交叉表的行维度、分组标签、合计行的标题格）。列头不受影响，仍是 columnheader；合并格的起点跟着所在的列走。 给函数时按行决定：表体里这一列的格子问一次，入参是行定义与它在可见数据行里的序号（0 起算，与 cellSpan 的 rowIndex 相同），返回 true 才报 rowheader。分组报表只让组头行与小计行的分组格报行表头，明细行照旧是 gridcell。 表尾格子没有行定义，函数不调用，按行表头处理。 |
 
 ### TableRowDef
 
@@ -5102,9 +5429,10 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
-| `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
+| `column-preference-change` | `TableFooterCellSpanDetails` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `action` | `TableActionDetails` | 行主操作：点在数据行上或焦点在行上按 Enter；detail 为 `{ value, column }`，value 是行 id，column 是点中那一格的列 id、键盘触发时为 null |
 | `row-move` | `TableRowMoveDetails` | 行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序 |
 
 ### 插槽
@@ -5131,7 +5459,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |
 | `XhTableRow` | `value` | `string` |  | 行 id：数据行必须提供，表头行与脚注行省略。 |
-| `XhTableRow` | `level` | `number` |  | 多级表头下写明这是第几行表头（1 起算），行里的列头据此定位；单行表头省略。 |
+| `XhTableRow` | `level` | `number` |  | 多级表头写明这是第几行表头、多行表尾写明这是第几行表尾（1 起算），行里的列头与表尾格子据此定位；只有一行时省略。 |
 
 ### 状态
 
@@ -5150,7 +5478,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -5173,9 +5501,12 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `selectionMode` | `TableSelectionMode` |  |
 | `expandedValue` | `string[]` |  |
 | `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体中时为 null。 |
+| `focusedColumn` | `string \| null` | navigation 为 cell 时锚点所在的列，焦点在行上或不在表体中时为 null。 |
+| `navigation` | `TableNavigation` | 表体的键盘导航粒度。 |
 | `loading` | `boolean` |  |
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
-| `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
+| `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 表尾行。 |
+| `footerRowCount` | `number` | 表尾占几行，即 footerRows 取整后的值。 |
 | `columnCount` | `number` | aria-colcount：列定义的条数。 |
 | `headerRows` | `readonly (readonly TableHeaderCell[])[]` | 表头按层排好的格子，每层一行；没有分组时只有一行、每格是一列。 多级表头按它逐层渲染表头行与列头（带上 level），占位格也要渲。 |
 | `headerRowCount` | `number` | 表头占几行，数据行的行号从它之后起算。 |
@@ -5202,7 +5533,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 | `getHeaderRowProps` | `(props?: TableHeaderRowProps) => T['element']` | 表头行：占行号空间最前面的几行；多级表头下写明第几行。 |
-| `getFooterRowProps` | `() => T['element']` | 脚注行：占行号空间的最后一行。 |
+| `getFooterRowProps` | `(props?: TableFooterRowProps) => T['element']` | 表尾行：占行号空间最后的几行；多行表尾下写明第几行。 |
 | `rowNumber` | `(rowId: string) => string` | 该行显示的序号。平表是分页全局序号，树形是大纲编号。 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。 |
 | `columnPreference` | `TableColumnPreference` | 当前的列偏好。原样交出即可存储。 |
 | `columnSettings` | `readonly TableColumnSetting[]` | 列设置区按它渲染：作者定义的列，按偏好排序，隐藏的也在其中。 每条自带显隐、冻结、宽度与排序，足以渲染一整行设置项而不必回头比对两份数组。 |
@@ -5242,6 +5573,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `ArrowUp` | focus in table body | 焦点移到上一个可见数据行（禁用行跳过；loop 默认关，首行不回绕） |
 | `Home` | focus in table body | 焦点移到首个可见数据行 |
 | `End` | focus in table body | 焦点移到末个可见数据行 |
+| `Enter` | focus on row, 该行未禁用 | 触发行主操作（onAction，column 为 null），用来下钻或联动；焦点停在行内控件上时 Enter 归那个控件，选中仍归 Space |
 | `Space` | focus on row, selectionMode 非 none 且该行未禁用 | 切换焦点行的选中（单选替换、复选增删）；选不动时不吞这个键，页面照常滚动 |
 | `ArrowRight` | focus on 可展开且收起的行（dir=rtl 时改由 ArrowLeft 承担） | 就地展开当前行，焦点不动；不可展开、已展开或禁用的行上什么都不做且不吞键 |
 | `ArrowLeft` | focus on 可展开且已展开的行（dir=rtl 时改由 ArrowRight 承担） | 就地收起当前行，焦点不动；其余情形什么都不做且不吞键 |
@@ -5253,8 +5585,17 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `Shift+ArrowLeft` / `Shift+ArrowRight` | focus in column-resize-trigger，该列 resizable | 按 40px 收窄 / 加宽，方向规则同上 |
 | `ArrowLeft` / `ArrowRight` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列往前 / 往后挪一位，按一下就是一次完整提交；往行首侧挪是往前，rtl 下左右两键对调，语义恒是「往前 / 往后」；已在段首 / 段末就不动，也不回绕 |
 | `Home` / `End` | focus in column-drag-trigger，该列在可拖的那一段里 | 把这一列挪到可拖那一段的段首 / 段末；rtl 下两键对调，语义恒是「段首 / 段末」；已经在那儿就不动 |
+| `ArrowRight` | navigation=cell，focus on 已展开或不可展开的行（dir=rtl 时改由 ArrowLeft 承担） | 焦点进到这一行的首格；收起的可展开行上仍是展开 |
+| `ArrowLeft` | navigation=cell，focus on 收起或不可展开、且有父行的行（dir=rtl 时改由 ArrowRight 承担） | 焦点回到父行；已展开的行上仍是收起，根层的行上什么都不做且不吞键 |
+| `ArrowRight` / `ArrowLeft` | navigation=cell，focus on 表体格子 | 焦点在这一行的格子之间走一格；已在末格就停住，首格再往回走一格回到行；被合并掉的格子跳过。rtl 下两键对调，语义恒是「下一格 / 上一格」 |
+| `ArrowDown` / `ArrowUp` | navigation=cell，focus on 表体格子 | 焦点移到下一个 / 上一个可见数据行的同一列（禁用行跳过，loop 默认关）；那一行的这一列被合并掉时落到行上 |
+| `Home` / `End` | navigation=cell，focus on 表体格子 | 焦点移到本行的首格 / 末格 |
+| `Ctrl+Home` / `Ctrl+End` | navigation=cell，focus in table body | 焦点在格子上时移到本列的首行 / 末行，在行上时移到首行 / 末行 |
+| `Enter` / `F2` | navigation=cell，focus on 表体格子 | 放开这一格的控件、焦点交给其中第一个（格内编辑），编辑时方向键等按键都归控件；格内没有控件时 Enter 触发行主操作（onAction，column 是这一格的列 id），F2 无事可做 |
+| `Tab` / `Shift+Tab` | navigation=cell，focus in 表体格子里的控件 | 只在这一格的控件之间走，到头回绕，不离开这一格；格里只有一个控件时停在它上面；控件自己用掉了 Tab 时不管 |
+| `Escape` / `F2` | navigation=cell，focus in 表体格子里的控件 | 退出格内编辑，焦点回到这一格；控件自己用掉了 Escape（比如收起它的下拉）时不退出 |
 | `Alt+ArrowUp` / `Alt+ArrowDown` | focus in table body，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已在首行 / 末行就不动，也不回绕；焦点锚点跟着搬走的那一行，连按几下能一路挪到位。裸方向键仍是导航、Space 仍是选中、左右键仍是展开收起 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。rows 里一行都不带 parentId 时这两个键不归表格管，放行给页面 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in table body，声明了 tree 或 rows 里有行声明了 parentId，rowReorderable 且行拖拽没有被阻断的原因 | 把焦点行改一层缩进：往里是认上一个兄弟当爹，往外是变成父行的下一个兄弟；按一下就是一次完整提交，不进拖动态；横轴跟着文字方向翻，rtl 下两键对调，语义恒是「往里 / 往外」；没有上一个兄弟就缩不进去、已在根层就退不出来，两种情形都不动。没声明 tree、rows 里也一行都不带 parentId 时这两个键不归表格管，放行给页面 |
 
 ### ARIA
 
@@ -5264,9 +5605,9 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
 | `root` | `aria-colcount` | columns.length \|\| undefined |
-| `root` | `aria-labelledby` | `caption` 部件的 id |
+| `root` | `aria-labelledby` | `caption` 部件的 id \| undefined |
 | `root` | `aria-multiselectable` | 'true' \| 'false' |
-| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + (hasFooter ? 1 … |
+| `root` | `aria-rowcount` | headerRowCount + visibleRows.length + footerRowCount |
 | `root` | `role` | 'treegrid' \| 'grid' |
 | `header` | `role` | 'rowgroup' |
 | `body` | `role` | 'rowgroup' |
@@ -5290,7 +5631,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `cell` | `aria-colspan` | Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1) \| undefined |
 | `cell` | `aria-hidden` | 'true' |
 | `cell` | `aria-rowspan` | origin.rowSpan \| undefined |
-| `cell` | `role` | 'gridcell' |
+| `cell` | `role` | 'rowheader' \| 'gridcell' |
 | `toolbar` | `aria-label` | label.toolbar |
 | `column-list` | `aria-label` | label.columnList |
 | `column-list` | `role` | 'group' |
@@ -5328,15 +5669,18 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 | `header-row` | `aria-rowindex` | Math.max(1, Math.min(Math.trunc(header?.level ?? 1) \|… |
-| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + (hasFooter ? 1 … \| undefined |
+| `footer-row` | `aria-rowindex` | headerRowCount + visibleRows.length + level \| undefined |
 | `header-row` | `role` | 'row' |
 | `footer-row` | `role` | 'row' |
 
+- 表格的名字来自 `caption` 部件：放了 caption 时根（`role=grid` / `treegrid`）经 `aria-labelledby` 引用它。不放 caption 时在根上写 `aria-label` 或 `aria-labelledby`：Vue 写在 `XhTableRoot` 上，React 写在 `<XhTableRoot>` 上，Web Components 写在 `data-xh-part="root"` 的节点上；写在 `<xh-table>` 宿主上的也会转到根上，宿主上的命名改了跟着变。caption 后补进来时根改为引用它。什么都不写时根不写 `aria-labelledby`，不留指向未渲染节点的引用。
 - 排序钮是 `role=button`，自占一个 Tab 位；它不包列名，可及名取 `translations.sort(列名)`（默认 `Sort by <列名>`），当前方向由所在列头的 `aria-sort` 报出，钮上不重复。
 - `column-label` 不带角色与状态：列头 `role=columnheader` 的可及名由它里面的文字算出，视觉上被省略号截断的列名读屏仍读全文。
 - 列宽把手与列拖拽把手同样各占一个 Tab 位，名字分别取 `translations.columnResize` 与 `translations.columnDrag`。
 - 行内的勾选框与展开箭头对读屏隐藏：选中与展开都由行自身的属性与方向键 / 空格承担。
-- 焦点是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。表格刻意不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。
+- Enter 在焦点行上触发行主操作，与点击同一条路径；焦点停在行内控件上时 Enter 归那个控件。
+- 焦点缺省是行级的，合并格不改变键盘：上下键逐行走，每一行都是一个停靠点；纵向合并格只在起点行里报出（带 `aria-rowspan`），下面几行那一格是占位、读屏跳过。缺省不做单元格级导航（左右键是展开 / 收起），合并格因此没有「焦点落进合并格、再移出」的问题。`navigation="cell"` 时格子也是落点（`tabindex` 随锚点轮换），格子上画一圈内收的聚焦环；被合并掉的格子不是落点。
+- 行换位（拖放与 Alt + 方向键）之后表格自带的 `live-region` 播一句：平表说可见数据行里的第几位、共几位；树形表（声明了 `tree`，或有行带 `parentId`）说放进了哪一层，位次与总数按那一层的兄弟行算，父行的名字经 `translations.item` 取，放到根层时取 `translations.rootLevel`。
 - 级联的半选只画在行选把手上：`row` 角色没有 mixed 这一档，半选的父行对读屏报 `aria-selected=false`，勾了哪些子行由子行各自报出。
 
 ## 样式参考
@@ -5364,6 +5708,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `footer` | `data-fixed` | ''（条件成立时才出现） |
 | `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
 | `row` | `data-dragging` | ''（条件成立时才出现） |
@@ -5509,7 +5854,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-expand-fg` | `expand-trigger` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-subtle` | table 的 expand-trigger 部件 color 覆盖槽。 |
 | `--xh-table-fg` | `root` | `color` | `default` | `--xh-fg-default` | table 的 root 部件 color 覆盖槽。 |
 | `--xh-table-font-size` | `root`<br>`row` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root、row 部件 font-size 覆盖槽。 |
-| `--xh-table-footer-bg` | `footer` | `background` | `default` | `--xh-bg-subtle` | table 的 footer 部件 background 覆盖槽。 |
+| `--xh-table-footer-bg` | `cell`<br>`footer`<br>`row` | `background` | `default`<br>`fixed`<br>`frozen` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 cell、footer、row 部件 background 覆盖槽。 |
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
 | `--xh-table-frozen-edge` | `cell`<br>`column-header` | `background` | `frozen-edge`<br>`is([data-part='column-header'], [data-part='cell'])` | `--xh-border-default` | table 的 cell、column-header 部件 background 覆盖槽。 |
@@ -5537,7 +5882,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-row-bg-pressed` | `row` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover-opaque` | table 的 row 部件 background-color 覆盖槽。 |
 | `--xh-table-row-bg-selected` | `row` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | table 的 row 部件 background-color 覆盖槽。 |
 | `--xh-table-row-bg-striped` | `body`<br>`root`<br>`row` | `background-color` | `striped`<br>`where(:nth-of-type(even)`<br>`where([data-scope='table'][data-part='root'][data-striped] [data-scope='table'][data-part='body'])` | `--xh-bg-subtle-opaque` | table 的 body、root、row 部件 background-color 覆盖槽。 |
-| `--xh-table-row-border` | `body`<br>`cell`<br>`column-header`<br>`expanded-row`<br>`footer`<br>`header`<br>`root`<br>`row` | `border-block-start`<br>`border-inline-end` | `is([data-part='header'], [data-part='body'], [data-part='footer'])`<br>`is([data-part='row'], [data-part='expanded-row'])`<br>`not(:last-child)`<br>`not([hidden])`<br>`split` | `--xh-border-subtle` | table 的 body、cell、column-header、expanded-row、footer、header、root、row 部件 border-block-start、border-inline-end 覆盖槽。 |
+| `--xh-table-row-border` | `body`<br>`cell`<br>`column-header`<br>`expanded-row`<br>`footer`<br>`header`<br>`item`<br>`root`<br>`row` | `border-block-start`<br>`border-inline-end` | `index=0`<br>`is([data-part='header'], [data-part='body'], [data-part='footer'])`<br>`is([data-part='row'], [data-part='expanded-row'])`<br>`not(:last-child)`<br>`not([data-index='0'])`<br>`not([hidden])`<br>`split` | `--xh-border-subtle` | table 的 body、cell、column-header、expanded-row、footer、header、item、root、row 部件 border-block-start、border-inline-end 覆盖槽。 |
 | `--xh-table-row-cursor` | `row` | `cursor` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `default` | table 的 row 部件 cursor 覆盖槽。 |
 | `--xh-table-row-drag-fg` | `row-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-table-row-drag-fg-active` | `row-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | table 的 row-drag-trigger 部件 color 覆盖槽。 |
@@ -5558,6 +5903,7 @@ const rows = computed(() => sorted.value.map(m => ({ id: m.id })));
 | `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
 | `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
 | `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
+| `--xh-table-sticky-footer-layer` | `footer` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 footer 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-table-toolbar-fg` | `toolbar` | `color` | `default` | `--xh-fg-default` | table 的 toolbar 部件 color 覆盖槽。 |
