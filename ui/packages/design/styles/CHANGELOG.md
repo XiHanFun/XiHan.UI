@@ -1,5 +1,329 @@
 # @xihan-ui/styles
 
+## 5.0.0
+
+### Major Changes
+
+- 382ccc2: 日历族（CalendarPicker、CalendarRangePicker、DatePicker、DateRangePicker）的周、月、季度、年视图改为按行渲染。`role="grid"` 底下得是 `role="row"`、`gridcell` 得落在行里；此前周期格直接铺进网格，读屏报不出格子落在第几行第几列，axe 判 `aria-required-children` 与 `aria-required-parent`。
+
+  - 面板的 `cells`（平铺）改为 `rows`：按 `CALENDAR_PERIOD_COLUMNS` 切好的行，周一行一格，月与年一行三格，季度一行四格；日视图下为空数组。平铺的 `periods` 照旧给，只作数据用。
+  - 新增顶层 `rows`（首个面板的周期行，与 `weeks` 对应）：Vue 插槽载荷、React children 载荷与 Web Components 的只读属性同步提供。
+  - `buildPeriodGrid` 的返回值 `cells` 改为 `rows`；新增 `calendarPeriodRows(periods, view)`，给作者自备的格子列表（比如一页铺开两百年的年份）按视图的列数切行。
+  - `week-row` 带上 `data-view`，皮肤按它换列数；周期视图下网格只排行，不再直接排格子。
+
+  迁移：周期视图把 `panel.cells`（或平铺的 `periods`）换成 `panel.rows` / `rows`，一行写一个 `week-row`，格子放进行里。
+
+  ```vue
+  <XhCalendarPickerGrid>
+    <XhCalendarPickerWeekRow v-for="row in rows" :key="row[0].key">
+      <XhCalendarPickerCell v-for="period in row" :key="period.key" :value="period.start">
+        <XhCalendarPickerCellTrigger>{{ period.label }}</XhCalendarPickerCellTrigger>
+      </XhCalendarPickerCell>
+    </XhCalendarPickerWeekRow>
+  </XhCalendarPickerGrid>
+  ```
+
+  自备格子列表的写法：`calendarPeriodRows(myPeriods, 'year')` 切好再照上面渲染。
+
+- 375ed7a: **调整** 菜单、右键菜单与菜单栏的 `item-indicator` 只当对号：只在勾选与单选条目上出现，标准结构里是条目的最后一个部件（正文、说明、快捷键与 `item-suffix` 之后），落 Collection Item 家族的 `indicator` 列（`data-xh-collection-slot="indicator"`），与 Listbox、Tree 的选项一致，读屏也先念正文；手写部件时对号写在哪，皮肤都排到行尾。行首内容全部归 `item-icon`：`item-prefix` 插槽改落 `item-icon`（压过数据里的 `icon`），图标随条目字色走，危险条目随字转红。删去条目数据里的 `indicator` 文字（`MenuNode`、`ContextMenuNode` 与元信息的同名字段）。三份 anatomy 的部件表把 `item-indicator` 排到最后。
+
+  迁移：
+
+  - `item-prefix` 插槽的内容现在落在 `item-icon`，给它写样式的改按 `item-icon` 选。
+  - 手写 `ItemIndicator` 当行首图标的，改用 `ItemIcon`（Web Components 写 `data-xh-part="item-icon"`）。
+  - 给 `item-indicator` 写样式改图标颜色的，改写到 `item-icon`；它本来就随条目字色走，多数时候删掉即可。
+  - 数据里写 `indicator` 文字的，图标改写 `icon`；要表达选中，改用勾选或单选条目。
+  - 按位置选部件的（如 `[data-part='item'] > :first-child`），改按 `data-part` 选。
+
+- d640b7f: 集合与表格在「刷新」相位（已有数据、后台在取）不再把内容淡到 `--xh-state-disabled-opacity`。Select、Combobox、Listbox、Mention、Cascader、TreeSelect、Command、Transfer 的条目与 Table 的表体此刻仍可点可选，淡下去之后文字只有 2.1–3.4:1，WCAG 1.4.3 只豁免失效控件。刷新时容器照旧报 `aria-busy`、在途占位照旧让位，内容原样留着。
+
+  Tree 与 GridList 的刷新行在取数期间不接指针，仍按原样淡下再淡回。
+
+  迁移：删掉了随之不用的组件槽 `--xh-command-list-busy-opacity`，设过它的直接去掉。
+
+- d4f17ae: 全部包统一升到 5.0.0。
+
+  4.2.0 之后，组件库为打印、流程、表单、报表四款设计器补齐了一批能力：多数组件改用标准结构（Vue 不写默认插槽、React 不给 children、Web Components 不写部件时，三端照同一个结构函数铺出整套部件），库内表单控件统一了命名（`ariaLabel`）与表单状态继承，新增条件编辑器、格式输入、表达式输入框，以及首发的 `@xihan-ui/designer-kit`、`@xihan-ui/designer-shell`、`@xihan-ui/expression`、`@xihan-ui/xlsx`。其中下列改动不兼容 4.x 的写法，按版本政策整组升 major，全部包同号发布。
+
+  升级前逐条对照：
+
+  1. **日历族周期视图按行渲染**（CalendarPicker、CalendarRangePicker、DatePicker、DateRangePicker）：面板与 `buildPeriodGrid` 返回值的 `cells` 改为按列数切好的 `rows`，网格底下必须是 `week-row`、格子放进行里。手写周、月、季度、年视图的，把 `panel.cells`（或平铺的 `periods`）换成 `panel.rows` / `rows`，一行写一个 `week-row`；自备格子列表的用 `calendarPeriodRows(periods, view)` 切行。
+  2. **热力图事件与类型对齐图表家族**：`cell-press` / `onCellPress` → `datum-press` / `onDatumPress`，`cell-active` / `onCellActive` → `datum-active` / `onDatumActive`；删除 `cell-focus` / `onCellFocus`（改听 `datum-active`）；`HeatmapCellDetails` 改名 `HeatmapDatumDetails`，删除 `HeatmapCellFocusDetails`；`translations.cellLabel` / `matrixCellLabel` 的参数随之换类型。
+  3. **表格表尾支持多行**：删除 `footer`（WC 属性 `footer`），改写 `footerRows: 1`（WC `footer-rows="1"`）；`getFooterRowProps()` 改为 `getFooterRowProps({ level })`，多行表尾的每一行写 `level`。
+  4. **快捷键工具移到 core**：`formatHotkey`、`matchesHotkey`、`detectKbdPlatform`、`resolveKbdPlatform` 与类型 `KbdPlatform`、`KbdResolvedPlatform`、`HotkeySegment` 不再从 `@xihan-ui/headless` 导出，改从 `@xihan-ui/core/hotkey` 引入。
+  5. **语言包删掉两句、改用一句**：Citation 的 `translations.openSource`、`translations.source` 删除，覆盖过的直接去掉。FileUpload 的 `translations.dropzone` 从「投放区的兜底可及名」改为标准结构里投放区那句看得见的说明（也是名字的后半句），覆盖过它的按新用途改写文字；手写结构的投放区不再取它，改由标题接上投放区里看得见的说明命名，请在投放区里写一句说明。
+  6. **删除组件覆盖槽** `--xh-command-list-busy-opacity`：命令面板刷新时不再淡化列表，设过它的直接去掉。
+  7. **HoverCard 在场判断改用 `parts`**：`HoverCardRefs` 删去 `getTitleEl`、`getDescriptionEl`；Vue 的 `HoverCardContext` 删去 `titleRef`、`descriptionRef`，React 的 `HoverCardContext`（`useHoverCardContext`）删去 `setTitleEl`、`setDescriptionEl`。用库内的 `XhHoverCardTitle` / `XhHoverCardDescription` 的不受影响；自写标题、说明部件的改为向 `parts` 报告在场。
+  8. **表单必填的空值范围扩大**：只含空白的字符串、元素全为空的数组（如 `[null, null]`）算空，`required` 会拦下。确实允许只填空格的字段不要加 `required`，改在 `validator` 里判断。
+  9. **表单规则的字符串长度按字素计数**：`min` / `max` 对字符串改按用户看到的字数（组合 emoji、国旗各算一个）。依赖 UTF-16 码元计数的（如贴合数据库列宽），改在 `validator` 里自行计数，并保留后端校验。
+  10. **React `XhCardRoot` 的 `title`、`content`** 改为卡片的标题与正文（取 ReactNode），不再作为原生属性写到根节点上。原先拿 `title` 当原生提示的，改用 Tooltip 或写到外层节点。
+  11. **Web Components `xh-file-upload` 的条目改按 `allFiles` 对应**：远程附件在前、本地文件在后，与 Vue / React 同一口径；`deleteFile` 也收远程附件。原先按 `acceptedFiles` 铺条目、远程附件另行自绘的，改成按 `allFiles` 每个文件铺一行；没有 `remoteFiles` 时写法不用改。
+  12. **Web Components 的布尔 attribute 全部改为三态**：原先约一百三十个布尔属性（`disabled`、`default-open`、`loading`、`multiple`、`lazy-mount` 等）按 HTML 原生规矩，写出即为真；现在与其余属性一样，显式写 `="false"` 为假，不写交给组件缺省，写空串或别的值仍为真。写过 `disabled="false"` 这类「写了 false 却想要真」的地方改成 `disabled` 或 `disabled=""`；只有显式写成 `"false"` 才受影响。移除属性也改为回到组件缺省，不再固定为假：缺省为真的开关（如 `xh-citation` 的 `loop`）移除后回到开。自己写元素的，布尔属性改用 `@xihan-ui/web-components/authoring` 新导出的 `BOOLEAN_CONVERTER`。
+  13. **ColorPicker 单选的空值改为未选**：原先单选给空数组按缺省色 `#000000` 显示、值是 `['#000000']`；现在是未选：色块画斜线、值文字显示 `placeholder`，`value` 为空数组、表单影子为空串，`required` 会拦下。依赖空数组得到黑色的改写 `['#000000']`；`value` 与 `defaultValue` 都不给时照旧从 `#000000` 起。单选有值时新增清空钮 `clear-trigger`，按下派 `clear`。
+  14. **颜色换算函数挪到 core**：`colorParse`、`colorToString`、`colorCss`、`colorSameColor`、`colorSameRgba`、`colorHexToRgba`、`colorRgbaToHex`、`colorRgbaToHsva`、`colorHsvaToRgba`、`colorRgbaToHsla`、`colorHslaToRgba`、`colorRgbaToOklch`、`colorOklchToRgba`、`colorNormalizeRgba`、`colorNormalizeHsva` 与类型 `ColorFormat`、`ColorRgba`、`ColorHsva`、`ColorHsla`、`ColorOklch` 不再从 `@xihan-ui/headless` 导出，改从 `@xihan-ui/core/color` 引入，函数名不变。`colorParse` 改按 CSS Color 4 的语法认写法：分隔符混写（`rgb(1, 2 3)`）、逗号写法里数与百分数混用（`rgb(50%, 0, 0)`）、不带 `#` 的十六进制、色相写百分数这类浏览器不认的写法返回 `null`，此前会认下；依赖这些写法的改写成规范写法。取色器专用的通道与兜底色（`COLOR_CHANNELS`、`colorChannelRange`、`COLOR_FALLBACK` 等）留在 headless。
+  15. **令牌的颜色换算改由 core 提供**：`@xihan-ui/tokens`（根入口与 `./runtime`）不再导出下表左列的名字，改从 `@xihan-ui/core/color` 引入右列。`colorParseOklch` 解析不了时返回 `null`，原 `parseColorToOklch` 是抛错；分量越界的写法（如 `oklch(120% 0.1 30)`、透明度大于 1）不再夹回范围，`colorParseOklch` 返回 `null`，令牌里其余颜色函数（`contrastRatio`、`mixColors`、`deriveBrandScale` 等）抛错。无彩色的色相取 0，白色写出 `oklch(1 0 0)`（原先 `oklch(1 0 89.88)`），颜色本身不变。合成、亮度、对比度、择色、混色与深浅函数照旧从 `@xihan-ui/tokens` 引入。
+
+      | 4.x（`@xihan-ui/tokens`） | 5.0（`@xihan-ui/core/color`） |
+      | ------------------------- | ----------------------------- |
+      | `srgbToLinear`            | `colorSrgbToLinear`           |
+      | `linearToSrgb`            | `colorLinearToSrgb`           |
+      | `linearRgbToOklch`        | `colorLinearRgbToOklch`       |
+      | `oklchToLinearRgb`        | `colorOklchToLinearRgb`       |
+      | `parseColorToOklch`       | `colorParseOklch`             |
+      | `inSrgbGamut`             | `colorInSrgbGamut`            |
+      | `clampChroma`             | `colorClampChroma`            |
+      | `formatOklch`             | `colorFormatOklch`            |
+      | `Oklch`（类型）           | `ColorOklch`（字段相同）      |
+
+  16. **Web Components 对话框与抽屉的语义角色改写 `dialog-role`**：`<xh-dialog>`、`<xh-drawer>` 不再把 `role` 当作配置，角色只落在 content 上，宿主不带 `role`。写过 `role="alertdialog"` 的改成 `dialog-role="alertdialog"`，代码里设 `role` 的改设 `dialogRole`；Vue 与 React 的 `role` 不变。
+  17. **Web Components 通知条目的标题改写 `title-text`**：`<xh-notification-item>` 不再把 `title` 当作配置，宿主不带 `title`，悬停不出原生提示，读屏不再把标题念两遍。写过 `title="…"` 的改成 `title-text="…"`；property `titleText` 与通知服务不用改，Vue 与 React 的 `title` 不变。
+  18. **树的多选改为选择模式 `selectionMode`**（Tree）：删除 `multiple`，改写 `selectionMode`（Web Components 为 `selection-mode`），取值与 Listbox 相同：`'single'`（缺省，单选不变）、`'multiple'`、新增的 `'extended'`（照文件管理器）。`multiple: true` 改写 `selectionMode: 'multiple'`（Vue 模板与 Web Components 写 `selection-mode="multiple"`）；`TreeApi` 的 `multiple` 改为 `selectionMode`，判断是否多选改读 `selectionMode !== 'single'`。TreeSelect 的 `multiple` 不变。
+  19. **菜单族的选中事件改名 `item-select`**（Menu、ContextMenu、Menubar、Command、Mention）：原名 `select` 与原生 `select` 同名，输入框里选中文字时原生事件冒泡上来，Web Components 的监听会收到不带 `detail` 的「选中」。Vue 的 `@select` 改写 `@item-select`，React 的 `onSelect` 改写 `onItemSelect`，Web Components 的 `addEventListener('select', …)` 改监听 `item-select`；headless 的 `onSelect` 改为 `onItemSelect`，详情类型 `MenuSelectDetails`、`ContextMenuSelectDetails`、`MenubarSelectDetails`、`CommandSelectDetails`、`MentionSelectDetails` 改为 `MenuItemSelectDetails` 等（字段不变）。React 的 Menubar、ContextMenu、Mention 根上不再拦原生 `onSelect`，写了就照原生事件透传到根节点。Command 的 `select(value)` 方法不变。
+  20. **Popconfirm 的取消事件改名 `cancel-press`**：原名 `cancel` 与原生 `cancel` 同名，文件输入框取消选择时原生事件冒泡上来，会被当成按了取消。Vue 的 `@cancel` 改写 `@cancel-press`，React 的 `onCancel` 改写 `onCancelPress`，Web Components 的 `addEventListener('cancel', …)` 改监听 `cancel-press`；headless 的 `onCancel` 改为 `onCancelPress`。React 根上不再拦原生 `onCancel`。确认事件 `confirm`、方法 `cancel()` 与部件 `cancel-trigger` 不变。
+  21. **菜单族的 `item-indicator` 只当对号，行首归 `item-icon`**（Menu、ContextMenu、Menubar）：`item-indicator` 只在勾选与单选条目上出现，标准结构里由条目的第一个部件挪到最后（正文、说明、快捷键与 `item-suffix` 之后），落 Collection Item 的 `indicator` 列（`data-xh-collection-slot="indicator"`），与 Listbox、Tree 一致；`item-prefix` 插槽改落 `item-icon`，图标随条目字色走；删去条目数据里的 `indicator` 文字。迁移：给 `item-prefix` 内容写样式的改按 `item-icon` 选；手写 `ItemIndicator` 当行首图标的改用 `ItemIcon`；给 `item-indicator` 写样式改图标颜色的改写到 `item-icon`；数据里写 `indicator` 文字的改写 `icon`，要表达选中改用勾选或单选条目；按位置选部件的改按 `data-part` 选。
+
+  另有几处不改 API、但升级后看得出来的变化：
+
+  - 右键菜单（ContextMenu）的触发区里已有可聚焦的内容（画布、列表）时，触发区不再另占一个 Tab 位：菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到它。内容里没有 Tab 位时照旧由触发区占一个。
+  - Web Components 的 `<xh-checkbox>`、`<xh-switch>` 宿主不再占一层盒子（`display: contents`），与 Vue / React 一样按行内排：原先在块级容器里一个宿主独占一行，要逐行排的给外层容器写排布，或给宿主写 `display`。
+  - Web Components 放在 `<xh-config>` 里的对话框、抽屉与下拉，内容搬进 Portal 后照原位取配置：原先里面的元素只取全局的 `locale`、`size` 与文案，现在取包着浮层的那一层；浮层里的 `<xh-config>` 原先按系统偏好重算主题，现在承接外层的主题。
+  - 组件根不写默认插槽 / 不给 children 时，原先渲出空的根，现在铺出整套缺省结构；Web Components 的元素不写部件时同样自己生成；`<xh-icon>` 只写一个空的 `root` 时也在里面生成图形，原先什么都不画。
+  - Vue 的表单控件上写 `aria-label` 现在落到承担名字的部件（输入框、触发钮等）上，不再透传到根节点。
+  - 渲染成 `<button>` 的部件由皮肤的 reset 层清掉浏览器缺省样式；Web Components 作者自写的 `<button data-xh-part="trigger">` 接线后同样是无壳样子，要按钮外观时把按钮（Button）当作这个部件写进去。
+  - 十种内建语言包新增了若干键（如 `confirmTrigger`、`loading`、`empty`、`addTrigger`、`searchPlaceholder`）；自建语言包缺这些键时对应的字退回英文，照内建包补上即可。
+  - FileUpload 点标题不再经原生激活直接弹出选择框，改为把焦点交给投放区（没写投放区时交给选择钮）；`label` 的 `for` 仍指向隐藏输入。
+  - Fieldset 整组禁用时，组内 Field 的标题与说明随控件一起变淡；Scrollbar 不再随整组禁用，组内与选择器列表里的滚动条照常可用。
+
+### Minor Changes
+
+- a314107: 取色器单选的空值改为未选，并新增清空钮。原先单选给空数组按缺省色 `#000000` 显示，值是 `['#000000']`，表单里的颜色字段明明没填却显示黑色，选过颜色后也清不回空值。现在单选给空数组是未选：色块画一道斜线、值文字显示 `placeholder`（新增，缺省取新增的 `translations.placeholder`），触发钮念出占位提示，`value` 为空数组、表单影子为空串，`required` 会拦下。依赖空数组得到黑色的，改写 `['#000000']`；`value` 与 `defaultValue` 都不给时照旧从 `#000000` 起。
+
+  单选有值时盒里露出清空钮 `clear-trigger`（新部件，可及名取新增的 `translations.clearTrigger`，不占 Tab 位），按下清回未选，先发值变化再发新增的 `clear` 事件（React `onClear`）；`setValue([])` 同样清回未选、不发 `clear`。api 新增 `empty`、`valueText` 与 `getClearTriggerProps`；皮肤新增覆盖槽 `--xh-color-picker-placeholder-fg`、`--xh-color-picker-swatch-empty-stroke` 与清空钮的 `--xh-color-picker-action-*`。十种内建语言包补上两条文案。 取色器皮肤去注释后从 20713 字节涨到 23459 字节（约 13%），多出来的是清空钮的 field-inset 接线与兜底字形、它在高对比档里的字形、未选时值文字与色块的两条规则。
+
+- 9970a9a: **新增** `expression-input` 组件（表达式输入框）：输入受限表达式，边输入边报出问题，并补全可引用的名字与函数。Vue、React 与 Web Components 三端同时可用。
+
+  - 检查由宿主给的 `check` 完成：值变化后去抖（`checkDelay`，缺省 150 毫秒）调用、失焦时立即调用，`@xihan-ui/expression` 的 `createExpressionCheck` 可以直接交给它。问题区间在镜像层画波浪下划线，框下的问题列表逐行写出位置与说明，并进输入框的描述链；有 error 即 `aria-invalid`，warning 只提示。
+  - 补全来源是宿主的 `completions`（静态列表按前缀过滤，函数形式由宿主按光标处的查询给出，可在 `$row.` 之后只列成员）与 `functions` 函数表（缺省全部内置函数）；函数条目显示参数签名与一句说明。输入名字字符且有匹配才打开，Ctrl+Space 主动打开；接受时只替换光标处的名字，函数的光标落在括号里。`insert(text)` 在选区处插入一段文本，供宿主的「插入字段」按钮使用。
+  - 单行时输入框是 `role=combobox`；`multiline` 时是 textarea，保持 textbox 角色，补全浮层锚在光标处，`autoSize` 给出行数上下限。输入法组合期间不取词、不检查。
+  - 结构由 `expressionInputStructure` 一份给出：Web Components 只写元素本身，Vue / React 不写默认插槽时，三端铺出同一棵树；写了 `label` 才铺标题。放进字段时，字段的名字、说明与校验状态接到输入框上。
+  - 字段外框与输入框走 Field Chrome 家族，补全列表走磨砂面与集合条目家族。
+  - 十种内建语言包新增 `expression-input` 一桶：中文与英文给出问题码、参数名与内置函数的说明，其余语言的这三项沿用英文。
+
+- 3170011: **新增** 字段数组开了 `movable` 时每行多一颗拖动把手 `item-drag-trigger`，按住把这一行拖到别处换位。
+
+  - 拖动由排序（sortable）的状态机驱动：其余各行实时让位，拖到边缘自动滚动，松手后这一行从松手处收进新位置，值按 `{ type: 'move', from, to }` 换位，与上移、下移走同一条路径，同受 `movable`、禁用与只读约束。列表与表格两种排布都能拖。
+  - 把手只接指针：不占 Tab 位、对读屏隐藏，键盘与读屏照旧用上移、下移。
+  - 删掉的行在原处淡出时照常拖别的行：淡出的替身不算一项，照样播完退场。
+  - 新部件：Vue / React 的 `XhFieldArrayItemDragTrigger`，Web Components 的 `item-drag-trigger` 部件。标准结构开了 `movable` 时把手依次是拖动、上移、下移、删除。`FieldArrayApi` 加 `dragging` 与 `getItemDragTriggerProps`，`FieldArrayItem` 加 `canDrag`。
+  - 自己组装时：`connectFieldArray(service, normalize, drag)` 的第三个参数是按 `fieldArrayDragProps(service)` 跑的 sortable 机器，容器与项用 `fieldArrayDragContainer`、`fieldArrayDragItems` 接到它的 refs 上。
+  - sortable 的 refs 加 `getItemEls`：嵌在别的组件里、项是那个组件的部件时由适配器给出项节点；离场替身一律不算一项。
+  - core 的 `trackListMotion` 的 `reflow` 可以给函数，每批变更现问一次：拖动放下的那一批换位由拖动那一套滑过去，列表动效这一批不再补偿。
+  - 皮肤：`field-array.css` 加拖动把手的抓手字形与手型、拖着的那一行（承载面底色、lifted 海拔，高对比档描一圈 Highlight 轮廓）与让位过渡，新增覆盖槽 `--xh-field-array-item-bg-dragging`、`--xh-field-array-item-shadow-dragging`、`--xh-field-array-drag-grip-w`、`--xh-field-array-drag-grip-h`。这份皮肤去注释压空白后从 14463 字节涨到 16690 字节。
+
+- cb81c4e: **新增** FieldArray 表格排布加 `stickyActions`（Web Components 是 `sticky-actions`），缺省 `true`：行尾把手钉在末端侧，与原先一样。容器很窄时钉住的两侧会占掉滚动区的大半，中间的格子怎么滚都看不全，这时写 `false`：把手随行一起横向滚动，滚到末端或 Tab 到把手时露出来，行号仍钉在起始侧。钉住的把手与表格的冻结列一样带 `data-frozen="end"`，表头带 `data-frozen-actions`，皮肤只把带这两个属性的部件钉住。
+- 372ad97: 字段数组表格排布的格子里放字段（Field）时，控件、行号与把手落在同一条中线上：格里的字段不再留辅助行占位，没报错时一行就是控件高加上下内衬，报错时错误文案再把这一行撑开；格子改为顶对齐，行头与把手在控件高的那一条里居中，某一格报错撑高整行时三者仍然对齐。新增组件槽 `--xh-field-array-cell-control-h`（行头与把手对齐的控件高，缺省取 md 档控件高），格里放的不是 md 档控件时用它对齐。
+- 5c060db: 字段数组（FieldArray）新增表格排布：`layout="table"` 时由新部件 `table`（role=table）装下表头与各行，表头与各行共用一套列宽，新增把手仍是 `root` 的最后一个子节点、排在表格之后。`root` 在两种排布下都不带角色；列表排布（缺省）不写 `table`，也不报缺失。
+
+  - headless：新增 `layout`（`'list' | 'table'`）与 `columns`（`FieldArrayColumn[]`：`id`、`label?`、`width?`，数字按 px、字符串原样、不写按 1fr）两个 prop；新部件 `table`、`header`（role=row，第 1 行）、`column-header`（role=columnheader）、`item-cell`（role=cell），表格排布下 `item` 是 row（`aria-rowindex` 从 2 起）、`item-label` 是 rowheader、`item-action` 是 cell，`table` 带 `aria-rowcount`（行数加表头）。不带键盘模型，Tab 依次经过各格里的控件与把手。新增 `getTableProps`、`getHeaderProps`、`getColumnHeaderProps`、`getItemCellProps` 与类型 `FieldArrayLayout`、`FieldArrayColumn`、`FieldArrayColumnProps`、`FieldArrayItemCellProps`。
+  - vue / react：新增 `XhFieldArrayTable`、`XhFieldArrayHeader`、`XhFieldArrayColumnHeader`（`value` 写列 id，没写内容时显示这一列的 `label`）、`XhFieldArrayItemCell`（`value` 写列 id）；根组件收 `layout` 与 `columns`。放进字段（Field）时字段的标签与说明接到 `table` 上，列表排布下不接。
+  - web-components：`<xh-field-array>` 收 `layout` 特性与 `columns` 属性，认 `table`、`header`、`column-header`、`item-cell` 四个部件，留空的 `column-header` 由元素填入列的 `label`；表格排布下放进 `<xh-field>` 时字段的标签与说明接到 `table` 上，不在字段里时宿主上的 `aria-label` 转给 `table`。元素基类新增受保护的 `acceptsFieldWiring()`，子类据此按状态决定声明的接线目标此刻接不接线。
+  - styles：表格排布的皮肤，表头淡底、行间内部分隔线、格内衬与表格单元格同一档；新增组件槽 `--xh-field-array-header-bg`、`--xh-field-array-column-header-fg`、`--xh-field-array-column-header-font-weight`、`--xh-field-array-row-divider`、`--xh-field-array-cell-py`、`--xh-field-array-cell-px`、`--xh-field-array-table-border`、`--xh-field-array-table-radius`。皮肤 field-array.css（去注释压空白后）由 7752 字节涨到 10967 字节，涨的是表格排布这一整套规则。
+
+- 7930da9: FieldArray 表格排布的列新增 `minWidth`：给了之后这一列不再随容器压窄到它以下，轨道写成 `minmax(minWidth, width)`（数字按 px，不写 `width` 时上限是 1fr）。各列下限之和超过容器时，表格本体横向滚动，表头与各行一起滚；行号（`item-label`）钉在起始侧、把手（`item-action`）钉在末端侧，紧挨滚动区的一侧只在确有内容被压住时画分隔线，与 Table 的冻结列一致。表格本体新增 `data-at-min-horizontal` / `data-at-max-horizontal`，报它离两端的远近；表格本体换成表面底（`--xh-field-array-table-bg`），钉住的格子靠它压住滑过去的内容。新增覆盖槽 `--xh-field-array-table-bg`、`--xh-field-array-frozen-bg`、`--xh-field-array-frozen-header-bg`、`--xh-field-array-frozen-edge`、`--xh-field-array-sticky-column-layer`。
+- 14d302a: 文件上传新增附件链接部件 `item-link`：远程附件的 `url` 经 `toSafeLinkHref` 判定为安全时，标准结构把文件名铺成指向它的链接，地址不安全（如 `javascript:`）时不写 `href`、标准结构退回纯文字的文件名；本地文件不铺链接。`FileUploadApi` 新增 `fileHref(file)` 与 `getItemLinkProps`；三端新增 `linkTarget` 控制打开方式（缺省当前页，写 `_blank` 时链接同时带 `rel="noopener noreferrer"`），Vue / React 新增 `XhFileUploadItemLink`，Web Components 是 `link-target` 属性与 `item-link` 部件。只读时链接照常可聚焦、可打开，禁用时退出 Tab 序列、报 `aria-disabled`、点了不跳转。皮肤与正文里的行内链接同一种画法。
+- 39aa292: **新增** `filter-builder` 组件（条件编辑器）：可视化编辑一棵 `@xihan-ui/viz` 的条件树（`FilterGroup`），交给 `compileFilter` 即可按它筛选。Vue、React 与 Web Components 三端同时可用。
+
+  - 组里是条件与子组，组头切「全部满足 / 任一满足」；每个条件是字段、运算符与值。运算符按字段类型给出（字段可自带运算符），值的控件随运算符换：单值、区间两端、一组值（有候选值时多选下拉，没有时标签输入）、不要值。字符串运算符旁有「忽略大小写」开关，`ignoreCase` 设为 false 可关掉。
+  - 换运算符时能保留的值保留，换字段而类型变了时清空；组与条件上不认识的键原样保留。`maxDepth`（缺省 2）限定子组嵌套层数，到上限时「加条件组」收起。
+  - 给了 `parameters` 时每个条件可以在「值 / 参数」之间切换，只列类型相同、且多值与运算符相容的参数，值写成 `{ parameter: 名字 }`。
+  - 给了 `createId` 时新建的条件与组带 `id`；带 `id` 的条件行尾可以放宿主自己的控件：Vue 用 `condition-extra` 作用域插槽、React 用 `renderConditionExtra`，参数是条件与路径；Web Components 在宿主的直接子节点上写 `slot="condition-extra:<条件 id>"`。
+  - 不完整的条件（字段已不存在、运算符与类型不合、该有值却没有、参数已不存在或类型不符）照常留在值里，行上带 `aria-invalid` 与行内说明，根标无效。
+  - 键盘：行里 Alt+Shift+↑ / ↓ 在同组内挪这一行，Ctrl+Delete 删除这一行；增删与挪动后焦点落到合适的位置，播报区读出「已添加条件 3」这类说明。
+  - 根、每个组与每个条件都是 `role=group`，组以逻辑为名、条件以「条件 n」为名；行内的每个控件都有名字（「条件 2 的字段」「条件 2 的运算符」「条件 2 的值」，区间两端分「起始值」「结束值」）。根收 `ariaLabel`，放进字段时用字段的标题与说明。
+  - 里面的下拉、输入框、数字框、日期框、标签输入、分段切换与开关都是库内组件的实例，结构由 `filterBuilderStructure` 一份给出：Web Components 不写部件（或只写 root）时元素按值生成整棵树，Vue / React 不写默认插槽时三端铺出同一棵树；按需注册 `xh-filter-builder` 时连带注册这几个元素。元素上的删除方法叫 `removeNode`（`remove` 是元素自己的移出文档）。
+  - 皮肤只管排布：子组缩进一段、起始缘一条细线标出层级；条件行放不下时折行，操作数占满余下的宽度，区间两端等分；加条件、加条件组是虚线描边的文字钮，删除钮是 xs 的叉，悬停转危险色。
+  - 十种内建语言包新增 `filter-builder` 一桶。
+
+- 6be9df7: **新增** `format-input` 组件（格式输入）：编辑一份 `@xihan-ui/expression` 的格式说明（`FormatSpec`）。先选种类，再填这一种的参数，下方显示样例。Vue、React 与 Web Components 三端同时可用。
+
+  - 种类有数字、百分比、日期、人民币大写与数字字形，`kinds` 限定可选的几种；`clearable`（缺省开）在种类里多一项「不设格式」，选它派发 `null`。连同这一项不超过三项时种类用分段切换，否则用下拉。
+  - 参数行按种类铺开：小数位（固定、范围、不舍入）与位数、千分位、舍入方式、日期模式（预设由 `datePatterns` 给，也可自由输入）、数字字形的样式。种类一换，参数行整组换。
+  - 只派发合法的格式说明：清空位数、最少位数大于最多位数、日期模式清空时不派发，根标 `aria-invalid`，行内说明出现并进根的描述链。受控时宿主写回另一份格式说明，种类与参数行按它改写；写回同一个值时输入中的文字不被打断。
+  - 样例按 `sample`（缺省按种类取一个值）、`locale` 与 `timeZone` 格式化，是 `role=status` 的礼貌播报，停止输入一会儿后才换文字。
+  - 根是 `role=group`；写了标题部件以它为名，放进字段时用字段的标题与说明。里面的下拉、分段切换、数字框、开关与组合框都是库内组件的实例，结构由 `formatInputStructure` 一份给出：Web Components 只写元素本身（或只写 root），Vue / React 不写默认插槽时，三端铺出同一棵树；按需注册 `xh-format-input` 时连带注册这几个元素。
+  - 皮肤只管排布：参数行按列宽自动分栏、各格底边对齐，开关那一行与旁边的输入框等高；里面的控件铺满所在的那一格。
+  - 十种内建语言包新增 `format-input` 一桶，中文与英文给出全部文案，其余语言的问题说明沿用英文。
+
+- ef5cef2: 栅格（Grid）新增 `ruled`：画外框与格与格之间的横竖线，跨行跨列的格子里不出线，可以用来排带合并单元格的表格式布局。Web Components 写 `ruled` 属性，根上写 `data-split`，与表格（Table）的 `ruled` 同名同义。
+
+  - 画格线时行列间距为 0，`gap`、`rowGap`、`columnGap` 与 `--xh-grid-gap` 不生效；格子铺满所在格，`align` 与 `justifyItems` 不生效。
+  - 每道线只画一次，半透明的线色不会在相邻格子之间叠深。格子要铺满整行，空着的位置里没有格线，外框始终完整。
+  - 新增覆盖槽 `--xh-grid-divider`（格线与外框的颜色，缺省 `--xh-border-default`）与 `--xh-grid-ruled-padding`（画格线时格子的内衬，缺省与描述列表 outline 形态格子的内衬一致）。
+
+- baa276c: 热力图（Heatmap）的事件、受控键、加载与空态改为与其余图表同一套约定，Web Components 端只写 `root` 时由元素生成整套结构。
+
+  破坏性改动：
+
+  - 事件改名：`cell-press` → `datum-press`（`onCellPress` → `onDatumPress`），`cell-active` → `datum-active`（`onCellActive` → `onDatumActive`）。
+  - 删除 `cell-focus` / `onCellFocus`：键盘聚焦与指针悬停都经 `datum-active` 报告。
+  - 类型 `HeatmapCellDetails` 改名为 `HeatmapDatumDetails`，并新增 `key`（日期形态是 ISO 日期，矩阵形态是 `heatmapMatrixKey(row, column)`）与 `formatted.value`（按 `format` 写好的数值）；删除 `HeatmapCellFocusDetails`。
+  - `translations.cellLabel` / `matrixCellLabel` 的参数换成 `HeatmapDatumDetails`，各语言的内建文案改写 `formatted.value`，数值按 `locale` 带千分位。
+  - `heatmapDetailsOf` 的返回值随之换成 `HeatmapDatumDetails`。
+
+  新增：
+
+  - `activeKey`（受控）与 `onActiveKeyChange` / `active-key-change`：指针与键盘都不在网格上时，键命中的那一格描出与悬停相同的一圈，用来联动；Vue 可写 `v-model:active-key`。联动键只认字符串：日期形态写 ISO 日期串，矩阵形态写 `heatmapMatrixKey(row, column)`，`Date` 对象不匹配。
+  - `pending`：网格保留上一帧并按 `--xh-chart-pending-alpha` 淡下去，根上 `aria-busy`。
+  - `empty` 部件（Vue / React 组件 `XhHeatmapEmpty`，Vue 插槽 `empty`，React `renderEmpty`）：网格里一条数据都没有时叠在热力图上；取数中改写加载文案。`translations` 新增 `emptyText`、`loadingText`，`api` 新增 `empty`、`emptyText`、`activeKey`、`getEmptyProps`。
+  - `format`：数值格式（`NumberFormatSpec` 或函数），详情、格子的可访问名称与发散色阶对照条两端共用。
+  - 标准结构：headless 新增 `heatmapStructure(api, options)`（选项类型 `HeatmapStructureOptions`）与通用的结构节点类型 `StructureNode`。三端的缺省树都照它渲：Vue / React 不写默认插槽时、Web Components 只写 `root` 时，铺出的是同一棵树。
+  - Web Components：`root` 里没有作者写的 `grid` 时，元素按形态生成与 Vue / React 缺省树一致的结构（带 `data-xh-gen`，按身份复用）；作者另写的 `tooltip`、`empty`、`legend` 保留。写了 `grid` 时照旧由作者手写。
+
+  迁移：
+
+  - 全文搜索 `cell-press`、`cell-active`、`cell-focus`、`onCellPress`、`onCellActive`、`onCellFocus`，换成 `datum-press` / `datum-active` / `onDatumPress` / `onDatumActive`；只关心键盘聚焦的改听 `datum-active`。
+  - 全文搜索 `HeatmapCellDetails`、`HeatmapCellFocusDetails`，换成 `HeatmapDatumDetails`。
+  - Web Components 端手写整棵树、只为铺出缺省结构的，删掉 `root` 里的节点与铺设脚本即可。
+
+- fd3e5c8: **新增** 菜单、右键菜单与菜单栏的条目可以带图标：`collection` 的条目加 `icon`（图标记录），三个组件都多一个部件 `item-icon`，排在条目文字之前，装饰态，读屏从条目文字取意。勾选与单选条目的勾仍在 `item-indicator`，两者各占一格。Vue / React 新增 `XhMenuItemIcon`、`XhContextMenuItemIcon`、`XhMenubarItemIcon`，手写条目时也可以用；集合条目族多一个 `icon` 槽位。
+
+  **新增** 工具条的 `itemIcons`：按条目的 `value` 给图标记录，放不下收进「更多」菜单的条目带着各自的图标，三端同一种写法。
+
+  **新增** Web Components 的 `<xh-icon>` 一个部件都不写时，自己生成 `<svg>` 根与 glyph 空壳，只给 `icon` 即可画出；只写一个空的 `root` 时在里面生成 glyph 空壳，以前这种写法什么都不画、只报一条缺 glyph 的 warn；在 `root` 里写了几何而没写 `glyph` 时照旧不改作者的几何。
+
+- 723fab6: 评分（Rating）新增 `invalid`：星星带（role=radiogroup）写 `aria-invalid`，root、星星带、每颗星与分值文本写 `data-invalid`。放进字段（Field）或表单（Form）时自动继承，实例显式给的值优先；Web Components 为 `invalid` 属性。
+
+  皮肤：校验失败时没点亮的那部分星形换成无效色（新增覆盖槽 `--xh-rating-item-fg-invalid`，缺省 `--xh-border-invalid`），点亮的部分仍取语气色；强制色下照旧是 GrayText。
+
+- 80fe575: 选择器（Select）新增整表取数失败的状态，与级联选择、树选择分支级的取数失败同一套命名和行为：
+
+  - `error`：为真时浮层里露出 `error` 部件（role=alert，没写内容时显示 `translations.loadError`）与 `retry-trigger` 重试钮（没写内容时显示 `translations.retry`），空态占位让位；`loading` 同时为真时在途占位优先。
+  - 重试：点 `retry-trigger`，或浮层里没有高亮条目时按 Enter / Space，派发重试。Vue 为 `retry` 事件，React 为 `onRetry`，Web Components 为 `retry` 事件与 `error` 属性。重试钮不占 Tab 位，与浮层底部操作区一样。
+  - 新部件：Vue / React 的 `XhSelectError`、`XhSelectRetryTrigger`，Web Components 的 `error`、`retry-trigger` 角色节点；两者与空态、在途占位一样不进标准结构，由作者手写结构时摆放。
+  - 新增读屏文案 `loadError`、`retry`（十种语言）与覆盖槽 `--xh-select-error-*`。
+
+- 9478019: 表格（Table）新增单元格级导航 `navigation="cell"`（Web Components 写 `navigation` 属性），照 WAI-ARIA treegrid 的键盘，缺省 `row` 仍是行级焦点。
+
+  - 焦点在行上：左右键照旧展开 / 收起；已展开或不可展开的行按右键进到首格，已收起的行或叶子行按左键回到父行；Ctrl + Home / End 到首末行。
+  - 焦点在格子上：左右键在格子之间走，首格再按左键回到行；上下键在可见数据行之间走同一列，禁用行跳过；Home / End 到本行首末格，Ctrl + Home / End 到本列首末行。
+  - Enter 或 F2 进到格内第一个可聚焦的控件，之后按键都归控件；Esc 或 F2 退回格子，控件自己用掉了 Esc 的不退。格内没有控件时 Enter 触发行主操作 `onAction`，`column` 报这一格的列 id。
+  - 整张表只有一个 Tab 位，落在锚点所在的行或格子上；格子落焦画一圈内收的聚焦环。表体格子里的控件平时退出 Tab 序列（表格替它们写 `tabindex="-1"`，记下原值），进到哪一格的控件里才放开那一格，后来插入的控件同样管到；编辑中 Tab / Shift + Tab 只在这一格的控件之间回绕。选中（Space）、Alt + 方向键换位与改层级、拖动照常可用，换位之后焦点仍在原来那一格。
+
+  同时修复：键盘换位（Alt + 上下键、Alt + 左右键）之后，宿主写回时若挪动了持有焦点的行节点（Web Components 下把行节点按新次序排回表体就是这样），焦点掉回页面，连着再按一次就没有反应；现在焦点回到搬走的那一行，行级导航下同样如此。
+
+- da2d2e4: 表格（Table）的表尾支持多行与吸底。
+
+  破坏性改动：
+
+  - 删除 `footer`（Web Components 属性 `footer`），改为 `footerRows`（WC 属性 `footer-rows`）：表尾行数，缺省 0。原来写 `footer` 的改写 `footerRows: 1` / `footer-rows="1"`。
+  - `getFooterRowProps()` 改为 `getFooterRowProps({ level })`：多行表尾下每一行写明第几行（1 起算，与多级表头同一写法）；Vue / React 的 `XhTableRow` 在表尾里写 `level`，Web Components 在表尾的 row 上写 `level` 属性。只有一行时可省。
+
+  新增：
+
+  - `stickyFooter`（WC 属性 `sticky-footer`）：表尾钉在滚动容器下沿，与 `stickyHeader` 对称；吸底时底色取不透明的淡底，滚过的行不会透出来。组件覆盖槽 `--xh-table-sticky-footer-layer` 调层级。
+  - `api.footerRowCount`；`aria-rowcount` 计入全部表尾行；新增类型 `TableFooterRowProps`。
+
+  迁移：全文搜索 `XhTableRoot` / `xh-table` 上的 `footer`，换成 `footerRows` / `footer-rows`；有几行表尾就写几，每个表尾行写 `level`。
+
+- 8a8a943: 时间选择器（TimePicker）新增 `placeholder`，整条占位，与日期选择器（DatePicker）的字符串占位同义。Web Components 为 `placeholder` 属性。
+
+  - 单选：一段都没填、焦点也不在段上时，输入行显示这句文字，段位与分隔符淡出；焦点进到段上即换回段位。段组带 `data-placeholder-text` 与 `data-placeholder-shown`。
+  - 多选：没有选中值时标签行显示这句文字，同一对状态属性落在 tag-list 上。
+  - 文字由皮肤以生成内容画出，新增覆盖槽 `--xh-time-picker-placeholder-fg`（缺省 `--xh-fg-subtle`）；强制色下取系统弱色。
+
+- 839c920: 时间区间选择器（TimeRangePicker）新增 `startPlaceholder` / `endPlaceholder`，与日期区间选择器（DateRangePicker）同名同义：起点、终点两组段位各自一句整条占位。Web Components 为 `start-placeholder` / `end-placeholder` 属性。
+
+  - 这一端一段都没填、焦点也不在这一端的段上时，那一组段位显示这句文字，段位与分隔符淡出；焦点进到这一端的段上即换回段位，另一端不受影响。段组带 `data-placeholder-text` 与 `data-placeholder-shown`。
+  - 文字由皮肤以生成内容画出，新增覆盖槽 `--xh-time-range-picker-placeholder-fg`（缺省 `--xh-fg-subtle`）；强制色下取系统弱色。
+
+- 2aeca01: 分段开关组（ToggleGroup）新增 `readOnly`、`invalid`、`required`，放进字段（Field）或表单（Form）时自动继承，实例显式给的值优先；Web Components 为 `read-only`、`invalid`、`required` 属性。
+
+  - 单选（role=radiogroup）写 `aria-readonly`、`aria-invalid`、`aria-required`，缺省显式写 false；多选是 role=group，不收这三条，只写 `data-readonly`、`data-invalid`、`data-required`。
+  - 只读：条目仍可聚焦、方向键照常走，点击与 Space / Enter 不改选中，也不进按压面；程序化写值不受影响。
+  - 表单影子从 `type="hidden"` 改为视觉隐藏的文本输入：hidden 不参与约束校验，原生 `required` 拦不住空值提交；没选时值为空串。
+  - 皮肤：只读的段悬停与按下停在静息面、光标为默认；校验失败时整组外沿画一圈无效色的线（新增覆盖槽 `--xh-toggle-group-border-invalid`，缺省 `--xh-border-invalid`），强制色下为 ButtonText。
+
+- fea11a1: **新增** 提示的委托模式 `delegate`：值是 CSS 选择器，一个提示管一整个容器。trigger 此时是容器，容器里命中选择器的元素悬停或键盘聚焦时打开提示并作锚点，挪到另一个锚点时直接换过去、不再等延时；指针移出容器、焦点离开容器或按 Esc 时收起。文字取锚点的 `data-xh-tooltip`，没写时取锚点的可及名；快捷键取锚点的 `aria-keyshortcuts`，按 `platform` 写成当前平台的样子。content 里多两个部件 `text` 与 `shortcut`，Vue / React 新增 `XhTooltipText`、`XhTooltipShortcut`。提示文字与锚点的名字不同时，锚点的 `aria-describedby` 才引用 `text`。
+
+  **新增** 提示的 `translations`，目前一项 `keyLabel`：委托模式下快捷键里一枚键显示的字，十种内建语言包与 Kbd 用同一张键帽表。
+
+- c45f5e2: Tree 新增分支行的说明部件 `branch-description`：`TreeNode.description` 本来就不分叶子与分支，分支行现在也有正式的说明部件，排法与叶子的 `item-description` 相同，带说明的分支行折成两行，说明独占第 2 行，放不下截断；展开箭头排在行首时，说明让出箭头那一格，与分支名同一起点。headless 新增 `getBranchDescriptionProps`，Vue / React 新增 `XhTreeBranchDescription`，Web Components 在 `branch-control` 里写 `data-xh-part="branch-description"`。
+
+### Patch Changes
+
+- aa39942: Approval 待决的呼吸点改取图形色，不再借警告文字色：写了语气时取语气层给图形用的那一支（与色条、指示条同一档，六族在亮暗两态对承载面都不低于 3:1），没写语气时与 `warning` 语气同一档（亮色 warning-700，暗色 warning-600）。此前没写语气时借的是 `--xh-fg-warning`，警告文字色加深一档后圆点跟着变深；写了 `warning` 语气时取的是语气主色，亮色白底上只有 2.69:1。覆盖槽 `--xh-approval-pending-indicator-color` 不变。
+- 6515808: 按钮组（ButtonGroup）里放菜单组成分体按钮（主按钮加一枚下拉触发器）时，下拉钮与主按钮连成一条。
+
+  - Web Components：组的 `variant` / `tone` / `size` 原来只写给直接放在组里的 `<xh-button>`，放在 `<xh-menu>` 里的触发器拿不到，下拉钮保持单独一枚按钮的缺省形态。现在段是包着触发器的宿主时，写到它直接带的触发器 `<xh-button>` 上；菜单自己的 `tone` / `size` 管的是弹出内容，不动它。Vue / React 本来就经组的上下文下发，行为不变。
+  - 皮肤：outline 形态下组内按钮不再各画描边、组内按下不缩放这两条，覆盖到放在菜单触发器里的按钮，主题调了按压缩放时接缝不会被撕开。
+  - 文档：按钮组新增「分体按钮」示例。
+
+- 686cfde: 库里渲染成 `<button>` 的部件不再吃浏览器的缺省样式，不依赖宿主页面的全局 reset：reset 层清掉按钮的缺省内衬（1px 6px）、边框、外边距与底色，皮肤要哪一项再自己写。此前在没有全局 reset 的页面里，标签（Tag）的关闭钮被缺省内衬挤得只剩 4px 宽，叉几乎看不见；多数按钮部件都留着 1px 的上下内衬，菜单、命令面板与图片查看器的触发钮还带着浏览器的灰底与凸边。
+
+  作者自己写的 `<button data-xh-part="trigger">` 接线后同样会被清成无壳的样子，与文档站里一致；触发钮要按钮外观时，把按钮（Button）当作这个部件写进去。
+
+- e5bef70: core 新增页面级窗口叠放序 `getWindowStack(doc)` 与类型 `WindowStack`：`raise(key)` 提到最上面、`remove(key)` 移出、`depthOf(key)` 从上往下数第几扇（最上 0，不在栈里 -1）、`subscribe(fn)` 订阅变化；按 Document 各一份，页面上几份 core 共用，不进层栈。
+
+  浮动面板（Floating Panel）接上叠放序：几个面板同时开着时，后展开的在上面，在哪个面板上按下或焦点进到哪个面板里，哪个就提到最上；收起或卸载时移出。定位层的私有层号 `--xh-_layer` 取抽屉层减去从上往下数的序号（最上面的就在抽屉层上，往下每一扇减一），最上面的面板仍在模态层之下；写了 `--xh-floating-panel-layer` 就按写的来。
+
+- cf66e68: **修复** 字段数组表格排布的格子里放字段（Field）时，文本框的原生宽把字段撑出这一列、压到相邻的格上：格里的内容现在可以窄过自己的最小内容宽，包了一层字段的控件也铺满这一格；各列下限之和放不下时照旧由表格本体横向滚动。
+- cfee03d: FieldArray 表格排布里，一行的格子与行头、把手一样至少占一条控件高，并在里面居中；控件高按这一行字段控件的尺寸档取（`data-xh-field-size`，几档混排时取大的，没有字段控件时按 md），不再固定 md。复选框、开关这类比控件矮的放进格子，也与文本框的控件落在同一条中线上；格里报错撑高这一行时照旧不错开。覆盖槽 `--xh-field-array-cell-control-h` 现在也管格子。
+
+  Web Components 的 `<xh-checkbox>`、`<xh-switch>` 宿主不再占一层盒子（`display: contents`），作者写的结构直接参与外层排布，与 Vue / React 直接渲染根一致，也与字段族控件的宿主同一种处理：放进弹性或网格容器时，按钮不再落在宿主的一行里按基线排、比容器中线低一两像素。原先在块级容器里一个宿主独占一行，现在与 Vue / React 一样按行内排；要逐行排的，给外层容器写排布，或给宿主写 `display`（作者写的照层叠胜出）。
+
+- 60c220d: 文件上传（FileUpload）新增 `readOnly`、`required`，放进字段（Field）或表单（Form）时自动继承，实例显式给的值优先；Web Components 为 `read-only`、`required` 属性。
+
+  - 只读：选择、拖放、粘贴、删除与清空都不收，已经开始的传输照常（开传与取消不改列表）。投放区仍在 Tab 序列里、报 `aria-disabled="true"`；选择、清空与删除三种按钮不用原生 disabled，报 `aria-disabled="true"` 并画禁用面。皮肤收回只读投放区的手形光标与悬停面。
+  - 必填：根与标题写 `data-required`，标题据此画星号；列表为空时文件输入带原生 `required`，拦下空表单的提交。有文件时不带：选完文件输入就被清空，恒带 required 会把已经选了文件的表单也拦下。
+
+- 16c31a0: 条件编辑器的删除钮在高对比档里按所在的面取字形色：悬停与按下时按钮涂成 Highlight，叉换成 HighlightText；禁用时叉取 GrayText。原来一律是 ButtonText，悬停时与 Highlight 面分不开，禁用时看不出禁用。
+- fca3825: **修复** Form 与 Fieldset 的项距：带 `XhFieldDescription` 的字段在说明下面照常留一段项距（`--xh-form-gap` / `--xh-fieldset-gap`，缺省 `--xh-space-5`），说明文字不再贴着下一项的标签；给错误文案留了一行、那一行空着的字段仍以那一行当项距。带说明与不带说明的字段交替排时，上一项看得见的内容到下一项标签都隔一段项距；字段转无效时错误文案顶替说明那一行，后面的字段不挪位。Web Components 里字段直接放进表单或字段集（直接子项是 `<xh-field>`）时，只留了错误行的字段不再多留一段项距，与 Vue / React 一致。只改皮肤。
+- 3aa9185: **调整** 菜单、右键菜单、菜单栏的下拉与子菜单，以及 Listbox、Select、Combobox、Command、Mention 的选项列表：同一层里只要有一条带行首图标，所有条目都空出图标那一格，正文左缘对齐；整层都没有图标就不留。跨分组与分隔线算一层，子菜单另算一层。菜单族的 `item-icon` 定宽为图标尺寸，作者放进来的图标大一号小一号都落在同一列；候选列表的 `item-prefix` 在这样的层里至少一个图标宽。条目高度不变，只改皮肤。Cascader 与 Tree 没有行首图标格，不受影响。
+
+  `context-menu.css` 与 `menubar.css` 比上一版基线各涨一成半左右（对号排到行尾的留位、对号只当对号与这一条的图标列开关），皮肤体积基线随之重落。
+
+- 2befc8d: **修复** 菜单、右键菜单、菜单栏的 `item-icon`，以及 Listbox、Select、Combobox、Command、Mention 的 `item-prefix`：格里的图标与正文上下居中，中线对齐。菜单族的图标格宽高都取图标尺寸，盒高不再靠行高撑；候选列表的行首格里面居中。图标比行高矮时（如 `sm` 档 16px 的图标配 19.5px 的行高）不再贴着格子上沿、比正文高出约 2px。Web Components 的 `<xh-icon>` 宿主改为只包住 `<svg>` 的行内块（行高归 0），盒子与图标一样大，不再按行高撑出一截、把图标顶到上沿，放进弹性或网格容器时与 Vue / React 一样居中；行内文字里的位置不变。给宿主写了 `display` 时以作者为准。只改皮肤。
+- 41fa2bf: **调整** 菜单、右键菜单与菜单栏的勾选、单选对号排到行尾，与子菜单箭头同一列，快捷键与行尾那一格（`item-suffix`）在它之前，与 Select、Tree 等集合的对号同位。行首只留图标，勾选条目的图标与普通条目左缘对齐；没勾的条目对号只隐不塌。同一层有勾选或单选条目时，普通条目在行尾留出同宽的一格，整张菜单的快捷键同列；没有勾选条目的一层照旧不留。只改皮肤，结构、部件与覆盖槽都不变。
+- 796d008: **调整** 菜单栏（Menubar）的下拉与它的子菜单只按落定那一侧的可用高度封顶（留出与视口边缘的间距），和桌面应用的菜单栏一样：可用高度够时整张菜单一次铺开、不出滚动条，不再叠 20rem 的固定上限；要收矮写 `--xh-menubar-max-h`。Menu 与 ContextMenu 照旧以 20rem 一档封顶，`--xh-menu-max-h`、`--xh-context-menu-max-h` 可改。
+
+  - **新增** Menu 的 `fitAvailableHeight`（Web Components 为 `fit-available-height`）：内容只按可用高度封顶，content 带 `data-fit-available-height`。菜单栏的子菜单由菜单栏自动带上；`XhMenuSub` 与嵌套的 `<xh-menu submenu>` 没写时跟着上一层。
+
+  三家菜单的固定上限都改经私有槽 `--xh-_<组件>-max-h` 承接（菜单与右键菜单取 20rem 一档，菜单栏取可用高度），公开槽不变。`menu.css` 比上一版基线涨 11%（对号排到行尾时普通条目的留位规则，与这一条的上限），皮肤体积基线随之重落。
+
+- 901a6db: 表格（Table）表尾里的冻结格（`sticky: 'start'` / `'end'`）补上不透明的表尾底色，与表体、表头的冻结格一致：横向滚动时，被它压住的格子不再从底下透出来。吸底与不吸底的表尾都一样，底色仍可经 `--xh-table-footer-bg` 覆盖。
+- 91f6294: 表格（Table）接了虚拟滚动时表体画出行间线。行包在虚拟条目里，原先画行间线的兄弟选择器跨不过条目，整张表体没有一条线；现在与普通表体同一条线、画在后一行的上沿。第一行按完整行序判，滚动换批时窗口里的第一行照画、每一行的高度不变；条目里跟在数据行后面的详情行也画。原先自己给虚拟表体的行补过 `border-block-end` 的可以删掉，不删会多出一条线。
+- cc5dade: Tabs 横线档（line，缺省形态）的当前页在悬停、键盘高亮与按下时，字换成深一档的强调色：没写语气时取 `--xh-fg-brand-strong`，写了语气时把语气字往 `--xh-fg-default` 兑三成。此前三态沿用静息的 `--xh-fg-brand`，压在页面底（`--xh-bg-page`）上叠一层淡底只有 4.1:1，按下时在面上也不到 4.5:1；带语气的当前页一悬停，字就退回品牌色。现在亮、暗与两档高对比下，页面底与面上的四态都在 4.5:1 以上。覆盖槽 `--xh-tabs-trigger-fg-active` 照旧管当前页的全部状态。
+- ff4237b: 工具栏（Toolbar）的条目可以声明只放图标：按方钮画，宽等于高，三种尺寸都一样，与「更多」钮同一个方盒。
+
+  - Vue / React：`XhToolbarItem` 新增 `iconOnly`；Web Components 在条目上写 `data-icon-only`，运行期增删同样生效。条目随之写 `data-icon-only`，名字仍要用 `aria-label` 给。
+  - 皮肤：只放图标的条目接 Action Control 的 icon 档，工具栏的公开内距槽 `--xh-toolbar-item-px` 不再把它撑宽。竖排时一列条目照旧一样宽：只放图标的条目随列宽拉伸、最窄是方盒，列宽随内容时整列只放图标就是一列方钮。图标加文字、只有文字的条目照旧。
+  - 文档：工具栏「用法」「收进更多菜单」两个示例的条目声明只放图标。
+
+- 1ac7d41: 引导新增 `boundary`，把引导限在一块区域里，写法同步骤的 `target`（选择器、元素或返回元素的函数；Web Components 的同名属性只收选择器）。遮罩只盖这块区域，高亮框连同暗幕裁在区域里，居中步摆在区域中间，气泡以区域为界避让。区域外照常可读可点，焦点不困在气泡里，对话框也不标 `aria-modal`。引导途中，区域里新开的层（如抽屉）排在引导之下，Esc 仍先收起引导。不给或取不到时照旧是整个视口。
+
+  配套的两处底层能力：
+
+  - 定位引擎的选项加 `boundary`：可用区域再与这块区域的矩形取交集，翻面、避让与可用空间都以交集为界。
+  - 层栈的层加 `covers`：之后在这块区域里新开、又不开在本层内容里的层，排在本层之下。
+
+- 68251a9: Tree 叶子行的说明（`item-description`）落在名称下面一行，与 `TreeNode.description` 的说法一致：带说明的行折成两行，说明独占第 2 行、从行内容的起点开始，放不下就截断。此前行是不换行的一行，说明挤在名称后面，窄的时候把树撑出横向滚动。没写说明的行高不变。
+- c1b1ede: 虚拟滚动（Virtualizer）的 `scrollContainer` 新增 `ancestor`：滚视口最近的、在主轴上可滚动的祖先，找不到时随整页滚。视口与根写 `data-scroll-container="ancestor"`，视口不滚动、不占 Tab 位，列表在祖先里的起点每次滚动现量。`collectionVirtualizer` 多报一个 `scrollContainer`。
+
+  表格（Table）的虚拟滚动改用这一写法：Virtualizer 写 `scrollContainer="ancestor"`，表格根节点保留皮肤给的限高与滚动，表体里的视口不定高。
+
+  - 吸顶表头、冻结列、横向溢出与行在同一个滚动面里：列宽之和超过容器时表头与行同列对齐，冻结列在表头与表体都留在行首。
+  - 视口不再带 tabindex，表体的 rowgroup 直接拥有行，axe 不再报 aria-required-children。
+  - 表格行不窄于自己那排格子（`min-inline-size: max-content`），装在虚拟条目里时照样和表头一样宽；Virtualizer 的根在 window 与 ancestor 形态下不再裁切，列表里吸附的格子钉得住。
+  - 表体里的视口自己滚时，开发模式下提醒一次。原来的写法仍可用于普通长列表。
+
+- Updated dependencies [0597fe4]
+- Updated dependencies [e76c28d]
+- Updated dependencies [25af3a5]
+- Updated dependencies [bff6439]
+- Updated dependencies [3db90a6]
+- Updated dependencies [d4f17ae]
+  - @xihan-ui/tokens@5.0.0
+
 ## 4.2.0
 
 ### Minor Changes
