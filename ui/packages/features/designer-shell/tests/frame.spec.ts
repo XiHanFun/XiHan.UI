@@ -147,6 +147,23 @@ describe('<xh-designer-frame>', () => {
     host.remove()
   })
 
+  it('closable：菜单栏最右端一颗关闭钮，排在行尾一段后面，名字是 Close，点了派发 close；缺省不显示，只有它时菜单栏也显示', async () => {
+    await mount()
+    const close = (): HTMLButtonElement | null => frame.querySelector<HTMLButtonElement>('[data-part="menubar-close"]')
+    expect([close()?.hidden ?? true, frame.showsPanel('menubar')]).toEqual([true, false])
+    frame.closable = true
+    await settle()
+    expect([close()!.hidden, close()!.getAttribute('aria-label'), frame.showsPanel('menubar')]).toEqual([false, 'Close', true])
+    expect([close()!.closest('[data-region]')!.getAttribute('data-region'), close()!.previousElementSibling?.getAttribute('data-zone')]).toEqual(['menubar', 'end'])
+    const seen: Event[] = []
+    frame.addEventListener('close', event => seen.push(event))
+    close()!.click()
+    expect(seen.map(event => event.type)).toEqual(['close'])
+    frame.closable = false
+    await settle()
+    expect([close()!.hidden, frame.showsPanel('menubar')]).toEqual([true, false])
+  })
+
   it('forwardFrameSlots 转来的 menubar-center 进菜单栏正中一段；转来的内容在同一段里排在设计器自己放的前面，后转来的也一样', async () => {
     const host = document.createElement('div')
     frame = document.createElement('xh-designer-frame')

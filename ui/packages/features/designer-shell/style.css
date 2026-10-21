@@ -2051,7 +2051,7 @@
 
   /* 帮助与关闭：只有字形的按钮，静息透明，悬停与按下换淡底；
      帮助钮那一支的 button 写在 :where 里，整条与收起各钮的 [hidden] 规则同一档特异度，带 hidden 的钮照样收起 */
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='menubar-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])) {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -2068,24 +2068,24 @@
     transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):hover {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='menubar-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):hover {
     background: var(--xh-bg-subtle);
     color: var(--xh-fg-default);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):active {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='menubar-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):active {
     background: var(--xh-bg-subtle-hover);
     transition-duration: var(--xh-motion-duration-press);
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):focus-visible {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > button, xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='menubar-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock'])):focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
   }
 
   /* 缺省画关闭的图形；帮助钮那一支的 button 写在 :where 里，整条与下面各钮的图形规则同一档特异度，排在后面的盖得住 */
-  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock']))::before {
+  :is(xh-designer-frame [data-scope='designer-frame'][data-part='panel-help-tip'] > :where(button), xh-designer-frame [data-scope='designer-frame']:is([data-part='panel-close'], [data-part='menubar-close'], [data-part='panel-minimize'], [data-part='panel-menu-trigger'], [data-part='float-dock']))::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-glyph-size-text);

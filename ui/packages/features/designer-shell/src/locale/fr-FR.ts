@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: 'Redimensionner la colonne de gauche',
     resizeRight: 'Redimensionner la colonne de droite',
     resizeBottom: 'Redimensionner la zone du bas',
+    close: 'Fermer',
     closePanel: label => `Fermer ${label}`,
     panelHelp: label => `À propos de ${label}`,
     minimizePanel: label => `Réduire ${label}`,

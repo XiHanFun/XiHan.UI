@@ -161,6 +161,25 @@ describe('菜单栏正中一段（Chromium）', () => {
     expect(Math.abs(middle(center) - middle(bar(document)))).toBeLessThanOrEqual(0.5)
   })
 
+  it('closable：关闭钮在菜单栏最右端、行尾一段的右边；量空当时把它算进去，正中一段截断后不压它', async () => {
+    frame.closable = true
+    await settle()
+    const close = document.querySelector<HTMLElement>('[data-part="menubar-close"]')!
+    const region = bar(document)
+    const gap = Number.parseFloat(getComputedStyle(region).columnGap)
+    expect(close.getBoundingClientRect().right).toBeCloseTo(region.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(region).paddingRight), 0)
+    expect(zone(document, 'menubar', 'end').getBoundingClientRect().right).toBeLessThanOrEqual(close.getBoundingClientRect().left + 0.5)
+    // 行尾一段空着、行首一段很窄：右边挡住正中一段的是关闭钮
+    zone(document, 'menubar', 'end').replaceChildren()
+    ;(zone(document, 'menubar', 'start').firstElementChild as HTMLElement).style.width = '20px'
+    await resize(260)
+    const center = zone(document, 'menubar', 'center')
+    expect(center.checkVisibility()).toBe(true)
+    expect(Math.abs(middle(center) - middle(region))).toBeLessThanOrEqual(0.5)
+    expect(center.getBoundingClientRect().right).toBeLessThanOrEqual(close.getBoundingClientRect().left - gap + 0.5)
+    expect(title.scrollWidth).toBeGreaterThan(title.clientWidth)
+  })
+
   describe.each(Object.keys(SHEETS) as (keyof typeof SHEETS)[])('截断那一档的结构（%s）', (kind) => {
     it('正中一段仍在整条菜单栏的正中，不压两边，里面的文字截断加省略号', async () => {
       await resize(820)

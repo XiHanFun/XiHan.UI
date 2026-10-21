@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: '왼쪽 열 너비 조정',
     resizeRight: '오른쪽 열 너비 조정',
     resizeBottom: '아래쪽 영역 높이 조정',
+    close: '닫기',
     closePanel: label => `${label} 닫기`,
     panelHelp: label => `${label} 도움말`,
     minimizePanel: label => `${label} 접기`,

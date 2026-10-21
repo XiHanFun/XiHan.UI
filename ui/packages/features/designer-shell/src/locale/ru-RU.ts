@@ -95,6 +95,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: 'Изменить ширину левой колонки',
     resizeRight: 'Изменить ширину правой колонки',
     resizeBottom: 'Изменить высоту нижней области',
+    close: 'Закрыть',
     closePanel: label => `Закрыть «${label}»`,
     panelHelp: label => `О панели «${label}»`,
     minimizePanel: label => `Свернуть «${label}»`,
