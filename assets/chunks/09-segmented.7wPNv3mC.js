@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Fo as i}from"./theme.DGfvfTUV.js";var a=n({__name:`09-segmented`,setup(n){let a=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];return(n,o)=>(r(),t(e(i),{variant:`segmented`,collection:a,"default-value":`week`,label:`时间粒度`}))}});export{a as default};

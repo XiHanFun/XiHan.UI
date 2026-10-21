@@ -1,0 +1,1 @@
+import{$ as e,Et as t,Lt as n,Zt as r,ft as i,st as a,ut as o,wt as s}from"./framework.eUj94whv.js";import{gd as c,hd as l,md as u}from"./theme.DtyqiN1q.js";var d=i({__name:`04-size`,setup(i){let d=[`sm`,`md`,`lg`];return(i,f)=>(s(),a(e,null,t(d,e=>o(r(l),{key:e,style:{position:`static`},size:e},{default:n(()=>[o(r(c)),o(r(u))]),_:1},8,[`size`])),64))}});export{d as default};

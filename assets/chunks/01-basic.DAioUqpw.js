@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.SIwpYkXh.js";import{a as t,n,o as r,r as i,t as a}from"./tooltip.Cqc0T1ka.js";var o=e();function s(){return(0,o.jsxs)(t,{children:[(0,o.jsx)(r,{children:`保存`}),(0,o.jsx)(i,{children:(0,o.jsxs)(n,{children:[`写入草稿箱，不会发布`,(0,o.jsx)(a,{})]})})]})}export{s as default};

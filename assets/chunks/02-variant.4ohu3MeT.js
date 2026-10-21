@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./button.DySsLXgv.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{variant:`solid`,children:`主要`}),(0,n.jsx)(t,{variant:`subtle`,children:`次要`}),(0,n.jsx)(t,{variant:`outline`,children:`线框`}),(0,n.jsx)(t,{variant:`ghost`,children:`幽灵`})]})}export{r as default};

@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./progress.VJym9ml_.js";var n=e();function r(){return(0,n.jsx)(t,{value:30,buffer:65,valueText:`已播放 30%`,"aria-label":`播放进度`,style:{width:`100%`}})}export{r as default};

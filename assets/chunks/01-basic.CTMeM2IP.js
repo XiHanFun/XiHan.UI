@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{va as i}from"./theme.DGfvfTUV.js";var a=n({__name:`01-basic`,setup(n){let a=[320,356,341,398,420,388,452,470,431,498,520,548];return(n,o)=>(r(),t(e(i),{data:a,"aria-label":`近 12 周访问量`}))}});export{a as default};

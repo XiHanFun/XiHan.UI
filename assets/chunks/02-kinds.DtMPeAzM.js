@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Xu as i}from"./theme.DGfvfTUV.js";var a=n({__name:`02-kinds`,setup(n){return(n,a)=>(r(),t(e(i),{kinds:[`number`,`percent`],"default-value":{kind:`percent`,decimals:1},"aria-label":`占比格式`}))}});export{a as default};

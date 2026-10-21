@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./format-input.B8DMToXB.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{readOnly:!0,defaultValue:{kind:`number`,decimals:2,grouping:!0},"aria-label":`只读的金额格式`}),(0,n.jsx)(t,{disabled:!0,defaultValue:{kind:`percent`,decimals:1},"aria-label":`禁用的占比格式`})]})}export{r as default};

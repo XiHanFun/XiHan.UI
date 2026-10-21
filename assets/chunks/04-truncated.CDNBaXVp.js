@@ -1,2 +1,0 @@
-import{qO as e}from"./theme.DGfvfTUV.js";import{n as t}from"./normalize-props.C_GYr3Wu.js";import{a as n,n as r,o as i,r as a,t as o}from"./diff-view.B2oTrwys.js";var s=t(),c=Array.from({length:30},(e,t)=>`const item${t} = ${t}`).join(`
-`),l=c.replace(`const item2 = 2`,`const item2 = 200`),u=e(c,l,{maxLines:6});function d(){return(0,s.jsxs)(a,{model:u,contextLines:2,children:[(0,s.jsx)(r,{children:`src/items.ts`}),(0,s.jsx)(i,{children:(0,s.jsx)(o,{})}),(0,s.jsx)(n,{})]})}export{d as default};

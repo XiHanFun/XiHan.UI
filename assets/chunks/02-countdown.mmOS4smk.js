@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{i as t}from"./timer.BttMDOPC.js";var n=e(),r=12e4;function i(){return(0,n.jsx)(t,{countdown:!0,startMs:r,autoStart:!0})}export{i as default};

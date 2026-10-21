@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{rf as i}from"./theme.DGfvfTUV.js";var a=n({__name:`04-disabled`,setup(n){let a=[{value:`apple`,label:`苹果`},{value:`banana`,label:`香蕉`}];return(n,o)=>(r(),t(e(i),{collection:a,"default-value":[`apple`],disabled:``,label:`水果`,placeholder:`请选择`}))}});export{a as default};

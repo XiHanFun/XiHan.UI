@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./sparkline.wafesWRA.js";var n=e(),r=[18,24,21,30,27,35,32,41],i=[`line`,`area`,`bar`];function a(){return(0,n.jsx)(`div`,{style:{display:`flex`,flexWrap:`wrap`,alignItems:`center`,gap:`var(--xh-space-6)`},children:i.map(e=>(0,n.jsx)(t,{data:r,variant:e,"aria-label":`近 8 天订单数（${e}）`},e))})}export{a as default};

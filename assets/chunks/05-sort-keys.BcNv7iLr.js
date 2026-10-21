@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.SIwpYkXh.js";import{t}from"./json-viewer.CXxX77ko.js";var n=e(),r={zone:`cn-east-1`,action:`deploy`,meta:{retries:2,at:`2026-08-20`,by:`ci`},steps:[`build`,`test`,`publish`]};function i(){return(0,n.jsx)(t,{value:r,defaultExpandedDepth:2,sortKeys:!0,style:{inlineSize:`100%`,maxInlineSize:`420px`}})}export{i as default};

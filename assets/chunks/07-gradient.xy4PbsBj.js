@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{a as t,o as n,t as r}from"./typography.t4gzUyoO.js";var i=e();function a(){return(0,i.jsx)(t,{children:(0,i.jsxs)(r,{as:`h2`,level:1,children:[`快速、轻量的`,(0,i.jsx)(n,{variant:`gradient`,children:`Headless 组件库`})]})})}export{a as default};

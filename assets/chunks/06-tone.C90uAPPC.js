@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{va as i}from"./theme.DGfvfTUV.js";var a=n({__name:`06-tone`,setup(n){let a=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1];return(n,o)=>(r(),t(e(i),{data:a,tone:`danger`,"aria-label":`近 10 分钟错误率`}))}});export{a as default};

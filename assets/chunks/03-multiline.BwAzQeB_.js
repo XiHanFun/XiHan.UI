@@ -1,0 +1,1 @@
+import{bO as e,yO as t}from"./theme.DtyqiN1q.js";async function n(){let n=[{label:`amount`,kind:`variable`,detail:`数字`,description:`报销金额`},{label:`level`,kind:`variable`,detail:`文本`,description:`会员等级`}],r=document.getElementById(`expression-input-multiline`);r.autoSize={minRows:3,maxRows:6},r.completions=n,r.check=t(e(),{identifiers:n.map(e=>e.label)})}export{n as default};

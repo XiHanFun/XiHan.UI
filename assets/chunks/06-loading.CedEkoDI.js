@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.SIwpYkXh.js";import{n as t,r as n,t as r}from"./button.DHTeSnMi.js";var i=e();function a(){return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsxs)(r,{loading:!0,children:[(0,i.jsx)(t,{}),(0,i.jsx)(n,{children:`提交`})]}),(0,i.jsxs)(r,{loading:!0,variant:`subtle`,children:[(0,i.jsx)(t,{}),(0,i.jsx)(n,{children:`处理中`})]})]})}export{a as default};

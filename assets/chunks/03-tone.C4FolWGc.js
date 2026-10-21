@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./checkbox.D0TPq24J.js";var n=e(),r=[`brand`,`neutral`,`success`,`warning`,`danger`,`info`];function i(){return(0,n.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`16px`,flexWrap:`wrap`},children:r.map(e=>(0,n.jsx)(t,{tone:e,defaultChecked:!0,children:e},e))})}export{i as default};

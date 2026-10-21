@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{pr as i}from"./theme.DtyqiN1q.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(r(),t(e(i),{"auto-start":``}))}});export{a as default};

@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C_GYr3Wu.js";import{t}from"./funnel-chart.CyizBl_m.js";var n=e(),r=[{stage:`收到简历`,users:860},{stage:`简历通过`,users:310},{stage:`一面`,users:150},{stage:`二面`,users:64},{stage:`发放录用`,users:18}];function i(){return(0,n.jsx)(t,{data:r,nameField:`stage`,valueField:`users`,align:`start`,shape:`bar`,caption:`招聘流程`})}export{i as default};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.SIwpYkXh.js";import{i as t,n,r}from"./pin-input.D8aixbEH.js";var i=e(),a=Array.from({length:4},(e,t)=>t);function o(){return(0,i.jsxs)(t,{length:4,placeholder:`·`,children:[(0,i.jsx)(r,{children:`验证码`}),(0,i.jsx)(`div`,{style:{display:`flex`},children:a.map(e=>(0,i.jsx)(n,{index:e},e))})]})}export{o as default};

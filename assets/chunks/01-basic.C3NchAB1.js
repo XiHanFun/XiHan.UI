@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.SIwpYkXh.js";import{t}from"./truncate.jOhgSkz8.js";var n=e();function r(){return(0,n.jsx)(`div`,{style:{inlineSize:`280px`,maxInlineSize:`100%`},children:(0,n.jsx)(t,{children:`XiHan.UI 提供框架无关的 Headless UI 组件与多端适配器。`})})}export{r as default};
