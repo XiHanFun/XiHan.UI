@@ -29,6 +29,7 @@ import {
   XhBreadcrumbList,
   XhBreadcrumbRoot,
   XhBreadcrumbSeparator,
+  XhContextMenuRoot,
   XhDownloadTrigger,
   XhMenubarContent,
   XhMenubarItem,
@@ -267,6 +268,14 @@ const EXTRA: ReadonlyArray<{ name: string, render: () => VNode }> = [
         ]),
       ])),
     ]),
+  },
+  {
+    name: 'context-menu 勾着的勾选条目行尾的对号',
+    render: () => h(XhContextMenuRoot, { defaultOpen: true, checkboxValue: ['grid'], collection: [{ value: 'grid', label: '显示网格', kind: 'checkbox' }] }, { trigger: () => '画布' }),
+  },
+  {
+    name: 'menubar 勾着的勾选条目行尾的对号',
+    render: () => h(XhMenubarRoot, { defaultValue: 'view', checkboxValue: ['grid'], collection: [{ value: 'view', label: '视图', items: [{ value: 'grid', label: '显示网格', kind: 'checkbox' }] }] }),
   },
 ]
 
