@@ -47,7 +47,7 @@
     "@xihan-ui/viz": "link:../ui/packages/engine/viz",
     "@xihan-ui/vue": "link:../ui/packages/adapters/vue",
     "@xihan-ui/web-components": "link:../ui/packages/adapters/web-components",
-    "@xihanfun/vitepress-theme": "^1.1.0",
+    "@xihanfun/vitepress-theme": "^1.2.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "vitepress": "2.0.0-alpha.20",
