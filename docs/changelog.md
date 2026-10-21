@@ -74,7 +74,8 @@
 - **新增** Tour 的 `boundary`：把引导限在一块区域里，遮罩与高亮框只盖这块区域、气泡以它为界避让，区域外照常可读可点；定位引擎与层栈各补了配套的 `boundary`、`covers`
 - **新增** 令牌的预设品牌 `BRAND_PRESETS`（如 `blue`、`green`、`orange`、`pink`）与各档代表色 `BRAND_PRESET_COLORS`，`data-brand` 直接换一套品牌原语、不必 `registerBrand`，各档的对比度与缺省品牌同样达标
 - **新增** Web Components 子入口 `authoring`（编写同形 Light DOM 元素的基类、布尔属性的三态转换器 `BOOLEAN_CONVERTER` 与工具）与按需注册 `defineXhElement`
-- **新增** 设计器画布与表格编辑命令用的一批图标（编辑、对齐与分布、层级、表格行列与合并等）
+- **新增** 设计器画布与表格编辑命令用的一批图标（编辑、拖动、对齐与分布、层级、表格行列与合并等）
+- **新增** `@xihan-ui/pointer` 的 `wheelPixels`：把按行、按页计量的滚轮滚动量折成像素（缺省一行 16、一页 400），Tabs 的滚轮滚动与图表的滚轮缩放改用它，换算值不变
 - **新增** `@xihan-ui/viz` 有向图算法、分层布局与直角连线、折线工具、多样式折行 `wrapRuns`、表格数据处理与 `pivotWider`
 - **优化** 按需注册一个元素的产物从约 160 kB 降到约 15 kB（gzip）；`@xihan-ui/expression` 可摇树
 - **调整** Web Components 的 `<xh-dialog>`、`<xh-drawer>` 语义角色改写 `dialog-role`，宿主上不再带 `role`（详见升级须知）
