@@ -364,6 +364,12 @@ export default defineXiHanConfig({
   description,
   keywords,
   repo: "XiHan.UI",
+  banner: {
+    id: "2026-10-designers-rc",
+    text: "生态产品多个设计器现已发布候选版本",
+    link: "https://docs.xihanfun.com/cosmos/ecosystem",
+    linkText: "查看生态总览",
+  },
   llms: {
     title: "曦寒视图组件",
     summary: "框架无关的设计系统运行时：无头内核提供行为与无障碍，Vue、React 与 Web Components 三个适配器只负责把属性铺到宿主元素上，纯 CSS 皮肤认 `data-scope` / `data-part` 而不是类名。",
