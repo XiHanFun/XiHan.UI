@@ -19,7 +19,7 @@ import type { DesignerFrameTranslations } from '../translations'
 import type { DesignerLayout, DesignerLayoutDock, DesignerLayoutPolicy, DesignerLayoutRect, ResolvedDesignerLayout } from './layout'
 import type { DesignerCanvasTool, DesignerFrameOverlayAnchor, DesignerFramePosition, DesignerFrameRegion } from './types'
 import { announce as announceToPage, createCounterIdGenerator, getLayerRegistry } from '@xihan-ui/core'
-import { createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
+import { BOOLEAN_CONVERTER, createAuthoredElement, createGeneratedElement, emitEvent, setAttributes, setText, XhConfigController, XhReactiveElement } from '@xihan-ui/web-components/authoring'
 import { registerDropTarget, startDrag } from '../drag/drag'
 import { panelActionsOverflow } from '../extensions/panel-actions-overflow'
 import { adoptSlots } from '../internal/slots'
@@ -130,6 +130,8 @@ export interface DesignerFrameEventMap {
   'layout-change': CustomEvent<{ layout: ResolvedDesignerLayout, reason: DesignerLayoutChangeReason }>
   /** 画布上的工具换了（写 canvasTool、拖动工具命令或 Esc 退出拖动）。 */
   'canvas-tool-change': CustomEvent<{ tool: DesignerCanvasTool }>
+  /** 菜单栏最右端的关闭钮按下了：外框不做别的，怎么关、要不要先问未保存的修改由宿主定。 */
+  'close': CustomEvent<Record<string, never>>
 }
 
 /** 缺省的命名区：菜单栏、工具栏、物料、画布、属性、问题、状态栏。 */
@@ -165,6 +167,7 @@ const DEFAULT_TRANSLATIONS: DesignerFrameTranslations = {
   resizeLeft: 'Resize left column',
   resizeRight: 'Resize right column',
   resizeBottom: 'Resize bottom area',
+  close: 'Close',
   closePanel: label => `Close ${label}`,
   panelHelp: label => `About ${label}`,
   minimizePanel: label => `Collapse ${label}`,
@@ -269,6 +272,8 @@ interface RegionParts {
   /** 状态栏的分段，画布区的浮动条落点，卡片的操作区。 */
   readonly zones: Readonly<Record<string, HTMLElement>>
   readonly card?: CardParts
+  /** 菜单栏最右端的关闭钮。 */
+  readonly close?: HTMLButtonElement
   /** 区结构的签名：种类与是不是卡片变了就重建。 */
   readonly signature: string
 }
@@ -349,6 +354,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     defaultLayout: { attribute: false },
     layoutPolicy: { attribute: false },
     translations: { attribute: false },
+    closable: { converter: BOOLEAN_CONVERTER },
   }
 
   /** 命名区，缺省为 DESIGNER_FRAME_REGIONS。 */
@@ -361,6 +367,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   declare layoutPolicy: DesignerLayoutPolicy | undefined
   /** 元素自己的文案，压在全局配置之上。 */
   declare translations: Partial<DesignerFrameTranslations> | undefined
+  /** 在菜单栏最右端显示关闭钮，按下派发 close；缺省不显示。同名 attribute closable。 */
+  declare closable: boolean | undefined
 
   /** 注册外框用到的库内元素。 */
   static defineDependencies(): void {
@@ -714,9 +722,13 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       this.#restoreFocus()
     }
     for (const region of this.#regionList()) {
-      const card = this.#regions.get(region.name)?.card
-      if (card)
-        this.#paintCard(region, card, t)
+      const parts = this.#regions.get(region.name)
+      if (parts?.card)
+        this.#paintCard(region, parts.card, t)
+      if (parts?.close) {
+        parts.close.hidden = this.closable !== true
+        setAttributes(parts.close, { 'aria-label': t.close })
+      }
     }
     this.#paintFloats(plan, t)
     this.#paintCanvasTool()
@@ -804,7 +816,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       const middle = bar.left + bar.width / 2
       let left = bar.left + (Number.parseFloat(style.paddingLeft) || 0)
       let right = bar.right - (Number.parseFloat(style.paddingRight) || 0)
-      for (const zone of [parts.zones.start, parts.zones.end]) {
+      for (const zone of [parts.zones.start, parts.zones.end, parts.close?.hidden === false ? parts.close : undefined]) {
         const box = zone?.getBoundingClientRect()
         if (box === undefined || box.width === 0)
           continue
@@ -882,8 +894,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
 
   /** 菜单栏或状态栏的某一段有没有元素。 */
   #hasContent(name: string): boolean {
-    const zones = this.#regions.get(name)?.zones ?? {}
-    return Object.values(zones).some(zone => zone.childElementCount > 0)
+    const parts = this.#regions.get(name)
+    return (parts?.close !== undefined && this.closable === true) || Object.values(parts?.zones ?? {}).some(zone => zone.childElementCount > 0)
   }
 
   #ensureParts(): Parts {
@@ -978,7 +990,13 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     }
     if (!card) {
       element.append(...Object.values(zones))
-      return { element, content: element, zones, signature }
+      if (region.position !== 'menubar')
+        return { element, content: element, zones, signature }
+      // 菜单栏最右端的关闭钮，排在行尾一段后面
+      const close = createAuthoredElement(doc, 'button', { 'data-scope': SCOPE, 'data-part': 'menubar-close', 'type': 'button', 'hidden': '' }) as HTMLButtonElement
+      close.addEventListener('click', () => emitEvent(this, 'close', {}))
+      element.append(close)
+      return { element, content: element, zones, signature, close }
     }
     const titleId = this.#nextId('title')
     const title = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'panel-title', 'id': titleId })

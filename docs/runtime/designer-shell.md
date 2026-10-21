@@ -633,6 +633,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 | `resolvedLayout` | 只读：此刻的整份布局，每个字段都在 |
 | `narrow` | 只读：视口窄于断点、左右两栏收进抽屉时为 `true`，见下文「窄屏」 |
 | `openDrawer` | 窄屏时开着的那侧抽屉（`start` 或 `end`），都收着时为 `undefined`；赋值开、关抽屉，不是窄屏时读出 `undefined`、赋值不起作用 |
+| `closable` | 在菜单栏最右端显示关闭钮，按下派发 `close`；缺省不显示。同名 attribute `closable`，见下文「菜单栏」 |
 | `canvasTool` | 画布上此刻的工具：`select`（缺省，点选与框选）或 `pan`（拖动：按住拖动平移画布）。拖动时画布区标上 `data-canvas-tool="pan"`、显示手形光标；外框里按 Esc（里面的元件没接走）退回 `select`；换了就派发 `canvas-tool-change`。怎么平移由各款在自己的画布上接，见下文「拖动工具」 |
 
 | 方法 | 说明 |
@@ -655,6 +656,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 
 | 事件 | detail |
 | --- | --- |
+| `close` | `{}`：菜单栏最右端的关闭钮按下了（`closable` 开着时）。外框不做别的；设计器在自己身上转发成同名事件，怎么关、要不要先问未保存的修改由宿主定 |
 | `canvas-tool-change` | `{ tool }`：画布上的工具换了（写 `canvasTool`、`pan-tool` 命令或按 Esc 退出拖动）。设计器收到时重画工具栏，让「拖动」钮的按下状态跟上 |
 | `layout-change` | `{ layout, reason }`：布局变了，`layout` 是改完的整份（`ResolvedDesignerLayout`，可以直接存）。`reason` 取 `toggle`、`move`、`minimize`、`float`、`dock`、`resize`、`reset`。指针拖分隔条只在松手时派发，方向键调的、在分隔条上收起或放回的当场派发；拖小窗的标题栏挪动在松手时派发，用键盘挪动与改尺停 300 毫秒后派发。调方法改布局时先按新布局排好再派发：新的分隔条在随后的微任务里接好线，在这个事件里排下的更新量到的就是排好以后的大小。重排前后焦点留在原来持有它的元素上 |
 
@@ -721,6 +723,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 正中一段按整条菜单栏的宽度居中，不随两边内容的宽窄偏。行首、行尾两段的内容各挡住一边，外框取离中线近的那一边，定出以中线对称的空当：内容放得下照原宽；放不下截到空当的宽，里面的作者内容（这一段的直接子元素）截断加省略号；空当窄过几个字宽就整段藏起，变宽了再出来。窄屏菜单栏收成「菜单」钮时照同一个规矩，不压那颗钮。文字取正常字色、小一号。
 - 键盘：设计器里有焦点时按 F10（不带修饰键），焦点交给菜单栏里第一个看得见、能用 Tab 走到的元素（宽屏是菜单栏，窄屏是那颗「菜单」钮）；再按 F10，或在菜单栏里按 Esc（菜单收着时），回到按 F10 之前持有焦点的地方。用 Tab 走进菜单栏的，Esc 不带回去。Shift+F10 仍是右键菜单，Alt+F10 仍是选中工具条。外框在自己身上接这个键，各款不用另接；里面的元件已经接走（`preventDefault`）的 F10 与 Esc 外框不管。
 - 外框由设计器自己建在设计器元素里，宿主够不着它的段：设计器用 `forwardFrameSlots(设计器元素, 外框, ["menubar-center", "menubar-end", "status-end"])` 把宿主写在设计器元素上、`slot` 在名单里的子元素搬进外框，后来加的跟着搬，宿主就能往菜单栏正中放模板标题、往状态栏右端放保存状态。名单里只写要转交的段，别的子元素不动；转过去的内容在同一段里排在设计器自己放的内容前面（状态栏右端的缩放比例这类各款自己的状态项留在最右）。返回停止转交的函数，已经搬过去的不搬回来。
+- `closable` 开着时，菜单栏最右端（行尾一段后面）多一颗关闭钮：只有叉号字形，可及名取外框文案的 `close`（「关闭」），按下派发 `close`。它不是命令，不进任何菜单，也不进工具栏定制；窄屏菜单栏收成「菜单」钮时照样在右上角；正中一段量空当时把它算作行尾一侧的边。只有它时菜单栏也显示。设计器各出一个同名属性 `closable` 交给外框，在外框的 `close` 上停止冒泡、从设计器元素自己派发 `close`。
 - 菜单栏本身怎么从命令表铺，见下文「扩展的面板与命令」的「菜单栏」。
 
 ### 状态栏
@@ -1325,7 +1328,7 @@ menubar.update(arrangeMenubar(menus, commands, designerMenubarLayout(commands), 
 - 窄屏（外框写着 `data-narrow`）时这一条收起，换成一颗「菜单」钮（`menu-trigger` 部件，文字取 `labels.menu`，给了 `menuIcon` 在前面铺图标），点开一张 `<xh-menu>`，每张菜单是它的一个子菜单，开关式命令的勾照样跟着状态，选中照样执行。
 - 键盘照 `<xh-menubar>`：整条一个 Tab 位，左右键在菜单之间走，下键、Enter、Space 展开，展开后左右键换到相邻的菜单，Esc 收起回到入口；F10 进出菜单栏由外框接，见「外框」的「菜单栏」。
 
-宿主自己的操作（新建、预览、打印、返回列表）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题写成设计器元素的子元素 `slot="menubar-center"`，保存状态写成 `slot="status-end"`，其他要常显的写 `slot="menubar-end"`，各款经 `forwardFrameSlots` 转进外框；状态栏在设置里关掉时，宿主放在状态栏里的内容跟着不显示。这样设计器外面不必另起一条操作条。
+宿主自己的操作（新建、预览、打印）写成一个扩展的命令，`placement` 写 `menubar:file` 就进「文件」菜单，常用的同时写 `toolbar` 上工具栏；保存用内置的 `save`，照旧接各款的 `save` 事件；模板标题写成设计器元素的子元素 `slot="menubar-center"`，保存状态写成 `slot="status-end"`，其他要常显的写 `slot="menubar-end"`，各款经 `forwardFrameSlots` 转进外框；状态栏在设置里关掉时，宿主放在状态栏里的内容跟着不显示。要关掉设计器、回到列表时，开各款的 `closable`，接 `close` 事件，菜单栏右上角就有一颗关闭钮，不在菜单里另放「返回列表」。这样设计器外面不必另起一条操作条。
 
 ```ts
 designer.extensions = [...presets, {

@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: '调整左栏的宽度',
     resizeRight: '调整右栏的宽度',
     resizeBottom: '调整下栏的高度',
+    close: '关闭',
     closePanel: label => `关闭「${label}」`,
     panelHelp: label => `「${label}」说明`,
     minimizePanel: label => `收起「${label}」`,

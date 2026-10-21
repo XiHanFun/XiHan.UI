@@ -285,6 +285,21 @@ describe('菜单栏（Chromium）', () => {
     expect(gridItem()!.getAttribute('aria-checked')).toBe('true')
   })
 
+  it('closable：关闭钮在菜单栏最右端；窄屏收成「菜单」钮时仍在右上角', async () => {
+    frame.closable = true
+    await settle()
+    const close = frame.querySelector<HTMLElement>('[data-part="menubar-close"]')!
+    const strip = frame.querySelector('[data-part="region"][data-position="menubar"]')!
+    const edge = (): number => strip.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(strip).paddingRight)
+    expect(close.getBoundingClientRect().right).toBeCloseTo(edge(), 0)
+    expect(close.getBoundingClientRect().left).toBeGreaterThan(frame.querySelector('[role="menubar"]')!.getBoundingClientRect().right)
+    await page.viewport(375, 700)
+    await until(() => frame.narrow)
+    await settle()
+    expect([close.checkVisibility(), Math.abs(close.getBoundingClientRect().right - edge()) < 1]).toEqual([true, true])
+    expect(close.getBoundingClientRect().bottom).toBeLessThanOrEqual(strip.getBoundingClientRect().bottom + 0.5)
+  })
+
   it('正中一段的标题：宽屏时在整条菜单栏正中；窄屏收成「菜单」钮时仍在正中，放不下截断，不压那颗钮', async () => {
     const title = document.createElement('span')
     title.slot = 'menubar-center'

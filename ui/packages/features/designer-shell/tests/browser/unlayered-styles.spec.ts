@@ -252,6 +252,7 @@ describe('外壳零件在有层与无层两种搭配下算出同一套计算样�
     const zoom = createStatusItem(document, { label: 'Zoom', value: '100%' })
     zoom.element.slot = 'status-end'
     frame.append(menu, title, draft, zoom.element)
+    frame.closable = true
     const outline = mount(document.createElement('xh-designer-outline'))
     outline.style.cssText = 'display: flex; flex-direction: column; inline-size: 280px; block-size: 240px'
     outline.searchable = true

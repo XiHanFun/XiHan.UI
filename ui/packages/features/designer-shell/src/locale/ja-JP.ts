@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: '左列の幅を変更',
     resizeRight: '右列の幅を変更',
     resizeBottom: '下部エリアの高さを変更',
+    close: '閉じる',
     closePanel: label => `「${label}」を閉じる`,
     panelHelp: label => `「${label}」について`,
     minimizePanel: label => `「${label}」を折りたたむ`,

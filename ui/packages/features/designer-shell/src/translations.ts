@@ -160,6 +160,8 @@ export interface DesignerFrameTranslations {
   readonly resizeRight: string
   /** 下栏与画布之间那条分隔条的无障碍名称。 */
   readonly resizeBottom: string
+  /** 菜单栏最右端关闭钮（closable 开着时）的名字。 */
+  readonly close: string
   /** 面板头关闭钮的名字，入参是面板标题。 */
   readonly closePanel: (label: string) => string
   /** 面板头帮助钮的名字，入参是面板标题。 */

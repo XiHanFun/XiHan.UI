@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: 'Breite der linken Spalte ändern',
     resizeRight: 'Breite der rechten Spalte ändern',
     resizeBottom: 'Höhe des unteren Bereichs ändern',
+    close: 'Schließen',
     closePanel: label => `${label} schließen`,
     panelHelp: label => `Hilfe zu ${label}`,
     minimizePanel: label => `${label} einklappen`,

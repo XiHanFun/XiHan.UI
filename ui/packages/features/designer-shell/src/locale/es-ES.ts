@@ -84,6 +84,7 @@ const translations: DesignerShellLocaleTranslations = {
     resizeLeft: 'Cambiar el ancho de la columna izquierda',
     resizeRight: 'Cambiar el ancho de la columna derecha',
     resizeBottom: 'Cambiar la altura del área inferior',
+    close: 'Cerrar',
     closePanel: label => `Cerrar ${label}`,
     panelHelp: label => `Acerca de ${label}`,
     minimizePanel: label => `Contraer ${label}`,
