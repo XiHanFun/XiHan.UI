@@ -372,6 +372,43 @@ describe('<xh-designer-transform> 视口变化与手势途中不读布局（Chro
     expect(toolbar.bottom).toBeLessThanOrEqual(frame.top)
   })
 
+  it('工具条在手势中收起、松手后重新显示：照上次记下的尺寸摆放，不当场量', async () => {
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.style.cssText = 'display:flex'
+    bar.innerHTML = '<button type="button">Copy</button>'
+    overlay.append(bar)
+    overlay.viewport = { x: 50, y: 200, zoom: 1 }
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    await frames(2)
+    const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!
+    const shown = toolbar.getBoundingClientRect()
+    const frame = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    const center = { x: (frame.left + frame.right) / 2, y: (frame.top + frame.bottom) / 2 }
+    overlay.startMove(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, isPrimary: true, pointerType: 'mouse', button: 0, clientX: center.x, clientY: center.y }))
+    pointer(document, 'pointermove', center.x + 20, center.y)
+    await overlay.updateComplete
+    await frames(2)
+    expect(toolbar.hidden).toBe(true)
+    pointer(document, 'pointerup', center.x + 20, center.y)
+    await overlay.updateComplete
+    const recording = recordLayoutReads()
+    try {
+      overlay.items = [{ id: 'a', rect: { x: 30, y: 20, width: 100, height: 50 }, rotatable: true }]
+      await overlay.updateComplete
+      expect(toolbar.hidden).toBe(false)
+      expect(recording.reads()).toEqual([])
+    }
+    finally {
+      recording.stop()
+    }
+    await frames(2)
+    const box = toolbar.getBoundingClientRect()
+    expect(box.width).toBeCloseTo(shown.width, 1)
+    expect(box.left).toBeCloseTo(shown.left + 20, 0)
+  })
+
   it('移动途中：覆盖层的位置只在开始时量一次，徽标照记下的尺寸摆放', async () => {
     overlay.measureOptions = { unit: 'mm' }
     await overlay.updateComplete
