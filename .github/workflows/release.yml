@@ -1,6 +1,6 @@
 name: Release
 
-# 只做一件事：把当前提交里的包发到 npm。
+# 只做一件事：把当前提交里的包发到 npm，并核对各包的 latest 指到了这一版。
 # 版本号、CHANGELOG、git tag、GitHub Release 全部由人手工完成。
 # 门禁、测试、publint / attw 全在 ci.yml：标签指向的提交进 main 时 CI 已经跑过一遍，
 # 这里不再重复；发布链上只留发包本身绕不开的步骤。
@@ -80,4 +80,10 @@ jobs:
         run: pnpm release
         env:
           NPM_CONFIG_PROVENANCE: 'true'
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # latest 跟着这一版走：等官方源取得到这一版（刚发完个别包会晚二十来分钟），逐个包核 latest，没指过来的补上，
+      # 全部对上这一步才过；预发布时只给 npm 上还没有正式版的包挂 latest。本地可加 --dry-run 只看不改
+      - name: latest 跟上这一版
+        run: node scripts/release/promote-latest.mjs
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

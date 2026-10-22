@@ -217,6 +217,12 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - 不推送、不发布、不创建远程 PR，除非用户明确要求。
 - 提交前检查 `git diff --check`、相关测试、`pnpm gate` 和生产构建。
 
+## 发版
+
+- 准备版本、打标签与发布按 `.agents/skills/version-release/SKILL.md`；推标签、发 npm 只在用户明确要求时做。
+- `.github/workflows/release.yml` 由 `main` 上的 `v*` 标签触发：guard 核对标签与包版本，构建后 `changeset publish` 发包，最后 `ui/scripts/release/promote-latest.mjs` 让各包的 npm `latest` 跟到这一版——等 npm 官方源取得到这一版、逐个包核，没指过来的用 `npm dist-tag add` 补上，全部对上这一步才过；预发布时只给 npm 上还没有正式版的包挂 `latest`。
+- 本地在 `ui/` 运行 `node scripts/release/promote-latest.mjs --dry-run` 只看一遍 npm 现状、不等不改。
+
 ## 禁止事项
 
 - 不凭记忆猜组件 API、部件、事件或令牌。
