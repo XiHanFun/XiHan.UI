@@ -135,6 +135,28 @@ describe('<xh-designer-minimap>', () => {
     expect(navigated).toHaveLength(2)
   })
 
+  it('换了一份图形时沿用已有的节点，只改写变了的属性', async () => {
+    const map = await mount((element) => {
+      element.shapes = shapes
+    })
+    const before = Array.from(part(map, 'shapes').children)
+    const records: MutationRecord[] = []
+    const observer = new MutationObserver(list => records.push(...list))
+    observer.observe(part(map, 'shapes'), { subtree: true, childList: true, attributes: true })
+    map.shapes = [
+      { kind: 'rect', rect: { x: 0, y: 0, width: 100, height: 50 } },
+      { kind: 'rect', rect: { x: 200, y: 100, width: 100, height: 50 } },
+      { kind: 'path', d: 'M 100 25 L 200 125' },
+    ]
+    await map.updateComplete
+    records.push(...observer.takeRecords())
+    observer.disconnect()
+    expect(Array.from(part(map, 'shapes').children)).toEqual(before)
+    expect(Array.from(part(map, 'shapes').children).every((child, index) => child === before[index])).toBe(true)
+    expect(records.map(item => `${item.type} ${(item.target as Element).localName} ${item.attributeName ?? ''}`)).toEqual(['attributes rect data-tone'])
+    expect(before[1]!.hasAttribute('data-tone')).toBe(false)
+  })
+
   it('只认主键；拆下后不再跟随指针', async () => {
     const map = await mount((element) => {
       element.shapes = shapes
