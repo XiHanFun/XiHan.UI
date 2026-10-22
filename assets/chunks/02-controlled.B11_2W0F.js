@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{t}from"./react.CbNV8_UV.js";import{t as n}from"./switch.Dj4LmNjX.js";var r=t(),i=e();function a(){let[e,t]=(0,r.useState)(!0);return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsx)(n,{checked:e,onCheckedChange:e=>t(e.checked)}),(0,i.jsxs)(`span`,{"data-demo-output":!0,children:[`当前：`,e?`开`:`关`]})]})}export{a as default};

@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.SIwpYkXh.js";import{n as t,r as n,t as r}from"./avatar.BZx9-tOa.js";var i=e();function a(){return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsxs)(n,{src:`/images/demo-avatar.svg`,alt:`曦寒`,children:[(0,i.jsx)(t,{}),(0,i.jsx)(r,{children:`曦`})]}),(0,i.jsxs)(n,{children:[(0,i.jsx)(t,{}),(0,i.jsx)(r,{children:`XH`})]})]})}export{a as default};

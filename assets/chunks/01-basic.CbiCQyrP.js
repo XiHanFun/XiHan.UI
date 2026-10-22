@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{t}from"./checkbox.DAb5VNte.js";var n=e();function r(){return(0,n.jsx)(t,{name:`updates`,defaultChecked:!0,children:`接收产品更新`})}export{r as default};

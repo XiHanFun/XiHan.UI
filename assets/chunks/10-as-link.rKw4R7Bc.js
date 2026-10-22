@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{t}from"./button.CPxSGesc.js";var n=e();function r(){return(0,n.jsx)(t,{as:`a`,href:`/introduction`,children:`了解更多`})}export{r as default};

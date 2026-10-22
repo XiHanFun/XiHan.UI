@@ -1,1 +1,0 @@
-import{aO as e,lO as t,oO as n,sO as r}from"./theme.DtyqiN1q.js";import{c as i}from"./context.CDcDL83y.js";var a={};function o(e){return e}function s(){let t=i();return t?r(e(t.api)):a}function c(){let t=i();return t?n(e(t.api)):a}function l(){let n=i();if(!n)return o;let r=e(n.api).labelId;return e=>t(e,r)}export{l as n,s as r,c as t};

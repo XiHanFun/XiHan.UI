@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{n as t,r as n}from"./tag.C9XbjINA.js";var r=e(),i=[`前端`,`无头内核`,`可访问性`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,flexWrap:`wrap`,alignItems:`center`,gap:`8px`},children:i.map(e=>(0,r.jsx)(n,{children:(0,r.jsx)(t,{children:e})},e))})}export{a as default};

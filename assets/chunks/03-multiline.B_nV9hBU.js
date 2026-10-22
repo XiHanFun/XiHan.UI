@@ -1,0 +1,3 @@
+import{Wt as e,Zt as t,at as n,ft as r,wt as i}from"./framework.eUj94whv.js";import{bO as a,sp as o,yO as s}from"./theme.VO-fEBmc.js";var c=r({__name:`03-multiline`,setup(r){let c=[{label:`amount`,kind:`variable`,detail:`数字`,description:`报销金额`},{label:`level`,kind:`variable`,detail:`文本`,description:`会员等级`}],l=s(a(),{identifiers:c.map(e=>e.label)}),u=e(`IF(level == "gold",
+  amount * 0.9,
+  amont)`);return(e,r)=>(i(),n(t(o),{value:u.value,"onUpdate:value":r[0]||=e=>u.value=e,label:`折后金额`,multiline:``,"auto-size":{minRows:3,maxRows:6},completions:c,check:t(l)},null,8,[`value`,`check`]))}});export{c as default};

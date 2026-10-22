@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{t}from"./button.CPxSGesc.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

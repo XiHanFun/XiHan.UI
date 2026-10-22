@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{g as t}from"./select.x0ZuEfu6.js";var n=e(),r=Array.from(`ABCDEFGHIJKLMNOPQRSTUVWXYZ`,e=>({value:e,label:`${e} 区`}));function i(){return(0,n.jsx)(t,{collection:r,label:`仓位`,placeholder:`敲 M 试试`})}export{i as default};

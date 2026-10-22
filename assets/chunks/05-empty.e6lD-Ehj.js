@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{c as t,l as n,n as r,t as i}from"./listbox.Bhsih3m_.js";var a=e();function o(){return(0,a.jsxs)(n,{collection:[],style:{inlineSize:`min(100%, 300px)`},children:[(0,a.jsx)(t,{children:`团队成员`}),(0,a.jsx)(i,{}),(0,a.jsx)(r,{children:`暂无成员`})]})}export{o as default};

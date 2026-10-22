@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{t}from"./kbd.CTQSvRKw.js";var n=e(),r=[[`Mod`],[`Shift`],[`ArrowUp`],[`Escape`],[`Mod`,`Shift`,`P`]];function i(){return(0,n.jsx)(`div`,{style:{display:`flex`,flexWrap:`wrap`,gap:`8px`},children:r.map(e=>(0,n.jsx)(t,{keys:e},e.join(`-`)))})}export{i as default};

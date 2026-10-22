@@ -1,0 +1,1 @@
+import{$M as e,QM as t,ZM as n}from"./theme.VO-fEBmc.js";import{t as r}from"./react.CbNV8_UV.js";var i=r();function a(r,a){let o=t(r.machine);(0,i.useEffect)(()=>{if(!o)return;let t=e({getNode:()=>a.current,getFormId:()=>r.prop(`form`),onReset:()=>{r.getStatus()===`Started`&&r.send({type:n})}});return()=>{t?.dispose(),t=null}},[o,r,a])}export{a as t};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{n as t,t as n}from"./spinner.Cu2OUGGo.js";var r=e();function i(){return(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(n,{label:`正在加载数据`,children:(0,r.jsx)(t,{})}),(0,r.jsx)(n,{translations:{label:`正在提交表单`},children:(0,r.jsx)(t,{})})]})}export{i as default};

@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.SIwpYkXh.js";import{i as t}from"./breadcrumb.CFRj1JCe.js";var n=e(),r=[{value:`workspace`,label:`工作台`,href:`#/workspace`},{value:`projects`,label:`项目`,href:`#/workspace/projects`},{value:`xihan-ui`,label:`XiHan.UI`,current:!0}];function i(){return(0,n.jsx)(t,{collection:r,renderSeparator:()=>`•`})}export{i as default};

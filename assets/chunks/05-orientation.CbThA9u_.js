@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.O31TtG2D.js";import{n as t}from"./toggle-group.DTJXfKNm.js";var n=e(),r=[{value:`day`,label:`日`},{value:`week`,label:`周`},{value:`month`,label:`月`}];function i(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{collection:r,defaultValue:`day`}),(0,n.jsx)(t,{collection:r,defaultValue:`day`,orientation:`vertical`})]})}export{i as default};

@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: XiHan.UI
-description: 'XiHan.UI 5.0.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
+description: 'XiHan.UI 5.1.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
 colors:
   primary: 'oklch(0.546 0.216 258)'
   primary-hover: 'oklch(0.488 0.196 258)'
