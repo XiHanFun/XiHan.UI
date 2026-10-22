@@ -192,6 +192,8 @@ interface Gesture {
   guides: readonly SnapGuide[]
   marquee?: Rect
   frame: number
+  /** 覆盖层在视口里的位置：开始时量一次，手势中沿用；滚动或覆盖层改了大小时作废，下次用到再量。 */
+  box: DOMRect | undefined
 }
 
 /** 出控制柄的框与可用的方向。 */
@@ -252,8 +254,12 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   #parts: Parts | undefined
   #gesture: Gesture | undefined
   #childObserver: MutationObserver | undefined
-  /** 覆盖层、工具条与徽标的尺寸一变就重排：画布改了大小、工具条收进「更多」后变窄、徽标换了内容。 */
+  /** 覆盖层、工具条与徽标的尺寸一变就记下并重排：画布改了大小、工具条收进「更多」后变窄、徽标换了内容。 */
   #resizeObserver: ResizeObserver | undefined
+  /** ResizeObserver 记下的覆盖层的尺寸；还没记下时为 undefined。 */
+  #overlaySize: Size | undefined
+  /** ResizeObserver 记下的工具条与徽标的尺寸；收着（量出 0）或还没记下时没有。 */
+  readonly #sizes = new WeakMap<Element, Size>()
   /** focusToolbar、focusMeasure 之前焦点所在的元素，Esc 时还回去。 */
   #returnFocus: HTMLElement | undefined
   #measureFields: MeasureFields | undefined
@@ -273,7 +279,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     this.#childObserver ??= new MutationObserver(() => this.requestUpdate())
     this.#childObserver.observe(this, { childList: true })
     if (typeof ResizeObserver !== 'undefined') {
-      this.#resizeObserver ??= new ResizeObserver(() => this.requestUpdate())
+      this.#resizeObserver ??= new ResizeObserver(this.#onResize)
       this.#resizeObserver.observe(this)
       if (this.#parts) {
         this.#resizeObserver.observe(this.#parts.toolbar)
@@ -286,7 +292,42 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     super.disconnectedCallback()
     this.#childObserver?.disconnect()
     this.#resizeObserver?.disconnect()
+    this.#overlaySize = undefined
     this.cancel()
+  }
+
+  /** 记下观察到的尺寸再重排：摆放工具条与徽标时用记下的，不在写完位置后当场量。 */
+  readonly #onResize = (entries: readonly ResizeObserverEntry[]): void => {
+    for (const entry of entries) {
+      if (entry.target === this) {
+        const { width, height } = entry.contentRect
+        const resized = this.#overlaySize !== undefined && (this.#overlaySize.width !== width || this.#overlaySize.height !== height)
+        this.#overlaySize = { width, height }
+        if (resized && this.#gesture)
+          this.#gesture.box = undefined
+        continue
+      }
+      const box = entry.borderBoxSize?.[0]
+      if (box && (box.inlineSize > 0 || box.blockSize > 0))
+        this.#sizes.set(entry.target, { width: box.inlineSize, height: box.blockSize })
+      else
+        this.#sizes.delete(entry.target)
+    }
+    this.requestUpdate()
+  }
+
+  /** 覆盖层的宽：取记下的，还没记下时当场量。 */
+  #overlayWidth(): number {
+    return this.#overlaySize?.width ?? this.clientWidth
+  }
+
+  /** 工具条或徽标的尺寸：取记下的，还没记下（刚显示出来）时当场量。 */
+  #sizeOf(element: HTMLElement): Size {
+    const known = this.#sizes.get(element)
+    if (known)
+      return known
+    const box = element.getBoundingClientRect()
+    return { width: box.width, height: box.height }
   }
 
   /**
@@ -370,10 +411,10 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     this.#placeBox(parts.marquee, gesture?.marquee, viewport)
     const target = this.readonly ? undefined : handleTargetOf(items, rects)
     this.#placeHandles(parts.handles, target, viewport, gesture)
-    this.#placeMeasure(parts.measure, items, rects, gesture, viewport)
+    const measureBottom = this.#placeMeasure(parts.measure, items, rects, gesture, viewport)
     this.#adoptToolbar(parts.toolbar)
     const toolbarFor = gesture || this.readonly || rects.length === 0 ? undefined : unionRects(rects.map(rotatedBounds))
-    this.#placeToolbar(parts.toolbar, toolbarFor, viewport, target?.allowed.has('rotate') === true, parts.measure)
+    this.#placeToolbar(parts.toolbar, toolbarFor, viewport, target?.allowed.has('rotate') === true, measureBottom)
   }
 
   #ensureParts(): Parts {
@@ -419,9 +460,9 @@ export class XhDesignerTransformElement extends XhReactiveElement {
    * 上下文工具条：在选中框（整体包围框）上方居中，有旋转柄时让开它；上方放不下时翻到下方，徽标显示着就排在徽标下面；
    * 最宽到覆盖层的宽减去两侧间距，左右夹在覆盖层里。没有选中、只读、手势中或没有内容时收起。落在哪一侧写在 data-placement 上。
    */
-  #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean, measure: HTMLElement): void {
+  #placeToolbar(element: HTMLElement, bounds: Rect | undefined, viewport: Viewport, rotate: boolean, measureBottom: number | undefined): void {
     const shown = bounds !== undefined && element.childElementCount > 0
-    element.hidden = !shown
+    setHidden(element, !shown)
     if (!shown) {
       delete element.dataset.placement
       return
@@ -429,10 +470,10 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const start = worldToScreen(viewport, { x: bounds.x, y: bounds.y })
     const end = worldToScreen(viewport, { x: bounds.x + bounds.width, y: bounds.y + bounds.height })
     element.style.maxInlineSize = this.#maxInline()
-    const box = element.getBoundingClientRect()
+    const box = this.#sizeOf(element)
     const above = start.y - (rotate ? ROTATE_OFFSET : 0) - TOOLBAR_GAP - box.height
     const placement = above >= TOOLBAR_GAP ? 'top' : 'bottom'
-    const below = measure.hidden ? end.y : Math.max(end.y, measure.getBoundingClientRect().bottom - this.getBoundingClientRect().top)
+    const below = measureBottom === undefined ? end.y : Math.max(end.y, measureBottom)
     const y = placement === 'top' ? above : below + TOOLBAR_GAP
     const x = this.#clampInline((start.x + end.x - box.width) / 2, box.width)
     element.dataset.placement = placement
@@ -441,14 +482,16 @@ export class XhDesignerTransformElement extends XhReactiveElement {
 
   /** 工具条与徽标的最大宽：覆盖层的宽减去两侧间距；覆盖层没有排版（宽为 0）时不限。 */
   #maxInline(): string {
-    return this.clientWidth > 0 ? `${Math.max(0, this.clientWidth - 2 * TOOLBAR_GAP)}px` : ''
+    const width = this.#overlayWidth()
+    return width > 0 ? `${Math.max(0, width - 2 * TOOLBAR_GAP)}px` : ''
   }
 
   /** 宽 width 的一块从 left 起放：左右夹进覆盖层、两侧留出间距，比覆盖层还宽时贴左边的间距；覆盖层没有排版时原样返回。 */
   #clampInline(left: number, width: number): number {
-    if (this.clientWidth === 0)
+    const overlay = this.#overlayWidth()
+    if (overlay === 0)
       return left
-    return Math.min(Math.max(left, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, this.clientWidth - width - TOOLBAR_GAP))
+    return Math.min(Math.max(left, TOOLBAR_GAP), Math.max(TOOLBAR_GAP, overlay - width - TOOLBAR_GAP))
   }
 
   /** 工具条里按 Esc：焦点回到 focusToolbar 之前的位置。 */
@@ -464,7 +507,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
 
   /** 按世界矩形（可带旋转）摆放一块：尺寸按 zoom 换成屏幕像素，绕中心旋转。 */
   #placeBox(element: HTMLElement, rect: Rect | undefined, viewport: Viewport): void {
-    element.hidden = rect === undefined
+    setHidden(element, rect === undefined)
     if (!rect)
       return
     const width = rect.width * viewport.zoom
@@ -504,7 +547,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const rotation = target?.rect.rotation ?? 0
     for (const [handle, element] of handles) {
       const shown = points !== undefined && target!.allowed.has(handle) && (!gesture || gesture.handle === handle || gesture.kind === 'move')
-      element.hidden = !shown
+      setHidden(element, !shown)
       if (!shown)
         continue
       const at = worldToScreen(viewport, points[handle])
@@ -517,15 +560,16 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   /**
    * 尺寸徽标：在选中框（整体包围框）底边下方居中，左右夹在覆盖层里。拖动、缩放中只读显示实时尺寸；measure 为 selection 时空闲也显示，
    * 单选、可编辑、能缩放时是宽高两个数字框，否则只读显示（多选写整体包围框的尺寸，单选写元素自己的宽高）。
+   * 返回徽标下沿在覆盖层里的纵坐标，没显示时为 undefined。
    */
-  #placeMeasure(element: HTMLElement, items: readonly DesignerTransformItem[], rects: readonly Rect[], gesture: Gesture | undefined, viewport: Viewport): void {
+  #placeMeasure(element: HTMLElement, items: readonly DesignerTransformItem[], rects: readonly Rect[], gesture: Gesture | undefined, viewport: Viewport): number | undefined {
     const options = this.measureOptions
     const moving = gesture !== undefined && gesture.kind !== 'marquee'
     const shown = options !== undefined && rects.length > 0 && (moving || (gesture === undefined && this.measure === 'selection'))
-    element.hidden = !shown
+    setHidden(element, !shown)
     if (!shown) {
       this.#measured = undefined
-      return
+      return undefined
     }
     const t = this.#translations()
     const bounds = unionRects(rects.map(rotatedBounds))!
@@ -543,8 +587,9 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     }
     const at = worldToScreen(viewport, { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height })
     element.style.maxInlineSize = this.#maxInline()
-    const width = element.getBoundingClientRect().width
-    element.style.transform = `translate(${this.#clampInline(at.x - width / 2, width)}px, ${at.y}px)`
+    const size = this.#sizeOf(element)
+    element.style.transform = `translate(${this.#clampInline(at.x - size.width / 2, size.width)}px, ${at.y}px)`
+    return at.y + size.height
   }
 
   #translations(): DesignerTransformTranslations {
@@ -770,8 +815,23 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   }
 
   #local(client: Point): Point {
-    const box = this.getBoundingClientRect()
+    const box = this.#box()
     return { x: client.x - box.left, y: client.y - box.top }
+  }
+
+  /** 覆盖层在视口里的位置：手势中沿用开始时量的，作废了再量；不在手势中时当场量。 */
+  #box(): DOMRect {
+    const gesture = this.#gesture
+    if (!gesture)
+      return this.getBoundingClientRect()
+    gesture.box ??= this.getBoundingClientRect()
+    return gesture.box
+  }
+
+  /** 手势中页面或外层滚动了：覆盖层换了位置，下次用到时重新量。 */
+  readonly #onScroll = (): void => {
+    if (this.#gesture)
+      this.#gesture.box = undefined
   }
 
   #world(client: Point): Point {
@@ -783,12 +843,13 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     const doc = resolveSessionDoc(this)
     const client = { x: event.clientX, y: event.clientY }
     const startRects = new Map((this.items ?? []).map(item => [item.id, item.rect]))
+    const box = this.getBoundingClientRect()
     const gesture: Gesture = {
       kind,
       session: createPointerSession({ doc, pointerId: event.pointerId, onMove: this.#onMove, onEnd: this.#onEnd }),
       pointerId: event.pointerId,
       startClient: client,
-      startWorld: this.#world(client),
+      startWorld: screenToWorld(this.viewport ?? DEFAULT_VIEWPORT, { x: client.x - box.left, y: client.y - box.top }),
       startRects,
       snap: options.snap,
       handle: options.handle,
@@ -801,10 +862,12 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       rects: startRects,
       guides: [],
       frame: 0,
+      box,
     }
     this.#gesture = gesture
     doc?.addEventListener('keydown', this.#onKey, true)
     doc?.addEventListener('keyup', this.#onKey, true)
+    doc?.addEventListener('scroll', this.#onScroll, { capture: true, passive: true })
   }
 
   #end(gesture: Gesture): void {
@@ -814,6 +877,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       view?.cancelAnimationFrame(gesture.frame)
     this.ownerDocument.removeEventListener('keydown', this.#onKey, true)
     this.ownerDocument.removeEventListener('keyup', this.#onKey, true)
+    this.ownerDocument.removeEventListener('scroll', this.#onScroll, { capture: true })
     if (this.#gesture === gesture)
       this.#gesture = undefined
   }
@@ -919,7 +983,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   }
 
   #panDelta(gesture: Gesture): Point {
-    const box = this.getBoundingClientRect()
+    const box = this.#box()
     return edgeScrollDelta({ bounds: { x: box.left, y: box.top, width: box.width, height: box.height }, point: gesture.client })
   }
 
@@ -1008,6 +1072,12 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     if (gesture.active)
       this.#step(gesture)
   }
+}
+
+/** 显隐不同时才改写。 */
+function setHidden(element: HTMLElement, hidden: boolean): void {
+  if (element.hidden !== hidden)
+    element.hidden = hidden
 }
 
 function resizeHandlesOf(item: DesignerTransformItem): readonly ResizeHandle[] {
