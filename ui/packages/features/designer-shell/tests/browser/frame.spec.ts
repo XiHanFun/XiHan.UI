@@ -412,3 +412,45 @@ describe('<xh-designer-frame>（Chromium）', () => {
     expect(frame.canvasTool).toBe('pan')
   })
 })
+
+describe('<xh-designer-frame> 只换了一块区的副标题（Chromium）', () => {
+  it('只改那张卡片：书写方向只读一次，分隔条的文案不重设，菜单栏正中一段不重量', async () => {
+    const regions = (subtitle: string): typeof DESIGNER_FRAME_REGIONS => DESIGNER_FRAME_REGIONS.map((region) => {
+      if (region.name === 'properties')
+        return { ...region, title: 'Properties', subtitle }
+      return region.name === 'palette' || region.name === 'issues' ? { ...region, title: region.name } : region
+    })
+    frame.regions = regions('Node A')
+    await frame.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const splitters = Array.from(frame.querySelectorAll<HTMLElement & { translations?: unknown }>('xh-splitter'))
+    const before = splitters.map(splitter => splitter.translations)
+    const menubar = frame.querySelector('[data-part="region"][data-region="menubar"]')!
+    const reads: string[] = []
+    const style = window.getComputedStyle
+    const rect = Element.prototype.getBoundingClientRect
+    window.getComputedStyle = (element, pseudo) => {
+      if (element === frame)
+        reads.push('frame style')
+      return style.call(window, element, pseudo)
+    }
+    Element.prototype.getBoundingClientRect = function (this: Element) {
+      if (this === menubar)
+        reads.push('menubar rect')
+      return rect.call(this)
+    }
+    try {
+      frame.regions = regions('Node B')
+      await frame.updateComplete
+    }
+    finally {
+      window.getComputedStyle = style
+      Element.prototype.getBoundingClientRect = rect
+    }
+    expect(reads).toEqual(['frame style'])
+    expect(splitters.length).toBeGreaterThan(0)
+    expect(splitters.map(splitter => splitter.translations)).toEqual(before)
+    expect(splitters.every((splitter, index) => splitter.translations === before[index])).toBe(true)
+    expect(frame.querySelector('[data-region="properties"] [data-part="panel-subtitle"]')!.textContent).toBe('Node B')
+  })
+})

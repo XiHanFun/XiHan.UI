@@ -49,6 +49,8 @@ type FrameSplitterTarget = string | { readonly column: 'start' | 'end' | 'bottom
 interface FrameSplitter {
   readonly element: XhSplitterElement
   readonly triggers: readonly FrameSplitterTarget[]
+  /** 上次交给分隔条的文案（总名与各条的名字），没变不重设。 */
+  names?: string
 }
 
 /** 分隔条里的一块面板：collapsed 的建出来就收着；fixed 的大小钉死（收成标题条的面板）。 */
@@ -385,6 +387,10 @@ export class XhDesignerFrameElement extends XhReactiveElement {
   #slotsKey = ''
   #layoutKey = ''
   #splitters: FrameSplitter[] = []
+  /** 这一轮渲染读到的书写方向；还没渲染过时为 undefined，用到时当场读。 */
+  #dir: 'ltr' | 'rtl' | undefined
+  /** 上次量菜单栏正中一段时关闭钮显示着没有。 */
+  #closeFitted = false
   /** 此刻的整份布局：属性合成出来的，加上分隔条、小窗还没派发出去的改动。 */
   #state: ResolvedDesignerLayout | undefined
   /** 最后一次派发出去（或从属性收到）的那一份。 */
@@ -704,15 +710,17 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     const plan = this.#plan()
     const minimized = this.#state!.minimized.length > 0
     const mins = (['start', 'end', 'bottom'] as const).map(position => Math.round((this.#measuredMin[position] ?? 0) / MIN_SIZE_EPSILON))
+    this.#dir = this.#readDirection()
     const key = JSON.stringify([
-      this.#direction(),
+      this.#dir,
       mins,
       this.#narrow,
       Object.entries(plan).map(([position, regions]) => [position, Array.isArray(regions) ? regions.map(region => region.name) : Object.entries(regions as Plan['docks']).map(([dock, items]) => [dock, items.map(region => region.name)])]),
       this.#state!.minimized,
       minimized ? [Math.round(this.#foldedHeight), Math.round(this.#bodyHeight / 8)] : 0,
     ])
-    if (key !== this.#layoutKey || rebuild) {
+    const rebuilt = key !== this.#layoutKey || rebuild
+    if (rebuilt) {
       this.#layoutKey = key
       const root = this.getRootNode() as Document | ShadowRoot
       const focused = root.activeElement instanceof HTMLElement && this.contains(root.activeElement) ? root.activeElement : undefined
@@ -743,8 +751,14 @@ export class XhDesignerFrameElement extends XhReactiveElement {
         return t.resizeBottom
       return this.#sideOf(target.column) === 'left' ? t.resizeLeft : t.resizeRight
     }
-    for (const { element, triggers } of this.#splitters)
-      element.translations = { root: t.layout, resizeTrigger: index => nameOf(triggers[index]) }
+    for (const splitter of this.#splitters) {
+      const names = splitter.triggers.map(nameOf)
+      const key = JSON.stringify([t.layout, names])
+      if (splitter.names === key)
+        continue
+      splitter.names = key
+      splitter.element.translations = { root: t.layout, resizeTrigger: index => names[index] ?? '' }
+    }
     this.toggleAttribute('data-narrow', this.#narrow)
     if (this.#menubarRefocus) {
       // 宽窄一换，原来持有焦点的入口可能藏起来了：落到此刻看得见的那个
@@ -765,13 +779,20 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       drawer.element.side = this.#sideOf(position)
       drawer.content.setAttribute('aria-label', regions.map(region => region.title ?? region.label ?? region.name).join('、'))
     }
-    this.#watchMenubarCenter()
+    this.#watchMenubarCenter(rebuilt)
   }
 
-  /** 盯住此刻的菜单栏、它的三段与正中一段里的作者内容，变了就重量正中一段；换了区重新盯。 */
-  #watchMenubarCenter(): void {
-    const watched = this.#menubarParts().flatMap(parts => [parts.element, ...Object.values(parts.zones)])
+  /**
+   * 盯住此刻的菜单栏、它的三段、关闭钮与正中一段里的作者内容，变了就重量正中一段；换了区重新盯。
+   * 当场量只在盯的部件换了、结构重建了（refit 为真）或关闭钮的显隐变了时做，其余交给观察器。
+   */
+  #watchMenubarCenter(refit: boolean): void {
+    const watched = this.#menubarParts().flatMap(parts => [parts.element, ...Object.values(parts.zones), ...(parts.close ? [parts.close] : [])])
+    const close = this.closable === true
+    let changed = refit || close !== this.#closeFitted
+    this.#closeFitted = close
     if (watched.length !== this.#centerWatched.length || watched.some((node, index) => node !== this.#centerWatched[index])) {
+      changed = true
       this.#centerWatched = watched
       this.#centerResize?.disconnect()
       this.#centerMutation?.disconnect()
@@ -786,7 +807,8 @@ export class XhDesignerFrameElement extends XhReactiveElement {
           this.#centerMutation.observe(parts.zones.center!, { childList: true, subtree: true, characterData: true })
       }
     }
-    this.#fitMenubarCenter()
+    if (changed)
+      this.#fitMenubarCenter()
   }
 
   /** 登记了的菜单栏区。 */
@@ -879,8 +901,12 @@ export class XhDesignerFrameElement extends XhReactiveElement {
     return drawer
   }
 
-  /** 外框所在的文字方向，交给分隔条换算左右键与指针位移的正负。 */
+  /** 外框所在的文字方向，交给分隔条换算左右键与指针位移的正负：取这一轮渲染读到的，还没渲染过时当场读。 */
   #direction(): 'ltr' | 'rtl' {
+    return this.#dir ?? this.#readDirection()
+  }
+
+  #readDirection(): 'ltr' | 'rtl' {
     return this.ownerDocument.defaultView?.getComputedStyle(this).direction === 'rtl' ? 'rtl' : 'ltr'
   }
 
