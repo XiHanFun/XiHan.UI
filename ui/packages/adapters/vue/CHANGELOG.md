@@ -1,5 +1,19 @@
 # @xihan-ui/vue
 
+## 5.1.0
+
+### Patch Changes
+
+- Updated dependencies [8e78081]
+- Updated dependencies [eba48ba]
+  - @xihan-ui/headless@5.1.0
+  - @xihan-ui/core@5.1.0
+  - @xihan-ui/motion@5.1.0
+  - @xihan-ui/position@5.1.0
+  - @xihan-ui/pointer@5.1.0
+  - @xihan-ui/viz@5.1.0
+  - @xihan-ui/expression@5.1.0
+
 ## 5.0.0
 
 ### Major Changes

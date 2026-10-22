@@ -1,5 +1,20 @@
 # @xihan-ui/web-components
 
+## 5.1.0
+
+### Patch Changes
+
+- cdca5b4: **优化** Web Components 接线后取消部件身上已经起播的过渡：每个根（Document 或 ShadowRoot）只取一次动画、只同步算一遍样式，挑齐了再一起取消，不再逐个部件取、每取消一次就为下一个部件重算一遍样式。设计器这类一次接上成百上千个部件的场景耗时大降；取消的范围不变，只取消部件自己身上的 CSS 过渡，伪元素上的过渡与关键帧动画不碰。
+- Updated dependencies [8e78081]
+- Updated dependencies [eba48ba]
+  - @xihan-ui/headless@5.1.0
+  - @xihan-ui/core@5.1.0
+  - @xihan-ui/motion@5.1.0
+  - @xihan-ui/position@5.1.0
+  - @xihan-ui/pointer@5.1.0
+  - @xihan-ui/viz@5.1.0
+  - @xihan-ui/expression@5.1.0
+
 ## 5.0.0
 
 ### Major Changes

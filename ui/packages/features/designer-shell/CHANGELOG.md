@@ -1,5 +1,28 @@
 # @xihan-ui/designer-shell
 
+## 5.1.0
+
+### Minor Changes
+
+- 3acb09d: **新增** 设计器外框 `xh-designer-frame` 加 `closable` 属性：开着时菜单栏最右端（行尾一段后面）显示一颗关闭钮，按下派发 `close` 事件，怎么关、要不要先问未保存的修改由宿主定。它不进任何菜单与工具栏定制，窄屏菜单栏收成「菜单」钮时仍在右上角。外框文案新增 `close`（「关闭」），十种语言都已提供。
+
+### Patch Changes
+
+- af59ca2: **优化** 设计器零件更新时少做无用功，拖动、缩放、点选与改属性更跟手：
+  - 属性面板刷新时，没变的字段不再重新接线，多行文本框不再反复重新量高。
+  - 变换覆盖层在视口变化与拖动途中不再当场量选中工具条、尺寸徽标与覆盖层自己的位置。
+  - 小地图的尺寸由观察器记下，不再每次更新都量；图形换了一份时沿用已有的节点，只改变了的。
+  - 外框只换了某块区的副标题这类文字时只改那张卡片，不再反复读书写方向、重设分隔条的文案、重量菜单栏正中一段。
+  - 问题面板换了一份内容相同的问题时不再整份重铺列表。
+- Updated dependencies [eba48ba]
+- Updated dependencies [cdca5b4]
+  - @xihan-ui/core@5.1.0
+  - @xihan-ui/web-components@5.1.0
+  - @xihan-ui/tokens@5.1.0
+  - @xihan-ui/pointer@5.1.0
+  - @xihan-ui/viz@5.1.0
+  - @xihan-ui/designer-kit@5.1.0
+
 ## 5.0.0
 
 ### Minor Changes
