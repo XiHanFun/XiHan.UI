@@ -208,13 +208,23 @@ describe('<xh-designer-issues>', () => {
     expect(document.activeElement).toBe(buttons[0])
   })
 
+  it('换了一份内容相同的 items 时不重铺列表', async () => {
+    const list = await mount((element) => {
+      element.items = items
+    })
+    const before = rows(list)
+    list.items = structuredClone(items)
+    await list.updateComplete
+    expect(rows(list).every((row, index) => row === before[index])).toBe(true)
+  })
+
   it('换了 items 后焦点回到原来那一条', async () => {
     const list = await mount((element) => {
       element.items = items
     })
     const target = rows(list).find(row => row.dataset.index === '3')!
     target.focus()
-    list.items = [...items]
+    list.items = [...items, { issue: { code: 'graph.cycle', path: [] }, message: '有环' }]
     await list.updateComplete
     const again = rows(list).find(row => row.dataset.index === '3')!
     expect(again).not.toBe(target)

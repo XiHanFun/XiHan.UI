@@ -170,7 +170,7 @@ export class XhDesignerIssuesElement extends XhReactiveElement {
     const visible = items.filter(item => this.#shown.has(issueSeverity(item.issue)))
     setText(parts.empty, this.emptyText ?? t.empty)
     parts.empty.hidden = visible.length > 0
-    const inputs = [items, this.groupBy, this.activate, filter.join(','), t.severityError, t.severityWarning, t.noTarget]
+    const inputs = [JSON.stringify(items), this.groupBy, this.activate, filter.join(','), t.severityError, t.severityWarning, t.noTarget]
     if (inputs.length === this.#rendered.length && inputs.every((input, index) => input === this.#rendered[index]))
       return
     this.#rendered = inputs
