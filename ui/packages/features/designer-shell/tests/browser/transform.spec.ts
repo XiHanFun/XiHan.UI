@@ -309,3 +309,91 @@ describe('<xh-designer-transform> 窄画布里的选中工具条与尺寸徽标�
     expect(right.right).toBeLessThanOrEqual(host.right)
   })
 })
+
+describe('<xh-designer-transform> 视口变化与手势途中不读布局（Chromium）', () => {
+  /** 记下这段时间里读了哪些部件的布局：覆盖层本身、工具条与徽标。 */
+  function recordLayoutReads(): { readonly reads: () => string[], readonly stop: () => void } {
+    const seen: string[] = []
+    const watched = (element: Element): string | undefined => {
+      if (element === overlay)
+        return 'overlay'
+      const part = element.getAttribute('data-part')
+      return element.parentElement === overlay && (part === 'toolbar' || part === 'measure') ? part : undefined
+    }
+    const rect = Element.prototype.getBoundingClientRect
+    const width = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')!
+    Element.prototype.getBoundingClientRect = function (this: Element) {
+      const name = watched(this)
+      if (name)
+        seen.push(`${name} rect`)
+      return rect.call(this)
+    }
+    Object.defineProperty(Element.prototype, 'clientWidth', { ...width, get(this: Element) {
+      const name = watched(this)
+      if (name)
+        seen.push(`${name} width`)
+      return width.get!.call(this)
+    } })
+    return {
+      reads: () => seen.slice(),
+      stop: () => {
+        Element.prototype.getBoundingClientRect = rect
+        Object.defineProperty(Element.prototype, 'clientWidth', width)
+      },
+    }
+  }
+
+  it('选中工具条与徽标显示着时改视口：照记下的尺寸摆放，不当场量', async () => {
+    overlay.measure = 'selection'
+    overlay.measureOptions = { unit: 'mm' }
+    const bar = document.createElement('div')
+    bar.slot = 'toolbar'
+    bar.style.cssText = 'display:flex'
+    bar.innerHTML = '<button type="button">Copy</button>'
+    overlay.append(bar)
+    await new Promise(resolve => setTimeout(resolve))
+    await overlay.updateComplete
+    await frames(2)
+    const recording = recordLayoutReads()
+    try {
+      for (const zoom of [1.5, 1.2, 1]) {
+        overlay.viewport = { x: 50, y: 200, zoom }
+        await overlay.updateComplete
+      }
+      expect(recording.reads()).toEqual([])
+    }
+    finally {
+      recording.stop()
+    }
+    await frames(2)
+    const toolbar = overlay.querySelector<HTMLElement>('[data-part="toolbar"]')!.getBoundingClientRect()
+    const frame = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    expect(Math.abs((toolbar.left + toolbar.right) / 2 - (frame.left + frame.right) / 2)).toBeLessThanOrEqual(1)
+    expect(toolbar.bottom).toBeLessThanOrEqual(frame.top)
+  })
+
+  it('移动途中：覆盖层的位置只在开始时量一次，徽标照记下的尺寸摆放', async () => {
+    overlay.measureOptions = { unit: 'mm' }
+    await overlay.updateComplete
+    const frame = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    const center = { x: (frame.left + frame.right) / 2, y: (frame.top + frame.bottom) / 2 }
+    overlay.startMove(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1, isPrimary: true, pointerType: 'mouse', button: 0, clientX: center.x, clientY: center.y }))
+    pointer(document, 'pointermove', center.x + 10, center.y + 10)
+    await overlay.updateComplete
+    await frames(2)
+    const recording = recordLayoutReads()
+    try {
+      for (let step = 2; step <= 6; step++) {
+        pointer(document, 'pointermove', center.x + step * 10, center.y + step * 10)
+        await overlay.updateComplete
+      }
+      expect(recording.reads()).toEqual([])
+    }
+    finally {
+      recording.stop()
+    }
+    const moved = overlay.querySelector('[data-part="frame"]')!.getBoundingClientRect()
+    expect(moved.left).toBeCloseTo(frame.left + 60, 0)
+    pointer(document, 'pointerup', center.x + 60, center.y + 60)
+  })
+})
