@@ -55,6 +55,8 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
   #dragging = false
   #session: { dispose: () => void } | undefined
   #resize: ResizeObserver | undefined
+  /** ResizeObserver 记下的内容区尺寸；还没记下或收着（量出 0）时为 undefined。 */
+  #size: Size | undefined
 
   constructor() {
     super()
@@ -66,7 +68,11 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     this.setAttribute('aria-hidden', 'true')
     this.addEventListener('pointerdown', this.#onPointerDown)
     if (typeof ResizeObserver === 'function') {
-      this.#resize = new ResizeObserver(() => this.requestUpdate())
+      this.#resize = new ResizeObserver((entries) => {
+        const { width, height } = entries.at(-1)!.contentRect
+        this.#size = width > 0 && height > 0 ? { width, height } : undefined
+        this.requestUpdate()
+      })
       this.#resize.observe(this)
     }
   }
@@ -76,6 +82,7 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     this.removeEventListener('pointerdown', this.#onPointerDown)
     this.#resize?.disconnect()
     this.#resize = undefined
+    this.#size = undefined
     this.#endDrag()
   }
 
@@ -85,7 +92,7 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     const shapes = this.shapes ?? []
     const content = this.bounds ?? unionRects(shapes.flatMap(shape => shape.kind === 'rect' ? [shape.rect] : []))
     this.toggleAttribute('data-empty', shapes.length === 0 || !content)
-    const size = { width: this.clientWidth, height: this.clientHeight }
+    const size = this.#size ?? { width: this.clientWidth, height: this.clientHeight }
     if (!content || size.width === 0 || size.height === 0)
       return
     const visible = this.viewport && this.canvasSize ? visibleWorldRect(this.viewport, this.canvasSize) : undefined
@@ -94,8 +101,8 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
       this.#map = fitRect(fitted, size, { padding: PADDING, maxZoom: 1, limits: { min: MIN_ZOOM, max: 1 } })
     }
     const { x, y, zoom } = this.#map
-    svg.setAttribute('viewBox', `0 0 ${size.width} ${size.height}`)
-    world.setAttribute('transform', `translate(${x} ${y}) scale(${zoom})`)
+    setAttribute(svg, 'viewBox', `0 0 ${size.width} ${size.height}`)
+    setAttribute(world, 'transform', `translate(${x} ${y}) scale(${zoom})`)
     if (shapes !== this.#drawn) {
       this.#drawn = shapes
       this.#draw(world, shapes)
@@ -131,22 +138,29 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
     return { svg, world, frame }
   }
 
+  /** 按图形逐个改写已有的节点：种类相同的只改变了的属性，种类不同的换掉，多出来的删掉。 */
   #draw(world: SVGGElement, shapes: readonly DesignerMinimapShape[]): void {
     const doc = this.ownerDocument
-    world.replaceChildren(...shapes.map((shape) => {
+    shapes.forEach((shape, index) => {
+      const current = world.children[index]
+      const tag = shape.kind === 'path' ? 'path' : 'rect'
+      const element = current?.localName === tag ? current : doc.createElementNS(SVG_NS, tag)
       if (shape.kind === 'path') {
-        const path = doc.createElementNS(SVG_NS, 'path')
-        path.setAttribute('data-part', 'path')
-        path.setAttribute('d', shape.d)
-        return path
+        setAttribute(element, 'data-part', 'path')
+        setAttribute(element, 'd', shape.d)
       }
-      const rect = doc.createElementNS(SVG_NS, 'rect')
-      rect.setAttribute('data-part', 'rect')
-      if (shape.tone === 'muted')
-        rect.setAttribute('data-tone', 'muted')
-      setRect(rect, shape.rect)
-      return rect
-    }))
+      else {
+        setAttribute(element, 'data-part', 'rect')
+        setAttribute(element, 'data-tone', shape.tone === 'muted' ? 'muted' : undefined)
+        setRect(element as SVGRectElement, shape.rect)
+      }
+      if (element !== current)
+        world.insertBefore(element, current ?? null)
+      if (current && element !== current)
+        current.remove()
+    })
+    while (world.children.length > shapes.length)
+      world.lastElementChild!.remove()
   }
 
   #worldAt(clientX: number, clientY: number): Point | undefined {
@@ -188,10 +202,18 @@ export class XhDesignerMinimapElement extends XhReactiveElement {
 }
 
 function setRect(element: SVGRectElement, rect: Rect): void {
-  element.setAttribute('x', String(rect.x))
-  element.setAttribute('y', String(rect.y))
-  element.setAttribute('width', String(rect.width))
-  element.setAttribute('height', String(rect.height))
+  setAttribute(element, 'x', String(rect.x))
+  setAttribute(element, 'y', String(rect.y))
+  setAttribute(element, 'width', String(rect.width))
+  setAttribute(element, 'height', String(rect.height))
+}
+
+/** 值不同时才改写，undefined 时删掉。 */
+function setAttribute(element: Element, name: string, value: string | undefined): void {
+  if (value === undefined)
+    element.removeAttribute(name)
+  else if (element.getAttribute(name) !== value)
+    element.setAttribute(name, value)
 }
 
 declare global {
