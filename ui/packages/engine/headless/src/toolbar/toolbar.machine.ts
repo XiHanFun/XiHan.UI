@@ -8,7 +8,7 @@
 import type { ToolbarOverflowItem, ToolbarSchema } from './toolbar.types'
 import { focusSafely, itemValue, queryItems, setup, trackOverflowLayout } from '@xihan-ui/core'
 import { toolbarItemQuery } from './toolbar.anatomy'
-import { measureToolbarOverflow, sameOverflowItems, toolbarOverflowTrigger } from './toolbar.overflow'
+import { describeToolbarOverflow, measureToolbarOverflow, sameOverflowItems, toolbarOverflowTrigger } from './toolbar.overflow'
 
 const { createMachine } = setup<ToolbarSchema>()
 
@@ -118,6 +118,19 @@ export const toolbarMachine = createMachine({
       },
       measureOverflowAfterRender: ({ flush, action }) => flush(() => action(['measureOverflow'])),
 
+      // 只有条目的声明变了：收起的还是那几条，重读它们在菜单里的样子；有一条找不到了就整份重量
+      describeOverflow: ({ refs, context, action }) => {
+        const root = refs.get('getRootEl')()
+        const current = context.get('overflowItems')
+        if (!root || current.length === 0)
+          return
+        const next = describeToolbarOverflow(root, current)
+        if (next === null)
+          action(['measureOverflow'])
+        else
+          context.set('overflowItems', next)
+      },
+
       // 替收起的条目触发它自己的点击：条目的行为（按钮的处理器、开关的切换、链接的跳转）一概归它，
       // 菜单只是换了个入口。条目虽然藏着，click() 照样派出点击事件
       activateOverflowItem: ({ refs, event }) => {
@@ -135,7 +148,7 @@ export const toolbarMachine = createMachine({
        * 盯住收纳：root 由适配器在首轮渲染后交进 refs，挂载那一刻先量一次（首帧就收好，
        * 不先画一排溢出的条目），再等下一轮渲染落定补量一次——Web Components 的角色节点
        * 要等首轮接线后才带上身份标记。之后由观察器接管，容器与条目的尺寸、条目增减与改写、
-       * 字体加载都会触发重量。
+       * 字体加载都会触发重量；只有条目的声明变了时只重读收起的条目。
        */
       trackOverflow: ({ refs, action, flush }) => {
         let disposed = false
@@ -159,6 +172,7 @@ export const toolbarMachine = createMachine({
                   return trigger ? [...items, trigger] : items
                 },
                 onChange: () => action(['measureOverflow']),
+                onDescribe: () => action(['describeOverflow']),
               })
             }
           }
