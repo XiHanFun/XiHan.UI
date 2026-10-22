@@ -22,6 +22,6 @@ description: 为 XiHan.UI 准备版本、消费 changeset、校验发布产物�
 
 ## 发布
 
-只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流只做发布：先由 guard 核对标签在 `main` 历史、标签号等于包版本且与预发布模式一致，再重新构建、执行 npm 发布；门禁、测试与 publint / attw 由 `ci.yml` 在提交进 `main` 时完成，发布链不再重跑。
+只有用户明确要求发布，才可在确认提交位于 `main` 后创建并推送 `vX.Y.Z` 标签。标签触发 `.github/workflows/release.yml`，该工作流只做发布：先由 guard 核对标签在 `main` 历史、标签号等于包版本且与预发布模式一致，再重新构建、执行 npm 发布，最后由 `ui/scripts/release/promote-latest.mjs` 让 `latest` 跟到这一版：等 npm 官方源取得到这一版（刚发完个别包会晚二十来分钟），逐个包核 `latest`，没指过来的用 `npm dist-tag add` 补上，全部对上这一步才过；预发布（`.changeset/pre.json` 在）时只给 npm 上还没有正式版的包挂 `latest`，已有正式版的包不动。门禁、测试与 publint / attw 由 `ci.yml` 在提交进 `main` 时完成，发布链不再重跑。
 
-发布后核对 npm 版本和工作流结果，再用独立 docs 提交补 `docs/changelog.md`。不手工修改 dist、不跳过失败门禁、不重复发布已存在版本；失败时停止并报告，不移动标签掩盖问题。
+发布后核对工作流结果；要自己看 npm 现状时在 `ui/` 运行 `node scripts/release/promote-latest.mjs --dry-run`（只读官方源，不等不改）。再用独立 docs 提交补 `docs/changelog.md`。不手工修改 dist、不跳过失败门禁、不重复发布已存在版本；失败时停止并报告，不移动标签掩盖问题。
