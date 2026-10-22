@@ -258,7 +258,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
   #resizeObserver: ResizeObserver | undefined
   /** ResizeObserver 记下的覆盖层的尺寸；还没记下时为 undefined。 */
   #overlaySize: Size | undefined
-  /** ResizeObserver 记下的工具条与徽标的尺寸；收着（量出 0）或还没记下时没有。 */
+  /** ResizeObserver 记下的工具条与徽标的尺寸；收起时（量出 0）留着上次的，还没记下时没有。 */
   readonly #sizes = new WeakMap<Element, Size>()
   /** focusToolbar、focusMeasure 之前焦点所在的元素，Esc 时还回去。 */
   #returnFocus: HTMLElement | undefined
@@ -310,8 +310,6 @@ export class XhDesignerTransformElement extends XhReactiveElement {
       const box = entry.borderBoxSize?.[0]
       if (box && (box.inlineSize > 0 || box.blockSize > 0))
         this.#sizes.set(entry.target, { width: box.inlineSize, height: box.blockSize })
-      else
-        this.#sizes.delete(entry.target)
     }
     this.requestUpdate()
   }
@@ -321,7 +319,7 @@ export class XhDesignerTransformElement extends XhReactiveElement {
     return this.#overlaySize?.width ?? this.clientWidth
   }
 
-  /** 工具条或徽标的尺寸：取记下的，还没记下（刚显示出来）时当场量。 */
+  /** 工具条或徽标的尺寸：取记下的，还没记下（头一回显示）时当场量。重新显示时先按上次的摆，变了由观察器重排。 */
   #sizeOf(element: HTMLElement): Size {
     const known = this.#sizes.get(element)
     if (known)
