@@ -54,11 +54,17 @@ export function placeAsGroup(row: FieldRow, control: HTMLElement): void {
   row.element.append(row.label, control, row.hint, row.error)
 }
 
+/** 显隐不同时才改写。 */
+function setHidden(element: HTMLElement, hidden: boolean): void {
+  if (element.hidden !== hidden)
+    element.hidden = hidden
+}
+
 /** 刷新标签、说明、错误与必填、只读、无效：放进字段的交给字段，按组排的写在行上并接好 aria-describedby。 */
 export function refreshFieldRow(row: FieldRow, state: FieldRowState): void {
   setText(row.label, state.label)
   setText(row.hint, state.hint ?? '')
-  row.hint.hidden = state.hint === undefined
+  setHidden(row.hint, state.hint === undefined)
   setText(row.error, state.error ?? '')
   if (row.field) {
     row.field.toggleAttribute('invalid', state.error !== undefined)
@@ -66,7 +72,7 @@ export function refreshFieldRow(row: FieldRow, state: FieldRowState): void {
     row.field.toggleAttribute('read-only', state.readonly)
   }
   else {
-    row.error.hidden = state.error === undefined
+    setHidden(row.error, state.error === undefined)
     row.label.toggleAttribute('data-required', state.required)
     if (row.element.getAttribute('role') === 'group') {
       const described = [state.hint === undefined ? '' : row.hint.id, state.error === undefined ? '' : row.error.id].filter(Boolean).join(' ')

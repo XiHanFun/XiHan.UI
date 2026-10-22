@@ -171,3 +171,35 @@ describe('属性面板的数字约束（Chromium）', () => {
     expect(getComputedStyle(own).fontWeight).not.toBe(getComputedStyle(own.parentElement!).fontWeight)
   })
 })
+
+describe('属性面板换了对象（Chromium）', () => {
+  it('只改了一个属性时，各行的说明与错误部件不被改写：字段不重新接线，多行框不重新量高', async () => {
+    panel = document.createElement('xh-designer-properties')
+    const target = {
+      kind: 'task',
+      id: 't1',
+      value: { label: '审批', code: 'a1', note: '第一行\n第二行' },
+      descriptors: [
+        { path: ['label'], control: { kind: 'text' as const }, label: 'Label' },
+        { path: ['code'], control: { kind: 'text' as const }, label: 'Code' },
+        { path: ['note'], control: { kind: 'text' as const, multiline: true }, label: 'Note' },
+      ],
+    }
+    panel.targets = [target]
+    panel.hintOf = descriptor => (descriptor.path[0] === 'code' ? 'Unique in the flow' : undefined)
+    document.body.append(panel)
+    await panel.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const records: MutationRecord[] = []
+    const observer = new MutationObserver(list => records.push(...list))
+    observer.observe(panel, { subtree: true, attributes: true })
+    panel.targets = [{ ...target, value: { ...target.value, label: '审批 2' } }]
+    await panel.updateComplete
+    await new Promise(resolve => requestAnimationFrame(resolve))
+    const writes = [...records, ...observer.takeRecords()]
+      .filter(item => (item.target as Element).matches('[data-xh-part="description"], [data-xh-part="error-text"], textarea'))
+      .map(item => `${(item.target as Element).closest('[data-path]')!.getAttribute('data-path')} ${(item.target as Element).getAttribute('data-xh-part')} ${item.attributeName}`)
+    observer.disconnect()
+    expect(writes).toEqual([])
+  })
+})
