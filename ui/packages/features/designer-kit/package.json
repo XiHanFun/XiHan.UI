@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/designer-kit",
   "type": "module",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "XiHan.UI designer kit — undo/redo history, viewport pan and zoom, snapping guides, alignment and marquee selection for visual designers, as pure functions.",
   "author": {
     "name": "XiHanFun",

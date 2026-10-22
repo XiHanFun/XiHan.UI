@@ -1,7 +1,7 @@
 {
   "name": "@xihan-ui/xlsx",
   "type": "module",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "XiHan.UI xlsx writer — typed cells, number and date formats, merged cells and frozen panes, written as a zip with zero dependencies.",
   "author": {
     "name": "XiHanFun",

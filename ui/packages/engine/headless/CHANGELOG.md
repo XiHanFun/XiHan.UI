@@ -1,5 +1,19 @@
 # @xihan-ui/headless
 
+## 5.1.0
+
+### Patch Changes
+
+- 8e78081: **优化** TextField 多行自动增高（`autoSize`）：值、占位符、行数配置、样式表给的上限与排字样式都没变的更新不再重新量高，属性面板这类频繁刷新的场景不再每次强制排版；宽度变化由 ResizeObserver 盯着，变宽变窄照样重量，网页字体加载完后的下一次更新也照样重量。需要量高时两只测量节点一起挂上、一次排版读完，不再读写交替。Vue、React、Web Components 行为不变。
+- eba48ba: **优化** 工具条的溢出收纳：条目只改了可及名、按下态或禁用时不再重量排版，只重读收起的条目在「更多」菜单里的样子；尺寸、条目增减与文字改写照旧重量。
+  **新增** `trackOverflowLayout` 的选项加 `onDescribe`：只有条目的声明变了时回调它；不给时照旧回调 `onChange`。
+- Updated dependencies [eba48ba]
+  - @xihan-ui/core@5.1.0
+  - @xihan-ui/motion@5.1.0
+  - @xihan-ui/pointer@5.1.0
+  - @xihan-ui/viz@5.1.0
+  - @xihan-ui/expression@5.1.0
+
 ## 5.0.0
 
 ### Major Changes
