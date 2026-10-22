@@ -50,24 +50,28 @@ function mockMirrorMeasurements(
   const queue = [...measurements]
   const mirrors: HTMLTextAreaElement[] = []
   const nativeCreate = doc.createElement.bind(doc)
+  // 一次量高先后建两只镜像：第一只放内容、第二只放一个字；返回的是放内容的那几只
+  let pairing: MirrorMeasurement | undefined
   vi.spyOn(doc, 'createElement').mockImplementation(((name: string, options?: ElementCreationOptions) => {
     const node = nativeCreate(name, options)
     if (name.toLowerCase() !== 'textarea')
       return node
-    const measurement = queue.shift()
+    const textareaNode = node as HTMLTextAreaElement
+    const isRow = pairing !== undefined
+    const measurement = pairing ?? queue.shift()
     if (!measurement)
       throw new Error('测试没有提供下一次 textarea 镜像测量值')
-    const textareaNode = node as HTMLTextAreaElement
-    let reads = 0
+    pairing = isRow ? undefined : measurement
     Object.defineProperty(textareaNode, 'scrollHeight', {
       configurable: true,
       get: () => {
         if (measurement.error !== undefined)
           throw measurement.error
-        return reads++ === 0 ? measurement.contentPaddingBox : measurement.rowPaddingBox
+        return isRow ? measurement.rowPaddingBox : measurement.contentPaddingBox
       },
     })
-    mirrors.push(textareaNode)
+    if (!isRow)
+      mirrors.push(textareaNode)
     return node
   }) as typeof doc.createElement)
   return mirrors
@@ -315,6 +319,7 @@ describe('autoSizeTextarea 上限只有一处、滚动只在 textarea', () => {
     expect(el.style.maxBlockSize).toBe('none')
     expect(el.style.overflowY).toBe('auto')
 
+    el.value = '短'
     autoSizeTextarea(el, { minRows: 6 })
     expect(el.style.blockSize).toBe('66px')
     expect(el.style.overflowY).toBe('hidden')
@@ -336,6 +341,7 @@ describe('autoSizeTextarea 上限只有一处、滚动只在 textarea', () => {
     } as CSSStyleDeclaration)
 
     autoSizeTextarea(el, true)
+    el.value = '换了一段内容'
     autoSizeTextarea(el, true)
     expect(el.style.blockSize).toBe('50px')
 
@@ -364,6 +370,274 @@ describe('autoSizeTextarea 上限只有一处、滚动只在 textarea', () => {
   })
 })
 
+class FakeResizeObserver {
+  readonly targets = new Set<Element>()
+  constructor(readonly callback: ResizeObserverCallback) {}
+  observe(target: Element): void {
+    this.targets.add(target)
+  }
+
+  unobserve(target: Element): void {
+    this.targets.delete(target)
+  }
+
+  disconnect(): void {
+    this.targets.clear()
+  }
+
+  resize(target: Element, inlineSize?: number): void {
+    const entry = {
+      target,
+      borderBoxSize: inlineSize === undefined ? undefined : [{ inlineSize, blockSize: 0 }],
+      contentRect: { width: inlineSize ?? 0 },
+    }
+    this.callback([entry as unknown as ResizeObserverEntry], this as unknown as ResizeObserver)
+  }
+}
+
+/** 放进独立 iframe 的 textarea：自带一个 Window，观察器、字体与计算样式都只替换这一份。 */
+function frameTextarea(): { frame: HTMLIFrameElement, win: Window & typeof globalThis, doc: Document, el: HTMLTextAreaElement } {
+  const frame = document.createElement('iframe')
+  document.body.append(frame)
+  const win = frame.contentWindow! as Window & typeof globalThis
+  const doc = frame.contentDocument!
+  const el = doc.createElement('textarea')
+  el.value = '一行真实内容'
+  doc.body.append(el)
+  return { frame, win, doc, el }
+}
+
+describe('autoSizeTextarea 量高的输入没变就不重量', () => {
+  it('值、配置、排字样式与接管的内联声明都没变：不建镜像、不写内联声明', () => {
+    const el = textarea()
+    const mirrors = mockMirrorMeasurements(document, [{ contentPaddingBox: 30, rowPaddingBox: 15 }])
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    autoSizeTextarea(el, { maxRows: 4 })
+    expect(el.style.blockSize).toBe('31px')
+
+    const setProperty = vi.spyOn(el.style, 'setProperty')
+    const removeProperty = vi.spyOn(el.style, 'removeProperty')
+    autoSizeTextarea(el, { maxRows: 4 })
+    expect(mirrors).toHaveLength(1)
+    expect(setProperty).not.toHaveBeenCalled()
+    expect(removeProperty).not.toHaveBeenCalled()
+    expect(el.style.blockSize).toBe('31px')
+  })
+
+  it('两只镜像一起挂上再读高度：一次量高只排版一次，读完一起摘掉', () => {
+    const el = textarea()
+    const nativeCreate = document.createElement.bind(document)
+    const created: HTMLTextAreaElement[] = []
+    const connectedAtRead: boolean[][] = []
+    vi.spyOn(document, 'createElement').mockImplementation(((name: string, options?: ElementCreationOptions) => {
+      const node = nativeCreate(name, options)
+      if (name.toLowerCase() !== 'textarea')
+        return node
+      const index = created.length
+      created.push(node as HTMLTextAreaElement)
+      Object.defineProperty(node, 'scrollHeight', {
+        configurable: true,
+        get: () => {
+          connectedAtRead.push(created.map(mirror => mirror.isConnected))
+          return index === 0 ? 30 : 15
+        },
+      })
+      return node
+    }) as typeof document.createElement)
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+
+    autoSizeTextarea(el, true)
+
+    expect(created).toHaveLength(2)
+    expect(connectedAtRead).toEqual([[true, true], [true, true]])
+    expect(created[0]!.value).toBe('一行真实内容')
+    expect(created[1]!.value).toBe('x')
+    expect(created.every(mirror => !mirror.isConnected)).toBe(true)
+    expect(el.style.blockSize).toBe('31px')
+  })
+
+  it('没给 maxRows 时暂还作者的上限读样式表上限来比对，没变就原样放回', () => {
+    const el = textarea()
+    const mirrors = mockMirrorMeasurements(document, [
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+      { contentPaddingBox: 100, rowPaddingBox: 15 },
+    ])
+    let sheetCeiling = '50px'
+    const cascade = computedStyle()
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (property: string) => property === 'max-block-size'
+        ? el.style.getPropertyValue('max-block-size') || sheetCeiling
+        : cascade.getPropertyValue(property),
+    } as CSSStyleDeclaration)
+
+    autoSizeTextarea(el, true)
+    expect(el.style.blockSize).toBe('50px')
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(1)
+    expect(el.style.maxBlockSize).toBe('none')
+
+    sheetCeiling = '40px'
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+    expect(el.style.blockSize).toBe('40px')
+    expect(el.style.maxBlockSize).toBe('none')
+  })
+
+  it('排字样式变了照样重量', () => {
+    const el = textarea()
+    const mirrors = mockMirrorMeasurements(document, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 40, rowPaddingBox: 17 },
+    ])
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    autoSizeTextarea(el, true)
+    expect(el.style.blockSize).toBe('31px')
+
+    getComputedStyle.mockReturnValue(computedStyle({ 'font-size': '12px' }))
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+    expect(el.style.blockSize).toBe('41px')
+  })
+
+  it('接管的内联声明被别处改了照样重量、重写', () => {
+    const el = textarea()
+    const mirrors = mockMirrorMeasurements(document, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+    ])
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    autoSizeTextarea(el, true)
+
+    el.style.setProperty('block-size', '10px')
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+    expect(el.style.blockSize).toBe('31px')
+  })
+
+  it('书写方向改成竖排照旧明确失败，并归还作者声明', () => {
+    const el = textarea()
+    el.style.setProperty('block-size', '25px')
+    mockMirrorMeasurements(document, [{ contentPaddingBox: 30, rowPaddingBox: 15 }])
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    autoSizeTextarea(el, true)
+
+    getComputedStyle.mockReturnValue(computedStyle({ 'writing-mode': 'vertical-rl' }))
+    expect(() => autoSizeTextarea(el, true)).toThrow(/只支持 writing-mode: horizontal-tb/)
+    expect(el.style.blockSize).toBe('25px')
+    expect(el.style.maxBlockSize).toBe('')
+  })
+
+  it('网页字体加载完，下一次更新即便输入没变也重量', () => {
+    const { frame, win, doc, el } = frameTextarea()
+    const fonts = new EventTarget()
+    Object.defineProperty(doc, 'fonts', { configurable: true, value: fonts })
+    win.getComputedStyle = (() => computedStyle()) as typeof win.getComputedStyle
+    const mirrors = mockMirrorMeasurements(doc, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 40, rowPaddingBox: 15 },
+    ])
+
+    autoSizeTextarea(el, true)
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(1)
+
+    fonts.dispatchEvent(new Event('loadingdone'))
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+    expect(el.style.blockSize).toBe('41px')
+    autoSizeTextarea(el, false)
+    frame.remove()
+  })
+
+  it('宽度由 ResizeObserver 盯着：观察到的宽度与量高时一样不重量，变了按新宽度重量', () => {
+    const { frame, win, doc, el } = frameTextarea()
+    const observers: FakeResizeObserver[] = []
+    win.ResizeObserver = class extends FakeResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        super(callback)
+        observers.push(this)
+      }
+    } as unknown as typeof ResizeObserver
+    let style = computedStyle()
+    win.getComputedStyle = (() => style) as typeof win.getComputedStyle
+    const mirrors = mockMirrorMeasurements(doc, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 60, rowPaddingBox: 15 },
+    ])
+
+    autoSizeTextarea(el, true)
+    expect(observers).toHaveLength(1)
+    expect(observers[0]!.targets.has(el)).toBe(true)
+
+    // 首次观察到的宽度就是量高时的计算宽度；自己写 block-size 引起的观察宽度也不变
+    observers[0]!.resize(el, 180)
+    expect(mirrors).toHaveLength(1)
+
+    observers[0]!.resize(el, 120)
+    expect(mirrors).toHaveLength(2)
+    expect(mirrors[1]!.style.width).toBe('120px')
+    expect(mirrors[1]!.style.boxSizing).toBe('border-box')
+    expect(el.style.blockSize).toBe('61px')
+    observers[0]!.resize(el, 120)
+    expect(mirrors).toHaveLength(2)
+
+    // 有观察器时计算宽度不进比对
+    style = computedStyle({ width: '999px' })
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+
+    autoSizeTextarea(el, false)
+    expect(observers[0]!.targets.has(el)).toBe(false)
+    frame.remove()
+  })
+
+  it('观察器给不出边框盒尺寸：不再观察，重量一次，之后按计算宽度比对', () => {
+    const { frame, win, doc, el } = frameTextarea()
+    const observers: FakeResizeObserver[] = []
+    win.ResizeObserver = class extends FakeResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        super(callback)
+        observers.push(this)
+      }
+    } as unknown as typeof ResizeObserver
+    let style = computedStyle()
+    win.getComputedStyle = (() => style) as typeof win.getComputedStyle
+    const mirrors = mockMirrorMeasurements(doc, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 60, rowPaddingBox: 15 },
+    ])
+
+    autoSizeTextarea(el, true)
+    observers[0]!.resize(el)
+    expect(observers[0]!.targets.has(el)).toBe(false)
+    expect(mirrors).toHaveLength(2)
+
+    style = computedStyle({ width: '120px' })
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(3)
+    expect(mirrors[2]!.style.width).toBe('120px')
+    autoSizeTextarea(el, false)
+    frame.remove()
+  })
+
+  it('没有观察器的 Window 里宽度进比对：计算宽度变了照样重量', () => {
+    const el = textarea()
+    const mirrors = mockMirrorMeasurements(document, [
+      { contentPaddingBox: 30, rowPaddingBox: 15 },
+      { contentPaddingBox: 60, rowPaddingBox: 15 },
+    ])
+    const getComputedStyle = vi.spyOn(window, 'getComputedStyle').mockReturnValue(computedStyle())
+    autoSizeTextarea(el, true)
+
+    getComputedStyle.mockReturnValue(computedStyle({ width: '120px' }))
+    autoSizeTextarea(el, true)
+    expect(mirrors).toHaveLength(2)
+    expect(mirrors[1]!.style.width).toBe('120px')
+    expect(el.style.blockSize).toBe('61px')
+  })
+})
+
 describe('没有排版的环境里安静跳过', () => {
   it('jsdom 的计算样式取不到写入方向、盒模型与行高：不抛错，不写任何内联声明', () => {
     const el = textarea()
@@ -389,6 +663,7 @@ describe('没有排版的环境里安静跳过', () => {
     mockMirrorMeasurements(document, [{ contentPaddingBox: 80, rowPaddingBox: 13 }, { contentPaddingBox: 0, rowPaddingBox: 0 }])
     autoSizeTextarea(el, true)
     const measured = { blockSize: el.style.blockSize, maxBlockSize: el.style.maxBlockSize, overflowY: el.style.overflowY }
+    el.value = '换了一段内容'
     expect(() => autoSizeTextarea(el, true)).not.toThrow()
     expect({ blockSize: el.style.blockSize, maxBlockSize: el.style.maxBlockSize, overflowY: el.style.overflowY }).toEqual(measured)
     expect(document.querySelectorAll('textarea')).toHaveLength(1)
