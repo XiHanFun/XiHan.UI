@@ -15,16 +15,30 @@ function isTransition(animation: Animation): boolean {
 
 function settle(): void {
   scheduled = false
-  const parts = [...pending]
-  pending.clear()
-  for (const el of parts) {
-    if (!el.isConnected || typeof el.getAnimations !== 'function')
+  const parts = new Set<Element>()
+  const roots = new Set<DocumentOrShadowRoot>()
+  for (const el of pending) {
+    if (!el.isConnected)
       continue
-    for (const animation of el.getAnimations()) {
-      if (isTransition(animation))
-        animation.cancel()
+    const root = el.getRootNode() as Node & Partial<DocumentOrShadowRoot>
+    if (typeof root.getAnimations !== 'function')
+      continue
+    parts.add(el)
+    roots.add(root as DocumentOrShadowRoot)
+  }
+  pending.clear()
+  // 每个根（Document 或 ShadowRoot）取一次动画、只挑这批部件自己身上的过渡（伪元素的不算），挑齐了再一起取消：
+  // 逐个部件取会在每次取消后为下一个部件重算一遍样式，部件一多就是一长串同步样式计算
+  const transitions: Animation[] = []
+  for (const root of roots) {
+    for (const animation of root.getAnimations()) {
+      const effect = animation.effect as KeyframeEffect | null
+      if (isTransition(animation) && effect?.target && !effect.pseudoElement && parts.has(effect.target))
+        transitions.push(animation)
     }
   }
+  for (const animation of transitions)
+    animation.cancel()
 }
 
 /**
