@@ -122,6 +122,7 @@ export interface ToolbarSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'measureOverflow'
     | 'measureOverflowAfterRender'
+    | 'describeOverflow'
     | 'activateOverflowItem'
   effect: 'trackOverflow'
 }

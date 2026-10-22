@@ -205,4 +205,33 @@ describe('trackOverflowLayout', () => {
     expect(onChange).toHaveBeenCalledTimes(2)
     stop()
   })
+
+  it('给了 onDescribe：只有声明改写时回调它、不重量；同一帧里另有条目增减或文字改写时只重量', async () => {
+    const container = document.createElement('div')
+    const item = document.createElement('button')
+    container.append(item)
+    document.body.append(container)
+    const onChange = vi.fn()
+    const onDescribe = vi.fn()
+    const stop = trackOverflowLayout(window, { container, nodes: () => [item], onChange, onDescribe })
+    const frame = (): Promise<void> => new Promise(resolve => requestAnimationFrame(() => resolve()))
+
+    item.setAttribute('aria-label', '复制')
+    item.setAttribute('disabled', '')
+    await Promise.resolve()
+    await frame()
+    expect([onChange.mock.calls.length, onDescribe.mock.calls.length]).toEqual([0, 1])
+
+    item.setAttribute('aria-pressed', 'true')
+    container.append(document.createElement('button'))
+    await Promise.resolve()
+    await frame()
+    expect([onChange.mock.calls.length, onDescribe.mock.calls.length]).toEqual([1, 1])
+
+    item.textContent = '粘贴'
+    await Promise.resolve()
+    await frame()
+    expect([onChange.mock.calls.length, onDescribe.mock.calls.length]).toEqual([2, 1])
+    stop()
+  })
 })

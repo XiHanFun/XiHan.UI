@@ -158,6 +158,11 @@ export interface TrackOverflowOptions {
   nodes: () => Iterable<Element>
   /** 要重量了。同一帧里的多次变化只回调一次。 */
   onChange: () => void
+  /**
+   * 只有条目的声明（可及名、按下态、禁用、身份）变了，尺寸与条目都没变：收纳结果不用重量，只要重读收起的条目。
+   * 同一帧里另有要重量的变化时只回调 onChange；不给时这类变化也回调 onChange。
+   */
+  onDescribe?: () => void
 }
 
 /**
@@ -174,21 +179,33 @@ const DECLARATION_ATTRS = ['aria-label', 'aria-labelledby', 'aria-pressed', 'ari
  * 浏览器会报 ResizeObserver 循环。
  */
 export function trackOverflowLayout(win: Window & typeof globalThis, options: TrackOverflowOptions): () => void {
-  const { container, nodes, onChange } = options
+  const { container, nodes, onChange, onDescribe } = options
   let disposed = false
   let frame = 0
-  const schedule = (): void => {
-    if (disposed || frame)
+  /** 这一帧里有没有要重量的变化。 */
+  let remeasure = false
+  const schedule = (measure: boolean): void => {
+    if (disposed)
+      return
+    remeasure ||= measure
+    if (frame)
       return
     frame = win.requestAnimationFrame(() => {
       frame = 0
-      if (!disposed)
+      const full = remeasure || onDescribe === undefined
+      remeasure = false
+      if (disposed)
+        return
+      if (full)
         onChange()
+      else
+        onDescribe()
     })
   }
+  const scheduleMeasure = (): void => schedule(true)
 
   const ResizeObserverCtor = win.ResizeObserver
-  const resizeObserver = typeof ResizeObserverCtor === 'function' ? new ResizeObserverCtor(schedule) : null
+  const resizeObserver = typeof ResizeObserverCtor === 'function' ? new ResizeObserverCtor(scheduleMeasure) : null
   const observeAll = (): void => {
     if (!resizeObserver)
       return
@@ -204,7 +221,7 @@ export function trackOverflowLayout(win: Window & typeof globalThis, options: Tr
     ? new MutationObserverCtor((records) => {
         if (records.some(record => record.type === 'childList'))
           observeAll()
-        schedule()
+        schedule(records.some(record => record.type !== 'attributes'))
       })
     : null
   mutationObserver?.observe(container, {
@@ -216,8 +233,8 @@ export function trackOverflowLayout(win: Window & typeof globalThis, options: Tr
   })
 
   const fonts = container.ownerDocument.fonts as FontFaceSet | undefined
-  fonts?.addEventListener?.('loadingdone', schedule)
-  win.addEventListener('resize', schedule)
+  fonts?.addEventListener?.('loadingdone', scheduleMeasure)
+  win.addEventListener('resize', scheduleMeasure)
 
   return () => {
     disposed = true
@@ -225,7 +242,7 @@ export function trackOverflowLayout(win: Window & typeof globalThis, options: Tr
       win.cancelAnimationFrame(frame)
     resizeObserver?.disconnect()
     mutationObserver?.disconnect()
-    fonts?.removeEventListener?.('loadingdone', schedule)
-    win.removeEventListener('resize', schedule)
+    fonts?.removeEventListener?.('loadingdone', scheduleMeasure)
+    win.removeEventListener('resize', scheduleMeasure)
   }
 }

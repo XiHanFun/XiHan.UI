@@ -268,6 +268,28 @@ describe('toolbar 「更多」菜单的条目', () => {
     expect(bar.service.context.get('overflowItems').map(item => item.label)).toEqual(['加粗', '居中对齐', '复制'])
   })
 
+  it('只改了条目的可及名或禁用：菜单里收起的条目跟着换，不重量排版', async () => {
+    const bar = mountToolbar(FOUR, {}, 130)
+    await nextFrame()
+    bar.render()
+    expect(bar.service.context.get('overflowItems').map(item => item.value)).toEqual(['c', 'd'])
+    let reads = 0
+    const rect = bar.root.getBoundingClientRect
+    bar.root.getBoundingClientRect = () => {
+      reads++
+      return rect()
+    }
+    bar.items[3]!.setAttribute('aria-label', '删除')
+    bar.items[2]!.setAttribute('disabled', '')
+    bar.items[0]!.setAttribute('aria-label', '复制')
+    await Promise.resolve()
+    await nextFrame()
+    bar.render()
+    expect(reads).toBe(0)
+    expect(bar.service.context.get('overflowItems').map(item => [item.value, item.label, item.disabled])).toEqual([['c', 'c', true], ['d', '删除', false]])
+    expect(bar.items.map(el => el.hidden)).toEqual([false, false, true, true])
+  })
+
   it('写了 aria-pressed 的条目是开关：菜单里是勾选项，勾没勾随按下态；禁用照搬', () => {
     const bar = mountToolbar([
       { kind: 'item', value: 'a' },

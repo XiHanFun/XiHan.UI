@@ -105,6 +105,15 @@ export function measureToolbarOverflow(
   return describe(root, items.slice(fitOverflowCount(layout)))
 }
 
+/**
+ * 收起的还是那几条时重读它们在菜单里的样子，不量排版。有一条已经找不到了（身份改了或被移走）时返回 null，要整份重量。
+ */
+export function describeToolbarOverflow(root: HTMLElement, current: readonly ToolbarOverflowItem[]): ToolbarOverflowItem[] | null {
+  const byValue = new Map(queryItems(root, toolbarItemQuery).map(el => [itemValue(el) ?? '', el]))
+  const collapsed = current.map(item => byValue.get(item.value))
+  return collapsed.every((el): el is HTMLElement => el !== undefined) ? describe(root, collapsed) : null
+}
+
 /** 两轮收纳结果是否一样：作 cell 的 isEqual 用，量到同一结果不多推一次更新。 */
 export function sameOverflowItems(a: readonly ToolbarOverflowItem[], b: unknown): boolean {
   if (!Array.isArray(b) || a.length !== b.length)
