@@ -30,6 +30,23 @@ describe('pointInPolygon', () => {
     expect(pointInPolygon({ x: 8, y: 8 }, tri)).toBe(false)
   })
 
+  it('斜边上与顶点上同样算在内', () => {
+    const tri = [
+      { x: 267.8, y: 74.8 },
+      { x: 168, y: 80 },
+      { x: 340, y: 80 },
+    ]
+    // 顶点：安全三角的出发点，离开触发器后紧接着的那次 pointermove 就落在这里
+    expect(pointInPolygon({ x: 267.8, y: 74.8 }, tri)).toBe(true)
+    expect(pointInPolygon({ x: 168, y: 80 }, tri)).toBe(true)
+    // 斜边中点
+    expect(pointInPolygon({ x: (267.8 + 168) / 2, y: (74.8 + 80) / 2 }, tri)).toBe(true)
+    expect(pointInPolygon({ x: (267.8 + 340) / 2, y: (74.8 + 80) / 2 }, tri)).toBe(true)
+    // 贴着斜边外侧
+    expect(pointInPolygon({ x: (267.8 + 168) / 2 - 1, y: (74.8 + 80) / 2 }, tri)).toBe(false)
+    expect(pointInPolygon({ x: 267.8, y: 74.7 }, tri)).toBe(false)
+  })
+
   it('退化输入（少于三点）恒为外', () => {
     expect(pointInPolygon({ x: 0, y: 0 }, [])).toBe(false)
     expect(pointInPolygon({ x: 0, y: 0 }, [{ x: 0, y: 0 }, { x: 1, y: 1 }])).toBe(false)
@@ -167,6 +184,19 @@ describe('trackHoverIntent', () => {
     // 走岔出三角：立即报关
     pointer('pointermove', document, 40, 200)
     expect(closeIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('离开后紧接着的 pointermove 与离开点同坐标（浏览器先派 leave 再派同一点的 move）：不报关，进浮层撤销', () => {
+    mount()
+    // 浮层在触发器正下方，中间隔一道空隙
+    content = mountContent({ x: 174, y: 80, width: 160, height: 118 })
+    pointer('pointerleave', trigger, 267.8, 74.8)
+    pointer('pointermove', document, 267.8, 74.8)
+    pointer('pointermove', document, 266, 78)
+    expect(closeIntent).not.toHaveBeenCalled()
+    pointer('pointerenter', content, 264, 84)
+    vi.advanceTimersByTime(1000)
+    expect(closeIntent).not.toHaveBeenCalled()
   })
 
   it('在三角里停滞超过 closeDelay：报关', () => {

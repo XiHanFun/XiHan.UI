@@ -18,7 +18,19 @@ export interface HoverRect {
   height: number
 }
 
-/** 点在多边形内（射线法）；落在边上算在内。 */
+// 坐标是浮点像素：离边不到这么远就算在边上
+const EDGE_EPSILON = 1e-6
+
+/** 点在线段上（含两端）：离线段所在直线不到容差，且落在两端点围成的范围里。 */
+function onSegment(point: HoverPoint, a: HoverPoint, b: HoverPoint): boolean {
+  const cross = (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x)
+  if (Math.abs(cross) > EDGE_EPSILON * Math.max(Math.hypot(b.x - a.x, b.y - a.y), 1))
+    return false
+  return point.x >= Math.min(a.x, b.x) - EDGE_EPSILON && point.x <= Math.max(a.x, b.x) + EDGE_EPSILON
+    && point.y >= Math.min(a.y, b.y) - EDGE_EPSILON && point.y <= Math.max(a.y, b.y) + EDGE_EPSILON
+}
+
+/** 点在多边形内（射线法）；落在任一条边或顶点上都算在内。 */
 export function pointInPolygon(point: HoverPoint, polygon: readonly HoverPoint[]): boolean {
   if (polygon.length < 3)
     return false
@@ -26,16 +38,14 @@ export function pointInPolygon(point: HoverPoint, polygon: readonly HoverPoint[]
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const a = polygon[i]!
     const b = polygon[j]!
-    // 边的水平范围盖住该点，且交点在该点右侧，穿一次翻一次
+    // 恰在边上或顶点上：按在内处理。安全三角的顶点就是离开点，离开后紧接着的那次移动常常落在这里
+    if (onSegment(point, a, b))
+      return true
+    // 边的竖直范围盖住该点，且交点在该点右侧，穿一次翻一次
     const intersects = (a.y > point.y) !== (b.y > point.y)
       && point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x
     if (intersects)
       inside = !inside
-    // 恰在顶点或水平边上：按在内处理，避免贴边抖动
-    if (a.y === point.y && b.y === point.y
-      && point.x >= Math.min(a.x, b.x) && point.x <= Math.max(a.x, b.x)) {
-      return true
-    }
   }
   return inside
 }
