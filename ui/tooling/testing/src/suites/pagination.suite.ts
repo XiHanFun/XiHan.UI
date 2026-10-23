@@ -1,4 +1,4 @@
-import type { ConformanceSuite } from '../conformance/types'
+import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { paginationAnatomy, paginationKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
@@ -427,6 +427,38 @@ export const paginationSuite: ConformanceSuite = {
             const prev = q(doc, 'prev-trigger')
             if (!prev?.hasAttribute('disabled'))
               throw new Error('首页时 prev-trigger 应带原生 disabled——只有原生禁用才会退出 Tab 序列')
+          },
+        },
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 paginationStructure 铺出上一页、折叠后的页码序列与下一页；翻页后按页码复用并重铺序列',
+      spec: { apg: APG, adr: ARIA_CURRENT },
+      fixture: (): FixtureNode => ({ part: 'root', tag: 'nav', defaultStructure: true }),
+      props: { count: 100, pageSize: 10 },
+      initial: {
+        order: ['root', 'prev-trigger', 'item[0]', 'item[1]', 'item[2]', 'item[3]', 'item[4]', 'ellipsis-trigger', 'item[5]', 'next-trigger'],
+        parts: {
+          'prev-trigger': { 'type': 'button', 'aria-label': 'Previous page', 'disabled': '' },
+          'item[0]': { 'type': 'button', 'aria-current': 'page', 'data-value': '1' },
+          'item[4]': { 'aria-current': null, 'data-value': '5' },
+          'item[5]': { 'data-value': '10' },
+          'ellipsis-trigger': { 'aria-expanded': 'false' },
+          'next-trigger': { 'type': 'button', 'aria-label': 'Next page', 'disabled': null },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'item[4]',
+          expect: {
+            order: ['root', 'prev-trigger', 'item[0]', 'ellipsis-trigger[0]', 'item[1]', 'item[2]', 'item[3]', 'ellipsis-trigger[1]', 'item[4]', 'next-trigger'],
+            parts: {
+              'item[1]': { 'data-value': '4' },
+              'item[2]': { 'aria-current': 'page', 'data-value': '5' },
+              'item[4]': { 'data-value': '10' },
+              'prev-trigger': { disabled: null },
+            },
           },
         },
       ],

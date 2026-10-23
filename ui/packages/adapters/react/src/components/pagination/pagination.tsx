@@ -9,12 +9,14 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { paginationStructure } from '@xihan-ui/headless'
 import { useCallback, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { PaginationProvider, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -128,24 +130,27 @@ export function XhPaginationRoot({
           { ref: setRootRef },
         )}
       >
-        {renderSlot(children, {
-          page: api.page,
-          pageSize: api.pageSize,
-          pageSizeOptions: api.pageSizeOptions,
-          count: api.count,
-          totalPages: api.totalPages,
-          pages: api.pages,
-          pageItems: api.pageItems,
-          openEllipsis: api.openEllipsis,
-          pageRange: api.pageRange,
-          previousPage: api.previousPage,
-          nextPage: api.nextPage,
-          setPage: api.setPage,
-          goToPrevPage: api.goToPrevPage,
-          goToNextPage: api.goToNextPage,
-          setPageSize: api.setPageSize,
-          slice: api.slice,
-        })}
+        {/* 没写 children 时铺标准结构 */}
+        {children === undefined
+          ? renderDefaultStructure(api)
+          : renderSlot(children, {
+              page: api.page,
+              pageSize: api.pageSize,
+              pageSizeOptions: api.pageSizeOptions,
+              count: api.count,
+              totalPages: api.totalPages,
+              pages: api.pages,
+              pageItems: api.pageItems,
+              openEllipsis: api.openEllipsis,
+              pageRange: api.pageRange,
+              previousPage: api.previousPage,
+              nextPage: api.nextPage,
+              setPage: api.setPage,
+              goToPrevPage: api.goToPrevPage,
+              goToNextPage: api.goToNextPage,
+              setPageSize: api.setPageSize,
+              slice: api.slice,
+            })}
       </nav>
     </PaginationProvider>
   )
@@ -395,4 +400,20 @@ export function XhPaginationContent({ children, ...rest }: XhPaginationContentPr
       {renderSlot(children, { pages: folded?.type === 'ellipsis' ? folded.pages : [] })}
     </div>
   )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const PAGINATION_PARTS = {
+  'prev-trigger': XhPaginationPrevTrigger,
+  'item': XhPaginationItem,
+  'ellipsis-trigger': XhPaginationEllipsisTrigger,
+  'next-trigger': XhPaginationNextTrigger,
+}
+
+/**
+ * 未写 children 时照 paginationStructure 铺开的整套结构：上一页、折叠后的页码序列与下一页，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。
+ */
+function renderDefaultStructure(api: PaginationApi): ReactNode[] {
+  return renderStructure(paginationStructure(api), PAGINATION_PARTS)
 }
