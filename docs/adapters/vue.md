@@ -21,7 +21,47 @@ import {
 
 只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部导出组件按组件分组列在[组件参考](../components/)。
 
-没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
+默认按名称 import，`sideEffects: false` 让打包器移除未使用的部分；也可以交给 unplugin-vue-components 按需自动引入，或用插件全量注册，见[注册方式](#注册方式)。
+
+## 注册方式
+
+三种写法，产物里的组件从少到多：
+
+| 写法 | 产物里的组件 | 模板里的类型 |
+| --- | --- | --- |
+| 按名称 import | 只有用到的 | 来自 import |
+| `@xihan-ui/vue/resolver` 配 unplugin-vue-components | 只有用到的 | unplugin-vue-components 生成的 `components.d.ts` |
+| `@xihan-ui/vue/plugin` 全量注册 | 全部组件 | 引入插件模块即生效 |
+
+### 自动引入
+
+```ts
+// vite.config.ts
+import vue from "@vitejs/plugin-vue";
+import { XiHanUIResolver } from "@xihan-ui/vue/resolver";
+import Components from "unplugin-vue-components/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [vue(), Components({ resolvers: [XiHanUIResolver()], dts: true })],
+});
+```
+
+解析器只认 `Xh` 前缀，`<XhButton>` 与 `<xh-button>` 都解析到 `@xihan-ui/vue` 的同名导出；名字拼错时打包器会报主入口没有这个导出，不会静默忽略。皮肤不随组件引入，入口处仍引一次 `@xihan-ui/styles`。
+
+### 全量注册
+
+```ts
+// main.ts
+import { XiHanUI } from "@xihan-ui/vue/plugin";
+import { createApp } from "vue";
+import App from "./App.vue";
+import "@xihan-ui/styles";
+
+createApp(App).use(XiHanUI).mount("#app");
+```
+
+插件引用全部组件，产物不再摇树，适合原型、内部后台这类不在意首包体积的场景。引入插件模块的同时就给 `GlobalComponents` 补上了全部组件的类型，Volar 与 vue-tsc 在模板里直接校验 props，不需要另配 `types`。
 
 ## 配置与视觉环境
 

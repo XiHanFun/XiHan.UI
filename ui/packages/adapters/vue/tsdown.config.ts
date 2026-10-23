@@ -7,6 +7,8 @@ export default defineXihanPackage({
     backgrounds: 'src/backgrounds.ts',
     behavior: 'src/behavior.ts',
     locale: 'src/locale.ts',
+    plugin: 'src/plugin.ts',
+    resolver: 'src/resolver.ts',
     sound: 'src/sound.ts',
   },
 })

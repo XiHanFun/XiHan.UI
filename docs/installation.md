@@ -126,7 +126,7 @@ createVisualEnvironmentController({
 createApp(App).mount("#app");
 ```
 
-组件按需从主入口取，不需要注册插件：
+组件按需从主入口取，不需要注册插件（也可以自动引入或全量注册，见 [Vue 适配器 · 注册方式](./adapters/vue#注册方式)）：
 
 ```vue
 <script setup lang="ts">
