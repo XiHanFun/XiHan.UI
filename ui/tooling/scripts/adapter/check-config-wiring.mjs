@@ -16,7 +16,8 @@ import { ADAPTERS, reactCovered, reactProgress } from '../lib/adapters.mjs'
 
 const CONFIG_FILES = {
   vue: 'packages/adapters/vue/src/config/config.ts',
-  react: 'packages/adapters/react/src/config/config.tsx',
+  // React 的 XhConfig 单独放在 types.ts：Provider 是 'use client' 模块，纯合并函数与类型不跟它走
+  react: 'packages/adapters/react/src/config/types.ts',
   wc: 'packages/adapters/web-components/src/config.ts',
 }
 const SRC = {

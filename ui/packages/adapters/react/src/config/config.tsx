@@ -6,30 +6,16 @@
 // 全局配置注入：应用级默认值，实例上写了的以实例为准。
 // 取值优先级：实例 props > 最近一层 Provider > 外层 Provider > 组件内建默认（英文）。
 // 不套 Provider 时组件走原路，零开销。
-import type {
-  VisualEnvironmentController,
-  VisualEnvironmentControllerOptions,
-} from '@xihan-ui/core/visual-environment'
-import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
+import type { VisualEnvironmentController } from '@xihan-ui/core/visual-environment'
+import type { XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
+import type { XhConfig } from './types'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
-import { componentTranslations, DISABLED_IS_NOT_SCOPED, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { componentTranslations, DISABLED_IS_NOT_SCOPED, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react'
+import { mergeXhConfig } from './merge'
 
-export type { XhTranslationOverrides }
-
-type BindVisualRoot<T> = T extends unknown ? Omit<T, 'parent' | 'root'> & { root: Element } : never
-export type XhVisualEnvironmentConfig = BindVisualRoot<VisualEnvironmentControllerOptions>
-
-export interface XhConfig extends XhConfigBase {
-  /**
-   * 浮层默认挂载的容器；返回 null 即挂载到 body。
-   * 应用级默认，实例上写了容器时以实例为准。
-   */
-  portalContainer?: () => Element | null
-  /** 本 Provider 的八轴视觉环境；root 必须显式给出，不推测 DOM 边界。 */
-  visualEnvironment?: XhVisualEnvironmentConfig
-}
+export type { XhConfig, XhTranslationOverrides, XhVisualEnvironmentConfig } from './types'
 
 interface XhConfigContextValue {
   config: XhConfig
@@ -38,16 +24,6 @@ interface XhConfigContextValue {
 }
 
 const XhConfigContext = createContext<XhConfigContextValue | undefined>(undefined)
-
-/**
- * 本层与外层逐键合并。
- *
- * 键缺席与写为 undefined 都视为本层未声明，一律回落外层：子树只需要改文案时，
- * 不应把外层的 locale 与 portalContainer 一并清除。
- */
-export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig): XhConfig {
-  return mergeBase(base, over)
-}
 
 export interface XhConfigProviderProps {
   config: XhConfig

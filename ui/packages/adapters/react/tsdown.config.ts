@@ -1,4 +1,4 @@
-import { defineXihanPackage } from '@xihan-ui/build'
+import { defineXihanPackage, useClientDirective } from '@xihan-ui/build'
 
 export default defineXihanPackage({
   unbundle: true,
@@ -10,4 +10,6 @@ export default defineXihanPackage({
     sound: 'src/sound.ts',
   },
   neverBundle: ['react', 'react-dom', 'react/jsx-runtime'],
+  // 用到客户端能力的模块带 'use client'，Next.js App Router 的服务端组件可以直接导入
+  overrides: { plugins: [useClientDirective()] },
 })
