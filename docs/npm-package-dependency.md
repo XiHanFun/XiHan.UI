@@ -136,7 +136,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/icons` | `./codegen` |
 | `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） |
 | `@xihan-ui/headless` | `./locale`（内建语言包） |
-| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./sound` |
+| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` |
 | `@xihan-ui/react` | `./backgrounds` `./behavior` `./locale` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
 | `@xihan-ui/styles` | 每份皮肤一条 CSS，共 155 条（143 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |

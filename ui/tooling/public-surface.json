@@ -13,6 +13,8 @@
       "./backgrounds",
       "./behavior",
       "./locale",
+      "./plugin",
+      "./resolver",
       "./sound"
     ],
     "@xihan-ui/web-components": [
@@ -4898,6 +4900,10 @@
       "XhVisualEnvironmentConfig",
       "XhWatermarkContent",
       "XhWatermarkRoot",
+      "XiHanUI",
+      "XiHanUIComponentResolver",
+      "XiHanUIResolveResult",
+      "XiHanUIResolver",
       "clearFieldContext",
       "createColumnStore",
       "createDialogService",
