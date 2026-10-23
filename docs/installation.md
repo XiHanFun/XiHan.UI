@@ -138,7 +138,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 
 ::: tip 中文项目的配置
 组件的内建文案（关闭按钮的读屏名称、分页的翻页说明等）默认为英文；日期时间类组件另接受 `locale`，未提供时跟随浏览器语言，读取失败时使用 `en-US`。
-要将两者固定为中文，在根组件中 `provideXhConfig({ locale: 'zh-CN', translations: { … } })` 全局配置一次即可，不需要逐实例传 `:translations`。文档站的示例是孤立片段，因此逐个传入；真实应用不应如此。见[国际化](./guide/i18n)。
+要将两者固定为中文，在根组件中把内建的 `zhCN` 语言包交给全局配置一次：`provideXhConfig(zhCN)`（`zhCN` 从 `@xihan-ui/vue/locale` 导入），文案与 `locale` 一起切换，不需要逐实例传 `:translations`；个别说法再经 `translations` 覆盖。文档站的示例是孤立片段，因此逐个传入；真实应用不应如此。见[国际化](./guide/i18n)。
 :::
 
 ## 接入原生 / 非 Vue 项目
