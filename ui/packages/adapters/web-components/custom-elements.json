@@ -50419,7 +50419,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-pagination>`：Light-DOM 行为宿主：作者写 root / prev-trigger / item / ellipsis-trigger / next-trigger\n角色节点，元素运行 pagination 状态机并把 connect 产出接上。\n\nroot 必须是 `<nav>`：分页器是跳到某一页的导航地标，元素只在其上写 aria-label，\n地标语义需要由标签自身提供。页码按钮须自带 `value` 属性标明页码。\n\n页码序列（哪些页、哪里应显示省略号）由作者按 `pages` 渲染，元素不替作者生成节点：\n生成节点等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都无法再加入。序列本身\n从元素上获取（`pages` / `pageItems`），不必自行按当前页与总页数推导。\n\n取数接口是实时计算的，读到的恒为当前的一份。重读时机：`page-change` 与 `page-size-change`\n两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器中重读即可；修改 `count` /\n`sibling-count` 这类作者自己书写的属性时，写完立即重读，不必等待事件。受控（写了 `page` 属性）时\n需要先把新页码写回 `page` 再读取：受控下当前页存放在属性中，不写回时读到的仍是上一页的序列。",
+          "description": "`<xh-pagination>`：Light-DOM 行为宿主：作者写 root / prev-trigger / item / ellipsis-trigger / next-trigger\n角色节点，元素运行 pagination 状态机并把 connect 产出接上。\n\nroot 必须是 `<nav>`：分页器是跳到某一页的导航地标，元素只在其上写 aria-label，\n地标语义需要由标签自身提供。页码按钮须自带 `value` 属性标明页码。\n\n不写部件（或只写 root）时，元素按标准结构生成上一页、页码序列与下一页，翻页后按页码复用节点。\n要外层 `<li>` 壳、图标、自定义文案或首末页钮、跳页框这些按需部件时，作者整棵手写，\n页码序列（哪些页、哪里应显示省略号）按 `pages` 渲染，元素不再插手。序列本身\n从元素上获取（`pages` / `pageItems`），不必自行按当前页与总页数推导。\n\n取数接口是实时计算的，读到的恒为当前的一份。重读时机：`page-change` 与 `page-size-change`\n两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器中重读即可；修改 `count` /\n`sibling-count` 这类作者自己书写的属性时，写完立即重读，不必等待事件。受控（写了 `page` 属性）时\n需要先把新页码写回 `page` 再读取：受控下当前页存放在属性中，不写回时读到的仍是上一页的序列。",
           "name": "XhPaginationElement",
           "cssParts": [
             {
@@ -50480,6 +50480,15 @@
               },
               "static": true,
               "default": "{ anatomy: paginationAnatomy, meta: paginationMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhPaginationElement>"
+              },
+              "static": true,
+              "default": "{ rootTag: 'nav', build: (host) => { const api = host.api() return api ? paginationStructure(api) : undefined }, }"
             },
             {
               "kind": "field",

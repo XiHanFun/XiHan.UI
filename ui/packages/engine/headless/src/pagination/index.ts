@@ -27,6 +27,7 @@ export {
   totalPagesOf,
 } from './pagination.range'
 export type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
+export { paginationStructure } from './pagination.structure'
 export type {
   PaginationApi,
   PaginationEllipsisTriggerProps,

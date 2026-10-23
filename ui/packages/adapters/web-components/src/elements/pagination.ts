@@ -7,9 +7,10 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageChangeDetails, PaginationPageItem, PaginationSchema, PaginationTranslations, SelectApi, SelectSchema } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
+import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
@@ -50,8 +51,9 @@ interface PageSizeNodes {
  * root 必须是 `<nav>`：分页器是跳到某一页的导航地标，元素只在其上写 aria-label，
  * 地标语义需要由标签自身提供。页码按钮须自带 `value` 属性标明页码。
  *
- * 页码序列（哪些页、哪里应显示省略号）由作者按 `pages` 渲染，元素不替作者生成节点：
- * 生成节点等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都无法再加入。序列本身
+ * 不写部件（或只写 root）时，元素按标准结构生成上一页、页码序列与下一页，翻页后按页码复用节点。
+ * 要外层 `<li>` 壳、图标、自定义文案或首末页钮、跳页框这些按需部件时，作者整棵手写，
+ * 页码序列（哪些页、哪里应显示省略号）按 `pages` 渲染，元素不再插手。序列本身
  * 从元素上获取（`pages` / `pageItems`），不必自行按当前页与总页数推导。
  *
  * 取数接口是实时计算的，读到的恒为当前的一份。重读时机：`page-change` 与 `page-size-change`
@@ -93,6 +95,16 @@ export class XhPaginationElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: paginationAnatomy, meta: paginationMeta }
+
+  // 不写部件（或只写 root）时照 paginationStructure 生成上一页、页码序列与下一页，翻页后按值复用节点；
+  // 首末页钮、跳页框、每页条数与省略位的展开面板不在标准结构里，要用时整棵手写
+  static override structure: ElementStructure<XhPaginationElement> = {
+    rootTag: 'nav',
+    build: (host) => {
+      const api = host.api()
+      return api ? paginationStructure(api) : undefined
+    },
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名响应式字段会与基类类型打架。属性仍进 observedAttributes，改 dir 照样触发重算。

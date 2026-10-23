@@ -9,9 +9,11 @@ import type { Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { PaginationApi, PaginationEllipsisSide, PaginationPageSizeChangeDetails, PaginationSchema, PaginationTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { paginationStructure } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { providePagination, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
@@ -84,25 +86,31 @@ export const XhPaginationRoot = defineComponent({
     }
     const ctx = usePagination(withXhConfig('pagination', props) as PaginationProps, notify, notifyPageSize)
     providePagination(ctx)
-    // 根节点渲染为 nav 地标
-    return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      page: ctx.api.value.page,
-      pageSize: ctx.api.value.pageSize,
-      pageSizeOptions: ctx.api.value.pageSizeOptions,
-      count: ctx.api.value.count,
-      totalPages: ctx.api.value.totalPages,
-      pages: ctx.api.value.pages,
-      pageItems: ctx.api.value.pageItems,
-      openEllipsis: ctx.api.value.openEllipsis,
-      pageRange: ctx.api.value.pageRange,
-      previousPage: ctx.api.value.previousPage,
-      nextPage: ctx.api.value.nextPage,
-      setPage: ctx.api.value.setPage,
-      goToPrevPage: ctx.api.value.goToPrevPage,
-      goToNextPage: ctx.api.value.goToNextPage,
-      setPageSize: ctx.api.value.setPageSize,
-      slice: ctx.api.value.slice,
-    }))
+    // 根节点渲染为 nav 地标；没写默认插槽时铺标准结构
+    return () => {
+      const api = ctx.api.value
+      const body = slots.default
+        ? slots.default({
+            page: api.page,
+            pageSize: api.pageSize,
+            pageSizeOptions: api.pageSizeOptions,
+            count: api.count,
+            totalPages: api.totalPages,
+            pages: api.pages,
+            pageItems: api.pageItems,
+            openEllipsis: api.openEllipsis,
+            pageRange: api.pageRange,
+            previousPage: api.previousPage,
+            nextPage: api.nextPage,
+            setPage: api.setPage,
+            goToPrevPage: api.goToPrevPage,
+            goToNextPage: api.goToNextPage,
+            setPageSize: api.setPageSize,
+            slice: api.slice,
+          })
+        : renderDefaultStructure(api)
+      return h('nav', api.getRootProps() as Record<string, unknown>, body)
+    }
   },
 })
 
@@ -319,3 +327,19 @@ export const XhPaginationContent = defineComponent({
     }
   },
 })
+
+/** 标准结构里各部件对应的组件。 */
+const PAGINATION_PARTS = {
+  'prev-trigger': XhPaginationPrevTrigger,
+  'item': XhPaginationItem,
+  'ellipsis-trigger': XhPaginationEllipsisTrigger,
+  'next-trigger': XhPaginationNextTrigger,
+}
+
+/**
+ * 未写默认插槽时照 paginationStructure 铺开的整套结构：上一页、折叠后的页码序列与下一页，
+ * 与 Web Components 不写部件时元素生成的节点出自同一份。
+ */
+function renderDefaultStructure(api: PaginationApi): VNode[] {
+  return renderStructure(paginationStructure(api), PAGINATION_PARTS)
+}

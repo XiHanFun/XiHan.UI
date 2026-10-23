@@ -9458,6 +9458,7 @@
       "paginationMachine",
       "paginationMeta",
       "paginationPageSizeSelectProps",
+      "paginationStructure",
       "panelConstraint",
       "panelConstraints",
       "panelCount",
