@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 // 门禁：逐个可发布包跑 publint 与 attw，校验产物契约（exports 条件、类型解析）。
 import { execFileSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
+import { clientModules, hasUseClientDirective } from '../../build/src/use-client.js'
 
 const PACKAGES_DIR = 'packages'
+const REACT_DIR = join(PACKAGES_DIR, 'adapters', 'react')
 
 // 按包声明的支持面校验：ESM-only、engines node>=18，不提供 CJS，也不承诺 node10 的
 // 旧式解析（它不认 exports，子路径一律解析失败）。profile 收窄到 esm-only 后
@@ -51,6 +54,36 @@ async function packageDirs() {
   return out
 }
 
+/**
+ * React 适配器的 'use client'：产物里每个模块带不带指令，与源码判定（clientModules）逐个对上。
+ * 漏标，Next.js App Router 的服务端组件一导入就报错；多标，语言包和纯合并函数在服务端
+ * 变成调不了的客户端引用。指令由构建插件 useClientDirective 按同一份判定写入。
+ * @returns {Promise<string[]>} 对不上的产物
+ */
+async function useClientMismatches() {
+  const srcDir = join(REACT_DIR, 'src')
+  const distDir = join(REACT_DIR, 'dist')
+  const client = clientModules(srcDir)
+  const problems = []
+  let mapped = 0
+  for (const rel of await readdir(distDir, { recursive: true })) {
+    if (!rel.endsWith('.js'))
+      continue
+    const stem = join(srcDir, rel.slice(0, -'.js'.length))
+    const source = ['.tsx', '.ts'].map(ext => stem + ext).find(path => existsSync(path))
+    if (!source)
+      continue
+    mapped++
+    const expected = client.has(resolve(source).replaceAll('\\', '/'))
+    const actual = hasUseClientDirective(await readFile(join(distDir, rel), 'utf8'))
+    if (expected !== actual)
+      problems.push(`${rel}：源码判定${expected ? '要' : '不要'} 'use client'，产物${actual ? '带了' : '没带'}`)
+  }
+  if (mapped === 0)
+    problems.push(`${distDir} 里没有一个产物对得上 src 的模块——先构建 @xihan-ui/react`)
+  return problems
+}
+
 const failed = []
 const dirs = await packageDirs()
 let checked = 0
@@ -77,6 +110,14 @@ for (const dir of dirs) {
     attwArgs.push('--exclude-entrypoints', ep)
   if (!run('attw', attwArgs, dir))
     failed.push(`${pkg.name} (attw)`)
+}
+
+const useClientProblems = await useClientMismatches()
+if (useClientProblems.length) {
+  console.error(`\n[check-publish] @xihan-ui/react 的 'use client' 与源码判定对不上（${useClientProblems.length} 处）：`)
+  for (const problem of useClientProblems)
+    console.error(`  ${problem}`)
+  failed.push('@xihan-ui/react (use client)')
 }
 
 if (failed.length) {

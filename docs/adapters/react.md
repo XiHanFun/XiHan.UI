@@ -188,6 +188,49 @@ Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改�
 - scope 的基名取自 `useId`，同一棵树两端一致，不会 hydration 不匹配；
 - 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
 
+### React Server Components
+
+用到客户端能力的模块（组件、hook、全局配置的 Provider、命令式服务）在产物里带 `'use client'`，Next.js App Router 的服务端组件可以直接从 `@xihan-ui/react` 导入组件并渲染，props 可序列化即可：
+
+```tsx
+// app/page.tsx（服务端组件）
+import { XhButton } from "@xihan-ui/react";
+
+export default function Page() {
+  return <XhButton type="submit">提交</XhButton>;
+}
+```
+
+从服务端组件传给组件的 props 必须可序列化，事件回调、`ref` 与函数式 children 只能写在客户端组件里。语言包同样含函数式文案（如 `deleteItem: label => …`），所以全局配置的 Provider 放进自己的客户端组件，再由布局引用：
+
+```tsx
+// app/providers.tsx
+"use client";
+import { XhConfigProvider } from "@xihan-ui/react";
+import { zhCN } from "@xihan-ui/react/locale";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <XhConfigProvider config={zhCN}>{children}</XhConfigProvider>;
+}
+```
+
+```tsx
+// app/layout.tsx（服务端组件）
+import { Providers } from "./providers";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="zh-CN">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+语言包（`@xihan-ui/react/locale`）与 `mergeXhConfig` 不带指令，服务端代码里也能读取和调用。哪些模块带指令由构建时的同一份判定决定，`pnpm gate:publish` 逐个产物核对，漏标与多标都会失败。
+
 ## 与另外两个适配器的关系
 
 三个适配器运行同一个状态机、同一份 `connect`，输出的 DOM 属性完全一致：跨适配器一致性测试逐帧比对归一化快照，无法消除的差异即判失败。React 侧另有一道服务端渲染一致性判据。
