@@ -57,11 +57,14 @@ pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 三个适配器共用同一份令牌与皮肤，在入口处各引一次：
 
 ```ts
-import { createThemeController } from '@xihan-ui/tokens/runtime'
+import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-createThemeController({ storageKey: 'app-theme' })
+createVisualEnvironmentController({
+  root: document.documentElement,
+  initial: { mode: 'system', motion: 'system', transparency: 'system' },
+})
 ```
 
 Vue：
