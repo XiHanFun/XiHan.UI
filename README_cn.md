@@ -163,7 +163,7 @@ pnpm dev
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述门禁。
+欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述门禁。环境准备、提交与 changeset 的约定见[贡献指南](./CONTRIBUTING_cn.md)。
 
 ## 诚挚致谢
 

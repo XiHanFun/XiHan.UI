@@ -163,7 +163,7 @@ Not in the box: the token browser and enterprise business components. For a lang
 
 ## Contributing
 
-Issues and pull requests are welcome. Commits follow conventional commits, and changes must pass the gates listed above.
+Issues and pull requests are welcome. Commits follow conventional commits, and changes must pass the gates listed above. See the [contributing guide](./CONTRIBUTING.md) for setup, commit and changeset conventions.
 
 ## Acknowledgements
 
