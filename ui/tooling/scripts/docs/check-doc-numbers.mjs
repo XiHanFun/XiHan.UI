@@ -214,6 +214,15 @@ const truth = {
       return JSON.parse(await read('.size-limit.json')).length
     },
   },
+  全量皮肤gzip上限: {
+    how: '.size-limit.json 里 path 为 packages/design/styles/index.css 那一条的 limit（kB）',
+    async value() {
+      const entry = JSON.parse(await read('.size-limit.json')).find(e => e.path === 'packages/design/styles/index.css')
+      if (!entry)
+        throw new Error('.size-limit.json 里找不到 packages/design/styles/index.css 的条目')
+      return Number.parseFloat(entry.limit)
+    },
+  },
   皮肤份数: {
     how: 'packages/design/styles/css 下的 .css 文件数',
     async value() {
@@ -1427,6 +1436,7 @@ const TABLE = [
   ['docs/installation.md', /\| Node（安装使用） \| ≥ (\d+)，/, '消费端Node主版本下限'],
   ['docs/installation.md', /（参与本仓库开发） \| ≥ ([\d.]+) \/ ≥ [\d.]+ \|/, '开发期Node下限'],
   ['docs/installation.md', /（参与本仓库开发） \| ≥ [\d.]+ \/ ≥ ([\d.]+) \|/, '开发期pnpm下限'],
+  ['docs/installation.md', /一项把它限制在 (\d+) kB gzip 以内/, '全量皮肤gzip上限'],
   // 「没有第三方运行时依赖」的几处陈述：命中即记作「无」，将来真有了依赖，真值变成名字就对不上
   ['docs/index.md', /(全部库包都没有运行时第三方依赖)/, '运行时第三方依赖名单', () => '无'],
   ['docs/introduction.md', /(库包的运行时代码不引入第三方依赖)/, '运行时第三方依赖名单', () => '无'],
