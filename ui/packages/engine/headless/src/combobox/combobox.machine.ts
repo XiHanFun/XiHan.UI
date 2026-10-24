@@ -5,8 +5,8 @@
 
 // 提供 combobox 相关实现。
 
-import type { PositionResult } from '@xihan-ui/core'
-import type { ComboboxFocusIntent, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
+import type { Params, PositionResult } from '@xihan-ui/core'
+import type { ComboboxFocusIntent, ComboboxNode, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
@@ -15,11 +15,23 @@ import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from 
 import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { COMBOBOX_TAG_LIST_SELECTOR, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
+import { comboboxFilterQuery, filterComboboxNodes } from './combobox.filter'
 
 const { createMachine } = setup<ComboboxSchema>()
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const COMBOBOX_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
+
+/**
+ * 当下的候选：给了 filter 即按用户打的检索词筛过，连接层经同一个 filterComboboxNodes 算出 api.collection。
+ * 没给 collection 时为 undefined，走活 DOM 查条目那条路。
+ */
+function visibleCollection({ prop, context }: Pick<Params<ComboboxSchema>, 'prop' | 'context'>): readonly ComboboxNode[] | undefined {
+  const collection = prop('collection')
+  if (!collection)
+    return undefined
+  return filterComboboxNodes(collection, comboboxFilterQuery(context.get('inputValue'), context.get('filterQuery')), prop('filter'))
+}
 
 /** 选中集合的不变量：单选恒为长度 ≤ 1，多选去重。公开 API 与退格删末项都经这里收口。 */
 function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
@@ -45,6 +57,8 @@ export const comboboxMachine = createMachine({
       defaultValue: prop('defaultInputValue') ?? '',
       onChange: inputValue => prop('onInputValueChange')?.({ inputValue }),
     })),
+    // 内置过滤的检索词：用户打的那段字。选中后回显的文字与内联补全补出的那段都不算，见 combobox.filter
+    filterQuery: cell<string>(() => ({ defaultValue: '' })),
     // 显示文本只能从活 DOM 取：条目文本是作者写的插槽内容，prop 里没有
     valueText: cell<string | null>(() => ({ defaultValue: null })),
     // 已选项见过的文字：候选由调用方过滤，选过的项常常已不在候选里，多选标签的文字只能从这里取
@@ -212,6 +226,7 @@ export const comboboxMachine = createMachine({
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         resetDeclaredValue(params, 'inputValue', 'inputValue', 'defaultInputValue')
+        params.context.set('filterQuery', '')
         params.context.reset('highlightedValue')
         params.action(['syncValueText'])
       },
@@ -245,7 +260,7 @@ export const comboboxMachine = createMachine({
             context.set('highlightedValue', null)
             return
           }
-          const collection = prop('collection')
+          const collection = visibleCollection({ prop, context })
           const virtualizer = prop('virtualizer')
           if (collection && virtualizer) {
             const selected = context.get('value')[0] ?? null
@@ -294,16 +309,18 @@ export const comboboxMachine = createMachine({
 
       setInputValue: ({ context, event }) => {
         const e = event.current()
-        if (e.type === 'INPUT.CHANGE' || e.type === 'INPUT.SET')
-          context.set('inputValue', e.value)
+        if (e.type !== 'INPUT.CHANGE' && e.type !== 'INPUT.SET')
+          return
+        context.set('inputValue', e.value)
+        context.set('filterQuery', e.value)
       },
 
       /**
        * 候选集合重新结算：条数供空态节点用，同时把悬空的高亮摘掉。
-       * 过滤是调用方做的，机器无从预知何时变，所以适配器每次提交完 DOM 都要发一次 ITEMS.SYNC。
+       * 没给 filter 时过滤是调用方做的，机器无从预知何时变，所以适配器每次提交完 DOM 都要发一次 ITEMS.SYNC。
        */
       syncItems: ({ refs, prop, context }) => {
-        const collection = prop('collection')
+        const collection = visibleCollection({ prop, context })
         if (collection) {
           context.set('itemCount', collection.length)
           const highlighted = context.get('highlightedValue')
@@ -322,7 +339,10 @@ export const comboboxMachine = createMachine({
           context.set('highlightedValue', null)
       },
 
-      /** 输入串变化后的收尾。必须推迟一拍：调用方要等收到 onInputValueChange 才重渲，此刻查到的是旧候选。 */
+      /**
+       * 输入串变化后的收尾。必须推迟一拍：没给 filter 时调用方要等收到 onInputValueChange 才重渲，此刻查到的是旧候选。
+       * 内联补全只改输入框，不改检索词：补出整段文字后候选仍按用户打的那几个字筛。
+       */
       refreshAfterInput: ({ refs, prop, context, state, event, flush }) => {
         const e = event.current()
         // 删字时不做内联补全，否则退格补回来、字永远删不掉
@@ -330,7 +350,7 @@ export const comboboxMachine = createMachine({
         flush(() => {
           if (state.get() !== 'open')
             return
-          const collection = prop('collection')
+          const collection = visibleCollection({ prop, context })
           if (collection) {
             context.set('itemCount', collection.length)
             const behavior = prop('inputBehavior') ?? 'none'
@@ -478,6 +498,8 @@ export const comboboxMachine = createMachine({
         // 文字在事件那一刻取好带过来：选完这一项常常就被宿主筛出候选，之后查不到了
         if (e.label != null && context.get('valueLabels')[e.value] !== e.label)
           context.set('valueLabels', { ...context.get('valueLabels'), [e.value]: e.label })
+        // 选完这一项就不再按刚才打的字筛：多选接着筛下一个从全集起，单选再展开看到全部候选
+        context.set('filterQuery', '')
         const current = context.get('value')
         if (prop('multiple')) {
           context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
@@ -497,6 +519,7 @@ export const comboboxMachine = createMachine({
         const text = context.get('inputValue')
         if (text === '')
           return
+        context.set('filterQuery', '')
         const current = context.get('value')
         if (prop('multiple')) {
           if (!current.includes(text))
@@ -522,6 +545,7 @@ export const comboboxMachine = createMachine({
         context.set('value', [])
         context.set('valueText', null)
         context.set('inputValue', '')
+        context.set('filterQuery', '')
       },
 
       /**
@@ -531,6 +555,8 @@ export const comboboxMachine = createMachine({
       reconcileInput: ({ context, prop }) => {
         const multiple = !!prop('multiple')
         const text = context.get('inputValue')
+        // 焦点离场即这一轮检索结束，不论输入串收不收回去
+        context.set('filterQuery', '')
         if (prop('allowCustomValue')) {
           // 多选下不替用户造 token，只把残留清掉
           if (multiple) {

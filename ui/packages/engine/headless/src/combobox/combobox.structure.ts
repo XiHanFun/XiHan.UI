@@ -55,13 +55,18 @@ export interface ComboboxStructureOptions {
   /** 盒里带不带清空按钮，缺省不带。 */
   clearable?: boolean
   /**
+   * 表单字段名。给了 name、或控件必填（必填的空值占位拦得住空表单）时才在末尾铺表单影子；
+   * 两样都没有的影子既不提交也拦不住什么，不铺。
+   */
+  name?: string
+  /**
    * 作者给了哪些插槽的内容：label、empty、item（条目文字）、item-prefix、item-suffix，后三个按条目的值带 key。
    * 条目文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
    */
   slotted?: StructureSlotted
 }
 
-type ComboboxStructureModel = Pick<ComboboxApi, 'collection' | 'multiple' | 'tags' | 'translations'>
+type ComboboxStructureModel = Pick<ComboboxApi, 'collection' | 'multiple' | 'required' | 'tags' | 'translations'>
 
 /** 一个条目：行首、文字、副文本、行尾、选中标记；带 slot 的格子的 data 是这一条的元信息。 */
 function itemStructure(node: ComboboxNodeMeta, slotted: StructureSlotted): ComboboxNode {
@@ -82,9 +87,9 @@ function itemStructure(node: ComboboxNodeMeta, slotted: StructureSlotted): Combo
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
 /**
- * 组合框在 root 里的标准结构，次序是标题、盒、浮层、表单影子。
+ * 组合框在 root 里的标准结构，次序是标题、盒、浮层、表单影子（给了 name 或必填时才铺）。
  * 盒里多选的已选项排在输入框之前，一枚一个带删除钮的标签，摆不下的折进 +N；清空钮在输入框之后、展开钮之前。
- * 浮层里候选列表之后是空态节点（content 的兄弟，不进列表框）。过滤仍归调用方：collection 就是当前应显示的候选。
+ * 浮层里候选列表之后是空态节点（content 的兄弟，不进列表框）。候选取 api.collection：给了 filter 即筛过的那份，没给就是调用方传进来的当前候选。
  */
 export function comboboxStructure(model: ComboboxStructureModel, options: ComboboxStructureOptions = {}): ComboboxNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -134,7 +139,8 @@ export function comboboxStructure(model: ComboboxStructureModel, options: Combob
         { key: 'loading', tag: 'div', part: 'loading', text: model.translations.loading },
       ],
     },
-    { key: 'hidden-input', tag: 'input', part: 'hidden-input' },
   )
+  if (options.name != null || model.required)
+    nodes.push({ key: 'hidden-input', tag: 'input', part: 'hidden-input' })
   return nodes
 }

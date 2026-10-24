@@ -40,6 +40,8 @@ function mountFromCollection(value: string[], clearable = true) {
       empty: '无匹配水果',
       placeholder: '输入水果名筛选',
       clearable,
+      // 给了 name 才铺表单影子，与手写那棵的 hidden-input 对得上
+      name: 'fruit',
     }),
   }), { attachTo: document.body })
 }
@@ -51,6 +53,7 @@ function mountFromParts(value: string[]) {
       value,
       collection: COLLECTION,
       placeholder: '输入水果名筛选',
+      name: 'fruit',
     }, () => [
       h(XhComboboxLabel, () => '水果'),
       h(XhComboboxControl, () => [

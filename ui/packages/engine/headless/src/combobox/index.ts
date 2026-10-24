@@ -7,9 +7,10 @@
 
 export { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 export { connectCombobox } from './combobox.connect'
+export { filterComboboxNodes } from './combobox.filter'
 export { comboboxKeyboard } from './combobox.keyboard'
 export { COMBOBOX_DEFAULT_PLACEMENT, comboboxMachine } from './combobox.machine'
 export { comboboxMeta } from './combobox.meta'
 export { comboboxStructure } from './combobox.structure'
 export type { ComboboxStructureOptions } from './combobox.structure'
-export type { ComboboxApi, ComboboxFocusIntent, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxInputProps, ComboboxInputValueChangeDetails, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxOpenChangeDetails, ComboboxPressedPart, ComboboxRefs, ComboboxSchema, ComboboxTagMeta, ComboboxTagProps, ComboboxTranslations, ComboboxValueChangeDetails } from './combobox.types'
+export type { ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxFocusIntent, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxInputProps, ComboboxInputValueChangeDetails, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxOpenChangeDetails, ComboboxPressedPart, ComboboxRefs, ComboboxSchema, ComboboxTagMeta, ComboboxTagProps, ComboboxTranslations, ComboboxValueChangeDetails } from './combobox.types'

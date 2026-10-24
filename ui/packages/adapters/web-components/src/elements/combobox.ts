@@ -80,6 +80,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} allow-custom-value - 允许提交候选列表中没有的值
  * @attr {boolean} open-on-click - 点击输入框即展开，默认 false
  * @attr {'none'|'autohighlight'|'autocomplete'} input-behavior - 输入行为，默认 none
+ * @attr {'contains'|'startsWith'} filter - 内置过滤：按用户打的检索词筛 collection，不分大小写；自定义匹配经 filter property 给函数。没写即不过滤
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
@@ -137,6 +138,7 @@ export class XhComboboxElement extends XhPortalHostElement {
           label: host.label,
           empty: host.empty,
           clearable: host.clearable,
+          name: host.name,
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -172,6 +174,8 @@ export class XhComboboxElement extends XhPortalHostElement {
     allowCustomValue: { converter: BOOLEAN_CONVERTER, attribute: 'allow-custom-value' },
     openOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-click' },
     inputBehavior: { converter: STRING_CONVERTER, attribute: 'input-behavior' },
+    // 特性只写得了两种口径；自定义函数经 filter property 给
+    filter: { converter: STRING_CONVERTER },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
     // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
@@ -208,6 +212,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   declare allowCustomValue?: boolean
   declare openOnClick?: boolean
   declare inputBehavior?: ComboboxInputBehavior
+  declare filter?: ComboboxSchema['props']['filter']
   declare placement?: Placement
   declare offset?: number
   declare direction?: Direction
@@ -308,6 +313,7 @@ export class XhComboboxElement extends XhPortalHostElement {
       allowCustomValue: this.allowCustomValue ?? false,
       openOnClick: this.openOnClick ?? false,
       inputBehavior: this.inputBehavior,
+      filter: this.filter,
       placement: this.placement,
       offset: this.offset,
       dir: this.direction,

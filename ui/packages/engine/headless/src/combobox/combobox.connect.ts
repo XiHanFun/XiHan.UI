@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
-import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
+import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, queryItems } from '@xihan-ui/core'
 import { COMBOBOX_EN_US } from '../locale/en-US'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
@@ -15,6 +15,7 @@ import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
+import { comboboxFilterQuery, filterComboboxNodes } from './combobox.filter'
 import { COMBOBOX_DEFAULT_PLACEMENT } from './combobox.machine'
 
 const parts = comboboxAnatomy.build()
@@ -46,16 +47,19 @@ export function connectCombobox<T extends PropTypes>(
   const value = context.get('value')
   const inputValue = context.get('inputValue')
 
-  // collection 推出的候选元信息：显示文本与禁用都在这里定案，条目部件只报 value
+  // collection 推出的候选元信息：显示文本与禁用都在这里定案，条目部件只报 value。
+  // 按值查文字与禁用用全集（已选项常常不在当下候选里）；api.collection、位置与条数用筛过的那份，与机器经同一个函数算
   const nodes = prop('collection')
-  const collection: ComboboxNodeMeta[] = (nodes ?? []).map(node => ({
+  const toMeta = (node: ComboboxNode): ComboboxNodeMeta => ({
     value: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
     description: node.description ?? null,
-  }))
-  const metaOf = new Map(collection.map(meta => [meta.value, meta]))
+  })
+  const metaOf = new Map((nodes ?? []).map(node => [node.value, toMeta(node)]))
+  const visible = nodes ? filterComboboxNodes(nodes, comboboxFilterQuery(inputValue, context.get('filterQuery')), prop('filter')) : []
+  const collection: ComboboxNodeMeta[] = visible.map(node => metaOf.get(node.value) ?? toMeta(node))
   const indexOf = new Map(collection.map((meta, index) => [meta.value, index]))
   const virtualizer = prop('virtualizer')
   assertCollectionVirtualizer('Combobox', virtualizer, collection.length, nodes != null)

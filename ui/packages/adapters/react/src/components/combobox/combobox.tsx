@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { comboboxStructure } from '@xihan-ui/headless'
@@ -79,6 +79,8 @@ export interface XhComboboxRootProps extends RootElementProps {
   allowCustomValue?: boolean
   openOnClick?: boolean
   inputBehavior?: ComboboxInputBehavior
+  /** 内置过滤：contains / startsWith 或自定义函数；没给即不过滤，候选由调用方按 onInputValueChange 换。 */
+  filter?: ComboboxFilterMode | ComboboxFilter
   placement?: Placement
   offset?: number
   dir?: Direction
@@ -127,6 +129,7 @@ export function XhComboboxRoot({
   allowCustomValue,
   openOnClick,
   inputBehavior,
+  filter,
   placement,
   offset,
   dir,
@@ -169,6 +172,7 @@ export function XhComboboxRoot({
     allowCustomValue,
     openOnClick,
     inputBehavior,
+    filter,
     placement,
     offset,
     dir,
@@ -203,7 +207,7 @@ export function XhComboboxRoot({
         clear: api.clear,
         deselect: api.deselect,
       })
-    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix })
+    : renderDefaultStructure(api, { label, empty, clearable, name, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <ComboboxProvider value={ctx}>
@@ -541,6 +545,8 @@ interface ComboboxStructureContent {
   label?: ReactNode
   empty?: ReactNode
   clearable?: boolean
+  /** 表单字段名：给了或必填时才铺表单影子。 */
+  name?: string
   renderItem?: (node: ComboboxNodeMeta) => ReactNode
   renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
   renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
@@ -549,7 +555,7 @@ interface ComboboxStructureContent {
 /**
  * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 comboboxStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题与空态、条目文字与行首行尾由对应的值或渲染函数接管。
- * 过滤仍归调用方：collection 就是当前应显示的候选。
+ * 候选取 api.collection：给了 filter 即筛过的那份，没给就是调用方传进来的当前候选。
  */
 function renderDefaultStructure(api: ComboboxApi, content: ComboboxStructureContent): ReactNode[] {
   const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
@@ -564,6 +570,7 @@ function renderDefaultStructure(api: ComboboxApi, content: ComboboxStructureCont
     label: typeof label === 'string' ? label : undefined,
     empty: typeof empty === 'string' ? empty : undefined,
     clearable: content.clearable,
+    name: content.name,
     slotted: name => slotted[name] === true,
   })
   return renderStructure(nodes, COMBOBOX_PARTS, (node) => {

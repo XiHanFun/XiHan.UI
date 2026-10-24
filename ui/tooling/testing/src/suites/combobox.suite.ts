@@ -1132,6 +1132,67 @@ export const comboboxSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'filter=contains：按用户打的字筛 collection，选中后回显选中项文字，再展开看到全部候选；筛空时空态显形',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [
+          { value: 'beijing', label: 'Beijing' },
+          { value: 'berlin', label: 'Berlin' },
+          { value: 'bern', label: 'Bern' },
+          { value: 'london', label: 'London' },
+        ],
+        filter: 'contains',
+        label: '城市',
+        empty: '没有匹配的城市',
+      },
+      initial: { counts: { item: 4 } },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'type 步骤改不动输入框的值；内置过滤按 input 事件带来的检索词筛',
+          run: ({ doc, flush }) => typeInto(doc, 'ber', flush),
+          expect: {
+            parts: { input: { 'aria-expanded': 'true' }, empty: { hidden: '' } },
+            counts: { item: 2 },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        { kind: 'key', key: 'ArrowDown', expect: { parts: { input: { 'aria-activedescendant': '@part(item[0])' } } } },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { input: { 'aria-expanded': 'false' } },
+            events: [
+              { type: 'value-change', detail: { value: ['berlin'] } },
+              { type: 'open-change', detail: { open: false } },
+            ],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '输入框文字只落 DOM property，不进属性快照',
+          run: ({ doc }) => assertInputValue(doc, 'Berlin'),
+        },
+        {
+          kind: 'key',
+          key: 'ArrowDown',
+          expect: {
+            parts: { input: { 'aria-expanded': 'true' } },
+            counts: { item: 4 },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+        {
+          kind: 'raw',
+          why: '筛空之后 empty 节点显形',
+          run: ({ doc, flush }) => typeInto(doc, 'zz', flush),
+        },
+        { kind: 'settle', until: { attr: { part: 'empty', name: 'hidden', value: null } }, expect: { counts: { item: 0 } } },
+      ],
+    },
+    {
       name: '多选不写结构：盒里铺标签行，每枚标签带文字与删除钮，摆不下的折进 +N；没有标题时输入框以 ariaLabel 为名',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),

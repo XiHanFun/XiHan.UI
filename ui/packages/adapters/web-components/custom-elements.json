@@ -13237,42 +13237,42 @@
               "name": "hueCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerHueSliderProps(this.ctrl.service), labelled: this.mountHasLabel('hue-slider') }), { scope: this.pickerScope }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerHueSliderProps(this.ctrl.service), labelled: this.mountHasLabel('hue-slider') }), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
               "name": "hueSliderCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.hueCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')) }, )"
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.hueCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')), formField: false }, )"
             },
             {
               "kind": "field",
               "name": "alphaCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(this.ctrl.service), labelled: this.mountHasLabel('alpha-slider') }), { scope: this.pickerScope }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(this.ctrl.service), labelled: this.mountHasLabel('alpha-slider') }), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
               "name": "alphaSliderCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.alphaCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')) }, )"
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.alphaCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')), formField: false }, )"
             },
             {
               "kind": "field",
               "name": "swatchCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('swatch-picker') }), { scope: this.pickerScope }, )"
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('swatch-picker') }), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
               "name": "recentSwatchCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('recent-swatch-picker') }), { scope: this.pickerScope }, )"
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('recent-swatch-picker') }), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "method",
@@ -14539,7 +14539,7 @@
               "name": "innerCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.ctrl.service), { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')) }, )"
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.ctrl.service), { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')), formField: false }, )"
             },
             {
               "kind": "field",
@@ -15925,6 +15925,15 @@
             },
             {
               "kind": "field",
+              "name": "filter",
+              "privacy": "public",
+              "type": {
+                "text": "ComboboxSchema['props']['filter'] | undefined"
+              },
+              "attribute": "filter"
+            },
+            {
+              "kind": "field",
               "name": "placement",
               "privacy": "public",
               "type": {
@@ -16511,6 +16520,14 @@
               "description": "输入行为，默认 none",
               "name": "input-behavior",
               "fieldName": "inputBehavior"
+            },
+            {
+              "type": {
+                "text": "ComboboxSchema['props']['filter'] | undefined"
+              },
+              "description": "内置过滤：按用户打的检索词筛 collection，不分大小写；自定义匹配经 filter property 给函数。没写即不过滤",
+              "name": "filter",
+              "fieldName": "filter"
             },
             {
               "type": {
@@ -20205,7 +20222,7 @@
               "name": "fieldCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => datePickerFieldProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => datePickerFieldProps(this.rootCtrl.service), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
@@ -21914,14 +21931,14 @@
               "name": "fieldCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => dateRangePickerFieldProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => dateRangePickerFieldProps(this.rootCtrl.service), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
               "name": "fieldEndCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => dateRangePickerFieldEndProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
+              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => dateRangePickerFieldEndProps(this.rootCtrl.service), { scope: this.pickerScope, formField: false }, )"
             },
             {
               "kind": "field",
@@ -50715,7 +50732,7 @@
               "name": "pageSizeCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SelectSchema>( this, selectMachine, () => paginationPageSizeSelectProps(this.ctrl.service as Service<PaginationSchema>), { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc) }, )",
+              "default": "new MachineController<SelectSchema>( this, selectMachine, () => paginationPageSizeSelectProps(this.ctrl.service as Service<PaginationSchema>), { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc), formField: false }, )",
               "description": "每页条数那个下拉：用的是库里的 select，不再是原生下拉。\nprops 从翻页机现读，故必须排在 ctrl 之后建。"
             },
             {
