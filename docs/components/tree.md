@@ -484,11 +484,8 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `branch-control` | `data-draggable` | ''（条件成立时才出现） |
 | `branch-control` | `data-dragging` | ''（条件成立时才出现） |
 | `branch-control` | `data-drop` | 'before' \| 'after' \| 'inside' |
-| `branch-control` | `data-empty` | ''（条件成立时才出现） |
-| `branch-control` | `data-error` | ''（条件成立时才出现） |
 | `branch-control` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-control` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-control` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-control` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-control` | `data-selected` | ''（条件成立时才出现） |
 | `branch-control` | `data-state` | 'open' \| 'closed' |
@@ -497,47 +494,32 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 | `branch-control` | `data-xh-collection-item` | '' |
 | `branch-control` | `data-xh-collection-size` | props.size |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-trigger` | `data-empty` | ''（条件成立时才出现） |
-| `branch-trigger` | `data-error` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-trigger` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-trigger` | `data-selected` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
 | `branch-trigger` | `data-xh-collection-slot` | 'prefix' |
 | `branch-indicator` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-indicator` | `data-empty` | ''（条件成立时才出现） |
-| `branch-indicator` | `data-error` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-indicator` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-indicator` | `data-selected` | ''（条件成立时才出现） |
 | `branch-indicator` | `data-state` | 'open' \| 'closed' |
 | `branch-indicator` | `data-xh-collection-slot` | 'prefix' |
 | `branch-text` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-text` | `data-empty` | ''（条件成立时才出现） |
-| `branch-text` | `data-error` | ''（条件成立时才出现） |
 | `branch-text` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-text` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-text` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-text` | `data-selected` | ''（条件成立时才出现） |
 | `branch-text` | `data-state` | 'open' \| 'closed' |
 | `branch-text` | `data-xh-collection-slot` | 'text' |
 | `branch-description` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-description` | `data-empty` | ''（条件成立时才出现） |
-| `branch-description` | `data-error` | ''（条件成立时才出现） |
 | `branch-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-description` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-description` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-description` | `data-selected` | ''（条件成立时才出现） |
 | `branch-description` | `data-state` | 'open' \| 'closed' |
 | `branch-description` | `data-xh-collection-slot` | 'description' |
 | `branch-content` | `data-disabled` | ''（条件成立时才出现） |
-| `branch-content` | `data-empty` | ''（条件成立时才出现） |
-| `branch-content` | `data-error` | ''（条件成立时才出现） |
 | `branch-content` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch-content` | `data-indeterminate` | ''（条件成立时才出现） |
-| `branch-content` | `data-load-state` | branchLoadState(value)?.status |
 | `branch-content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `branch-content` | `data-selected` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
