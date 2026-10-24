@@ -7,6 +7,7 @@
 
 import type { CascadeStrategy, ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
+  CollectionVirtualizer,
   TableActionDetails,
   TableApi,
   TableColumnDef,
@@ -15,7 +16,11 @@ import type {
   TableColumnProps,
   TableColumnSetting,
   TableExpandedValueChangeDetails,
+  TableFilterValue,
+  TableFilterValueChangeDetails,
   TableNavigation,
+  TablePageChangeDetails,
+  TableRecord,
   TableRowDef,
   TableRowProps,
   TableSchema,
@@ -25,12 +30,19 @@ import type {
   TableSortChangeDetails,
   TableSortDescriptor,
 } from '@xihan-ui/headless'
+import type { KeyedChildren } from '../dom/generated-nodes'
+import type { ElementStructure } from '../element-base'
+import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTable, tableAnatomy, tableMachine, tableMeta } from '@xihan-ui/headless'
+import { connectTable, tableAnatomy, tableMachine, tableMeta, tablePaginationStructure, tableStructure, tableVisibleDataRowCount, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
+import { placeAfterRoot, unwrapDelegated } from '../dom/structure'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { XhMenuElement } from './menu'
+import { XhPaginationElement } from './pagination'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -42,6 +54,9 @@ type TableRowMoveDetails = Parameters<NonNullable<TableSchema['props']['onRowMov
 
 /** 行系部件的归属容器：行内的把手与单元格向上找最近的那一行。 */
 const ROW_SELECTOR = '[data-xh-part="row"]'
+/** 标准结构开虚拟化时数据行的预估高度（px），与 md 档的行高相当；还没量到的行按已量到的平均高度估。 */
+const TABLE_VIRTUAL_ESTIMATE = 40
+
 /** 列系部件的归属容器：排序把手向上找最近的那个列标题。 */
 const COLUMN_HEADER_SELECTOR = '[data-xh-part="column-header"]'
 const HEADER_SELECTOR = '[data-xh-part="header"]'
@@ -82,9 +97,19 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} tree - 声明这是一棵树：一行 parentId 都没有时也报 treegrid、Alt + 左右键改层级、任何行都能接受「放进去」
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {'row'|'cell'} navigation - 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子
+ * @attr {boolean} pagination - 数据驱动模式（给了 data）下分页：按 page 与 page-size 切片，元素在 root 之后生成一个 xh-pagination；筛选一变回到第 1 页
+ * @attr {number} default-page - 非受控初始页码，默认 1
+ * @attr {boolean} virtual - 标准结构的虚拟化开关：只写 root（或什么都不写）时表体只铺滚到的那一屏行，滚的是 root；Virtualizer 那一块开了才加载
+ * @attr {number} estimate-size - 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
  * @attr {'sm'|'md'|'lg'} size - 密度：只影响单元格的纵向内边距与字号，列宽不受影响
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
+ * @fires filter-value-change - 筛选值变化（数据驱动模式）；detail 为 `{ value: Record<列 id, string[]> }`
+ * @fires page-change - 页码变化（数据驱动模式开了分页）；detail 为 `{ value: number }`
+ * @prop {TableRecord[]} data - 数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot="cell:<行 id>:<列 id>"` 接管，空态用 `slot="empty"`
+ * @prop {string | ((record: TableRecord) => string)} rowKey - 记录的行 id：字段名或取值函数，缺省取 id 字段
+ * @prop {Record<string, string[]>} filterValue - 筛选值（列 id → 勾选的值），提供即受控；列给了 filterOptions 时列头生成一颗筛选钮
+ * @prop {Record<string, string[]>} defaultFilterValue - 非受控初始筛选值
  * @fires column-preference-change - 列偏好变化；detail 为 `{ value: TableColumnPreference }`
  * @prop {TableColumnPreference} columnPreference - 列偏好（显隐 / 顺序 / 宽度 / 冻结），提供即受控
  * @prop {TableColumnKind[]} prefixColumns - 需要的前缀列，按给定顺序插在最前面
@@ -118,15 +143,46 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart empty - 空态节点，表体为空且不在加载时显示
  * @csspart loading - 加载态节点，表体为空且正在加载时显示：一枚加载环排在文案之前
  * @csspart load-more-trigger - 取下一页的按钮，放在表尾；点击后的行为由作者决定，取数在途时自动停用
+ * @csspart virtual-viewport - 开了 virtual 时表体里 Virtualizer 的视口（接线后 data-scope 是 virtualizer，data-part 是 viewport）；不定高、不滚动，滚的是 root
+ * @csspart virtual-content - 开了 virtual 时视口里的内容层（接线后 data-part 是 content）
+ * @csspart virtual-item - 开了 virtual 时窗口里每一行外面的外壳（接线后 data-part 是 item），窗口外的收起
  */
 export class XhTableElement extends XhElement {
-  static override partContract = { anatomy: tableAnatomy, meta: tableMeta }
+  // virtual- 前缀的三个作者名接的是 virtualizer 的视口、内容层与条目外壳（开了 virtual 才由结构生成）
+  static override partContract = { anatomy: tableAnatomy, meta: tableMeta, delegates: [VIRTUAL_STRUCTURE_DELEGATE] }
+
+  // 标准结构里组合进来的组件：数据驱动模式列头的筛选菜单、root 之后的分页
+  static override dependencies = { 'xh-menu': XhMenuElement, 'xh-pagination': XhPaginationElement }
+
+  static override structure: ElementStructure<XhTableElement> = {
+    build: (host) => {
+      // 这一轮由元素生成结构（作者只写了 root 或什么都没写）：root 之后的分页跟着这一条走
+      host.structureBuilt = true
+      if (!host.ctrl.service)
+        return undefined
+      const nodes = tableStructure(connectTable(host.ctrl.service, wcNormalize), {
+        virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined,
+        slotted: (name, key) => host.slotted(name, key),
+      })
+      // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，表体空着
+      return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes
+    },
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     columns: { attribute: false },
     rows: { attribute: false },
+    // 数据驱动模式的数据、行 id 取法与筛选值都是数组 / 对象 / 函数，只走 property
+    data: { attribute: false },
+    rowKey: { attribute: false },
+    filterValue: { attribute: false },
+    defaultFilterValue: { attribute: false },
+    pagination: { converter: BOOLEAN_CONVERTER },
+    defaultPage: { converter: NUMBER_CONVERTER, attribute: 'default-page' },
+    virtual: { converter: BOOLEAN_CONVERTER },
+    estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
     sort: { attribute: false },
     defaultSort: { attribute: false },
     selection: { attribute: false },
@@ -170,6 +226,14 @@ export class XhTableElement extends XhElement {
 
   declare columns?: TableColumnDef[]
   declare rows?: TableRowDef[]
+  declare data?: TableRecord[]
+  declare rowKey?: TableSchema['props']['rowKey']
+  declare filterValue?: TableFilterValue
+  declare defaultFilterValue?: TableFilterValue
+  declare pagination?: boolean
+  declare defaultPage?: number
+  declare virtual?: boolean
+  declare estimateSize?: number
   declare sort?: TableSortDescriptor[]
   declare defaultSort?: TableSortDescriptor[]
   declare selection?: TableSelection
@@ -213,6 +277,14 @@ export class XhTableElement extends XhElement {
     this.dispatchEvent(new CustomEvent('sort-change', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyFilterValue = (details: TableFilterValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('filter-value-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyPage = (details: TablePageChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('page-change', { detail: details, bubbles: true, composed: true }))
+  }
+
   private readonly notifySelection = (details: TableSelectionChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
   }
@@ -238,6 +310,44 @@ export class XhTableElement extends XhElement {
     { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) },
   )
 
+  /**
+   * 标准结构开虚拟化时按需加载进来的绑定：跑 Virtualizer、接视口 / 内容层 / 行外壳。没开或还没到时为 null。
+   * 只按类型引用：没开 virtual 的表格不为 Virtualizer 的内核付体积
+   */
+  private virtualBinding: StructureVirtualBinding | null = null
+  private virtualLoading = false
+  /** 这一轮由元素生成结构：build 里置上，wire 里读完清掉；作者手写结构时 build 不跑，它停在 false。 */
+  private structureBuilt = false
+  /** root 之后的分页按 key 复用：与标准结构那一份分开记。 */
+  private readonly afterRootKeys: KeyedChildren = new WeakMap()
+
+  /** 交给机器的桥：开了 virtual 取绑定的，没开取作者给的。 */
+  private currentVirtualizer(): CollectionVirtualizer | undefined {
+    return this.virtual ? this.virtualBinding?.bridge : this.virtualizer
+  }
+
+  /** 开了 virtual 才加载绑定；到了就挂上 Virtualizer 的状态机、请元素重渲一轮，结构随之铺出窗口。 */
+  private ensureVirtualBinding(): void {
+    if (!this.virtual || this.virtualBinding || this.virtualLoading)
+      return
+    this.virtualLoading = true
+    void import('../runtime/structure-virtual').then(({ StructureVirtualBinding }) => {
+      this.virtualBinding = new StructureVirtualBinding({
+        host: this,
+        spreader: this.spreader,
+        // 条数经数据管线现算、不经表格的 api：api 要读桥，桥又要读 Virtualizer，两边互相取值会成环
+        count: () => (this.ctrl.service ? tableVisibleDataRowCount(this.ctrl.service) : 0),
+        estimateSize: () => this.estimateSize ?? TABLE_VIRTUAL_ESTIMATE,
+        // 滚的是 root：吸顶表头、冻结列与行在同一个滚动面里
+        scrollContainer: 'ancestor',
+        estimateFromMeasured: true,
+        getPart: name => this.getPart(name),
+        getParts: name => this.getParts(name),
+      })
+      this.requestUpdate()
+    })
+  }
+
   /** 接了 Virtualizer 时行隔着一层 xh-virtualizer：窗口里那几行由它交出来，归表格接线。 */
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.virtualizer?.getRenderedItemRoots() ?? []
@@ -249,6 +359,14 @@ export class XhTableElement extends XhElement {
       captioned: this.getPart('caption') != null,
       columns: this.columns,
       rows: this.rows,
+      data: this.data,
+      rowKey: this.rowKey,
+      filterValue: this.filterValue,
+      defaultFilterValue: this.defaultFilterValue,
+      onFilterValueChange: this.notifyFilterValue,
+      pagination: this.pagination ?? false,
+      defaultPage: this.defaultPage,
+      onPageChange: this.notifyPage,
       sort: this.sort,
       // 不补 []，缺省由机器兜
       defaultSort: this.defaultSort,
@@ -261,7 +379,7 @@ export class XhTableElement extends XhElement {
       checkedStrategy: this.checkedStrategy,
       cellSpan: this.cellSpan,
       footerCellSpan: this.footerCellSpan,
-      virtualizer: this.virtualizer,
+      virtualizer: this.currentVirtualizer(),
       prefixColumns: this.prefixColumns,
       columnPreference: this.columnPreference,
       defaultColumnPreference: this.defaultColumnPreference,
@@ -396,6 +514,9 @@ export class XhTableElement extends XhElement {
       return existing
     const el = this.ownerDocument.createElement('div')
     el.setAttribute('data-xh-part', 'live-region')
+    // 打上生成标记：它是元素代建的，不算作者写的部件。不打的话结构同步把它当作者在 root 外写了部件，
+    // 判成作者全写，撤掉生成的表头与表体
+    el.setAttribute(GEN_ATTR, '')
     this.append(el)
     return el
   }
@@ -433,6 +554,9 @@ export class XhTableElement extends XhElement {
   }
 
   protected wire(): void {
+    this.ensureVirtualBinding()
+    const structured = this.structureBuilt
+    this.structureBuilt = false
     const api = connectTable(this.ctrl.service, wcNormalize)
 
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -521,5 +645,18 @@ export class XhTableElement extends XhElement {
       this.setPartHidden(el, !api.isExpanded(el.getAttribute('value') ?? ''))
     this.setPartHidden(this.getPart('empty'), !!emptyProps.hidden)
     this.setPartHidden(this.getPart('loading'), !!loadingProps.hidden)
+
+    // 虚拟化的视口、内容层与行外壳排在最后接：行里的格子要先接上本元素的属性，量出来才是排好版的高度
+    const binding = this.virtualBinding
+    if (binding) {
+      // 窗口外的行外壳收起：Light DOM 常驻，作者层的 display 会盖过 [hidden]，用内联 display 收
+      for (const el of this.getParts('virtual-item'))
+        this.setPartHidden(el, !binding.inWindow(el))
+      binding.wire()
+    }
+
+    // 数据驱动模式的分页生成在 root 之后：root 是 grid 系角色，分页只能是它的兄弟。
+    // 只跟着元素生成的结构走，作者手写结构时不生成
+    placeAfterRoot(this, this.getPart('root'), structured ? tablePaginationStructure(api) : [], this.afterRootKeys)
   }
 }

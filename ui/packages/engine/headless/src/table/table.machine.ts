@@ -5,13 +5,14 @@
 
 // 提供 table 相关实现。
 
-import type { RefsFacade } from '@xihan-ui/core'
+import type { ContextFacade, RefsFacade } from '@xihan-ui/core'
 import type { DragAnnounceKind } from '../shared/drag'
 import type { TableRowMove } from './table.drag'
 import type { TableLayoutNeeds } from './table.layout'
 import type {
   TableColumnPreference,
   TableDropTarget,
+  TableFilterValue,
   TableLayout,
   TablePressedKey,
   TableRowDef,
@@ -33,6 +34,7 @@ import { createCellWidgetLock } from './table.cell-widgets'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
+import { tableRowDefs } from './table.pipeline'
 import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowCanExpand, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
@@ -80,6 +82,16 @@ function sameSort(a: TableSortDescriptor[], b: TableSortDescriptor[] | undefined
     && a.every((item, i) => item.id === b[i]!.id && item.direction === b[i]!.direction)
 }
 
+/** 筛选值按列比，每列的勾选按先后比；勾选为空的列与没有这一列同义。 */
+function sameFilterValue(a: TableFilterValue, b: TableFilterValue | undefined): boolean {
+  if (!b)
+    return false
+  const keys = (value: TableFilterValue): string[] => Object.keys(value).filter(key => value[key]!.length > 0).sort()
+  const left = keys(a)
+  const right = keys(b)
+  return sameValues(left, right) && left.every(key => sameValues(a[key]!, b[key]!))
+}
+
 // 排序、选中与展开都住在 context 的 cell 里，受控/非受控在 cell 收口，
 // 不需要影子事件与受控守卫。
 export const tableMachine = createMachine({
@@ -90,6 +102,18 @@ export const tableMachine = createMachine({
       defaultValue: prop('defaultSort') ?? [],
       isEqual: sameSort,
       onChange: value => prop('onSortChange')?.({ value }),
+    })),
+    filterValue: cell<TableFilterValue>(() => ({
+      value: prop('filterValue'),
+      defaultValue: prop('defaultFilterValue') ?? {},
+      isEqual: sameFilterValue,
+      onChange: value => prop('onFilterValueChange')?.({ value }),
+    })),
+    // 手写结构时页码只算序号：没给 page 时这一格停在缺省值上，序号照旧回退为可见序（connect 看的是 prop）
+    page: cell<number>(() => ({
+      value: prop('page'),
+      defaultValue: prop('defaultPage') ?? 1,
+      onChange: value => prop('onPageChange')?.({ value }),
     })),
     selection: cell<TableSelection>(() => ({
       value: prop('selection'),
@@ -159,6 +183,8 @@ export const tableMachine = createMachine({
         'COLUMN_PREF.PATCH': { actions: ['patchColumnPreference'] },
         'SORT.SET': { actions: ['setSort'] },
         'SORT.TOGGLE': { actions: ['toggleSort'] },
+        'FILTER.SET': { actions: ['setFilter'] },
+        'PAGE.SET': { actions: ['setPage'] },
         'SELECTION.SET': { actions: ['setSelection'] },
         'ROW.SELECT': { actions: ['selectRow'] },
         'SELECTION.ALL_TOGGLE': { actions: ['toggleSelectAll'] },
@@ -530,7 +556,7 @@ export const tableMachine = createMachine({
         const rects = refs.get('rowDrag')?.rects ?? []
         const point = e.clientY - drift
         // 树形表多一档「落进去」：能收孩子的行才给这一档，声明了 tree 时每一行都给；平表只有前后两档
-        const rows = prop('rows') ?? []
+        const rows = tableRowDefs({ prop, context })
         const tree = !!prop('tree')
         const nested = tree || rows.some((row: TableRowDef) => row.parentId != null)
         const hit = nested
@@ -660,6 +686,26 @@ export const tableMachine = createMachine({
           return
         context.set('sort', tableToggleSort(context.get('sort'), e.value, { append: e.append }))
       },
+      // 勾选为空的列不留条目；筛选结果的条数变了，停在原来那一页可能已经没有行，回到第 1 页
+      setFilter: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'FILTER.SET')
+          return
+        const next: TableFilterValue = { ...context.get('filterValue') }
+        const values = unique(e.value)
+        if (values.length > 0)
+          next[e.column] = values
+        else
+          delete next[e.column]
+        context.set('filterValue', next)
+        context.set('page', 1)
+      },
+      setPage: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'PAGE.SET' || !Number.isFinite(e.value))
+          return
+        context.set('page', Math.max(1, Math.trunc(e.value)))
+      },
       setSelection: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'SELECTION.SET')
@@ -676,7 +722,7 @@ export const tableMachine = createMachine({
         const mode = tableSelectionMode(prop('selectionMode'))
         if (mode === 'none')
           return
-        const rows = prop('rows') ?? []
+        const rows = tableRowDefs({ prop, context })
         const row = rows.find(item => item.id === e.value)
         // 禁用行选不动；不在 rows 里的行也不认，那种选中值算不出行号
         if (!row || row.disabled)
@@ -723,7 +769,7 @@ export const tableMachine = createMachine({
         // 全选只在复选下成立
         if (tableSelectionMode(prop('selectionMode')) !== 'multiple')
           return
-        const rows = prop('rows') ?? []
+        const rows = tableRowDefs({ prop, context })
         const ids = tableSelectableRowIds(rows)
         if (!tableCascades(prop('cascade'), 'multiple', rows)) {
           context.set('selection', tableToggleSelectAll(context.get('selection'), ids))
@@ -749,7 +795,7 @@ export const tableMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ROW.EXPAND')
           return
-        if (!tableRowCanExpand(prop('rows') ?? [], e.value))
+        if (!tableRowCanExpand(tableRowDefs({ prop, context }), e.value))
           return
         const current = context.get('expandedValue')
         if (current.includes(e.value))
@@ -772,7 +818,7 @@ export const tableMachine = createMachine({
           context.set('expandedValue', current.filter(v => v !== e.value))
           return
         }
-        if (!tableRowCanExpand(prop('rows') ?? [], e.value))
+        if (!tableRowCanExpand(tableRowDefs({ prop, context }), e.value))
           return
         context.set('expandedValue', [...current, e.value])
       },
@@ -838,9 +884,9 @@ export const TABLE_COLUMN_STEP = 8
 /** Shift + 方向键的步长（px）。 */
 export const TABLE_COLUMN_LARGE_STEP = 40
 
-/** 行拖拽那一路的最小接口。 */
+/** 行拖拽那一路的最小接口。读口收整个 context：行定义经数据管线取，排序链、筛选值与页码都在里面。 */
 interface RowDragContext {
-  get: (k: 'expandedValue') => string[]
+  get: ContextFacade<TableSchema>['get']
   set: (k: 'announcement', v: string) => void
 }
 
@@ -926,10 +972,10 @@ function clearColumnDrag(
 
 /** 可见数据行的 id 序列。落点、位置播报与键盘命令三处都以它为准。 */
 function visibleRowIds(
-  context: { get: (k: 'expandedValue') => string[] },
+  context: Pick<ContextFacade<TableSchema>, 'get'>,
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
 ): string[] {
-  return flattenTableRows(prop('rows') ?? [], context.get('expandedValue'))
+  return flattenTableRows(tableRowDefs({ prop, context }), context.get('expandedValue'))
     .filter(row => row.kind === 'data')
     .map(row => row.id)
 }
@@ -946,7 +992,7 @@ function announceRowMove(
   rowId: string,
   move?: TableRowMove,
 ): void {
-  const rows = prop('rows') ?? []
+  const rows = tableRowDefs({ prop, context })
   const translations = prop('translations')
   if (!prop('tree') && !rows.some(row => row.parentId != null)) {
     const ids = visibleRowIds(context, prop)
@@ -999,7 +1045,7 @@ function commitRowMove(
   kind: DragAnnounceKind,
   beforeCommit: () => void,
 ): void {
-  const rows = prop('rows') ?? []
+  const rows = tableRowDefs({ prop, context })
   const move = tableRowMoveOf(flattenTableRows(rows, context.get('expandedValue')), rowId, target)
   if (!move) {
     announceRowMove(context, prop, 'rejected', rowId)
@@ -1079,12 +1125,12 @@ function clearRowDrag(
  * 第四条是作者的 allowRowDrop——它收到的是折算好的搬家，与提交时那份一模一样。
  */
 function rowDropAllowed(
-  context: { get: (k: 'expandedValue') => string[] },
+  context: Pick<ContextFacade<TableSchema>, 'get'>,
   prop: <K extends keyof TableSchema['props']>(k: K) => TableSchema['props'][K],
   rowId: string,
   target: TableDropTarget,
 ): boolean {
-  const rows = prop('rows') ?? []
+  const rows = tableRowDefs({ prop, context })
   const move = tableRowMoveOf(flattenTableRows(rows, context.get('expandedValue')), rowId, target)
   if (!move)
     return false

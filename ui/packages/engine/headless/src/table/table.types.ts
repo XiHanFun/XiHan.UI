@@ -189,6 +189,47 @@ export interface TableColumnDef {
    * 表尾格子没有行定义，函数不调用，按行表头处理。
    */
   rowHeader?: boolean | ((row: TableRowDef, rowIndex: number) => boolean)
+  /**
+   * 数据驱动模式（给了 data）下这一列的升序比较，两条记录比大小：负数排前、正数排后。降序由表格倒过来用。
+   * 不给时按记录里与列 id 同名的字段比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。
+   * 只在列声明了 sortable 时用到。
+   */
+  compare?: (a: TableRecord, b: TableRecord) => number
+  /**
+   * 数据驱动模式下的筛选项：给了它，列头铺一颗筛选钮，点开是一组勾选项；勾了几项就只留下命中的行，
+   * 一项都不勾即不筛。勾选值存在 filterValue 里，按列 id 分开。
+   */
+  filterOptions?: TableFilterOption[]
+  /**
+   * 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。
+   * 不给时取与列 id 同名的字段转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。
+   */
+  filter?: (record: TableRecord, values: readonly string[]) => boolean
+  /**
+   * 数据驱动模式下格子里显示的文字。不给时取与列 id 同名的字段转成字符串，空值显示为空。
+   * 要放图标、徽标这类内容时改用 cell 插槽。
+   */
+  format?: (value: unknown, record: TableRecord) => string
+}
+
+/** 数据驱动模式下的一条记录：字段名 → 值。列 id 即字段名。 */
+export type TableRecord = Record<string, unknown>
+
+/** 列头筛选菜单里的一项。label 缺省取 value。 */
+export interface TableFilterOption {
+  value: string
+  label?: string
+}
+
+/** 筛选值：列 id → 这一列勾选的值。没有条目或数组为空即这一列不筛。 */
+export type TableFilterValue = Record<string, string[]>
+
+export interface TableFilterValueChangeDetails {
+  value: TableFilterValue
+}
+
+export interface TablePageChangeDetails {
+  value: number
 }
 
 /**
@@ -417,8 +458,26 @@ export interface TableSchema extends MachineSchema {
     captioned?: boolean
     /** 列定义，列号与列总数的唯一事实源。默认为空表。 */
     columns?: TableColumnDef[]
-    /** 行定义，行序与行号的唯一事实源。默认为空表。 */
+    /** 行定义，行序与行号的唯一事实源。默认为空表。给了 data 时不再读它，行定义由 data 推出。 */
     rows?: TableRowDef[]
+    /**
+     * 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。
+     * 列 id 即记录里的字段名；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。
+     * 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。
+     */
+    data?: TableRecord[]
+    /** 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 */
+    rowKey?: string | ((record: TableRecord) => string)
+    /** 筛选值（列 id → 勾选的值）。提供即受控：写入只发 onFilterValueChange。只在数据驱动模式下参与计算。 */
+    filterValue?: TableFilterValue
+    defaultFilterValue?: TableFilterValue
+    /**
+     * 数据驱动模式下分页：按 page 与 pageSize 切出当前页，表后铺一组分页按筛过的总条数算页数。
+     * 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。
+     */
+    pagination?: boolean
+    /** 非受控初始页码，默认 1。 */
+    defaultPage?: number
     /** 排序链。提供即受控：cell 直读 prop，写入只发 onSortChange 不落内部值。 */
     sort?: TableSortDescriptor[]
     defaultSort?: TableSortDescriptor[]
@@ -478,8 +537,9 @@ export interface TableSchema extends MachineSchema {
     columnPreference?: TableColumnPreference
     defaultColumnPreference?: TableColumnPreference
     /**
-     * 当前页码与每页条数，只用于计算序号，不参与切片：切片归调用方
-     * （或分页组件的 `api.slice`）。都未提供时序号回退为可见序。
+     * 当前页码与每页条数。手写结构时只用于计算序号，不参与切片：切片归调用方（或分页组件的 `api.slice`），
+     * 都未提供时序号回退为可见序。数据驱动模式开了 pagination 时表格按它们切片，pageSize 缺省 10；
+     * page 提供即受控，写入只发 onPageChange。
      */
     page?: number
     pageSize?: number
@@ -524,6 +584,8 @@ export interface TableSchema extends MachineSchema {
     allowRowDrop?: (move: TableRowMoveDetails) => boolean
     onColumnPreferenceChange?: (details: TableColumnPreferenceChangeDetails) => void
     onSortChange?: (details: TableSortChangeDetails) => void
+    onFilterValueChange?: (details: TableFilterValueChangeDetails) => void
+    onPageChange?: (details: TablePageChangeDetails) => void
     onSelectionChange?: (details: TableSelectionChangeDetails) => void
     onExpandedValueChange?: (details: TableExpandedValueChangeDetails) => void
     /**
@@ -536,6 +598,10 @@ export interface TableSchema extends MachineSchema {
   context: {
     /** 排序链，有序且按 id 去重。受控（sort 提供）时 cell 直读 prop。 */
     sort: TableSortDescriptor[]
+    /** 筛选值，按列 id 分开；勾选为空的列不留条目。受控（filterValue 提供）时 cell 直读 prop。 */
+    filterValue: TableFilterValue
+    /** 当前页码（未夹到有效范围的原值）。受控（page 提供）时 cell 直读 prop。 */
+    page: number
     /** 选中集合，可能是裸 'all'。单选时长度 ≤ 1。 */
     selection: TableSelection
     /** 展开集合，恒为数组。 */
@@ -643,6 +709,10 @@ export interface TableSchema extends MachineSchema {
     | { type: 'SORT.SET', value: TableSortDescriptor[] }
     /** 点击一次排序把手：append 为真表示追加到链尾而不是替换整条链。 */
     | { type: 'SORT.TOGGLE', value: string, append: boolean }
+    /** 改写一列的筛选值；value 为空即这一列不筛。回到第 1 页。 */
+    | { type: 'FILTER.SET', column: string, value: string[] }
+    /** 翻到某一页。 */
+    | { type: 'PAGE.SET', value: number }
     /** 整体改写列偏好；value 缺席即清空，回到作者定义的原样。 */
     | { type: 'COLUMN_PREF.SET', value?: TableColumnPreference }
     /**
@@ -713,6 +783,8 @@ export interface TableSchema extends MachineSchema {
     | 'patchColumnPreference'
     | 'setSort'
     | 'toggleSort'
+    | 'setFilter'
+    | 'setPage'
     | 'setSelection'
     | 'selectRow'
     | 'toggleSelectAll'
@@ -773,6 +845,30 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   /** 展开展平后的可见行序列（详情行插在所属数据行之后）。 */
   visibleRows: readonly TableVisibleRow[]
   sort: TableSortDescriptor[]
+  /** 给了 data，表格自己算排序、筛选与分页。 */
+  dataDriven: boolean
+  /** 数据驱动模式下当前页的记录，排过序、筛过，与表体的数据行一一对应；手写结构时为空数组。 */
+  records: readonly TableRecord[]
+  /** 数据驱动模式下筛过之后的总条数，分页按它算页数；手写结构时为可见数据行的条数。 */
+  recordCount: number
+  /** 一行的记录（整份 data 里的，不止当前页）；手写结构时恒为 undefined。 */
+  recordOf: (rowId: string) => TableRecord | undefined
+  /** 某一行某一列格子里显示的文字：列的 format，没有就取字段值转字符串；手写结构时为空串。 */
+  cellText: (rowId: string, columnId: string) => string
+  filterValue: TableFilterValue
+  /** 改写一列的筛选值，空数组即这一列不筛；随之回到第 1 页。 */
+  setFilter: (columnId: string, values: string[]) => void
+  /** 数据驱动模式开了 pagination：表格按页切片，表后铺分页。 */
+  paginated: boolean
+  /** 当前页码：开了分页时已夹到有效范围；否则为 page 的原值，缺省 1。 */
+  page: number
+  /** 每页条数：开了分页时缺省 10；否则为 pageSize 的原值，没给时为 0。 */
+  pageSize: number
+  /** 总页数：开了分页时按筛过的总条数算，至少 1；否则为 1。 */
+  pageCount: number
+  setPage: (page: number) => void
+  /** 解析后的文案：排序钮、筛选钮的名字，空态与在途占位的字。 */
+  translations: TableTranslations
   selection: TableSelection
   /** 全选把手的三态，只按可选行（未禁用）计算。 */
   selectionState: TableSelectionState
@@ -936,6 +1032,12 @@ export interface TableTranslations extends Partial<DragTranslations> {
   columnList: string
   /** 一列的显隐把手的名字。把手自身默认没有内容，名字是它对读屏唯一的自述。 */
   columnVisibility: (columnLabel: string) => string
+  /** 数据驱动模式下列头筛选钮的名字。钮里只有皮肤画的漏斗，名字是它对读屏唯一的自述，菜单也跟着取这个名字。 */
+  filter: (columnLabel: string) => string
+  /** 标准结构里空态占位的字：表体为空且不在加载时露面。 */
+  empty: string
+  /** 标准结构里在途占位的字：表体为空且正在加载时露面，排在加载环之后。 */
+  loading: string
 }
 
 /** 列拖拽的落点：落在哪一列的哪一侧。 */

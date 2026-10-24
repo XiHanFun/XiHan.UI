@@ -1,0 +1,38 @@
+<!-- 数据驱动 | 给 data 与 columns 就是一张会排序、会筛选、会分页的表：列 id 即字段名，排序、筛选与切页都由表格自己算，表后自动铺一组分页 -->
+<div style="width: 100%; max-width: 640px; display: grid; gap: 12px">
+  <!-- 只写 root：表头、表体与空态由元素照标准结构生成，分页生成在 root 之后 -->
+  <xh-table id="table-data-driven" pagination page-size="8">
+    <div data-xh-part="root" aria-label="成员"></div>
+  </xh-table>
+  <span id="table-data-driven-value" data-demo-output></span>
+</div>
+
+<script type="module">
+  const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
+  const levels = ["P5", "P6", "P7", "P8"];
+
+  const table = document.getElementById("table-data-driven");
+  const readout = document.getElementById("table-data-driven-value");
+
+  // 列 id 即字段名：排序按字段值比，给了 filterOptions 的列在列头铺一颗筛选钮
+  table.columns = [
+    { id: "name", label: "姓名", width: "8rem", sortable: true },
+    { id: "dept", label: "部门", sortable: true, filterOptions: depts.map((value) => ({ value })) },
+    { id: "level", label: "职级", width: "6rem", sortable: true, filterOptions: levels.map((value) => ({ value })) },
+    { id: "joined", label: "入职", width: "6rem", sortable: true, format: (value) => `${value} 年` },
+  ];
+
+  table.data = Array.from({ length: 36 }, (_, i) => ({
+    id: `u${i + 1}`,
+    name: `员工 ${i + 1}`,
+    dept: depts[i % depts.length],
+    level: levels[(i * 7) % levels.length],
+    joined: 2016 + ((i * 5) % 9),
+  }));
+
+  const show = (page) => {
+    readout.textContent = `第 ${page} 页`;
+  };
+  table.addEventListener("page-change", (event) => show(event.detail.value));
+  show(1);
+</script>

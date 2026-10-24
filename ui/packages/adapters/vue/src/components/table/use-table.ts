@@ -6,7 +6,7 @@
 // 提供 use table 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { TableApi, TableSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TableApi, TableSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { connectTable, tableMachine } from '@xihan-ui/headless'
@@ -25,21 +25,20 @@ export interface TableContext {
   captionCount: Ref<number>
 }
 
-export function useTable(
-  props: TableSchema['props'],
-  onSortChange?: TableSchema['props']['onSortChange'],
-  onSelectionChange?: TableSchema['props']['onSelectionChange'],
-  onExpandedValueChange?: TableSchema['props']['onExpandedValueChange'],
-  onColumnPreferenceChange?: TableSchema['props']['onColumnPreferenceChange'],
-  onRowMove?: TableSchema['props']['onRowMove'],
-  onAction?: TableSchema['props']['onAction'],
-): TableContext {
+/** 根组件交给机器的回调（把变化发成事件），以及开了 virtual 时现取的桥：它随 Virtualizer 的状态换身份。 */
+export type TableHandlers = Pick<
+  TableSchema['props'],
+  'onSortChange' | 'onFilterValueChange' | 'onPageChange' | 'onSelectionChange' | 'onExpandedValueChange' | 'onColumnPreferenceChange' | 'onRowMove' | 'onAction'
+> & { virtualizer?: () => CollectionVirtualizer | undefined }
+
+export function useTable(props: TableSchema['props'], handlers: TableHandlers): TableContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const captionCount = ref(0)
+  const { virtualizer, ...callbacks } = handlers
   const service = useMachine(
     tableMachine,
-    () => ({ ...props, captioned: captionCount.value > 0, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction }),
+    () => ({ ...props, ...callbacks, ...(virtualizer ? { virtualizer: virtualizer() } : {}), captioned: captionCount.value > 0 }),
     scope,
   )
   const rootRef = ref<HTMLElement | null>(null)

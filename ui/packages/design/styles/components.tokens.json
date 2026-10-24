@@ -44095,6 +44095,7 @@
         "caps-lock-indicator",
         "clear-trigger",
         "close-trigger",
+        "column-header",
         "comment-trigger",
         "condition-delete-trigger",
         "control",
@@ -44196,7 +44197,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -75394,6 +75395,63 @@
       "description": "table 的 root 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-table-filter-fg",
+      "component": "table",
+      "part": [
+        "column-header",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-header、trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-filter-fg-active",
+      "component": "table",
+      "part": [
+        "column-header",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "filtered"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-header、trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-filter-size",
+      "component": "table",
+      "part": [
+        "column-header",
+        "trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_table-trigger-size"
+      ],
+      "visibility": "public",
+      "description": "table 的 column-header、trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-table-font-size",
       "component": "table",
       "part": [
@@ -75723,6 +75781,24 @@
       ],
       "visibility": "public",
       "description": "table 的 root 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-table-pagination-gap",
+      "component": "table",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "table 的 root 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-table-radius",
@@ -76166,9 +76242,12 @@
       "name": "--xh-table-sort-bg-hover",
       "component": "table",
       "part": [
-        "sort-trigger"
+        "column-header",
+        "sort-trigger",
+        "trigger"
       ],
       "property": [
+        "background",
         "background-color"
       ],
       "state": [
@@ -76179,10 +76258,11 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_action-variant-bg-hover"
+        "--xh-_action-variant-bg-hover",
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "table 的 sort-trigger 部件 background-color 覆盖槽。"
+      "description": "table 的 column-header、sort-trigger、trigger 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-table-sort-bg-pressed",
@@ -76727,12 +76807,14 @@
       "component": "table",
       "part": [
         "column-drag-trigger",
+        "column-header",
         "column-visibility-trigger",
         "expand-trigger",
         "row-drag-trigger",
         "row-select-trigger",
         "select-all-trigger",
-        "sort-trigger"
+        "sort-trigger",
+        "trigger"
       ],
       "property": [
         "border-radius"
@@ -76745,17 +76827,19 @@
         "--xh-shape-inset"
       ],
       "visibility": "public",
-      "description": "table 的 column-drag-trigger、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 border-radius 覆盖槽。"
+      "description": "table 的 column-drag-trigger、column-header、column-visibility-trigger、expand-trigger、row-drag-trigger、row-select-trigger、select-all-trigger、sort-trigger、trigger 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-table-trigger-size",
       "component": "table",
       "part": [
+        "column-header",
         "column-visibility-trigger",
         "expand-trigger",
         "row-select-trigger",
         "select-all-trigger",
-        "sort-trigger"
+        "sort-trigger",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size",
@@ -76773,7 +76857,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "table 的 column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
+      "description": "table 的 column-header、column-visibility-trigger、expand-trigger、row-select-trigger、select-all-trigger、sort-trigger、trigger 部件 --xh-icon-size、block-size、inline-size、min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-content-fg",

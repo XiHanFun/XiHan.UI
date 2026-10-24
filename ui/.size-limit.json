@@ -449,9 +449,11 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhTableRoot }",
     "gzip": true,
-    "limit": "38 kB",
+    "limit": "41 kB",
     "ignore": [
-      "vue"
+      "vue",
+      "*/table-extras.js",
+      "*/structure-virtual.js"
     ]
   },
   {
