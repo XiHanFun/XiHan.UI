@@ -6,12 +6,23 @@
 // 提供 tree select 相关实现。
 
 import type { ActionFn, PositionResult } from '@xihan-ui/core'
+import type { BranchLoadPort } from '../shared/lazy-branch'
 import type { TreeVisibleNode } from '../tree'
-import type { TreeSelectBranchLoadSnapshot, TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, TreeSelectSchema } from './tree-select.types'
+import type { TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, TreeSelectSchema } from './tree-select.types'
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import {
+  abortBranchLoads,
+  beginBranchLoad as beginLazyBranchLoad,
+  cancelBranchLoad as cancelLazyBranchLoad,
+  cancelBranchLoads as cancelLazyBranchLoads,
+  findLazyNode,
+  isLazyBranch,
+  resolveLazyCollection,
+  syncBranchLoads as syncLazyBranchLoads,
+} from '../shared/lazy-branch'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -32,7 +43,7 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 
 /** 节点是懒分支的唯一判据：明确有孩子但孩子尚未在 collection 里。 */
 export function isTreeSelectLazyBranch(node: TreeSelectNode): boolean {
-  return node.hasChildren === true && node.children === undefined
+  return isLazyBranch(node)
 }
 
 export function findTreeSelectNode(
@@ -40,17 +51,7 @@ export function findTreeSelectNode(
   value: string,
   loadedChildren: Readonly<Record<string, TreeSelectNode[]>> = {},
 ): TreeSelectNode | null {
-  for (const node of nodes) {
-    if (node.value === value)
-      return node
-    const children = node.children ?? loadedChildren[node.value]
-    if (children) {
-      const found = findTreeSelectNode(children, value, loadedChildren)
-      if (found)
-        return found
-    }
-  }
-  return null
+  return findLazyNode(nodes, value, loadedChildren)
 }
 
 /**
@@ -61,15 +62,7 @@ export function resolveTreeSelectCollection(
   collection: readonly TreeSelectNode[],
   loadedChildren: Readonly<Record<string, TreeSelectNode[]>>,
 ): TreeSelectNode[] {
-  return collection.map((node) => {
-    if (node.children === undefined && !isTreeSelectLazyBranch(node))
-      return node
-    const source = node.children ?? loadedChildren[node.value] ?? []
-    const children = resolveTreeSelectCollection(source, loadedChildren)
-    if (node.children && children.length === node.children.length && children.every((child, index) => child === node.children![index]))
-      return node
-    return { ...node, children }
-  })
+  return resolveLazyCollection(collection, loadedChildren)
 }
 
 type TreeSelectActionParams = Parameters<ActionFn<TreeSelectSchema>>[0]
@@ -93,101 +86,39 @@ function treeSelectView(
     : { nodes, expanded: context.get('expandedValue'), searching: false }
 }
 
-function setBranchLoad(
-  context: TreeSelectActionParams['context'],
-  value: string,
-  snapshot: TreeSelectBranchLoadSnapshot,
-): void {
-  context.set('branchLoads', { ...context.get('branchLoads'), [value]: snapshot })
+/** 懒分支取数接到本组件的 context、prop 与 refs 上；取数本身是与树共用的一套。 */
+function branchLoadPort(params: TreeSelectActionParams): BranchLoadPort<TreeSelectNode> {
+  const { context, prop, refs, scope } = params
+  return {
+    component: 'TreeSelect',
+    collection: () => prop('collection') ?? [],
+    loadedChildren: () => context.get('loadedChildren'),
+    setLoadedChildren: next => context.set('loadedChildren', next),
+    loads: () => context.get('branchLoads'),
+    setLoads: next => context.set('branchLoads', next),
+    loadChildren: () => prop('loadChildren'),
+    onStart: details => prop('onBranchLoadStart')?.(details),
+    onLoad: details => prop('onBranchLoad')?.(details),
+    onError: details => prop('onBranchLoadError')?.(details),
+    runtime: {
+      controllers: refs.get('branchLoadControllers'),
+      sequence: refs.get('branchLoadSequence'),
+      owners: refs.get('branchLoadOwners'),
+    },
+    createAbortController: () => new (scope.getWin().AbortController)(),
+  }
 }
 
 function beginBranchLoad(params: TreeSelectActionParams, value: string, force: boolean): void {
-  const { context, prop, refs, scope } = params
-  const loadChildren = prop('loadChildren')
-  const node = findTreeSelectNode(prop('collection') ?? [], value, context.get('loadedChildren'))
-  if (!node || !isTreeSelectLazyBranch(node))
-    return
-  if (value in context.get('loadedChildren'))
-    return
-  if (!force && context.get('branchLoads')[value]?.status === 'error')
-    return
-  if (!loadChildren) {
-    const error = new Error(`TreeSelect lazy branch "${value}" requires loadChildren`)
-    refs.get('branchLoadOwners').set(value, node)
-    setBranchLoad(context, value, { status: 'error', error })
-    prop('onBranchLoadError')?.({ value, node, error })
-    return
-  }
-
-  const controllers = refs.get('branchLoadControllers')
-  const previous = controllers.get(value)
-  if (previous && !force)
-    return
-  previous?.controller.abort()
-
-  const token = ++refs.get('branchLoadSequence').n
-  const controller = new (scope.getWin().AbortController)()
-  controllers.set(value, { controller, token, node })
-  refs.get('branchLoadOwners').set(value, node)
-  setBranchLoad(context, value, { status: 'loading' })
-  prop('onBranchLoadStart')?.({ value, node, reason: force ? 'retry' : 'expand' })
-
-  const current = (): boolean => {
-    const entry = controllers.get(value)
-    return entry?.controller === controller
-      && entry.token === token
-      && findTreeSelectNode(prop('collection') ?? [], value, context.get('loadedChildren')) === node
-      && isTreeSelectLazyBranch(node)
-  }
-
-  Promise.resolve()
-    .then(() => loadChildren({ node, signal: controller.signal }))
-    .then((children) => {
-      if (!current() || controller.signal.aborted)
-        return
-      const resolved = children ? [...children] : []
-      controllers.delete(value)
-      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: resolved })
-      setBranchLoad(context, value, { status: 'loaded', empty: resolved.length === 0 })
-      prop('onBranchLoad')?.({ value, node, children: resolved })
-    }, (error: unknown) => {
-      if (!current() || controller.signal.aborted)
-        return
-      controllers.delete(value)
-      setBranchLoad(context, value, { status: 'error', error })
-      prop('onBranchLoadError')?.({ value, node, error })
-    })
-}
-
-function lazyBranches(
-  nodes: readonly TreeSelectNode[],
-  loadedChildren: Readonly<Record<string, TreeSelectNode[]>>,
-  values = new Map<string, TreeSelectNode>(),
-): Map<string, TreeSelectNode> {
-  for (const node of nodes) {
-    if (isTreeSelectLazyBranch(node))
-      values.set(node.value, node)
-    const children = node.children ?? loadedChildren[node.value]
-    if (children)
-      lazyBranches(children, loadedChildren, values)
-  }
-  return values
+  beginLazyBranchLoad(branchLoadPort(params), value, force)
 }
 
 function cancelBranchLoad(params: TreeSelectActionParams, value: string): void {
-  const entry = params.refs.get('branchLoadControllers').get(value)
-  if (!entry)
-    return
-  entry.controller.abort()
-  params.refs.get('branchLoadControllers').delete(value)
-  setBranchLoad(params.context, value, { status: 'idle' })
+  cancelLazyBranchLoad(branchLoadPort(params), value)
 }
 
 function cancelBranchLoads(params: TreeSelectActionParams, except: ReadonlySet<string> = new Set()): void {
-  for (const value of params.refs.get('branchLoadControllers').keys()) {
-    if (!except.has(value))
-      cancelBranchLoad(params, value)
-  }
+  cancelLazyBranchLoads(branchLoadPort(params), except)
 }
 
 /**
@@ -431,34 +362,9 @@ export const treeSelectMachine = createMachine({
       },
 
       syncBranchLoads: (params) => {
-        const { context, prop, refs } = params
-        const source = prop('collection') ?? []
-        const owners = refs.get('branchLoadOwners')
-        const currentChildren = context.get('loadedChildren')
-        const initialLive = lazyBranches(source, currentChildren)
-        const children = Object.fromEntries(
-          Object.entries(currentChildren).filter(([value]) => initialLive.get(value) === owners.get(value)),
-        )
-        const live = lazyBranches(source, children)
-        const controllers = refs.get('branchLoadControllers')
-        for (const [value, entry] of controllers) {
-          if (live.get(value) !== entry.node) {
-            entry.controller.abort()
-            controllers.delete(value)
-          }
-        }
-        const keep = (value: string): boolean => live.get(value) === owners.get(value)
-        const loads = Object.fromEntries(Object.entries(context.get('branchLoads')).filter(([value]) => keep(value)))
-        if (Object.keys(loads).length !== Object.keys(context.get('branchLoads')).length)
-          context.set('branchLoads', loads)
-        if (Object.keys(children).length !== Object.keys(currentChildren).length)
-          context.set('loadedChildren', children)
-        for (const value of owners.keys()) {
-          if (!keep(value))
-            owners.delete(value)
-        }
+        syncLazyBranchLoads(branchLoadPort(params))
         if (params.state.get() === 'open') {
-          for (const value of context.get('expandedValue'))
+          for (const value of params.context.get('expandedValue'))
             beginBranchLoad(params, value, false)
         }
       },
@@ -717,11 +623,7 @@ export const treeSelectMachine = createMachine({
           for (const value of params.context.get('expandedValue'))
             beginBranchLoad(params, value, false)
         }))
-        return () => {
-          for (const { controller } of params.refs.get('branchLoadControllers').values())
-            controller.abort()
-          params.refs.get('branchLoadControllers').clear()
-        }
+        return () => abortBranchLoads(branchLoadPort(params).runtime)
       },
 
       /**

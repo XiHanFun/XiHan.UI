@@ -28,8 +28,8 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_
 import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
-import { PART_ATTR } from '../dom/parts'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
@@ -252,8 +252,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   private readonly ownsValueText = new WeakMap<HTMLElement, boolean>()
   /** 每枚标签里由元素补出来的那层 label。 */
   private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
-  private readonly ownsFeedbackText = new WeakMap<HTMLElement, boolean>()
-  private readonly generatedFeedback = new WeakSet<HTMLElement>()
+  private readonly feedback = new FeedbackNodes()
   private renderedNodeCount = -1
 
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
@@ -543,39 +542,6 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     el.textContent = text
   }
 
-  private fillFeedbackText(el: HTMLElement, text: string): void {
-    let owned = this.ownsFeedbackText.get(el)
-    if (owned === undefined) {
-      owned = (el.textContent ?? '').trim() === ''
-      this.ownsFeedbackText.set(el, owned)
-    }
-    if (owned && el.textContent !== text)
-      el.textContent = text
-  }
-
-  /** 作者部件优先；缺席时在指定容器末尾补一个默认反馈节点。 */
-  private ensureFeedback(parent: HTMLElement | null, name: string, tag = 'div'): HTMLElement | null {
-    if (!parent)
-      return null
-    const candidates = [...parent.querySelectorAll<HTMLElement>(`[${PART_ATTR}="${name}"]`)]
-      .filter(el => !name.startsWith('branch-') || el.closest(BRANCH_SELECTOR) === parent)
-    const authored = candidates.find(el => !this.generatedFeedback.has(el))
-    if (authored) {
-      for (const generated of candidates) {
-        if (this.generatedFeedback.has(generated))
-          generated.remove()
-      }
-      return authored
-    }
-    if (candidates[0])
-      return candidates[0]
-    const el = this.ownerDocument.createElement(tag)
-    el.setAttribute(PART_ATTR, name)
-    this.generatedFeedback.add(el)
-    parent.append(el)
-    return el
-  }
-
   protected wire(): void {
     const nodes = [...this.getParts('branch'), ...this.getParts('item')]
     if (nodes.length !== this.renderedNodeCount) {
@@ -617,7 +583,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
-        this.fillFeedbackText(label, api.overflowText)
+        this.feedback.fillText(label, api.overflowText)
       }
     }
     put('indicator', api.getIndicatorProps() as Record<string, unknown>)
@@ -628,16 +594,16 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     put('input', api.getInputProps() as Record<string, unknown>)
     put('tree', api.getTreeProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
-    const empty = this.ensureFeedback(this.getPart('content'), 'empty')
+    const empty = this.feedback.ensure(this.getPart('content'), 'empty')
     if (empty) {
       this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
       // 搜索视图里的空是「没有匹配」，与整棵树没有节点分开说
-      this.fillFeedbackText(empty, api.searching ? api.translations.noMatch : api.translations.empty)
+      this.feedback.fillText(empty, api.searching ? api.translations.noMatch : api.translations.empty)
     }
-    const loading = this.ensureFeedback(this.getPart('content'), 'loading')
+    const loading = this.feedback.ensure(this.getPart('content'), 'loading')
     if (loading) {
       this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
-      this.fillFeedbackText(loading, api.translations.loading)
+      this.feedback.fillText(loading, api.translations.loading)
     }
     // 表单出口可缺省；必填且没选值时补一份空值占位，原生 required 才拦得住空表单
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
@@ -681,11 +647,11 @@ export class XhTreeSelectElement extends XhPortalHostElement {
         ['branch-empty', 'div', api.getBranchEmptyProps(node), api.translations.branchEmpty],
       ] as const
       for (const [name, tag, props, text] of feedback) {
-        const el = this.ensureFeedback(branch, name, tag)
+        const el = this.feedback.ensure(branch, name, tag, BRANCH_SELECTOR)
         if (!el)
           continue
         this.spreader.spread(el, props as Record<string, unknown>)
-        this.fillFeedbackText(el, text)
+        this.feedback.fillText(el, text)
       }
     }
 
