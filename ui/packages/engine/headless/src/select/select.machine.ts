@@ -6,8 +6,8 @@
 // 提供 select 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
-import type { SelectFocusIntent, SelectSchema } from './select.types'
-import { createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
+import type { SelectFocusIntent, SelectNode, SelectSchema } from './select.types'
+import { createTypeahead, focusFirst, getTabbables, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, removeLinks, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
@@ -33,6 +33,24 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 // 受控缺席时原样透传 undefined，cell 据此判非受控
 function normalizeInput(next: string[] | undefined, multiple: boolean): string[] | undefined {
   return next === undefined ? undefined : normalizeSelection(next, multiple)
+}
+
+const VIRTUAL_NODE_ACCESS = { value: (item: SelectNode) => item.value, disabled: (item: SelectNode) => !!item.disabled }
+
+/**
+ * 接了虚拟化桥时按完整 collection 挑锚点，返回下标；-1 表示本轮不落锚点。
+ * repick 是锚点条目离场后的重挑：没有选中项可停也要落到首个可停留条目，否则没有条目认领 tabindex=0
+ */
+function virtualAnchorIndex(collection: readonly SelectNode[], intent: SelectFocusIntent, selection: readonly string[], loop: boolean, repick: boolean): number {
+  if (intent === 'selected') {
+    const index = collection.findIndex(item => selection.includes(item.value) && !item.disabled)
+    if (index >= 0 || (selection.length === 0 && !repick))
+      return index
+    return virtualCollectionTarget(collection, null, 'first', VIRTUAL_NODE_ACCESS)?.index ?? -1
+  }
+  const selected = collection.find(item => selection.includes(item.value))?.value ?? null
+  const from = intent === 'first' || intent === 'last' ? null : selected
+  return virtualCollectionTarget(collection, from, intent, { ...VIRTUAL_NODE_ACCESS, loop })?.index ?? -1
 }
 
 export const selectMachine = createMachine({
@@ -87,6 +105,7 @@ export const selectMachine = createMachine({
     track([context.dep('value')], () => action(['syncValueText', 'releaseWhenInert']))
     track([() => prop('multiple')], () => action(['normalizeValue']))
     track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
+    track([() => prop('virtualizer')], () => action(['adoptVirtualizer']))
   },
   // 只改值不动开合，收起态连打与外部 setValue 两个状态都认；只读时值改不动
   on: {
@@ -319,27 +338,7 @@ export const selectMachine = createMachine({
         }
         const pick = (): void => {
           if (collection && virtualizer) {
-            const intent = context.get('focusIntent')
-            const selection = context.get('value')
-            let index = -1
-            if (intent === 'selected') {
-              index = collection.findIndex(item => selection.includes(item.value) && !item.disabled)
-              if (index < 0 && (selection.length > 0 || repick)) {
-                index = virtualCollectionTarget(collection, null, 'first', {
-                  value: item => item.value,
-                  disabled: item => !!item.disabled,
-                })?.index ?? -1
-              }
-            }
-            else {
-              const selected = collection.find(item => selection.includes(item.value))?.value ?? null
-              const from = intent === 'first' || intent === 'last' ? null : selected
-              index = virtualCollectionTarget(collection, from, intent, {
-                value: item => item.value,
-                disabled: item => !!item.disabled,
-                loop: prop('loop') ?? true,
-              })?.index ?? -1
-            }
+            const index = virtualAnchorIndex(collection, context.get('focusIntent'), context.get('value'), prop('loop') ?? true, repick)
             const item = index >= 0 ? collection[index] : undefined
             context.set('highlightedValue', item?.value ?? null)
             if (item)
@@ -378,6 +377,32 @@ export const selectMachine = createMachine({
         flush(() => {
           if (state.get() === 'open' && context.get('highlightedValue') == null)
             pick()
+        })
+      },
+      // 虚拟化的桥晚到（标准结构的那一块按需加载，或作者的 Virtualizer 晚一拍挂上）而浮层已经开着：
+      // 展开那一刻按 DOM 挑锚点、焦点域落焦都扑了空——列表还不在，焦点域重试几帧就收手了。
+      // 桥一到就按完整 collection 补挑一次，由桥把目标条目滚进窗口交出焦点；本轮不该有锚点
+      // （指针打开且无选中值）时焦点交给认领着 Tab 位的列表本体。焦点已经停在条目上就不抢
+      adoptVirtualizer: ({ prop, refs, context, state, scope, flush }) => {
+        flush(() => {
+          const collection = prop('collection')
+          const virtualizer = prop('virtualizer')
+          const content = refs.get('getContentEl')()
+          if (state.get() !== 'open' || !collection || !virtualizer || !content)
+            return
+          const active = scope.getActiveElement()
+          const inside = !!active && content.contains(active)
+          if (inside && context.get('highlightedValue') != null)
+            return
+          const index = virtualAnchorIndex(collection, context.get('focusIntent'), context.get('value'), prop('loop') ?? true, false)
+          const item = index >= 0 ? collection[index] : undefined
+          if (item) {
+            context.set('highlightedValue', item.value)
+            virtualizer.focusIndex(index, { align: 'auto', selector: itemQuerySelector(selectItemQuery) })
+            return
+          }
+          if (!inside)
+            focusFirst(removeLinks(getTabbables(content)))
         })
       },
       clearHighlightedValue: ({ context }) => context.set('highlightedValue', null),

@@ -9,8 +9,9 @@ import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement,
 import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
+import type { SelectVirtualBinding } from '../runtime/select-virtual'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure } from '@xihan-ui/headless'
+import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
@@ -23,6 +24,9 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+
+/** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
+const SELECT_VIRTUAL_ESTIMATE = 36
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : Number(v)) }
 
 /**
@@ -47,6 +51,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @customElement xh-select
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
+ * @attr {boolean} virtual - 生成结构时开虚拟化：浮层里只铺滚到的那一屏条目，虚拟化那一块按需加载；手写部件时不使用它，照旧自己套 xh-virtualizer
+ * @attr {number} estimate-size - 虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正
  * @attr {string} empty - 空态文字：生成结构时写进 empty 部件，没写时取 translations.empty；手写部件时不使用它
  * @attr {string} value - 受控选中值；未提供该属性即非受控。多选集合通过 property 设置，属性只能传入单值
  * @attr {string} default-value - 非受控初始选中值。多选集合通过 property 设置，属性只能传入单值
@@ -102,6 +108,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart item-suffix - 条目行尾的作者内容（计数、徽标）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
  * @csspart hidden-select - 表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开启原生 multiple），省略该节点即不参与表单
+ * @csspart virtual-viewport - 开了 virtual 时生成：Virtualizer 的视口（data-scope="virtualizer"），浮层里由它来滚，列表在它里面
+ * @csspart virtual-content - 开了 virtual 时生成：Virtualizer 撑出总长的内容层，在列表里面
+ * @csspart virtual-item - 开了 virtual 时生成：窗口里每条的外壳，壳里是选择器自己的条目
  */
 export class XhSelectElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -111,7 +120,8 @@ export class XhSelectElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: selectAnatomy,
     meta: selectMeta,
-    delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }],
+    // virtual- 前缀的三个作者名接的是 virtualizer 的视口、内容层与条目外壳（开了 virtual 才由结构生成）
+    delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }, VIRTUAL_STRUCTURE_DELEGATE],
   }
 
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
@@ -122,6 +132,7 @@ export class XhSelectElement extends XhPortalHostElement {
           label: host.label,
           clearable: host.clearable,
           empty: host.empty,
+          virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined,
           slotted: (name, key) => host.slotted(name, key),
         })
       : undefined,
@@ -133,6 +144,8 @@ export class XhSelectElement extends XhPortalHostElement {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
     virtualizer: { attribute: false },
+    virtual: { converter: BOOLEAN_CONVERTER },
+    estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
     lazyMount: { converter: BOOLEAN_CONVERTER, attribute: 'lazy-mount' },
     label: { converter: STRING_CONVERTER },
     clearable: { converter: BOOLEAN_CONVERTER },
@@ -164,6 +177,8 @@ export class XhSelectElement extends XhPortalHostElement {
   // 属性只递得进单值，多选集合走 property
   declare collection?: SelectNode[]
   declare virtualizer?: CollectionVirtualizer
+  declare virtual?: boolean
+  declare estimateSize?: number
   declare lazyMount?: boolean
   declare label?: string
   declare clearable?: boolean
@@ -238,10 +253,25 @@ export class XhSelectElement extends XhPortalHostElement {
     { scope: this.selectScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  /** 列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档 */
+  /**
+   * 标准结构开虚拟化时按需加载进来的绑定：跑 Virtualizer、接视口 / 内容层 / 条目外壳。没开或还没到时为 null。
+   * 只按类型引用：没开 virtual 的选择器不为 Virtualizer 的内核付体积
+   */
+  private virtualBinding: SelectVirtualBinding | null = null
+  private virtualLoading = false
+
+  /** 交给机器的桥：开了 virtual 取绑定的，没开取作者给的。 */
+  private currentVirtualizer(): CollectionVirtualizer | undefined {
+    return this.virtual ? this.virtualBinding?.bridge : this.virtualizer
+  }
+
+  /**
+   * 列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档。
+   * 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：条子跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
+   */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
-    scrollable: () => this.getPart('list'),
+    scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'),
     props: () => ({ size: 'sm' }),
   })
 
@@ -269,7 +299,7 @@ export class XhSelectElement extends XhPortalHostElement {
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
       collection: this.collection,
-      virtualizer: this.virtualizer,
+      virtualizer: this.currentVirtualizer(),
       lazyMount: this.lazyMount,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
@@ -460,7 +490,26 @@ export class XhSelectElement extends XhPortalHostElement {
     return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).overflowText : ''
   }
 
+  /** 开了 virtual 才加载绑定；到了就挂上 Virtualizer 的状态机、请元素重渲一轮，结构随之铺出窗口。 */
+  private ensureVirtualBinding(): void {
+    if (!this.virtual || this.virtualBinding || this.virtualLoading)
+      return
+    this.virtualLoading = true
+    void import('../runtime/select-virtual').then(({ SelectVirtualBinding }) => {
+      this.virtualBinding = new SelectVirtualBinding({
+        host: this,
+        spreader: this.spreader,
+        count: () => this.collection?.length ?? 0,
+        estimateSize: () => this.estimateSize ?? SELECT_VIRTUAL_ESTIMATE,
+        getPart: name => this.getPart(name),
+        getParts: name => this.getParts(name),
+      })
+      this.requestUpdate()
+    })
+  }
+
   protected wire(): void {
+    this.ensureVirtualBinding()
     const api = connectSelect(this.ctrl.service, wcNormalize)
     // 新克隆进来的条目由部件观察器补一轮 wire 接上属性
     this.lazyList.sync(this.getPart('list'), api.isContentMounted())
@@ -578,6 +627,15 @@ export class XhSelectElement extends XhPortalHostElement {
     this.setPartHidden(content, !exit.visible)
     this.bars.wire()
     this.portal.sync(exit.visible)
+    // 虚拟化的视口、内容层与条目外壳排在最后接：外壳里的条目要先接上本元素的属性与集合条目的样式，
+    // 量出来才是排好版的高度；先量会量到没上样式的那一版，样式一到尺寸再变，正赶上尺寸观察的投递就成了循环
+    const binding = this.virtualBinding
+    if (binding) {
+      // 窗口外的条目外壳收起：Light DOM 常驻，作者层的 display 会盖过 [hidden]，用内联 display 收
+      for (const el of this.getParts('virtual-item'))
+        this.setPartHidden(el, !binding.inWindow(el))
+      binding.wire()
+    }
 
     // 首次键盘展开时，旧帧的 content 仍带 inert，connect 当场 focus 会被浏览器拒绝。
     // 开态属性与 Portal 都落定后，仅在焦点尚未进入浮层时补到已高亮项；正常行间移动不抢焦点。

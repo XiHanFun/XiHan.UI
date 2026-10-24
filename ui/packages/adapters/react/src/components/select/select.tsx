@@ -6,11 +6,12 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema, StructureVirtualItem } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import type { SelectVirtualWindow } from './use-select'
 import { selectStructure } from '@xihan-ui/headless'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -49,6 +50,13 @@ export interface XhSelectRootProps extends RootElementProps {
   ariaLabel?: string
   collection?: SelectNode[]
   virtualizer?: CollectionVirtualizer
+  /**
+   * 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。虚拟化那一块异步加载，没开的不为它付体积；
+   * 手写 children 时不使用它，照旧自己套 Virtualizer 再把 collectionVirtualizer 交给 virtualizer。
+   */
+  virtual?: boolean
+  /** 虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正。 */
+  estimateSize?: number
   /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
   lazyMount?: boolean
   /** 标题文字。提供后不必再写 label 部件。 */
@@ -112,10 +120,44 @@ function SelectHiddenSelect(): ReactNode {
   )
 }
 
+/** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
+const SELECT_VIRTUAL_ESTIMATE = 36
+
+type SelectVirtualModule = typeof import('./select-virtual')
+
+/**
+ * 虚拟化部件单独成块：开了 virtual 才加载，Virtualizer 的内核不进选择器的首包。
+ * 不用 React.lazy：内容层与条目外壳也是这一块里的，各自首次渲染都会让外层 Suspense 重新挂起，
+ * 挂起时 React 藏起已显示的子树、跑布局副作用的清理，视口来回撤桥。这里手动加载，到了再换上真部件
+ */
+function useSelectVirtualModule(virtual: boolean | undefined): SelectVirtualModule | null {
+  const [module, setModule] = useState<SelectVirtualModule | null>(null)
+  useEffect(() => {
+    if (!virtual || module)
+      return
+    let alive = true
+    void import('./select-virtual').then((loaded) => {
+      if (alive)
+        setModule(loaded)
+    })
+    return () => {
+      alive = false
+    }
+  }, [virtual, module])
+  return module
+}
+
+/** 这一块到之前三个委派部件先空着：列表随视口一起晚一拍出现。 */
+function SelectVirtualPending(): ReactNode {
+  return null
+}
+
 export function XhSelectRoot({
   ariaLabel,
   collection,
   virtualizer,
+  virtual,
+  estimateSize,
   lazyMount,
   label,
   empty,
@@ -152,10 +194,14 @@ export function XhSelectRoot({
   children,
   ...rest
 }: XhSelectRootProps): ReactNode {
+  // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，它把桥与窗口回报到这里。
+  // 视口挂上来之前不带桥、列表里也没有条目；挂上来之后桥交给机器、条目按窗口铺
+  const [virtualWindow, setVirtualWindow] = useState<SelectVirtualWindow | null>(null)
+  const virtualModule = useSelectVirtualModule(virtual)
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
     ariaLabel,
     collection,
-    virtualizer,
+    virtualizer: virtual ? virtualWindow?.bridge : virtualizer,
     lazyMount,
     value,
     defaultValue,
@@ -205,7 +251,9 @@ export function XhSelectRoot({
           })}
         </>
       )
-    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix })
+    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix, virtualItems: virtual ? (virtualWindow?.items ?? []) : undefined, virtualModule })
+  if (virtual)
+    ctx.virtual = { count: collection?.length ?? 0, estimateSize: estimateSize ?? SELECT_VIRTUAL_ESTIMATE, publish: setVirtualWindow }
 
   return (
     <SelectProvider value={ctx}>
@@ -359,7 +407,8 @@ export function XhSelectPositioner({ children, container, ...rest }: XhSelectPos
   const ctx = useSelectContext()
   // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
   // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
-  const bars = useScrollbars({ scrollable: () => ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
+  // 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：自绘条跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
+  const bars = useScrollbars({ scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
@@ -588,6 +637,9 @@ const SELECT_PARTS = {
   'retry-trigger': XhSelectRetryTrigger,
   'item-suffix': XhSelectItemSuffix,
   'item-indicator': XhSelectItemIndicator,
+  'virtualizer/virtual-viewport': SelectVirtualPending,
+  'virtualizer/virtual-content': SelectVirtualPending,
+  'virtualizer/virtual-item': SelectVirtualPending,
 }
 
 interface SelectStructureContent {
@@ -597,6 +649,9 @@ interface SelectStructureContent {
   renderItem?: (node: SelectNodeMeta) => ReactNode
   renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
   renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
+  virtualItems?: readonly StructureVirtualItem[]
+  /** 虚拟化那一块到了就换上真部件。 */
+  virtualModule?: SelectVirtualModule | null
 }
 
 /**
@@ -616,9 +671,18 @@ function renderDefaultStructure(api: SelectApi, content: SelectStructureContent)
     label: typeof label === 'string' ? label : undefined,
     empty: typeof empty === 'string' ? empty : undefined,
     clearable: content.clearable,
+    virtualItems: content.virtualItems,
     slotted: name => slotted[name] === true,
   })
-  return renderStructure(nodes, SELECT_PARTS, (node) => {
+  const parts = content.virtualModule
+    ? {
+        ...SELECT_PARTS,
+        'virtualizer/virtual-viewport': content.virtualModule.SelectVirtualViewport,
+        'virtualizer/virtual-content': content.virtualModule.SelectVirtualContent,
+        'virtualizer/virtual-item': content.virtualModule.SelectVirtualItem,
+      }
+    : SELECT_PARTS
+  return renderStructure(nodes, parts, (node) => {
     const meta = node.data as SelectNodeMeta
     switch (node.slot?.name) {
       case 'label':

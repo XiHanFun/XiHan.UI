@@ -8113,6 +8113,7 @@
       "StructureSlotted",
       "StructureTag",
       "StructureTakeoverPosition",
+      "StructureVirtualItem",
       "SwitchApi",
       "SwitchCheckedChangeDetails",
       "SwitchSchema",
@@ -8456,7 +8457,9 @@
       "VIRTUALIZER_EMPTY_SNAPSHOT",
       "VIRTUALIZER_INDEX_ATTRIBUTE",
       "VIRTUALIZER_SCROLL_IDLE_DELAY",
+      "VIRTUAL_STRUCTURE_DELEGATE",
       "VISUALLY_HIDDEN_STYLE",
+      "VirtualStructurePart",
       "VirtualizerAlign",
       "VirtualizerAnchor",
       "VirtualizerApi",
@@ -10008,6 +10011,7 @@
       "updateFilterNode",
       "validateFiles",
       "valueToPercent",
+      "virtualListStructure",
       "virtualizerAnatomy",
       "virtualizerContentStyle",
       "virtualizerItemStyle",
@@ -23848,6 +23852,7 @@
         "disabled",
         "empty",
         "error",
+        "estimate-size",
         "invalid",
         "label",
         "lazy-mount",
@@ -23865,7 +23870,8 @@
         "size",
         "tone",
         "value",
-        "variant"
+        "variant",
+        "virtual"
       ],
       "events": [
         "clear",

@@ -35,7 +35,8 @@
 
 - 与[表单字段](./field)组合。
 - 不参与表单时使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
-- 长选项列表把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`。
+- 长选项列表不写结构时只写 `virtual`：浮层里只铺滚到的那一屏条目，方向键、Home / End 与按字跳转仍跨完整 collection，自绘滚动条跟着视口走；条目按 `estimateSize`（缺省 36）起算、渲出后按实测校正，带副文本的两行条目也对得齐。虚拟化那一块按需加载，没开的选择器不为 Virtualizer 的内核付体积；挂载后立刻展开、或 `lazyMount` 下第一次展开时它还在路上，到了之后焦点照样补进列表。
+- 手写结构时照旧把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`；`virtual` 只管标准结构。
 
 ## 最佳实践
 

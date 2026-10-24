@@ -1160,6 +1160,54 @@ describe('selectSelect 展开时的焦点', () => {
   })
 })
 
+describe('selectSelect 虚拟化的桥晚到', () => {
+  const collection = ITEMS.map(item => ({ value: item.value, label: item.text }))
+  const bridge = (focusIndex: (index: number) => void) => ({ count: collection.length, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null })
+
+  it('浮层开着、焦点掉在外面：桥一到就按完整 collection 补挑锚点，由桥交出焦点', async () => {
+    const focusIndex = vi.fn()
+    const h = mount({ collection, defaultValue: 'cherry' })
+    h.send({ type: 'OPEN' })
+    await frames()
+    // 按需加载那一块晚到时列表还不在，展开那一刻的落焦扑空，焦点留在 trigger 上
+    h.trigger.focus()
+    h.setProps({ virtualizer: bridge(focusIndex) })
+    await tick()
+    expect(h.highlighted()).toBe('cherry')
+    expect(focusIndex).toHaveBeenLastCalledWith(2, expect.objectContaining({ align: 'auto' }))
+  })
+
+  it('指针打开且无选中值：不落锚点，焦点交给认领着 Tab 位的列表本体', async () => {
+    const focusIndex = vi.fn()
+    const h = mount({ collection })
+    h.send({ type: 'OPEN' })
+    await frames()
+    h.trigger.focus()
+    h.setProps({ virtualizer: bridge(focusIndex) })
+    await tick()
+    expect(h.highlighted() ?? null).toBeNull()
+    expect(focusIndex).not.toHaveBeenCalled()
+    expect(document.activeElement).toBe(h.list)
+  })
+
+  it('焦点已停在条目上、或浮层收着：桥到了也不抢焦点', async () => {
+    const focusIndex = vi.fn()
+    const h = mount({ collection, defaultValue: 'banana' })
+    h.setProps({ virtualizer: bridge(focusIndex) })
+    await tick()
+    expect(focusIndex).not.toHaveBeenCalled()
+
+    h.setProps({ virtualizer: undefined })
+    h.send({ type: 'OPEN' })
+    await frames()
+    expect(document.activeElement).toBe(h.item('banana'))
+    h.setProps({ virtualizer: bridge(focusIndex) })
+    await tick()
+    expect(focusIndex).not.toHaveBeenCalled()
+    expect(document.activeElement).toBe(h.item('banana'))
+  })
+})
+
 describe('selectSelect 标签删除钮：就是 tag 的 close-trigger', () => {
   /** 把删除钮的 props 摊到一颗真按钮上，与适配器渲出来的节点同形。 */
   function deleteButton(h: Harness, value: string): HTMLButtonElement {

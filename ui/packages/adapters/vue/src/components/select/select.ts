@@ -6,10 +6,11 @@
 // 提供 select 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { SelectVirtualSlot } from './use-select'
 import { selectStructure } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
@@ -47,6 +48,12 @@ const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
+const SELECT_VIRTUAL_ESTIMATE = 36
+
+/** 虚拟化部件单独成块：开了 virtual 才加载，Virtualizer 的内核不进选择器的首包。 */
+const loadVirtual = (): Promise<typeof import('./select-virtual')> => import('./select-virtual')
+
 export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
@@ -55,6 +62,13 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     ariaLabel: { type: String },
     collection: { type: Array as PropType<SelectNode[]> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
+    /**
+     * 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。挂载时定下，之后改它不生效；
+     * 手写部件时不使用它，照旧自己套 Virtualizer 再把 collectionVirtualizer 交给 virtualizer。
+     */
+    virtual: Boolean,
+    /** 虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正。 */
+    estimateSize: { type: Number },
     /** 列表内容第一次展开时才挂载；打开前的选中文字与收起态连打按 collection 算。 */
     lazyMount: { type: Boolean, default: undefined },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
@@ -120,14 +134,24 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), { onClear: () => emit('clear'), onRetry: () => emit('retry') }) as SelectProps, notifyValue, notifyOpen)
+    // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，这里只留一个空位等它登记。
+    // 视口挂上来之前不带桥、列表里也没有条目；挂上来之后桥交给机器、条目按窗口铺
+    const virtual: SelectVirtualSlot | undefined = props.virtual
+      ? { count: () => props.collection?.length ?? 0, estimateSize: () => props.estimateSize ?? SELECT_VIRTUAL_ESTIMATE, view: shallowRef(null) }
+      : undefined
+    const handlers: Record<string, unknown> = { onClear: () => emit('clear'), onRetry: () => emit('retry') }
+    // 桥随 Virtualizer 的状态换身份，用取值器现取，机器每次读 prop 都拿到当下这一份
+    if (virtual)
+      Object.defineProperty(handlers, 'virtualizer', { enumerable: true, get: () => virtual.view.value?.api.value.collectionVirtualizer })
+    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), handlers) as SelectProps, notifyValue, notifyOpen)
+    ctx.virtual = virtual
     provideSelect(ctx)
 
     return () => {
       const api = ctx.api.value
       const rootProps = api.getRootProps() as Record<string, unknown>
       if (!slots.default)
-        return h('div', rootProps, renderDefaultStructure(api, { label: props.label, empty: props.empty, clearable: props.clearable }, slots))
+        return h('div', rootProps, renderDefaultStructure(api, { label: props.label, empty: props.empty, clearable: props.clearable, virtualItems: virtual ? (virtual.view.value?.api.value.virtualItems ?? []) : undefined }, slots))
       return h('div', rootProps, [
         h(SelectHiddenSelect),
         ...(slots.default({
@@ -297,7 +321,8 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
     // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
-    const bars = useScrollbars({ scrollable: () => ctx.listRef.value, props: () => ({ size: 'sm', disabled: !ctx.api.value.isContentMounted() }) })
+    // 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：自绘条跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
+    const bars = useScrollbars({ scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.value, props: () => ({ size: 'sm', disabled: !ctx.api.value.isContentMounted() }) })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
@@ -517,6 +542,9 @@ const SELECT_PARTS = {
   'loading': XhSelectLoading,
   'error': XhSelectError,
   'retry-trigger': XhSelectRetryTrigger,
+  'virtualizer/virtual-viewport': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualViewport)),
+  'virtualizer/virtual-content': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualContent)),
+  'virtualizer/virtual-item': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualItem)),
 }
 
 interface SelectStructureSlots {
@@ -531,7 +559,7 @@ interface SelectStructureSlots {
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultStructure(api: SelectApi, options: { label?: string, empty?: string, clearable: boolean }, slots: SelectStructureSlots): VNode[] {
+function renderDefaultStructure(api: SelectApi, options: { label?: string, empty?: string, clearable: boolean, virtualItems?: readonly StructureVirtualItem[] }, slots: SelectStructureSlots): VNode[] {
   const nodes = selectStructure(api, { ...options, slotted: name => slots[name as keyof SelectStructureSlots] != null })
   return renderStructure(nodes, SELECT_PARTS, (node) => {
     switch (node.slot?.name) {
