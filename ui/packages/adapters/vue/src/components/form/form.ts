@@ -8,6 +8,7 @@
 import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormPath, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { formFieldModel } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideForm, provideFormField, useFormContext } from './context'
@@ -163,8 +164,9 @@ export const XhFormFieldGroup = defineComponent({
   }>,
   setup(props, { slots }) {
     const ctx = useFormContext()
-    // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
-    provideFormField({ name: () => props.name })
+    // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运；没给值的录入控件经值端口按字段名读写
+    const name = (): FormPath => props.name
+    provideFormField({ name, model: formFieldModel(ctx.service, name) })
     // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',

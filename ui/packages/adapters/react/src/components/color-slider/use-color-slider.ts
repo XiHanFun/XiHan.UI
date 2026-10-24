@@ -48,7 +48,7 @@ export function useColorSlider(props: ColorSliderSchema['props']): ColorSliderCo
   }, [])
   // 内嵌一台滑杆：区间与当下的值从颜色滑块现读，颜色滑块须先建立；
   // 两台共用一份 scope，part id 里带组件名区分，不会撞
-  const slider = useMachine(sliderMachine, () => colorSliderSliderProps(service), { scope, onCreate: onSliderCreate })
+  const slider = useMachine(sliderMachine, () => colorSliderSliderProps(service), { scope, onCreate: onSliderCreate, formField: false })
   const services: ColorSliderServices = { root: service, slider }
 
   // 颜色攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置颜色不变

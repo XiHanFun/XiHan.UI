@@ -1,4 +1,4 @@
-// 表单页 | 一张值表驱动多种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一经表单
+// 表单页 | 一张值表驱动多种控件：文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框放进字段组即按 name 读写这张表，不必逐个接线；校验、错误态与错误摘要统一经表单
 import type { FormErrorPatch, FormSubmitDetails, FormValues, RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {
@@ -171,15 +171,11 @@ export default function Demo(): ReactNode {
             <XhFieldsetLegend>问题本身</XhFieldsetLegend>
 
             <XhFormFieldGroup name="title">
-              {({ value, error, invalid, setValue }) => (
-                <XhFieldRoot invalid={invalid} required>
+              {({ error }) => (
+                <XhFieldRoot required>
                   <XhFieldLabel>标题</XhFieldLabel>
                   <XhFieldControl>
-                    <input
-                      value={String(value ?? "")}
-                      placeholder="一句话说清现象"
-                      onChange={event => setValue(event.target.value)}
-                    />
+                    <XhTextFieldRoot placeholder="一句话说清现象" />
                   </XhFieldControl>
                   <XhFieldErrorText>{error}</XhFieldErrorText>
                 </XhFieldRoot>
@@ -187,16 +183,11 @@ export default function Demo(): ReactNode {
             </XhFormFieldGroup>
 
             <XhFormFieldGroup name="detail">
-              {({ value, error, invalid, setValue }) => (
-                <XhFieldRoot invalid={invalid} required>
+              {({ error }) => (
+                <XhFieldRoot required>
                   <XhFieldLabel>详细描述</XhFieldLabel>
                   <XhFieldControl>
-                    <XhTextFieldRoot
-                      value={String(value ?? "")}
-                      invalid={invalid}
-                      placeholder="复现步骤、期望结果、实际结果"
-                      onValueChange={details => setValue(details.value)}
-                    >
+                    <XhTextFieldRoot placeholder="复现步骤、期望结果、实际结果">
                       <XhTextFieldControl>
                         {/* rows 只有 textarea 认，输入部件的属性表按 input 写，展开着传进去 */}
                         <XhTextFieldInput as="textarea" {...{ rows: 3 }} />
@@ -211,97 +202,60 @@ export default function Demo(): ReactNode {
 
             <div style={rowStyle}>
               <XhFormFieldGroup name="priority">
-                {({ value, setValue }) => (
-                  <XhSelectRoot
-                    collection={priorities}
-                    value={value as string[]}
-                    label="优先级"
-                    placeholder="请选择"
-                    onValueChange={details => setValue(details.value)}
-                  />
-                )}
+                <XhSelectRoot collection={priorities} label="优先级" placeholder="请选择" />
               </XhFormFieldGroup>
 
               <XhFormFieldGroup name="amount">
-                {({ value, setValue }) => (
-                  <XhNumberFieldRoot
-                    value={String(value ?? "")}
-                    min={1}
-                    max={99}
-                    onValueChange={details => setValue(details.value)}
-                  >
-                    <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
-                    <XhNumberFieldControl>
-                      <XhNumberFieldDecrementTrigger />
-                      <XhNumberFieldInput />
-                      <XhNumberFieldIncrementTrigger />
-                    </XhNumberFieldControl>
-                  </XhNumberFieldRoot>
-                )}
+                <XhNumberFieldRoot min={1} max={99}>
+                  <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
+                  <XhNumberFieldControl>
+                    <XhNumberFieldDecrementTrigger />
+                    <XhNumberFieldInput />
+                    <XhNumberFieldIncrementTrigger />
+                  </XhNumberFieldControl>
+                </XhNumberFieldRoot>
               </XhFormFieldGroup>
             </div>
 
             <XhFormFieldGroup name="kind">
-              {({ value, setValue }) => (
-                <XhRadioGroupRoot
-                  collection={kinds}
-                  value={value as string}
-                  label="工单类型"
-                  onValueChange={details => setValue(details.value)}
-                />
-              )}
+              <XhRadioGroupRoot collection={kinds} label="工单类型" />
             </XhFormFieldGroup>
 
             <XhFormFieldGroup name="labels">
-              {({ value, setValue }) => (
-                <XhTagsInputRoot
-                  value={value as string[]}
-                  placeholder="回车落一个"
-                  onValueChange={details => setValue(details.value)}
-                >
-                  {({ value: tags }) => (
-                    <>
-                      <XhTagsInputLabel>关联模块</XhTagsInputLabel>
-                      <XhTagsInputControl>
-                        {tags.map(tag => (
-                          <XhTagsInputItem key={tag} value={tag}>
-                            <XhTagsInputItemPreview>
-                              <XhTagsInputItemText>{tag}</XhTagsInputItemText>
-                              <XhTagsInputItemDeleteTrigger />
-                            </XhTagsInputItemPreview>
-                          </XhTagsInputItem>
-                        ))}
-                        <XhTagsInputInput />
-                      </XhTagsInputControl>
-                    </>
-                  )}
-                </XhTagsInputRoot>
-              )}
+              <XhTagsInputRoot placeholder="回车落一个">
+                {({ value: tags }) => (
+                  <>
+                    <XhTagsInputLabel>关联模块</XhTagsInputLabel>
+                    <XhTagsInputControl>
+                      {tags.map(tag => (
+                        <XhTagsInputItem key={tag} value={tag}>
+                          <XhTagsInputItemPreview>
+                            <XhTagsInputItemText>{tag}</XhTagsInputItemText>
+                            <XhTagsInputItemDeleteTrigger />
+                          </XhTagsInputItemPreview>
+                        </XhTagsInputItem>
+                      ))}
+                      <XhTagsInputInput />
+                    </XhTagsInputControl>
+                  </>
+                )}
+              </XhTagsInputRoot>
             </XhFormFieldGroup>
 
             <XhFormFieldGroup name="impact">
-              {({ value, setValue }) => (
-                <XhSliderRoot
-                  value={value as number[]}
-                  min={0}
-                  max={100}
-                  step={5}
-                  largeStep={20}
-                  onValueChange={details => setValue(details.value)}
-                >
-                  {({ value: impact }) => (
-                    <>
-                      <XhSliderLabel>{`影响面估计：${impact[0]}%`}</XhSliderLabel>
-                      <XhSliderControl>
-                        <XhSliderTrack>
-                          <XhSliderRange />
-                        </XhSliderTrack>
-                        <XhSliderThumb />
-                      </XhSliderControl>
-                    </>
-                  )}
-                </XhSliderRoot>
-              )}
+              <XhSliderRoot min={0} max={100} step={5} largeStep={20}>
+                {({ value: impact }) => (
+                  <>
+                    <XhSliderLabel>{`影响面估计：${impact[0]}%`}</XhSliderLabel>
+                    <XhSliderControl>
+                      <XhSliderTrack>
+                        <XhSliderRange />
+                      </XhSliderTrack>
+                      <XhSliderThumb />
+                    </XhSliderControl>
+                  </>
+                )}
+              </XhSliderRoot>
             </XhFormFieldGroup>
           </XhFieldsetRoot>
 
@@ -309,26 +263,17 @@ export default function Demo(): ReactNode {
             <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
             <XhFormFieldGroup name="notify">
-              {({ value, setValue }) => (
-                <label style={checkStyle}>
-                  <XhSwitch
-                    checked={value === true}
-                    onCheckedChange={details => setValue(details.checked)}
-                  />
-                  有进展就通知我
-                </label>
-              )}
+              <label style={checkStyle}>
+                <XhSwitch />
+                有进展就通知我
+              </label>
             </XhFormFieldGroup>
 
             <XhFormFieldGroup name="agree">
-              {({ value, error, invalid, setValue }) => (
-                <XhFieldRoot invalid={invalid} required>
+              {({ error }) => (
+                <XhFieldRoot required>
                   <label style={checkStyle}>
-                    <XhCheckbox
-                      checked={value === true}
-                      invalid={invalid}
-                      onCheckedChange={details => setValue(details.checked)}
-                    />
+                    <XhCheckbox />
                     这条工单可以对内公开
                   </label>
                   <XhFieldErrorText>{error}</XhFieldErrorText>

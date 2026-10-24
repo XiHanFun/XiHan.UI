@@ -20,6 +20,7 @@
 - `min` / `max` 对字符串按字素计数：组合 emoji、国旗、带变音符的字母各算一个字，与[文本框](./text-field)的计数和 `maxLength` 同一口径，`@xihan-ui/headless` 导出的 `graphemeLength` 就是这把尺子；数组按元素个数，数值比较大小。数据库按列长限制时（如 PostgreSQL 的 `varchar(n)` 按码点计），后端仍要自己校验长度；.NET 端用 `StringInfo.LengthInTextElements` 得到同样的字数。
 - 正则以字符串保存时（模板、服务端下发的规则），用 `compileFormPattern(source, { flags?, fullMatch?, maxLength? })` 编译成 `pattern` 所需的 `RegExp`：标志缺省只允许 `imsu`，源码缺省不超过 1000 个字符，失败时返回原因而不抛异常，`fullMatch` 包成整串匹配。它只检查语法，不判断回溯开销，来自不受信方的正则仍要在服务端限时执行。
 - 字段值、错误和校验状态均可受控。
+- 录入控件放进字段组即按字段名读写值表：控件自己没给值（`value`，开关与复选框是 `checked`，文件上传是 `files`）时，初值取 `defaultValues`（字段有值时控件自己的 `defaultValue` 等初值不生效），改动写回表单，表单重置或 `setFieldValue` 改了这个字段，控件跟着变；禁用、只读、必填与错误态照旧由表单下传。控件自己给了值就一概不接，作用域插槽里的 `value` / `setValue` 手动接法照旧可用。组里有几个控件就都接同一个字段（滑块配一个数字框显示同一个值）；组件内部借来的子控件（颜色选择器里的滑块、分页里的每页条数下拉）与字段边界后面的实例不接。
 - 值表变化来自某个字段组的行变更时，`onValuesChange`（事件名 `values-change`）的载荷另带 `arrayMutation: { name, mutation }`：是哪一个字段组、哪一种行变更，与字段组的 `value-change` 同一份。
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。

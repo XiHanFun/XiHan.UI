@@ -103,9 +103,9 @@ export function useDateRangePicker(props: DateRangePickerSchema['props']): DateR
       svc.refs.set('getBoundaryEls', () => [contentRef.current, controlRef.current])
     },
   })
-  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldProps(root), { scope })
+  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldProps(root), { scope, formField: false })
   // 终点那组段位：与起点那组同一台分段输入机器，各管区间的一端
-  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldEndProps(root), { scope })
+  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldEndProps(root), { scope, formField: false })
   const services: DateRangePickerServices = { root, calendar, field, fieldEnd }
 
   // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。

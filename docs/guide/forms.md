@@ -63,6 +63,29 @@ checkbox 与 switch 的根是 `<button>`，HTML 的内容模型禁止 button 含
 
 不在任何表单内、无 DOM 的服务端、作者未写影子输入，三种情形都不需要特别处理：归属判定不命中、服务端不挂载副作用、锚点是组件根节点而不是影子输入。
 
+## 放进表单字段组
+
+库内的录入控件放进 `XhFormFieldGroup`（Web Components 是 `data-xh-part="field-group"`）后，按字段组的 `name` 读写 `XhFormRoot` 的值表，不必再接 `v-model`、`value` / `onValueChange` 或监听 `value-change` 后回写：
+
+```vue
+<XhFormRoot :default-values="{ title: '', notify: true }">
+  <XhFormFieldGroup name="title">
+    <XhTextFieldRoot placeholder="一句话说清现象" />
+  </XhFormFieldGroup>
+  <XhFormFieldGroup name="notify">
+    <XhSwitch />
+  </XhFormFieldGroup>
+</XhFormRoot>
+```
+
+- 值落在哪个 prop 由控件决定：多数是 `value`，开关与复选框是 `checked`，文件上传是 `files`。登记表在 headless 的 `formModelOf`。
+- 控件自己给了值（`null` 也算）就一概不接，表单的值不读也不写，作用域插槽里的 `value` / `setValue` 手动接法照旧可用。
+- 字段在 `defaultValues` 里有值时控件是受控的：表单重置、`setFieldValue` 改了这个字段，控件跟着变。初值与重置这时都归表单，控件自己写的 `defaultValue` / `defaultChecked` 不生效，原生表单的 `reset` 也不会让控件报出自己的初值去覆盖表单刚还原的值。字段还没有值时控件照旧非受控（自己的初值照用），第一次改动写进表单后转为受控。
+- 一个字段组里有几个控件就都接同一个字段，例如滑块旁配一个数字框显示同一个值。组件内部借来跑的子控件（颜色选择器里的滑块、日期选择器里的日期输入、分页里的每页条数下拉）不接，`XhFieldBoundary` 与浮层的 Portal 后面的实例也不接。
+- 禁用、只读、必填与错误态本来就由表单下传，不必再写 `:invalid="invalid"`；错误文案仍从作用域插槽的 `error` 取。
+
+新增的表单组件没登记值通道、或组件内部借来跑子控件时没写 `formField: false`，都会被门禁拦截（`check-form-model`）。
+
 ## 控件在薄封装内
 
 `XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合并到它唯一的子节点上。子节点是组件时，合并到的是组件的根，而薄封装的根往往是 `div`。

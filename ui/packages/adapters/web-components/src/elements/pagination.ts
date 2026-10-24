@@ -185,7 +185,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     this,
     selectMachine,
     () => paginationPageSizeSelectProps(this.ctrl.service as Service<PaginationSchema>),
-    { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc) },
+    { scope: this.paginationScope, onBuilt: svc => this.injectPageSizeRefs(svc), formField: false },
   )
 
   /** 下拉那套节点；作者写的挂载点换了就整套重建。 */

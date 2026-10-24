@@ -90,9 +90,9 @@ function createDateRangePickerContext(
   const labelCount = ref(0)
   const root = useMachine(dateRangePickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
   const calendar = useMachine<CalendarRangePickerSchema>(calendarRangePickerMachine, () => dateRangePickerCalendarProps(root), scope)
-  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldProps(root), scope)
+  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldProps(root), scope, { formField: false })
   // 终点那组段位：与起点那组同一台分段输入机器，各管区间的一端
-  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldEndProps(root), scope)
+  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => dateRangePickerFieldEndProps(root), scope, { formField: false })
   const services: DateRangePickerServices = { root, calendar, field, fieldEnd }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」

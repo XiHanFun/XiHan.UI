@@ -40,7 +40,7 @@ export function useColorSlider(
 
   // 内嵌一台滑杆：区间与当下的值从颜色滑块现读，颜色滑块须先建立；
   // 两台共用一份 scope，part id 里带组件名区分，不会撞
-  const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(service), scope)
+  const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(service), scope, { formField: false })
   // 传 getter 而非节点，轨道要到挂载后才有
   slider.refs.set('getTrackEl', () => trackRef.value)
   const services: ColorSliderServices = { root: service, slider }

@@ -1,4 +1,4 @@
-<!-- 表单页 | 一张值表驱动多种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一经表单 -->
+<!-- 表单页 | 一张值表驱动多种控件：文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框放进字段组即按 name 读写这张表，不必逐个接线；校验、错误态与错误摘要统一经表单 -->
 <style>
   #form-page {
     display: flex;
@@ -72,7 +72,13 @@
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">标题</label>
-            <input data-xh-part="control" placeholder="一句话说清现象" />
+            <xh-text-field placeholder="一句话说清现象">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" />
+                </div>
+              </div>
+            </xh-text-field>
             <p data-xh-part="error-text"></p>
           </div>
         </xh-field>
@@ -82,7 +88,7 @@
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">详细描述</label>
-            <xh-text-field id="form-page-detail" placeholder="复现步骤、期望结果、实际结果">
+            <xh-text-field placeholder="复现步骤、期望结果、实际结果">
               <div data-xh-part="root">
                 <div data-xh-part="control">
                   <textarea data-xh-part="input" rows="3"></textarea>
@@ -97,7 +103,7 @@
 
       <div data-form="row">
         <div data-xh-part="field-group" name="priority">
-          <xh-select id="form-page-priority" placeholder="请选择">
+          <xh-select placeholder="请选择">
             <div data-xh-part="root">
               <span data-xh-part="label">优先级</span>
               <div data-xh-part="control">
@@ -129,7 +135,7 @@
         </div>
 
         <div data-xh-part="field-group" name="amount">
-          <xh-number-field id="form-page-amount" min="1" max="99">
+          <xh-number-field min="1" max="99">
             <div data-xh-part="root">
               <label data-xh-part="label">受影响实例</label>
               <div data-xh-part="control">
@@ -143,7 +149,7 @@
       </div>
 
       <div data-xh-part="field-group" name="kind">
-        <xh-radio-group id="form-page-kind" orientation="horizontal">
+        <xh-radio-group orientation="horizontal">
           <div data-xh-part="root">
             <span data-xh-part="label">工单类型</span>
             <div data-xh-part="item" value="bug">
@@ -177,7 +183,7 @@
       </div>
 
       <div data-xh-part="field-group" name="impact">
-        <xh-slider id="form-page-impact" min="0" max="100" step="5" large-step="20">
+        <xh-slider min="0" max="100" step="5" large-step="20">
           <div data-xh-part="root">
             <label data-xh-part="label">
               影响面估计：<span id="form-page-impact-value">40</span>%
@@ -196,7 +202,7 @@
 
       <div data-xh-part="field-group" name="notify">
         <label data-form="check">
-          <xh-switch id="form-page-notify">
+          <xh-switch>
             <button data-xh-part="root">
               <span data-xh-part="thumb"></span>
             </button>
@@ -207,7 +213,7 @@
 
       <div data-xh-part="field-group" name="agree">
         <label data-form="check">
-          <xh-checkbox id="form-page-agree">
+          <xh-checkbox>
             <button data-xh-part="root">
               <span data-xh-part="indicator"></span>
             </button>
@@ -232,6 +238,8 @@
   const count = document.getElementById("form-page-count");
   const submitted = document.getElementById("form-page-submitted");
   const impactReadout = document.getElementById("form-page-impact-value");
+  const tagControl = document.querySelector('#form-page-labels [data-xh-part="control"]');
+  const tagInput = tagControl.querySelector('[data-xh-part="input"]');
 
   const defaults = {
     title: "",
@@ -245,8 +253,6 @@
     agree: false,
   };
 
-  let values = { ...defaults };
-
   // 整表跑一遍：required 拦空值，长度与「必须勾上」各由一条规则收
   host.rules = {
     title: { required: true, message: "标题不能为空" },
@@ -256,31 +262,8 @@
       validator: (value) => (value === true ? undefined : "要先确认这条工单可以对内公开"),
     },
   };
+  // 字段组里的控件按 name 读写这张值表：不必逐个监听改动再写回，重置也由表单带着控件一起还原
   host.defaultValues = defaults;
-  host.values = values;
-
-  const title = host.querySelector('[data-xh-part="field-group"][name="title"] [data-xh-part="control"]');
-  const detail = document.getElementById("form-page-detail");
-  const priority = document.getElementById("form-page-priority");
-  const amount = document.getElementById("form-page-amount");
-  const kind = document.getElementById("form-page-kind");
-  const labels = document.getElementById("form-page-labels");
-  const tagControl = labels.querySelector('[data-xh-part="control"]');
-  const tagInput = tagControl.querySelector('[data-xh-part="input"]');
-  const impact = document.getElementById("form-page-impact");
-  const notify = document.getElementById("form-page-notify");
-  const agree = document.getElementById("form-page-agree");
-
-  // 九个控件各自把改动写回同一张值表
-  title.addEventListener("input", () => host.setFieldValue("title", title.value));
-  detail.addEventListener("value-change", (e) => host.setFieldValue("detail", e.detail.value));
-  priority.addEventListener("value-change", (e) => host.setFieldValue("priority", e.detail.value));
-  amount.addEventListener("value-change", (e) => host.setFieldValue("amount", e.detail.value));
-  kind.addEventListener("value-change", (e) => host.setFieldValue("kind", e.detail.value));
-  labels.addEventListener("value-change", (e) => host.setFieldValue("labels", e.detail.value));
-  impact.addEventListener("value-change", (e) => host.setFieldValue("impact", e.detail.value));
-  notify.addEventListener("checked-change", (e) => host.setFieldValue("notify", e.detail.checked));
-  agree.addEventListener("checked-change", (e) => host.setFieldValue("agree", e.detail.checked));
 
   // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
   function createTag(value) {
@@ -313,23 +296,13 @@
     }
   }
 
-  // 值表是唯一事实源：变了就刷回每个控件
-  function syncControls() {
-    const next = String(values.title ?? "");
-    if (title.value !== next) title.value = next;
-    detail.value = String(values.detail ?? "");
-    amount.value = String(values.amount ?? "");
-    kind.value = String(values.kind ?? "");
-    priority.value = values.priority ?? [];
-    labels.value = values.labels ?? [];
-    impact.value = values.impact ?? [0];
-    notify.checked = values.notify === true;
-    agree.checked = values.agree === true;
-    impactReadout.textContent = impact.value[0];
-    renderTags(labels.value);
+  // 标签节点与影响面读数由作者自己铺：照值表刷
+  function paintValues(values) {
+    impactReadout.textContent = (values.impact ?? [0])[0];
+    renderTags(values.labels ?? []);
   }
 
-  // 错误文案由作者自己写进字段、控件旁那一行与摘要条目
+  // 错误文案由作者自己写进字段、控件旁那一行与摘要条目；错误态由表单交给控件
   function paintErrors(errors) {
     for (const name of ["title", "detail"]) {
       host.querySelector(`[data-xh-part="field-group"][name="${name}"] [data-xh-part="error-text"]`)
@@ -340,18 +313,12 @@
       line.textContent = message;
       line.hidden = message === "";
     }
-    agree.invalid = errors.agree !== undefined;
     for (const item of host.querySelectorAll('[data-xh-part="error-summary-item"]'))
       item.textContent = errors[item.getAttribute("value")] ?? "";
     count.textContent = `共 ${Object.keys(errors).length} 处需要修改`;
   }
 
-  // 值给了即受控，写值只发通知，改动由宿主自己写回
-  host.addEventListener("values-change", (event) => {
-    values = event.detail.values;
-    host.values = values;
-    syncControls();
-  });
+  host.addEventListener("values-change", (event) => paintValues(event.detail.values));
   host.addEventListener("errors-change", (event) => paintErrors(event.detail.errors));
   host.addEventListener("submit", (event) => {
     // 整张值表一行放不下，输出栏截断，悬停看全文
@@ -359,5 +326,5 @@
     submitted.textContent = `已提交：${submitted.title}`;
   });
 
-  syncControls();
+  paintValues(defaults);
 </script>

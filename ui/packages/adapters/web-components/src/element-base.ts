@@ -5,7 +5,7 @@
 
 // 提供 element base 相关实现。
 
-import type { FieldControlWiring, StructureChild } from '@xihan-ui/headless'
+import type { FieldControlWiring, FormFieldModel, StructureChild } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import type { StructureSpec } from './dom/structure'
@@ -102,6 +102,18 @@ export abstract class XhElement extends XhReactiveElement {
     if (sameWiring(this.fieldWiring, wiring))
       return
     this.fieldWiring = wiring
+    this.requestUpdate()
+  }
+
+  /** 表单字段组交来的值端口；不在字段组里时为 null。机器控制器经它按字段名读写表单的值。 */
+  formFieldModel: FormFieldModel | null = null
+
+  /**
+   * Form 发现字段组里的库内控件后调用，null 收回；不是公开的业务写值入口。
+   * 表单每次接线都会调一遍：字段的值从外面变了（重置、setFieldValue），控件凭这一下重渲。
+   */
+  setFormFieldModel(model: FormFieldModel | null): void {
+    this.formFieldModel = model
     this.requestUpdate()
   }
 

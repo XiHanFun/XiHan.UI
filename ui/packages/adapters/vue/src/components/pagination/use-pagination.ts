@@ -65,6 +65,7 @@ export function usePagination(
     selectMachine,
     () => paginationPageSizeSelectProps(service),
     scope,
+    { formField: false },
   )
   const services: PaginationServices = { root: service, pageSizeSelect }
 

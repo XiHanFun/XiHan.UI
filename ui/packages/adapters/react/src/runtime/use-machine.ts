@@ -9,8 +9,10 @@ import type { MachineConfig, MachineSchema, Scope, Service, ServiceOptions } fro
 import type { ReactRuntime } from './create-react-runtime'
 import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'
 import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } from '@xihan-ui/core/metadata'
+import { bindFormModel, formModelOf } from '@xihan-ui/headless'
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { version as REACT_ADAPTER_VERSION } from '../../package.json'
+import { useOptionalFormField } from '../components/form/context'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createReactRuntime, machineVersion } from './create-react-runtime'
 
@@ -52,6 +54,12 @@ export interface UseMachineOptions<T extends MachineSchema> {
    * 返回值在卸载时调用；StrictMode 重建状态机时会再运行一次。
    */
   onCreate?: (service: Service<T>) => (() => void) | void
+  /**
+   * 放进表单字段组时接不接字段的值，缺省接（只对登记了值通道的机器有效）。
+   * 组件内部借来跑的子机器传 false：颜色选择器里的滑块、日期选择器里的日期输入、分页里的每页条数下拉，
+   * 它们与外层组件同在一个字段组下，接了就会把外层字段的值当成自己的。
+   */
+  formField?: boolean
 }
 
 interface Instance<T extends MachineSchema> {
@@ -151,6 +159,13 @@ export function useMachine<T extends MachineSchema>(
   const optionsRef = useRef(options)
   optionsRef.current = options
 
+  // 放进表单字段组、自己又没给值的录入控件按字段名读写表单的值，也在这一处并进来；
+  // 字段边界会断开字段组，组合节点里的实例因此不会接到外面的字段。字段值一变 handle 就换身份，控件跟着重渲
+  const formModel = options.formField === false ? undefined : formModelOf(machine.name)
+  const field = useOptionalFormField()
+  const fieldRef = useRef(field)
+  fieldRef.current = field
+
   // 连接层一次要读十几个 prop，每读一个都重新展开一遍组件 props 纯属白做。
   // 两把钥匙一起当记忆的依据：渲染轮次盖住组件 props 与渲染期赋的 ref，
   // 机器版本号盖住从别的机器现读的派生值。两者都没动，展开结果必然一样。
@@ -170,7 +185,7 @@ export function useMachine<T extends MachineSchema>(
       if (cache.render !== renderEpoch.current || cache.machine !== version) {
         cache.render = renderEpoch.current
         cache.machine = version
-        cache.value = applyXhConfigDefaults(machine.name, { ...propsRef.current() }, configRef.current())
+        cache.value = bindFormModel(applyXhConfigDefaults(machine.name, { ...propsRef.current() }, configRef.current()), formModel, fieldRef.current?.model)
       }
       return cache.value
     }) as ServiceOptions<T>['props'],

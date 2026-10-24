@@ -283,42 +283,42 @@ export class XhColorPickerElement extends XhPortalHostElement {
     this,
     colorSliderMachine,
     () => ({ ...colorPickerHueSliderProps(this.ctrl.service), labelled: this.mountHasLabel('hue-slider') }),
-    { scope: this.pickerScope },
+    { scope: this.pickerScope, formField: false },
   )
 
   private readonly hueSliderCtrl = new MachineController<SliderSchema>(
     this,
     sliderMachine,
     () => colorSliderSliderProps(this.hueCtrl.service),
-    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')) },
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')), formField: false },
   )
 
   private readonly alphaCtrl = new MachineController<ColorSliderSchema>(
     this,
     colorSliderMachine,
     () => ({ ...colorPickerAlphaSliderProps(this.ctrl.service), labelled: this.mountHasLabel('alpha-slider') }),
-    { scope: this.pickerScope },
+    { scope: this.pickerScope, formField: false },
   )
 
   private readonly alphaSliderCtrl = new MachineController<SliderSchema>(
     this,
     sliderMachine,
     () => colorSliderSliderProps(this.alphaCtrl.service),
-    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')) },
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')), formField: false },
   )
 
   private readonly swatchCtrl = new MachineController(
     this,
     colorSwatchPickerMachine,
     () => ({ ...colorPickerSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('swatch-picker') }),
-    { scope: this.pickerScope },
+    { scope: this.pickerScope, formField: false },
   )
 
   private readonly recentSwatchCtrl = new MachineController(
     this,
     colorSwatchPickerMachine,
     () => ({ ...colorPickerRecentSwatchPickerProps(this.ctrl.service), labelled: this.mountHasLabel('recent-swatch-picker') }),
-    { scope: this.pickerScope },
+    { scope: this.pickerScope, formField: false },
   )
 
   /** 连接层要的整份服务表。 */

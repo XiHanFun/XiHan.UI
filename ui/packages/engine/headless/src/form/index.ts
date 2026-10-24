@@ -7,6 +7,8 @@
 
 export { resolveFormControlState } from './form-control'
 export type { FormControlState, ResolvedFormControlState } from './form-control'
+export { bindFormModel, formFieldModel, formModelOf } from './form-model'
+export type { FormFieldModel, FormModel } from './form-model'
 export {
   FORM_FIELD_NAME_ATTR,
   formAnatomy,

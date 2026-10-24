@@ -135,10 +135,10 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
     setAlphaLabels(n => n + 1)
     return () => setAlphaLabels(n => n - 1)
   }, [])
-  const hueRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerHueSliderProps(service), labelled: hueLabels > 0 }), { scope })
-  const hueSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(hueRoot), { scope, onCreate: onHueCreate })
-  const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(service), labelled: alphaLabels > 0 }), { scope })
-  const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate })
+  const hueRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerHueSliderProps(service), labelled: hueLabels > 0 }), { scope, formField: false })
+  const hueSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(hueRoot), { scope, onCreate: onHueCreate, formField: false })
+  const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...colorPickerAlphaSliderProps(service), labelled: alphaLabels > 0 }), { scope, formField: false })
+  const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate, formField: false })
   // 内嵌的两组色板同样可以放 label 部件：各自的登记数喂给各自的机器，根的 aria-labelledby 才只指向真渲染了的标题。
   // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
   const [swatchLabels, setSwatchLabels] = useState(0)
@@ -151,8 +151,8 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
     setRecentSwatchLabels(n => n + 1)
     return () => setRecentSwatchLabels(n => n - 1)
   }, [])
-  const swatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels > 0 }), { scope })
-  const recentSwatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels > 0 }), { scope })
+  const swatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels > 0 }), { scope, formField: false })
+  const recentSwatchPickerService = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels > 0 }), { scope, formField: false })
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hueRoot, slider: hueSliderMachine },
