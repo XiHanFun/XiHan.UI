@@ -323,6 +323,22 @@ function placeTrailing(root: Element, takeover: ReadonlyMap<string, StructureTak
   }
 }
 
+/**
+ * 委派给内嵌组件的部件，在那个组件的绑定还没到时拆掉：节点换成它自己的子节点。委派部件要等内嵌组件接线，
+ * 提前铺出来的是接不上线的空壳——开发期报 wc.unknown-part，等更新落定的调用方也拿到半成品。
+ * Vue / React 那几个异步部件加载完之前同样什么都不渲；这里宿主自己的部件（选择器的列表本体）照样留着。
+ */
+export function unwrapDelegated(nodes: readonly StructureChild[], component: string): StructureChild[] {
+  return nodes.flatMap((node): StructureChild[] => {
+    if (isStructureInstance(node) || isStructureLiteral(node) || isStructureOutlet(node))
+      return [node]
+    const children = node.children ? unwrapDelegated(node.children, component) : undefined
+    if (node.component === component)
+      return children ?? []
+    return [children ? { ...node, children } : node]
+  })
+}
+
 /** 一台宿主的生成状态：按 key 复用的节点表，以及搬进结构里的作者节点 → 它所在的部件。 */
 export interface StructureState {
   readonly keys: KeyedChildren

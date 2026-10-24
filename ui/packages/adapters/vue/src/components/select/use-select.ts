@@ -7,8 +7,7 @@
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { SelectApi, SelectSchema } from '@xihan-ui/headless'
-import type { ComputedRef, Ref, ShallowRef } from 'vue'
-import type { VirtualizerContext } from '../virtualizer/use-virtualizer'
+import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSelect, selectMachine } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
@@ -18,22 +17,6 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
-
-/**
- * 标准结构开虚拟化时的空位：异步加载进来的视口把它跑的那台 Virtualizer 登记在这里。
- * 根组件只认这个空位，不静态引用 Virtualizer：没开 virtual 的选择器不为它的内核付体积。
- */
-export interface SelectVirtualSlot {
-  /**
-   * 条数，直取 collection 的长度。不经选择器的 api：api 求值要读 virtualizer 这条桥，
-   * 桥又要读 Virtualizer 的 api，两边互相取值会成环。
-   */
-  count: () => number
-  /** 每条的预估高度（px），条目渲出后按实测校正。 */
-  estimateSize: () => number
-  /** 视口挂上来之前为 null：此时选择器不带虚拟化桥，列表里也还没有条目。 */
-  view: ShallowRef<VirtualizerContext | null>
-}
 
 export interface SelectContext {
   /**
@@ -55,8 +38,6 @@ export interface SelectContext {
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
-  /** 标准结构开了虚拟化才有；见 SelectVirtualSlot。 */
-  virtual?: SelectVirtualSlot
 }
 
 export function useSelect(

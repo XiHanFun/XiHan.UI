@@ -6,7 +6,7 @@
 // 提供 use select 相关实现。
 
 import type { Layer, Service } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectSchema, StructureVirtualItem } from '@xihan-ui/headless'
+import type { SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectSelect, selectMachine } from '@xihan-ui/headless'
@@ -17,25 +17,6 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
-
-/** 异步加载进来的视口回报给根组件的东西：交给机器的桥，与当下该铺的窗口。 */
-export interface SelectVirtualWindow {
-  bridge: CollectionVirtualizer
-  items: readonly StructureVirtualItem[]
-}
-
-/**
- * 标准结构开虚拟化时的空位：视口据此建 Virtualizer，再把桥与窗口回报回来。
- * 根组件只认这个空位，不静态引用 Virtualizer：没开 virtual 的选择器不为它的内核付体积。
- * 条数直取 collection 的长度，不经选择器的 api：api 要读桥，桥又要读 Virtualizer，两边互相取值会成环。
- */
-export interface SelectVirtualSlot {
-  count: number
-  /** 每条的预估高度（px），条目渲出后按实测校正。 */
-  estimateSize: number
-  /** 视口把桥与窗口交回根组件；卸载时交 null。 */
-  publish: (window: SelectVirtualWindow | null) => void
-}
 
 export interface SelectContext extends OverlayWiring {
   /**
@@ -55,8 +36,6 @@ export interface SelectContext extends OverlayWiring {
   contentRef: RefObject<HTMLElement | null>
   /** 列表框本体：真正在滚动的层，自绘条挂在 positioner 上跟着它走 */
   listRef: RefObject<HTMLElement | null>
-  /** 标准结构开了虚拟化才有；见 SelectVirtualSlot。 */
-  virtual?: SelectVirtualSlot
 }
 
 export function useSelect(props: SelectSchema['props']): SelectContext {

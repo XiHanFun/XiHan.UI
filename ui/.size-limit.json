@@ -462,13 +462,13 @@
     "limit": "57 kB",
     "ignore": [
       "vue",
-      "*/select-virtual.js"
+      "*/structure-virtual.js"
     ]
   },
   {
-    "name": "vue：XhSelectRoot 开 virtual 时按需加载的那一块",
-    "path": "packages/adapters/vue/dist/components/select/select-virtual.js",
-    "import": "{ SelectVirtualViewport }",
+    "name": "vue：标准结构开 virtual 时按需加载的那一块（选择器与表格共用）",
+    "path": "packages/adapters/vue/dist/components/virtualizer/structure-virtual.js",
+    "import": "{ StructureVirtualViewport }",
     "gzip": true,
     "limit": "19 kB",
     "ignore": [
