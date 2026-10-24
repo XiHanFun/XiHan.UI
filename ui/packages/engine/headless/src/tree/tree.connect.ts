@@ -7,9 +7,12 @@
 
 import type { NavIntent, NormalizeProps, Orientation, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DragRect } from '../shared/drag'
-import type { TreeApi, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeVisibleNode } from './tree.types'
+import type { TreeApi, TreeBranchLoadSnapshot, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeTranslations, TreeVisibleNode } from './tree.types'
 import { cascadeState, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { TREE_EN_US } from '../locale/en-US'
 import { isEditableTarget } from '../shared/editable-target'
+import { branchLoadSnapshotOf, resolveLazyCollection } from '../shared/lazy-branch'
+import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
@@ -62,7 +65,11 @@ export function connectTree<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): TreeApi<T> {
   const { context, prop, send, refs, scope } = service
-  const collection = prop('collection') ?? []
+  // 作者的 collection 是取数的依据；有效树在懒分支上补上已取回的子项，行、层级与级联都照它算
+  const sourceCollection = prop('collection') ?? []
+  const loadedChildren = context.get('loadedChildren')
+  const collection = resolveLazyCollection(sourceCollection, loadedChildren)
+  const translations: TreeTranslations = resolveTranslations(TREE_EN_US, prop('translations'))
   const expandedValue = context.get('expandedValue')
   const selection = context.get('selection')
   const treeDisabled = !!prop('disabled')
@@ -176,13 +183,33 @@ export function connectTree<T extends PropTypes>(
     'data-highlighted': dataAttr(focusedValue === value),
   })
 
-  /** 正在取子节点的分支：作者写在 loadingValue 里的那几枝。 */
-  const branchLoading = new Set(prop('loadingValue') ?? [])
+  /** 懒分支此刻的取数相位；不是懒分支时为 null。 */
+  const branchLoads = context.get('branchLoads')
+  const branchLoadState = (value: string): TreeBranchLoadSnapshot | null =>
+    branchLoadSnapshotOf(sourceCollection, loadedChildren, branchLoads, value)
+  const branchLoadedEmpty = (value: string): boolean => {
+    const snapshot = branchLoadState(value)
+    return snapshot?.status === 'loaded' && snapshot.empty
+  }
+
+  /** 正在取子节点的分支：作者写在 loadingValue 里的那几枝，加上交给 loadChildren 正在取的懒分支。 */
+  const authorLoading = new Set(prop('loadingValue') ?? [])
+  const isBranchLoading = (value: string): boolean => authorLoading.has(value) || branchLoadState(value)?.status === 'loading'
 
   /** 分支一系再多一个展开态，箭头旋转与子树收起都看它。 */
   const branchState = (value: string): Record<string, string | undefined> => ({
     ...itemState(value),
     'data-state': isExpanded(value) ? 'open' : 'closed',
+  })
+
+  /**
+   * 懒分支的取数相位只写在 branch 与四个反馈部件上，不进控制行：集合条目家族按行上的 data-error 换告警面、
+   * 并收掉悬停与按下，取数失败的这一行仍要能点、能按确认键重试。
+   */
+  const loadState = (value: string): Record<string, string | undefined> => ({
+    'data-error': dataAttr(branchLoadState(value)?.status === 'error'),
+    'data-empty': dataAttr(branchLoadedEmpty(value)),
+    'data-load-state': branchLoadState(value)?.status,
   })
 
   /**
@@ -355,6 +382,11 @@ export function connectTree<T extends PropTypes>(
   const activate = (row: TreeVisibleNode): void => {
     if (row.disabled || treeDisabled)
       return
+    // 取数失败的懒分支上，确认键是重试：焦点留在这一行，不改选中与展开
+    if (row.branch && branchLoadState(row.value)?.status === 'error') {
+      send({ type: 'BRANCH.RETRY', value: row.value })
+      return
+    }
     send({ type: 'NODE.SELECT', value: row.value })
     if (row.branch && expandOnClick)
       send({ type: 'BRANCH.TOGGLE', value: row.value })
@@ -370,13 +402,16 @@ export function connectTree<T extends PropTypes>(
     focusedValue,
     selectionMode,
     disabled: treeDisabled,
+    translations,
     isExpanded,
     isSelected,
     isIndeterminate,
+    branchLoadState,
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
+    retryBranch: value => send({ type: 'BRANCH.RETRY', value }),
     select: (value, options) => send({ type: 'NODE.SELECT', value, extend: options?.extend, additive: options?.additive }),
 
     getRootProps: () => normalize.element({
@@ -723,10 +758,11 @@ export function connectTree<T extends PropTypes>(
         ...parts.branch.attrs,
         ...nodeAttrs(node.value),
         ...branchState(node.value),
+        ...loadState(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
         // 这一枝在取子节点：读屏据此知道子层还没到齐，皮肤据此把展开箭头换成转圈
-        'aria-busy': branchLoading.has(node.value) ? 'true' : undefined,
-        'data-loading': dataAttr(branchLoading.has(node.value)),
+        'aria-busy': isBranchLoading(node.value) ? 'true' : undefined,
+        'data-loading': dataAttr(isBranchLoading(node.value)),
         // 名字取自己那一行的内容，与叶子行同一个来源：按内容算名字时不往 role=group 的子层里取字，
         // 子孙的文字不会算进来。显式给 aria-label 反倒让行里看得见的字（后缀、说明）落在名字之外（WCAG 2.5.3）
         'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
@@ -832,6 +868,56 @@ export function connectTree<T extends PropTypes>(
       'role': 'group',
       // group 不收 aria-orientation，排布方向只以 data 形式交给皮肤
       'data-orientation': branchOrientation(node.value),
+    }),
+
+    // 懒分支的四种取数反馈放在分支里（控制行与子层之后），展开时才露面；由组件或元素在分支里自己补
+    getBranchLoadingProps: node => normalize.element({
+      ...parts['branch-loading'].attrs,
+      ...branchState(node.value),
+      ...loadState(node.value),
+      'role': 'status',
+      // 文案前一枚加载环，由加载环配方画
+      'data-xh-loading-ring': '',
+      'data-loading': dataAttr(branchLoadState(node.value)?.status === 'loading'),
+      'hidden': (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'loading') || undefined,
+    }),
+
+    getBranchErrorProps: node => normalize.element({
+      ...parts['branch-error'].attrs,
+      ...branchState(node.value),
+      ...loadState(node.value),
+      role: 'alert',
+      hidden: (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'error') || undefined,
+    }),
+
+    // 重试按钮不占 Tab 位：键盘那一路是在分支上按确认键
+    getBranchRetryTriggerProps: node => normalize.button({
+      ...parts['branch-retry-trigger'].attrs,
+      ...branchState(node.value),
+      ...loadState(node.value),
+      'type': 'button',
+      'tabindex': -1,
+      'aria-label': translations.retry,
+      'disabled': treeDisabled || undefined,
+      'hidden': (!isExpanded(node.value) || branchLoadState(node.value)?.status !== 'error') || undefined,
+      'onPointerDown': (event: PointerEvent) => {
+        if (event.button === 0)
+          event.preventDefault()
+      },
+      'onClick': (event: MouseEvent) => {
+        // 按钮长在分支里，不掐断冒泡会再跑一遍点行
+        event.stopPropagation()
+        if (!treeDisabled)
+          send({ type: 'BRANCH.RETRY', value: node.value })
+      },
+    }),
+
+    getBranchEmptyProps: node => normalize.element({
+      ...parts['branch-empty'].attrs,
+      ...branchState(node.value),
+      ...loadState(node.value),
+      role: 'status',
+      hidden: (!isExpanded(node.value) || !branchLoadedEmpty(node.value)) || undefined,
     }),
   }
 }

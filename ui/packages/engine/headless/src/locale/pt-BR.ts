@@ -709,7 +709,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Fechar', progress: (step, count) => `Etapa ${step} de ${count}` },
   'transfer': { toTarget: 'Mover para a lista de destino', toSource: 'Mover para a lista de origem', sourceTitle: 'Lista de origem', targetTitle: 'Lista de destino', selectAll: 'Selecionar tudo', empty: 'Nenhum dado', loading: 'Carregando' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: 'Carregando',
+    branchError: 'Não foi possível carregar os subitens',
+    retry: 'Tentar novamente',
+    branchEmpty: 'Nenhum subitem',
+  },
   'tree-select': {
     ...tagged,
     tree: 'Opções em árvore',

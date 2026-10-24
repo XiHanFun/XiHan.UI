@@ -29,12 +29,14 @@
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
-- 节点级加载态：`loadingValue` 里的分支报告 `aria-busy`，展开箭头换成转圈（减弱动效下停住）。取数归作者：在 `onExpandedValueChange` 里发起请求，回来后写回 `collection` 并把它移出 `loadingValue`。
+- 懒分支：节点写 `hasChildren: true` 且不给 `children`，首次展开时调 `loadChildren({ node, signal })` 取它的直接子项，取回的子项由组件暂存、不写回 `collection`；在途时分支报告 `aria-busy`、展开箭头换成转圈（减弱动效下停住）。收起会中止在途的一轮，收起再展开不重复请求。失败与「取回空数组」是两个终态：失败露出说明与重试钮，再次展开不自动重试，点重试钮或在分支上按 Enter / Space 才重发；空数组露出空结果。在途、失败说明、重试钮与空结果四个部件由组件在分支里自己补，手写结构时也一样。取数与树选择、级联选择同一套规则，事件是 `branch-load-start` / `branch-load` / `branch-load-error`。
+- 取数由作者自己编排时，把在途的分支写进 `loadingValue`：同样报告 `aria-busy` 并换成转圈，回来后写回 `collection` 并移出。
 - `lines` 打开连接线：父节点展开箭头的中线向下引一道竖线，每个子节点从竖线横出一段接到行首（分支接到展开箭头，叶子穿过占位那一格接到正文前），最后一个子节点的竖线止于它那一行的中线；展开着的分支，竖线沿它的整棵子树接到下一个兄弟。颜色取内部分隔线（`--xh-tree-line-color`），只是外观，不改结构与键盘。顶层节点没有父节点可连，不画线；线画在嵌套的子层里，虚拟化平铺渲染的行不画。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
 
 ## 组合
 
+- 不写结构时照标准结构铺：标题（给了 `label` 时）与整棵树，分支是一行控制行（展开箭头、文字、副文本、对号）加一层子层，叶子是文字、副文本与对号；收起的分支照样铺出子层，节点按值复用。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数。行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位不在标准结构里，要用时整棵手写。
 - 前缀放[图标](./icon)，行尾放[菜单](./menu)；放入[分栏](./splitter)的一侧。
 - 大树把 `visibleNodes` 的长度交给 [Virtualizer](./virtualizer)，并把其 `collectionVirtualizer` 回传给根；展开收起后同步更新 `count`。
 

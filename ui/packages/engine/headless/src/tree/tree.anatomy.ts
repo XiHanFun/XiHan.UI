@@ -25,6 +25,11 @@ export const treeAnatomy = createAnatomy('tree', [
   'branch-text',
   'branch-description',
   'branch-content',
+  // 懒分支的取数反馈：在途、失败说明与重试钮、取回空数组，组件或元素在分支里自己补
+  'branch-loading',
+  'branch-error',
+  'branch-retry-trigger',
+  'branch-empty',
   'node-drag-trigger',
   'empty',
   'loading',

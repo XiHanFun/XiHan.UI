@@ -23,6 +23,7 @@ export const treeKeyboard: KeyboardTable = {
     { id: 'tree.kbd.expand', keys: ['ArrowRight'], when: 'focus on branch（dir=rtl 时改由 ArrowLeft 承担）', does: '收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键' },
     { id: 'tree.kbd.collapse', keys: ['ArrowLeft'], when: 'focus in tree（dir=rtl 时改由 ArrowRight 承担）', does: '展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做' },
     { id: 'tree.kbd.select', keys: ['Enter', 'Space'], when: 'focus on node, 节点未禁用', does: '选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态' },
+    { id: 'tree.kbd.retry', keys: ['Enter', 'Space'], when: 'focus on branch, 懒分支取数失败', does: '重试该分支，焦点留在分支行；不改变选中值与展开集合' },
     { id: 'tree.kbd.toggle', keys: ['Ctrl+Space', 'Cmd+Space'], when: 'focus on node, selectionMode 为 multiple 或 extended、节点未禁用', does: '只切换焦点节点的选中态，其余选中不动，不改展开态' },
     { id: 'tree.kbd.press', keys: ['Enter', 'Space'], when: 'held on node, 树未禁用、未加载且节点未禁用', does: '按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担' },
     { id: 'tree.kbd.expand-siblings', keys: ['*'], when: 'focus in tree', does: '展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键' },

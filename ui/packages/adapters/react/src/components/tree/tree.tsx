@@ -9,12 +9,14 @@ import type { CascadeStrategy, ControlVariant, Direction, Orientation, Service, 
 import type { CollectionVirtualizer, TreeApi, TreeNode, TreeSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { treeStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { TreeNodeProvider, TreeProvider, useTreeContext, useTreeNodeContext } from './context'
 import { useTree } from './use-tree'
 
@@ -71,6 +73,10 @@ function useNodeFocusReport(
 
 export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
+  /** 标题：不写 children 时铺进标准结构的 label；手写结构时用 XhTreeLabel。 */
+  label?: ReactNode
+  /** 取回 `hasChildren: true` 分支的直接子项；首次展开自动调用，失败后显式重试。 */
+  loadChildren?: TreeProps['loadChildren']
   virtualizer?: CollectionVirtualizer
   /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
   variant?: ControlVariant
@@ -105,11 +111,16 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   onSelectionChange?: TreeProps['onSelectionChange']
   /** 移动是通知，节点顺序的真源在使用者的数据中。 */
   onNodeMove?: TreeProps['onNodeMove']
+  onBranchLoadStart?: TreeProps['onBranchLoadStart']
+  onBranchLoad?: TreeProps['onBranchLoad']
+  onBranchLoadError?: TreeProps['onBranchLoadError']
   children?: SlotChildren<TreeRootSlotProps>
 }
 
 export function XhTreeRoot({
   collection,
+  label,
+  loadChildren,
   virtualizer,
   variant,
   size,
@@ -135,11 +146,15 @@ export function XhTreeRoot({
   onExpandedValueChange,
   onSelectionChange,
   onNodeMove,
+  onBranchLoadStart,
+  onBranchLoad,
+  onBranchLoadError,
   children,
   ...rest
 }: XhTreeRootProps): ReactNode {
   const ctx = useTree(withXhConfig('tree', {
     collection,
+    loadChildren,
     virtualizer,
     variant,
     size,
@@ -165,29 +180,35 @@ export function XhTreeRoot({
     onExpandedValueChange,
     onSelectionChange,
     onNodeMove,
+    onBranchLoadStart,
+    onBranchLoad,
+    onBranchLoadError,
   }) as TreeProps)
   const api = ctx.api
   return (
     <TreeProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {renderSlot(children, {
-          visibleNodes: api.visibleNodes,
-          expandedValue: api.expandedValue,
-          selection: api.selection,
-          focusedValue: api.focusedValue,
-          isExpanded: api.isExpanded,
-          isSelected: api.isSelected,
-          isIndeterminate: api.isIndeterminate,
-          expand: api.expand,
-          collapse: api.collapse,
-          select: api.select,
-        })}
+        {/* 没写 children 时铺标准结构 */}
+        {children === undefined
+          ? renderDefaultStructure(api, label)
+          : renderSlot(children, {
+              visibleNodes: api.visibleNodes,
+              expandedValue: api.expandedValue,
+              selection: api.selection,
+              focusedValue: api.focusedValue,
+              isExpanded: api.isExpanded,
+              isSelected: api.isSelected,
+              isIndeterminate: api.isIndeterminate,
+              expand: api.expand,
+              collapse: api.collapse,
+              select: api.select,
+            })}
       </div>
     </TreeProvider>
   )
 }
 
-XhTreeRoot.xhEvents = ['expanded-value-change', 'selection-change', 'node-move'] as const
+XhTreeRoot.xhEvents = ['expanded-value-change', 'selection-change', 'node-move', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhTreeLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeLabel({ children, ...rest }: XhTreeLabelProps): ReactNode {
@@ -331,6 +352,7 @@ export function XhTreeBranch({ value, children, ...rest }: XhTreeBranchProps): R
         )}
       >
         {children}
+        <TreeBranchFeedback />
       </div>
     </TreeNodeProvider>
   )
@@ -378,4 +400,76 @@ export function XhTreeBranchContent({ children, ...rest }: XhTreeBranchContentPr
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
   return <div {...mergeReactProps(ctx.api.getBranchContentProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
+export interface XhTreeBranchLoadingProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeBranchLoading({ children, ...rest }: XhTreeBranchLoadingProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchLoadingProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
+}
+
+export interface XhTreeBranchErrorProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeBranchError({ children, ...rest }: XhTreeBranchErrorProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchErrorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchError}</div>
+}
+
+export interface XhTreeBranchRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
+export function XhTreeBranchRetryTrigger({ children, ...rest }: XhTreeBranchRetryTriggerProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <button {...mergeReactProps(ctx.api.getBranchRetryTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.retry}</button>
+}
+
+export interface XhTreeBranchEmptyProps extends ComponentPropsWithRef<'div'> {}
+export function XhTreeBranchEmpty({ children, ...rest }: XhTreeBranchEmptyProps): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  return <div {...mergeReactProps(ctx.api.getBranchEmptyProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchEmpty}</div>
+}
+
+/** 懒分支的四种取数反馈：分支自己补在控制行与子层之后，手写结构与标准结构都一样；不是懒分支时不补。 */
+function TreeBranchFeedback(): ReactNode {
+  const ctx = useTreeContext()
+  const node = useTreeNodeContext()
+  if (ctx.api.branchLoadState(node.value) == null)
+    return null
+  return (
+    <>
+      <XhTreeBranchLoading />
+      <XhTreeBranchError />
+      <XhTreeBranchRetryTrigger />
+      <XhTreeBranchEmpty />
+    </>
+  )
+}
+
+/** 标准结构里各部件对应的组件。 */
+const TREE_PARTS = {
+  'label': XhTreeLabel,
+  'tree': XhTreeTree,
+  'item': XhTreeItem,
+  'item-text': XhTreeItemText,
+  'item-description': XhTreeItemDescription,
+  'item-indicator': XhTreeItemIndicator,
+  'branch': XhTreeBranch,
+  'branch-control': XhTreeBranchControl,
+  'branch-trigger': XhTreeBranchTrigger,
+  'branch-text': XhTreeBranchText,
+  'branch-description': XhTreeBranchDescription,
+  'branch-content': XhTreeBranchContent,
+}
+
+/**
+ * 未写 children 时照 treeStructure 铺开的整套结构：标题与整棵树，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题是字符串时铺成 label 的文字，是别的节点时作为 label 的内容；没给时不铺标题。
+ */
+function renderDefaultStructure(api: TreeApi, label: ReactNode): ReactNode[] {
+  const nodes = treeStructure(api, {
+    label: typeof label === 'string' ? label : undefined,
+    slotted: name => name === 'label' && label != null && typeof label !== 'string',
+  })
+  return renderStructure(nodes, TREE_PARTS, node => node.slot?.name === 'label' ? label : undefined)
 }

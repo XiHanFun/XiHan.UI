@@ -5,8 +5,9 @@
 
 // 提供 tree 相关实现。
 
-import type { Scope } from '@xihan-ui/core'
+import type { ActionFn, Scope } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
+import type { BranchLoadPort } from '../shared/lazy-branch'
 import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
@@ -14,6 +15,14 @@ import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { hitAlongNested } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
+import {
+  abortBranchLoads,
+  beginBranchLoad,
+  cancelBranchLoad,
+  cancelBranchLoads,
+  resolveLazyCollection,
+  syncBranchLoads,
+} from '../shared/lazy-branch'
 import { TREE_ROW_SELECTOR } from './tree.anatomy'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
@@ -99,11 +108,45 @@ function normalizeSelection(next: readonly string[], mode: TreeSelectionMode): s
   return mode === 'single' ? next.slice(0, 1) : unique(next)
 }
 
+type TreeActionParams = Parameters<ActionFn<TreeSchema>>[0]
+type TreeProp = <K extends keyof TreeSchema['props']>(k: K) => TreeSchema['props'][K]
+
+/** 有效树：作者的 collection，懒分支补上已取回的子项（还没取回的补空数组）。动作与连接层都照它算。 */
+function treeCollection(prop: TreeProp, context: { get: (k: 'loadedChildren') => Record<string, TreeNode[]> }): TreeNode[] {
+  return resolveLazyCollection(prop('collection') ?? [], context.get('loadedChildren'))
+}
+
+/** 懒分支取数接到本组件的 context、prop 与 refs 上；取数本身是与树选择共用的一套。 */
+function branchLoadPort(params: TreeActionParams): BranchLoadPort<TreeNode> {
+  const { context, prop, refs, scope } = params
+  return {
+    component: 'Tree',
+    collection: () => prop('collection') ?? [],
+    loadedChildren: () => context.get('loadedChildren'),
+    setLoadedChildren: next => context.set('loadedChildren', next),
+    loads: () => context.get('branchLoads'),
+    setLoads: next => context.set('branchLoads', next),
+    loadChildren: () => prop('loadChildren'),
+    onStart: details => prop('onBranchLoadStart')?.(details),
+    onLoad: details => prop('onBranchLoad')?.(details),
+    onError: details => prop('onBranchLoadError')?.(details),
+    runtime: {
+      controllers: refs.get('branchLoadControllers'),
+      sequence: refs.get('branchLoadSequence'),
+      owners: refs.get('branchLoadOwners'),
+    },
+    createAbortController: () => new (scope.getWin().AbortController)(),
+  }
+}
+
 // 展开集合与选中集合都住在 context 的 cell 里，受控/非受控在 cell 收口，
 // 不需要影子事件与受控守卫。
 export const treeMachine = createMachine({
   name: 'tree',
   context: ({ prop, cell }) => ({
+    // 懒分支：相位与取回的子项分开放，取回的子项不写回作者的 collection
+    branchLoads: cell(() => ({ defaultValue: {} })),
+    loadedChildren: cell(() => ({ defaultValue: {} })),
     expandedValue: cell<string[]>(() => ({
       value: prop('expandedValue'),
       defaultValue: prop('defaultExpandedValue') ?? [],
@@ -132,16 +175,23 @@ export const treeMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([() => prop('disabled'), () => prop('loading')], () => action(['releaseWhenInert']))
     track([context.dep('selection')], () => action(['followSelection']))
+    // 外部删掉或补齐分支时，在途的旧请求必须失效，不能把结果写回已不存在的数据树
+    track([() => prop('collection')], () => action(['syncBranchLoads']))
+    // 受控 expandedValue、setExpandedValue 与键盘展开共用这一个入口：展开的懒分支去取，收起的中止
+    track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
-  effects: ['trackPointer'],
+  effects: ['trackPointer', 'trackBranchLoads'],
   refs: () => ({
     typeahead: createTypeahead(),
     gesture: null,
     nodeDrag: null,
     reorder: null,
     knownSelection: null,
+    branchLoadControllers: new Map(),
+    branchLoadSequence: { n: 0 },
+    branchLoadOwners: new Map(),
   }),
   initialState: () => 'idle',
   states: {
@@ -149,9 +199,10 @@ export const treeMachine = createMachine({
       // 省略 target：只跑 actions，不换状态
       on: {
         'EXPANDED.SET': { actions: ['setExpanded'] },
-        'BRANCH.EXPAND': { actions: ['expandBranch'] },
+        'BRANCH.EXPAND': { actions: ['loadExpandedBranch', 'expandBranch'] },
         'BRANCH.COLLAPSE': { actions: ['collapseBranch'] },
-        'BRANCH.TOGGLE': { actions: ['toggleBranch'] },
+        'BRANCH.TOGGLE': { actions: ['loadExpandedBranch', 'toggleBranch'] },
+        'BRANCH.RETRY': { actions: ['retryBranch'] },
         'SELECTION.SET': { actions: ['setSelection'] },
         'NODE.SELECT': { actions: ['selectNode'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
@@ -202,6 +253,16 @@ export const treeMachine = createMachine({
           refs.set('reorder', null)
         }
       },
+
+      // 挂载后为初始就展开的懒分支取数；卸载时中止所有在途请求
+      trackBranchLoads: (params) => {
+        params.flush(() => params.scope.getWin().queueMicrotask(() => {
+          const port = branchLoadPort(params)
+          for (const value of params.context.get('expandedValue'))
+            beginBranchLoad(port, value, false)
+        }))
+        return () => abortBranchLoads(branchLoadPort(params).runtime)
+      },
     },
     actions: {
       startPress: ({ context, event }) => {
@@ -250,7 +311,7 @@ export const treeMachine = createMachine({
           refs.set('nodeDrag', { ...session, activated: true })
           context.set('draggingNode', session.value)
         }
-        const meta = indexTree(prop('collection') ?? [])
+        const meta = indexTree(treeCollection(prop, context))
         // 命中要减掉版面漂移换算回快照坐标；激活上面用的是原始视口坐标，
         // 两件事在两个坐标系里判——内容滚过去了但手没动，不算拖了一段
         const point = e.clientY - snapshotDrift(session.source, session.rects, session.value, 'y')
@@ -285,12 +346,40 @@ export const treeMachine = createMachine({
         const e = event.current()
         if (e.type !== 'NODE.MOVE_BY')
           return
-        const meta = indexTree(prop('collection') ?? [])
+        const meta = indexTree(treeCollection(prop, context))
         if (!isTreeDropAllowed(meta, e.value, e.target, prop('allowDrop'))) {
           announceNodeMove(context, prop, 'rejected', e.value)
           return
         }
         commitNodeMove(context, prop, e.value, e.target, 'moved', () => armReorder(scope, refs))
+      },
+
+      // 在真正写入 expandedValue 前看旧值：重复展开与收起都不会悄悄再发请求；
+      // 受控时宿主不写回展开态，用户的这次展开意图照样去取
+      loadExpandedBranch: (params) => {
+        const e = params.event.current()
+        if (e.type !== 'BRANCH.EXPAND' && e.type !== 'BRANCH.TOGGLE')
+          return
+        if (!params.context.get('expandedValue').includes(e.value))
+          beginBranchLoad(branchLoadPort(params), e.value, false)
+      },
+      retryBranch: (params) => {
+        const e = params.event.current()
+        if (e.type === 'BRANCH.RETRY')
+          beginBranchLoad(branchLoadPort(params), e.value, true)
+      },
+      loadExpandedBranches: (params) => {
+        const port = branchLoadPort(params)
+        const expanded = new Set(params.context.get('expandedValue'))
+        cancelBranchLoads(port, expanded)
+        for (const value of expanded)
+          beginBranchLoad(port, value, false)
+      },
+      syncBranchLoads: (params) => {
+        const port = branchLoadPort(params)
+        syncBranchLoads(port)
+        for (const value of params.context.get('expandedValue'))
+          beginBranchLoad(port, value, false)
       },
 
       setExpanded: ({ context, event }) => {
@@ -308,17 +397,22 @@ export const treeMachine = createMachine({
           return
         context.set('expandedValue', [...current, e.value])
       },
-      collapseBranch: ({ context, event }) => {
-        const e = event.current()
+      collapseBranch: (params) => {
+        const { context } = params
+        const e = params.event.current()
         if (e.type !== 'BRANCH.COLLAPSE')
           return
+        cancelBranchLoad(branchLoadPort(params), e.value)
         context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
       },
-      toggleBranch: ({ context, event }) => {
-        const e = event.current()
+      toggleBranch: (params) => {
+        const { context } = params
+        const e = params.event.current()
         if (e.type !== 'BRANCH.TOGGLE')
           return
         const current = context.get('expandedValue')
+        if (current.includes(e.value))
+          cancelBranchLoad(branchLoadPort(params), e.value)
         context.set(
           'expandedValue',
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
@@ -361,7 +455,7 @@ export const treeMachine = createMachine({
         // Ctrl/Cmd 切换这一项、裸点换成这一项，锚点都挪过来
         if (mode === 'extended') {
           if (e.extend && anchor != null) {
-            const roots = prop('collection') ?? []
+            const roots = treeCollection(prop, context)
             const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
             const baseline = e.additive ? (context.get('selectionBaseline') ?? current) : []
             context.set('selectionBaseline', e.additive ? baseline : null)
@@ -389,7 +483,7 @@ export const treeMachine = createMachine({
         // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
         // 再叠上范围选，选出来什么会难以预料
         if (e.extend && mode === 'multiple' && !prop('cascade') && anchor != null) {
-          const roots = prop('collection') ?? []
+          const roots = treeCollection(prop, context)
           // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去
           const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
           const baseline = context.get('selectionBaseline') ?? current
@@ -414,7 +508,7 @@ export const treeMachine = createMachine({
         }
         // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
         if (prop('cascade')) {
-          const roots = prop('collection') ?? []
+          const roots = treeCollection(prop, context)
           const state = cascadeToggle(roots, current, e.value)
           commit(collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
           return
@@ -440,6 +534,7 @@ export const treeMachine = createMachine({
 
 /** 播报与提交两处都要写 announcement，抽一个最小接口，别把整个 service 拖进来。 */
 interface NodeDragContext {
+  get: (k: 'loadedChildren') => Record<string, TreeNode[]>
   set: (k: 'announcement', v: string) => void
 }
 
@@ -454,7 +549,7 @@ function announceNodeMove(
   value: string,
   move?: TreeMove,
 ): void {
-  const meta = indexTree(prop('collection') ?? [])
+  const meta = indexTree(treeCollection(prop, context))
   const self = meta.get(value)
   // 落点在哪一层，那一层就有几个；说不出层时退回它此刻所在的层
   const parent = move ? move.parent : (self?.parent ?? null)
@@ -497,7 +592,7 @@ function commitNodeMove(
   kind: DragAnnounceKind,
   beforeCommit: () => void,
 ): void {
-  const meta = indexTree(prop('collection') ?? [])
+  const meta = indexTree(treeCollection(prop, context))
   const move = treeMoveOf(meta, value, target)
   if (!move) {
     announceNodeMove(context, prop, 'rejected', value)

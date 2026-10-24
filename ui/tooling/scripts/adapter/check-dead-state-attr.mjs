@@ -103,6 +103,7 @@ const HOOKS = {
   'clipboard:data-variant': '复制钮的形态由它自己身上的 data-xh-action-variant 交给 Action Control 形态矩阵；root 上的 data-variant 保留为作者按整件形态写样式的钩子',
   'toggle:data-icon-only': '图标按钮几何由同节点的 data-xh-action-profile=icon 交给 Action Control 配方；data-icon-only 保留为作者样式钩子',
   'cascader:data-load-state': '懒分支的标准视觉由 data-loading、data-error 与它那一列里的状态部件承载；完整状态值保留为作者样式钩子',
+  'tree:data-load-state': '分支的标准视觉分别由 data-loading、data-error、data-empty 与对应状态部件承载；完整状态值保留为作者样式钩子',
   'tree-select:data-load-state': '分支的标准视觉分别由 data-loading、data-error、data-empty 与对应状态部件承载；完整状态值保留为作者样式钩子',
   'truncate:data-expandable': '展开入口是文字盒子旁那颗按钮，它的显隐由按钮自己的 hidden 承载；文字盒子上这一位留给作者按可展开写样式的钩子',
   'truncate:data-overflowing': '被裁了的视觉由按钮的 hidden 与原生提示的 title 承载；这一位是给作者接自定义提示的钩子',

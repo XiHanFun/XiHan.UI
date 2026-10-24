@@ -91717,6 +91717,24 @@
       "description": "tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。"
     },
     {
+      "name": "--xh-tree-branch-error-fg",
+      "component": "tree",
+      "part": [
+        "branch-error"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-error 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-branch-gap",
       "component": "tree",
       "part": [
@@ -91783,6 +91801,86 @@
       ],
       "visibility": "public",
       "description": "tree 的 branch、branch-control、branch-indicator、branch-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-branch-retry-fg",
+      "component": "tree",
+      "part": [
+        "branch-retry-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-retry-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-branch-status-fg",
+      "component": "tree",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-empty、branch-error、branch-loading 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-branch-status-font-size",
+      "component": "tree",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading",
+        "branch-retry-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default",
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-_tree-font-size"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-branch-status-py",
+      "component": "tree",
+      "part": [
+        "branch-empty",
+        "branch-error",
+        "branch-loading"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])"
+      ],
+      "defaultToken": [
+        "--xh-_tree-row-py"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-empty、branch-error、branch-loading 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-tree-drag-fg",
@@ -92144,16 +92242,23 @@
         "branch",
         "branch-content",
         "branch-control",
+        "branch-empty",
+        "branch-error",
+        "branch-loading",
+        "branch-retry-trigger",
         "item",
         "tree"
       ],
       "property": [
         "inline-size",
         "inset-inline-start",
+        "margin-inline-start",
+        "padding-inline",
         "padding-inline-start"
       ],
       "state": [
         "default",
+        "is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])",
         "lines",
         "not(:last-child)",
         "orientation=vertical"
@@ -92162,7 +92267,7 @@
         "--xh-_tree-indent"
       ],
       "visibility": "public",
-      "description": "tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch、branch-content、branch-control、branch-empty、branch-error、branch-loading、branch-retry-trigger、item、tree 部件 inline-size、inset-inline-start、margin-inline-start、padding-inline、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-indicator-size",

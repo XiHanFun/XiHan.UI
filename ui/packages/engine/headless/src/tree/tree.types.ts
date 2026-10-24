@@ -8,7 +8,26 @@
 import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
+import type { BranchLoadChildren, BranchLoadDetails, BranchLoadErrorDetails, BranchLoadRequest, BranchLoadRuntime, BranchLoadSnapshot, BranchLoadStartDetails, BranchLoadStatus } from '../shared/lazy-branch'
 import type { CollectionVirtualizer } from '../virtualizer'
+
+/** 懒分支的取数相位。 */
+export type TreeBranchLoadStatus = BranchLoadStatus
+
+/** 懒分支的取数快照；成功空结果与失败是两个独立终态，不能互相降级。 */
+export type TreeBranchLoadSnapshot = BranchLoadSnapshot
+
+/** 一次分支取数。signal 会在重试、分支收起、节点从 collection 移除或组件卸载时中止。 */
+export type TreeLoadChildrenRequest = BranchLoadRequest<TreeNode>
+
+/** 一轮有效分支请求开始；reason 区分首次展开与显式重试。 */
+export type TreeBranchLoadStartDetails = BranchLoadStartDetails<TreeNode>
+
+/** 一轮有效分支请求成功；children 为空仍是成功。 */
+export type TreeBranchLoadDetails = BranchLoadDetails<TreeNode>
+
+/** 一轮有效分支请求失败；error 是 loadChildren 给出的原样错误。 */
+export type TreeBranchLoadErrorDetails = BranchLoadErrorDetails<TreeNode>
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -58,6 +77,11 @@ export interface TreeNode {
    * 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。
    */
   children?: TreeNode[]
+  /**
+   * 懒分支：写 true 且不给 children 时，这一枝在首次展开时由 loadChildren 取子项。
+   * 已提供 children 时它没有额外作用。取回的子项由 headless 暂存，不需要宿主重写整棵 collection。
+   */
+  hasChildren?: boolean
   /**
    * 该层子节点的排布方式，由作者在数据上标注。提供后以它为准，`vertical` 也优先于树级的
    * `leafOrientation`；未提供时才回退为 `leafOrientation` 加子节点全是叶子的结构判据。
@@ -152,6 +176,12 @@ export interface TreeRefs {
   typeahead: Typeahead
   /** 树上一次所知的选中：自己提的那份，或从外面换上的那份；还没看过时为 null。 */
   knownSelection: readonly string[] | null
+  /** 仍在途的分支请求；只存放运行时资源，不进入可渲染 context。 */
+  branchLoadControllers: BranchLoadRuntime<TreeNode>['controllers']
+  /** 每次开新请求递增，用于拒绝过期回调。实例私有，不能放模块变量。 */
+  branchLoadSequence: BranchLoadRuntime<TreeNode>['sequence']
+  /** load 状态与成功 children 所属的原始节点对象；同 value 换节点时据此作废旧结果。 */
+  branchLoadOwners: BranchLoadRuntime<TreeNode>['owners']
 }
 
 /** 接了按压通道的两个部件：叶子行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
@@ -208,10 +238,16 @@ export interface TreeSchema extends MachineSchema {
     /** 节点加载中：树报告 aria-busy、隐藏空态占位；还没有节点时显示在途占位，已有节点时行保留上一帧淡下。 */
     loading?: boolean
     /**
-     * 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈；
-     * 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。
+     * 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈。
+     * 取数由作者自己编排时用它；交给 loadChildren 的懒分支由库自己标出在途，不必写在这里。
      */
     loadingValue?: string[]
+    /**
+     * 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch 或
+     * branch-retry-trigger 显式重试；收起分支会中止在途的那一轮。旧请求的兑现或拒绝不会覆盖更新的一轮，
+     * 也不会写回已移除的分支。取回的子项暂存在组件里，不写回 collection。
+     */
+    loadChildren?: BranchLoadChildren<TreeNode>
     /** 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线，默认 false。只是外观，不改结构与键盘。 */
     lines?: boolean
     /** 上下键到达首尾是否回绕，默认 false。 */
@@ -233,8 +269,18 @@ export interface TreeSchema extends MachineSchema {
     onNodeMove?: (move: TreeMove) => void
     onExpandedValueChange?: (details: TreeExpandedValueChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
+    /** 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 */
+    onBranchLoadStart?: (details: TreeBranchLoadStartDetails) => void
+    /** 一轮有效分支请求成功；children 为空仍是成功，不转换为错误。 */
+    onBranchLoad?: (details: TreeBranchLoadDetails) => void
+    /** 一轮有效分支请求失败；保留 loadChildren 给出的原始 error。 */
+    onBranchLoadError?: (details: TreeBranchLoadErrorDetails) => void
   }
   context: {
+    /** 懒分支的当前相位；成功后的子项单独存放，避免把运输状态混进数据树。 */
+    branchLoads: Record<string, TreeBranchLoadSnapshot>
+    /** 已成功取回的直接子项，按父节点 value 建表。 */
+    loadedChildren: Record<string, TreeNode[]>
     /** 展开集合，恒为数组。受控（expandedValue 提供）时 cell 直读 prop。 */
     expandedValue: string[]
     /** 选中集合，恒为数组。单选时长度 ≤ 1，形状不随模式变化。 */
@@ -272,6 +318,8 @@ export interface TreeSchema extends MachineSchema {
     | { type: 'BRANCH.EXPAND', value: string }
     | { type: 'BRANCH.COLLAPSE', value: string }
     | { type: 'BRANCH.TOGGLE', value: string }
+    /** 显式重试一个取数失败的懒分支：中止在途的一轮，重新发。 */
+    | { type: 'BRANCH.RETRY', value: string }
     /** 整体改写选中集合。 */
     | { type: 'SELECTION.SET', value: string[] }
     /**
@@ -320,11 +368,15 @@ export interface TreeSchema extends MachineSchema {
     | 'endPress'
     | 'releaseWhenInert'
     | 'followSelection'
-  effect: 'trackPointer'
+    | 'loadExpandedBranch'
+    | 'loadExpandedBranches'
+    | 'retryBranch'
+    | 'syncBranchLoads'
+  effect: 'trackPointer' | 'trackBranchLoads'
 }
 
 export interface TreeApi<T extends PropTypes = PropTypes> {
-  /** 作者提供的原始树数据。 */
+  /** 有效树数据：作者的 collection，懒分支补上已取回的子项（还没取回的补空数组）。 */
   collection: readonly TreeNode[]
   /**
    * 当前可见行序列（收起分支的子树不在其中）。
@@ -342,14 +394,20 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   /** 生效的选择模式。 */
   selectionMode: TreeSelectionMode
   disabled: boolean
+  /** 生效的文案：内建英文与 translations 合并后的那一份。 */
+  translations: TreeTranslations
   isExpanded: (value: string) => boolean
   isSelected: (value: string) => boolean
   /** 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 */
   isIndeterminate: (value: string) => boolean
+  /** 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 */
+  branchLoadState: (value: string) => TreeBranchLoadSnapshot | null
   setExpandedValue: (next: string[]) => void
   setSelection: (next: string[]) => void
   expand: (value: string) => void
   collapse: (value: string) => void
+  /** 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 */
+  retryBranch: (value: string) => void
   /**
    * 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认），
    * additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。
@@ -393,7 +451,27 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   /** 分支行的第 2 行副文本，与叶子的 item-description 同一档。 */
   getBranchDescriptionProps: (props: TreeNodeProps) => T['element']
   getBranchContentProps: (props: TreeNodeProps) => T['element']
+  /** 懒分支取数在途：组件或元素在分支里自己补出，展开且在途时露面。 */
+  getBranchLoadingProps: (props: TreeNodeProps) => T['element']
+  /** 懒分支取数失败的说明：展开且失败时露面。 */
+  getBranchErrorProps: (props: TreeNodeProps) => T['element']
+  /** 懒分支失败后的重试按钮：不占 Tab 位，键盘在分支上按确认键即重试。 */
+  getBranchRetryTriggerProps: (props: TreeNodeProps) => T['button']
+  /** 懒分支取回了空数组：展开时露面。 */
+  getBranchEmptyProps: (props: TreeNodeProps) => T['element']
 }
 
-/** 读屏文案，默认英文。拖动过程在视觉上很清楚，在读屏中全部依靠这些文案。 */
-export interface TreeTranslations extends Partial<DragTranslations> {}
+/**
+ * 文案，默认英文。拖动过程在视觉上很清楚，在读屏中全部依靠拖动那几句；
+ * 懒分支的在途、失败、重试与空结果四句由组件在分支里自己补出的节点使用。
+ */
+export interface TreeTranslations extends Partial<DragTranslations> {
+  /** 懒分支正在取子项时的文案。 */
+  loading: string
+  /** 懒分支取数失败时的文案。 */
+  branchError: string
+  /** 懒分支失败后的重试按钮文案。 */
+  retry: string
+  /** 懒分支取回空数组时的文案。 */
+  branchEmpty: string
+}

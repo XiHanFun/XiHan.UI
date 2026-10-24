@@ -5,6 +5,9 @@ import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/treeview/'
 
+/** 懒分支取数失败时 loader 给出的那个错误：事件里原样带出，三端比的是同一个对象。 */
+const BRANCH_LOAD_ERROR = new Error('offline')
+
 /**
  * 树数据是层级元信息的唯一事实源，作者标记只管长相，两者必须同源。
  *
@@ -916,6 +919,135 @@ export const treeSuite: ConformanceSuite = {
         { kind: 'setProps', props: { disabled: false, loading: true } },
         heldPressIgnored('tree', 'item', '加载中叶子不接受按压', { value: 'index' }),
         heldPressIgnored('tree', 'branch-control', '加载中分支行不接受按压', { keyboardHost: '[data-scope="tree"][data-part="branch"][data-value="src"]' }),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 treeStructure 铺出标题与整棵树（分支是控制行加子层，叶子是文字加对号）；展开后子层露面',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        label: '文件',
+        collection: [
+          { value: 'src', label: 'src', children: [{ value: 'main', label: 'main.ts' }] },
+          { value: 'readme', label: 'README.md' },
+        ],
+      },
+      initial: {
+        order: ['root', 'label', 'tree', 'branch', 'branch-control', 'branch-trigger', 'branch-text', 'item-indicator[0]', 'branch-content', 'item[0]', 'item-text[0]', 'item-indicator[1]', 'item[1]', 'item-text[1]', 'item-indicator[2]'],
+        parts: {
+          'branch': { 'role': 'treeitem', 'aria-expanded': 'false', 'aria-level': '1', 'data-value': 'src' },
+          'branch-content': { 'role': 'group', 'data-state': 'closed' },
+          'item[0]': { 'aria-level': '2', 'data-value': 'main' },
+          'item[1]': { 'aria-level': '1', 'data-value': 'readme' },
+        },
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger',
+          expect: {
+            parts: { 'branch': { 'aria-expanded': 'true' }, 'branch-content': { 'data-state': 'open' } },
+            events: [{ type: 'expanded-value-change', detail: { value: ['src'] } }],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支在途：展开即取，分支报 aria-busy，组件在分支里补出在途反馈，开始事件带分支与原因',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        loadChildren: () => new Promise(() => {}),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger',
+          expect: {
+            parts: {
+              'branch': { 'aria-busy': 'true', 'data-loading': '', 'data-load-state': 'loading' },
+              'branch-loading': { role: 'status', hidden: null },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { hidden: '' },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支失败与重试：失败露出说明与重试钮；分支上按确认键是重试而不是选中',
+      spec: { apg: APG },
+      covers: ['tree.kbd.retry'],
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        loadChildren: () => Promise.reject(BRANCH_LOAD_ERROR),
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger',
+          expect: {
+            parts: {
+              'branch': { 'data-error': '', 'data-load-state': 'error', 'data-empty': null },
+              'branch-loading': { hidden: '' },
+              'branch-error': { role: 'alert', hidden: null },
+              'branch-retry-trigger': { 'type': 'button', 'aria-label': 'Retry', 'tabindex': '-1', 'hidden': null },
+              'branch-empty': { hidden: '' },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: { branch: { 'data-error': '', 'data-load-state': 'error', 'aria-selected': 'false' } },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'retry' } },
+              { type: 'branch-load-error', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, error: BRANCH_LOAD_ERROR } },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      name: '懒分支取回空数组：是成功，露出空结果，不降级成失败',
+      spec: { apg: APG },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: {
+        collection: [{ value: 'docs', label: 'Docs', hasChildren: true }],
+        loadChildren: async () => [],
+      },
+      steps: [
+        {
+          kind: 'click',
+          part: 'branch-trigger',
+          expect: {
+            parts: {
+              'branch': { 'data-empty': '', 'data-error': null, 'data-load-state': 'loaded' },
+              'branch-loading': { hidden: '' },
+              'branch-error': { hidden: '' },
+              'branch-retry-trigger': { hidden: '' },
+              'branch-empty': { role: 'status', hidden: null },
+            },
+            events: [
+              { type: 'branch-load-start', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, reason: 'expand' } },
+              { type: 'expanded-value-change', detail: { value: ['docs'] } },
+              { type: 'branch-load', detail: { value: 'docs', node: { value: 'docs', label: 'Docs', hasChildren: true }, children: [] } },
+            ],
+          },
+        },
       ],
     },
   ],

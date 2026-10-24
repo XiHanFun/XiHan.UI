@@ -925,7 +925,13 @@ export const TOUR_EN_US: XhLocaleBucket<'tour'> = { close: 'Close', progress: (s
 
 export const TRANSFER_EN_US: XhLocaleBucket<'transfer'> = { toTarget: 'Move to target list', toSource: 'Move to source list', sourceTitle: 'Source list', targetTitle: 'Target list', selectAll: 'Select all', empty: 'No data', loading: 'Loading' }
 
-export const TREE_EN_US: XhLocaleBucket<'tree'> = DRAG_EN_US
+export const TREE_EN_US: XhLocaleBucket<'tree'> = {
+  ...DRAG_EN_US,
+  loading: 'Loading',
+  branchError: 'Could not load children',
+  retry: 'Retry',
+  branchEmpty: 'No children',
+}
 
 export const TREE_SELECT_EN_US: XhLocaleBucket<'tree-select'> = {
   deleteItem,
