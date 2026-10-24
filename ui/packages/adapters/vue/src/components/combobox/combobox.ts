@@ -6,7 +6,7 @@
 // 提供 combobox 相关实现。
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { comboboxStructure } from '@xihan-ui/headless'
@@ -76,6 +76,7 @@ export const XhComboboxRoot = defineComponent({
     allowCustomValue: Boolean,
     openOnClick: Boolean,
     inputBehavior: { type: String as PropType<ComboboxInputBehavior> },
+    filter: { type: [String, Function] as PropType<ComboboxFilterMode | ComboboxFilter> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
@@ -490,17 +491,18 @@ interface ComboboxStructureContent {
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 comboboxStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、条目文字与行首行尾由对应插槽接管。
- * 过滤仍归调用方：collection 就是当前应显示的候选。
+ * 候选取 api.collection：给了 filter 即筛过的那份，没给就是调用方传进来的当前候选。
  */
 function renderDefaultStructure(
   api: ComboboxApi,
-  props: { label?: string, empty?: string, clearable: boolean },
+  props: { label?: string, empty?: string, clearable: boolean, name?: string },
   content: ComboboxStructureContent,
 ): VNode[] {
   const nodes = comboboxStructure(api, {
     label: props.label,
     empty: props.empty,
     clearable: props.clearable,
+    name: props.name,
     slotted: name => content[name as keyof ComboboxStructureContent] != null,
   })
   return renderStructure(nodes, COMBOBOX_PARTS, (node) => {

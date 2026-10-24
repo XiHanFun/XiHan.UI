@@ -13,6 +13,7 @@ interface ComboboxHost extends HTMLElement {
   collection?: ComboboxNode[]
   label?: string
   empty?: string
+  name?: string
   clearable?: boolean
   multiple?: boolean
   value?: string | string[]
@@ -58,7 +59,7 @@ describe('xh-combobox 生成结构', () => {
   it('什么都不写：连 root 生成整套节点，标题进输入框的名字链，不报缺少部件', async () => {
     const records: DiagnosticRecord[] = []
     stops.push(onDiagnostic(record => records.push(record)))
-    const el = mount({ collection: COLLECTION, label: '水果', empty: '没有匹配项', clearable: true })
+    const el = mount({ collection: COLLECTION, label: '水果', empty: '没有匹配项', clearable: true, name: 'fruit' })
     await settle(el)
 
     const root = part(el, 'root')!
@@ -70,6 +71,11 @@ describe('xh-combobox 生成结构', () => {
     expect(part(el, 'input')!.getAttribute('aria-labelledby')).toBe(part(el, 'label')!.id)
     expect(part(el, 'empty')!.textContent).toBe('没有匹配项')
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
+
+    // 没有 name 也不必填：影子既不提交也拦不住什么，不铺
+    el.name = undefined
+    await settle(el)
+    expect(Array.from(root.children).map(node => node.getAttribute('data-xh-part'))).toEqual(['label', 'control', 'positioner'])
   })
 
   it('候选清空时空态露出：过滤归调用方，换 collection 即换候选', async () => {

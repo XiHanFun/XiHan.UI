@@ -16,7 +16,7 @@
 ## 特性
 
 - 支持单选、多选、分组和自定义值。
-- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，空态之后是在途占位（文字取 `translations.loading`，展开、在途且没有候选时露出），末尾一份表单影子，给了 `name` 才参与提交。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
+- 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，空态之后是在途占位（文字取 `translations.loading`，展开、在途且没有候选时露出），末尾一份表单影子，给了 `name` 或必填时才铺（必填时那份空值占位拦得住空表单），两样都没有就不铺。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
 - 多选的已选项在输入框前排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签带删除钮，输入串为空时退格删掉最后一个；已选项被筛出候选后标签仍显示选中那一刻的文字。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
@@ -24,7 +24,8 @@
 - 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 输入值、选中值与展开状态均可独立受控。
 - `loading` 与 `empty` 分别表示加载和空结果。
-- 支持自定义过滤、异步候选和自定义条目内容。
+- 内置过滤：给了 `collection` 再写 `filter` 即按用户打的字筛候选，`contains` 显示文本包含检索词、`startsWith` 以检索词开头，都不分大小写，也可以给函数 `(node, query) => boolean` 自己判。检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、`inputBehavior="autocomplete"` 补出的那段都不拿去筛，再展开看到全部候选。没写 `filter` 即不过滤，候选由调用方按 `onInputValueChange` 换，远程搜索就这么写。
+- 支持异步候选和自定义条目内容。
 - 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
@@ -33,7 +34,7 @@
 
 - 放进[表单字段](./field)获得标签、说明与错误信息，字段状态会接到输入框上。
 - 候选列表是常驻的[列表框](./listbox)收进浮层的形态；选项固定且不需要输入时换成[选择器](./select)。
-- 长候选列表接入 [Virtualizer](./virtualizer) 时，过滤后的 collection 与 `count` 必须同批更新；高亮、`aria-activedescendant` 与确认仍按完整候选序列计算。
+- 长候选列表接入 [Virtualizer](./virtualizer) 时，当下候选（给了 `filter` 即 `api.collection`，否则是调用方筛过的 collection）与 `count` 必须同批更新；高亮、`aria-activedescendant` 与确认仍按完整候选序列计算。
 
 ## 最佳实践
 

@@ -1,7 +1,6 @@
-// 基础用法 | 搜索并选择城市
+// 基础用法 | 搜索并选择城市：filter="contains" 按打的字筛候选，不必自己写过滤；选中后再展开看到全部城市
 import type { ReactNode } from "react";
 import { XhComboboxRoot } from "@xihan-ui/react";
-import { useState } from "react";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -12,16 +11,10 @@ const cities = [
 ];
 
 export default function Demo(): ReactNode {
-  const [query, setQuery] = useState("");
-
-  const q = query.trim().toLowerCase();
-  const filtered = q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
-
   return (
     <XhComboboxRoot
-      inputValue={query}
-      onInputValueChange={details => setQuery(details.inputValue)}
-      collection={filtered}
+      collection={cities}
+      filter="contains"
       clearable
       label="城市"
       empty="无匹配城市"

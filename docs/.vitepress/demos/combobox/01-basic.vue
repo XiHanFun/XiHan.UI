@@ -1,7 +1,6 @@
-<!-- 基础用法 | 搜索并选择城市 -->
+<!-- 基础用法 | 搜索并选择城市：filter="contains" 按打的字筛候选，不必自己写过滤；选中后再展开看到全部城市 -->
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
 
 const cities = [
   { value: "beijing", label: "Beijing 北京" },
@@ -10,18 +9,12 @@ const cities = [
   { value: "busan", label: "Busan 釜山（禁用）", disabled: true },
   { value: "london", label: "London 伦敦" },
 ];
-
-const query = ref("");
-const filtered = computed(() => {
-  const q = query.value.trim().toLowerCase();
-  return q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
-});
 </script>
 
 <template>
   <XhComboboxRoot
-    v-model:input-value="query"
-    :collection="filtered"
+    :collection="cities"
+    filter="contains"
     clearable
     label="城市"
     empty="无匹配城市"

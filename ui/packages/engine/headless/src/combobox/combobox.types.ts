@@ -67,7 +67,7 @@ export interface ComboboxValueChangeDetails {
 }
 
 export interface ComboboxInputValueChangeDetails {
-  /** 输入框中的字符串。与选中值是两个概念：过滤由调用方按它自行完成。 */
+  /** 输入框中的字符串。与选中值是两个概念：没给 filter 时过滤由调用方按它自行完成。 */
   inputValue: string
 }
 
@@ -91,6 +91,12 @@ export interface ComboboxNode {
    */
   description?: string
 }
+
+/** 内置过滤的口径：显示文本包含检索词，或以检索词开头；都不分大小写。 */
+export type ComboboxFilterMode = 'contains' | 'startsWith'
+
+/** 自定义过滤：返回真即保留这条候选。query 是用户打的检索词，已 trim 且非空。 */
+export type ComboboxFilter = (node: ComboboxNode, query: string) => boolean
 
 /** 单个候选的元信息，由 collection 推导，不含选中态与高亮态。 */
 export interface ComboboxNodeMeta {
@@ -135,12 +141,20 @@ export interface ComboboxSchema extends MachineSchema {
      */
     ariaLabel?: string
     /**
-     * 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。
+     * 候选数据，显示文本与禁用的事实源。给了 filter 时传全集，组件按用户打的字筛；
+     * 没给时过滤由调用方完成，传入的即当前应显示的候选。
      * 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。
      * 未提供时回到文本写在条目中、从 DOM 查询的方式。
      */
     collection?: ComboboxNode[]
-    /** 当前已过滤 collection 与 Virtualizer 的滚动桥；count 必须与 collection.length 一致。 */
+    /**
+     * 内置过滤：'contains' 显示文本包含检索词，'startsWith' 以检索词开头，都不分大小写；也可以给一个函数自己判。
+     * 检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、内联补全补出的那段都不拿去筛，
+     * 再展开时看到的是全部候选。没给即不过滤（远程搜索就不给，候选由调用方按 onInputValueChange 换）。
+     * 只作用于 collection，不给 collection 时没有效果。
+     */
+    filter?: ComboboxFilterMode | ComboboxFilter
+    /** 当前候选（给了 filter 即筛过的那份，见 api.collection）与 Virtualizer 的滚动桥；count 必须与 api.collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /**
      * 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
@@ -150,7 +164,7 @@ export interface ComboboxSchema extends MachineSchema {
     defaultValue?: string | string[]
     /**
      * 输入框中的字符串。提供即受控，与选中值各自独立。
-     * 过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。
+     * 没给 filter 时过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。
      */
     inputValue?: string
     defaultInputValue?: string
@@ -204,7 +218,7 @@ export interface ComboboxSchema extends MachineSchema {
     onValueChange?: (details: ComboboxValueChangeDetails) => void
     /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
     onClear?: () => void
-    /** 输入串变化回调：调用方据此重新过滤候选。 */
+    /** 输入串变化回调：没给 filter 时调用方据此重新过滤候选。 */
     onInputValueChange?: (details: ComboboxInputValueChangeDetails) => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ComboboxOpenChangeDetails) => void
@@ -221,6 +235,11 @@ export interface ComboboxSchema extends MachineSchema {
     value: string[]
     /** 输入框中的字符串。受控（inputValue 提供）时 cell 直读 prop。 */
     inputValue: string
+    /**
+     * 内置过滤拿去筛候选的检索词：用户打的那段字（及程序化 setInputValue 写进来的串）。
+     * 选中、提交自定义值、清空、失焦对齐与表单重置时清掉；内联补全改写输入框时不动它。
+     */
+    filterQuery: string
     /** 单选选中项的显示文本；由动作从 DOM 查询后回填，失焦复原输入串时使用。 */
     valueText: string | null
     /**
@@ -329,7 +348,7 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 解析后的读屏文案；loading 没写内容时显示其中的 loading。 */
   translations: ComboboxTranslations
-  /** 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 */
+  /** 当下的候选元信息：由 collection 推导，给了 filter 即按检索词筛过，按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly ComboboxNodeMeta[]
   /** 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 */
   value: string[]
