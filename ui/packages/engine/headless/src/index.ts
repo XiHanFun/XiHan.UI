@@ -247,6 +247,8 @@ export { isStructureInstance, isStructureLiteral, isStructureOutlet } from './sh
 export type { StructureChild, StructureInstanceNode, StructureLiteralNode, StructureNode, StructureOutletNode, StructureSlot, StructureSlotted, StructureTag, StructureTakeoverPosition } from './shared/structure'
 export { structureInstance } from './shared/structure-instance'
 export type { StructureInstanceProps } from './shared/structure-instance'
+export { VIRTUAL_STRUCTURE_DELEGATE, virtualListStructure } from './shared/virtual-structure'
+export type { StructureVirtualItem, VirtualStructurePart } from './shared/virtual-structure'
 export { isTimeItemUnavailable, laterTimeBound, resolveTimeStep, timeBoundsOnDate, timeColumns, timeColumnsFor, timeDraftPeriod, timeItemValue, timeUnavailableValue } from './shared/time-constraint'
 export type { ResolvedTimeStep, TimeBounds, TimeColumn, TimeColumnsOptions, TimeColumnUnit, TimeItemAvailability, TimeStep, TimeUnavailableContext, TimeUnavailablePredicate } from './shared/time-constraint'
 export type { TitleDescriptionParts } from './shared/title-description'

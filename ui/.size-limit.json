@@ -461,6 +461,17 @@
     "gzip": true,
     "limit": "57 kB",
     "ignore": [
+      "vue",
+      "*/select-virtual.js"
+    ]
+  },
+  {
+    "name": "vue：XhSelectRoot 开 virtual 时按需加载的那一块",
+    "path": "packages/adapters/vue/dist/components/select/select-virtual.js",
+    "import": "{ SelectVirtualViewport }",
+    "gzip": true,
+    "limit": "19 kB",
+    "ignore": [
       "vue"
     ]
   },

@@ -152,7 +152,7 @@ outline、subtle 和 ghost
 
 ### 长选项虚拟化
 
-完整 collection 负责选择语义，Virtualizer 负责浮层中的窗口
+一万条选项只写 virtual：浮层里只铺滚到的那一屏，键盘仍跨完整 collection；虚拟化那一块按需加载，没开的不为它付体积
 
 <XhDemo src="select/23-virtualized" />
 
@@ -191,7 +191,8 @@ outline、subtle 和 ghost
 
 - 与[表单字段](./field)组合。
 - 不参与表单时使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
-- 长选项列表把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`。
+- 长选项列表不写结构时只写 `virtual`：浮层里只铺滚到的那一屏条目，方向键、Home / End 与按字跳转仍跨完整 collection，自绘滚动条跟着视口走；条目按 `estimateSize`（缺省 36）起算、渲出后按实测校正，带副文本的两行条目也对得齐。虚拟化那一块按需加载，没开的选择器不为 Virtualizer 的内核付体积；挂载后立刻展开、或 `lazyMount` 下第一次展开时它还在路上，到了之后焦点照样补进列表。
+- 手写结构时照旧把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`；`virtual` 只管标准结构。
 
 ### 最佳实践
 
@@ -298,6 +299,8 @@ outline、subtle 和 ghost
 | `XhSelectItem` | `value` | `string` | 是 |  |
 | `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhSelectRoot` | `virtual` | `boolean` |  | 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。虚拟化那一块异步加载，没开的不为它付体积； 手写 children 时不使用它，照旧自己套 Virtualizer 再把 collectionVirtualizer 交给 virtualizer。 |
+| `XhSelectRoot` | `estimateSize` | `number` |  | 虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正。 |
 | `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhSelectRoot` | `empty` | `ReactNode` |  | 自动渲染树中的空态内容，没给时取 translations.empty。 |
 | `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |

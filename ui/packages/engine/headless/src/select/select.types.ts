@@ -281,6 +281,7 @@ export interface SelectSchema extends MachineSchema {
     | 'setReturnFocus'
     | 'setHighlightedValue'
     | 'setInitialHighlightedValue'
+    | 'adoptVirtualizer'
     | 'clearHighlightedValue'
     | 'clearTypeahead'
     | 'resetToDefault'

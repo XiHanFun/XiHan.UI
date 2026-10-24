@@ -15690,7 +15690,7 @@
                 "text": "ElementStructure<XhComboboxElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? comboboxStructure(connectCombobox(host.ctrl.service, wcNormalize), { label: host.label, empty: host.empty, clearable: host.clearable, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? comboboxStructure(connectCombobox(host.ctrl.service, wcNormalize), { label: host.label, empty: host.empty, clearable: host.clearable, name: host.name, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -60981,6 +60981,18 @@
             {
               "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开启原生 multiple），省略该节点即不参与表单",
               "name": "hidden-select"
+            },
+            {
+              "description": "开了 virtual 时生成：Virtualizer 的视口（data-scope=\"virtualizer\"），浮层里由它来滚，列表在它里面",
+              "name": "virtual-viewport"
+            },
+            {
+              "description": "开了 virtual 时生成：Virtualizer 撑出总长的内容层，在列表里面",
+              "name": "virtual-content"
+            },
+            {
+              "description": "开了 virtual 时生成：窗口里每条的外壳，壳里是选择器自己的条目",
+              "name": "virtual-item"
             }
           ],
           "members": [
@@ -60999,7 +61011,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: selectAnatomy, meta: selectMeta, delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }], }"
+              "default": "{ anatomy: selectAnatomy, meta: selectMeta, // virtual- 前缀的三个作者名接的是 virtualizer 的视口、内容层与条目外壳（开了 virtual 才由结构生成） delegates: [{ name: 'tag', parts: ['tag', 'overflow-tag', 'item-delete-trigger'] }, VIRTUAL_STRUCTURE_DELEGATE], }"
             },
             {
               "kind": "field",
@@ -61017,7 +61029,7 @@
                 "text": "ElementStructure<XhSelectElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, empty: host.empty, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: host => host.ctrl.service ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, empty: host.empty, virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
             },
             {
               "kind": "field",
@@ -61034,6 +61046,24 @@
               "type": {
                 "text": "CollectionVirtualizer | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "virtual",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "virtual"
+            },
+            {
+              "kind": "field",
+              "name": "estimateSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "estimate-size"
             },
             {
               "kind": "field",
@@ -61377,11 +61407,41 @@
             },
             {
               "kind": "field",
+              "name": "virtualBinding",
+              "type": {
+                "text": "SelectVirtualBinding | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "标准结构开虚拟化时按需加载进来的绑定：跑 Virtualizer、接视口 / 内容层 / 条目外壳。没开或还没到时为 null。\n只按类型引用：没开 virtual 的选择器不为 Virtualizer 的内核付体积"
+            },
+            {
+              "kind": "field",
+              "name": "virtualLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "currentVirtualizer",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "CollectionVirtualizer | undefined"
+                }
+              },
+              "description": "交给机器的桥：开了 virtual 取绑定的，没开取作者给的。"
+            },
+            {
+              "kind": "field",
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('list'), props: () => ({ size: 'sm' }), })",
-              "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'), props: () => ({ size: 'sm' }), })",
+              "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档。\n虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：条子跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法"
             },
             {
               "kind": "field",
@@ -61649,6 +61709,17 @@
             },
             {
               "kind": "method",
+              "name": "ensureVirtualBinding",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "开了 virtual 才加载绑定；到了就挂上 Virtualizer 的状态机、请元素重渲一轮，结构随之铺出窗口。"
+            },
+            {
+              "kind": "method",
               "name": "wire",
               "privacy": "protected",
               "return": {
@@ -61698,6 +61769,22 @@
               "description": "生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空",
               "name": "clearable",
               "fieldName": "clearable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "生成结构时开虚拟化：浮层里只铺滚到的那一屏条目，虚拟化那一块按需加载；手写部件时不使用它，照旧自己套 xh-virtualizer",
+              "name": "virtual",
+              "fieldName": "virtual"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正",
+              "name": "estimate-size",
+              "fieldName": "estimateSize"
             },
             {
               "type": {
@@ -83036,10 +83123,10 @@
             },
             {
               "kind": "field",
-              "name": "registeredItemIndices",
+              "name": "virtualizerWiring",
               "privacy": "private",
               "readonly": true,
-              "default": "new Set<number>()"
+              "default": "new VirtualizerWiring(this.spreader, { viewport: () => this.getPart('viewport'), content: () => this.getPart('content'), items: () => this.getParts('item'), })"
             },
             {
               "kind": "field",

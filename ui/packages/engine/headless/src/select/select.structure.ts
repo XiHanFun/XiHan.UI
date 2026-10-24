@@ -7,8 +7,10 @@
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
 import type { StructureNode, StructureSlotted } from '../shared/structure'
+import type { StructureVirtualItem, VirtualStructurePart } from '../shared/virtual-structure'
 import type { selectAnatomy } from './select.anatomy'
 import type { SelectApi, SelectNodeMeta } from './select.types'
+import { virtualListStructure } from '../shared/virtual-structure'
 
 type SelectPart = (typeof selectAnatomy)['parts'][number]
 
@@ -49,7 +51,7 @@ type SelectStructurePart = (typeof SELECT_STRUCTURE_PARTS)[number]
 /** 委派给 tag 的部件：标签与 +N 那一枚，名字取元素委派声明里的。 */
 type SelectTagPart = 'tag' | 'overflow-tag'
 
-type SelectNode = StructureNode<SelectStructurePart | SelectTagPart>
+type SelectNode = StructureNode<SelectStructurePart | SelectTagPart | VirtualStructurePart>
 
 /** 结构里要不要铺这几个可选部件。 */
 export interface SelectStructureOptions {
@@ -64,6 +66,11 @@ export interface SelectStructureOptions {
    * 条目文字没给插槽时铺 collection 里的 label；行首、行尾没给插槽时不铺这两格。
    */
   slotted?: StructureSlotted
+  /**
+   * 虚拟化窗口：给了即列表外套 Virtualizer 的视口与内容层，只铺窗口里的这几条（按下标取 collection），
+   * 下标与 key 取自 Virtualizer 的 virtualItems；没给即铺全部条目。
+   */
+  virtualItems?: readonly StructureVirtualItem[]
 }
 
 type SelectStructureModel = Pick<SelectApi, 'collection' | 'multiple' | 'tags' | 'isContentMounted' | 'translations'>
@@ -91,6 +98,7 @@ const NOTHING_SLOTTED: StructureSlotted = () => false
  * 盒里触发器在前、清空按钮在后（按钮不能套按钮），展开箭头是触发器里的指示符；
  * 多选的已选项在触发器里排成标签（只作展示），摆不下的折进 +N；列表内容懒挂载、还没展开过时列表先空着。
  * 浮层里列表之后是空态、在途、取数失败的提示与重试钮，文字取 translations（空态先取 empty），露哪一种归连接层。
+ * 给了 virtualItems 时列表包在 Virtualizer 的视口里，只铺窗口里的条目，见 virtualListStructure。
  */
 export function selectStructure(model: SelectStructureModel, options: SelectStructureOptions = {}): SelectNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
@@ -135,12 +143,21 @@ export function selectStructure(model: SelectStructureModel, options: SelectStru
         tag: 'div',
         part: 'content',
         children: [
-          {
-            key: 'list',
-            tag: 'div',
-            part: 'list',
-            children: model.isContentMounted() ? model.collection.map(node => itemStructure(node, slotted)) : [],
-          },
+          options.virtualItems
+            ? virtualListStructure<SelectStructurePart | SelectTagPart>(
+                { key: 'list', tag: 'div', part: 'list' },
+                model.isContentMounted() ? options.virtualItems : [],
+                (index) => {
+                  const node = model.collection[index]
+                  return node ? itemStructure(node, slotted) : null
+                },
+              )
+            : {
+                key: 'list',
+                tag: 'div',
+                part: 'list',
+                children: model.isContentMounted() ? model.collection.map(node => itemStructure(node, slotted)) : [],
+              },
           slotted('empty')
             ? { key: 'empty', tag: 'div', part: 'empty', slot: { name: 'empty' } }
             : { key: 'empty', tag: 'div', part: 'empty', text: options.empty ?? model.translations.empty },

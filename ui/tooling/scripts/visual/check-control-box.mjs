@@ -196,6 +196,7 @@ const OUTSIDE_BOX = {
   list: 'select 的列表在浮层里撑满面板高度',
   empty: 'cascader 空态铺满面板',
   tree: 'tree-select 的树在浮层里撑满面板高度',
+  viewport: '开了 virtual 的 select 在浮层里由 Virtualizer 的视口撑满面板高度，列表只是视口里的一层',
 }
 
 /**
