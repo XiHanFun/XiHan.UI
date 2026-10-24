@@ -925,8 +925,17 @@ export const TOUR_EN_US: XhLocaleBucket<'tour'> = { close: 'Close', progress: (s
 
 export const TRANSFER_EN_US: XhLocaleBucket<'transfer'> = { toTarget: 'Move to target list', toSource: 'Move to source list', sourceTitle: 'Source list', targetTitle: 'Target list', selectAll: 'Select all', empty: 'No data', loading: 'Loading' }
 
+// 与 TABS_EN_US 同样逐个写出拖拽那几条，不展开 DRAG_EN_US：对象展开打包器不认作无副作用，
+// 这一份会摇不掉，进了每个引用默认文案的组件的包
 export const TREE_EN_US: XhLocaleBucket<'tree'> = {
-  ...DRAG_EN_US,
+  moved,
+  dropped,
+  canceled,
+  rejected,
+  movedInto,
+  droppedInto,
+  canceledInto,
+  rootLevel,
   loading: 'Loading',
   branchError: 'Could not load children',
   retry: 'Retry',
