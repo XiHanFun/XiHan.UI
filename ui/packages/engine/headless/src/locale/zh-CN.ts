@@ -715,7 +715,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: '关闭', progress: (step, count) => `第 ${step} 步，共 ${count} 步` },
   'transfer': { toTarget: '移到目标列表', toSource: '移回源列表', sourceTitle: '源列表', targetTitle: '目标列表', selectAll: '全选', empty: '暂无数据', loading: '加载中' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: '加载中',
+    branchError: '无法加载下级项',
+    retry: '重试',
+    branchEmpty: '没有下级项',
+  },
   'tree-select': {
     ...tagged,
     tree: '树形选项',

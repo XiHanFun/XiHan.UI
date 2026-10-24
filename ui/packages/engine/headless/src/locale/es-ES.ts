@@ -703,7 +703,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Cerrar', progress: (step, count) => `Paso ${step} de ${count}` },
   'transfer': { toTarget: 'Mover a la lista de destino', toSource: 'Mover a la lista de origen', sourceTitle: 'Lista de origen', targetTitle: 'Lista de destino', selectAll: 'Seleccionar todo', empty: 'Sin datos', loading: 'Cargando' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: 'Cargando',
+    branchError: 'No se pudieron cargar los elementos secundarios',
+    retry: 'Reintentar',
+    branchEmpty: 'Sin elementos secundarios',
+  },
   'tree-select': {
     ...tagged,
     tree: 'Opciones en árbol',

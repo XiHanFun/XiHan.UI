@@ -80445,17 +80445,10 @@
             },
             {
               "kind": "field",
-              "name": "ownsFeedbackText",
+              "name": "feedback",
               "privacy": "private",
               "readonly": true,
-              "default": "new WeakMap<HTMLElement, boolean>()"
-            },
-            {
-              "kind": "field",
-              "name": "generatedFeedback",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new WeakSet<HTMLElement>()"
+              "default": "new FeedbackNodes()"
             },
             {
               "kind": "field",
@@ -80841,59 +80834,6 @@
                 }
               ],
               "description": "填入选中项显示文字；首次见到该节点时若已有内容则归作者，之后不再改写。"
-            },
-            {
-              "kind": "method",
-              "name": "fillFeedbackText",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "el",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "text",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "ensureFeedback",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement | null"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "parent",
-                  "type": {
-                    "text": "HTMLElement | null"
-                  }
-                },
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  }
-                },
-                {
-                  "name": "tag",
-                  "default": "'div'"
-                }
-              ],
-              "description": "作者部件优先；缺席时在指定容器末尾补一个默认反馈节点。"
             },
             {
               "kind": "method",
@@ -81482,7 +81422,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，\n元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`\n这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。\n因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。\n\n树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，\n为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。",
+          "description": "`<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，\n元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`\n这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。\n因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。\n\n树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；\n落点校验 `allowDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。\n\n不写部件（或只写 root）时，元素照标准结构按 collection 生成标题（写了 label 属性时）与整棵树，\n展开、取回与重排后按值复用节点。要行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位时整棵手写。\n\n节点写 `hasChildren: true` 且不给 children 即为懒分支：首次展开时调 `loadChildren` 取子项，取回的子项由元素暂存。\n分支里的在途、失败说明、重试钮与空结果四种反馈由元素补齐，作者写了同名部件时用作者的。\n\n开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，\n为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。",
           "name": "XhTreeElement",
           "cssParts": [
             {
@@ -81566,6 +81506,22 @@
               "name": "branch-content"
             },
             {
+              "description": "懒分支在途状态；标记缺席时由元素补齐",
+              "name": "branch-loading"
+            },
+            {
+              "description": "懒分支错误状态；标记缺席时由元素补齐",
+              "name": "branch-error"
+            },
+            {
+              "description": "懒分支失败后的重试按钮；标记缺席时由元素补齐",
+              "name": "branch-retry-trigger"
+            },
+            {
+              "description": "懒分支成功返回空数组的状态；标记缺席时由元素补齐",
+              "name": "branch-empty"
+            },
+            {
               "description": "节点拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由树上的 Alt + 方向键承担",
               "name": "node-drag-trigger"
             }
@@ -81582,11 +81538,38 @@
             },
             {
               "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTreeElement>"
+              },
+              "static": true,
+              "default": "{ build: host => host.ctrl.service ? treeStructure(connectTree(host.ctrl.service, wcNormalize), { label: host.label, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+            },
+            {
+              "kind": "field",
               "name": "collection",
               "privacy": "public",
               "type": {
                 "text": "TreeNode[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "loadChildren",
+              "privacy": "public",
+              "type": {
+                "text": "Function"
+              },
+              "description": "取回 `hasChildren: true` 分支的直接子项；首次展开自动调用，失败后用重试钮或分支上的确认键重试。只能通过 property 设置"
             },
             {
               "kind": "field",
@@ -81799,6 +81782,32 @@
             },
             {
               "kind": "field",
+              "name": "notifyBranchLoadStart",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoad",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyBranchLoadError",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "feedback",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new FeedbackNodes()",
+              "description": "懒分支的四种取数反馈：作者没写时由元素补在分支里。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -81900,6 +81909,27 @@
               "type": {
                 "text": "TreeNodeMoveDetails"
               }
+            },
+            {
+              "description": "分支请求开始；detail 为 `{ value, node, reason }`",
+              "name": "branch-load-start",
+              "type": {
+                "text": "TreeBranchLoadStartDetails"
+              }
+            },
+            {
+              "description": "分支请求成功；detail 为 `{ value, node, children }`",
+              "name": "branch-load",
+              "type": {
+                "text": "TreeBranchLoadDetails"
+              }
+            },
+            {
+              "description": "分支请求失败；detail 为 `{ value, node, error }`",
+              "name": "branch-load-error",
+              "type": {
+                "text": "TreeBranchLoadErrorDetails"
+              }
             }
           ],
           "attributes": [
@@ -81969,6 +81999,14 @@
             },
             {
               "type": {
+                "text": "string | undefined"
+              },
+              "description": "标题文字：不写部件时铺进标准结构的 label；手写结构时写 label 部件",
+              "name": "label",
+              "fieldName": "label"
+            },
+            {
+              "type": {
                 "text": "boolean | undefined"
               },
               "description": "整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中",
@@ -82032,6 +82070,9 @@
               "name": "--xh-tree-branch-content-gap"
             },
             {
+              "name": "--xh-tree-branch-error-fg"
+            },
+            {
               "name": "--xh-tree-branch-gap"
             },
             {
@@ -82039,6 +82080,18 @@
             },
             {
               "name": "--xh-tree-branch-loading-fg"
+            },
+            {
+              "name": "--xh-tree-branch-retry-fg"
+            },
+            {
+              "name": "--xh-tree-branch-status-fg"
+            },
+            {
+              "name": "--xh-tree-branch-status-font-size"
+            },
+            {
+              "name": "--xh-tree-branch-status-py"
             },
             {
               "name": "--xh-tree-drag-fg"

@@ -31,6 +31,7 @@ export function useTree(
   onExpandedValueChange?: TreeSchema['props']['onExpandedValueChange'],
   onSelectionChange?: TreeSchema['props']['onSelectionChange'],
   onNodeMove?: TreeSchema['props']['onNodeMove'],
+  branchLoadHandlers: Pick<TreeSchema['props'], 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError'> = {},
 ): TreeContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -38,7 +39,7 @@ export function useTree(
   // 连打检索缓冲存在机器的 refs 里，适配器不必注入 refs
   const service = useMachine(
     treeMachine,
-    () => ({ ...props, labelled: labelCount.value > 0, onExpandedValueChange, onSelectionChange, onNodeMove }),
+    () => ({ ...props, labelled: labelCount.value > 0, onExpandedValueChange, onSelectionChange, onNodeMove, ...branchLoadHandlers }),
     scope,
   )
   const api = computed(() => connectTree(service, vueNormalize))

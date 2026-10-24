@@ -702,7 +702,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: '閉じる', progress: (step, count) => `${count} ステップ中 ${step} ステップ目` },
   'transfer': { toTarget: '移動先のリストへ移動', toSource: '移動元のリストへ戻す', sourceTitle: '移動元のリスト', targetTitle: '移動先のリスト', selectAll: 'すべて選択', empty: 'データがありません', loading: '読み込み中' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: '読み込み中',
+    branchError: '下位の項目を読み込めませんでした',
+    retry: '再試行',
+    branchEmpty: '下位の項目はありません',
+  },
   'tree-select': {
     ...tagged,
     tree: 'ツリーの選択肢',

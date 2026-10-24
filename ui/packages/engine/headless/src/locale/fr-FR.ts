@@ -711,7 +711,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: 'Fermer', progress: (step, count) => `Étape ${step} sur ${count}` },
   'transfer': { toTarget: 'Déplacer vers la liste cible', toSource: 'Déplacer vers la liste source', sourceTitle: 'Liste source', targetTitle: 'Liste cible', selectAll: 'Tout sélectionner', empty: 'Aucune donnée', loading: 'Chargement' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: 'Chargement',
+    branchError: 'Impossible de charger les sous-éléments',
+    retry: 'Réessayer',
+    branchEmpty: 'Aucun sous-élément',
+  },
   'tree-select': {
     ...tagged,
     tree: 'Options arborescentes',

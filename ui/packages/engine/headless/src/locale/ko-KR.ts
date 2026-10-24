@@ -702,7 +702,13 @@ const translations = {
   'tooltip': { keyLabel: (key, platform) => keyText(KEY_LABEL, key, platform) },
   'tour': { close: '닫기', progress: (step, count) => `총 ${count}단계 중 ${step}단계` },
   'transfer': { toTarget: '대상 목록으로 이동', toSource: '원본 목록으로 이동', sourceTitle: '원본 목록', targetTitle: '대상 목록', selectAll: '모두 선택', empty: '데이터 없음', loading: '로드 중' },
-  'tree': drag,
+  'tree': {
+    ...drag,
+    loading: '로드 중',
+    branchError: '하위 항목을 로드하지 못했습니다',
+    retry: '다시 시도',
+    branchEmpty: '하위 항목 없음',
+  },
   'tree-select': {
     ...tagged,
     tree: '트리 옵션',

@@ -116,10 +116,12 @@
       "tree"
     ],
     "branch-empty": [
+      "tree",
       "tree-select"
     ],
     "branch-error": [
       "cascader",
+      "tree",
       "tree-select"
     ],
     "branch-indicator": [
@@ -131,10 +133,12 @@
     ],
     "branch-loading": [
       "cascader",
+      "tree",
       "tree-select"
     ],
     "branch-retry-trigger": [
       "cascader",
+      "tree",
       "tree-select"
     ],
     "branch-summary": [

@@ -1,18 +1,6 @@
-// 基础用法 | collection 是层级元信息的唯一事实源，标记只负责外观；缩进由子层容器自行撑开
+// 基础用法 | collection 是层级元信息的唯一事实源；不写结构时组件照它铺出标题与整棵树，缩进由子层容器自行撑开
 import type { ReactNode } from "react";
-import {
-  XhTreeBranch,
-  XhTreeBranchContent,
-  XhTreeBranchControl,
-  XhTreeBranchText,
-  XhTreeBranchTrigger,
-  XhTreeItem,
-  XhTreeItemIndicator,
-  XhTreeItemText,
-  XhTreeLabel,
-  XhTreeRoot,
-  XhTreeTree,
-} from "@xihan-ui/react";
+import { XhTreeRoot } from "@xihan-ui/react";
 
 const collection = [
   {
@@ -46,64 +34,8 @@ export default function Demo(): ReactNode {
     <XhTreeRoot
       collection={collection}
       defaultExpandedValue={["src"]}
-      style={{ inlineSize: "100%", maxInlineSize: "320px" }}
-    >
-      <XhTreeLabel>项目文件</XhTreeLabel>
-      <XhTreeTree>
-        <XhTreeBranch value="src">
-          <XhTreeBranchControl>
-            <XhTreeBranchTrigger />
-            <XhTreeBranchText>src</XhTreeBranchText>
-            <XhTreeItemIndicator />
-          </XhTreeBranchControl>
-          <XhTreeBranchContent>
-            <XhTreeBranch value="components">
-              <XhTreeBranchControl>
-                <XhTreeBranchTrigger />
-                <XhTreeBranchText>components</XhTreeBranchText>
-                <XhTreeItemIndicator />
-              </XhTreeBranchControl>
-              <XhTreeBranchContent>
-                <XhTreeItem value="button">
-                  <XhTreeItemText>Button.vue</XhTreeItemText>
-                  <XhTreeItemIndicator />
-                </XhTreeItem>
-                <XhTreeItem value="dialog">
-                  <XhTreeItemText>Dialog.vue</XhTreeItemText>
-                  <XhTreeItemIndicator />
-                </XhTreeItem>
-              </XhTreeBranchContent>
-            </XhTreeBranch>
-            <XhTreeItem value="main">
-              <XhTreeItemText>main.ts</XhTreeItemText>
-              <XhTreeItemIndicator />
-            </XhTreeItem>
-          </XhTreeBranchContent>
-        </XhTreeBranch>
-
-        <XhTreeBranch value="docs">
-          <XhTreeBranchControl>
-            <XhTreeBranchTrigger />
-            <XhTreeBranchText>docs</XhTreeBranchText>
-            <XhTreeItemIndicator />
-          </XhTreeBranchControl>
-          <XhTreeBranchContent>
-            <XhTreeItem value="guide">
-              <XhTreeItemText>guide.md</XhTreeItemText>
-              <XhTreeItemIndicator />
-            </XhTreeItem>
-            <XhTreeItem value="api">
-              <XhTreeItemText>api.md</XhTreeItemText>
-              <XhTreeItemIndicator />
-            </XhTreeItem>
-          </XhTreeBranchContent>
-        </XhTreeBranch>
-
-        <XhTreeItem value="readme">
-          <XhTreeItemText>README.md</XhTreeItemText>
-          <XhTreeItemIndicator />
-        </XhTreeItem>
-      </XhTreeTree>
-    </XhTreeRoot>
+      label="项目文件"
+      style={{ inlineSize: "100%", maxInlineSize: 320 }}
+    />
   );
 }

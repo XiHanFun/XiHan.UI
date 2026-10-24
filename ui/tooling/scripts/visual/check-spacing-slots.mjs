@@ -40,6 +40,8 @@ const SUFFIX = {
  * 键是 `<组件>.<槽名的部件段>`，值是允许读到它的部件。
  */
 const CROSS_PART = {
+  // 公开槽 --xh-tree-branch-loading-fg 早于 branch-loading 部件：它指「正在取子节点的那一枝」，管的是展开箭头与指示符换成的转圈的颜色，改名即破坏
+  'tree.branch-loading': ['branch-indicator'],
   // 镜像层必须与输入框逐字对齐，字号读输入框那支槽；波浪线与框下问题行同色，读问题行的色槽
   'expression-input.input': ['highlight'],
   'expression-input.issue': ['highlight-segment'],

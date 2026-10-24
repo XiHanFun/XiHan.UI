@@ -6,10 +6,12 @@
 // 提供 tree 相关实现。
 
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadStartDetails, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTree, treeAnatomy, treeMachine, treeMeta } from '@xihan-ui/headless'
+import { connectTree, treeAnatomy, treeMachine, treeMeta, treeStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -36,7 +38,13 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * 因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。
  *
  * 树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；
- * 落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。
+ * 落点校验 `allowDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。
+ *
+ * 不写部件（或只写 root）时，元素照标准结构按 collection 生成标题（写了 label 属性时）与整棵树，
+ * 展开、取回与重排后按值复用节点。要行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位时整棵手写。
+ *
+ * 节点写 `hasChildren: true` 且不给 children 即为懒分支：首次展开时调 `loadChildren` 取子项，取回的子项由元素暂存。
+ * 分支里的在途、失败说明、重试钮与空结果四种反馈由元素补齐，作者写了同名部件时用作者的。
  *
  * 开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，
  * 只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，
@@ -53,6 +61,8 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开
  * @attr {boolean} lines - 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线
  * @prop {string[]} loadingValue - 正在取子节点的分支；在其中的分支报告 aria-busy，展开箭头换成转圈。只能通过 property 设置
+ * @attr {string} label - 标题文字：不写部件时铺进标准结构的 label；手写结构时写 label 部件
+ * @prop {Function} loadChildren - 取回 `hasChildren: true` 分支的直接子项；首次展开自动调用，失败后用重试钮或分支上的确认键重试。只能通过 property 设置
  * @attr {boolean} disabled - 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
@@ -61,6 +71,9 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires node-move - 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）
+ * @fires branch-load-start - 分支请求开始；detail 为 `{ value, node, reason }`
+ * @fires branch-load - 分支请求成功；detail 为 `{ value, node, children }`
+ * @fires branch-load-error - 分支请求失败；detail 为 `{ value, node, error }`
  * @csspart root - 组件根容器，承载 data-variant 与 data-size
  * @csspart label - 树标题（aria-labelledby 目标）
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 tree 部件平级（root 自身不带角色，无法进入 role=tree 的子节点集合）
@@ -81,10 +94,23 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @csspart branch-text - 分支文本
  * @csspart branch-description - 分支行的第 2 行副文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
+ * @csspart branch-loading - 懒分支在途状态；标记缺席时由元素补齐
+ * @csspart branch-error - 懒分支错误状态；标记缺席时由元素补齐
+ * @csspart branch-retry-trigger - 懒分支失败后的重试按钮；标记缺席时由元素补齐
+ * @csspart branch-empty - 懒分支成功返回空数组的状态；标记缺席时由元素补齐
  * @csspart node-drag-trigger - 节点拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由树上的 Alt + 方向键承担
  */
 export class XhTreeElement extends XhElement {
   static override partContract = { anatomy: treeAnatomy, meta: treeMeta }
+
+  static override structure: ElementStructure<XhTreeElement> = {
+    build: host => host.ctrl.service
+      ? treeStructure(connectTree(host.ctrl.service, wcNormalize), {
+          label: host.label,
+          slotted: (name, key) => host.slotted(name, key),
+        })
+      : undefined,
+  }
 
   // dir 只占属性名、字段改叫 direction：HTMLElement 原生 dir 是 string 访问器，
   // 同名声明既与基类类型冲突，也会盖掉原生反射。别名保留原生行为，
@@ -92,6 +118,8 @@ export class XhTreeElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     collection: { attribute: false },
+    label: { converter: STRING_CONVERTER },
+    loadChildren: { attribute: false },
     virtualizer: { attribute: false },
     variant: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -120,6 +148,8 @@ export class XhTreeElement extends XhElement {
   }
 
   declare collection?: TreeNode[]
+  declare label?: string
+  declare loadChildren?: TreeSchema['props']['loadChildren']
   declare virtualizer?: CollectionVirtualizer
   declare variant?: TreeSchema['props']['variant']
   declare size?: TreeSchema['props']['size']
@@ -155,6 +185,21 @@ export class XhTreeElement extends XhElement {
     this.dispatchEvent(new CustomEvent('node-move', { detail: details, bubbles: true, composed: true }))
   }
 
+  private readonly notifyBranchLoadStart = (details: TreeBranchLoadStartDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-start', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoad = (details: TreeBranchLoadDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyBranchLoadError = (details: TreeBranchLoadErrorDetails): void => {
+    this.dispatchEvent(new CustomEvent('branch-load-error', { detail: details, bubbles: true, composed: true }))
+  }
+
+  /** 懒分支的四种取数反馈：作者没写时由元素补在分支里。 */
+  private readonly feedback = new FeedbackNodes()
+
   // tree 机器无副作用（连打缓冲住在 refs 里、由机器自己建），
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())
@@ -168,6 +213,7 @@ export class XhTreeElement extends XhElement {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       collection: this.collection,
+      loadChildren: this.loadChildren,
       virtualizer: this.virtualizer,
       variant: this.variant,
       size: this.size,
@@ -194,6 +240,9 @@ export class XhTreeElement extends XhElement {
       onExpandedValueChange: this.notifyExpanded,
       onSelectionChange: this.notifySelection,
       onNodeMove: this.notifyNodeMove,
+      onBranchLoadStart: this.notifyBranchLoadStart,
+      onBranchLoad: this.notifyBranchLoad,
+      onBranchLoadError: this.notifyBranchLoadError,
     }
   }
 
@@ -277,6 +326,26 @@ export class XhTreeElement extends XhElement {
     putAll('branch-content', BRANCH_SELECTOR, node => api.getBranchContentProps(node))
     // 把手写在叶子里还是分支里都行，身份跟着最近的那个节点走
     putAll('node-drag-trigger', NODE_SELECTOR, node => api.getNodeDragTriggerProps(node))
+
+    // 懒分支的取数反馈补在分支末尾（控制行与子层之后）；不是懒分支的不补
+    for (const branch of this.getParts('branch')) {
+      const node = this.nodeOf(branch, BRANCH_SELECTOR)
+      if (api.branchLoadState(node.value) == null)
+        continue
+      const feedback = [
+        ['branch-loading', 'div', api.getBranchLoadingProps(node), api.translations.loading],
+        ['branch-error', 'div', api.getBranchErrorProps(node), api.translations.branchError],
+        ['branch-retry-trigger', 'button', api.getBranchRetryTriggerProps(node), api.translations.retry],
+        ['branch-empty', 'div', api.getBranchEmptyProps(node), api.translations.branchEmpty],
+      ] as const
+      for (const [name, tag, props, text] of feedback) {
+        const el = this.feedback.ensure(branch, name, tag, BRANCH_SELECTOR)
+        if (!el)
+          continue
+        this.spreader.spread(el, props as Record<string, unknown>)
+        this.feedback.fillText(el, text)
+      }
+    }
 
     // Light DOM 子层常驻，WC 自管可见性：收起时隐藏 branch-content。
     // connect 已置 data-state=closed，皮肤那条收起规则会被作者层同特指度的 display 声明盖过；

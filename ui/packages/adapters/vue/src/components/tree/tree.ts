@@ -6,12 +6,14 @@
 // 提供 tree 相关实现。
 
 import type { Direction } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, StructureNode, TreeApi, TreeNode, TreeNodeProps, TreeSchema } from '@xihan-ui/headless'
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { TreeContext } from './use-tree'
+import { treeStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
 import { provideTree, provideTreeNode, useTreeContext, useTreeNodeContext } from './context'
 import { useTree } from './use-tree'
 
@@ -61,6 +63,10 @@ export const XhTreeRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]> },
+    /** 标题文字：不写默认插槽时铺进标准结构的 label；手写结构时用 XhTreeLabel。 */
+    label: { type: String },
+    /** 取回 `hasChildren: true` 分支的直接子项；首次展开自动调用，失败后显式重试。 */
+    loadChildren: { type: Function as PropType<TreeProps['loadChildren']> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
     variant: { type: String as PropType<TreeProps['variant']> },
@@ -100,9 +106,14 @@ export const XhTreeRoot = defineComponent({
     'update:selection': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
     // 搬家是通知，节点顺序的真源在使用者的数据里，故没有配对的 update:*
     'node-move': (_move: PayloadOf<TreeProps, 'onNodeMove'>) => true,
+    'branch-load-start': (_details: PayloadOf<TreeProps, 'onBranchLoadStart'>) => true,
+    'branch-load': (_details: PayloadOf<TreeProps, 'onBranchLoad'>) => true,
+    'branch-load-error': (_details: PayloadOf<TreeProps, 'onBranchLoadError'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: TreeRootSlotProps) => VNode[]
+    /** 标准结构里标题的内容；手写结构时不用它。 */
+    label?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const onExpandedValueChange: TreeProps['onExpandedValueChange'] = (details) => {
@@ -116,20 +127,31 @@ export const XhTreeRoot = defineComponent({
     const onNodeMove: TreeProps['onNodeMove'] = (move) => {
       emit('node-move', move)
     }
-    const ctx = useTree(withXhConfig('tree', props) as TreeProps, onExpandedValueChange, onSelectionChange, onNodeMove)
+    const ctx = useTree(withXhConfig('tree', props) as TreeProps, onExpandedValueChange, onSelectionChange, onNodeMove, {
+      onBranchLoadStart: details => emit('branch-load-start', details),
+      onBranchLoad: details => emit('branch-load', details),
+      onBranchLoadError: details => emit('branch-load-error', details),
+    })
     provideTree(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
-      visibleNodes: ctx.api.value.visibleNodes,
-      expandedValue: ctx.api.value.expandedValue,
-      selection: ctx.api.value.selection,
-      focusedValue: ctx.api.value.focusedValue,
-      isExpanded: ctx.api.value.isExpanded,
-      isSelected: ctx.api.value.isSelected,
-      isIndeterminate: ctx.api.value.isIndeterminate,
-      expand: ctx.api.value.expand,
-      collapse: ctx.api.value.collapse,
-      select: ctx.api.value.select,
-    }))
+    // 没写默认插槽时铺标准结构
+    return () => {
+      const api = ctx.api.value
+      const body = slots.default
+        ? slots.default({
+            visibleNodes: api.visibleNodes,
+            expandedValue: api.expandedValue,
+            selection: api.selection,
+            focusedValue: api.focusedValue,
+            isExpanded: api.isExpanded,
+            isSelected: api.isSelected,
+            isIndeterminate: api.isIndeterminate,
+            expand: api.expand,
+            collapse: api.collapse,
+            select: api.select,
+          })
+        : renderDefaultStructure(api, props.label, slots.label)
+      return h('div', api.getRootProps() as Record<string, unknown>, body)
+    }
   },
 })
 
@@ -277,7 +299,7 @@ export const XhTreeBranch = defineComponent({
     return () => h(
       'div',
       { ...ctx.api.value.getBranchProps(node.value) as Record<string, unknown>, ref: el },
-      slots.default?.(),
+      [slots.default?.(), ...renderBranchFeedback(ctx, node.value)],
     )
   },
 })
@@ -337,3 +359,77 @@ export const XhTreeBranchContent = defineComponent({
     return () => h('div', ctx.api.value.getBranchContentProps(node.value) as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 懒分支的四种取数反馈：分支自己补在控制行与子层之后，手写结构与标准结构都一样；不是懒分支时不补。 */
+function renderBranchFeedback(ctx: TreeContext, node: TreeNodeProps): VNode[] {
+  const api = ctx.api.value
+  if (api.branchLoadState(node.value) == null)
+    return []
+  return [
+    h('div', api.getBranchLoadingProps(node) as Record<string, unknown>, api.translations.loading),
+    h('div', api.getBranchErrorProps(node) as Record<string, unknown>, api.translations.branchError),
+    h('button', api.getBranchRetryTriggerProps(node) as Record<string, unknown>, api.translations.retry),
+    h('div', api.getBranchEmptyProps(node) as Record<string, unknown>, api.translations.branchEmpty),
+  ]
+}
+
+export const XhTreeBranchLoading = defineComponent({
+  name: 'XhTreeBranchLoading',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+  },
+})
+
+export const XhTreeBranchError = defineComponent({
+  name: 'XhTreeBranchError',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('div', ctx.api.value.getBranchErrorProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchError)
+  },
+})
+
+export const XhTreeBranchRetryTrigger = defineComponent({
+  name: 'XhTreeBranchRetryTrigger',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
+  },
+})
+
+export const XhTreeBranchEmpty = defineComponent({
+  name: 'XhTreeBranchEmpty',
+  setup(_, { slots }) {
+    const ctx = useTreeContext()
+    const { node } = useTreeNodeContext()
+    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchEmpty)
+  },
+})
+
+/** 标准结构里各部件对应的组件。 */
+const TREE_PARTS = {
+  'label': XhTreeLabel,
+  'tree': XhTreeTree,
+  'item': XhTreeItem,
+  'item-text': XhTreeItemText,
+  'item-description': XhTreeItemDescription,
+  'item-indicator': XhTreeItemIndicator,
+  'branch': XhTreeBranch,
+  'branch-control': XhTreeBranchControl,
+  'branch-trigger': XhTreeBranchTrigger,
+  'branch-text': XhTreeBranchText,
+  'branch-description': XhTreeBranchDescription,
+  'branch-content': XhTreeBranchContent,
+}
+
+/**
+ * 未写默认插槽时照 treeStructure 铺开的整套结构：标题与整棵树，与 Web Components 不写部件时元素生成的节点出自同一份。
+ * 标题给了 label 插槽就由它提供，否则取 label 属性；都没给时不铺标题。
+ */
+function renderDefaultStructure(api: TreeApi, label: string | undefined, labelSlot?: () => VNode[]): VNode[] {
+  const nodes = treeStructure(api, { label, slotted: name => name === 'label' && labelSlot != null })
+  return renderStructure(nodes, TREE_PARTS, (node: StructureNode) => node.slot?.name === 'label' ? labelSlot?.() : undefined)
+}

@@ -11,4 +11,6 @@ export { isSelfOrDescendant, isTreeDropAllowed, treeMoveCommand, treeMoveIntentF
 export { treeKeyboard } from './tree.keyboard'
 export { flattenTree, indexTree, treeMachine } from './tree.machine'
 export { treeMeta } from './tree.meta'
-export type { TreeApi, TreeExpandedValueChangeDetails, TreeFocusModel, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreePressedPart, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree.types'
+export { treeStructure } from './tree.structure'
+export type { TreeStructureOptions } from './tree.structure'
+export type { TreeApi, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadSnapshot, TreeBranchLoadStartDetails, TreeBranchLoadStatus, TreeExpandedValueChangeDetails, TreeFocusModel, TreeLoadChildrenRequest, TreeMove, TreeNode, TreeNodeMeta, TreeNodeProps, TreePressedPart, TreeRefs, TreeSchema, TreeSelectionChangeDetails, TreeSelectionMode, TreeTranslations, TreeVisibleNode } from './tree.types'

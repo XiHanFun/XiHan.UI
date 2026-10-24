@@ -53253,6 +53253,71 @@
   padding-inline-start: var(--xh-tree-indent, var(--xh-_tree-indent));
 }
 
+/* 懒分支首次展开取子项时的三种占位排在子层的位置（与子层同一缩进），与整树的占位同一副样子：
+   在途一枚加载环 + 文案、成功为空一句文案、失败一枚警示字形 + 说明。它们不是 treeitem，不接悬停与按下 */
+.xh-scope-tree:is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error']) {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-_tree-row-gap);
+  padding-block: var(--xh-tree-branch-status-py, var(--xh-_tree-row-py));
+  padding-inline: calc(var(--xh-tree-indent, var(--xh-_tree-indent)) + var(--xh-_tree-row-px)) var(--xh-_tree-row-px);
+  color: var(--xh-tree-branch-status-fg, var(--xh-fg-muted));
+  font-size: var(--xh-tree-branch-status-font-size, var(--xh-_tree-font-size));
+  line-height: var(--xh-leading-none);
+  user-select: none;
+}
+
+/* 环由加载环配方画成，这里只给它盒子：直径取尺寸档的图标档 */
+.xh-scope-tree[data-part='branch-loading']::before {
+  content: '';
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+}
+
+/* 失败的非颜色通道：一枚警示字形，取危险色 */
+.xh-scope-tree[data-part='branch-error']::before {
+  content: '';
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  background-color: var(--xh-tree-branch-error-fg, var(--xh-fg-danger));
+  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+}
+
+/* 重试钮排在失败说明之下、与说明同一缩进；指针入口，键盘在出错的分支行上按 Enter / Space 重试 */
+.xh-scope-tree[data-part='branch-retry-trigger'] {
+  align-self: flex-start;
+  margin-inline-start: calc(var(--xh-tree-indent, var(--xh-_tree-indent)) + var(--xh-_tree-row-px));
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--xh-tree-branch-retry-fg, var(--xh-fg-brand));
+  font: inherit;
+  font-size: var(--xh-tree-branch-status-font-size, var(--xh-_tree-font-size));
+  line-height: var(--xh-leading-normal);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: var(--xh-space-0_5);
+  cursor: pointer;
+  transition: text-decoration-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+.xh-scope-tree[data-part='branch-retry-trigger']:hover {
+  text-decoration-color: currentColor;
+}
+
+.xh-scope-tree[data-part='branch-retry-trigger']:disabled {
+  color: var(--xh-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+.xh-scope-tree:is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'], [data-part='branch-retry-trigger'])[hidden] {
+  display: none;
+}
+
 /*
  * 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点从竖线横出一段接到自己行首（├），
  * 最后一个子节点的竖线止于它那一行的中线（└），层级深时一眼看得出谁挂在谁下面。
@@ -53586,6 +53651,7 @@
      字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
      条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
      禁用取 GrayText */
+  .xh-scope-tree[data-part='branch-error']::before,
   .xh-scope-tree:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
   .xh-scope-tree[data-part='item-indicator']:empty::before {
     forced-color-adjust: none;

@@ -565,6 +565,7 @@
   "[data-scope=\"tree-select\"][data-part=\"item-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"tree\"][data-part=\"branch-control\"][data-drop=\"after\"]::after": "写法挂不出来：::",
   "[data-scope=\"tree\"][data-part=\"branch-control\"][data-drop=\"before\"]::after": "写法挂不出来：::",
+  "[data-scope=\"tree\"][data-part=\"branch-error\"]::before": "写法挂不出来：::",
   "[data-scope=\"tree\"][data-part=\"branch-indicator\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"tree\"][data-part=\"branch-trigger\"]:empty::before": "写法挂不出来：:empty",
   "[data-scope=\"tree\"][data-part=\"item-indicator\"]:empty::before": "写法挂不出来：:empty",
