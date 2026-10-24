@@ -89,7 +89,7 @@ function createDatePickerContext(
   const labelCount = ref(0)
   const root = useMachine(datePickerMachine, () => ({ ...props, labelled: labelCount.value > 0, ...handlers }), scope)
   const calendar = useMachine<CalendarPickerSchema>(calendarPickerMachine, () => datePickerCalendarProps(root), scope)
-  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope)
+  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope, { formField: false })
   const services: DatePickerServices = { root, calendar, field }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」

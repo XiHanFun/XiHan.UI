@@ -5,7 +5,7 @@
 
 // 提供 context 相关实现。
 
-import type { FormPath } from '@xihan-ui/headless'
+import type { FormFieldModel, FormPath } from '@xihan-ui/headless'
 import type { InjectionKey } from 'vue'
 import type { FormContext } from './use-form'
 import { inject, provide } from 'vue'
@@ -31,6 +31,8 @@ export function useOptionalFormContext(): FormContext | null {
 /** 字段容器把字段名交给后代：Field 据此从表单上下文自取校验态。 */
 export interface FormFieldHandle {
   name: () => FormPath
+  /** 这个字段的值端口：组里没给值的录入控件经它按字段名读写表单的值。 */
+  model: FormFieldModel
 }
 
 const FIELD_KEY: InjectionKey<FormFieldHandle | null> = Symbol.for('xh-form-field')

@@ -5,13 +5,15 @@
 
 // 提供 form control host 相关实现。
 
-import type { FormControlState } from '@xihan-ui/headless'
+import type { FormControlState, FormFieldModel } from '@xihan-ui/headless'
 import { GEN_ATTR } from '../dom/generated-nodes'
 import { STRUCTURE_MARK } from '../dom/structure'
 
 /** 能接收最近 Form/Field 状态的非 Portal 表单控件宿主。 */
 export interface FormControlHost extends HTMLElement {
   setFormControlState: (state: FormControlState | undefined) => void
+  /** 字段组的值端口，见 XhElement.setFormFieldModel。 */
+  setFormFieldModel: (model: FormFieldModel | null) => void
 }
 
 /**

@@ -17,6 +17,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { formFieldModel } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -200,8 +201,10 @@ export interface XhFormFieldGroupProps extends Omit<ComponentPropsWithRef<'div'>
 export function XhFormFieldGroup({ name, span, children, ...rest }: XhFormFieldGroupProps): ReactNode {
   const ctx = useFormContext()
   const api = ctx.api
-  // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运
-  const handle = useMemo(() => ({ name }), [name])
+  // 后代 Field 据此从表单上下文自取校验态，省掉逐字段搬运；没给值的录入控件经值端口按字段名读写。
+  // 字段值进依赖：表单从外面改了这个字段（重置、setFieldValue），组里的控件凭 handle 换身份重渲
+  const value = api.getFieldValue(name)
+  const handle = useMemo(() => ({ name, model: formFieldModel(ctx.service, () => name) }), [name, ctx.service, value])
   return (
     <FormFieldProvider value={handle}>
       <div

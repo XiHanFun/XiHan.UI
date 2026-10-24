@@ -1,4 +1,4 @@
-<!-- 表单页 | 一张值表驱动多种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一经表单 -->
+<!-- 表单页 | 一张值表驱动多种控件：文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框放进字段组即按 name 读写这张表，不必逐个接线；校验、错误态与错误摘要统一经表单 -->
 <script setup lang="ts">
 import type { RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import {
@@ -125,30 +125,21 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>问题本身</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="title">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="title">
+          <XhFieldRoot required>
             <XhFieldLabel>标题</XhFieldLabel>
             <XhFieldControl>
-              <input
-                :value="value"
-                placeholder="一句话说清现象"
-                @input="setValue(($event.target as HTMLInputElement).value)"
-              >
+              <XhTextFieldRoot placeholder="一句话说清现象" />
             </XhFieldControl>
             <XhFieldErrorText>{{ error }}</XhFieldErrorText>
           </XhFieldRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="detail">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="detail">
+          <XhFieldRoot required>
             <XhFieldLabel>详细描述</XhFieldLabel>
             <XhFieldControl>
-              <XhTextFieldRoot
-                :value="String(value ?? '')"
-                :invalid="invalid"
-                placeholder="复现步骤、期望结果、实际结果"
-                @update:value="setValue($event)"
-              >
+              <XhTextFieldRoot placeholder="复现步骤、期望结果、实际结果">
                 <XhTextFieldControl>
                   <XhTextFieldInput as="textarea" rows="3" />
                 </XhTextFieldControl>
@@ -160,23 +151,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         </XhFormFieldGroup>
 
         <div class="form-page__row">
-          <XhFormFieldGroup v-slot="{ value, setValue }" name="priority">
-            <XhSelectRoot
-              :collection="priorities"
-              :value="(value as string[])"
-              label="优先级"
-              placeholder="请选择"
-              @update:value="setValue($event)"
-            />
+          <XhFormFieldGroup name="priority">
+            <XhSelectRoot :collection="priorities" label="优先级" placeholder="请选择" />
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup v-slot="{ value, setValue }" name="amount">
-            <XhNumberFieldRoot
-              :value="String(value ?? '')"
-              :min="1"
-              :max="99"
-              @update:value="setValue($event)"
-            >
+          <XhFormFieldGroup name="amount">
+            <XhNumberFieldRoot :min="1" :max="99">
               <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
               <XhNumberFieldControl>
                 <XhNumberFieldDecrementTrigger />
@@ -187,22 +167,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhFormFieldGroup>
         </div>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="kind">
-          <XhRadioGroupRoot
-            :collection="kinds"
-            :value="(value as string)"
-            label="工单类型"
-            @update:value="setValue($event)"
-          />
+        <XhFormFieldGroup name="kind">
+          <XhRadioGroupRoot :collection="kinds" label="工单类型" />
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="labels">
-          <XhTagsInputRoot
-            v-slot="{ value: tags }"
-            :value="(value as string[])"
-            placeholder="回车落一个"
-            @update:value="setValue($event)"
-          >
+        <XhFormFieldGroup name="labels">
+          <XhTagsInputRoot v-slot="{ value: tags }" placeholder="回车落一个">
             <XhTagsInputLabel>关联模块</XhTagsInputLabel>
             <XhTagsInputControl>
               <XhTagsInputItem v-for="tag in tags" :key="tag" :value="tag">
@@ -216,16 +186,8 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhTagsInputRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="impact">
-          <XhSliderRoot
-            v-slot="{ value: impact }"
-            :value="(value as number[])"
-            :min="0"
-            :max="100"
-            :step="5"
-            :large-step="20"
-            @update:value="setValue($event)"
-          >
+        <XhFormFieldGroup name="impact">
+          <XhSliderRoot v-slot="{ value: impact }" :min="0" :max="100" :step="5" :large-step="20">
             <XhSliderLabel>影响面估计：{{ impact[0] }}%</XhSliderLabel>
             <XhSliderControl>
               <XhSliderTrack>
@@ -240,21 +202,17 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="notify">
+        <XhFormFieldGroup name="notify">
           <label class="form-page__check">
-            <XhSwitch :checked="value === true" @update:checked="setValue($event)" />
+            <XhSwitch />
             有进展就通知我
           </label>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="agree">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="agree">
+          <XhFieldRoot required>
             <label class="form-page__check">
-              <XhCheckbox
-                :checked="value === true"
-                :invalid="invalid"
-                @update:checked="setValue($event)"
-              />
+              <XhCheckbox />
               这条工单可以对内公开
             </label>
             <XhFieldErrorText>{{ error }}</XhFieldErrorText>

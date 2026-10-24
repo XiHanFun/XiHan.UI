@@ -27,7 +27,7 @@ import type {
   FormValuesChangeDetails,
 } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'
-import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
+import { connectForm, formAnatomy, formFieldModel, formMachine, formMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -386,16 +386,21 @@ export class XhFormElement extends XhElement {
         required: api.isFieldRequired(name),
         invalid: api.isFieldInvalid(name),
       }
+      // 值端口按字段名现取：字段组改了 name 也跟着换字段
+      const model = formFieldModel(this.ctrl.service, () => fieldPathOf(el))
       // 表单只发现 Light-DOM 控件并交出最近状态；实例优先级与实际交互都由控件机器处理。
       for (const control of el.querySelectorAll<FormControlHost>(`xh-field, ${FORM_CONTROL_HOST_SELECTOR}`)) {
-        // Field 自己会再把已合并状态交给其内的控件，避免 Form 越过 Field 覆盖最近继承源。
-        if (control.tagName !== 'XH-FIELD' && control.closest('xh-field'))
-          continue
         if (isComposedControl(control))
           continue
         // 字段边界后面的控件与 Field 不归这个字段组：边界落在字段组里面时跳过
         const boundary = control.parentElement?.closest('xh-field-boundary')
         if (boundary && el.contains(boundary))
+          continue
+        // 值不经 Field 转手：Field 里的控件也直接从字段组接值端口。字段组嵌套时按文档序后到的内层盖过外层
+        if (control.tagName !== 'XH-FIELD')
+          control.setFormFieldModel(model)
+        // Field 自己会再把已合并状态交给其内的控件，避免 Form 越过 Field 覆盖最近继承源。
+        if (control.tagName !== 'XH-FIELD' && control.closest('xh-field'))
           continue
         control.setFormControlState(state)
       }

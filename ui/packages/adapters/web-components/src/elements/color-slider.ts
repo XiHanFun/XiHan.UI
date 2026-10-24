@@ -107,7 +107,7 @@ export class XhColorSliderElement extends XhElement {
     this,
     sliderMachine,
     () => colorSliderSliderProps(this.ctrl.service),
-    { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')) },
+    { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')), formField: false },
   )
 
   private inheritedControl: FormControlState | undefined

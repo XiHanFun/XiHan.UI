@@ -372,7 +372,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     this,
     dateFieldMachine,
     () => datePickerFieldProps(this.rootCtrl.service),
-    { scope: this.pickerScope },
+    { scope: this.pickerScope, formField: false },
   )
 
   /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */

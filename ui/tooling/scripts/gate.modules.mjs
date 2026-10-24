@@ -153,6 +153,7 @@ export const MODULES = [
       'node tooling/scripts/adapter/check-part-wiring.mjs',
       'node tooling/scripts/adapter/check-field-wiring.mjs',
       'node tooling/scripts/adapter/check-form-reset.mjs',
+      'node tooling/scripts/adapter/check-form-model.mjs',
       'node tooling/scripts/adapter/check-slot-types.mjs',
       'node tooling/scripts/adapter/check-translations-slots.mjs',
       'node tooling/scripts/adapter/check-config-wiring.mjs',

@@ -80,8 +80,8 @@ export function useColorPicker(
   // 两条滑块同样可以放 label 部件：各自的登记数喂给各自的机器
   const colorSlider = (sliderProps: (root: Service<ColorPickerSchema>) => ColorSliderSchema['props']): ColorSliderServices & { trackRef: Ref<HTMLElement | null>, labelCount: Ref<number> } => {
     const labelCount = ref(0)
-    const root = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...sliderProps(service), labelled: labelCount.value > 0 }), scope)
-    const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(root), scope)
+    const root = useMachine<ColorSliderSchema>(colorSliderMachine, () => ({ ...sliderProps(service), labelled: labelCount.value > 0 }), scope, { formField: false })
+    const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(root), scope, { formField: false })
     const trackRef = ref<HTMLElement | null>(null)
     // 传 getter 而非节点，轨道要到挂载后才有
     slider.refs.set('getTrackEl', () => trackRef.value)
@@ -92,8 +92,8 @@ export function useColorPicker(
   // 内嵌的两组色板同样可以放 label 部件：各自的登记数喂给各自的机器，根的 aria-labelledby 才只指向真渲染了的标题
   const swatchLabels = ref(0)
   const recentSwatchLabels = ref(0)
-  const swatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels.value > 0 }), scope)
-  const recentSwatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels.value > 0 }), scope)
+  const swatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerSwatchPickerProps(service), labelled: swatchLabels.value > 0 }), scope, { formField: false })
+  const recentSwatchPicker = useMachine(colorSwatchPickerMachine, () => ({ ...colorPickerRecentSwatchPickerProps(service), labelled: recentSwatchLabels.value > 0 }), scope, { formField: false })
   const services: ColorPickerServices = {
     root: service,
     hueSlider: { root: hue.root, slider: hue.slider },

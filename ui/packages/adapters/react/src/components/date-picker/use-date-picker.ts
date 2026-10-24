@@ -100,7 +100,7 @@ export function useDatePicker(props: DatePickerSchema['props']): DatePickerConte
       svc.refs.set('getGridEl', () => gridRef.current)
     },
   })
-  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), { scope })
+  const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), { scope, formField: false })
   const services: DatePickerServices = { root, calendar, field }
 
   // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。

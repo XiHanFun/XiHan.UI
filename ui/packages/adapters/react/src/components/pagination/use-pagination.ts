@@ -108,7 +108,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
   const pageSizeSelect = useMachine(
     selectMachine,
     () => paginationPageSizeSelectProps(service),
-    { scope, onCreate: onCreatePageSize },
+    { scope, onCreate: onCreatePageSize, formField: false },
   )
   const api = connectPagination({ root: service, pageSizeSelect }, reactNormalize)
 

@@ -6,12 +6,13 @@
 // 提供 machine controller 相关实现。
 
 import type { Disposable, MachineConfig, MachineSchema, Scope, Service } from '@xihan-ui/core'
+import type { FormFieldModel } from '@xihan-ui/headless'
 import type { XhConfig } from '../config'
 import type { ReactiveController, ReactiveControllerHost } from '../reactive'
 import type { LitRuntime } from './lit-runtime'
 import { createFormResetBridge, createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
 import { isPlainObject } from '@xihan-ui/core/json'
-import { withXhConfigBase } from '@xihan-ui/headless'
+import { bindFormModel, formModelOf, withXhConfigBase } from '@xihan-ui/headless'
 import { resolveXhConfig, xhConfigGeneration } from '../config'
 import { createLitRuntime } from './lit-runtime'
 
@@ -25,6 +26,17 @@ export interface MachineControllerOptions<T extends MachineSchema> {
    * 文案却在 notification 那一桶。
    */
   configName?: string
+  /**
+   * 放进表单字段组时接不接字段的值，缺省接（只对登记了值通道的机器有效）。
+   * 元素内部借来跑的子机器传 false：颜色选择器里的滑块、日期选择器里的日期输入、分页里的每页条数下拉，
+   * 它们与外层元素是同一个宿主，接了就会把外层字段的值当成自己的。
+   */
+  formField?: boolean
+}
+
+/** 能接表单字段组值端口的宿主：Form 发现这个控件时写进来，见 XhElement.setFormFieldModel。 */
+interface FormModelHost {
+  readonly formFieldModel?: FormFieldModel | null
 }
 
 /** 初值类 prop 的键：defaultValue、defaultOpen、defaultWindow…… */
@@ -91,7 +103,9 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     // 全局配置在这一处并进来：所有跑机器的元素都从这里取 props，不必逐个接线。
     // 传宿主元素而不是只看全局那份：配置沿 DOM 祖先链解析，作者用 <xh-config> 包住一棵子树即可局部覆盖
     const bucket = this.opts.configName ?? machine.name
-    this.props = () => withXhConfigBase(bucket, rawProps(), this.config())
+    // 放进表单字段组、自己又没给值的控件按字段名读写表单的值，也在这一处并进来，与 Vue / React 的 useMachine 对位
+    const formModel = this.opts.formField === false ? undefined : formModelOf(machine.name)
+    this.props = () => bindFormModel(withXhConfigBase(bucket, rawProps(), this.config()), formModel, (host as Partial<FormModelHost>).formFieldModel)
     host.addController(this)
     // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }
