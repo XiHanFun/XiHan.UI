@@ -245,6 +245,9 @@ export function connectMenu<T extends PropTypes>(
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
+      // 按钮里只有图标时名字写在这里；没写就不带这个键：触发器常被合并到别家的按钮上（标签页、工具条的「更多」钮），
+      // 合并时 undefined 也会把那颗钮自己的名字盖掉
+      ...(prop('translations')?.trigger == null ? {} : { 'aria-label': prop('translations')?.trigger }),
       'aria-haspopup': 'menu',
       'aria-expanded': open ? 'true' : 'false',
       'aria-controls': ids.content,

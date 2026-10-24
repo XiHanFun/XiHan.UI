@@ -334,6 +334,11 @@ export interface MenuApi<T extends PropTypes = PropTypes> {
 export interface MenuTranslations {
   /** 菜单容器的名字。默认不写，读屏改由 aria-labelledby 指向触发器取名；用 anchor 时没有触发器可指，要写上它。 */
   content: string
+  /**
+   * 触发按钮的名字，写成它的 aria-label。默认不写，名字取按钮里的文字；按钮里只有图标（皮肤画的字形）时要写上它，
+   * 菜单容器经 aria-labelledby 指回触发器，也跟着取到这个名字。
+   */
+  trigger: string
 }
 
 /** 结构里触发器怎么铺、作者接管哪些格。 */

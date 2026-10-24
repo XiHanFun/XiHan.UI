@@ -26,7 +26,7 @@ interface LocaleExcludedKeys {
   'clipboard': 'copy'
   'download-trigger': 'trigger'
   'mention': 'input'
-  'menu': 'content'
+  'menu': 'content' | 'trigger'
   'prompt-input': 'input'
   'question-flow': 'notePlaceholder' | 'skip' | 'continue' | 'send'
   'sortable': 'item'
