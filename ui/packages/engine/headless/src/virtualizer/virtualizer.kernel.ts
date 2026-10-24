@@ -599,6 +599,17 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
     return Math.round(options.horizontal ? el.offsetWidth : el.offsetHeight)
   }
 
+  /**
+   * 把节点量出来的尺寸记进账本。量出 0 的不记：条目只要排了版就不会是 0，量出 0 是它或祖先此刻没排版
+   * （浮层还藏着等定位、Web Components 收起了窗口外的外壳），记进去会把那一条压成 0、总长随之抖动；
+   * 节点排出来后尺寸观察会再报一次真值。
+   */
+  function measureItem(index: number, el: HTMLElement): void {
+    const size = readItemSize(el)
+    if (size > 0)
+      resizeItem(index, size)
+  }
+
   /** 视口里第一条的身份与它离视口起点的距离：条目增删之后按身份找回它、放回原处。 */
   function captureAnchor(): { key: string | number, delta: number } | null {
     if (!target || metrics.count === 0)
@@ -728,9 +739,11 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
             continue
           }
           const index = indexFromElement(node)
-          // estimateFromMeasured 下收起来的节点不量：它量出来恒是 0，计进平均会把估算拉低
-          if (index != null && (!measuredMode() || (!node.hidden && isRendered(index))))
-            resizeItem(index, readItemSize(node))
+          // 收起来的节点一律不量：它量出来恒是 0，记进账本会把那一条压成 0、总长随之抖动。
+          // Web Components 把窗口外的外壳留在 DOM 里只挂 hidden，不像 Vue / React 直接卸掉，这条路上最常碰到；
+          // estimateFromMeasured 下另外只认窗口里的条目，免得计进平均把估算拉低
+          if (index != null && !node.hidden && (!measuredMode() || isRendered(index)))
+            measureItem(index, node)
         }
       })
     }
@@ -868,7 +881,7 @@ export function createVirtualizerKernel(initial: VirtualizerKernelOptions, scope
       if (index == null)
         return
       observeItem(element)
-      resizeItem(index, readItemSize(element))
+      measureItem(index, element)
     },
 
     reset: () => {

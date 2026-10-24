@@ -610,6 +610,24 @@ describe('命令式方法', () => {
     expect(r.api().totalSize).toBe(30000)
   })
 
+  it('窗口里的条目量出 0 视同还没排版：保留估算值，排出来后照常记真值', async () => {
+    const r = rig({ ...LIST, overscan: 0 })
+    await settle()
+    const node = document.createElement('div')
+    node.setAttribute('data-index', '0')
+    // 浮层还藏着等定位：节点在窗口里，但祖先没排版，量出来是 0
+    let height = 0
+    Object.defineProperty(node, 'offsetHeight', { configurable: true, get: () => height })
+    r.viewport.appendChild(node)
+
+    r.api().measureElement(node)
+    expect(r.api().totalSize).toBe(30000)
+
+    height = 90
+    r.api().measureElement(node)
+    expect(r.api().totalSize).toBe(30060)
+  })
+
   it('measure 把视口重新量一遍：没有 ResizeObserver 的环境靠它跟上尺寸变化', async () => {
     const r = rig({ ...LIST, overscan: 0 }, 0)
     await settle()
