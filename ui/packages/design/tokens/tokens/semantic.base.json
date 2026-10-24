@@ -291,6 +291,10 @@
       "$type": "icon",
       "$value": "arrow-down"
     },
+    "mark-filter": {
+      "$type": "icon",
+      "$value": "filter"
+    },
     "mark-info": {
       "$type": "icon",
       "$value": "info"

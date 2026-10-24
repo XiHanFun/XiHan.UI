@@ -16596,6 +16596,7 @@
     "--xh-glyph-mark-eye",
     "--xh-glyph-mark-eye-off",
     "--xh-glyph-mark-file",
+    "--xh-glyph-mark-filter",
     "--xh-glyph-mark-flip-horizontal",
     "--xh-glyph-mark-flip-vertical",
     "--xh-glyph-mark-info",
