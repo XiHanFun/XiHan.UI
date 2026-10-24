@@ -9,7 +9,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema, StructureVirtualItem } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { SelectVirtualWindow } from './use-select'
+import type { StructureVirtualSlot, StructureVirtualWindow } from '../virtualizer/structure-slot'
 import { selectStructure } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
@@ -22,6 +22,7 @@ import { renderStructure } from '../../runtime/structure'
 import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
+import { StructureVirtualProvider, useStructureVirtualParts } from '../virtualizer/structure-slot'
 import {
   SelectGroupProvider,
   SelectItemProvider,
@@ -123,35 +124,6 @@ function SelectHiddenSelect(): ReactNode {
 /** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
 const SELECT_VIRTUAL_ESTIMATE = 36
 
-type SelectVirtualModule = typeof import('./select-virtual')
-
-/**
- * 虚拟化部件单独成块：开了 virtual 才加载，Virtualizer 的内核不进选择器的首包。
- * 不用 React.lazy：内容层与条目外壳也是这一块里的，各自首次渲染都会让外层 Suspense 重新挂起，
- * 挂起时 React 藏起已显示的子树、跑布局副作用的清理，视口来回撤桥。这里手动加载，到了再换上真部件
- */
-function useSelectVirtualModule(virtual: boolean | undefined): SelectVirtualModule | null {
-  const [module, setModule] = useState<SelectVirtualModule | null>(null)
-  useEffect(() => {
-    if (!virtual || module)
-      return
-    let alive = true
-    void import('./select-virtual').then((loaded) => {
-      if (alive)
-        setModule(loaded)
-    })
-    return () => {
-      alive = false
-    }
-  }, [virtual, module])
-  return module
-}
-
-/** 这一块到之前三个委派部件先空着：列表随视口一起晚一拍出现。 */
-function SelectVirtualPending(): ReactNode {
-  return null
-}
-
 export function XhSelectRoot({
   ariaLabel,
   collection,
@@ -196,8 +168,8 @@ export function XhSelectRoot({
 }: XhSelectRootProps): ReactNode {
   // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，它把桥与窗口回报到这里。
   // 视口挂上来之前不带桥、列表里也没有条目；挂上来之后桥交给机器、条目按窗口铺
-  const [virtualWindow, setVirtualWindow] = useState<SelectVirtualWindow | null>(null)
-  const virtualModule = useSelectVirtualModule(virtual)
+  const [virtualWindow, setVirtualWindow] = useState<StructureVirtualWindow | null>(null)
+  const virtualParts = useStructureVirtualParts(virtual)
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
     ariaLabel,
     collection,
@@ -251,21 +223,25 @@ export function XhSelectRoot({
           })}
         </>
       )
-    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix, virtualItems: virtual ? (virtualWindow?.items ?? []) : undefined, virtualModule })
-  if (virtual)
-    ctx.virtual = { count: collection?.length ?? 0, estimateSize: estimateSize ?? SELECT_VIRTUAL_ESTIMATE, publish: setVirtualWindow }
+    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix, virtualItems: virtual ? (virtualWindow?.items ?? []) : undefined, virtualParts: virtual ? virtualParts : undefined })
+  // 条数直取 collection 的长度，不经选择器的 api（见 StructureVirtualSlot.count）；视口自己滚
+  const virtualSlot: StructureVirtualSlot | null = virtual
+    ? { count: collection?.length ?? 0, estimateSize: estimateSize ?? SELECT_VIRTUAL_ESTIMATE, scrollContainer: 'viewport', estimateFromMeasured: false, publish: setVirtualWindow }
+    : null
 
   return (
     <SelectProvider value={ctx}>
-      <div
-        {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
-          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
-        )}
-      >
-        {body}
-      </div>
+      <StructureVirtualProvider value={virtualSlot}>
+        <div
+          {...mergeReactProps(
+            api.getRootProps() as Record<string, unknown>,
+            rest as Record<string, unknown>,
+            { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+          )}
+        >
+          {body}
+        </div>
+      </StructureVirtualProvider>
     </SelectProvider>
   )
 }
@@ -637,9 +613,6 @@ const SELECT_PARTS = {
   'retry-trigger': XhSelectRetryTrigger,
   'item-suffix': XhSelectItemSuffix,
   'item-indicator': XhSelectItemIndicator,
-  'virtualizer/virtual-viewport': SelectVirtualPending,
-  'virtualizer/virtual-content': SelectVirtualPending,
-  'virtualizer/virtual-item': SelectVirtualPending,
 }
 
 interface SelectStructureContent {
@@ -650,8 +623,8 @@ interface SelectStructureContent {
   renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
   renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
   virtualItems?: readonly StructureVirtualItem[]
-  /** 虚拟化那一块到了就换上真部件。 */
-  virtualModule?: SelectVirtualModule | null
+  /** 开了虚拟化时委派给 virtualizer 的三个部件：那一块到之前是空位，到了换上真部件。 */
+  virtualParts?: Readonly<Record<string, (props: never) => ReactNode>>
 }
 
 /**
@@ -674,14 +647,7 @@ function renderDefaultStructure(api: SelectApi, content: SelectStructureContent)
     virtualItems: content.virtualItems,
     slotted: name => slotted[name] === true,
   })
-  const parts = content.virtualModule
-    ? {
-        ...SELECT_PARTS,
-        'virtualizer/virtual-viewport': content.virtualModule.SelectVirtualViewport,
-        'virtualizer/virtual-content': content.virtualModule.SelectVirtualContent,
-        'virtualizer/virtual-item': content.virtualModule.SelectVirtualItem,
-      }
-    : SELECT_PARTS
+  const parts = content.virtualParts ? { ...SELECT_PARTS, ...content.virtualParts } : SELECT_PARTS
   return renderStructure(nodes, parts, (node) => {
     const meta = node.data as SelectNodeMeta
     switch (node.slot?.name) {

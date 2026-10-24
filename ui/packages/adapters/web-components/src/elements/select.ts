@@ -9,13 +9,14 @@ import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement,
 import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
-import type { SelectVirtualBinding } from '../runtime/select-virtual'
+import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
+import { unwrapDelegated } from '../dom/structure'
 import { createOverlayExit } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
@@ -127,15 +128,19 @@ export class XhSelectElement extends XhPortalHostElement {
   static override fieldTarget = { parts: ['trigger'], kind: 'state' } as const
 
   static override structure: ElementStructure<XhSelectElement> = {
-    build: host => host.ctrl.service
-      ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), {
-          label: host.label,
-          clearable: host.clearable,
-          empty: host.empty,
-          virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined,
-          slotted: (name, key) => host.slotted(name, key),
-        })
-      : undefined,
+    build: (host) => {
+      if (!host.ctrl.service)
+        return undefined
+      const nodes = selectStructure(connectSelect(host.ctrl.service, wcNormalize), {
+        label: host.label,
+        clearable: host.clearable,
+        empty: host.empty,
+        virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined,
+        slotted: (name, key) => host.slotted(name, key),
+      })
+      // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，列表本体空着
+      return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes
+    },
   }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
@@ -257,7 +262,7 @@ export class XhSelectElement extends XhPortalHostElement {
    * 标准结构开虚拟化时按需加载进来的绑定：跑 Virtualizer、接视口 / 内容层 / 条目外壳。没开或还没到时为 null。
    * 只按类型引用：没开 virtual 的选择器不为 Virtualizer 的内核付体积
    */
-  private virtualBinding: SelectVirtualBinding | null = null
+  private virtualBinding: StructureVirtualBinding | null = null
   private virtualLoading = false
 
   /** 交给机器的桥：开了 virtual 取绑定的，没开取作者给的。 */
@@ -495,12 +500,15 @@ export class XhSelectElement extends XhPortalHostElement {
     if (!this.virtual || this.virtualBinding || this.virtualLoading)
       return
     this.virtualLoading = true
-    void import('../runtime/select-virtual').then(({ SelectVirtualBinding }) => {
-      this.virtualBinding = new SelectVirtualBinding({
+    void import('../runtime/structure-virtual').then(({ StructureVirtualBinding }) => {
+      this.virtualBinding = new StructureVirtualBinding({
         host: this,
         spreader: this.spreader,
         count: () => this.collection?.length ?? 0,
         estimateSize: () => this.estimateSize ?? SELECT_VIRTUAL_ESTIMATE,
+        // 视口自己滚：浮层给它限高
+        scrollContainer: 'viewport',
+        estimateFromMeasured: false,
         getPart: name => this.getPart(name),
         getParts: name => this.getParts(name),
       })

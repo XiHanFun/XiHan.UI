@@ -8,9 +8,9 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import type { SelectVirtualSlot } from './use-select'
+import type { StructureVirtualSlot } from '../virtualizer/structure-slot'
 import { selectStructure } from '@xihan-ui/headless'
-import { computed, defineAsyncComponent, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
@@ -19,6 +19,7 @@ import { useScrollbars } from '../../runtime/use-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
+import { provideStructureVirtual, STRUCTURE_VIRTUAL_PARTS } from '../virtualizer/structure-slot'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
 import { useSelect } from './use-select'
 
@@ -50,9 +51,6 @@ const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
 
 /** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
 const SELECT_VIRTUAL_ESTIMATE = 36
-
-/** 虚拟化部件单独成块：开了 virtual 才加载，Virtualizer 的内核不进选择器的首包。 */
-const loadVirtual = (): Promise<typeof import('./select-virtual')> => import('./select-virtual')
 
 export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
@@ -136,15 +134,17 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     }
     // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，这里只留一个空位等它登记。
     // 视口挂上来之前不带桥、列表里也没有条目；挂上来之后桥交给机器、条目按窗口铺
-    const virtual: SelectVirtualSlot | undefined = props.virtual
-      ? { count: () => props.collection?.length ?? 0, estimateSize: () => props.estimateSize ?? SELECT_VIRTUAL_ESTIMATE, view: shallowRef(null) }
+    // 条数直取 collection 的长度，不经选择器的 api（见 StructureVirtualSlot.count）；视口自己滚
+    const virtual: StructureVirtualSlot | undefined = props.virtual
+      ? { count: () => props.collection?.length ?? 0, estimateSize: () => props.estimateSize ?? SELECT_VIRTUAL_ESTIMATE, scrollContainer: 'viewport', estimateFromMeasured: false, view: shallowRef(null) }
       : undefined
     const handlers: Record<string, unknown> = { onClear: () => emit('clear'), onRetry: () => emit('retry') }
     // 桥随 Virtualizer 的状态换身份，用取值器现取，机器每次读 prop 都拿到当下这一份
     if (virtual)
       Object.defineProperty(handlers, 'virtualizer', { enumerable: true, get: () => virtual.view.value?.api.value.collectionVirtualizer })
     const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), handlers) as SelectProps, notifyValue, notifyOpen)
-    ctx.virtual = virtual
+    if (virtual)
+      provideStructureVirtual(virtual)
     provideSelect(ctx)
 
     return () => {
@@ -542,9 +542,7 @@ const SELECT_PARTS = {
   'loading': XhSelectLoading,
   'error': XhSelectError,
   'retry-trigger': XhSelectRetryTrigger,
-  'virtualizer/virtual-viewport': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualViewport)),
-  'virtualizer/virtual-content': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualContent)),
-  'virtualizer/virtual-item': /* @__PURE__ */ defineAsyncComponent(() => loadVirtual().then(m => m.SelectVirtualItem)),
+  ...STRUCTURE_VIRTUAL_PARTS,
 }
 
 interface SelectStructureSlots {

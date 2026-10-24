@@ -61029,7 +61029,7 @@
                 "text": "ElementStructure<XhSelectElement>"
               },
               "static": true,
-              "default": "{ build: host => host.ctrl.service ? selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, empty: host.empty, virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), }) : undefined, }"
+              "default": "{ build: (host) => { if (!host.ctrl.service) return undefined const nodes = selectStructure(connectSelect(host.ctrl.service, wcNormalize), { label: host.label, clearable: host.clearable, empty: host.empty, virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), }) // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，列表本体空着 return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes }, }"
             },
             {
               "kind": "field",
