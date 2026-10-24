@@ -19,24 +19,13 @@ import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectVirtualizer, virtualizerAnatomy, virtualizerMachine, virtualizerMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
+import { virtualItemInWindow, VirtualizerWiring } from '../dom/virtualizer-wiring'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
-
-/** 条目声明的下标；缺失或空串一律返回 NaN（见 wire 中的说明）。 */
-function itemIndex(el: HTMLElement): number {
-  const raw = el.getAttribute('value')
-  return raw == null || raw === '' ? Number.NaN : Number(raw)
-}
-
-/** 这个条目要不要把真实尺寸回喂给内核。三态语义与 horizontal 属性一致。 */
-function wantsMeasure(el: HTMLElement): boolean {
-  const raw = el.getAttribute('measure')
-  return raw !== null && raw !== 'false'
-}
 
 /**
  * `<xh-virtualizer>`：Light-DOM 行为宿主：作者写 root / viewport / content / item 角色节点，
@@ -111,7 +100,11 @@ export class XhVirtualizerElement extends XhElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly virtualizerScope = createScope(null, this.idGen)
-  private readonly registeredItemIndices = new Set<number>()
+  private readonly virtualizerWiring = new VirtualizerWiring(this.spreader, {
+    viewport: () => this.getPart('viewport'),
+    content: () => this.getPart('content'),
+    items: () => this.getParts('item'),
+  })
 
   private readonly notify = (details: VirtualizerRangeChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('range-change', { detail: details, bubbles: true, composed: true }))
@@ -202,33 +195,11 @@ export class XhVirtualizerElement extends XhElement {
         this.spreader.spread(el, props)
     }
     put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-
-    // 条目是多实例 part，逐个打：身份取作者写的 value。
-    // 漏写时给 NaN 而不是 Number(null) 的 0：NaN 与任何下标都不相等，条目会被当成
-    // "不在窗口里"收起来，但绝不会冒充第 0 条；Vue 侧漏写 value 拿到的同样是 NaN，两侧一致
-    const nextIndices = new Set<number>()
-    for (const el of this.getParts('item')) {
-      const index = itemIndex(el)
-      nextIndices.add(index)
-      this.spreader.spread(el, api.getItemProps({ index }) as Record<string, unknown>)
-      api.registerItemElement(index, el)
-      // Light DOM 常驻，WC 自管可见性：作者层若给这个 part 声明了 display，
-      // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
-      // 本包的样式自带 [hidden]{display:none} 压得住，但宿主不能指望作者装了这份样式
-      this.setPartHidden(el, !api.virtualItems.some(item => item.index === index))
-      // 量尺寸放在这里而不是连接期：wire 跑在 updated 之后，此刻节点的布局才是这一帧的。
-      // 收起来的条目要不要量由 connect 判（两侧同一份规则）；
-      // 尺寸没变时内核不会再通知，这条回路会自己停下来，不会来回震荡
-      if (wantsMeasure(el))
-        api.measureElement(el)
-    }
-    for (const index of this.registeredItemIndices) {
-      if (!nextIndices.has(index))
-        api.registerItemElement(index, null)
-    }
-    this.registeredItemIndices.clear()
-    for (const index of nextIndices) this.registeredItemIndices.add(index)
+    // Light DOM 常驻，WC 自管可见性：窗口外的条目收起。作者层若给这个 part 声明了 display，
+    // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。先收再接线，量尺寸时只量露着的
+    for (const el of this.getParts('item'))
+      this.setPartHidden(el, !virtualItemInWindow(api, el))
+    // 视口、内容层与条目外壳的接线与开了 virtual 的集合元素共用一份；条目身份取作者写的 value，漏写给 NaN
+    this.virtualizerWiring.wire(api)
   }
 }
