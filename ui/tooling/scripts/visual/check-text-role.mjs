@@ -115,6 +115,7 @@ const GLYPH_EXEMPT = {
   'empty-state:indicator': '空状态的主视觉字形，不是控件内图标',
   'table:expand-trigger': '展开方向 chevron 是指示符，与 16px 方盒同走 --xh-control-indicator-size，不按图标档取',
   'table:sort-trigger': '排序方向箭头是指示符，与 16px 方盒同走 --xh-control-indicator-size（公开槽 --xh-table-sort-size），不按图标档取',
+  'table:trigger': '数据驱动模式下列头里筛选钮（内嵌菜单的触发按钮）的漏斗是指示符，与排序箭头同走 --xh-control-indicator-size（公开槽 --xh-table-filter-size），不按图标档取',
   'tree:branch-trigger': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree:branch-indicator': '展开方向 chevron 是指示符，与 16px 箭头盒同走 --xh-control-indicator-size，不按图标档取',
   'tree:item-indicator': '行尾对号与半选杠是指示符，与 16px 对号盒同走 --xh-control-indicator-size，不按图标档取',

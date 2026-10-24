@@ -61409,7 +61409,7 @@
               "kind": "field",
               "name": "virtualBinding",
               "type": {
-                "text": "SelectVirtualBinding | null"
+                "text": "StructureVirtualBinding | null"
               },
               "privacy": "private",
               "default": "null",
@@ -67528,6 +67528,18 @@
             {
               "description": "取下一页的按钮，放在表尾；点击后的行为由作者决定，取数在途时自动停用",
               "name": "load-more-trigger"
+            },
+            {
+              "description": "开了 virtual 时表体里 Virtualizer 的视口（接线后 data-scope 是 virtualizer，data-part 是 viewport）；不定高、不滚动，滚的是 root",
+              "name": "virtual-viewport"
+            },
+            {
+              "description": "开了 virtual 时视口里的内容层（接线后 data-part 是 content）",
+              "name": "virtual-content"
+            },
+            {
+              "description": "开了 virtual 时窗口里每一行外面的外壳（接线后 data-part 是 item），窗口外的收起",
+              "name": "virtual-item"
             }
           ],
           "members": [
@@ -67538,7 +67550,25 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: tableAnatomy, meta: tableMeta }"
+              "default": "{ anatomy: tableAnatomy, meta: tableMeta, delegates: [VIRTUAL_STRUCTURE_DELEGATE] }"
+            },
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'xh-menu': XhMenuElement, 'xh-pagination': XhPaginationElement }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhTableElement>"
+              },
+              "static": true,
+              "default": "{ build: (host) => { // 这一轮由元素生成结构（作者只写了 root 或什么都没写）：root 之后的分页跟着这一条走 host.structureBuilt = true if (!host.ctrl.service) return undefined const nodes = tableStructure(connectTable(host.ctrl.service, wcNormalize), { virtualItems: host.virtual ? (host.virtualBinding?.virtualItems ?? []) : undefined, slotted: (name, key) => host.slotted(name, key), }) // 虚拟化那一块还在路上：先不铺 Virtualizer 的视口与内容层，表体空着 return host.virtual && !host.virtualBinding ? unwrapDelegated(nodes, VIRTUAL_STRUCTURE_DELEGATE.name) : nodes }, }"
             },
             {
               "kind": "field",
@@ -67555,6 +67585,78 @@
               "type": {
                 "text": "TableRowDef[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "privacy": "public",
+              "type": {
+                "text": "TableRecord[]"
+              },
+              "description": "数据驱动模式：给了它，元素自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）；只写 root 时按标准结构生成表头、表体与空态，列 id 即字段名，某一格可用宿主直接子节点 `slot=\"cell:<行 id>:<列 id>\"` 接管，空态用 `slot=\"empty\"`"
+            },
+            {
+              "kind": "field",
+              "name": "rowKey",
+              "privacy": "public",
+              "type": {
+                "text": "string | ((record: TableRecord) => string)"
+              },
+              "description": "记录的行 id：字段名或取值函数，缺省取 id 字段"
+            },
+            {
+              "kind": "field",
+              "name": "filterValue",
+              "privacy": "public",
+              "type": {
+                "text": "Record<string, string[]>"
+              },
+              "description": "筛选值（列 id → 勾选的值），提供即受控；列给了 filterOptions 时列头生成一颗筛选钮"
+            },
+            {
+              "kind": "field",
+              "name": "defaultFilterValue",
+              "privacy": "public",
+              "type": {
+                "text": "Record<string, string[]>"
+              },
+              "description": "非受控初始筛选值"
+            },
+            {
+              "kind": "field",
+              "name": "pagination",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "pagination"
+            },
+            {
+              "kind": "field",
+              "name": "defaultPage",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "default-page"
+            },
+            {
+              "kind": "field",
+              "name": "virtual",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "virtual"
+            },
+            {
+              "kind": "field",
+              "name": "estimateSize",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "estimate-size"
             },
             {
               "kind": "field",
@@ -67858,6 +67960,18 @@
             },
             {
               "kind": "field",
+              "name": "notifyFilterValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyPage",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifySelection",
               "privacy": "private",
               "readonly": true
@@ -67886,6 +68000,68 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TableSchema>( this, tableMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getRootEl', () => this.getPart('root')) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "virtualBinding",
+              "type": {
+                "text": "StructureVirtualBinding | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "标准结构开虚拟化时按需加载进来的绑定：跑 Virtualizer、接视口 / 内容层 / 行外壳。没开或还没到时为 null。\n只按类型引用：没开 virtual 的表格不为 Virtualizer 的内核付体积"
+            },
+            {
+              "kind": "field",
+              "name": "virtualLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "structureBuilt",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "这一轮由元素生成结构：build 里置上，wire 里读完清掉；作者手写结构时 build 不跑，它停在 false。"
+            },
+            {
+              "kind": "field",
+              "name": "afterRootKeys",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "root 之后的分页按 key 复用：与标准结构那一份分开记。"
+            },
+            {
+              "kind": "method",
+              "name": "currentVirtualizer",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "CollectionVirtualizer | undefined"
+                }
+              },
+              "description": "交给机器的桥：开了 virtual 取绑定的，没开取作者给的。"
+            },
+            {
+              "kind": "method",
+              "name": "ensureVirtualBinding",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "开了 virtual 才加载绑定；到了就挂上 Virtualizer 的状态机、请元素重渲一轮，结构随之铺出窗口。"
             },
             {
               "kind": "method",
@@ -68217,6 +68393,20 @@
               }
             },
             {
+              "description": "筛选值变化（数据驱动模式）；detail 为 `{ value: Record<列 id, string[]> }`",
+              "name": "filter-value-change",
+              "type": {
+                "text": "TableFilterValueChangeDetails"
+              }
+            },
+            {
+              "description": "页码变化（数据驱动模式开了分页）；detail 为 `{ value: number }`",
+              "name": "page-change",
+              "type": {
+                "text": "TablePageChangeDetails"
+              }
+            },
+            {
               "description": "列偏好变化；detail 为 `{ value: TableColumnPreference }`",
               "name": "column-preference-change",
               "type": {
@@ -68375,6 +68565,38 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "数据驱动模式（给了 data）下分页：按 page 与 page-size 切片，元素在 root 之后生成一个 xh-pagination；筛选一变回到第 1 页",
+              "name": "pagination",
+              "fieldName": "pagination"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "非受控初始页码，默认 1",
+              "name": "default-page",
+              "fieldName": "defaultPage"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "标准结构的虚拟化开关：只写 root（或什么都不写）时表体只铺滚到的那一屏行，滚的是 root；Virtualizer 那一块开了才加载",
+              "name": "virtual",
+              "fieldName": "virtual"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估",
+              "name": "estimate-size",
+              "fieldName": "estimateSize"
+            },
+            {
+              "type": {
                 "text": "Direction | undefined"
               },
               "description": "文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr",
@@ -68505,6 +68727,15 @@
               "name": "--xh-table-fg"
             },
             {
+              "name": "--xh-table-filter-fg"
+            },
+            {
+              "name": "--xh-table-filter-fg-active"
+            },
+            {
+              "name": "--xh-table-filter-size"
+            },
+            {
               "name": "--xh-table-font-size"
             },
             {
@@ -68554,6 +68785,9 @@
             },
             {
               "name": "--xh-table-max-h"
+            },
+            {
+              "name": "--xh-table-pagination-gap"
             },
             {
               "name": "--xh-table-radius"

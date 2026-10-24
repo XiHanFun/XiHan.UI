@@ -240,6 +240,8 @@ const NO_PRESS = {
   'switch:label': '标签是包住轨道与文字的整行命中区，点它等于点轨道，按下的回执落在轨道与滑块上，标签自己不动',
   'format-input:item': '开关那一行是包住名字与轨道的整行命中区，点它等于点轨道，按下的回执落在轨道与滑块上，参数行自己不动',
   'editable:label': '标题是「点它等于进编辑态」的扩大命中区，反馈该落在预览区与输入框本体上，标签自己不动',
+  // 数据驱动模式下列头里的筛选钮：内嵌的菜单触发按钮，菜单没有按压通道
+  'table:menu/trigger': '列头里的筛选钮是内嵌菜单的触发按钮，按下即展开，回执是展开态的换面（menu.css 的 data-state=open），菜单不投影按压态',
   'slider:tick-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
   // 字段外壳与壳里铺满宽度的值显示体：缩放会把回显文字一起挤
   'cascader:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
@@ -437,10 +439,12 @@ async function isRowProfile(name, part) {
 }
 
 for (const key of Object.keys(NO_PRESS)) {
-  const [name, part] = key.split(':')
+  const [name, partName] = key.split(':')
+  // 主体戴着别家 scope 时键写成「宿主:scope/部件」，部件到那家的解剖里查，:active 仍在宿主的皮肤里查
+  const [scope, part] = partName.includes('/') ? partName.split('/') : [name, partName]
   let anatomy
   try {
-    anatomy = await readFile(`${HEADLESS}/${name}/${name}.anatomy.ts`, 'utf8')
+    anatomy = await readFile(`${HEADLESS}/${scope}/${scope}.anatomy.ts`, 'utf8')
   }
   catch {
     problems.push(`${key} 的解剖文件读不到——组件改名了就把 NO_PRESS 里那条一起改`)

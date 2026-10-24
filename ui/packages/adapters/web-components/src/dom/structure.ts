@@ -16,6 +16,9 @@ import { createGeneratedElement, GEN_ATTR, generatedChildren, reconcile, SVG_NS 
 /** 标准结构生成的节点在 data-xh-gen 上写的值。 */
 export const STRUCTURE_MARK = 'structure'
 
+/** 宿主里紧跟 root 的组合节点写的标记：与标准结构的生成节点分开，结构同步清宿主那一层的生成节点时不碰它们。 */
+const AFTER_ROOT_MARK = 'structure-after-root'
+
 /** 结构标签里属于 SVG 命名空间的图元。 */
 const SVG_TAGS: ReadonlySet<string> = new Set(['svg', 'g', 'line', 'path'])
 
@@ -337,6 +340,28 @@ export function unwrapDelegated(nodes: readonly StructureChild[], component: str
       return children ?? []
     return [children ? { ...node, children } : node]
   })
+}
+
+/**
+ * 宿主里紧跟 root 的组合节点：表格数据驱动模式的分页（root 是 grid 系角色，分页只能是它的兄弟）。
+ * 按 key 复用、按 property 赋值，与结构里的组合节点同一套规则；没有 root 或列表为空时撤掉。
+ * 只在不在位时挪动：挪动一个已在文档里的节点会让里面的焦点丢掉。
+ */
+export function placeAfterRoot(host: Element, root: Element | null, nodes: readonly StructureInstanceNode[], keys: KeyedChildren): void {
+  const doc = host.ownerDocument
+  reconcile(host, root ? nodes : [], keys, node => node.key, (node, reuse) => {
+    const el = placeInstance(doc, node, reuse)
+    el.setAttribute(GEN_ATTR, AFTER_ROOT_MARK)
+    return el
+  }, AFTER_ROOT_MARK)
+  if (!root)
+    return
+  let anchor: Element = root
+  for (const el of generatedChildren(host, AFTER_ROOT_MARK)) {
+    if (anchor.nextElementSibling !== el)
+      anchor.after(el)
+    anchor = el
+  }
 }
 
 /** 一台宿主的生成状态：按 key 复用的节点表，以及搬进结构里的作者节点 → 它所在的部件。 */

@@ -276,7 +276,7 @@ const SAMPLES: Record<string, Record<string, unknown[][]>> = {
   },
   'splitter': { resizeTrigger: [[0, 2], [1, 2]] },
   'steps': { progressValueText: [[60]] },
-  'table': { ...DRAG, sort: [['Name']], columnResize: [['Name']], columnDrag: [['Name']], columnVisibility: [['Name']] },
+  'table': { ...DRAG, sort: [['Name']], columnResize: [['Name']], columnDrag: [['Name']], columnVisibility: [['Name']], filter: [['Name']] },
   'tabs': DRAG,
   'tag-group': { deleteItem: [['Tag']] },
   'tags-input': { deleteItem: [['Tag']], editTagInput: [['Tag']] },

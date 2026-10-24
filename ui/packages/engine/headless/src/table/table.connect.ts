@@ -37,6 +37,7 @@ import { tableAnatomy, tableRowQuery } from './table.anatomy'
 import { buildTableHeaderRows, orderColumnIds, resolveTableColumns, tableColumnAncestors, tableLeafColumns } from './table.columns'
 import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableColumnIds, rowGroupRects, rowReorderReason, tableRowMoveCommand, treeRowIntentFromKey } from './table.drag'
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableSelectionMode } from './table.machine'
+import { tableCellText, tableDataViewOf } from './table.pipeline'
 import {
   flattenTableRows,
   tableCascadeRoots,
@@ -68,9 +69,9 @@ function columnSize(width: string | number | undefined): string | undefined {
  * 作者写的 `minWidth` / `maxWidth` 同时管布局：伸缩分剩余空间时不越过这两条，
  * 三者写成同一个数就是一列定宽。
  */
-function columnSizeStyle(def: TableColumnDef | undefined, pinned: boolean): Record<string, unknown> {
+function columnSizeStyle(def: TableColumnDef | undefined, pinned: boolean, width: string | number | undefined = def?.width): Record<string, unknown> {
   const style: Record<string, unknown> = {}
-  const size = columnSize(def?.width)
+  const size = columnSize(width)
   if (size)
     Object.assign(style, pinned ? { inlineSize: size, flexGrow: 0, flexShrink: 0 } : { inlineSize: size })
   if (def?.minWidth != null)
@@ -176,6 +177,10 @@ function resizeStepFromKey(key: string, rtl: boolean): number | null {
   return null
 }
 
+/** 数据驱动模式下没写宽度的数据列与序号列的伸缩基准，见 connectTable 里的 basisWidth。 */
+const TABLE_DATA_COLUMN_BASIS = '8rem'
+const TABLE_INDEX_COLUMN_BASIS = '4rem'
+
 /** 表体用自滚视口的提醒只发一次。 */
 let viewportScrollWarned = false
 
@@ -187,7 +192,10 @@ export function connectTable<T extends PropTypes>(
   // 分组列只在表头占格：生效列、列号、列偏好与设置区都只认叶子列
   const authorTree = prop('columns') ?? []
   const authorColumns = tableLeafColumns(authorTree)
-  const rows = prop('rows') ?? []
+  // 数据驱动模式：当前页的行由 data 推出，排序、筛选与切页都在数据管线里算好了，之后的一切照手写结构的路子走
+  const dataView = tableDataViewOf(service)
+  const rows = dataView?.rows ?? prop('rows') ?? []
+  const filterValue = context.get('filterValue')
   // 前缀列插在最前面并占住列号：不占的话右侧所有列的 aria-colindex 会整体串位。
   // 数据列按列偏好排过序、藏过、覆盖过宽与冻结
   const columnPreference = context.get('columnPreference')
@@ -335,10 +343,11 @@ export function connectTable<T extends PropTypes>(
    * 这一行显示什么序号。
    *
    * 平表用分页全局序号，翻到第二页不会又从 1 开始；page / pageSize 都不给时
-   * 退回可见序。树形的大纲编号另行接管（见 rowOutline）。
+   * 退回可见序。树形的大纲编号另行接管（见 rowOutline）。数据驱动模式开了分页时按夹好的页码与生效的每页条数算。
    */
-  const pageNo = Math.max(1, Math.trunc(prop('page') ?? 1))
-  const perPage = Math.max(0, Math.trunc(prop('pageSize') ?? 0))
+  const paginated = !!dataView && !!prop('pagination')
+  const pageNo = paginated ? dataView.page : Math.max(1, Math.trunc(prop('page') ?? 1))
+  const perPage = paginated ? dataView.pageSize : Math.max(0, Math.trunc(prop('pageSize') ?? 0))
   const rowNumber = (rowId: string): string => {
     const outline = rowOutline.get(rowId)
     if (outline)
@@ -551,11 +560,23 @@ export function connectTable<T extends PropTypes>(
       '--xh-_table-span-overhang': `${Math.max(0, last.bottom - first.bottom)}px`,
     }
   }
+  /**
+   * 伸缩的基准宽度。每一行是一个各自伸缩的 flex 行，没写宽度的列按内容定基准时，列头（多了排序钮与筛选钮）
+   * 与各行格子的基准不一样，整列就对不齐。数据驱动模式下这些钮是表格自己铺的，作者无从规避：没写宽度的数据列
+   * 以 TABLE_DATA_COLUMN_BASIS、序号列以 TABLE_INDEX_COLUMN_BASIS 为基准，各行同一个，再照常一起伸缩。
+   * 选择列与展开列每一行装的都是同一颗把手，按内容定基准也对得齐；手写结构照旧按内容定基准。
+   */
+  const basisWidth = (def: TableColumnDef | undefined): string | number | undefined => {
+    if (def?.width != null || !dataView)
+      return def?.width
+    const kind = (def as TableColumn | undefined)?.kind
+    return kind === 'data' ? TABLE_DATA_COLUMN_BASIS : kind === 'index' ? TABLE_INDEX_COLUMN_BASIS : undefined
+  }
   /** 横跨几列的格子（分组表头、合并单元格、下面行里的占位）：宽度按跨过的各列相加。 */
   const spanColumnsStyle = (startIndex: number, colSpan: number): Record<string, unknown> =>
     spanSizeStyle(
       columns.slice(startIndex, startIndex + colSpan),
-      def => def?.width,
+      basisWidth,
       def => (def ? hasWidthOverride(def.id) : false),
     )
 
@@ -921,6 +942,23 @@ export function connectTable<T extends PropTypes>(
     rows,
     visibleRows,
     sort,
+    dataDriven: dataView != null,
+    records: dataView?.records ?? [],
+    recordCount: dataView?.count ?? dataRows.length,
+    recordOf: rowId => dataView?.byId.get(rowId),
+    cellText: (rowId, columnId) => {
+      const record = dataView?.byId.get(rowId)
+      const def = authorColumns.find(column => column.id === columnId)
+      return record && def ? tableCellText(record, def) : ''
+    },
+    filterValue,
+    setFilter: (columnId, values) => send({ type: 'FILTER.SET', column: columnId, value: values }),
+    paginated,
+    page: pageNo,
+    pageSize: perPage,
+    pageCount: paginated ? dataView.pageCount : 1,
+    setPage: page => send({ type: 'PAGE.SET', value: page }),
+    translations: label,
     selection,
     selectionState,
     selectionMode: mode,
@@ -1341,7 +1379,7 @@ export function connectTable<T extends PropTypes>(
       if (cell?.covered) {
         const def = columnOf(column.value)
         const sticky = stickyAttrs(def)
-        const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value))
+        const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value), basisWidth(def))
         return normalize.element({
           ...parts['column-header'].attrs,
           [ITEM_VALUE_ATTR]: column.value,
@@ -1368,7 +1406,7 @@ export function connectTable<T extends PropTypes>(
       const headerSpan = cell && cell.rowSpan > 1 ? cell.rowSpan : undefined
       const sortable = !!def?.sortable
       const direction = sortDirection(column.value)
-      const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value))
+      const sizeStyle = columnSizeStyle(def, hasWidthOverride(column.value), basisWidth(def))
       const sticky = stickyAttrs(def)
       return normalize.element({
         ...parts['column-header'].attrs,
@@ -1383,6 +1421,8 @@ export function connectTable<T extends PropTypes>(
           ? (direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none')
           : undefined,
         'data-sortable': dataAttr(sortable),
+        // 这一列正在筛：皮肤据此把列头里的筛选钮换成品牌色
+        'data-filtered': dataAttr((filterValue[column.value]?.length ?? 0) > 0),
         // 拖动中：被拖的那一列自己降透明度，落点那一列画指示线。
         // 两个属性都不带位移——被拖的列原地不动，冻结列的吸附才不会被祖先 transform 打死
         'data-dragging': dataAttr(draggingColumn === column.value),
@@ -1434,7 +1474,7 @@ export function connectTable<T extends PropTypes>(
       const rowSpan = origin && origin.rowSpan > 1 ? origin.rowSpan : undefined
       const sizeStyle = origin && origin.colSpan > 1
         ? spanColumnsStyle(columnIndex.get(cell.value)! - 1, origin.colSpan)
-        : columnSizeStyle(def, hasWidthOverride(cell.value))
+        : columnSizeStyle(def, hasWidthOverride(cell.value), basisWidth(def))
       const spanStyle = rowSpan && origin ? rowSpanStyle(origin.rowIndex, rowSpan) : {}
       return normalize.element({
         ...parts.cell.attrs,

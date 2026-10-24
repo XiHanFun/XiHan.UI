@@ -844,6 +844,9 @@ export const TABLE_EN_US: XhLocaleBucket<'table'> = {
   toolbar: 'Table toolbar',
   columnList: 'Column settings',
   columnVisibility: column => `Show column ${column}`,
+  filter: column => `Filter ${column}`,
+  empty: 'No data',
+  loading: 'Loading',
 }
 
 export const TABS_EN_US: XhLocaleBucket<'tabs'> = {

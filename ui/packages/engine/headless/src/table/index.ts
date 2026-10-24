@@ -29,6 +29,8 @@ export { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNee
 export type { TableLayoutNeeds } from './table.layout'
 export { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableMachine, tableSelectionMode } from './table.machine'
 export { tableMeta } from './table.meta'
+export { computeTableDataView, TABLE_DEFAULT_PAGE_SIZE, tableCellText, tableCompareValues, tableDataViewOf, tableRowDefs, tableVisibleDataRowCount } from './table.pipeline'
+export type { TableDataInput, TableDataView } from './table.pipeline'
 export { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowSelected, tableSelectableRowIds, tableSelectionIds, tableSelectionState, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 export {
   tableNormalizeSort,
@@ -37,4 +39,6 @@ export {
   tableToggleSort,
 } from './table.sort'
 export type { TableToggleSortOptions } from './table.sort'
-export type { TableActionDetails, TableApi, TableCellProps, TableCellSpan, TableCellSpanDetails, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableColumnSetting, TableDropTarget, TableExpandedValueChangeDetails, TableFocusModel, TableFooterCellSpanDetails, TableFooterRowProps, TableHeaderCell, TableHeaderRowProps, TableLayout, TableNavigation, TablePressedKey, TableRowDef, TableRowMoveDetails, TableRowProps, TableRowReorderReason, TableSchema, TableScrollEdges, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'
+export { tablePaginationStructure, tableStructure } from './table.structure'
+export type { TableCellSlotData, TableStructureOptions } from './table.structure'
+export type { TableActionDetails, TableApi, TableCellProps, TableCellSpan, TableCellSpanDetails, TableColumn, TableColumnDef, TableColumnKind, TableColumnPreference, TableColumnPreferenceChangeDetails, TableColumnProps, TableColumnSetting, TableDropTarget, TableExpandedValueChangeDetails, TableFilterOption, TableFilterValue, TableFilterValueChangeDetails, TableFocusModel, TableFooterCellSpanDetails, TableFooterRowProps, TableHeaderCell, TableHeaderRowProps, TableLayout, TableNavigation, TablePageChangeDetails, TablePressedKey, TableRecord, TableRowDef, TableRowMoveDetails, TableRowProps, TableRowReorderReason, TableSchema, TableScrollEdges, TableSelection, TableSelectionChangeDetails, TableSelectionMode, TableSelectionState, TableSortChangeDetails, TableSortDescriptor, TableSortDirection, TableTranslations, TableVisibleRow } from './table.types'

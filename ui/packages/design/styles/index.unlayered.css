@@ -46222,6 +46222,81 @@
   margin-inline-start: 0;
 }
 
+/* 数据驱动模式下列头里的筛选钮：一张勾选型菜单的触发按钮，钮里不放字，漏斗由这里画，名字由连接层写在 aria-label 上。
+   与排序钮同一副方盒：定尺、透明底、坐在表头淡底上，静息取 subtle 前景，悬停换表头那一档的面，按下即展开，
+   回执是展开态的换面（menu.css）；排在排序钮之后，
+   列里没有排序钮时由它接过 auto 外边距、推到行尾侧。这一列正在筛（列头的 data-filtered）时漏斗换成品牌色。
+   Web Components 下它包在 xh-menu 宿主里，宿主不占盒，钮照样是列头 flex 行的一项 */
+.xh-scope-table[data-part='column-header'] > xh-menu:not([hidden]) {
+  display: contents;
+}
+
+.xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger'] {
+  /* 方盒边长与其余五颗把手同一支；漏斗是指示符，与排序箭头一样读方盒的尺，留一支自己的公开槽 */
+  --xh-_table-trigger-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
+  --xh-icon-size: var(--xh-table-filter-size, var(--xh-_table-trigger-size));
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-_table-trigger-size);
+  block-size: var(--xh-_table-trigger-size);
+  margin-inline-start: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
+  background: transparent;
+  color: var(--xh-table-filter-fg, var(--xh-fg-subtle));
+  cursor: pointer;
+  transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+.xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger']:hover {
+  background: var(--xh-table-sort-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+.xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger']:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+.xh-scope-table[data-part='column-header'][data-filtered] .xh-scope-menu[data-part='trigger'] {
+  color: var(--xh-table-filter-fg-active, var(--xh-fg-brand));
+}
+
+/* 前面已有排序钮时 auto 外边距归它，筛选钮紧贴其后；同理列宽把手紧贴筛选钮之后 */
+.xh-scope-table[data-part='sort-trigger']:not([hidden]) ~ .xh-scope-menu[data-part='trigger'],
+.xh-scope-table[data-part='sort-trigger']:not([hidden]) ~ xh-menu > .xh-scope-menu[data-part='trigger'],
+.xh-scope-menu[data-part='trigger'] ~ .xh-scope-table[data-part='column-resize-trigger'],
+xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
+  margin-inline-start: 0;
+}
+
+/* 漏斗字形同排序箭头：尺寸读钮自己改接过的 --xh-icon-size，:empty 守卫让作者塞的图标整个顶掉兜底 */
+.xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger']:empty::before {
+  content: '';
+  display: inline-block;
+  flex: none;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-filter) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-filter) center / contain no-repeat;
+}
+
+/* 数据驱动模式的分页排在 root 之后（root 是 grid 系角色，分页只能是它的兄弟）：与表格隔开一段、靠行尾侧。
+   Web Components 下分页包在生成的 xh-pagination 宿主里 */
+.xh-scope-table[data-part='root'] + .xh-scope-pagination[data-part='root'],
+.xh-scope-table[data-part='root'] + xh-pagination > .xh-scope-pagination[data-part='root'] {
+  justify-content: flex-end;
+  margin-block-start: var(--xh-table-pagination-gap, var(--xh-space-3));
+}
+
+.xh-scope-table[data-part='root'] + xh-pagination:not([hidden]) {
+  display: block;
+}
+
 /* 接缝上那条线。平时借表头的分隔色，按住与聚焦时换成品牌色好认 */
 .xh-scope-table[data-part='column-resize-trigger']::after {
   content: '';
@@ -46674,6 +46749,11 @@
 
   .xh-scope-table:is([data-part='sort-trigger'], [data-part='expand-trigger'])[data-disabled]:empty::before {
     background-color: GrayText;
+  }
+  /* 列头里的筛选钮同一道理，取 ButtonText：它不走家族配方，悬停与展开时按钮面不会被涂成 Highlight */
+  .xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger']:empty::before {
+    forced-color-adjust: none;
+    background-color: ButtonText;
   }
 }
 

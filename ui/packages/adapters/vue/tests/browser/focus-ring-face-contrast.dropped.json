@@ -430,6 +430,8 @@
   "[data-scope=\"switch\"][data-part=\"thumb\"]": "部件不接焦点：switch/thumb",
   "[data-scope=\"table\"][data-part=\"cell\"][data-drop]:not([data-frozen])::after": "写法挂不出来：::",
   "[data-scope=\"table\"][data-part=\"cell\"][data-frozen-edge]::after": "写法挂不出来：::",
+  "[data-scope=\"table\"][data-part=\"column-header\"] [data-scope=\"menu\"][data-part=\"trigger\"]:empty::before": "写法挂不出来：:empty",
+  "[data-scope=\"table\"][data-part=\"column-header\"] [data-scope=\"menu\"][data-part=\"trigger\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"table\"][data-part=\"column-header\"][data-drop]:not([data-frozen])::after": "写法挂不出来：::",
   "[data-scope=\"table\"][data-part=\"column-header\"][data-frozen-edge]::after": "写法挂不出来：::",
   "[data-scope=\"table\"][data-part=\"column-header\"][data-frozen]": "部件不接焦点：table/column-header",

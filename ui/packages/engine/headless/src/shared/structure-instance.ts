@@ -14,6 +14,7 @@ import type { IconProps } from '../icon/icon.types'
 import type { MenuSchema, MenuStructureOptions } from '../menu/menu.types'
 import type { NumberFieldStructureOptions } from '../number-field/number-field.structure'
 import type { NumberFieldSchema } from '../number-field/number-field.types'
+import type { PaginationSchema } from '../pagination/pagination.types'
 import type { SelectStructureOptions } from '../select/select.structure'
 import type { SelectSchema } from '../select/select.types'
 import type { SwitchStructureOptions } from '../switch/switch.structure'
@@ -39,6 +40,7 @@ export interface StructureInstanceProps {
   'icon': IconProps
   'menu': InstanceProps<MenuSchema, MenuStructureOptions>
   'number-field': InstanceProps<NumberFieldSchema, NumberFieldStructureOptions>
+  'pagination': PaginationSchema['props']
   'select': InstanceProps<SelectSchema, SelectStructureOptions>
   'switch': InstanceProps<SwitchSchema, SwitchStructureOptions>
   'tags-input': InstanceProps<TagsInputSchema, TagsInputStructureOptions>

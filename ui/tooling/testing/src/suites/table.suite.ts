@@ -375,6 +375,54 @@ function activeWidget(index: number): StepWithExpect {
   }
 }
 
+/** 数据驱动模式：列 id 即字段名；name 可排序，size 的格子文字经 format 加上单位。 */
+const DATA_COLUMNS: TableColumnDef[] = [
+  { id: 'name', label: 'Name', sortable: true },
+  { id: 'size', label: 'Size', format: value => `${String(value)} KB` },
+]
+
+const DATA_RECORDS = [
+  { id: 'f1', name: 'beta', size: 2 },
+  { id: 'f2', name: 'alpha', size: 10 },
+  { id: 'f3', name: 'gamma', size: 1 },
+]
+
+/** 分页与筛选用：25 条，kind 按 3 种轮流，筛掉两种剩 9 条。 */
+const PAGED_COLUMNS: TableColumnDef[] = [
+  { id: 'name', label: 'Name' },
+  { id: 'kind', label: 'Kind', filterOptions: [{ value: 'doc' }, { value: 'img' }, { value: 'zip' }] },
+]
+const PAGED_RECORDS = Array.from({ length: 25 }, (_, i) => ({ id: `r${i + 1}`, name: `file-${i + 1}`, kind: ['doc', 'img', 'zip'][i % 3] }))
+
+/** 表体里各格的文字，按文档序。 */
+function bodyCellTexts(doc: Document): string[] {
+  return [...doc.querySelectorAll('[data-scope="table"][data-part="body"] [data-scope="table"][data-part="cell"]')].map(cell => cell.textContent?.trim() ?? '')
+}
+
+/** 表体里各行的身份，按文档序。 */
+function bodyRowValues(doc: Document): string[] {
+  return [...doc.querySelectorAll('[data-scope="table"][data-part="body"] [data-scope="table"][data-part="row"]')].map(row => row.getAttribute('data-value') ?? '')
+}
+
+/** 表格 root 之后紧跟的那个兄弟：Vue / React 是分页的 root，Web Components 是生成的 xh-pagination。 */
+function paginationAfterRoot(doc: Document): Element | null {
+  const root = doc.querySelector('[data-scope="table"][data-part="root"]')
+  const next = root?.nextElementSibling ?? null
+  if (!next)
+    return null
+  return next.matches('[data-scope="pagination"][data-part="root"]') ? next : next.querySelector('[data-scope="pagination"][data-part="root"]')
+}
+
+async function until(check: () => boolean, flush: () => Promise<void>, what: string): Promise<void> {
+  for (let i = 0; i < 50; i++) {
+    if (check())
+      return
+    await flush()
+    await new Promise(resolve => setTimeout(resolve, 10))
+  }
+  throw new Error(`等不到：${what}`)
+}
+
 export const tableSuite: ConformanceSuite = {
   component: 'table',
   anatomy: tableAnatomy,
@@ -1501,6 +1549,79 @@ export const tableSuite: ConformanceSuite = {
         heldPressIgnored('table', 'sort-trigger', '加载中排序把手不接受按压', { selector: SORT_NAME }),
         heldPressIgnored('table', 'column-visibility-trigger', '加载中列显隐把手不接受按压', { value: 'name' }),
         heldPressIgnored('table', 'load-more-trigger', '加载中取下一页按钮不接受按压'),
+      ],
+    },
+    {
+      name: '作者不写结构：三端都照 tableStructure 铺出表头、表体、在途与空态，格子文字取字段值或 format；点排序钮按排序链重排',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { columns: DATA_COLUMNS, data: DATA_RECORDS },
+      initial: {
+        counts: { 'header': 1, 'body': 1, 'row': 4, 'column-header': 2, 'column-label': 2, 'sort-trigger': 1, 'cell': 6, 'loading': 1, 'empty': 1 },
+        parts: {
+          'root': { 'role': 'grid', 'aria-rowcount': '4', 'aria-colcount': '2' },
+          'column-header[0]': { 'data-value': 'name', 'aria-sort': 'none' },
+          'row[1]': { 'data-value': 'f1', 'aria-rowindex': '2' },
+          'row[3]': { 'data-value': 'f3', 'aria-rowindex': '4' },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '格子的文字不进属性快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            if (bodyCellTexts(doc).join('|') !== 'beta|2 KB|alpha|10 KB|gamma|1 KB')
+              throw new Error(`格子文字不对：${bodyCellTexts(doc).join('|')}`)
+          },
+        },
+        {
+          kind: 'click',
+          part: 'sort-trigger',
+          expect: {
+            parts: { 'column-header[0]': { 'aria-sort': 'ascending' }, 'row[1]': { 'data-value': 'f2' }, 'row[2]': { 'data-value': 'f1' }, 'row[3]': { 'data-value': 'f3' } },
+          },
+        },
+      ],
+    },
+    {
+      name: '数据驱动模式：按页切片、分页生成在 root 之后；翻页与筛选都由表格自己算，筛选值受控时跟着宿主写回',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { columns: PAGED_COLUMNS, data: PAGED_RECORDS, pagination: true, pageSize: 10 },
+      initial: {
+        counts: { row: 11, cell: 20 },
+        parts: { 'root': { 'aria-rowcount': '11' }, 'row[1]': { 'data-value': 'r1' } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '分页是 root 的兄弟、戴 pagination 的 scope，不进本组件的属性快照；Vue / React 那一块按需加载，要等它到',
+          run: async ({ doc, flush }) => {
+            await until(() => paginationAfterRoot(doc) != null, flush, '分页出现在 root 之后')
+            const page2 = paginationAfterRoot(doc)!.querySelector<HTMLElement>('[data-scope="pagination"][data-part="item"][data-value="2"]')
+            if (!page2)
+              throw new Error('分页里没有第 2 页')
+            page2.click()
+            await until(() => bodyRowValues(doc)[0] === 'r11', flush, '翻到第 2 页')
+            if (bodyRowValues(doc).length !== 10)
+              throw new Error(`第 2 页应有 10 行：${bodyRowValues(doc).join(',')}`)
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { filterValue: { kind: ['doc'] }, page: 1 },
+          expect: {
+            counts: { row: 10 },
+            parts: { 'row[1]': { 'data-value': 'r1' }, 'row[2]': { 'data-value': 'r4' }, 'column-header[1]': { 'data-filtered': '' } },
+          },
+        },
+        {
+          kind: 'raw',
+          why: '分页按筛过的总条数算页数：9 条只有 1 页',
+          run: async ({ doc, flush }) => {
+            await until(() => paginationAfterRoot(doc)?.querySelector('[data-scope="pagination"][data-part="item"][data-value="2"]') == null, flush, '筛过之后只剩 1 页')
+          },
+        },
       ],
     },
   ],

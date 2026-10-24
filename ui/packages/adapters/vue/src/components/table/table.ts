@@ -7,12 +7,16 @@
 
 import type { CascadeStrategy, ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
+  StructureVirtualItem,
   TableApi,
+  TableCellSlotData,
   TableColumnDef,
   TableColumnKind,
   TableColumnPreference,
   TableColumnProps,
+  TableFilterValue,
   TableNavigation,
+  TableRecord,
   TableRowDef,
   TableRowProps,
   TableSchema,
@@ -20,11 +24,16 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from '@xihan-ui/headless'
-import type { PropType, Ref, SlotsType, VNode } from 'vue'
+import type { Component, PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import type { StructureVirtualSlot } from '../virtualizer/structure-slot'
+import type { VirtualizerContext } from '../virtualizer/use-virtualizer'
 import type { TableContext } from './use-table'
-import { computed, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
+import { forwardCollectionVirtualizer, tablePaginationStructure, tableStructure, tableVisibleDataRowCount } from '@xihan-ui/headless'
+import { computed, defineAsyncComponent, defineComponent, Fragment, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
+import { renderStructure } from '../../runtime/structure'
+import { provideStructureVirtual, STRUCTURE_VIRTUAL_PARTS } from '../virtualizer/structure-slot'
 import {
   provideTable,
   provideTableColumn,
@@ -44,6 +53,11 @@ import {
 import { useTable } from './use-table'
 
 type TableProps = TableSchema['props']
+
+/** 层号：作者写数字，标准结构经属性给字符串，两种都收。 */
+function levelOf(raw: number | string | undefined): number | undefined {
+  return raw == null || raw === '' ? undefined : Number(raw)
+}
 
 /** 本行持有焦点时，value 变更重新报告焦点行，卸载时上报表体失焦 */
 function reportRowFocus(ctx: TableContext, el: Ref<HTMLElement | null>, value: () => string): void {
@@ -123,12 +137,35 @@ export type TableToolbarSlotProps = Pick<
   | 'loading'
 >
 
+/** 标准结构开虚拟化时数据行的预估高度（px），与 md 档的行高相当；还没量到的行按已量到的平均高度估。 */
+const TABLE_VIRTUAL_ESTIMATE = 40
+
 export const XhTableRoot = /* @__PURE__ */ defineComponent({
   name: 'XhTableRoot',
   // 有机器侧兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined，缺省值由 connect 与机器决定
   props: {
     columns: { type: Array as PropType<TableColumnDef[]> },
     rows: { type: Array as PropType<TableRowDef[]> },
+    /**
+     * 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）。
+     * 不写默认插槽时按标准结构铺出表头、表体与空态，列 id 即字段名；格子内容用 cell 插槽接管。
+     */
+    data: { type: Array as PropType<TableRecord[]> },
+    /** 记录的行 id：字段名或取值函数，缺省取 id 字段。 */
+    rowKey: { type: [String, Function] as PropType<TableProps['rowKey']> },
+    /** 筛选值（列 id → 勾选的值）：给定即受控。列给了 filterOptions 时列头铺一颗筛选钮。 */
+    filterValue: { type: Object as PropType<TableFilterValue> },
+    defaultFilterValue: { type: Object as PropType<TableFilterValue> },
+    /** 数据驱动模式下分页：按 page 与 pageSize 切片，表后铺一组分页；筛选一变回到第 1 页。 */
+    pagination: Boolean,
+    defaultPage: { type: Number },
+    /**
+     * 标准结构的虚拟化开关：表体只铺滚到的那一屏行，滚的是表格根节点（吸顶表头、冻结列与行在同一个滚动面里）。
+     * Virtualizer 那一块开了才加载；写默认插槽时不用它，照旧自己套 Virtualizer。
+     */
+    virtual: Boolean,
+    /** 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估。 */
+    estimateSize: { type: Number },
     sort: { type: Array as PropType<TableSortDescriptor[]> },
     defaultSort: { type: Array as PropType<TableSortDescriptor[]> },
     selection: { type: [Array, String] as PropType<TableSelection> },
@@ -182,6 +219,10 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     'update:columnPreference': (_value: TableColumnPreference) => true,
     'sort-change': (_details: PayloadOf<TableProps, 'onSortChange'>) => true,
     'update:sort': (_sort: PayloadOf<TableProps, 'onSortChange'>['value']) => true,
+    'filter-value-change': (_details: PayloadOf<TableProps, 'onFilterValueChange'>) => true,
+    'update:filterValue': (_value: PayloadOf<TableProps, 'onFilterValueChange'>['value']) => true,
+    'page-change': (_details: PayloadOf<TableProps, 'onPageChange'>) => true,
+    'update:page': (_page: PayloadOf<TableProps, 'onPageChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TableProps, 'onSelectionChange'>) => true,
     'update:selection': (_selection: PayloadOf<TableProps, 'onSelectionChange'>['value']) => true,
     'expanded-value-change': (_details: PayloadOf<TableProps, 'onExpandedValueChange'>) => true,
@@ -198,6 +239,10 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
      * 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
      */
     toolbar?: (props: TableToolbarSlotProps) => VNode[]
+    /** 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 */
+    cell?: (props: TableCellSlotData) => VNode[]
+    /** 标准结构里空态占位的内容。 */
+    empty?: () => VNode[]
   }>,
   // Fragment 根接不住自动透传：Vue 只在单个元素根上做这件事。
   // 作者写在 XhTableRoot 上的 class / aria-* / 监听器都要自己合到 root 那个 div 上
@@ -219,14 +264,43 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
       emit('expanded-value-change', details)
       emit('update:expandedValue', details.value)
     }
+    const onFilterValueChange: TableProps['onFilterValueChange'] = (details) => {
+      emit('filter-value-change', details)
+      emit('update:filterValue', details.value)
+    }
+    const onPageChange: TableProps['onPageChange'] = (details) => {
+      emit('page-change', details)
+      emit('update:page', details.value)
+    }
     const onRowMove: TableProps['onRowMove'] = (details) => {
       emit('row-move', details)
     }
     const onAction: TableProps['onAction'] = (details) => {
       emit('action', details)
     }
-    const ctx = useTable(withXhConfig('table', props) as TableProps, onSortChange, onSelectionChange, onExpandedValueChange, onColumnPreferenceChange, onRowMove, onAction)
+    // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，它登记在这一格里
+    const virtualView = props.virtual ? shallowRef<VirtualizerContext | null>(null) : undefined
+    const forwarded = forwardCollectionVirtualizer(() => virtualView?.value?.api.value.collectionVirtualizer)
+    const ctx = useTable(withXhConfig('table', props) as TableProps, {
+      onSortChange,
+      onFilterValueChange,
+      onPageChange,
+      onSelectionChange,
+      onExpandedValueChange,
+      onColumnPreferenceChange,
+      onRowMove,
+      onAction,
+      // 交给机器的是转交桥：求表格的 props 时只看视口登记了没有，不碰 Virtualizer 的 api——
+      // 条数要经表格的数据管线算，表格的 props 又要带上桥，直接取真桥会在同一轮求值里绕回自己
+      ...(virtualView ? { virtualizer: () => (virtualView.value ? forwarded : undefined) } : {}),
+    })
     provideTable(ctx)
+    // 空位等视口来登记：条数经数据管线现算、不经表格的 api（见 StructureVirtualSlot.count），滚的是表格根节点
+    const virtual: StructureVirtualSlot | undefined = virtualView
+      ? { count: () => tableVisibleDataRowCount(ctx.service), estimateSize: () => props.estimateSize ?? TABLE_VIRTUAL_ESTIMATE, scrollContainer: 'ancestor', estimateFromMeasured: true, view: virtualView }
+      : undefined
+    if (virtual)
+      provideStructureVirtual(virtual)
     return () => h(Fragment, [
       // 工具条排在表前且在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup。
       // 载荷只给对整张表下手的那几样，逐行的东西（visibleRows / rowNumber / 选中查询）不进来
@@ -248,37 +322,42 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
       }) ?? null,
       h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs, {
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement | null },
-      }), slots.default?.({
-        columns: ctx.api.value.columns,
-        columnPreference: ctx.api.value.columnPreference,
-        columnSettings: ctx.api.value.columnSettings,
-        setColumnHidden: ctx.api.value.setColumnHidden,
-        setColumnSticky: ctx.api.value.setColumnSticky,
-        moveColumn: ctx.api.value.moveColumn,
-        setColumnWidth: ctx.api.value.setColumnWidth,
-        setColumnPreference: ctx.api.value.setColumnPreference,
-        rowNumber: ctx.api.value.rowNumber,
-        visibleRows: ctx.api.value.visibleRows,
-        headerRows: ctx.api.value.headerRows,
-        headerRowCount: ctx.api.value.headerRowCount,
-        cellSpanOf: ctx.api.value.cellSpanOf,
-        sort: ctx.api.value.sort,
-        selection: ctx.api.value.selection,
-        selectionState: ctx.api.value.selectionState,
-        expandedValue: ctx.api.value.expandedValue,
-        focusedRow: ctx.api.value.focusedRow,
-        empty: ctx.api.value.empty,
-        loading: ctx.api.value.loading,
-        isSelected: ctx.api.value.isSelected,
-        isExpanded: ctx.api.value.isExpanded,
-        sortDirection: ctx.api.value.sortDirection,
-        sortPriority: ctx.api.value.sortPriority,
-        toggleSort: ctx.api.value.toggleSort,
-        selectRow: ctx.api.value.selectRow,
-        toggleSelectAll: ctx.api.value.toggleSelectAll,
-        toggleExpandRow: ctx.api.value.toggleExpandRow,
-        rowReorderDisabledReason: ctx.api.value.rowReorderDisabledReason,
-      })),
+      }), !slots.default
+        // 不写默认插槽：照 headless 的 tableStructure 铺，与 Web Components 只写 root 时元素生成的节点出自同一份
+        ? renderDefaultStructure(ctx.api.value, virtual ? (virtual.view.value?.api.value.virtualItems ?? []) : undefined, slots)
+        : slots.default({
+            columns: ctx.api.value.columns,
+            columnPreference: ctx.api.value.columnPreference,
+            columnSettings: ctx.api.value.columnSettings,
+            setColumnHidden: ctx.api.value.setColumnHidden,
+            setColumnSticky: ctx.api.value.setColumnSticky,
+            moveColumn: ctx.api.value.moveColumn,
+            setColumnWidth: ctx.api.value.setColumnWidth,
+            setColumnPreference: ctx.api.value.setColumnPreference,
+            rowNumber: ctx.api.value.rowNumber,
+            visibleRows: ctx.api.value.visibleRows,
+            headerRows: ctx.api.value.headerRows,
+            headerRowCount: ctx.api.value.headerRowCount,
+            cellSpanOf: ctx.api.value.cellSpanOf,
+            sort: ctx.api.value.sort,
+            selection: ctx.api.value.selection,
+            selectionState: ctx.api.value.selectionState,
+            expandedValue: ctx.api.value.expandedValue,
+            focusedRow: ctx.api.value.focusedRow,
+            empty: ctx.api.value.empty,
+            loading: ctx.api.value.loading,
+            isSelected: ctx.api.value.isSelected,
+            isExpanded: ctx.api.value.isExpanded,
+            sortDirection: ctx.api.value.sortDirection,
+            sortPriority: ctx.api.value.sortPriority,
+            toggleSort: ctx.api.value.toggleSort,
+            selectRow: ctx.api.value.selectRow,
+            toggleSelectAll: ctx.api.value.toggleSelectAll,
+            toggleExpandRow: ctx.api.value.toggleExpandRow,
+            rowReorderDisabledReason: ctx.api.value.rowReorderDisabledReason,
+          })),
+      // 数据驱动模式的分页排在 root 之后：root 是 grid 系角色，分页只能是它的兄弟
+      ...(slots.default ? [] : renderPagination(ctx.api.value)),
       // 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
       // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
       h(
@@ -383,21 +462,21 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
     /** 行 id：数据行必须提供，表头行与脚注行省略。 */
     value: { type: String },
     /** 多级表头写明这是第几行表头、多行表尾写明这是第几行表尾（1 起算）；只有一行时省略。 */
-    level: { type: Number },
+    level: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
     const section = useTableSection()
     if (section !== 'body') {
       if (section === 'header')
-        provideTableHeaderLevel(computed(() => props.level))
+        provideTableHeaderLevel(computed(() => levelOf(props.level)))
       else
-        provideTableFooterLevel(computed(() => props.level))
+        provideTableFooterLevel(computed(() => levelOf(props.level)))
       return () => h(
         'div',
         (section === 'header'
-          ? ctx.api.value.getHeaderRowProps({ level: props.level })
-          : ctx.api.value.getFooterRowProps({ level: props.level })) as Record<string, unknown>,
+          ? ctx.api.value.getHeaderRowProps({ level: levelOf(props.level) })
+          : ctx.api.value.getFooterRowProps({ level: levelOf(props.level) })) as Record<string, unknown>,
         slots.default?.(),
       )
     }
@@ -419,12 +498,12 @@ export const XhTableColumnHeader = /* @__PURE__ */ defineComponent({
   props: {
     value: { type: String, required: true },
     /** 多级表头里这一格所在的表头行；省略时取所在表头行写明的层号。 */
-    level: { type: Number },
+    level: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {
     const ctx = useTableContext()
     const headerLevel = useOptionalTableHeaderLevel()
-    const column = computed<TableColumnProps>(() => ({ value: props.value, level: props.level ?? headerLevel?.value }))
+    const column = computed<TableColumnProps>(() => ({ value: props.value, level: levelOf(props.level) ?? headerLevel?.value }))
     provideTableColumn({ column })
     return () => h(
       'div',
@@ -618,3 +697,58 @@ export const XhTableLoadMoreTrigger = /* @__PURE__ */ defineComponent({
     return () => h('button', ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+/** 数据驱动模式的组合部件单独成块：列头给了 filterOptions 或开了分页才加载，手写结构的表格不为菜单与分页付体积。 */
+const loadExtras = (): Promise<typeof import('./table-extras')> => import('./table-extras')
+
+/** 标准结构里组合进来的组件：列头的筛选菜单、表后的分页。 */
+const TABLE_INSTANCES: Readonly<Record<string, Component>> = {
+  menu: /* @__PURE__ */ defineAsyncComponent(() => loadExtras().then(m => m.XhMenuRoot)),
+  pagination: /* @__PURE__ */ defineAsyncComponent(() => loadExtras().then(m => m.XhPaginationRoot)),
+}
+
+/** 标准结构的部件名 → 部件组件：结构交给 renderStructure 渲成这套部件。 */
+const TABLE_PARTS: Readonly<Record<string, Component>> = {
+  'header': XhTableHeader,
+  'body': XhTableBody,
+  'row': XhTableRow,
+  'column-header': XhTableColumnHeader,
+  'column-label': XhTableColumnLabel,
+  'cell': XhTableCell,
+  'select-all-trigger': XhTableSelectAllTrigger,
+  'row-select-trigger': XhTableRowSelectTrigger,
+  'sort-trigger': XhTableSortTrigger,
+  'column-resize-trigger': XhTableColumnResizeTrigger,
+  'column-drag-trigger': XhTableColumnDragTrigger,
+  'empty': XhTableEmpty,
+  'loading': XhTableLoading,
+  ...STRUCTURE_VIRTUAL_PARTS,
+}
+
+/** 数据驱动模式开了分页时 root 之后的那一组分页，照 headless 的 tablePaginationStructure 渲。 */
+function renderPagination(api: TableApi): VNode[] {
+  return renderStructure(tablePaginationStructure(api), {}, undefined, TABLE_INSTANCES)
+}
+
+interface TableStructureSlots {
+  cell?: (props: TableCellSlotData) => VNode[]
+  empty?: () => VNode[]
+}
+
+/**
+ * 未写默认插槽时铺开的整套结构，作者只提供列与数据：照 headless 的 tableStructure 渲，
+ * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 cell / empty 插槽接管。
+ */
+function renderDefaultStructure(api: TableApi, virtualItems: readonly StructureVirtualItem[] | undefined, slots: TableStructureSlots): VNode[] {
+  const nodes = tableStructure(api, { virtualItems, slotted: name => (name === 'cell' || name === 'empty') && slots[name] != null })
+  return renderStructure(nodes, TABLE_PARTS, (node) => {
+    switch (node.slot?.name) {
+      case 'cell':
+        return slots.cell?.(node.data as TableCellSlotData)
+      case 'empty':
+        return slots.empty?.()
+      default:
+        return undefined
+    }
+  }, TABLE_INSTANCES)
+}
