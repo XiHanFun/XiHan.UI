@@ -9,12 +9,13 @@ import type { NavIntent, StepOptions } from '@xihan-ui/core'
 import type { CascaderColumn, CascaderLevel, CascaderNode, CascaderNodeMeta } from './cascader.types'
 import { stepIndex } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
+import { findLazyNode, isLazyBranch } from '../shared/lazy-branch'
 
 // 级联的纯算法层：不碰 DOM、不认识状态机（connect 在 render 期求值，此时 DOM 尚不存在）。
 
 /** 懒分支的唯一判据：声明了有子项，但 children 还没给出。 */
 export function isCascaderLazyBranch(node: CascaderNode): boolean {
-  return node.hasChildren === true && node.children === undefined
+  return isLazyBranch(node)
 }
 
 /** children 是非空数组才算分支；空数组与缺省都是叶子。懒分支在取回之前也算分支，右边照样开一列。 */
@@ -28,22 +29,13 @@ export function findCascaderNode(
   value: string,
   loadedChildren: Readonly<Record<string, CascaderNode[]>> = {},
 ): CascaderNode | null {
-  for (const node of collection) {
-    if (node.value === value)
-      return node
-    const children = node.children ?? loadedChildren[node.value]
-    if (children) {
-      const found = findCascaderNode(children, value, loadedChildren)
-      if (found)
-        return found
-    }
-  }
-  return null
+  return findLazyNode(collection, value, loadedChildren)
 }
 
 /**
  * 有效树：懒分支取回的直接子项并进它的 children，宿主无需为单个分支的结果重建 collection。
  * 没取回的懒分支原样留着（仍是分支、children 缺省），取回空数组的即成了叶子。
+ * 所以不走共享内核的 resolveLazyCollection：那边给没取回的懒分支补空数组，在这里会被当成叶子、右边不再开列。
  */
 export function resolveCascaderCollection(
   collection: readonly CascaderNode[],
