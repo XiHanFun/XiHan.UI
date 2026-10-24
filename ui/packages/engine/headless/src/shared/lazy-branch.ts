@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 懒分支：按需取子项，树与树选择共用一套。
+// 懒分支：按需取子项，树、树选择与级联选择共用一套。
 //
 // 节点写了 hasChildren: true、children 缺席即为懒分支。首次展开时调 loadChildren 取它的直接子项，
 // 取回的子项按父节点 value 暂存在组件 context 里，作者不必为一个分支的结果重建整棵 collection。
@@ -11,7 +11,7 @@
 // 分支从 collection 移除或换了节点对象时，在途请求被中止、已取回的结果作废。
 // 失败与「成功但没有子项」是两个独立终态；失败后不随再次展开自动重试，只有显式的重试才再发。
 
-/** 懒加载用到的节点形状；树与树选择的节点都满足它。 */
+/** 懒加载用到的节点形状；树、树选择与级联选择的节点都满足它。 */
 export interface LazyTreeNode {
   value: string
   children?: LazyTreeNode[]
@@ -148,12 +148,21 @@ export interface BranchLoadPort<N extends LazyTreeNode> {
   readonly setLoadedChildren: (next: Record<string, N[]>) => void
   readonly loads: () => Readonly<Record<string, BranchLoadSnapshot>>
   readonly setLoads: (next: Record<string, BranchLoadSnapshot>) => void
+  /**
+   * 现取现找某个分支的原始节点，开取与请求回来时的核对都经它。缺省按 value 在 collection 与取回的子项里找；
+   * 级联选择按路径找，同一 value 可能挂在不同路径下。
+   */
+  readonly locate?: (value: string) => N | null
   readonly loadChildren: () => BranchLoadChildren<N> | undefined
   readonly onStart: (details: BranchLoadStartDetails<N>) => void
   readonly onLoad: (details: BranchLoadDetails<N>) => void
   readonly onError: (details: BranchLoadErrorDetails<N>) => void
   readonly runtime: BranchLoadRuntime<N>
   readonly createAbortController: () => AbortController
+}
+
+function locateNode<N extends LazyTreeNode>(port: BranchLoadPort<N>, value: string): N | null {
+  return port.locate ? port.locate(value) : findLazyNode(port.collection(), value, port.loadedChildren())
 }
 
 function setLoad<N extends LazyTreeNode>(port: BranchLoadPort<N>, value: string, snapshot: BranchLoadSnapshot): void {
@@ -165,7 +174,7 @@ function setLoad<N extends LazyTreeNode>(port: BranchLoadPort<N>, value: string,
  * force 是显式重试：中止在途的一轮，重新发。缺 loadChildren 直接落到失败态并回调，不静默。
  */
 export function beginBranchLoad<N extends LazyTreeNode>(port: BranchLoadPort<N>, value: string, force: boolean): void {
-  const node = findLazyNode(port.collection(), value, port.loadedChildren())
+  const node = locateNode(port, value)
   if (!node || !isLazyBranch(node))
     return
   if (value in port.loadedChildren())
@@ -198,7 +207,7 @@ export function beginBranchLoad<N extends LazyTreeNode>(port: BranchLoadPort<N>,
     const entry = controllers.get(value)
     return entry?.controller === controller
       && entry.token === token
-      && findLazyNode(port.collection(), value, port.loadedChildren()) === node
+      && locateNode(port, value) === node
       && isLazyBranch(node)
   }
 

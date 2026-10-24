@@ -6,10 +6,17 @@
 // 提供 cascader 相关实现。
 
 import type { ActionFn, ContextFacade, PositionResult } from '@xihan-ui/core'
+import type { BranchLoadPort } from '../shared/lazy-branch'
 import type { CascaderBranchLoadSnapshot, CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import {
+  abortBranchLoads,
+  beginBranchLoad as beginLazyBranchLoad,
+  cancelBranchLoads as cancelLazyBranchLoads,
+  syncBranchLoads as syncLazyBranchLoads,
+} from '../shared/lazy-branch'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -121,24 +128,35 @@ function cascaderNodeAlong(
   return node
 }
 
-/** 树里此刻所有的懒分支（已取回子项的也算，子项里再有懒分支一并收），按 value 记原始节点。 */
-function lazyBranches(
-  nodes: readonly CascaderNode[],
-  loadedChildren: Readonly<Record<string, CascaderNode[]>>,
-  out = new Map<string, CascaderNode>(),
-): Map<string, CascaderNode> {
-  for (const node of nodes) {
-    if (isCascaderLazyBranch(node))
-      out.set(node.value, node)
-    const children = node.children ?? loadedChildren[node.value]
-    if (children)
-      lazyBranches(children, loadedChildren, out)
+/**
+ * 接到懒分支共享内核上的端口。级联选择按路径认节点：同一 value 可能挂在不同路径下，
+ * 开取与请求回来时的核对都沿这条路径找；请求与三个事件另带上这条路径。
+ * 只做中止与对账时用不到路径，缺省为空。
+ */
+function branchLoadPort(params: CascaderActionParams, path: readonly string[] = []): BranchLoadPort<CascaderNode> {
+  const { context, prop, refs, scope } = params
+  return {
+    component: 'Cascader',
+    collection: () => prop('collection') ?? [],
+    loadedChildren: () => context.get('loadedChildren'),
+    setLoadedChildren: next => context.set('loadedChildren', next),
+    loads: () => context.get('branchLoads'),
+    setLoads: next => context.set('branchLoads', next),
+    locate: () => cascaderNodeAlong(prop('collection') ?? [], path, context.get('loadedChildren')),
+    loadChildren: () => {
+      const loadChildren = prop('loadChildren')
+      return loadChildren && (({ node, signal }) => loadChildren({ node, path: [...path], signal }))
+    },
+    onStart: ({ value, node, reason }) => prop('onBranchLoadStart')?.({ value, path: [...path], node, reason }),
+    onLoad: ({ value, node, children }) => prop('onBranchLoad')?.({ value, path: [...path], node, children }),
+    onError: ({ value, node, error }) => prop('onBranchLoadError')?.({ value, path: [...path], node, error }),
+    runtime: {
+      controllers: refs.get('branchLoadControllers'),
+      sequence: refs.get('branchLoadSequence'),
+      owners: refs.get('branchLoadOwners'),
+    },
+    createAbortController: () => new (scope.getWin().AbortController)(),
   }
-  return out
-}
-
-function setBranchLoad(context: CascaderActionParams['context'], value: string, snapshot: CascaderBranchLoadSnapshot): void {
-  context.set('branchLoads', { ...context.get('branchLoads'), [value]: snapshot })
 }
 
 /**
@@ -146,79 +164,13 @@ function setBranchLoad(context: CascaderActionParams['context'], value: string, 
  * 迟到的兑现或拒绝对不上这一轮（被重试顶掉、分支离开展开路径、节点换代）就丢掉，不写回也不发事件。
  */
 function beginBranchLoad(params: CascaderActionParams, path: readonly string[], force: boolean): void {
-  const { context, prop, refs, scope } = params
-  const source = prop('collection') ?? []
-  const node = cascaderNodeAlong(source, path, context.get('loadedChildren'))
-  if (!node || !isCascaderLazyBranch(node))
-    return
-  const value = node.value
-  if (value in context.get('loadedChildren'))
-    return
-  if (!force && context.get('branchLoads')[value]?.status === 'error')
-    return
-  const loadChildren = prop('loadChildren')
-  if (!loadChildren) {
-    const error = new Error(`Cascader lazy branch "${value}" requires loadChildren`)
-    refs.get('branchLoadOwners').set(value, node)
-    setBranchLoad(context, value, { status: 'error', error })
-    prop('onBranchLoadError')?.({ value, path: [...path], node, error })
-    return
-  }
-
-  const controllers = refs.get('branchLoadControllers')
-  const previous = controllers.get(value)
-  if (previous && !force)
-    return
-  previous?.controller.abort()
-
-  const token = ++refs.get('branchLoadSequence').n
-  const controller = new (scope.getWin().AbortController)()
-  controllers.set(value, { controller, token, node })
-  refs.get('branchLoadOwners').set(value, node)
-  setBranchLoad(context, value, { status: 'loading' })
-  prop('onBranchLoadStart')?.({ value, path: [...path], node, reason: force ? 'retry' : 'expand' })
-
-  const current = (): boolean => {
-    const entry = controllers.get(value)
-    return entry?.controller === controller
-      && entry.token === token
-      && cascaderNodeAlong(prop('collection') ?? [], path, context.get('loadedChildren')) === node
-  }
-
-  Promise.resolve()
-    .then(() => loadChildren({ node, path: [...path], signal: controller.signal }))
-    .then((children) => {
-      if (!current() || controller.signal.aborted)
-        return
-      const resolved = children ? [...children] : []
-      controllers.delete(value)
-      context.set('loadedChildren', { ...context.get('loadedChildren'), [value]: resolved })
-      setBranchLoad(context, value, { status: 'loaded', empty: resolved.length === 0 })
-      prop('onBranchLoad')?.({ value, path: [...path], node, children: resolved })
-    }, (error: unknown) => {
-      if (!current() || controller.signal.aborted)
-        return
-      controllers.delete(value)
-      setBranchLoad(context, value, { status: 'error', error })
-      prop('onBranchLoadError')?.({ value, path: [...path], node, error })
-    })
-}
-
-/** 中止一个在途请求，状态退回 idle；失败与已取回的不动。 */
-function cancelBranchLoad(params: CascaderActionParams, value: string): void {
-  const entry = params.refs.get('branchLoadControllers').get(value)
-  if (!entry)
-    return
-  entry.controller.abort()
-  params.refs.get('branchLoadControllers').delete(value)
-  setBranchLoad(params.context, value, { status: 'idle' })
+  const value = path.at(-1)
+  if (value !== undefined)
+    beginLazyBranchLoad(branchLoadPort(params, path), value, force)
 }
 
 function cancelBranchLoads(params: CascaderActionParams, keep: ReadonlySet<string> = new Set()): void {
-  for (const value of [...params.refs.get('branchLoadControllers').keys()]) {
-    if (!keep.has(value))
-      cancelBranchLoad(params, value)
-  }
+  cancelLazyBranchLoads(branchLoadPort(params), keep)
 }
 
 /**
@@ -629,32 +581,7 @@ export const cascaderMachine = createMachine({
        * 仍对得上的原样留着。随后按展开路径把该取的补上。
        */
       syncBranchLoads: (params) => {
-        const { context, prop, refs } = params
-        const source = prop('collection') ?? []
-        const owners = refs.get('branchLoadOwners')
-        const currentChildren = context.get('loadedChildren')
-        const initialLive = lazyBranches(source, currentChildren)
-        const children = Object.fromEntries(
-          Object.entries(currentChildren).filter(([value]) => initialLive.get(value) === owners.get(value)),
-        )
-        const live = lazyBranches(source, children)
-        const controllers = refs.get('branchLoadControllers')
-        for (const [value, entry] of [...controllers]) {
-          if (live.get(value) !== entry.node) {
-            entry.controller.abort()
-            controllers.delete(value)
-          }
-        }
-        const keep = (value: string): boolean => live.get(value) === owners.get(value)
-        const loads = Object.fromEntries(Object.entries(context.get('branchLoads')).filter(([value]) => keep(value)))
-        if (Object.keys(loads).length !== Object.keys(context.get('branchLoads')).length)
-          context.set('branchLoads', loads)
-        if (Object.keys(children).length !== Object.keys(currentChildren).length)
-          context.set('loadedChildren', children)
-        for (const value of [...owners.keys()]) {
-          if (!keep(value))
-            owners.delete(value)
-        }
+        syncLazyBranchLoads(branchLoadPort(params))
         loadActiveBranches(params)
       },
     },
@@ -692,11 +619,7 @@ export const cascaderMachine = createMachine({
       // 初始即展开时展开路径上的懒分支补一次取数；卸载时中止所有在途请求
       trackBranchLoads: (params) => {
         params.flush(() => params.scope.getWin().queueMicrotask(() => loadActiveBranches(params)))
-        return () => {
-          for (const { controller } of params.refs.get('branchLoadControllers').values())
-            controller.abort()
-          params.refs.get('branchLoadControllers').clear()
-        }
+        return () => abortBranchLoads(branchLoadPort(params).runtime)
       },
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
