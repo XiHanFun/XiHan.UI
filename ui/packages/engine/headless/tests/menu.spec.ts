@@ -214,6 +214,20 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
+describe('触发按钮的名字', () => {
+  it('没写 translations.trigger 时连键都不带：触发器合并到别家按钮上时不盖掉那颗钮自己的名字', () => {
+    const h = mount()
+    expect(h.trigger.hasAttribute('aria-label')).toBe(false)
+    expect('aria-label' in h.api().getTriggerProps()).toBe(false)
+  })
+
+  it('按钮里只有图标时写 translations.trigger：落成按钮的 aria-label，菜单容器仍经 aria-labelledby 指回它', () => {
+    const h = mount({ translations: { trigger: '筛选部门' } })
+    expect(h.trigger.getAttribute('aria-label')).toBe('筛选部门')
+    expect(h.content.getAttribute('aria-labelledby')).toBe(h.trigger.id)
+  })
+})
+
 describe('条目高亮标记', () => {
   it('收起态没有锚点：条目不打 data-highlighted，Tab 位也不归任何条目', () => {
     const h = mount()
