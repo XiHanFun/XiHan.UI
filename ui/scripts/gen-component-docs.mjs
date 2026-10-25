@@ -770,6 +770,25 @@ for (const sf of slotProgram.getSourceFiles()) {
   })
 }
 
+// 对外导出的组件是实现套上一层类型（表格根按行类型收窄：`XhTableRoot = XhTableRootImpl as unknown as …`）：
+// 插槽跟着实现走，按导出的名字再记一份
+for (const sf of slotProgram.getSourceFiles()) {
+  if (!slotFiles.includes(path.normalize(sf.fileName)))
+    continue
+  ts.forEachChild(sf, (node) => {
+    if (!ts.isVariableStatement(node))
+      return
+    for (const decl of node.declarationList.declarations) {
+      const compName = decl.name.getText(sf)
+      let init = decl.initializer
+      while (init && (ts.isAsExpression(init) || ts.isParenthesizedExpression(init) || ts.isSatisfiesExpression(init)))
+        init = init.expression
+      if (compName.startsWith('Xh') && init && ts.isIdentifier(init) && slotsByComponent.has(init.text))
+        slotsByComponent.set(compName, slotsByComponent.get(init.text))
+    }
+  })
+}
+
 function adapterArtifacts(id) {
   const P = pascal(id)
   // XhSwitch 与 XhSwitchThumb 都算 switch 的产物，但 XhSwitchGroup 不是——
@@ -916,6 +935,41 @@ function unionMembers(node, sf) {
   return values.length ? values : null
 }
 
+/**
+ * 联合类型别名的条目字段（表格的列定义按几种列收窄）：把各成员的字段并起来，每个字段取写了 JSDoc 的那一处声明——
+ * 共有的字段都写在同一个带注释的基接口上，收窄用的那几处不写注释。不是联合的、字段一个注释都没有的不展开：
+ * 后者是各成员各管各字段的判别联合（citation 的 sources），并成一张表会把哪个字段属于哪一种写混。
+ */
+function aliasFields(node) {
+  if (!node)
+    return undefined
+  const type = checker.getTypeAtLocation(node.name)
+  if (!type.isUnion())
+    return undefined
+  const byName = new Map()
+  for (const member of type.types) {
+    if (!(member.flags & ts.TypeFlags.Object) && !member.isIntersection())
+      continue
+    for (const sym of checker.getPropertiesOfType(member)) {
+      if (byName.has(sym.name))
+        continue
+      const decls = (sym.declarations ?? []).filter(d => ts.isPropertySignature(d) && d.type)
+      const decl = decls.find(d => jsdoc(d, d.getSourceFile())) ?? decls[0]
+      if (!decl)
+        continue
+      const declSf = decl.getSourceFile()
+      byName.set(sym.name, {
+        name: sym.name,
+        type: typeText(decl.type, declSf),
+        optional: Boolean(decl.questionToken),
+        doc: jsdoc(decl, declSf),
+      })
+    }
+  }
+  const fields = [...byName.values()]
+  return fields.some(field => field.doc) ? fields : undefined
+}
+
 function typeMeta(id) {
   const P = pascal(id)
   const result = { props: [], api: [], states: null, events: null, guards: null, nodes: [] }
@@ -926,6 +980,7 @@ function typeMeta(id) {
   // 只有写进数据的那一层需要展开——`collection: MenuNode[]` 一行带过的话，
   // 逐条能写什么（语气、副文本、快捷键、分组）全站无处可查
   const localInterfaces = new Map()
+  const localAliases = new Map()
   for (const sf of program.getSourceFiles()) {
     if (!typeFiles.includes(path.normalize(sf.fileName)))
       continue
@@ -952,6 +1007,11 @@ function typeMeta(id) {
         if (fields.length)
           localInterfaces.set(name, fields)
       }
+
+      // 写成类型别名的条目数据先只记下声明，用到时才经检查器展开（见 aliasFields）：
+      // 在这一轮里提前解析会改动别的组件那些 Omit 出来的类型的成员次序，生成结果随之漂移
+      if (ts.isTypeAliasDeclaration(node) && !localAliases.has(name))
+        localAliases.set(name, node)
 
       if (ts.isInterfaceDeclaration(node) && name === `${P}Schema`) {
         for (const member of node.members) {
@@ -1042,10 +1102,14 @@ function typeMeta(id) {
   // `MenuNode[]`、`readonly CommandNode[]`、`Partial<X>` 之类一律先剥到裸名字再查
   const seen = new Set()
   for (const prop of result.props) {
-    const bare = prop.type.replace(/^readonly\s+/, '').replace(/\[\]$/, '')
-    if (bare === prop.type || seen.has(bare))
+    const element = prop.type.replace(/^readonly\s+/, '').replace(/\[\]$/, '')
+    if (element === prop.type)
       continue
-    const fields = localInterfaces.get(bare)
+    // 带行类型参数的（`TableColumnDef<TRow>[]`）按裸名字查
+    const bare = element.replace(/<[^<>]*>$/, '')
+    if (seen.has(bare))
+      continue
+    const fields = localInterfaces.get(bare) ?? aliasFields(localAliases.get(bare))
     if (!fields)
       continue
     seen.add(bare)
