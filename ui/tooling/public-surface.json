@@ -13720,6 +13720,7 @@
       "tone",
       "translations",
       "value",
+      "valueKey",
       "variant",
       "virtualizer"
     ],
@@ -22411,6 +22412,7 @@
         "size",
         "tone",
         "value",
+        "value-key",
         "variant"
       ],
       "events": [

@@ -5,7 +5,7 @@
 
 // 提供 combobox 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
   ComboboxInputBehavior,
@@ -19,6 +19,7 @@ import type {
   ComboboxTagMeta,
   ComboboxValueChangeDetails,
   FormControlState,
+  SelectionValueKey,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
@@ -58,6 +59,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * 可以由宿主直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、
  * `slot="item-suffix:<值>"`。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhComboboxElement<number>>('xh-combobox')`
+ * 拿到的元素上 value、collection、filter 与 tags 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。
+ *
  * @customElement xh-combobox
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} empty - 空态文字：生成结构时写进 empty 部件；手写部件时不使用它
@@ -87,7 +91,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
@@ -118,7 +123,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart empty - 无匹配项提示；须放在 positioner 中作为 content 的兄弟（列表内只允许 option 与 group）
  * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示；留空即由元素填入 translations.loading
  */
-export class XhComboboxElement extends XhPortalHostElement {
+export class XhComboboxElement<V = string> extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
@@ -148,6 +153,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它候选的文本与禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
     virtualizer: { attribute: false },
     label: { converter: STRING_CONVERTER },
     empty: { converter: STRING_CONVERTER },
@@ -186,14 +192,15 @@ export class XhComboboxElement extends XhPortalHostElement {
     size: { converter: STRING_CONVERTER },
   }
 
-  declare collection?: ComboboxNode[]
+  declare collection?: ComboboxNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
   declare label?: string
   declare empty?: string
   declare clearable?: boolean
   declare virtualizer?: CollectionVirtualizer
   declare translations?: ComboboxSchema['props']['translations']
-  declare value?: string | string[]
-  declare defaultValue?: string | string[]
+  declare value?: V | V[]
+  declare defaultValue?: V | V[]
   declare inputValue?: string
   declare defaultInputValue?: string
   declare open?: boolean
@@ -212,7 +219,7 @@ export class XhComboboxElement extends XhPortalHostElement {
   declare allowCustomValue?: boolean
   declare openOnClick?: boolean
   declare inputBehavior?: ComboboxInputBehavior
-  declare filter?: ComboboxSchema['props']['filter']
+  declare filter?: ComboboxSchema<V>['props']['filter']
   declare placement?: Placement
   declare offset?: number
   declare direction?: Direction
@@ -239,7 +246,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
   }
 
-  private readonly notifyValue = (details: ComboboxValueChangeDetails): void => {
+  private readonly notifyValue = (details: ComboboxValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -286,15 +293,22 @@ export class XhComboboxElement extends XhPortalHostElement {
       invalid: this.invalid,
       required: this.required,
     }, this.inheritedControl)
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
+      collection: this.collection,
+      valueKey: this.valueKey,
+      value: this.value,
+      defaultValue: this.defaultValue,
+      filter: this.filter,
+      onValueChange: this.notifyValue,
+    } as Pick<ComboboxSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'filter' | 'onValueChange'>
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
-      collection: this.collection,
+      ...valueTyped,
       virtualizer: this.virtualizer,
       translations: this.translations,
-      value: this.value,
-      defaultValue: this.defaultValue,
       inputValue: this.inputValue,
       defaultInputValue: this.defaultInputValue,
       open: this.open,
@@ -313,14 +327,12 @@ export class XhComboboxElement extends XhPortalHostElement {
       allowCustomValue: this.allowCustomValue ?? false,
       openOnClick: this.openOnClick ?? false,
       inputBehavior: this.inputBehavior,
-      filter: this.filter,
       placement: this.placement,
       offset: this.offset,
       dir: this.direction,
       variant: this.variant,
       tone: this.tone,
       size: this.size,
-      onValueChange: this.notifyValue,
       onClear: this.notifyClear,
       onInputValueChange: this.notifyInputValue,
       onOpenChange: this.notifyOpen,
@@ -420,8 +432,8 @@ export class XhComboboxElement extends XhPortalHostElement {
    * 应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序；单选恒为空数组。
    * 作者据此渲染 tag 部件。状态机尚未建立时返回空数组。
    */
-  get tags(): ComboboxTagMeta[] {
-    return this.ctrl.service ? connectCombobox(this.ctrl.service, wcNormalize).tags : []
+  get tags(): ComboboxTagMeta<V>[] {
+    return this.ctrl.service ? connectCombobox<PropTypes, V>(this.ctrl.service, wcNormalize).tags : []
   }
 
   /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
@@ -435,9 +447,9 @@ export class XhComboboxElement extends XhPortalHostElement {
   }
 
   /** 移除一个选中值，其余保持选中先后；状态机尚未建立时不做任何事。 */
-  deselect(value: string): void {
+  deselect(value: V): void {
     if (this.ctrl.service)
-      connectCombobox(this.ctrl.service, wcNormalize).deselect(value)
+      connectCombobox<PropTypes, V>(this.ctrl.service, wcNormalize).deselect(value)
   }
 
   protected wire(): void {
@@ -495,7 +507,8 @@ export class XhComboboxElement extends XhPortalHostElement {
     // 必填且没选值时补一份空值占位，原生 required 才拦得住空表单
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
       ? [api.getHiddenInputProps() as Record<string, unknown>]
-      : api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
+      // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
+      : api.valueKeys.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }

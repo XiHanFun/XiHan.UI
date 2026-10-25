@@ -5,8 +5,8 @@
 
 // 提供 combobox 相关实现。
 
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Placement, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { comboboxStructure } from '@xihan-ui/headless'
@@ -34,26 +34,32 @@ import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
 
-/** 函数式 children 的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。 */
-export type ComboboxRootSlotProps = Pick<
-  ComboboxApi,
+/** 函数式 children 的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。V 是选中值的类型。 */
+export type ComboboxRootSlotProps<V = string> = Pick<
+  ComboboxApi<PropTypes, V>,
   'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'tags' | 'overflowCount' | 'overflowText' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear' | 'deselect'
 >
 
-/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
-type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
-export interface XhComboboxRootProps extends RootElementProps {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，
+ * 对象值给 valueKey。onValueChange、filter、children 与 renderItem 拿到的都是 V。
+ */
+export interface XhComboboxRootProps<V = string> extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: ComboboxNode[]
+  collection?: ComboboxNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
   virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   /** 无匹配时的提示语。提供后不必再写 empty 部件。 */
   empty?: ReactNode
-  value?: string | string[]
-  defaultValue?: string | string[]
+  value?: V | V[]
+  defaultValue?: V | V[]
   inputValue?: string
   defaultInputValue?: string
   open?: boolean
@@ -80,28 +86,28 @@ export interface XhComboboxRootProps extends RootElementProps {
   openOnClick?: boolean
   inputBehavior?: ComboboxInputBehavior
   /** 内置过滤：contains / startsWith 或自定义函数；没给即不过滤，候选由调用方按 onInputValueChange 换。 */
-  filter?: ComboboxFilterMode | ComboboxFilter
+  filter?: ComboboxFilterMode | ComboboxFilter<V>
   placement?: Placement
   offset?: number
   dir?: Direction
   variant?: ControlVariant
   tone?: Tone
   size?: Size
-  onValueChange?: ComboboxProps['onValueChange']
+  onValueChange?: (details: ComboboxValueChangeDetails<V>) => void
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   onInputValueChange?: ComboboxProps['onInputValueChange']
   onOpenChange?: ComboboxProps['onOpenChange']
   /** 每个候选的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: ComboboxNodeMeta) => ReactNode
+  renderItem?: (node: ComboboxNodeMeta<V>) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
-  renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
+  renderItemPrefix?: (node: ComboboxNodeMeta<V>) => ReactNode
   /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
-  renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
-  children?: SlotChildren<ComboboxRootSlotProps>
+  renderItemSuffix?: (node: ComboboxNodeMeta<V>) => ReactNode
+  children?: SlotChildren<ComboboxRootSlotProps<V>>
 }
 
-export function XhComboboxRoot({
+export function XhComboboxRoot<V = string>({
   ariaLabel,
   collection,
   virtualizer,
@@ -145,7 +151,7 @@ export function XhComboboxRoot({
   renderItemSuffix,
   children,
   ...rest
-}: XhComboboxRootProps): ReactNode {
+}: XhComboboxRootProps<V>): ReactNode {
   const ctx = useCombobox(withXhConfig('combobox', useFormControlProps({
     ariaLabel,
     collection,
@@ -206,8 +212,9 @@ export function XhComboboxRoot({
         setInputValue: api.setInputValue,
         clear: api.clear,
         deselect: api.deselect,
-      })
-    : renderDefaultStructure(api, { label, empty, clearable, name, renderItem, renderItemPrefix, renderItemSuffix })
+        // 值在 api 里已经解回原值，类型上按根组件推断出来的 V 交出去
+      } as ComboboxRootSlotProps<V>)
+    : renderDefaultStructure<V>(api, { label, empty, clearable, name, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <ComboboxProvider value={ctx}>
@@ -277,14 +284,14 @@ function tagChildren(children: ReactNode): ReactNode {
 }
 
 export interface XhComboboxTagProps extends ComponentPropsWithRef<'span'> {
-  /** 它代表哪个选中值。 */
-  value: string
+  /** 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 */
+  value: unknown
 }
 /** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从组合框传下，形态按盒的面派生；配合 XhComboboxItemDeleteTrigger 可删除。 */
 export function XhComboboxTag({ value, children, ...rest }: XhComboboxTagProps): ReactNode {
   const ctx = useComboboxContext()
   return (
-    <ComboboxTagProvider value={value}>
+    <ComboboxTagProvider value={{ value }}>
       <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
     </ComboboxTagProvider>
   )
@@ -413,7 +420,8 @@ export function XhComboboxGroupLabel({ children, ...rest }: XhComboboxGroupLabel
 }
 
 export interface XhComboboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -485,7 +493,8 @@ export function XhComboboxHiddenInput({ ...rest }: XhComboboxHiddenInputProps): 
   // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
   const inputs: Array<{ value: string } | undefined> = ctx.api.value.length === 0 && ctx.api.required
     ? [undefined]
-    : ctx.api.value.map(value => ({ value }))
+    // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
+    : ctx.api.valueKeys.map(value => ({ value }))
   return inputs.map(input => (
     <input
       key={input?.value ?? 'required'}
@@ -541,15 +550,15 @@ const COMBOBOX_PARTS = {
   'hidden-input': XhComboboxHiddenInput,
 }
 
-interface ComboboxStructureContent {
+interface ComboboxStructureContent<V> {
   label?: ReactNode
   empty?: ReactNode
   clearable?: boolean
   /** 表单字段名：给了或必填时才铺表单影子。 */
   name?: string
-  renderItem?: (node: ComboboxNodeMeta) => ReactNode
-  renderItemPrefix?: (node: ComboboxNodeMeta) => ReactNode
-  renderItemSuffix?: (node: ComboboxNodeMeta) => ReactNode
+  renderItem?: (node: ComboboxNodeMeta<V>) => ReactNode
+  renderItemPrefix?: (node: ComboboxNodeMeta<V>) => ReactNode
+  renderItemSuffix?: (node: ComboboxNodeMeta<V>) => ReactNode
 }
 
 /**
@@ -557,7 +566,7 @@ interface ComboboxStructureContent {
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题与空态、条目文字与行首行尾由对应的值或渲染函数接管。
  * 候选取 api.collection：给了 filter 即筛过的那份，没给就是调用方传进来的当前候选。
  */
-function renderDefaultStructure(api: ComboboxApi, content: ComboboxStructureContent): ReactNode[] {
+function renderDefaultStructure<V>(api: ComboboxApi<PropTypes, unknown>, content: ComboboxStructureContent<V>): ReactNode[] {
   const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
   const slotted: Readonly<Record<string, boolean>> = {
     'label': label != null && typeof label !== 'string',
@@ -574,7 +583,7 @@ function renderDefaultStructure(api: ComboboxApi, content: ComboboxStructureCont
     slotted: name => slotted[name] === true,
   })
   return renderStructure(nodes, COMBOBOX_PARTS, (node) => {
-    const meta = node.data as ComboboxNodeMeta
+    const meta = node.data as ComboboxNodeMeta<V>
     switch (node.slot?.name) {
       case 'label':
         return label

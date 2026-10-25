@@ -15556,7 +15556,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。\n\n多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），\ntag 与 overflow-tag 接线为库内 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用从本元素传下，\n形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签\n那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：标题（label）、盒（多选的标签行、输入框、\n带不带清空钮看 clearable、展开钮）、浮层里的候选与空态（empty）、表单影子。标题、空态、条目文字与行首行尾\n可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。",
+          "description": "`<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...\n角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。\n\n过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；\n元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。\n\n多选的已选项排在盒里、输入框之前的 tag-list 中：作者按 tags 渲染 tag 节点（与 Select 同一写法），\ntag 与 overflow-tag 接线为库内 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用从本元素传下，\n形态按盒的面派生；节点中只有文字时元素为它包一层 tag 的 label。item-delete-trigger 接线为所在标签\n那份 tag 的 close-trigger，不占 Tab 位、按下不夺焦。overflow-tag 留空即由元素填入 +N。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：标题（label）、盒（多选的标签行、输入框、\n带不带清空钮看 clearable、展开钮）、浮层里的候选与空态（empty）、表单影子。标题、空态、条目文字与行首行尾\n可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。\n\nV 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhComboboxElement<number>>('xh-combobox')`\n拿到的元素上 value、collection、filter 与 tags 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。",
           "name": "XhComboboxElement",
           "cssParts": [
             {
@@ -15697,8 +15697,17 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "ComboboxNode[] | undefined"
+                "text": "ComboboxNode<V>[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "valueKey",
+              "privacy": "public",
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "attribute": "value-key"
             },
             {
               "kind": "field",
@@ -15748,7 +15757,7 @@
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "attribute": "value"
             },
@@ -15757,7 +15766,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "attribute": "default-value"
             },
@@ -15928,7 +15937,7 @@
               "name": "filter",
               "privacy": "public",
               "type": {
-                "text": "ComboboxSchema['props']['filter'] | undefined"
+                "text": "ComboboxSchema<V>['props']['filter'] | undefined"
               },
               "attribute": "filter"
             },
@@ -16273,7 +16282,7 @@
               "kind": "field",
               "name": "tags",
               "type": {
-                "text": "ComboboxTagMeta[]"
+                "text": "ComboboxTagMeta<V>[]"
               },
               "description": "应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序；单选恒为空数组。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
               "readonly": true
@@ -16308,7 +16317,7 @@
                 {
                   "name": "value",
                   "type": {
-                    "text": "string"
+                    "text": "V"
                   }
                 }
               ],
@@ -16327,7 +16336,7 @@
           ],
           "events": [
             {
-              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "description": "选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）",
               "name": "value-change",
               "type": {
                 "text": "ComboboxValueChangeDetails"
@@ -16379,7 +16388,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "description": "受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组",
               "name": "value",
@@ -16387,7 +16396,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "description": "非受控初始选中值",
               "name": "default-value",
@@ -16523,7 +16532,7 @@
             },
             {
               "type": {
-                "text": "ComboboxSchema['props']['filter'] | undefined"
+                "text": "ComboboxSchema<V>['props']['filter'] | undefined"
               },
               "description": "内置过滤：按用户打的检索词筛 collection，不分大小写；自定义匹配经 filter property 给函数。没写即不过滤",
               "name": "filter",
@@ -16576,6 +16585,14 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "description": "对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认",
+              "name": "value-key",
+              "fieldName": "valueKey"
             },
             {
               "type": {

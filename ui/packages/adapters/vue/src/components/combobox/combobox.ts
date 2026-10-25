@@ -5,9 +5,10 @@
 
 // 提供 combobox 相关实现。
 
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Placement, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, ComboboxApi, ComboboxFilter, ComboboxFilterMode, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxSchema, ComboboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { BivariantCallback } from '../../runtime/bivariant'
 import type { PayloadOf } from '../../runtime/payload'
 import { comboboxStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onMounted, onUnmounted, onUpdated, watch } from 'vue'
@@ -33,26 +34,30 @@ import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
 
-/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。 */
-export type ComboboxRootSlotProps = Pick<
-  ComboboxApi,
+/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态、多选的可见标签与折起的个数，以及修改它们的命令。V 是选中值的类型。 */
+export type ComboboxRootSlotProps<V = string> = Pick<
+  ComboboxApi<PropTypes, V>,
   'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'tags' | 'overflowCount' | 'overflowText' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear' | 'deselect'
 >
 
-export const XhComboboxRoot = defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhComboboxRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhComboboxRootImpl = defineComponent({
   name: 'XhComboboxRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<ComboboxNode[]> },
+    collection: { type: Array as PropType<ComboboxNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     /** 无匹配时的提示语。提供后不必再写 empty 部件；需要放置其他内容时改用 empty 插槽。 */
     empty: { type: String },
-    value: { type: [String, Array] as PropType<string | string[]> },
-    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    // 值可以是字符串、数字或对象：运行时不查类型，类型由对外导出的 XhComboboxRoot 按值类型收窄
+    value: { type: null as unknown as PropType<unknown> },
+    defaultValue: { type: null as unknown as PropType<unknown> },
     inputValue: { type: String },
     defaultInputValue: { type: String },
     open: { type: Boolean, default: undefined },
@@ -76,7 +81,7 @@ export const XhComboboxRoot = defineComponent({
     allowCustomValue: Boolean,
     openOnClick: Boolean,
     inputBehavior: { type: String as PropType<ComboboxInputBehavior> },
-    filter: { type: [String, Function] as PropType<ComboboxFilterMode | ComboboxFilter> },
+    filter: { type: [String, Function] as PropType<ComboboxFilterMode | ComboboxFilter<unknown>> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
@@ -88,23 +93,23 @@ export const XhComboboxRoot = defineComponent({
   // *-change 携带 details 对象，update:* 携带裸值
   emits: {
     'clear': () => true,
-    'value-change': (_details: PayloadOf<ComboboxProps, 'onValueChange'>) => true,
+    'value-change': (_details: ComboboxValueChangeDetails<unknown>) => true,
     'input-value-change': (_details: PayloadOf<ComboboxProps, 'onInputValueChange'>) => true,
     'open-change': (_details: PayloadOf<ComboboxProps, 'onOpenChange'>) => true,
-    'update:value': (_value: PayloadOf<ComboboxProps, 'onValueChange'>['value']) => true,
+    'update:value': (_value: unknown[]) => true,
     'update:inputValue': (_inputValue: PayloadOf<ComboboxProps, 'onInputValueChange'>['inputValue']) => true,
     'update:open': (_open: PayloadOf<ComboboxProps, 'onOpenChange'>['open']) => true,
   },
   slots: Object as SlotsType<{
-    'default'?: (props: ComboboxRootSlotProps) => VNode[]
+    'default'?: (props: ComboboxRootSlotProps<unknown>) => VNode[]
     'label'?: () => VNode[]
     'empty'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    'item'?: (node: ComboboxNodeMeta) => VNode[]
+    'item'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
-    'item-prefix'?: (node: ComboboxNodeMeta) => VNode[]
+    'item-prefix'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
-    'item-suffix'?: (node: ComboboxNodeMeta) => VNode[]
+    'item-suffix'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: ComboboxProps['onValueChange'] = (details) => {
@@ -119,7 +124,7 @@ export const XhComboboxRoot = defineComponent({
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useCombobox(withHandlers(withXhConfig('combobox', useFormControlProps(props)), { onClear: () => emit('clear') }) as ComboboxProps, {
+    const ctx = useCombobox(withHandlers(withXhConfig('combobox', useFormControlProps(props)), { onClear: () => emit('clear') }) as unknown as ComboboxProps, {
       onValueChange: notifyValue,
       onInputValueChange: notifyInputValue,
       onOpenChange: notifyOpen,
@@ -160,6 +165,37 @@ export const XhComboboxRoot = defineComponent({
     )
   },
 })
+
+/** 根组件里随值类型收窄的那几项 prop：选中值、候选数据、取键方式、自定义过滤与值变化的回调。 */
+export interface XhComboboxRootValueProps<V> {
+  'value'?: V | V[]
+  'defaultValue'?: V | V[]
+  'collection'?: ComboboxNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'filter'?: ComboboxFilterMode | BivariantCallback<[node: ComboboxNode<V>, query: string], boolean>
+  'onUpdate:value'?: BivariantCallback<[value: V[]]>
+  'onValueChange'?: BivariantCallback<[details: ComboboxValueChangeDetails<V>]>
+}
+
+type XhComboboxRootInstance = InstanceType<typeof XhComboboxRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
+ * 默认插槽、条目插槽与自定义过滤拿到的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhComboboxRootComponent = Omit<typeof XhComboboxRootImpl, never> & {
+  new<V = string>(props?: Omit<XhComboboxRootInstance['$props'], keyof XhComboboxRootValueProps<V>> & XhComboboxRootValueProps<V>): Omit<XhComboboxRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhComboboxRootInstance['$props'], keyof XhComboboxRootValueProps<V>> & XhComboboxRootValueProps<V>
+    $slots: Omit<XhComboboxRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
+      'default'?: (props: ComboboxRootSlotProps<V>) => VNode[]
+      'item'?: (node: ComboboxNodeMeta<V>) => VNode[]
+      'item-prefix'?: (node: ComboboxNodeMeta<V>) => VNode[]
+      'item-suffix'?: (node: ComboboxNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhComboboxRoot = XhComboboxRootImpl as unknown as XhComboboxRootComponent
 
 export const XhComboboxLabel = defineComponent({
   name: 'XhComboboxLabel',
@@ -219,8 +255,8 @@ function tagChildren(content: VNode[] | string | undefined): VNode[] | string | 
 export const XhComboboxTag = defineComponent({
   name: 'XhComboboxTag',
   props: {
-    /** 它代表哪个选中值。 */
-    value: { type: String, required: true },
+    /** 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
   },
   setup(props, { slots }) {
     const ctx = useComboboxContext()
@@ -352,13 +388,14 @@ export const XhComboboxGroupLabel = defineComponent({
 export const XhComboboxItem = defineComponent({
   name: 'XhComboboxItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useComboboxContext()
-    const item = computed<ComboboxItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    const item = computed<ComboboxItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideComboboxItem({ item })
     // 候选的进出与改名由条目自己上报，机器据此结算条数并摘掉悬空高亮
     onMounted(ctx.syncItems)
@@ -424,8 +461,9 @@ export const XhComboboxHiddenInput = defineComponent({
     const ctx = useComboboxContext()
     // 表单出口，不写这个部件即不参与表单提交
     // 合并而不是展开：作者的 class 与部件的挂载类拼起来，不互相覆盖
+    // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
     return () => [
-      ...ctx.api.value.value.map(value => h('input', {
+      ...ctx.api.value.valueKeys.map(value => h('input', {
         ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
         key: value,
       })),
@@ -483,9 +521,9 @@ const COMBOBOX_PARTS = {
 interface ComboboxStructureContent {
   'label'?: () => VNode[]
   'empty'?: () => VNode[]
-  'item'?: (node: ComboboxNodeMeta) => VNode[]
-  'item-prefix'?: (node: ComboboxNodeMeta) => VNode[]
-  'item-suffix'?: (node: ComboboxNodeMeta) => VNode[]
+  'item'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
+  'item-prefix'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
+  'item-suffix'?: (node: ComboboxNodeMeta<unknown>) => VNode[]
 }
 
 /**
@@ -494,7 +532,7 @@ interface ComboboxStructureContent {
  * 候选取 api.collection：给了 filter 即筛过的那份，没给就是调用方传进来的当前候选。
  */
 function renderDefaultStructure(
-  api: ComboboxApi,
+  api: ComboboxApi<PropTypes, unknown>,
   props: { label?: string, empty?: string, clearable: boolean, name?: string },
   content: ComboboxStructureContent,
 ): VNode[] {
@@ -506,7 +544,7 @@ function renderDefaultStructure(
     slotted: name => content[name as keyof ComboboxStructureContent] != null,
   })
   return renderStructure(nodes, COMBOBOX_PARTS, (node) => {
-    const meta = node.data as ComboboxNodeMeta
+    const meta = node.data as ComboboxNodeMeta<unknown>
     switch (node.slot?.name) {
       case 'label':
         return content.label?.()
