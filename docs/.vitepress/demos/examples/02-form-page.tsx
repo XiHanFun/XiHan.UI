@@ -1,5 +1,5 @@
 // 表单页 | 一张值表驱动多种控件：文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框放进字段组即按 name 读写这张表，不必逐个接线；校验、错误态与错误摘要统一经表单
-import type { FormErrorPatch, FormSubmitDetails, FormValues, RadioGroupNode, SelectNode } from "@xihan-ui/headless";
+import type { FormErrorPatchOf, FormSubmitDetails, RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhAlertContent,
@@ -77,7 +77,7 @@ const defaults = {
 };
 
 // 整表跑一遍，返回「字段名 → 错误文案」；空串表示这条没错
-function validate(values: FormValues): FormErrorPatch {
+function validate(values: typeof defaults): FormErrorPatchOf<typeof defaults> {
   const title = String(values.title ?? "").trim();
   const detail = String(values.detail ?? "").trim();
   return {

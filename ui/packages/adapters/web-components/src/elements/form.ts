@@ -14,10 +14,13 @@ import type {
   FormControlState,
   FormErrorPatch,
   FormErrorsChangeDetails,
+  FormFieldPath,
   FormFieldSpan,
   FormInvalidDetails,
   FormPath,
+  FormPathValue,
   FormSchema,
+  FormStandardSchema,
   FormSubmitDetails,
   FormSubmitErrorDetails,
   FormValidateOn,
@@ -109,6 +112,10 @@ function fieldPathOf(el: HTMLElement): FormPath {
  * 每个字段用一个 field-group 包裹并用 `name` 属性声明字符串字段：错误摘要的链接指向它，
  * 提交失败后的焦点也落进它：落点按文档序取第一个出错的字段，而不是错误表的键序。
  *
+ * 值类型 TValues（缺省 FormValues）只在 TypeScript 里给作者看：`querySelector<XhFormElement<SignUp>>('xh-form')`
+ * 拿到的元素，values、rules、validate 交回的键与按字段取写的命令都按它收窄。`schema` 属性收 Standard Schema
+ * （zod、valibot、arktype 的 schema 都是），它报的问题按路径落到字段上；同一字段几边都报错时 rules 优先、validate 其次、schema 最后。
+ *
  * @customElement xh-form
  * @attr {string} validate-on - 校验时机：submit（默认）/ blur / change
  * @attr {string} layout - 排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）/ grid（等宽列的网格）
@@ -134,7 +141,7 @@ function fieldPathOf(el: HTMLElement): FormPath {
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）
  */
-export class XhFormElement extends XhElement {
+export class XhFormElement<TValues extends object = FormValues> extends XhElement {
   static override partContract = { anatomy: formAnatomy, meta: formMeta }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -146,6 +153,7 @@ export class XhFormElement extends XhElement {
     errors: { attribute: false },
     defaultErrors: { attribute: false },
     validate: { attribute: false },
+    schema: { attribute: false },
     rules: { attribute: false },
     validateMessages: { attribute: false },
     translations: { attribute: false },
@@ -158,13 +166,15 @@ export class XhFormElement extends XhElement {
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
   }
 
-  declare values?: FormValues
-  declare defaultValues?: FormValues
+  declare values?: TValues
+  declare defaultValues?: TValues
   declare errors?: FormErrorPatch
   declare defaultErrors?: FormErrorPatch
-  declare validate?: FormSchema['props']['validate']
+  declare validate?: FormSchema<TValues>['props']['validate']
+  /** Standard Schema（zod、valibot 的 schema 都是）：它报的问题按路径落到字段上，与 validate、rules 并用。只作为 property 暴露。 */
+  declare schema?: FormStandardSchema
   /** 声明式校验规则；对象无法表达为属性，只作为 property 暴露。 */
-  declare rules?: FormSchema['props']['rules']
+  declare rules?: FormSchema<TValues>['props']['rules']
   declare validateMessages?: FormSchema['props']['validateMessages']
   /** 校验报错的文案模板；对象只作为 property 暴露，全局配置（setXhConfig）的 form 那一桶垫在它下面。 */
   declare translations?: FormSchema['props']['translations']
@@ -188,7 +198,7 @@ export class XhFormElement extends XhElement {
   // 从本元素冒出去的 submit 只可能是这一条（且只在校验通过时才有）
   private readonly notifySubmit = (details: FormSubmitDetails): void | PromiseLike<unknown> => {
     this.dispatchEvent(new CustomEvent('submit', { detail: details, bubbles: true, composed: true }))
-    return this.submitAction?.(details)
+    return this.submitAction?.(details as unknown as FormSubmitDetails<TValues>)
   }
 
   private readonly notifySubmitError = (details: FormSubmitErrorDetails): void => {
@@ -199,7 +209,7 @@ export class XhFormElement extends XhElement {
    * 异步提交动作：事件无法获取监听函数的返回值，异步门经此属性。校验通过后先派发 submit 事件（仅作通知）再调用它：
    * 返回 thenable 期间 submitting 为真、再提交不发生、提交钮报在途，拒绝经 submit-error 报出。
    */
-  declare submitAction?: (details: FormSubmitDetails) => void | PromiseLike<unknown>
+  declare submitAction?: (details: FormSubmitDetails<TValues>) => void | PromiseLike<unknown>
 
   private readonly notifyInvalid = (details: FormInvalidDetails): void => {
     this.dispatchEvent(new CustomEvent('invalid', { detail: details, bubbles: true, composed: true }))
@@ -225,13 +235,18 @@ export class XhFormElement extends XhElement {
   )
 
   private machineProps(): Partial<FormSchema['props']> {
-    return {
+    // 值类型只给作者看：交给机器时擦回缺省的值表
+    const valueTyped = {
       values: this.values,
       defaultValues: this.defaultValues,
-      errors: this.errors,
-      defaultErrors: this.defaultErrors,
       validate: this.validate,
       rules: this.rules,
+    } as unknown as Pick<FormSchema['props'], 'values' | 'defaultValues' | 'validate' | 'rules'>
+    return {
+      ...valueTyped,
+      errors: this.errors,
+      defaultErrors: this.defaultErrors,
+      schema: this.schema,
       validateMessages: this.validateMessages,
       translations: this.translations,
       validateOn: this.validateOn,
@@ -261,13 +276,13 @@ export class XhFormElement extends XhElement {
   }
 
   /** 写入一个字段的值；禁用或只读时不做处理。 */
-  setFieldValue(name: FormPath, value: unknown): void {
-    this.commands().setFieldValue(name, value)
+  setFieldValue<P extends FormFieldPath<TValues>>(name: P, value: FormPathValue<TValues, P>): void {
+    this.commands().setFieldValue(name as FormPath, value)
   }
 
   /** 写入一个字段的错误；未提供文案（或提供空串）即清除该条错误。 */
-  setFieldError(name: FormPath, message?: string): void {
-    this.commands().setFieldError(name, message)
+  setFieldError(name: FormFieldPath<TValues>, message?: string): void {
+    this.commands().setFieldError(name as FormPath, message)
   }
 
   clearErrors(): void {
@@ -290,28 +305,28 @@ export class XhFormElement extends XhElement {
   }
 
   /** 只校验一个字段并只写回它的那一条。 */
-  validateField(name: FormPath): Promise<FormValidateResult> {
-    return this.commands().validateField(name)
+  validateField(name: FormFieldPath<TValues>): Promise<FormValidateResult> {
+    return this.commands().validateField(name as FormPath)
   }
 
   /** 逐字段校验这几个字段并只写回它们。 */
-  validateFields(names: readonly FormPath[]): Promise<FormValidateResult> {
-    return this.commands().validateFields(names)
+  validateFields(names: readonly FormFieldPath<TValues>[]): Promise<FormValidateResult> {
+    return this.commands().validateFields(names as readonly FormPath[])
   }
 
   /** 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不做处理。 */
-  resetField(name: FormPath): void {
-    this.commands().resetField(name)
+  resetField(name: FormFieldPath<TValues>): void {
+    this.commands().resetField(name as FormPath)
   }
 
   /** 该字段的值与 defaultValues 里的不同（按结构比）。 */
-  isFieldDirty(name: FormPath): boolean {
-    return this.commands().isFieldDirty(name)
+  isFieldDirty(name: FormFieldPath<TValues>): boolean {
+    return this.commands().isFieldDirty(name as FormPath)
   }
 
   /** 该字段失焦过一次。 */
-  isFieldTouched(name: FormPath): boolean {
-    return this.commands().isFieldTouched(name)
+  isFieldTouched(name: FormFieldPath<TValues>): boolean {
+    return this.commands().isFieldTouched(name as FormPath)
   }
 
   /** 有字段的值与 defaultValues 不同。 */
@@ -325,17 +340,17 @@ export class XhFormElement extends XhElement {
   }
 
   /** 字段容器的 DOM id：作者需要将其写到自己的控件上时从此处读取，不应自行拼接。 */
-  getFieldId(name: FormPath): string {
-    return this.commands().getFieldId(name)
+  getFieldId(name: FormFieldPath<TValues>): string {
+    return this.commands().getFieldId(name as FormPath)
   }
 
-  getFieldValue(name: FormPath): unknown {
-    return this.commands().getFieldValue(name)
+  getFieldValue<P extends FormFieldPath<TValues>>(name: P): FormPathValue<TValues, P> | undefined {
+    return this.commands().getFieldValue(name as FormPath) as FormPathValue<TValues, P> | undefined
   }
 
   /** 该字段当前的错误文案；无错误时为 undefined。 */
-  getFieldError(name: FormPath): string | undefined {
-    return this.commands().getFieldError(name)
+  getFieldError(name: FormFieldPath<TValues>): string | undefined {
+    return this.commands().getFieldError(name as FormPath)
   }
 
   /** 出错的字段名，插入顺序。 */
@@ -358,8 +373,8 @@ export class XhFormElement extends XhElement {
   }
 
   /** 最近一次有效校验的执行异常；没有异常时为 null。 */
-  get validationError(): FormValidationErrorDetails | null {
-    return this.commands().validationError
+  get validationError(): FormValidationErrorDetails<TValues> | null {
+    return this.commands().validationError as FormValidationErrorDetails<TValues> | null
   }
 
   protected wire(): void {

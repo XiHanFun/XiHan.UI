@@ -25,6 +25,8 @@
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
 - 嵌套字段与字段数组使用显式 `FormPath`。
+- 值类型：根组件按 `defaultValues`（或 `values`）推断整表的值类型，`rules` 与 `validate` 交回的键只能写它的字段，`onSubmit` 拿到的 `values` 与 `setFieldValue(name, value)` 的值都按字段收窄，字段名拼错编译即报错。字段组推断不到根上的值类型：`const { FieldGroup, ErrorSummaryItem } = defineFormFields<SignUp>()`（Vue、React）拿到的就是字段组与错误摘要条目本身，只在类型上收窄，`name` 只能写字段（数组路径逐段检查），插槽里的 `value` 是那个字段的类型。Web Components 写 `querySelector<XhFormElement<SignUp>>('xh-form')`。
+- `schema` 收 Standard Schema：zod、valibot、arktype 的 schema 直接交进去，组件只依赖接口、不引入任何校验库。交给它的是嵌套对象（数组路径的字段按段写回原位），它报的问题按 `path` 落到字段上，同一字段只留第一条，没有路径的记在空字段名 `''` 下；同一字段几边都报错时 `rules` 优先、`validate` 其次、`schema` 最后。schema 转换后的输出不用，`onSubmit` 交出的仍是表单的值。
 - 字段级状态：`api.dirty` 与 `isFieldDirty(name)` 相对 `defaultValues` 按结构比（改回原样即不算改过），`isFieldTouched(name)` 记失焦过一次的字段；`resetField(name)` 只把一个字段的值、错误与触碰标记还原。
 - 不提交的校验：`validateAll()` 整表校验并整表替换错误表，`validateField(name)` / `validateFields(names)` 只写回涉及的字段；三者都返回 `Promise<{ valid, errors, stale }>`，不触发 onSubmit / onInvalid、不显示错误摘要，也不搬焦点。校验结束前值被改则 `stale` 为真、结果不写回；校验器抛错时 Promise 拒绝，同时照常报 `onValidationError`。
 - 字段联动：规则写 `deps: ['password']`，依赖字段一改，本字段在被触碰过（校验时机不是 submit）或正挂着错误时重新校验，validator 的第二个参数读得到依赖字段的新值。

@@ -11,7 +11,7 @@ import {
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
 
-const rules: FormRules = {
+const rules: FormRules<{ password: string, confirm: string }> = {
   password: { required: true, message: "请填写密码" },
   // validator 的第二个参数读得到密码的新值；deps 让密码一改就重验这一条
   confirm: {

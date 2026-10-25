@@ -11,7 +11,7 @@ import {
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
 
-const rules: FormRules = {
+const rules: FormRules<{ username: string, email: string, age: string }> = {
   username: [
     { required: true, message: "用户名不能为空" },
     { min: 3, max: 12 },

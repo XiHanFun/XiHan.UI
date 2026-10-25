@@ -5,8 +5,29 @@
 
 // 提供 form 相关实现。
 
-import type { FormApi, FormColumns, FormErrorPatch, FormFieldSpan, FormPath, FormSchema, FormValidateOn, FormValues } from '@xihan-ui/headless'
+import type { PropTypes } from '@xihan-ui/core'
+import type {
+  FormApi,
+  FormColumns,
+  FormErrorPatch,
+  FormErrorPatchOf,
+  FormFieldPath,
+  FormFieldSpan,
+  FormInvalidDetails,
+  FormPath,
+  FormPathValue,
+  FormRules,
+  FormSchema,
+  FormStandardSchema,
+  FormSubmitDetails,
+  FormSubmitErrorDetails,
+  FormValidateOn,
+  FormValidationErrorDetails,
+  FormValues,
+  FormValuesChangeDetails,
+} from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { BivariantCallback } from '../../runtime/bivariant'
 import type { PayloadOf } from '../../runtime/payload'
 import { formFieldModel } from '@xihan-ui/headless'
 import { defineComponent, h } from 'vue'
@@ -16,9 +37,9 @@ import { useForm } from './use-form'
 
 type FormProps = FormSchema['props']
 
-/** 默认插槽的载荷：整表的值与错误、校验与提交在途、改动与触碰，以及逐字段读写、清错、校验、提交、重置的命令。 */
-export type FormRootSlotProps = Pick<
-  FormApi,
+/** 默认插槽的载荷：整表的值与错误、校验与提交在途、改动与触碰，以及逐字段读写、清错、校验、提交、重置的命令。TValues 是整表的值类型。 */
+export type FormRootSlotProps<TValues = FormValues> = Pick<
+  FormApi<PropTypes, TValues>,
   | 'values'
   | 'errors'
   | 'errorNames'
@@ -43,26 +64,27 @@ export type FormRootSlotProps = Pick<
   | 'reset'
 >
 
-/** 字段容器默认插槽的载荷：该字段的名字、值、错误与控件 id，以及写值的命令。 */
-export interface FormFieldGroupSlotProps {
-  name: FormPath
-  value: unknown
+/** 字段容器默认插槽的载荷：该字段的名字、值、错误与控件 id，以及写值的命令。给了值类型时值按字段收窄。 */
+export interface FormFieldGroupSlotProps<TValues = FormValues, P = FormPath> {
+  name: P
+  value: FormPathValue<TValues, P> | undefined
   error: string | undefined
   invalid: boolean
   controlId: string
-  setValue: (next: unknown) => void
+  setValue: (next: FormPathValue<TValues, P>) => void
 }
 
 /** 错误摘要默认插槽的载荷：整表的错误、出错字段名与条数。 */
 export type FormErrorSummarySlotProps = Pick<FormApi, 'errors' | 'errorNames' | 'errorCount'>
 
 /** 错误摘要单条默认插槽的载荷：该条指向的字段名与它的错误文案。 */
-export interface FormErrorSummaryItemSlotProps {
-  name: FormPath
+export interface FormErrorSummaryItemSlotProps<P = FormPath> {
+  name: P
   error: string | undefined
 }
 
-export const XhFormRoot = defineComponent({
+// 运行时的根组件按缺省的值表收；对外导出的 XhFormRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhFormRootImpl = defineComponent({
   name: 'XhFormRoot',
   // 缺省值由 connect 与机器给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
@@ -71,6 +93,8 @@ export const XhFormRoot = defineComponent({
     errors: { type: Object as PropType<FormErrorPatch> },
     defaultErrors: { type: Object as PropType<FormErrorPatch> },
     validate: { type: Function as PropType<FormProps['validate']> },
+    /** Standard Schema（zod、valibot、arktype 的 schema 都是）：它报的问题按路径落到字段上，与 validate、rules 并用。 */
+    schema: { type: Object as PropType<FormStandardSchema> },
     rules: { type: Object as PropType<FormProps['rules']> },
     validateMessages: { type: Object as PropType<FormProps['validateMessages']> },
     /** 校验报错的文案模板；全局语言包经它到达，validateMessages 再逐条压在上面。 */
@@ -150,6 +174,35 @@ export const XhFormRoot = defineComponent({
     }))
   },
 })
+
+/** 根组件里随值类型收窄的那几项 prop：值表、校验、规则与几个回调的载荷。 */
+export interface XhFormRootValueProps<TValues> {
+  'values'?: TValues
+  'defaultValues'?: TValues
+  'validate'?: (values: TValues) => FormErrorPatchOf<TValues> | Promise<FormErrorPatchOf<TValues>>
+  'rules'?: FormRules<TValues>
+  'onSubmit'?: BivariantCallback<[details: FormSubmitDetails<TValues>], void | PromiseLike<unknown>>
+  'onValuesChange'?: BivariantCallback<[details: FormValuesChangeDetails<TValues>]>
+  'onUpdate:values'?: BivariantCallback<[values: TValues]>
+  'onInvalid'?: BivariantCallback<[details: FormInvalidDetails<TValues>]>
+  'onSubmitError'?: BivariantCallback<[details: FormSubmitErrorDetails<TValues>]>
+  'onValidationError'?: BivariantCallback<[details: FormValidationErrorDetails<TValues>]>
+}
+
+type XhFormRootInstance = InstanceType<typeof XhFormRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 defaultValues（或 values）推断值类型：rules 的键、validate 交回的键
+ * 只能写它的字段，onSubmit 与默认插槽里按字段取写的值都按它收窄。`h()` 推断不了泛型，那里按缺省的值表收。
+ */
+export type XhFormRootComponent = Omit<typeof XhFormRootImpl, never> & {
+  new<TValues extends object = FormValues>(props?: Omit<XhFormRootInstance['$props'], keyof XhFormRootValueProps<TValues>> & XhFormRootValueProps<TValues>): Omit<XhFormRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhFormRootInstance['$props'], keyof XhFormRootValueProps<TValues>> & XhFormRootValueProps<TValues>
+    $slots: { default?: (props: FormRootSlotProps<TValues>) => VNode[] }
+  }
+}
+
+export const XhFormRoot = XhFormRootImpl as unknown as XhFormRootComponent
 
 export const XhFormFieldGroup = defineComponent({
   name: 'XhFormFieldGroup',
@@ -234,3 +287,38 @@ export const XhFormResetTrigger = defineComponent({
     return () => h('button', ctx.api.value.getResetTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+type XhFormFieldGroupInstance = InstanceType<typeof XhFormFieldGroup>
+type XhFormErrorSummaryItemInstance = InstanceType<typeof XhFormErrorSummaryItem>
+
+/** 按值类型收窄的字段组：name 只能写值表的字段，作用域插槽里的 value 与 setValue 是那个字段的类型。 */
+export type XhFormFieldGroupComponent<TValues> = Omit<typeof XhFormFieldGroup, never> & {
+  new<P extends FormFieldPath<TValues>>(props: Omit<XhFormFieldGroupInstance['$props'], 'name'> & { name: P }): Omit<XhFormFieldGroupInstance, '$props' | '$slots'> & {
+    $props: Omit<XhFormFieldGroupInstance['$props'], 'name'> & { name: P }
+    $slots: { default?: (props: FormFieldGroupSlotProps<TValues, P>) => VNode[] }
+  }
+}
+
+/** 按值类型收窄的错误摘要条目：name 只能写值表的字段。 */
+export type XhFormErrorSummaryItemComponent<TValues> = Omit<typeof XhFormErrorSummaryItem, never> & {
+  new<P extends FormFieldPath<TValues>>(props: Omit<XhFormErrorSummaryItemInstance['$props'], 'name'> & { name: P }): Omit<XhFormErrorSummaryItemInstance, '$props' | '$slots'> & {
+    $props: Omit<XhFormErrorSummaryItemInstance['$props'], 'name'> & { name: P }
+    $slots: { default?: (props: FormErrorSummaryItemSlotProps<P>) => VNode[] }
+  }
+}
+
+/**
+ * 按值类型收窄的字段组与错误摘要条目：`const { FieldGroup } = defineFormFields<SignUp>()`，模板里写
+ * `<FieldGroup name="email">`，字段名只能写 SignUp 的字段，作用域插槽里的 value 是那个字段的类型。
+ * 字段组是表单根的子组件，推断不到根上的值类型，所以要这样交一次；拿到的就是 XhFormFieldGroup 与
+ * XhFormErrorSummaryItem 本身，只在类型上收窄。
+ */
+export function defineFormFields<TValues extends object>(): {
+  FieldGroup: XhFormFieldGroupComponent<TValues>
+  ErrorSummaryItem: XhFormErrorSummaryItemComponent<TValues>
+} {
+  return {
+    FieldGroup: XhFormFieldGroup as unknown as XhFormFieldGroupComponent<TValues>,
+    ErrorSummaryItem: XhFormErrorSummaryItem as unknown as XhFormErrorSummaryItemComponent<TValues>,
+  }
+}

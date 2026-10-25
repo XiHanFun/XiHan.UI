@@ -11,7 +11,7 @@ describe('表单字段级接口的函数式组件适配', () => {
     const onSubmit = vi.fn(() => new Promise<void>((resolve) => {
       settle = resolve
     }))
-    let api!: FormRootSlotProps
+    let api!: FormRootSlotProps<{ user: string }>
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)

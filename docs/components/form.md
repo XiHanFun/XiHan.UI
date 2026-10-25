@@ -91,6 +91,8 @@
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
 - 嵌套字段与字段数组使用显式 `FormPath`。
+- 值类型：根组件按 `defaultValues`（或 `values`）推断整表的值类型，`rules` 与 `validate` 交回的键只能写它的字段，`onSubmit` 拿到的 `values` 与 `setFieldValue(name, value)` 的值都按字段收窄，字段名拼错编译即报错。字段组推断不到根上的值类型：`const { FieldGroup, ErrorSummaryItem } = defineFormFields<SignUp>()`（Vue、React）拿到的就是字段组与错误摘要条目本身，只在类型上收窄，`name` 只能写字段（数组路径逐段检查），插槽里的 `value` 是那个字段的类型。Web Components 写 `querySelector<XhFormElement<SignUp>>('xh-form')`。
+- `schema` 收 Standard Schema：zod、valibot、arktype 的 schema 直接交进去，组件只依赖接口、不引入任何校验库。交给它的是嵌套对象（数组路径的字段按段写回原位），它报的问题按 `path` 落到字段上，同一字段只留第一条，没有路径的记在空字段名 `''` 下；同一字段几边都报错时 `rules` 优先、`validate` 其次、`schema` 最后。schema 转换后的输出不用，`onSubmit` 交出的仍是表单的值。
 - 字段级状态：`api.dirty` 与 `isFieldDirty(name)` 相对 `defaultValues` 按结构比（改回原样即不算改过），`isFieldTouched(name)` 记失焦过一次的字段；`resetField(name)` 只把一个字段的值、错误与触碰标记还原。
 - 不提交的校验：`validateAll()` 整表校验并整表替换错误表，`validateField(name)` / `validateFields(names)` 只写回涉及的字段；三者都返回 `Promise<{ valid, errors, stale }>`，不触发 onSubmit / onInvalid、不显示错误摘要，也不搬焦点。校验结束前值被改则 `stale` 为真、结果不写回；校验器抛错时 Promise 拒绝，同时照常报 `onValidationError`。
 - 字段联动：规则写 `deps: ['password']`，依赖字段一改，本字段在被触碰过（校验时机不是 submit）或正挂着错误时重新校验，validator 的第二个参数读得到依赖字段的新值。
@@ -130,12 +132,13 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `values` | `FormValues` |  | 受控值表；提供即受控：cell 直读 prop，写入只发 onValuesChange 不落内部值。 |
-| `defaultValues` | `FormValues` |  | 非受控初值，同时也是 reset 的落点。 |
+| `values` | `TValues` |  | 受控值表；提供即受控：cell 直读 prop，写入只发 onValuesChange 不落内部值。 |
+| `defaultValues` | `TValues` |  | 非受控初值，同时也是 reset 的落点。 |
 | `errors` | `FormErrorPatch` |  | 受控错误表；提供即受控。空串会被清理（空串不是一条错误）。 |
 | `defaultErrors` | `FormErrorPatch` |  |  |
-| `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回字段名 → 错误文案，无错的字段给空串或省略； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案计算。 |
-| `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
+| `validate` | `(values: TValues) => FormErrorPatchOf<TValues> \| Promise<FormErrorPatchOf<TValues>>` |  | 校验函数。返回字段名 → 错误文案，无错的字段给空串或省略； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案计算。 |
+| `schema` | `FormStandardSchema` |  | Standard Schema（zod、valibot、arktype 的 schema 都是）：校验时把整表的值交给它， 它报的问题按路径落到字段上——一段的字符串路径即字段名，多段的即数组路径（数组行、嵌套对象）； 没有路径的问题记在空字段名 '' 下，提交照样被拦下。与 validate、rules 并用：同字段几边都报错时 rules 的文案优先、其次 validate，再次 schema。只用它的问题，不用它的输出值：提交交出去的仍是表单的值。 |
+| `rules` | `FormRules<TValues>` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
 | `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；逐条压在 translations 之上，都没给的取英文语言包。 |
 | `translations` | `Partial<FormTranslations>` |  | 校验报错的文案模板，形状同 validateMessages；全局语言包经它到达。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
@@ -145,12 +148,12 @@
 | `labelAlign` | `'start' \| 'end'` |  | horizontal 下标签文字的对齐缘，默认 end（贴近控件）。 |
 | `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两个按钮带原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：写值与重置不发生，但仍可提交。 |
-| `onValuesChange` | `(details: FormValuesChangeDetails) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValuesChange` | `(details: FormValuesChangeDetails<TValues>) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onErrorsChange` | `(details: FormErrorsChangeDetails) => void` |  | 错误表变化意图回调；受控时是唯一出口。 |
-| `onSubmit` | `(details: FormSubmitDetails) => void \| PromiseLike<unknown>` |  | 校验通过才调用。返回 thenable 时 submitting 为真直到它落定：期间再提交不发生、提交钮报在途； 拒绝经 onSubmitError 报出。同步抛出照常向上抛，不当作提交失败。 |
-| `onSubmitError` | `(details: FormSubmitErrorDetails) => void` |  | 提交回调返回的 thenable 拒绝时调用。 |
-| `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调用，附带拦截的整张错误表。 |
-| `onValidationError` | `(details: FormValidationErrorDetails) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
+| `onSubmit` | `(details: FormSubmitDetails<TValues>) => void \| PromiseLike<unknown>` |  | 校验通过才调用。返回 thenable 时 submitting 为真直到它落定：期间再提交不发生、提交钮报在途； 拒绝经 onSubmitError 报出。同步抛出照常向上抛，不当作提交失败。 |
+| `onSubmitError` | `(details: FormSubmitErrorDetails<TValues>) => void` |  | 提交回调返回的 thenable 拒绝时调用。 |
+| `onInvalid` | `(details: FormInvalidDetails<TValues>) => void` |  | 校验不通过时调用，附带拦截的整张错误表。 |
+| `onValidationError` | `(details: FormValidationErrorDetails<TValues>) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
 
 ### 事件
 
@@ -183,12 +186,12 @@
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhFormErrorSummary` | `children` | `SlotChildren<FormErrorSummarySlotProps>` |  |  |
-| `XhFormErrorSummaryItem` | `name` | `FormPath` | 是 | 该条指向哪个字段路径。 |
-| `XhFormErrorSummaryItem` | `children` | `SlotChildren<FormErrorSummaryItemSlotProps>` |  |  |
-| `XhFormFieldGroup` | `name` | `FormPath` | 是 | 字段路径；字符串含点仍是单键，数组才表示层级。 |
+| `XhFormErrorSummaryItem` | `name` | `P` | 是 | 该条指向哪个字段路径。 |
+| `XhFormErrorSummaryItem` | `children` | `SlotChildren<FormErrorSummaryItemSlotProps<P>>` |  |  |
+| `XhFormFieldGroup` | `name` | `P` | 是 | 字段路径；字符串含点仍是单键，数组才表示层级。 |
 | `XhFormFieldGroup` | `span` | `FormFieldSpan` |  | grid 排布下该格占多宽：1 至 4 跨相应列数，'full' 占满整行；未写时占一列。 |
-| `XhFormFieldGroup` | `children` | `SlotChildren<FormFieldGroupSlotProps>` |  |  |
-| `XhFormRoot` | `children` | `SlotChildren<FormRootSlotProps>` |  |  |
+| `XhFormFieldGroup` | `children` | `SlotChildren<FormFieldGroupSlotProps<TValues, P>>` |  |  |
+| `XhFormRoot` | `children` | `SlotChildren<FormRootSlotProps<TValues>>` |  |  |
 
 ### 状态
 
@@ -213,7 +216,7 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `values` | `FormValues` | 当前的值表。 |
+| `values` | `TValues` | 当前的值表。 |
 | `errors` | `FormErrors` | 当前的错误表（已清理）。 |
 | `errorNames` | `FormPath[]` | 出错的字段名，插入顺序。 |
 | `errorCount` | `number` |  |
@@ -222,35 +225,35 @@
 | `validating` | `boolean` | 异步校验进行中（提交或逐字段都计入）。 |
 | `submitting` | `boolean` | 提交回调返回的 thenable 尚未落定：期间再提交不发生，提交钮报在途。 |
 | `dirty` | `boolean` | 有字段的值与 defaultValues 不同（按结构比，受控时同样以 defaultValues 为基准）。 |
-| `validationError` | `FormValidationErrorDetails \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
+| `validationError` | `FormValidationErrorDetails<TValues> \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |
 | `layout` | `FormLayout` | 当前的排布档。 |
-| `getFieldId` | `(name: FormPath) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
-| `getFieldValue` | `(name: FormPath) => unknown` |  |
-| `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段当前的错误文案；无错时为 undefined。 |
+| `getFieldId` | `(name: FormFieldPath<TValues>) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
+| `getFieldValue` | `<P extends FormFieldPath<TValues>>(name: P) => FormPathValue<TValues, P> \| undefined` |  |
+| `getFieldError` | `(name: FormFieldPath<TValues>) => string \| undefined` | 该字段当前的错误文案；无错时为 undefined。 |
 | `summaryErrors` | `FormErrors` | 错误摘要此刻画的那版错误表：平时就是 errors；错误全改完、摘要播退场的那几帧里是撤下之前的最后一版， 摘要里的文案与条数照它写，才不会先于摘要一起消失。 |
 | `summaryErrorNames` | `FormPath[]` | summaryErrors 里出错的字段名，插入顺序。 |
 | `summaryErrorCount` | `number` |  |
-| `getSummaryError` | `(name: FormPath) => string \| undefined` | 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 |
-| `isFieldInvalid` | `(name: FormPath) => boolean` |  |
-| `isFieldDirty` | `(name: FormPath) => boolean` | 该字段的值与 defaultValues 里的不同（按结构比）。 |
-| `isFieldTouched` | `(name: FormPath) => boolean` | 该字段失焦过一次。 |
-| `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则中声明了 required：字段的必填标记由此推导。 |
-| `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不生效。 |
-| `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；未提供文案（或提供空串）即清除该条。 |
+| `getSummaryError` | `(name: FormFieldPath<TValues>) => string \| undefined` | 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 |
+| `isFieldInvalid` | `(name: FormFieldPath<TValues>) => boolean` |  |
+| `isFieldDirty` | `(name: FormFieldPath<TValues>) => boolean` | 该字段的值与 defaultValues 里的不同（按结构比）。 |
+| `isFieldTouched` | `(name: FormFieldPath<TValues>) => boolean` | 该字段失焦过一次。 |
+| `isFieldRequired` | `(name: FormFieldPath<TValues>) => boolean` | 该字段的规则中声明了 required：字段的必填标记由此推导。 |
+| `setFieldValue` | `<P extends FormFieldPath<TValues>>(name: P, value: FormPathValue<TValues, P>) => void` | 写一个字段的值；禁用或只读时不生效。 |
+| `setFieldError` | `(name: FormFieldPath<TValues>, message?: string) => void` | 写一个字段的错误；未提供文案（或提供空串）即清除该条。 |
 | `clearErrors` | `() => void` |  |
 | `submit` | `() => void` | 执行完整的校验与提交流程，与用户按提交键走同一路径。 |
 | `validateAll` | `() => Promise<FormValidateResult>` | 整表校验一次、整表替换错误表，但不提交：不触发 onSubmit / onInvalid，不显示错误摘要，也不搬焦点。 |
-| `validateField` | `(name: FormPath) => Promise<FormValidateResult>` | 只校验一个字段并只写回它的那一条。 |
-| `validateFields` | `(names: readonly FormPath[]) => Promise<FormValidateResult>` | 逐字段校验这几个字段并只写回它们。 |
-| `resetField` | `(name: FormPath) => void` | 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不生效。 |
+| `validateField` | `(name: FormFieldPath<TValues>) => Promise<FormValidateResult>` | 只校验一个字段并只写回它的那一条。 |
+| `validateFields` | `(names: readonly FormFieldPath<TValues>[]) => Promise<FormValidateResult>` | 逐字段校验这几个字段并只写回它们。 |
+| `resetField` | `(name: FormFieldPath<TValues>) => void` | 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不生效。 |
 | `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不生效。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getFieldGroupProps` | `(props: FormFieldGroupProps) => T['element']` |  |
+| `getFieldGroupProps` | `(props: FormFieldGroupProps<TValues>) => T['element']` |  |
 | `getErrorSummaryProps` | `() => T['element']` |  |
-| `getErrorSummaryItemProps` | `(props: FormErrorSummaryItemProps) => T['element']` |  |
+| `getErrorSummaryItemProps` | `(props: FormErrorSummaryItemProps<TValues>) => T['element']` |  |
 | `getSubmitTriggerProps` | `() => T['button']` |  |
 | `getResetTriggerProps` | `() => T['button']` |  |
 

@@ -15,6 +15,7 @@ import { formFieldGroupQuery, formFieldName } from './form.anatomy'
 import { firstFormErrorName, formErrorNames, mergeFormErrors, normalizeFormErrors, sameFormErrors } from './form.errors'
 import { cloneFormPathRecord, deleteFormPathValue, formPathEntries, formPathKey, getFormPathValue, rebaseFormArrayPath, rebaseFormPathRecord, sameFormPathRecords, setFormPathValue } from './form.path'
 import { formValidateMessages, runFormRules } from './form.rules'
+import { formValidateWithSchema } from './form.schema'
 
 const { createMachine, guards } = setup<FormSchema>()
 const { not } = guards
@@ -336,6 +337,8 @@ const pendingArrayMutations = new WeakMap<FormValues, { name: FormPath, mutation
 
 export const formMachine = createMachine({
   name: 'form',
+  // 给了 schema 就把它与作者的 validate 并成一个 validate：提交、逐字段与 validateAll 几条路都走 validate，不必另接
+  props: ({ props }) => (props.schema ? { ...props, validate: formValidateWithSchema(props.schema, props.validate) } : props),
   refs: ({ prop }) => ({
     getRootEl: () => null,
     validation: new Map(),

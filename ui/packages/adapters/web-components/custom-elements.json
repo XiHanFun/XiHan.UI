@@ -31963,7 +31963,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-form>`：Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与\nfield-group / error-summary / error-summary-item / submit-trigger / reset-trigger 角色节点，\n元素运行 form 状态机并把 connect 产出接上。\n\n提交只有一条路径：`<form>` 自身的 submit 事件。回车的隐式提交、`type=submit` 按钮、\n以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault：页面永不刷新，\n校验与回调都由组件收口。\n\n值与错误都是表：元素不采集原生控件中的值（那需要替作者推断 checkbox / 多选 / 数字的类型），\n而是由作者经 `values` 属性或 `setFieldValue()` 写入。校验函数同样由作者提供。\n\n每个字段用一个 field-group 包裹并用 `name` 属性声明字符串字段：错误摘要的链接指向它，\n提交失败后的焦点也落进它：落点按文档序取第一个出错的字段，而不是错误表的键序。",
+          "description": "`<xh-form>`：Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与\nfield-group / error-summary / error-summary-item / submit-trigger / reset-trigger 角色节点，\n元素运行 form 状态机并把 connect 产出接上。\n\n提交只有一条路径：`<form>` 自身的 submit 事件。回车的隐式提交、`type=submit` 按钮、\n以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault：页面永不刷新，\n校验与回调都由组件收口。\n\n值与错误都是表：元素不采集原生控件中的值（那需要替作者推断 checkbox / 多选 / 数字的类型），\n而是由作者经 `values` 属性或 `setFieldValue()` 写入。校验函数同样由作者提供。\n\n每个字段用一个 field-group 包裹并用 `name` 属性声明字符串字段：错误摘要的链接指向它，\n提交失败后的焦点也落进它：落点按文档序取第一个出错的字段，而不是错误表的键序。\n\n值类型 TValues（缺省 FormValues）只在 TypeScript 里给作者看：`querySelector<XhFormElement<SignUp>>('xh-form')`\n拿到的元素，values、rules、validate 交回的键与按字段取写的命令都按它收窄。`schema` 属性收 Standard Schema\n（zod、valibot、arktype 的 schema 都是），它报的问题按路径落到字段上；同一字段几边都报错时 rules 优先、validate 其次、schema 最后。",
           "name": "XhFormElement",
           "cssParts": [
             {
@@ -32006,7 +32006,7 @@
               "name": "values",
               "privacy": "public",
               "type": {
-                "text": "FormValues | undefined"
+                "text": "TValues | undefined"
               }
             },
             {
@@ -32014,7 +32014,7 @@
               "name": "defaultValues",
               "privacy": "public",
               "type": {
-                "text": "FormValues | undefined"
+                "text": "TValues | undefined"
               }
             },
             {
@@ -32038,15 +32038,24 @@
               "name": "validate",
               "privacy": "public",
               "type": {
-                "text": "FormSchema['props']['validate'] | undefined"
+                "text": "FormSchema<TValues>['props']['validate'] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "schema",
+              "privacy": "public",
+              "type": {
+                "text": "FormStandardSchema | undefined"
+              },
+              "description": "Standard Schema（zod、valibot 的 schema 都是）：它报的问题按路径落到字段上，与 validate、rules 并用。只作为 property 暴露。"
             },
             {
               "kind": "field",
               "name": "rules",
               "privacy": "public",
               "type": {
-                "text": "FormSchema['props']['rules'] | undefined"
+                "text": "FormSchema<TValues>['props']['rules'] | undefined"
               },
               "description": "声明式校验规则；对象无法表达为属性，只作为 property 暴露。"
             },
@@ -32158,7 +32167,7 @@
               "kind": "field",
               "name": "submitAction",
               "type": {
-                "text": "(details: FormSubmitDetails) => void | PromiseLike<unknown> | undefined"
+                "text": "(details: FormSubmitDetails<TValues>) => void | PromiseLike<unknown> | undefined"
               },
               "description": "异步提交动作：事件无法获取监听函数的返回值，异步门经此属性。校验通过后先派发 submit 事件（仅作通知）再调用它：\n返回 thenable 期间 submitting 为真、再提交不发生、提交钮报在途，拒绝经 submit-error 报出。"
             },
@@ -32214,13 +32223,13 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "P"
                   }
                 },
                 {
                   "name": "value",
                   "type": {
-                    "text": "unknown"
+                    "text": "FormPathValue<TValues, P>"
                   }
                 }
               ],
@@ -32238,7 +32247,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 },
                 {
@@ -32302,7 +32311,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32320,7 +32329,7 @@
                 {
                   "name": "names",
                   "type": {
-                    "text": "readonly FormPath[]"
+                    "text": "readonly FormFieldPath<TValues>[]"
                   }
                 }
               ],
@@ -32338,7 +32347,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32356,7 +32365,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32374,7 +32383,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32410,7 +32419,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32421,14 +32430,14 @@
               "name": "getFieldValue",
               "return": {
                 "type": {
-                  "text": "unknown"
+                  "text": "FormPathValue<TValues, P> | undefined"
                 }
               },
               "parameters": [
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "P"
                   }
                 }
               ]
@@ -32445,7 +32454,7 @@
                 {
                   "name": "name",
                   "type": {
-                    "text": "FormPath"
+                    "text": "FormFieldPath<TValues>"
                   }
                 }
               ],
@@ -32490,7 +32499,7 @@
               "kind": "field",
               "name": "validationError",
               "type": {
-                "text": "FormValidationErrorDetails | null"
+                "text": "FormValidationErrorDetails<TValues> | null"
               },
               "description": "最近一次有效校验的执行异常；没有异常时为 null。",
               "readonly": true

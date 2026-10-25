@@ -15,7 +15,7 @@ import {
 const taken = ["admin", "root", "xihan"];
 
 // 远程唯一性核验：这里用定时器模拟服务端往返
-const rules: FormRules = {
+const rules: FormRules<{ username: string }> = {
   username: [
     { required: true, message: "用户名不能为空" },
     {

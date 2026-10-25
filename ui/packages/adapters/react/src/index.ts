@@ -1303,6 +1303,7 @@ export type {
 export { useFloatingPanel } from './components/floating-panel/use-floating-panel'
 export type { FloatingPanelContext } from './components/floating-panel/use-floating-panel'
 export {
+  defineFormFields,
   XhFormErrorSummary,
   XhFormErrorSummaryItem,
   XhFormFieldGroup,

@@ -7,19 +7,60 @@
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { FormErrorPatch, FormErrors } from './form.errors'
-import type { FormArrayMutation, FormPath, FormPathRecord } from './form.path'
+import type { FormArrayMutation, FormPath, FormPathRecord, FormPathSegment } from './form.path'
 
 /**
  * 字段路径 → 值。字符串字段仍是对象上的单键；数组路径存放在不可枚举路径索引中，
  * 不会被 JavaScript 隐式转为逗号字符串。用 get/setFormPathValue 访问数组路径。
+ * 这是值表的缺省类型，什么字段名都收；根组件给了 defaultValues（或 values）时值类型从它推断，见 TValues。
  */
 export type FormValues = FormPathRecord<unknown>
+
+/** 值表里能当字段名的键：它的字符串键。值表说不出有哪些键时（缺省的 FormValues）是 string，什么名字都收。 */
+export type FormFieldName<TValues> = string extends keyof TValues ? string : Extract<keyof TValues, string>
+
+/** 往下走的那一段路径不进的值：日期、正则与函数没有可当字段的键。 */
+type FormLeafValue = Date | RegExp | ((...args: never[]) => unknown)
+
+/** 某个值往下的子路径：数组按下标，对象按键，至多再走四层；走到叶子值就停。 */
+type FormSubPath<V, D extends unknown[]> = D['length'] extends 4
+  ? FormPathSegment[]
+  : V extends FormLeafValue
+    ? never
+    : V extends readonly (infer E)[]
+      ? [number] | [number, ...FormSubPath<E, [...D, 0]>]
+      : V extends object
+        ? { [K in Extract<keyof V, string>]: [K] | [K, ...FormSubPath<V[K], [...D, 0]>] }[Extract<keyof V, string>]
+        : never
+
+/**
+ * 字段身份按值类型收窄：字符串是一整个字段名，只能写值表的键；数组路径进到数组行与对象里，
+ * 每一段都只能写那一层真有的键或下标。值表说不出有哪些键时就是 FormPath，什么都收。
+ */
+export type FormFieldPath<TValues> = string extends keyof TValues
+  ? FormPath
+  : FormFieldName<TValues> | { [K in FormFieldName<TValues>]: readonly [K, ...FormSubPath<TValues[K], []>] }[FormFieldName<TValues>]
+
+/** 沿一段路径往下取值的类型；路径里有值类型说不出的那一段就是 unknown。 */
+type FormWalk<T, P extends readonly unknown[]> = P extends readonly [infer H, ...infer R]
+  ? H extends keyof NonNullable<T> ? FormWalk<NonNullable<T>[H], R> : unknown
+  : T
+
+/** 某个字段的值类型：字符串字段名取值表的那一项，数组路径逐段往下走；值表说不出有哪些键时是 unknown。 */
+export type FormPathValue<TValues, P> = string extends keyof TValues
+  ? unknown
+  : P extends keyof TValues
+    ? TValues[P]
+    : P extends readonly unknown[] ? FormWalk<TValues, P> : unknown
 
 /** 内置类型检查档位。 */
 export type FormRuleType = 'string' | 'number' | 'integer' | 'email' | 'url' | 'array'
 
-/** 一条声明式规则；各检查项都可省略，validator 支持异步。 */
-export interface FormRule {
+/**
+ * 一条声明式规则；各检查项都可省略，validator 支持异步。
+ * TValue 是这个字段的值类型、TValues 是整表的值类型，给了值类型时 validator 的两个参数与 deps 都按它收窄。
+ */
+export interface FormRule<TValue = unknown, TValues = FormValues> {
   /** 必填：空值拦截——undefined / null / 只含空白的字符串 / 空数组 / 元素全为空的数组；false 与 0 不算空。 */
   required?: boolean
   /** 类型检查档位；数值 / 整数会把字符串数字也识别为数。 */
@@ -34,18 +75,52 @@ export interface FormRule {
    * 自定义检查：返回错误文案即失败，返回空即通过；允许返回 Promise（远程校验）。
    * 第二个参数是整表值，跨字段规则从这里读取。
    */
-  validator?: (value: unknown, values: FormValues) => string | undefined | null | Promise<string | undefined | null>
+  validator?: (value: TValue, values: TValues) => string | undefined | null | Promise<string | undefined | null>
   /**
    * 本字段依赖的字段：它们的值一变，本字段在被触碰过（失焦过一次，且校验时机不是 submit）
    * 或正挂着错误时重新校验。跨字段比较写在 validator 里，第二个参数读得到依赖字段的新值。
    */
-  deps?: readonly FormPath[]
+  deps?: readonly FormFieldPath<TValues>[]
   /** 本条规则的文案，优先于模板。 */
   message?: string
 }
 
-/** 字段名 → 一条或一组规则。 */
-export type FormRules = FormPathRecord<FormRule | FormRule[]>
+/**
+ * 字段名 → 一条或一组规则。给了值类型时键只能写它的字段，写错编译即报错；数组路径的规则照旧用
+ * createFormPathRecord 建表交进来。
+ */
+export type FormRules<TValues = FormValues> = string extends keyof TValues
+  ? FormPathRecord<FormRule | FormRule[]>
+  : { [K in FormFieldName<TValues>]?: FormRule<TValues[K], TValues> | FormRule<TValues[K], TValues>[] }
+
+/** validate 交回的错误表：字段名 → 错误文案。给了值类型时键只能写它的字段。 */
+export type FormErrorPatchOf<TValues> = string extends keyof TValues
+  ? FormErrorPatch
+  : { [K in FormFieldName<TValues>]?: string | null | undefined }
+
+/**
+ * Standard Schema（standardschema.dev）的接口：zod、valibot、arktype 等的 schema 都带着它。
+ * 这里只依赖接口、不引入任何运行时；照规范的建议原样抄下来，与它的 v1 版本一致。
+ */
+export interface FormStandardSchema<Input = unknown, Output = Input> {
+  readonly '~standard': {
+    readonly version: 1
+    readonly vendor: string
+    readonly validate: (value: unknown) => FormStandardResult<Output> | Promise<FormStandardResult<Output>>
+    readonly types?: { readonly input: Input, readonly output: Output } | undefined
+  }
+}
+
+/** Standard Schema 一次校验的结果：通过时带输出值，不通过时带一组问题。 */
+export type FormStandardResult<Output>
+  = | { readonly value: Output, readonly issues?: undefined }
+    | { readonly issues: ReadonlyArray<FormStandardIssue> }
+
+/** Standard Schema 报的一个问题：文案，与它指向的路径（每段是键，或带 key 的对象）。 */
+export interface FormStandardIssue {
+  readonly message: string
+  readonly path?: ReadonlyArray<PropertyKey | { readonly key: PropertyKey }> | undefined
+}
 
 /** 文案模板，{name}/{min}/{max} 现场代入；未提供的取 translations，再退英文语言包。 */
 export interface FormValidateMessages {
@@ -107,8 +182,9 @@ export type FormFieldSpan = FormColumnCount | 'full'
  */
 export type FormValidateOn = 'submit' | 'blur' | 'change'
 
-export interface FormValuesChangeDetails {
-  values: FormValues
+/** TValues 是整表的值类型，缺省 FormValues。 */
+export interface FormValuesChangeDetails<TValues = FormValues> {
+  values: TValues
   /** 这次变化来自某个字段组的行变更时带上：哪一个字段组、哪一种行变更，与字段组的 value-change 同一份。 */
   arrayMutation?: { name: FormPath, mutation: FormArrayMutation }
 }
@@ -117,16 +193,16 @@ export interface FormErrorsChangeDetails {
   errors: FormErrors
 }
 
-export interface FormSubmitDetails {
+export interface FormSubmitDetails<TValues = FormValues> {
   /** 通过校验的值。 */
-  values: FormValues
+  values: TValues
 }
 
 /** 提交回调返回的 thenable 拒绝时的详情；cause 是未经包装的原始原因。 */
-export interface FormSubmitErrorDetails {
+export interface FormSubmitErrorDetails<TValues = FormValues> {
   cause: unknown
   /** 这次提交通过校验的值。 */
-  values: FormValues
+  values: TValues
 }
 
 /** 一次不提交的校验（validate / validateField / validateFields）的结果。 */
@@ -139,18 +215,18 @@ export interface FormValidateResult {
   stale: boolean
 }
 
-export interface FormInvalidDetails {
+export interface FormInvalidDetails<TValues = FormValues> {
   /** 本次提交拦截的全部错误。 */
   errors: FormErrors
   /** 提交时的值，与 errors 是同一时刻的快照。 */
-  values: FormValues
+  values: TValues
 }
 
 /** 校验器执行异常，与字段填写错误分开；原始 cause 不转换为默认文案。 */
-export interface FormValidationErrorDetails {
+export interface FormValidationErrorDetails<TValues = FormValues> {
   cause: unknown
   /** 发生异常的值快照。 */
-  values: FormValues
+  values: TValues
   /** null 表示整表提交校验；否则是触发校验的字段路径。 */
   field: FormPath | null
 }
@@ -171,9 +247,9 @@ export interface FormValidationTask {
  * connect 不得反查 DOM：Vue 侧在 render 期求值（本帧 DOM 尚不存在）、WC 侧在 updated 后求值，
  * 读取 DOM 会使两个适配器的首帧快照分叉。
  */
-export interface FormFieldGroupProps {
-  /** 字段路径；字符串含点仍是单键，数组才表示嵌套层级。 */
-  name: FormPath
+export interface FormFieldGroupProps<TValues = FormValues> {
+  /** 字段路径；字符串含点仍是单键，数组才表示嵌套层级。给了值类型时只能写它的字段。 */
+  name: FormFieldPath<TValues>
   /**
    * grid 排布下该字段占的宽度：1 至 4 是固定跨列数，'full' 占满整行；未提供时占一列。
    * 范围外的值按未提供处理。'full' 跟随当前的列数，窄视口收为一列时它仍是一整行；
@@ -184,8 +260,8 @@ export interface FormFieldGroupProps {
 }
 
 /** 错误摘要中的一条：指向哪个字段由作者声明。 */
-export interface FormErrorSummaryItemProps {
-  name: FormPath
+export interface FormErrorSummaryItemProps<TValues = FormValues> {
+  name: FormFieldPath<TValues>
 }
 
 /**
@@ -215,12 +291,16 @@ export interface FormRefs {
   submitSequence: { n: number }
 }
 
-export interface FormSchema extends MachineSchema {
+/**
+ * TValues 是整表的值类型，缺省 FormValues；只收窄 values、defaultValues、validate、rules 与几个回调的载荷，
+ * 机器自己按缺省的 FormValues 跑，根组件按 defaultValues（或 values）推断它、交给机器时擦掉。
+ */
+export interface FormSchema<TValues = FormValues> extends MachineSchema {
   props: {
     /** 受控值表；提供即受控：cell 直读 prop，写入只发 onValuesChange 不落内部值。 */
-    values?: FormValues
+    values?: TValues
     /** 非受控初值，同时也是 reset 的落点。 */
-    defaultValues?: FormValues
+    defaultValues?: TValues
     /** 受控错误表；提供即受控。空串会被清理（空串不是一条错误）。 */
     errors?: FormErrorPatch
     defaultErrors?: FormErrorPatch
@@ -229,9 +309,16 @@ export interface FormSchema extends MachineSchema {
      * 允许返回 Promise（远程校验），期间 validating 置真。
      * 与 rules 并用时同字段两边都报错按 rules 的文案计算。
      */
-    validate?: (values: FormValues) => FormErrorPatch | Promise<FormErrorPatch>
+    validate?: (values: TValues) => FormErrorPatchOf<TValues> | Promise<FormErrorPatchOf<TValues>>
+    /**
+     * Standard Schema（zod、valibot、arktype 的 schema 都是）：校验时把整表的值交给它，
+     * 它报的问题按路径落到字段上——一段的字符串路径即字段名，多段的即数组路径（数组行、嵌套对象）；
+     * 没有路径的问题记在空字段名 '' 下，提交照样被拦下。与 validate、rules 并用：同字段几边都报错时
+     * rules 的文案优先、其次 validate，再次 schema。只用它的问题，不用它的输出值：提交交出去的仍是表单的值。
+     */
+    schema?: FormStandardSchema
     /** 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 */
-    rules?: FormRules
+    rules?: FormRules<TValues>
     /** 规则文案模板，{name}/{min}/{max} 现场代入；逐条压在 translations 之上，都没给的取英文语言包。 */
     validateMessages?: FormValidateMessages
     /** 校验报错的文案模板，形状同 validateMessages；全局语言包经它到达。 */
@@ -255,20 +342,20 @@ export interface FormSchema extends MachineSchema {
     /** 只读：写值与重置不发生，但仍可提交。 */
     readOnly?: boolean
     /** 值表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
-    onValuesChange?: (details: FormValuesChangeDetails) => void
+    onValuesChange?: (details: FormValuesChangeDetails<TValues>) => void
     /** 错误表变化意图回调；受控时是唯一出口。 */
     onErrorsChange?: (details: FormErrorsChangeDetails) => void
     /**
      * 校验通过才调用。返回 thenable 时 submitting 为真直到它落定：期间再提交不发生、提交钮报在途；
      * 拒绝经 onSubmitError 报出。同步抛出照常向上抛，不当作提交失败。
      */
-    onSubmit?: (details: FormSubmitDetails) => void | PromiseLike<unknown>
+    onSubmit?: (details: FormSubmitDetails<TValues>) => void | PromiseLike<unknown>
     /** 提交回调返回的 thenable 拒绝时调用。 */
-    onSubmitError?: (details: FormSubmitErrorDetails) => void
+    onSubmitError?: (details: FormSubmitErrorDetails<TValues>) => void
     /** 校验不通过时调用，附带拦截的整张错误表。 */
-    onInvalid?: (details: FormInvalidDetails) => void
+    onInvalid?: (details: FormInvalidDetails<TValues>) => void
     /** 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 */
-    onValidationError?: (details: FormValidationErrorDetails) => void
+    onValidationError?: (details: FormValidationErrorDetails<TValues>) => void
   }
   context: {
     /** 当前的值表。受控（values 提供）时 cell 直读 prop。 */
@@ -379,9 +466,10 @@ export interface FormSchema extends MachineSchema {
   effect: 'trackSummaryPresence'
 }
 
-export interface FormApi<T extends PropTypes = PropTypes> {
+/** TValues 是整表的值类型：值表、字段名与按字段取写的值都按它收窄。 */
+export interface FormApi<T extends PropTypes = PropTypes, TValues = FormValues> {
   /** 当前的值表。 */
-  values: FormValues
+  values: TValues
   /** 当前的错误表（已清理）。 */
   errors: FormErrors
   /** 出错的字段名，插入顺序。 */
@@ -398,17 +486,17 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   /** 有字段的值与 defaultValues 不同（按结构比，受控时同样以 defaultValues 为基准）。 */
   dirty: boolean
   /** 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 */
-  validationError: FormValidationErrorDetails | null
+  validationError: FormValidationErrorDetails<TValues> | null
   disabled: boolean
   readOnly: boolean
   validateOn: FormValidateOn
   /** 当前的排布档。 */
   layout: FormLayout
   /** 字段容器的 DOM id；错误摘要的链接指向它。 */
-  getFieldId: (name: FormPath) => string
-  getFieldValue: (name: FormPath) => unknown
+  getFieldId: (name: FormFieldPath<TValues>) => string
+  getFieldValue: <P extends FormFieldPath<TValues>>(name: P) => FormPathValue<TValues, P> | undefined
   /** 该字段当前的错误文案；无错时为 undefined。 */
-  getFieldError: (name: FormPath) => string | undefined
+  getFieldError: (name: FormFieldPath<TValues>) => string | undefined
   /**
    * 错误摘要此刻画的那版错误表：平时就是 errors；错误全改完、摘要播退场的那几帧里是撤下之前的最后一版，
    * 摘要里的文案与条数照它写，才不会先于摘要一起消失。
@@ -418,35 +506,35 @@ export interface FormApi<T extends PropTypes = PropTypes> {
   summaryErrorNames: FormPath[]
   summaryErrorCount: number
   /** 错误摘要此刻给该字段画的文案；摘要里的条目读它而不读 getFieldError。 */
-  getSummaryError: (name: FormPath) => string | undefined
-  isFieldInvalid: (name: FormPath) => boolean
+  getSummaryError: (name: FormFieldPath<TValues>) => string | undefined
+  isFieldInvalid: (name: FormFieldPath<TValues>) => boolean
   /** 该字段的值与 defaultValues 里的不同（按结构比）。 */
-  isFieldDirty: (name: FormPath) => boolean
+  isFieldDirty: (name: FormFieldPath<TValues>) => boolean
   /** 该字段失焦过一次。 */
-  isFieldTouched: (name: FormPath) => boolean
+  isFieldTouched: (name: FormFieldPath<TValues>) => boolean
   /** 该字段的规则中声明了 required：字段的必填标记由此推导。 */
-  isFieldRequired: (name: FormPath) => boolean
+  isFieldRequired: (name: FormFieldPath<TValues>) => boolean
   /** 写一个字段的值；禁用或只读时不生效。 */
-  setFieldValue: (name: FormPath, value: unknown) => void
+  setFieldValue: <P extends FormFieldPath<TValues>>(name: P, value: FormPathValue<TValues, P>) => void
   /** 写一个字段的错误；未提供文案（或提供空串）即清除该条。 */
-  setFieldError: (name: FormPath, message?: string) => void
+  setFieldError: (name: FormFieldPath<TValues>, message?: string) => void
   clearErrors: () => void
   /** 执行完整的校验与提交流程，与用户按提交键走同一路径。 */
   submit: () => void
   /** 整表校验一次、整表替换错误表，但不提交：不触发 onSubmit / onInvalid，不显示错误摘要，也不搬焦点。 */
   validateAll: () => Promise<FormValidateResult>
   /** 只校验一个字段并只写回它的那一条。 */
-  validateField: (name: FormPath) => Promise<FormValidateResult>
+  validateField: (name: FormFieldPath<TValues>) => Promise<FormValidateResult>
   /** 逐字段校验这几个字段并只写回它们。 */
-  validateFields: (names: readonly FormPath[]) => Promise<FormValidateResult>
+  validateFields: (names: readonly FormFieldPath<TValues>[]) => Promise<FormValidateResult>
   /** 只重置一个字段：值、错误与触碰标记回到初始；禁用或只读时不生效。 */
-  resetField: (name: FormPath) => void
+  resetField: (name: FormFieldPath<TValues>) => void
   /** 值与错误都回到初始；禁用或只读时不生效。 */
   reset: () => void
   getRootProps: () => T['element']
-  getFieldGroupProps: (props: FormFieldGroupProps) => T['element']
+  getFieldGroupProps: (props: FormFieldGroupProps<TValues>) => T['element']
   getErrorSummaryProps: () => T['element']
-  getErrorSummaryItemProps: (props: FormErrorSummaryItemProps) => T['element']
+  getErrorSummaryItemProps: (props: FormErrorSummaryItemProps<TValues>) => T['element']
   getSubmitTriggerProps: () => T['button']
   getResetTriggerProps: () => T['button']
 }
