@@ -15645,16 +15645,16 @@
   }
 }
 
-/* styles/undefined.css */
+/* styles/not-defined.css */
 /*
- * 元素升级前的形态。
+ * 元素升级前的形态。文件名取自它选中的 :not(:defined)；旧名 undefined.css 作为子路径别名保留到 6.0.0。
  *
  * 收起态由元素在 wire() 里用内联 display 做，而 data-scope / data-part 也是那一刻才打上，
  * 所以 JS 到达之前这段子树既没有皮肤也没有收起——内容会以裸文本堆在页面流里，
  * 并被搜索引擎与读屏当作正文。SSR / SSG 直出时这段时间尤其长。
  *
  * 这里按作者写的 data-xh-part 选中，那是升级前唯一存在的标记。
- * 名单与元素的对应由 check-undefined-guard.mjs 双向守着。
+ * 名单与元素的对应由 check-not-defined-guard.mjs 双向守着。
  */
 @layer xihan.components {
   :where(

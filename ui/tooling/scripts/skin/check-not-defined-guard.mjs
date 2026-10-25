@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 门禁：凡是在 wire() 里用内联 display 收起浮层部件的元素，标签名必须列进 undefined.css 的升级前名单。
+// 门禁：凡是在 wire() 里用内联 display 收起浮层部件的元素，标签名必须列进 not-defined.css 的升级前名单。
 //
 // 收起态与 data-scope / data-part 都是元素升级那一刻才落到 DOM。JS 到达之前这段子树既没有皮肤
 // 也没有收起，内容会以裸文本堆在页面流里，名单漏一个就漏一处。
@@ -11,14 +11,14 @@ import { WC_ELEMENTS_DIR } from '../lib/adapters.mjs'
 /**
  * 这张门禁只核 Web Components 一家。
  * 「升级前」这段时间只有自定义元素有：标签先进 DOM，类定义后到，中间那一段既没有
- * data-scope / data-part 也没有收起态，靠 undefined.css 按标签名先收住。
+ * data-scope / data-part 也没有收起态，靠 not-defined.css 按标签名先收住。
  * Vue 与 React 的节点是运行时创建的，出现在 DOM 里时属性与内联样式已经在身上了，
- * 没有这段空窗，也没有标签名可以让 undefined.css 去点。
+ * 没有这段空窗，也没有标签名可以让 not-defined.css 去点。
  */
 const SCOPE = '只核 Web Components 一家；Vue 与 React 不在其列：它们的节点是运行时创建的，没有「标签已在、类未到」这段升级前空窗'
 
 const ELEMENTS_DIR = WC_ELEMENTS_DIR
-const UNDEFINED_CSS = 'packages/design/styles/css/undefined.css'
+const NOT_DEFINED_CSS = 'packages/design/styles/css/not-defined.css'
 
 /** 升级前必须收起的浮层部件。 */
 const OVERLAY_PARTS = new Set(['backdrop', 'content', 'positioner', 'viewport'])
@@ -98,17 +98,17 @@ for (const file of files) {
     shouldList.add(tag)
 }
 
-const css = await readFile(UNDEFINED_CSS, 'utf8')
+const css = await readFile(NOT_DEFINED_CSS, 'utf8')
 const block = css.match(/:where\(\s*(xh-[\s\S]*?)\)/)
 if (!block) {
-  console.error(`[check-undefined-guard] ✗ ${UNDEFINED_CSS} 里找不到标签名单`)
+  console.error(`[check-not-defined-guard] ✗ ${NOT_DEFINED_CSS} 里找不到标签名单`)
   process.exit(1)
 }
 const listed = new Set([...block[1].matchAll(/xh-[\w-]+/g)].map(m => m[0]))
 
 for (const tag of [...shouldList].sort()) {
   if (!listed.has(tag))
-    problems.push(`${tag}：收起了浮层部件，却不在 ${UNDEFINED_CSS} 的名单里`)
+    problems.push(`${tag}：收起了浮层部件，却不在 ${NOT_DEFINED_CSS} 的名单里`)
 }
 for (const tag of [...listed].sort()) {
   if (!tagOf.has(tag))
@@ -118,12 +118,12 @@ for (const tag of [...listed].sort()) {
 }
 
 if (problems.length) {
-  console.error('[check-undefined-guard] ✗ 升级前名单与元素对不上：')
+  console.error('[check-not-defined-guard] ✗ 升级前名单与元素对不上：')
   for (const p of problems)
     console.error(`  ${p}`)
   console.error('名单漏一个，那个组件的浮层内容在 JS 到达之前就以裸文本堆在页面流里。')
   process.exit(1)
 }
 
-console.log(`[check-undefined-guard] 通过：${files.length} 个元素里 ${shouldList.size} 个收起浮层部件，与升级前名单逐一对上`)
-console.log(`[check-undefined-guard] 适用面：${SCOPE}`)
+console.log(`[check-not-defined-guard] 通过：${files.length} 个元素里 ${shouldList.size} 个收起浮层部件，与升级前名单逐一对上`)
+console.log(`[check-not-defined-guard] 适用面：${SCOPE}`)

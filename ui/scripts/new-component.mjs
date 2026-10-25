@@ -832,7 +832,7 @@ const HANDLERS = {
 
   'styles-index': (src, n) => {
     // 组件皮肤那一段是字母序；层内胜负靠源序，段外那几条（overlay-arrow / forced-colors）位置是刻意的，跳过
-    const SKIP = new Set(['overlay-arrow', 'forced-colors', 'layers', 'reset', 'tone', 'visually-hidden', 'undefined'])
+    const SKIP = new Set(['overlay-arrow', 'forced-colors', 'layers', 'reset', 'tone', 'visually-hidden', 'not-defined'])
     const lines = src.split('\n')
     const start = lines.findIndex(line => line === `@import './css/accordion.css';`)
     if (start === -1)

@@ -354,7 +354,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层的内容会以裸文本出现在页面流中，被搜索引擎与读屏视为正文。SSR / SSG 直出时这段窗口尤其长。
 
-`undefined.css` 处理这种情况，按作者写的 `data-xh-part` 选中（升级前唯一存在的标记）：
+`not-defined.css` 处理这种情况，按作者写的 `data-xh-part` 选中（升级前唯一存在的标记）。文件名取自它选中的 `:not(:defined)`；原名 `undefined.css`，旧路径 `@xihan-ui/styles/undefined.css` 在 5.x 里仍可引入、内容相同，6.0.0 移除：
 
 ```css
 @layer xihan.components {

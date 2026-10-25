@@ -14,6 +14,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { emitActionControlRecipe } from '../../../packages/design/styles/build/action-control-recipe.mjs'
 import { emitChartRecipe } from '../../../packages/design/styles/build/chart-recipe.mjs'
 import { emitCollectionItemRecipe } from '../../../packages/design/styles/build/collection-item-recipe.mjs'
+import { DEPRECATED_SUBPATHS } from '../../../packages/design/styles/build/deprecated-subpaths.mjs'
 import { emitFieldChromeRecipe } from '../../../packages/design/styles/build/field-chrome-recipe.mjs'
 import { emitSwatchRecipe } from '../../../packages/design/styles/build/swatch-recipe.mjs'
 
@@ -79,9 +80,22 @@ for (const file of imported) {
     errors.push(`index.source.css 引了不存在的 css/${file}`)
 }
 
+// 改过名的旧路径指向 build 出的副本，源目录里本就没有它；它的新名字必须还在、也必须导出
 for (const file of exported) {
+  if (Object.hasOwn(DEPRECATED_SUBPATHS, file)) {
+    const { target } = DEPRECATED_SUBPATHS[file]
+    if (!files.includes(target) || !exported.includes(target))
+      errors.push(`已弃用的 ${file} 改名去的 css/${target} 不在源目录或没有子路径导出`)
+    continue
+  }
   if (!files.includes(file))
     errors.push(`exports 指向不存在的 css/${file}`)
+}
+for (const [file, { target }] of Object.entries(DEPRECATED_SUBPATHS)) {
+  if (files.includes(file))
+    errors.push(`css/${file} 已改名为 ${target}，源目录里不该还留着旧文件`)
+  if (!exported.includes(file))
+    errors.push(`已弃用的 ./${file} 没有导出：旧路径要保留到 ${DEPRECATED_SUBPATHS[file].removeIn}，到期再连同 build/deprecated-subpaths.mjs 的登记一起删`)
 }
 
 const seen = new Set()
