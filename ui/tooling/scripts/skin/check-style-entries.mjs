@@ -6,6 +6,7 @@
 //   漏了子路径导出   → 按需引入的人根本 import 不到它
 //   源入口重复引     → 同一份规则进两遍，等特异性下的胜负由第二遍说了算
 //   扁平主入口漏段   → 生成物过期，发布出去的 index.css 少一份皮肤
+//   全量入口指回包根 → 发出去的又是带注释、未压缩的那份，安装体积与开发服务器的加载量翻倍
 //
 // 顺带把「按需产物的顺序只能由 index.source.css 过滤得来」这条钉在这里：同层内等特异性的规则靠源序
 // 定胜负，另起一套排序（例如按目录读取序）会让按需与全量渲染分叉，而且分叉看不出来。
@@ -39,6 +40,17 @@ const errors = []
 
 for (const target of stale)
   errors.push(`exports 直指源文件 ${target}：按需引入拿到的是未转换的属性选择器，改指 ${target.replace('./', './dist/')}`)
+
+// 发布的是 dist/ 下压缩过的一份：入库的两份扁平入口带着注释与段标记，只给门禁与评审读，不随包发出去
+const FULL_ENTRIES = { '.': './dist/index.css', './index.css': './dist/index.css', './index.unlayered.css': './dist/index.unlayered.css' }
+for (const [key, target] of Object.entries(FULL_ENTRIES)) {
+  if (manifest.exports[key] !== target)
+    errors.push(`exports["${key}"] 应指向压缩产物 ${target}，现为 ${JSON.stringify(manifest.exports[key])}`)
+}
+for (const entry of manifest.files ?? []) {
+  if (['css', 'family', 'index.css', 'index.unlayered.css'].includes(entry.replace(/\/$/, '')))
+    errors.push(`files 里有 ${entry}：带注释的源文件与可读入口不发布，exports 只指 dist/`)
+}
 
 try {
   await emitActionControlRecipe({ check: true })
@@ -86,4 +98,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-style-entries] 通过：${files.length} 份皮肤都在 index.source.css 里各引一次、在生成的 index.css 里各内联一段，也都有子路径导出`)
+console.log(`[check-style-entries] 通过：${files.length} 份皮肤都在 index.source.css 里各引一次、在生成的 index.css 里各内联一段，也都有子路径导出；全量入口指向 dist/ 下的压缩产物`)

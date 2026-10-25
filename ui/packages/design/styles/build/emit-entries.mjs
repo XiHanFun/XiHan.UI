@@ -40,6 +40,11 @@
 // 代价是 xihan.overrides 这个覆盖槽位在无层那一份里不存在，使用者改用特异性覆盖。
 // 两份的取舍写在文档站的「安装与接入」。
 //
+// ── 为什么发布的是 dist/ 下压缩过的一份 ──
+// 皮肤里的中文注释是写给维护者的设计说明，占了全量入口三成多的字节；开发服务器不压缩，会原样加载，
+// 包里还同时躺着源文件与产物四份。所以入库的 index.css / index.unlayered.css 保持可读（门禁按段标记
+// 读它们，评审也看它们的差异），exports 指向的全是 dist/ 下去掉注释、压掉空白的一份，带注释的源文件不发布。
+//
 // 用法：node build/emit-entries.mjs
 
 import fs from 'node:fs'
@@ -96,13 +101,19 @@ const ENTRIES = [
   },
 ]
 
+/** 压缩产物里唯一的一行注释：告诉在 node_modules 或 devtools 里翻到它的人，带注释的源文件在哪。 */
+const MINIFIED_HEAD = '/* @xihan-ui/styles · MIT License · 已压缩，带注释的源文件见 https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/design/styles */\n'
+
+fs.mkdirSync(path.join(pkgRoot, 'dist'), { recursive: true })
 for (const entry of ENTRIES) {
   const outFile = path.join(pkgRoot, entry.file)
-  fs.writeFileSync(outFile, applyFileHeader(outFile, `${mountScopeClasses(emitEntry(entry)).replace(/\n{3,}/g, '\n\n').trim()}\n`))
-  console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
+  const css = `${mountScopeClasses(emitEntry(entry)).replace(/\n{3,}/g, '\n\n').trim()}\n`
+  fs.writeFileSync(outFile, applyFileHeader(outFile, css))
+  fs.writeFileSync(path.join(pkgRoot, 'dist', entry.file), MINIFIED_HEAD + minifyCss(css))
+  console.log(`已生成 ${path.relative(pkgRoot, outFile)} 与 dist/${entry.file}`)
 }
 
-// 按需子路径（@xihan-ui/styles/dialog.css 一类）同样以挂载类领头：css/ 与 family/ 逐份转一遍放进 dist/，
+// 按需子路径（@xihan-ui/styles/dialog.css 一类）同样以挂载类领头：css/ 与 family/ 逐份转一遍、压缩后放进 dist/，
 // 相对 @import 的目录结构不变（dist/css/x.css 里的 ../family/y.css 仍指得到）。dist/ 不入库，随 build 生成
 for (const dir of SUBPATH_DIRS) {
   const from = path.join(pkgRoot, dir)
@@ -111,8 +122,62 @@ for (const dir of SUBPATH_DIRS) {
   fs.mkdirSync(to, { recursive: true })
   const names = fs.readdirSync(from).filter(name => name.endsWith('.css'))
   for (const name of names)
-    fs.writeFileSync(path.join(to, name), mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8')))
+    fs.writeFileSync(path.join(to, name), MINIFIED_HEAD + minifyCss(mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8'))))
   console.log(`已生成 dist/${dir}/（${names.length} 份）`)
+}
+
+/**
+ * 保守压缩：只去注释、压空白，不改写任何选择器与声明值，所以不必引入压缩器依赖，也不会改动级联。
+ * 字符串原样照抄；空白串压成一个空格，`{ } ; ,` 两侧的空格删掉，块末那个分号删掉。
+ * 注释不算空白（`.a/＊＊/.b` 就是 `.a.b`），只在它两侧的记号会粘成一个时补一个空格。
+ * 逗号两侧的空白在选择器、@ 规则头与声明值里都不影响语义；其余空白（后代组合符、calc() 的
+ * 加减号两侧、`and (` 之间）都留成一个空格。
+ */
+function minifyCss(css) {
+  const tight = new Set(['{', '}', ';', ','])
+  let out = ''
+  let space = false
+  const last = () => out[out.length - 1]
+  const flushSpace = (next) => {
+    if (space && out && !tight.has(last()) && !tight.has(next))
+      out += ' '
+    space = false
+  }
+  let i = 0
+  while (i < css.length) {
+    const c = css[i]
+    if (c === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2)
+      i = end === -1 ? css.length : end + 2
+      if (out && /[\w-]/.test(last()) && /[\w(-]/.test(css[i] ?? ''))
+        space = true
+      continue
+    }
+    if (c === '"' || c === '\'') {
+      const end = skipString(css, i)
+      flushSpace(c)
+      out += css.slice(i, end + 1)
+      i = end + 1
+      continue
+    }
+    if (/\s/.test(c)) {
+      space = true
+      i++
+      continue
+    }
+    if (tight.has(c)) {
+      space = false
+      if (c === '}' && last() === ';')
+        out = out.slice(0, -1)
+      out += c
+      i++
+      continue
+    }
+    flushSpace(c)
+    out += c
+    i++
+  }
+  return `${out}\n`
 }
 
 /**

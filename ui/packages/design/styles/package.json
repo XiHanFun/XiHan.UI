@@ -28,7 +28,7 @@
     "**/*.css"
   ],
   "exports": {
-    ".": "./index.css",
+    ".": "./dist/index.css",
     "./component-tokens": {
       "types": "./component-tokens.d.ts",
       "import": "./component-tokens.js"
@@ -114,8 +114,8 @@
     "./image-cropper.css": "./dist/css/image-cropper.css",
     "./image-viewer.css": "./dist/css/image-viewer.css",
     "./image.css": "./dist/css/image.css",
-    "./index.css": "./index.css",
-    "./index.unlayered.css": "./index.unlayered.css",
+    "./index.css": "./dist/index.css",
+    "./index.unlayered.css": "./dist/index.unlayered.css",
     "./infinite-scroll.css": "./dist/css/infinite-scroll.css",
     "./input-group.css": "./dist/css/input-group.css",
     "./json-viewer.css": "./dist/css/json-viewer.css",
@@ -207,11 +207,7 @@
     "component-tokens.d.ts",
     "component-tokens.js",
     "components.tokens.json",
-    "css",
-    "dist",
-    "family",
-    "index.css",
-    "index.unlayered.css"
+    "dist"
   ],
   "engines": {
     "node": ">=18"
