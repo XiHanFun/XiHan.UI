@@ -28,7 +28,7 @@ const SHARED = {
   'pointer': '指针反馈的公共层，按 [data-scope] 与禁用态的三种条件拼写匹配全部库节点，不挑具体哪一个',
   'reset': '库自己的基线，按 [data-scope] 匹配全部库节点，不挑具体哪一个',
   'tone': '语气层，与组件无关，三视觉轴共用一份',
-  'undefined': '自定义元素升级前的形态，按元素名匹配，那一刻 data-scope 还没打上',
+  'not-defined': '自定义元素升级前的形态，按元素名匹配，那一刻 data-scope 还没打上',
   'visually-hidden': '视觉隐藏工具类，按 .xh-visually-hidden 匹配',
 }
 

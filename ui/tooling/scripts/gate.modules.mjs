@@ -50,7 +50,7 @@ export const MODULES = [
       'node tooling/scripts/skin/check-invalidation-features.mjs',
       'node tooling/scripts/skin/check-skin-markers.mjs',
       'node tooling/scripts/skin/check-hidden-override.mjs',
-      'node tooling/scripts/skin/check-undefined-guard.mjs',
+      'node tooling/scripts/skin/check-not-defined-guard.mjs',
       'node tooling/scripts/skin/check-skin-size.mjs',
       'node tooling/scripts/skin/check-scope-has-skin.mjs',
       'node tooling/scripts/skin/check-skin-parts.mjs',

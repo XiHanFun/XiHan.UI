@@ -51,6 +51,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { applyFileHeader, stripFileHeader } from '../../../../tooling/file-header.mjs'
+import { DEPRECATED_SUBPATHS, deprecationBanner } from './deprecated-subpaths.mjs'
 
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const SOURCE = path.join(pkgRoot, 'index.source.css')
@@ -137,6 +138,13 @@ for (const dir of SUBPATH_DIRS) {
   for (const name of names)
     fs.writeFileSync(path.join(to, name), MINIFIED_HEAD + minifyCss(mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8'))))
   console.log(`已生成 dist/${dir}/（${names.length} 份）`)
+}
+
+// 改过名的子路径：旧路径照新文件出一份副本，开头带弃用说明（见 build/deprecated-subpaths.mjs）
+for (const [oldName, { target }] of Object.entries(DEPRECATED_SUBPATHS)) {
+  const current = fs.readFileSync(path.join(pkgRoot, 'dist', 'css', target), 'utf8').slice(MINIFIED_HEAD.length)
+  fs.writeFileSync(path.join(pkgRoot, 'dist', 'css', oldName), MINIFIED_HEAD + deprecationBanner(oldName) + current)
+  console.log(`已生成 dist/css/${oldName}（已弃用，内容同 ${target}）`)
 }
 
 /**

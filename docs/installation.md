@@ -316,7 +316,7 @@ import "@xihan-ui/styles/index.unlayered.css";
 ## 服务端渲染
 
 - 视觉环境运行时在 `document` / `window` 缺席时自动进入 SSR 分支：不读媒体查询、不写 DOM，使用八轴基线。要避免首屏闪烁，在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。Nuxt 项目由 [Nuxt 模块](./adapters/vue#nuxt)代劳。
-- 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 中的 `undefined.css` 处理这段窗口：用 `:not(:defined)` 选中作者编写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起，避免内容以裸文本出现在页面流中被读屏和搜索引擎视为正文。
+- 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 中的 `not-defined.css`（原名 `undefined.css`，旧路径 6.0.0 移除）处理这段窗口：用 `:not(:defined)` 选中作者编写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起，避免内容以裸文本出现在页面流中被读屏和搜索引擎视为正文。
 
 ## 下一步
 

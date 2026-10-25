@@ -312,7 +312,7 @@ This documentation site uses the unlayered build: VitePress ships an unlayered `
 ## Server-side rendering
 
 - The visual environment runtime enters an SSR branch when `document` / `window` are absent: it reads no media queries, writes no DOM and uses the eight-axis baseline. To avoid a flash on first paint, render the seven attributes `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` directly onto `<html>` on the server. In Nuxt projects the [Nuxt module](/adapters/vue#nuxt) (in Chinese) does this for you.
-- Custom elements are not upgraded before the JS arrives. `undefined.css` in `@xihan-ui/styles` covers that window: it selects the `data-xh-part` nodes you wrote with `:not(:defined)` and collapses the `content` / `positioner` / `backdrop` / `viewport` of the overlay family first, so their content does not show up in the page flow as bare text that screen readers and search engines treat as body copy.
+- Custom elements are not upgraded before the JS arrives. `not-defined.css` in `@xihan-ui/styles` (formerly `undefined.css`; the old path is removed in 6.0.0) covers that window: it selects the `data-xh-part` nodes you wrote with `:not(:defined)` and collapses the `content` / `positioner` / `backdrop` / `viewport` of the overlay family first, so their content does not show up in the page flow as bare text that screen readers and search engines treat as body copy.
 
 ## Next steps
 

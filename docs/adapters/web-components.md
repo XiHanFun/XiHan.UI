@@ -171,7 +171,7 @@ document.querySelector("xh-dialog")
 
 ## 升级前
 
-自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
+自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `not-defined.css`（原名 `undefined.css`）用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
 ## 编写自己的元素
 

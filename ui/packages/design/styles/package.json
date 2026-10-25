@@ -139,6 +139,7 @@
     "./menubar.css": "./dist/css/menubar.css",
     "./message-feed.css": "./dist/css/message-feed.css",
     "./navigation-menu.css": "./dist/css/navigation-menu.css",
+    "./not-defined.css": "./dist/css/not-defined.css",
     "./notification.css": "./dist/css/notification.css",
     "./number-animation.css": "./dist/css/number-animation.css",
     "./number-field.css": "./dist/css/number-field.css",
