@@ -19,7 +19,7 @@ async function readJson(path) {
 }
 
 // attw 解析不了纯资源子路径（CSS 里没有类型也没有 JS），按 exports 自动摘掉。
-// 键或目标任一是资源都算：styles 的根入口 "." 指向 ./index.css，光看键认不出来。
+// 键或目标任一是资源都算：styles 的根入口 "." 指向 ./dist/index.css，光看键认不出来。
 function assetEntrypoints(pkg) {
   const asset = /\.(?:css|json)$/
   const out = []

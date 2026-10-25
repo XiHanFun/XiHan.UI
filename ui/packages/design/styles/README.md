@@ -16,6 +16,9 @@ import '@xihan-ui/styles/tone.css'
 import '@xihan-ui/styles/button.css'
 ```
 
+发布的样式都是去掉注释、压掉空白的一份（`dist/`）；皮肤里的设计说明写在注释里，只在仓库的
+[`ui/packages/design/styles`](https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/design/styles) 下看得到。
+
 单皮肤文件头各自 `@import` 所属家族，单独引入时家族在场；混用多份单皮肤时每份都各带一份家族 `@import`，打包器不去重 `@import`（如 `@tailwindcss/vite` 自带的内联器）就会把家族复制多份。引入的皮肤超过几份时改用主入口。
 
 `button.css` 已传递引入 Action Control Family Recipe；需要给自定义解剖接入同一视觉合同时，也可单独引入 `@xihan-ui/styles/action-control.css`，并使用文档化的 `data-xh-action-*` 角色属性。家族缺省是无顶光、无描边、无投影的平面中性动作；品牌实心、显式边界与海拔必须由消费组件通过状态槽明确映射。
