@@ -9057,7 +9057,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-text，元素运行 checkbox-group 状态机\n并把 connect 产出接上。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）与 collection 的条目，每个条目带表单影子、方框、\n文字与说明（给了才有）；全选格要用时手写部件。标题与条目文字可以由宿主直接子节点\n`slot=\"label\"`、`slot=\"item:<值>\"` 接管。",
+          "description": "`<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，\n每个 item 内自带 hidden-input / indicator / item-text，元素运行 checkbox-group 状态机\n并把 connect 产出接上。条目身份取自条目节点上的 value 属性。\n\n不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）与 collection 的条目，每个条目带表单影子、方框、\n文字与说明（给了才有）；全选格要用时手写部件。标题与条目文字可以由宿主直接子节点\n`slot=\"label\"`、`slot=\"item:<值>\"` 接管。\n\nV 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhCheckboxGroupElement<number>>('xh-checkbox-group')`\n拿到的元素上 value、itemValues 与 collection 都是 V；写在标记里的条目 value 永远是字符串。",
           "name": "XhCheckboxGroupElement",
           "cssParts": [
             {
@@ -9126,8 +9126,17 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "CheckboxGroupNode[] | undefined"
+                "text": "CheckboxGroupNode<V>[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "valueKey",
+              "privacy": "public",
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "attribute": "value-key"
             },
             {
               "kind": "field",
@@ -9143,7 +9152,7 @@
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "attribute": "value"
             },
@@ -9152,7 +9161,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "attribute": "default-value"
             },
@@ -9161,7 +9170,7 @@
               "name": "itemValues",
               "privacy": "public",
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "attribute": "item-values"
             },
@@ -9428,7 +9437,7 @@
           ],
           "events": [
             {
-              "description": "选中值变化；detail 为 `{ value: string[] }`",
+              "description": "选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）",
               "name": "value-change",
               "type": {
                 "text": "CheckboxGroupValueChangeDetails"
@@ -9446,7 +9455,7 @@
             },
             {
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "description": "受控选中值，逗号分隔；未提供该属性即非受控",
               "name": "value",
@@ -9454,7 +9463,7 @@
             },
             {
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "description": "非受控初始选中值，逗号分隔",
               "name": "default-value",
@@ -9462,7 +9471,7 @@
             },
             {
               "type": {
-                "text": "string[] | undefined"
+                "text": "V[] | undefined"
               },
               "description": "组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选",
               "name": "item-values",
@@ -9555,6 +9564,14 @@
               "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "description": "对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认",
+              "name": "value-key",
+              "fieldName": "valueKey"
             }
           ],
           "superclass": {

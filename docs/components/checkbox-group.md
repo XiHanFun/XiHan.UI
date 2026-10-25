@@ -83,6 +83,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 - `variant` 是结构形态：缺省 `list` 是一列「方框 + 文案」的行；`card` 把每个条目画成一张可点的描边卡（surface 圆角，白底承载阶梯悬停 100 → 按下 200），方框在卡的行首，整张卡是命中区。勾中的卡换品牌淡底（写了 `tone` 换语气淡底），与表格选中行、穿梭框选中项同一种标记，描边不换；只读时卡片不给悬停与按下面。竖排时卡片撑满一列，横排时各卡等分一行、放不下就折行。全选触发器在两种形态里都是一行。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
 - 根是 `role=group`，`label` 部件真渲染了时才经 `aria-labelledby` 给组命名；不写标题时给根节点写 `aria-label`。Vue / React 的 `label` 属性不论手写选项还是数据驱动都会铺出标题。
+- 值可以是任意类型：`value`、`defaultValue`、`itemValues` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，几处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhCheckboxGroupElement<number>>("xh-checkbox-group")` 收窄。
 
 ### 组合
 
@@ -118,10 +119,11 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `CheckboxGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
-| `value` | `string[]` |  | 选中值集合。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string[]` |  |  |
-| `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；未提供时 checkedState 退化为 unchecked / indeterminate 两态。 |
+| `collection` | `CheckboxGroupNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
+| `value` | `V[]` |  | 选中值集合。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
+| `defaultValue` | `V[]` |  |  |
+| `itemValues` | `V[]` |  | 组内全部条目的值，按书写顺序声明；未提供时 checkedState 退化为 unchecked / indeterminate 两态。 |
 | `min` | `number` |  | 至少选几项，非负整数；选中数降到它时已选的条目改不动（aria-disabled）。 只约束用户的点选与全选，不校验程序化写入与初值。 |
 | `max` | `number` |  | 至多选几项，非负整数；选中数到了它时未选的条目改不动（aria-disabled），全选只补到它为止。 只约束用户的点选与全选，不校验程序化写入与初值。min 大于 max 立即报错。 |
 | `disabled` | `boolean` |  | 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 |
@@ -135,7 +137,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `variant` | `CheckboxGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡。 |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueChange` | `(details: CheckboxGroupValueChangeDetails<V>) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### CheckboxGroupNode
 
@@ -143,8 +145,8 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为值（不是字符串的值退回它的键）。 |
 | `description` | `string` |  | 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `disabled` | `boolean` |  | 条目禁用：仍可聚焦、仍占一个 Tab 停靠点，但不可修改，全选也跳过它。 |
 
@@ -154,7 +156,7 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `CheckboxGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `value-change` | `CheckboxGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 
 ### 插槽
 
@@ -162,9 +164,9 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhCheckboxGroupRoot` | `default` | `CheckboxGroupRootSlotProps` |  |
+| `XhCheckboxGroupRoot` | `default` | `CheckboxGroupRootSlotProps<V>` |  |
 | `XhCheckboxGroupRoot` | `label` | — |  |
-| `XhCheckboxGroupRoot` | `item` | `CheckboxGroupNodeMeta` |  |
+| `XhCheckboxGroupRoot` | `item` | `CheckboxGroupNodeMeta<V>` |  |
 
 ### React 适配器 props
 
@@ -172,11 +174,11 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhCheckboxGroupItem` | `value` | `string` | 是 |  |
+| `XhCheckboxGroupItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhCheckboxGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhCheckboxGroupRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
-| `XhCheckboxGroupRoot` | `renderItem` | `(node: CheckboxGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
-| `XhCheckboxGroupRoot` | `children` | `SlotChildren<CheckboxGroupRootSlotProps>` |  |  |
+| `XhCheckboxGroupRoot` | `renderItem` | `(node: CheckboxGroupNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhCheckboxGroupRoot` | `children` | `SlotChildren<CheckboxGroupRootSlotProps<V>>` |  |  |
 
 ### 状态
 
@@ -205,8 +207,8 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string[]` |  |
-| `collection` | `readonly CheckboxGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `V[]` |  |
+| `collection` | `readonly CheckboxGroupNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `checkedState` | `CheckboxGroupCheckedState` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -214,16 +216,16 @@ min / max 约束选中数：选满时没选的项置灰，降到下限时已选�
 | `required` | `boolean` |  |
 | `atMax` | `boolean` | 选中数到了 max：未选的条目改不动。未设 max 时恒为 false。 |
 | `atMin` | `boolean` | 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 |
-| `isChecked` | `(value: string) => boolean` |  |
-| `setValue` | `(next: string[]) => void` | 整体替换选中集合。程序化入口，不受 readOnly 拦截。 |
-| `toggleValue` | `(value: string) => void` | 切换某个值；整组禁用或只读时无效。 |
+| `isChecked` | `(value: V) => boolean` |  |
+| `setValue` | `(next: V[]) => void` | 整体替换选中集合。程序化入口，不受 readOnly 拦截。 |
+| `toggleValue` | `(value: V) => void` | 切换某个值；整组禁用或只读时无效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
-| `getIndicatorProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: CheckboxGroupItemProps) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
-| `getHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
+| `getItemProps` | `(props: CheckboxGroupItemProps<V>) => T['element']` |  |
+| `getIndicatorProps` | `(props: CheckboxGroupItemProps<V>) => T['element']` |  |
+| `getItemTextProps` | `(props: CheckboxGroupItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: CheckboxGroupItemProps<V>) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
+| `getHiddenInputProps` | `(props: CheckboxGroupItemProps<V>) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
 | `getSelectAllTriggerProps` | `() => T['element']` | 全选 / 半选的父复选框。必须写在 root 之内，它依靠祖先链找到本组。 |
 
 ## 无障碍

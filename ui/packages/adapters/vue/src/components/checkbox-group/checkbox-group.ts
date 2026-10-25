@@ -5,18 +5,20 @@
 
 // 提供 checkbox group 相关实现。
 
-import type { Orientation, Size, Tone } from '@xihan-ui/core'
+import type { Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type {
   CheckboxGroupApi,
   CheckboxGroupItemProps,
   CheckboxGroupNode,
   CheckboxGroupNodeMeta,
   CheckboxGroupSchema,
+  CheckboxGroupValueChangeDetails,
   CheckboxGroupVariant,
+  SelectionValueKey,
   StructureChild,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import type { PayloadOf } from '../../runtime/payload'
+import type { BivariantCallback } from '../../runtime/bivariant'
 import { checkboxGroupStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onUnmounted } from 'vue'
 import { renderStructure } from '../../runtime/structure'
@@ -32,24 +34,28 @@ import { useCheckboxGroup } from './use-checkbox-group'
 
 type CheckboxGroupProps = CheckboxGroupSchema['props']
 
-/** 默认插槽的载荷：整组的选中集合与全选态，以及整体替换与翻转单值的方法。 */
-export type CheckboxGroupRootSlotProps = Pick<
-  CheckboxGroupApi,
+/** 默认插槽的载荷：整组的选中集合与全选态，以及整体替换与翻转单值的方法。V 是选中值的类型。 */
+export type CheckboxGroupRootSlotProps<V = string> = Pick<
+  CheckboxGroupApi<PropTypes, V>,
   'value' | 'checkedState' | 'atMax' | 'atMin' | 'isChecked' | 'setValue' | 'toggleValue'
 >
 
-export const XhCheckboxGroupRoot = defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhCheckboxGroupRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhCheckboxGroupRootImpl = defineComponent({
   name: 'XhCheckboxGroupRoot',
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<CheckboxGroupNode[]> },
+    collection: { type: Array as PropType<CheckboxGroupNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     // 缺席值 undefined 表示非受控
-    value: { type: Array as PropType<string[]> },
-    defaultValue: { type: Array as PropType<string[]> },
-    itemValues: { type: Array as PropType<string[]> },
+    // 值可以是字符串、数字或对象：类型由对外导出的 XhCheckboxGroupRoot 按值类型收窄
+    value: { type: Array as PropType<unknown[]> },
+    defaultValue: { type: Array as PropType<unknown[]> },
+    itemValues: { type: Array as PropType<unknown[]> },
     min: { type: Number },
     max: { type: Number },
     disabled: { type: Boolean, default: undefined },
@@ -64,20 +70,20 @@ export const XhCheckboxGroupRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸数组
   emits: {
-    'value-change': (_details: PayloadOf<CheckboxGroupProps, 'onValueChange'>) => true,
-    'update:value': (_value: PayloadOf<CheckboxGroupProps, 'onValueChange'>['value']) => true,
+    'value-change': (_details: CheckboxGroupValueChangeDetails<unknown>) => true,
+    'update:value': (_value: unknown[]) => true,
   },
   slots: Object as SlotsType<{
-    default?: (props: CheckboxGroupRootSlotProps) => VNode[]
+    default?: (props: CheckboxGroupRootSlotProps<unknown>) => VNode[]
     label?: () => VNode[]
-    item?: (props: CheckboxGroupNodeMeta) => VNode[]
+    item?: (props: CheckboxGroupNodeMeta<unknown>) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: CheckboxGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useCheckboxGroup(useFormControlProps(props) as CheckboxGroupProps, notify)
+    const ctx = useCheckboxGroup(useFormControlProps(props) as unknown as CheckboxGroupProps, notify)
     provideCheckboxGroup(ctx)
     // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
     const fieldWiring = useFieldGroupWiring()
@@ -100,6 +106,35 @@ export const XhCheckboxGroupRoot = defineComponent({
   },
 })
 
+/** 根组件里随值类型收窄的那几项 prop：选中值、条目数据、全部条目的值、取键方式与值变化的回调。 */
+export interface XhCheckboxGroupRootValueProps<V> {
+  'value'?: V[]
+  'defaultValue'?: V[]
+  'itemValues'?: V[]
+  'collection'?: CheckboxGroupNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'onUpdate:value'?: BivariantCallback<[value: V[]]>
+  'onValueChange'?: BivariantCallback<[details: CheckboxGroupValueChangeDetails<V>]>
+}
+
+type XhCheckboxGroupRootInstance = InstanceType<typeof XhCheckboxGroupRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
+ * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhCheckboxGroupRootComponent = Omit<typeof XhCheckboxGroupRootImpl, never> & {
+  new<V = string>(props?: Omit<XhCheckboxGroupRootInstance['$props'], keyof XhCheckboxGroupRootValueProps<V>> & XhCheckboxGroupRootValueProps<V>): Omit<XhCheckboxGroupRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhCheckboxGroupRootInstance['$props'], keyof XhCheckboxGroupRootValueProps<V>> & XhCheckboxGroupRootValueProps<V>
+    $slots: Omit<XhCheckboxGroupRootInstance['$slots'], 'default' | 'item'> & {
+      default?: (props: CheckboxGroupRootSlotProps<V>) => VNode[]
+      item?: (node: CheckboxGroupNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhCheckboxGroupRoot = XhCheckboxGroupRootImpl as unknown as XhCheckboxGroupRootComponent
+
 export const XhCheckboxGroupLabel = defineComponent({
   name: 'XhCheckboxGroupLabel',
   setup(_, { slots }) {
@@ -116,13 +151,14 @@ export const XhCheckboxGroupLabel = defineComponent({
 export const XhCheckboxGroupItem = defineComponent({
   name: 'XhCheckboxGroupItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useCheckboxGroupContext()
-    const item = computed<CheckboxGroupItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    const item = computed<CheckboxGroupItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideCheckboxGroupItem({ item })
     // 表单影子由条目自行装配，不暴露成独立组件，作者只写方框与文本
     return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, [
@@ -190,21 +226,21 @@ function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[
 
 interface CheckboxGroupStructureSlots {
   label?: () => VNode[]
-  item?: (node: CheckboxGroupNodeMeta) => VNode[]
+  item?: (node: CheckboxGroupNodeMeta<unknown>) => VNode[]
 }
 
 /**
  * 未写默认插槽时铺开的整套结构：照 headless 的 checkboxGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与条目文字由对应插槽接管；全选控件要用时写默认插槽。
  */
-function renderDefaultStructure(api: CheckboxGroupApi, label: string | undefined, content: CheckboxGroupStructureSlots): VNode[] {
+function renderDefaultStructure(api: CheckboxGroupApi<PropTypes, unknown>, label: string | undefined, content: CheckboxGroupStructureSlots): VNode[] {
   const nodes = checkboxGroupStructure(api, { label, slotted: name => content[name as keyof CheckboxGroupStructureSlots] != null })
   return renderStructure(withoutSelfAssembled(nodes), CHECKBOX_GROUP_PARTS, (node) => {
     switch (node.slot?.name) {
       case 'label':
         return content.label?.()
       case 'item':
-        return content.item?.(node.data as CheckboxGroupNodeMeta) ?? (node.data as CheckboxGroupNodeMeta).label
+        return content.item?.(node.data as CheckboxGroupNodeMeta<unknown>) ?? (node.data as CheckboxGroupNodeMeta<unknown>).label
       default:
         return undefined
     }

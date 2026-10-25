@@ -6,6 +6,7 @@
 // 定义 checkbox group 类型契约。
 
 import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { SelectionValueKey } from '../shared/value-codec'
 
 /**
  * 结构形态：list 是一列「方框 + 文案」的行（缺省）；card 是一组可点的描边卡，
@@ -14,8 +15,9 @@ import type { MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-u
  */
 export type CheckboxGroupVariant = 'card' | 'list'
 
-export interface CheckboxGroupValueChangeDetails {
-  value: string[]
+/** V 是选中值的类型，缺省 string；数字、对象都行，见 CheckboxGroupSchema 的 valueKey。 */
+export interface CheckboxGroupValueChangeDetails<V = string> {
+  value: V[]
 }
 
 /**
@@ -27,9 +29,9 @@ export interface CheckboxGroupValueChangeDetails {
 export type CheckboxGroupCheckedState = 'checked' | 'unchecked' | 'indeterminate'
 
 /** 条目数据。提供 collection 时，显示文本与禁用以它为准。 */
-export interface CheckboxGroupNode {
-  value: string
-  /** 展示文本；默认回退为 value。 */
+export interface CheckboxGroupNode<V = string> {
+  value: V
+  /** 展示文本；默认回退为值（不是字符串的值退回它的键）。 */
   label?: string
   /** 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 */
   description?: string
@@ -38,9 +40,11 @@ export interface CheckboxGroupNode {
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态。 */
-export interface CheckboxGroupNodeMeta {
-  value: string
-  /** node.label ?? node.value，恒为字符串。 */
+export interface CheckboxGroupNodeMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 */
+  key: string
+  /** node.label，没写时退回值（不是字符串的值退回它的键），恒为字符串。 */
   label: string
   /** 未提供时为 null。 */
   description: string | null
@@ -51,8 +55,8 @@ export interface CheckboxGroupNodeMeta {
  * 条目声明的身份：值必须声明，禁用可由 collection 代为声明。
  * connect 不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
-export interface CheckboxGroupItemProps {
-  value: string
+export interface CheckboxGroupItemProps<V = string> {
+  value: V
   /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
@@ -60,18 +64,27 @@ export interface CheckboxGroupItemProps {
 /** 接了按压通道的两个部件：条目按 value 记，全选格整组只有一个、不带 value。 */
 export type CheckboxGroupPressedPart = 'item' | 'select-all-trigger'
 
-export interface CheckboxGroupSchema extends MachineSchema {
+/**
+ * V 是选中值的类型，缺省 string。机器与 DOM 只认字符串键：值进来时编成键（字符串原样，数字转字符串，
+ * 对象按 valueKey），onValueChange 与 api 交出去时解回原值。
+ */
+export interface CheckboxGroupSchema<V = string> extends MachineSchema {
   props: {
     /**
      * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */
-    collection?: CheckboxGroupNode[]
+    collection?: CheckboxGroupNode<V>[]
+    /**
+     * 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它；
+     * 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。
+     */
+    valueKey?: SelectionValueKey<V>
     /** 选中值集合。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 */
-    value?: string[]
-    defaultValue?: string[]
+    value?: V[]
+    defaultValue?: V[]
     /** 组内全部条目的值，按书写顺序声明；未提供时 checkedState 退化为 unchecked / indeterminate 两态。 */
-    itemValues?: string[]
+    itemValues?: V[]
     /**
      * 至少选几项，非负整数；选中数降到它时已选的条目改不动（aria-disabled）。
      * 只约束用户的点选与全选，不校验程序化写入与初值。
@@ -116,7 +129,7 @@ export interface CheckboxGroupSchema extends MachineSchema {
      */
     ariaLabel?: string
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
-    onValueChange?: (details: CheckboxGroupValueChangeDetails) => void
+    onValueChange?: (details: CheckboxGroupValueChangeDetails<V>) => void
   }
   context: {
     /** 选中值。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
@@ -155,10 +168,11 @@ export interface CheckboxGroupSchema extends MachineSchema {
   effect: never
 }
 
-export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
-  value: string[]
+/** V 是选中值的类型：value 与 collection 交出原值，收值的 getter 与动作也收原值。 */
+export interface CheckboxGroupApi<T extends PropTypes = PropTypes, V = string> {
+  value: V[]
   /** 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 */
-  collection: readonly CheckboxGroupNodeMeta[]
+  collection: readonly CheckboxGroupNodeMeta<V>[]
   checkedState: CheckboxGroupCheckedState
   disabled: boolean
   readOnly: boolean
@@ -168,20 +182,20 @@ export interface CheckboxGroupApi<T extends PropTypes = PropTypes> {
   atMax: boolean
   /** 选中数降到 min：已选的条目改不动。未设 min（或为 0）时恒为 false。 */
   atMin: boolean
-  isChecked: (value: string) => boolean
+  isChecked: (value: V) => boolean
   /** 整体替换选中集合。程序化入口，不受 readOnly 拦截。 */
-  setValue: (next: string[]) => void
+  setValue: (next: V[]) => void
   /** 切换某个值；整组禁用或只读时无效。 */
-  toggleValue: (value: string) => void
+  toggleValue: (value: V) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
-  getItemProps: (props: CheckboxGroupItemProps) => T['element']
-  getIndicatorProps: (props: CheckboxGroupItemProps) => T['element']
-  getItemTextProps: (props: CheckboxGroupItemProps) => T['element']
+  getItemProps: (props: CheckboxGroupItemProps<V>) => T['element']
+  getIndicatorProps: (props: CheckboxGroupItemProps<V>) => T['element']
+  getItemTextProps: (props: CheckboxGroupItemProps<V>) => T['element']
   /** 条目的说明：文案下方一行次级文字，常用在 card 形态里。 */
-  getItemDescriptionProps: (props: CheckboxGroupItemProps) => T['element']
+  getItemDescriptionProps: (props: CheckboxGroupItemProps<V>) => T['element']
   /** 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 */
-  getHiddenInputProps: (props: CheckboxGroupItemProps) => T['input']
+  getHiddenInputProps: (props: CheckboxGroupItemProps<V>) => T['input']
   /** 全选 / 半选的父复选框。必须写在 root 之内，它依靠祖先链找到本组。 */
   getSelectAllTriggerProps: () => T['element']
 }

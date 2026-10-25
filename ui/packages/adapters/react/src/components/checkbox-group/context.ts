@@ -11,7 +11,7 @@ import { createContext, useContext } from 'react'
 
 const Ctx = createContext<CheckboxGroupContext | undefined>(undefined)
 /** 条目声明的值与禁用，供 indicator / item-text 复用同一份声明。 */
-const ItemCtx = createContext<CheckboxGroupItemProps | undefined>(undefined)
+const ItemCtx = createContext<CheckboxGroupItemProps<unknown> | undefined>(undefined)
 
 export const CheckboxGroupProvider = Ctx
 export const CheckboxGroupItemProvider = ItemCtx
@@ -23,7 +23,7 @@ export function useCheckboxGroupContext(): CheckboxGroupContext {
   return ctx
 }
 
-export function useCheckboxGroupItemContext(): CheckboxGroupItemProps {
+export function useCheckboxGroupItemContext(): CheckboxGroupItemProps<unknown> {
   const item = useContext(ItemCtx)
   if (!item)
     throw new Error('条目的子部件要放在 XhCheckboxGroupItem 里')

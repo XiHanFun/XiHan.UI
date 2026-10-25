@@ -5,6 +5,7 @@
 
 // 复选组的标准结构：三端不写结构时按它铺出整套部件，Web Components 不写部件时元素按它生成节点。
 
+import type { PropTypes } from '@xihan-ui/core'
 import type { StructureNode, StructureSlotted } from '../shared/structure'
 import type { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 import type { CheckboxGroupApi, CheckboxGroupNodeMeta } from './checkbox-group.types'
@@ -42,21 +43,23 @@ export interface CheckboxGroupStructureOptions {
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
 /** 一个条目：表单影子、方框、文字、说明（给了才铺）；带 slot 的文字格的 data 是这一条的元信息。 */
-function itemStructure(node: CheckboxGroupNodeMeta, slotted: StructureSlotted): CheckboxGroupNode {
+function itemStructure(node: CheckboxGroupNodeMeta<unknown>, slotted: StructureSlotted): CheckboxGroupNode {
   const children: CheckboxGroupNode[] = [
     { key: 'hidden-input', tag: 'input', part: 'hidden-input' },
     { key: 'indicator', tag: 'span', part: 'indicator' },
-    slotted('item', node.value)
-      ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.value }, data: node }
+    slotted('item', node.key)
+      ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.key }, data: node }
       : { key: 'text', tag: 'span', part: 'item-text', text: node.label },
   ]
   if (node.description != null)
     children.push({ key: 'description', tag: 'span', part: 'item-description', text: node.description })
-  return { key: `item:${node.value}`, tag: 'div', part: 'item', attrs: { value: node.value }, children }
+  // 结构里一律用键：值可以是对象，拼不成节点的 key，也写不进 data-value；插槽数据 node 里照旧是原值
+  return { key: `item:${node.key}`, tag: 'div', part: 'item', attrs: { value: node.key }, children }
 }
 
 /** 复选组在 root 里的标准结构：标题与 collection 的条目；每个条目里表单影子与方框在前，接着文字与说明。 */
-export function checkboxGroupStructure(model: Pick<CheckboxGroupApi, 'collection'>, options: CheckboxGroupStructureOptions = {}): CheckboxGroupNode[] {
+// 值不论什么类型，结构只用元信息里的键：按 unknown 收，带具体值类型的 api 都交得进来
+export function checkboxGroupStructure(model: Pick<CheckboxGroupApi<PropTypes, unknown>, 'collection'>, options: CheckboxGroupStructureOptions = {}): CheckboxGroupNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   const nodes: CheckboxGroupNode[] = []
   if (slotted('label'))

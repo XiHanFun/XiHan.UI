@@ -17,8 +17,9 @@ type Props = CheckboxGroupSchema['props']
 
 function makeService(props: Props = {}) {
   const runtime = createVanillaRuntime()
-  // 同一个对象原样返回：service 按返回值身份缓存 props，原地改字段即可模拟宿主写回
-  const service = createService(checkboxGroupMachine, { props: () => props, runtime })
+  // 每次交一份浅拷贝：机器归一 props（值边界）后按返回值身份缓存，原地改字段要换一份新对象才看得见，
+  // 与宿主写回时适配器交出新的 props 对象同一回事
+  const service = createService(checkboxGroupMachine, { props: () => ({ ...props }), runtime })
   runtime.start()
   return service
 }
