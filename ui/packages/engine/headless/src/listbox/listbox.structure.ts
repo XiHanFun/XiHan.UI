@@ -6,6 +6,7 @@
 // 列表框的标准结构：标题、按 collection 铺的条目与空态、在途两块占位。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
+import type { PropTypes } from '@xihan-ui/core'
 import type { StructureNode, StructureSlotted } from '../shared/structure'
 import type { listboxAnatomy } from './listbox.anatomy'
 import type { ListboxApi, ListboxNodeMeta } from './listbox.types'
@@ -50,24 +51,26 @@ export interface ListboxStructureOptions {
   slotted?: StructureSlotted
 }
 
-type ListboxStructureModel = Pick<ListboxApi, 'collection' | 'translations'>
+// 值不论什么类型，结构只用元信息里的键：按 unknown 收，带具体值类型的 api 都交得进来
+type ListboxStructureModel = Pick<ListboxApi<PropTypes, unknown>, 'collection' | 'translations'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
 /** 一个条目：行首、文字、副文本、行尾、选中标记；带 slot 的格子的 data 是这一条的元信息。 */
-function itemStructure(node: ListboxNodeMeta, slotted: StructureSlotted): ListboxNode {
+function itemStructure(node: ListboxNodeMeta<unknown>, slotted: StructureSlotted): ListboxNode {
   const children: ListboxNode[] = []
-  if (slotted('item-prefix', node.value))
-    children.push({ key: 'prefix', tag: 'span', part: 'item-prefix', slot: { name: 'item-prefix', key: node.value }, data: node })
-  children.push(slotted('item', node.value)
-    ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.value }, data: node }
+  if (slotted('item-prefix', node.key))
+    children.push({ key: 'prefix', tag: 'span', part: 'item-prefix', slot: { name: 'item-prefix', key: node.key }, data: node })
+  children.push(slotted('item', node.key)
+    ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.key }, data: node }
     : { key: 'text', tag: 'span', part: 'item-text', text: node.label })
   if (node.description != null)
     children.push({ key: 'description', tag: 'span', part: 'item-description', text: node.description })
-  if (slotted('item-suffix', node.value))
-    children.push({ key: 'suffix', tag: 'span', part: 'item-suffix', slot: { name: 'item-suffix', key: node.value }, data: node })
+  if (slotted('item-suffix', node.key))
+    children.push({ key: 'suffix', tag: 'span', part: 'item-suffix', slot: { name: 'item-suffix', key: node.key }, data: node })
   children.push({ key: 'indicator', tag: 'span', part: 'item-indicator' })
-  return { key: `item:${node.value}`, tag: 'div', part: 'item', attrs: { value: node.value }, children }
+  // 结构里一律用键：值可以是对象，拼不成节点的 key，也写不进 data-value；插槽数据 node 里照旧是原值
+  return { key: `item:${node.key}`, tag: 'div', part: 'item', attrs: { value: node.key }, children }
 }
 
 /**

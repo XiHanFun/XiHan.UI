@@ -78,6 +78,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 - 提供空态、加载态与加载更多部件。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是列表、空态与在途占位：`collection` 的每条数据一个条目（文字、有副文本时的副文本与选中标记），没给 `collection` 时列表是空的；空态与在途的文字取 `translations`（`empty`、`loading`），按状态收放。分组与加载更多不在其中，要用时手写结构。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhListboxElement<number>>("xh-listbox")` 收窄。
 
 ### 组合
 
@@ -116,10 +117,11 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `collection` | `ListboxNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
-| `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
-| `defaultValue` | `string \| string[]` |  |  |
+| `value` | `V \| V[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
+| `defaultValue` | `V \| V[]` |  |  |
 | `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
 | `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
 | `readOnly` | `boolean` |  | 只读：条目照常浏览与聚焦，但选中值不可修改。禁用则连同焦点一起退出。 |
@@ -132,7 +134,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。 |
 | `translations` | `Partial<ListboxTranslations>` |  |  |
-| `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
+| `onValueChange` | `(details: ListboxValueChangeDetails<V>) => void` |  | value 变化意图回调。 |
 
 ### ListboxNode
 
@@ -140,8 +142,8 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为值（不是字符串的值退回它的键）。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整列的 tone 不下发给条目。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
@@ -152,7 +154,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 
 ### 插槽
 
@@ -160,12 +162,12 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhListboxRoot` | `default` | `ListboxRootSlotProps` |  |
+| `XhListboxRoot` | `default` | `ListboxRootSlotProps<V>` |  |
 | `XhListboxRoot` | `label` | — |  |
 | `XhListboxRoot` | `empty` | — | 不写默认插槽时空态占位的内容；未写时取 translations.empty。 |
-| `XhListboxRoot` | `item` | `ListboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
-| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
-| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+| `XhListboxRoot` | `item` | `ListboxNodeMeta<V>` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhListboxRoot` | `item-prefix` | `ListboxNodeMeta<V>` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhListboxRoot` | `item-suffix` | `ListboxNodeMeta<V>` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
 ### React 适配器 props
 
@@ -174,14 +176,14 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhListboxGroup` | `value` | `string` | 是 |  |
-| `XhListboxItem` | `value` | `string` | 是 |  |
+| `XhListboxItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhListboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhListboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhListboxRoot` | `empty` | `ReactNode` |  | 不给 children 时空态占位的内容；未写时取 translations.empty。 |
-| `XhListboxRoot` | `renderItem` | `(node: ListboxNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
-| `XhListboxRoot` | `renderItemPrefix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
-| `XhListboxRoot` | `renderItemSuffix` | `(node: ListboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhListboxRoot` | `children` | `SlotChildren<ListboxRootSlotProps>` |  |  |
+| `XhListboxRoot` | `renderItem` | `(node: ListboxNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhListboxRoot` | `renderItemPrefix` | `(node: ListboxNodeMeta<V>) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhListboxRoot` | `renderItemSuffix` | `(node: ListboxNodeMeta<V>) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhListboxRoot` | `children` | `SlotChildren<ListboxRootSlotProps<V>>` |  |  |
 
 ### 状态
 
@@ -210,19 +212,20 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
-| `collection` | `readonly ListboxNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `V[]` | 选中集合；单选模式下长度 ≤ 1。 |
+| `valueKeys` | `string[]` | 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。 |
+| `collection` | `readonly ListboxNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
-| `focusedValue` | `string \| null` | 焦点锚点；焦点不在列表内时为 null。 |
+| `focusedValue` | `V \| null` | 焦点锚点；焦点不在列表内时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `loading` | `boolean` |  |
 | `translations` | `ListboxTranslations` | 合上作者覆盖后的文案。 |
-| `isSelected` | `(value: string) => boolean` |  |
-| `setValue` | `(next: string[]) => void` |  |
-| `select` | `(value: string) => void` | 只保留该条目；加选使用 toggle。 |
-| `toggle` | `(value: string) => void` |  |
+| `isSelected` | `(value: V) => boolean` |  |
+| `setValue` | `(next: V[]) => void` |  |
+| `select` | `(value: V) => void` | 只保留该条目；加选使用 toggle。 |
+| `toggle` | `(value: V) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
@@ -231,12 +234,12 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：库不知道是否还有下一页，是否显示与点击后的行为都由作者决定， 连接层只保证取数在途与整列禁用两档不可点击。 |
 | `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
-| `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
-| `getItemPrefixProps` | `(props: ListboxItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: ListboxItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: ListboxItemProps) => T['element']` |  |
-| `getItemSuffixProps` | `(props: ListboxItemProps) => T['element']` |  |
-| `getItemIndicatorProps` | `(props: ListboxItemProps) => T['element']` |  |
+| `getItemProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
+| `getItemTextProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: ListboxItemProps<V>) => T['element']` |  |
 
 ## 无障碍
 

@@ -5,7 +5,7 @@
 
 // 提供 use listbox 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
@@ -21,7 +21,8 @@ export interface ListboxContext {
    * 可聚焦部件的 aria-labelledby 据此决定指不指过去：label 排在输入之前时，首帧与服务端直出就带上名字。
    */
   labelCount: Ref<number>
-  api: ComputedRef<ListboxApi>
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComputedRef<ListboxApi<PropTypes, unknown>>
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<ListboxSchema>
 }
@@ -35,6 +36,6 @@ export function useListbox(
   // 连打检索缓冲存在机器的 refs 里，适配器不必注入 refs
   const labelCount = ref(0)
   const service = useMachine(listboxMachine, () => ({ ...props, labelled: labelCount.value > 0, onValueChange }), scope)
-  const api = computed(() => connectListbox(service, vueNormalize))
+  const api = computed(() => connectListbox<PropTypes, unknown>(service, vueNormalize))
   return { labelCount, api, service }
 }

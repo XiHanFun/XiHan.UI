@@ -6,6 +6,7 @@
 // 定义 listbox 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone, Typeahead } from '@xihan-ui/core'
+import type { SelectionValueKey } from '../shared/value-codec'
 import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
@@ -29,15 +30,16 @@ export type ListboxFocusModel = 'roving-tabindex'
  */
 export type ListboxSelectionMode = 'single' | 'multiple' | 'extended'
 
-export interface ListboxValueChangeDetails {
+/** V 是选中值的类型，缺省 string；数字、对象都行，见 ListboxSchema 的 valueKey。 */
+export interface ListboxValueChangeDetails<V = string> {
   /** 选中集合；单选模式下长度 ≤ 1。 */
-  value: string[]
+  value: V[]
 }
 
 /** 条目数据。提供 collection 时，显示文本与禁用以它为准。 */
-export interface ListboxNode {
-  value: string
-  /** 展示文本，也是连打检索的取字来源；默认回退为 value。 */
+export interface ListboxNode<V = string> {
+  value: V
+  /** 展示文本，也是连打检索的取字来源；默认回退为值（不是字符串的值退回它的键）。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
@@ -56,9 +58,11 @@ export interface ListboxNode {
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态与焦点态。 */
-export interface ListboxNodeMeta {
-  value: string
-  /** node.label ?? node.value，恒为字符串。 */
+export interface ListboxNodeMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。条目的 data-value 与列表里的 key 用它。 */
+  key: string
+  /** node.label，没写时退回值（不是字符串的值退回它的键），恒为字符串。 */
   label: string
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
@@ -72,8 +76,8 @@ export interface ListboxNodeMeta {
  * connect 因此是 (context/prop, 本条目声明) 的纯函数，不反查 DOM：Vue 侧在 render 期求值（本帧 DOM 尚不存在），
  * WC 侧在 updated 后求值（DOM 已就位），连接期读取 DOM 会使两个适配器的首帧快照分叉。
  */
-export interface ListboxItemProps {
-  value: string
+export interface ListboxItemProps<V = string> {
+  value: V
   /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
@@ -88,7 +92,11 @@ export interface ListboxRefs {
   typeahead: Typeahead
 }
 
-export interface ListboxSchema extends MachineSchema {
+/**
+ * V 是选中值的类型，缺省 string。机器与 DOM 只认字符串键：值进来时编成键（字符串原样，数字转字符串，
+ * 对象按 valueKey），onValueChange 与 api 交出去时解回原值。
+ */
+export interface ListboxSchema<V = string> extends MachineSchema {
   props: {
     /**
      * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
@@ -104,12 +112,17 @@ export interface ListboxSchema extends MachineSchema {
      * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */
-    collection?: ListboxNode[]
+    collection?: ListboxNode<V>[]
+    /**
+     * 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它；
+     * 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value。
+     */
+    valueKey?: SelectionValueKey<V>
     /** 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /** 选中值，提供即受控；单选可写为裸串，内部归一为数组。 */
-    value?: string | string[]
-    defaultValue?: string | string[]
+    value?: V | V[]
+    defaultValue?: V | V[]
     /** 选择模式，默认 single。 */
     selectionMode?: ListboxSelectionMode
     /** 整个列表禁用，键盘与点击都不再改选中值。 */
@@ -134,7 +147,7 @@ export interface ListboxSchema extends MachineSchema {
     typeahead?: boolean
     translations?: Partial<ListboxTranslations>
     /** value 变化意图回调。 */
-    onValueChange?: (details: ListboxValueChangeDetails) => void
+    onValueChange?: (details: ListboxValueChangeDetails<V>) => void
   }
   context: {
     /** 选中集合，恒为数组；受控时 cell 直读 prop。 */
@@ -175,26 +188,29 @@ export interface ListboxSchema extends MachineSchema {
   effect: never
 }
 
-export interface ListboxApi<T extends PropTypes = PropTypes> {
+/** V 是选中值的类型：value、collection 与焦点交出原值，收值的 getter 与动作也收原值。 */
+export interface ListboxApi<T extends PropTypes = PropTypes, V = string> {
   /** 选中集合；单选模式下长度 ≤ 1。 */
-  value: string[]
+  value: V[]
+  /** 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。 */
+  valueKeys: string[]
   /** 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 */
-  collection: readonly ListboxNodeMeta[]
+  collection: readonly ListboxNodeMeta<V>[]
   /** 生效的选择模式。 */
   selectionMode: ListboxSelectionMode
   /** 焦点锚点；焦点不在列表内时为 null。 */
-  focusedValue: string | null
+  focusedValue: V | null
   disabled: boolean
   readOnly: boolean
   invalid: boolean
   loading: boolean
   /** 合上作者覆盖后的文案。 */
   translations: ListboxTranslations
-  isSelected: (value: string) => boolean
-  setValue: (next: string[]) => void
+  isSelected: (value: V) => boolean
+  setValue: (next: V[]) => void
   /** 只保留该条目；加选使用 toggle。 */
-  select: (value: string) => void
-  toggle: (value: string) => void
+  select: (value: V) => void
+  toggle: (value: V) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getContentProps: () => T['element']
@@ -215,12 +231,12 @@ export interface ListboxApi<T extends PropTypes = PropTypes> {
   getLoadMoreTriggerProps: () => T['element']
   getGroupProps: (props: ListboxGroupProps) => T['element']
   getGroupLabelProps: (props: ListboxGroupProps) => T['element']
-  getItemProps: (props: ListboxItemProps) => T['element']
-  getItemPrefixProps: (props: ListboxItemProps) => T['element']
-  getItemTextProps: (props: ListboxItemProps) => T['element']
-  getItemDescriptionProps: (props: ListboxItemProps) => T['element']
-  getItemSuffixProps: (props: ListboxItemProps) => T['element']
-  getItemIndicatorProps: (props: ListboxItemProps) => T['element']
+  getItemProps: (props: ListboxItemProps<V>) => T['element']
+  getItemPrefixProps: (props: ListboxItemProps<V>) => T['element']
+  getItemTextProps: (props: ListboxItemProps<V>) => T['element']
+  getItemDescriptionProps: (props: ListboxItemProps<V>) => T['element']
+  getItemSuffixProps: (props: ListboxItemProps<V>) => T['element']
+  getItemIndicatorProps: (props: ListboxItemProps<V>) => T['element']
 }
 
 /** 组件自带的固定文案，缺省英文。 */

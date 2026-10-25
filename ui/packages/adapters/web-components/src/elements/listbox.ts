@@ -6,7 +6,7 @@
 // 提供 listbox 相关实现。
 
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, listboxStructure, resolveFormControlState } from '@xihan-ui/headless'
@@ -40,6 +40,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 标题、空态、条目文字与行首行尾可以由宿主直接子节点接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、
  * `slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhListboxElement<number>>('xh-listbox')`
+ * 拿到的元素上 value 与 collection 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。
+ *
  * @customElement xh-listbox
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置
@@ -55,7 +58,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
- * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @csspart root - 组件根容器（承载 data-orientation / data-disabled）
  * @csspart label - 列表标题（aria-labelledby 目标）
  * @csspart content - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
@@ -71,7 +75,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  */
-export class XhListboxElement extends XhElement {
+export class XhListboxElement<V = string> extends XhElement {
   static override partContract = { anatomy: listboxAnatomy, meta: listboxMeta }
   // 放进字段时字段的标题与说明落在列表（content）上（组类接线）
   static override fieldTarget = { parts: ['content'], kind: 'group' } as const
@@ -92,6 +96,7 @@ export class XhListboxElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
     virtualizer: { attribute: false },
     translations: { attribute: false },
     label: { converter: STRING_CONVERTER },
@@ -110,12 +115,13 @@ export class XhListboxElement extends XhElement {
     typeahead: { converter: BOOLEAN_CONVERTER },
   }
 
-  declare collection?: ListboxNode[]
+  declare collection?: ListboxNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
   declare virtualizer?: CollectionVirtualizer
   declare translations?: Partial<ListboxTranslations>
   declare label?: string
-  declare value?: string | string[]
-  declare defaultValue?: string | string[]
+  declare value?: V | V[]
+  declare defaultValue?: V | V[]
   declare selectionMode?: ListboxSelectionMode
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -146,7 +152,7 @@ export class XhListboxElement extends XhElement {
     }, this.inheritedControl)
   }
 
-  private readonly notify = (details: ListboxValueChangeDetails): void => {
+  private readonly notify = (details: ListboxValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -173,14 +179,20 @@ export class XhListboxElement extends XhElement {
 
   private machineProps(): Partial<ListboxSchema['props']> {
     const control = this.controlState()
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
+      collection: this.collection,
+      valueKey: this.valueKey,
+      value: this.value,
+      defaultValue: this.defaultValue,
+      onValueChange: this.notify,
+    } as Pick<ListboxSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'onValueChange'>
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
-      collection: this.collection,
+      ...valueTyped,
       virtualizer: this.virtualizer,
-      value: this.value,
-      defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
       disabled: control.disabled,
       readOnly: control.readOnly,
@@ -193,7 +205,6 @@ export class XhListboxElement extends XhElement {
       orientation: this.orientation,
       typeahead: this.typeahead,
       translations: this.translations,
-      onValueChange: this.notify,
     }
   }
 
@@ -210,7 +221,8 @@ export class XhListboxElement extends XhElement {
     const focusedValue = context.get('focusedValue')
     if (focusedValue == null)
       return
-    if (this.virtualizer && this.collection?.some(node => node.value === focusedValue))
+    // 锚点是键：与机器里编过的 collection 比
+    if (this.virtualizer && this.ctrl.service.prop('collection')?.some(node => node.value === focusedValue))
       return
     // data-value 只写在 item 上，条目内的文本与标记离场不会误判；
     // 只有走的正是持有锚点的那个条目才报，否则删任一无关条目都会清掉方向键起点

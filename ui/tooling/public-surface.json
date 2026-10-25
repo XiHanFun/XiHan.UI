@@ -14517,6 +14517,7 @@
       "translations",
       "typeahead",
       "value",
+      "valueKey",
       "virtualizer"
     ],
     "loading-bar": [
@@ -23259,7 +23260,8 @@
         "size",
         "tone",
         "typeahead",
-        "value"
+        "value",
+        "value-key"
       ],
       "events": [
         "value-change"
