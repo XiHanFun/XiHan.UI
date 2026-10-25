@@ -5,11 +5,11 @@
 
 // 提供 toggle group 相关实现。
 
-import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ToggleGroupApi, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
+import type { ActionVariant, Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { SelectionValueKey, ToggleGroupApi, ToggleGroupModel, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupSelection, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
-import type { PayloadOf } from '../../runtime/payload'
-import { toggleGroupStructure } from '@xihan-ui/headless'
+import type { BivariantCallback } from '../../runtime/bivariant'
+import { toggleGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { Comment, defineComponent, Fragment, h, onBeforeUnmount, ref, Text, watch } from 'vue'
 import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
@@ -33,15 +33,19 @@ function flattenChildren(children: readonly VNode[]): VNode[] {
   return result
 }
 
-export const XhToggleGroupRoot = defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhToggleGroupRoot 在它上面套一层按值类型与 multiple 收窄的类型，见文件后面
+const XhToggleGroupRootImpl = defineComponent({
   name: 'XhToggleGroupRoot',
   // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<ToggleGroupNode[]> },
-    value: { type: [String, Array] as PropType<ToggleGroupValue> },
-    defaultValue: { type: [String, Array] as PropType<ToggleGroupValue> },
+    collection: { type: Array as PropType<ToggleGroupNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
+    // 值可以是字符串、数字或对象：运行时不查类型，类型由对外导出的 XhToggleGroupRoot 按值类型与 multiple 收窄
+    value: { type: null as unknown as PropType<unknown> },
+    defaultValue: { type: null as unknown as PropType<unknown> },
     multiple: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -59,17 +63,17 @@ export const XhToggleGroupRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     rovingFocus: { type: Boolean, default: undefined },
   },
-  // value-change 携带 { value }，update:value 携带裸值；裸值形态跟随 multiple，单选为字符串、多选为数组
+  // value-change 携带 { value }，update:value 携带裸值；裸值形态跟随 multiple，单选为一个值、多选为数组
   emits: {
-    'value-change': (_details: PayloadOf<ToggleGroupProps, 'onValueChange'>) => true,
-    'update:value': (_value: PayloadOf<ToggleGroupProps, 'onValueChange'>['value']) => true,
+    'value-change': (_details: ToggleGroupValueChangeDetails<unknown>) => true,
+    'update:value': (_value: unknown) => true,
   },
   setup(props, { slots, emit }) {
     const notify: ToggleGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useToggleGroup(useFormControlProps(props) as ToggleGroupProps, notify)
+    const ctx = useToggleGroup(useFormControlProps(props) as unknown as ToggleGroupProps, notify)
     provideToggleGroup(ctx)
     // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
     const fieldWiring = useFieldGroupWiring()
@@ -85,10 +89,39 @@ export const XhToggleGroupRoot = defineComponent({
   },
 })
 
+/** 根组件里随值类型与 multiple 收窄的那几项 prop：多选时选中值是数组，单选时是一个值或 null。 */
+export interface XhToggleGroupRootValueProps<V, M extends boolean> {
+  'multiple'?: M
+  'value'?: ToggleGroupModel<V, M>
+  'defaultValue'?: ToggleGroupModel<V, M>
+  'collection'?: ToggleGroupNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'onUpdate:value'?: BivariantCallback<[value: ToggleGroupSelection<V, M>]>
+  'onValueChange'?: BivariantCallback<[details: { value: ToggleGroupSelection<V, M> }]>
+}
+
+type XhToggleGroupRootInstance = InstanceType<typeof XhToggleGroupRootImpl>
+
+/**
+ * 按值类型与 multiple 收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V、照 multiple 推断形状：
+ * 写了 multiple 时 v-model:value 绑数组，没写时绑一个值或 null，数字、对象都不必断言。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhToggleGroupRootComponent = Omit<typeof XhToggleGroupRootImpl, never> & {
+  new<V = string, M extends boolean = false>(props?: Omit<XhToggleGroupRootInstance['$props'], keyof XhToggleGroupRootValueProps<V, M>> & XhToggleGroupRootValueProps<V, M>): Omit<XhToggleGroupRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhToggleGroupRootInstance['$props'], keyof XhToggleGroupRootValueProps<V, M>> & XhToggleGroupRootValueProps<V, M>
+    $slots: Omit<XhToggleGroupRootInstance['$slots'], 'item'> & {
+      item?: (node: ToggleGroupNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhToggleGroupRoot = XhToggleGroupRootImpl as unknown as XhToggleGroupRootComponent
+
 export const XhToggleGroupItem = defineComponent({
   name: 'XhToggleGroupItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
@@ -103,7 +136,8 @@ export const XhToggleGroupItem = defineComponent({
       if (service.getStatus() !== 'Started')
         return
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.FOCUS', value: next })
+        // 机器只认键
+        service.send({ type: 'ITEM.FOCUS', value: valueKeyOf(service.scope, next) })
     })
     onBeforeUnmount(() => {
       const { service } = ctx
@@ -167,12 +201,12 @@ const TOGGLE_GROUP_PARTS = {
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 toggleGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。条目的内容由 item 插槽接管。
  */
-function renderDefaultStructure(api: ToggleGroupApi, itemSlot?: (node: ToggleGroupNodeMeta) => VNode[]): VNode[] {
+function renderDefaultStructure(api: ToggleGroupApi<PropTypes, unknown>, itemSlot?: (node: ToggleGroupNodeMeta<unknown>) => VNode[]): VNode[] {
   const nodes = toggleGroupStructure(api, { slotted: name => name === 'item' && itemSlot != null })
   return renderStructure(nodes, TOGGLE_GROUP_PARTS, (node) => {
     if (node.slot?.name !== 'item')
       return undefined
-    const meta = node.data as ToggleGroupNodeMeta
+    const meta = node.data as ToggleGroupNodeMeta<unknown>
     return itemSlot?.(meta) ?? meta.label
   })
 }

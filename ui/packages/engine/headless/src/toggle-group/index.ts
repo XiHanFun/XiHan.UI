@@ -17,4 +17,4 @@ export {
 export { toggleGroupMeta } from './toggle-group.meta'
 export { toggleGroupStructure } from './toggle-group.structure'
 export type { ToggleGroupStructureOptions } from './toggle-group.structure'
-export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupTranslations, ToggleGroupValue, ToggleGroupValueChangeDetails } from './toggle-group.types'
+export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupModel, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupSelection, ToggleGroupTranslations, ToggleGroupValue, ToggleGroupValueChangeDetails } from './toggle-group.types'

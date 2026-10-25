@@ -305,7 +305,7 @@ export type { TimestampApi, TimestampProps, TimestampSchema, TimestampState, Tim
 export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
 export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema, ToggleTranslations } from './toggle'
 export { connectToggleGroup, normalizeToggleGroupValue, sameToggleGroupValue, toggleGroupAnatomy, toggleGroupKeyboard, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure, toToggleGroupChangeValue } from './toggle-group'
-export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupStructureOptions, ToggleGroupTranslations, ToggleGroupValue, ToggleGroupValueChangeDetails } from './toggle-group'
+export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupModel, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupSelection, ToggleGroupStructureOptions, ToggleGroupTranslations, ToggleGroupValue, ToggleGroupValueChangeDetails } from './toggle-group'
 export { connectToolCall, isToolCallErrored, isToolCallRunning, isToolCallSettled, toneOfToolCallPhase, toolCallAnatomy, toolCallDuration, toolCallKeyboard, toolCallMachine, toolCallMeta, toolCallStatusText } from './tool-call'
 export type { ToolCallApi, ToolCallOpenChangeDetails, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from './tool-call'
 export { connectToolbar, toolbarAnatomy, toolbarItemQuery, toolbarKeyboard, toolbarMachine, toolbarMeta, toolbarOverflowMenuProps, toolbarOverflowTriggerQuery } from './toolbar'

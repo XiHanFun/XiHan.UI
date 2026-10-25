@@ -76169,7 +76169,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。\n\n不写部件（或只写 root）时元素按标准结构生成：collection 的每一条一个按钮，末尾一份表单影子；\n条目的内容可以由宿主直接子节点 `slot=\"item:<值>\"` 接管。",
+          "description": "`<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。\n\n不写部件（或只写 root）时元素按标准结构生成：collection 的每一条一个按钮，末尾一份表单影子；\n条目的内容可以由宿主直接子节点 `slot=\"item:<值>\"` 接管。\n\nV 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhToggleGroupElement<number>>('xh-toggle-group')`\n拿到的元素上 value 与 collection 都是 V；写在标记里的条目 value 永远是字符串。",
           "name": "XhToggleGroupElement",
           "cssParts": [
             {
@@ -76218,15 +76218,24 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "ToggleGroupNode[] | undefined"
+                "text": "ToggleGroupNode<V>[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "valueKey",
+              "privacy": "public",
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "attribute": "value-key"
             },
             {
               "kind": "field",
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "ToggleGroupValue<V> | undefined"
               },
               "attribute": "value"
             },
@@ -76235,7 +76244,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "ToggleGroupValue<V> | undefined"
               },
               "attribute": "default-value"
             },
@@ -76524,7 +76533,7 @@
           ],
           "events": [
             {
-              "description": "选中值变化；detail 为 `{ value: string | string[] | null }`（形态随 multiple 决定）",
+              "description": "选中值变化；detail 为 `{ value: 值 | 值[] | null }`（形态随 multiple 决定），值是 value / collection 里交进来的原值（字符串、数字或对象）",
               "name": "value-change",
               "type": {
                 "text": "ToggleGroupValueChangeDetails"
@@ -76534,7 +76543,7 @@
           "attributes": [
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "ToggleGroupValue<V> | undefined"
               },
               "description": "受控选中值（属性形式只能表达单值）；未提供该属性即非受控",
               "name": "value",
@@ -76542,7 +76551,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "ToggleGroupValue<V> | undefined"
               },
               "description": "非受控的初始选中值",
               "name": "default-value",
@@ -76675,6 +76684,14 @@
               "description": "roving tabindex，默认开启；关闭后每个条目各占一个 Tab 位",
               "name": "roving-focus",
               "fieldName": "rovingFocus"
+            },
+            {
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "description": "对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认",
+              "name": "value-key",
+              "fieldName": "valueKey"
             }
           ],
           "superclass": {

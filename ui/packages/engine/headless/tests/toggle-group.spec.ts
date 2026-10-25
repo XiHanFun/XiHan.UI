@@ -28,10 +28,11 @@ interface Harness {
 
 function makeService(initial: Props = {}): Harness {
   const changes: ToggleGroupValueChangeDetails[] = []
-  // props 对象身份固定、字段可改：解释器按身份缓存归一化结果，改字段即被下一次 prop() 读到
+  // 字段可改，每次交一份浅拷贝：机器归一 props（值边界）后按返回值身份缓存，原地改字段要换一份新对象才看得见，
+  // 与宿主写回时适配器交出新的 props 对象同一回事
   const props: Props = { ...initial, onValueChange: d => changes.push(d) }
   const runtime = createVanillaRuntime()
-  const service = createService(toggleGroupMachine, { props: () => props, runtime })
+  const service = createService(toggleGroupMachine, { props: () => ({ ...props }), runtime })
   runtime.start()
   return {
     service,

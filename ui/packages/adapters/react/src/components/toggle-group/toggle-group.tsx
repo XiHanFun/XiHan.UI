@@ -5,10 +5,10 @@
 
 // 提供 toggle group 相关实现。
 
-import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { ToggleGroupApi, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupValue } from '@xihan-ui/headless'
+import type { ActionVariant, Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { SelectionValueKey, ToggleGroupApi, ToggleGroupModel, ToggleGroupNode, ToggleGroupNodeMeta, ToggleGroupSchema, ToggleGroupSelection } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
-import { toggleGroupStructure } from '@xihan-ui/headless'
+import { toggleGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { Children, Fragment, isValidElement, useEffect, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -21,13 +21,19 @@ import { useToggleGroup } from './use-toggle-group'
 
 type ToggleGroupProps = ToggleGroupSchema['props']
 
-export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，对象值给 valueKey。
+ * M 是 multiple 的字面量类型：写了 multiple 时 value 与 onValueChange 的值是数组，没写时是一个值或 null。
+ */
+export interface XhToggleGroupRootProps<V = string, M extends boolean = false> extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: ToggleGroupNode[]
-  value?: ToggleGroupValue
-  defaultValue?: ToggleGroupValue
-  multiple?: boolean
+  collection?: ToggleGroupNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
+  value?: ToggleGroupModel<V, M>
+  defaultValue?: ToggleGroupModel<V, M>
+  multiple?: M
   disabled?: boolean
   /** 只读：条目仍可聚焦，不能改选中。 */
   readOnly?: boolean
@@ -48,15 +54,16 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
   loop?: boolean
   /** roving tabindex，默认开启；关闭后每个条目自成一个 Tab 停靠点。 */
   rovingFocus?: boolean
-  onValueChange?: ToggleGroupProps['onValueChange']
+  onValueChange?: (details: { value: ToggleGroupSelection<V, M> }) => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: ToggleGroupNodeMeta) => ReactNode
+  renderItem?: (node: ToggleGroupNodeMeta<V>) => ReactNode
   children?: ReactNode
 }
 
-export function XhToggleGroupRoot({
+export function XhToggleGroupRoot<V = string, M extends boolean = false>({
   ariaLabel,
   collection,
+  valueKey,
   value,
   defaultValue,
   multiple,
@@ -79,10 +86,11 @@ export function XhToggleGroupRoot({
   renderItem,
   children,
   ...rest
-}: XhToggleGroupRootProps): ReactNode {
+}: XhToggleGroupRootProps<V, M>): ReactNode {
   const ctx = useToggleGroup(useFormControlProps({
     ariaLabel,
     collection,
+    valueKey,
     value,
     defaultValue,
     multiple,
@@ -102,7 +110,7 @@ export function XhToggleGroupRoot({
     loop,
     rovingFocus,
     onValueChange,
-  } as ToggleGroupProps))
+  } as unknown as ToggleGroupProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
@@ -134,7 +142,8 @@ export function XhToggleGroupRoot({
 XhToggleGroupRoot.xhEvents = ['value-change'] as const
 
 export interface XhToggleGroupItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -154,7 +163,8 @@ export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhTogg
     if (svc.getStatus() !== 'Started')
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.FOCUS', value })
+      // 机器只认键
+      svc.send({ type: 'ITEM.FOCUS', value: valueKeyOf(svc.scope, value) })
   }, [ctx.service, value])
 
   // 卸载时上报整组失焦：按「本节点当下正持有焦点」判定，不按 value 比对
@@ -208,12 +218,12 @@ const TOGGLE_GROUP_PARTS = {
  * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 toggleGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。条目的内容由 renderItem 接管。
  */
-function renderDefaultStructure(api: ToggleGroupApi, renderItem?: (node: ToggleGroupNodeMeta) => ReactNode): ReactNode[] {
+function renderDefaultStructure<V>(api: ToggleGroupApi<PropTypes, unknown>, renderItem?: (node: ToggleGroupNodeMeta<V>) => ReactNode): ReactNode[] {
   const nodes = toggleGroupStructure(api, { slotted: name => name === 'item' && renderItem != null })
   return renderStructure(nodes, TOGGLE_GROUP_PARTS, (node) => {
     if (node.slot?.name !== 'item')
       return undefined
-    const meta = node.data as ToggleGroupNodeMeta
+    const meta = node.data as ToggleGroupNodeMeta<V>
     return renderItem?.(meta) ?? meta.label
   })
 }

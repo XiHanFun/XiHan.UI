@@ -8,6 +8,7 @@
 import type { ToggleGroupSchema, ToggleGroupValue } from './toggle-group.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
+import { encodeSelectionProps, valueCodecOf } from '../shared/value-codec'
 
 const { createMachine } = setup<ToggleGroupSchema>()
 
@@ -51,6 +52,8 @@ export function sameToggleGroupValue(a: readonly string[], b: readonly string[] 
 // 机器只有一个状态，transition 省略 target 即只跑 actions、不换状态。
 export const toggleGroupMachine = createMachine({
   name: 'toggle-group',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器与 DOM 只认键；onValueChange 交出去时解回原值
+  props: ({ props, scope }) => encodeSelectionProps(props, valueCodecOf(scope, { valueKey: props.valueKey })),
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => {
       const multiple = !!prop('multiple')

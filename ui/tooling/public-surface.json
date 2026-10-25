@@ -8346,9 +8346,11 @@
       "ToggleApi",
       "ToggleGroupApi",
       "ToggleGroupItemProps",
+      "ToggleGroupModel",
       "ToggleGroupNode",
       "ToggleGroupNodeMeta",
       "ToggleGroupSchema",
+      "ToggleGroupSelection",
       "ToggleGroupStructureOptions",
       "ToggleGroupTranslations",
       "ToggleGroupValue",
@@ -15594,6 +15596,7 @@
       "size",
       "tone",
       "value",
+      "valueKey",
       "variant"
     ],
     "tool-call": [
@@ -24422,6 +24425,7 @@
         "size",
         "tone",
         "value",
+        "value-key",
         "variant"
       ],
       "events": [

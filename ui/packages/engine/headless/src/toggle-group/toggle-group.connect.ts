@@ -8,6 +8,7 @@
 import type { ItemQuery, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNodeMeta, ToggleGroupSchema } from './toggle-group.types'
 import { contains, createPressTracker, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
+import { decodeMetas, decodeValues, encodeSelection, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { toggleGroupAnatomy } from './toggle-group.anatomy'
 
@@ -16,7 +17,29 @@ const parts = toggleGroupAnatomy.build()
 // 条目集合只在事件处理器里查活 DOM，顺序即文档序；归属过滤保证嵌套的两组开关互不吞并。
 const ITEM_QUERY: ItemQuery = { scope: toggleGroupAnatomy.name, part: 'item' }
 
-export function connectToggleGroup<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectToggleGroupKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectToggleGroup<T extends PropTypes, V = string>(
+  service: Service<ToggleGroupSchema>,
+  normalize: NormalizeProps<T>,
+): ToggleGroupApi<T, V> {
+  const api = connectToggleGroupKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection, service.prop('collection')),
+    value: decodeValues(codec, api.value),
+    focusedValue: api.focusedValue == null ? null : codec.value(api.focusedValue),
+    isSelected: value => api.isSelected(codec.key(value)),
+    setValue: next => api.setValue(encodeSelection(codec, next) ?? null),
+    // 收值的 getter 换成先编码的版本
+    ...keyedGetters(codec, api, ['getItemProps']),
+  } as ToggleGroupApi<T, V>
+}
+
+function connectToggleGroupKeys<T extends PropTypes>(
   service: Service<ToggleGroupSchema>,
   normalize: NormalizeProps<T>,
 ): ToggleGroupApi<T> {
@@ -26,6 +49,7 @@ export function connectToggleGroup<T extends PropTypes>(
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: ToggleGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
   }))
