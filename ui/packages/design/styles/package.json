@@ -44,6 +44,10 @@
     "./swatch.css": "./dist/family/swatch.css",
     "./tag-list.css": "./dist/family/tag-list.css",
     "./components.tokens.json": "./components.tokens.json",
+    "./vite": {
+      "types": "./vite.d.ts",
+      "import": "./vite.js"
+    },
     "./accordion.css": "./dist/css/accordion.css",
     "./affix.css": "./dist/css/affix.css",
     "./alert.css": "./dist/css/alert.css",
@@ -207,7 +211,9 @@
     "component-tokens.d.ts",
     "component-tokens.js",
     "components.tokens.json",
-    "dist"
+    "dist",
+    "vite.d.ts",
+    "vite.js"
   ],
   "engines": {
     "node": ">=18"

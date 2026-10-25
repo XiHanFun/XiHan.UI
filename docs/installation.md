@@ -179,11 +179,16 @@ createVisualEnvironmentController({
 import "@xihan-ui/styles";
 ```
 
-按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。每份单皮肤文件头自带它所属家族的 `@import '../family/*.css'`，单独引入时家族在场。
+按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。每份单皮肤文件头自带它所属家族的 `@import '../family/*.css'`，单独引入时家族在场。reset 与四份公共层（聚焦环、字段标签、说明文字、指针反馈）不随皮肤引入，要自己引：漏了 `focus.css`，键盘聚焦时只剩浏览器缺省的那圈。用 Vite 的项目可以交给下文的插件自动完成。
 
 ```ts
 import "@xihan-ui/styles/layers.css";
 import "@xihan-ui/tokens/tokens.css";
+import "@xihan-ui/styles/reset.css";
+import "@xihan-ui/styles/focus.css";
+import "@xihan-ui/styles/label.css";
+import "@xihan-ui/styles/description.css";
+import "@xihan-ui/styles/pointer.css";
 import "@xihan-ui/styles/button.css";
 import "@xihan-ui/styles/dialog.css";
 ```
@@ -203,6 +208,26 @@ import "@xihan-ui/tokens/tokens.css";
 
 发布的样式文件都已去掉注释、压掉空白（`index.css` 约 1.6 MB）；带注释的源文件只在仓库里，不随包发布。全量是全部皮肤加令牌，压缩后约 180 kB gzip（约 120 kB brotli，v5.1.0 实测）；`pnpm size` 里 `styles/index.css` 一项把它限制在 197 kB gzip 以内，超出时 CI 不通过。没有明确的体积压力时使用第一种。
 :::
+
+### 按用到的组件自动注入
+
+用 Vite 的项目，按组件引入的排序与漏引都可以交给 `@xihan-ui/styles/vite`。插件扫描源码里写到的组件（`XhButton`、`XhSelectRoot` 这类导出名与 `<xh-button>` 这类标签都认），注入层序、令牌、reset、公共层、家族配方与这些组件的皮肤；组件内部借来的组件（分页里的每页条数下拉、日期选择器里的日历）一并补上。先后取自全量入口，注入的就是 `index.css` 的子集，渲染与全量引入一致。
+
+```ts
+// vite.config.ts
+import { XiHanUIStyles } from "@xihan-ui/styles/vite";
+
+export default defineConfig({
+  plugins: [vue(), XiHanUIStyles()],
+});
+```
+
+```ts
+// 应用入口：代替 import "@xihan-ui/styles"
+import "virtual:xihan-ui/styles";
+```
+
+扫描的是磁盘上的文件，默认 `index.html` 与 `src/`，`scan` 改扫描范围。组件写在扫描范围之外（由别的包渲染）时用 `include: ["dialog"]` 补上，`exclude` 去掉不要的。开发态默认挂漏引探测：页面上出现了没注入皮肤的组件，控制台报一条并给出补法，`skinCheck: false` 关掉。注入的是有层的一份，宿主带无层 reset 时改用全量的 `index.unlayered.css`。TypeScript 开了 `noUncheckedSideEffectImports` 时，给 `virtual:xihan-ui/styles` 补一条 `declare module`。
 
 ### 开发模式下查漏引
 

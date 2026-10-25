@@ -1,0 +1,74 @@
+{
+  "$comment": "由 tooling/scripts/skin/gen-skin-uses.mjs 从 headless 与 Vue 适配器的导入生成，禁止手改。组件 → 它渲染时借来的别的组件皮肤；@xihan-ui/styles/vite 按需注入时据此补齐。",
+  "uses": {
+    "color-picker": [
+      "color-slider",
+      "color-swatch-picker"
+    ],
+    "color-slider": [
+      "slider"
+    ],
+    "context-menu": [
+      "icon",
+      "menu"
+    ],
+    "date-picker": [
+      "calendar-picker",
+      "date-field"
+    ],
+    "date-range-picker": [
+      "calendar-range-picker",
+      "date-field"
+    ],
+    "drawer": [
+      "dialog"
+    ],
+    "filter-builder": [
+      "date-field",
+      "number-field",
+      "select",
+      "switch",
+      "tags-input",
+      "text-field",
+      "toggle-group"
+    ],
+    "format-input": [
+      "combobox",
+      "number-field",
+      "select",
+      "switch",
+      "toggle-group"
+    ],
+    "menu": [
+      "icon"
+    ],
+    "menubar": [
+      "icon",
+      "menu"
+    ],
+    "pagination": [
+      "select"
+    ],
+    "select": [
+      "virtualizer"
+    ],
+    "side-nav": [
+      "tooltip"
+    ],
+    "table": [
+      "virtualizer"
+    ],
+    "tabs": [
+      "menu"
+    ],
+    "tag-group": [
+      "tag"
+    ],
+    "tags-input": [
+      "tag"
+    ],
+    "toolbar": [
+      "menu"
+    ]
+  }
+}

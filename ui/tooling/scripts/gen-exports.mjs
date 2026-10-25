@@ -47,7 +47,7 @@ const HANDWRITTEN = {
  */
 const NO_TSDOWN = {
   '@xihan-ui/icons': '产物由 build/build-icons.mjs 出，扩展名是 .mjs / .d.mts',
-  '@xihan-ui/styles': '只出 CSS，没有 JS 产物',
+  '@xihan-ui/styles': '只出 CSS 与手写的 vite.js（按需注入插件），不走 tsdown',
 }
 
 /** 主入口排在最前：exports 是有序的，`.` 落到别的子入口后面会让人读不出哪个是主入口。 */

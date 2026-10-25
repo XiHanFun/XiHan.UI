@@ -200,6 +200,7 @@
       "./undefined.css",
       "./virtualizer.css",
       "./visually-hidden.css",
+      "./vite",
       "./watermark.css"
     ],
     "@xihan-ui/tokens": [
@@ -5683,7 +5684,14 @@
       "ComponentTokenComponent",
       "ComponentTokenDefinition",
       "ComponentTokenManifest",
-      "ComponentTokenName"
+      "ComponentTokenName",
+      "XiHanUIStyleManifest",
+      "XiHanUIStyles",
+      "XiHanUIStylesOptions",
+      "XiHanUIStylesPlugin",
+      "composeStyles",
+      "readStyleManifest",
+      "scopesIn"
     ],
     "@xihan-ui/tokens": [
       "BASELINE_THEME",

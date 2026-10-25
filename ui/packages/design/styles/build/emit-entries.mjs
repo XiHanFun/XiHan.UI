@@ -104,13 +104,26 @@ const ENTRIES = [
 /** 压缩产物里唯一的一行注释：告诉在 node_modules 或 devtools 里翻到它的人，带注释的源文件在哪。 */
 const MINIFIED_HEAD = '/* @xihan-ui/styles · MIT License · 已压缩，带注释的源文件见 https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/design/styles */\n'
 
+/**
+ * 有层主入口里各文件真正落下的先后（递归展开后的顺序，令牌记它的包路径）：按需注入（vite.js）只从这张序里
+ * 挑子集，挑出来的先后就与全量入口一致。生成有层入口时收集，其余时候为 null。
+ */
+let inlineOrder = null
+
 fs.mkdirSync(path.join(pkgRoot, 'dist'), { recursive: true })
 for (const entry of ENTRIES) {
   const outFile = path.join(pkgRoot, entry.file)
+  if (entry.layered)
+    inlineOrder = []
   const css = `${mountScopeClasses(emitEntry(entry)).replace(/\n{3,}/g, '\n\n').trim()}\n`
   fs.writeFileSync(outFile, applyFileHeader(outFile, css))
   fs.writeFileSync(path.join(pkgRoot, 'dist', entry.file), MINIFIED_HEAD + minifyCss(css))
   console.log(`已生成 ${path.relative(pkgRoot, outFile)} 与 dist/${entry.file}`)
+  if (entry.layered) {
+    fs.writeFileSync(path.join(pkgRoot, 'dist', 'manifest.json'), `${JSON.stringify(styleManifest(inlineOrder), null, 2)}\n`)
+    inlineOrder = null
+    console.log('已生成 dist/manifest.json')
+  }
 }
 
 // 按需子路径（@xihan-ui/styles/dialog.css 一类）同样以挂载类领头：css/ 与 family/ 逐份转一遍、压缩后放进 dist/，
@@ -280,6 +293,7 @@ function emitEntry({ layered, head }) {
     // 留在层里也照样生效；保持 @import 也避免把另一个包的产物复制进来。
     if (!spec.startsWith('.')) {
       out.push(line)
+      inlineOrder?.push(spec)
       tokensSeen = true
       continue
     }
@@ -374,10 +388,50 @@ function expandRelativeImports(file, stack, { layered, inlined }) {
     const child = path.resolve(path.dirname(resolved), imported[1])
     if (inlined.has(child))
       continue
-    lines.push('', `/* ${path.relative(pkgRoot, child).replaceAll('\\', '/')} */`)
+    lines.push('', `/* ${relativePath(child)} */`)
     lines.push(expandRelativeImports(child, [...stack, resolved], { layered, inlined }))
   }
+  // 子文件先于自己的正文落下（@import 都在文件头），所以记在展开完子文件之后
+  inlineOrder?.push(relativePath(resolved))
   return lines.join('\n')
+}
+
+function relativePath(file) {
+  return path.relative(pkgRoot, file).replaceAll('\\', '/')
+}
+
+/** 一份样式文件头上的相对 @import，解析成包内路径。 */
+function relativeImports(file) {
+  const out = []
+  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+    const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)
+    if (imported && imported[1].startsWith('.'))
+      out.push(relativePath(path.resolve(path.dirname(file), imported[1])))
+  }
+  return out
+}
+
+/**
+ * 按需注入的清单，随包发布在 dist/manifest.json，由 vite.js 读：
+ *   order   有层主入口里各文件的先后（令牌记包路径），子集照它排
+ *   skins   组件名 → 它的皮肤；只认带 --xh-<名字>-skin 标记的组件皮肤，其余（层序、令牌、公共层、
+ *           语气与材质层、高对比档、浮层箭头这些与组件无关的）一律随注入
+ *   imports 每份文件头上的相对 @import：家族配方与被引的皮肤（scrollbar、tooltip）跟着补
+ *   uses    组件渲染时借来的别的组件皮肤，由 tooling/scripts/skin/gen-skin-uses.mjs 从源码算出
+ */
+function styleManifest(order) {
+  const skins = {}
+  const imports = {}
+  for (const rel of order.filter(item => !item.startsWith('@'))) {
+    const name = path.basename(rel, '.css')
+    if (rel.startsWith('css/') && fs.readFileSync(path.join(pkgRoot, rel), 'utf8').includes(`--xh-${name}-skin: 1`))
+      skins[name] = rel
+    const deps = relativeImports(path.join(pkgRoot, rel))
+    if (deps.length > 0)
+      imports[rel] = deps
+  }
+  const { uses } = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'skin-uses.json'), 'utf8'))
+  return { $comment: '由 build/emit-entries.mjs 生成，供 @xihan-ui/styles/vite 按需注入时读取。', version: 1, order, skins, imports, uses }
 }
 
 function isFamilyFile(file) {
