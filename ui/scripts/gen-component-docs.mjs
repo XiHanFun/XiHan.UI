@@ -770,8 +770,8 @@ for (const sf of slotProgram.getSourceFiles()) {
   })
 }
 
-// 对外导出的组件是实现套上一层类型（表格根按行类型收窄：`XhTableRoot = XhTableRootImpl as unknown as …`）：
-// 插槽跟着实现走，按导出的名字再记一份
+// 对外导出的组件是实现套上一层类型（表格根按行类型收窄、选择类按值类型收窄：`XhSelectRoot = XhSelectRootImpl as unknown as …`）：
+// 插槽跟着实现走，按导出的名字再记一份；实现按 unknown 写的载荷，外壳按值类型 V 收窄，文档照作者拿到的写
 for (const sf of slotProgram.getSourceFiles()) {
   if (!slotFiles.includes(path.normalize(sf.fileName)))
     continue
@@ -784,7 +784,7 @@ for (const sf of slotProgram.getSourceFiles()) {
       while (init && (ts.isAsExpression(init) || ts.isParenthesizedExpression(init) || ts.isSatisfiesExpression(init)))
         init = init.expression
       if (compName.startsWith('Xh') && init && ts.isIdentifier(init) && slotsByComponent.has(init.text))
-        slotsByComponent.set(compName, slotsByComponent.get(init.text))
+        slotsByComponent.set(compName, slotsByComponent.get(init.text).map(row => ({ ...row, payload: row.payload.replaceAll('<unknown>', '<V>') })))
     }
   })
 }
