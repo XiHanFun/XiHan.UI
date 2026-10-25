@@ -52,6 +52,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { applyFileHeader, stripFileHeader } from '../../../../tooling/file-header.mjs'
 import { DEPRECATED_SUBPATHS, deprecationBanner } from './deprecated-subpaths.mjs'
+import { systemModeVariants } from './system-mode.mjs'
 
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const SOURCE = path.join(pkgRoot, 'index.source.css')
@@ -116,7 +117,8 @@ for (const entry of ENTRIES) {
   const outFile = path.join(pkgRoot, entry.file)
   if (entry.layered)
     inlineOrder = []
-  const css = `${mountScopeClasses(emitEntry(entry)).replace(/\n{3,}/g, '\n\n').trim()}\n`
+  // 深色专属规则补上 data-theme='system' 的系统档副本（见 build/system-mode.mjs）；按需子路径同样转一遍
+  const css = `${systemModeVariants(mountScopeClasses(emitEntry(entry))).replace(/\n{3,}/g, '\n\n').trim()}\n`
   fs.writeFileSync(outFile, applyFileHeader(outFile, css))
   fs.writeFileSync(path.join(pkgRoot, 'dist', entry.file), MINIFIED_HEAD + minifyCss(css))
   console.log(`已生成 ${path.relative(pkgRoot, outFile)} 与 dist/${entry.file}`)
@@ -136,7 +138,7 @@ for (const dir of SUBPATH_DIRS) {
   fs.mkdirSync(to, { recursive: true })
   const names = fs.readdirSync(from).filter(name => name.endsWith('.css'))
   for (const name of names)
-    fs.writeFileSync(path.join(to, name), MINIFIED_HEAD + minifyCss(mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8'))))
+    fs.writeFileSync(path.join(to, name), MINIFIED_HEAD + minifyCss(systemModeVariants(mountScopeClasses(fs.readFileSync(path.join(from, name), 'utf8')))))
   console.log(`已生成 dist/${dir}/（${names.length} 份）`)
 }
 

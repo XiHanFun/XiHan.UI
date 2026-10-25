@@ -429,6 +429,20 @@
   --xh-_action-variant-fg-focus-visible: var(--xh-action-on-brand-solid);
   --xh-_action-variant-fg-loading: var(--xh-action-on-brand-solid);
 }
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system'])[data-scope][data-xh-action-control][data-xh-action-variant='solid']:is(:not([data-tone]), [data-tone='brand']) {
+    --xh-_action-variant-bg-rest: var(--xh-action-brand-solid);
+    --xh-_action-variant-bg-hover: var(--xh-action-brand-solid-hover);
+    --xh-_action-variant-bg-pressed: var(--xh-action-brand-solid-active);
+    --xh-_action-variant-bg-focus-visible: var(--xh-action-brand-solid);
+    --xh-_action-variant-bg-loading: var(--xh-action-brand-solid);
+    --xh-_action-variant-fg-rest: var(--xh-action-on-brand-solid);
+    --xh-_action-variant-fg-hover: var(--xh-action-on-brand-solid);
+    --xh-_action-variant-fg-pressed: var(--xh-action-on-brand-solid);
+    --xh-_action-variant-fg-focus-visible: var(--xh-action-on-brand-solid);
+    --xh-_action-variant-fg-loading: var(--xh-action-on-brand-solid);
+  }
+}
 
 [data-scope][data-xh-action-control][data-xh-ink-surface] {
   --xh-ink-surface: var(--xh-action-bg-rest, var(--xh-_action-variant-bg-rest));
@@ -8173,6 +8187,11 @@
 :is([data-theme='dark'] *, [data-theme='dark']).xh-scope-heatmap[data-part='root'][data-palette='gray'] {
   --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-neutral-450));
 }
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system']).xh-scope-heatmap[data-part='root'][data-palette='gray'] {
+    --xh-_heatmap-ink: var(--xh-heatmap-ink, var(--xh-color-neutral-450));
+  }
+}
 
 /* —— 发散色阶 ——
    以中点为界两侧各自加深：中点那一格是数据色的中性中点，低于中点兑向负向色、高于中点兑向正向色。
@@ -15710,6 +15729,11 @@
 :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='warning'] {
   --xh-_tone-border-control: var(--xh-color-warning-600);
 }
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system'])[data-tone='warning'] {
+    --xh-_tone-border-control: var(--xh-color-warning-600);
+  }
+}
 
 [data-tone='neutral'] {
   --xh-_tone-border-control: var(--xh-color-neutral-600);
@@ -15717,6 +15741,11 @@
 
 :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='neutral'] {
   --xh-_tone-border-control: var(--xh-color-neutral-550);
+}
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system'])[data-tone='neutral'] {
+    --xh-_tone-border-control: var(--xh-color-neutral-550);
+  }
 }
 
 /* 把语气色转成线性 sRGB 分量、按 WCAG 的权重算出相对亮度：低于 0.179 前景取白、
@@ -15743,6 +15772,11 @@
    其余五族的底是固定原语、不随主题翻，shift 也就不必翻 */
 :is([data-theme='dark'] *, [data-theme='dark'])[data-tone='brand'] {
   --xh-_tone-shift: var(--xh-color-neutral-0);
+}
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system'])[data-tone='brand'] {
+    --xh-_tone-shift: var(--xh-color-neutral-0);
+  }
 }
 
 /* 语气轴对外的那一族：上面每支私有槽一对一指过来，取值恒等。
@@ -17300,6 +17334,11 @@
 /* data-theme 写在自己身上还是写在祖先上都算 */
 :is([data-theme='dark'] *, [data-theme='dark']).xh-scope-approval[data-part='pending-indicator'] {
   --xh-_approval-pending-fill: var(--xh-color-warning-600);
+}
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system']).xh-scope-approval[data-part='pending-indicator'] {
+    --xh-_approval-pending-fill: var(--xh-color-warning-600);
+  }
 }
 
 .xh-scope-approval[data-part='pending-indicator']::after {
@@ -41059,6 +41098,12 @@
 :is([data-theme='dark'] *, [data-theme='dark']).xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
   --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
   --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
+}
+@media (prefers-color-scheme: dark) {
+  :is([data-theme='system'] *, [data-theme='system']).xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
+    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
+  }
 }
 
 /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。

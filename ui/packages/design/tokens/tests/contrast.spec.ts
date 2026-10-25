@@ -135,7 +135,7 @@ function inkAlphas(selector: string): Map<string, number> {
 }
 
 const INK = {
-  light: { ink: 'oklch(0 0 0)', alphas: inkAlphas(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`) },
+  light: { ink: 'oklch(0 0 0)', alphas: inkAlphas(`:where(:root), :where([data-theme='light']), :where([data-theme='system']), :where([data-xh-ink='dark']) {`) },
   dark: { ink: 'oklch(1 0 0)', alphas: inkAlphas(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`) },
 }
 

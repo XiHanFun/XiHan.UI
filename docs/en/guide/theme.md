@@ -161,7 +161,7 @@ The baseline of the eight axes is light, xihan, comfortable, ltr, default, defau
 
 | DOM axis | Description |
 | --- | --- |
-| `data-theme` | Light and dark each have a full set of semantic values |
+| `data-theme` | Light and dark each have a full set of semantic values; `system` follows the system without JS, see below |
 | `data-brand` | Switches the brand color: presets work directly, custom brands are registered with `registerBrand` first |
 | `data-density='compact'` | Tightens control heights, padding and gaps without shrinking font sizes or glyphs |
 | `dir` | Logical properties drive the LTR / RTL layout; quantities that only know physical directions (translate, gradient angles, the left and right sides of clip-path) are multiplied by `--xh-direction-sign`, which inherits from the nearest `dir` (1 for ltr, -1 for rtl), so a subtree set back to `ltr` flips back; physical coordinates such as `transform-origin` take `--xh-direction-start` / `--xh-direction-end` (the horizontal position of the inline start / end edge: 0% / 100% for ltr, the other way round for rtl) |
@@ -169,6 +169,16 @@ The baseline of the eight axes is light, xihan, comfortable, ltr, default, defau
 | `data-motion` | `reduce` triggers local CSS motion reduction |
 | `data-transparency` | `reduce` switches translucent materials opened by a theme back to solid recipes |
 | `data-material` | `liquid` turns the navigation-layer parts floating above content (float buttons, media controls, the sticky top bar) into liquid surfaces; `standard` keeps the original material; the nearest ancestor wins |
+
+### Follow the system color scheme without JS
+
+The controller's `mode: "system"` resolves light or dark only once the script runs. When a page just wants to follow the system without loading a script for it, or needs to be right before the script arrives, write `data-theme="system"` in the HTML:
+
+```html
+<html data-theme="system">
+```
+
+On a light system it takes the same values as `light`. When the system switches to dark, the dark token values, `color-scheme` and the few skin rules that only hold in dark (tones, solid buttons and so on) switch over through `prefers-color-scheme`, without any script, and follow every later system switch. `system` is only a value written in the DOM; the controller still projects only `light` / `dark`, so a controller created later on the same root replaces the attribute with the resolved value.
 
 ## Preset brands
 
