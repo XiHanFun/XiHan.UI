@@ -151,16 +151,21 @@ export type TableToolbarSlotProps = Pick<
 /** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
-export interface XhTableRootProps extends RootElementProps {
-  columns?: TableColumnDef[]
+/**
+ * TRow 是数据驱动模式下记录的类型，按 data 的元素类型推断：columns 的 id / field 只能写它的字段，
+ * format、compare、filter、rowKey 与 renderCell 的参数都跟着它走。不给 data 时是宽松的 TableRecord。
+ */
+export interface XhTableRootProps<TRow extends object = TableRecord> extends RootElementProps {
+  /** 列定义。行类型只从 data 推断，列定义照它检查，不反过来参与推断。 */
+  columns?: NoInfer<TableColumnDef<TRow>>[]
   rows?: TableRowDef[]
   /**
    * 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录（rows 不再读）。
    * 不给 children 时按标准结构铺出表头、表体与空态，列 id 即字段名；格子内容用 renderCell 接管。
    */
-  data?: TableRecord[]
+  data?: readonly TRow[]
   /** 记录的行 id：字段名或取值函数，缺省取 id 字段。 */
-  rowKey?: TableProps['rowKey']
+  rowKey?: NoInfer<TableSchema<TRow>['props']['rowKey']>
   /** 筛选值（列 id → 勾选的值）：给定即受控。列给了 filterOptions 时列头铺一颗筛选钮。 */
   filterValue?: TableFilterValue
   defaultFilterValue?: TableFilterValue
@@ -177,7 +182,7 @@ export interface XhTableRootProps extends RootElementProps {
   /** 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估。 */
   estimateSize?: number
   /** 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 */
-  renderCell?: (cell: TableCellSlotData) => ReactNode
+  renderCell?: (cell: TableCellSlotData<TRow>) => ReactNode
   /** 标准结构里空态占位的内容。 */
   renderEmpty?: () => ReactNode
   sort?: TableSortDescriptor[]
@@ -247,7 +252,7 @@ export interface XhTableRootProps extends RootElementProps {
 /** 标准结构开虚拟化时数据行的预估高度（px），与 md 档的行高相当；还没量到的行按已量到的平均高度估。 */
 const TABLE_VIRTUAL_ESTIMATE = 40
 
-export function XhTableRoot({
+export function XhTableRoot<TRow extends object = TableRecord>({
   columns,
   rows,
   data,
@@ -304,7 +309,7 @@ export function XhTableRoot({
   toolbar,
   children,
   ...rest
-}: XhTableRootProps): ReactNode {
+}: XhTableRootProps<TRow>): ReactNode {
   // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，它把桥与窗口回报到这里。
   // 视口挂上来之前不带桥、表体里也没有行；挂上来之后桥交给机器、行按窗口铺
   const [virtualWindow, setVirtualWindow] = useState<StructureVirtualWindow | null>(null)
@@ -795,12 +800,12 @@ const TABLE_PARTS: Readonly<Record<string, StructurePart>> = {
   'loading': XhTableLoading,
 }
 
-interface TableStructureContent {
+interface TableStructureContent<TRow extends object> {
   virtualItems?: readonly StructureVirtualItem[]
   /** 开了虚拟化时委派给 virtualizer 的三个部件：那一块到之前是空位，到了换上真部件。 */
   virtualParts?: Readonly<Record<string, StructurePart>>
   instances: Readonly<Record<string, StructurePart>>
-  renderCell?: (cell: TableCellSlotData) => ReactNode
+  renderCell?: (cell: TableCellSlotData<TRow>) => ReactNode
   renderEmpty?: () => ReactNode
 }
 
@@ -808,7 +813,7 @@ interface TableStructureContent {
  * 未给 children 时铺开的整套结构，作者只提供列与数据：照 headless 的 tableStructure 渲，
  * 与 Web Components 只写 root 时元素生成的节点出自同一份。格子与空态的内容由 renderCell / renderEmpty 接管。
  */
-function renderDefaultStructure(api: TableApi, content: TableStructureContent): ReactNode[] {
+function renderDefaultStructure<TRow extends object>(api: TableApi, content: TableStructureContent<TRow>): ReactNode[] {
   const { renderCell, renderEmpty } = content
   const nodes = tableStructure(api, {
     virtualItems: content.virtualItems,
@@ -818,7 +823,8 @@ function renderDefaultStructure(api: TableApi, content: TableStructureContent): 
   return renderStructure(nodes, parts, (node) => {
     switch (node.slot?.name) {
       case 'cell':
-        return renderCell?.(node.data as TableCellSlotData)
+        // 结构按擦掉行类型的记录给参数，记录本身就是作者交进 data 的那几条
+        return renderCell?.(node.data as TableCellSlotData<TRow>)
       case 'empty':
         return renderEmpty?.()
       default:

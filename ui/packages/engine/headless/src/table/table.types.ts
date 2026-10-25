@@ -58,10 +58,6 @@ export type TableSelection = string[] | 'all'
 export type TableSelectionState = 'unchecked' | 'indeterminate' | 'checked'
 
 /**
- * 列定义。列号（aria-colindex）与列总数（aria-colcount）的唯一事实源，不从 DOM 反推。
- * 选择列、展开列这类只有把手的列也必须在此声明一条，否则右侧所有列的列号错位。
- */
-/**
  * 列的用途。data 是作者定义的数据列，其余三种由库按需插在最前面。
  *
  * 它们必须占用列号空间：不占用时右侧所有列的 aria-colindex 会整体错位，
@@ -128,14 +124,38 @@ export interface TableColumnSetting {
   toggleable: boolean
 }
 
-/** 生效的列：作者定义的列，加上库插在最前面的前缀列。 */
-export interface TableColumn extends TableColumnDef {
+/** 生效的列：作者定义的列，加上库插在最前面的前缀列。行类型在这里已经擦掉，回调按宽松的记录读。 */
+export interface TableColumn extends TableColumnBase {
   kind: TableColumnKind
 }
 
-export interface TableColumnDef {
-  /** 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 */
+/**
+ * 回调与插槽看到的记录类型。行类型宽到说不出有哪些字段时（object、unknown，`h()` 擦掉泛型后就是它）
+ * 按缺省的 TableRecord 读：什么字段名都收，字段值是 unknown。
+ */
+export type TableRecordOf<TRow> = object extends TRow ? TableRecord : TRow
+
+/** 行类型里能当列读的字段名：它的字符串键；宽松的记录什么名字都收（string）。 */
+export type TableField<TRow> = Extract<keyof TableRecordOf<TRow>, string>
+
+/** 一个字段的值类型；字段名不在行类型里（宽松的记录）时是 unknown。 */
+export type TableFieldValue<TRow, K extends string> = K extends keyof TableRecordOf<TRow> ? TableRecordOf<TRow>[K] : unknown
+
+/**
+ * 列定义的全部字段。TRow 是行（记录）的类型，TValue 是这一列读到的字段值的类型；
+ * 作者写列定义用 TableColumnDef，它按这三种列把 id、field 与 children 收窄。
+ */
+export interface TableColumnBase<TRow extends object = TableRecord, TValue = unknown> {
+  /**
+   * 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。
+   * 数据驱动模式下没写 field 时它也是记录里的字段名：给了行类型时只能写它的字段，写错编译即报错。
+   */
   id: string
+  /**
+   * 数据驱动模式下这一列读记录里的哪个字段，缺省即列 id。列 id 想另起名字（同一个字段铺两列）时写在这里；
+   * 写 null 是不读字段的列（操作列、由几个字段拼出来的列），格子的文字靠 format 或 cell 插槽，排序与筛选靠 compare / filter。
+   */
+  field?: TableField<TRow> | null
   /** 展示名。只供调用方渲染，不作为可及名。 */
   label?: string
   /** 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 */
@@ -167,7 +187,7 @@ export interface TableColumnDef {
    * 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度，
    * 分组那一格的宽度才能按叶子列之和算准。
    */
-  children?: TableColumnDef[]
+  children?: TableColumnDef<TRow>[]
   /**
    * 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位，
    * 未声明的表格不承担该代价。
@@ -191,10 +211,10 @@ export interface TableColumnDef {
   rowHeader?: boolean | ((row: TableRowDef, rowIndex: number) => boolean)
   /**
    * 数据驱动模式（给了 data）下这一列的升序比较，两条记录比大小：负数排前、正数排后。降序由表格倒过来用。
-   * 不给时按记录里与列 id 同名的字段比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。
+   * 不给时按这一列的字段值比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。
    * 只在列声明了 sortable 时用到。
    */
-  compare?: (a: TableRecord, b: TableRecord) => number
+  compare?: (a: TableRecordOf<TRow>, b: TableRecordOf<TRow>) => number
   /**
    * 数据驱动模式下的筛选项：给了它，列头铺一颗筛选钮，点开是一组勾选项；勾了几项就只留下命中的行，
    * 一项都不勾即不筛。勾选值存在 filterValue 里，按列 id 分开。
@@ -202,17 +222,32 @@ export interface TableColumnDef {
   filterOptions?: TableFilterOption[]
   /**
    * 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。
-   * 不给时取与列 id 同名的字段转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。
+   * 不给时把这一列的字段值转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。
    */
-  filter?: (record: TableRecord, values: readonly string[]) => boolean
+  filter?: (record: TableRecordOf<TRow>, values: readonly string[]) => boolean
   /**
-   * 数据驱动模式下格子里显示的文字。不给时取与列 id 同名的字段转成字符串，空值显示为空。
-   * 要放图标、徽标这类内容时改用 cell 插槽。
+   * 数据驱动模式下格子里显示的文字，value 是这一列的字段值（不读字段的列恒为 undefined）。
+   * 不给时把字段值转成字符串，空值显示为空。要放图标、徽标这类内容时改用 cell 插槽。
    */
-  format?: (value: unknown, record: TableRecord) => string
+  format?: (value: TValue, record: TableRecordOf<TRow>) => string
 }
 
-/** 数据驱动模式下的一条记录：字段名 → 值。列 id 即字段名。 */
+/**
+ * 列定义（`columns` 的元素）。列号（aria-colindex）与列总数（aria-colcount）的唯一事实源，不从 DOM 反推。
+ *
+ * 四种写法：读一个字段的数据列（id 即字段名）、表头分组（给了 children）、不读字段的列（field: null）、
+ * id 另起名字再用 field 指明字段的数据列。TRow 给出行类型时，数据列的 id / field 只能写它的字段，
+ * compare、filter 与 format 的参数也按它推断；缺省的 TableRecord 什么名字都收。
+ *
+ * 另起 id 的那一种排在最后：id 写错时类型检查按它报「缺 field」并列出全部字段名，比报「缺 children」好认。
+ */
+export type TableColumnDef<TRow extends object = TableRecord>
+  = | { [K in TableField<TRow>]: TableColumnBase<TRow, TableFieldValue<TRow, K>> & { id: K, field?: undefined, children?: undefined } }[TableField<TRow>]
+    | (TableColumnBase<TRow> & { field?: undefined, children: TableColumnDef<TRow>[] })
+    | (TableColumnBase<TRow> & { field: null, children?: undefined })
+    | (TableColumnBase<TRow, TableFieldValue<TRow, TableField<TRow>>> & { field: TableField<TRow>, children?: undefined })
+
+/** 数据驱动模式下一条记录的缺省类型：字段名 → 值。没给行类型时用它，什么字段名都收。 */
 export type TableRecord = Record<string, unknown>
 
 /** 列头筛选菜单里的一项。label 缺省取 value。 */
@@ -449,7 +484,11 @@ export type TablePressedKey
     | `row:${string}`
     | `sort:${string}`
 
-export interface TableSchema extends MachineSchema {
+/**
+ * TRow 是数据驱动模式下记录的类型，只收窄 columns、data 与 rowKey 三项；机器自己按缺省的 TableRecord 跑，
+ * 适配器在根组件上按 data 的元素类型推断它，交给机器时擦掉。
+ */
+export interface TableSchema<TRow extends object = TableRecord> extends MachineSchema {
   props: {
     /**
      * 作者渲染了 caption 部件时置真，由适配器统计而不是判断标题文字是否有值。
@@ -457,17 +496,17 @@ export interface TableSchema extends MachineSchema {
      */
     captioned?: boolean
     /** 列定义，列号与列总数的唯一事实源。默认为空表。 */
-    columns?: TableColumnDef[]
+    columns?: TableColumnDef<TRow>[]
     /** 行定义，行序与行号的唯一事实源。默认为空表。给了 data 时不再读它，行定义由 data 推出。 */
     rows?: TableRowDef[]
     /**
      * 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。
-     * 列 id 即记录里的字段名；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。
+     * 列 id 即记录里的字段名（或列的 field）；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。
      * 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。
      */
-    data?: TableRecord[]
+    data?: readonly TRow[]
     /** 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 */
-    rowKey?: string | ((record: TableRecord) => string)
+    rowKey?: TableField<TRow> | ((record: TableRecordOf<TRow>) => string)
     /** 筛选值（列 id → 勾选的值）。提供即受控：写入只发 onFilterValueChange。只在数据驱动模式下参与计算。 */
     filterValue?: TableFilterValue
     defaultFilterValue?: TableFilterValue

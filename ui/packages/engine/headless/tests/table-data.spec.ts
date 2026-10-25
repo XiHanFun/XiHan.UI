@@ -3,7 +3,7 @@ import type { TableColumnDef, TableDataInput, TableRecord, TableSchema } from '.
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
-import { computeTableDataView, connectTable, tableCellText, tableMachine, tableVisibleDataRowCount } from '../src/table'
+import { computeTableDataView, connectTable, tableCellText, tableColumnField, tableColumnValue, tableMachine, tableVisibleDataRowCount } from '../src/table'
 
 type Props = TableSchema['props']
 type Dict = Record<string, unknown>
@@ -114,6 +114,39 @@ describe('数据管线：分页与行 id', () => {
     expect(tableCellText(PEOPLE[0]!, { id: 'age' })).toBe('30')
     expect(tableCellText(PEOPLE[1]!, { id: 'note' })).toBe('')
     expect(tableCellText(PEOPLE[0]!, { id: 'age', format: (value, record) => `${String(value)} 岁（${String(record.name)}）` })).toBe('30 岁（赵一）')
+  })
+})
+
+describe('数据管线：列的 field', () => {
+  it('id 另起名字时按 field 读字段：排序、筛选与格子文字都认它，排序链与筛选值仍按列 id 记', () => {
+    const columns: TableColumnDef[] = [
+      { id: 'name' },
+      { id: 'years', field: 'age', sortable: true },
+      { id: 'team', field: 'dept', filterOptions: [{ value: '平台' }] },
+    ]
+    const base = { data: PEOPLE, columns, filterValue: {}, paginate: false, page: 1, pageSize: 10 }
+    expect(ids(computeTableDataView({ ...base, sort: [{ id: 'years', direction: 'asc' }] }).records)).toEqual(['u2', 'u5', 'u1', 'u4', 'u3'])
+    expect(ids(computeTableDataView({ ...base, sort: [], filterValue: { team: ['平台'] } }).records)).toEqual(['u1', 'u3'])
+    expect(tableCellText(PEOPLE[0]!, { id: 'years', field: 'age' })).toBe('30')
+    expect(tableColumnField({ id: 'years', field: 'age' })).toBe('age')
+    expect(tableColumnField({ id: 'age' })).toBe('age')
+  })
+
+  it('field 为 null 是不读字段的列：值恒为 undefined，文字只靠 format，排序与筛选只靠 compare / filter', () => {
+    const columns: TableColumnDef[] = [
+      { id: 'card', field: null, sortable: true, format: (value, record) => `${String(value)}·${String(record.name)}` },
+      { id: 'plain', field: null, sortable: true },
+      { id: 'grown', field: null, sortable: true, compare: (a, b) => Number(a.age ?? 0) - Number(b.age ?? 0), filter: (record, values) => values.includes(String(Number(record.age) > 28)) },
+    ]
+    const base = { data: PEOPLE, columns, filterValue: {}, paginate: false, page: 1, pageSize: 10 }
+    expect(tableColumnField({ id: 'card', field: null })).toBeNull()
+    expect(tableColumnValue(PEOPLE[0]!, { id: 'name', field: null })).toBeUndefined()
+    expect(tableCellText(PEOPLE[0]!, columns[0]!)).toBe('undefined·赵一')
+    expect(tableCellText(PEOPLE[0]!, columns[1]!)).toBe('')
+    // 没有 compare 时比不出高下，保持原来的先后
+    expect(ids(computeTableDataView({ ...base, sort: [{ id: 'plain', direction: 'desc' }] }).records)).toEqual(['u1', 'u2', 'u3', 'u4', 'u5'])
+    expect(ids(computeTableDataView({ ...base, sort: [{ id: 'grown', direction: 'desc' }] }).records)).toEqual(['u4', 'u1', 'u2', 'u5', 'u3'])
+    expect(ids(computeTableDataView({ ...base, sort: [], filterValue: { grown: ['true'] } }).records)).toEqual(['u1', 'u4'])
   })
 })
 

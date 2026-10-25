@@ -1,5 +1,5 @@
-// 格子插槽 | 数据驱动下要在格子里放标签、链接这类内容时接管那一格：参数里有记录、字段值与本来要显示的文字，别的列照常交出文字
-import type { TableColumnDef, TableRecord } from "@xihan-ui/headless";
+// 格子插槽 | 数据驱动下要在格子里放标签、链接这类内容时接管那一格：参数里有记录、字段值与本来要显示的文字，别的列照常交出文字；不读字段的列写 field: null，文字由 format 从整条记录拼
+import type { TableColumnDef } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhTableRoot, XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 
@@ -11,8 +11,17 @@ const statusMeta = {
 
 type Status = keyof typeof statusMeta;
 
+interface Task {
+  id: string;
+  name: string;
+  owner: string;
+  status: Status;
+  done: number;
+  total: number;
+}
+
 // 筛选项的 label 是给人看的字，value 与字段值比
-const columns: TableColumnDef[] = [
+const columns: TableColumnDef<Task>[] = [
   { id: "name", label: "任务", sortable: true },
   { id: "owner", label: "负责人", width: "7rem" },
   {
@@ -21,16 +30,26 @@ const columns: TableColumnDef[] = [
     width: "8rem",
     filterOptions: Object.entries(statusMeta).map(([value, meta]) => ({ value, label: meta.label })),
   },
+  // 不读字段的列：文字由 format 从整条记录拼，排序靠 compare
+  {
+    id: "progress",
+    field: null,
+    label: "进度",
+    width: "6rem",
+    sortable: true,
+    compare: (a, b) => a.done / a.total - b.done / b.total,
+    format: (_, task) => `${task.done}/${task.total}`,
+  },
 ];
 
-const tasks = [
-  { id: "t1", name: "接入单点登录", owner: "赵一", status: "doing" },
-  { id: "t2", name: "导出报表", owner: "钱二", status: "todo" },
-  { id: "t3", name: "表格虚拟滚动", owner: "孙三", status: "done" },
-  { id: "t4", name: "暗色主题", owner: "李四", status: "doing" },
+const tasks: Task[] = [
+  { id: "t1", name: "接入单点登录", owner: "赵一", status: "doing", done: 3, total: 5 },
+  { id: "t2", name: "导出报表", owner: "钱二", status: "todo", done: 0, total: 4 },
+  { id: "t3", name: "表格虚拟滚动", owner: "孙三", status: "done", done: 6, total: 6 },
+  { id: "t4", name: "暗色主题", owner: "李四", status: "doing", done: 1, total: 3 },
 ];
 
-const statusOf = (record: TableRecord | undefined): (typeof statusMeta)[Status] => statusMeta[(record?.status as Status | undefined) ?? "todo"];
+const statusOf = (task: Task | undefined): (typeof statusMeta)[Status] => statusMeta[task?.status ?? "todo"];
 
 export default function Demo(): ReactNode {
   return (

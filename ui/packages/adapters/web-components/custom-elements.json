@@ -67575,7 +67575,7 @@
               "name": "columns",
               "privacy": "public",
               "type": {
-                "text": "TableColumnDef[] | undefined"
+                "text": "TableColumnDef<TRow>[] | undefined"
               }
             },
             {

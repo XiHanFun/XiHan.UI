@@ -140,7 +140,8 @@ export type TableToolbarSlotProps = Pick<
 /** 标准结构开虚拟化时数据行的预估高度（px），与 md 档的行高相当；还没量到的行按已量到的平均高度估。 */
 const TABLE_VIRTUAL_ESTIMATE = 40
 
-export const XhTableRoot = /* @__PURE__ */ defineComponent({
+// 运行时的根组件按擦掉行类型的宽松记录写；对外导出的 XhTableRoot 在它上面套一层按行类型收窄的类型，见文件后面
+const XhTableRootImpl = /* @__PURE__ */ defineComponent({
   name: 'XhTableRoot',
   // 有机器侧兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined，缺省值由 connect 与机器决定
   props: {
@@ -368,6 +369,31 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     ])
   },
 })
+
+/** 根组件里随行类型收窄的那几项 prop：列定义、记录与行 id。 */
+export interface XhTableRootRowProps<TRow extends object> {
+  /** 列定义。行类型只从 data 推断，列定义照它检查，不反过来参与推断。 */
+  columns?: NoInfer<TableColumnDef<TRow>>[]
+  data?: readonly TRow[]
+  rowKey?: NoInfer<TableSchema<TRow>['props']['rowKey']>
+}
+
+type XhTableRootInstance = InstanceType<typeof XhTableRootImpl>
+
+/**
+ * 按行类型收窄的根组件类型。模板里由 Volar 照 data 的元素类型推断 TRow：columns 的 id / field 写错即报错，
+ * format、compare、filter 与 cell 插槽的参数跟着收窄。`h()` 推断不了泛型，那里按宽松的记录检查。
+ */
+export type XhTableRootComponent = Omit<typeof XhTableRootImpl, never> & {
+  new<TRow extends object = TableRecord>(props?: XhTableRootRowProps<TRow>): Omit<XhTableRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>
+    $slots: Omit<XhTableRootInstance['$slots'], 'cell'> & {
+      cell?: (props: TableCellSlotData<TRow>) => VNode[]
+    }
+  }
+}
+
+export const XhTableRoot = XhTableRootImpl as unknown as XhTableRootComponent
 
 /**
  * 工具条：搜索、筛选、密度与列设置等作用于整张表的控件放在这里。

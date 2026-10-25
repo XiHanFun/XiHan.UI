@@ -147,7 +147,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart virtual-content - 开了 virtual 时视口里的内容层（接线后 data-part 是 content）
  * @csspart virtual-item - 开了 virtual 时窗口里每一行外面的外壳（接线后 data-part 是 item），窗口外的收起
  */
-export class XhTableElement extends XhElement {
+export class XhTableElement<TRow extends object = TableRecord> extends XhElement {
   // virtual- 前缀的三个作者名接的是 virtualizer 的视口、内容层与条目外壳（开了 virtual 才由结构生成）
   static override partContract = { anatomy: tableAnatomy, meta: tableMeta, delegates: [VIRTUAL_STRUCTURE_DELEGATE] }
 
@@ -224,10 +224,12 @@ export class XhTableElement extends XhElement {
     translations: { attribute: false },
   }
 
-  declare columns?: TableColumnDef[]
+  // 行类型泛型只收窄 columns / data / rowKey：`querySelector<XhTableElement<User>>('xh-table')` 拿到的元素上，
+  // 列的 id / field 只能写 User 的字段，format 这些回调的参数也是 User
+  declare columns?: TableColumnDef<TRow>[]
   declare rows?: TableRowDef[]
-  declare data?: TableRecord[]
-  declare rowKey?: TableSchema['props']['rowKey']
+  declare data?: readonly TRow[]
+  declare rowKey?: TableSchema<TRow>['props']['rowKey']
   declare filterValue?: TableFilterValue
   declare defaultFilterValue?: TableFilterValue
   declare pagination?: boolean
@@ -354,13 +356,13 @@ export class XhTableElement extends XhElement {
   }
 
   private machineProps(): Partial<TableSchema['props']> {
+    // 行类型只给作者看：交给机器时擦回宽松的记录，机器按 TableRecord 跑
+    const rowTyped = { columns: this.columns, data: this.data, rowKey: this.rowKey } as Pick<TableSchema['props'], 'columns' | 'data' | 'rowKey'>
     return {
       // 作者写没写 caption 角色节点决定根的 aria-labelledby 指不指过去
       captioned: this.getPart('caption') != null,
-      columns: this.columns,
+      ...rowTyped,
       rows: this.rows,
-      data: this.data,
-      rowKey: this.rowKey,
       filterValue: this.filterValue,
       defaultFilterValue: this.defaultFilterValue,
       onFilterValueChange: this.notifyFilterValue,
