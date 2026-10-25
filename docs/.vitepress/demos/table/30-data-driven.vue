@@ -7,19 +7,28 @@ import { ref } from "vue";
 const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
 const levels = ["P5", "P6", "P7", "P8"];
 
-// 列 id 即字段名：排序按字段值比，给了 filterOptions 的列在列头铺一颗筛选钮
-const columns: TableColumnDef[] = [
+interface Member {
+  id: string;
+  name: string;
+  dept: string;
+  level: string;
+  joined: number;
+}
+
+// 列 id 即字段名：排序按字段值比，给了 filterOptions 的列在列头铺一颗筛选钮。
+// 标上行类型后 id 只能写 Member 的字段，format 的 value 也是那个字段的类型
+const columns: TableColumnDef<Member>[] = [
   { id: "name", label: "姓名", width: "8rem", sortable: true },
   { id: "dept", label: "部门", sortable: true, filterOptions: depts.map(value => ({ value })) },
   { id: "level", label: "职级", width: "6rem", sortable: true, filterOptions: levels.map(value => ({ value })) },
-  { id: "joined", label: "入职", width: "6rem", sortable: true, format: value => `${String(value)} 年` },
+  { id: "joined", label: "入职", width: "6rem", sortable: true, format: value => `${value} 年` },
 ];
 
-const members = Array.from({ length: 36 }, (_, i) => ({
+const members: Member[] = Array.from({ length: 36 }, (_, i) => ({
   id: `u${i + 1}`,
   name: `员工 ${i + 1}`,
-  dept: depts[i % depts.length],
-  level: levels[(i * 7) % levels.length],
+  dept: depts[i % depts.length]!,
+  level: levels[(i * 7) % levels.length]!,
   joined: 2016 + ((i * 5) % 9),
 }));
 

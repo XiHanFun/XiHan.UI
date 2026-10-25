@@ -8,14 +8,14 @@
 // 结果按这几样输入的身份缓存一份：两次求值之间都没换时直接拿上一份，一万条不必每次重排。
 
 import type { ContextFacade, PropFn } from '@xihan-ui/core'
-import type { TableColumnDef, TableFilterValue, TableRecord, TableRowDef, TableSchema, TableSortDescriptor } from './table.types'
+import type { TableColumnBase, TableFilterValue, TableRecord, TableRowDef, TableSchema, TableSortDescriptor } from './table.types'
 import { tableLeafColumns } from './table.columns'
 import { flattenTableRows } from './table.rows'
 
 /** 数据驱动模式开了分页时缺省的每页条数，与分页组件同一个数。 */
 export const TABLE_DEFAULT_PAGE_SIZE = 10
 
-const EMPTY_COLUMNS: readonly TableColumnDef[] = []
+const EMPTY_COLUMNS: readonly TableColumnBase[] = []
 const EMPTY_ROWS: readonly TableRowDef[] = []
 
 /** 数据驱动模式算出来的一页。 */
@@ -36,14 +36,20 @@ export interface TableDataView {
   readonly byId: ReadonlyMap<string, TableRecord>
 }
 
-/** 取一列在记录里的值：列 id 即字段名。 */
-export function tableFieldValue(record: TableRecord, columnId: string): unknown {
-  return record[columnId]
+/** 一列读记录里的哪个字段：没写 field 即列 id，写了 null 是不读字段的列。 */
+export function tableColumnField(column: Pick<TableColumnBase, 'id' | 'field'>): string | null {
+  return column.field === undefined ? column.id : column.field
+}
+
+/** 取一列在记录里的值；不读字段的列恒为 undefined。 */
+export function tableColumnValue(record: TableRecord, column: Pick<TableColumnBase, 'id' | 'field'>): unknown {
+  const field = tableColumnField(column)
+  return field == null ? undefined : record[field]
 }
 
 /** 格子里显示的文字：列的 format 优先，没有就把字段值转成字符串，空值显示为空。 */
-export function tableCellText(record: TableRecord, column: TableColumnDef): string {
-  const value = tableFieldValue(record, column.id)
+export function tableCellText(record: TableRecord, column: TableColumnBase): string {
+  const value = tableColumnValue(record, column)
   if (column.format)
     return column.format(value, record)
   return value == null ? '' : String(value)
@@ -77,25 +83,25 @@ export function tableCompareValues(a: unknown, b: unknown): number {
 }
 
 /** 这一列有没有命中勾选的筛选值。 */
-function matchesFilter(record: TableRecord, column: TableColumnDef, values: readonly string[]): boolean {
+function matchesFilter(record: TableRecord, column: TableColumnBase, values: readonly string[]): boolean {
   if (column.filter)
     return column.filter(record, values)
-  const value = tableFieldValue(record, column.id)
+  const value = tableColumnValue(record, column)
   if (Array.isArray(value))
     return value.some(item => values.includes(String(item)))
   return values.includes(value == null ? '' : String(value))
 }
 
 /** 按排序链比两条记录：链上逐环比，前一环分出高下就不看后面；没声明 sortable 的列不参与。 */
-function compareRecords(a: TableRecord, b: TableRecord, chain: readonly { column: TableColumnDef, desc: boolean }[]): number {
+function compareRecords(a: TableRecord, b: TableRecord, chain: readonly { column: TableColumnBase, desc: boolean }[]): number {
   for (const { column, desc } of chain) {
     let diff: number
     if (column.compare) {
       diff = column.compare(a, b)
     }
     else {
-      const left = tableFieldValue(a, column.id)
-      const right = tableFieldValue(b, column.id)
+      const left = tableColumnValue(a, column)
+      const right = tableColumnValue(b, column)
       // 空值无论升降都排最后：倒过来排时不能把它们翻到最前面
       if (isEmpty(left) || isEmpty(right)) {
         if (isEmpty(left) !== isEmpty(right))
@@ -113,7 +119,7 @@ function compareRecords(a: TableRecord, b: TableRecord, chain: readonly { column
 export interface TableDataInput {
   readonly data: readonly TableRecord[]
   /** 作者给的列定义（可带分组），筛选与排序只认叶子列。 */
-  readonly columns: readonly TableColumnDef[]
+  readonly columns: readonly TableColumnBase[]
   readonly rowKey?: TableSchema['props']['rowKey']
   readonly sort: readonly TableSortDescriptor[]
   readonly filterValue: TableFilterValue

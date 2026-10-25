@@ -5,17 +5,24 @@ import { XhTableRoot } from "@xihan-ui/react";
 
 const depts = ["平台研发", "前端体验", "基础架构", "质量保障"];
 
-const columns: TableColumnDef[] = [
+interface Person {
+  id: string;
+  no: number;
+  name: string;
+  dept: string;
+}
+
+const columns: TableColumnDef<Person>[] = [
   { id: "no", label: "编号", width: "6rem", sortable: true },
   { id: "name", label: "姓名", width: "8rem" },
   { id: "dept", label: "部门", filterOptions: depts.map(value => ({ value })) },
 ];
 
-const people = Array.from({ length: 10000 }, (_, i) => ({
+const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
   id: `u${i + 1}`,
   no: i + 1,
   name: `员工 ${i + 1}`,
-  dept: depts[i % depts.length],
+  dept: depts[i % depts.length]!,
 }));
 
 export default function Demo(): ReactNode {

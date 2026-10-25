@@ -200,7 +200,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 ### 格子插槽
 
-数据驱动下要在格子里放标签、链接这类内容时接管那一格：参数里有记录、字段值与本来要显示的文字，别的列照常交出文字
+数据驱动下要在格子里放标签、链接这类内容时接管那一格：参数里有记录、字段值与本来要显示的文字，别的列照常交出文字；不读字段的列写 field: null，文字由 format 从整条记录拼
 
 <XhDemo src="table/31-data-cell" />
 
@@ -242,6 +242,8 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 - 冻结列不必都写数字宽度：同侧多列冻结时，数字宽度直接累加，其余（没写、百分比、`fr`）取挂载后实测的列头宽度；量到之前那一侧从该列起暂时贴边。
 - 行数很大时只渲染窗口内的行：把[虚拟滚动](./virtualizer)的 `collectionVirtualizer` 交给 `virtualizer`，虚拟滚动写 `scrollContainer="ancestor"`，表体里放它的视口（不定高），每个虚拟条目装一行数据行（`count` 等于可见数据行的条数，展开的详情行跟在同一个条目里）。行间线与普通表体一样画在行与行之间：按完整行序判，第一行不画，滚动换批时每一行的高度不变。行号与 `aria-rowcount` 照旧按完整行序报；上下键与 Home / End 按完整行序求落点，落点不在窗口里时先把它滚进来再交焦点。窗口外的行没有落点，接上后行拖动换位不可用（`rowReorderDisabledReason` 为 `virtualized`）。Web Components 下行隔着一层 `xh-virtualizer`，行节点写 `data-xh-part-owner="table"` 归表格。表格根节点保留皮肤给的限高与滚动，表头吸顶、冻结列、横向溢出与行都在这一个滚动面里，列宽之和超过容器时表头与行照样对齐；视口不滚动，也就不占 Tab 位。表体里的视口自己滚时，表头与冻结列落在另一个滚动面上，开发模式下会提醒一次。
 - 数据驱动模式：给了 `data`（连同 `columns`），表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出，`rows` 不再读。列 id 即字段名，行 id 缺省取 `id` 字段（`rowKey` 可换成别的字段或取值函数）。排序按字段值比：数字与日期按大小，字符串按数值序（第 10 项排在第 9 项之后），空值无论升降都排最后；列给了 `compare` 就用它。列给了 `filterOptions` 时列头铺一颗筛选钮，点开是一张勾选型[菜单](./menu)，钮里只有漏斗，名字取 `translations.filter(列名)`；勾了几项就只留下命中的行，一项都不勾即不筛，勾选值存在 `filterValue` 里（可受控），列的 `filter` 可以换掉缺省的比法（字段值转字符串后在勾选值里，字段是数组时有一项在里面就算）。`pagination` 打开切页：按 `page` 与 `pageSize`（缺省 10）切出当前页，表后铺一组[分页](./pagination)，按筛过的总条数算页数；筛选值一变回到第 1 页，数据变短时页码夹到最后一页，序号跨页连续。格子里的文字取列的 `format`，没有就是字段值；要放标签、链接这类内容时用 `cell` 插槽接管那一格（React 是 `renderCell`，Web Components 在宿主的直接子节点上写 `slot="cell:<行 id>:<列 id>"`），参数里有记录、字段值与本来要显示的文字。每一行是各自伸缩的一行，没写宽度的列按内容定基准时列头（多了排序钮与筛选钮）与格子对不齐，所以数据驱动模式下没写宽度的数据列以 8rem、序号列以 4rem 为伸缩基准，各行同一个，再照常一起分剩余空间。远程排序、远程分页这类只交一页数据进来的表格仍用 `rows` 手写结构。
+- 列的 `field`：数据驱动模式下列读记录里的哪个字段，缺省即列 id。列 id 想另起名字（同一个字段铺两列）时写 `field: "字段名"`；写 `field: null` 是不读字段的列（操作列、由几个字段拼出来的列），值恒为 `undefined`，格子的文字靠 `format` 或 `cell` 插槽，排序与筛选靠 `compare` 与 `filter`。排序链与筛选值仍按列 id 记。
+- 行类型泛型：根组件按 `data` 的元素类型推断行类型，数据列的 id 与 `field`、`rowKey` 只能写它的字段，写错编译即报错；`format` 的 `value` 是那个字段的类型，`compare`、`filter`、`format` 与 `cell` 插槽（React 是 `renderCell`）的记录都是那一行的类型，插槽参数按 `field` 判出字段后 `value` 也跟着收窄。列定义另写成常量时标成 `TableColumnDef<行类型>[]`。行类型只从 `data` 推断，没给 `data` 的手写结构表格是宽松的 `TableRecord`，什么列名都收。Vue 在模板里由 Volar 推断，`h()` 推断不了泛型，那里按宽松的记录检查；Web Components 写 `querySelector<XhTableElement<行类型>>("xh-table")`。
 - 不写结构（Vue 不写默认插槽、React 不给 children、Web Components 只写 `root` 或什么都不写）时按标准结构铺出表头、表体、在途与空态占位，三端出自同一个结构函数。前缀列照样铺：多选时序号列与选择列的列头分别是 `#` 与全选把手，格子是序号与行选把手；可排序的列铺排序钮，声明了 `resizable` 与 `reorderable` 的列铺改宽与拖拽把手。空态的字取 `translations.empty`，`empty` 插槽（React 是 `renderEmpty`）可以接管。标准结构只铺数据行：展开详情、表尾、标题、工具条与列设置区跟着手写结构走。
 - 标准结构的虚拟化开关 `virtual`：表体只铺滚到的那一屏行，滚的是表格根节点，吸顶表头、冻结列与行在同一个滚动面里；行号、`aria-rowcount` 与方向键仍按完整行序，落点不在窗口里时先滚进来再交焦点。行高按 `estimateSize`（缺省 40，Web Components 为 `estimate-size`）起算，渲出后按实测校正。Virtualizer 那一块开了才加载，手写结构的表格不为它付体积；手写结构时照旧自己套 Virtualizer（见上一条）。
 - 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
@@ -286,10 +288,10 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `captioned` | `boolean` |  | 作者渲染了 caption 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 是无效引用，作者写在根上的 aria-label / aria-labelledby 也会被它压住。 |
-| `columns` | `TableColumnDef[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
+| `columns` | `TableColumnDef<TRow>[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
 | `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。默认为空表。给了 data 时不再读它，行定义由 data 推出。 |
-| `data` | `TableRecord[]` |  | 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。 列 id 即记录里的字段名；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。 |
-| `rowKey` | `string \| ((record: TableRecord) => string)` |  | 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 |
+| `data` | `readonly TRow[]` |  | 数据驱动模式：给了它，表格自己按排序链、筛选值与页码算出当前页的记录，行定义随之推出（rows 不再读）。 列 id 即记录里的字段名（或列的 field）；不写结构时按标准结构铺出表头、表体与空态，格子的文字取 format 或字段值。 远程分页、远程排序这类只交一页数据进来的表格仍用 rows 手写结构。 |
+| `rowKey` | `TableField<TRow> \| ((record: TableRecordOf<TRow>) => string)` |  | 数据驱动模式下记录的行 id：字段名或取值函数，缺省取 id 字段；记录里没有时退回它在 data 里的下标。 |
 | `filterValue` | `TableFilterValue` |  | 筛选值（列 id → 勾选的值）。提供即受控：写入只发 onFilterValueChange。只在数据驱动模式下参与计算。 |
 | `defaultFilterValue` | `TableFilterValue` |  |  |
 | `pagination` | `boolean` |  | 数据驱动模式下分页：按 page 与 pageSize 切出当前页，表后铺一组分页按筛过的总条数算页数。 筛选值一变回到第 1 页；数据变短时页码夹到最后一页。 |
@@ -342,7 +344,8 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 |
+| `id` | `string` | 是 | 全表唯一：既是 DOM 身份（data-value），也是排序链与列号索引的键。 数据驱动模式下没写 field 时它也是记录里的字段名：给了行类型时只能写它的字段，写错编译即报错。 |
+| `field` | `TableField<TRow> \| null` |  | 数据驱动模式下这一列读记录里的哪个字段，缺省即列 id。列 id 想另起名字（同一个字段铺两列）时写在这里； 写 null 是不读字段的列（操作列、由几个字段拼出来的列），格子的文字靠 format 或 cell 插槽，排序与筛选靠 compare / filter。 |
 | `label` | `string` |  | 展示名。只供调用方渲染，不作为可及名。 |
 | `sortable` | `boolean` |  | 可排序：提供后才产出 aria-sort，排序把手也才响应按键与点击。 |
 | `sticky` | `boolean \| 'start' \| 'end'` |  | 横向冻结（左右滚动时该列固定），写为条目上的 data-frozen。true 等于 'start'（固定在行首侧），'end' 固定在行尾侧。 与表头吸顶的 data-fixed 是两件事：那是布尔，这个带方向，同名会使 [data-fixed] 一条选择器命中两种语义。 同侧有多列吸附时，连接层按前面各列的宽度累加出偏移，写入 --xh-table-sticky-inset： 数字列宽直接累加，不是数字（没写、百分比、fr 这类）的列取挂载后实测的列头宽度，量到之前该侧从该列起暂时贴边。 |
@@ -350,14 +353,14 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `minWidth` | `number` |  | 列宽下限（px）：布局里伸缩时不窄过它，拖动改宽也不窄过它。 未提供时布局下限是皮肤的 --xh-table-cell-min-w，拖动下限是 TABLE_COLUMN_MIN_WIDTH。 |
 | `maxWidth` | `number` |  | 列宽上限（px）：布局里伸缩时不宽过它，拖动改宽也不宽过它。未提供时不封顶。 |
 | `resizable` | `boolean` |  | 该列的宽度可以拖动修改。提供后才产出改宽把手。 |
-| `children` | `TableColumnDef[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
+| `children` | `TableColumnDef<TRow>[]` |  | 表头分组：给了 children 即为分组列，只在表头占一格、横跨它全部叶子列，不进列号空间， 也不承载数据、排序、改宽与冻结。叶子列才是生效列；嵌套几层表头就有几行， 较浅的叶子列（含前缀列）的列头纵向跨到最后一行。分组内的叶子列都要给出宽度， 分组那一格的宽度才能按叶子列之和算准。 |
 | `reorderable` | `boolean` |  | 该列可以拖动换位。提供后才产出拖拽把手：每个把手都是一个 Tab 位， 未声明的表格不承担该代价。 不可拖动的列与冻结列一样是屏障：跨过它落下会把它挤走，而作者已声明该列不动。 |
 | `align` | `'start' \| 'center' \| 'end'` |  | 列内容的对齐方向，写为列头与数据格上的 data-align。 不提供时由皮肤决定（默认 start）。 |
 | `rowHeader` | `boolean \| ((row: TableRowDef, rowIndex: number) => boolean)` |  | 行表头列：表体与脚注里这一列的格子写 role="rowheader"，读屏报某一格时连着念出它所在行的表头 （交叉表的行维度、分组标签、合计行的标题格）。列头不受影响，仍是 columnheader；合并格的起点跟着所在的列走。 给函数时按行决定：表体里这一列的格子问一次，入参是行定义与它在可见数据行里的序号（0 起算，与 cellSpan 的 rowIndex 相同），返回 true 才报 rowheader。分组报表只让组头行与小计行的分组格报行表头，明细行照旧是 gridcell。 表尾格子没有行定义，函数不调用，按行表头处理。 |
-| `compare` | `(a: TableRecord, b: TableRecord) => number` |  | 数据驱动模式（给了 data）下这一列的升序比较，两条记录比大小：负数排前、正数排后。降序由表格倒过来用。 不给时按记录里与列 id 同名的字段比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。 只在列声明了 sortable 时用到。 |
+| `compare` | `(a: TableRecordOf<TRow>, b: TableRecordOf<TRow>) => number` |  | 数据驱动模式（给了 data）下这一列的升序比较，两条记录比大小：负数排前、正数排后。降序由表格倒过来用。 不给时按这一列的字段值比：数字与日期按大小，其余按字符串（数字串按数值序），空值无论升降都排最后。 只在列声明了 sortable 时用到。 |
 | `filterOptions` | `TableFilterOption[]` |  | 数据驱动模式下的筛选项：给了它，列头铺一颗筛选钮，点开是一组勾选项；勾了几项就只留下命中的行， 一项都不勾即不筛。勾选值存在 filterValue 里，按列 id 分开。 |
-| `filter` | `(record: TableRecord, values: readonly string[]) => boolean` |  | 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。 不给时取与列 id 同名的字段转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。 |
-| `format` | `(value: unknown, record: TableRecord) => string` |  | 数据驱动模式下格子里显示的文字。不给时取与列 id 同名的字段转成字符串，空值显示为空。 要放图标、徽标这类内容时改用 cell 插槽。 |
+| `filter` | `(record: TableRecordOf<TRow>, values: readonly string[]) => boolean` |  | 数据驱动模式下一条记录是否命中这一列勾选的筛选值（values 至少一项）。 不给时把这一列的字段值转成字符串，在 values 里即命中；字段是数组时有一项在里面就算。 |
+| `format` | `(value: TValue, record: TableRecordOf<TRow>) => string` |  | 数据驱动模式下格子里显示的文字，value 是这一列的字段值（不读字段的列恒为 undefined）。 不给时把字段值转成字符串，空值显示为空。要放图标、徽标这类内容时改用 cell 插槽。 |
 
 ### TableRowDef
 
@@ -419,7 +422,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `XhTableExpandedRow` | `value` | `string` | 是 | 所属数据行的 id。 |
 | `XhTableRoot` | `virtual` | `boolean` |  | 标准结构的虚拟化开关：表体只铺滚到的那一屏行，滚的是表格根节点（吸顶表头、冻结列与行在同一个滚动面里）。 Virtualizer 那一块开了才加载；给了 children 时不用它，照旧自己套 Virtualizer。 |
 | `XhTableRoot` | `estimateSize` | `number` |  | 开了 virtual 时数据行的预估高度（px），缺省 40；还没量到的行按已量到的平均高度估。 |
-| `XhTableRoot` | `renderCell` | `(cell: TableCellSlotData) => ReactNode` |  | 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 |
+| `XhTableRoot` | `renderCell` | `(cell: TableCellSlotData<TRow>) => ReactNode` |  | 标准结构里一格的内容：参数里有记录、字段值与本来要显示的文字，别的列交出 text 即可。 |
 | `XhTableRoot` | `renderEmpty` | `() => ReactNode` |  | 标准结构里空态占位的内容。 |
 | `XhTableRoot` | `toolbar` | `SlotChildren<TableToolbarSlotProps>` |  | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 | `XhTableRoot` | `children` | `SlotChildren<TableRootSlotProps>` |  |  |

@@ -7,7 +7,7 @@
 
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { MeasuredRow } from './table.drag'
-import type { TableApi, TableColumn, TableColumnDef, TableColumnSetting, TableHeaderCell, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableColumnBase, TableColumnSetting, TableHeaderCell, TablePressedKey, TableSchema, TableVisibleRow } from './table.types'
 import {
   cascadeState,
   contains,
@@ -69,7 +69,7 @@ function columnSize(width: string | number | undefined): string | undefined {
  * 作者写的 `minWidth` / `maxWidth` 同时管布局：伸缩分剩余空间时不越过这两条，
  * 三者写成同一个数就是一列定宽。
  */
-function columnSizeStyle(def: TableColumnDef | undefined, pinned: boolean, width: string | number | undefined = def?.width): Record<string, unknown> {
+function columnSizeStyle(def: TableColumnBase | undefined, pinned: boolean, width: string | number | undefined = def?.width): Record<string, unknown> {
   const style: Record<string, unknown> = {}
   const size = columnSize(width)
   if (size)
@@ -87,16 +87,16 @@ function columnSizeStyle(def: TableColumnDef | undefined, pinned: boolean, width
  * 上下限同理：跨过的每一列都写了才相加，有一列没写就不给合并格设这一条。
  */
 function spanSizeStyle(
-  defs: readonly (TableColumnDef | undefined)[],
-  widthOf: (def: TableColumnDef | undefined) => string | number | undefined,
-  pinnedOf: (def: TableColumnDef | undefined) => boolean,
+  defs: readonly (TableColumnBase | undefined)[],
+  widthOf: (def: TableColumnBase | undefined) => string | number | undefined,
+  pinnedOf: (def: TableColumnBase | undefined) => boolean,
 ): Record<string, unknown> {
   const sizes = defs.map(def => columnSize(widthOf(def)))
   const grow = defs.reduce((n, def) => n + (pinnedOf(def) ? 0 : 1), 0)
   const style: Record<string, unknown> = { flexGrow: grow, flexShrink: grow }
   if (sizes.every(size => size != null))
     style.inlineSize = sizes.length === 1 ? sizes[0] : `calc(${sizes.join(' + ')})`
-  const sum = (pick: (def: TableColumnDef | undefined) => number | undefined): number | undefined => {
+  const sum = (pick: (def: TableColumnBase | undefined) => number | undefined): number | undefined => {
     const values = defs.map(pick)
     return values.every(value => value != null) ? values.reduce<number>((total, value) => total + (value ?? 0), 0) : undefined
   }
@@ -232,7 +232,7 @@ export function connectTable<T extends PropTypes>(
   const stickyFooter = !!prop('stickyFooter')
   const footerRowCount = Math.max(0, Math.trunc(prop('footerRows') ?? 0) || 0)
   const dir = prop('dir') ?? 'ltr'
-  const numericWidth = (id: string, def: TableColumnDef | undefined): number | null =>
+  const numericWidth = (id: string, def: TableColumnBase | undefined): number | null =>
     columnNumericWidth(context.get('columnPreference').widths?.[id], def?.width)
   /** 这一列的宽度是不是用户改出来的。 */
   const hasWidthOverride = (id: string): boolean => context.get('columnPreference').widths?.[id] != null
@@ -261,7 +261,7 @@ export function connectTable<T extends PropTypes>(
   /** 有子行的行：展开的是子行，不产出详情行。父行不存在的子行按根行处理，不算。 */
   const parentRows = new Set(rows.flatMap(row => row.parentId != null && rowDefById.has(row.parentId) ? [row.parentId] : []))
   const dataRowOrder = new Map(dataRows.map((row, index) => [row.id, index]))
-  const isRowHeader = (def: TableColumnDef | undefined, rowId: string | undefined, footer: boolean): boolean => {
+  const isRowHeader = (def: TableColumnBase | undefined, rowId: string | undefined, footer: boolean): boolean => {
     const flag = def?.rowHeader
     if (typeof flag !== 'function')
       return !!flag
@@ -330,7 +330,7 @@ export function connectTable<T extends PropTypes>(
     draggingRow != null && dropTarget?.targetValue === id ? dropTarget.position : undefined
 
   const columnIndex = new Map<string, number>()
-  const columnIndexDefs = new Map<string, TableColumnDef>()
+  const columnIndexDefs = new Map<string, TableColumnBase>()
   columns.forEach((column, i) => {
     // 列 id 重复时以先出现的为准，取列号是确定的
     if (columnIndexDefs.has(column.id))
@@ -376,13 +376,13 @@ export function connectTable<T extends PropTypes>(
   const rowCount = headerRowCount + visibleRows.length + footerRowCount
 
   const metaOf = (value: string): TableVisibleRow | undefined => metaIndex.get(value)
-  const columnOf = (value: string): TableColumnDef | undefined => columnIndexDefs.get(value)
+  const columnOf = (value: string): TableColumnBase | undefined => columnIndexDefs.get(value)
 
   // 吸附列：同侧多列时按列宽累加偏移。行首侧从左往右加、行尾侧从右往左加；
   // 宽度不是数字的列取挂载后实测的列头宽度，还没量到时那一侧从这列起暂时退回贴边（偏移留空，皮肤按 0 处理）
-  const insetWidth = (def: TableColumnDef): number | undefined =>
+  const insetWidth = (def: TableColumnBase): number | undefined =>
     typeof def.width === 'number' ? def.width : layout.columnWidths[def.id]
-  const stickySideOf = (def: TableColumnDef | undefined): 'start' | 'end' | undefined =>
+  const stickySideOf = (def: TableColumnBase | undefined): 'start' | 'end' | undefined =>
     def?.sticky === true ? 'start' : def?.sticky === 'start' || def?.sticky === 'end' ? def.sticky : undefined
   const stickyInset = new Map<string, number>()
   {
@@ -415,7 +415,7 @@ export function connectTable<T extends PropTypes>(
       frozenEdges.add(endEdge.id)
   }
   const scrollEdges = context.get('scrollEdges')
-  const stickyAttrs = (def: TableColumnDef | undefined): Record<string, unknown> => {
+  const stickyAttrs = (def: TableColumnBase | undefined): Record<string, unknown> => {
     const side = stickySideOf(def)
     if (!side)
       return { 'data-frozen': undefined }
@@ -566,7 +566,7 @@ export function connectTable<T extends PropTypes>(
    * 以 TABLE_DATA_COLUMN_BASIS、序号列以 TABLE_INDEX_COLUMN_BASIS 为基准，各行同一个，再照常一起伸缩。
    * 选择列与展开列每一行装的都是同一颗把手，按内容定基准也对得齐；手写结构照旧按内容定基准。
    */
-  const basisWidth = (def: TableColumnDef | undefined): string | number | undefined => {
+  const basisWidth = (def: TableColumnBase | undefined): string | number | undefined => {
     if (def?.width != null || !dataView)
       return def?.width
     const kind = (def as TableColumn | undefined)?.kind
@@ -590,7 +590,7 @@ export function connectTable<T extends PropTypes>(
 
   // 列设置区那一份：只收作者定义的列（前缀列是结构性的，不归用户调），按偏好排过序，
   // 藏起来的也在其中——生效列把它们滤掉了，而设置区正是把它们放回来的地方
-  const settingDefs = new Map<string, TableColumnDef>()
+  const settingDefs = new Map<string, TableColumnBase>()
   for (const column of authorColumns) {
     // 列 id 重复时以先出现的为准，与列号索引同一口径
     if (!settingDefs.has(column.id))

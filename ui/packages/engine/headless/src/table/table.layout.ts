@@ -5,7 +5,7 @@
 
 // 提供 table.layout 相关实现：挂载后的版面实测。
 
-import type { TableColumnDef, TableColumnPreference, TableLayout, TableScrollEdges } from './table.types'
+import type { TableColumnBase, TableColumnPreference, TableLayout, TableScrollEdges } from './table.types'
 import { tableLeafColumns } from './table.columns'
 
 /** 还没量过、或不需要量时的版面。 */
@@ -19,7 +19,7 @@ export interface TableLayoutNeeds {
 
 /** 按 props 判定要不要实测：两样都不需要时整套观察都不挂，一张普通表格一点开销都没有。 */
 export function tableLayoutNeeds(
-  columns: readonly TableColumnDef[],
+  columns: readonly TableColumnBase[],
   preference: TableColumnPreference | undefined,
   hasCellSpan: boolean,
 ): TableLayoutNeeds {

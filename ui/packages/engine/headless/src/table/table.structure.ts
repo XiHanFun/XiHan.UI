@@ -10,9 +10,10 @@
 import type { StructureChild, StructureInstanceNode, StructureNode, StructureSlotted } from '../shared/structure'
 import type { StructureVirtualItem, VirtualStructurePart } from '../shared/virtual-structure'
 import type { tableAnatomy } from './table.anatomy'
-import type { TableApi, TableColumn, TableHeaderCell, TableRecord, TableVisibleRow } from './table.types'
+import type { TableApi, TableColumn, TableField, TableFieldValue, TableHeaderCell, TableRecord, TableRecordOf, TableVisibleRow } from './table.types'
 import { structureInstance } from '../shared/structure-instance'
 import { virtualWindowStructure } from '../shared/virtual-structure'
+import { tableColumnField } from './table.pipeline'
 
 type TablePart = (typeof tableAnatomy)['parts'][number]
 
@@ -67,14 +68,20 @@ export interface TableStructureOptions {
   readonly slotted?: StructureSlotted
 }
 
-/** cell 插槽的参数：作者据此在格子里放徽标、链接这类内容；text 是不接管时会显示的那段文字，别的列照常交出它即可。 */
-export interface TableCellSlotData {
+/**
+ * cell 插槽的参数：作者据此在格子里放徽标、链接这类内容；text 是不接管时会显示的那段文字，别的列照常交出它即可。
+ * 给了行类型时 record 是那个类型，按 field 判出是哪个字段后 value 也跟着收窄；不读字段的列 field 为 null。
+ */
+export type TableCellSlotData<TRow extends object = TableRecord> = {
   readonly row: string
   readonly column: TableColumn
-  readonly record: TableRecord | undefined
-  readonly value: unknown
+  /** 这一行的记录；手写 rows 的表格没有记录。 */
+  readonly record: TableRecordOf<TRow> | undefined
   readonly text: string
-}
+} & (
+  | { [K in TableField<TRow>]: { readonly field: K, readonly value: TableFieldValue<TRow, K> | undefined } }[TableField<TRow>]
+  | { readonly field: null, readonly value: undefined }
+)
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -143,7 +150,10 @@ function bodyCell(model: TableStructureModel, row: string, column: TableColumn, 
   if (!slotted('cell', key))
     return { ...base, text }
   const record = model.recordOf(row)
-  const data: TableCellSlotData = { row, column, record, value: record?.[column.id], text }
+  const field = tableColumnField(column)
+  const data: TableCellSlotData = field == null
+    ? { row, column, record, text, field: null, value: undefined }
+    : { row, column, record, text, field, value: record?.[field] }
   return { ...base, slot: { name: 'cell', key }, data }
 }
 

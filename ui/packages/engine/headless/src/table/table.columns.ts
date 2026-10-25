@@ -7,7 +7,7 @@
 
 import type {
   TableColumn,
-  TableColumnDef,
+  TableColumnBase,
   TableColumnKind,
   TableColumnPreference,
   TableHeaderCell,
@@ -61,11 +61,11 @@ export function orderColumnIds(ids: readonly string[], order?: readonly string[]
  * 让它继续占列号会让读屏报出一个数不到的格子。
  */
 export function resolveTableColumns(
-  columns: readonly TableColumnDef[],
+  columns: readonly TableColumnBase[],
   prefix: readonly TableColumnKind[],
   preference?: TableColumnPreference,
 ): TableColumn[] {
-  const defs = new Map<string, TableColumnDef>()
+  const defs = new Map<string, TableColumnBase>()
   for (const column of columns) {
     // 列 id 重复时以先出现的为准，取列号是确定的
     if (!defs.has(column.id))
@@ -102,9 +102,9 @@ export function resolveTableColumns(
  * 分组列摊成叶子列：带 children 的是分组，只在表头占一格，不进列号空间。
  * 没有分组时原样返回同一批列定义。
  */
-export function tableLeafColumns(columns: readonly TableColumnDef[]): TableColumnDef[] {
-  const out: TableColumnDef[] = []
-  const walk = (nodes: readonly TableColumnDef[]): void => {
+export function tableLeafColumns(columns: readonly TableColumnBase[]): TableColumnBase[] {
+  const out: TableColumnBase[] = []
+  const walk = (nodes: readonly TableColumnBase[]): void => {
     for (const column of nodes) {
       if (column.children?.length)
         walk(column.children)
@@ -116,9 +116,9 @@ export function tableLeafColumns(columns: readonly TableColumnDef[]): TableColum
 }
 
 /** 叶子列 id → 自根而下的分组链；不在任何分组里的列没有条目。 */
-export function tableColumnAncestors(columns: readonly TableColumnDef[]): Map<string, TableColumnDef[]> {
-  const out = new Map<string, TableColumnDef[]>()
-  const walk = (nodes: readonly TableColumnDef[], chain: TableColumnDef[]): void => {
+export function tableColumnAncestors(columns: readonly TableColumnBase[]): Map<string, TableColumnBase[]> {
+  const out = new Map<string, TableColumnBase[]>()
+  const walk = (nodes: readonly TableColumnBase[], chain: TableColumnBase[]): void => {
     for (const column of nodes) {
       if (column.children?.length)
         walk(column.children, [...chain, column])
@@ -139,9 +139,9 @@ export function tableColumnAncestors(columns: readonly TableColumnDef[]): Map<st
  */
 export function buildTableHeaderRows(
   columns: readonly TableColumn[],
-  ancestors: ReadonlyMap<string, readonly TableColumnDef[]>,
+  ancestors: ReadonlyMap<string, readonly TableColumnBase[]>,
 ): TableHeaderCell[][] {
-  const chainOf = (id: string): readonly TableColumnDef[] => ancestors.get(id) ?? []
+  const chainOf = (id: string): readonly TableColumnBase[] => ancestors.get(id) ?? []
   let depth = 1
   for (const column of columns)
     depth = Math.max(depth, chainOf(column.id).length + 1)
