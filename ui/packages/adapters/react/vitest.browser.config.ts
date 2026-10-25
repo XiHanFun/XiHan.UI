@@ -1,4 +1,5 @@
 import { playwright } from '@vitest/browser-playwright'
+import { XiHanUIStyles } from '@xihan-ui/styles/vite'
 import { browserCommands } from '@xihan-ui/testing/browser-commands'
 import { defineConfig } from 'vitest/config'
 
@@ -12,6 +13,8 @@ const A11Y_SPECS = ['tests/browser/a11y-*.spec.tsx']
 // 与 vitest.config 缺省的 jsdom 单测互不覆盖，各跑各的目录。
 // 用例后缀是 .tsx：React 的夹具要写 JSX，转换口径由包根 tsconfig 的 jsx: 'react-jsx' 给。
 export default defineConfig({
+  // 按需注入只扫这一个用例：它只写到按钮，注入的就是按钮那一份子集；别的用例照旧引全量入口，不受影响
+  plugins: [XiHanUIStyles({ scan: ['tests/browser/styles-auto-inject.spec.tsx'], skinCheck: false })],
   test: {
     setupFiles: ['./tests/browser/setup.ts'],
     browser: {

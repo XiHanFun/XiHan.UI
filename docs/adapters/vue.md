@@ -47,7 +47,7 @@ export default defineConfig({
 });
 ```
 
-解析器只认 `Xh` 前缀，`<XhButton>` 与 `<xh-button>` 都解析到 `@xihan-ui/vue` 的同名导出；名字拼错时打包器会报主入口没有这个导出，不会静默忽略。皮肤不随组件引入，入口处仍引一次 `@xihan-ui/styles`。
+解析器只认 `Xh` 前缀，`<XhButton>` 与 `<xh-button>` 都解析到 `@xihan-ui/vue` 的同名导出；名字拼错时打包器会报主入口没有这个导出，不会静默忽略。皮肤不随组件引入：入口处引一次 `@xihan-ui/styles`，或者交给 `@xihan-ui/styles/vite` 按用到的组件注入，见[按用到的组件自动注入](../installation#按用到的组件自动注入)。
 
 ### 全量注册
 
