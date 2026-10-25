@@ -12,6 +12,7 @@ import { SELECT_EN_US } from '../locale/en-US'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
+import { decodeMetas, decodeValues, encodeSelection, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { selectAnatomy, selectItemQuery, selectItemText } from './select.anatomy'
@@ -22,7 +23,30 @@ const parts = selectAnatomy.build()
 // 指针亲手点亮过的条目：pointerleave 只收自己点的漆，键盘建立的高亮被指针路过不受影响
 const pointerHot = new WeakSet<Element>()
 
-export function connectSelect<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectSelectKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectSelect<T extends PropTypes, V = string>(
+  service: Service<SelectSchema>,
+  normalize: NormalizeProps<T>,
+): SelectApi<T, V> {
+  const api = connectSelectKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection, service.prop('collection')),
+    value: decodeValues(codec, api.value),
+    tags: decodeMetas(codec, api.tags),
+    highlightedValue: api.highlightedValue == null ? null : codec.value(api.highlightedValue),
+    setValue: next => api.setValue(encodeSelection(codec, next) ?? []),
+    deselect: value => api.deselect(codec.key(value)),
+    // 收值的 getter 按名单换成先编码的版本
+    ...keyedGetters(codec, api, ['getTagProps', 'getItemDeleteTriggerProps', 'getItemProps', 'getItemPrefixProps', 'getItemTextProps', 'getItemDescriptionProps', 'getItemSuffixProps', 'getItemIndicatorProps']),
+  } as SelectApi<T, V>
+}
+
+function connectSelectKeys<T extends PropTypes>(
   service: Service<SelectSchema>,
   normalize: NormalizeProps<T>,
 ): SelectApi<T> {
@@ -47,6 +71,7 @@ export function connectSelect<T extends PropTypes>(
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: SelectNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
@@ -87,7 +112,7 @@ export function connectSelect<T extends PropTypes>(
     readOnly,
     onDelete: v => send({ type: 'VALUE.SET', value: value.filter(x => x !== v) }),
   }, normalize)
-  const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const tags = selectionTags.visible.map(tag => ({ value: tag.key, key: tag.key, label: tag.label }))
   const { overflowCount, overflowText } = selectionTags
   const loading = !!prop('loading')
   // 整表取数失败：在途优先，失败提示只在不在途时露出
@@ -200,6 +225,7 @@ export function connectSelect<T extends PropTypes>(
     open,
     collection,
     value,
+    valueKeys: value,
     valueText,
     displayText,
     multiple,

@@ -385,7 +385,7 @@ type XhTableRootInstance = InstanceType<typeof XhTableRootImpl>
  * format、compare、filter 与 cell 插槽的参数跟着收窄。`h()` 推断不了泛型，那里按宽松的记录检查。
  */
 export type XhTableRootComponent = Omit<typeof XhTableRootImpl, never> & {
-  new<TRow extends object = TableRecord>(props?: XhTableRootRowProps<TRow>): Omit<XhTableRootInstance, '$props' | '$slots'> & {
+  new<TRow extends object = TableRecord>(props?: Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>): Omit<XhTableRootInstance, '$props' | '$slots'> & {
     $props: Omit<XhTableRootInstance['$props'], keyof XhTableRootRowProps<TRow>> & XhTableRootRowProps<TRow>
     $slots: Omit<XhTableRootInstance['$slots'], 'cell'> & {
       cell?: (props: TableCellSlotData<TRow>) => VNode[]

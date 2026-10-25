@@ -156,6 +156,12 @@ outline、subtle 和 ghost
 
 <XhDemo src="select/23-virtualized" />
 
+### 对象值
+
+选项直接用接口取回来的对象：value 与值变化交出的都是对象本身，给 valueKey 按 id 认，同一个人换成内容相同的新对象也选得中
+
+<XhDemo src="select/24-object-value" />
+
 ## 设计指引
 
 ### 何时使用
@@ -186,6 +192,7 @@ outline、subtle 和 ghost
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhSelectElement<number>>("xh-select")` 收窄。
 
 ### 组合
 
@@ -223,11 +230,12 @@ outline、subtle 和 ghost
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `collection` | `SelectNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
-| `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
+| `value` | `V \| V[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
+| `defaultValue` | `V \| V[] \| null` |  | 非受控初始选中值。与 value 同样接受裸值与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
@@ -248,7 +256,7 @@ outline、subtle 和 ghost
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
-| `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueChange` | `(details: SelectValueChangeDetails<V>) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onRetry` | `() => void` |  | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 |
@@ -259,8 +267,8 @@ outline、subtle 和 ghost
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为值（不是字符串的值退回它的键）。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个选择器的 tone 不下发给条目。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
@@ -271,7 +279,7 @@ outline、subtle 和 ghost
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `retry` | `` | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
@@ -282,12 +290,12 @@ outline、subtle 和 ghost
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
+| `XhSelectRoot` | `default` | `SelectRootSlotProps<V>` |  |
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `empty` | — | 自动渲染树中空态占位的内容 |
-| `XhSelectRoot` | `item` | `SelectNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
-| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
-| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+| `XhSelectRoot` | `item` | `SelectNodeMeta<V>` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta<V>` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta<V>` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
 ### React 适配器 props
 
@@ -296,7 +304,7 @@ outline、subtle 和 ghost
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhSelectGroup` | `value` | `string` | 是 |  |
-| `XhSelectItem` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhSelectRoot` | `virtual` | `boolean` |  | 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。虚拟化那一块异步加载，没开的不为它付体积； 手写 children 时不使用它，照旧自己套 Virtualizer 再把 collectionVirtualizer 交给 virtualizer。 |
@@ -304,11 +312,11 @@ outline、subtle 和 ghost
 | `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhSelectRoot` | `empty` | `ReactNode` |  | 自动渲染树中的空态内容，没给时取 translations.empty。 |
 | `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
-| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
-| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
-| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps>` |  |  |
-| `XhSelectTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
+| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps<V>>` |  |  |
+| `XhSelectTag` | `value` | `unknown` | 是 | 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 |
 
 ### 状态
 
@@ -349,8 +357,9 @@ outline、subtle 和 ghost
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly SelectNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
-| `value` | `string[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
+| `collection` | `readonly SelectNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `V[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
+| `valueKeys` | `string[]` | 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 |
 | `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 中查询不到条目时该项回退为值本身。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
@@ -359,14 +368,14 @@ outline、subtle 和 ghost
 | `translations` | `SelectTranslations` | 解析后的读屏文案；error 与 retry-trigger 没写内容时显示其中的 loadError 与 retry。 |
 | `readOnly` | `boolean` | 只读态。 |
 | `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
-| `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
+| `tags` | `SelectTagMeta<V>[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
-| `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
+| `highlightedValue` | `V \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string \| string[]) => void` |  |
+| `setValue` | `(next: V \| V[]) => void` |  |
 | `clear` | `() => void` | 清空全部选中。 |
-| `deselect` | `(value: string) => void` | 移除一个选中值。 |
+| `deselect` | `(value: V) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在其中并排，有值时清空按钮替代展开指示符。 |
@@ -375,10 +384,10 @@ outline、subtle 和 ghost
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；无法清空时整体隐藏；点击清空全部选中、不展开浮层，焦点送回 trigger。 |
 | `getTagListProps` | `() => T['element']` | 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 |
-| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 |
+| `getTagProps` | `(props: SelectTagProps<V>) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 |
 | `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
 | `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
-| `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
+| `getItemDeleteTriggerProps` | `(props: SelectTagProps<V>) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
 | `isContentMounted` | `() => boolean` | content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。 content 节点本身始终在场，只有它的内容按此挂载。 |
@@ -390,12 +399,12 @@ outline、subtle 和 ghost
 | `getRetryTriggerProps` | `() => T['button']` | 整表取数失败后的重试按钮：不占 Tab 位，键盘从浮层里按 Enter / Space 重试；点击派发 onRetry。 |
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
-| `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemPrefixProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemSuffixProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemPrefixProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemTextProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemSuffixProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: SelectItemProps<V>) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。 |
 
 ## 无障碍

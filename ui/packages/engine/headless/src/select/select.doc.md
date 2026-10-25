@@ -30,6 +30,7 @@
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhSelectElement<number>>("xh-select")` 收窄。
 
 ## 组合
 

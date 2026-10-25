@@ -14,6 +14,7 @@ import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/fi
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { SELECTION_TAG_DEFAULT_MAX, trackSelectionTagMotion } from '../shared/selection-tags'
+import { encodeSelectionProps, valueCodecOf } from '../shared/value-codec'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { SELECT_TAG_LIST_SELECTOR, selectItemQuery, selectItemText } from './select.anatomy'
 
@@ -55,6 +56,8 @@ function virtualAnchorIndex(collection: readonly SelectNode[], intent: SelectFoc
 
 export const selectMachine = createMachine({
   name: 'select',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器、DOM 与连打检索只认键；onValueChange 交出去时解回原值
+  props: ({ props, scope }) => encodeSelectionProps(props, valueCodecOf(scope, { valueKey: props.valueKey })),
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),

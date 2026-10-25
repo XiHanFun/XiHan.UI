@@ -5,11 +5,12 @@
 
 // 提供 select 相关实现。
 
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Placement, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, SelectApi, SelectGroupProps, SelectionValueKey, SelectItemProps, SelectNode, SelectNodeMeta, SelectOpenChangeDetails, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
+import type { BivariantCallback } from '../../runtime/bivariant'
 import type { StructureVirtualSlot } from '../virtualizer/structure-slot'
-import { selectStructure } from '@xihan-ui/headless'
+import { selectStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
@@ -25,9 +26,9 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及修改展开、修改值、清空、移除值四个动作。 */
-export type SelectRootSlotProps = Pick<
-  SelectApi,
+/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及修改展开、修改值、清空、移除值四个动作。V 是选中值的类型。 */
+export type SelectRootSlotProps<V = string> = Pick<
+  SelectApi<PropTypes, V>,
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
@@ -42,7 +43,8 @@ const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
     return () => {
       const api = ctx.api.value
       const options = [h('option', { value: '' })]
-      for (const [i, v] of api.value.entries())
+      // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
+      for (const [i, v] of api.valueKeys.entries())
         options.push(h('option', { value: v, selected: true }, api.valueText[i] ?? v))
       return h('select', api.getHiddenSelectProps() as Record<string, unknown>, options)
     }
@@ -52,13 +54,16 @@ const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
 /** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
 const SELECT_VIRTUAL_ESTIMATE = 36
 
-export const XhSelectRoot = /* @__PURE__ */ defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhSelectRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhSelectRootImpl = /* @__PURE__ */ defineComponent({
   name: 'XhSelectRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<SelectNode[]> },
+    collection: { type: Array as PropType<SelectNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /**
      * 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。挂载时定下，之后改它不生效；
@@ -73,8 +78,9 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     label: { type: String },
     /** 自动渲染树中的空态文字，没给时取 translations.empty；需要放置其他内容时改用 empty 插槽。 */
     empty: { type: String },
-    value: { type: [String, Array] as PropType<string | string[] | null> },
-    defaultValue: { type: [String, Array] as PropType<string | string[] | null> },
+    // 值可以是字符串、数字或对象：运行时不查类型，类型由对外导出的 XhSelectRoot 按值类型收窄
+    value: { type: null as unknown as PropType<unknown> },
+    defaultValue: { type: null as unknown as PropType<unknown> },
     multiple: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
@@ -101,27 +107,27 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     size: { type: String as PropType<Size> },
   },
   // *-change 携带 details 对象，update:* 携带裸值。
-  // 校验函数恒真，只声明载荷类型：'update:value' 是 string[]，单选也是长度 1 的数组而非裸串。
+  // 校验函数恒真，只声明载荷类型：'update:value' 是数组，单选也是长度 1 的数组而非裸值。
   emits: {
     'clear': () => true,
     // 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
     'retry': () => true,
-    'value-change': (_details: SelectValueChangeDetails) => true,
+    'value-change': (_details: SelectValueChangeDetails<unknown>) => true,
     'open-change': (_details: SelectOpenChangeDetails) => true,
-    'update:value': (_value: string[]) => true,
+    'update:value': (_value: unknown[]) => true,
     'update:open': (_open: boolean) => true,
   },
   slots: Object as SlotsType<{
-    'default'?: (props: SelectRootSlotProps) => VNode[]
+    'default'?: (props: SelectRootSlotProps<unknown>) => VNode[]
     'label'?: () => VNode[]
     /** 自动渲染树中空态占位的内容 */
     'empty'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    'item'?: (node: SelectNodeMeta) => VNode[]
+    'item'?: (node: SelectNodeMeta<unknown>) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
-    'item-prefix'?: (node: SelectNodeMeta) => VNode[]
+    'item-prefix'?: (node: SelectNodeMeta<unknown>) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
-    'item-suffix'?: (node: SelectNodeMeta) => VNode[]
+    'item-suffix'?: (node: SelectNodeMeta<unknown>) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notifyValue: SelectProps['onValueChange'] = (details) => {
@@ -142,7 +148,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     // 桥随 Virtualizer 的状态换身份，用取值器现取，机器每次读 prop 都拿到当下这一份
     if (virtual)
       Object.defineProperty(handlers, 'virtualizer', { enumerable: true, get: () => virtual.view.value?.api.value.collectionVirtualizer })
-    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), handlers) as SelectProps, notifyValue, notifyOpen)
+    const ctx = useSelect(withHandlers(withXhConfig('select', useFormControlProps(props)), handlers) as unknown as SelectProps, notifyValue, notifyOpen)
     if (virtual)
       provideStructureVirtual(virtual)
     provideSelect(ctx)
@@ -170,6 +176,36 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     }
   },
 })
+
+/** 根组件里随值类型收窄的那几项 prop：选中值、条目数据、取键方式与值变化的回调。 */
+export interface XhSelectRootValueProps<V> {
+  'value'?: V | V[] | null
+  'defaultValue'?: V | V[] | null
+  'collection'?: SelectNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'onUpdate:value'?: BivariantCallback<[value: V[]]>
+  'onValueChange'?: BivariantCallback<[details: SelectValueChangeDetails<V>]>
+}
+
+type XhSelectRootInstance = InstanceType<typeof XhSelectRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
+ * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhSelectRootComponent = Omit<typeof XhSelectRootImpl, never> & {
+  new<V = string>(props?: Omit<XhSelectRootInstance['$props'], keyof XhSelectRootValueProps<V>> & XhSelectRootValueProps<V>): Omit<XhSelectRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhSelectRootInstance['$props'], keyof XhSelectRootValueProps<V>> & XhSelectRootValueProps<V>
+    $slots: Omit<XhSelectRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
+      'default'?: (props: SelectRootSlotProps<V>) => VNode[]
+      'item'?: (node: SelectNodeMeta<V>) => VNode[]
+      'item-prefix'?: (node: SelectNodeMeta<V>) => VNode[]
+      'item-suffix'?: (node: SelectNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhSelectRoot = XhSelectRootImpl as unknown as XhSelectRootComponent
 
 export const XhSelectLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectLabel',
@@ -275,8 +311,8 @@ function tagChildren(content: VNode[] | string | undefined): VNode[] | string | 
 export const XhSelectTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTag',
   props: {
-    /** 它代表哪个选中值。 */
-    value: { type: String, required: true },
+    /** 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
   },
   setup(props, { slots }) {
     const ctx = useSelectContext()
@@ -432,13 +468,14 @@ export const XhSelectGroupLabel = /* @__PURE__ */ defineComponent({
 export const XhSelectItem = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useSelectContext()
-    const item = computed<SelectItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    const item = computed<SelectItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideSelectItem({ item })
     // 本条目持有焦点时，value 变更重报高亮条目，卸载时上报条目丢失
     const itemEl = ref<HTMLElement | null>(null)
@@ -448,14 +485,16 @@ export const XhSelectItem = /* @__PURE__ */ defineComponent({
       const svc = ctx.service
       if (svc.getStatus() !== 'Started')
         return
+      // 机器只认键
       if (itemEl.value && svc.scope.getActiveElement() === itemEl.value)
-        svc.send({ type: 'ITEM.HIGHLIGHT', value: next })
+        svc.send({ type: 'ITEM.HIGHLIGHT', value: valueKeyOf(svc.scope, next) })
     })
     onBeforeUnmount(() => {
       const { service } = ctx
       if (service.getStatus() !== 'Started')
         return
-      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === props.value))
+      const key = valueKeyOf(service.scope, props.value)
+      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === key))
         return
       // 按「本节点当下正持有焦点」判定，不按 value 比对
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
@@ -548,16 +587,16 @@ const SELECT_PARTS = {
 interface SelectStructureSlots {
   'label'?: () => VNode[]
   'empty'?: () => VNode[]
-  'item'?: (node: SelectNodeMeta) => VNode[]
-  'item-prefix'?: (node: SelectNodeMeta) => VNode[]
-  'item-suffix'?: (node: SelectNodeMeta) => VNode[]
+  'item'?: (node: SelectNodeMeta<unknown>) => VNode[]
+  'item-prefix'?: (node: SelectNodeMeta<unknown>) => VNode[]
+  'item-suffix'?: (node: SelectNodeMeta<unknown>) => VNode[]
 }
 
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、空态、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultStructure(api: SelectApi, options: { label?: string, empty?: string, clearable: boolean, virtualItems?: readonly StructureVirtualItem[] }, slots: SelectStructureSlots): VNode[] {
+function renderDefaultStructure(api: SelectApi<PropTypes, unknown>, options: { label?: string, empty?: string, clearable: boolean, virtualItems?: readonly StructureVirtualItem[] }, slots: SelectStructureSlots): VNode[] {
   const nodes = selectStructure(api, { ...options, slotted: name => slots[name as keyof SelectStructureSlots] != null })
   return renderStructure(nodes, SELECT_PARTS, (node) => {
     switch (node.slot?.name) {
@@ -566,11 +605,11 @@ function renderDefaultStructure(api: SelectApi, options: { label?: string, empty
       case 'empty':
         return slots.empty?.()
       case 'item':
-        return slots.item?.(node.data as SelectNodeMeta) ?? (node.data as SelectNodeMeta).label
+        return slots.item?.(node.data as SelectNodeMeta<unknown>) ?? (node.data as SelectNodeMeta<unknown>).label
       case 'item-prefix':
-        return slots['item-prefix']?.(node.data as SelectNodeMeta)
+        return slots['item-prefix']?.(node.data as SelectNodeMeta<unknown>)
       case 'item-suffix':
-        return slots['item-suffix']?.(node.data as SelectNodeMeta)
+        return slots['item-suffix']?.(node.data as SelectNodeMeta<unknown>)
       default:
         return undefined
     }

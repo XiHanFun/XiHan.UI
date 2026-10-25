@@ -104,7 +104,8 @@ for (const name of dirs) {
     problems.push(`${name} —— 登记的值 prop「${channel.prop}」在 ${name}.types.ts 的 props 里没有`)
   if (!new RegExp(`^\\s{4}${channel.defaultProp}\\?:`, 'm').test(types))
     problems.push(`${name} —— 登记的初值 prop「${channel.defaultProp}」在 ${name}.types.ts 的 props 里没有`)
-  const callback = types.match(new RegExp(`^\\s{4}${channel.onChange}\\?: \\(details: (\\w+)\\)`, 'm'))
+  // 细节类型可以带值类型参数（选择类的 `SelectValueChangeDetails<V>`），只取名字去找它的声明
+  const callback = types.match(new RegExp(`^\\s{4}${channel.onChange}\\?: \\(details: (\\w+)(?:<[^>]*>)?\\)`, 'm'))
   if (!callback) {
     problems.push(`${name} —— 登记的改动回调「${channel.onChange}」在 ${name}.types.ts 的 props 里没有`)
     continue

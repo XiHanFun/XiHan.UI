@@ -243,7 +243,7 @@ describe('select 多选标签', () => {
   it('tags 与 value 同序取 collection 文本；maxTagCount 截断、余数进 overflowCount', async () => {
     const m = mountSelect({ defaultValue: ['a', 'b', 'c'], maxTagCount: 2 })
     await tick()
-    expect(m.bag().tags).toEqual([{ value: 'a', label: '甲' }, { value: 'b', label: '乙' }])
+    expect(m.bag().tags).toEqual([{ value: 'a', key: 'a', label: '甲' }, { value: 'b', key: 'b', label: '乙' }])
     expect(m.bag().overflowCount).toBe(1)
   })
 

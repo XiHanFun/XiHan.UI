@@ -12,7 +12,7 @@ import { inject, provide } from 'vue'
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface SelectItemContext {
-  item: ComputedRef<SelectItemProps>
+  item: ComputedRef<SelectItemProps<unknown>>
 }
 
 const KEY: InjectionKey<SelectContext> = Symbol.for('xh-select')
@@ -60,7 +60,7 @@ export function useSelectGroupContext(): SelectGroupContext {
 
 /** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
 export interface SelectTagContext {
-  value: () => string
+  value: () => unknown
 }
 
 const TAG_KEY: InjectionKey<SelectTagContext> = Symbol.for('xh-select-tag')

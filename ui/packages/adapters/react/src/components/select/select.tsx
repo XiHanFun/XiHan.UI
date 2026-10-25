@@ -5,12 +5,12 @@
 
 // 提供 select 相关实现。
 
-import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, SelectApi, SelectNode, SelectNodeMeta, SelectSchema, StructureVirtualItem } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Placement, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, SelectApi, SelectionValueKey, SelectNode, SelectNodeMeta, SelectSchema, SelectValueChangeDetails, StructureVirtualItem } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { StructureVirtualSlot, StructureVirtualWindow } from '../virtualizer/structure-slot'
-import { selectStructure } from '@xihan-ui/headless'
+import { selectStructure, valueKeyOf } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -37,19 +37,25 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及四个动作。 */
-export type SelectRootSlotProps = Pick<
-  SelectApi,
+/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及四个动作。V 是选中值的类型。 */
+export type SelectRootSlotProps<V = string> = Pick<
+  SelectApi<PropTypes, V>,
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
 /** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
-export interface XhSelectRootProps extends RootElementProps {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，
+ * 对象值给 valueKey。onValueChange、children 与 renderItem 拿到的都是 V。
+ */
+export interface XhSelectRootProps<V = string> extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: SelectNode[]
+  collection?: SelectNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
   virtualizer?: CollectionVirtualizer
   /**
    * 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。虚拟化那一块异步加载，没开的不为它付体积；
@@ -64,8 +70,8 @@ export interface XhSelectRootProps extends RootElementProps {
   label?: ReactNode
   /** 自动渲染树中的空态内容，没给时取 translations.empty。 */
   empty?: ReactNode
-  value?: string | string[] | null
-  defaultValue?: string | string[] | null
+  value?: V | V[] | null
+  defaultValue?: V | V[] | null
   multiple?: boolean
   open?: boolean
   defaultOpen?: boolean
@@ -90,19 +96,19 @@ export interface XhSelectRootProps extends RootElementProps {
   variant?: ControlVariant
   tone?: Tone
   size?: Size
-  onValueChange?: SelectProps['onValueChange']
+  onValueChange?: (details: SelectValueChangeDetails<V>) => void
   /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
   onClear?: () => void
   onOpenChange?: SelectProps['onOpenChange']
   /** 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 */
   onRetry?: () => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: SelectNodeMeta) => ReactNode
+  renderItem?: (node: SelectNodeMeta<V>) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
-  renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
+  renderItemPrefix?: (node: SelectNodeMeta<V>) => ReactNode
   /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
-  renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
-  children?: SlotChildren<SelectRootSlotProps>
+  renderItemSuffix?: (node: SelectNodeMeta<V>) => ReactNode
+  children?: SlotChildren<SelectRootSlotProps<V>>
 }
 
 /**
@@ -114,7 +120,8 @@ function SelectHiddenSelect(): ReactNode {
   return (
     <select {...api.getHiddenSelectProps() as Record<string, unknown>}>
       <option value="" />
-      {api.value.map((v, i) => (
+      {/* 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey */}
+      {api.valueKeys.map((v, i) => (
         <option key={v} value={v} selected>{api.valueText[i] ?? v}</option>
       ))}
     </select>
@@ -124,9 +131,10 @@ function SelectHiddenSelect(): ReactNode {
 /** 标准结构开虚拟化时条目的预估高度（px），与 md 档的条目高度相当；渲出后按实测校正。 */
 const SELECT_VIRTUAL_ESTIMATE = 36
 
-export function XhSelectRoot({
+export function XhSelectRoot<V = string>({
   ariaLabel,
   collection,
+  valueKey,
   virtualizer,
   virtual,
   estimateSize,
@@ -165,7 +173,7 @@ export function XhSelectRoot({
   renderItemSuffix,
   children,
   ...rest
-}: XhSelectRootProps): ReactNode {
+}: XhSelectRootProps<V>): ReactNode {
   // 标准结构的虚拟化：Virtualizer 由异步加载进来的视口自己跑，它把桥与窗口回报到这里。
   // 视口挂上来之前不带桥、列表里也没有条目；挂上来之后桥交给机器、条目按窗口铺
   const [virtualWindow, setVirtualWindow] = useState<StructureVirtualWindow | null>(null)
@@ -173,6 +181,7 @@ export function XhSelectRoot({
   const ctx = useSelect(withXhConfig('select', useFormControlProps({
     ariaLabel,
     collection,
+    valueKey,
     virtualizer: virtual ? virtualWindow?.bridge : virtualizer,
     lazyMount,
     value,
@@ -220,10 +229,11 @@ export function XhSelectRoot({
             setValue: api.setValue,
             clear: api.clear,
             deselect: api.deselect,
-          })}
+            // 值在 api 里已经解回原值，类型上按根组件推断出来的 V 交出去
+          } as SelectRootSlotProps<V>)}
         </>
       )
-    : renderDefaultStructure(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix, virtualItems: virtual ? (virtualWindow?.items ?? []) : undefined, virtualParts: virtual ? virtualParts : undefined })
+    : renderDefaultStructure<V>(api, { label, empty, clearable, renderItem, renderItemPrefix, renderItemSuffix, virtualItems: virtual ? (virtualWindow?.items ?? []) : undefined, virtualParts: virtual ? virtualParts : undefined })
   // 条数直取 collection 的长度，不经选择器的 api（见 StructureVirtualSlot.count）；视口自己滚
   const virtualSlot: StructureVirtualSlot | null = virtual
     ? { count: collection?.length ?? 0, estimateSize: estimateSize ?? SELECT_VIRTUAL_ESTIMATE, scrollContainer: 'viewport', estimateFromMeasured: false, publish: setVirtualWindow }
@@ -342,14 +352,14 @@ function tagChildren(children: ReactNode): ReactNode {
 }
 
 export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
-  /** 它代表哪个选中值。 */
-  value: string
+  /** 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 */
+  value: unknown
 }
 /** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhSelectItemDeleteTrigger 可删除。 */
 export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
-    <SelectTagProvider value={value}>
+    <SelectTagProvider value={{ value }}>
       <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
     </SelectTagProvider>
   )
@@ -495,7 +505,8 @@ export function XhSelectGroupLabel({ children, ...rest }: XhSelectGroupLabelProp
 }
 
 export interface XhSelectItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -519,10 +530,12 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
-    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === value))
+    // 机器只认键：比对 collection 与上报高亮都用这条的键
+    const key = valueKeyOf(svc.scope, value)
+    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === key))
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.HIGHLIGHT', value })
+      svc.send({ type: 'ITEM.HIGHLIGHT', value: key })
   }, [ctx.service, value])
 
   // 卸载时上报条目丢失：按「本节点当下正持有焦点」判定，不按 value 比对
@@ -615,13 +628,13 @@ const SELECT_PARTS = {
   'item-indicator': XhSelectItemIndicator,
 }
 
-interface SelectStructureContent {
+interface SelectStructureContent<V> {
   label?: ReactNode
   empty?: ReactNode
   clearable?: boolean
-  renderItem?: (node: SelectNodeMeta) => ReactNode
-  renderItemPrefix?: (node: SelectNodeMeta) => ReactNode
-  renderItemSuffix?: (node: SelectNodeMeta) => ReactNode
+  renderItem?: (node: SelectNodeMeta<V>) => ReactNode
+  renderItemPrefix?: (node: SelectNodeMeta<V>) => ReactNode
+  renderItemSuffix?: (node: SelectNodeMeta<V>) => ReactNode
   virtualItems?: readonly StructureVirtualItem[]
   /** 开了虚拟化时委派给 virtualizer 的三个部件：那一块到之前是空位，到了换上真部件。 */
   virtualParts?: Readonly<Record<string, (props: never) => ReactNode>>
@@ -631,7 +644,7 @@ interface SelectStructureContent {
  * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 selectStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、条目文字与行首行尾由对应渲染函数接管。
  */
-function renderDefaultStructure(api: SelectApi, content: SelectStructureContent): ReactNode[] {
+function renderDefaultStructure<V>(api: SelectApi<PropTypes, unknown>, content: SelectStructureContent<V>): ReactNode[] {
   const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
   const slotted: Readonly<Record<string, boolean>> = {
     'label': label != null && typeof label !== 'string',
@@ -649,7 +662,7 @@ function renderDefaultStructure(api: SelectApi, content: SelectStructureContent)
   })
   const parts = content.virtualParts ? { ...SELECT_PARTS, ...content.virtualParts } : SELECT_PARTS
   return renderStructure(nodes, parts, (node) => {
-    const meta = node.data as SelectNodeMeta
+    const meta = node.data as SelectNodeMeta<V>
     switch (node.slot?.name) {
       case 'label':
         return label

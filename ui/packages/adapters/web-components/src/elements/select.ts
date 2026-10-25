@@ -5,8 +5,8 @@
 
 // 提供 select 相关实现。
 
-import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, FormControlState, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, FormControlState, SelectionValueKey, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { StructureVirtualBinding } from '../runtime/structure-virtual'
@@ -49,6 +49,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * 节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），
  * 作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhSelectElement<number>>('xh-select')`
+ * 拿到的元素上 value、collection 与 tags 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。
+ *
  * @customElement xh-select
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {boolean} clearable - 生成结构时盒里带清空按钮；手写部件时不使用它，写了 clear-trigger 即可清空
@@ -77,7 +80,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} lazy-mount - 列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算
- * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires retry - 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space
@@ -113,7 +117,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @csspart virtual-content - 开了 virtual 时生成：Virtualizer 撑出总长的内容层，在列表里面
  * @csspart virtual-item - 开了 virtual 时生成：窗口里每条的外壳，壳里是选择器自己的条目
  */
-export class XhSelectElement extends XhPortalHostElement {
+export class XhSelectElement<V = string> extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
@@ -148,6 +152,7 @@ export class XhSelectElement extends XhPortalHostElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: STRING_CONVERTER, attribute: 'value-key' },
     virtualizer: { attribute: false },
     virtual: { converter: BOOLEAN_CONVERTER },
     estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
@@ -180,7 +185,8 @@ export class XhSelectElement extends XhPortalHostElement {
   }
 
   // 属性只递得进单值，多选集合走 property
-  declare collection?: SelectNode[]
+  declare collection?: SelectNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
   declare virtualizer?: CollectionVirtualizer
   declare virtual?: boolean
   declare estimateSize?: number
@@ -188,8 +194,8 @@ export class XhSelectElement extends XhPortalHostElement {
   declare label?: string
   declare clearable?: boolean
   declare empty?: string
-  declare value?: string | string[]
-  declare defaultValue?: string | string[]
+  declare value?: V | V[] | null
+  declare defaultValue?: V | V[] | null
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean
@@ -238,7 +244,7 @@ export class XhSelectElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }))
   }
 
-  private readonly notifyValue = (details: SelectValueChangeDetails): void => {
+  private readonly notifyValue = (details: SelectValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -299,15 +305,21 @@ export class XhSelectElement extends XhPortalHostElement {
       invalid: this.invalid,
       required: this.required,
     }, this.inheritedControl)
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
+      collection: this.collection,
+      valueKey: this.valueKey,
+      value: this.value,
+      defaultValue: this.defaultValue ?? null,
+      onValueChange: this.notifyValue,
+    } as Pick<SelectSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'onValueChange'>
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
-      collection: this.collection,
+      ...valueTyped,
       virtualizer: this.currentVirtualizer(),
       lazyMount: this.lazyMount,
-      value: this.value,
-      defaultValue: this.defaultValue ?? null,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       disabled: control.disabled,
@@ -328,7 +340,6 @@ export class XhSelectElement extends XhPortalHostElement {
       size: this.size,
       translations: this.translations,
       maxTagCount: this.maxTagCount,
-      onValueChange: this.notifyValue,
       onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onRetry: this.notifyRetry,
@@ -406,7 +417,8 @@ export class XhSelectElement extends XhPortalHostElement {
     const highlighted = context.get('highlightedValue')
     if (highlighted == null)
       return
-    if (this.virtualizer && this.collection?.some(node => node.value === highlighted))
+    // 锚点是键：与机器里编过的 collection 比
+    if (this.virtualizer && this.ctrl.service.prop('collection')?.some(node => node.value === highlighted))
       return
     const content = this.getPart('content')
     const active = scope.getActiveElement()
@@ -481,8 +493,8 @@ export class XhSelectElement extends XhPortalHostElement {
    * 应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。
    * 作者据此渲染 tag 部件。状态机尚未建立时返回空数组。
    */
-  get tags(): SelectTagMeta[] {
-    return this.ctrl.service ? connectSelect(this.ctrl.service, wcNormalize).tags : []
+  get tags(): SelectTagMeta<V>[] {
+    return this.ctrl.service ? connectSelect<PropTypes, V>(this.ctrl.service, wcNormalize).tags : []
   }
 
   /** 被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。 */
@@ -599,7 +611,8 @@ export class XhSelectElement extends XhPortalHostElement {
     const hiddenSelect = this.getPart('hidden-select')
     if (hiddenSelect) {
       this.spreader.spread(hiddenSelect, api.getHiddenSelectProps() as Record<string, unknown>)
-      this.syncHiddenOptions(hiddenSelect, api.value, api.valueText, api.multiple)
+      // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
+      this.syncHiddenOptions(hiddenSelect, api.valueKeys, api.valueText, api.multiple)
     }
 
     // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。

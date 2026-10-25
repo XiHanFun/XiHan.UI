@@ -60867,7 +60867,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...\n角色节点，元素运行 select 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：表单影子、标题（label）、盒（带不带清空钮看 clearable）、\n浮层与 collection 的条目，以及浮层里的空态、在途、取数失败的提示与重试钮（按状态收放）。标题、空态、条目文字与\n行首行尾可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；\nvalue-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接线为库内 tag 的 root（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：\n语气、尺寸与禁用从本元素传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。\n节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），\n作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。",
+          "description": "`<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...\n角色节点，元素运行 select 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\n不写部件（或只写 root）时元素按标准结构生成整套节点：表单影子、标题（label）、盒（带不带清空钮看 clearable）、\n浮层与 collection 的条目，以及浮层里的空态、在途、取数失败的提示与重试钮（按状态收放）。标题、空态、条目文字与\n行首行尾可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、`slot=\"item-prefix:<值>\"`、\n`slot=\"item-suffix:<值>\"`。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；\nvalue-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接线为库内 tag 的 root（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：\n语气、尺寸与禁用从本元素传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。\n节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），\n作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。\n\nV 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhSelectElement<number>>('xh-select')`\n拿到的元素上 value、collection 与 tags 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。",
           "name": "XhSelectElement",
           "cssParts": [
             {
@@ -61036,8 +61036,17 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "SelectNode[] | undefined"
+                "text": "SelectNode<V>[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "valueKey",
+              "privacy": "public",
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "attribute": "value-key"
             },
             {
               "kind": "field",
@@ -61106,7 +61115,7 @@
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | null | undefined"
               },
               "attribute": "value"
             },
@@ -61115,7 +61124,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | null | undefined"
               },
               "attribute": "default-value"
             },
@@ -61684,7 +61693,7 @@
               "kind": "field",
               "name": "tags",
               "type": {
-                "text": "SelectTagMeta[]"
+                "text": "SelectTagMeta<V>[]"
               },
               "description": "应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
               "readonly": true
@@ -61731,7 +61740,7 @@
           ],
           "events": [
             {
-              "description": "选中值变化；detail 为 `{ value: string[] }`",
+              "description": "选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）",
               "name": "value-change",
               "type": {
                 "text": "SelectValueChangeDetails"
@@ -61796,7 +61805,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | null | undefined"
               },
               "description": "受控选中值；未提供该属性即非受控。多选集合通过 property 设置，属性只能传入单值",
               "name": "value",
@@ -61804,7 +61813,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | null | undefined"
               },
               "description": "非受控初始选中值。多选集合通过 property 设置，属性只能传入单值",
               "name": "default-value",
@@ -61969,6 +61978,14 @@
               "description": "列表内容第一次展开时才挂载：条目写在 list 里的一个 `<template>` 中时，第一次展开才克隆、之后常驻；打开前的选中文字与收起态连打按 collection 算",
               "name": "lazy-mount",
               "fieldName": "lazyMount"
+            },
+            {
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "description": "对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认",
+              "name": "value-key",
+              "fieldName": "valueKey"
             }
           ],
           "superclass": {
