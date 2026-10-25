@@ -12,7 +12,7 @@ import { parseArgs } from 'node:util'
 import { FRAMEWORKS, loadKnowledge, parseFramework } from './knowledge'
 import { serveStdio } from './mcp'
 import { migrateProject, renderMigration } from './migrate'
-import { MIGRATIONS, migrationsBetween } from './migrations'
+import { LATEST_MAJOR, migrationsBetween } from './migrations'
 import { detectProject, versionNotice } from './project'
 import { componentParts, demoSource, listComponents, listPages, queryChangelog, QueryError, queryTokens, requireComponent, resolveDoc } from './query'
 import { renderChangelog, renderDemo, renderDemoList, renderDoc, renderInfo, renderList, renderPages, renderParts, renderTokens } from './render'
@@ -149,7 +149,7 @@ function runMigrate(positionals: readonly string[], values: Record<string, strin
   const usage = 'migrate <从版本> <到版本> [<路径>...]'
   const from = majorOf(positionals[0], usage)
   const to = majorOf(positionals[1], usage)
-  const latest = MIGRATIONS.at(-1)!.rules.major
+  const latest = LATEST_MAJOR
   if (to <= from)
     throw new UsageError(`到版本（${to}）要比从版本（${from}）新`)
   if (to > latest)

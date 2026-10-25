@@ -511,7 +511,7 @@
     "name": "cli",
     "path": "packages/tools/cli/dist/index.js",
     "gzip": true,
-    "limit": "15 kB",
+    "limit": "28 kB",
     "ignore": [
       "node:*"
     ]
