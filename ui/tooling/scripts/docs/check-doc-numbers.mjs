@@ -1437,6 +1437,13 @@ const TABLE = [
   ['docs/installation.md', /（参与本仓库开发） \| ≥ ([\d.]+) \/ ≥ [\d.]+ \|/, '开发期Node下限'],
   ['docs/installation.md', /（参与本仓库开发） \| ≥ [\d.]+ \/ ≥ ([\d.]+) \|/, '开发期pnpm下限'],
   ['docs/installation.md', /一项把它限制在 (\d+) kB gzip 以内/, '全量皮肤gzip上限'],
+  // 英文区的同一批陈述：中文页跟着真值改了，英文页也要改
+  ['docs/en/installation.md', /\| Node \(using the packages\) \| ≥ (\d+), /, '消费端Node主版本下限'],
+  ['docs/en/installation.md', /\(developing in this repository\) \| ≥ ([\d.]+) \/ ≥ [\d.]+ \|/, '开发期Node下限'],
+  ['docs/en/installation.md', /\(developing in this repository\) \| ≥ [\d.]+ \/ ≥ ([\d.]+) \|/, '开发期pnpm下限'],
+  ['docs/en/installation.md', /limits it to (\d+) kB gzip/, '全量皮肤gzip上限'],
+  ['docs/en/index.md', /(No library package has a third-party runtime dependency)/, '运行时第三方依赖名单', () => '无'],
+  ['docs/en/introduction.md', /(The runtime code of the library packages pulls in no third-party dependencies)/, '运行时第三方依赖名单', () => '无'],
   // 「没有第三方运行时依赖」的几处陈述：命中即记作「无」，将来真有了依赖，真值变成名字就对不上
   ['docs/index.md', /(全部库包都没有运行时第三方依赖)/, '运行时第三方依赖名单', () => '无'],
   ['docs/introduction.md', /(库包的运行时代码不引入第三方依赖)/, '运行时第三方依赖名单', () => '无'],
@@ -1516,6 +1523,7 @@ const TABLE = [
 /** 刻意的约数：不参与对账，但登记项必须仍能在文件里命中，免得留下一条早已不存在的豁免。 */
 const APPROX = [
   ['docs/installation.md', /压缩后约 (\d+) kB gzip/, '皮肤增删就漂，取整到十位，不逐份对账'],
+  ['docs/en/installation.md', /plus tokens — is about (\d+) kB gzip/, '皮肤增删就漂，取整到十位，不逐份对账'],
   ['docs/guide/pointer.md', /整包压缩后 ([\d.]+) kB/, '产物体积随实现走，随 size-limit 的限额一起看，不逐次对账'],
   ['docs/guide/backgrounds.md', /实测约 (\d+) kB（gzip 约 [\d.]+ kB），占整包四成/, '打包器与压缩档位不同结果就不同，只作量级参考'],
   ['docs/guide/testing.md', /预算一律按实测留一成余量/, '余量是口径不是数字，逐条限额各自取整'],
