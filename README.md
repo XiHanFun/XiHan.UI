@@ -132,6 +132,8 @@ defineXhElements()
 
 <https://ui.docs.xihanfun.com> — component pages are generated from the headless output and the type definitions, and include the connect API, keyboard tables and state charts.
 
+English readers start at <https://ui.docs.xihanfun.com/en/>: the introduction, installation, quick start, theming and accessibility guides, plus the API reference of every component (props, events, slots, parts, data attributes and CSS variables). Usage guidance and live examples are in the Chinese pages for now.
+
 ## Browser Support
 
 The styling floor is Chrome 111, Firefox 113 and Safari 16.2 (the bar for `oklch`, `@layer` and `:where`); below that line you get no styling rather than a degraded one. Local development requires Node.js 24+ and pnpm 11+.

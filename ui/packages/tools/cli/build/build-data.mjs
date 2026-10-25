@@ -165,10 +165,10 @@ function summaryOf(markdown) {
   return ''
 }
 
-/** docs/ 下的 Markdown，跳过站点目录、首页与更新日志。 */
+/** docs/ 下的 Markdown，跳过站点目录、首页与更新日志；英文区（docs/en/）是部分页面的译本，离线数据只收中文一份。 */
 function docFiles(dir = DOCS, out = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (['node_modules', '.vitepress', 'public'].includes(entry.name))
+    if (['node_modules', '.vitepress', 'public'].includes(entry.name) || (dir === DOCS && entry.name === 'en'))
       continue
     const full = join(dir, entry.name)
     if (entry.isDirectory())

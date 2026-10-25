@@ -1623,6 +1623,239 @@ function renderIndex() {
   return L.join('\n')
 }
 
+// ── 英文 API 参考 ─────────────────────────────────────────────────────────────
+// /en/components/<id> 只出 API 参考：名称、类型、部件、数据属性与覆盖槽本身就是英文。
+// JSDoc 说明、设计指引与示例标题是中文，不进英文页，页头链回中文页看用法与示例；
+// 连接层取值里那两种中文句式换成英文说法，其余取值是代码原文。
+
+const enOutDir = path.join(docsRoot, 'en', 'components')
+
+function enValue(value) {
+  return value
+    .replace(/(`[^`]+`) 部件的 id/g, 'id of the $1 part')
+    .replace(/（条件成立时才出现）/g, ' (present only while the condition holds)')
+    .replace('定位引擎算出的实际落位', 'actual placement computed by the positioning engine')
+}
+
+/** 键盘规格里不是具体按键的那几种写法。新加了别的写法时英文页照原文出，由「英文页不含中文」那条检查报出来。 */
+const EN_KEYS = {
+  '单个可打印字符': 'any single printable character',
+  '可打印字符': 'printable characters',
+  'keys 指定的组合': 'the combination given by keys',
+  '方向键': 'arrow keys',
+  '交叉轴的两个方向键': 'both arrow keys of the cross axis',
+  '输入法组合期间的任意键': 'any key during IME composition',
+  '名字字符': 'name characters',
+  '前缀字符': 'prefix characters',
+  'delimiter（默认 ,，可给一组）': 'delimiter (default `,`; may be a set)',
+}
+const enKey = key => EN_KEYS[key] ?? key
+
+function enStatusBadge(entry) {
+  const state = componentStatus(entry)
+  return state ? ` <Badge type="${state === 'new' ? 'tip' : state === 'updated' ? 'warning' : 'info'}" text="${state}" />` : ''
+}
+
+function renderComponentEn(entry, category) {
+  const { id } = entry
+  const rt = runtimeMeta(id)
+  const ad = adapterArtifacts(id)
+  const tm = typeMeta(id)
+  const es = elementSurface(id)
+  const at = attrSurface(id, rt.parts, tm.states)
+  const sk = skinTraits(id)
+  const required = new Set(rt.requiredParts)
+  const required_ = optional => (optional ? '' : 'Yes')
+
+  const L = []
+  const push = (...xs) => L.push(...xs)
+  push(`# ${pascal(id)}${enStatusBadge(entry)}`, '')
+  push(
+    `${category.labelEn} component. This page is the API reference, generated from the source code. `
+    + `Usage guidance and live examples are on the [Chinese page](/components/${id}).`,
+    '',
+  )
+  push('<div class="xh-resource-links">')
+  for (const [label, href] of sourceLinks(id, ad))
+    push(`  <a href="${href}" target="_blank" rel="noreferrer">${label}</a>`)
+  push('</div>', '')
+
+  if (rt.parts.length) {
+    push('## Anatomy', '')
+    push('Parts in bold are required.', '')
+    push(`${code(`data-scope="${id}"`)}: ${rt.parts.map(x => (required.has(x) ? `**${code(x)}**` : code(x))).join(' · ')}`, '')
+  }
+
+  push('## API reference', '')
+  push('Descriptions of individual props, events and slots are written in Chinese and appear on the Chinese page.', '')
+
+  push('### Artifacts', '')
+  push('| Layer | Value |', '| --- | --- |')
+  if (ad.tag)
+    push(`| Custom element | ${code(`<${ad.tag}>`)} |`)
+  if (ad.components.length)
+    push(`| Vue components | ${ad.components.map(code).join(' ')} |`)
+  if (ad.composable)
+    push(`| Composable | ${code(ad.composable)} |`)
+  push(`| State machine | ${tm.states ? code(`${camel(id)}Machine`) : 'None: `connect` computes attributes from props directly'} |`)
+  if (ad.skin)
+    push(`| Skin | ${code(ad.skin)} |`)
+  push('')
+
+  if (tm.props.length) {
+    push('### Props', '')
+    push('| Prop | Type | Required |', '| --- | --- | --- |')
+    for (const x of tm.props)
+      push(`| ${cell(x.name)} | ${cell(x.type)} | ${required_(x.optional)} |`)
+    push('')
+  }
+
+  for (const node of tm.nodes) {
+    push(`### ${node.name}`, '')
+    push(`Elements of ${code(node.via)}.`, '')
+    push('| Field | Type | Required |', '| --- | --- | --- |')
+    for (const f of node.fields)
+      push(`| ${cell(f.name)} | ${cell(f.type)} | ${required_(f.optional)} |`)
+    push('')
+  }
+
+  if (es.events.length) {
+    push('### Events', '')
+    push(`Custom elements put the payload in ${code('detail')}; Vue emits an event of the same name.`, '')
+    push('| Event | Payload |', '| --- | --- |')
+    for (const e of es.events)
+      push(`| ${cell(e.name)} | ${cell(e.type?.text ?? '')} |`)
+    push('')
+  }
+
+  const slotRows = slotRowsOf(ad)
+  if (slotRows.length) {
+    push('### Slots', '')
+    push('Only slots with a payload are listed.', '')
+    push('| Vue component | Slot | Payload |', '| --- | --- | --- |')
+    for (const x of slotRows)
+      push(`| ${cell(x.comp)} | ${cell(x.name)} | ${x.payload ? cell(x.payload) : '—'} |`)
+    push('')
+  }
+
+  const reactRows = reactRowsOf(id, ad, tm)
+  if (reactRows.length) {
+    push('### React adapter props', '')
+    push(
+      'Only the props each component declares itself: DOM attributes inherited from `ComponentPropsWithRef` are left out, '
+      + 'and root props already listed in the Props table are not repeated. The Vue counterpart is the slot table above.',
+      '',
+    )
+    push('| React component | Prop | Type | Required |', '| --- | --- | --- | --- |')
+    for (const x of reactRows)
+      push(`| ${cell(x.comp)} | ${cell(x.name)} | ${cell(x.type)} | ${required_(x.optional)} |`)
+    push('')
+  }
+
+  const stateAttrs = at.data.filter(a => a.attr === 'data-state')
+  if (tm.states || tm.events || stateAttrs.length) {
+    push('### State', '')
+    if (stateAttrs.length) {
+      push(`Public state is written to ${code('data-state')}.`, '')
+      push('| Part | Values |', '| --- | --- |')
+      for (const a of stateAttrs)
+        push(`| ${cell(a.part)} | ${esc(enValue(a.value))} |`)
+      push('')
+    }
+    if (tm.states || tm.events) {
+      push('The following names are internal to the state machine.', '')
+      if (tm.states)
+        push(`**States**: ${tm.states.map(code).join(' · ')}`, '')
+      if (tm.events)
+        push(`**Events**: ${tm.events.map(code).join(' · ')}`, '')
+      if (tm.guards)
+        push(`**Guards**: ${tm.guards.map(code).join(' · ')}`, '')
+    }
+  }
+
+  if (tm.api.length) {
+    push('### connect API', '')
+    push(`${code('getXxxProps()')} returns the host attributes of the matching part.`, '')
+    push('| Member | Type |', '| --- | --- |')
+    for (const a of tm.api)
+      push(`| ${cell(a.name)} | ${cell(a.type)} |`)
+    push('')
+  }
+
+  push('## Accessibility', '')
+  push('### Keyboard', '')
+  push(`Specification: [W3C APG](${rt.keyboard.source}). Each row is a stable behavior id that the conformance tests cover; the conditions and effects are described on the Chinese page.`, '')
+  if (rt.keyboard.rows.length) {
+    push('| Keys | Behavior |', '| --- | --- |')
+    for (const r of rt.keyboard.rows)
+      push(`| ${r.keys.map(key => (EN_KEYS[key] ? enKey(key) : code(key))).join(' / ')} | ${code(r.id)} |`)
+  }
+  else {
+    push('No keyboard interaction: the component takes no focus, or focus behavior comes entirely from native elements.')
+  }
+  push('')
+  if (at.aria.length) {
+    push('### ARIA', '')
+    push(`These attributes are produced by ${code('connect')}.`, '')
+    push('| Part | Attribute | Value |', '| --- | --- | --- |')
+    for (const a of at.aria)
+      push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(enValue(a.value))} |`)
+    push('')
+  }
+
+  if ((sk && ad.skin) || at.data.length || es.componentTokens.length)
+    push('## Style reference', '')
+  if (sk && ad.skin) {
+    push('### Skin', '')
+    push(
+      `${code(ad.skin)} is written against ${code(`[data-scope="${id}"][data-part="${rt.parts[0]}"]`)} part selectors; `
+      + `the published build uses the mount class ${code(`.xh-scope-${id}`)} in place of data-scope (same specificity) `
+      + `and sits in the ${sk.layers.map(code).join(' and ')} layer${sk.layers.length > 1 ? 's' : ''}. `
+      + `Put overrides in ${code('xihan.overrides')}; the part selectors work as usual.`,
+      '',
+    )
+  }
+  if (at.data.length) {
+    push('### Data attributes', '')
+    push(`Produced by ${code('connect')}; valueless attributes are omitted while their condition does not hold.`, '')
+    push('| Part | Attribute | Value |', '| --- | --- | --- |')
+    for (const a of at.data)
+      push(`| ${cell(a.part)} | ${cell(a.attr)} | ${esc(enValue(a.value))} |`)
+    push('')
+  }
+  if (es.componentTokens.length) {
+    const list = values => values.map(v => code(String(v).replace(/\|/g, '\\|'))).join('<br>')
+    push('### CSS variables', '')
+    push('The public override slots, generated from what the standalone skin actually consumes.', '')
+    push('| Variable | Part | CSS property | State | Default from |', '| --- | --- | --- | --- | --- |')
+    for (const t of es.componentTokens)
+      push(`| ${code(t.name)} | ${list(t.part)} | ${list(t.property)} | ${list(t.state)} | ${list(t.defaultToken)} |`)
+    push('')
+  }
+
+  return L.join('\n')
+}
+
+function renderIndexEn() {
+  const L = []
+  L.push('# Components', '')
+  L.push('Browse the components XiHan.UI provides. Each page lists the API; usage guides and live examples are on the Chinese pages.', '')
+  for (const c of manifest.categories) {
+    L.push(`## ${c.labelEn}`, '')
+    L.push('<div class="xh-component-grid">', '')
+    for (const entry of c.components) {
+      const renderless = entry.renderless ? ' renderless' : ''
+      const status = componentStatus(entry)
+      const statusAttr = status ? ` status="${status}"` : ''
+      L.push(`<XhComponentCard src="${entry.id}" name="${pascal(entry.id)}" label="" href="/en/components/${entry.id}"${statusAttr}${renderless} />`)
+    }
+    for (const ref of c.references ?? [])
+      L.push(`<XhComponentCard src="${ref.preview}" name="${pascal(ref.id)}" label="" href="/en/components/${ref.id}" />`)
+    L.push('', '</div>', '')
+  }
+  return L.join('\n')
+}
+
 // ── 主流程 ───────────────────────────────────────────────────────────────────
 
 const registered = new Set(
@@ -1666,13 +1899,26 @@ const files = new Map()
 for (const c of manifest.categories) {
   for (const entry of c.components) {
     files.set(path.join(outDir, `${entry.id}.md`), renderComponent(entry, c))
+    files.set(path.join(enOutDir, `${entry.id}.md`), renderComponentEn(entry, c))
   }
 }
 files.set(path.join(outDir, 'index.md'), renderIndex())
+files.set(path.join(enOutDir, 'index.md'), renderIndexEn())
+/** 生成的两个目录：中文组件页与英文 API 参考。 */
+const outDirs = [outDir, enOutDir]
 
 if (checkOnly) {
   if (proseless.length) {
     console.error(`这些组件还没写文案，请补 <id>.doc.md：${proseless.join(', ')}`)
+    process.exit(1)
+  }
+  // 英文 API 参考不夹中文：连接层取值与键盘规格新添了中文写法，就在 enValue / EN_KEYS 里配上英文
+  const untranslated = [...files]
+    .filter(([file, content]) => file.startsWith(enOutDir) && /\p{Script=Han}/u.test(content))
+    .map(([file, content]) => `${path.relative(docsRoot, file).replaceAll('\\', '/')}：${content.match(/[^\n|]*\p{Script=Han}[^\n|]*/u)[0].trim()}`)
+  if (untranslated.length) {
+    console.error('英文组件页里有中文，在 gen-component-docs.mjs 的 enValue / EN_KEYS 里配上英文：')
+    for (const line of untranslated) console.error(`  ${line}`)
     process.exit(1)
   }
   const drifted = []
@@ -1681,11 +1927,11 @@ if (checkOnly) {
     if (current !== content)
       drifted.push(path.relative(repoRoot, file))
   }
-  const known = new Set([...files.keys()].map(f => path.basename(f)))
-  const orphan = fs
-    .readdirSync(outDir)
-    .filter(f => f.endsWith('.md') && !known.has(f))
-    .map(f => `components/${f}（已不在 manifest 中）`)
+  const known = new Set(files.keys())
+  const orphan = outDirs
+    .filter(dir => fs.existsSync(dir))
+    .flatMap(dir => fs.readdirSync(dir).filter(f => f.endsWith('.md') && !known.has(path.join(dir, f))).map(f => path.join(dir, f)))
+    .map(f => `${path.relative(docsRoot, f).replaceAll('\\', '/')}（已不在 manifest 中）`)
   const all = [...drifted, ...orphan]
   if (all.length) {
     console.error('组件文档与源码不同步，请在 ui/ 下执行 pnpm gen:docs：')
@@ -1695,11 +1941,13 @@ if (checkOnly) {
   console.log(`组件文档已同步（${files.size} 个文件）`)
 }
 else {
-  fs.mkdirSync(outDir, { recursive: true })
-  const known = new Set([...files.keys()].map(f => path.basename(f)))
-  for (const f of fs.readdirSync(outDir)) {
-    if (f.endsWith('.md') && !known.has(f))
-      fs.rmSync(path.join(outDir, f))
+  const known = new Set(files.keys())
+  for (const dir of outDirs) {
+    fs.mkdirSync(dir, { recursive: true })
+    for (const f of fs.readdirSync(dir)) {
+      if (f.endsWith('.md') && !known.has(path.join(dir, f)))
+        fs.rmSync(path.join(dir, f))
+    }
   }
   for (const [file, content] of files) fs.writeFileSync(file, content)
   console.log(`已生成 ${files.size} 个组件文档文件`)

@@ -66,16 +66,17 @@ const componentManifest: {
   categories: {
     id: string;
     label: string;
+    labelEn: string;
     components: { id: string; name: string; status?: ComponentStatus }[];
   }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
 
 // 组件缺省即正式、不挂标；alpha / new / updated 逐条写在清单条目的 status 上
-function sidebarStatus(component: { status?: ComponentStatus }): string {
+function sidebarStatus(component: { status?: ComponentStatus }, english = false): string {
   const status = component.status;
   if (!status)
     return "";
-  const label = status === "updated" ? "更新" : status;
+  const label = status === "updated" && !english ? "更新" : status;
   return ` <span class="xh-sidebar-status xh-sidebar-status--${status}">${label}</span>`;
 }
 
@@ -359,10 +360,160 @@ const nav: DefaultTheme.NavItem[] = [
   },
 ];
 
+// ── English（/en/）─────────────────────────────────────────────────────────────
+// 英文区先出入门三页与主题、无障碍两篇指南；组件页是生成器产出的英文 API 参考，用法与示例链回中文页。
+// 没译的页面不进英文侧栏，统一从「Full documentation (Chinese)」进中文站。
+
+const enStartSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "Getting started",
+    collapsed: false,
+    items: [
+      { text: "Introduction", link: "/en/introduction" },
+      { text: "Installation", link: "/en/installation" },
+      { text: "Quick start", link: "/en/quickstart" },
+    ],
+  },
+  {
+    text: "Guides",
+    collapsed: false,
+    items: [
+      { text: "Design tokens and theming", link: "/en/guide/theme" },
+      { text: "Accessibility and keyboard", link: "/en/guide/a11y" },
+    ],
+  },
+  {
+    text: "Reference",
+    collapsed: false,
+    items: [
+      { text: "Components", link: "/en/components/" },
+      { text: "Full documentation (Chinese)", link: "/introduction" },
+    ],
+  },
+];
+
+const enComponentsSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: "Overview",
+    collapsed: false,
+    items: [{ text: "All components", link: "/en/components/" }],
+  },
+  ...componentManifest.categories.map(category => ({
+    text: `${category.labelEn} (${category.components.length})`,
+    collapsed: false,
+    items: category.components.map(component => ({
+      text: `${enName(component.id)}${sidebarStatus(component, true)}`,
+      link: `/en/components/${component.id}`,
+    })),
+  })),
+];
+
+const enNav: DefaultTheme.NavItem[] = [
+  {
+    text: "Guide",
+    activeMatch: "^/en/(introduction|installation|quickstart|guide/.*)$",
+    items: [
+      { text: "Introduction", link: "/en/introduction" },
+      { text: "Installation", link: "/en/installation" },
+      { text: "Quick start", link: "/en/quickstart" },
+      { text: "Design tokens and theming", link: "/en/guide/theme" },
+      { text: "Accessibility and keyboard", link: "/en/guide/a11y" },
+    ],
+  },
+  { text: "Components", link: "/en/components/", activeMatch: "^/en/components/" },
+  {
+    text: `v${version}`,
+    items: [
+      { text: "Changelog (Chinese)", link: "/changelog" },
+      { text: "npm", link: "https://www.npmjs.com/org/xihan-ui" },
+    ],
+  },
+];
+
+// 本地搜索的文案按语言给：主题缺省只有中文一份，这里写全两份（中文照抄主题缺省）
+const zhSearchTranslations = {
+  button: { buttonText: "搜索文档", buttonAriaLabel: "搜索文档" },
+  modal: {
+    displayDetails: "显示详细列表",
+    resetButtonTitle: "清除查询条件",
+    backButtonTitle: "关闭搜索",
+    noResultsText: "无法找到相关结果",
+    footer: {
+      selectText: "选择",
+      selectKeyAriaLabel: "回车",
+      navigateText: "切换",
+      navigateUpKeyAriaLabel: "上方向键",
+      navigateDownKeyAriaLabel: "下方向键",
+      closeText: "关闭",
+      closeKeyAriaLabel: "Esc",
+    },
+  },
+};
+const enSearchTranslations = {
+  button: { buttonText: "Search", buttonAriaLabel: "Search" },
+  modal: {
+    displayDetails: "Display detailed list",
+    resetButtonTitle: "Reset search",
+    backButtonTitle: "Close search",
+    noResultsText: "No results for",
+    footer: {
+      selectText: "to select",
+      selectKeyAriaLabel: "enter",
+      navigateText: "to navigate",
+      navigateUpKeyAriaLabel: "up arrow",
+      navigateDownKeyAriaLabel: "down arrow",
+      closeText: "to close",
+      closeKeyAriaLabel: "escape",
+    },
+  },
+};
+
+// 主题缺省的界面文案是中文，英文区逐项写回英文
+const enThemeConfig = {
+  nav: enNav,
+  sidebar: { "/en/components/": enComponentsSidebar, "/en/": enStartSidebar },
+  docFooter: { prev: "Previous page", next: "Next page" },
+  outline: { label: "On this page", level: "deep" as const },
+  langMenuLabel: "Change language",
+  navMenuLabel: "Main navigation",
+  mobileMenuLabel: "Menu",
+  extraMenuLabel: "More",
+  returnToTopLabel: "Return to top",
+  sidebarMenuLabel: "Menu",
+  darkModeSwitchLabel: "Appearance",
+  lightModeSwitchTitle: "Switch to light theme",
+  darkModeSwitchTitle: "Switch to dark theme",
+  skipToContentLabel: "Skip to content",
+  fullscreenLabel: "Full screen",
+  exitFullscreenLabel: "Exit full screen",
+  notFound: {
+    title: "Page not found",
+    quote: "But if you don't change your direction, and if you keep looking, you may end up where you are heading.",
+    linkLabel: "Go to home",
+    linkText: "Take me home",
+  },
+  editLink: {
+    text: "Edit this page on GitHub",
+    pattern: "https://github.com/XiHanFun/XiHan.UI/tree/main/docs/:path",
+  },
+  lastUpdated: { text: "Last updated" },
+};
+
 export default defineXiHanConfig({
   title,
   description,
   keywords,
+  locales: {
+    root: { label: "简体中文", lang: "zh-CN" },
+    en: {
+      label: "English",
+      lang: "en-US",
+      link: "/en/",
+      title: "XiHan.UI",
+      description: "A framework-agnostic design system runtime and component library",
+      themeConfig: enThemeConfig,
+    },
+  },
   repo: "XiHan.UI",
   banner: {
     id: "2026-10-designers-rc",
@@ -382,6 +533,7 @@ export default defineXiHanConfig({
       { dir: "runtime", label: "服务与运行时" },
       { dir: "examples", label: "场景" },
       { dir: "components", label: "组件" },
+      { dir: "en", label: "English" },
     ],
     bundles: [
       {
@@ -444,5 +596,12 @@ export default defineXiHanConfig({
   themeConfig: {
     nav,
     sidebar,
+    search: {
+      provider: "local",
+      options: {
+        translations: zhSearchTranslations,
+        locales: { en: { translations: enSearchTranslations } },
+      },
+    },
   },
 });
