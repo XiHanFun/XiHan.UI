@@ -32,12 +32,14 @@ if (dirs.length === 0) {
 }
 
 /**
- * 不由 entry 表推导的子入口：样式表、清单文件这类手写条目。
+ * 不由 entry 表推导的子入口：样式表、清单文件、构建工具插件这类手写条目。
  * 登记了却在该包的 exports 里找不到，就是名单过期，报错。
  */
 const HANDWRITTEN = {
   '@xihan-ui/designer-shell': ['./style.css', './style.unlayered.css'],
   '@xihan-ui/tokens': ['./tokens.css', './tokens.json'],
+  // Nuxt 模块只在 Nuxt 的构建进程里跑，手写在包根，不进 tsdown（组件源码的类型检查不带 Node 的类型）
+  '@xihan-ui/vue': ['./nuxt'],
   '@xihan-ui/web-components': ['./custom-elements.json'],
 }
 

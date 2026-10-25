@@ -145,6 +145,19 @@ The built-in texts of components (the screen reader name of a close button, the 
 To switch both to another language, hand a built-in language pack to the global configuration once in the root component, for example `provideXhConfig(zhCN)` with `zhCN` imported from `@xihan-ui/vue/locale`; texts and `locale` switch together, and individual phrases can still be overridden through `translations`.
 :::
 
+### Nuxt projects
+
+Install the same `@xihan-ui/vue` and `@xihan-ui/styles` and add one module to `nuxt.config.ts`; the skin import, the visual environment controller and the component imports above are no longer needed:
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+});
+```
+
+The module also renders the visual environment onto `<html>` on the server and reads back the reader's stored preference before the first paint. Options and how to use `$xhVisual` are in [Vue adapter · Nuxt](/adapters/vue#nuxt), in Chinese.
+
 ## Use it in a plain / non-framework project
 
 ```ts
@@ -298,7 +311,7 @@ This documentation site uses the unlayered build: VitePress ships an unlayered `
 
 ## Server-side rendering
 
-- The visual environment runtime enters an SSR branch when `document` / `window` are absent: it reads no media queries, writes no DOM and uses the eight-axis baseline. To avoid a flash on first paint, render the seven attributes `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` directly onto `<html>` on the server.
+- The visual environment runtime enters an SSR branch when `document` / `window` are absent: it reads no media queries, writes no DOM and uses the eight-axis baseline. To avoid a flash on first paint, render the seven attributes `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` directly onto `<html>` on the server. In Nuxt projects the [Nuxt module](/adapters/vue#nuxt) (in Chinese) does this for you.
 - Custom elements are not upgraded before the JS arrives. `undefined.css` in `@xihan-ui/styles` covers that window: it selects the `data-xh-part` nodes you wrote with `:not(:defined)` and collapses the `content` / `positioner` / `backdrop` / `viewport` of the overlay family first, so their content does not show up in the page flow as bare text that screen readers and search engines treat as body copy.
 
 ## Next steps

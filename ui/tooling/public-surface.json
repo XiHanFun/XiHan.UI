@@ -13,6 +13,7 @@
       "./backgrounds",
       "./behavior",
       "./locale",
+      "./nuxt",
       "./plugin",
       "./resolver",
       "./sound"
@@ -4916,6 +4917,10 @@
       "XhWatermarkRoot",
       "XiHanUI",
       "XiHanUIComponentResolver",
+      "XiHanUINuxtComponent",
+      "XiHanUINuxtModule",
+      "XiHanUINuxtOptions",
+      "XiHanUINuxtVisualEnvironment",
       "XiHanUIResolveResult",
       "XiHanUIResolver",
       "clearFieldContext",
@@ -5192,6 +5197,8 @@
       "withDialogSound",
       "withNotificationSound",
       "withXhConfig",
+      "xihanUIFirstFrameScript",
+      "xihanUINuxtComponents",
       "zhCN",
       "zhTW"
     ],

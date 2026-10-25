@@ -267,7 +267,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 
-另有分层依赖检查与十二项单独的门禁：
+另有分层依赖检查与十三项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引入第三方
@@ -282,6 +282,7 @@ pnpm gate:demo-types # 文档站 React 示例逐份类型检查（读 icons 的 
 pnpm gate:publish # 逐包运行 publint 与 attw，校验 exports 条件与类型解析
 pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不得保留站点标签
 pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合子集），并用临时夹具证七条家族门禁会红
+pnpm gate:nuxt    # 本仓的包打出来装进 examples/nuxt，类型检查、构建并起服务检查首屏（在临时目录里装 Nuxt，先 build）
 ```
 
 `gate:llms` 读取文档站的构建产物，运行前先在 `docs/` 下运行一次 `pnpm build`。

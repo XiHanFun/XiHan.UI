@@ -25,12 +25,13 @@ import {
 
 ## 注册方式
 
-三种写法，产物里的组件从少到多：
+四种写法，产物里的组件从少到多：
 
 | 写法 | 产物里的组件 | 模板里的类型 |
 | --- | --- | --- |
 | 按名称 import | 只有用到的 | 来自 import |
 | `@xihan-ui/vue/resolver` 配 unplugin-vue-components | 只有用到的 | unplugin-vue-components 生成的 `components.d.ts` |
+| Nuxt 项目装 [`@xihan-ui/vue/nuxt`](#nuxt) | 只有用到的 | Nuxt 生成的组件声明 |
 | `@xihan-ui/vue/plugin` 全量注册 | 全部组件 | 引入插件模块即生效 |
 
 ### 自动引入
@@ -272,7 +273,54 @@ import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sou
 
 - `createVueRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
 - id 由 `createVueIdGenerator()` 生成，同一棵树两端一致，不会 hydration 不匹配；
-- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
+- 视觉环境属性建议在服务端就渲染到 `<html>` 上，见[安装与接入 · 服务端渲染](../installation#服务端渲染)；Nuxt 项目交给 [Nuxt 模块](#nuxt)。
+
+## Nuxt
+
+`@xihan-ui/vue/nuxt` 是 Nuxt 模块。装上 `@xihan-ui/vue` 与 `@xihan-ui/styles` 后只写一行：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+});
+```
+
+模块接好三件事，各有一个开关：
+
+| 做什么 | 选项 | 缺省 |
+| --- | --- | --- |
+| 组件自动注册：模板里直接写 `<XhButton>` / `<xh-button>`，按用到的组件从主入口导入，照常摇树 | `components` | `true` |
+| 注入令牌与皮肤，排在应用自己的样式之前 | `styles`：`"layered"`；宿主有无层 reset 时用 `"unlayered"`；`false` 自己引 | `"layered"` |
+| SSR 首帧主题：服务端把八轴视觉环境渲染到 `<html>` 上，head 里一段内联脚本在首帧前读回读者存过的偏好，客户端随后接管成视觉环境控制器 | `visualEnvironment`：`{ storageKey, initial }`；`false` 由应用自己管 | `{}` |
+
+选项写在 `xihanUI` 下，或写在模块元组的第二项（后者优先）：
+
+```ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+  xihanUI: {
+    visualEnvironment: {
+      storageKey: "my-app-visual",
+      initial: { density: "compact" },
+    },
+  },
+});
+```
+
+控制器经 `useNuxtApp().$xhVisual` 交给应用，切明暗、密度等调 `setPreference`。写了 `storageKey` 时偏好存进 localStorage，下次打开的首帧就是那一套，不会先闪一下浅色。`initial` 里写了的轴压过读者存的值，要留给读者自己选的轴不要写进 `initial`；写错的值在构建时就报。
+
+```vue
+<script setup lang="ts">
+const { $xhVisual } = useNuxtApp();
+
+function toggleDark() {
+  $xhVisual.setPreference({ mode: $xhVisual.getState().mode === "dark" ? "light" : "dark" });
+}
+</script>
+```
+
+服务端没有媒体查询与存储：那一端的 `$xhVisual` 按 `initial` 解出，`system` 轴取基线。按明暗分支渲染的内容放到 `onMounted` 之后，免得水合对不上。完整示例在仓库的 [`examples/nuxt`](https://github.com/XiHanFun/XiHan.UI/tree/dev/examples/nuxt)，CI 每轮都对着本仓刚构建的包装一遍，类型检查、构建并检查首屏。
 
 ## 与 Web Components 适配器的关系
 
