@@ -12,7 +12,7 @@ describe('表单校验异常的函数式组件适配', () => {
     const onValidationError = vi.fn()
     const onSubmit = vi.fn()
     const onInvalid = vi.fn()
-    let api!: FormRootSlotProps
+    let api!: FormRootSlotProps<{ user: string }>
     const host = document.createElement('div')
     document.body.append(host)
     const root = createRoot(host)
