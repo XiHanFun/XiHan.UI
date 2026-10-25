@@ -53,6 +53,10 @@
     "./sound": {
       "types": "./dist/sound.d.ts",
       "import": "./dist/sound.js"
+    },
+    "./nuxt": {
+      "types": "./nuxt.d.ts",
+      "import": "./nuxt.js"
     }
   },
   "main": "./dist/index.js",
@@ -60,7 +64,10 @@
   "types": "./dist/index.d.ts",
   "files": [
     "CHANGELOG.md",
-    "dist"
+    "dist",
+    "nuxt-app.d.ts",
+    "nuxt.d.ts",
+    "nuxt.js"
   ],
   "engines": {
     "node": ">=18"

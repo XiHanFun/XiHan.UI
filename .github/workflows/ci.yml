@@ -98,6 +98,21 @@ jobs:
       - name: 机读资产与库对账
         run: pnpm gate:llms
 
+  # Nuxt 示例（仓库根 examples/nuxt）在系统临时目录里装：Nuxt 不进 ui 的依赖与锁文件。
+  # 示例对着本仓刚打出的包装（pnpm pack 把 workspace: 换成真实版本，与发到 npm 的那一份同形），
+  # 只靠 modules: ['@xihan-ui/vue/nuxt'] 接上，类型检查、构建后起服务检查首屏。
+  nuxt:
+    name: Nuxt 示例
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
+      - name: Build
+        run: pnpm build
+      - name: 装进 Nuxt 示例，类型检查、构建并检查首屏
+        run: pnpm gate:nuxt
+
   # 单测按包分组，各占一台 runner。四个大包单跑一个要六到八分钟（一个 worker 时），
   # 挤在一台 4 核机器上时 test-unit.mjs 只能给每包一个 worker；拆开后一组只有一两个包，
   # worker 数按组里的包数放宽到占满四核。
