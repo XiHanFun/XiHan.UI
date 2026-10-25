@@ -42149,7 +42149,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-listbox>`：Light-DOM 行为宿主：作者写 root / label / content 与若干 item 角色节点，\n元素运行 listbox 状态机并把 connect 产出接上。条目身份取自条目节点上的 value 属性，\n禁用由条目声明 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派发 click）。\n分组同样用 value 属性声明身份，分组标题的 id 由它派生。\n\n导航与选中在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），\n属性无法表达数组。\n\n条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需声明 value。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、列表与空态、在途两块占位，列表里 collection 的\n每条数据一个条目（文字、有副文本时的副文本与选中标记），两块占位的字取 translations（empty / loading），按状态收放。\n标题、空态、条目文字与行首行尾可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、\n`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"`。",
+          "description": "`<xh-listbox>`：Light-DOM 行为宿主：作者写 root / label / content 与若干 item 角色节点，\n元素运行 listbox 状态机并把 connect 产出接上。条目身份取自条目节点上的 value 属性，\n禁用由条目声明 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派发 click）。\n分组同样用 value 属性声明身份，分组标题的 id 由它派生。\n\n导航与选中在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。\n\n选中值是集合：单选可以直接写 value=\"apple\" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），\n属性无法表达数组。\n\n条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需声明 value。\n\n不写部件（或只写 root）时元素按标准结构生成：标题（label）、列表与空态、在途两块占位，列表里 collection 的\n每条数据一个条目（文字、有副文本时的副文本与选中标记），两块占位的字取 translations（empty / loading），按状态收放。\n标题、空态、条目文字与行首行尾可以由宿主直接子节点接管：`slot=\"label\"`、`slot=\"empty\"`、`slot=\"item:<值>\"`、\n`slot=\"item-prefix:<值>\"`、`slot=\"item-suffix:<值>\"`。\n\nV 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhListboxElement<number>>('xh-listbox')`\n拿到的元素上 value 与 collection 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。",
           "name": "XhListboxElement",
           "cssParts": [
             {
@@ -42242,8 +42242,17 @@
               "name": "collection",
               "privacy": "public",
               "type": {
-                "text": "ListboxNode[] | undefined"
+                "text": "ListboxNode<V>[] | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "valueKey",
+              "privacy": "public",
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "attribute": "value-key"
             },
             {
               "kind": "field",
@@ -42275,7 +42284,7 @@
               "name": "value",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "attribute": "value"
             },
@@ -42284,7 +42293,7 @@
               "name": "defaultValue",
               "privacy": "public",
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "attribute": "default-value"
             },
@@ -42545,7 +42554,7 @@
           ],
           "events": [
             {
-              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "description": "选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）",
               "name": "value-change",
               "type": {
                 "text": "ListboxValueChangeDetails"
@@ -42563,7 +42572,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "description": "受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置",
               "name": "value",
@@ -42571,7 +42580,7 @@
             },
             {
               "type": {
-                "text": "string | string[] | undefined"
+                "text": "V | V[] | undefined"
               },
               "description": "非受控初始选中值",
               "name": "default-value",
@@ -42664,6 +42673,14 @@
               "description": "连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
+            },
+            {
+              "type": {
+                "text": "SelectionValueKey<V> | undefined"
+              },
+              "description": "对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认",
+              "name": "value-key",
+              "fieldName": "valueKey"
             }
           ],
           "superclass": {

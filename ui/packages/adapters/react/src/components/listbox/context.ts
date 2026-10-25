@@ -11,7 +11,7 @@ import { createContext, useContext } from 'react'
 
 const Ctx = createContext<ListboxContext | undefined>(undefined)
 const GroupCtx = createContext<ListboxGroupProps | undefined>(undefined)
-const ItemCtx = createContext<ListboxItemProps | undefined>(undefined)
+const ItemCtx = createContext<ListboxItemProps<unknown> | undefined>(undefined)
 
 export const ListboxProvider = Ctx
 export const ListboxGroupProvider = GroupCtx
@@ -31,7 +31,7 @@ export function useListboxGroupContext(): ListboxGroupProps {
   return group
 }
 
-export function useListboxItemContext(): ListboxItemProps {
+export function useListboxItemContext(): ListboxItemProps<unknown> {
   const item = useContext(ItemCtx)
   if (!item)
     throw new Error('条目的子部件要放在 XhListboxItem 里')

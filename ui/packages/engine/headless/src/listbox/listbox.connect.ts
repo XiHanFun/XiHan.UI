@@ -10,12 +10,37 @@ import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } fro
 import { applySelection, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'
 import { LISTBOX_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
+import { decodeMetas, decodeValues, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { listboxAnatomy, listboxItemQuery, listboxItemText } from './listbox.anatomy'
 
 const parts = listboxAnatomy.build()
 
-export function connectListbox<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectListboxKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectListbox<T extends PropTypes, V = string>(
+  service: Service<ListboxSchema>,
+  normalize: NormalizeProps<T>,
+): ListboxApi<T, V> {
+  const api = connectListboxKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection, service.prop('collection')),
+    value: decodeValues(codec, api.value),
+    focusedValue: api.focusedValue == null ? null : codec.value(api.focusedValue),
+    isSelected: value => api.isSelected(codec.key(value)),
+    setValue: next => api.setValue(next.map(codec.key)),
+    select: value => api.select(codec.key(value)),
+    toggle: value => api.toggle(codec.key(value)),
+    // 收值的 getter 按名单换成先编码的版本
+    ...keyedGetters(codec, api, ['getItemProps', 'getItemPrefixProps', 'getItemTextProps', 'getItemDescriptionProps', 'getItemSuffixProps', 'getItemIndicatorProps']),
+  } as ListboxApi<T, V>
+}
+
+function connectListboxKeys<T extends PropTypes>(
   service: Service<ListboxSchema>,
   normalize: NormalizeProps<T>,
 ): ListboxApi<T> {
@@ -46,6 +71,7 @@ export function connectListbox<T extends PropTypes>(
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: ListboxNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
@@ -200,6 +226,7 @@ export function connectListbox<T extends PropTypes>(
 
   return {
     value,
+    valueKeys: value,
     collection,
     selectionMode: mode,
     focusedValue,

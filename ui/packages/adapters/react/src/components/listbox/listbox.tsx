@@ -5,11 +5,11 @@
 
 // 提供 listbox 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations } from '@xihan-ui/headless'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, ListboxApi, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { listboxStructure } from '@xihan-ui/headless'
+import { listboxStructure, valueKeyOf } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
@@ -32,24 +32,30 @@ import { useListbox } from './use-listbox'
 
 type ListboxProps = ListboxSchema['props']
 
-/** 函数式 children 的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换的命令。 */
-export type ListboxRootSlotProps = Pick<
-  ListboxApi,
+/** 函数式 children 的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换的命令。V 是选中值的类型。 */
+export type ListboxRootSlotProps<V = string> = Pick<
+  ListboxApi<PropTypes, V>,
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle'
 >
 
 /** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
-export interface XhListboxRootProps extends RootElementProps {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，
+ * 对象值给 valueKey。onValueChange、children 与 renderItem 拿到的都是 V。
+ */
+export interface XhListboxRootProps<V = string> extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: ListboxNode[]
+  collection?: ListboxNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
   virtualizer?: CollectionVirtualizer
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
-  value?: string | string[]
-  defaultValue?: string | string[]
+  value?: V | V[]
+  defaultValue?: V | V[]
   selectionMode?: ListboxSelectionMode
   disabled?: boolean
   /** 只读：条目照常浏览与聚焦，但选中值不可修改。 */
@@ -63,21 +69,22 @@ export interface XhListboxRootProps extends RootElementProps {
   dir?: Direction
   orientation?: Orientation
   translations?: Partial<ListboxTranslations>
-  onValueChange?: ListboxProps['onValueChange']
+  onValueChange?: (details: ListboxValueChangeDetails<V>) => void
   /** 不给 children 时空态占位的内容；未写时取 translations.empty。 */
   empty?: ReactNode
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: ListboxNodeMeta) => ReactNode
+  renderItem?: (node: ListboxNodeMeta<V>) => ReactNode
   /** 只接管条目行首那一格；其余槽仍由数据铺。 */
-  renderItemPrefix?: (node: ListboxNodeMeta) => ReactNode
+  renderItemPrefix?: (node: ListboxNodeMeta<V>) => ReactNode
   /** 只接管条目行尾那一格；其余槽仍由数据铺。 */
-  renderItemSuffix?: (node: ListboxNodeMeta) => ReactNode
-  children?: SlotChildren<ListboxRootSlotProps>
+  renderItemSuffix?: (node: ListboxNodeMeta<V>) => ReactNode
+  children?: SlotChildren<ListboxRootSlotProps<V>>
 }
 
-export function XhListboxRoot({
+export function XhListboxRoot<V = string>({
   ariaLabel,
   collection,
+  valueKey,
   virtualizer,
   value,
   defaultValue,
@@ -101,10 +108,11 @@ export function XhListboxRoot({
   renderItemPrefix,
   renderItemSuffix,
   ...rest
-}: XhListboxRootProps): ReactNode {
+}: XhListboxRootProps<V>): ReactNode {
   const ctx = useListbox(withXhConfig('listbox', useFormControlProps({
     ariaLabel,
     collection,
+    valueKey,
     virtualizer,
     value,
     defaultValue,
@@ -133,8 +141,9 @@ export function XhListboxRoot({
         setValue: api.setValue,
         select: api.select,
         toggle: api.toggle,
-      })
-    : renderDefaultStructure(api, { label, empty, renderItem, renderItemPrefix, renderItemSuffix })
+        // 值在 api 里已经解回原值，类型上按根组件推断出来的 V 交出去
+      } as ListboxRootSlotProps<V>)
+    : renderDefaultStructure<V>(api, { label, empty, renderItem, renderItemPrefix, renderItemSuffix })
 
   return (
     <ListboxProvider value={ctx}>
@@ -230,7 +239,8 @@ export function XhListboxGroupLabel({ children, ...rest }: XhListboxGroupLabelPr
 }
 
 export interface XhListboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -251,10 +261,12 @@ export function XhListboxItem({ value, disabled, children, ...rest }: XhListboxI
     const svc = ctx.service
     if (svc.getStatus() !== 'Started')
       return
-    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === value))
+    // 机器只认键：比对 collection 与上报焦点都用这条的键
+    const key = valueKeyOf(svc.scope, value)
+    if (svc.prop('virtualizer') && svc.prop('collection')?.some(node => node.value === key))
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.FOCUS', value })
+      svc.send({ type: 'ITEM.FOCUS', value: key })
   }, [ctx.service, value])
 
   // 卸载时上报列表失焦：按「本节点当下正持有焦点」判定，不按 value 比对
@@ -334,19 +346,19 @@ const LISTBOX_PARTS = {
   'loading': XhListboxLoading,
 }
 
-interface ListboxStructureContent {
+interface ListboxStructureContent<V> {
   label?: ReactNode
   empty?: ReactNode
-  renderItem?: (node: ListboxNodeMeta) => ReactNode
-  renderItemPrefix?: (node: ListboxNodeMeta) => ReactNode
-  renderItemSuffix?: (node: ListboxNodeMeta) => ReactNode
+  renderItem?: (node: ListboxNodeMeta<V>) => ReactNode
+  renderItemPrefix?: (node: ListboxNodeMeta<V>) => ReactNode
+  renderItemSuffix?: (node: ListboxNodeMeta<V>) => ReactNode
 }
 
 /**
  * 未写 children 时铺开的整套结构，作者只提供数据：照 headless 的 listboxStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题、条目文字与行首行尾由对应渲染函数接管。
  */
-function renderDefaultStructure(api: ListboxApi, content: ListboxStructureContent): ReactNode[] {
+function renderDefaultStructure<V>(api: ListboxApi<PropTypes, unknown>, content: ListboxStructureContent<V>): ReactNode[] {
   const { label, empty, renderItem, renderItemPrefix, renderItemSuffix } = content
   const slotted: Readonly<Record<string, boolean>> = {
     'label': label != null && typeof label !== 'string',
@@ -361,7 +373,7 @@ function renderDefaultStructure(api: ListboxApi, content: ListboxStructureConten
     slotted: name => slotted[name] === true,
   })
   return renderStructure(nodes, LISTBOX_PARTS, (node) => {
-    const meta = node.data as ListboxNodeMeta
+    const meta = node.data as ListboxNodeMeta<V>
     switch (node.slot?.name) {
       case 'label':
         return label

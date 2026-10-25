@@ -12,7 +12,7 @@ import { inject, provide } from 'vue'
 
 /** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface ListboxItemContext {
-  item: ComputedRef<ListboxItemProps>
+  item: ComputedRef<ListboxItemProps<unknown>>
 }
 
 /** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */

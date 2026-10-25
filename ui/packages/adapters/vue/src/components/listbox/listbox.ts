@@ -5,11 +5,11 @@
 
 // 提供 listbox 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations } from '@xihan-ui/headless'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CollectionVirtualizer, ListboxApi, ListboxGroupProps, ListboxItemProps, ListboxNode, ListboxNodeMeta, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import type { PayloadOf } from '../../runtime/payload'
-import { listboxStructure } from '@xihan-ui/headless'
+import type { BivariantCallback } from '../../runtime/bivariant'
+import { listboxStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUnmounted, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { renderStructure } from '../../runtime/structure'
@@ -28,24 +28,28 @@ import { useListbox } from './use-listbox'
 
 type ListboxProps = ListboxSchema['props']
 
-/** 默认插槽的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换的命令。 */
-export type ListboxRootSlotProps = Pick<
-  ListboxApi,
+/** 默认插槽的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换的命令。V 是选中值的类型。 */
+export type ListboxRootSlotProps<V = string> = Pick<
+  ListboxApi<PropTypes, V>,
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle'
 >
 
-export const XhListboxRoot = defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhListboxRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhListboxRootImpl = defineComponent({
   name: 'XhListboxRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<ListboxNode[]> },
+    collection: { type: Array as PropType<ListboxNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
-    value: { type: [String, Array] as PropType<string | string[]> },
-    defaultValue: { type: [String, Array] as PropType<string | string[]> },
+    // 值可以是字符串、数字或对象：运行时不查类型，类型由对外导出的 XhListboxRoot 按值类型收窄
+    value: { type: null as unknown as PropType<unknown> },
+    defaultValue: { type: null as unknown as PropType<unknown> },
     selectionMode: { type: String as PropType<ListboxSelectionMode> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -61,27 +65,27 @@ export const XhListboxRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
   emits: {
-    'value-change': (_details: PayloadOf<ListboxProps, 'onValueChange'>) => true,
-    'update:value': (_value: PayloadOf<ListboxProps, 'onValueChange'>['value']) => true,
+    'value-change': (_details: ListboxValueChangeDetails<unknown>) => true,
+    'update:value': (_value: unknown[]) => true,
   },
   slots: Object as SlotsType<{
-    'default'?: (props: ListboxRootSlotProps) => VNode[]
+    'default'?: (props: ListboxRootSlotProps<unknown>) => VNode[]
     'label'?: () => VNode[]
     /** 不写默认插槽时空态占位的内容；未写时取 translations.empty。 */
     'empty'?: () => VNode[]
     /** 只填条目的文字槽，副文本与首尾两格照旧各归各的 */
-    'item'?: (node: ListboxNodeMeta) => VNode[]
+    'item'?: (node: ListboxNodeMeta<unknown>) => VNode[]
     /** 只接管行首那一格，其余槽照旧由数据铺 */
-    'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
+    'item-prefix'?: (node: ListboxNodeMeta<unknown>) => VNode[]
     /** 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 */
-    'item-suffix'?: (node: ListboxNodeMeta) => VNode[]
+    'item-suffix'?: (node: ListboxNodeMeta<unknown>) => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: ListboxProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useListbox(withXhConfig('listbox', useFormControlProps(props)) as ListboxProps, notify)
+    const ctx = useListbox(withXhConfig('listbox', useFormControlProps(props)) as unknown as ListboxProps, notify)
     provideListbox(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
       ...(slots.default
@@ -104,6 +108,36 @@ export const XhListboxRoot = defineComponent({
     ])
   },
 })
+
+/** 根组件里随值类型收窄的那几项 prop：选中值、条目数据、取键方式与值变化的回调。 */
+export interface XhListboxRootValueProps<V> {
+  'value'?: V | V[]
+  'defaultValue'?: V | V[]
+  'collection'?: ListboxNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'onUpdate:value'?: BivariantCallback<[value: V[]]>
+  'onValueChange'?: BivariantCallback<[details: ListboxValueChangeDetails<V>]>
+}
+
+type XhListboxRootInstance = InstanceType<typeof XhListboxRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象的数组都不必断言，
+ * 默认插槽与条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhListboxRootComponent = Omit<typeof XhListboxRootImpl, never> & {
+  new<V = string>(props?: Omit<XhListboxRootInstance['$props'], keyof XhListboxRootValueProps<V>> & XhListboxRootValueProps<V>): Omit<XhListboxRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhListboxRootInstance['$props'], keyof XhListboxRootValueProps<V>> & XhListboxRootValueProps<V>
+    $slots: Omit<XhListboxRootInstance['$slots'], 'default' | 'item' | 'item-prefix' | 'item-suffix'> & {
+      'default'?: (props: ListboxRootSlotProps<V>) => VNode[]
+      'item'?: (node: ListboxNodeMeta<V>) => VNode[]
+      'item-prefix'?: (node: ListboxNodeMeta<V>) => VNode[]
+      'item-suffix'?: (node: ListboxNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhListboxRoot = XhListboxRootImpl as unknown as XhListboxRootComponent
 
 export const XhListboxLabel = defineComponent({
   name: 'XhListboxLabel',
@@ -202,13 +236,14 @@ export const XhListboxGroupLabel = defineComponent({
 export const XhListboxItem = defineComponent({
   name: 'XhListboxItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useListboxContext()
-    const item = computed<ListboxItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    const item = computed<ListboxItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideListboxItem({ item })
     // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报列表失焦
     const itemEl = ref<HTMLElement | null>(null)
@@ -218,10 +253,12 @@ export const XhListboxItem = defineComponent({
       const { service } = ctx
       if (service.getStatus() !== 'Started')
         return
-      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === props.value))
+      // 机器只认键：比对 collection 与上报焦点都用这条的键
+      const key = valueKeyOf(service.scope, next)
+      if (service.prop('virtualizer') && service.prop('collection')?.some(node => node.value === key))
         return
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
-        service.send({ type: 'ITEM.FOCUS', value: next })
+        service.send({ type: 'ITEM.FOCUS', value: key })
     })
     onBeforeUnmount(() => {
       const { service } = ctx
@@ -304,19 +341,19 @@ const LISTBOX_PARTS = {
 interface ListboxStructureSlots {
   'label'?: () => VNode[]
   'empty'?: () => VNode[]
-  'item'?: (node: ListboxNodeMeta) => VNode[]
-  'item-prefix'?: (node: ListboxNodeMeta) => VNode[]
-  'item-suffix'?: (node: ListboxNodeMeta) => VNode[]
+  'item'?: (node: ListboxNodeMeta<unknown>) => VNode[]
+  'item-prefix'?: (node: ListboxNodeMeta<unknown>) => VNode[]
+  'item-suffix'?: (node: ListboxNodeMeta<unknown>) => VNode[]
 }
 
 /**
  * 未写默认插槽时铺开的整套结构，作者只提供数据：照 headless 的 listboxStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题、条目文字与行首行尾由对应插槽接管。
  */
-function renderDefaultStructure(api: ListboxApi, label: string | undefined, authored: ListboxStructureSlots): VNode[] {
+function renderDefaultStructure(api: ListboxApi<PropTypes, unknown>, label: string | undefined, authored: ListboxStructureSlots): VNode[] {
   const nodes = listboxStructure(api, { label, slotted: name => authored[name as keyof ListboxStructureSlots] != null })
   return renderStructure(nodes, LISTBOX_PARTS, (node) => {
-    const meta = node.data as ListboxNodeMeta
+    const meta = node.data as ListboxNodeMeta<unknown>
     switch (node.slot?.name) {
       case 'label':
         return authored.label?.()

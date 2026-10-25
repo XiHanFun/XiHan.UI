@@ -8,6 +8,7 @@
 import type { ListboxSchema, ListboxSelectionMode } from './listbox.types'
 import { createTypeahead, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
+import { encodeSelectionProps, valueCodecOf } from '../shared/value-codec'
 
 const { createMachine } = setup<ListboxSchema>()
 
@@ -19,6 +20,8 @@ function normalizeSelection(next: readonly string[], mode: ListboxSelectionMode)
 // 选中集合存放在 context cell，受控/非受控由 cell 收口；机器只有 idle 一个状态。
 export const listboxMachine = createMachine({
   name: 'listbox',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器、DOM 与连打检索只认键；onValueChange 交出去时解回原值
+  props: ({ props, scope }) => encodeSelectionProps(props, valueCodecOf(scope, { valueKey: props.valueKey })),
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
       value: toValues(prop('value')),

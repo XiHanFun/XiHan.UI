@@ -24,6 +24,7 @@
 - 提供空态、加载态与加载更多部件。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，接着是列表、空态与在途占位：`collection` 的每条数据一个条目（文字、有副文本时的副文本与选中标记），没给 `collection` 时列表是空的；空态与在途的文字取 `translations`（`empty`、`loading`），按状态收放。分组与加载更多不在其中，要用时手写结构。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点 `slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"` 上接管。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhListboxElement<number>>("xh-listbox")` 收窄。
 
 ## 组合
 

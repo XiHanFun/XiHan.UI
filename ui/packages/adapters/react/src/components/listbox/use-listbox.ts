@@ -5,7 +5,7 @@
 
 // 提供 use listbox 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxSchema } from '@xihan-ui/headless'
 import { connectListbox, listboxMachine } from '@xihan-ui/headless'
 import { useCallback, useState } from 'react'
@@ -21,7 +21,8 @@ export interface ListboxContext {
   registerLabel: () => () => void
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<ListboxSchema>
-  api: ListboxApi
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ListboxApi<PropTypes, unknown>
 }
 
 export function useListbox(props: ListboxSchema['props']): ListboxContext {
@@ -34,5 +35,5 @@ export function useListbox(props: ListboxSchema['props']): ListboxContext {
     return () => setLabelCount(n => n - 1)
   }, [])
   const service = useMachine(listboxMachine, () => ({ ...props, labelled: labelCount > 0 }), { scope })
-  return { registerLabel, service, api: connectListbox(service, reactNormalize) }
+  return { registerLabel, service, api: connectListbox<PropTypes, unknown>(service, reactNormalize) }
 }
