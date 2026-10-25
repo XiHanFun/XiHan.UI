@@ -6,7 +6,7 @@
 // 提供 toggle group 相关实现。
 
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, SelectionValueKey, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValue, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToggleGroup, resolveFormControlState, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure } from '@xihan-ui/headless'
@@ -33,6 +33,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * 不写部件（或只写 root）时元素按标准结构生成：collection 的每一条一个按钮，末尾一份表单影子；
  * 条目的内容可以由宿主直接子节点 `slot="item:<值>"` 接管。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhToggleGroupElement<number>>('xh-toggle-group')`
+ * 拿到的元素上 value 与 collection 都是 V；写在标记里的条目 value 永远是字符串。
+ *
  * @customElement xh-toggle-group
  * @attr {string} value - 受控选中值（属性形式只能表达单值）；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
@@ -52,12 +55,13 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
  * @attr {boolean} roving-focus - roving tabindex，默认开启；关闭后每个条目各占一个 Tab 位
- * @fires value-change - 选中值变化；detail 为 `{ value: string | string[] | null }`（形态随 multiple 决定）
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中值变化；detail 为 `{ value: 值 | 值[] | null }`（形态随 multiple 决定），值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @csspart root - role=radiogroup / group 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 开关按钮，须是原生 `<button>` 并自带 value 属性标识身份
  * @csspart hidden-input - 表单出口，可选；须是原生 `<input>`
  */
-export class XhToggleGroupElement extends XhElement {
+export class XhToggleGroupElement<V = string> extends XhElement {
   static override partContract = { anatomy: toggleGroupAnatomy, meta: toggleGroupMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
@@ -75,6 +79,7 @@ export class XhToggleGroupElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     multiple: { converter: BOOLEAN_CONVERTER },
@@ -96,9 +101,10 @@ export class XhToggleGroupElement extends XhElement {
   }
 
   // 属性只喂得进字符串，property 还能直接喂数组（多选受控走这一路）
-  declare collection?: ToggleGroupNode[]
-  declare value?: string | string[]
-  declare defaultValue?: string | string[]
+  declare collection?: ToggleGroupNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
+  declare value?: ToggleGroupValue<V>
+  declare defaultValue?: ToggleGroupValue<V>
   declare multiple?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
@@ -119,7 +125,7 @@ export class XhToggleGroupElement extends XhElement {
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
 
-  private readonly notify = (details: ToggleGroupValueChangeDetails): void => {
+  private readonly notify = (details: ToggleGroupValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -144,11 +150,17 @@ export class XhToggleGroupElement extends XhElement {
 
   private machineProps(): Partial<ToggleGroupSchema['props']> {
     const control = this.controlState()
-    return {
-      ariaLabel: this.hostAriaLabel(),
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
       collection: this.collection,
+      valueKey: this.valueKey,
       value: this.value,
       defaultValue: this.defaultValue,
+      onValueChange: this.notify,
+    } as Pick<ToggleGroupSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'onValueChange'>
+    return {
+      ariaLabel: this.hostAriaLabel(),
+      ...valueTyped,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
       // （multiple / disabled / disallowEmpty 默认关，loop / rovingFocus 默认开）
       multiple: this.multiple,
@@ -167,7 +179,6 @@ export class XhToggleGroupElement extends XhElement {
       dir: this.direction,
       loop: this.loop,
       rovingFocus: this.rovingFocus,
-      onValueChange: this.notify,
     }
   }
 

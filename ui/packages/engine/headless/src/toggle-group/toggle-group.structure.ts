@@ -6,6 +6,7 @@
 // 开关组的标准结构：按 collection 铺出条目，末尾一份表单影子。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
+import type { PropTypes } from '@xihan-ui/core'
 import type { StructureNode, StructureSlotted } from '../shared/structure'
 import type { toggleGroupAnatomy } from './toggle-group.anatomy'
 import type { ToggleGroupApi } from './toggle-group.types'
@@ -35,12 +36,13 @@ const NOTHING_SLOTTED: StructureSlotted = () => false
  * 开关组在 root 里的标准结构：每个条目一个原生按钮，文字直接落在按钮里；末尾一份表单影子，给了 name 才参与提交。
  * 带 slot 的条目的 data 是这一条的元信息。相邻条目间的分隔线由适配器按 separators 生成，不在结构里。
  */
-export function toggleGroupStructure(model: Pick<ToggleGroupApi, 'collection'>, options: ToggleGroupStructureOptions = {}): ToggleGroupNode[] {
+// 值不论什么类型，结构只用元信息里的键（拼不成节点的 key 的对象写不进 data-value）；插槽数据 node 里照旧是原值
+export function toggleGroupStructure(model: Pick<ToggleGroupApi<PropTypes, unknown>, 'collection'>, options: ToggleGroupStructureOptions = {}): ToggleGroupNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   return [
-    ...model.collection.map((node): ToggleGroupNode => slotted('item', node.value)
-      ? { key: `item:${node.value}`, tag: 'button', part: 'item', attrs: { value: node.value }, slot: { name: 'item', key: node.value }, data: node }
-      : { key: `item:${node.value}`, tag: 'button', part: 'item', attrs: { value: node.value }, text: node.label }),
+    ...model.collection.map((node): ToggleGroupNode => slotted('item', node.key)
+      ? { key: `item:${node.key}`, tag: 'button', part: 'item', attrs: { value: node.key }, slot: { name: 'item', key: node.key }, data: node }
+      : { key: `item:${node.key}`, tag: 'button', part: 'item', attrs: { value: node.key }, text: node.label }),
     { key: 'hidden-input', tag: 'input', part: 'hidden-input' },
   ]
 }

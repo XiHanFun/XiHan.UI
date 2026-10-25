@@ -95,6 +95,7 @@
 - `disallowEmpty` 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
 - 不写结构时按标准结构铺出整组（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`）：每一条一个按钮，末尾一份表单影子，给了 `name` 才参与提交。Web Components 里某一条的内容可以写在宿主的直接子节点上接管：`slot="item:<值>"`。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型、按 `multiple` 推断形状——写了 `multiple` 时值是数组，没写时是一个值或 `null`，单选却绑数组、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhToggleGroupElement<number>>("xh-toggle-group")` 收窄。
 
 ### 组合
 
@@ -128,9 +129,10 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
-| `value` | `ToggleGroupValue` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
-| `defaultValue` | `ToggleGroupValue` |  |  |
+| `collection` | `ToggleGroupNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
+| `value` | `ToggleGroupValue<V>` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
+| `defaultValue` | `ToggleGroupValue<V>` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即替换其余。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
@@ -148,7 +150,7 @@
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内依靠方向键移动。 关闭后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
-| `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueChange` | `(details: ToggleGroupValueChangeDetails<V>) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### ToggleGroupNode
 
@@ -156,8 +158,8 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为值（不是字符串的值退回它的键）。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 
 ### 事件
@@ -166,7 +168,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态随 multiple 决定） |
+| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: 值 \| 值[] \| null }`（形态随 multiple 决定），值是 value / collection 里交进来的原值（字符串、数字或对象） |
 
 ### React 适配器 props
 
@@ -174,9 +176,9 @@
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhToggleGroupItem` | `value` | `string` | 是 |  |
+| `XhToggleGroupItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhToggleGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
-| `XhToggleGroupRoot` | `renderItem` | `(node: ToggleGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhToggleGroupRoot` | `renderItem` | `(node: ToggleGroupNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
 | `XhToggleGroupRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态
@@ -201,9 +203,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
-| `collection` | `readonly ToggleGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
-| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
+| `value` | `V[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
+| `collection` | `readonly ToggleGroupNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `focusedValue` | `V \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -211,10 +213,10 @@
 | `required` | `boolean` |  |
 | `orientation` | `Orientation` |  |
 | `separators` | `boolean` |  |
-| `isSelected` | `(value: string) => boolean` |  |
-| `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 均可，内部按 multiple 归一。 |
+| `isSelected` | `(value: V) => boolean` |  |
+| `setValue` | `(next: ToggleGroupValue<V>) => void` | 传单值 / 数组 / null 均可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: ToggleGroupItemProps) => T['button']` |  |
+| `getItemProps` | `(props: ToggleGroupItemProps<V>) => T['button']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的即当前选中值。 |
 
 ## 无障碍
