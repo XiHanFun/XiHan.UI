@@ -15,7 +15,7 @@ pageClass: xh-designer-page
 | 设置 | 改的是 | 项目里怎么用 |
 | --- | --- | --- |
 | 品牌色 | 由种子色派生的整套 `--xh-color-brand-50…950` 原语 | 导出的 `[data-brand]` 取值块，或运行时 `registerBrand` |
-| 明暗 | `data-theme` | 视觉环境控制器的 `mode` |
+| 明暗 | `data-theme`；「跟随系统」写 `system`，不跑脚本由 `prefers-color-scheme` 切换 | 视觉环境控制器的 `mode`，或根元素上的 `data-theme` |
 | 密度 | `data-density` | 控制器的 `density` |
 | 对比度 | `data-contrast` | 控制器的 `contrast` |
 | 圆角 | 原始阶梯 `--xh-radius-sm / md / lg` | 导出的 `:root` 覆盖 |
@@ -34,6 +34,8 @@ pageClass: xh-designer-page
 
 ## 接入
 
-把「CSS」一栏放进全局样式，或者只用「TypeScript」一栏在运行时注册品牌：两者给出的品牌色是同一套。明暗、密度与对比度属于视觉环境，按[设计令牌与主题](../guide/theme#八轴视觉环境运行时)里的控制器提交，Vue 与 React 也可以经 `XhConfigProvider` 传入。
+把「CSS」一栏放进全局样式，再把「HTML」一栏的属性写到根元素上，不跑任何脚本即生效；或者只用「TypeScript」一栏在运行时注册品牌：两者给出的品牌色是同一套。明暗、密度与对比度属于视觉环境，脚本接法按[设计令牌与主题](../guide/theme#八轴视觉环境运行时)里的控制器提交，Vue 与 React 也可以经 `XhConfigProvider` 传入。
+
+想看某个设置下每支令牌的实际取值，用[令牌浏览器](./token-browser)。
 
 预览区本身就是一个局部视觉环境：它用 `XhConfigProvider` 的同一套机制把设置写到自己的根元素上，下拉、日期面板这类渲染到预览区之外的浮层也会带上同样的设置。项目里把控制器挂在根元素上，整站随之生效。

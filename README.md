@@ -156,7 +156,7 @@ Changes must pass the full CI gate, and CI runs the same commands you do locally
 
 In the box: every component with its core and adapters, default skins for the visual components, design tokens and the theme runtime, bundled language packs for ten languages (Simplified Chinese, Traditional Chinese, English, Japanese, Korean, French, German, Spanish, Brazilian Portuguese and Russian, from each adapter's `locale` subpath; see [i18n](./docs/guide/i18n.md)), the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
 
-Not in the box: the token browser and enterprise business components. For a language outside the ten, write your own `XhLocale` using any bundled pack as the template.
+Not in the box: enterprise business components. The documentation site also has a [theme designer](https://ui.docs.xihanfun.com/design/theme-designer) and a [token browser](https://ui.docs.xihanfun.com/design/token-browser). For a language outside the ten, write your own `XhLocale` using any bundled pack as the template.
 
 ## Related Projects
 
