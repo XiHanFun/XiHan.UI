@@ -13519,6 +13519,7 @@
       "size",
       "tone",
       "value",
+      "valueKey",
       "variant"
     ],
     "citation": [
@@ -22179,6 +22180,7 @@
         "size",
         "tone",
         "value",
+        "value-key",
         "variant"
       ],
       "events": [

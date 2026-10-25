@@ -5,8 +5,8 @@
 
 // 提供 checkbox group 相关实现。
 
-import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupVariant, StructureChild } from '@xihan-ui/headless'
+import type { Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { CheckboxGroupApi, CheckboxGroupNode, CheckboxGroupNodeMeta, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, SelectionValueKey, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { checkboxGroupStructure } from '@xihan-ui/headless'
@@ -26,22 +26,28 @@ import { useCheckboxGroup } from './use-checkbox-group'
 
 type CheckboxGroupProps = CheckboxGroupSchema['props']
 
-/** 函数式 children 的载荷：整组的选中集合与全选态，以及整体替换与切换单值的方法。 */
-export type CheckboxGroupRootSlotProps = Pick<
-  CheckboxGroupApi,
+/** 函数式 children 的载荷：整组的选中集合与全选态，以及整体替换与切换单值的方法。V 是选中值的类型。 */
+export type CheckboxGroupRootSlotProps<V = string> = Pick<
+  CheckboxGroupApi<PropTypes, V>,
   'value' | 'checkedState' | 'atMax' | 'atMin' | 'isChecked' | 'setValue' | 'toggleValue'
 >
 
-export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，
+ * 对象值给 valueKey。onValueChange、children 与 renderItem 拿到的都是 V。
+ */
+export interface XhCheckboxGroupRootProps<V = string> extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: CheckboxGroupNode[]
+  collection?: CheckboxGroupNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
-  value?: string[]
-  defaultValue?: string[]
+  value?: V[]
+  defaultValue?: V[]
   /** 组内全部条目的值；未提供时全选格只在 unchecked 与 indeterminate 两态之间切换。 */
-  itemValues?: string[]
+  itemValues?: V[]
   /** 至少选几项；降到它时已选的条目改不动。 */
   min?: number
   /** 至多选几项；到了它时未选的条目改不动，全选只补到它为止。 */
@@ -57,15 +63,16 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   size?: Size
   /** 结构形态，默认 list；card 把每个条目画成一张可点的卡。 */
   variant?: CheckboxGroupVariant
-  onValueChange?: CheckboxGroupProps['onValueChange']
+  onValueChange?: (details: CheckboxGroupValueChangeDetails<V>) => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode
-  children?: SlotChildren<CheckboxGroupRootSlotProps>
+  renderItem?: (node: CheckboxGroupNodeMeta<V>) => ReactNode
+  children?: SlotChildren<CheckboxGroupRootSlotProps<V>>
 }
 
-export function XhCheckboxGroupRoot({
+export function XhCheckboxGroupRoot<V = string>({
   ariaLabel,
   collection,
+  valueKey,
   label,
   value,
   defaultValue,
@@ -85,10 +92,11 @@ export function XhCheckboxGroupRoot({
   renderItem,
   children,
   ...rest
-}: XhCheckboxGroupRootProps): ReactNode {
+}: XhCheckboxGroupRootProps<V>): ReactNode {
   const ctx = useCheckboxGroup(useFormControlProps({
     ariaLabel,
     collection,
+    valueKey,
     value,
     defaultValue,
     itemValues,
@@ -121,7 +129,8 @@ export function XhCheckboxGroupRoot({
         isChecked: api.isChecked,
         setValue: api.setValue,
         toggleValue: api.toggleValue,
-      })
+        // 值在 api 里已经解回原值，类型上按根组件推断出来的 V 交出去
+      } as CheckboxGroupRootSlotProps<V>)
     : renderDefaultStructure(api, label, renderItem)
 
   return (
@@ -152,7 +161,8 @@ export function XhCheckboxGroupLabel({ children, ...rest }: XhCheckboxGroupLabel
 }
 
 export interface XhCheckboxGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -231,7 +241,7 @@ function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件，条目文字交给 renderItem；
  * 全选控件要用时写 children。
  */
-function renderDefaultStructure(api: CheckboxGroupApi, label: ReactNode, renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode): ReactNode[] {
+function renderDefaultStructure<V>(api: CheckboxGroupApi<PropTypes, unknown>, label: ReactNode, renderItem?: (node: CheckboxGroupNodeMeta<V>) => ReactNode): ReactNode[] {
   const slotted: Readonly<Record<string, boolean>> = {
     label: label != null && typeof label !== 'string',
     item: renderItem != null,
@@ -242,7 +252,7 @@ function renderDefaultStructure(api: CheckboxGroupApi, label: ReactNode, renderI
       case 'label':
         return label
       case 'item':
-        return renderItem?.(node.data as CheckboxGroupNodeMeta) ?? (node.data as CheckboxGroupNodeMeta).label
+        return renderItem?.(node.data as CheckboxGroupNodeMeta<V>) ?? (node.data as CheckboxGroupNodeMeta<V>).label
       default:
         return undefined
     }

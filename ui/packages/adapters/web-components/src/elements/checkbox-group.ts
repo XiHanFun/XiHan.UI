@@ -6,7 +6,7 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -38,6 +38,9 @@ const LIST_CONVERTER = {
  * 文字与说明（给了才有）；全选格要用时手写部件。标题与条目文字可以由宿主直接子节点
  * `slot="label"`、`slot="item:<值>"` 接管。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhCheckboxGroupElement<number>>('xh-checkbox-group')`
+ * 拿到的元素上 value、itemValues 与 collection 都是 V；写在标记里的条目 value 永远是字符串。
+ *
  * @customElement xh-checkbox-group
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值，逗号分隔；未提供该属性即非受控
@@ -54,7 +57,8 @@ const LIST_CONVERTER = {
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'list'|'card'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
- * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @csspart root - role=group 容器
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart item - role=checkbox 条目，作者用 value 属性声明身份
@@ -64,7 +68,7 @@ const LIST_CONVERTER = {
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  * @csspart trigger - 全选 / 半选的父复选框，须写在 root 之内
  */
-export class XhCheckboxGroupElement extends XhElement {
+export class XhCheckboxGroupElement<V = string> extends XhElement {
   static override partContract = { anatomy: checkboxGroupAnatomy, meta: checkboxGroupMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
@@ -82,6 +86,7 @@ export class XhCheckboxGroupElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
     label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: LIST_CONVERTER },
     defaultValue: { converter: LIST_CONVERTER, attribute: 'default-value' },
@@ -99,11 +104,12 @@ export class XhCheckboxGroupElement extends XhElement {
     name: { converter: STRING_CONVERTER },
   }
 
-  declare collection?: CheckboxGroupNode[]
+  declare collection?: CheckboxGroupNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
   declare label?: string
-  declare value?: string[]
-  declare defaultValue?: string[]
-  declare itemValues?: string[]
+  declare value?: V[]
+  declare defaultValue?: V[]
+  declare itemValues?: V[]
   declare min?: number
   declare max?: number
   declare disabled?: boolean
@@ -119,7 +125,7 @@ export class XhCheckboxGroupElement extends XhElement {
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
 
-  private readonly notify = (details: CheckboxGroupValueChangeDetails): void => {
+  private readonly notify = (details: CheckboxGroupValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -143,11 +149,17 @@ export class XhCheckboxGroupElement extends XhElement {
 
   private machineProps(): Partial<CheckboxGroupSchema['props']> {
     const control = this.controlState()
-    return {
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
       collection: this.collection,
+      valueKey: this.valueKey,
       value: this.value,
       defaultValue: this.defaultValue,
       itemValues: this.itemValues,
+      onValueChange: this.notify,
+    } as Pick<CheckboxGroupSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'itemValues' | 'onValueChange'>
+    return {
+      ...valueTyped,
       min: this.min,
       max: this.max,
       disabled: control.disabled,
@@ -162,7 +174,6 @@ export class XhCheckboxGroupElement extends XhElement {
       // 作者写没写 label 角色节点决定根的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
-      onValueChange: this.notify,
     }
   }
 

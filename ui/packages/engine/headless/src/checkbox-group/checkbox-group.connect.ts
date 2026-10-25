@@ -15,6 +15,7 @@ import type {
   CheckboxGroupSchema,
 } from './checkbox-group.types'
 import { createPressTracker, dataAttr, isItemDisabled, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'
+import { decodeMetas, decodeValues, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { checkboxGroupAnatomy } from './checkbox-group.anatomy'
 import { resolveCheckboxGroupLimits } from './checkbox-group.machine'
@@ -37,7 +38,29 @@ export function resolveCheckedState(
   return hit === itemValues.length ? 'checked' : 'indeterminate'
 }
 
-export function connectCheckboxGroup<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectCheckboxGroupKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectCheckboxGroup<T extends PropTypes, V = string>(
+  service: Service<CheckboxGroupSchema>,
+  normalize: NormalizeProps<T>,
+): CheckboxGroupApi<T, V> {
+  const api = connectCheckboxGroupKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection, service.prop('collection')),
+    value: decodeValues(codec, api.value),
+    isChecked: value => api.isChecked(codec.key(value)),
+    setValue: next => api.setValue(next.map(codec.key)),
+    toggleValue: value => api.toggleValue(codec.key(value)),
+    // 收值的 getter 按名单换成先编码的版本
+    ...keyedGetters(codec, api, ['getItemProps', 'getIndicatorProps', 'getItemTextProps', 'getItemDescriptionProps', 'getHiddenInputProps']),
+  } as CheckboxGroupApi<T, V>
+}
+
+function connectCheckboxGroupKeys<T extends PropTypes>(
   service: Service<CheckboxGroupSchema>,
   normalize: NormalizeProps<T>,
 ): CheckboxGroupApi<T> {
@@ -63,6 +86,7 @@ export function connectCheckboxGroup<T extends PropTypes>(
   // collection 推出的条目元信息：显示文本与禁用都在这里定案，条目部件只报 value
   const collection: CheckboxGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     description: node.description ?? null,
     disabled: !!node.disabled,

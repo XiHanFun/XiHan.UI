@@ -5,7 +5,7 @@
 
 // 提供 use checkbox group 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { CheckboxGroupApi, CheckboxGroupSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { checkboxGroupMachine, connectCheckboxGroup } from '@xihan-ui/headless'
@@ -16,7 +16,8 @@ import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface CheckboxGroupContext {
-  api: CheckboxGroupApi
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: CheckboxGroupApi<PropTypes, unknown>
   service: Service<CheckboxGroupSchema>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
@@ -42,5 +43,5 @@ export function useCheckboxGroup(props: CheckboxGroupSchema['props']): CheckboxG
   // 选中集合攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
 
-  return { api: connectCheckboxGroup(service, reactNormalize), service, rootRef, registerLabel }
+  return { api: connectCheckboxGroup<PropTypes, unknown>(service, reactNormalize), service, rootRef, registerLabel }
 }

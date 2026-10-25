@@ -12,7 +12,7 @@ import { inject, provide } from 'vue'
 
 /** 条目声明的值与禁用，供 indicator / item-text 等子部件复用同一份声明。 */
 export interface CheckboxGroupItemContext {
-  item: ComputedRef<CheckboxGroupItemProps>
+  item: ComputedRef<CheckboxGroupItemProps<unknown>>
 }
 
 const KEY: InjectionKey<CheckboxGroupContext> = Symbol.for('xh-checkbox-group')

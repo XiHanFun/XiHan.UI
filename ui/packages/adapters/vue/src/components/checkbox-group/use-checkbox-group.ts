@@ -5,7 +5,7 @@
 
 // 提供 use checkbox group 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { CheckboxGroupApi, CheckboxGroupSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
@@ -16,7 +16,8 @@ import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CheckboxGroupContext {
-  api: ComputedRef<CheckboxGroupApi>
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComputedRef<CheckboxGroupApi<PropTypes, unknown>>
   service: Service<CheckboxGroupSchema>
   /**
    * 已挂载的 label 部件数量，由 XhCheckboxGroupLabel 自行登记。
@@ -34,6 +35,6 @@ export function useCheckboxGroup(
   // onValueChange 由组件外壳（emit）或组合式调用方提供，随 props 一并喂给机器
   const labelCount = ref(0)
   const service = useMachine(checkboxGroupMachine, () => ({ ...props, labelled: labelCount.value > 0, onValueChange }), scope)
-  const api = computed(() => connectCheckboxGroup(service, vueNormalize))
+  const api = computed(() => connectCheckboxGroup<PropTypes, unknown>(service, vueNormalize))
   return { api, service, labelCount }
 }

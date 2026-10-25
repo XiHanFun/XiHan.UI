@@ -7,6 +7,7 @@
 
 import type { CheckboxGroupPressedPart, CheckboxGroupSchema } from './checkbox-group.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { encodeSelectionProps, valueCodecOf } from '../shared/value-codec'
 
 const { createMachine } = setup<CheckboxGroupSchema>()
 
@@ -71,6 +72,12 @@ export function toggleAllValues(list: readonly string[], values: readonly string
 // 因此不需要影子事件与受控守卫。机器只有一个状态，逻辑全在 context + actions。
 export const checkboxGroupMachine = createMachine({
   name: 'checkbox-group',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器与 DOM 只认键；onValueChange 交出去时解回原值
+  props: ({ props, scope }) => {
+    const codec = valueCodecOf(scope, { valueKey: props.valueKey })
+    const encoded = encodeSelectionProps(props, codec)
+    return props.itemValues ? { ...encoded, itemValues: props.itemValues.map(codec.key) } : encoded
+  },
   context: ({ prop, cell }) => ({
     value: cell<string[]>(() => ({
       value: prop('value'),
