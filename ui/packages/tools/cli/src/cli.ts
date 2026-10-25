@@ -11,6 +11,8 @@ import process from 'node:process'
 import { parseArgs } from 'node:util'
 import { FRAMEWORKS, loadKnowledge, parseFramework } from './knowledge'
 import { serveStdio } from './mcp'
+import { migrateProject, renderMigration } from './migrate'
+import { MIGRATIONS, migrationsBetween } from './migrations'
 import { detectProject, versionNotice } from './project'
 import { componentParts, demoSource, listComponents, listPages, queryChangelog, QueryError, queryTokens, requireComponent, resolveDoc } from './query'
 import { renderChangelog, renderDemo, renderDemoList, renderDoc, renderInfo, renderList, renderPages, renderParts, renderTokens } from './render'
@@ -30,6 +32,11 @@ const HELP = `xihan-ui —— XiHan.UI 的离线知识库与 MCP 服务端
   parts <组件>                                   部件选择器、数据属性与覆盖槽
   design.md                                      设计语言文档
   changelog [<版本> [<版本>]] [--keyword <词>]   更新日志，两个版本时取区间
+
+迁移
+  migrate <从版本> <到版本> [<路径>...]          按每个 major 的规则改写源码：导入、组件、属性、事件、部件、元素、
+        [--dry-run] [--check]                    CSS 变量与关键帧的改名；改不了的报出位置。路径缺省为当前目录，
+                                                 --dry-run 只列出不写回，--check 有要改的就以 1 退出
 
 集成
   mcp                                            以 stdio 启动 MCP 服务端
@@ -130,6 +137,36 @@ function query(command: string, positionals: readonly string[], values: Record<s
   }
 }
 
+/** 版本写法（4、4.2.0、v4、^4.2.0）取 major。 */
+function majorOf(version: string | undefined, usage: string): number {
+  const match = /^\D*(\d+)/.exec(requireArg(version, usage))
+  if (!match)
+    throw new UsageError(`版本写法认不出：${version}。用法：xihan-ui ${usage}`)
+  return Number(match[1])
+}
+
+function runMigrate(positionals: readonly string[], values: Record<string, string | boolean | undefined>, out: CliEnvironment): number {
+  const usage = 'migrate <从版本> <到版本> [<路径>...]'
+  const from = majorOf(positionals[0], usage)
+  const to = majorOf(positionals[1], usage)
+  const latest = MIGRATIONS.at(-1)!.rules.major
+  if (to <= from)
+    throw new UsageError(`到版本（${to}）要比从版本（${from}）新`)
+  if (to > latest)
+    throw new UsageError(`最新的一套迁移规则是 ${latest}.0，没有到 ${to}.0 的规则`)
+  const migrations = migrationsBetween(from, to)
+  const report = migrateProject({
+    migrations,
+    from,
+    to,
+    paths: positionals.length > 2 ? positionals.slice(2) : ['.'],
+    cwd: out.cwd ?? process.cwd(),
+    write: !values['dry-run'] && !values.check,
+  })
+  out.stdout(values.format === 'json' ? JSON.stringify(report, null, 2) : renderMigration(report))
+  return values.check && report.files.some(file => file.edits > 0) ? 1 : 0
+}
+
 function runSetup(values: Record<string, string | boolean | undefined>, knowledge: Knowledge, out: CliEnvironment): number {
   const client = values.client
   if (typeof client !== 'string' || !CLIENTS.includes(client as Client))
@@ -200,6 +237,12 @@ export async function runCli(argv: readonly string[], environment: Partial<CliEn
   }
 
   try {
+    // 迁移只读规则，不读离线知识库
+    if (command === 'migrate') {
+      if (values.format !== undefined && values.format !== 'markdown' && values.format !== 'json')
+        throw new UsageError(`--format 只能是 markdown / json，收到 ${values.format}`)
+      return runMigrate(rest, values, out)
+    }
     const knowledge = loadKnowledge(out.dataDir)
     if (values.version) {
       out.stdout(knowledge.meta.version)
