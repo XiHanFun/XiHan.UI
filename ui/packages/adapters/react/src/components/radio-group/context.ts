@@ -11,7 +11,7 @@ import { createContext, useContext } from 'react'
 
 const Ctx = createContext<RadioGroupContext | undefined>(undefined)
 /** 条目声明的值与禁用，供 item-text 复用同一份声明。 */
-const ItemCtx = createContext<RadioGroupItemProps | undefined>(undefined)
+const ItemCtx = createContext<RadioGroupItemProps<unknown> | undefined>(undefined)
 
 export const RadioGroupProvider = Ctx
 export const RadioGroupItemProvider = ItemCtx
@@ -23,7 +23,7 @@ export function useRadioGroupContext(): RadioGroupContext {
   return ctx
 }
 
-export function useRadioGroupItemContext(): RadioGroupItemProps {
+export function useRadioGroupItemContext(): RadioGroupItemProps<unknown> {
   const item = useContext(ItemCtx)
   if (!item)
     throw new Error('条目的子部件要放在 XhRadioGroupItem 里')

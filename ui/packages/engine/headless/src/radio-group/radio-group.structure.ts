@@ -5,6 +5,7 @@
 
 // 单选组的标准结构：三端不写结构时按它铺出整套部件，Web Components 不写部件时元素按它生成节点。
 
+import type { PropTypes } from '@xihan-ui/core'
 import type { StructureNode, StructureSlotted } from '../shared/structure'
 import type { radioGroupAnatomy } from './radio-group.anatomy'
 import type { RadioGroupApi, RadioGroupNodeMeta } from './radio-group.types'
@@ -42,26 +43,28 @@ export interface RadioGroupStructureOptions {
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
 /** 一个条目：表单影子、单选圆圈、图标（给了才铺）、文字、说明（给了才铺）；带 slot 的文字格的 data 是这一条的元信息。 */
-function itemStructure(node: RadioGroupNodeMeta, slotted: StructureSlotted): RadioGroupNode {
+function itemStructure(node: RadioGroupNodeMeta<unknown>, slotted: StructureSlotted): RadioGroupNode {
   const children: RadioGroupNode[] = [
     { key: 'hidden-input', tag: 'input', part: 'hidden-input' },
     { key: 'indicator', tag: 'span', part: 'indicator' },
   ]
   if (node.icon != null)
     children.push({ key: 'icon', tag: 'span', part: 'item-icon', text: node.icon })
-  children.push(slotted('item', node.value)
-    ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.value }, data: node }
+  children.push(slotted('item', node.key)
+    ? { key: 'text', tag: 'span', part: 'item-text', slot: { name: 'item', key: node.key }, data: node }
     : { key: 'text', tag: 'span', part: 'item-text', text: node.label })
   if (node.description != null)
     children.push({ key: 'description', tag: 'span', part: 'item-description', text: node.description })
-  return { key: `item:${node.value}`, tag: 'div', part: 'item', attrs: { value: node.value }, children }
+  // 结构里一律用键：值可以是对象，拼不成节点的 key，也写不进 data-value；插槽数据 node 里照旧是原值
+  return { key: `item:${node.key}`, tag: 'div', part: 'item', attrs: { value: node.key }, children }
 }
 
 /**
  * 单选组在 root 里的标准结构：标题、segmented 形态的滑块（绝对定位，排在条目之前，后面的条目才盖得住它）、
  * collection 的条目。每个条目里表单影子与单选圆圈在前，接着图标、文字与说明。
  */
-export function radioGroupStructure(model: Pick<RadioGroupApi, 'collection' | 'variant'>, options: RadioGroupStructureOptions = {}): RadioGroupNode[] {
+// 值不论什么类型，结构只用元信息里的键：按 unknown 收，带具体值类型的 api 都交得进来
+export function radioGroupStructure(model: Pick<RadioGroupApi<PropTypes, unknown>, 'collection' | 'variant'>, options: RadioGroupStructureOptions = {}): RadioGroupNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
   const nodes: RadioGroupNode[] = []
   if (slotted('label'))

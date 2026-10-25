@@ -5,7 +5,7 @@
 
 // 提供 use radio group 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { RadioGroupApi, RadioGroupSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { connectRadioGroup, radioGroupMachine } from '@xihan-ui/headless'
@@ -16,7 +16,8 @@ import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface RadioGroupContext {
-  api: RadioGroupApi
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: RadioGroupApi<PropTypes, unknown>
   /** 状态机实例，供条目上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
   /** root 节点：条目集合的查询容器，segmented 形态滑块测量的参照系，也是表单重置的锚点。 */
@@ -49,5 +50,5 @@ export function useRadioGroup(props: RadioGroupSchema['props']): RadioGroupConte
   // 选中值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
 
-  return { api: connectRadioGroup(service, reactNormalize), service, rootRef, registerLabel }
+  return { api: connectRadioGroup<PropTypes, unknown>(service, reactNormalize), service, rootRef, registerLabel }
 }

@@ -5,10 +5,10 @@
 
 // 提供 radio group 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupApi, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant, StructureChild } from '@xihan-ui/headless'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { RadioGroupApi, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, SelectionValueKey, StructureChild } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { radioGroupStructure } from '@xihan-ui/headless'
+import { radioGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -24,14 +24,20 @@ type RadioGroupProps = RadioGroupSchema['props']
 /** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
-export interface XhRadioGroupRootProps extends RootElementProps {
+/**
+ * V 是选中值的类型，按 value / defaultValue / collection 推断，缺省 string：数字、对象都行，
+ * 对象值给 valueKey。onValueChange 与 renderItem 拿到的都是 V。
+ */
+export interface XhRadioGroupRootProps<V = string> extends RootElementProps {
   /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
   ariaLabel?: string
-  collection?: RadioGroupNode[]
+  collection?: RadioGroupNode<V>[]
+  /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+  valueKey?: SelectionValueKey<V>
   /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
-  value?: string | null
-  defaultValue?: string | null
+  value?: V | null
+  defaultValue?: V | null
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -47,15 +53,16 @@ export interface XhRadioGroupRootProps extends RootElementProps {
   size?: Size
   /** 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 */
   variant?: RadioGroupVariant
-  onValueChange?: RadioGroupProps['onValueChange']
+  onValueChange?: (details: RadioGroupValueChangeDetails<V>) => void
   /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
-  renderItem?: (node: RadioGroupNodeMeta) => ReactNode
+  renderItem?: (node: RadioGroupNodeMeta<V>) => ReactNode
   children?: ReactNode
 }
 
-export function XhRadioGroupRoot({
+export function XhRadioGroupRoot<V = string>({
   ariaLabel,
   collection,
+  valueKey,
   label,
   value,
   defaultValue,
@@ -75,10 +82,11 @@ export function XhRadioGroupRoot({
   renderItem,
   children,
   ...rest
-}: XhRadioGroupRootProps): ReactNode {
+}: XhRadioGroupRootProps<V>): ReactNode {
   const ctx = useRadioGroup(useFormControlProps({
     ariaLabel,
     collection,
+    valueKey,
     value,
     defaultValue,
     disabled,
@@ -150,7 +158,8 @@ export function XhRadioGroupThumb({ children, ...rest }: XhRadioGroupThumbProps)
 }
 
 export interface XhRadioGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  value: string
+  /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+  value: unknown
   /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
@@ -171,7 +180,8 @@ export function XhRadioGroupItem({ value, disabled, children, ...rest }: XhRadio
     if (svc.getStatus() !== 'Started')
       return
     if (itemEl.current && svc.scope.getActiveElement() === itemEl.current)
-      svc.send({ type: 'ITEM.FOCUS', value })
+      // 机器只认键
+      svc.send({ type: 'ITEM.FOCUS', value: valueKeyOf(svc.scope, value) })
   }, [ctx.service, value])
 
   // 卸载时上报整组失焦：按「本节点当下正持有焦点」判定，不按 value 比对
@@ -256,7 +266,7 @@ function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[
  * 未写 children 时铺开的整套结构：照 headless 的 radioGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。文字以外的标题内容交给 label 部件，条目文字交给 renderItem。
  */
-function renderDefaultStructure(api: RadioGroupApi, label: ReactNode, renderItem?: (node: RadioGroupNodeMeta) => ReactNode): ReactNode[] {
+function renderDefaultStructure<V>(api: RadioGroupApi<PropTypes, unknown>, label: ReactNode, renderItem?: (node: RadioGroupNodeMeta<V>) => ReactNode): ReactNode[] {
   const slotted: Readonly<Record<string, boolean>> = {
     label: label != null && typeof label !== 'string',
     item: renderItem != null,
@@ -267,7 +277,7 @@ function renderDefaultStructure(api: RadioGroupApi, label: ReactNode, renderItem
       case 'label':
         return label
       case 'item':
-        return renderItem?.(node.data as RadioGroupNodeMeta) ?? (node.data as RadioGroupNodeMeta).label
+        return renderItem?.(node.data as RadioGroupNodeMeta<V>) ?? (node.data as RadioGroupNodeMeta<V>).label
       default:
         return undefined
     }

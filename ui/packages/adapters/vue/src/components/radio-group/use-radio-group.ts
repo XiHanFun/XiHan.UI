@@ -5,7 +5,7 @@
 
 // 提供 use radio group 相关实现。
 
-import type { Service } from '@xihan-ui/core'
+import type { PropTypes, Service } from '@xihan-ui/core'
 import type { RadioGroupApi, RadioGroupSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createScope } from '@xihan-ui/core'
@@ -16,7 +16,8 @@ import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface RadioGroupContext {
-  api: ComputedRef<RadioGroupApi>
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComputedRef<RadioGroupApi<PropTypes, unknown>>
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
   /** root 节点：条目集合的查询容器，同时是 segmented 形态滑块测量的参照系。 */
@@ -41,6 +42,6 @@ export function useRadioGroup(
   // 滑块的量测在机器里跑，DOM 侧的取值口经 refs 交进去
   service.refs.set('getRootEl', () => rootRef.value)
 
-  const api = computed(() => connectRadioGroup(service, vueNormalize))
+  const api = computed(() => connectRadioGroup<PropTypes, unknown>(service, vueNormalize))
   return { api, service, rootRef, labelCount }
 }

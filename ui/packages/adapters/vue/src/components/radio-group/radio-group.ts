@@ -5,11 +5,11 @@
 
 // 提供 radio group 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupVariant, StructureChild } from '@xihan-ui/headless'
+import type { Direction, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
+import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNode, RadioGroupNodeMeta, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, SelectionValueKey, StructureChild } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
-import type { PayloadOf } from '../../runtime/payload'
-import { radioGroupStructure } from '@xihan-ui/headless'
+import type { BivariantCallback } from '../../runtime/bivariant'
+import { radioGroupStructure, valueKeyOf } from '@xihan-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, onUnmounted, ref, watch } from 'vue'
 import { renderStructure } from '../../runtime/structure'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
@@ -19,16 +19,20 @@ import { useRadioGroup } from './use-radio-group'
 
 type RadioGroupProps = RadioGroupSchema['props']
 
-export const XhRadioGroupRoot = defineComponent({
+// 运行时的根组件按 unknown 收值；对外导出的 XhRadioGroupRoot 在它上面套一层按值类型收窄的类型，见文件后面
+const XhRadioGroupRootImpl = defineComponent({
   name: 'XhRadioGroupRoot',
   props: {
     /** 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上；放进字段或渲染了 label 部件时以它们为准。 */
     ariaLabel: { type: String },
-    collection: { type: Array as PropType<RadioGroupNode[]> },
+    collection: { type: Array as PropType<RadioGroupNode<unknown>[]> },
+    /** 对象值怎样取键：字段名或取值函数；同一个选项每次都是新对象时给它，不给按对象身份认。 */
+    valueKey: { type: [String, Function] as PropType<string | ((value: never) => string)> },
     /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
-    value: { type: String as PropType<string | null> },
-    defaultValue: { type: String as PropType<string | null> },
+    // 值可以是字符串、数字或对象：运行时不查类型，类型由对外导出的 XhRadioGroupRoot 按值类型收窄
+    value: { type: null as unknown as PropType<unknown> },
+    defaultValue: { type: null as unknown as PropType<unknown> },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
@@ -44,15 +48,15 @@ export const XhRadioGroupRoot = defineComponent({
   },
   // value-change 携带 { value }，update:value 携带裸值
   emits: {
-    'value-change': (_details: PayloadOf<RadioGroupProps, 'onValueChange'>) => true,
-    'update:value': (_value: PayloadOf<RadioGroupProps, 'onValueChange'>['value']) => true,
+    'value-change': (_details: RadioGroupValueChangeDetails<unknown>) => true,
+    'update:value': (_value: unknown) => true,
   },
   setup(props, { slots, emit }) {
     const notify: RadioGroupProps['onValueChange'] = (details) => {
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useRadioGroup(useFormControlProps(props) as RadioGroupProps, notify)
+    const ctx = useRadioGroup(useFormControlProps(props) as unknown as RadioGroupProps, notify)
     provideRadioGroup(ctx)
     // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
     const fieldWiring = useFieldGroupWiring()
@@ -70,6 +74,33 @@ export const XhRadioGroupRoot = defineComponent({
     }
   },
 })
+
+/** 根组件里随值类型收窄的那几项 prop：选中值、条目数据、取键方式与值变化的回调。 */
+export interface XhRadioGroupRootValueProps<V> {
+  'value'?: V | null
+  'defaultValue'?: V | null
+  'collection'?: RadioGroupNode<V>[]
+  'valueKey'?: SelectionValueKey<V>
+  'onUpdate:value'?: BivariantCallback<[value: V | null]>
+  'onValueChange'?: BivariantCallback<[details: RadioGroupValueChangeDetails<V>]>
+}
+
+type XhRadioGroupRootInstance = InstanceType<typeof XhRadioGroupRootImpl>
+
+/**
+ * 按值类型收窄的根组件类型。模板里由 Volar 照 value / collection 推断 V：v-model:value 绑数字或对象都不必断言，
+ * 条目插槽交出来的也是 V。`h()` 推断不了泛型，那里按 unknown 收。
+ */
+export type XhRadioGroupRootComponent = Omit<typeof XhRadioGroupRootImpl, never> & {
+  new<V = string>(props?: Omit<XhRadioGroupRootInstance['$props'], keyof XhRadioGroupRootValueProps<V>> & XhRadioGroupRootValueProps<V>): Omit<XhRadioGroupRootInstance, '$props' | '$slots'> & {
+    $props: Omit<XhRadioGroupRootInstance['$props'], keyof XhRadioGroupRootValueProps<V>> & XhRadioGroupRootValueProps<V>
+    $slots: Omit<XhRadioGroupRootInstance['$slots'], 'item'> & {
+      item?: (node: RadioGroupNodeMeta<V>) => VNode[]
+    }
+  }
+}
+
+export const XhRadioGroupRoot = XhRadioGroupRootImpl as unknown as XhRadioGroupRootComponent
 
 export const XhRadioGroupLabel = defineComponent({
   name: 'XhRadioGroupLabel',
@@ -96,13 +127,14 @@ export const XhRadioGroupThumb = defineComponent({
 export const XhRadioGroupItem = defineComponent({
   name: 'XhRadioGroupItem',
   props: {
-    value: { type: String, required: true },
+    /** 条目代表的值，与根上的值同类型：字符串、数字或对象。 */
+    value: { type: null as unknown as PropType<unknown>, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const ctx = useRadioGroupContext()
-    const item = computed<RadioGroupItemProps>(() => ({ value: props.value, disabled: props.disabled }))
+    const item = computed<RadioGroupItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideRadioGroupItem({ item })
     // 本条目持有焦点时，value 变更重报焦点条目，卸载时上报整组失焦
     const itemEl = ref<HTMLElement | null>(null)
@@ -113,7 +145,8 @@ export const XhRadioGroupItem = defineComponent({
       if (svc.getStatus() !== 'Started')
         return
       if (itemEl.value && svc.scope.getActiveElement() === itemEl.value)
-        svc.send({ type: 'ITEM.FOCUS', value: next })
+        // 机器只认键
+        svc.send({ type: 'ITEM.FOCUS', value: valueKeyOf(svc.scope, next) })
     })
     onBeforeUnmount(() => {
       const { service } = ctx
@@ -184,21 +217,21 @@ function withoutSelfAssembled(nodes: readonly StructureChild[]): StructureChild[
 
 interface RadioGroupStructureSlots {
   label?: () => VNode[]
-  item?: (node: RadioGroupNodeMeta) => VNode[]
+  item?: (node: RadioGroupNodeMeta<unknown>) => VNode[]
 }
 
 /**
  * 未写默认插槽时铺开的整套结构：照 headless 的 radioGroupStructure 渲，
  * 与 Web Components 不写部件时元素生成的节点出自同一份。标题与条目文字由对应插槽接管。
  */
-function renderDefaultStructure(api: RadioGroupApi, label: string | undefined, content: RadioGroupStructureSlots): VNode[] {
+function renderDefaultStructure(api: RadioGroupApi<PropTypes, unknown>, label: string | undefined, content: RadioGroupStructureSlots): VNode[] {
   const nodes = radioGroupStructure(api, { label, slotted: name => content[name as keyof RadioGroupStructureSlots] != null })
   return renderStructure(withoutSelfAssembled(nodes), RADIO_GROUP_PARTS, (node) => {
     switch (node.slot?.name) {
       case 'label':
         return content.label?.()
       case 'item':
-        return content.item?.(node.data as RadioGroupNodeMeta) ?? (node.data as RadioGroupNodeMeta).label
+        return content.item?.(node.data as RadioGroupNodeMeta<unknown>) ?? (node.data as RadioGroupNodeMeta<unknown>).label
       default:
         return undefined
     }
