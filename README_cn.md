@@ -154,7 +154,7 @@ pnpm dev
 
 库里有的：全部组件的内核与适配器、视觉组件的默认皮肤、设计令牌与主题运行时、十种语言的内建语言包（简体中文、繁體中文、English、日本語、한국어、Français、Deutsch、Español、Português (Brasil)、Русский，各适配器的 `locale` 子入口，见[国际化](./docs/guide/i18n.md)）、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
 
-库里没有的：令牌浏览器、企业业务组件。十种以外的语言以任一份内建语言包为样板自写一份 `XhLocale`。
+库里没有的：企业业务组件。文档站另有[主题设计器](https://ui.docs.xihanfun.com/design/theme-designer)与[令牌浏览器](https://ui.docs.xihanfun.com/design/token-browser)。十种以外的语言以任一份内建语言包为样板自写一份 `XhLocale`。
 
 ## 相关项目
 

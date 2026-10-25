@@ -21,7 +21,7 @@ import {
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import XhThemePreview from "./XhThemePreview.vue";
 
-type Mode = "light" | "dark";
+type Mode = "light" | "dark" | "system";
 type Density = "comfortable" | "compact";
 type Contrast = "default" | "more";
 type Radius = "tight" | "default" | "round";
@@ -104,7 +104,7 @@ const radius = ref<string | null>(baseline.radius);
 
 /** 工具条上的四组分段设置 */
 const settings = [
-  { label: "明暗", model: mode, options: [{ value: "light", label: "浅色" }, { value: "dark", label: "深色" }] },
+  { label: "明暗", model: mode, options: [{ value: "light", label: "浅色" }, { value: "dark", label: "深色" }, { value: "system", label: "跟随系统" }] },
   { label: "密度", model: density, options: [{ value: "comfortable", label: "宽松" }, { value: "compact", label: "紧凑" }] },
   { label: "对比度", model: contrast, options: [{ value: "default", label: "常规" }, { value: "more", label: "高对比" }] },
   { label: "圆角", model: radius, options: [{ value: "tight", label: "方正" }, { value: "default", label: "默认" }, { value: "round", label: "圆润" }] },
@@ -173,7 +173,7 @@ registerBrand("${EXPORT_BRAND}", "${state.value.seed}");
 const visual = createVisualEnvironmentController({
   root: document.documentElement,
   initial: {
-    // 预览用的是${state.value.mode === "dark" ? "深色" : "浅色"}；跟随系统写 "system"
+    // ${state.value.mode === "system" ? "跟随系统明暗" : `预览用的是${state.value.mode === "dark" ? "深色" : "浅色"}；跟随系统写 "system"`}
     mode: "${state.value.mode}",
     brand: brandId("${EXPORT_BRAND}"),
     density: "${state.value.density}",
@@ -181,12 +181,23 @@ const visual = createVisualEnvironmentController({
   },
 });`);
 
-const copied = ref<"css" | "ts" | null>(null);
+/** 不跑脚本的接法：根元素写上这几个属性；明暗选「跟随系统」时写 system，由 prefers-color-scheme 切换 */
+const htmlCode = computed(() => {
+  const attrs = [`data-theme="${state.value.mode}"`, `data-brand="${EXPORT_BRAND}"`];
+  if (state.value.density !== "comfortable")
+    attrs.push(`data-density="${state.value.density}"`);
+  if (state.value.contrast !== "default")
+    attrs.push(`data-contrast="${state.value.contrast}"`);
+  return `<!-- 引入 @xihan-ui/styles 与上面的 CSS 后，根元素写上这几个属性即生效，不必跑脚本 -->
+<html ${attrs.join(" ")}>`;
+});
+
+const copied = ref<"css" | "html" | "ts" | null>(null);
 let copiedTimer: ReturnType<typeof setTimeout> | undefined;
 
-async function copy(kind: "css" | "ts"): Promise<void> {
+async function copy(kind: "css" | "html" | "ts"): Promise<void> {
   try {
-    await navigator.clipboard.writeText(kind === "css" ? cssCode.value : tsCode.value);
+    await navigator.clipboard.writeText({ css: cssCode.value, html: htmlCode.value, ts: tsCode.value }[kind]);
     copied.value = kind;
     clearTimeout(copiedTimer);
     copiedTimer = setTimeout(() => (copied.value = null), 1600);
@@ -349,6 +360,15 @@ onBeforeUnmount(() => {
           </XhButton>
         </header>
         <pre class="xh-designer__code"><code>{{ cssCode }}</code></pre>
+      </section>
+      <section class="xh-designer__export" aria-label="HTML">
+        <header class="xh-designer__export-head">
+          <span>HTML：根元素属性，不跑脚本</span>
+          <XhButton variant="ghost" tone="neutral" size="sm" @click="copy('html')">
+            {{ copied === "html" ? "已复制" : "复制" }}
+          </XhButton>
+        </header>
+        <pre class="xh-designer__code"><code>{{ htmlCode }}</code></pre>
       </section>
       <section class="xh-designer__export" aria-label="接入代码">
         <header class="xh-designer__export-head">

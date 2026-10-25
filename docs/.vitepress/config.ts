@@ -139,7 +139,10 @@ const designSidebar: DefaultTheme.SidebarItem[] = [
   {
     text: "工具",
     collapsed: false,
-    items: [{ text: "主题设计器", link: "/design/theme-designer" }],
+    items: [
+      { text: "主题设计器", link: "/design/theme-designer" },
+      { text: "令牌浏览器", link: "/design/token-browser" },
+    ],
   },
 ];
 

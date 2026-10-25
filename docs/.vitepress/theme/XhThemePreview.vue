@@ -198,7 +198,7 @@ import { computed, ref } from "vue";
 const props = defineProps<{
   /** 已注册的品牌 id */
   brand: string;
-  mode: "light" | "dark";
+  mode: "light" | "dark" | "system";
   density: "comfortable" | "compact";
   contrast: "default" | "more";
 }>();
