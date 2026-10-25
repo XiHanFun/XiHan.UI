@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { SelectionValueKey } from '../shared/value-codec'
 import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
@@ -48,14 +49,15 @@ export interface SelectOpenChangeDetails {
   reason?: OverlayCloseReason
 }
 
-export interface SelectValueChangeDetails {
-  value: string[]
+/** V 是选中值的类型，缺省 string；数字、对象都行，见 SelectSchema 的 valueKey。 */
+export interface SelectValueChangeDetails<V = string> {
+  value: V[]
 }
 
 /** 条目数据。提供 collection 时，显示文本与禁用以它为准。 */
-export interface SelectNode {
-  value: string
-  /** 展示文本，也是连打检索的取字来源；默认回退为 value。 */
+export interface SelectNode<V = string> {
+  value: V
+  /** 展示文本，也是连打检索的取字来源；默认回退为值（不是字符串的值退回它的键）。 */
   label?: string
   /** 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
@@ -95,19 +97,23 @@ export interface SelectTranslations {
 }
 
 /** 标签声明的身份：代表哪个选中值。 */
-export interface SelectTagProps {
-  value: string
+export interface SelectTagProps<V = string> {
+  value: V
 }
 
 /** 可见标签的数据：值与显示文本。 */
-export interface SelectTagMeta {
-  value: string
+export interface SelectTagMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。标签的 data-value 与列表里的 key 用它。 */
+  key: string
   label: string
 }
 
-export interface SelectNodeMeta {
-  value: string
-  /** node.label ?? node.value，恒为字符串。 */
+export interface SelectNodeMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。条目的 data-value 与列表里的 key 用它。 */
+  key: string
+  /** node.label，没写时退回值（不是字符串的值退回它的键），恒为字符串。 */
   label: string
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
@@ -120,8 +126,8 @@ export interface SelectNodeMeta {
  * 条目声明的身份：值必须声明，禁用可由 collection 代为声明。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
-export interface SelectItemProps {
-  value: string
+export interface SelectItemProps<V = string> {
+  value: V
   /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
@@ -131,7 +137,11 @@ export interface SelectGroupProps {
   value: string
 }
 
-export interface SelectSchema extends MachineSchema {
+/**
+ * V 是选中值的类型，缺省 string。机器与 DOM 只认字符串键：值进来时编成键（字符串原样，数字转字符串，
+ * 对象按 valueKey），onValueChange 与 api 交出去时解回原值，选中值、条目、标签与 v-model 都是 V。
+ */
+export interface SelectSchema<V = string> extends MachineSchema {
   props: {
     /**
      * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
@@ -147,7 +157,12 @@ export interface SelectSchema extends MachineSchema {
      * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value，
      * 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。
      */
-    collection?: SelectNode[]
+    collection?: SelectNode<V>[]
+    /**
+     * 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它；
+     * 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。
+     */
+    valueKey?: SelectionValueKey<V>
     /** 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /**
@@ -160,9 +175,9 @@ export interface SelectSchema extends MachineSchema {
      * 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。
      * 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。
      */
-    value?: string | string[] | null
-    /** 非受控初始选中值。与 value 同样接受裸串与 null。 */
-    defaultValue?: string | string[] | null
+    value?: V | V[] | null
+    /** 非受控初始选中值。与 value 同样接受裸值与 null。 */
+    defaultValue?: V | V[] | null
     /** 允许选中多项。单选时选完即收起，多选时保持展开继续选。 */
     multiple?: boolean
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
@@ -204,7 +219,7 @@ export interface SelectSchema extends MachineSchema {
     /** 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 */
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
-    onValueChange?: (details: SelectValueChangeDetails) => void
+    onValueChange?: (details: SelectValueChangeDetails<V>) => void
     /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
     onClear?: () => void
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
@@ -294,12 +309,15 @@ export interface SelectSchema extends MachineSchema {
   effect: 'trackPosition' | 'trackLayer' | 'trackTagListMotion'
 }
 
-export interface SelectApi<T extends PropTypes = PropTypes> {
+/** V 是选中值的类型：value、tags、collection 与高亮交出原值，收值的 getter 与动作也收原值。 */
+export interface SelectApi<T extends PropTypes = PropTypes, V = string> {
   open: boolean
   /** 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 */
-  collection: readonly SelectNodeMeta[]
+  collection: readonly SelectNodeMeta<V>[]
   /** 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 */
-  value: string[]
+  value: V[]
+  /** 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 */
+  valueKeys: string[]
   /** 选中项的文本，与 value 逐项等长对应；某项在 DOM 中查询不到条目时该项回退为值本身。 */
   valueText: string[]
   /** value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 */
@@ -317,19 +335,19 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   /** 当前能否清空：有选中且既不禁用也不只读。 */
   canClear: boolean
   /** 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 */
-  tags: SelectTagMeta[]
+  tags: SelectTagMeta<V>[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
   /** 高亮锚点；收起时为 null。 */
-  highlightedValue: string | null
+  highlightedValue: V | null
   setOpen: (next: boolean) => void
-  setValue: (next: string | string[]) => void
+  setValue: (next: V | V[]) => void
   /** 清空全部选中。 */
   clear: () => void
   /** 移除一个选中值。 */
-  deselect: (value: string) => void
+  deselect: (value: V) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   /** 触发器与清空按钮的收纳容器：两者在其中并排，有值时清空按钮替代展开指示符。 */
@@ -342,13 +360,13 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   /** 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 */
   getTagListProps: () => T['element']
   /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 */
-  getTagProps: (props: SelectTagProps) => T['element']
+  getTagProps: (props: SelectTagProps<V>) => T['element']
   /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
   getTagLabelProps: () => T['element']
   /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
   getOverflowTagProps: () => T['element']
   /** 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 */
-  getItemDeleteTriggerProps: (props: SelectTagProps) => T['button']
+  getItemDeleteTriggerProps: (props: SelectTagProps<V>) => T['button']
   getPositionerProps: () => T['element']
   /** 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 */
   getContentProps: () => T['element']
@@ -379,12 +397,12 @@ export interface SelectApi<T extends PropTypes = PropTypes> {
   getGroupProps: (props: SelectGroupProps) => T['element']
   /** 分组标题：不是选项、不进入导航，只作为本组的可及名。 */
   getGroupLabelProps: (props: SelectGroupProps) => T['element']
-  getItemProps: (props: SelectItemProps) => T['element']
-  getItemPrefixProps: (props: SelectItemProps) => T['element']
-  getItemTextProps: (props: SelectItemProps) => T['element']
-  getItemDescriptionProps: (props: SelectItemProps) => T['element']
-  getItemSuffixProps: (props: SelectItemProps) => T['element']
-  getItemIndicatorProps: (props: SelectItemProps) => T['element']
+  getItemProps: (props: SelectItemProps<V>) => T['element']
+  getItemPrefixProps: (props: SelectItemProps<V>) => T['element']
+  getItemTextProps: (props: SelectItemProps<V>) => T['element']
+  getItemDescriptionProps: (props: SelectItemProps<V>) => T['element']
+  getItemSuffixProps: (props: SelectItemProps<V>) => T['element']
+  getItemIndicatorProps: (props: SelectItemProps<V>) => T['element']
   /**
    * 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。
    * 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。

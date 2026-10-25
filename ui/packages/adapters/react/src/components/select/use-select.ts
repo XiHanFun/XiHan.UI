@@ -5,7 +5,7 @@
 
 // 提供 use select 相关实现。
 
-import type { Layer, Service } from '@xihan-ui/core'
+import type { Layer, PropTypes, Service } from '@xihan-ui/core'
 import type { SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
@@ -26,7 +26,8 @@ export interface SelectContext extends OverlayWiring {
   registerLabel: () => () => void
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<SelectSchema>
-  api: SelectApi
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: SelectApi<PropTypes, unknown>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
   triggerRef: RefObject<HTMLElement | null>
@@ -96,7 +97,7 @@ export function useSelect(props: SelectSchema['props']): SelectContext {
     registerLabel,
     ...overlay,
     service,
-    api: connectSelect(service, reactNormalize),
+    api: connectSelect<PropTypes, unknown>(service, reactNormalize),
     rootRef,
     triggerRef,
     controlRef,

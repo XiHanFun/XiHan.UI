@@ -388,7 +388,10 @@ function childrenPayload(source, fileName) {
       // 后者的载荷是第二个实参，第一个是 children 本身
       const direct = /(?:^|\.)children$/.test(callee)
       const viaHelper = /(?:^|\.)renderSlot$/.test(callee)
-      const arg = direct ? n.arguments[0] : viaHelper ? n.arguments[1] : undefined
+      let arg = direct ? n.arguments[0] : viaHelper ? n.arguments[1] : undefined
+      // 载荷对象外面可以套一层类型断言：选择类按根组件推断出来的值类型交出去（`{ … } as SelectRootSlotProps<V>`）
+      while (arg && (ts.isAsExpression(arg) || ts.isSatisfiesExpression(arg) || ts.isParenthesizedExpression(arg)))
+        arg = arg.expression
       if (arg && ts.isObjectLiteralExpression(arg)) {
         for (const prop of arg.properties) {
           if (ts.isPropertyAssignment(prop)) {

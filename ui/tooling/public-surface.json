@@ -7997,6 +7997,7 @@
       "SelectTagProps",
       "SelectTranslations",
       "SelectValueChangeDetails",
+      "SelectionValueKey",
       "SeparatorAlign",
       "SeparatorApi",
       "SeparatorProps",
@@ -10035,6 +10036,7 @@
       "upceExpand",
       "updateFilterNode",
       "validateFiles",
+      "valueKeyOf",
       "valueToPercent",
       "virtualListStructure",
       "virtualWindowStructure",
@@ -15101,6 +15103,7 @@
       "tone",
       "translations",
       "value",
+      "valueKey",
       "variant",
       "virtualizer"
     ],
@@ -23910,6 +23913,7 @@
         "size",
         "tone",
         "value",
+        "value-key",
         "variant",
         "virtual"
       ],

@@ -5,7 +5,7 @@
 
 // 提供 use select 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Cleanup, Layer, PropTypes, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -26,7 +26,8 @@ export interface SelectContext {
   labelCount: Ref<number>
   /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<SelectSchema>
-  api: ComputedRef<SelectApi>
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComputedRef<SelectApi<PropTypes, unknown>>
   triggerRef: Ref<HTMLElement | null>
   /** 盒：触发器与清空按钮在里面并排，记为浮层分支 */
   controlRef: Ref<HTMLElement | null>
@@ -85,7 +86,7 @@ export function useSelect(
     service.refs.set('getContentEl', () => contentRef.value)
   }
 
-  const api = computed(() => connectSelect(service, vueNormalize))
+  const api = computed(() => connectSelect<PropTypes, unknown>(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({
     config,

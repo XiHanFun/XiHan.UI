@@ -1,0 +1,34 @@
+<!-- 对象值 | 选项直接用接口取回来的对象：value 与值变化交出的都是对象本身，给 valueKey 按 id 认，同一个人换成内容相同的新对象也选得中 -->
+<div style="display: grid; gap: 12px; width: 100%; max-width: 320px">
+  <xh-select id="select-object-value" multiple value-key="id" label="负责人" placeholder="请选择">
+    <div data-xh-part="root"></div>
+  </xh-select>
+  <span id="select-object-value-output" data-demo-output></span>
+</div>
+
+<script type="module">
+  const members = [
+    { id: 1, name: "赵一", team: "平台研发" },
+    { id: 2, name: "钱二", team: "前端体验" },
+    { id: 3, name: "孙三", team: "基础架构" },
+    { id: 4, name: "李四", team: "质量保障" },
+  ];
+
+  const select = document.getElementById("select-object-value");
+  const output = document.getElementById("select-object-value-output");
+  const render = (picked) => {
+    output.textContent = picked.map(member => `${member.name}（${member.team}）`).join("、") || "未选";
+  };
+
+  // 对象值只能经 property 交：collection 与 value 都是对象本身
+  select.collection = members.map(member => ({ value: member, label: member.name, description: member.team }));
+  // 初值是另一份内容相同的对象（比如从地址栏还原的），按 value-key 写的 id 认得出来
+  select.value = [{ id: 2, name: "钱二", team: "前端体验" }];
+  render(select.value);
+
+  // value-change 交出的是对象本身；受控时写回 value
+  select.addEventListener("value-change", (event) => {
+    select.value = event.detail.value;
+    render(event.detail.value);
+  });
+</script>

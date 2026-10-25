@@ -11,8 +11,9 @@ import { createContext, useContext } from 'react'
 
 const Ctx = createContext<SelectContext | undefined>(undefined)
 const GroupCtx = createContext<SelectGroupProps | undefined>(undefined)
-const ItemCtx = createContext<SelectItemProps | undefined>(undefined)
-const TagCtx = createContext<string | undefined>(undefined)
+const ItemCtx = createContext<SelectItemProps<unknown> | undefined>(undefined)
+// 包一层：值本身可以是任何东西（含空串、0），缺席只认 undefined 这一个容器
+const TagCtx = createContext<{ value: unknown } | undefined>(undefined)
 
 export const SelectProvider = Ctx
 export const SelectGroupProvider = GroupCtx
@@ -33,16 +34,16 @@ export function useSelectGroupContext(): SelectGroupProps {
   return group
 }
 
-export function useSelectItemContext(): SelectItemProps {
+export function useSelectItemContext(): SelectItemProps<unknown> {
   const item = useContext(ItemCtx)
   if (!item)
     throw new Error('条目的子部件要放在 XhSelectItem 里')
   return item
 }
 
-export function useSelectTagContext(): string {
-  const value = useContext(TagCtx)
-  if (value === undefined)
+export function useSelectTagContext(): unknown {
+  const tag = useContext(TagCtx)
+  if (tag === undefined)
     throw new Error('XhSelectItemDeleteTrigger 要放在 XhSelectTag 里')
-  return value
+  return tag.value
 }
