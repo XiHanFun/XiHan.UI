@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 // 选择类组件的值边界：数字、对象值进来编成键，机器与 DOM 只认键；onValueChange 与 api 交出去时解回原值。
 import type { PropTypes } from '@xihan-ui/core'
+import type { ComboboxSchema } from '../src/combobox'
 import type { SelectSchema } from '../src/select'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it, vi } from 'vitest'
+import { comboboxMachine, connectCombobox } from '../src/combobox'
 import { connectSelect, selectMachine } from '../src/select'
 
 function mount<V>(initial: Partial<SelectSchema<V>['props']>) {
@@ -89,5 +91,42 @@ describe('选择类的值边界', () => {
     expect(api().value).toEqual(['b'])
     expect(api().valueKeys).toEqual(['b'])
     expect(api().collection.map(meta => meta.value)).toEqual(['a', 'b'])
+  })
+})
+
+function mountCombobox<V>(initial: Partial<ComboboxSchema<V>['props']>) {
+  const runtime = createVanillaRuntime()
+  const props = runtime.signal(initial)
+  const service = createService(comboboxMachine, { props: () => props.get() as ComboboxSchema['props'], runtime })
+  runtime.start()
+  return {
+    api: () => connectCombobox<PropTypes, V>(service, normalizeProps),
+    service,
+  }
+}
+
+describe('组合框的值边界', () => {
+  it('数字值：选中、标签与 onValueChange 交出数字；自定义过滤拿到的是作者给的那一条', () => {
+    const onValueChange = vi.fn()
+    const seen: unknown[] = []
+    const { api, service } = mountCombobox<number>({
+      multiple: true,
+      collection: [{ value: 10, label: '十' }, { value: 20, label: '二十' }],
+      defaultValue: [20],
+      filter: (node, query) => {
+        seen.push(node.value)
+        return node.label!.includes(query)
+      },
+      onValueChange,
+    })
+    expect(api().value).toEqual([20])
+    expect(api().tags.map(tag => [tag.value, tag.key])).toEqual([[20, '20']])
+    expect(api().isSelected(20)).toBe(true)
+    api().setValue([10, 20])
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: [10, 20] })
+    service.send({ type: 'INPUT.CHANGE', value: '十' })
+    expect(api().collection.map(meta => meta.value)).toEqual([10, 20])
+    expect(seen).toContain(10)
+    expect(seen.every(value => typeof value === 'number')).toBe(true)
   })
 })

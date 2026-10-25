@@ -5,7 +5,7 @@
 
 // 提供 use combobox 相关实现。
 
-import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
+import type { Cleanup, Layer, PropTypes, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -26,7 +26,8 @@ export interface ComboboxContext {
   labelCount: Ref<number>
   /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<ComboboxSchema>
-  api: ComputedRef<ComboboxApi>
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComputedRef<ComboboxApi<PropTypes, unknown>>
   controlRef: Ref<HTMLElement | null>
   /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染为哪个。 */
   inputRef: Ref<ComboboxInputEl | null>
@@ -95,7 +96,7 @@ export function useCombobox(
     })
   }
 
-  const api = computed(() => connectCombobox(service, vueNormalize))
+  const api = computed(() => connectCombobox<PropTypes, unknown>(service, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
   const visible = useOverlayExit({
     config,

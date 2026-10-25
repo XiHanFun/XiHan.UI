@@ -12,6 +12,7 @@ import { COMBOBOX_EN_US } from '../locale/en-US'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
+import { decodeMetas, decodeValues, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { assertCollectionVirtualizer, virtualCollectionAria, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { comboboxAnatomy, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
@@ -35,7 +36,31 @@ function isMultilineHost(input: ComboboxInputProps): boolean {
   return (input.as ?? 'input') === 'textarea'
 }
 
-export function connectCombobox<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectComboboxKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectCombobox<T extends PropTypes, V = string>(
+  service: Service<ComboboxSchema>,
+  normalize: NormalizeProps<T>,
+): ComboboxApi<T, V> {
+  const api = connectComboboxKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection),
+    value: decodeValues(codec, api.value),
+    tags: decodeMetas(codec, api.tags),
+    highlightedValue: api.highlightedValue == null ? null : codec.value(api.highlightedValue),
+    isSelected: value => api.isSelected(codec.key(value)),
+    setValue: next => api.setValue(next.map(codec.key)),
+    deselect: value => api.deselect(codec.key(value)),
+    // 收值的 getter 按名单换成先编码的版本
+    ...keyedGetters(codec, api, ['getTagProps', 'getItemDeleteTriggerProps', 'getItemProps', 'getItemPrefixProps', 'getItemTextProps', 'getItemDescriptionProps', 'getItemSuffixProps', 'getItemIndicatorProps']),
+  } as ComboboxApi<T, V>
+}
+
+function connectComboboxKeys<T extends PropTypes>(
   service: Service<ComboboxSchema>,
   normalize: NormalizeProps<T>,
 ): ComboboxApi<T> {
@@ -52,6 +77,7 @@ export function connectCombobox<T extends PropTypes>(
   const nodes = prop('collection')
   const toMeta = (node: ComboboxNode): ComboboxNodeMeta => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     disabled: !!node.disabled,
     tone: node.tone ?? null,
@@ -113,7 +139,7 @@ export function connectCombobox<T extends PropTypes>(
       refs.get('getInputEl')()?.focus()
     },
   }, normalize)
-  const tags = selectionTags.visible.map(tag => ({ value: tag.key, label: tag.label }))
+  const tags = selectionTags.visible.map(tag => ({ value: tag.key, key: tag.key, label: tag.label }))
   const { overflowCount, overflowText } = selectionTags
 
   /** 条目 id。aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，所以先编码再拼。 */
@@ -232,6 +258,7 @@ export function connectCombobox<T extends PropTypes>(
     translations,
     collection,
     value,
+    valueKeys: value,
     inputValue,
     valueText,
     highlightedValue: highlighted,

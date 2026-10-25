@@ -126,7 +126,7 @@ describe('组合框的内置过滤', () => {
     const h = mount({ collection: CITIES, filter: 'contains', multiple: true, defaultValue: ['london'] })
     h.service.send({ type: 'INPUT.CHANGE', value: 'ber' })
     expect(h.shown()).toEqual(['berlin', 'bern'])
-    expect(h.api().tags).toEqual([{ value: 'london', label: 'London 伦敦' }])
+    expect(h.api().tags).toEqual([{ value: 'london', key: 'london', label: 'London 伦敦' }])
   })
 
   it('程序化 setInputValue 也按写进来的串筛', () => {

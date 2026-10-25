@@ -5,7 +5,7 @@
 
 // 提供 use combobox 相关实现。
 
-import type { Layer, Service } from '@xihan-ui/core'
+import type { Layer, PropTypes, Service } from '@xihan-ui/core'
 import type { ComboboxApi, ComboboxInputEl, ComboboxSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
@@ -26,7 +26,8 @@ export interface ComboboxContext extends OverlayWiring {
   registerLabel: () => () => void
   /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<ComboboxSchema>
-  api: ComboboxApi
+  /** 值按 unknown 交：根组件按作者的值类型推断 V，部件之间只是转手。 */
+  api: ComboboxApi<PropTypes, unknown>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
   controlRef: RefObject<HTMLElement | null>
@@ -107,7 +108,7 @@ export function useCombobox(props: ComboboxSchema['props']): ComboboxContext {
     registerLabel,
     ...overlay,
     service,
-    api: connectCombobox(service, reactNormalize),
+    api: connectCombobox<PropTypes, unknown>(service, reactNormalize),
     rootRef,
     controlRef,
     inputRef,

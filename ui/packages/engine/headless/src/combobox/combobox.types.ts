@@ -7,6 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { SelectionValueKey } from '../shared/value-codec'
 import type { CollectionVirtualizer } from '../virtualizer'
 
 /**
@@ -61,9 +62,10 @@ export interface ComboboxOpenChangeDetails {
   open: boolean
 }
 
-export interface ComboboxValueChangeDetails {
+/** V 是选中值的类型，缺省 string；数字、对象都行，见 ComboboxSchema 的 valueKey。 */
+export interface ComboboxValueChangeDetails<V = string> {
   /** 选中集合。单选模式下也是数组（长度 ≤ 1），形状不随模式变化。 */
-  value: string[]
+  value: V[]
 }
 
 export interface ComboboxInputValueChangeDetails {
@@ -72,9 +74,9 @@ export interface ComboboxInputValueChangeDetails {
 }
 
 /** 候选数据。提供 collection 时，显示文本与禁用以它为准。 */
-export interface ComboboxNode {
-  value: string
-  /** 展示文本，也是选中后回填输入框的取字来源；默认回退为 value。 */
+export interface ComboboxNode<V = string> {
+  value: V
+  /** 展示文本，也是选中后回填输入框的取字来源；默认回退为值（不是字符串的值退回它的键）。 */
   label?: string
   /** 候选禁用：方向键跳过它，点击与回车都不选中它。 */
   disabled?: boolean
@@ -96,12 +98,14 @@ export interface ComboboxNode {
 export type ComboboxFilterMode = 'contains' | 'startsWith'
 
 /** 自定义过滤：返回真即保留这条候选。query 是用户打的检索词，已 trim 且非空。 */
-export type ComboboxFilter = (node: ComboboxNode, query: string) => boolean
+export type ComboboxFilter<V = string> = (node: ComboboxNode<V>, query: string) => boolean
 
 /** 单个候选的元信息，由 collection 推导，不含选中态与高亮态。 */
-export interface ComboboxNodeMeta {
-  value: string
-  /** node.label ?? node.value，恒为字符串。 */
+export interface ComboboxNodeMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。条目的 data-value 与列表里的 key 用它。 */
+  key: string
+  /** node.label，没写时退回值（不是字符串的值退回它的键），恒为字符串。 */
   label: string
   disabled: boolean
   /** 该条自己写的语气；未提供时为 null。 */
@@ -114,8 +118,8 @@ export interface ComboboxNodeMeta {
  * 条目声明的身份：值必须声明，禁用可由 collection 代为声明。
  * connect 不得反查 DOM：Vue 侧在 render 期求值（此时 DOM 不存在），WC 侧在 updated 后求值。
  */
-export interface ComboboxItemProps {
-  value: string
+export interface ComboboxItemProps<V = string> {
+  value: V
   /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
@@ -128,7 +132,11 @@ export interface ComboboxGroupProps {
 /** 接了按压通道的三个部件：候选按 value 记，两个按钮只记部件。 */
 export type ComboboxPressedPart = 'item' | 'trigger' | 'clear-trigger'
 
-export interface ComboboxSchema extends MachineSchema {
+/**
+ * V 是选中值的类型，缺省 string。机器与 DOM 只认字符串键：值进来时编成键（字符串原样，数字转字符串，
+ * 对象按 valueKey），onValueChange 与 api 交出去时解回原值；filter 拿到的也是作者给的那一条。
+ */
+export interface ComboboxSchema<V = string> extends MachineSchema {
   props: {
     /**
      * 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。
@@ -146,22 +154,27 @@ export interface ComboboxSchema extends MachineSchema {
      * 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。
      * 未提供时回到文本写在条目中、从 DOM 查询的方式。
      */
-    collection?: ComboboxNode[]
+    collection?: ComboboxNode<V>[]
+    /**
+     * 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它；
+     * 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。
+     */
+    valueKey?: SelectionValueKey<V>
     /**
      * 内置过滤：'contains' 显示文本包含检索词，'startsWith' 以检索词开头，都不分大小写；也可以给一个函数自己判。
      * 检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、内联补全补出的那段都不拿去筛，
      * 再展开时看到的是全部候选。没给即不过滤（远程搜索就不给，候选由调用方按 onInputValueChange 换）。
      * 只作用于 collection，不给 collection 时没有效果。
      */
-    filter?: ComboboxFilterMode | ComboboxFilter
+    filter?: ComboboxFilterMode | ComboboxFilter<V>
     /** 当前候选（给了 filter 即筛过的那份，见 api.collection）与 Virtualizer 的滚动桥；count 必须与 api.collection.length 一致。 */
     virtualizer?: CollectionVirtualizer
     /**
      * 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      * 单选写为裸串是简写，内部一律归一为数组。
      */
-    value?: string | string[]
-    defaultValue?: string | string[]
+    value?: V | V[]
+    defaultValue?: V | V[]
     /**
      * 输入框中的字符串。提供即受控，与选中值各自独立。
      * 没给 filter 时过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。
@@ -215,7 +228,7 @@ export interface ComboboxSchema extends MachineSchema {
     /** 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 */
     size?: Size
     /** value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
-    onValueChange?: (details: ComboboxValueChangeDetails) => void
+    onValueChange?: (details: ComboboxValueChangeDetails<V>) => void
     /** 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 */
     onClear?: () => void
     /** 输入串变化回调：没给 filter 时调用方据此重新过滤候选。 */
@@ -334,30 +347,35 @@ export interface ComboboxSchema extends MachineSchema {
 }
 
 /** 标签声明的身份：代表哪个选中值。 */
-export interface ComboboxTagProps {
-  value: string
+export interface ComboboxTagProps<V = string> {
+  value: V
 }
 
 /** 可见标签的数据：值与显示文本。 */
-export interface ComboboxTagMeta {
-  value: string
+export interface ComboboxTagMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。标签的 data-value 与列表里的 key 用它。 */
+  key: string
   label: string
 }
 
-export interface ComboboxApi<T extends PropTypes = PropTypes> {
+/** V 是选中值的类型：value、tags、collection 与高亮交出原值，收值的 getter 与动作也收原值。 */
+export interface ComboboxApi<T extends PropTypes = PropTypes, V = string> {
   open: boolean
   /** 解析后的读屏文案；loading 没写内容时显示其中的 loading。 */
   translations: ComboboxTranslations
   /** 当下的候选元信息：由 collection 推导，给了 filter 即按检索词筛过，按数据顺序排列；未提供 collection 时为空数组。 */
-  collection: readonly ComboboxNodeMeta[]
+  collection: readonly ComboboxNodeMeta<V>[]
   /** 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 */
-  value: string[]
+  value: V[]
+  /** 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 */
+  valueKeys: string[]
   /** 输入框中的字符串。 */
   inputValue: string
   /** 单选选中项的显示文本；无选中或多选时为 null。 */
   valueText: string | null
   /** 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 */
-  highlightedValue: string | null
+  highlightedValue: V | null
   multiple: boolean
   disabled: boolean
   readOnly: boolean
@@ -368,25 +386,25 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   /** 清空按钮当前是否可按。 */
   canClear: boolean
   /** 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 */
-  tags: ComboboxTagMeta[]
+  tags: ComboboxTagMeta<V>[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
-  isSelected: (value: string) => boolean
+  isSelected: (value: V) => boolean
   setOpen: (next: boolean) => void
-  setValue: (next: string[]) => void
+  setValue: (next: V[]) => void
   setInputValue: (next: string) => void
   clear: () => void
   /** 移除一个选中值。 */
-  deselect: (value: string) => void
+  deselect: (value: V) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']
   /** 标签行：放在盒里、输入框之前，收纳可见标签与 +N 标签；单选或无选中时整体 hidden。 */
   getTagListProps: () => T['element']
   /** 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。 */
-  getTagProps: (props: ComboboxTagProps) => T['element']
+  getTagProps: (props: ComboboxTagProps<V>) => T['element']
   /** 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 */
   getTagLabelProps: () => T['element']
   /** 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 */
@@ -395,7 +413,7 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
    * 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，
    * 禁用与只读时保留位置、原生 disabled。不占 Tab 位，按下不夺焦：焦点留在输入框，键盘用退格删掉最后一个。
    */
-  getItemDeleteTriggerProps: (props: ComboboxTagProps) => T['button']
+  getItemDeleteTriggerProps: (props: ComboboxTagProps<V>) => T['button']
   /** 不传参即单行 input，产出与增加此参数前逐字相同。 */
   getInputProps: (props?: ComboboxInputProps) => T['input']
   getTriggerProps: () => T['button']
@@ -404,12 +422,12 @@ export interface ComboboxApi<T extends PropTypes = PropTypes> {
   getContentProps: () => T['element']
   getGroupProps: (props: ComboboxGroupProps) => T['element']
   getGroupLabelProps: (props: ComboboxGroupProps) => T['element']
-  getItemProps: (props: ComboboxItemProps) => T['element']
-  getItemPrefixProps: (props: ComboboxItemProps) => T['element']
-  getItemTextProps: (props: ComboboxItemProps) => T['element']
-  getItemDescriptionProps: (props: ComboboxItemProps) => T['element']
-  getItemSuffixProps: (props: ComboboxItemProps) => T['element']
-  getItemIndicatorProps: (props: ComboboxItemProps) => T['element']
+  getItemProps: (props: ComboboxItemProps<V>) => T['element']
+  getItemPrefixProps: (props: ComboboxItemProps<V>) => T['element']
+  getItemTextProps: (props: ComboboxItemProps<V>) => T['element']
+  getItemDescriptionProps: (props: ComboboxItemProps<V>) => T['element']
+  getItemSuffixProps: (props: ComboboxItemProps<V>) => T['element']
+  getItemIndicatorProps: (props: ComboboxItemProps<V>) => T['element']
   getEmptyProps: () => T['element']
   /**
    * 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。

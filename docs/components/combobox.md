@@ -101,6 +101,7 @@
 - 候选面板与输入框所在的字段盒等宽，长候选在条目里截断。
 - 通过隐藏输入参与原生表单提交。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽、`renderItem` 与自定义 `filter` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhComboboxElement<number>>("xh-combobox")` 收窄。
 
 ### 组合
 
@@ -138,11 +139,12 @@
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。给了 filter 时传全集，组件按用户打的字筛； 没给时过滤由调用方完成，传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
-| `filter` | `ComboboxFilterMode \| ComboboxFilter` |  | 内置过滤：'contains' 显示文本包含检索词，'startsWith' 以检索词开头，都不分大小写；也可以给一个函数自己判。 检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、内联补全补出的那段都不拿去筛， 再展开时看到的是全部候选。没给即不过滤（远程搜索就不给，候选由调用方按 onInputValueChange 换）。 只作用于 collection，不给 collection 时没有效果。 |
+| `collection` | `ComboboxNode<V>[]` |  | 候选数据，显示文本与禁用的事实源。给了 filter 时传全集，组件按用户打的字筛； 没给时过滤由调用方完成，传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
+| `filter` | `ComboboxFilterMode \| ComboboxFilter<V>` |  | 内置过滤：'contains' 显示文本包含检索词，'startsWith' 以检索词开头，都不分大小写；也可以给一个函数自己判。 检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、内联补全补出的那段都不拿去筛， 再展开时看到的是全部候选。没给即不过滤（远程搜索就不给，候选由调用方按 onInputValueChange 换）。 只作用于 collection，不给 collection 时没有效果。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 当前候选（给了 filter 即筛过的那份，见 api.collection）与 Virtualizer 的滚动桥；count 必须与 api.collection.length 一致。 |
-| `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
-| `defaultValue` | `string \| string[]` |  |  |
+| `value` | `V \| V[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
+| `defaultValue` | `V \| V[]` |  |  |
 | `inputValue` | `string` |  | 输入框中的字符串。提供即受控，与选中值各自独立。 没给 filter 时过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。 |
 | `defaultInputValue` | `string` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
@@ -168,7 +170,7 @@
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 |
-| `onValueChange` | `(details: ComboboxValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueChange` | `(details: ComboboxValueChangeDetails<V>) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：没给 filter 时调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -179,8 +181,8 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本，也是选中后回填输入框的取字来源；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本，也是选中后回填输入框的取字来源；默认回退为值（不是字符串的值退回它的键）。 |
 | `disabled` | `boolean` |  | 候选禁用：方向键跳过它，点击与回车都不选中它。 |
 | `tone` | `Tone` |  | 该条候选自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余候选同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个组合框的 tone 不下发给候选。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
@@ -191,7 +193,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
 | `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
@@ -202,12 +204,12 @@
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhComboboxRoot` | `default` | `ComboboxRootSlotProps` |  |
+| `XhComboboxRoot` | `default` | `ComboboxRootSlotProps<V>` |  |
 | `XhComboboxRoot` | `label` | — |  |
 | `XhComboboxRoot` | `empty` | — |  |
-| `XhComboboxRoot` | `item` | `ComboboxNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
-| `XhComboboxRoot` | `item-prefix` | `ComboboxNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
-| `XhComboboxRoot` | `item-suffix` | `ComboboxNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+| `XhComboboxRoot` | `item` | `ComboboxNodeMeta<V>` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhComboboxRoot` | `item-prefix` | `ComboboxNodeMeta<V>` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhComboboxRoot` | `item-suffix` | `ComboboxNodeMeta<V>` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
 ### React 适配器 props
 
@@ -217,17 +219,17 @@
 | --- | --- | --- | --- | --- |
 | `XhComboboxGroup` | `value` | `string` | 是 |  |
 | `XhComboboxInput` | `as` | `ComboboxInputHost` |  | 输入框渲染为哪个标签，默认 input。 写 textarea 即多行宿主：connect 随之撤销 type、role 与 aria-expanded。 |
-| `XhComboboxItem` | `value` | `string` | 是 |  |
+| `XhComboboxItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhComboboxItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhComboboxPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhComboboxRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhComboboxRoot` | `empty` | `ReactNode` |  | 无匹配时的提示语。提供后不必再写 empty 部件。 |
 | `XhComboboxRoot` | `clearable` | `boolean` |  | 自动铺开时是否渲染清空按钮；手写部件模式不使用它，写了节点即可清空。 |
-| `XhComboboxRoot` | `renderItem` | `(node: ComboboxNodeMeta) => ReactNode` |  | 每个候选的自定义内容；未提供时使用 collection 中的 label。 |
-| `XhComboboxRoot` | `renderItemPrefix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
-| `XhComboboxRoot` | `renderItemSuffix` | `(node: ComboboxNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhComboboxRoot` | `children` | `SlotChildren<ComboboxRootSlotProps>` |  |  |
-| `XhComboboxTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
+| `XhComboboxRoot` | `renderItem` | `(node: ComboboxNodeMeta<V>) => ReactNode` |  | 每个候选的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhComboboxRoot` | `renderItemPrefix` | `(node: ComboboxNodeMeta<V>) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `renderItemSuffix` | `(node: ComboboxNodeMeta<V>) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhComboboxRoot` | `children` | `SlotChildren<ComboboxRootSlotProps<V>>` |  |  |
+| `XhComboboxTag` | `value` | `unknown` | 是 | 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 |
 
 ### 状态
 
@@ -266,11 +268,12 @@
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `translations` | `ComboboxTranslations` | 解析后的读屏文案；loading 没写内容时显示其中的 loading。 |
-| `collection` | `readonly ComboboxNodeMeta[]` | 当下的候选元信息：由 collection 推导，给了 filter 即按检索词筛过，按数据顺序排列；未提供 collection 时为空数组。 |
-| `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 |
+| `collection` | `readonly ComboboxNodeMeta<V>[]` | 当下的候选元信息：由 collection 推导，给了 filter 即按检索词筛过，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `V[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 |
+| `valueKeys` | `string[]` | 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 |
 | `inputValue` | `string` | 输入框中的字符串。 |
 | `valueText` | `string \| null` | 单选选中项的显示文本；无选中或多选时为 null。 |
-| `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
+| `highlightedValue` | `V \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
@@ -278,23 +281,23 @@
 | `required` | `boolean` |  |
 | `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 |
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
-| `tags` | `ComboboxTagMeta[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
+| `tags` | `ComboboxTagMeta<V>[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
-| `isSelected` | `(value: string) => boolean` |  |
+| `isSelected` | `(value: V) => boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string[]) => void` |  |
+| `setValue` | `(next: V[]) => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |
-| `deselect` | `(value: string) => void` | 移除一个选中值。 |
+| `deselect` | `(value: V) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getTagListProps` | `() => T['element']` | 标签行：放在盒里、输入框之前，收纳可见标签与 +N 标签；单选或无选中时整体 hidden。 |
-| `getTagProps` | `(props: ComboboxTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。 |
+| `getTagProps` | `(props: ComboboxTagProps<V>) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生，另带 data-value 记录代表的值。 |
 | `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
 | `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
-| `getItemDeleteTriggerProps` | `(props: ComboboxTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem， 禁用与只读时保留位置、原生 disabled。不占 Tab 位，按下不夺焦：焦点留在输入框，键盘用退格删掉最后一个。 |
+| `getItemDeleteTriggerProps` | `(props: ComboboxTagProps<V>) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem， 禁用与只读时保留位置、原生 disabled。不占 Tab 位，按下不夺焦：焦点留在输入框，键盘用退格删掉最后一个。 |
 | `getInputProps` | `(props?: ComboboxInputProps) => T['input']` | 不传参即单行 input，产出与增加此参数前逐字相同。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
@@ -302,12 +305,12 @@
 | `getContentProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: ComboboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ComboboxGroupProps) => T['element']` |  |
-| `getItemProps` | `(props: ComboboxItemProps) => T['element']` |  |
-| `getItemPrefixProps` | `(props: ComboboxItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: ComboboxItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: ComboboxItemProps) => T['element']` |  |
-| `getItemSuffixProps` | `(props: ComboboxItemProps) => T['element']` |  |
-| `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
+| `getItemProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
+| `getItemPrefixProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
+| `getItemTextProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
+| `getItemSuffixProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: ComboboxItemProps<V>) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
 | `getHiddenInputProps` | `(props?: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。不给 value 是必填且没选值时的空值占位，带原生 required。 |

@@ -691,7 +691,7 @@ describe('多选标签', () => {
 
   it('多选的已选项按选中先后排成标签，maxTagCount 之外的折进 +N', () => {
     const h = mount({ multiple: true, defaultValue: ['cherry', 'apple', 'durian', 'banana'], maxTagCount: 2 })
-    expect(h.api().tags).toEqual([{ value: 'cherry', label: 'Cherry' }, { value: 'apple', label: 'Apple' }])
+    expect(h.api().tags).toEqual([{ value: 'cherry', key: 'cherry', label: 'Cherry' }, { value: 'apple', key: 'apple', label: 'Apple' }])
     expect(h.api().overflowCount).toBe(2)
     expect(h.api().overflowText).toBe('+2')
   })
@@ -723,7 +723,7 @@ describe('多选标签', () => {
     expect(list().hidden).toBe(true)
     click(h.item('cherry'))
     expect(list().hidden).toBeUndefined()
-    expect(h.api().tags).toEqual([{ value: 'cherry', label: 'Cherry' }])
+    expect(h.api().tags).toEqual([{ value: 'cherry', key: 'cherry', label: 'Cherry' }])
   })
 
   it('已选项被宿主筛出候选后，标签仍是选中那一刻的文字', () => {
@@ -731,15 +731,15 @@ describe('多选标签', () => {
     click(h.item('apple'))
     type(h.input, 'ch')
     expect(h.content.contains(h.item('apple'))).toBe(false)
-    expect(h.api().tags).toEqual([{ value: 'apple', label: 'Apple' }])
+    expect(h.api().tags).toEqual([{ value: 'apple', key: 'apple', label: 'Apple' }])
   })
 
   it('给了 collection 时按数据取文字；数据里筛掉了也留着记下的那份', () => {
     const all = ITEMS.map(item => ({ value: item.value, label: `${item.text} 果` }))
     const h = mount({ multiple: true, collection: all, defaultValue: ['durian'] })
-    expect(h.api().tags).toEqual([{ value: 'durian', label: 'Durian 果' }])
+    expect(h.api().tags).toEqual([{ value: 'durian', key: 'durian', label: 'Durian 果' }])
     h.setProps({ collection: all.filter(item => item.value === 'apple') })
-    expect(h.api().tags).toEqual([{ value: 'durian', label: 'Durian 果' }])
+    expect(h.api().tags).toEqual([{ value: 'durian', key: 'durian', label: 'Durian 果' }])
   })
 
   it('每枚标签是 tag 的 root 并带 data-value；三轴从组合框传下，形态按盒的面派', () => {

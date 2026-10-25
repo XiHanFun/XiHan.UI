@@ -12,7 +12,7 @@ import { inject, provide } from 'vue'
 
 /** 候选声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface ComboboxItemContext {
-  item: ComputedRef<ComboboxItemProps>
+  item: ComputedRef<ComboboxItemProps<unknown>>
 }
 
 /** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
@@ -59,7 +59,7 @@ export function useComboboxItemGroupContext(): ComboboxItemGroupContext {
 
 /** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
 export interface ComboboxTagContext {
-  value: () => string
+  value: () => unknown
 }
 
 const TAG_KEY: InjectionKey<ComboboxTagContext> = Symbol.for('xh-combobox-tag')

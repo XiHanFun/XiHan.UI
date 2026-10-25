@@ -13,6 +13,7 @@ import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/fi
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
+import { encodeSelectionProps, originalNode, valueCodecOf } from '../shared/value-codec'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { COMBOBOX_TAG_LIST_SELECTOR, comboboxItemQuery, comboboxItemText } from './combobox.anatomy'
 import { comboboxFilterQuery, filterComboboxNodes } from './combobox.filter'
@@ -42,6 +43,13 @@ function normalizeSelection(next: readonly string[], multiple: boolean): string[
 // 开合编进 FSM 状态，走守卫对 + CONTROLLED.* 影子事件 + watch。
 export const comboboxMachine = createMachine({
   name: 'combobox',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器、DOM 与连打检索只认键；onValueChange 交出去时解回原值，
+  // 自定义过滤拿到的也是作者给的那一条
+  props: ({ props, scope }) => {
+    const encoded = encodeSelectionProps(props, valueCodecOf(scope, { valueKey: props.valueKey }))
+    const filter = props.filter
+    return typeof filter === 'function' ? { ...encoded, filter: (node, query) => filter(originalNode(node), query) } : encoded
+  },
   context: ({ prop, cell }) => ({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
