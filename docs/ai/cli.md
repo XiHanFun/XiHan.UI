@@ -1,6 +1,6 @@
 # CLI
 
-`@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，也是 [MCP 服务端](./mcp) 的载体。
+`@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，跨大版本升级时改写源码，也是 [MCP 服务端](./mcp) 的载体。
 
 ## 特点
 
@@ -66,6 +66,25 @@ xihan-ui doc guide/theme               # 指南页全文
 | `mcp` | — | 以 stdio 启动 MCP 服务端，见 [MCP Server](./mcp) |
 | `setup` | `--client <claude\|cursor\|vscode\|codex>` `--mode <mcp\|skill\|both>` `--pin <版本>` `--dry-run` `--check` | 把钉住版本的 MCP 配置与使用技能写进项目 |
 
+### 迁移
+
+| 命令 | 参数 | 说明 |
+| --- | --- | --- |
+| `migrate` | `<从版本> <到版本> [<路径>...]` `--dry-run` `--check` | 按每个大版本的规则改写源码，从版本之后、到版本及之前的每个大版本依次套用；路径缺省为当前目录 |
+
+```bash
+npx -y @xihan-ui/cli migrate 4 5 --dry-run   # 先看要改哪些
+npx -y @xihan-ui/cli migrate 4 5 src         # 写回 src 下的文件
+```
+
+改写的范围是各版[更新日志](../changelog)「升级须知」里能机改的改名：导入路径与搬了家的导出、组件与 Props 类型、属性与事件、部件、Web Components 元素与 attribute、CSS 变量（令牌与覆盖槽）、关键帧与 `data-*` 属性。认 `.vue`、`.ts`、`.tsx`、`.js`、`.jsx`、`.html`、`.css` 等源码，跳过 `node_modules`、`dist` 与点开头的目录，没提到 XiHan.UI 的文件原样不动。
+
+改不了的报出文件与行号：属性写的是表达式、与原生同名的事件监听、改成另一种结构的组件，以及本大版本删掉、迁移后仍出现的名字（删除清单由各版的公开面基线比对得出）。缺省值、行为与外观的变化列在输出末尾。
+
+- 规则按文本改、不跑类型检查：组件标签按最长的组件名归属（`XhContextMenuRoot` 归上下文菜单），属性与事件只在归属对上的标签里改。迁完跑一遍项目的类型检查与测试。
+- 每套规则里的旧名都核对过在上一版里存在、新名在新版里存在；文档站全部示例迁一遍不改一处。
+- `--check` 只算不写，有要改的地方以 `1` 退出，可放进 CI；`--format json` 给出结构化结果。
+
 ### 组件名
 
 组件名可以写标识（`date-picker`）、PascalCase（`DatePicker`）、导出名（`XhDatePickerRoot`、`XhDatePickerTrigger`）、自定义元素标签（`xh-date-picker`）或中文名（`日期选择器`）。文档页写站内路径，如 `guide/theme`、`installation`、`adapters/react`。
@@ -84,7 +103,7 @@ xihan-ui doc guide/theme               # 指南页全文
 | 退出码 | 含义 |
 | --- | --- |
 | `0` | 成功 |
-| `1` | 查不到（stderr 给出候选）或配置核对未通过 |
+| `1` | 查不到（stderr 给出候选）、配置核对未通过，或 `migrate --check` 发现要改的地方 |
 | `2` | 用法错误：未知命令、缺参数、选项取值不合法 |
 
 ## 编程接口
