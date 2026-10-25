@@ -29,7 +29,7 @@ describe('equivalentAlpha', () => {
 
 describe('tokens.css 里的墨色域', () => {
   it('dark / light 域挂在浅色 / 深色取值块与材质边界上', () => {
-    expect(css).toContain(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
+    expect(css).toContain(`:where(:root), :where([data-theme='light']), :where([data-theme='system']), :where([data-xh-ink='dark']) {`)
     expect(css).toContain(`:where([data-theme='dark']), :where([data-xh-ink='light']) {`)
     expect(css).toContain(`:where(:root), :where([data-theme]), :where([data-contrast]), :where([data-xh-ink]), :where([data-xh-ink-surface] > *) {`)
   })
@@ -44,7 +44,7 @@ describe('tokens.css 里的墨色域', () => {
   })
 
   it('缺省面同样用墨色：主题块写墨色本身与按比例透明的中性装饰，参与对比度路由的只换缺省分支', () => {
-    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
+    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-theme='system']), :where([data-xh-ink='dark']) {`)
     const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
     expect(light).toContain('--xh-ink: oklch(0 0 0);')
     expect(light).toContain('--xh-bg-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);')
@@ -72,7 +72,7 @@ describe('tokens.css 里的墨色域', () => {
   })
 
   it('缺省面上置灰字保持实色；淡底各有一支叠在缺省面上的不透明档', () => {
-    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-xh-ink='dark']) {`)
+    const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-theme='system']), :where([data-xh-ink='dark']) {`)
     const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
     expect(light).toMatch(/--xh-fg-disabled: var\(--xh-color-neutral-\d+\);/)
     for (const [name, alpha] of [['subtle', '4.7%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%'], ['muted', '4.7%']])

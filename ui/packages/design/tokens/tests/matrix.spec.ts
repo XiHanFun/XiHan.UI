@@ -454,9 +454,10 @@ describe('快照的前提', () => {
 
   it('被跳过的 @media 都有独立源测试看守', () => {
     // 别的 @media 块会成为解析盲区：那一档的取值不进这 16 格，快照照样绿。
-    // 四个分别由 material-frosted.spec / reduce.spec / print.spec 对账；
+    // 系统深色档由 system-mode.spec 对账，其余四个分别由 material-frosted.spec / reduce.spec / print.spec 对账；
     // 新条件冒出来时这里判红，逼着它要么进轴、要么也配一份自己的用例。
     expect(mediaConditions).toEqual([
+      '(prefers-color-scheme: dark)',
       '(prefers-reduced-transparency: reduce)',
       '(forced-colors: active)',
       '(prefers-reduced-motion: reduce)',

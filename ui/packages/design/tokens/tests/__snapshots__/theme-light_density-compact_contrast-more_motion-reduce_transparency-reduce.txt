@@ -7,7 +7,7 @@
 #   [4] :where([data-density='compact'])
 #   [5] :where([data-density='compact'])
 #   [6] :where(:root)
-#   [7] :where(:root), :where([data-theme='light'])
+#   [7] :where(:root), :where([data-theme='light']), :where([data-theme='system'])
 #   [10] :where([data-contrast='more'])
 #   [11] :where([data-transparency='reduce']), :where([data-transparency='reduce'] [data-theme]), :where([data-transparency='reduce'] [data-contrast])
 #   [12] :where([data-motion='reduce'])

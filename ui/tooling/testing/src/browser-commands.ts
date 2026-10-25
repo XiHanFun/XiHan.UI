@@ -22,12 +22,22 @@ const holdImageSources: BrowserCommand<[]> = async ({ page }) => {
   await page.route(`${IMAGE_SOURCE_ORIGIN}/**`, () => {})
 }
 
+/**
+ * 模拟系统明暗偏好（prefers-color-scheme），null 撤掉模拟、回到浏览器缺省。
+ * 纯 CSS 的系统档（data-theme='system'）只认这一个媒体特性，用例借它切系统明暗。
+ */
+const emulateColorScheme: BrowserCommand<[scheme: 'light' | 'dark' | null]> = async ({ page }, scheme) => {
+  await page.emulateMedia({ colorScheme: scheme })
+}
+
 /** 交给 `test.browser.commands`。 */
-export const browserCommands = { holdImageSources }
+export const browserCommands = { holdImageSources, emulateColorScheme }
 
 declare module 'vitest/internal/browser' {
   interface BrowserCommands {
     /** 见 {@link browserCommands} 里的同名实现。 */
     holdImageSources: () => Promise<void>
+    /** 见 {@link browserCommands} 里的同名实现。 */
+    emulateColorScheme: (scheme: 'light' | 'dark' | null) => Promise<void>
   }
 }

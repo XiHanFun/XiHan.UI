@@ -160,7 +160,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 
 | DOM 轴 | 说明 |
 | --- | --- |
-| `data-theme` | 明暗两值各有整套语义取值 |
+| `data-theme` | 明暗两值各有整套语义取值；`system` 是不跑 JS 的跟随系统档，见下文 |
 | `data-brand` | 切换品牌色：预设品牌直接可用，自定义品牌先 `registerBrand` |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
@@ -168,6 +168,16 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
+
+### 不跑 JS 跟随系统明暗
+
+控制器的 `mode: "system"` 要等脚本跑起来才解出明暗。页面只想跟随系统、不想为此引脚本，或者要在脚本到达之前就对，直接在 HTML 里写 `data-theme="system"`：
+
+```html
+<html data-theme="system">
+```
+
+浅色系统下它与 `light` 同一套取值；系统切到深色，令牌的深色取值、`color-scheme` 与皮肤里只在深色下成立的几条规则（语气、按钮实底等）由 `prefers-color-scheme` 一并切过去，不经任何脚本，系统随时切换随时跟上。`system` 只是写在 DOM 上的一档，控制器照旧只投影 `light` / `dark`：之后若在同一个根上建控制器，它会把属性改成解出的具体值。
 
 ## 预设品牌
 
