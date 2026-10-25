@@ -14968,6 +14968,7 @@
       "size",
       "tone",
       "value",
+      "valueKey",
       "variant"
     ],
     "rating": [
@@ -23767,6 +23768,7 @@
         "size",
         "tone",
         "value",
+        "value-key",
         "variant"
       ],
       "events": [

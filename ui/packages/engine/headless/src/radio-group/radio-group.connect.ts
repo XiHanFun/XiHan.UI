@@ -8,6 +8,7 @@
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { RadioGroupApi, RadioGroupItemProps, RadioGroupNodeMeta, RadioGroupSchema } from './radio-group.types'
 import { anchorItem, contains, createPressTracker, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
+import { decodeMetas, keyedGetters, valueCodecOf } from '../shared/value-codec'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { radioGroupAnatomy, radioGroupItemQuery } from './radio-group.anatomy'
 import { resolveRadioGroupOrientation } from './radio-group.orientation'
@@ -17,7 +18,28 @@ const parts = radioGroupAnatomy.build()
 // 条目查询描述符；只在事件处理器里查活 DOM，渲染期不得调用
 const ITEM_QUERY = radioGroupItemQuery
 
-export function connectRadioGroup<T extends PropTypes>(
+/**
+ * 值边界之外的那一层：作者的值在这里解回原值、收进来的值编成键，里面的 connectRadioGroupKeys 只认键。
+ * V 是作者那一侧的值类型，由根组件按 value / collection 推断后交下来。
+ */
+export function connectRadioGroup<T extends PropTypes, V = string>(
+  service: Service<RadioGroupSchema>,
+  normalize: NormalizeProps<T>,
+): RadioGroupApi<T, V> {
+  const api = connectRadioGroupKeys(service, normalize)
+  const codec = valueCodecOf(service.scope)
+  return {
+    ...api,
+    collection: decodeMetas(codec, api.collection, service.prop('collection')),
+    value: api.value == null ? null : codec.value(api.value),
+    focusedValue: api.focusedValue == null ? null : codec.value(api.focusedValue),
+    setValue: next => api.setValue(codec.key(next)),
+    // 收值的 getter 按名单换成先编码的版本
+    ...keyedGetters(codec, api, ['getItemProps', 'getItemIconProps', 'getItemTextProps', 'getItemDescriptionProps', 'getIndicatorProps', 'getHiddenInputProps']),
+  } as RadioGroupApi<T, V>
+}
+
+function connectRadioGroupKeys<T extends PropTypes>(
   service: Service<RadioGroupSchema>,
   normalize: NormalizeProps<T>,
 ): RadioGroupApi<T> {
@@ -44,6 +66,7 @@ export function connectRadioGroup<T extends PropTypes>(
   // collection 推出的条目元信息：显示文本、说明、图标与禁用都在这里定案，条目部件只报 value
   const collection: RadioGroupNodeMeta[] = (prop('collection') ?? []).map(node => ({
     value: node.value,
+    key: node.value,
     label: node.label ?? node.value,
     description: node.description ?? null,
     icon: node.icon ?? null,

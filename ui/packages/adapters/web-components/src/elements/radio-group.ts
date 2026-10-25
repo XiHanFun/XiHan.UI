@@ -6,7 +6,7 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure, resolveFormControlState } from '@xihan-ui/headless'
@@ -30,6 +30,9 @@ import { MachineController } from '../runtime/machine-controller'
  * 每个条目带表单影子、圆圈、图标（给了才有）、文字与说明（给了才有）；标题与条目文字可以由宿主直接子节点
  * `slot="label"`、`slot="item:<值>"` 接管。
  *
+ * V 是选中值的类型，缺省 string：经 property 交进数字、对象都行，`querySelector<XhRadioGroupElement<number>>('xh-radio-group')`
+ * 拿到的元素上 value 与 collection 都是 V；写在标记里的 value 属性与条目的 value 永远是字符串。
+ *
  * @customElement xh-radio-group
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控选中值；未提供该属性即非受控
@@ -46,7 +49,8 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'list'|'card'|'segmented'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段
- * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
+ * @attr {string} value-key - 对象值按哪个字段取键（同一个选项每次都是新对象时给它）；取值函数经 property `valueKey` 给，不给按对象身份认
+ * @fires value-change - 选中值变化；detail 为 `{ value: 值 | null }`，值是 value / collection 里交进来的原值（字符串、数字或对象）
  * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）；segmented 形态下就是那条轨道
  * @csspart label - 组标题（aria-labelledby 目标）；segmented 形态下视觉隐藏、只作可及名
  * @csspart thumb - segmented 形态里滑动的选中标记，对读屏隐藏；无选中项时收起，须写在条目之前
@@ -57,7 +61,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @csspart indicator - 条目行首的单选圆圈；segmented 形态不画
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
  */
-export class XhRadioGroupElement extends XhElement {
+export class XhRadioGroupElement<V = string> extends XhElement {
   static override partContract = { anatomy: radioGroupAnatomy, meta: radioGroupMeta }
 
   static override fieldTarget = { parts: ['root'], kind: 'group' } as const
@@ -75,6 +79,7 @@ export class XhRadioGroupElement extends XhElement {
   static override properties = {
     // 数组只走 property，属性表达不了；给了它条目的文本与禁用即以数据为准
     collection: { attribute: false },
+    valueKey: { converter: { fromAttribute: (v: string | null) => v ?? undefined }, attribute: 'value-key' },
     label: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
@@ -92,10 +97,11 @@ export class XhRadioGroupElement extends XhElement {
     variant: {},
   }
 
-  declare collection?: RadioGroupNode[]
+  declare collection?: RadioGroupNode<V>[]
+  declare valueKey?: SelectionValueKey<V>
   declare label?: string
-  declare value?: string
-  declare defaultValue?: string
+  declare value?: V | null
+  declare defaultValue?: V | null
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -112,7 +118,7 @@ export class XhRadioGroupElement extends XhElement {
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
 
-  private readonly notify = (details: RadioGroupValueChangeDetails): void => {
+  private readonly notify = (details: RadioGroupValueChangeDetails<unknown>): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
@@ -142,10 +148,16 @@ export class XhRadioGroupElement extends XhElement {
 
   private machineProps(): Partial<RadioGroupSchema['props']> {
     const control = this.controlState()
-    return {
+    // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
+    const valueTyped = {
       collection: this.collection,
+      valueKey: this.valueKey,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
+      onValueChange: this.notify,
+    } as Pick<RadioGroupSchema['props'], 'collection' | 'valueKey' | 'value' | 'defaultValue' | 'onValueChange'>
+    return {
+      ...valueTyped,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
@@ -161,7 +173,6 @@ export class XhRadioGroupElement extends XhElement {
       // 作者写没写 label 角色节点决定根的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),
-      onValueChange: this.notify,
     }
   }
 

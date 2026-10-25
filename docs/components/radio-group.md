@@ -114,6 +114,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 - `item-icon` 是文字前的图标位，对读屏隐藏，直径随尺寸档、颜色随条目；节点的 `icon` 字段写入图标文本，需要放置图形时手写部件，把图标组件或 svg 放进 `item-icon`。
 - `item-description` 是文案下方的说明行（13 / `--xh-fg-muted`），与文案一起构成条目的可及名；`collection` 里的 `description` 会自动铺出这一行。
 - 与[复选框](./checkbox)的不对称是有意的：一个复选框自身即成立（勾选同意条款），一个单选按钮自身不成立，因此复选框有独立组件、单选按钮没有。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，选中值是一个值或 `null`，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhRadioGroupElement<number>>("xh-radio-group")` 收窄。
 
 ### 组合
 
@@ -153,9 +154,10 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `RadioGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
-| `value` | `string \| null` |  |  |
-| `defaultValue` | `string \| null` |  |  |
+| `collection` | `RadioGroupNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
+| `value` | `V \| null` |  |  |
+| `defaultValue` | `V \| null` |  |  |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  | 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 |
 | `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
@@ -170,7 +172,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `variant` | `RadioGroupVariant` |  | 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时根不输出 aria-labelledby：指向未渲染的 id 会让组没有名字，作者写在根上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `onValueChange` | `(details: RadioGroupValueChangeDetails) => void` |  | value 变化回调。 |
+| `onValueChange` | `(details: RadioGroupValueChangeDetails<V>) => void` |  | value 变化回调。 |
 
 ### RadioGroupNode
 
@@ -178,8 +180,8 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本；默认回退为值（不是字符串的值退回它的键）。 |
 | `description` | `string` |  | 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 |
 | `icon` | `string` |  | 图标文本，写入文字前的 item-icon 部件，对读屏隐藏；需要放置图形时改为手写部件。未提供时本条不铺该部件。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
@@ -190,7 +192,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: 值 \| null }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 
 ### React 适配器 props
 
@@ -198,10 +200,10 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhRadioGroupItem` | `value` | `string` | 是 |  |
+| `XhRadioGroupItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhRadioGroupItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhRadioGroupRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
-| `XhRadioGroupRoot` | `renderItem` | `(node: RadioGroupNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhRadioGroupRoot` | `renderItem` | `(node: RadioGroupNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
 | `XhRadioGroupRoot` | `children` | `ReactNode` |  |  |
 
 ### 状态
@@ -231,21 +233,21 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` |  |
-| `collection` | `readonly RadioGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
-| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
+| `value` | `V \| null` |  |
+| `collection` | `readonly RadioGroupNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `focusedValue` | `V \| null` | 焦点在组外时为 null。 |
 | `variant` | `RadioGroupVariant` | 结算后的结构形态：没传 variant 即 list。适配器据它决定按 collection 铺开时放不放滑块。 |
-| `setValue` | `(next: string) => void` |  |
+| `setValue` | `(next: V) => void` |  |
 | `measure` | `() => void` | 重新测量滑块（只在 segmented 形态下有落点）。选中值变化与 collection 增删改名都会自动重新测量， 根与条目的尺寸变化由尺寸观察器接管；条目的文字由部件手写（未经 collection）而后修改时需要手动调用。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: RadioGroupItemProps) => T['element']` |  |
-| `getItemIconProps` | `(props: RadioGroupItemProps) => T['element']` | 条目文字前的图标位：纯装饰，对读屏隐藏，状态标记与条目一致。 |
-| `getItemTextProps` | `(props: RadioGroupItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: RadioGroupItemProps) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
-| `getIndicatorProps` | `(props: RadioGroupItemProps) => T['element']` | 条目行首的单选圆圈；segmented 形态由滑块标出选中，皮肤不画它。 |
+| `getItemProps` | `(props: RadioGroupItemProps<V>) => T['element']` |  |
+| `getItemIconProps` | `(props: RadioGroupItemProps<V>) => T['element']` | 条目文字前的图标位：纯装饰，对读屏隐藏，状态标记与条目一致。 |
+| `getItemTextProps` | `(props: RadioGroupItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: RadioGroupItemProps<V>) => T['element']` | 条目的说明：文案下方一行次级文字，常用在 card 形态里。 |
+| `getIndicatorProps` | `(props: RadioGroupItemProps<V>) => T['element']` | 条目行首的单选圆圈；segmented 形态由滑块标出选中，皮肤不画它。 |
 | `getThumbProps` | `() => T['element']` | segmented 形态里滑动的选中标记：整组一份，位置与尺寸由状态机量好写成私有槽；没有落点时收起。 |
-| `getHiddenInputProps` | `(props: RadioGroupItemProps) => T['input']` | 条目对应的隐藏原生 radio 输入，用于表单提交。 |
+| `getHiddenInputProps` | `(props: RadioGroupItemProps<V>) => T['input']` | 条目对应的隐藏原生 radio 输入，用于表单提交。 |
 
 ## 无障碍
 

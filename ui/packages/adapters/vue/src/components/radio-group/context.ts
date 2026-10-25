@@ -12,7 +12,7 @@ import { inject, provide } from 'vue'
 
 /** 条目声明的值与禁用，供 item-text / indicator 等子部件复用同一份声明。 */
 export interface RadioGroupItemContext {
-  item: ComputedRef<RadioGroupItemProps>
+  item: ComputedRef<RadioGroupItemProps<unknown>>
 }
 
 const KEY: InjectionKey<RadioGroupContext> = Symbol.for('xh-radio-group')

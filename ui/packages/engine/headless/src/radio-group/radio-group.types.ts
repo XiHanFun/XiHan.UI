@@ -7,6 +7,7 @@
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { LiquidIndicator } from '../shared/indicator'
+import type { SelectionValueKey } from '../shared/value-codec'
 
 /**
  * 结构形态：list 是一列「圆圈 + 文案」的行（缺省）；card 是一组可点的描边卡，
@@ -16,14 +17,15 @@ import type { LiquidIndicator } from '../shared/indicator'
  */
 export type RadioGroupVariant = 'card' | 'list' | 'segmented'
 
-export interface RadioGroupValueChangeDetails {
-  value: string | null
+/** V 是选中值的类型，缺省 string；数字、对象都行，见 RadioGroupSchema 的 valueKey。 */
+export interface RadioGroupValueChangeDetails<V = string> {
+  value: V | null
 }
 
 /** 条目数据。提供 collection 时，显示文本与禁用以它为准。 */
-export interface RadioGroupNode {
-  value: string
-  /** 展示文本；默认回退为 value。 */
+export interface RadioGroupNode<V = string> {
+  value: V
+  /** 展示文本；默认回退为值（不是字符串的值退回它的键）。 */
   label?: string
   /** 说明文字，写入 item-description 部件；未提供时本条不铺该部件。 */
   description?: string
@@ -34,9 +36,11 @@ export interface RadioGroupNode {
 }
 
 /** 单个条目的元信息，由 collection 推导，不含选中态与焦点态。 */
-export interface RadioGroupNodeMeta {
-  value: string
-  /** node.label ?? node.value，恒为字符串。 */
+export interface RadioGroupNodeMeta<V = string> {
+  value: V
+  /** 值的键：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 */
+  key: string
+  /** node.label，没写时退回值（不是字符串的值退回它的键），恒为字符串。 */
   label: string
   /** 未提供时为 null。 */
   description: string | null
@@ -49,8 +53,8 @@ export interface RadioGroupNodeMeta {
  * 条目声明：值必须声明，禁用可由 collection 代为声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
-export interface RadioGroupItemProps {
-  value: string
+export interface RadioGroupItemProps<V = string> {
+  value: V
   /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
@@ -73,15 +77,24 @@ export interface RadioGroupRefs {
   syncThumbLayout: (() => void) | null
 }
 
-export interface RadioGroupSchema extends MachineSchema {
+/**
+ * V 是选中值的类型，缺省 string。机器与 DOM 只认字符串键：值进来时编成键（字符串原样，数字转字符串，
+ * 对象按 valueKey），onValueChange 与 api 交出去时解回原值。
+ */
+export interface RadioGroupSchema<V = string> extends MachineSchema {
   props: {
     /**
      * 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。
      * 未提供时回到文本与禁用都写在条目部件上的方式。
      */
-    collection?: RadioGroupNode[]
-    value?: string | null
-    defaultValue?: string | null
+    collection?: RadioGroupNode<V>[]
+    /**
+     * 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它；
+     * 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。
+     */
+    valueKey?: SelectionValueKey<V>
+    value?: V | null
+    defaultValue?: V | null
     disabled?: boolean
     /** 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 */
     readOnly?: boolean
@@ -119,7 +132,7 @@ export interface RadioGroupSchema extends MachineSchema {
      */
     ariaLabel?: string
     /** value 变化回调。 */
-    onValueChange?: (details: RadioGroupValueChangeDetails) => void
+    onValueChange?: (details: RadioGroupValueChangeDetails<V>) => void
   }
   context: {
     /** 选中值。 */
@@ -171,15 +184,16 @@ export interface RadioGroupSchema extends MachineSchema {
   effect: 'trackThumbLayout' | 'trackLiquidThumb'
 }
 
-export interface RadioGroupApi<T extends PropTypes = PropTypes> {
-  value: string | null
+/** V 是选中值的类型：value、collection 与焦点交出原值，收值的 getter 与动作也收原值。 */
+export interface RadioGroupApi<T extends PropTypes = PropTypes, V = string> {
+  value: V | null
   /** 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 */
-  collection: readonly RadioGroupNodeMeta[]
+  collection: readonly RadioGroupNodeMeta<V>[]
   /** 焦点在组外时为 null。 */
-  focusedValue: string | null
+  focusedValue: V | null
   /** 结算后的结构形态：没传 variant 即 list。适配器据它决定按 collection 铺开时放不放滑块。 */
   variant: RadioGroupVariant
-  setValue: (next: string) => void
+  setValue: (next: V) => void
   /**
    * 重新测量滑块（只在 segmented 形态下有落点）。选中值变化与 collection 增删改名都会自动重新测量，
    * 根与条目的尺寸变化由尺寸观察器接管；条目的文字由部件手写（未经 collection）而后修改时需要手动调用。
@@ -187,18 +201,18 @@ export interface RadioGroupApi<T extends PropTypes = PropTypes> {
   measure: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
-  getItemProps: (props: RadioGroupItemProps) => T['element']
+  getItemProps: (props: RadioGroupItemProps<V>) => T['element']
   /** 条目文字前的图标位：纯装饰，对读屏隐藏，状态标记与条目一致。 */
-  getItemIconProps: (props: RadioGroupItemProps) => T['element']
-  getItemTextProps: (props: RadioGroupItemProps) => T['element']
+  getItemIconProps: (props: RadioGroupItemProps<V>) => T['element']
+  getItemTextProps: (props: RadioGroupItemProps<V>) => T['element']
   /** 条目的说明：文案下方一行次级文字，常用在 card 形态里。 */
-  getItemDescriptionProps: (props: RadioGroupItemProps) => T['element']
+  getItemDescriptionProps: (props: RadioGroupItemProps<V>) => T['element']
   /** 条目行首的单选圆圈；segmented 形态由滑块标出选中，皮肤不画它。 */
-  getIndicatorProps: (props: RadioGroupItemProps) => T['element']
+  getIndicatorProps: (props: RadioGroupItemProps<V>) => T['element']
   /** segmented 形态里滑动的选中标记：整组一份，位置与尺寸由状态机量好写成私有槽；没有落点时收起。 */
   getThumbProps: () => T['element']
   /** 条目对应的隐藏原生 radio 输入，用于表单提交。 */
-  getHiddenInputProps: (props: RadioGroupItemProps) => T['input']
+  getHiddenInputProps: (props: RadioGroupItemProps<V>) => T['input']
 }
 
 /** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */

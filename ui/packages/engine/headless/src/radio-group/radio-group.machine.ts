@@ -8,6 +8,7 @@
 import type { RadioGroupNode, RadioGroupSchema, RadioGroupThumbRect } from './radio-group.types'
 import { itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { encodeSelectionProps, valueCodecOf } from '../shared/value-codec'
 import { radioGroupItemQuery } from './radio-group.anatomy'
 import { resolveRadioGroupOrientation } from './radio-group.orientation'
 
@@ -24,6 +25,8 @@ function collectionKeyOf(nodes: RadioGroupNode[] | undefined): string {
 
 export const radioGroupMachine = createMachine({
   name: 'radio-group',
+  // 值边界：作者的值（数字、对象）在这里编成键，机器与 DOM 只认键；onValueChange 交出去时解回原值
+  props: ({ props, scope }) => encodeSelectionProps(props, valueCodecOf(scope, { valueKey: props.valueKey })),
   context: ({ prop, cell }) => ({
     value: cell<string | null>(() => ({
       value: prop('value'),

@@ -425,8 +425,8 @@ describe('radio-group 条目图标', () => {
     }, [{ value: 'list' }, { value: 'grid' }])
     const api = connectRadioGroup(h.service, normalizeProps)
     expect(api.collection).toEqual([
-      { value: 'list', label: '列表', description: null, icon: '☰', disabled: false },
-      { value: 'grid', label: '网格', description: null, icon: null, disabled: false },
+      { value: 'list', key: 'list', label: '列表', description: null, icon: '☰', disabled: false },
+      { value: 'grid', key: 'grid', label: '网格', description: null, icon: null, disabled: false },
     ])
   })
 
