@@ -168,7 +168,7 @@ describe('connectDrawer 属性输出', () => {
     expect(close['aria-label']).toBe('Close')
   })
 
-  it('十二个部件各带 data-scope="drawer" 与自己的 data-part', () => {
+  it('十四个部件各带 data-scope="drawer" 与自己的 data-part', () => {
     const api = connectDrawer(makeService({ defaultOpen: true }), normalizeProps)
     const emitted: Array<[string, Record<string, unknown>]> = [
       ['root', api.getRootProps() as Record<string, unknown>],
@@ -181,6 +181,8 @@ describe('connectDrawer 属性输出', () => {
       ['description', api.getDescriptionProps() as Record<string, unknown>],
       ['body', api.getBodyProps() as Record<string, unknown>],
       ['footer', api.getFooterProps() as Record<string, unknown>],
+      ['confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>],
+      ['cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>],
       ['close-trigger', api.getCloseTriggerProps() as Record<string, unknown>],
       ['resize-trigger', api.getResizeTriggerProps() as Record<string, unknown>],
     ]

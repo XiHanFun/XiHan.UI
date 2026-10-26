@@ -14,7 +14,7 @@ Overlays component. This page is the API reference, generated from the source co
 
 Parts in bold are required.
 
-`data-scope="dialog"`: `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="dialog"`: `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `confirm-trigger` · `cancel-trigger` · `close-trigger`
 
 ## API reference
 
@@ -25,7 +25,7 @@ Descriptions of individual props, events and slots are written in Chinese and ap
 | Layer | Value |
 | --- | --- |
 | Custom element | `<xh-dialog>` |
-| Vue components | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
+| Vue components | `XhDialogBody` `XhDialogCancelTrigger` `XhDialogCloseTrigger` `XhDialogConfirmTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | Composable | `useDialog` |
 | State machine | `dialogMachine` |
 | Skin | `@xihan-ui/styles/dialog.css` |
@@ -57,6 +57,9 @@ Custom elements put the payload in `detail`; Vue emits an event of the same name
 
 | Event | Payload |
 | --- | --- |
+| `confirm` | `CustomEvent` |
+| `confirm-error` | `CustomEvent` |
+| `cancel-press` | `CustomEvent` |
 | `exit-complete` | `CustomEvent` |
 | `open-change` | `DialogOpenChangeDetails` |
 
@@ -67,6 +70,11 @@ Only slots with a payload are listed.
 | Vue component | Slot | Payload |
 | --- | --- | --- |
 | `XhDialogRoot` | `default` | `DialogRootSlotProps` |
+| `XhDialogRoot` | `trigger` | — |
+| `XhDialogRoot` | `title` | — |
+| `XhDialogRoot` | `description` | — |
+| `XhDialogRoot` | `body` | — |
+| `XhDialogRoot` | `footer` | — |
 
 ### React adapter props
 
@@ -75,6 +83,17 @@ Only the props each component declares itself: DOM attributes inherited from `Co
 | React component | Prop | Type | Required |
 | --- | --- | --- | --- |
 | `XhDialogContent` | `container` | `() => Element \| null` |  |
+| `XhDialogRoot` | `trigger` | `ReactNode` |  |
+| `XhDialogRoot` | `title` | `ReactNode` |  |
+| `XhDialogRoot` | `description` | `ReactNode` |  |
+| `XhDialogRoot` | `body` | `ReactNode` |  |
+| `XhDialogRoot` | `footer` | `ReactNode` |  |
+| `XhDialogRoot` | `actions` | `DialogStructureActions` |  |
+| `XhDialogRoot` | `confirmText` | `string` |  |
+| `XhDialogRoot` | `cancelText` | `string` |  |
+| `XhDialogRoot` | `onConfirm` | `DialogActionIntents['onConfirm']` |  |
+| `XhDialogRoot` | `onConfirmError` | `DialogActionIntents['onConfirmError']` |  |
+| `XhDialogRoot` | `onCancelPress` | `DialogActionIntents['onCancelPress']` |  |
 | `XhDialogRoot` | `children` | `SlotChildren<DialogRootSlotProps>` |  |
 
 ### State
@@ -105,7 +124,11 @@ The following names are internal to the state machine.
 | `open` | `boolean` |
 | `offset` | `DialogOffset` |
 | `dragging` | `boolean` |
+| `pending` | `boolean` |
+| `actionError` | `DialogConfirmErrorDetails \| null` |
 | `setOpen` | `(next: boolean) => void` |
+| `confirm` | `() => void` |
+| `cancel` | `() => void` |
 | `getTriggerProps` | `() => T['button']` |
 | `getBackdropProps` | `() => T['element']` |
 | `getPositionerProps` | `() => T['element']` |
@@ -117,6 +140,8 @@ The following names are internal to the state machine.
 | `getDescriptionProps` | `() => T['element']` |
 | `getBodyProps` | `() => T['element']` |
 | `getFooterProps` | `() => T['element']` |
+| `getConfirmTriggerProps` | `() => T['button']` |
+| `getCancelTriggerProps` | `() => T['button']` |
 | `getCloseTriggerProps` | `() => T['button']` |
 | `isContentMounted` | `(present: boolean) => boolean` |
 
@@ -154,6 +179,8 @@ These attributes are produced by `connect`.
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `drag-trigger` | `aria-label` | translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
+| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `close-trigger` | `aria-label` | translations.close |
 
 ## Style reference
@@ -189,6 +216,21 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `drag-trigger` | `data-disabled` | '' (present only while the condition holds) |
 | `drag-trigger` | `data-dragging` | '' (present only while the condition holds) |
 | `title` | `data-draggable` | '' (present only while the condition holds) |
+| `confirm-trigger` | `data-loading` | '' (present only while the condition holds) |
+| `confirm-trigger` | `data-pressed` | '' (present only while the condition holds) |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'md' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `confirm-trigger` | `data-xh-loading-ring` | 'overlay' |
+| `cancel-trigger` | `data-pressed` | '' (present only while the condition holds) |
+| `cancel-trigger` | `data-xh-action-control` | '' |
+| `cancel-trigger` | `data-xh-action-display` | 'always' |
+| `cancel-trigger` | `data-xh-action-profile` | 'text' |
+| `cancel-trigger` | `data-xh-action-size` | 'md' |
+| `cancel-trigger` | `data-xh-action-variant` | 'outline' |
 | `close-trigger` | `data-pressed` | '' (present only while the condition holds) |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |

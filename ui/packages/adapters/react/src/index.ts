@@ -922,7 +922,9 @@ export type {
 export { useDialogContext } from './components/dialog/context'
 export {
   XhDialogBody,
+  XhDialogCancelTrigger,
   XhDialogCloseTrigger,
+  XhDialogConfirmTrigger,
   XhDialogContent,
   XhDialogDescription,
   XhDialogDragTrigger,
@@ -936,7 +938,9 @@ export {
 export type {
   DialogRootSlotProps,
   XhDialogBodyProps,
+  XhDialogCancelTriggerProps,
   XhDialogCloseTriggerProps,
+  XhDialogConfirmTriggerProps,
   XhDialogContentProps,
   XhDialogDescriptionProps,
   XhDialogDragTriggerProps,
@@ -981,7 +985,9 @@ export type { DownloadTriggerContext } from './components/download-trigger/use-d
 export { useDrawerContext } from './components/drawer/context'
 export {
   XhDrawerBody,
+  XhDrawerCancelTrigger,
   XhDrawerCloseTrigger,
+  XhDrawerConfirmTrigger,
   XhDrawerContent,
   XhDrawerDescription,
   XhDrawerFooter,
@@ -994,7 +1000,9 @@ export {
 export type {
   DrawerRootSlotProps,
   XhDrawerBodyProps,
+  XhDrawerCancelTriggerProps,
   XhDrawerCloseTriggerProps,
+  XhDrawerConfirmTriggerProps,
   XhDrawerContentProps,
   XhDrawerDescriptionProps,
   XhDrawerFooterProps,

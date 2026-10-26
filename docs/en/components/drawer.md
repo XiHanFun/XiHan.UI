@@ -14,7 +14,7 @@ Overlays component. This page is the API reference, generated from the source co
 
 Parts in bold are required.
 
-`data-scope="drawer"`: **`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger` · `resize-trigger`
+`data-scope="drawer"`: **`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `confirm-trigger` · `cancel-trigger` · `close-trigger` · `resize-trigger`
 
 ## API reference
 
@@ -25,7 +25,7 @@ Descriptions of individual props, events and slots are written in Chinese and ap
 | Layer | Value |
 | --- | --- |
 | Custom element | `<xh-drawer>` |
-| Vue components | `XhDrawerBody` `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerResizeTrigger` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
+| Vue components | `XhDrawerBody` `XhDrawerCancelTrigger` `XhDrawerCloseTrigger` `XhDrawerConfirmTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerResizeTrigger` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
 | Composable | `useDrawer` |
 | State machine | `drawerMachine` |
 | Skin | `@xihan-ui/styles/drawer.css` |
@@ -63,6 +63,9 @@ Custom elements put the payload in `detail`; Vue emits an event of the same name
 
 | Event | Payload |
 | --- | --- |
+| `confirm` | `CustomEvent` |
+| `confirm-error` | `CustomEvent` |
+| `cancel-press` | `CustomEvent` |
 | `exit-complete` | `CustomEvent` |
 | `panel-size-change` | `CustomEvent` |
 | `open-change` | `DrawerOpenChangeDetails` |
@@ -74,6 +77,11 @@ Only slots with a payload are listed.
 | Vue component | Slot | Payload |
 | --- | --- | --- |
 | `XhDrawerRoot` | `default` | `DrawerRootSlotProps` |
+| `XhDrawerRoot` | `trigger` | — |
+| `XhDrawerRoot` | `title` | — |
+| `XhDrawerRoot` | `description` | — |
+| `XhDrawerRoot` | `body` | — |
+| `XhDrawerRoot` | `footer` | — |
 
 ### React adapter props
 
@@ -82,6 +90,17 @@ Only the props each component declares itself: DOM attributes inherited from `Co
 | React component | Prop | Type | Required |
 | --- | --- | --- | --- |
 | `XhDrawerRoot` | `container` | `() => Element \| null` |  |
+| `XhDrawerRoot` | `trigger` | `ReactNode` |  |
+| `XhDrawerRoot` | `title` | `ReactNode` |  |
+| `XhDrawerRoot` | `description` | `ReactNode` |  |
+| `XhDrawerRoot` | `body` | `ReactNode` |  |
+| `XhDrawerRoot` | `footer` | `ReactNode` |  |
+| `XhDrawerRoot` | `actions` | `DrawerStructureActions` |  |
+| `XhDrawerRoot` | `confirmText` | `string` |  |
+| `XhDrawerRoot` | `cancelText` | `string` |  |
+| `XhDrawerRoot` | `onConfirm` | `DrawerActionIntents['onConfirm']` |  |
+| `XhDrawerRoot` | `onConfirmError` | `DrawerActionIntents['onConfirmError']` |  |
+| `XhDrawerRoot` | `onCancelPress` | `DrawerActionIntents['onCancelPress']` |  |
 | `XhDrawerRoot` | `children` | `SlotChildren<DrawerRootSlotProps>` |  |
 
 ### State
@@ -114,7 +133,11 @@ The following names are internal to the state machine.
 | `panelSize` | `number \| null` |
 | `resizing` | `boolean` |
 | `side` | `DrawerSide` |
+| `pending` | `boolean` |
+| `actionError` | `DrawerConfirmErrorDetails \| null` |
 | `setOpen` | `(next: boolean) => void` |
+| `confirm` | `() => void` |
+| `cancel` | `() => void` |
 | `getRootProps` | `() => T['element']` |
 | `getTriggerProps` | `() => T['button']` |
 | `getBackdropProps` | `() => T['element']` |
@@ -125,6 +148,8 @@ The following names are internal to the state machine.
 | `getDescriptionProps` | `() => T['element']` |
 | `getBodyProps` | `() => T['element']` |
 | `getFooterProps` | `() => T['element']` |
+| `getConfirmTriggerProps` | `() => T['button']` |
+| `getCancelTriggerProps` | `() => T['button']` |
 | `getCloseTriggerProps` | `() => T['button']` |
 | `getResizeTriggerProps` | `() => T['element']` |
 | `isContentMounted` | `(present: boolean) => boolean` |
@@ -160,6 +185,8 @@ These attributes are produced by `connect`.
 | `content` | `aria-labelledby` | id of the `title` part \| undefined |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
+| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | id of the `content` part |
 | `resize-trigger` | `aria-label` | translations.resizeTrigger |
@@ -205,6 +232,21 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `confirm-trigger` | `data-loading` | '' (present only while the condition holds) |
+| `confirm-trigger` | `data-pressed` | '' (present only while the condition holds) |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'md' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `confirm-trigger` | `data-xh-loading-ring` | 'overlay' |
+| `cancel-trigger` | `data-pressed` | '' (present only while the condition holds) |
+| `cancel-trigger` | `data-xh-action-control` | '' |
+| `cancel-trigger` | `data-xh-action-display` | 'always' |
+| `cancel-trigger` | `data-xh-action-profile` | 'text' |
+| `cancel-trigger` | `data-xh-action-size` | 'md' |
+| `cancel-trigger` | `data-xh-action-variant` | 'outline' |
 | `close-trigger` | `data-pressed` | '' (present only while the condition holds) |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |

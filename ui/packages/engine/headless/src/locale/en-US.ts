@@ -330,7 +330,7 @@ export const DIFF_VIEW_EN_US: XhLocaleBucket<'diff-view'> = {
   commentOn: (line, side) => `Comment on ${side === 'old' ? 'old' : 'new'} line ${line}`,
 }
 
-export const DRAWER_EN_US: XhLocaleBucket<'drawer'> = { close: 'Close', resizeTrigger: 'Resize drawer' }
+export const DRAWER_EN_US: XhLocaleBucket<'drawer'> = { close: 'Close', resizeTrigger: 'Resize drawer', ok: 'OK', cancel: 'Cancel' }
 
 export const EXPRESSION_INPUT_EN_US: XhLocaleBucket<'expression-input'> = {
   content: 'Suggestions',

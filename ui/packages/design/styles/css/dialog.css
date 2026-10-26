@@ -8,6 +8,7 @@
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
 @import '../family/action-control.css';
+@import '../family/loading-ring.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -343,8 +344,31 @@
   /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
   [data-scope='dialog'][data-part='header'][hidden],
   [data-scope='dialog'][data-part='body'][hidden],
-  [data-scope='dialog'][data-part='footer'][hidden] {
+  [data-scope='dialog'][data-part='footer'][hidden],
+  [data-scope='dialog'][data-part='confirm-trigger'][hidden],
+  [data-scope='dialog'][data-part='cancel-trigger'][hidden] {
     display: none;
+  }
+
+  /* 页脚两颗动作钮（confirm-trigger / cancel-trigger）：盒型、四态面与按压由家族配方按连接层给的档位画
+     （text 档 md，确定 solid、取消 outline），与命令式服务的按钮同一档。这里只接异步确认的在途：
+     环由加载环配方压在确定钮正中（连接层投影 data-xh-loading-ring="overlay"），起始边取钮的真实前景；
+     不是禁用，焦点与对比度都保持。确定文案随前景淡到透明留位：挂起一个 micro 之后才起淡（快速落定什么都不闪），
+     落定时不等、按 micro 淡回 */
+  [data-scope='dialog'][data-part='confirm-trigger'] {
+    --xh-_loading-ring-fg: var(--xh-_action-variant-fg-loading);
+    --xh-_loading-ring-duration: var(--xh-motion-loop-spin);
+  }
+
+  [data-scope='dialog'][data-part='confirm-trigger'][data-loading] {
+    --xh-action-fg-loading: transparent;
+
+    transition-delay: var(--xh-motion-duration-micro);
+  }
+
+  /* 实心面上环色与面同族，画在面里看不出来：环改取面自己的前景色 */
+  [data-scope='dialog'][data-part='confirm-trigger'][data-xh-action-variant='solid']:focus-visible {
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 面板标题：页面级面板标题档、正文色；行高钉在 normal，头部带按它算标题行居中 */

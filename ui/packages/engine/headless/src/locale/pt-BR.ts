@@ -281,7 +281,7 @@ const translations = {
         : `Mais ${count} linhas foram truncadas e não são exibidas`,
     commentOn: (line, side) => `Comentar na linha ${line} da versão ${side === 'old' ? 'antiga' : 'nova'}`,
   },
-  'drawer': { close: 'Fechar', resizeTrigger: 'Redimensionar gaveta' },
+  'drawer': { close: 'Fechar', resizeTrigger: 'Redimensionar gaveta', ok: 'OK', cancel: 'Cancelar' },
   'expression-input': {
     content: 'Sugestões',
     noMatches: 'Nenhuma correspondência',

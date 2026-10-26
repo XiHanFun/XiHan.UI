@@ -278,7 +278,7 @@ const translations = {
     truncated: count => `残りの ${count} 行は省略され、表示されていません`,
     commentOn: (line, side) => `${side === 'old' ? '変更前' : '変更後'}の ${line} 行目にコメント`,
   },
-  'drawer': { close: '閉じる', resizeTrigger: 'ドロワーのサイズを変更' },
+  'drawer': { close: '閉じる', resizeTrigger: 'ドロワーのサイズを変更', ok: 'OK', cancel: 'キャンセル' },
   'expression-input': {
     content: '候補',
     noMatches: '一致する候補がありません',

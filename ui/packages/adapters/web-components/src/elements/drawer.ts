@@ -6,10 +6,11 @@
 // 提供 drawer 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { DrawerOpenChangeDetails, DrawerSchema } from '@xihan-ui/headless'
+import type { DrawerActionIntents, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta } from '@xihan-ui/headless'
+import { connectDrawer, drawerAnatomy, drawerMachine, drawerMeta, drawerStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
@@ -38,6 +39,11 @@ const NUMBER_CONVERTER = {
  *
  * 键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。
  *
+ * 不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写
+ * `slot="trigger"`、`slot="title"`、`slot="description"`、`slot="body"`、`slot="footer"` 的节点）给出各段内容，
+ * 页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋
+ * `confirmAction = () => thenable`：抽屉等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。
+ *
  * @customElement xh-drawer
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
@@ -57,7 +63,17 @@ const NUMBER_CONVERTER = {
  * @attr {number} min-panel-size - 厚度下限（像素），默认 160
  * @attr {number} max-panel-size - 厚度上限（像素）；不给时只受视口（或所在容器）限制
  * @attr {boolean} unmount-on-exit - 收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 "false" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻
+ * @attr {string} trigger-text - 标准结构里触发按钮的文字；没有它也没有 slot="trigger" 时不生成触发器
+ * @attr {string} title-text - 标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示
+ * @attr {string} description - 标准结构里的说明文字
+ * @attr {'confirm'|'alert'|'none'} actions - 标准结构的页脚：confirm 为取消 + 确定（缺省），alert 只有确定，none 不铺；slot="footer" 整段接管
+ * @attr {string} confirm-text - 确定钮的文字，缺省取语言包
+ * @attr {string} cancel-text - 取消钮的文字，缺省取语言包
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires confirm - 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值，
+ *   给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知
+ * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
+ * @fires cancel-press - 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change
  * @fires exit-complete - 退出完成且本层资源已释放
  * @fires panel-size-change - 厚度变化意图；detail 为 `{ panelSize: number }`
  * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
@@ -70,6 +86,8 @@ const NUMBER_CONVERTER = {
  * @csspart description - 描述（aria-describedby 目标）
  * @csspart body - 正文：面板中唯一会滚动的段
  * @csspart footer - 面板尾：动作按钮所在的段，不随正文滚动
+ * @csspart confirm-trigger - 确定钮：页脚的主动作，异步确认挂起时转圈
+ * @csspart cancel-trigger - 取消钮：页脚的次要出口
  * @csspart close-trigger - 关闭按钮
  * @csspart resize-trigger - 改尺把手（role=separator），落在朝向页面的那条边上；没开 resizable 时收起
  */
@@ -78,6 +96,20 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: drawerAnatomy, meta: drawerMeta }
+
+  static override structure: ElementStructure<XhDrawerElement> = {
+    build: host => drawerStructure({
+      ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }),
+      ...(host.titleText === undefined ? {} : { title: host.titleText }),
+      ...(host.description === undefined ? {} : { description: host.description }),
+      ...(host.actions === undefined ? {} : { actions: host.actions }),
+      ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }),
+      ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }),
+      ...(host.resizable === undefined ? {} : { resizable: host.resizable }),
+      translations: host.translations,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
@@ -100,6 +132,13 @@ export class XhDrawerElement extends XhPortalHostElement {
     unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 文案是对象，只走 property
     translations: { attribute: false },
+    // —— 标准结构 ——
+    triggerText: { converter: STRING_CONVERTER, attribute: 'trigger-text' },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
+    description: { converter: STRING_CONVERTER },
+    actions: { converter: STRING_CONVERTER },
+    confirmText: { converter: STRING_CONVERTER, attribute: 'confirm-text' },
+    cancelText: { converter: STRING_CONVERTER, attribute: 'cancel-text' },
   }
 
   declare open?: boolean
@@ -120,6 +159,56 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare maxPanelSize?: number
   declare unmountOnExit?: boolean
   declare translations?: DrawerSchema['props']['translations']
+  declare triggerText?: string
+  declare titleText?: string
+  declare description?: string
+  declare actions?: DrawerStructureActions
+  declare confirmText?: string
+  declare cancelText?: string
+
+  /**
+   * 确定钮的异步门：返回 thenable 即挂起，等兑现才收起、确定钮转圈；拒绝留在原地并发 confirm-error。
+   * confirm 事件照常触发，仅作通知。
+   */
+  declare confirmAction?: () => void | PromiseLike<unknown>
+
+  /** 异步确认进行中；Escape 与层外交互此时不收起。 */
+  private pendingState = false
+  /** 最近一次确认动作的错误。 */
+  private actionErrorState: DrawerConfirmErrorDetails | null = null
+
+  get pending(): boolean {
+    return this.pendingState
+  }
+
+  get actionError(): DrawerConfirmErrorDetails | null {
+    return this.actionErrorState
+  }
+
+  private actionIntents(): DrawerActionIntents {
+    return {
+      onConfirm: () => {
+        this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
+        return this.confirmAction?.()
+      },
+      onConfirmError: (details) => {
+        this.dispatchEvent(new CustomEvent<DrawerConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
+      },
+      onCancelPress: () => {
+        this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true }))
+      },
+      pending: this.pendingState,
+      onPendingChange: (next) => {
+        this.pendingState = next
+        this.requestUpdate()
+      },
+      actionError: this.actionErrorState,
+      onActionErrorChange: (next) => {
+        this.actionErrorState = next
+        this.requestUpdate()
+      },
+    }
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
@@ -159,8 +248,8 @@ export class XhDrawerElement extends XhPortalHostElement {
       contained: this.contained ?? false,
       side: this.side,
       role: this.dialogRole,
-      closeOnEscape: this.closeOnEscape,
-      closeOnInteractOutside: this.closeOnInteractOutside,
+      closeOnEscape: this.pendingState ? false : this.closeOnEscape,
+      closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
       size: this.size,
       variant: this.variant,
@@ -233,7 +322,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   protected wire(): void {
     this.descriptionWatch.watch(this.getPart('description'))
     const svc = this.ctrl.service
-    const api = connectDrawer(svc, wcNormalize)
+    const api = connectDrawer(svc, wcNormalize, this.actionIntents())
     const open = svc.state.get() === 'open'
 
     this.contentNode = this.getPart('content')
@@ -254,6 +343,8 @@ export class XhDrawerElement extends XhPortalHostElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+    put('cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
     put('resize-trigger', api.getResizeTriggerProps() as Record<string, unknown>)
 

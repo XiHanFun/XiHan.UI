@@ -6,7 +6,7 @@
 // 提供 use dialog 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
+import type { DialogActionIntents, DialogApi, DialogConfirmErrorDetails, DialogSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -31,10 +31,14 @@ export interface DialogContext {
   presence: TitleDescriptionPresence
 }
 
+/** 页脚确定与取消两颗钮的回调；pending 与 actionError 两个状态由这里持有。 */
+export type DialogActionNotifiers = Pick<DialogActionIntents, 'onConfirm' | 'onConfirmError' | 'onCancelPress'>
+
 export function useDialog(
   props: DialogSchema['props'],
   onOpenChange?: DialogSchema['props']['onOpenChange'],
   onExitComplete?: DialogSchema['props']['onExitComplete'],
+  actions: DialogActionNotifiers = {},
 ): DialogContext {
   const contentRef = ref<HTMLElement | null>(null)
   const backdropRef = ref<HTMLElement | null>(null)
@@ -42,7 +46,17 @@ export function useDialog(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const presence = useTitleDescriptionPresence()
-  const service = useMachine(dialogMachine, () => ({ ...props, parts: presence.parts.value, onOpenChange, onExitComplete }), scope)
+  // ref 同步写入：thenable 被识别的同一拍里，机器就要开始拒绝 Escape 与层外交互关闭
+  const pending = ref(false)
+  const actionError = ref<DialogConfirmErrorDetails | null>(null)
+  const service = useMachine(dialogMachine, () => ({
+    ...props,
+    closeOnEscape: pending.value ? false : props.closeOnEscape,
+    closeOnInteractOutside: pending.value ? false : props.closeOnInteractOutside,
+    parts: presence.parts.value,
+    onOpenChange,
+    onExitComplete,
+  }), scope)
 
   const xhConfig = useXhConfig()
   let config: RuntimeConfig | null = null
@@ -78,7 +92,13 @@ export function useDialog(
     onPresence: presence => service.refs.set('presence', presence),
   })
 
-  const api = computed(() => connectDialog(service, vueNormalize))
+  const api = computed(() => connectDialog(service, vueNormalize, {
+    ...actions,
+    pending: pending.value,
+    onPendingChange: (next) => { pending.value = next },
+    actionError: actionError.value,
+    onActionErrorChange: (next) => { actionError.value = next },
+  }))
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
   return { service, api, rendered, contentRef, backdropRef, portalTarget, presence }

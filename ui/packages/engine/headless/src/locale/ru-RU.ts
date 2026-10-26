@@ -292,7 +292,7 @@ const translations = {
     truncated: count => `Обрезано и не показано строк: ${count}`,
     commentOn: (line, side) => `Комментировать строку ${line} ${side === 'old' ? 'старой' : 'новой'} версии`,
   },
-  'drawer': { close: 'Закрыть', resizeTrigger: 'Изменить размер выдвижной панели' },
+  'drawer': { close: 'Закрыть', resizeTrigger: 'Изменить размер выдвижной панели', ok: 'ОК', cancel: 'Отмена' },
   'expression-input': {
     content: 'Подсказки',
     noMatches: 'Совпадений нет',

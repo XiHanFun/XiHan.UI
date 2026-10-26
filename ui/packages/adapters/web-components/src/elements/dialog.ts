@@ -6,10 +6,11 @@
 // 提供 dialog 相关实现。
 
 import type { Cleanup, IdGenerator, Layer, OverlayBackdropVariant, RuntimeConfig, Service, Size } from '@xihan-ui/core'
-import type { DialogOpenChangeDetails, DialogSchema } from '@xihan-ui/headless'
+import type { DialogActionIntents, DialogConfirmErrorDetails, DialogOpenChangeDetails, DialogSchema, DialogStructureActions } from '@xihan-ui/headless'
+import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta } from '@xihan-ui/headless'
+import { connectDialog, dialogAnatomy, dialogMachine, dialogMeta, dialogStructure } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
@@ -27,6 +28,11 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * `<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，
  * 关闭时用内联 style.display 隐藏浮层子树。
  *
+ * 不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写
+ * `slot="trigger"`、`slot="title"`、`slot="description"`、`slot="body"`、`slot="footer"` 的节点）给出各段内容，
+ * 页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋
+ * `confirmAction = () => thenable`：面板等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。
+ *
  * @customElement xh-dialog
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
@@ -39,7 +45,17 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @attr {boolean} panel-draggable - 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
  * @attr {boolean} unmount-on-exit - 收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 "false" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻
+ * @attr {string} trigger-text - 标准结构里触发按钮的文字；没有它也没有 slot="trigger" 时不生成触发器
+ * @attr {string} title-text - 标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示
+ * @attr {string} description - 标准结构里的说明文字
+ * @attr {'confirm'|'alert'|'none'} actions - 标准结构的页脚：confirm 为取消 + 确定（缺省），alert 只有确定，none 不铺；slot="footer" 整段接管
+ * @attr {string} confirm-text - 确定钮的文字，缺省取语言包
+ * @attr {string} cancel-text - 取消钮的文字，缺省取语言包
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires confirm - 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值，
+ *   给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知
+ * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
+ * @fires cancel-press - 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change
  * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
@@ -52,6 +68,8 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart description - 描述（aria-describedby 目标）
  * @csspart body - 正文：面板中唯一会滚动的段
  * @csspart footer - 面板尾：动作按钮所在的段，不随正文滚动
+ * @csspart confirm-trigger - 确定钮：页脚的主动作，异步确认挂起时转圈
+ * @csspart cancel-trigger - 取消钮：页脚的次要出口
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDialogElement extends XhPortalHostElement {
@@ -59,6 +77,20 @@ export class XhDialogElement extends XhPortalHostElement {
   declare portalContainer?: () => Element | null
 
   static override partContract = { anatomy: dialogAnatomy, meta: dialogMeta }
+
+  static override structure: ElementStructure<XhDialogElement> = {
+    rootless: true,
+    build: host => dialogStructure({
+      ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }),
+      ...(host.titleText === undefined ? {} : { title: host.titleText }),
+      ...(host.description === undefined ? {} : { description: host.description }),
+      ...(host.actions === undefined ? {} : { actions: host.actions }),
+      ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }),
+      ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }),
+      translations: host.translations,
+      slotted: (name, key) => host.slotted(name, key),
+    }),
+  }
 
   static override properties = {
     open: { converter: BOOLEAN_CONVERTER },
@@ -75,6 +107,13 @@ export class XhDialogElement extends XhPortalHostElement {
     unmountOnExit: { converter: BOOLEAN_CONVERTER, attribute: 'unmount-on-exit' },
     // 对象进不了属性，只作为 property 暴露
     translations: { attribute: false },
+    // —— 标准结构 ——
+    triggerText: { converter: STRING_CONVERTER, attribute: 'trigger-text' },
+    titleText: { converter: STRING_CONVERTER, attribute: 'title-text' },
+    description: { converter: STRING_CONVERTER },
+    actions: { converter: STRING_CONVERTER },
+    confirmText: { converter: STRING_CONVERTER, attribute: 'confirm-text' },
+    cancelText: { converter: STRING_CONVERTER, attribute: 'cancel-text' },
   }
 
   declare open?: boolean
@@ -90,6 +129,56 @@ export class XhDialogElement extends XhPortalHostElement {
   declare unmountOnExit?: boolean
   /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: DialogSchema['props']['translations']
+  declare triggerText?: string
+  declare titleText?: string
+  declare description?: string
+  declare actions?: DialogStructureActions
+  declare confirmText?: string
+  declare cancelText?: string
+
+  /**
+   * 确定钮的异步门：返回 thenable 即挂起，等兑现才收起、确定钮转圈；拒绝留在原地并发 confirm-error。
+   * confirm 事件照常触发，仅作通知。
+   */
+  declare confirmAction?: () => void | PromiseLike<unknown>
+
+  /** 异步确认进行中；Escape 与层外交互此时不收起。 */
+  private pendingState = false
+  /** 最近一次确认动作的错误。 */
+  private actionErrorState: DialogConfirmErrorDetails | null = null
+
+  get pending(): boolean {
+    return this.pendingState
+  }
+
+  get actionError(): DialogConfirmErrorDetails | null {
+    return this.actionErrorState
+  }
+
+  private actionIntents(): DialogActionIntents {
+    return {
+      onConfirm: () => {
+        this.dispatchEvent(new CustomEvent('confirm', { bubbles: true, composed: true }))
+        return this.confirmAction?.()
+      },
+      onConfirmError: (details) => {
+        this.dispatchEvent(new CustomEvent<DialogConfirmErrorDetails>('confirm-error', { detail: details, bubbles: true, composed: true }))
+      },
+      onCancelPress: () => {
+        this.dispatchEvent(new CustomEvent('cancel-press', { bubbles: true, composed: true }))
+      },
+      pending: this.pendingState,
+      onPendingChange: (next) => {
+        this.pendingState = next
+        this.requestUpdate()
+      },
+      actionError: this.actionErrorState,
+      onActionErrorChange: (next) => {
+        this.actionErrorState = next
+        this.requestUpdate()
+      },
+    }
+  }
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 运行时环境必须始终取宿主当前所属 Document：iframe 创建或 adopt 之后不能继续用构造时的全局 realm。
@@ -127,7 +216,9 @@ export class XhDialogElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       modal: this.modal,
       role: this.dialogRole,
-      closeOnEscape: this.closeOnEscape,
+      closeOnEscape: this.pendingState ? false : this.closeOnEscape,
+      // 异步确认挂起期间层外交互也收不起；平时交给机器的缺省
+      closeOnInteractOutside: this.pendingState ? false : undefined,
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,
       size: this.size,
@@ -196,7 +287,7 @@ export class XhDialogElement extends XhPortalHostElement {
   protected wire(): void {
     this.descriptionWatch.watch(this.getPart('description'))
     const svc = this.ctrl.service
-    const api = connectDialog(svc, wcNormalize)
+    const api = connectDialog(svc, wcNormalize, this.actionIntents())
     const open = svc.state.get() === 'open'
 
     this.contentNode = this.getPart('content')
@@ -218,6 +309,8 @@ export class XhDialogElement extends XhPortalHostElement {
     put('description', api.getDescriptionProps() as Record<string, unknown>)
     put('body', api.getBodyProps() as Record<string, unknown>)
     put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+    put('cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>)
     put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
 
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。

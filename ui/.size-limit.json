@@ -425,11 +425,11 @@
     ]
   },
   {
-    "name": "vue：只用 XhDialogRoot",
+    "name": "vue：只用 XhDialogRoot（props 写法即整套对话框）",
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "35 kB",
+    "limit": "43 kB",
     "ignore": [
       "vue"
     ]

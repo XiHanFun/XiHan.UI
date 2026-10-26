@@ -171,6 +171,8 @@
       "date-range-picker"
     ],
     "cancel-trigger": [
+      "dialog",
+      "drawer",
       "editable",
       "popconfirm"
     ],
@@ -329,6 +331,8 @@
       "color-picker",
       "date-picker",
       "date-range-picker",
+      "dialog",
+      "drawer",
       "popconfirm",
       "time-picker"
     ],

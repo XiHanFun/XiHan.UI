@@ -21,5 +21,8 @@ export const dialogAnatomy = createAnatomy('dialog', [
   'description',
   'body',
   'footer',
+  // 页脚的两颗动作钮：确认门的确定与取消（标准结构按 actions 铺，组合写法放进 footer）
+  'confirm-trigger',
+  'cancel-trigger',
   'close-trigger',
 ])

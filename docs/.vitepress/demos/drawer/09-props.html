@@ -1,0 +1,16 @@
+<!-- props 写法 | 不写结构时按标准结构铺：标题与触发器文字两项，正文另给；页脚的取消与确定照铺，点确定记一次「应用」 -->
+<xh-drawer id="drawer-props" trigger-text="筛选" title-text="筛选条件" confirm-text="应用">
+  <p slot="body">只看最近 30 天、状态为进行中的订单。</p>
+</xh-drawer>
+<span data-demo-output>已应用 <span id="drawer-props-count">0</span> 次</span>
+
+<script type="module">
+  const drawer = document.getElementById("drawer-props");
+  const count = document.getElementById("drawer-props-count");
+  let applied = 0;
+
+  drawer.addEventListener("confirm", () => {
+    applied += 1;
+    count.textContent = String(applied);
+  });
+</script>
