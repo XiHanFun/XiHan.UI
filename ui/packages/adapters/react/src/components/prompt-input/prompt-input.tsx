@@ -87,7 +87,7 @@ export function XhPromptInputRoot({
   const { api } = ctx
   return (
     <PromptInputProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           value: api.value,
           isComposing: api.isComposing,
@@ -110,7 +110,7 @@ export interface XhPromptInputControlProps extends ComponentPropsWithRef<'div'> 
 export function XhPromptInputControl({ children, ...rest }: XhPromptInputControlProps): ReactNode {
   const ctx = usePromptInputContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -123,11 +123,11 @@ export function XhPromptInputInput({ ...rest }: XhPromptInputInputProps): ReactN
   return (
     <textarea
       {...mergeReactProps(
-        ctx.api.getInputProps() as Record<string, unknown>,
+        ctx.api.getInputProps(),
         // 草稿攥在机器里，写回走连接层的 onInput。React 要求带 value 的输入交出一个 onChange，
         // 否则在开发构建里逐帧告警；真正的写回不经它
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -138,7 +138,7 @@ export interface XhPromptInputSubmitTriggerProps extends ComponentPropsWithRef<'
 export function XhPromptInputSubmitTrigger({ children, ...rest }: XhPromptInputSubmitTriggerProps): ReactNode {
   const ctx = usePromptInputContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps(), rest)}>
       {children}
     </button>
   )

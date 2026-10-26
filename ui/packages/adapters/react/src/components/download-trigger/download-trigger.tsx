@@ -47,7 +47,7 @@ export function XhDownloadTrigger({ children, ...props }: XhDownloadTriggerProps
   const ctx = useDownloadTrigger(withXhConfig('download-trigger', { ...props, disabled: props.disabled }) as DownloadTriggerProps)
   // 用原生 button，激活交给平台
   return (
-    <button {...ctx.api.getRootProps() as Record<string, unknown>}>
+    <button {...ctx.api.getRootProps()}>
       {renderSlot(children, {
         status: ctx.api.status,
         preparing: ctx.api.preparing,

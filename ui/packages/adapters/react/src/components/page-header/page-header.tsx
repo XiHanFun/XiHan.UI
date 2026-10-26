@@ -31,7 +31,7 @@ export function XhPageHeaderRoot({ size, split, variant, children, ...rest }: Xh
   )
   return (
     <PageHeaderProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </PageHeaderProvider>
@@ -44,7 +44,7 @@ export interface XhPageHeaderBreadcrumbProps extends ComponentPropsWithRef<'div'
 export function XhPageHeaderBreadcrumb({ children, ...rest }: XhPageHeaderBreadcrumbProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getBreadcrumbProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getBreadcrumbProps(), rest)}>
       {children}
     </div>
   )
@@ -56,7 +56,7 @@ export interface XhPageHeaderMediaProps extends ComponentPropsWithRef<'div'> {}
 export function XhPageHeaderMedia({ children, ...rest }: XhPageHeaderMediaProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getMediaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getMediaProps(), rest)}>
       {children}
     </div>
   )
@@ -75,7 +75,7 @@ export function XhPageHeaderBackTrigger({ as = 'button', children, ...rest }: Xh
   const ctx = usePageHeaderContext()
   const Tag = as as 'button'
   return (
-    <Tag {...mergeReactProps(ctx.api.getBackTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getBackTriggerProps(), rest)}>
       {children}
     </Tag>
   )
@@ -91,7 +91,7 @@ export function XhPageHeaderTitle({ as = 'div', children, ...rest }: XhPageHeade
   const ctx = usePageHeaderContext()
   const Tag = as as 'div'
   return (
-    <Tag {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </Tag>
   )
@@ -103,7 +103,7 @@ export interface XhPageHeaderDescriptionProps extends ComponentPropsWithRef<'div
 export function XhPageHeaderDescription({ children, ...rest }: XhPageHeaderDescriptionProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getDescriptionProps(), rest)}>
       {children}
     </div>
   )
@@ -115,7 +115,7 @@ export interface XhPageHeaderExtraProps extends ComponentPropsWithRef<'div'> {}
 export function XhPageHeaderExtra({ children, ...rest }: XhPageHeaderExtraProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getExtraProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getExtraProps(), rest)}>
       {children}
     </div>
   )
@@ -127,7 +127,7 @@ export interface XhPageHeaderFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhPageHeaderFooter({ children, ...rest }: XhPageHeaderFooterProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>
       {children}
     </div>
   )

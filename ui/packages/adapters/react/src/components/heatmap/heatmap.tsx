@@ -211,8 +211,8 @@ export function XhHeatmapRoot({
     <HeatmapProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -231,11 +231,11 @@ export function XhHeatmapGrid({ children, ...rest }: XhHeatmapGridProps): ReactN
   const ctx = useHeatmapContext()
   // 网格自己得焦要把焦点转投给锚点那一格，DOM 的 focus 不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getGridProps() as Record<string, unknown>,
+    ctx.api.getGridProps(),
     ['onFocus'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )
@@ -253,8 +253,8 @@ export function XhHeatmapMonthBlock({ value, children, ...rest }: XhHeatmapMonth
     <HeatmapMonthProvider value={value}>
       <div
         {...mergeReactProps(
-          ctx.api.getMonthBlockProps({ value }) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getMonthBlockProps({ value }),
+          rest,
         )}
       >
         {children}
@@ -288,8 +288,8 @@ export function XhHeatmapRow({ value, month, children, ...rest }: XhHeatmapRowPr
     <HeatmapRowProvider value={row.row}>
       <div
         {...mergeReactProps(
-          ctx.api.getRowProps(row) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getRowProps(row),
+          rest,
         )}
       >
         {children}
@@ -309,8 +309,8 @@ export function XhHeatmapWeekDay({ value, children, ...rest }: XhHeatmapWeekDayP
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(value) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(value) }),
+        rest,
       )}
     >
       {children}
@@ -329,8 +329,8 @@ export function XhHeatmapMonthLabel({ value, children, ...rest }: XhHeatmapMonth
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getMonthLabelProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getMonthLabelProps({ value }),
+        rest,
       )}
     >
       {children}
@@ -349,8 +349,8 @@ export function XhHeatmapRowLabel({ value, children, ...rest }: XhHeatmapRowLabe
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getRowLabelProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getRowLabelProps({ value }),
+        rest,
       )}
     >
       {children}
@@ -369,8 +369,8 @@ export function XhHeatmapColumnLabel({ value, children, ...rest }: XhHeatmapColu
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getColumnLabelProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getColumnLabelProps({ value }),
+        rest,
       )}
     >
       {children}
@@ -394,11 +394,11 @@ export function XhHeatmapCell({ value, row, children, ...rest }: XhHeatmapCellPr
     : { date: value }
   // 指针进出与聚焦都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getCellProps(cell) as Record<string, unknown>,
+    ctx.api.getCellProps(cell),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )
@@ -410,7 +410,7 @@ export interface XhHeatmapTooltipProps extends ComponentPropsWithRef<'div'> {}
 export function XhHeatmapTooltip({ children, ...rest }: XhHeatmapTooltipProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
-    <div {...mergeReactProps(ctx.api.getTooltipProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getTooltipProps(), rest)}>
       {children}
     </div>
   )
@@ -422,7 +422,7 @@ export interface XhHeatmapEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhHeatmapEmpty({ children, ...rest }: XhHeatmapEmptyProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
-    <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>
       {children}
     </div>
   )
@@ -434,7 +434,7 @@ export interface XhHeatmapLegendProps extends ComponentPropsWithRef<'div'> {}
 export function XhHeatmapLegend({ children, ...rest }: XhHeatmapLegendProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLegendProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLegendProps(), rest)}>
       {children}
     </div>
   )
@@ -451,8 +451,8 @@ export function XhHeatmapLegendLabel({ value, children, ...rest }: XhHeatmapLege
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getLegendLabelProps({ bound: value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getLegendLabelProps({ bound: value }),
+        rest,
       )}
     >
       {children}
@@ -473,8 +473,8 @@ export function XhHeatmapLegendItem({ value, polarity, children, ...rest }: XhHe
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getLegendItemProps({ level: Number(value) || 0, polarity: polarity ?? null }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getLegendItemProps({ level: Number(value) || 0, polarity: polarity ?? null }),
+        rest,
       )}
     >
       {children}

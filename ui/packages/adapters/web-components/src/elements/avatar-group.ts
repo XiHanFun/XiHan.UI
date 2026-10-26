@@ -49,7 +49,7 @@ export class XhAvatarGroupElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('overflow-item', api.getOverflowItemProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('overflow-item', api.getOverflowItemProps())
   }
 }

@@ -109,8 +109,8 @@ export function XhEditableRoot({
     <EditableProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -138,7 +138,7 @@ export function XhEditableLabel({ children, ...rest }: XhEditableLabelProps): Re
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -149,7 +149,7 @@ export interface XhEditableControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhEditableControl({ children, ...rest }: XhEditableControlProps): ReactNode {
   const ctx = useEditableContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -163,13 +163,13 @@ export interface XhEditablePreviewProps extends ComponentPropsWithRef<'span'> {}
  */
 export function XhEditablePreview({ children, ...rest }: XhEditablePreviewProps): ReactNode {
   const ctx = useEditableContext()
-  const bind = useNativeEvents(ctx.api.getPreviewProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getPreviewProps(), ['onFocus'])
   return (
     <span
       {...mergeReactProps(
         bind.attrs,
         { ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
         { ref: (el: HTMLSpanElement | null) => { ctx.previewRef.current = el } },
       )}
     >
@@ -184,8 +184,8 @@ export function XhEditableInput({ ...rest }: XhEditableInputProps): ReactNode {
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getInputProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getInputProps(),
+        rest,
         { ref: (el: HTMLInputElement | null) => { ctx.inputRef.current = el } },
       )}
     />
@@ -196,7 +196,7 @@ export interface XhEditableEditTriggerProps extends ComponentPropsWithRef<'butto
 export function XhEditableEditTrigger({ children, ...rest }: XhEditableEditTriggerProps): ReactNode {
   const ctx = useEditableContext()
   return (
-    <button {...mergeReactProps(ctx.api.getEditTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getEditTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -206,7 +206,7 @@ export interface XhEditableSubmitTriggerProps extends ComponentPropsWithRef<'but
 export function XhEditableSubmitTrigger({ children, ...rest }: XhEditableSubmitTriggerProps): ReactNode {
   const ctx = useEditableContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -216,7 +216,7 @@ export interface XhEditableCancelTriggerProps extends ComponentPropsWithRef<'but
 export function XhEditableCancelTrigger({ children, ...rest }: XhEditableCancelTriggerProps): ReactNode {
   const ctx = useEditableContext()
   return (
-    <button {...mergeReactProps(ctx.api.getCancelTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getCancelTriggerProps(), rest)}>
       {children}
     </button>
   )

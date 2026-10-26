@@ -163,12 +163,12 @@ export class XhSplitterElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     for (const el of this.getParts('panel'))
-      this.spreader.spread(el, api.getPanelProps(this.partIndex(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getPanelProps(this.partIndex(el)))
 
     for (const el of this.getParts('resize-trigger'))
-      this.spreader.spread(el, api.getResizeTriggerProps(this.partIndex(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getResizeTriggerProps(this.partIndex(el)))
   }
 }

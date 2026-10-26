@@ -45,7 +45,7 @@ export function XhSeparatorRoot({
   const api = connectSeparator({ orientation, decorative, variant, dashed, align } as SeparatorProps, reactNormalize)
   return (
     <SeparatorProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </SeparatorProvider>
@@ -59,7 +59,7 @@ export interface XhSeparatorLineProps extends Omit<ComponentPropsWithRef<'div'>,
 export function XhSeparatorLine(props: XhSeparatorLineProps): ReactNode {
   const ctx = useSeparatorContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLineProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+    <div {...mergeReactProps(ctx.api.getLineProps(), props)} />
   )
 }
 
@@ -69,7 +69,7 @@ export interface XhSeparatorContentProps extends ComponentPropsWithRef<'span'> {
 export function XhSeparatorContent({ children, ...rest }: XhSeparatorContentProps): ReactNode {
   const ctx = useSeparatorContext()
   return (
-    <span {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </span>
   )

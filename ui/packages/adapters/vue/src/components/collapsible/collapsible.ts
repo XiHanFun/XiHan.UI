@@ -41,7 +41,7 @@ export const XhCollapsibleRoot = defineComponent({
     }
     const ctx = useCollapsible(props as CollapsibleProps, notify)
     provideCollapsible(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -50,7 +50,7 @@ export const XhCollapsibleHeader = defineComponent({
   name: 'XhCollapsibleHeader',
   setup(_, { slots }) {
     const ctx = useCollapsibleContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -65,7 +65,7 @@ export const XhCollapsibleTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useCollapsibleContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -82,7 +82,7 @@ export const XhCollapsibleIndicator = defineComponent({
   name: 'XhCollapsibleIndicator',
   setup(_, { slots }) {
     const ctx = useCollapsibleContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -91,7 +91,7 @@ export const XhCollapsibleContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useCollapsibleContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },

@@ -105,8 +105,8 @@ export function XhTimeFieldRoot({
     <TimeFieldProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -138,19 +138,19 @@ export function XhTimeFieldLabel({ children, ...rest }: XhTimeFieldLabelProps): 
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
+  return <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</label>
 }
 
 export interface XhTimeFieldControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimeFieldControl({ children, ...rest }: XhTimeFieldControlProps): ReactNode {
   const ctx = useTimeFieldContext()
-  return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>{children}</div>
 }
 
 export interface XhTimeFieldSegmentGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimeFieldSegmentGroup({ children, ...rest }: XhTimeFieldSegmentGroupProps): ReactNode {
   const ctx = useTimeFieldContext()
-  return <div {...mergeReactProps(ctx.api.getSegmentGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSegmentGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhTimeFieldSegmentProps extends ComponentPropsWithRef<'span'> {
@@ -162,9 +162,9 @@ export function XhTimeFieldSegment({ segment, children, ...rest }: XhTimeFieldSe
   const ctx = useTimeFieldContext()
   const api = ctx.api
   // 段位的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getSegmentProps({ segment }) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getSegmentProps({ segment }), ['onFocus'])
   return (
-    <span {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <span {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children ?? api.getSegmentText({ segment })}
     </span>
   )
@@ -174,7 +174,7 @@ export interface XhTimeFieldClearTriggerProps extends ComponentPropsWithRef<'but
 /** 未写内容时由皮肤绘制兜底字形。 */
 export function XhTimeFieldClearTrigger({ children, ...rest }: XhTimeFieldClearTriggerProps): ReactNode {
   const ctx = useTimeFieldContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTimeFieldHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
@@ -183,11 +183,11 @@ export function XhTimeFieldHiddenInput({ ...rest }: XhTimeFieldHiddenInputProps)
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

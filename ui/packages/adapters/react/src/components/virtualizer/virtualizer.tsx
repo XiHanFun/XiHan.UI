@@ -107,7 +107,7 @@ export function XhVirtualizerRoot({
   const api = ctx.api
   return (
     <VirtualizerProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           virtualItems: api.virtualItems,
           totalSize: api.totalSize,
@@ -134,8 +134,8 @@ export function XhVirtualizerViewport({ children, ...rest }: XhVirtualizerViewpo
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -150,8 +150,8 @@ export function XhVirtualizerContent({ children, ...rest }: XhVirtualizerContent
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
       )}
     >
@@ -181,8 +181,8 @@ export function XhVirtualizerItem({ value, measure, children, ...rest }: XhVirtu
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getItemProps({ index: Number(value) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps({ index: Number(value) }),
+        rest,
         {
           ref: (node: HTMLDivElement | null) => {
             el.current = node

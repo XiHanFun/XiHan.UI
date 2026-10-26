@@ -48,19 +48,19 @@ export interface CartesianChartTooltipSlotProps {
 
 /** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
 function renderDefs(api: CartesianChartApi): VNode {
-  return h('defs', api.getDefsProps() as Record<string, unknown>, [
+  return h('defs', api.getDefsProps(), [
     ...api.patterns.map(pattern =>
-      h('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, [
-        h('path', api.getPatternLineProps(pattern) as Record<string, unknown>),
+      h('pattern', { ...api.getPatternProps(pattern), key: pattern.id }, [
+        h('path', api.getPatternLineProps(pattern)),
       ])),
     // 缩放后的裁剪区：窗外的系列与注释按它裁掉
-    ...(api.clip ? [h('clipPath', { ...api.getClipPathProps() as Record<string, unknown>, key: 'clip' }, [h('rect', api.getClipRectProps() as Record<string, unknown>)])] : []),
+    ...(api.clip ? [h('clipPath', { ...api.getClipPathProps(), key: 'clip' }, [h('rect', api.getClipRectProps())])] : []),
   ])
 }
 
 /** 一个场景标记画成 SVG 元素；分组递归画子标记，文字标记带文字。 */
 function renderMark(api: CartesianChartApi, mark: ChartMark): VNode {
-  const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
+  const props = { ...api.getMarkProps(mark), key: mark.key }
   if (mark.kind === 'group')
     return h('g', props, mark.children.map(child => renderMark(api, child)))
   if (mark.kind === 'text')
@@ -74,11 +74,11 @@ function renderTooltipContent(api: CartesianChartApi): VNode[] {
   if (!tooltip)
     return []
   return [
-    h('div', api.getTooltipHeaderProps() as Record<string, unknown>, tooltip.header),
-    ...tooltip.rows.map(row => h('div', { ...api.getTooltipRowProps(row) as Record<string, unknown>, key: row.seriesId }, [
-      h('span', api.getTooltipSwatchProps(row) as Record<string, unknown>),
-      h('span', api.getTooltipValueProps(row) as Record<string, unknown>, row.value),
-      h('span', api.getTooltipNameProps(row) as Record<string, unknown>, row.name),
+    h('div', api.getTooltipHeaderProps(), tooltip.header),
+    ...tooltip.rows.map(row => h('div', { ...api.getTooltipRowProps(row), key: row.seriesId }, [
+      h('span', api.getTooltipSwatchProps(row)),
+      h('span', api.getTooltipValueProps(row), row.value),
+      h('span', api.getTooltipNameProps(row), row.name),
     ])),
   ]
 }
@@ -87,10 +87,10 @@ function renderTooltipContent(api: CartesianChartApi): VNode[] {
 function renderA11y(api: CartesianChartApi): VNode[] {
   const { columns, rows } = api.table
   return [
-    h('p', api.getSummaryProps() as Record<string, unknown>, api.summary),
+    h('p', api.getSummaryProps(), api.summary),
     // 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度
-    h('div', api.getTableRegionProps() as Record<string, unknown>, [
-      h('table', api.getTableProps() as Record<string, unknown>, [
+    h('div', api.getTableRegionProps(), [
+      h('table', api.getTableProps(), [
         h('caption', api.tableCaption),
         h('thead', [h('tr', columns.map(column => h('th', { key: column.id, scope: 'col' }, column.label)))]),
         h('tbody', rows.map((row, i) => h('tr', { key: i }, row.cells.map((cell, c) =>
@@ -105,19 +105,19 @@ export const XhCartesianChartCaption = defineComponent({
   name: 'XhCartesianChartCaption',
   setup(_, { slots }) {
     const ctx = useCartesianChartContext()
-    return () => h('figcaption', ctx.api.value.getCaptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('figcaption', ctx.api.value.getCaptionProps(), slots.default?.())
   },
 })
 
 /** 色阶图例：按值着色时跟在图例项后面；没有按值着色时整块收起，节点常在。 */
 function renderLegendScale(api: CartesianChartApi): VNode {
   const scale = api.legendScale
-  return h('div', { ...api.getLegendScaleProps() as Record<string, unknown>, key: 'legend-scale' }, scale
+  return h('div', { ...api.getLegendScaleProps(), key: 'legend-scale' }, scale
     ? [
-        h('span', api.getLegendScaleNameProps() as Record<string, unknown>, scale.name),
-        h('span', api.getLegendScaleValueProps('min') as Record<string, unknown>, scale.min),
-        h('span', api.getLegendScaleBarProps() as Record<string, unknown>),
-        h('span', api.getLegendScaleValueProps('max') as Record<string, unknown>, scale.max),
+        h('span', api.getLegendScaleNameProps(), scale.name),
+        h('span', api.getLegendScaleValueProps('min'), scale.min),
+        h('span', api.getLegendScaleBarProps()),
+        h('span', api.getLegendScaleValueProps('max'), scale.max),
       ]
     : [])
 }
@@ -129,11 +129,11 @@ export const XhCartesianChartLegend = defineComponent({
     const ctx = useCartesianChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getLegendProps() as Record<string, unknown>, [
+      return h('div', api.getLegendProps(), [
         ...api.legendItems.map(item =>
-          h('button', { ...api.getLegendItemProps(item) as Record<string, unknown>, key: item.id }, [
-            h('span', api.getLegendSwatchProps(item) as Record<string, unknown>),
-            h('span', api.getLegendLabelProps(item) as Record<string, unknown>, item.name),
+          h('button', { ...api.getLegendItemProps(item), key: item.id }, [
+            h('span', api.getLegendSwatchProps(item)),
+            h('span', api.getLegendLabelProps(item), item.name),
           ])),
         renderLegendScale(api),
       ])
@@ -147,7 +147,7 @@ export const XhCartesianChartViewport = defineComponent({
   setup(_, { slots }) {
     const ctx = useCartesianChartContext()
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: (el: unknown) => { ctx.viewportRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -167,12 +167,12 @@ export const XhCartesianChartPlot = defineComponent({
     }
     return () => {
       const api = ctx.api.value
-      const plot = h('svg', { ...api.getPlotProps() as Record<string, unknown>, key: 'plot' }, [renderDefs(api), ...api.layers.plot.map(mark => renderMark(api, mark))])
+      const plot = h('svg', { ...api.getPlotProps(), key: 'plot' }, [renderDefs(api), ...api.layers.plot.map(mark => renderMark(api, mark))])
       if (api.renderer !== 'canvas')
         return [plot]
       return [
-        h('svg', { ...api.getUnderlayProps() as Record<string, unknown>, key: 'underlay' }, api.layers.underlay.map(mark => renderMark(api, mark))),
-        h('canvas', { ...api.getCanvasProps() as Record<string, unknown>, key: 'canvas', ref: bindCanvas }),
+        h('svg', { ...api.getUnderlayProps(), key: 'underlay' }, api.layers.underlay.map(mark => renderMark(api, mark))),
+        h('canvas', { ...api.getCanvasProps(), key: 'canvas', ref: bindCanvas }),
         plot,
       ]
     }
@@ -186,14 +186,14 @@ export const XhCartesianChartZoomSlider = defineComponent({
     const ctx = useCartesianChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getZoomSliderProps() as Record<string, unknown>, [
-        h('div', api.getZoomTrackProps() as Record<string, unknown>, [
-          h('div', api.getZoomWindowProps() as Record<string, unknown>, [
-            h('span', api.getZoomHandleProps('start') as Record<string, unknown>),
-            h('span', api.getZoomHandleProps('end') as Record<string, unknown>),
+      return h('div', api.getZoomSliderProps(), [
+        h('div', api.getZoomTrackProps(), [
+          h('div', api.getZoomWindowProps(), [
+            h('span', api.getZoomHandleProps('start')),
+            h('span', api.getZoomHandleProps('end')),
           ]),
-          h('svg', api.getZoomPreviewProps() as Record<string, unknown>, [
-            h('path', api.getZoomPreviewLineProps() as Record<string, unknown>),
+          h('svg', api.getZoomPreviewProps(), [
+            h('path', api.getZoomPreviewLineProps()),
           ]),
         ]),
       ])
@@ -211,7 +211,7 @@ export const XhCartesianChartTooltip = defineComponent({
     const ctx = useCartesianChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getTooltipProps() as Record<string, unknown>, slots.default
+      return h('div', api.getTooltipProps(), slots.default
         ? slots.default({ active: api.active, tooltip: api.tooltip })
         : renderTooltipContent(api))
     }
@@ -223,7 +223,7 @@ export const XhCartesianChartEmpty = defineComponent({
   name: 'XhCartesianChartEmpty',
   setup(_, { slots }) {
     const ctx = useCartesianChartContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.emptyText)
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? ctx.api.value.emptyText)
   },
 })
 
@@ -336,7 +336,7 @@ export const XhCartesianChartRoot = defineComponent({
             h(XhCartesianChartTooltip, null, slots.tooltip ? { default: slots.tooltip } : undefined),
           ]
       return h('figure', {
-        ...api.getRootProps() as Record<string, unknown>,
+        ...api.getRootProps(),
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
       }, [...content, ...renderA11y(api)])
     }

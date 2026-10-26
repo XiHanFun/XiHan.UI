@@ -125,8 +125,8 @@ export function XhPaginationRoot({
     <PaginationProvider value={ctx}>
       <nav
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: setRootRef },
         )}
       >
@@ -160,26 +160,26 @@ export interface XhPaginationFirstTriggerProps extends ComponentPropsWithRef<'bu
 /** 跳到首页；按需放在上一页之前，没写内容时由皮肤画双箭头。 */
 export function XhPaginationFirstTrigger({ children, ...rest }: XhPaginationFirstTriggerProps): ReactNode {
   const ctx = usePaginationContext()
-  return <button {...mergeReactProps(ctx.api.getFirstTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getFirstTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPaginationPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPaginationPrevTrigger({ children, ...rest }: XhPaginationPrevTriggerProps): ReactNode {
   const ctx = usePaginationContext()
-  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPaginationNextTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPaginationNextTrigger({ children, ...rest }: XhPaginationNextTriggerProps): ReactNode {
   const ctx = usePaginationContext()
-  return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPaginationLastTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 跳到末页；按需放在下一页之后，没写内容时由皮肤画双箭头。 */
 export function XhPaginationLastTrigger({ children, ...rest }: XhPaginationLastTriggerProps): ReactNode {
   const ctx = usePaginationContext()
-  return <button {...mergeReactProps(ctx.api.getLastTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getLastTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPaginationItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
@@ -191,8 +191,8 @@ export function XhPaginationItem({ value, children, ...rest }: XhPaginationItemP
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getItemProps({ page: Number(value) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps({ page: Number(value) }),
+        rest,
       )}
     >
       {children}
@@ -209,7 +209,7 @@ export function XhPaginationEllipsisTrigger({ side = 'start', children, ...rest 
   // pointerenter / pointerleave 不冒泡，React 的同名合成事件收不到直接派到节点上的那一份；
   // 装成原生监听器，到达路径才与另外两家一致
   const bind = useNativeEvents(
-    ctx.api.getEllipsisTriggerProps({ side }) as Record<string, unknown>,
+    ctx.api.getEllipsisTriggerProps({ side }),
     ['onPointerEnter', 'onPointerLeave'],
   )
   // 摊开的那一个是定位锚点；两个省略位共用一份定位层，谁开着谁认领
@@ -219,7 +219,7 @@ export function XhPaginationEllipsisTrigger({ side = 'start', children, ...rest 
       {...mergeReactProps(
         bind.attrs,
         { ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
         {
           ref: (el: HTMLButtonElement | null) => {
             if (open)
@@ -256,14 +256,14 @@ export function XhPaginationSummary({ children, ...rest }: XhPaginationSummaryPr
         end: api.pageRange.end,
         count: api.count,
       })
-  return <div {...mergeReactProps(api.getSummaryProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+  return <div {...mergeReactProps(api.getSummaryProps(), rest)}>{body}</div>
 }
 
 export interface XhPaginationJumperProps extends ComponentPropsWithRef<'input'> {}
 /** 跳页输入框：输入页码按回车即跳转。 */
 export function XhPaginationJumper({ ...rest }: XhPaginationJumperProps): ReactNode {
   const ctx = usePaginationContext()
-  return <input {...mergeReactProps(ctx.api.getJumperProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(ctx.api.getJumperProps(), rest)} />
 }
 
 /**
@@ -274,13 +274,13 @@ function PageSizeOption({ value, label }: { value: string, label: string }): Rea
   const select = usePaginationContext().api.pageSizeSelect
   const item = useMemo(() => ({ value }), [value])
   const bind = useNativeEvents(
-    select.getItemProps(item) as Record<string, unknown>,
+    select.getItemProps(item),
     ['onFocus', 'onPointerLeave'],
   )
   return (
     <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
-      <span {...select.getItemTextProps(item) as Record<string, unknown>}>{label}</span>
-      <span {...select.getItemIndicatorProps(item) as Record<string, unknown>} />
+      <span {...select.getItemTextProps(item)}>{label}</span>
+      <span {...select.getItemIndicatorProps(item)} />
     </div>
   )
 }
@@ -302,17 +302,17 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
   const select = api.pageSizeSelect
   return (
     <>
-      <div {...mergeReactProps(api.getPageSizeSelectProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        <div {...select.getRootProps() as Record<string, unknown>}>
-          <div {...select.getControlProps() as Record<string, unknown>}>
+      <div {...mergeReactProps(api.getPageSizeSelectProps(), rest)}>
+        <div {...select.getRootProps()}>
+          <div {...select.getControlProps()}>
             <button
               {...mergeReactProps(
-                select.getTriggerProps() as Record<string, unknown>,
+                select.getTriggerProps(),
                 { ref: (el: HTMLButtonElement | null) => { ctx.pageSizeTriggerRef.current = el } },
               )}
             >
-              <span {...select.getValueTextProps() as Record<string, unknown>}>{select.displayText}</span>
-              <span {...select.getIndicatorProps() as Record<string, unknown>} />
+              <span {...select.getValueTextProps()}>{select.displayText}</span>
+              <span {...select.getIndicatorProps()} />
             </button>
           </div>
         </div>
@@ -320,13 +320,13 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
       <XhPortal container={container ?? ctx.portalContainer} source={ctx.pageSizeTriggerRef} present={ctx.pageSizeVisible}>
         <div
           {...mergeReactProps(
-            select.getPositionerProps() as Record<string, unknown>,
+            select.getPositionerProps(),
             { ref: (el: HTMLDivElement | null) => { ctx.pageSizePositionerRef.current = el } },
           )}
         >
           <div
             {...mergeReactProps(
-              select.getContentProps() as Record<string, unknown>,
+              select.getContentProps(),
               {
                 // 收起跟着退场闸门走，与省略位那层同一套写法
                 style: ctx.pageSizeVisible ? undefined : { display: 'none' },
@@ -334,7 +334,7 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
               },
             )}
           >
-            <div {...select.getListProps() as Record<string, unknown>}>
+            <div {...select.getListProps()}>
               {select.collection.map(option => (
                 <PageSizeOption key={option.value} value={option.value} label={option.label} />
               ))}
@@ -360,8 +360,8 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef} present={ctx.visible}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -387,8 +387,8 @@ export function XhPaginationContent({ children, ...rest }: XhPaginationContentPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），真正的收起落成内联 display

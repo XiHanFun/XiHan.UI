@@ -66,10 +66,10 @@ export class XhFlexElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 分隔符是多实例部件：作者写几个就打几个，一个都没写也成立（只有一个子项时本就没有缝）
     for (const el of this.getParts('split'))
-      this.spreader.spread(el, api.getSplitProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSplitProps())
   }
 }

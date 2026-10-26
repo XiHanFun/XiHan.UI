@@ -194,14 +194,14 @@ export class XhCodeViewElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('filename', api.getFilenameProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
+    put('filename', api.getFilenameProps())
     this.#fillFilename(api)
-    put('lang-label', api.getLangLabelProps() as Record<string, unknown>)
-    put('pre', api.getPreProps() as Record<string, unknown>)
-    put('code', api.getCodeProps() as Record<string, unknown>)
-    put('fold-trigger', api.getFoldTriggerProps() as Record<string, unknown>)
+    put('lang-label', api.getLangLabelProps())
+    put('pre', api.getPreProps())
+    put('code', api.getCodeProps())
+    put('fold-trigger', api.getFoldTriggerProps())
 
     this.#paint(api)
   }
@@ -248,22 +248,22 @@ export class XhCodeViewElement extends XhElement {
     const folding: FoldingLine[] = []
     api.lines.forEach((line, index) => {
       const row = doc.createElement('span')
-      this.spreader.spread(row, api.getLineProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(row, api.getLineProps({ index }))
 
       // 行号槽不开就不建节点，两个适配器同一条判据
       if (api.lineNumbers) {
         const number = doc.createElement('span')
-        this.spreader.spread(number, api.getLineNumberProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(number, api.getLineNumberProps({ index }))
         row.appendChild(number)
       }
 
       const content = doc.createElement('span')
-      this.spreader.spread(content, api.getLineContentProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(content, api.getLineContentProps({ index }))
       // 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建
       let trigger: HTMLElement | null = null
       if (api.isFoldStart(index)) {
         trigger = doc.createElement('button')
-        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }))
         content.appendChild(trigger)
       }
       // 没有着色结果就一个文本节点，别平白多包一层 span
@@ -275,7 +275,7 @@ export class XhCodeViewElement extends XhElement {
       else {
         for (const token of line.tokens) {
           const span = doc.createElement('span')
-          this.spreader.spread(span, api.getTokenProps(token) as Record<string, unknown>)
+          this.spreader.spread(span, api.getTokenProps(token))
           span.textContent = token.text
           content.appendChild(span)
         }
@@ -295,10 +295,10 @@ export class XhCodeViewElement extends XhElement {
    */
   #refold(api: CodeViewApi): void {
     for (const { index, row, content, trigger } of this.#folding) {
-      this.spreader.spread(row, api.getLineProps({ index }) as Record<string, unknown>)
-      this.spreader.spread(content, api.getLineContentProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(row, api.getLineProps({ index }))
+      this.spreader.spread(content, api.getLineContentProps({ index }))
       if (trigger)
-        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getLineFoldTriggerProps({ index }))
     }
   }
 }

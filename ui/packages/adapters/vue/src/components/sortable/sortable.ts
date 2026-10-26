@@ -75,7 +75,7 @@ export const XhSortableRoot = defineComponent({
     provideSortable(ctx)
 
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: ctx.rootRef,
     }, slots.default?.({
       items: ctx.api.value.items,
@@ -104,7 +104,7 @@ export const XhSortableItem = defineComponent({
     const state = computed(() => ctx.api.value.items.find(item => item.id === props.itemId))
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ id: props.itemId, disabled: props.disabled }),
       slots.default?.({
         dragging: state.value?.dragging ?? false,
         index: state.value?.index ?? -1,
@@ -128,7 +128,7 @@ export const XhSortableItemDragTrigger = defineComponent({
     const ctx = useSortableContext()
     return () => h(
       'button',
-      ctx.api.value.getItemDragTriggerProps({ id: props.itemId, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getItemDragTriggerProps({ id: props.itemId, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -143,7 +143,7 @@ export const XhSortableDropIndicator = defineComponent({
   name: 'XhSortableDropIndicator',
   setup() {
     const ctx = useSortableContext()
-    return () => h('div', ctx.api.value.getDropIndicatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getDropIndicatorProps())
   },
 })
 
@@ -159,7 +159,7 @@ export const XhSortableLiveRegion = defineComponent({
     const ctx = useSortableContext()
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       ctx.service.context.get('announcement'),
     )
   },

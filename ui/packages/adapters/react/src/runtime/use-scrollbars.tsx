@@ -139,9 +139,9 @@ function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegi
     scope: registry.scope,
     // 传 getter 而非节点，ref 在挂载后才有值；量尺寸与挂监听都在机器的效应里进行
     onCreate: (svc) => {
-      svc.refs.set('getScrollableEl', registry.scrollable as never)
-      svc.refs.set('getTrackEl', (() => trackRef.current) as never)
-      svc.refs.set('getRootEl', (() => rootRef.current) as never)
+      svc.refs.set('getScrollableEl', registry.scrollable)
+      svc.refs.set('getTrackEl', () => trackRef.current)
+      svc.refs.set('getRootEl', () => rootRef.current)
       registry.add(axis, svc as Service<ScrollbarSchema>)
       return () => registry.remove(axis)
     },
@@ -158,7 +158,7 @@ function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegi
   const corner = registry.axes.length > 1 && axis === 'vertical'
     ? (
         <div
-          {...api.getCornerProps() as Record<string, unknown>}
+          {...api.getCornerProps()}
           hidden={gutter ? undefined : true}
         />
       )
@@ -166,14 +166,14 @@ function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegi
 
   return (
     <div
-      {...api.getRootProps() as Record<string, unknown>}
+      {...api.getRootProps()}
       ref={(el: HTMLDivElement | null) => { rootRef.current = el }}
     >
       <div
-        {...api.getTrackProps() as Record<string, unknown>}
+        {...api.getTrackProps()}
         ref={(el: HTMLDivElement | null) => { trackRef.current = el }}
       >
-        <div {...api.getThumbProps() as Record<string, unknown>} />
+        <div {...api.getThumbProps()} />
       </div>
       {corner}
     </div>

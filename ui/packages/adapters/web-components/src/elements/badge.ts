@@ -85,12 +85,12 @@ export class XhBadgeElement extends XhElement {
     if (!root)
       return
     const api = connectBadge(this.ctrl.service, wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
 
     const indicator = this.getPart('indicator')
     if (!indicator)
       return
-    this.spreader.spread(indicator, api.getIndicatorProps() as Record<string, unknown>)
+    this.spreader.spread(indicator, api.getIndicatorProps())
     // 作者自己写了内容就不动它，空着才把算好的计数填进去
     if (api.text && !indicator.textContent?.trim())
       indicator.textContent = api.text

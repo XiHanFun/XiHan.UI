@@ -55,7 +55,7 @@ export const XhDownloadTrigger = defineComponent({
       onDownloadError: details => emit('download-error', details),
     })
     // 用原生 button，激活交给平台
-    return () => h('button', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('button', ctx.api.value.getRootProps(), slots.default?.({
       status: ctx.api.value.status,
       preparing: ctx.api.value.preparing,
       disabled: ctx.api.value.disabled,

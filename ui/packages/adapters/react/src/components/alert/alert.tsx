@@ -51,7 +51,7 @@ export function XhAlertRoot({
   }) as AlertProps)
   return (
     <AlertProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children}
       </div>
     </AlertProvider>
@@ -63,21 +63,21 @@ XhAlertRoot.xhEvents = ['open-change'] as const
 export interface XhAlertIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhAlertIndicator({ children, ...rest }: XhAlertIndicatorProps): ReactNode {
   const ctx = useAlertContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhAlertContentProps extends ComponentPropsWithRef<'div'> {}
 /** 文本列：标题与说明纵向排列为一列。未写它时两段文字直接位于 root 的一行上。 */
 export function XhAlertContent({ children, ...rest }: XhAlertContentProps): ReactNode {
   const ctx = useAlertContext()
-  return <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>{children}</div>
 }
 
 export interface XhAlertTitleProps extends ComponentPropsWithRef<'div'> {}
 export function XhAlertTitle({ children, ...rest }: XhAlertTitleProps): ReactNode {
   const ctx = useAlertContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <div {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</div>
 }
 
 export interface XhAlertDescriptionProps extends ComponentPropsWithRef<'div'> {}
@@ -92,11 +92,11 @@ export interface XhAlertActionProps extends ComponentPropsWithRef<'div'> {}
 /** 操作槽：划定按钮区，按钮本身归作者。 */
 export function XhAlertAction({ children, ...rest }: XhAlertActionProps): ReactNode {
   const ctx = useAlertContext()
-  return <div {...mergeReactProps(ctx.api.getActionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getActionProps(), rest)}>{children}</div>
 }
 
 export interface XhAlertCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhAlertCloseTrigger({ children, ...rest }: XhAlertCloseTriggerProps): ReactNode {
   const ctx = useAlertContext()
-  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>{children}</button>
 }

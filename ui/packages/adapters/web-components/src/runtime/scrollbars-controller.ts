@@ -102,13 +102,13 @@ export class ScrollbarsController {
       if (!service || !nodes)
         continue
       const api = connectScrollbar(service, wcNormalize)
-      this.spreader.spread(nodes.root, api.getRootProps() as Record<string, unknown>)
-      this.spreader.spread(nodes.track, api.getTrackProps() as Record<string, unknown>)
-      this.spreader.spread(nodes.thumb, api.getThumbProps() as Record<string, unknown>)
+      this.spreader.spread(nodes.root, api.getRootProps())
+      this.spreader.spread(nodes.track, api.getTrackProps())
+      this.spreader.spread(nodes.thumb, api.getThumbProps())
       // 只有一条轴在场时右下角没有缺口要补，收起来免得平白盖住一块内容
       if (nodes.corner) {
         this.spreader.spread(nodes.corner, {
-          ...api.getCornerProps() as Record<string, unknown>,
+          ...api.getCornerProps(),
           hidden: both ? undefined : true,
         })
       }

@@ -100,8 +100,8 @@ export function XhResizableRoot({
     <ResizableProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -134,8 +134,8 @@ export function XhResizableHandle({ edge, children, ...rest }: XhResizableHandle
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getHandleProps({ edge }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getHandleProps({ edge }),
+        rest,
       )}
     >
       {children}

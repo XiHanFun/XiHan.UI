@@ -212,13 +212,13 @@ export class XhToggleGroupElement<V = string> extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 打上去的 data-scope/data-part/data-value 正是键盘导航在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
     for (const el of this.getParts('item')) {
-      this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(this.itemProps(el)))
       this.declaredDisabled.commit(el)
     }
 
@@ -231,7 +231,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
 
     const hiddenInput = this.getPart('hidden-input')
     if (hiddenInput)
-      this.spreader.spread(hiddenInput, api.getHiddenInputProps() as Record<string, unknown>)
+      this.spreader.spread(hiddenInput, api.getHiddenInputProps())
   }
 
   /** 默认补齐相邻条目间的分隔线，隐藏输入不参与。 */

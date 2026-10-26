@@ -82,7 +82,7 @@ export const XhMessageFeedRoot = defineComponent({
     })
     provideMessageFeed(ctx)
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: ctx.rootRef,
     }, slots.default?.({
       status: ctx.api.value.status,
@@ -103,7 +103,7 @@ export const XhMessageFeedViewport = defineComponent({
     const ctx = useMessageFeedContext()
     // 把视口节点交给机器，由粘底句柄监听滚动
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: ctx.viewportRef,
     }, slots.default?.())
   },
@@ -115,7 +115,7 @@ export const XhMessageFeedList = defineComponent({
     const ctx = useMessageFeedContext()
     // 把内容节点交给机器，由粘底句柄观察尺寸；条目必须是它的直接子节点
     return () => h('div', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: ctx.contentRef,
     }, slots.default?.())
   },
@@ -144,7 +144,7 @@ export const XhMessageFeedItem = defineComponent({
         role: props.itemRole,
         streaming: props.itemStreaming,
         labelled: labelCount.value > 0,
-      }) as Record<string, unknown>,
+      }),
       ref: el,
     }, slots.default?.())
   },
@@ -164,7 +164,7 @@ export const XhMessageFeedItemLabel = defineComponent({
     })
     return () => h(
       'span',
-      ctx.api.value.getItemLabelProps({ id: item.id() }) as Record<string, unknown>,
+      ctx.api.value.getItemLabelProps({ id: item.id() }),
       slots.default?.(),
     )
   },
@@ -174,7 +174,7 @@ export const XhMessageFeedScrollToEndTrigger = defineComponent({
   name: 'XhMessageFeedScrollToEndTrigger',
   setup(_, { slots }) {
     const ctx = useMessageFeedContext()
-    return () => h('button', ctx.api.value.getScrollToEndTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getScrollToEndTriggerProps(), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhMessageFeedUnreadCount = defineComponent({
   name: 'XhMessageFeedUnreadCount',
   setup(_, { slots }) {
     const ctx = useMessageFeedContext()
-    return () => h('span', ctx.api.value.getUnreadCountProps() as Record<string, unknown>, slots.default?.() ?? String(ctx.api.value.unreadCount))
+    return () => h('span', ctx.api.value.getUnreadCountProps(), slots.default?.() ?? String(ctx.api.value.unreadCount))
   },
 })
 
@@ -192,7 +192,7 @@ export const XhMessageFeedSeparator = defineComponent({
   name: 'XhMessageFeedSeparator',
   setup(_, { slots }) {
     const ctx = useMessageFeedContext()
-    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSeparatorProps(), slots.default?.())
   },
 })
 
@@ -201,7 +201,7 @@ export const XhMessageFeedPendingIndicator = defineComponent({
   name: 'XhMessageFeedPendingIndicator',
   setup() {
     const ctx = useMessageFeedContext()
-    return () => h('span', ctx.api.value.getPendingIndicatorProps() as Record<string, unknown>)
+    return () => h('span', ctx.api.value.getPendingIndicatorProps())
   },
 })
 
@@ -210,6 +210,6 @@ export const XhMessageFeedLiveRegion = defineComponent({
   setup(_, { slots }) {
     const ctx = useMessageFeedContext()
     // 播报文本由宿主在一轮流结束时写进来
-    return () => h('div', ctx.api.value.getLiveRegionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLiveRegionProps(), slots.default?.())
   },
 })

@@ -151,24 +151,24 @@ export class XhToolbarElement extends XhPortalHostElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 分组与分隔线都是多实例 part，且属性与身份无关，逐个打同一份产出即可
     for (const el of this.getParts('group'))
-      this.spreader.spread(el, api.getGroupProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps())
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
     // 所以 wire 必须先于事件跑过——updated() 已保证。
     for (const el of this.getParts('item')) {
-      this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(this.itemProps(el)))
       this.declaredDisabled.commit(el)
     }
 
     // 「更多」钮与它弹出的菜单：钮是作者写的工具条部件，菜单那一套由共用的控制器自建
-    this.overflowMenu.wire(api.getOverflowTriggerProps() as Record<string, unknown>)
+    this.overflowMenu.wire(api.getOverflowTriggerProps())
   }
 
   override disconnectedCallback(): void {

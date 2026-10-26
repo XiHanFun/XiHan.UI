@@ -51,7 +51,7 @@ export function XhToggle({
     onPressedChange,
   } as ToggleProps)
   return (
-    <button {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getRootProps(), rest)}>
       {children}
     </button>
   )

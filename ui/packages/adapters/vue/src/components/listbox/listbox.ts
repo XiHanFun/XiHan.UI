@@ -87,7 +87,7 @@ const XhListboxRootImpl = defineComponent({
     }
     const ctx = useListbox(withXhConfig('listbox', useFormControlProps(props)) as unknown as ListboxProps, notify)
     provideListbox(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
+    return () => h('div', ctx.api.value.getRootProps(), [
       ...(slots.default
         ? slots.default({
           value: ctx.api.value.value,
@@ -148,7 +148,7 @@ export const XhListboxLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -175,7 +175,7 @@ export const XhListboxContent = defineComponent({
     onUpdated(() => bars.measure())
     return () => [
       h('div', {
-        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getContentProps() as Record<string, unknown> }), attrs),
+        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getContentProps() }), attrs),
         ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
       }, slots.default?.()),
       ...bars.render(),
@@ -189,7 +189,7 @@ export const XhListboxEmpty = defineComponent({
     const ctx = useListboxContext()
     // 空态占位：写在 root 里、content 的兄弟，不进列表框的拥有关系。
     // 给了 collection 时收放归连接层，条目手写时归作者
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -198,7 +198,7 @@ export const XhListboxLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.())
   },
 })
 
@@ -207,7 +207,7 @@ export const XhListboxLoadMoreTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     // 取下一页的入口：点了做什么归作者，这里只把在途与禁用两档焊成点不动
-    return () => h('button', ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getLoadMoreTriggerProps(), slots.default?.())
   },
 })
 
@@ -220,7 +220,7 @@ export const XhListboxGroup = defineComponent({
     const ctx = useListboxContext()
     const group = computed<ListboxGroupProps>(() => ({ value: props.value }))
     provideListboxItemGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -229,7 +229,7 @@ export const XhListboxGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { group } = useListboxItemGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -270,7 +270,7 @@ export const XhListboxItem = defineComponent({
     })
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps(item.value), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -281,7 +281,7 @@ export const XhListboxItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { item } = useListboxItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -291,7 +291,7 @@ export const XhListboxItemPrefix = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { item } = useListboxItemContext()
-    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value), slots.default?.())
   },
 })
 
@@ -301,7 +301,7 @@ export const XhListboxItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { item } = useListboxItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -311,7 +311,7 @@ export const XhListboxItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { item } = useListboxItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -320,7 +320,7 @@ export const XhListboxItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useListboxContext()
     const { item } = useListboxItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 

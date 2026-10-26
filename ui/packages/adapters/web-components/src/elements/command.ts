@@ -370,21 +370,21 @@ export class XhCommandElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('backdrop', api.getBackdropProps() as Record<string, unknown>)
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('trigger', api.getTriggerProps())
+    put('backdrop', api.getBackdropProps())
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('input', api.getInputProps())
+    put('list', api.getListProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
+    put('footer', api.getFooterProps())
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     // 条目逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
@@ -394,18 +394,18 @@ export class XhCommandElement extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const shortcut of this.partsIn(el, 'item-shortcut'))
-        this.spreader.spread(shortcut, api.getItemShortcutProps(item) as Record<string, unknown>)
+        this.spreader.spread(shortcut, api.getItemShortcutProps(item))
       for (const prefix of this.partsIn(el, 'item-prefix'))
-        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+        this.spreader.spread(prefix, api.getItemPrefixProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）。

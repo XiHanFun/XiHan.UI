@@ -26,7 +26,7 @@ export const XhAvatarGroupRoot = defineComponent({
     const configured = withXhConfig('avatar-group', props)
     const api = computed(() => connectAvatarGroup(configured as AvatarGroupProps, vueNormalize))
     provideAvatarGroup({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -35,6 +35,6 @@ export const XhAvatarGroupOverflowItem = defineComponent({
   setup(_, { slots }) {
     const ctx = useAvatarGroupContext()
     // 「+N」的文本由作者写进插槽
-    return () => h('span', ctx.api.value.getOverflowItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getOverflowItemProps(), slots.default?.())
   },
 })

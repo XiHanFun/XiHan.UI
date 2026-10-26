@@ -100,14 +100,14 @@ export class XhAlertElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    const rootProps = api.getRootProps() as Record<string, unknown>
+    const rootProps = api.getRootProps()
     put('root', rootProps)
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('action', api.getActionProps() as Record<string, unknown>)
-    put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps())
+    put('content', api.getContentProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('action', api.getActionProps())
+    put('close-trigger', api.getCloseTriggerProps())
 
     // 收起时用内联 display 隐藏整块提示：显隐照连接层给的 hidden，退场动画播完之前根还留着
     this.setPartHidden(this.getPart('root'), rootProps.hidden === true)

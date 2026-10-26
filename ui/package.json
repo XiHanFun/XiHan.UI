@@ -49,7 +49,8 @@
     "coarse-target:update": "node tooling/scripts/visual/check-coarse-target.mjs --update",
     "focus-ring-surface:update": "node tooling/scripts/a11y/check-focus-ring-surface.mjs --update",
     "vocab:update": "node tooling/scripts/adapter/check-part-vocabulary.mjs --update",
-    "keyframes:update": "node tooling/scripts/motion/check-keyframe-registry.mjs --update"
+    "keyframes:update": "node tooling/scripts/motion/check-keyframe-registry.mjs --update",
+    "assertions:update": "node tooling/scripts/adapter/check-type-assertions.mjs --update"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",

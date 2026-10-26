@@ -43,7 +43,7 @@ export function XhLayoutRoot({ children, ...props }: XhLayoutRootProps): ReactNo
   const ctx = useLayout(props as LayoutProps)
   return (
     <LayoutProvider value={ctx}>
-      <div {...ctx.api.getRootProps() as Record<string, unknown>}>{children}</div>
+      <div {...ctx.api.getRootProps()}>{children}</div>
     </LayoutProvider>
   )
 }
@@ -55,7 +55,7 @@ export interface XhLayoutHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhLayoutHeader({ children, ...rest }: XhLayoutHeaderProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>
       {children}
     </div>
   )
@@ -67,7 +67,7 @@ export interface XhLayoutSiderBackdropProps extends ComponentPropsWithRef<'div'>
 export function XhLayoutSiderBackdrop({ children, ...rest }: XhLayoutSiderBackdropProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <div {...mergeReactProps(ctx.api.getSiderBackdropProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getSiderBackdropProps(), rest)}>
       {children}
     </div>
   )
@@ -78,7 +78,7 @@ export interface XhLayoutSiderProps extends ComponentPropsWithRef<'div'> {}
 export function XhLayoutSider({ children, ...rest }: XhLayoutSiderProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <div {...mergeReactProps(ctx.api.getSiderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getSiderProps(), rest)}>
       {children}
     </div>
   )
@@ -89,7 +89,7 @@ export interface XhLayoutContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhLayoutContent({ children, ...rest }: XhLayoutContentProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </div>
   )
@@ -100,7 +100,7 @@ export interface XhLayoutFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhLayoutFooter({ children, ...rest }: XhLayoutFooterProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>
       {children}
     </div>
   )
@@ -112,7 +112,7 @@ export interface XhLayoutSiderTriggerProps extends ComponentPropsWithRef<'button
 export function XhLayoutSiderTrigger({ children, ...rest }: XhLayoutSiderTriggerProps): ReactNode {
   const ctx = useLayoutContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSiderTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSiderTriggerProps(), rest)}>
       {children}
     </button>
   )

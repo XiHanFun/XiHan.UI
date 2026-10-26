@@ -51,7 +51,7 @@ export function XhBreadcrumbRoot({
   const body = children ?? renderDefaultStructure(ctx.api, renderSeparator, renderEllipsis)
   return (
     <BreadcrumbProvider value={ctx}>
-      <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <nav {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {body}
       </nav>
     </BreadcrumbProvider>
@@ -62,13 +62,13 @@ export interface XhBreadcrumbListProps extends ComponentPropsWithRef<'ol'> {}
 /** 渲染为 ol，把层级路径表达为有序列表。 */
 export function XhBreadcrumbList({ children, ...rest }: XhBreadcrumbListProps): ReactNode {
   const ctx = useBreadcrumbContext()
-  return <ol {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ol>
+  return <ol {...mergeReactProps(ctx.api.getListProps(), rest)}>{children}</ol>
 }
 
 export interface XhBreadcrumbItemProps extends ComponentPropsWithRef<'li'> {}
 export function XhBreadcrumbItem({ children, ...rest }: XhBreadcrumbItemProps): ReactNode {
   const ctx = useBreadcrumbContext()
-  return <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  return <li {...mergeReactProps(ctx.api.getItemProps(), rest)}>{children}</li>
 }
 
 export interface XhBreadcrumbLinkProps extends ComponentPropsWithRef<'a'>, AsChildProps {
@@ -85,8 +85,8 @@ export function XhBreadcrumbLink({ value, current, asChild, children, ...rest }:
   const ctx = useBreadcrumbContext()
   const fallbackValue = useId()
   const props = mergePartProps(
-    ctx.api.getLinkProps({ value: value ?? fallbackValue, current }) as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getLinkProps({ value: value ?? fallbackValue, current }),
+    rest,
   )
   return renderAsChild(asChild, children, props, 'breadcrumb', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }
@@ -95,21 +95,21 @@ export interface XhBreadcrumbLinkIconProps extends ComponentPropsWithRef<'span'>
 /** 链接中的图标位，与文字并排；纯装饰。 */
 export function XhBreadcrumbLinkIcon({ children, ...rest }: XhBreadcrumbLinkIconProps): ReactNode {
   const ctx = useBreadcrumbContext()
-  return <span {...mergeReactProps(ctx.api.getLinkIconProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLinkIconProps(), rest)}>{children}</span>
 }
 
 export interface XhBreadcrumbSeparatorProps extends ComponentPropsWithRef<'li'> {}
 /** 分隔符是 ol 的直接子节点，渲染为 li 并对读屏隐藏。 */
 export function XhBreadcrumbSeparator({ children, ...rest }: XhBreadcrumbSeparatorProps): ReactNode {
   const ctx = useBreadcrumbContext()
-  return <li {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  return <li {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>{children}</li>
 }
 
 export interface XhBreadcrumbEllipsisProps extends ComponentPropsWithRef<'li'> {}
 /** 折叠位：路径里的一个列表项，装着展开完整路径的触发器；展开后收起。 */
 export function XhBreadcrumbEllipsis({ children, ...rest }: XhBreadcrumbEllipsisProps): ReactNode {
   const ctx = useBreadcrumbContext()
-  return <li {...mergeReactProps(ctx.api.getEllipsisProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  return <li {...mergeReactProps(ctx.api.getEllipsisProps(), rest)}>{children}</li>
 }
 
 export interface XhBreadcrumbEllipsisTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -117,7 +117,7 @@ export interface XhBreadcrumbEllipsisTriggerProps extends ComponentPropsWithRef<
 export function XhBreadcrumbEllipsisTrigger({ children, ...rest }: XhBreadcrumbEllipsisTriggerProps): ReactNode {
   const ctx = useBreadcrumbContext()
   return (
-    <button {...mergePartProps(ctx.api.getEllipsisTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergePartProps(ctx.api.getEllipsisTriggerProps(), rest)}>
       {children}
     </button>
   )

@@ -65,9 +65,9 @@ export function useDrawer(
     additionalExitNodes: () => [backdropRef.current],
     container,
     refs: (service) => {
-      service.refs.set('getContentEl', (() => contentRef.current) as never)
-      service.refs.set('getTriggerEl', (() => null) as never)
-      service.refs.set('branches', (() => []) as never)
+      service.refs.set('getContentEl', () => contentRef.current)
+      service.refs.set('getTriggerEl', () => null)
+      service.refs.set('branches', () => [])
     },
   })
 

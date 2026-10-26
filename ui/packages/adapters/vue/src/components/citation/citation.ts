@@ -61,7 +61,7 @@ export const XhCitationRoot = defineComponent({
     })
     provideCitation(context)
     return () => h('div', {
-      ...context.api.value.getRootProps() as Record<string, unknown>,
+      ...context.api.value.getRootProps(),
       ref: (el: unknown) => { context.rootRef.value = el as HTMLElement | null },
     }, slots.default?.())
   },
@@ -71,7 +71,7 @@ export const XhCitationText = defineComponent({
   name: 'XhCitationText',
   setup(_, { slots }) {
     const { api } = useCitationContext()
-    return () => h('span', api.value.getTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getTextProps(), slots.default?.())
   },
 })
 
@@ -88,7 +88,7 @@ export const XhCitationTrigger = defineComponent({
   },
   setup(props, { slots }) {
     const { api } = useCitationContext()
-    return () => h('button', api.value.getTriggerProps(props) as Record<string, unknown>, slots.default?.())
+    return () => h('button', api.value.getTriggerProps(props), slots.default?.())
   },
 })
 
@@ -107,7 +107,7 @@ export const XhCitationPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useCitationContext()
     return () => {
-      const positioner = ctx.api.value.getPositionerProps() as Record<string, unknown>
+      const positioner = ctx.api.value.getPositionerProps()
       const shell = h('div', {
         ...mergeProps(positioner, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement | null },
@@ -131,7 +131,7 @@ export const XhCitationPreview = defineComponent({
     return () => {
       const authored = slots.default?.()
       const item: CitationPreviewProps = props
-      return h('section', api.value.getPreviewProps(item) as Record<string, unknown>, slotPaints(authored)
+      return h('section', api.value.getPreviewProps(item), slotPaints(authored)
         ? authored
         : renderPreview(api.value, item))
     }
@@ -143,7 +143,7 @@ export const XhCitationSourceLink = defineComponent({
   setup(_, { slots }) {
     const { api } = useCitationContext()
     const item = useCitationSource()
-    return () => h('button', api.value.getSourceLinkProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', api.value.getSourceLinkProps(item.value), slots.default?.())
   },
 })
 
@@ -152,7 +152,7 @@ export const XhCitationSourceIndex = defineComponent({
   setup(_, { slots }) {
     const { api } = useCitationContext()
     const item = useCitationSource()
-    return () => h('span', api.value.getSourceIndexProps(item.value) as Record<string, unknown>, slots.default?.() ?? `${api.value.sources.findIndex(source => source.sourceId === item.value.sourceId) + 1}`)
+    return () => h('span', api.value.getSourceIndexProps(item.value), slots.default?.() ?? `${api.value.sources.findIndex(source => source.sourceId === item.value.sourceId) + 1}`)
   },
 })
 
@@ -165,7 +165,7 @@ function sourcePart(
   return () => {
     const current = api.value.sources.find(source => source.sourceId === item.value.sourceId)
     const text = name === 'getSourceTitleProps' ? citationSourceTitle(current) : api.value.sourceMetaText(current)
-    return h('span', api.value[name](item.value) as Record<string, unknown>, slots.default?.() ?? text)
+    return h('span', api.value[name](item.value), slots.default?.() ?? text)
   }
 }
 
@@ -193,7 +193,7 @@ export const XhCitationSource = defineComponent({
     const { api } = useCitationContext()
     const item = computed<CitationSourceItemProps>(() => ({ sourceId: props.sourceId, disabled: props.disabled }))
     provideCitationSource(item)
-    return () => h('li', api.value.getSourceProps(item.value) as Record<string, unknown>, slots.default?.() ?? [
+    return () => h('li', api.value.getSourceProps(item.value), slots.default?.() ?? [
       h(XhCitationSourceLink, null, () => [h(XhCitationSourceIndex), h('span', null, [h(XhCitationSourceTitle), h(XhCitationSourceMeta)])]),
     ])
   },
@@ -205,7 +205,7 @@ export const XhCitationList = defineComponent({
     const { api } = useCitationContext()
     return () => {
       const authored = slots.default?.()
-      return h('ol', api.value.getListProps() as Record<string, unknown>, slotPaints(authored)
+      return h('ol', api.value.getListProps(), slotPaints(authored)
         ? authored
         : api.value.sources.map(source => h(XhCitationSource, { key: source.sourceId, sourceId: source.sourceId })))
     }
@@ -221,18 +221,18 @@ function renderPreview(api: ReturnType<typeof useCitationContext>['api']['value'
   const linkTag = current.type === 'source-url' ? 'a' : 'button'
   const at = api.getPreviewPosition(item)
   return [
-    h('header', api.getPreviewHeaderProps(item) as Record<string, unknown>, [
+    h('header', api.getPreviewHeaderProps(item), [
       h('span', null, [
-        h('strong', api.getPreviewTitleProps(item) as Record<string, unknown>, citationSourceTitle(current)),
-        h('span', api.getPreviewMetaProps(item) as Record<string, unknown>, api.sourceMetaText(current)),
+        h('strong', api.getPreviewTitleProps(item), citationSourceTitle(current)),
+        h('span', api.getPreviewMetaProps(item), api.sourceMetaText(current)),
       ]),
       // 一处多源的轮换：只有一个来源时这三件带 hidden
-      h('button', api.getPrevTriggerProps(item) as Record<string, unknown>),
-      h('span', api.getPreviewIndexProps(item) as Record<string, unknown>, at ? `${at.index} / ${at.total}` : ''),
-      h('button', api.getNextTriggerProps(item) as Record<string, unknown>),
-      h('button', api.getDismissTriggerProps(item) as Record<string, unknown>),
+      h('button', api.getPrevTriggerProps(item)),
+      h('span', api.getPreviewIndexProps(item), at ? `${at.index} / ${at.total}` : ''),
+      h('button', api.getNextTriggerProps(item)),
+      h('button', api.getDismissTriggerProps(item)),
     ]),
-    h('blockquote', api.getQuoteProps(item) as Record<string, unknown>, quote),
-    h(linkTag, api.getPreviewLinkProps(item) as Record<string, unknown>, api.previewLinkText(item)),
+    h('blockquote', api.getQuoteProps(item), quote),
+    h(linkTag, api.getPreviewLinkProps(item), api.previewLinkText(item)),
   ]
 }

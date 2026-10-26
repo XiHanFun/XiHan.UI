@@ -206,7 +206,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
     this.spreader.spread(child.trigger, api.getItemProps({
       value: child.trigger.getAttribute('value') ?? '',
       disabled: child.getDisabled(),
-    }) as Record<string, unknown>)
+    }))
   }
 
   private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
@@ -384,21 +384,21 @@ export class XhContextMenuElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('arrow', api.getArrowProps())
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
       const isRadio = el.getAttribute('kind') === 'radio'
         || api.collection.some(node => node.kind === 'radio' && node.group === group.value)
-      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
@@ -422,28 +422,28 @@ export class XhContextMenuElement extends XhPortalHostElement {
         : item.kind === 'radio'
           ? api.getRadioItemProps(item)
           : api.getItemProps(item)
-      this.spreader.spread(el, itemProps as Record<string, unknown>)
+      this.spreader.spread(el, itemProps)
       this.declaredDisabled.commit(el)
       // 条目内的文本与标记位跟着同一份声明走，样式层各处状态一致
       for (const icon of this.partsIn(el, 'item-icon'))
-        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
+        this.spreader.spread(icon, api.getItemIconProps(item))
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const indicator of this.partsIn(el, 'item-indicator'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const shortcut of this.partsIn(el, 'item-shortcut'))
-        this.spreader.spread(shortcut, api.getItemShortcutProps(item) as Record<string, unknown>)
+        this.spreader.spread(shortcut, api.getItemShortcutProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
     }
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     // Light DOM content 常驻，WC 自管可见性：作者层给 content 设了 display（本仓样式是 flex）
     // 就会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住。

@@ -155,22 +155,22 @@ export class XhDiffViewElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('body', api.getBodyProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
+    put('viewport', api.getViewportProps())
+    put('body', api.getBodyProps())
+    put('empty', api.getEmptyProps())
     // 提示条的文字由本元素填：留给作者填的话，作者不填就又变回一份看着完整的残缺差异
     const truncation = this.getPart('truncation')
     if (truncation) {
-      this.spreader.spread(truncation, api.getTruncationProps() as Record<string, unknown>)
+      this.spreader.spread(truncation, api.getTruncationProps())
       truncation.textContent = api.truncationText
     }
 
     // 统计位增删各一个，作者用 data-change 说明这一个是哪一档，数字由本元素填
     for (const el of this.getParts('summary')) {
       const change = el.dataset.change === 'removed' ? 'removed' : 'added'
-      this.spreader.spread(el, api.getSummaryProps({ change }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSummaryProps({ change }))
       el.textContent = change === 'added' ? `+${api.stats.added}` : `−${api.stats.removed}`
     }
 
@@ -199,7 +199,7 @@ export class XhDiffViewElement extends XhElement {
       for (const trigger of host.querySelectorAll<HTMLElement>('[data-part="gap-trigger"]')) {
         const gapId = trigger.getAttribute('data-value')
         if (gapId !== null)
-          this.spreader.spread(trigger, api.getGapTriggerProps({ gapId }) as Record<string, unknown>)
+          this.spreader.spread(trigger, api.getGapTriggerProps({ gapId }))
       }
       // 评论钮的停靠点与挂着的评论也不进签名：就地更新
       this.#syncComments(api)
@@ -215,11 +215,11 @@ export class XhDiffViewElement extends XhElement {
       if (row.kind === 'gap') {
         const gapId = row.gapId!
         const gap = doc.createElement('div')
-        this.spreader.spread(gap, api.getGapProps({ gapId }) as Record<string, unknown>)
+        this.spreader.spread(gap, api.getGapProps({ gapId }))
         const cell = doc.createElement('div')
-        this.spreader.spread(cell, api.getGapCellProps() as Record<string, unknown>)
+        this.spreader.spread(cell, api.getGapCellProps())
         const trigger = doc.createElement('button')
-        this.spreader.spread(trigger, api.getGapTriggerProps({ gapId }) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getGapTriggerProps({ gapId }))
         trigger.textContent = `⋯ ${row.hiddenCount}`
         cell.appendChild(trigger)
         gap.appendChild(cell)
@@ -229,17 +229,17 @@ export class XhDiffViewElement extends XhElement {
 
       const rowIndex = row.rowIndex
       const el = doc.createElement('div')
-      this.spreader.spread(el, api.getRowProps({ rowIndex }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getRowProps({ rowIndex }))
       for (const side of sides) {
         const number = doc.createElement('span')
-        this.spreader.spread(number, api.getLineNumberProps({ rowIndex, side }) as Record<string, unknown>)
+        this.spreader.spread(number, api.getLineNumberProps({ rowIndex, side }))
         el.appendChild(number)
 
         const content = doc.createElement('span')
-        this.spreader.spread(content, api.getLineContentProps({ rowIndex, side }) as Record<string, unknown>)
+        this.spreader.spread(content, api.getLineContentProps({ rowIndex, side }))
         // 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达
         const label = doc.createElement('span')
-        this.spreader.spread(label, api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>)
+        this.spreader.spread(label, api.getChangeLabelProps({ change: row.line!.change }))
         label.textContent = api.changeLabel(row.line!.change)
         content.appendChild(label)
 
@@ -248,7 +248,7 @@ export class XhDiffViewElement extends XhElement {
         let trigger: HTMLElement | null = null
         if (api.commentable && api.commentRefAt(cell) !== undefined) {
           trigger = doc.createElement('button')
-          this.spreader.spread(trigger, api.getCommentTriggerProps(cell) as Record<string, unknown>)
+          this.spreader.spread(trigger, api.getCommentTriggerProps(cell))
           content.appendChild(trigger)
         }
         cells.push({ cell, content, trigger, comment: null })
@@ -270,7 +270,7 @@ export class XhDiffViewElement extends XhElement {
     if (segments.length > 0) {
       for (const segment of segments) {
         const span = doc.createElement('span')
-        this.spreader.spread(span, api.getInlineChangeProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>)
+        this.spreader.spread(span, api.getInlineChangeProps({ rowIndex, changed: segment.changed }))
         if (segment.tokens.length === 0)
           span.textContent = segment.text
         else
@@ -301,7 +301,7 @@ export class XhDiffViewElement extends XhElement {
     for (const painted of this.#cells) {
       const { cell, content, trigger } = painted
       if (trigger)
-        this.spreader.spread(trigger, api.getCommentTriggerProps(cell) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getCommentTriggerProps(cell))
       const ref = api.commentRefAt(cell)
       if (!api.hasComment(cell) || ref === undefined) {
         painted.comment?.remove()
@@ -309,11 +309,11 @@ export class XhDiffViewElement extends XhElement {
         continue
       }
       if (painted.comment) {
-        this.spreader.spread(painted.comment, api.getCommentThreadProps(cell) as Record<string, unknown>)
+        this.spreader.spread(painted.comment, api.getCommentThreadProps(cell))
         continue
       }
       const comment = content.ownerDocument.createElement('div')
-      this.spreader.spread(comment, api.getCommentThreadProps(cell) as Record<string, unknown>)
+      this.spreader.spread(comment, api.getCommentThreadProps(cell))
       content.appendChild(comment)
       painted.comment = comment
       const line = api.rows[cell.rowIndex - 1]?.line
@@ -333,7 +333,7 @@ export class XhDiffViewElement extends XhElement {
   #paintTokens(host: HTMLElement, api: DiffViewApi, tokens: readonly CodeToken[]): void {
     for (const token of tokens) {
       const span = host.ownerDocument.createElement('span')
-      this.spreader.spread(span, api.getTokenProps(token) as Record<string, unknown>)
+      this.spreader.spread(span, api.getTokenProps(token))
       span.textContent = token.text
       host.appendChild(span)
     }

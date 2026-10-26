@@ -122,7 +122,7 @@ export const XhContextMenuRoot = defineComponent({
     })
     return () => h(
       'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      ctx.api.value.getRootProps(),
       slots.default
         ? slots.default({
             open: ctx.api.value.open,
@@ -152,7 +152,7 @@ export const XhContextMenuTrigger = defineComponent({
     // 触发区渲染为 div，语义由 connect 打上的 ARIA 属性给出
     return () => {
       const part = mergePartProps({
-        ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+        ...ctx.api.value.getTriggerProps(),
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
       }, attrs)
       const children = slots.default?.()
@@ -183,7 +183,7 @@ export const XhContextMenuPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeVueProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeVueProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -195,7 +195,7 @@ export const XhContextMenuContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -213,7 +213,7 @@ export const XhContextMenuGroup = defineComponent({
     const ctx = useContextMenuContext()
     const group = computed<ContextMenuGroupProps>(() => ({ value: props.value }))
     provideContextMenuGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -226,7 +226,7 @@ export const XhContextMenuRadioGroup = defineComponent({
     const ctx = useContextMenuContext()
     const group = computed<ContextMenuGroupProps>(() => ({ value: props.value }))
     provideContextMenuGroup({ group })
-    return () => h('div', ctx.api.value.getRadioGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRadioGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -235,7 +235,7 @@ export const XhContextMenuGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { group } = useContextMenuGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -283,7 +283,7 @@ function createContextMenuItemComponent(name: string, kind: 'item' | 'checkbox' 
           : declaration.kind === 'radio'
             ? ctx.api.value.getRadioItemProps(declaration)
             : ctx.api.value.getItemProps(declaration)
-        return h('div', { ...part as Record<string, unknown>, ref: itemEl }, slots.default?.())
+        return h('div', { ...part, ref: itemEl }, slots.default?.())
       }
     },
   })
@@ -377,9 +377,9 @@ export const XhContextMenuSubTrigger = defineComponent({
       // 合并序=子先父后：父层的 data-scope/data-part 胜出，父层的方向键与选中照常认它
       // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
       ...mergeProps(
-        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled })),
         // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
-        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled })),
       ),
       // 子菜单的定位锚点就是这一条
       ref: (el: unknown) => {
@@ -394,7 +394,7 @@ export const XhContextMenuItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -403,7 +403,7 @@ export const XhContextMenuItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -413,7 +413,7 @@ export const XhContextMenuItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -423,7 +423,7 @@ export const XhContextMenuItemIcon = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIconProps(item.value), slots.default?.())
   },
 })
 
@@ -433,7 +433,7 @@ export const XhContextMenuItemShortcut = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value), slots.default?.())
   },
 })
 
@@ -443,7 +443,7 @@ export const XhContextMenuItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useContextMenuContext()
     const { item } = useContextMenuItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -451,7 +451,7 @@ export const XhContextMenuSeparator = defineComponent({
   name: 'XhContextMenuSeparator',
   setup() {
     const ctx = useContextMenuContext()
-    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getSeparatorProps())
   },
 })
 
@@ -459,7 +459,7 @@ export const XhContextMenuArrow = defineComponent({
   name: 'XhContextMenuArrow',
   setup() {
     const ctx = useContextMenuContext()
-    return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getArrowProps())
   },
 })
 

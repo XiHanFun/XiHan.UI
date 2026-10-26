@@ -52,17 +52,17 @@ export interface CartesianChartTooltipSlotProps {
 
 /** 纹理定义：绘图区的第一个子节点，每种纹理一个 pattern、里面一条线。 */
 function renderDefs(api: CartesianChartApi): ReactNode {
-  return createElement('defs', api.getDefsProps() as Record<string, unknown>, [
+  return createElement('defs', api.getDefsProps(), [
     ...api.patterns.map(pattern =>
-      createElement('pattern', { ...api.getPatternProps(pattern) as Record<string, unknown>, key: pattern.id }, createElement('path', api.getPatternLineProps(pattern) as Record<string, unknown>))),
+      createElement('pattern', { ...api.getPatternProps(pattern), key: pattern.id }, createElement('path', api.getPatternLineProps(pattern)))),
     // 缩放后的裁剪区：窗外的系列与注释按它裁掉
-    api.clip ? createElement('clipPath', { ...api.getClipPathProps() as Record<string, unknown>, key: 'clip' }, createElement('rect', api.getClipRectProps() as Record<string, unknown>)) : null,
+    api.clip ? createElement('clipPath', { ...api.getClipPathProps(), key: 'clip' }, createElement('rect', api.getClipRectProps())) : null,
   ])
 }
 
 /** 一个场景标记画成 SVG 元素；分组递归画子标记，文字标记带文字。 */
 function renderMark(api: CartesianChartApi, mark: ChartMark): ReactNode {
-  const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
+  const props = { ...api.getMarkProps(mark), key: mark.key }
   if (mark.kind === 'group')
     return createElement('g', props, mark.children.map(child => renderMark(api, child)))
   if (mark.kind === 'text')
@@ -77,12 +77,12 @@ function TooltipContent({ api }: { api: CartesianChartApi }): ReactNode {
     return null
   return (
     <>
-      <div {...api.getTooltipHeaderProps() as Record<string, unknown>}>{tooltip.header}</div>
+      <div {...api.getTooltipHeaderProps()}>{tooltip.header}</div>
       {tooltip.rows.map(row => (
-        <div key={row.seriesId} {...api.getTooltipRowProps(row) as Record<string, unknown>}>
-          <span {...api.getTooltipSwatchProps(row) as Record<string, unknown>} />
-          <span {...api.getTooltipValueProps(row) as Record<string, unknown>}>{row.value}</span>
-          <span {...api.getTooltipNameProps(row) as Record<string, unknown>}>{row.name}</span>
+        <div key={row.seriesId} {...api.getTooltipRowProps(row)}>
+          <span {...api.getTooltipSwatchProps(row)} />
+          <span {...api.getTooltipValueProps(row)}>{row.value}</span>
+          <span {...api.getTooltipNameProps(row)}>{row.name}</span>
         </div>
       ))}
     </>
@@ -94,10 +94,10 @@ function A11y({ api }: { api: CartesianChartApi }): ReactNode {
   const { columns, rows } = api.table
   return (
     <>
-      <p {...api.getSummaryProps() as Record<string, unknown>}>{api.summary}</p>
+      <p {...api.getSummaryProps()}>{api.summary}</p>
       {/* 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度 */}
-      <div {...api.getTableRegionProps() as Record<string, unknown>}>
-        <table {...api.getTableProps() as Record<string, unknown>}>
+      <div {...api.getTableRegionProps()}>
+        <table {...api.getTableProps()}>
           <caption>{api.tableCaption}</caption>
           <thead>
             <tr>{columns.map(column => <th key={column.id} scope="col">{column.label}</th>)}</tr>
@@ -288,8 +288,8 @@ export function XhCartesianChartRoot({
     <CartesianChartProvider value={ctx}>
       <figure
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -308,7 +308,7 @@ export interface XhCartesianChartCaptionProps extends ComponentPropsWithRef<'fig
 export function XhCartesianChartCaption({ children, ...rest }: XhCartesianChartCaptionProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
-    <figcaption {...mergeReactProps(api.getCaptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <figcaption {...mergeReactProps(api.getCaptionProps(), rest)}>
       {children}
     </figcaption>
   )
@@ -320,7 +320,7 @@ export interface XhCartesianChartLegendProps extends Omit<ComponentPropsWithRef<
 export function XhCartesianChartLegend(props: XhCartesianChartLegendProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
-    <div {...mergeReactProps(api.getLegendProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getLegendProps(), props)}>
       {api.legendItems.map(item => <LegendItem key={item.id} api={api} item={item} />)}
       <LegendScale api={api} />
     </div>
@@ -331,14 +331,14 @@ export function XhCartesianChartLegend(props: XhCartesianChartLegendProps): Reac
 function LegendScale({ api }: { api: CartesianChartApi }): ReactNode {
   const scale = api.legendScale
   return (
-    <div {...api.getLegendScaleProps() as Record<string, unknown>}>
+    <div {...api.getLegendScaleProps()}>
       {scale
         ? (
             <>
-              <span {...api.getLegendScaleNameProps() as Record<string, unknown>}>{scale.name}</span>
-              <span {...api.getLegendScaleValueProps('min') as Record<string, unknown>}>{scale.min}</span>
-              <span {...api.getLegendScaleBarProps() as Record<string, unknown>} />
-              <span {...api.getLegendScaleValueProps('max') as Record<string, unknown>}>{scale.max}</span>
+              <span {...api.getLegendScaleNameProps()}>{scale.name}</span>
+              <span {...api.getLegendScaleValueProps('min')}>{scale.min}</span>
+              <span {...api.getLegendScaleBarProps()} />
+              <span {...api.getLegendScaleValueProps('max')}>{scale.max}</span>
             </>
           )
         : null}
@@ -349,13 +349,13 @@ function LegendScale({ api }: { api: CartesianChartApi }): ReactNode {
 /** 图例项：焦点与指针进出是不冒泡的事件，改挂原生监听器。 */
 function LegendItem({ api, item }: { api: CartesianChartApi, item: CartesianLegendItem }): ReactNode {
   const bind = useNativeEvents(
-    api.getLegendItemProps(item) as Record<string, unknown>,
+    api.getLegendItemProps(item),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   return (
     <button {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
-      <span {...api.getLegendSwatchProps(item) as Record<string, unknown>} />
-      <span {...api.getLegendLabelProps(item) as Record<string, unknown>}>{item.name}</span>
+      <span {...api.getLegendSwatchProps(item)} />
+      <span {...api.getLegendLabelProps(item)}>{item.name}</span>
     </button>
   )
 }
@@ -368,8 +368,8 @@ export function XhCartesianChartViewport({ children, ...rest }: XhCartesianChart
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -390,17 +390,17 @@ export function XhCartesianChartPlot(props: XhCartesianChartPlotProps): ReactNod
   const { api } = ctx
   // 指针离开是不冒泡的事件，改挂原生监听器；滚轮在 React 里是被动监听，拦不下页面的缩放，也改挂原生的。
   // focusin / focusout 留给 React 的 onFocus / onBlur
-  const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave', 'onWheel'])
+  const bind = useNativeEvents(api.getPlotProps(), ['onPointerLeave', 'onWheel'])
   const canvas = api.renderer === 'canvas'
   return (
     <>
       {canvas
-        ? <svg {...api.getUnderlayProps() as Record<string, unknown>}>{api.layers.underlay.map(mark => renderMark(api, mark))}</svg>
+        ? <svg {...api.getUnderlayProps()}>{api.layers.underlay.map(mark => renderMark(api, mark))}</svg>
         : null}
       {canvas
-        ? <canvas {...mergeReactProps(api.getCanvasProps() as Record<string, unknown>, { ref: (el: HTMLCanvasElement | null) => { ctx.canvasRef.current = el } })} />
+        ? <canvas {...mergeReactProps(api.getCanvasProps(), { ref: (el: HTMLCanvasElement | null) => { ctx.canvasRef.current = el } })} />
         : null}
-      <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
+      <svg {...mergeReactProps(bind.attrs, props, { ref: bind.ref })}>
         {renderDefs(api)}
         {api.layers.plot.map(mark => renderMark(api, mark))}
       </svg>
@@ -414,14 +414,14 @@ export interface XhCartesianChartZoomSliderProps extends Omit<ComponentPropsWith
 export function XhCartesianChartZoomSlider(props: XhCartesianChartZoomSliderProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
-    <div {...mergeReactProps(api.getZoomSliderProps() as Record<string, unknown>, props as Record<string, unknown>)}>
-      <div {...api.getZoomTrackProps() as Record<string, unknown>}>
-        <div {...api.getZoomWindowProps() as Record<string, unknown>}>
-          <span {...api.getZoomHandleProps('start') as Record<string, unknown>} />
-          <span {...api.getZoomHandleProps('end') as Record<string, unknown>} />
+    <div {...mergeReactProps(api.getZoomSliderProps(), props)}>
+      <div {...api.getZoomTrackProps()}>
+        <div {...api.getZoomWindowProps()}>
+          <span {...api.getZoomHandleProps('start')} />
+          <span {...api.getZoomHandleProps('end')} />
         </div>
-        <svg {...api.getZoomPreviewProps() as Record<string, unknown>}>
-          <path {...api.getZoomPreviewLineProps() as Record<string, unknown>} />
+        <svg {...api.getZoomPreviewProps()}>
+          <path {...api.getZoomPreviewLineProps()} />
         </svg>
       </div>
     </div>
@@ -437,7 +437,7 @@ export interface XhCartesianChartTooltipProps extends Omit<ComponentPropsWithRef
 export function XhCartesianChartTooltip({ children, ...rest }: XhCartesianChartTooltipProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
-    <div {...mergeReactProps(api.getTooltipProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getTooltipProps(), rest)}>
       {children === undefined
         ? <TooltipContent api={api} />
         : renderSlot(children, { active: api.active, tooltip: api.tooltip })}
@@ -451,7 +451,7 @@ export interface XhCartesianChartEmptyProps extends ComponentPropsWithRef<'div'>
 export function XhCartesianChartEmpty({ children, ...rest }: XhCartesianChartEmptyProps): ReactNode {
   const { api } = useCartesianChartContext()
   return (
-    <div {...mergeReactProps(api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getEmptyProps(), rest)}>
       {children ?? api.emptyText}
     </div>
   )

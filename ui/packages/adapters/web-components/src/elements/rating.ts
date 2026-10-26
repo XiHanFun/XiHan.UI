@@ -214,19 +214,19 @@ export class XhRatingElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
     const valueText = this.getPart('value-text')
     if (valueText) {
-      this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(valueText, api.getValueTextProps())
       this.fillValueText(valueText, api.valueText)
     }
 
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps(this.itemProps(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(this.itemProps(el)))
   }
 }

@@ -71,7 +71,7 @@ export class XhSpinnerElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
   }
 }

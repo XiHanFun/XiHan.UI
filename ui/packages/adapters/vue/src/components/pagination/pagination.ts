@@ -109,7 +109,7 @@ export const XhPaginationRoot = defineComponent({
             slice: api.slice,
           })
         : renderDefaultStructure(api)
-      return h('nav', api.getRootProps() as Record<string, unknown>, body)
+      return h('nav', api.getRootProps(), body)
     }
   },
 })
@@ -119,7 +119,7 @@ export const XhPaginationFirstTrigger = defineComponent({
   name: 'XhPaginationFirstTrigger',
   setup(_, { slots }) {
     const ctx = usePaginationContext()
-    return () => h('button', ctx.api.value.getFirstTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getFirstTriggerProps(), slots.default?.())
   },
 })
 
@@ -127,7 +127,7 @@ export const XhPaginationPrevTrigger = defineComponent({
   name: 'XhPaginationPrevTrigger',
   setup(_, { slots }) {
     const ctx = usePaginationContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -135,7 +135,7 @@ export const XhPaginationNextTrigger = defineComponent({
   name: 'XhPaginationNextTrigger',
   setup(_, { slots }) {
     const ctx = usePaginationContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -144,7 +144,7 @@ export const XhPaginationLastTrigger = defineComponent({
   name: 'XhPaginationLastTrigger',
   setup(_, { slots }) {
     const ctx = usePaginationContext()
-    return () => h('button', ctx.api.value.getLastTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getLastTriggerProps(), slots.default?.())
   },
 })
 
@@ -158,7 +158,7 @@ export const XhPaginationItem = defineComponent({
     const ctx = usePaginationContext()
     return () => h(
       'button',
-      ctx.api.value.getItemProps({ page: Number(props.value) }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ page: Number(props.value) }),
       slots.default?.(),
     )
   },
@@ -176,7 +176,7 @@ export const XhPaginationEllipsisTrigger = defineComponent({
     return () => {
       const open = ctx.api.value.openEllipsis === props.side
       return h('button', {
-        ...ctx.api.value.getEllipsisTriggerProps({ side: props.side }) as Record<string, unknown>,
+        ...ctx.api.value.getEllipsisTriggerProps({ side: props.side }),
         ref: (el: unknown) => {
           if (open)
             ctx.ellipsisRef.value = el as HTMLElement
@@ -198,7 +198,7 @@ export const XhPaginationSummary = defineComponent({
       const api = ctx.api.value
       return h(
         'div',
-        api.getSummaryProps() as Record<string, unknown>,
+        api.getSummaryProps(),
         slots.default
           ? slots.default({
               summaryText: api.summaryText,
@@ -217,7 +217,7 @@ export const XhPaginationJumper = defineComponent({
   name: 'XhPaginationJumper',
   setup() {
     const ctx = usePaginationContext()
-    return () => h('input', ctx.api.value.getJumperProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getJumperProps())
   },
 })
 
@@ -242,37 +242,37 @@ export const XhPaginationPageSizeSelect = defineComponent({
       const api = ctx.api.value
       const select = api.pageSizeSelect
       return [
-        h('div', mergeProps(api.getPageSizeSelectProps() as Record<string, unknown>, attrs), [
-          h('div', select.getRootProps() as Record<string, unknown>, [
-            h('div', select.getControlProps() as Record<string, unknown>, [
+        h('div', mergeProps(api.getPageSizeSelectProps(), attrs), [
+          h('div', select.getRootProps(), [
+            h('div', select.getControlProps(), [
               h('button', {
-                ...select.getTriggerProps() as Record<string, unknown>,
+                ...select.getTriggerProps(),
                 ref: (el: unknown) => { ctx.pageSizeTriggerRef.value = el as HTMLElement },
               }, [
-                h('span', select.getValueTextProps() as Record<string, unknown>, select.displayText),
-                h('span', select.getIndicatorProps() as Record<string, unknown>),
+                h('span', select.getValueTextProps(), select.displayText),
+                h('span', select.getIndicatorProps()),
               ]),
             ]),
           ]),
         ]),
         h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.pageSizeTriggerRef, present: ctx.pageSizeVisible.value }, () => [
           h('div', {
-            ...select.getPositionerProps() as Record<string, unknown>,
+            ...select.getPositionerProps(),
             ref: (el: unknown) => { ctx.pageSizePositionerRef.value = el as HTMLElement },
           }, [
             h('div', {
-              ...select.getContentProps() as Record<string, unknown>,
+              ...select.getContentProps(),
               // 收起跟着退场闸门走，与省略位那层同一套写法
               style: ctx.pageSizeVisible.value ? undefined : { display: 'none' },
               ref: (el: unknown) => { ctx.pageSizeContentRef.value = el as HTMLElement },
             }, [
-              h('div', select.getListProps() as Record<string, unknown>, select.collection.map(option =>
+              h('div', select.getListProps(), select.collection.map(option =>
                 h('div', {
-                  ...select.getItemProps({ value: option.value }) as Record<string, unknown>,
+                  ...select.getItemProps({ value: option.value }),
                   key: option.value,
                 }, [
-                  h('span', select.getItemTextProps({ value: option.value }) as Record<string, unknown>, option.label),
-                  h('span', select.getItemIndicatorProps({ value: option.value }) as Record<string, unknown>),
+                  h('span', select.getItemTextProps({ value: option.value }), option.label),
+                  h('span', select.getItemIndicatorProps({ value: option.value })),
                 ]))),
             ]),
           ]),
@@ -298,7 +298,7 @@ export const XhPaginationPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.ellipsisRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -318,7 +318,7 @@ export const XhPaginationContent = defineComponent({
         item => item.type === 'ellipsis' && item.side === open,
       )
       return h('div', {
-        ...ctx.api.value.getContentProps() as Record<string, unknown>,
+        ...ctx.api.value.getContentProps(),
         // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}
         // （补了退场就一帧都播不出来），真正的收起落成内联 display
         style: ctx.visible.value ? undefined : { display: 'none' },

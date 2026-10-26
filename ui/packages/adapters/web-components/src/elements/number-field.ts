@@ -182,14 +182,14 @@ export class XhNumberFieldElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('prefix', api.getPrefixProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('suffix', api.getSuffixProps() as Record<string, unknown>)
-    put('increment-trigger', api.getIncrementTriggerProps() as Record<string, unknown>)
-    put('decrement-trigger', api.getDecrementTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('prefix', api.getPrefixProps())
+    put('input', api.getInputProps())
+    put('suffix', api.getSuffixProps())
+    put('increment-trigger', api.getIncrementTriggerProps())
+    put('decrement-trigger', api.getDecrementTriggerProps())
     // 输入框的 value 不需要在这里另外回写：spreader 把 value/checked/selected 三个键
     // 当 property 写（dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框
   }

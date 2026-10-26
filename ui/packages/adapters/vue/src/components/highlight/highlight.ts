@@ -37,10 +37,10 @@ export const XhHighlight = defineComponent({
 
     return () => {
       const current = api.value
-      const markProps = current.getMarkProps() as Record<string, unknown>
+      const markProps = current.getMarkProps()
       // 片段每次整份重算，按位置替换即可，不给 key：一半是元素、一半是纯文本，
       // 给了 key 反而要求两种节点在同一条列表里对上号
-      return h('span', current.getRootProps() as Record<string, unknown>, current.segments.map(segment =>
+      return h('span', current.getRootProps(), current.segments.map(segment =>
         segment.matched ? h('mark', markProps, segment.text) : segment.text))
     }
   },

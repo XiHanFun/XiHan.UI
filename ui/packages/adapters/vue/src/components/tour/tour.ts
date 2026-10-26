@@ -89,7 +89,7 @@ export const XhTourRoot = defineComponent({
     }, () => props.container)
     provideTour(ctx)
     // 经插槽暴露状态与走步、放弃等命令，供浮层外的按钮使用
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
       count: ctx.api.value.count,
@@ -116,7 +116,7 @@ export const XhTourBackdrop = defineComponent({
     // 与浮层同去一个落点：遮罩留在原地就会被面板甩下，两层不再叠在一起
     return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getBackdropProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getBackdropProps(), attrs),
         // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
         hidden: (!ctx.visible.value || !ctx.showBackdrop()) || undefined,
         ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
@@ -134,7 +134,7 @@ export const XhTourSpotlight = defineComponent({
     // 高亮框与遮罩是同一层暗幕的两半，必须一起搬
     return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getSpotlightProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getSpotlightProps(), attrs),
         // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
         hidden: (!ctx.visible.value || !ctx.api.value.anchored) || undefined,
         ref: (el: unknown) => { ctx.spotlightRef.value = el as HTMLElement },
@@ -152,7 +152,7 @@ export const XhTourPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: ctx.portalTarget.value, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来
         hidden: !ctx.visible.value || undefined,
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
@@ -166,7 +166,7 @@ export const XhTourContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useTourContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -183,7 +183,7 @@ export const XhTourTitle = defineComponent({
     useTitleDescriptionPart(ctx.presence, 'title')
     return () => h(
       'h2',
-      ctx.api.value.getTitleProps() as Record<string, unknown>,
+      ctx.api.value.getTitleProps(),
       slots.default?.() ?? ctx.api.value.currentStep?.title,
     )
   },
@@ -197,7 +197,7 @@ export const XhTourDescription = defineComponent({
     const el = useDescriptionPart(ctx.presence)
     return () => h(
       'p',
-      { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getDescriptionProps(), ref: el },
       slots.default?.() ?? ctx.api.value.currentStep?.description,
     )
   },
@@ -209,7 +209,7 @@ export const XhTourProgressText = defineComponent({
     const ctx = useTourContext()
     return () => h(
       'span',
-      ctx.api.value.getProgressTextProps() as Record<string, unknown>,
+      ctx.api.value.getProgressTextProps(),
       slots.default?.() ?? ctx.api.value.progressText,
     )
   },
@@ -223,10 +223,10 @@ export const XhTourProgressIndicator = defineComponent({
     return () => {
       const api = ctx.api.value
       const dots = Array.from({ length: api.count }, (_, index) =>
-        h('div', api.getProgressDotProps({ index }) as Record<string, unknown>))
+        h('div', api.getProgressDotProps({ index })))
       return h(
         'div',
-        api.getProgressIndicatorProps() as Record<string, unknown>,
+        api.getProgressIndicatorProps(),
         slots.default?.() ?? dots,
       )
     }
@@ -241,7 +241,7 @@ export const XhTourProgressDot = defineComponent({
   },
   setup(props) {
     const ctx = useTourContext()
-    return () => h('div', ctx.api.value.getProgressDotProps({ index: Number(props.index) }) as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getProgressDotProps({ index: Number(props.index) }))
   },
 })
 
@@ -249,7 +249,7 @@ export const XhTourPrevTrigger = defineComponent({
   name: 'XhTourPrevTrigger',
   setup(_, { slots }) {
     const ctx = useTourContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -257,7 +257,7 @@ export const XhTourNextTrigger = defineComponent({
   name: 'XhTourNextTrigger',
   setup(_, { slots }) {
     const ctx = useTourContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -265,7 +265,7 @@ export const XhTourSkipTrigger = defineComponent({
   name: 'XhTourSkipTrigger',
   setup(_, { slots }) {
     const ctx = useTourContext()
-    return () => h('button', ctx.api.value.getSkipTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSkipTriggerProps(), slots.default?.())
   },
 })
 
@@ -273,7 +273,7 @@ export const XhTourCloseTrigger = defineComponent({
   name: 'XhTourCloseTrigger',
   setup(_, { slots }) {
     const ctx = useTourContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
 
@@ -281,6 +281,6 @@ export const XhTourArrow = defineComponent({
   name: 'XhTourArrow',
   setup() {
     const ctx = useTourContext()
-    return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getArrowProps())
   },
 })

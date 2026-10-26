@@ -124,8 +124,8 @@ export function XhNumberFieldRoot({
     <NumberFieldProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -156,7 +156,7 @@ export function XhNumberFieldLabel({ children, ...rest }: XhNumberFieldLabelProp
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -167,7 +167,7 @@ export interface XhNumberFieldControlProps extends ComponentPropsWithRef<'div'> 
 export function XhNumberFieldControl({ children, ...rest }: XhNumberFieldControlProps): ReactNode {
   const ctx = useNumberFieldContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -177,7 +177,7 @@ export interface XhNumberFieldPrefixProps extends ComponentPropsWithRef<'span'> 
 export function XhNumberFieldPrefix({ children, ...rest }: XhNumberFieldPrefixProps): ReactNode {
   const ctx = useNumberFieldContext()
   return (
-    <span {...mergeReactProps(ctx.api.getPrefixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getPrefixProps(), rest)}>
       {children}
     </span>
   )
@@ -187,7 +187,7 @@ export interface XhNumberFieldSuffixProps extends ComponentPropsWithRef<'span'> 
 export function XhNumberFieldSuffix({ children, ...rest }: XhNumberFieldSuffixProps): ReactNode {
   const ctx = useNumberFieldContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSuffixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSuffixProps(), rest)}>
       {children}
     </span>
   )
@@ -205,9 +205,9 @@ export function XhNumberFieldInput({ ...rest }: XhNumberFieldInputProps): ReactN
       {...mergeReactProps(
         fieldLabel({
           ...fieldWiring,
-          ...ctx.api.getInputProps() as Record<string, unknown>,
+          ...ctx.api.getInputProps(),
         }),
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -222,9 +222,9 @@ export interface XhNumberFieldIncrementTriggerProps extends ComponentPropsWithRe
  */
 export function XhNumberFieldIncrementTrigger({ children, ...rest }: XhNumberFieldIncrementTriggerProps): ReactNode {
   const ctx = useNumberFieldContext()
-  const bind = useNativeEvents(ctx.api.getIncrementTriggerProps() as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(ctx.api.getIncrementTriggerProps(), ['onPointerLeave'])
   return (
-    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </button>
   )
@@ -235,9 +235,9 @@ export interface XhNumberFieldDecrementTriggerProps extends ComponentPropsWithRe
 /** 减号；pointerleave 的处理同加号。 */
 export function XhNumberFieldDecrementTrigger({ children, ...rest }: XhNumberFieldDecrementTriggerProps): ReactNode {
   const ctx = useNumberFieldContext()
-  const bind = useNativeEvents(ctx.api.getDecrementTriggerProps() as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(ctx.api.getDecrementTriggerProps(), ['onPointerLeave'])
   return (
-    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </button>
   )

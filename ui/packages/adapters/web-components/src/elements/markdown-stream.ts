@@ -88,12 +88,12 @@ export class XhMarkdownStreamElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('content', api.getContentProps())
 
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       live.textContent = api.announcement ?? ''
     }
 
@@ -127,7 +127,7 @@ export class XhMarkdownStreamElement extends XhElement {
       else
         cursor = node.nextSibling
 
-      this.spreader.spread(node, api.getBlockProps({ block }) as Record<string, unknown>)
+      this.spreader.spread(node, api.getBlockProps({ block }))
       const html = markdownBlockHtml(block)
       // 与上一轮铺的比，而不是与节点此刻的内容比：作者往占位节点里挂了引用角标或公式，
       // 节点内容已经不是铺进去的那份，拿它比会把作者的节点整块冲掉

@@ -187,18 +187,18 @@ export class XhPinInputElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('hidden-input', api.getHiddenInputProps())
     // 分段与分隔都是纯排版角色，可以有多个，逐个打
-    this.getParts('group').forEach(el => this.spreader.spread(el, api.getGroupProps() as Record<string, unknown>))
-    this.getParts('separator').forEach(el => this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>))
+    this.getParts('group').forEach(el => this.spreader.spread(el, api.getGroupProps()))
+    this.getParts('separator').forEach(el => this.spreader.spread(el, api.getSeparatorProps()))
 
     // 格子是多实例 part，逐个打。打上去的 data-scope/data-part 正是移格与粘贴在事件那一刻
     // 现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。
     this.getParts('input').forEach((el, position) => {
       const props = api.getInputProps({ index: declaredIndex(el, position) })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
     })
     // 各格的 value 不需要在这里另外回写：spreader 把 value/checked/selected 三个键
     // 当 property 写（dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框

@@ -97,7 +97,7 @@ export function XhReasoningRoot({
   const { api } = ctx
   return (
     <ReasoningProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           open: api.open,
           streaming: api.streaming,
@@ -116,20 +116,20 @@ XhReasoningRoot.xhEvents = ['open-change'] as const
 export interface XhReasoningTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhReasoningTrigger({ children, ...rest }: XhReasoningTriggerProps): ReactNode {
   const ctx = useReasoningContext()
-  return <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhReasoningIconProps extends ComponentPropsWithRef<'span'> {}
 /** 状态图形位：随是否在思考换色，对读屏隐藏。 */
 export function XhReasoningIcon({ children, ...rest }: XhReasoningIconProps): ReactNode {
   const ctx = useReasoningContext()
-  return <span {...mergeReactProps(ctx.api.getIconProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIconProps(), rest)}>{children}</span>
 }
 
 export interface XhReasoningIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhReasoningIndicator({ children, ...rest }: XhReasoningIndicatorProps): ReactNode {
   const ctx = useReasoningContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhReasoningLabelProps extends ComponentPropsWithRef<'span'> {}
@@ -137,7 +137,7 @@ export interface XhReasoningLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhReasoningLabel({ children, ...rest }: XhReasoningLabelProps): ReactNode {
   const ctx = useReasoningContext()
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children ?? ctx.api.statusText}
     </span>
   )
@@ -146,7 +146,7 @@ export function XhReasoningLabel({ children, ...rest }: XhReasoningLabelProps): 
 export interface XhReasoningDurationProps extends ComponentPropsWithRef<'span'> {}
 export function XhReasoningDuration({ children, ...rest }: XhReasoningDurationProps): ReactNode {
   const ctx = useReasoningContext()
-  return <span {...mergeReactProps(ctx.api.getDurationProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getDurationProps(), rest)}>{children}</span>
 }
 
 export interface XhReasoningContentProps extends ComponentPropsWithRef<'div'> {}
@@ -155,8 +155,8 @@ export function XhReasoningContent({ children, ...rest }: XhReasoningContentProp
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地

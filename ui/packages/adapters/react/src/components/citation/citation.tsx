@@ -96,7 +96,7 @@ export function XhCitationRoot({
   }) as CitationProps)
   return (
     <CitationProvider value={context}>
-      <div {...mergeReactProps(context.api.getRootProps() as Record<string, unknown>, { ref: context.rootRef }, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(context.api.getRootProps(), { ref: context.rootRef }, rest)}>{children}</div>
     </CitationProvider>
   )
 }
@@ -106,7 +106,7 @@ XhCitationRoot.xhEvents = ['active-source-change', 'open-change', 'source-open']
 export interface XhCitationTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhCitationText({ children, ...rest }: XhCitationTextProps): ReactNode {
   const { api } = useCitationContext()
-  return <span {...mergeReactProps(api.getTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getTextProps(), rest)}>{children}</span>
 }
 
 export interface XhCitationTriggerProps extends ComponentPropsWithRef<'button'> {
@@ -121,11 +121,11 @@ export function XhCitationTrigger({ sourceId, sourceIds, citationId, anchorIndex
   const { api } = useCitationContext()
   // hover 档的指针进出与聚焦装成原生监听器：这三个事件不冒泡，委派在根容器上的合成事件收不到
   const bind = useNativeEvents(
-    api.getTriggerProps({ sourceId, sourceIds, citationId, anchorIndex, disabled }) as Record<string, unknown>,
+    api.getTriggerProps({ sourceId, sourceIds, citationId, anchorIndex, disabled }),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   return (
-    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </button>
   )
@@ -142,10 +142,10 @@ export interface XhCitationPositionerProps extends ComponentPropsWithRef<'div'> 
 export function XhCitationPositioner({ container, children, ...rest }: XhCitationPositionerProps): ReactNode {
   const ctx = useCitationContext()
   // 只摘指针进出：焦点那两个处理器挂的是冒泡的 focusin / focusout，落在 React 的 onFocus / onBlur 上正好
-  const positioner = ctx.api.getPositionerProps() as Record<string, unknown>
+  const positioner = ctx.api.getPositionerProps()
   const bind = useNativeEvents(positioner, ['onPointerEnter', 'onPointerLeave'])
   const shell = (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.positionerRef }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: ctx.positionerRef }, rest)}>
       {children}
     </div>
   )
@@ -163,7 +163,7 @@ export function XhCitationPreview({ sourceId, anchorIndex, children, ...rest }: 
   const { api } = useCitationContext()
   const item = { sourceId, anchorIndex }
   return (
-    <section {...mergeReactProps(api.getPreviewProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <section {...mergeReactProps(api.getPreviewProps(item), rest)}>
       {slotPaints(children) ? children : <DefaultPreview item={item} />}
     </section>
   )
@@ -172,9 +172,9 @@ export function XhCitationPreview({ sourceId, anchorIndex, children, ...rest }: 
 export interface XhCitationListProps extends ComponentPropsWithRef<'ol'> {}
 export function XhCitationList({ children, ...rest }: XhCitationListProps): ReactNode {
   const { api } = useCitationContext()
-  const bind = useNativeEvents(api.getListProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getListProps(), ['onFocus'])
   return (
-    <ol {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <ol {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {slotPaints(children) ? children : api.sources.map(source => <XhCitationSource key={source.sourceId} sourceId={source.sourceId} />)}
     </ol>
   )
@@ -189,7 +189,7 @@ export function XhCitationSource({ sourceId, disabled, children, ...rest }: XhCi
   const item = useMemo(() => ({ sourceId, disabled }), [sourceId, disabled])
   return (
     <CitationSourceProvider value={item}>
-      <li {...mergeReactProps(api.getSourceProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <li {...mergeReactProps(api.getSourceProps(item), rest)}>
         {children ?? (
           <XhCitationSourceLink>
             <XhCitationSourceIndex />
@@ -208,8 +208,8 @@ export interface XhCitationSourceLinkProps extends ComponentPropsWithRef<'button
 export function XhCitationSourceLink({ children, ...rest }: XhCitationSourceLinkProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
-  const bind = useNativeEvents(api.getSourceLinkProps(item) as Record<string, unknown>, ['onFocus'])
-  return <button {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>{children}</button>
+  const bind = useNativeEvents(api.getSourceLinkProps(item), ['onFocus'])
+  return <button {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</button>
 }
 
 export interface XhCitationSourcePartProps extends ComponentPropsWithRef<'span'> {}
@@ -217,21 +217,21 @@ export function XhCitationSourceIndex({ children, ...rest }: XhCitationSourcePar
   const { api } = useCitationContext()
   const item = useCitationSource()
   const index = api.sources.findIndex(source => source.sourceId === item.sourceId) + 1
-  return <span {...mergeReactProps(api.getSourceIndexProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? index}</span>
+  return <span {...mergeReactProps(api.getSourceIndexProps(item), rest)}>{children ?? index}</span>
 }
 
 export function XhCitationSourceTitle({ children, ...rest }: XhCitationSourcePartProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
   const current = api.sources.find(source => source.sourceId === item.sourceId)
-  return <span {...mergeReactProps(api.getSourceTitleProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? citationSourceTitle(current)}</span>
+  return <span {...mergeReactProps(api.getSourceTitleProps(item), rest)}>{children ?? citationSourceTitle(current)}</span>
 }
 
 export function XhCitationSourceMeta({ children, ...rest }: XhCitationSourcePartProps): ReactNode {
   const { api } = useCitationContext()
   const item = useCitationSource()
   const current = api.sources.find(source => source.sourceId === item.sourceId)
-  return <span {...mergeReactProps(api.getSourceMetaProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? api.sourceMetaText(current)}</span>
+  return <span {...mergeReactProps(api.getSourceMetaProps(item), rest)}>{children ?? api.sourceMetaText(current)}</span>
 }
 
 function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
@@ -241,7 +241,7 @@ function DefaultPreview({ item }: { item: CitationPreviewProps }): ReactNode {
     return null
   const anchorIndex = api.activeSourceId === item.sourceId ? api.activeAnchorIndex ?? item.anchorIndex ?? 0 : item.anchorIndex ?? 0
   const quote = current.anchors?.[anchorIndex]?.quote
-  const linkProps = api.getPreviewLinkProps(item) as Record<string, unknown>
+  const linkProps = api.getPreviewLinkProps(item)
   const at = api.getPreviewPosition(item)
   return (
     <>

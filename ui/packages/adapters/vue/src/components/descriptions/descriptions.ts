@@ -46,7 +46,7 @@ export const XhDescriptionsRoot = defineComponent({
     }, vueNormalize))
     provideDescriptions({ api })
     return () => {
-      const list = h(props.as, mergeProps(api.value.getRootProps() as Record<string, unknown>, attrs), slots.default?.())
+      const list = h(props.as, mergeProps(api.value.getRootProps(), attrs), slots.default?.())
       const header = slots.header?.()
       return header ? h(Fragment, [...header, list]) : list
     }
@@ -66,7 +66,7 @@ export const XhDescriptionsItem = defineComponent({
     const ctx = useDescriptionsContext()
     return () => h(
       props.as,
-      ctx.api.value.getItemProps({ span: props.span }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ span: props.span }),
       slots.default?.(),
     )
   },
@@ -80,7 +80,7 @@ export const XhDescriptionsLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h(props.as, ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -92,7 +92,7 @@ export const XhDescriptionsValue = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h(props.as, ctx.api.value.getValueProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getValueProps(), slots.default?.())
   },
 })
 
@@ -101,7 +101,7 @@ export const XhDescriptionsHeader = defineComponent({
   name: 'XhDescriptionsHeader',
   setup(_, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -113,7 +113,7 @@ export const XhDescriptionsTitle = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h(props.as, ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -121,6 +121,6 @@ export const XhDescriptionsExtra = defineComponent({
   name: 'XhDescriptionsExtra',
   setup(_, { slots }) {
     const ctx = useDescriptionsContext()
-    return () => h('div', ctx.api.value.getExtraProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getExtraProps(), slots.default?.())
   },
 })

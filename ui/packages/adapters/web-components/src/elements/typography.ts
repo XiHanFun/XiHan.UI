@@ -68,16 +68,16 @@ export class XhTypographyElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 四类内容部件都能有多份，逐个打；档位、形态、语气取作者写在各自节点上的声明
     for (const el of this.getParts('heading')) {
       const attrs = api.getHeadingProps({ level: authorValue(el, 'level') })
-      this.spreader.spread(el, attrs as Record<string, unknown>)
+      this.spreader.spread(el, attrs)
     }
 
     for (const el of this.getParts('paragraph'))
-      this.spreader.spread(el, api.getParagraphProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getParagraphProps())
 
     for (const el of this.getParts('text')) {
       const attrs = api.getTextProps({
@@ -88,13 +88,13 @@ export class XhTypographyElement extends XhElement {
         underline: el.hasAttribute('underline'),
         mark: el.hasAttribute('mark'),
       })
-      this.spreader.spread(el, attrs as Record<string, unknown>)
+      this.spreader.spread(el, attrs)
     }
 
     for (const el of this.getParts('link'))
-      this.spreader.spread(el, api.getLinkProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkProps())
 
     for (const el of this.getParts('prose'))
-      this.spreader.spread(el, api.getProseProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getProseProps())
   }
 }

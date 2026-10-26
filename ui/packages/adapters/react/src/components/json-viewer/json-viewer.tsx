@@ -35,7 +35,7 @@ function Segments({ api, segments }: { api: JsonViewerApi, segments: readonly Hi
   // 片段在原文里的起始位置就是它的身份：同一段文字切出来的片段两两不重叠
   const starts = segments.reduce<number[]>((acc, _segment, i) => [...acc, i === 0 ? 0 : acc[i - 1]! + segments[i - 1]!.text.length], [])
   return segments.map((segment, i) => (segment.matched
-    ? <mark key={starts[i]} {...api.getMarkProps() as Record<string, unknown>}>{segment.text}</mark>
+    ? <mark key={starts[i]} {...api.getMarkProps()}>{segment.text}</mark>
     : segment.text))
 }
 
@@ -50,11 +50,11 @@ function JsonRows({ api, groups, parent }: RowsProps): ReactNode {
 function JsonItem({ api, node }: { api: JsonViewerApi, node: JsonViewerNode }): ReactNode {
   const ref = { value: node.value }
   // 行的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getItemProps(ref) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getItemProps(ref), ['onFocus'])
   return (
     <div {...bind.attrs} ref={bind.ref}>
-      {node.key != null ? <span {...api.getItemKeyProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
-      <span {...api.getItemValueProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.valueSegments(node)} /></span>
+      {node.key != null ? <span {...api.getItemKeyProps(ref)}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
+      <span {...api.getItemValueProps(ref)}><Segments api={api} segments={api.valueSegments(node)} /></span>
     </div>
   )
 }
@@ -63,22 +63,22 @@ function JsonItem({ api, node }: { api: JsonViewerApi, node: JsonViewerNode }): 
 function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
   const ref = { value: node.value }
   // 行的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getBranchProps(ref) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getBranchProps(ref), ['onFocus'])
   return (
     <div {...bind.attrs} ref={bind.ref}>
-      <div {...api.getBranchControlProps(ref) as Record<string, unknown>}>
-        <span {...api.getBranchTriggerProps(ref) as Record<string, unknown>}>
-          <span {...api.getBranchIndicatorProps(ref) as Record<string, unknown>} />
+      <div {...api.getBranchControlProps(ref)}>
+        <span {...api.getBranchTriggerProps(ref)}>
+          <span {...api.getBranchIndicatorProps(ref)} />
         </span>
-        {node.key != null ? <span {...api.getBranchTextProps(ref) as Record<string, unknown>}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
-        <span {...api.getPreviewProps(ref) as Record<string, unknown>}>{api.previewText(node)}</span>
+        {node.key != null ? <span {...api.getBranchTextProps(ref)}><Segments api={api} segments={api.keySegments(node)} /></span> : null}
+        <span {...api.getPreviewProps(ref)}>{api.previewText(node)}</span>
         {/* 分支的可及名字：视觉隐藏，读屏从这一行的内容里取到它 */}
-        <span {...api.getBranchSummaryProps(ref) as Record<string, unknown>}>{api.branchSummary(node)}</span>
+        <span {...api.getBranchSummaryProps(ref)}>{api.branchSummary(node)}</span>
       </div>
       {/* 收起的子层不渲染：一份大 JSON 全铺出来会把页面压住，展开集合本来也是逐层放开的 */}
       {api.isExpanded(node.value)
         ? (
-            <div {...api.getBranchContentProps(ref) as Record<string, unknown>}>
+            <div {...api.getBranchContentProps(ref)}>
               <JsonRows api={api} groups={groups} parent={node.value} />
             </div>
           )
@@ -95,7 +95,7 @@ function TextSegments({ api }: { api: JsonViewerApi }): ReactNode {
     const key = start
     start += segment.text.length
     return segment.kind
-      ? <span key={key} {...api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>}>{segment.text}</span>
+      ? <span key={key} {...api.getTokenProps({ kind: segment.kind })}>{segment.text}</span>
       : segment.text
   })
 }
@@ -108,18 +108,18 @@ function JsonViewerToolbar({ api }: { api: JsonViewerApi }): ReactNode {
   if (!api.tools.length)
     return null
   return (
-    <div {...api.getToolbarProps() as Record<string, unknown>}>
-      {api.tools.includes('expand') ? <button {...api.getExpandTriggerProps() as Record<string, unknown>} /> : null}
-      {api.tools.includes('wrap') ? <button {...api.getWrapTriggerProps() as Record<string, unknown>} /> : null}
+    <div {...api.getToolbarProps()}>
+      {api.tools.includes('expand') ? <button {...api.getExpandTriggerProps()} /> : null}
+      {api.tools.includes('wrap') ? <button {...api.getWrapTriggerProps()} /> : null}
       {api.tools.includes('copy')
         ? (
             <>
-              <button {...api.getCopyTriggerProps() as Record<string, unknown>} />
-              <span {...api.getStatusProps() as Record<string, unknown>}>{api.announcement}</span>
+              <button {...api.getCopyTriggerProps()} />
+              <span {...api.getStatusProps()}>{api.announcement}</span>
             </>
           )
         : null}
-      {api.tools.includes('view') ? <button {...api.getViewTriggerProps() as Record<string, unknown>} /> : null}
+      {api.tools.includes('view') ? <button {...api.getViewTriggerProps()} /> : null}
     </div>
   )
 }
@@ -129,7 +129,7 @@ function JsonViewerTree({ api }: { api: JsonViewerApi }): ReactNode {
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回锚点上。
   // 同一节点上的 onFocusOut 归到 React 的 onBlur，留在合成事件那一档不动
-  const bind = useNativeEvents(api.getTreeProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getTreeProps(), ['onFocus'])
   const groups = groupJsonViewerNodesByParent(api.visibleNodes)
   return (
     <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
@@ -247,7 +247,7 @@ export function XhJsonViewerRoot({
   // 两档容器是页内结构容器（与 Tree 同类）：滚动条走 reset 层的原生细条，不接自绘条
   // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
   const emptySlot = (
-    <div {...api.getEmptyProps() as Record<string, unknown>}>{empty ?? api.emptyText}</div>
+    <div {...api.getEmptyProps()}>{empty ?? api.emptyText}</div>
   )
 
   return (
@@ -258,11 +258,11 @@ export function XhJsonViewerRoot({
         nextMatch: api.nextMatch,
         prevMatch: api.prevMatch,
       })}
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         <JsonViewerToolbar api={api} />
         {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
         {api.view === 'text'
-          ? <pre {...api.getTextProps() as Record<string, unknown>}><TextSegments api={api} /></pre>
+          ? <pre {...api.getTextProps()}><TextSegments api={api} /></pre>
           : <JsonViewerTree api={api} />}
         {emptySlot}
       </div>

@@ -152,17 +152,17 @@ export class XhTimerElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('display', api.getDisplayProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('display', api.getDisplayProps())
 
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 unit，认不出就按秒算
     for (const el of this.getParts('item')) {
       const declared = el.getAttribute('unit')
       const unit = isTimerUnit(declared) ? declared : FALLBACK_UNIT
-      this.spreader.spread(el, api.getItemProps({ unit }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ unit }))
       // 数字归元素写：spreader 只管属性与事件，写不了文本。
       // 比一次再写：值没动时的赋值会白白惊动一次变更记录，而这里每一拍都会走一遍
       const text = api.segmentText(unit)
@@ -171,6 +171,6 @@ export class XhTimerElement extends XhElement {
     }
 
     for (const el of this.getParts('control'))
-      this.spreader.spread(el, api.getControlProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getControlProps())
   }
 }

@@ -34,7 +34,7 @@ export const XhAvatarRoot = defineComponent({
     const notify: AvatarProps['onStatusChange'] = details => emit('status-change', details)
     const ctx = useAvatar(props as AvatarProps, notify)
     provideAvatar(ctx)
-    return () => h('span', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -56,7 +56,7 @@ export const XhAvatarImage = defineComponent({
 
     // 节点常挂，靠 hidden 显隐
     return () => h('img', {
-      ...ctx.api.value.getImageProps() as Record<string, unknown>,
+      ...ctx.api.value.getImageProps(),
       ref: imageEl,
     })
   },
@@ -67,6 +67,6 @@ export const XhAvatarFallback = defineComponent({
   setup(_, { slots }) {
     const ctx = useAvatarContext()
     // 节点常挂，靠 hidden 显隐
-    return () => h('span', ctx.api.value.getFallbackProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getFallbackProps(), slots.default?.())
   },
 })

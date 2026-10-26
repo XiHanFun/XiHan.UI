@@ -74,8 +74,8 @@ export function XhTruncate({
     translations,
   }) as TruncateProps)
   const props = mergeReactProps(
-    ctx.api.getRootProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getRootProps(),
+    rest,
     { ref: ctx.rootRef as Ref<unknown> },
   )
   const text = (
@@ -94,7 +94,7 @@ export function XhTruncate({
   return (
     <>
       {text}
-      <button {...ctx.api.getTriggerProps() as Record<string, unknown>}>
+      <button {...ctx.api.getTriggerProps()}>
         {triggerContent ?? ctx.api.triggerLabel}
       </button>
     </>

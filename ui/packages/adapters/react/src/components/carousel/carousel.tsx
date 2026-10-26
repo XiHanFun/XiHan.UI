@@ -109,12 +109,12 @@ export function XhCarouselRoot({
   // 自动播放的按停与续播会跟着乱跳——装成原生监听器，到达路径才与另外两家一致。
   // onFocusIn / onFocusOut 归到的 onFocus / onBlur 本就是冒泡的 focusin / focusout，不动它们
   const bind = useNativeEvents(
-    api.getRootProps() as Record<string, unknown>,
+    api.getRootProps(),
     ['onPointerEnter', 'onPointerLeave'],
   )
   return (
     <CarouselProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {renderSlot(children, {
           page: api.page,
           totalPages: api.totalPages,
@@ -147,7 +147,7 @@ export interface XhCarouselViewportProps extends ComponentPropsWithRef<'div'> {}
 export function XhCarouselViewport({ children, ...rest }: XhCarouselViewportProps): ReactNode {
   const ctx = useCarouselContext()
   return (
-    <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getViewportProps(), rest)}>
       {children}
     </div>
   )
@@ -157,7 +157,7 @@ export interface XhCarouselListProps extends ComponentPropsWithRef<'div'> {}
 export function XhCarouselList({ children, ...rest }: XhCarouselListProps): ReactNode {
   const ctx = useCarouselContext()
   return (
-    <div {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getListProps(), rest)}>
       {children}
     </div>
   )
@@ -172,8 +172,8 @@ export function XhCarouselItem({ index, children, ...rest }: XhCarouselItemProps
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getItemProps({ index: Number(index) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps({ index: Number(index) }),
+        rest,
       )}
     >
       {children}
@@ -185,7 +185,7 @@ export interface XhCarouselPrevTriggerProps extends ComponentPropsWithRef<'butto
 export function XhCarouselPrevTrigger({ children, ...rest }: XhCarouselPrevTriggerProps): ReactNode {
   const ctx = useCarouselContext()
   return (
-    <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -195,7 +195,7 @@ export interface XhCarouselNextTriggerProps extends ComponentPropsWithRef<'butto
 export function XhCarouselNextTrigger({ children, ...rest }: XhCarouselNextTriggerProps): ReactNode {
   const ctx = useCarouselContext()
   return (
-    <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -219,8 +219,8 @@ export function XhCarouselAutoplayTrigger({ children, ...rest }: XhCarouselAutop
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getAutoplayTriggerProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getAutoplayTriggerProps(),
+        rest,
       )}
     >
       {renderSlot(children, { stopped: ctx.api.autoplayStopped })}
@@ -232,7 +232,7 @@ export interface XhCarouselIndicatorGroupProps extends ComponentPropsWithRef<'di
 export function XhCarouselIndicatorGroup({ children, ...rest }: XhCarouselIndicatorGroupProps): ReactNode {
   const ctx = useCarouselContext()
   return (
-    <div {...mergeReactProps(ctx.api.getIndicatorGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getIndicatorGroupProps(), rest)}>
       {children}
     </div>
   )
@@ -247,8 +247,8 @@ export function XhCarouselIndicator({ index, children, ...rest }: XhCarouselIndi
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getIndicatorProps({ index: Number(index) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getIndicatorProps({ index: Number(index) }),
+        rest,
       )}
     >
       {children}

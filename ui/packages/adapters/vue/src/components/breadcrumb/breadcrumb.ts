@@ -34,7 +34,7 @@ export const XhBreadcrumbRoot = defineComponent({
     provideBreadcrumb(ctx)
     return () => h(
       'nav',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      ctx.api.value.getRootProps(),
       slots.default
         ? slots.default()
         : renderDefaultStructure(ctx.api.value, slots.separator, slots.ellipsis),
@@ -47,7 +47,7 @@ export const XhBreadcrumbList = defineComponent({
   name: 'XhBreadcrumbList',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('ol', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('ol', ctx.api.value.getListProps(), slots.default?.())
   },
 })
 
@@ -55,7 +55,7 @@ export const XhBreadcrumbItem = defineComponent({
   name: 'XhBreadcrumbItem',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getItemProps(), slots.default?.())
   },
 })
 
@@ -78,7 +78,7 @@ export const XhBreadcrumbLink = defineComponent({
     const fallbackValue = useId()
     return () => {
       const part = mergePartProps(
-        ctx.api.value.getLinkProps({ value: props.value ?? fallbackValue, current: props.current }) as Record<string, unknown>,
+        ctx.api.value.getLinkProps({ value: props.value ?? fallbackValue, current: props.current }),
         attrs,
       )
       const children = slots.default?.()
@@ -94,7 +94,7 @@ export const XhBreadcrumbLinkIcon = defineComponent({
   name: 'XhBreadcrumbLinkIcon',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('span', ctx.api.value.getLinkIconProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLinkIconProps(), slots.default?.())
   },
 })
 
@@ -103,7 +103,7 @@ export const XhBreadcrumbSeparator = defineComponent({
   name: 'XhBreadcrumbSeparator',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('li', ctx.api.value.getSeparatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getSeparatorProps(), slots.default?.())
   },
 })
 
@@ -112,7 +112,7 @@ export const XhBreadcrumbEllipsis = defineComponent({
   name: 'XhBreadcrumbEllipsis',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('li', ctx.api.value.getEllipsisProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getEllipsisProps(), slots.default?.())
   },
 })
 
@@ -121,7 +121,7 @@ export const XhBreadcrumbEllipsisTrigger = defineComponent({
   name: 'XhBreadcrumbEllipsisTrigger',
   setup(_, { slots }) {
     const ctx = useBreadcrumbContext()
-    return () => h('button', ctx.api.value.getEllipsisTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getEllipsisTriggerProps(), slots.default?.())
   },
 })
 

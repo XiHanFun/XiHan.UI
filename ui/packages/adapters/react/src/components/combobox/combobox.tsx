@@ -220,8 +220,8 @@ export function XhComboboxRoot<V = string>({
     <ComboboxProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -240,7 +240,7 @@ export function XhComboboxLabel({ children, ...rest }: XhComboboxLabelProps): Re
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
+  return <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</label>
 }
 
 export interface XhComboboxControlProps extends ComponentPropsWithRef<'div'> {}
@@ -250,8 +250,8 @@ export function XhComboboxControl({ children, ...rest }: XhComboboxControlProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -264,14 +264,14 @@ export interface XhComboboxTagListProps extends ComponentPropsWithRef<'span'> {}
 /** 标签行：盒里、输入框之前，可见标签与 +N 标签在其中并排；单选或无选中时连接层写 hidden。 */
 export function XhComboboxTagList({ children, ...rest }: XhComboboxTagListProps): ReactNode {
   const ctx = useComboboxContext()
-  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagListProps(), rest)}>{children}</span>
 }
 
 export interface XhComboboxTagLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
 export function XhComboboxTagLabel({ children, ...rest }: XhComboboxTagLabelProps): ReactNode {
   const ctx = useComboboxContext()
-  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps(), rest)}>{children}</span>
 }
 
 /**
@@ -292,7 +292,7 @@ export function XhComboboxTag({ value, children, ...rest }: XhComboboxTagProps):
   const ctx = useComboboxContext()
   return (
     <ComboboxTagProvider value={{ value }}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }), rest)}>{tagChildren(children)}</span>
     </ComboboxTagProvider>
   )
 }
@@ -302,7 +302,7 @@ export interface XhComboboxOverflowTagProps extends ComponentPropsWithRef<'span'
 export function XhComboboxOverflowTag({ children, ...rest }: XhComboboxOverflowTagProps): ReactNode {
   const ctx = useComboboxContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps(), rest)}>
       {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
@@ -313,7 +313,7 @@ export interface XhComboboxItemDeleteTriggerProps extends ComponentPropsWithRef<
 export function XhComboboxItemDeleteTrigger({ children, ...rest }: XhComboboxItemDeleteTriggerProps): ReactNode {
   const ctx = useComboboxContext()
   const value = useComboboxTagContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }), rest)}>{children}</button>
 }
 
 export interface XhComboboxInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {
@@ -330,8 +330,8 @@ export function XhComboboxInput({ as = 'input', ...rest }: XhComboboxInputProps)
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) as Record<string, unknown> }),
-    rest as Record<string, unknown>,
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) }),
+    rest,
     { ref: (el: ComboboxInputEl | null) => { ctx.inputRef.current = el } },
   )
   // 自己渲染宿主节点，label 的 for 指向它
@@ -343,14 +343,14 @@ export function XhComboboxInput({ as = 'input', ...rest }: XhComboboxInputProps)
 export interface XhComboboxTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhComboboxTrigger({ children, ...rest }: XhComboboxTriggerProps): ReactNode {
   const ctx = useComboboxContext()
-  return <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhComboboxClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 节点常驻，不可清空时依靠 hidden 隐藏。 */
 export function XhComboboxClearTrigger({ children, ...rest }: XhComboboxClearTriggerProps): ReactNode {
   const ctx = useComboboxContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhComboboxPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -366,8 +366,8 @@ export function XhComboboxPositioner({ children, container, ...rest }: XhCombobo
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -384,8 +384,8 @@ export function XhComboboxContent({ children, ...rest }: XhComboboxContentProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -407,7 +407,7 @@ export function XhComboboxGroup({ value, children, ...rest }: XhComboboxGroupPro
   const group = useMemo(() => ({ value }), [value])
   return (
     <ComboboxGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </ComboboxGroupProvider>
   )
 }
@@ -416,7 +416,7 @@ export interface XhComboboxGroupLabelProps extends ComponentPropsWithRef<'span'>
 export function XhComboboxGroupLabel({ children, ...rest }: XhComboboxGroupLabelProps): ReactNode {
   const ctx = useComboboxContext()
   const group = useComboboxGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhComboboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -429,7 +429,7 @@ export function XhComboboxItem({ value, disabled, children, ...rest }: XhCombobo
   const ctx = useComboboxContext()
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
   // 指针离开候选不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getItemProps(item) as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(ctx.api.getItemProps(item), ['onPointerLeave'])
 
   // 候选的进出由条目自己上报，机器据此结算条数并摘掉悬空高亮；
   // 节点就地复用时数量不变但身份换了，跟着 value 再报一次
@@ -441,7 +441,7 @@ export function XhComboboxItem({ value, disabled, children, ...rest }: XhCombobo
 
   return (
     <ComboboxItemProvider value={item}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children}
       </div>
     </ComboboxItemProvider>
@@ -452,7 +452,7 @@ export interface XhComboboxItemTextProps extends ComponentPropsWithRef<'span'> {
 export function XhComboboxItemText({ children, ...rest }: XhComboboxItemTextProps): ReactNode {
   const ctx = useComboboxContext()
   const item = useComboboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
@@ -460,7 +460,7 @@ export interface XhComboboxItemPrefixProps extends ComponentPropsWithRef<'span'>
 export function XhComboboxItemPrefix({ children, ...rest }: XhComboboxItemPrefixProps): ReactNode {
   const ctx = useComboboxContext()
   const item = useComboboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -468,7 +468,7 @@ export interface XhComboboxItemSuffixProps extends ComponentPropsWithRef<'span'>
 export function XhComboboxItemSuffix({ children, ...rest }: XhComboboxItemSuffixProps): ReactNode {
   const ctx = useComboboxContext()
   const item = useComboboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -476,14 +476,14 @@ export interface XhComboboxItemDescriptionProps extends ComponentPropsWithRef<'s
 export function XhComboboxItemDescription({ children, ...rest }: XhComboboxItemDescriptionProps): ReactNode {
   const ctx = useComboboxContext()
   const item = useComboboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhComboboxItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhComboboxItemIndicator({ children, ...rest }: XhComboboxItemIndicatorProps): ReactNode {
   const ctx = useComboboxContext()
   const item = useComboboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhComboboxHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
@@ -499,11 +499,11 @@ export function XhComboboxHiddenInput({ ...rest }: XhComboboxHiddenInputProps): 
     <input
       key={input?.value ?? 'required'}
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps(input) as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(input),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   ))
@@ -513,14 +513,14 @@ export interface XhComboboxEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 放在 positioner 中作为 content 的兄弟节点，不进入 role=listbox。 */
 export function XhComboboxEmpty({ children, ...rest }: XhComboboxEmptyProps): ReactNode {
   const ctx = useComboboxContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhComboboxLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间显示；没写内容时显示 translations.loading。 */
 export function XhComboboxLoading({ children, ...rest }: XhComboboxLoadingProps): ReactNode {
   const ctx = useComboboxContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
 }
 
 function noop(): void {}

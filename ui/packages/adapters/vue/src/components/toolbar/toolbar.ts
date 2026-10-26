@@ -42,7 +42,7 @@ export const XhToolbarRoot = defineComponent({
     const ctx = useToolbar(withXhConfig('toolbar', props) as ToolbarProps)
     provideToolbar(ctx)
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement | null },
     }, slots.default?.({
       focusedValue: ctx.api.value.focusedValue,
@@ -56,7 +56,7 @@ export const XhToolbarGroup = defineComponent({
   name: 'XhToolbarGroup',
   setup(_, { slots }) {
     const ctx = useToolbarContext()
-    return () => h('div', ctx.api.value.getGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(), slots.default?.())
   },
 })
 
@@ -65,7 +65,7 @@ export const XhToolbarSeparator = defineComponent({
   setup() {
     const ctx = useToolbarContext()
     // 分隔线不渲染内容
-    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getSeparatorProps())
   },
 })
 
@@ -103,7 +103,7 @@ export const XhToolbarItem = defineComponent({
     })
     return () => h(
       props.as,
-      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled, iconOnly: props.iconOnly }) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled, iconOnly: props.iconOnly }), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -122,7 +122,7 @@ export const XhToolbarOverflowTrigger = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useToolbarContext()
     return () => h(XhMenuRoot, { ...toolbarOverflowMenuProps(ctx.service), triggerAsChild: true }, {
-      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps() as Record<string, unknown>, attrs), slots.default?.())],
+      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps(), attrs), slots.default?.())],
     })
   },
 })

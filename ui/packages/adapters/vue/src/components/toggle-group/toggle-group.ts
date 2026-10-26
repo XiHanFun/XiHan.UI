@@ -82,7 +82,7 @@ const XhToggleGroupRootImpl = defineComponent({
       const children = slots.default ? slots.default() : renderDefaultStructure(ctx.api.value, slots.item)
       return h(
         'div',
-        fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }),
+        fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() }),
         renderChildren(children, ctx.api.value),
       )
     }
@@ -150,7 +150,7 @@ export const XhToggleGroupItem = defineComponent({
     // 用原生 button，激活交给平台
     return () => h(
       'button',
-      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -187,7 +187,7 @@ export const XhToggleGroupHiddenInput = defineComponent({
   name: 'XhToggleGroupHiddenInput',
   setup() {
     const ctx = useToggleGroupContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

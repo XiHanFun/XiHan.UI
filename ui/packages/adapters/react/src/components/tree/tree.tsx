@@ -187,7 +187,7 @@ export function XhTreeRoot({
   const api = ctx.api
   return (
     <TreeProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {/* 没写 children 时铺标准结构 */}
         {children === undefined
           ? renderDefaultStructure(api, label)
@@ -216,7 +216,7 @@ export function XhTreeLabel({ children, ...rest }: XhTreeLabelProps): ReactNode 
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhTreeTreeProps extends ComponentPropsWithRef<'div'> {}
@@ -224,9 +224,9 @@ export function XhTreeTree({ children, ...rest }: XhTreeTreeProps): ReactNode {
   const ctx = useTreeContext()
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，节点得焦也会把它叫起来，那一下会把焦点从节点抢回锚点上
-  const bind = useNativeEvents(ctx.api.getTreeProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getTreeProps(), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )
@@ -236,14 +236,14 @@ export interface XhTreeEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 空态占位：写在 root 中、tree 的兄弟，不进入 role=tree 的拥有关系。 */
 export function XhTreeEmpty({ children, ...rest }: XhTreeEmptyProps): ReactNode {
   const ctx = useTreeContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhTreeLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhTreeLoading({ children, ...rest }: XhTreeLoadingProps): ReactNode {
   const ctx = useTreeContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{children}</div>
 }
 
 export interface XhTreeLiveRegionProps extends ComponentPropsWithRef<'div'> {}
@@ -256,7 +256,7 @@ export interface XhTreeLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 export function XhTreeLiveRegion({ children, ...rest }: XhTreeLiveRegionProps): ReactNode {
   const ctx = useTreeContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children ?? ctx.api.announcement}
     </div>
   )
@@ -270,14 +270,14 @@ export function XhTreeItem({ value, children, ...rest }: XhTreeItemProps): React
   const node = useMemo(() => ({ value }), [value])
   const el = useRef<HTMLElement | null>(null)
   // 节点的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getItemProps(node) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getItemProps(node), ['onFocus'])
   useNodeFocusReport(ctx.service, el, value)
   return (
     <TreeNodeProvider value={node}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (n: HTMLDivElement | null) => { el.current = n } },
         )}
@@ -292,7 +292,7 @@ export interface XhTreeItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeItemText({ children, ...rest }: XhTreeItemTextProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(node), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -300,7 +300,7 @@ export interface XhTreeItemDescriptionProps extends ComponentPropsWithRef<'span'
 export function XhTreeItemDescription({ children, ...rest }: XhTreeItemDescriptionProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(node), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -308,7 +308,7 @@ export interface XhTreeItemSuffixProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeItemSuffix({ children, ...rest }: XhTreeItemSuffixProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeNodeDragTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -320,14 +320,14 @@ export interface XhTreeNodeDragTriggerProps extends ComponentPropsWithRef<'span'
 export function XhTreeNodeDragTrigger({ children, ...rest }: XhTreeNodeDragTriggerProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getNodeDragTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getNodeDragTriggerProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeItemIndicator({ children, ...rest }: XhTreeItemIndicatorProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeBranchProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -339,14 +339,14 @@ export function XhTreeBranch({ value, children, ...rest }: XhTreeBranchProps): R
   const node = useMemo(() => ({ value }), [value])
   const el = useRef<HTMLElement | null>(null)
   // 节点的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getBranchProps(node) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getBranchProps(node), ['onFocus'])
   useNodeFocusReport(ctx.service, el, value)
   return (
     <TreeNodeProvider value={node}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (n: HTMLDivElement | null) => { el.current = n } },
         )}
@@ -362,21 +362,21 @@ export interface XhTreeBranchControlProps extends ComponentPropsWithRef<'div'> {
 export function XhTreeBranchControl({ children, ...rest }: XhTreeBranchControlProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <div {...mergeReactProps(ctx.api.getBranchControlProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getBranchControlProps(node), rest)}>{children}</div>
 }
 
 export interface XhTreeBranchTriggerProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeBranchTrigger({ children, ...rest }: XhTreeBranchTriggerProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getBranchTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getBranchTriggerProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeBranchIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeBranchIndicator({ children, ...rest }: XhTreeBranchIndicatorProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getBranchIndicatorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getBranchIndicatorProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeBranchDescriptionProps extends ComponentPropsWithRef<'span'> {}
@@ -384,14 +384,14 @@ export interface XhTreeBranchDescriptionProps extends ComponentPropsWithRef<'spa
 export function XhTreeBranchDescription({ children, ...rest }: XhTreeBranchDescriptionProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getBranchDescriptionProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getBranchDescriptionProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeBranchTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeBranchText({ children, ...rest }: XhTreeBranchTextProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <span {...mergeReactProps(ctx.api.getBranchTextProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getBranchTextProps(node), rest)}>{children}</span>
 }
 
 export interface XhTreeBranchContentProps extends ComponentPropsWithRef<'div'> {}
@@ -399,35 +399,35 @@ export interface XhTreeBranchContentProps extends ComponentPropsWithRef<'div'> {
 export function XhTreeBranchContent({ children, ...rest }: XhTreeBranchContentProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <div {...mergeReactProps(ctx.api.getBranchContentProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getBranchContentProps(node), rest)}>{children}</div>
 }
 
 export interface XhTreeBranchLoadingProps extends ComponentPropsWithRef<'div'> {}
 export function XhTreeBranchLoading({ children, ...rest }: XhTreeBranchLoadingProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <div {...mergeReactProps(ctx.api.getBranchLoadingProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.loading}</div>
+  return <div {...mergeReactProps(ctx.api.getBranchLoadingProps(node), rest)}>{children ?? ctx.api.translations.loading}</div>
 }
 
 export interface XhTreeBranchErrorProps extends ComponentPropsWithRef<'div'> {}
 export function XhTreeBranchError({ children, ...rest }: XhTreeBranchErrorProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <div {...mergeReactProps(ctx.api.getBranchErrorProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchError}</div>
+  return <div {...mergeReactProps(ctx.api.getBranchErrorProps(node), rest)}>{children ?? ctx.api.translations.branchError}</div>
 }
 
 export interface XhTreeBranchRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTreeBranchRetryTrigger({ children, ...rest }: XhTreeBranchRetryTriggerProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <button {...mergeReactProps(ctx.api.getBranchRetryTriggerProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.retry}</button>
+  return <button {...mergeReactProps(ctx.api.getBranchRetryTriggerProps(node), rest)}>{children ?? ctx.api.translations.retry}</button>
 }
 
 export interface XhTreeBranchEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhTreeBranchEmpty({ children, ...rest }: XhTreeBranchEmptyProps): ReactNode {
   const ctx = useTreeContext()
   const node = useTreeNodeContext()
-  return <div {...mergeReactProps(ctx.api.getBranchEmptyProps(node) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.translations.branchEmpty}</div>
+  return <div {...mergeReactProps(ctx.api.getBranchEmptyProps(node), rest)}>{children ?? ctx.api.translations.branchEmpty}</div>
 }
 
 /** 懒分支的四种取数反馈：分支自己补在控制行与子层之后，手写结构与标准结构都一样；不是懒分支时不补。 */

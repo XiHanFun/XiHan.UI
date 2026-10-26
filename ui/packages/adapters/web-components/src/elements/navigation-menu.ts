@@ -246,11 +246,11 @@ export class XhNavigationMenuElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('list', api.getListProps())
 
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用经 authorDisabled 归一到 aria-disabled。
     // 打上去的 data-scope/data-part/data-value 正是方向键在事件那一刻查 DOM 的依据，
@@ -260,7 +260,7 @@ export class XhNavigationMenuElement extends XhElement {
         value: el.getAttribute('value') ?? '',
         disabled: authorDisabled(el),
       })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
     }
 
     // 方向标记与所在 trigger 同一份声明，身份取节点自报的 value
@@ -268,7 +268,7 @@ export class XhNavigationMenuElement extends XhElement {
       this.spreader.spread(el, api.getTriggerIndicatorProps({
         value: el.getAttribute('value') ?? '',
         disabled: authorDisabled(el),
-      }) as Record<string, unknown>)
+      }))
     }
 
     // 面板常挂，未展开的由 connect 输出 hidden；styles 给 content 设了 display，
@@ -276,7 +276,7 @@ export class XhNavigationMenuElement extends XhElement {
     // 判据直接取 connect 这一帧的产出，不另起一套：两边各判一次迟早会说岔。
     for (const el of this.getParts('content')) {
       const value = el.getAttribute('value') ?? ''
-      const props = api.getContentProps({ value }) as Record<string, unknown>
+      const props = api.getContentProps({ value })
       this.spreader.spread(el, props)
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
@@ -307,30 +307,30 @@ export class XhNavigationMenuElement extends XhElement {
       this.spreader.spread(el, api.getBranchTriggerProps({
         value: el.getAttribute('value') ?? '',
         disabled: authorDisabled(el),
-      }) as Record<string, unknown>)
+      }))
     }
     for (const el of this.getParts('branch-indicator'))
-      this.spreader.spread(el, api.getBranchIndicatorProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getBranchIndicatorProps({ value: el.getAttribute('value') ?? '' }))
     // 子级容器收着时 hidden；皮肤给它设了 display，同 content 一样用内联 display 压住
     for (const el of this.getParts('branch-content')) {
-      const props = api.getBranchContentProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>
+      const props = api.getBranchContentProps({ value: el.getAttribute('value') ?? '' })
       this.spreader.spread(el, props)
       this.setPartHidden(el, props.hidden === true)
     }
 
     for (const el of this.getParts('link'))
-      this.spreader.spread(el, api.getLinkProps({ value: this.linkValueOf(el), current: authorFlag(el, 'current') }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkProps({ value: this.linkValueOf(el), current: authorFlag(el, 'current') }))
 
     const indicator = this.getPart('indicator')
     if (indicator) {
-      const props = api.getIndicatorProps() as Record<string, unknown>
+      const props = api.getIndicatorProps()
       this.spreader.spread(indicator, props)
       this.setPartHidden(indicator, props.hidden === true)
     }
 
     const viewport = this.getPart('viewport')
     if (viewport) {
-      const props = api.getViewportProps() as Record<string, unknown>
+      const props = api.getViewportProps()
       this.spreader.spread(viewport, props)
       this.setPartHidden(viewport, props.hidden === true)
     }

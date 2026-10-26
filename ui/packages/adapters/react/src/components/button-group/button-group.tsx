@@ -89,7 +89,7 @@ export function XhButtonGroup({
   )
   return (
     <ButtonGroupProvider value={context}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderChildren(children, api)}
       </div>
     </ButtonGroupProvider>

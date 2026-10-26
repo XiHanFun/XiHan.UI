@@ -118,8 +118,8 @@ export function XhFieldArrayRoot({
     <FieldArrayProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -158,16 +158,16 @@ export function XhFieldArrayTable({ children, ...rest }: XhFieldArrayTableProps)
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
   const ctx = useFieldArrayContext()
-  const props = ctx.api.getTableProps() as Record<string, unknown>
+  const props = ctx.api.getTableProps()
   const own = ctx.api.layout === 'table' ? fieldLabel({ ...fieldWiring, ...props }) : props
-  return <div {...mergeReactProps(own, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(own, rest)}>{children}</div>
 }
 
 export interface XhFieldArrayHeaderProps extends ComponentPropsWithRef<'div'> {}
 /** 表头行：role=row。 */
 export function XhFieldArrayHeader({ children, ...rest }: XhFieldArrayHeaderProps): ReactNode {
   const ctx = useFieldArrayContext()
-  return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
 }
 
 export interface XhFieldArrayColumnHeaderProps extends ComponentPropsWithRef<'div'> {
@@ -178,7 +178,7 @@ export interface XhFieldArrayColumnHeaderProps extends ComponentPropsWithRef<'di
 export function XhFieldArrayColumnHeader({ value, children, ...rest }: XhFieldArrayColumnHeaderProps): ReactNode {
   const ctx = useFieldArrayContext()
   return (
-    <div {...mergeReactProps(ctx.api.getColumnHeaderProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getColumnHeaderProps({ value }), rest)}>
       {slotPaints(children) ? children : ctx.api.columns.find(column => column.id === value)?.label}
     </div>
   )
@@ -192,7 +192,7 @@ export interface XhFieldArrayItemCellProps extends ComponentPropsWithRef<'div'> 
 export function XhFieldArrayItemCell({ value, children, ...rest }: XhFieldArrayItemCellProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <div {...mergeReactProps(ctx.api.getItemCellProps({ index: item.index, value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemCellProps({ index: item.index, value }), rest)}>{children}</div>
 }
 
 export interface XhFieldArrayItemProps extends ComponentPropsWithRef<'div'> {
@@ -204,7 +204,7 @@ export function XhFieldArrayItem({ index, children, ...rest }: XhFieldArrayItemP
   const item = useMemo(() => ({ index: Math.trunc(Number(index)) }), [index])
   return (
     <FieldArrayItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         {children}
       </div>
     </FieldArrayItemProvider>
@@ -216,34 +216,34 @@ export interface XhFieldArrayItemLabelProps extends ComponentPropsWithRef<'span'
 export function XhFieldArrayItemLabel({ children, ...rest }: XhFieldArrayItemLabelProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemLabelProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemLabelProps(item), rest)}>{children}</span>
 }
 
 export interface XhFieldArrayItemContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhFieldArrayItemContent({ children, ...rest }: XhFieldArrayItemContentProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <div {...mergeReactProps(ctx.api.getItemContentProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemContentProps(item), rest)}>{children}</div>
 }
 
 export interface XhFieldArrayItemActionProps extends ComponentPropsWithRef<'div'> {}
 export function XhFieldArrayItemAction({ children, ...rest }: XhFieldArrayItemActionProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <div {...mergeReactProps(ctx.api.getItemActionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemActionProps(item), rest)}>{children}</div>
 }
 
 export interface XhFieldArrayAddTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFieldArrayAddTrigger({ children, ...rest }: XhFieldArrayAddTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
-  return <button {...mergeReactProps(ctx.api.getAddTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getAddTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhFieldArrayItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFieldArrayItemDeleteTrigger({ children, ...rest }: XhFieldArrayItemDeleteTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item), rest)}>{children}</button>
 }
 
 /** 拖动把手：按住拖这一行换位，只接指针、不占 Tab 位（键盘用上移、下移）。不换序时收起。 */
@@ -251,21 +251,21 @@ export interface XhFieldArrayItemDragTriggerProps extends ComponentPropsWithRef<
 export function XhFieldArrayItemDragTrigger({ children, ...rest }: XhFieldArrayItemDragTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <button {...mergeReactProps(ctx.api.getItemDragTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDragTriggerProps(item), rest)}>{children}</button>
 }
 
 export interface XhFieldArrayMoveUpTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFieldArrayMoveUpTrigger({ children, ...rest }: XhFieldArrayMoveUpTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <button {...mergeReactProps(ctx.api.getMoveUpTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getMoveUpTriggerProps(item), rest)}>{children}</button>
 }
 
 export interface XhFieldArrayMoveDownTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFieldArrayMoveDownTrigger({ children, ...rest }: XhFieldArrayMoveDownTriggerProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()
-  return <button {...mergeReactProps(ctx.api.getMoveDownTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getMoveDownTriggerProps(item), rest)}>{children}</button>
 }
 
 /** 结构里的部件 → 部件组件。 */

@@ -90,7 +90,7 @@ export interface XhTooltipTriggerProps extends ComponentPropsWithRef<'button'>, 
 
 export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTriggerProps): ReactNode {
   const ctx = useTooltipContext()
-  const part = ctx.api.getTriggerProps() as Record<string, unknown>
+  const part = ctx.api.getTriggerProps()
   // 指针进出、按下与聚焦装成原生监听器：这几个事件不冒泡，委派在根容器上的合成事件收不到。
   // 委托模式的 onFocus / onBlur 挂的是冒泡的 focusin / focusout，得留给合成事件，锚点得焦时容器才收得到
   const bind = useNativeEvents(part, ctx.api.delegated ? Object.keys(part).filter(key => key !== 'onFocus' && key !== 'onBlur') : undefined)
@@ -100,7 +100,7 @@ export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTrigge
       { ref: bind.ref },
       { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   // 委托模式下 trigger 是装着一个个锚点的容器，不是按钮
   return renderAsChild(asChild, children, props, 'tooltip', (p, kids) => (ctx.api.delegated ? <div {...p}>{kids}</div> : <button {...p}>{kids}</button>))
@@ -117,8 +117,8 @@ export function XhTooltipPositioner({ children, container, ...rest }: XhTooltipP
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -132,26 +132,26 @@ export interface XhTooltipTextProps extends ComponentPropsWithRef<'span'> {}
 /** 委托模式下的提示文字：缺省显示当前锚点的文字。 */
 export function XhTooltipText({ children, ...rest }: XhTooltipTextProps): ReactNode {
   const ctx = useTooltipContext()
-  return <span {...mergeReactProps(ctx.api.getTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.text}</span>
+  return <span {...mergeReactProps(ctx.api.getTextProps(), rest)}>{children ?? ctx.api.text}</span>
 }
 
 export interface XhTooltipShortcutProps extends ComponentPropsWithRef<'span'> {}
 /** 委托模式下的快捷键：缺省显示当前锚点的快捷键，按平台的写法。 */
 export function XhTooltipShortcut({ children, ...rest }: XhTooltipShortcutProps): ReactNode {
   const ctx = useTooltipContext()
-  return <span {...mergeReactProps(ctx.api.getShortcutProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.shortcut}</span>
+  return <span {...mergeReactProps(ctx.api.getShortcutProps(), rest)}>{children ?? ctx.api.shortcut}</span>
 }
 
 export interface XhTooltipContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): ReactNode {
   const ctx = useTooltipContext()
   // 指针进出装成原生监听器，与 trigger 同一条理由：移入浮层要能撤销收起等待
-  const bind = useNativeEvents(ctx.api.getContentProps() as Record<string, unknown>)
+  const bind = useNativeEvents(ctx.api.getContentProps())
   return (
     <div
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
         {
           // 收起跟着退场闸门走：皮肤给 content 声明了 display 来盖掉 UA 的 [hidden]{display:none}
@@ -178,5 +178,5 @@ export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): 
 export interface XhTooltipArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhTooltipArrow({ children, ...rest }: XhTooltipArrowProps): ReactNode {
   const ctx = useTooltipContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
 }

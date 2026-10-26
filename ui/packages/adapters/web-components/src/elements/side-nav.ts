@@ -378,19 +378,19 @@ export class XhSideNavElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('input', api.getInputProps())
+    put('list', api.getListProps())
     const empty = this.getPart('empty')
     if (empty) {
-      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.spreader.spread(empty, api.getEmptyProps())
       this.fillEmptyText(empty, api.translations.noMatch)
     }
     // 列表项的身份取它包着的那条链接：搜索时没命中就整行收起
     const links = this.getParts(LINK)
     for (const el of this.getParts('item')) {
       const link = links.find(node => node.closest(ITEM_SELECTOR) === el)
-      this.spreader.spread(el, api.getItemProps({ value: link?.getAttribute('value') ?? undefined }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ value: link?.getAttribute('value') ?? undefined }))
     }
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，节点增删无需记账
@@ -404,7 +404,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       const members = groupMembers
         .filter(node => node.closest(GROUP_SELECTOR) === el)
         .map(node => node.getAttribute('value') ?? '')
-      this.spreader.spread(el, api.getGroupProps({ ...this.nodeOf(el, GROUP), members }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps({ ...this.nodeOf(el, GROUP), members }))
     }
     putAll('group-label', GROUP, node => api.getGroupLabelProps(node))
     putAll('group-list', GROUP, node => api.getGroupListProps(node))
@@ -412,16 +412,16 @@ export class XhSideNavElement extends XhPortalHostElement {
     putAll('branch-trigger', BRANCH, node => api.getBranchTriggerProps(node))
     putAll('branch-indicator', BRANCH, node => api.getBranchIndicatorProps(node))
     for (const el of this.getParts('branch-text'))
-      this.spreader.spread(el, api.getBranchTextProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getBranchTextProps())
     for (const el of this.getParts('link-text'))
-      this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkTextProps())
     putAll('branch-content', BRANCH, node => api.getBranchContentProps(node))
     // 弹出面板的定位层常挂，退场动画挂在面板上：收起从跟着 open 走改成跟着 presence 走。
     // 一个定位层一份闸门。必须排在两处 spread 之后——data-state 得先落进 DOM，探测器才读得到
     const popoutVisible = new Map<HTMLElement, boolean>()
     for (const el of this.getParts('positioner')) {
       const value = this.nodeOf(el, BRANCH).value
-      const props = api.getPopoutPositionerProps({ value }) as Record<string, unknown>
+      const props = api.getPopoutPositionerProps({ value })
       this.spreader.spread(el, props)
       const open = props.hidden !== true
       let entry = this.exits.get(el)
@@ -473,8 +473,8 @@ export class XhSideNavElement extends XhPortalHostElement {
     // 名称提示：两个节点接的是 tooltip 的 positioner 与 content，文字由元素填成对着那一行的标签。
     // 退场动画播完之前先别收：必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     if (hint && hintPositioner && hintContent) {
-      this.spreader.spread(hintPositioner, api.getTooltipPositionerProps() as Record<string, unknown>)
-      this.spreader.spread(hintContent, api.getTooltipContentProps() as Record<string, unknown>)
+      this.spreader.spread(hintPositioner, api.getTooltipPositionerProps())
+      this.spreader.spread(hintContent, api.getTooltipContentProps())
       if (hintContent.textContent !== api.tooltipText)
         hintContent.textContent = api.tooltipText
       this.ensureConfig()

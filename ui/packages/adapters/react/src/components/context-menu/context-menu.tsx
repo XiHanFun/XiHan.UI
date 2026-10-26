@@ -172,7 +172,7 @@ export function XhContextMenuRoot({
 
   return (
     <ContextMenuProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>{body}</div>
     </ContextMenuProvider>
   )
 }
@@ -185,10 +185,10 @@ export function XhContextMenuTrigger({ children, asChild, ...rest }: XhContextMe
   const ctx = useContextMenuContext()
   const props = mergePartProps(
     mergeReactProps(
-      ctx.api.getTriggerProps() as Record<string, unknown>,
+      ctx.api.getTriggerProps(),
       { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   return renderAsChild(asChild, children, props, 'context-menu', (p, kids) => <div {...p}>{kids}</div>)
 }
@@ -207,8 +207,8 @@ export function XhContextMenuPositioner({ children, container, ...rest }: XhCont
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -224,12 +224,12 @@ export function XhContextMenuContent({ children, ...rest }: XhContextMenuContent
   const ctx = useContextMenuContext()
   // content 自身得焦时清锚点，收的是不冒泡的 DOM focus：合成事件挂在冒泡的 focusin 上，
   // 后代条目得焦也会把它叫起来，判据整个变味
-  const bind = useNativeEvents(ctx.api.getContentProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getContentProps(), ['onFocus'])
   return (
     <div
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
@@ -263,7 +263,7 @@ function ContextMenuItemImpl({ item, children, ...rest }: ContextMenuItemImplPro
       : ctx.api.getItemProps(item)
   // 条目的聚焦上报与指针划过都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    headlessProps as Record<string, unknown>,
+    headlessProps,
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
 
@@ -294,7 +294,7 @@ function ContextMenuItemImpl({ item, children, ...rest }: ContextMenuItemImplPro
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
@@ -328,7 +328,7 @@ export interface XhContextMenuItemTextProps extends ComponentPropsWithRef<'span'
 export function XhContextMenuItemText({ children, ...rest }: XhContextMenuItemTextProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
@@ -336,7 +336,7 @@ export interface XhContextMenuItemIndicatorProps extends ComponentPropsWithRef<'
 export function XhContextMenuItemIndicator({ children, ...rest }: XhContextMenuItemIndicatorProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
@@ -344,7 +344,7 @@ export interface XhContextMenuItemDescriptionProps extends ComponentPropsWithRef
 export function XhContextMenuItemDescription({ children, ...rest }: XhContextMenuItemDescriptionProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuItemIconProps extends ComponentPropsWithRef<'span'> {}
@@ -352,7 +352,7 @@ export interface XhContextMenuItemIconProps extends ComponentPropsWithRef<'span'
 export function XhContextMenuItemIcon({ children, ...rest }: XhContextMenuItemIconProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuItemShortcutProps extends ComponentPropsWithRef<'span'> {}
@@ -360,7 +360,7 @@ export interface XhContextMenuItemShortcutProps extends ComponentPropsWithRef<'s
 export function XhContextMenuItemShortcut({ children, ...rest }: XhContextMenuItemShortcutProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuItemSuffixProps extends ComponentPropsWithRef<'span'> {}
@@ -368,7 +368,7 @@ export interface XhContextMenuItemSuffixProps extends ComponentPropsWithRef<'spa
 export function XhContextMenuItemSuffix({ children, ...rest }: XhContextMenuItemSuffixProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 export interface XhContextMenuGroupProps extends ComponentPropsWithRef<'div'> {
@@ -379,7 +379,7 @@ export function XhContextMenuGroup({ value, children, ...rest }: XhContextMenuGr
   const group = useMemo<ContextMenuGroupProps>(() => ({ value }), [value])
   return (
     <ContextMenuGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </ContextMenuGroupProvider>
   )
 }
@@ -392,7 +392,7 @@ export function XhContextMenuRadioGroup({ value, children, ...rest }: XhContextM
   const group = useMemo<ContextMenuGroupProps>(() => ({ value }), [value])
   return (
     <ContextMenuGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group), rest)}>{children}</div>
     </ContextMenuGroupProvider>
   )
 }
@@ -401,19 +401,19 @@ export interface XhContextMenuGroupLabelProps extends ComponentPropsWithRef<'spa
 export function XhContextMenuGroupLabel({ children, ...rest }: XhContextMenuGroupLabelProps): ReactNode {
   const ctx = useContextMenuContext()
   const group = useContextMenuGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhContextMenuSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhContextMenuSeparator({ children, ...rest }: XhContextMenuSeparatorProps): ReactNode {
   const ctx = useContextMenuContext()
-  return <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>{children}</div>
 }
 
 export interface XhContextMenuArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhContextMenuArrow({ children, ...rest }: XhContextMenuArrowProps): ReactNode {
   const ctx = useContextMenuContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
 }
 
 export interface XhContextMenuSubProps {
@@ -507,9 +507,9 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
   const bind = useNativeEvents(
     mergeProps(
       // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
-      withoutScopeClass(sub.api.getSubmenuTriggerProps(item) as Record<string, unknown>),
+      withoutScopeClass(sub.api.getSubmenuTriggerProps(item)),
       // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
-      withoutUndefined(handle.parent.api.getItemProps(item) as Record<string, unknown>),
+      withoutUndefined(handle.parent.api.getItemProps(item)),
     ),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
@@ -517,7 +517,7 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
     <div
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
         // 子菜单的定位锚点就是这一条
         { ref: (el: HTMLDivElement | null) => { sub.triggerRef.current = el } },

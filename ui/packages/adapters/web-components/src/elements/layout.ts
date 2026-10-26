@@ -141,13 +141,13 @@ export class XhLayoutElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('sider-backdrop', api.getSiderBackdropProps() as Record<string, unknown>)
-    put('sider', api.getSiderProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('sider-trigger', api.getSiderTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
+    put('sider-backdrop', api.getSiderBackdropProps())
+    put('sider', api.getSiderProps())
+    put('content', api.getContentProps())
+    put('footer', api.getFooterProps())
+    put('sider-trigger', api.getSiderTriggerProps())
   }
 
   override disconnectedCallback(): void {

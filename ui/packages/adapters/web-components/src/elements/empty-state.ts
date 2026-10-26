@@ -73,11 +73,11 @@ export class XhEmptyStateElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('media', api.getMediaProps() as Record<string, unknown>)
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('action', api.getActionProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('media', api.getMediaProps())
+    put('indicator', api.getIndicatorProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('action', api.getActionProps())
   }
 }

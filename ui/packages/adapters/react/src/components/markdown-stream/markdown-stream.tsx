@@ -62,7 +62,7 @@ export function XhMarkdownStreamRoot({
   const { api } = ctx
   return (
     <MarkdownStreamProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, { blocks: api.blocks, streaming: api.streaming, announcement: api.announcement })}
       </div>
     </MarkdownStreamProvider>
@@ -139,9 +139,9 @@ export function XhMarkdownStreamContent({ children, renderCitation, renderMath, 
     setMounts(prev => (sameMarkdownInlines(prev, next) ? prev : next))
   })
   return (
-    <div {...mergeReactProps(api.getContentProps() as Record<string, unknown>, { ref: host }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getContentProps(), { ref: host }, rest)}>
       {api.blocks.map((block, index) => {
-        const attrs = api.getBlockProps({ block }) as Record<string, unknown>
+        const attrs = api.getBlockProps({ block })
         if (children !== undefined)
           return <div key={block.key} {...attrs}>{renderSlot(children, { block, index })}</div>
         const html = markdownBlockHtml(block)
@@ -165,7 +165,7 @@ export interface XhMarkdownStreamLiveRegionProps extends ComponentPropsWithRef<'
 export function XhMarkdownStreamLiveRegion({ children, ...rest }: XhMarkdownStreamLiveRegionProps): ReactNode {
   const ctx = useMarkdownStreamContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children ?? ctx.api.announcement}
     </div>
   )

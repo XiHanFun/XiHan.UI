@@ -155,18 +155,18 @@ export const XhMasonry = defineComponent({
           // 键跟着作者写的 key 走，同一列内增删才不会连累后面几项重建
           kids.push(h(
             'div',
-            { ...api.getItemProps({ index, column }) as Record<string, unknown>, key: child.key ?? `xh-masonry-item-${index}` },
+            { ...api.getItemProps({ index, column }), key: child.key ?? `xh-masonry-item-${index}` },
             [child],
           ))
         })
         columns.push(h(
           'div',
-          { ...api.getColumnProps({ index: column }) as Record<string, unknown>, key: column },
+          { ...api.getColumnProps({ index: column }), key: column },
           kids,
         ))
       }
 
-      return h('div', { ...api.getRootProps() as Record<string, unknown>, ref: rootEl }, columns)
+      return h('div', { ...api.getRootProps(), ref: rootEl }, columns)
     }
   },
 })

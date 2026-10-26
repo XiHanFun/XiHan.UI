@@ -92,14 +92,14 @@ export class XhKbdElement extends XhElement {
     if (root.localName !== 'kbd')
       throw new TypeError('[xh] <xh-kbd> 的 root 必须使用原生 <kbd>')
     const api = this.#api()
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     const key = JSON.stringify(api.segments)
     if (key !== this.#painted) {
       this.#painted = key
       const frame = root.ownerDocument.createDocumentFragment()
       for (const segment of api.segments) {
         const node = root.ownerDocument.createElement('span')
-        this.spreader.spread(node, api.getKeyProps({ value: segment.source }) as Record<string, unknown>)
+        this.spreader.spread(node, api.getKeyProps({ value: segment.source }))
         node.textContent = segment.label
         frame.append(node)
       }

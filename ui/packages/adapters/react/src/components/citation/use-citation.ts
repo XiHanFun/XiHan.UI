@@ -58,6 +58,6 @@ export function useCitation(props: CitationSchema['props']): CitationContext {
     return () => {}
   }, [config])
 
-  const service = useMachine(citationMachine, () => props, { scope, onCreate: onCreate as never })
+  const service = useMachine(citationMachine, () => props, { scope, onCreate })
   return { api: connectCitation(service, reactNormalize), service, rootRef, positionerRef }
 }

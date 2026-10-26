@@ -105,7 +105,7 @@ export const XhImageCropperRoot = defineComponent({
       { onValueChange, onValueChangeEnd, onZoomChange, onRotationChange, onFlipChange },
     )
     provideImageCropper(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       zoom: ctx.api.value.zoom,
       rotation: ctx.api.value.rotation,
@@ -132,7 +132,7 @@ export const XhImageCropperViewport = defineComponent({
     const ctx = useImageCropperContext()
     // 视口节点交给机器，矩形在指针事件里现量
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: ctx.viewportRef,
     }, slots.default?.())
   },
@@ -144,7 +144,7 @@ export const XhImageCropperImage = defineComponent({
     const ctx = useImageCropperContext()
     // 用原生 img：自然尺寸与 load 事件都归它，出图也从它取像素。src 与 alt 由根上的同名 prop 写进来
     return () => h('img', {
-      ...ctx.api.value.getImageProps() as Record<string, unknown>,
+      ...ctx.api.value.getImageProps(),
       ref: ctx.imageRef,
     })
   },
@@ -154,7 +154,7 @@ export const XhImageCropperCropArea = defineComponent({
   name: 'XhImageCropperCropArea',
   setup(_, { slots }) {
     const ctx = useImageCropperContext()
-    return () => h('div', ctx.api.value.getCropAreaProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCropAreaProps(), slots.default?.())
   },
 })
 
@@ -169,7 +169,7 @@ export const XhImageCropperCropHandle = defineComponent({
     // 用原生 button：它天然可聚焦、天然在 Tab 序列里
     return () => h(
       'button',
-      ctx.api.value.getCropHandleProps({ position: props.position }) as Record<string, unknown>,
+      ctx.api.value.getCropHandleProps({ position: props.position }),
       slots.default?.(),
     )
   },
@@ -179,7 +179,7 @@ export const XhImageCropperGrid = defineComponent({
   name: 'XhImageCropperGrid',
   setup(_, { slots }) {
     const ctx = useImageCropperContext()
-    return () => h('div', ctx.api.value.getGridProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGridProps(), slots.default?.())
   },
 })
 
@@ -188,7 +188,7 @@ export const XhImageCropperZoomSlider = defineComponent({
   setup() {
     const ctx = useImageCropperContext()
     // 用原生 range：拇指拖动、方向键步进与读屏播报都归它
-    return () => h('input', ctx.api.value.getZoomSliderProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getZoomSliderProps())
   },
 })
 
@@ -196,7 +196,7 @@ export const XhImageCropperRotateSlider = defineComponent({
   name: 'XhImageCropperRotateSlider',
   setup() {
     const ctx = useImageCropperContext()
-    return () => h('input', ctx.api.value.getRotateSliderProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getRotateSliderProps())
   },
 })
 
@@ -210,7 +210,7 @@ export const XhImageCropperFlipTrigger = defineComponent({
     const ctx = useImageCropperContext()
     return () => h(
       'button',
-      ctx.api.value.getFlipTriggerProps({ axis: props.axis }) as Record<string, unknown>,
+      ctx.api.value.getFlipTriggerProps({ axis: props.axis }),
       slots.default?.(),
     )
   },
@@ -220,6 +220,6 @@ export const XhImageCropperHiddenInput = defineComponent({
   name: 'XhImageCropperHiddenInput',
   setup() {
     const ctx = useImageCropperContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })

@@ -84,7 +84,7 @@ export class XhButtonElement extends XhElement {
     if (!root)
       return
     const api = connectButton(this.ctrl.service, wcNormalize)
-    this.spreader.spread(root, this.withAsChild(api.getRootProps() as Record<string, unknown>))
+    this.spreader.spread(root, this.withAsChild(api.getRootProps()))
 
     // label / prefix / suffix / indicator 都是可选角色节点，作者写了才接
     const put = (name: string, props: Record<string, unknown>): void => {
@@ -92,9 +92,9 @@ export class XhButtonElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('prefix', api.getPrefixProps() as Record<string, unknown>)
-    put('suffix', api.getSuffixProps() as Record<string, unknown>)
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
+    put('label', api.getLabelProps())
+    put('prefix', api.getPrefixProps())
+    put('suffix', api.getSuffixProps())
+    put('indicator', api.getIndicatorProps())
   }
 }

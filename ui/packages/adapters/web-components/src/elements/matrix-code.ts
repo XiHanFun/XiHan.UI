@@ -132,7 +132,7 @@ export class XhMatrixCodeElement extends XhElement {
     root.style.blockSize = style?.blockSize ?? ''
     this.#paint(root, api)
     if (logo)
-      this.spreader.spread(logo, api.getLogoProps() as Record<string, unknown>)
+      this.spreader.spread(logo, api.getLogoProps())
   }
 
   /**

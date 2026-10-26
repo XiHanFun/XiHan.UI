@@ -125,13 +125,13 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
       // 键跟着作者写的 key 走，同一列内增删才不会连累后面几项重建
       const key = isValidElement(child) && child.key != null ? child.key : `xh-masonry-item-${index}`
       kids.push(
-        <div key={key} {...api.getItemProps({ index, column }) as Record<string, unknown>}>
+        <div key={key} {...api.getItemProps({ index, column })}>
           {child}
         </div>,
       )
     })
     rendered.push(
-      <div key={column} {...api.getColumnProps({ index: column }) as Record<string, unknown>}>
+      <div key={column} {...api.getColumnProps({ index: column })}>
         {kids}
       </div>,
     )
@@ -140,8 +140,8 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
   return (
     <div
       {...mergeReactProps(
-        api.getRootProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        api.getRootProps(),
+        rest,
         { ref: rootRef },
       )}
     >

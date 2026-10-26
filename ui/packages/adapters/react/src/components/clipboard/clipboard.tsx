@@ -62,7 +62,7 @@ export function XhClipboardRoot({
   }) as ClipboardProps)
   return (
     <ClipboardProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {renderSlot(children, {
           status: ctx.api.status,
           copied: ctx.api.copied,
@@ -84,7 +84,7 @@ export function XhClipboardLabel({ children, ...rest }: XhClipboardLabelProps): 
   useEffect(() => registerLabel(), [registerLabel])
   // 必须是原生 <label>，connect 把 for 写向 input
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -94,7 +94,7 @@ export interface XhClipboardControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhClipboardControl({ children, ...rest }: XhClipboardControlProps): ReactNode {
   const ctx = useClipboardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -106,14 +106,14 @@ export function XhClipboardInput({ ...rest }: XhClipboardInputProps): ReactNode 
   const ctx = useClipboardContext()
   // 聚焦即全选挂的是 focus，它不冒泡：留在 React 的合成事件上收到的是冒泡的 focusin，
   // 直接派到框上的 focus 到不了处理器
-  const bind = useNativeEvents(ctx.api.getInputProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getInputProps(), ['onFocus'])
   return (
     <input
       {...mergeReactProps(
         bind.attrs,
         // 文本攥在机器里。React 要求带 value 的输入交出一个 onChange，否则在开发构建里逐帧告警
         { onChange: noop, ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -124,7 +124,7 @@ export function XhClipboardCopyTrigger({ children, ...rest }: XhClipboardCopyTri
   const ctx = useClipboardContext()
   // 原生 <button>，激活行为交给平台
   return (
-    <button {...mergeReactProps(ctx.api.getCopyTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getCopyTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -135,7 +135,7 @@ export interface XhClipboardStatusProps extends ComponentPropsWithRef<'span'> {}
 export function XhClipboardStatus({ children, ...rest }: XhClipboardStatusProps): ReactNode {
   const ctx = useClipboardContext()
   return (
-    <span {...mergeReactProps(ctx.api.getStatusProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getStatusProps(), rest)}>
       {children ?? ctx.api.announcement}
     </span>
   )
@@ -151,8 +151,8 @@ export function XhClipboardIndicator({ copied = false, children, ...rest }: XhCl
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getIndicatorProps({ copied }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getIndicatorProps({ copied }),
+        rest,
       )}
     >
       {children}

@@ -43,7 +43,7 @@ export interface HierarchyChartTooltipSlotProps {
 
 /** 一个场景标记画成 SVG 元素；文字标记带文字。 */
 function renderMark(api: HierarchyChartApi, mark: ChartMark): ReactNode {
-  const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
+  const props = { ...api.getMarkProps(mark), key: mark.key }
   if (mark.kind === 'group')
     return createElement('g', props, mark.children.map(child => renderMark(api, child)))
   if (mark.kind === 'text')
@@ -58,12 +58,12 @@ function TooltipContent({ api }: { api: HierarchyChartApi }): ReactNode {
     return null
   return (
     <>
-      <div {...api.getTooltipHeaderProps() as Record<string, unknown>}>{tooltip.header}</div>
+      <div {...api.getTooltipHeaderProps()}>{tooltip.header}</div>
       {tooltip.rows.map(row => (
-        <div key={row.key} {...api.getTooltipRowProps(row) as Record<string, unknown>}>
-          <span {...api.getTooltipSwatchProps(row) as Record<string, unknown>} />
-          <span {...api.getTooltipValueProps(row) as Record<string, unknown>}>{row.value}</span>
-          <span {...api.getTooltipNameProps(row) as Record<string, unknown>}>{row.name}</span>
+        <div key={row.key} {...api.getTooltipRowProps(row)}>
+          <span {...api.getTooltipSwatchProps(row)} />
+          <span {...api.getTooltipValueProps(row)}>{row.value}</span>
+          <span {...api.getTooltipNameProps(row)}>{row.name}</span>
         </div>
       ))}
     </>
@@ -75,10 +75,10 @@ function A11y({ api }: { api: HierarchyChartApi }): ReactNode {
   const { columns, rows } = api.table
   return (
     <>
-      <p {...api.getSummaryProps() as Record<string, unknown>}>{api.summary}</p>
+      <p {...api.getSummaryProps()}>{api.summary}</p>
       {/* 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度 */}
-      <div {...api.getTableRegionProps() as Record<string, unknown>}>
-        <table {...api.getTableProps() as Record<string, unknown>}>
+      <div {...api.getTableRegionProps()}>
+        <table {...api.getTableProps()}>
           <caption>{api.tableCaption}</caption>
           <thead>
             <tr>{columns.map(column => <th key={column.id} scope="col">{column.label}</th>)}</tr>
@@ -104,7 +104,7 @@ export interface XhHierarchyChartCaptionProps extends ComponentPropsWithRef<'fig
 export function XhHierarchyChartCaption({ children, ...rest }: XhHierarchyChartCaptionProps): ReactNode {
   const { api } = useHierarchyChartContext()
   return (
-    <figcaption {...mergeReactProps(api.getCaptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <figcaption {...mergeReactProps(api.getCaptionProps(), rest)}>
       {children}
     </figcaption>
   )
@@ -116,9 +116,9 @@ export interface XhHierarchyChartPathProps extends Omit<ComponentPropsWithRef<'n
 export function XhHierarchyChartPath(props: XhHierarchyChartPathProps): ReactNode {
   const { api } = useHierarchyChartContext()
   return (
-    <nav {...mergeReactProps(api.getPathProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+    <nav {...mergeReactProps(api.getPathProps(), props)}>
       {api.path.map(item => (
-        <button key={item.key ?? ''} {...api.getPathItemProps(item) as Record<string, unknown>}>{item.name}</button>
+        <button key={item.key ?? ''} {...api.getPathItemProps(item)}>{item.name}</button>
       ))}
     </nav>
   )
@@ -130,13 +130,13 @@ export interface XhHierarchyChartLegendProps extends Omit<ComponentPropsWithRef<
 export function XhHierarchyChartLegend(props: XhHierarchyChartLegendProps): ReactNode {
   const { api } = useHierarchyChartContext()
   return (
-    <div {...mergeReactProps(api.getLegendProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getLegendProps(), props)}>
       {api.legendScales.map(scale => (
-        <div key={scale.level} {...api.getLegendScaleProps(scale) as Record<string, unknown>}>
-          <span {...api.getLegendScaleNameProps() as Record<string, unknown>}>{scale.name}</span>
-          <span {...api.getLegendScaleValueProps('min') as Record<string, unknown>}>{scale.min}</span>
-          <span {...api.getLegendScaleBarProps() as Record<string, unknown>} />
-          <span {...api.getLegendScaleValueProps('max') as Record<string, unknown>}>{scale.max}</span>
+        <div key={scale.level} {...api.getLegendScaleProps(scale)}>
+          <span {...api.getLegendScaleNameProps()}>{scale.name}</span>
+          <span {...api.getLegendScaleValueProps('min')}>{scale.min}</span>
+          <span {...api.getLegendScaleBarProps()} />
+          <span {...api.getLegendScaleValueProps('max')}>{scale.max}</span>
         </div>
       ))}
     </div>
@@ -151,8 +151,8 @@ export function XhHierarchyChartViewport({ children, ...rest }: XhHierarchyChart
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -167,10 +167,10 @@ export interface XhHierarchyChartPlotProps extends Omit<ComponentPropsWithRef<'s
 export function XhHierarchyChartPlot(props: XhHierarchyChartPlotProps): ReactNode {
   const { api } = useHierarchyChartContext()
   // 指针离开是不冒泡的事件，改挂原生监听器；focusin / focusout 留给 React 的 onFocus / onBlur
-  const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(api.getPlotProps(), ['onPointerLeave'])
   const marks = [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over]
   return (
-    <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
+    <svg {...mergeReactProps(bind.attrs, props, { ref: bind.ref })}>
       {marks.map(mark => renderMark(api, mark))}
     </svg>
   )
@@ -185,7 +185,7 @@ export interface XhHierarchyChartTooltipProps extends Omit<ComponentPropsWithRef
 export function XhHierarchyChartTooltip({ children, ...rest }: XhHierarchyChartTooltipProps): ReactNode {
   const { api } = useHierarchyChartContext()
   return (
-    <div {...mergeReactProps(api.getTooltipProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getTooltipProps(), rest)}>
       {children === undefined
         ? <TooltipContent api={api} />
         : renderSlot(children, { active: api.active, tooltip: api.tooltip })}
@@ -199,7 +199,7 @@ export interface XhHierarchyChartEmptyProps extends ComponentPropsWithRef<'div'>
 export function XhHierarchyChartEmpty({ children, ...rest }: XhHierarchyChartEmptyProps): ReactNode {
   const { api } = useHierarchyChartContext()
   return (
-    <div {...mergeReactProps(api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getEmptyProps(), rest)}>
       {children ?? api.emptyText}
     </div>
   )
@@ -346,8 +346,8 @@ export function XhHierarchyChartRoot({
     <HierarchyChartProvider value={ctx}>
       <figure
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
       >

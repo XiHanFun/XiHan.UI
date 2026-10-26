@@ -20,7 +20,7 @@ export const XhFlexSplit = defineComponent({
   name: 'XhFlexSplit',
   setup(_, { slots }) {
     const ctx = useFlexContext()
-    return () => h('span', ctx.api.value.getSplitProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSplitProps(), slots.default?.())
   },
 })
 
@@ -88,7 +88,7 @@ export const XhFlex = defineComponent({
       const children = slots.default?.() ?? []
       // 没写分隔符插槽时原样交出去，不摊平：摊平会打散 v-for 的片段，白白丢掉它的复用信息
       const content = slots.split ? interleave(flexItems(children), slots.split) : children
-      return h('div', api.value.getRootProps() as Record<string, unknown>, content)
+      return h('div', api.value.getRootProps(), content)
     }
   },
 })

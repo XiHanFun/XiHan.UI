@@ -102,7 +102,7 @@ export const XhExpressionInputRoot = defineComponent({
       const api = ctx.api.value
       return h(
         'div',
-        api.getRootProps() as Record<string, unknown>,
+        api.getRootProps(),
         slots.default
           ? slots.default({
               value: api.value,
@@ -132,7 +132,7 @@ export const XhExpressionInputLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -141,7 +141,7 @@ export const XhExpressionInputControl = defineComponent({
   name: 'XhExpressionInputControl',
   setup(_, { slots }) {
     const ctx = useExpressionInputContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -163,7 +163,7 @@ export const XhExpressionInputInput = defineComponent({
     return () => h(tag.value, fieldLabel.value(withFieldDescription(
       {
         ...fieldWiring.value,
-        ...ctx.api.value.getInputProps({ as: tag.value }) as Record<string, unknown>,
+        ...ctx.api.value.getInputProps({ as: tag.value }),
         ref: (el: unknown) => { ctx.inputRef.value = el as ExpressionInputEl },
       },
       fieldWiring.value['aria-describedby'] as string | undefined,
@@ -177,7 +177,7 @@ export const XhExpressionInputHighlight = defineComponent({
   setup(_, { slots }) {
     const ctx = useExpressionInputContext()
     return () => h('div', {
-      ...ctx.api.value.getHighlightProps() as Record<string, unknown>,
+      ...ctx.api.value.getHighlightProps(),
       ref: (el: unknown) => { ctx.highlightRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -193,7 +193,7 @@ export const XhExpressionInputHighlightSegment = defineComponent({
     const ctx = useExpressionInputContext()
     return () => {
       const segment = ctx.api.value.segments[Number(props.index)]
-      return segment ? h('span', ctx.api.value.getHighlightSegmentProps({ segment }) as Record<string, unknown>, slots.default?.()) : null
+      return segment ? h('span', ctx.api.value.getHighlightSegmentProps({ segment }), slots.default?.()) : null
     }
   },
 })
@@ -210,7 +210,7 @@ export const XhExpressionInputPositioner = defineComponent({
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -222,7 +222,7 @@ export const XhExpressionInputContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useExpressionInputContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
     }, slots.default?.())
@@ -239,7 +239,7 @@ export const XhExpressionInputItem = defineComponent({
     const ctx = useExpressionInputContext()
     const item = computed(() => ctx.api.value.items.find(candidate => candidate.key === props.value))
     provide(ITEM_KEY, item)
-    return () => (item.value ? h('div', ctx.api.value.getItemProps({ item: item.value }) as Record<string, unknown>, slots.default?.()) : null)
+    return () => (item.value ? h('div', ctx.api.value.getItemProps({ item: item.value }), slots.default?.()) : null)
   },
 })
 
@@ -272,7 +272,7 @@ export const XhExpressionInputEmpty = defineComponent({
   name: 'XhExpressionInputEmpty',
   setup(_, { slots }) {
     const ctx = useExpressionInputContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -285,7 +285,7 @@ export const XhExpressionInputIssues = defineComponent({
     onUnmounted(() => {
       ctx.issuesCount.value--
     })
-    return () => h('div', ctx.api.value.getIssuesProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getIssuesProps(), slots.default?.())
   },
 })
 
@@ -299,7 +299,7 @@ export const XhExpressionInputIssue = defineComponent({
     const ctx = useExpressionInputContext()
     return () => {
       const issue = ctx.api.value.issues[Number(props.index)]
-      return issue ? h('p', ctx.api.value.getIssueProps({ issue }) as Record<string, unknown>, slots.default?.()) : null
+      return issue ? h('p', ctx.api.value.getIssueProps({ issue }), slots.default?.()) : null
     }
   },
 })

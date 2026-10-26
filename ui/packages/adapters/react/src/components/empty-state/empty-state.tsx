@@ -31,7 +31,7 @@ export function XhEmptyStateRoot({ size, live, status, tone, children, ...rest }
     <EmptyStateProvider value={ctx}>
       <div
         {...mergeReactProps(
-          { ...ctx.api.getRootProps() as Record<string, unknown>, ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+          { ...ctx.api.getRootProps(), ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
           rest as Record<string, unknown>,
         )}
       >
@@ -47,7 +47,7 @@ export interface XhEmptyStateMediaProps extends ComponentPropsWithRef<'div'> {}
 export function XhEmptyStateMedia({ children, ...rest }: XhEmptyStateMediaProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
-    <div {...mergeReactProps(ctx.api.getMediaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getMediaProps(), rest)}>
       {children}
     </div>
   )
@@ -59,7 +59,7 @@ export interface XhEmptyStateIndicatorProps extends ComponentPropsWithRef<'span'
 export function XhEmptyStateIndicator({ children, ...rest }: XhEmptyStateIndicatorProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
-    <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>
       {children}
     </span>
   )
@@ -71,7 +71,7 @@ export interface XhEmptyStateTitleProps extends ComponentPropsWithRef<'p'> {}
 export function XhEmptyStateTitle({ children, ...rest }: XhEmptyStateTitleProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
-    <p {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </p>
   )
@@ -82,7 +82,7 @@ export interface XhEmptyStateDescriptionProps extends ComponentPropsWithRef<'p'>
 export function XhEmptyStateDescription({ children, ...rest }: XhEmptyStateDescriptionProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
-    <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getDescriptionProps(), rest)}>
       {children}
     </p>
   )
@@ -94,7 +94,7 @@ export interface XhEmptyStateActionProps extends ComponentPropsWithRef<'div'> {}
 export function XhEmptyStateAction({ children, ...rest }: XhEmptyStateActionProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
-    <div {...mergeReactProps(ctx.api.getActionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getActionProps(), rest)}>
       {children}
     </div>
   )

@@ -215,11 +215,11 @@ export class XhNotificationElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 摞是多实例 part，逐个打：位置取作者写的 placement 属性
     for (const el of this.getParts('group'))
-      this.spreader.spread(el, api.getGroupProps({ placement: groupPlacement(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps({ placement: groupPlacement(el) }))
   }
 }
 
@@ -373,14 +373,14 @@ export class XhNotificationItemElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('item', api.getItemProps() as Record<string, unknown>)
-    put('item-indicator', api.getItemIndicatorProps() as Record<string, unknown>)
-    put('item-content', api.getItemContentProps() as Record<string, unknown>)
-    put('item-title', api.getItemTitleProps() as Record<string, unknown>)
-    put('item-description', api.getItemDescriptionProps() as Record<string, unknown>)
-    put('item-action-trigger', api.getItemActionTriggerProps() as Record<string, unknown>)
-    put('item-progress', api.getItemProgressProps() as Record<string, unknown>)
-    put('item-close-trigger', api.getItemCloseTriggerProps() as Record<string, unknown>)
+    put('item', api.getItemProps())
+    put('item-indicator', api.getItemIndicatorProps())
+    put('item-content', api.getItemContentProps())
+    put('item-title', api.getItemTitleProps())
+    put('item-description', api.getItemDescriptionProps())
+    put('item-action-trigger', api.getItemActionTriggerProps())
+    put('item-progress', api.getItemProgressProps())
+    put('item-close-trigger', api.getItemCloseTriggerProps())
 
     this.fillText(this.getPart('item-title'), api.title)
     this.fillText(this.getPart('item-description'), api.description)

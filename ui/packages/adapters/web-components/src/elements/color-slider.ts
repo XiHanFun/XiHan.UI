@@ -174,17 +174,17 @@ export class XhColorSliderElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('track', api.getTrackProps() as Record<string, unknown>)
-    put('thumb', api.getThumbProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('track', api.getTrackProps())
+    put('thumb', api.getThumbProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
     const bubble = this.getPart('value-text')
     if (bubble) {
-      this.spreader.spread(bubble, api.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(bubble, api.getValueTextProps())
       this.fillValueText(bubble, String(api.channelValue))
     }
   }

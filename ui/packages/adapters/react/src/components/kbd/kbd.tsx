@@ -60,9 +60,9 @@ export function XhKbd({ keys, platform, variant, register, target, preventDefaul
   useEffect(() => stop, [stop])
 
   return (
-    <kbd {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <kbd {...mergeReactProps(api.getRootProps(), rest)}>
       {api.segments.map((segment, index) => (
-        <span key={`${segment.source}-${index}`} {...api.getKeyProps({ value: segment.source }) as Record<string, unknown>}>
+        <span key={`${segment.source}-${index}`} {...api.getKeyProps({ value: segment.source })}>
           {segment.label}
         </span>
       ))}

@@ -39,7 +39,7 @@ export const XhAffixRoot = defineComponent({
     const ctx = useAffix(props as AffixProps, notify, () => props.target ?? null)
     provideAffix(ctx)
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default?.({ affixed: ctx.api.value.affixed }))
   },
@@ -50,6 +50,6 @@ export const XhAffixContent = defineComponent({
   name: 'XhAffixContent',
   setup(_, { slots }) {
     const ctx = useAffixContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })

@@ -62,7 +62,7 @@ export const XhTruncate = defineComponent({
     return () => {
       const api = ctx.api.value
       // 作者的 style / class / 监听器与连接层的逐条合并：平铺展开时同名 style 整个盖掉作者那份
-      const text = h('div', mergeProps(api.getRootProps() as Record<string, unknown>, attrs, {
+      const text = h('div', mergeProps(api.getRootProps(), attrs, {
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
       }), slots.default?.({
         open: api.open,
@@ -74,7 +74,7 @@ export const XhTruncate = defineComponent({
         return text
       const trigger = h(
         'button',
-        api.getTriggerProps() as Record<string, unknown>,
+        api.getTriggerProps(),
         slots.trigger?.({ open: api.open, triggerLabel: api.triggerLabel }) ?? api.triggerLabel,
       )
       return [text, trigger]

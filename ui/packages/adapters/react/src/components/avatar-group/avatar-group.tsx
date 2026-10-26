@@ -25,7 +25,7 @@ export function XhAvatarGroupRoot({ max, size, children, ...rest }: XhAvatarGrou
   const api = connectAvatarGroup(withXhConfig('avatar-group', { max, size }) as AvatarGroupProps, reactNormalize)
   return (
     <AvatarGroupProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </AvatarGroupProvider>
@@ -38,7 +38,7 @@ export interface XhAvatarGroupOverflowItemProps extends ComponentPropsWithRef<'s
 export function XhAvatarGroupOverflowItem({ children, ...rest }: XhAvatarGroupOverflowItemProps): ReactNode {
   const ctx = useAvatarGroupContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowItemProps(), rest)}>
       {children}
     </span>
   )

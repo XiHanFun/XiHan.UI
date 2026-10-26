@@ -54,7 +54,7 @@ export function XhInfiniteScrollRoot({
   const api = ctx.api
   return (
     <InfiniteScrollProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, { phase: api.phase, loading: api.loading, disabled: api.disabled })}
       </div>
     </InfiniteScrollProvider>
@@ -72,7 +72,7 @@ export interface XhInfiniteScrollLoadMoreTriggerProps extends ComponentPropsWith
 export function XhInfiniteScrollLoadMoreTrigger({ children, ...rest }: XhInfiniteScrollLoadMoreTriggerProps): ReactNode {
   const ctx = useInfiniteScrollContext()
   return (
-    <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -85,8 +85,8 @@ export function XhInfiniteScrollSentinel({ children, ...rest }: XhInfiniteScroll
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getSentinelProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getSentinelProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.sentinelRef.current = el } },
       )}
     >

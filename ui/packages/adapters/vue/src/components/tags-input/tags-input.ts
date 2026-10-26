@@ -106,7 +106,7 @@ export const XhTagsInputRoot = defineComponent({
     provideTagsInput(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             count: api.count,
@@ -140,7 +140,7 @@ export const XhTagsInputLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 用原生 label，getLabelProps 的 for 指向输入框
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -148,7 +148,7 @@ export const XhTagsInputControl = defineComponent({
   name: 'XhTagsInputControl',
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
-    return () => h('div', { ...(ctx.api.value.getControlProps() as Record<string, unknown>), ref: ctx.controlRef }, slots.default?.())
+    return () => h('div', { ...(ctx.api.value.getControlProps()), ref: ctx.controlRef }, slots.default?.())
   },
 })
 
@@ -160,7 +160,7 @@ export const XhTagsInputInput = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useTagsInputContext()
-    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() }))
   },
 })
 
@@ -192,7 +192,7 @@ export const XhTagsInputItem = defineComponent({
     })
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps(item.value), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -204,7 +204,7 @@ export const XhTagsInputItemPreview = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
     const { item } = useTagsInputItemContext()
-    return () => h('span', ctx.api.value.getItemPreviewProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPreviewProps(item.value), slots.default?.())
   },
 })
 
@@ -214,7 +214,7 @@ export const XhTagsInputItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
     const { item } = useTagsInputItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -224,7 +224,7 @@ export const XhTagsInputItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
     const { item } = useTagsInputItemContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value), slots.default?.())
   },
 })
 
@@ -233,7 +233,7 @@ export const XhTagsInputItemInput = defineComponent({
   setup() {
     const ctx = useTagsInputContext()
     const { item } = useTagsInputItemContext()
-    return () => h('input', ctx.api.value.getItemInputProps(item.value) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getItemInputProps(item.value))
   },
 })
 
@@ -241,7 +241,7 @@ export const XhTagsInputClearTrigger = defineComponent({
   name: 'XhTagsInputClearTrigger',
   setup(_, { slots }) {
     const ctx = useTagsInputContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -258,7 +258,7 @@ export const XhTagsInputCount = defineComponent({
       const fallback = api.max === undefined ? `${api.count}` : `${api.count} / ${api.max}`
       return h(
         'span',
-        api.getCountProps() as Record<string, unknown>,
+        api.getCountProps(),
         slots.default?.({ count: api.count, max: api.max, atMax: api.atMax, overflow: api.overflow }) ?? fallback,
       )
     }
@@ -269,7 +269,7 @@ export const XhTagsInputHiddenInput = defineComponent({
   name: 'XhTagsInputHiddenInput',
   setup() {
     const ctx = useTagsInputContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

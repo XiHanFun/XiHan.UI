@@ -109,11 +109,11 @@ export class XhCollapsibleElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
+    put('trigger', api.getTriggerProps())
+    put('content', api.getContentProps())
+    put('indicator', api.getIndicatorProps())
 
     // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
     // 就一帧都播不出来），真正的收起在动画结束后落成内联 display

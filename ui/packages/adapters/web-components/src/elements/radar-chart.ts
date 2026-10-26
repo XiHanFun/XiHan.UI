@@ -240,23 +240,23 @@ export class XhRadarChartElement extends XhElement {
         this.spreader.spread(el, props)
       return el
     }
-    const root = put('root', api.getRootProps() as Record<string, unknown>)
-    put('caption', api.getCaptionProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
+    const root = put('root', api.getRootProps())
+    put('caption', api.getCaptionProps())
+    put('viewport', api.getViewportProps())
 
-    const legend = put('legend', api.getLegendProps() as Record<string, unknown>)
+    const legend = put('legend', api.getLegendProps())
     if (legend)
       this.#paintLegend(legend, api)
 
-    const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
+    const plot = put('plot', api.getPlotProps())
     if (plot)
       this.#paintPlot(plot, [...api.scene.layers.back, ...api.overlay.under, ...api.scene.layers.data, ...api.overlay.over], api)
 
-    const tooltip = put('tooltip', api.getTooltipProps() as Record<string, unknown>)
+    const tooltip = put('tooltip', api.getTooltipProps())
     if (tooltip)
       this.#paintTooltip(tooltip, api)
 
-    const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
+    const empty = put('empty', api.getEmptyProps())
     if (empty && !hasAuthorContent(empty)) {
       const [own] = generatedChildren(empty)
       const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
@@ -283,7 +283,7 @@ export class XhRadarChartElement extends XhElement {
     const tag = api.markTag(mark)
     const node = reuse?.localName === tag ? reuse : doc.createElementNS(SVG_NS, tag)
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark))
     if (mark.kind === 'group')
       this.#paintMarks(node, mark.children, api)
     else if (mark.kind === 'text' && node.textContent !== mark.text)
@@ -295,18 +295,18 @@ export class XhRadarChartElement extends XhElement {
   #paintDefs(doc: Document, reuse: Element | undefined, api: RadarChartApi): Element {
     const defs = reuse?.localName === 'defs' ? reuse : doc.createElementNS(SVG_NS, 'defs')
     defs.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(defs as HTMLElement, api.getDefsProps() as Record<string, unknown>)
+    this.spreader.spread(defs as HTMLElement, api.getDefsProps())
     reconcile(defs, api.patterns, this.#keys, pattern => pattern.id, (pattern, old) => {
       const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
-      this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
+      this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern))
       let line = generatedChildren(node)[0]
       if (!line) {
         line = doc.createElementNS(SVG_NS, 'path')
         line.setAttribute(GEN_ATTR, '')
         node.append(line)
       }
-      this.spreader.spread(line as HTMLElement, api.getPatternLineProps(pattern) as Record<string, unknown>)
+      this.spreader.spread(line as HTMLElement, api.getPatternLineProps(pattern))
       return node
     })
     return defs
@@ -320,9 +320,9 @@ export class XhRadarChartElement extends XhElement {
       if (!reuse)
         button.append(doc.createElement('span'), doc.createElement('span'))
       const [swatch, label] = Array.from(button.children) as HTMLElement[]
-      this.spreader.spread(button, api.getLegendItemProps(item) as Record<string, unknown>)
-      this.spreader.spread(swatch!, api.getLegendSwatchProps(item) as Record<string, unknown>)
-      this.spreader.spread(label!, api.getLegendLabelProps(item) as Record<string, unknown>)
+      this.spreader.spread(button, api.getLegendItemProps(item))
+      this.spreader.spread(swatch!, api.getLegendSwatchProps(item))
+      this.spreader.spread(label!, api.getLegendLabelProps(item))
       if (label!.textContent !== item.name)
         label!.textContent = item.name
       return button
@@ -343,18 +343,18 @@ export class XhRadarChartElement extends XhElement {
       return
     const doc = tooltip.ownerDocument
     const header = createGeneratedElement(doc, 'div')
-    this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
+    this.spreader.spread(header, api.getTooltipHeaderProps())
     header.textContent = model.header
     const rows = model.rows.map((row) => {
       const line = createGeneratedElement(doc, 'div')
-      this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
+      this.spreader.spread(line, api.getTooltipRowProps(row))
       const swatch = doc.createElement('span')
-      this.spreader.spread(swatch, api.getTooltipSwatchProps(row) as Record<string, unknown>)
+      this.spreader.spread(swatch, api.getTooltipSwatchProps(row))
       const value = doc.createElement('span')
-      this.spreader.spread(value, api.getTooltipValueProps(row) as Record<string, unknown>)
+      this.spreader.spread(value, api.getTooltipValueProps(row))
       value.textContent = row.value
       const name = doc.createElement('span')
-      this.spreader.spread(name, api.getTooltipNameProps(row) as Record<string, unknown>)
+      this.spreader.spread(name, api.getTooltipNameProps(row))
       name.textContent = row.name
       line.append(swatch, value, name)
       return line
@@ -375,11 +375,11 @@ export class XhRadarChartElement extends XhElement {
       this.#table = null
     }
     const table = region.firstElementChild as HTMLElement
-    this.spreader.spread(summary, api.getSummaryProps() as Record<string, unknown>)
+    this.spreader.spread(summary, api.getSummaryProps())
     if (summary.textContent !== api.summary)
       summary.textContent = api.summary
-    this.spreader.spread(region, api.getTableRegionProps() as Record<string, unknown>)
-    this.spreader.spread(table, api.getTableProps() as Record<string, unknown>)
+    this.spreader.spread(region, api.getTableRegionProps())
+    this.spreader.spread(table, api.getTableProps())
     if (this.#table === api.table && this.#tableHost === table)
       return
     this.#table = api.table

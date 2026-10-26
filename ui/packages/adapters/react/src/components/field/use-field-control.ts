@@ -25,7 +25,7 @@ export function useFieldControl(): Record<string, unknown> {
   const ctx = useOptionalFieldContext()
   if (!ctx)
     return EMPTY
-  return wiringOnly(ctx.api.getControlProps() as Record<string, unknown>)
+  return wiringOnly(ctx.api.getControlProps())
 }
 
 /** 字段的说明、校验与只读状态，供薄封装补到自己的可聚焦节点上。 */

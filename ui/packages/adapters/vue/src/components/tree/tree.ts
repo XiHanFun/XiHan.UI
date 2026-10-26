@@ -150,7 +150,7 @@ export const XhTreeRoot = defineComponent({
             select: api.select,
           })
         : renderDefaultStructure(api, props.label, slots.label)
-      return h('div', api.getRootProps() as Record<string, unknown>, body)
+      return h('div', api.getRootProps(), body)
     }
   },
 })
@@ -164,7 +164,7 @@ export const XhTreeLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -172,7 +172,7 @@ export const XhTreeTree = defineComponent({
   name: 'XhTreeTree',
   setup(_, { slots }) {
     const ctx = useTreeContext()
-    return () => h('div', ctx.api.value.getTreeProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTreeProps(), slots.default?.())
   },
 })
 
@@ -182,7 +182,7 @@ export const XhTreeEmpty = defineComponent({
     const ctx = useTreeContext()
     // 空态占位：写在 root 里、tree 的兄弟，不进 role=tree 的拥有关系。
     // 给了 collection 时收放归连接层，节点手写时归作者
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -191,7 +191,7 @@ export const XhTreeLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.())
   },
 })
 
@@ -207,7 +207,7 @@ export const XhTreeLiveRegion = defineComponent({
     const ctx = useTreeContext()
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       ctx.service.context.get('announcement'),
     )
   },
@@ -226,7 +226,7 @@ export const XhTreeItem = defineComponent({
     reportNodeFocus(ctx, el, () => props.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(node.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getItemProps(node.value), ref: el },
       slots.default?.(),
     )
   },
@@ -237,7 +237,7 @@ export const XhTreeItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getItemTextProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(node.value), slots.default?.())
   },
 })
 
@@ -247,7 +247,7 @@ export const XhTreeItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value), slots.default?.())
   },
 })
 
@@ -257,7 +257,7 @@ export const XhTreeItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(node.value), slots.default?.())
   },
 })
 
@@ -271,7 +271,7 @@ export const XhTreeNodeDragTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getNodeDragTriggerProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getNodeDragTriggerProps(node.value), slots.default?.())
   },
 })
 
@@ -280,7 +280,7 @@ export const XhTreeItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(node.value), slots.default?.())
   },
 })
 
@@ -298,7 +298,7 @@ export const XhTreeBranch = defineComponent({
     reportNodeFocus(ctx, el, () => props.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getBranchProps(node.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getBranchProps(node.value), ref: el },
       [slots.default?.(), ...renderBranchFeedback(ctx, node.value)],
     )
   },
@@ -309,7 +309,7 @@ export const XhTreeBranchControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('div', ctx.api.value.getBranchControlProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBranchControlProps(node.value), slots.default?.())
   },
 })
 
@@ -318,7 +318,7 @@ export const XhTreeBranchTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getBranchTriggerProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchTriggerProps(node.value), slots.default?.())
   },
 })
 
@@ -327,7 +327,7 @@ export const XhTreeBranchIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getBranchIndicatorProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchIndicatorProps(node.value), slots.default?.())
   },
 })
 
@@ -336,7 +336,7 @@ export const XhTreeBranchText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getBranchTextProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchTextProps(node.value), slots.default?.())
   },
 })
 
@@ -346,7 +346,7 @@ export const XhTreeBranchDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('span', ctx.api.value.getBranchDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchDescriptionProps(node.value), slots.default?.())
   },
 })
 
@@ -356,7 +356,7 @@ export const XhTreeBranchContent = defineComponent({
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
     // 收起只加 hidden，不卸载子树节点
-    return () => h('div', ctx.api.value.getBranchContentProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBranchContentProps(node.value), slots.default?.())
   },
 })
 
@@ -366,10 +366,10 @@ function renderBranchFeedback(ctx: TreeContext, node: TreeNodeProps): VNode[] {
   if (api.branchLoadState(node.value) == null)
     return []
   return [
-    h('div', api.getBranchLoadingProps(node) as Record<string, unknown>, api.translations.loading),
-    h('div', api.getBranchErrorProps(node) as Record<string, unknown>, api.translations.branchError),
-    h('button', api.getBranchRetryTriggerProps(node) as Record<string, unknown>, api.translations.retry),
-    h('div', api.getBranchEmptyProps(node) as Record<string, unknown>, api.translations.branchEmpty),
+    h('div', api.getBranchLoadingProps(node), api.translations.loading),
+    h('div', api.getBranchErrorProps(node), api.translations.branchError),
+    h('button', api.getBranchRetryTriggerProps(node), api.translations.retry),
+    h('div', api.getBranchEmptyProps(node), api.translations.branchEmpty),
   ]
 }
 
@@ -378,7 +378,7 @@ export const XhTreeBranchLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value), slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -387,7 +387,7 @@ export const XhTreeBranchError = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('div', ctx.api.value.getBranchErrorProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchError)
+    return () => h('div', ctx.api.value.getBranchErrorProps(node.value), slots.default?.() ?? ctx.api.value.translations.branchError)
   },
 })
 
@@ -396,7 +396,7 @@ export const XhTreeBranchRetryTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
+    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value), slots.default?.() ?? ctx.api.value.translations.retry)
   },
 })
 
@@ -405,7 +405,7 @@ export const XhTreeBranchEmpty = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeContext()
     const { node } = useTreeNodeContext()
-    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchEmpty)
+    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value), slots.default?.() ?? ctx.api.value.translations.branchEmpty)
   },
 })
 

@@ -80,7 +80,7 @@ export const XhSignaturePadRoot = defineComponent({
     provideSignaturePad(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             paths: api.paths,
@@ -111,7 +111,7 @@ export const XhSignaturePadLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 不用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 挂过去
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -125,7 +125,7 @@ export const XhSignaturePadControl = defineComponent({
     // 画布是 svg：笔迹与基准线都是图元。viewBox 由连接层按钉住的尺寸给，
     // 基准线与笔迹都建在这棵 svg 子树里，命名空间由它带下去
     return () => h('svg', {
-      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() as Record<string, unknown> }),
+      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() }),
       ref: ctx.controlRef,
     }, slots.default?.())
   },
@@ -135,7 +135,7 @@ export const XhSignaturePadGuide = defineComponent({
   name: 'XhSignaturePadGuide',
   setup() {
     const ctx = useSignaturePadContext()
-    return () => h('line', ctx.api.value.getGuideProps() as Record<string, unknown>)
+    return () => h('line', ctx.api.value.getGuideProps())
   },
 })
 
@@ -144,7 +144,7 @@ export const XhSignaturePadPath = defineComponent({
   setup() {
     const ctx = useSignaturePadContext()
     // 全部笔迹落在这一条路径上，每一笔是它的一条子路径
-    return () => h('path', ctx.api.value.getPathProps() as Record<string, unknown>)
+    return () => h('path', ctx.api.value.getPathProps())
   },
 })
 
@@ -152,7 +152,7 @@ export const XhSignaturePadClearTrigger = defineComponent({
   name: 'XhSignaturePadClearTrigger',
   setup(_, { slots }) {
     const ctx = useSignaturePadContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -160,7 +160,7 @@ export const XhSignaturePadUndoTrigger = defineComponent({
   name: 'XhSignaturePadUndoTrigger',
   setup(_, { slots }) {
     const ctx = useSignaturePadContext()
-    return () => h('button', ctx.api.value.getUndoTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getUndoTriggerProps(), slots.default?.())
   },
 })
 
@@ -168,7 +168,7 @@ export const XhSignaturePadRedoTrigger = defineComponent({
   name: 'XhSignaturePadRedoTrigger',
   setup(_, { slots }) {
     const ctx = useSignaturePadContext()
-    return () => h('button', ctx.api.value.getRedoTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getRedoTriggerProps(), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhSignaturePadStatus = defineComponent({
     // 作者不写内容就用内建那句话，读屏才有东西可念
     return () => h(
       'span',
-      ctx.api.value.getStatusProps() as Record<string, unknown>,
+      ctx.api.value.getStatusProps(),
       slots.default?.() ?? ctx.api.value.statusText,
     )
   },
@@ -189,7 +189,7 @@ export const XhSignaturePadHiddenInput = defineComponent({
   name: 'XhSignaturePadHiddenInput',
   setup() {
     const ctx = useSignaturePadContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

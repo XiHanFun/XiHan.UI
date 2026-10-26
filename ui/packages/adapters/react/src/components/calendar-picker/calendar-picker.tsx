@@ -139,8 +139,8 @@ export function XhCalendarPickerRoot({
     <CalendarPickerProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -176,31 +176,31 @@ XhCalendarPickerRoot.xhEvents = ['value-change'] as const
 export interface XhCalendarPickerHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhCalendarPickerHeader({ children, ...rest }: XhCalendarPickerHeaderProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
 }
 
 export interface XhCalendarPickerPrevYearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCalendarPickerPrevYearTrigger({ children, ...rest }: XhCalendarPickerPrevYearTriggerProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <button {...mergeReactProps(ctx.api.getPrevYearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getPrevYearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhCalendarPickerPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCalendarPickerPrevTrigger({ children, ...rest }: XhCalendarPickerPrevTriggerProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhCalendarPickerNextTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCalendarPickerNextTrigger({ children, ...rest }: XhCalendarPickerNextTriggerProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhCalendarPickerNextYearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCalendarPickerNextYearTrigger({ children, ...rest }: XhCalendarPickerNextYearTriggerProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <button {...mergeReactProps(ctx.api.getNextYearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getNextYearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhCalendarPickerHeadingProps extends ComponentPropsWithRef<'div'> {
@@ -212,7 +212,7 @@ export function XhCalendarPickerHeading({ index = 0, children, ...rest }: XhCale
   const ctx = useCalendarPickerContext()
   const api = ctx.api
   return (
-    <div {...mergeReactProps(api.getHeadingProps({ index }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getHeadingProps({ index }), rest)}>
       {children ?? (api.panels[index]?.headingLabel ?? api.headingLabel)}
     </div>
   )
@@ -227,7 +227,7 @@ export function XhCalendarPickerHeadingYearTrigger({ index = 0, children, ...res
   const ctx = useCalendarPickerContext()
   const api = ctx.api
   return (
-    <button {...mergeReactProps(api.getHeadingYearTriggerProps({ index }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getHeadingYearTriggerProps({ index }), rest)}>
       {children ?? api.panels[index]?.headingYear}
     </button>
   )
@@ -241,7 +241,7 @@ export function XhCalendarPickerHeadingMonthTrigger({ index = 0, children, ...re
   const ctx = useCalendarPickerContext()
   const api = ctx.api
   return (
-    <button {...mergeReactProps(api.getHeadingMonthTriggerProps({ index }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getHeadingMonthTriggerProps({ index }), rest)}>
       {children ?? api.panels[index]?.headingMonth}
     </button>
   )
@@ -256,8 +256,8 @@ export function XhCalendarPickerGrid({ index = 0, children, ...rest }: XhCalenda
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getGridProps({ index }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getGridProps({ index }),
+        rest,
         // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
         index === 0 ? { ref: (el: HTMLDivElement | null) => { ctx.gridRef.current = el } } : {},
       )}
@@ -270,20 +270,20 @@ export function XhCalendarPickerGrid({ index = 0, children, ...rest }: XhCalenda
 export interface XhCalendarPickerGridHeadProps extends ComponentPropsWithRef<'div'> {}
 export function XhCalendarPickerGridHead({ children, ...rest }: XhCalendarPickerGridHeadProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <div {...mergeReactProps(ctx.api.getGridHeadProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGridHeadProps(), rest)}>{children}</div>
 }
 
 export interface XhCalendarPickerGridBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhCalendarPickerGridBody({ children, ...rest }: XhCalendarPickerGridBodyProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <div {...mergeReactProps(ctx.api.getGridBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGridBodyProps(), rest)}>{children}</div>
 }
 
 export interface XhCalendarPickerWeekRowProps extends ComponentPropsWithRef<'div'> {}
 /** 表头行与日期行共用同一个 role=row。 */
 export function XhCalendarPickerWeekRow({ children, ...rest }: XhCalendarPickerWeekRowProps): ReactNode {
   const ctx = useCalendarPickerContext()
-  return <div {...mergeReactProps(ctx.api.getWeekRowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getWeekRowProps(), rest)}>{children}</div>
 }
 
 export interface XhCalendarPickerWeekNumberProps extends ComponentPropsWithRef<'span'> {
@@ -295,7 +295,7 @@ export function XhCalendarPickerWeekNumber({ value, children, ...rest }: XhCalen
   const ctx = useCalendarPickerContext()
   const api = ctx.api
   return (
-    <span {...mergeReactProps(api.getWeekNumberProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getWeekNumberProps({ value }), rest)}>
       {children ?? api.getWeekNumberText({ value })}
     </span>
   )
@@ -310,7 +310,7 @@ export function XhCalendarPickerWeekDay({ value, children, ...rest }: XhCalendar
   const api = ctx.api
   const index = Number(value)
   return (
-    <span {...mergeReactProps(api.getWeekDayProps({ value: index }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getWeekDayProps({ value: index }), rest)}>
       {children ?? api.weekDays[index]?.label}
     </span>
   )
@@ -331,7 +331,7 @@ export function XhCalendarPickerCell({ value, index = 0, children, ...rest }: Xh
   const cell = useMemo(() => ({ value, index }), [value, index])
   return (
     <CalendarPickerCellProvider value={cell}>
-      <div {...mergeReactProps(ctx.api.getCellProps(cell) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getCellProps(cell), rest)}>{children}</div>
     </CalendarPickerCellProvider>
   )
 }
@@ -342,11 +342,11 @@ export function XhCalendarPickerCellTrigger({ children, ...rest }: XhCalendarPic
   const cell = useCalendarPickerCellContext()
   // 格子的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getCellTriggerProps(cell) as Record<string, unknown>,
+    ctx.api.getCellTriggerProps(cell),
     ['onFocus'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )

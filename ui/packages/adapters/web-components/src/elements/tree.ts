@@ -287,17 +287,17 @@ export class XhTreeElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('tree', api.getTreeProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('tree', api.getTreeProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
 
     // 播报区收作者写的那个节点：root 自己不带角色，作者把它放在 root 里、与 tree 部件平级即可，
     // 不必由元素代建。没写就是不要读屏播报，跳过。
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
       live.textContent = this.ctrl.service.context.get('announcement')
     }
@@ -342,7 +342,7 @@ export class XhTreeElement extends XhElement {
         const el = this.feedback.ensure(branch, name, tag, BRANCH_SELECTOR)
         if (!el)
           continue
-        this.spreader.spread(el, props as Record<string, unknown>)
+        this.spreader.spread(el, props)
         this.feedback.fillText(el, text)
       }
     }

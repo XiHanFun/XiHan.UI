@@ -227,13 +227,13 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `overlay` | 浮层坐标系、可用空间、定位层、遮罩、箭头、落点与自绘滚动条 |
 | `motion` | 关键帧、时长与缓动、幅度、减弱动效、动效覆盖面 |
 | `a11y` | 聚焦环、焦点复位与上报、ARIA 写法、按键重复与键盘套件 |
-| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点 |
+| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点、类型断言的棘轮 |
 | `docs` | 示例的多框架对齐、令牌与动效、文档数字与导入、组件总览 |
 | `repo` | changeset、提交 scope、发版标签、PR 模板、类型检查覆盖面、文件头、脚本接线 |
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 136 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 137 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -260,6 +260,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
+| `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |

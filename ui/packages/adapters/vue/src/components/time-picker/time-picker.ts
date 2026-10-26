@@ -145,7 +145,7 @@ export const XhTimePickerRoot = defineComponent({
     provideTimePicker(ctx)
 
     // 没写默认插槽时照 timePickerStructure 铺整套结构
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+    return () => h('div', ctx.api.value.getRootProps(), !slots.default
       ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
       : slots.default({
           open: ctx.api.value.open,
@@ -174,7 +174,7 @@ export const XhTimePickerLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhTimePickerControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -194,7 +194,7 @@ export const XhTimePickerTagLabel = defineComponent({
   name: 'XhTimePickerTagLabel',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -211,7 +211,7 @@ export const XhTimePickerItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
     const tag = useTimePickerTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -225,7 +225,7 @@ export const XhTimePickerTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useTimePickerContext()
     provideTimePickerTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -236,7 +236,7 @@ export const XhTimePickerOverflowTag = defineComponent({
     const ctx = useTimePickerContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -250,7 +250,7 @@ export const XhTimePickerTagList = defineComponent({
   name: 'XhTimePickerTagList',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default
       ? slots.default()
       : [
           ...ctx.api.value.tags.map(tag => h(XhTimePickerTag, { key: tag.value, value: tag.value }, () => [
@@ -266,7 +266,7 @@ export const XhTimePickerSegmentGroup = defineComponent({
   name: 'XhTimePickerSegmentGroup',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSegmentGroupProps(), slots.default?.())
   },
 })
 
@@ -281,7 +281,7 @@ export const XhTimePickerSegment = defineComponent({
     // 有插槽用插槽，否则显示该段的文字，空段为占位串
     return () => h(
       'span',
-      ctx.api.value.getSegmentProps({ segment: props.segment }) as Record<string, unknown>,
+      ctx.api.value.getSegmentProps({ segment: props.segment }),
       slots.default?.() ?? ctx.api.value.getSegmentText({ segment: props.segment }),
     )
   },
@@ -298,7 +298,7 @@ export const XhTimePickerTrigger = defineComponent({
     const ctx = useTimePickerContext()
     return () => h('button', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...ctx.api.value.getTriggerProps(),
       // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }), slots.default?.())
@@ -309,7 +309,7 @@ export const XhTimePickerClearTrigger = defineComponent({
   name: 'XhTimePickerClearTrigger',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -326,7 +326,7 @@ export const XhTimePickerPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, slots.default?.()),
     ])
@@ -338,7 +338,7 @@ export const XhTimePickerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -372,14 +372,14 @@ export const XhTimePickerPresetGroup = defineComponent({
         h(
           'div',
           {
-            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getPresetGroupProps(), attrs),
             ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
           },
           slotPaints(authored)
             ? authored
             : api.presets.map(preset => h(
                 'div',
-                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                { ...api.getPresetProps({ value: preset.value }), key: preset.value },
                 preset.label,
               )),
         ),
@@ -406,7 +406,7 @@ export const XhTimePickerPreset = defineComponent({
       const authored = slots.default?.()
       return h(
         'div',
-        api.getPresetProps({ value: props.value }) as Record<string, unknown>,
+        api.getPresetProps({ value: props.value }),
         slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
       )
     }
@@ -440,7 +440,7 @@ export const XhTimePickerColumn = defineComponent({
       h(
         'div',
         {
-          ...mergeProps(ctx.api.value.getColumnProps({ unit: props.unit }) as Record<string, unknown>, attrs),
+          ...mergeProps(ctx.api.value.getColumnProps({ unit: props.unit }), attrs),
           ref: (el: unknown) => { columnRef.value = el as HTMLElement },
         },
         slots.default?.({ options: ctx.api.value.columns.find(c => c.unit === props.unit)?.options ?? [] }),
@@ -462,7 +462,7 @@ export const XhTimePickerItem = defineComponent({
     // 有插槽用插槽，否则显示这一格该显示的文字（上下午列按 locale 译成「上午 / 下午」）
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ unit: unit.value, value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ unit: unit.value, value: props.value }),
       slots.default?.() ?? ctx.api.value.getItemText({ unit: unit.value, value: props.value }),
     )
   },
@@ -473,7 +473,7 @@ export const XhTimePickerConfirmTrigger = defineComponent({
   name: 'XhTimePickerConfirmTrigger',
   setup(_, { slots }) {
     const ctx = useTimePickerContext()
-    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConfirmTriggerProps(), slots.default?.())
   },
 })
 
@@ -483,7 +483,7 @@ export const XhTimePickerFooter = defineComponent({
     const ctx = useTimePickerContext()
     // 浮层底部的通栏操作区：写在 content 里、排在各列之后，「添加」钮通常放在这里；
     // 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列，从列上按 Tab 就能走到，浮层不收
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -493,8 +493,8 @@ export const XhTimePickerHiddenInput = defineComponent({
     const ctx = useTimePickerContext()
     // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
     return () => ctx.api.value.selectionMode === 'multiple'
-      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown> }))
-      : h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) }))
+      : h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

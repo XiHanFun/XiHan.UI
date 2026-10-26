@@ -106,13 +106,13 @@ export function XhMessageFeedRoot({
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上。
   // 同一节点上的 onFocusOut 归到 React 的 onBlur，留在合成事件那一档不动
-  const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getRootProps(), ['onFocus'])
   return (
     <MessageFeedProvider value={ctx}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -141,8 +141,8 @@ export function XhMessageFeedViewport({ children, ...rest }: XhMessageFeedViewpo
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -158,8 +158,8 @@ export function XhMessageFeedList({ children, ...rest }: XhMessageFeedListProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getListProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getListProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
       )}
     >
@@ -203,14 +203,14 @@ export function XhMessageFeedItem({
     role: itemRole,
     streaming: itemStreaming,
     labelled: labelCount > 0,
-  }) as Record<string, unknown>, ['onFocus'])
+  }), ['onFocus'])
   useItemFocusReport(ctx.service, el, itemId)
   return (
     <MessageFeedItemProvider value={item}>
       <article
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (node: HTMLElement | null) => { el.current = node } },
         )}
@@ -231,8 +231,8 @@ export function XhMessageFeedItemLabel({ children, ...rest }: XhMessageFeedItemL
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getItemLabelProps({ id: item.id }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemLabelProps({ id: item.id }),
+        rest,
       )}
     >
       {children}
@@ -244,7 +244,7 @@ export interface XhMessageFeedScrollToEndTriggerProps extends ComponentPropsWith
 export function XhMessageFeedScrollToEndTrigger({ children, ...rest }: XhMessageFeedScrollToEndTriggerProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
-    <button {...mergeReactProps(ctx.api.getScrollToEndTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getScrollToEndTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -255,7 +255,7 @@ export interface XhMessageFeedUnreadCountProps extends ComponentPropsWithRef<'sp
 export function XhMessageFeedUnreadCount({ children, ...rest }: XhMessageFeedUnreadCountProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
-    <span {...mergeReactProps(ctx.api.getUnreadCountProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getUnreadCountProps(), rest)}>
       {children ?? String(ctx.api.unreadCount)}
     </span>
   )
@@ -266,7 +266,7 @@ export interface XhMessageFeedSeparatorProps extends ComponentPropsWithRef<'div'
 export function XhMessageFeedSeparator({ children, ...rest }: XhMessageFeedSeparatorProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
-    <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>
       {children}
     </div>
   )
@@ -276,7 +276,7 @@ export interface XhMessageFeedPendingIndicatorProps extends Omit<ComponentPropsW
 /** 已发送、等首个片段时的呼吸点：放在列表之后，只在 status 为 submitted 时出现。 */
 export function XhMessageFeedPendingIndicator(props: XhMessageFeedPendingIndicatorProps): ReactNode {
   const ctx = useMessageFeedContext()
-  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps(), props)} />
 }
 
 export interface XhMessageFeedLiveRegionProps extends ComponentPropsWithRef<'div'> {}
@@ -284,7 +284,7 @@ export interface XhMessageFeedLiveRegionProps extends ComponentPropsWithRef<'div
 export function XhMessageFeedLiveRegion({ children, ...rest }: XhMessageFeedLiveRegionProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children}
     </div>
   )

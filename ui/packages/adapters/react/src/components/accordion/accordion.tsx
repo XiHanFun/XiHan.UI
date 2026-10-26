@@ -89,7 +89,7 @@ export function XhAccordionRoot({
   const body = children ?? renderDefaultStructure(ctx.api, renderContent)
   return (
     <AccordionProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {body}
       </div>
     </AccordionProvider>
@@ -108,7 +108,7 @@ export function XhAccordionItem({ value, disabled, children, ...rest }: XhAccord
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
   return (
     <AccordionItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         {children}
       </div>
     </AccordionItemProvider>
@@ -119,7 +119,7 @@ export interface XhAccordionItemSeparatorProps extends ComponentPropsWithRef<'di
 /** 条目之间的分隔线，纯视觉；不渲染它时条目直接相邻。 */
 export function XhAccordionItemSeparator({ children, ...rest }: XhAccordionItemSeparatorProps): ReactNode {
   const ctx = useAccordionContext()
-  return <div {...mergeReactProps(ctx.api.getItemSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemSeparatorProps(), rest)}>{children}</div>
 }
 
 export interface XhAccordionHeaderProps extends ComponentPropsWithRef<'h3'> {}
@@ -127,14 +127,14 @@ export interface XhAccordionHeaderProps extends ComponentPropsWithRef<'h3'> {}
 export function XhAccordionHeader({ children, ...rest }: XhAccordionHeaderProps): ReactNode {
   const ctx = useAccordionContext()
   const item = useAccordionItemContext()
-  return <h3 {...mergeReactProps(ctx.api.getHeaderProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h3>
+  return <h3 {...mergeReactProps(ctx.api.getHeaderProps(item), rest)}>{children}</h3>
 }
 
 export interface XhAccordionTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhAccordionTrigger({ children, ...rest }: XhAccordionTriggerProps): ReactNode {
   const ctx = useAccordionContext()
   const item = useAccordionItemContext()
-  return <button {...mergeReactProps(ctx.api.getTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getTriggerProps(item), rest)}>{children}</button>
 }
 
 export interface XhAccordionContentProps extends ComponentPropsWithRef<'div'> {}
@@ -151,8 +151,8 @@ export function XhAccordionContent({ children, ...rest }: XhAccordionContentProp
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps(item) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(item),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -170,7 +170,7 @@ export interface XhAccordionIndicatorProps extends ComponentPropsWithRef<'span'>
 export function XhAccordionIndicator({ children, ...rest }: XhAccordionIndicatorProps): ReactNode {
   const ctx = useAccordionContext()
   const item = useAccordionItemContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item), rest)}>{children}</span>
 }
 
 /** 标准结构里各部件对应的组件。 */

@@ -102,8 +102,8 @@ export function XhColorSliderRoot({
     <ColorSliderProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -131,7 +131,7 @@ export function XhColorSliderLabel({ children, ...rest }: XhColorSliderLabelProp
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -142,7 +142,7 @@ export interface XhColorSliderControlProps extends ComponentPropsWithRef<'div'> 
 export function XhColorSliderControl({ children, ...rest }: XhColorSliderControlProps): ReactNode {
   const ctx = useColorSliderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -155,8 +155,8 @@ export function XhColorSliderTrack({ children, ...rest }: XhColorSliderTrackProp
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getTrackProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTrackProps(),
+        rest,
         { ref: ctx.trackRef },
       )}
     >
@@ -171,9 +171,9 @@ export function XhColorSliderThumb({ children, ...rest }: XhColorSliderThumbProp
   const ctx = useColorSliderContext()
   // 拇指上的 onFocus 是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
   // 后代得焦会被算成拇指自己得焦。装成原生监听器，到达路径才与另外两家一致
-  const bind = useNativeEvents(ctx.api.getThumbProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getThumbProps(), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </div>
   )
@@ -185,7 +185,7 @@ export interface XhColorSliderValueTextProps extends ComponentPropsWithRef<'span
 export function XhColorSliderValueText({ children, ...rest }: XhColorSliderValueTextProps): ReactNode {
   const ctx = useColorSliderContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueTextProps(), rest)}>
       {children ?? String(ctx.api.channelValue)}
     </span>
   )

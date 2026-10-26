@@ -110,8 +110,8 @@ export function XhPasswordInputRoot({
     <PasswordInputProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -142,7 +142,7 @@ export function XhPasswordInputLabel({ children, ...rest }: XhPasswordInputLabel
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -153,7 +153,7 @@ export interface XhPasswordInputControlProps extends ComponentPropsWithRef<'div'
 export function XhPasswordInputControl({ children, ...rest }: XhPasswordInputControlProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -172,10 +172,10 @@ export function XhPasswordInputInput({ ...rest }: XhPasswordInputInputProps): Re
       {...mergeReactProps(
         // 输入框自己的描述链（大写锁定提示）与字段的拼起来，不互相顶掉
         fieldLabel(withFieldDescription(
-          { ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> },
+          { ...fieldWiring, ...ctx.api.getInputProps() },
           fieldWiring['aria-describedby'] as string | undefined,
         )),
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -186,7 +186,7 @@ export interface XhPasswordInputVisibilityTriggerProps extends ComponentPropsWit
 export function XhPasswordInputVisibilityTrigger({ children, ...rest }: XhPasswordInputVisibilityTriggerProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
-    <button {...mergeReactProps(ctx.api.getVisibilityTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getVisibilityTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -197,7 +197,7 @@ export interface XhPasswordInputCapsLockIndicatorProps extends Omit<ComponentPro
 export function XhPasswordInputCapsLockIndicator({ ...rest }: XhPasswordInputCapsLockIndicatorProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
-    <span {...mergeReactProps(ctx.api.getCapsLockIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getCapsLockIndicatorProps(), rest)}>
       {ctx.api.capsLockMessage}
     </span>
   )
@@ -208,7 +208,7 @@ export interface XhPasswordInputStrengthMeterProps extends ComponentPropsWithRef
 export function XhPasswordInputStrengthMeter({ children, ...rest }: XhPasswordInputStrengthMeterProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
-    <div {...mergeReactProps(ctx.api.getStrengthMeterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getStrengthMeterProps(), rest)}>
       {children}
     </div>
   )

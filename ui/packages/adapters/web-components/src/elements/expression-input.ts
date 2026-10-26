@@ -386,22 +386,22 @@ export class XhExpressionInputElement extends XhPortalHostElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('highlight', api.getHighlightProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('issues', api.getIssuesProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('highlight', api.getHighlightProps())
+    put('empty', api.getEmptyProps())
+    put('issues', api.getIssuesProps())
 
     const inputEl = this.getPart('input') as ExpressionInputEl | null
-    const inputProps = api.getInputProps({ as: inputEl?.tagName === 'TEXTAREA' ? 'textarea' : 'input' }) as Record<string, unknown>
+    const inputProps = api.getInputProps({ as: inputEl?.tagName === 'TEXTAREA' ? 'textarea' : 'input' })
     // 值一样就别重写：给 value 重新赋值会把光标弹到末尾，补全就插不到中间去了
     if (inputEl && inputEl.value === inputProps.value)
       delete inputProps.value
     put('input', inputProps)
 
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
 
     // 生成的节点按身份属性找回自己那份数据：条目是 value（条目 key），分段与问题行是 index
     const itemOf = (el: HTMLElement): ExpressionInputItem | undefined => api.items.find(item => item.key === el.getAttribute('value'))
@@ -409,25 +409,25 @@ export class XhExpressionInputElement extends XhPortalHostElement {
       const item = itemOf(el)
       if (!item)
         continue
-      this.spreader.spread(el, api.getItemProps({ item }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ item }))
       for (const kind of this.partsIn(el, 'item-prefix'))
-        this.spreader.spread(kind, api.getItemPrefixProps({ item }) as Record<string, unknown>)
+        this.spreader.spread(kind, api.getItemPrefixProps({ item }))
       for (const label of this.partsIn(el, 'item-text'))
-        this.spreader.spread(label, api.getItemTextProps({ item }) as Record<string, unknown>)
+        this.spreader.spread(label, api.getItemTextProps({ item }))
       for (const detail of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(detail, api.getItemSuffixProps({ item }) as Record<string, unknown>)
+        this.spreader.spread(detail, api.getItemSuffixProps({ item }))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps({ item }) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps({ item }))
     }
     for (const el of this.getParts('highlight-segment')) {
       const segment = api.segments[Number(el.getAttribute('index'))]
       if (segment)
-        this.spreader.spread(el, api.getHighlightSegmentProps({ segment }) as Record<string, unknown>)
+        this.spreader.spread(el, api.getHighlightSegmentProps({ segment }))
     }
     for (const el of this.getParts('issue')) {
       const issue = api.issues[Number(el.getAttribute('index'))]
       if (issue)
-        this.spreader.spread(el, api.getIssueProps({ issue }) as Record<string, unknown>)
+        this.spreader.spread(el, api.getIssueProps({ issue }))
     }
 
     // 退场动画播完之前先别收：必须排在 put('content') 之后，data-state 得先落进 DOM

@@ -124,8 +124,8 @@ export function XhPinInputRoot({
     <PinInputProvider value={ctx}>
       <div
         {...mergeReactProps(
-          fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }),
-          rest as Record<string, unknown>,
+          fieldLabel({ ...fieldWiring, ...api.getRootProps() }),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -155,7 +155,7 @@ export function XhPinInputLabel({ children, ...rest }: XhPinInputLabelProps): Re
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -166,7 +166,7 @@ export interface XhPinInputGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhPinInputGroup({ children, ...rest }: XhPinInputGroupProps): ReactNode {
   const ctx = usePinInputContext()
   return (
-    <div {...mergeReactProps(ctx.api.getGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getGroupProps(), rest)}>
       {children}
     </div>
   )
@@ -177,7 +177,7 @@ export interface XhPinInputSeparatorProps extends ComponentPropsWithRef<'span'> 
 export function XhPinInputSeparator({ children, ...rest }: XhPinInputSeparatorProps): ReactNode {
   const ctx = usePinInputContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>
       {children}
     </span>
   )
@@ -195,10 +195,10 @@ export interface XhPinInputInputProps extends Omit<ComponentPropsWithRef<'input'
 export function XhPinInputInput({ index, ...rest }: XhPinInputInputProps): ReactNode {
   const ctx = usePinInputContext()
   const bind = useNativeEvents(
-    ctx.api.getInputProps({ index: Math.trunc(Number(index)) }) as Record<string, unknown>,
+    ctx.api.getInputProps({ index: Math.trunc(Number(index)) }),
     ['onFocus'],
   )
-  return <input {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)} />
 }
 
 export interface XhPinInputHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
@@ -208,11 +208,11 @@ export function XhPinInputHiddenInput({ ...rest }: XhPinInputHiddenInputProps): 
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

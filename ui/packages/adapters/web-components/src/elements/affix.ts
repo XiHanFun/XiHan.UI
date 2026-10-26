@@ -81,7 +81,7 @@ export class XhAffixElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('content', api.getContentProps())
   }
 }

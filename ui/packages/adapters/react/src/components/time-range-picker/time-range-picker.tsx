@@ -203,8 +203,8 @@ export function XhTimeRangePickerRoot({
     <TimeRangePickerProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -239,7 +239,7 @@ export function XhTimeRangePickerLabel({ children, ...rest }: XhTimeRangePickerL
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
+  return <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</label>
 }
 
 export interface XhTimeRangePickerControlProps extends ComponentPropsWithRef<'div'> {}
@@ -248,8 +248,8 @@ export function XhTimeRangePickerControl({ children, ...rest }: XhTimeRangePicke
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -268,7 +268,7 @@ export function XhTimeRangePickerSegmentGroup({ index = 0, children, ...rest }: 
   const end: TimeRangePickerEndIndex = resolveTimeRangePickerEndIndex(index)
   return (
     <TimeRangePickerEndProvider value={end}>
-      <div {...mergeReactProps(ctx.api.getSegmentGroupProps({ index: end }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getSegmentGroupProps({ index: end }), rest)}>
         {children}
       </div>
     </TimeRangePickerEndProvider>
@@ -285,9 +285,9 @@ export function XhTimeRangePickerSegment({ segment, children, ...rest }: XhTimeR
   const index = useTimeRangePickerEndContext()
   const api = ctx.api
   // 段位的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getSegmentProps({ index, segment }) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getSegmentProps({ index, segment }), ['onFocus'])
   return (
-    <span {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <span {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children ?? api.getSegmentText({ index, segment })}
     </span>
   )
@@ -297,7 +297,7 @@ export interface XhTimeRangePickerRangeSeparatorProps extends ComponentPropsWith
 export function XhTimeRangePickerRangeSeparator({ children, ...rest }: XhTimeRangePickerRangeSeparatorProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getRangeSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getRangeSeparatorProps(), rest)}>
       {children ?? '-'}
     </span>
   )
@@ -314,8 +314,8 @@ export function XhTimeRangePickerTrigger({ children, ...rest }: XhTimeRangePicke
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() }),
+        rest,
         // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
@@ -328,7 +328,7 @@ export function XhTimeRangePickerTrigger({ children, ...rest }: XhTimeRangePicke
 export interface XhTimeRangePickerClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTimeRangePickerClearTrigger({ children, ...rest }: XhTimeRangePickerClearTriggerProps): ReactNode {
   const ctx = useTimeRangePickerContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTimeRangePickerPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -349,8 +349,8 @@ export function XhTimeRangePickerPositioner({ children, container, ...rest }: Xh
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -367,8 +367,8 @@ export function XhTimeRangePickerContent({ children, ...rest }: XhTimeRangePicke
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -400,11 +400,11 @@ export function XhTimeRangePickerPresetGroup({ children, ...rest }: XhTimeRangeP
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
     <>
-      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+      <div {...mergeReactProps(api.getPresetGroupProps(), rest, { ref: presetGroupRef })}>
         {slotPaints(authored)
           ? authored
           : api.presets.map(preset => (
-              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value })}>
                 {preset.label}
               </div>
             ))}
@@ -423,7 +423,7 @@ export function XhTimeRangePickerPreset({ value, children, ...rest }: XhTimeRang
   const ctx = useTimeRangePickerContext()
   const api = ctx.api
   return (
-    <div {...mergeReactProps(api.getPresetProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getPresetProps({ value }), rest)}>
       {slotPaints(children) ? children : api.presets.find(p => p.value === value)?.label}
     </div>
   )
@@ -441,7 +441,7 @@ export function XhTimeRangePickerColumnGroup({ index = 0, children, ...rest }: X
   const end: TimeRangePickerEndIndex = resolveTimeRangePickerEndIndex(index)
   return (
     <TimeRangePickerEndProvider value={end}>
-      <div {...mergeReactProps(api.getColumnGroupProps({ index: end }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getColumnGroupProps({ index: end }), rest)}>
         {children == null ? null : renderSlot(children, { columns: api.columnGroups[end].columns })}
       </div>
     </TimeRangePickerEndProvider>
@@ -452,7 +452,7 @@ export interface XhTimeRangePickerColumnGroupLabelProps extends ComponentPropsWi
 export function XhTimeRangePickerColumnGroupLabel({ children, ...rest }: XhTimeRangePickerColumnGroupLabelProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   const index = useTimeRangePickerEndContext()
-  return <div {...mergeReactProps(ctx.api.getColumnGroupLabelProps({ index }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getColumnGroupLabelProps({ index }), rest)}>{children}</div>
 }
 
 export interface XhTimeRangePickerColumnProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -474,7 +474,7 @@ export function XhTimeRangePickerColumn({ unit, children, ...rest }: XhTimeRange
   return (
     // 下传单位，供列内选项取到自己归哪一列
     <TimeRangePickerColumnProvider value={unit}>
-      <div {...mergeReactProps(api.getColumnProps({ index, unit }) as Record<string, unknown>, rest as Record<string, unknown>, { ref: columnRef })}>
+      <div {...mergeReactProps(api.getColumnProps({ index, unit }), rest, { ref: columnRef })}>
         {children == null
           ? null
           : renderSlot(children, { options: api.columnGroups[index].columns.find(c => c.unit === unit)?.options ?? [] })}
@@ -495,9 +495,9 @@ export function XhTimeRangePickerItem({ value, children, ...rest }: XhTimeRangeP
   const unit = useTimeRangePickerColumnContext()
   const api = ctx.api
   // 选项的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getItemProps({ index, unit, value }) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getItemProps({ index, unit, value }), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children ?? api.getItemText({ unit, value })}
     </div>
   )
@@ -514,11 +514,11 @@ export function XhTimeRangePickerHiddenInput({ index, ...rest }: XhTimeRangePick
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps({ index: at }) as Record<string, unknown>,
+        ctx.api.getHiddenInputProps({ index: at }),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

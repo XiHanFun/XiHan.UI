@@ -60,7 +60,7 @@ export const XhBarCode = defineComponent({
           'font-size': current.fontSize,
         }, run.text))
       }
-      return h('svg', current.getRootProps() as Record<string, unknown>, children)
+      return h('svg', current.getRootProps(), children)
     }
   },
 })

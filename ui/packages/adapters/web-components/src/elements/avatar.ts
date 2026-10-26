@@ -89,9 +89,9 @@ export class XhAvatarElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    const imageProps = api.getImageProps() as Record<string, unknown>
-    const fallbackProps = api.getFallbackProps() as Record<string, unknown>
-    put('root', api.getRootProps() as Record<string, unknown>)
+    const imageProps = api.getImageProps()
+    const fallbackProps = api.getFallbackProps()
+    put('root', api.getRootProps())
     put('image', imageProps)
     put('fallback', fallbackProps)
 

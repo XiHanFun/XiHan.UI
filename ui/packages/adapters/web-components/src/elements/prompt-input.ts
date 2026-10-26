@@ -118,10 +118,10 @@ export class XhPromptInputElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('control', api.getControlProps())
+    put('input', api.getInputProps())
+    put('submit-trigger', api.getSubmitTriggerProps())
     // value 无需另行回写，spreader 已把它按 property 写入
   }
 }

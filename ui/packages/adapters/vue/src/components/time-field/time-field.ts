@@ -65,7 +65,7 @@ export const XhTimeFieldRoot = defineComponent({
     }
     const ctx = useTimeField(withHandlers(withXhConfig('time-field', useFormControlProps(props)), { onClear: () => emit('clear') }) as TimeFieldProps, { onValueChange })
     provideTimeField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       empty: ctx.api.value.empty,
       outOfRange: ctx.api.value.outOfRange,
@@ -90,7 +90,7 @@ export const XhTimeFieldLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -98,7 +98,7 @@ export const XhTimeFieldControl = defineComponent({
   name: 'XhTimeFieldControl',
   setup(_, { slots }) {
     const ctx = useTimeFieldContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -106,7 +106,7 @@ export const XhTimeFieldSegmentGroup = defineComponent({
   name: 'XhTimeFieldSegmentGroup',
   setup(_, { slots }) {
     const ctx = useTimeFieldContext()
-    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSegmentGroupProps(), slots.default?.())
   },
 })
 
@@ -121,7 +121,7 @@ export const XhTimeFieldSegment = defineComponent({
     // 有插槽用插槽，否则显示该段的文字，空段为占位串
     return () => h(
       'span',
-      ctx.api.value.getSegmentProps({ segment: props.segment }) as Record<string, unknown>,
+      ctx.api.value.getSegmentProps({ segment: props.segment }),
       slots.default?.() ?? ctx.api.value.getSegmentText({ segment: props.segment }),
     )
   },
@@ -132,7 +132,7 @@ export const XhTimeFieldClearTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimeFieldContext()
     // 没写内容时由皮肤画兜底字形
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -140,6 +140,6 @@ export const XhTimeFieldHiddenInput = defineComponent({
   name: 'XhTimeFieldHiddenInput',
   setup() {
     const ctx = useTimeFieldContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })

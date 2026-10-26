@@ -642,7 +642,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
       this.formInputs[index] = input
       const path = api.value[index]
-      this.spreader.spread(input, api.getHiddenInputProps(path ? { path } : undefined) as Record<string, unknown>)
+      this.spreader.spread(input, api.getHiddenInputProps(path ? { path } : undefined))
       const previous = this.formInputs[index - 1]
       if (previous) {
         if (previous.nextSibling !== input)
@@ -662,15 +662,15 @@ export class XhCascaderElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('trigger', api.getTriggerProps())
+    put('tag-list', api.getTagListProps())
     // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性（路径的比较键）；只有文字的补一层 label
-    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    const tagLabelProps = api.getTagLabelProps()
     for (const el of this.getParts('tag')) {
-      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }))
       const label = this.ensureTagLabel(el)
       if (label)
         this.spreader.spread(label, tagLabelProps)
@@ -678,49 +678,49 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }))
     }
     // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
-      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      this.spreader.spread(overflowTag, api.getOverflowTagProps())
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
         this.fillOwnedText(this.ownsOverflowText, label, api.overflowText)
       }
     }
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps())
+    put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('search-list', api.getSearchListProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('input', api.getInputProps())
+    put('search-list', api.getSearchListProps())
+    put('footer', api.getFooterProps())
 
     // 空态占位标记里没写就补一个：露不露面归连接层，文案按当前视图取无匹配或无数据
     const empty = this.ensureEmpty()
     if (empty) {
-      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.spreader.spread(empty, api.getEmptyProps())
       this.fillOwnedText(this.ownsEmptyText, empty, api.searching ? api.translations.noMatch : api.translations.empty)
     }
 
     // Content 与 Vue / React 一样完整装配两种状态；作者写了 Loading 时只接线并保留作者文案。
     const loading = this.ensureLoading()
     if (loading) {
-      this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
+      this.spreader.spread(loading, api.getLoadingProps())
       this.fillOwnedText(this.ownsLoadingText, loading, api.translations.loading)
     }
 
     // 候选是多实例 part：身份用 value 属性自报整条路径（JSON 数组串，与 cascaderPathKey 同构）
     for (const el of this.getParts('search-item'))
-      this.spreader.spread(el, api.getSearchItemProps({ path: this.pathOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSearchItemProps({ path: this.pathOf(el) }))
 
     // 属性先落，显示文字随后
     const valueText = this.getPart('value-text')
     if (valueText) {
-      this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(valueText, api.getValueTextProps())
       this.fillOwnedText(this.ownsValueText, valueText, api.displayText)
     }
 
@@ -728,7 +728,7 @@ export class XhCascaderElement extends XhPortalHostElement {
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。
     this.getParts('column').forEach((el, position) => {
       const level = this.levelOf(el, position)
-      this.spreader.spread(el, api.getColumnProps({ level }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getColumnProps({ level }))
       // 这一列属于懒分支：列末补上在途、失败与重试三块，露哪一块归连接层；补过的留着，换了父条目照样由连接层收起
       const hasFeedback = [...el.children].some(child => this.generatedBranchFeedback.has(child as HTMLElement))
       if (api.columnLoadState(level) == null && !hasFeedback)
@@ -740,7 +740,7 @@ export class XhCascaderElement extends XhPortalHostElement {
       ] as const
       for (const [name, tag, props, text] of feedback) {
         const node = this.ensureColumnFeedback(el, name, tag)
-        this.spreader.spread(node, props as Record<string, unknown>)
+        this.spreader.spread(node, props)
         if (node.textContent !== text)
           node.textContent = text
       }
@@ -748,22 +748,22 @@ export class XhCascaderElement extends XhPortalHostElement {
     // 分组是多实例 part：身份取自己的 value 属性，组内标题跟着同一份身份
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
     for (const el of this.getParts('item')) {
       this.stripNativeDisabled(el)
-      this.spreader.spread(el, api.getItemProps(this.itemOf(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(this.itemOf(el)))
     }
     for (const el of this.getParts('item-text'))
-      this.spreader.spread(el, api.getItemTextProps(this.itemOf(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemTextProps(this.itemOf(el)))
     for (const el of this.getParts('item-description'))
-      this.spreader.spread(el, api.getItemDescriptionProps(this.itemOf(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDescriptionProps(this.itemOf(el)))
     for (const el of this.getParts('item-suffix'))
-      this.spreader.spread(el, api.getItemSuffixProps(this.itemOf(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemSuffixProps(this.itemOf(el)))
     for (const el of this.getParts('item-indicator'))
-      this.spreader.spread(el, api.getItemIndicatorProps(this.itemOf(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemIndicatorProps(this.itemOf(el)))
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）
     // 退场动画播完之前先别收：presence 读 content 的 animationName 决定要不要多留一会儿。

@@ -302,7 +302,7 @@ export class XhMenuElement extends XhPortalHostElement {
     this.spreader.spread(child.trigger, api.getItemProps({
       value: child.trigger.getAttribute('value') ?? '',
       disabled: child.getDisabled(),
-    }) as Record<string, unknown>)
+    }))
   }
 
   private registerSubmenu(child: MenuSubmenuChild): MenuSubmenuRegistration {
@@ -451,16 +451,16 @@ export class XhMenuElement extends XhPortalHostElement {
     if (api.open && !positionerEl)
       throw new Error('[xh] 展开的 Menu 必须具备 positioner')
     if (this.submenu && triggerEl) {
-      this.spreader.spread(triggerEl, api.getSubmenuTriggerProps({ value: triggerEl.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(triggerEl, api.getSubmenuTriggerProps({ value: triggerEl.getAttribute('value') ?? '' }))
     }
     else {
-      put('trigger', api.getTriggerProps() as Record<string, unknown>)
+      put('trigger', api.getTriggerProps())
     }
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('arrow', api.getArrowProps())
 
     const itemDeclaration = (el: HTMLElement): MenuAnyItemProps => {
       const value = el.getAttribute('value') ?? ''
@@ -487,7 +487,7 @@ export class XhMenuElement extends XhPortalHostElement {
         : declaration.kind === 'radio'
           ? api.getRadioItemProps(declaration)
           : api.getItemProps(declaration)
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
       this.declaredDisabled.commit(el)
     }
     for (const child of this.submenuBridges.values())
@@ -505,30 +505,30 @@ export class XhMenuElement extends XhPortalHostElement {
       return { value: '', kind: 'item' }
     }
     for (const el of this.getParts('item-icon'))
-      this.spreader.spread(el, api.getItemIconProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemIconProps(ownerItem(el)))
     for (const el of this.getParts('item-text'))
-      this.spreader.spread(el, api.getItemTextProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemTextProps(ownerItem(el)))
     for (const el of this.getParts('item-indicator'))
-      this.spreader.spread(el, api.getItemIndicatorProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemIndicatorProps(ownerItem(el)))
     for (const el of this.getParts('item-description'))
-      this.spreader.spread(el, api.getItemDescriptionProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDescriptionProps(ownerItem(el)))
     for (const el of this.getParts('item-shortcut'))
-      this.spreader.spread(el, api.getItemShortcutProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemShortcutProps(ownerItem(el)))
     for (const el of this.getParts('item-suffix'))
-      this.spreader.spread(el, api.getItemSuffixProps(ownerItem(el)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemSuffixProps(ownerItem(el)))
 
     // 分隔线也是多实例 part，但不带身份、不入导航，属性对每个都一样
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     // 分组与它的标题靠同一个 value 互相认领，标题的 id 由 connect 据此派生
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
       const isRadio = el.getAttribute('kind') === 'radio'
         || api.collection.some(node => node.kind === 'radio' && node.group === group.value)
-      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     // Light DOM content 常驻，WC 自管可见性。读 styles/css/menu.css 的结论：

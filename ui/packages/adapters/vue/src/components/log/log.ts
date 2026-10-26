@@ -50,7 +50,7 @@ export const XhLogRoot = defineComponent({
     const notify: LogSchema['props']['onStickChange'] = details => emit('stick-change', details)
     const ctx = useLog(withXhConfig('log', props) as LogProps, notify)
     provideLog(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       rows: ctx.api.value.rows,
       loading: ctx.api.value.loading,
       atBottom: ctx.api.value.atBottom,
@@ -67,7 +67,7 @@ export const XhLogViewport = defineComponent({
     const ctx = useLogContext()
     // 把视口节点交给机器，由粘底句柄监听滚动
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: ctx.viewportRef,
     }, slots.default?.())
   },
@@ -79,7 +79,7 @@ export const XhLogContent = defineComponent({
     const ctx = useLogContext()
     // 把内容节点交给机器，由粘底句柄观察尺寸
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       ref: ctx.contentRef,
     }, slots.default?.())
   },
@@ -93,7 +93,7 @@ export const XhLogSegment = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useLogContext()
-    return () => h('span', ctx.api.value.getSegmentProps(props.segment) as Record<string, unknown>, slots.default?.() ?? props.segment.text)
+    return () => h('span', ctx.api.value.getSegmentProps(props.segment), slots.default?.() ?? props.segment.text)
   },
 })
 
@@ -109,7 +109,7 @@ export const XhLogLine = defineComponent({
     // 一行的文本与标注由作者写在插槽里，级别落成行上的 data-level
     return () => h(
       'div',
-      ctx.api.value.getLineProps({ level: props.level }) as Record<string, unknown>,
+      ctx.api.value.getLineProps({ level: props.level }),
       slots.default?.() ?? (props.ansi === undefined ? undefined : parseAnsi(props.ansi).map(segment => h(XhLogSegment, { segment }))),
     )
   },
@@ -120,7 +120,7 @@ export const XhLogScrollToEndTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useLogContext()
     // 收起时走 hidden 属性，节点不卸载；插槽留空则由皮肤画兜底字形
-    return () => h('button', ctx.api.value.getScrollToEndTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getScrollToEndTriggerProps(), slots.default?.())
   },
 })
 
@@ -129,6 +129,6 @@ export const XhLogLiveRegion = defineComponent({
   setup(_, { slots }) {
     const ctx = useLogContext()
     // 内容由宿主写入，念哪一句、什么时候念都归宿主定
-    return () => h('div', ctx.api.value.getLiveRegionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLiveRegionProps(), slots.default?.())
   },
 })

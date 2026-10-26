@@ -216,9 +216,9 @@ export function createNotificationService(options: NotificationServiceOptions = 
     controller.syncItems(api.visibleNotifications.map(item => item.id))
     return (
       <XhConfigProvider config={configSource.read()}>
-        <div {...api.getRootProps() as Record<string, unknown>} ref={bindRoot}>
+        <div {...api.getRootProps()} ref={bindRoot}>
           {api.placements.map(placement => (
-            <div key={placement} {...api.getGroupProps({ placement }) as Record<string, unknown>}>
+            <div key={placement} {...api.getGroupProps({ placement })}>
               {/* 按队列身份 id 给 key，避免节点被就地复用 */}
               {api.getItemsByPlacement(placement).map(item => (
                 <Fragment key={item.id}>

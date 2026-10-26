@@ -92,7 +92,7 @@ export function XhMatrixCode({
 
   return (
     <MatrixCodeProvider value={{ api }}>
-      <svg {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <svg {...mergeReactProps(api.getRootProps(), rest)}>
         {geometry}
         {children}
       </svg>
@@ -109,7 +109,7 @@ export interface XhMatrixCodeLogoProps extends Omit<ComponentPropsWithRef<'svg'>
 export function XhMatrixCodeLogo({ children, ...rest }: XhMatrixCodeLogoProps): ReactNode {
   const ctx = useMatrixCodeContext()
   return (
-    <svg {...mergeReactProps(ctx.api.getLogoProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <svg {...mergeReactProps(ctx.api.getLogoProps(), rest)}>
       {children}
     </svg>
   )

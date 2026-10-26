@@ -150,21 +150,21 @@ export class XhCarouselElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
-    put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
-    put('autoplay-trigger', api.getAutoplayTriggerProps() as Record<string, unknown>)
-    put('indicator-group', api.getIndicatorGroupProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('viewport', api.getViewportProps())
+    put('list', api.getListProps())
+    put('prev-trigger', api.getPrevTriggerProps())
+    put('next-trigger', api.getNextTriggerProps())
+    put('autoplay-trigger', api.getAutoplayTriggerProps())
+    put('indicator-group', api.getIndicatorGroupProps())
 
     // 条目与指示点是多实例 part，逐个打：身份取作者写的 index，缺省按文档序。
     this.getParts('item').forEach((el, position) => {
-      this.spreader.spread(el, api.getItemProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ index: declaredIndex(el, position) }))
     })
 
     this.getParts('indicator').forEach((el, position) => {
-      this.spreader.spread(el, api.getIndicatorProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getIndicatorProps({ index: declaredIndex(el, position) }))
     })
   }
 }

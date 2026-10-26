@@ -40,7 +40,7 @@ export const XhInfiniteScrollRoot = defineComponent({
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useInfiniteScroll(props as InfiniteScrollProps, notify, () => props.target ?? null)
     provideInfiniteScroll(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       phase: ctx.api.value.phase,
       loading: ctx.api.value.loading,
       disabled: ctx.api.value.disabled,
@@ -59,7 +59,7 @@ export const XhInfiniteScrollLoadMoreTrigger = defineComponent({
     const ctx = useInfiniteScrollContext()
     return () => h(
       'button',
-      ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>,
+      ctx.api.value.getLoadMoreTriggerProps(),
       slots.default?.(),
     )
   },
@@ -71,7 +71,7 @@ export const XhInfiniteScrollSentinel = defineComponent({
   setup(_, { slots }) {
     const ctx = useInfiniteScrollContext()
     return () => h('div', {
-      ...ctx.api.value.getSentinelProps() as Record<string, unknown>,
+      ...ctx.api.value.getSentinelProps(),
       ref: (el: unknown) => { ctx.sentinelRef.value = el as HTMLElement },
     }, slots.default?.())
   },

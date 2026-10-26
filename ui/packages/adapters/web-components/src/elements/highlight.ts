@@ -67,7 +67,7 @@ export class XhHighlightElement extends XhElement {
       tone: this.tone,
     } satisfies HighlightProps, wcNormalize)
 
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     this.#paint(root, api)
   }
 
@@ -83,7 +83,7 @@ export class XhHighlightElement extends XhElement {
 
     const doc = root.ownerDocument
     const frame = doc.createDocumentFragment()
-    const markProps = api.getMarkProps() as Record<string, unknown>
+    const markProps = api.getMarkProps()
     for (const segment of api.segments) {
       if (!segment.matched) {
         frame.appendChild(doc.createTextNode(segment.text))

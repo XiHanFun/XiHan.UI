@@ -150,7 +150,7 @@ export const XhCommandTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useCommandContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -180,7 +180,7 @@ export const XhCommandContent = defineComponent({
       if (!ctx.rendered.value)
         return null
       const api = ctx.api.value
-      const backdrop = api.getBackdropProps() as Record<string, unknown>
+      const backdrop = api.getBackdropProps()
       // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
       return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         !backdrop.hidden
@@ -189,9 +189,9 @@ export const XhCommandContent = defineComponent({
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
-        h('div', api.getPositionerProps() as Record<string, unknown>, [
+        h('div', api.getPositionerProps(), [
           h('div', {
-            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getContentProps(), attrs),
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, [...(slots.default?.() ?? []), ...bars.render()]),
         ]),
@@ -205,7 +205,7 @@ export const XhCommandInput = defineComponent({
   setup() {
     const ctx = useCommandContext()
     return () => h('input', {
-      ...ctx.api.value.getInputProps() as Record<string, unknown>,
+      ...ctx.api.value.getInputProps(),
       ref: (el: unknown) => { ctx.inputRef.value = el as HTMLInputElement },
     })
   },
@@ -216,7 +216,7 @@ export const XhCommandList = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     return () => h('div', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -231,7 +231,7 @@ export const XhCommandGroup = defineComponent({
     const ctx = useCommandContext()
     const group = computed<CommandGroupProps>(() => ({ value: props.value }))
     provideCommandItemGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -240,7 +240,7 @@ export const XhCommandGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { group } = useCommandItemGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -255,7 +255,7 @@ export const XhCommandItem = defineComponent({
     const ctx = useCommandContext()
     const item = computed<CommandItemProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideCommandItem({ item })
-    return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProps(item.value), slots.default?.())
   },
 })
 
@@ -264,7 +264,7 @@ export const XhCommandItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { item } = useCommandItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -274,7 +274,7 @@ export const XhCommandItemPrefix = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { item } = useCommandItemContext()
-    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value), slots.default?.())
   },
 })
 
@@ -284,7 +284,7 @@ export const XhCommandItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { item } = useCommandItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -294,7 +294,7 @@ export const XhCommandItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { item } = useCommandItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -304,7 +304,7 @@ export const XhCommandItemShortcut = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     const { item } = useCommandItemContext()
-    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value), slots.default?.())
   },
 })
 
@@ -313,7 +313,7 @@ export const XhCommandEmpty = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     // 放在 content 里作 list 的兄弟节点，不进 role=listbox
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -322,7 +322,7 @@ export const XhCommandLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useCommandContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.())
   },
 })
 
@@ -330,7 +330,7 @@ export const XhCommandFooter = defineComponent({
   name: 'XhCommandFooter',
   setup(_, { slots }) {
     const ctx = useCommandContext()
-    return () => h('footer', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('footer', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 

@@ -118,7 +118,7 @@ export interface XhSelectRootProps<V = string> extends RootElementProps {
 function SelectHiddenSelect(): ReactNode {
   const { api } = useSelectContext()
   return (
-    <select {...api.getHiddenSelectProps() as Record<string, unknown>}>
+    <select {...api.getHiddenSelectProps()}>
       <option value="" />
       {/* 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey */}
       {api.valueKeys.map((v, i) => (
@@ -244,8 +244,8 @@ export function XhSelectRoot<V = string>({
       <StructureVirtualProvider value={virtualSlot}>
         <div
           {...mergeReactProps(
-            api.getRootProps() as Record<string, unknown>,
-            rest as Record<string, unknown>,
+            api.getRootProps(),
+            rest,
             { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
           )}
         >
@@ -264,7 +264,7 @@ export function XhSelectLabel({ children, ...rest }: XhSelectLabelProps): ReactN
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhSelectControlProps extends ComponentPropsWithRef<'div'> {}
@@ -274,8 +274,8 @@ export function XhSelectControl({ children, ...rest }: XhSelectControlProps): Re
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -294,8 +294,8 @@ export function XhSelectTrigger({ children, ...rest }: XhSelectTriggerProps): Re
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() }),
+        rest,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
     >
@@ -309,7 +309,7 @@ export interface XhSelectValueTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectValueText({ children, ...rest }: XhSelectValueTextProps): ReactNode {
   const ctx = useSelectContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueTextProps(), rest)}>
       {children ?? ctx.api.displayText}
     </span>
   )
@@ -318,28 +318,28 @@ export function XhSelectValueText({ children, ...rest }: XhSelectValueTextProps)
 export interface XhSelectIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectIndicator({ children, ...rest }: XhSelectIndicatorProps): ReactNode {
   const ctx = useSelectContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhSelectClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 节点常驻，不可清空时依靠 hidden 隐藏。 */
 export function XhSelectClearTrigger({ children, ...rest }: XhSelectClearTriggerProps): ReactNode {
   const ctx = useSelectContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhSelectTagListProps extends ComponentPropsWithRef<'span'> {}
 /** 标签行：可见标签与 +N 标签在其中并排；无选中时连接层写 hidden，value-text 恢复显示占位文字。 */
 export function XhSelectTagList({ children, ...rest }: XhSelectTagListProps): ReactNode {
   const ctx = useSelectContext()
-  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagListProps(), rest)}>{children}</span>
 }
 
 export interface XhSelectTagLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
 export function XhSelectTagLabel({ children, ...rest }: XhSelectTagLabelProps): ReactNode {
   const ctx = useSelectContext()
-  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps(), rest)}>{children}</span>
 }
 
 /**
@@ -360,7 +360,7 @@ export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): Rea
   const ctx = useSelectContext()
   return (
     <SelectTagProvider value={{ value }}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }), rest)}>{tagChildren(children)}</span>
     </SelectTagProvider>
   )
 }
@@ -370,7 +370,7 @@ export interface XhSelectOverflowTagProps extends ComponentPropsWithRef<'span'> 
 export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps(), rest)}>
       {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
@@ -381,7 +381,7 @@ export interface XhSelectItemDeleteTriggerProps extends ComponentPropsWithRef<'b
 export function XhSelectItemDeleteTrigger({ children, ...rest }: XhSelectItemDeleteTriggerProps): ReactNode {
   const ctx = useSelectContext()
   const value = useSelectTagContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }), rest)}>{children}</button>
 }
 
 export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -399,8 +399,8 @@ export function XhSelectPositioner({ children, container, ...rest }: XhSelectPos
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -417,8 +417,8 @@ export function XhSelectContent({ children, ...rest }: XhSelectContentProps): Re
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -439,8 +439,8 @@ export function XhSelectList({ children, ...rest }: XhSelectListProps): ReactNod
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getListProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getListProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.listRef.current = el } },
       )}
     >
@@ -452,35 +452,35 @@ export function XhSelectList({ children, ...rest }: XhSelectListProps): ReactNod
 export interface XhSelectFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhSelectFooter({ children, ...rest }: XhSelectFooterProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</div>
 }
 
 export interface XhSelectEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 空态占位：没写内容时显示 translations.empty。 */
 export function XhSelectEmpty({ children, ...rest }: XhSelectEmptyProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.empty}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{slotPaints(children) ? children : ctx.api.translations.empty}</div>
 }
 
 export interface XhSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：没写内容时显示 translations.loading。 */
 export function XhSelectLoading({ children, ...rest }: XhSelectLoadingProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{slotPaints(children) ? children : ctx.api.translations.loading}</div>
 }
 
 export interface XhSelectErrorProps extends ComponentPropsWithRef<'div'> {}
 /** 整表取数失败的提示：与空态、在途占位同一个位置；没写内容时显示 translations.loadError。 */
 export function XhSelectError({ children, ...rest }: XhSelectErrorProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getErrorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.loadError}</div>
+  return <div {...mergeReactProps(ctx.api.getErrorProps(), rest)}>{slotPaints(children) ? children : ctx.api.translations.loadError}</div>
 }
 
 export interface XhSelectRetryTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 重试钮：没写内容时显示 translations.retry。 */
 export function XhSelectRetryTrigger({ children, ...rest }: XhSelectRetryTriggerProps): ReactNode {
   const ctx = useSelectContext()
-  return <button {...mergeReactProps(ctx.api.getRetryTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{slotPaints(children) ? children : ctx.api.translations.retry}</button>
+  return <button {...mergeReactProps(ctx.api.getRetryTriggerProps(), rest)}>{slotPaints(children) ? children : ctx.api.translations.retry}</button>
 }
 
 export interface XhSelectGroupProps extends ComponentPropsWithRef<'div'> {
@@ -492,7 +492,7 @@ export function XhSelectGroup({ value, children, ...rest }: XhSelectGroupProps):
   const group = useMemo(() => ({ value }), [value])
   return (
     <SelectGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </SelectGroupProvider>
   )
 }
@@ -501,7 +501,7 @@ export interface XhSelectGroupLabelProps extends ComponentPropsWithRef<'span'> {
 export function XhSelectGroupLabel({ children, ...rest }: XhSelectGroupLabelProps): ReactNode {
   const ctx = useSelectContext()
   const group = useSelectGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhSelectItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -517,7 +517,7 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
   const previous = useRef(value)
   // 条目的聚焦上报与指针离开都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps(item) as Record<string, unknown>,
+    ctx.api.getItemProps(item),
     ['onFocus', 'onPointerLeave'],
   )
 
@@ -552,7 +552,7 @@ export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectIte
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
@@ -567,7 +567,7 @@ export interface XhSelectItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectItemText({ children, ...rest }: XhSelectItemTextProps): ReactNode {
   const ctx = useSelectContext()
   const item = useSelectItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
@@ -575,7 +575,7 @@ export interface XhSelectItemPrefixProps extends ComponentPropsWithRef<'span'> {
 export function XhSelectItemPrefix({ children, ...rest }: XhSelectItemPrefixProps): ReactNode {
   const ctx = useSelectContext()
   const item = useSelectItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -583,7 +583,7 @@ export interface XhSelectItemSuffixProps extends ComponentPropsWithRef<'span'> {
 export function XhSelectItemSuffix({ children, ...rest }: XhSelectItemSuffixProps): ReactNode {
   const ctx = useSelectContext()
   const item = useSelectItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -591,14 +591,14 @@ export interface XhSelectItemDescriptionProps extends ComponentPropsWithRef<'spa
 export function XhSelectItemDescription({ children, ...rest }: XhSelectItemDescriptionProps): ReactNode {
   const ctx = useSelectContext()
   const item = useSelectItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhSelectItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhSelectItemIndicator({ children, ...rest }: XhSelectItemIndicatorProps): ReactNode {
   const ctx = useSelectContext()
   const item = useSelectItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 /** 标准结构里各部件对应的组件；标签与 +N 委派给 tag，按「tag/部件名」找。 */

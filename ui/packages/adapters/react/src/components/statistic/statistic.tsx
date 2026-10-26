@@ -28,7 +28,7 @@ export function XhStatisticRoot({ size, tone, trend, children, ...rest }: XhStat
   const api = connectStatistic(withXhConfig('statistic', { size, tone, trend }) as StatisticProps, reactNormalize)
   return (
     <StatisticProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </StatisticProvider>
@@ -41,7 +41,7 @@ export interface XhStatisticLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhStatisticLabel({ children, ...rest }: XhStatisticLabelProps): ReactNode {
   const ctx = useStatisticContext()
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </span>
   )
@@ -53,7 +53,7 @@ export interface XhStatisticValueProps extends ComponentPropsWithRef<'span'> {}
 export function XhStatisticValue({ children, ...rest }: XhStatisticValueProps): ReactNode {
   const ctx = useStatisticContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueProps(), rest)}>
       {children}
     </span>
   )
@@ -64,7 +64,7 @@ export interface XhStatisticPrefixProps extends ComponentPropsWithRef<'span'> {}
 export function XhStatisticPrefix({ children, ...rest }: XhStatisticPrefixProps): ReactNode {
   const ctx = useStatisticContext()
   return (
-    <span {...mergeReactProps(ctx.api.getPrefixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getPrefixProps(), rest)}>
       {children}
     </span>
   )
@@ -75,7 +75,7 @@ export interface XhStatisticSuffixProps extends ComponentPropsWithRef<'span'> {}
 export function XhStatisticSuffix({ children, ...rest }: XhStatisticSuffixProps): ReactNode {
   const ctx = useStatisticContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSuffixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSuffixProps(), rest)}>
       {children}
     </span>
   )
@@ -87,7 +87,7 @@ export interface XhStatisticTrendProps extends ComponentPropsWithRef<'span'> {}
 export function XhStatisticTrend({ children, ...rest }: XhStatisticTrendProps): ReactNode {
   const ctx = useStatisticContext()
   return (
-    <span {...mergeReactProps(ctx.api.getTrendProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getTrendProps(), rest)}>
       {children}
     </span>
   )

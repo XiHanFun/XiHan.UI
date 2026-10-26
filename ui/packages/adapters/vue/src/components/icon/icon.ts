@@ -28,7 +28,7 @@ const NO_PROPS: IconProps = {}
 
 /** glyph 空壳：只带解剖标记，图元由标准结构的内容回调铺进来。 */
 const XhIconGlyph: FunctionalComponent = (_, { slots }) =>
-  h('g', connectIcon(NO_PROPS, vueNormalize).getGlyphProps() as Record<string, unknown>, slots.default?.())
+  h('g', connectIcon(NO_PROPS, vueNormalize).getGlyphProps(), slots.default?.())
 
 /** 标准结构里各部件对应的组件。 */
 const ICON_PARTS = { glyph: XhIconGlyph }
@@ -58,7 +58,7 @@ export const XhIcon = defineComponent({
       const authored = slots.default?.()
       return h(
         'svg',
-        ctx.api.value.getRootProps() as Record<string, unknown>,
+        ctx.api.value.getRootProps(),
         slotPaints(authored)
           ? authored
           : renderStructure(iconStructure(), ICON_PARTS, () => ctx.api.value.nodes.map(renderNode)),

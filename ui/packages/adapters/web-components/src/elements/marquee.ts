@@ -103,8 +103,8 @@ export class XhMarqueeElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('autoplay-trigger', api.getAutoplayTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('content', api.getContentProps())
+    put('autoplay-trigger', api.getAutoplayTriggerProps())
   }
 }

@@ -90,7 +90,7 @@ export class XhTimestampElement extends XhElement {
       return
 
     const api = connectTimestamp(this.ctrl.service, wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     this.#paintText(root, api.text)
   }
 

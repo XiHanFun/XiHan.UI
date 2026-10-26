@@ -40,7 +40,7 @@ export const XhAlertRoot = defineComponent({
     }
     const ctx = useAlert(withXhConfig('alert', props) as AlertProps, notify)
     provideAlert(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -48,7 +48,7 @@ export const XhAlertIndicator = defineComponent({
   name: 'XhAlertIndicator',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -56,7 +56,7 @@ export const XhAlertContent = defineComponent({
   name: 'XhAlertContent',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
 
@@ -65,7 +65,7 @@ export const XhAlertTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useAlertContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('div', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -75,7 +75,7 @@ export const XhAlertDescription = defineComponent({
     const ctx = useAlertContext()
     // 读不出一句话的说明不进描述链
     const el = useDescriptionPart(ctx.presence)
-    return () => h('div', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('div', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -83,7 +83,7 @@ export const XhAlertAction = defineComponent({
   name: 'XhAlertAction',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('div', ctx.api.value.getActionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getActionProps(), slots.default?.())
   },
 })
 
@@ -91,6 +91,6 @@ export const XhAlertCloseTrigger = defineComponent({
   name: 'XhAlertCloseTrigger',
   setup(_, { slots }) {
     const ctx = useAlertContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })

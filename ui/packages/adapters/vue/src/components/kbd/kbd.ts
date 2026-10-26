@@ -81,9 +81,9 @@ export const XhKbd = defineComponent({
     })
     onBeforeUnmount(stop)
 
-    return () => h('kbd', api.value.getRootProps() as Record<string, unknown>, api.value.segments.map((segment, index) => h(
+    return () => h('kbd', api.value.getRootProps(), api.value.segments.map((segment, index) => h(
       'span',
-      { ...api.value.getKeyProps({ value: segment.source }) as Record<string, unknown>, key: `${segment.source}-${index}` },
+      { ...api.value.getKeyProps({ value: segment.source }), key: `${segment.source}-${index}` },
       segment.label,
     )))
   },

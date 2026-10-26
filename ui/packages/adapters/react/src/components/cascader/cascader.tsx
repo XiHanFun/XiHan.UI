@@ -214,7 +214,7 @@ export function XhCascaderRoot({
   const api = ctx.api
   return (
     <CascaderProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
+      <div {...mergeReactProps(api.getRootProps(), rest, { ref: ctx.rootRef })}>
         {children == null
           ? renderDefaultStructure(api, label, { clearable, searchable })
           : renderSlot(children, {
@@ -242,10 +242,10 @@ export function XhCascaderRoot({
               clear: api.clear,
               deselect: api.deselect,
             })}
-        {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path }) as Record<string, unknown>} />)}
+        {api.value.map(path => <input key={JSON.stringify(path)} {...api.getHiddenInputProps({ path })} />)}
         {/* 必填且没选值：补一份空值占位，原生 required 才拦得住空表单。它是带 value 的文本输入，
             交一个不会被调用的 onChange，免得 React 在开发构建里报受控输入告警 */}
-        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps() as Record<string, unknown>, { onChange: noop })} />}
+        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps(), { onChange: noop })} />}
       </div>
     </CascaderProvider>
   )
@@ -261,7 +261,7 @@ export function XhCascaderLabel({ children, ...rest }: XhCascaderLabelProps): Re
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhCascaderControlProps extends ComponentPropsWithRef<'div'> {}
@@ -271,8 +271,8 @@ export function XhCascaderControl({ children, ...rest }: XhCascaderControlProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -291,8 +291,8 @@ export function XhCascaderTrigger({ children, ...rest }: XhCascaderTriggerProps)
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() }),
+        rest,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
     >
@@ -306,7 +306,7 @@ export interface XhCascaderValueTextProps extends ComponentPropsWithRef<'span'> 
 export function XhCascaderValueText({ children, ...rest }: XhCascaderValueTextProps): ReactNode {
   const ctx = useCascaderContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueTextProps(), rest)}>
       {children ?? ctx.api.displayText}
     </span>
   )
@@ -316,14 +316,14 @@ export interface XhCascaderTagListProps extends ComponentPropsWithRef<'span'> {}
 /** 标签行：可见标签与 +N 标签在其中并排；无选中时连接层写 hidden，value-text 恢复显示占位文字。 */
 export function XhCascaderTagList({ children, ...rest }: XhCascaderTagListProps): ReactNode {
   const ctx = useCascaderContext()
-  return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagListProps(), rest)}>{children}</span>
 }
 
 export interface XhCascaderTagLabelProps extends ComponentPropsWithRef<'span'> {}
 /** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
 export function XhCascaderTagLabel({ children, ...rest }: XhCascaderTagLabelProps): ReactNode {
   const ctx = useCascaderContext()
-  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps(), rest)}>{children}</span>
 }
 
 /**
@@ -344,7 +344,7 @@ export function XhCascaderTag({ value, children, ...rest }: XhCascaderTagProps):
   const ctx = useCascaderContext()
   return (
     <CascaderTagProvider value={value}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }), rest)}>{tagChildren(children)}</span>
     </CascaderTagProvider>
   )
 }
@@ -354,7 +354,7 @@ export interface XhCascaderOverflowTagProps extends ComponentPropsWithRef<'span'
 export function XhCascaderOverflowTag({ children, ...rest }: XhCascaderOverflowTagProps): ReactNode {
   const ctx = useCascaderContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps(), rest)}>
       {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
@@ -365,19 +365,19 @@ export interface XhCascaderItemDeleteTriggerProps extends ComponentPropsWithRef<
 export function XhCascaderItemDeleteTrigger({ children, ...rest }: XhCascaderItemDeleteTriggerProps): ReactNode {
   const ctx = useCascaderContext()
   const value = useCascaderTagContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }), rest)}>{children}</button>
 }
 
 export interface XhCascaderIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderIndicator({ children, ...rest }: XhCascaderIndicatorProps): ReactNode {
   const ctx = useCascaderContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhCascaderClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCascaderClearTrigger({ children, ...rest }: XhCascaderClearTriggerProps): ReactNode {
   const ctx = useCascaderContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhCascaderPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -400,8 +400,8 @@ export function XhCascaderPositioner({ children, container, ...rest }: XhCascade
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -424,7 +424,7 @@ function CascaderAutoLoading(): ReactNode {
   if (content.authoredLoadingCount > 0 || content.renderRegistration.authoredLoading)
     return null
   return (
-    <div {...ctx.api.getLoadingProps() as Record<string, unknown>} data-xh-cascader-auto-loading="">
+    <div {...ctx.api.getLoadingProps()} data-xh-cascader-auto-loading="">
       {ctx.api.translations.loading}
     </div>
   )
@@ -456,8 +456,8 @@ export function XhCascaderContent({ children, empty, ...rest }: XhCascaderConten
     <CascaderContentProvider value={contentContext}>
       <div
         {...mergeReactProps(
-          api.getContentProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getContentProps(),
+          rest,
           {
             // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
             // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -468,7 +468,7 @@ export function XhCascaderContent({ children, empty, ...rest }: XhCascaderConten
       >
         {children}
         {/* 空态占位常挂在列后，露不露面归连接层 */}
-        <div {...api.getEmptyProps() as Record<string, unknown>}>
+        <div {...api.getEmptyProps()}>
           {empty ?? (api.searching ? api.translations.noMatch : api.translations.empty)}
         </div>
         <CascaderAutoLoading />
@@ -486,7 +486,7 @@ export function XhCascaderLoading({ children, ...rest }: XhCascaderLoadingProps)
   content.renderRegistration.authoredLoading = true
   useIsomorphicLayoutEffect(() => content.registerLoading(), [content.registerLoading])
   return (
-    <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>
       {children ?? ctx.api.translations.loading}
     </div>
   )
@@ -496,7 +496,7 @@ export interface XhCascaderInputProps extends Omit<ComponentPropsWithRef<'input'
 /** 搜索框放在 content 顶部；未开启 searchable 时连接层写 hidden。 */
 export function XhCascaderInput({ ...rest }: XhCascaderInputProps): ReactNode {
   const ctx = useCascaderContext()
-  return <input {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(ctx.api.getInputProps(), rest)} />
 }
 
 export interface XhCascaderSearchListProps extends ComponentPropsWithRef<'div'> {
@@ -518,9 +518,9 @@ export function XhCascaderSearchList({ renderItem, ...rest }: XhCascaderSearchLi
   useEffect(() => bars.measure())
   return (
     <>
-      <div {...mergeReactProps(api.getSearchListProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: searchListRef })}>
+      <div {...mergeReactProps(api.getSearchListProps(), rest, { ref: searchListRef })}>
         {api.searchResults.map(result => (
-          <div key={result.key} {...api.getSearchItemProps({ path: result.path }) as Record<string, unknown>}>
+          <div key={result.key} {...api.getSearchItemProps({ path: result.path })}>
             {renderItem?.(result) ?? result.labels.join(' / ')}
           </div>
         ))}
@@ -550,8 +550,8 @@ export function XhCascaderColumn({ level, children, ...rest }: XhCascaderColumnP
     <>
       <div
         {...mergeReactProps(
-          ctx.api.getColumnProps({ level: Number(level) }) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getColumnProps({ level: Number(level) }),
+          rest,
           { ref: columnRef },
         )}
       >
@@ -573,9 +573,9 @@ function CascaderBranchFeedback({ level }: { level: number }): ReactNode {
     return null
   return (
     <>
-      <div {...api.getBranchLoadingProps({ level }) as Record<string, unknown>}>{api.translations.loading}</div>
-      <div {...api.getBranchErrorProps({ level }) as Record<string, unknown>}>{api.translations.branchError}</div>
-      <button {...api.getBranchRetryTriggerProps({ level }) as Record<string, unknown>}>{api.translations.retry}</button>
+      <div {...api.getBranchLoadingProps({ level })}>{api.translations.loading}</div>
+      <div {...api.getBranchErrorProps({ level })}>{api.translations.branchError}</div>
+      <button {...api.getBranchRetryTriggerProps({ level })}>{api.translations.retry}</button>
     </>
   )
 }
@@ -589,7 +589,7 @@ export function XhCascaderGroup({ value, children, ...rest }: XhCascaderGroupPro
   const group = useMemo(() => ({ value }), [value])
   return (
     <CascaderGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </CascaderGroupProvider>
   )
 }
@@ -598,7 +598,7 @@ export interface XhCascaderGroupLabelProps extends ComponentPropsWithRef<'span'>
 export function XhCascaderGroupLabel({ children, ...rest }: XhCascaderGroupLabelProps): ReactNode {
   const ctx = useCascaderContext()
   const group = useCascaderGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhCascaderItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -611,7 +611,7 @@ export function XhCascaderItem({ value, children, ...rest }: XhCascaderItemProps
   const previous = useRef(value)
   // 条目的聚焦上报与指针划入都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps(item) as Record<string, unknown>,
+    ctx.api.getItemProps(item),
     ['onFocus', 'onPointerEnter'],
   )
   // 层号回 collection 里查，条目只自报值；api 每渲染一份，效应里现读最新那一份
@@ -648,7 +648,7 @@ export function XhCascaderItem({ value, children, ...rest }: XhCascaderItemProps
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
@@ -663,7 +663,7 @@ export interface XhCascaderItemTextProps extends ComponentPropsWithRef<'span'> {
 export function XhCascaderItemText({ children, ...rest }: XhCascaderItemTextProps): ReactNode {
   const ctx = useCascaderContext()
   const item = useCascaderItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -671,7 +671,7 @@ export interface XhCascaderItemDescriptionProps extends ComponentPropsWithRef<'s
 export function XhCascaderItemDescription({ children, ...rest }: XhCascaderItemDescriptionProps): ReactNode {
   const ctx = useCascaderContext()
   const item = useCascaderItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -679,14 +679,14 @@ export interface XhCascaderItemSuffixProps extends ComponentPropsWithRef<'span'>
 export function XhCascaderItemSuffix({ children, ...rest }: XhCascaderItemSuffixProps): ReactNode {
   const ctx = useCascaderContext()
   const item = useCascaderItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 export interface XhCascaderItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhCascaderItemIndicator({ children, ...rest }: XhCascaderItemIndicatorProps): ReactNode {
   const ctx = useCascaderContext()
   const item = useCascaderItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhCascaderFooterProps extends ComponentPropsWithRef<'div'> {}
@@ -696,7 +696,7 @@ export interface XhCascaderFooterProps extends ComponentPropsWithRef<'div'> {}
  */
 export function XhCascaderFooter({ children, ...rest }: XhCascaderFooterProps): ReactNode {
   const ctx = useCascaderContext()
-  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</div>
 }
 
 /** 标准结构里各部件对应的组件；委派部件按「组件名/部件名」查。 */

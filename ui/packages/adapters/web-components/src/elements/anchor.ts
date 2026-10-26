@@ -120,24 +120,24 @@ export class XhAnchorElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('list', api.getListProps())
 
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps())
 
     // 逐个打 link，身份取作者写的 value（即目标区块的 id）
     for (const el of this.getParts('link')) {
       const props = api.getLinkProps({ value: el.getAttribute('value') ?? '' })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
     }
 
     for (const el of this.getParts('link-text'))
-      this.spreader.spread(el, api.getLinkTextProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkTextProps())
 
     const indicator = this.getPart('indicator')
     if (indicator) {
-      const props = api.getIndicatorProps() as Record<string, unknown>
+      const props = api.getIndicatorProps()
       this.spreader.spread(indicator, props)
       // 按本帧产出的 hidden 用内联 display 收起
       this.setPartHidden(indicator, props.hidden === true)

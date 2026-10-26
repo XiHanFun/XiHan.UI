@@ -49,7 +49,7 @@ export const XhGridRoot = defineComponent({
       ruled: props.ruled,
     }, vueNormalize))
     provideGrid({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -75,7 +75,7 @@ export const XhGridItem = defineComponent({
         span: normalizeGridTier(props.span) as GridItemProps['span'],
         offset: normalizeGridTier(props.offset) as GridItemProps['offset'],
         rowSpan: normalizeGridTier(props.rowSpan) as GridItemProps['rowSpan'],
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },

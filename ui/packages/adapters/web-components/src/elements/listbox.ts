@@ -250,36 +250,36 @@ export class XhListboxElement<V = string> extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
-    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('content', api.getContentProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
+    put('load-more-trigger', api.getLoadMoreTriggerProps())
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       // 条目内的文本与选中标记跟着同一份声明走，样式层各处状态一致
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const prefix of this.partsIn(el, 'item-prefix'))
-        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+        this.spreader.spread(prefix, api.getItemPrefixProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
       for (const indicator of this.partsIn(el, 'item-indicator'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item))
     }
 
     this.bars.wire()

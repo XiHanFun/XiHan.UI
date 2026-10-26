@@ -187,18 +187,18 @@ export class XhTimeFieldElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('segment-group', api.getSegmentGroupProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 段是多实例 part，逐个打。打上去的 data-scope/data-part/data-value 正是换段与
     // 自动跳段在事件那一刻现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。
     this.getParts('segment').forEach((el, position) => {
       const segment = declaredSegment(el, position)
-      this.spreader.spread(el, api.getSegmentProps({ segment }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSegmentProps({ segment }))
       this.fillSegmentText(el, api.getSegmentText({ segment }))
       // 收起不参与显示的段只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条
       // display 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住

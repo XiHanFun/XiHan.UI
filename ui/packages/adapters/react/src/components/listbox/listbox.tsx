@@ -147,7 +147,7 @@ export function XhListboxRoot<V = string>({
 
   return (
     <ListboxProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>{body}</div>
     </ListboxProvider>
   )
 }
@@ -160,7 +160,7 @@ export function XhListboxLabel({ children, ...rest }: XhListboxLabelProps): Reac
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhListboxContentProps extends ComponentPropsWithRef<'div'> {}
@@ -173,7 +173,7 @@ export function XhListboxContent({ children, ...rest }: XhListboxContentProps): 
   // 放进表单字段时，字段的标题与说明接到列表上：读屏进列表时念字段名与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getContentProps() as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getContentProps() }), ['onFocus'])
   const contentRef = useRef<HTMLDivElement | null>(null)
   // 定高小列表走自绘条：条子是 content 的兄弟、挂在 root 这个定位盒上，贴在 content 自己的盒子上
   // （root 里还有标题与占位，贴壳边会盖到它们）；两条轴都摆——皮肤给的是两轴 overflow: auto。
@@ -188,7 +188,7 @@ export function XhListboxContent({ children, ...rest }: XhListboxContentProps): 
   useEffect(() => bars.measure())
   return (
     <>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: contentRef })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref }, { ref: contentRef })}>
         {children}
       </div>
       {bars.render()}
@@ -200,21 +200,21 @@ export interface XhListboxEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 空态占位：写在 root 中、content 的兄弟，不进入列表框的拥有关系。 */
 export function XhListboxEmpty({ children, ...rest }: XhListboxEmptyProps): ReactNode {
   const ctx = useListboxContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhListboxLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhListboxLoading({ children, ...rest }: XhListboxLoadingProps): ReactNode {
   const ctx = useListboxContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{children}</div>
 }
 
 export interface XhListboxLoadMoreTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 取下一页的入口：点击后的行为归作者，这里只把在途与禁用两档固定为不可按下。 */
 export function XhListboxLoadMoreTrigger({ children, ...rest }: XhListboxLoadMoreTriggerProps): ReactNode {
   const ctx = useListboxContext()
-  return <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhListboxGroupProps extends ComponentPropsWithRef<'div'> {
@@ -226,7 +226,7 @@ export function XhListboxGroup({ value, children, ...rest }: XhListboxGroupProps
   const group = useMemo(() => ({ value }), [value])
   return (
     <ListboxGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </ListboxGroupProvider>
   )
 }
@@ -235,7 +235,7 @@ export interface XhListboxGroupLabelProps extends ComponentPropsWithRef<'span'> 
 export function XhListboxGroupLabel({ children, ...rest }: XhListboxGroupLabelProps): ReactNode {
   const ctx = useListboxContext()
   const group = useListboxGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhListboxItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -250,7 +250,7 @@ export function XhListboxItem({ value, disabled, children, ...rest }: XhListboxI
   const itemEl = useRef<HTMLElement | null>(null)
   const previous = useRef(value)
   // 条目的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getItemProps(item) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getItemProps(item), ['onFocus'])
 
   // 本条目持有焦点时，value 变更重报焦点条目
   useEffect(() => {
@@ -283,7 +283,7 @@ export function XhListboxItem({ value, disabled, children, ...rest }: XhListboxI
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
@@ -298,7 +298,7 @@ export interface XhListboxItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhListboxItemText({ children, ...rest }: XhListboxItemTextProps): ReactNode {
   const ctx = useListboxContext()
   const item = useListboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
@@ -306,7 +306,7 @@ export interface XhListboxItemPrefixProps extends ComponentPropsWithRef<'span'> 
 export function XhListboxItemPrefix({ children, ...rest }: XhListboxItemPrefixProps): ReactNode {
   const ctx = useListboxContext()
   const item = useListboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -314,7 +314,7 @@ export interface XhListboxItemSuffixProps extends ComponentPropsWithRef<'span'> 
 export function XhListboxItemSuffix({ children, ...rest }: XhListboxItemSuffixProps): ReactNode {
   const ctx = useListboxContext()
   const item = useListboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -322,14 +322,14 @@ export interface XhListboxItemDescriptionProps extends ComponentPropsWithRef<'sp
 export function XhListboxItemDescription({ children, ...rest }: XhListboxItemDescriptionProps): ReactNode {
   const ctx = useListboxContext()
   const item = useListboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhListboxItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhListboxItemIndicator({ children, ...rest }: XhListboxItemIndicatorProps): ReactNode {
   const ctx = useListboxContext()
   const item = useListboxItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 /** 标准结构里各部件对应的组件。 */

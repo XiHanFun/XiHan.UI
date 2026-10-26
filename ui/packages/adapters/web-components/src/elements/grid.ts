@@ -102,7 +102,7 @@ export class XhGridElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 多实例 part 逐个打，每一格的占位取作者写的 span、offset 与 row-span
     for (const el of this.getParts('item')) {
@@ -111,7 +111,7 @@ export class XhGridElement extends XhElement {
         offset: authorTier(el, 'offset') as GridItemProps['offset'],
         rowSpan: authorTier(el, 'row-span') as GridItemProps['rowSpan'],
       })
-      this.spreader.spread(el, attrs as Record<string, unknown>)
+      this.spreader.spread(el, attrs)
     }
   }
 }

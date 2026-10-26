@@ -180,8 +180,8 @@ export class XhStepsElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('list', api.getListProps())
 
     // 集合类 part 逐个 spread：身份由节点自报，不依赖下标，条目增删无需记账。
     // wire 跑在事件之前（element-base 的 updated），因此按键那一刻 data-scope/data-part/data-value
@@ -202,7 +202,7 @@ export class XhStepsElement extends XhElement {
     // 都会盖过 UA 的 [hidden]{display:none}，而宿主不能指望作者装的正是随包那份样式。
     for (const el of this.getParts('content')) {
       const index = stepIndexOf(el)
-      this.spreader.spread(el, api.getContentProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getContentProps({ index }))
       this.setPartHidden(el, index !== api.value)
     }
   }

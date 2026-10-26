@@ -46,7 +46,7 @@ const SelectHiddenSelect = /* @__PURE__ */ defineComponent({
       // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
       for (const [i, v] of api.valueKeys.entries())
         options.push(h('option', { value: v, selected: true }, api.valueText[i] ?? v))
-      return h('select', api.getHiddenSelectProps() as Record<string, unknown>, options)
+      return h('select', api.getHiddenSelectProps(), options)
     }
   },
 })
@@ -155,7 +155,7 @@ const XhSelectRootImpl = /* @__PURE__ */ defineComponent({
 
     return () => {
       const api = ctx.api.value
-      const rootProps = api.getRootProps() as Record<string, unknown>
+      const rootProps = api.getRootProps()
       if (!slots.default)
         return h('div', rootProps, renderDefaultStructure(api, { label: props.label, empty: props.empty, clearable: props.clearable, virtualItems: virtual ? (virtual.view.value?.api.value.virtualItems ?? []) : undefined }, slots))
       return h('div', rootProps, [
@@ -216,7 +216,7 @@ export const XhSelectLabel = /* @__PURE__ */ defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -226,7 +226,7 @@ export const XhSelectControl = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 盒：触发器与清空按钮在里面并排，描边、底色与聚焦环都长在它上面
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -242,7 +242,7 @@ export const XhSelectTrigger = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     return () => h('button', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...ctx.api.value.getTriggerProps(),
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }), slots.default?.())
   },
@@ -255,7 +255,7 @@ export const XhSelectValueText = /* @__PURE__ */ defineComponent({
     // 有插槽用插槽，否则显示选中项文本或 placeholder
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? ctx.api.value.displayText,
     )
   },
@@ -265,7 +265,7 @@ export const XhSelectIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhSelectIndicator',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -274,7 +274,7 @@ export const XhSelectClearTrigger = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 节点常挂，清不了时靠 hidden 藏掉
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -283,7 +283,7 @@ export const XhSelectTagList = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default?.())
   },
 })
 
@@ -292,7 +292,7 @@ export const XhSelectTagLabel = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTagLabel',
   setup(_, { slots }) {
     const ctx = useSelectContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -318,7 +318,7 @@ export const XhSelectTag = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     provideSelectTag({ value: () => props.value })
     // 标签随文排在触发器那一行里，根用 span
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -329,7 +329,7 @@ export const XhSelectOverflowTag = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -341,7 +341,7 @@ export const XhSelectItemDeleteTrigger = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const tag = useSelectTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -362,7 +362,7 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -374,7 +374,7 @@ export const XhSelectContent = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -389,7 +389,7 @@ export const XhSelectList = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 列表框本体：条目放这里面。滚动也在这一层，底部操作区因此不随条目滚走
     return () => h('div', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -401,7 +401,7 @@ export const XhSelectFooter = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 浮层底部的操作区：是 list 的兄弟，不进列表框的拥有关系，
     // 放在里面的按钮既不违反 listbox 的子节点约束，也不会被方向键与连打检索走到
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -411,7 +411,7 @@ export const XhSelectEmpty = /* @__PURE__ */ defineComponent({
     const ctx = useSelectContext()
     // 空态占位：写在 content 里、list 的兄弟，不进列表框的拥有关系。
     // 给了 collection 时收放归连接层，条目手写时归作者；没写内容时显示 translations.empty
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.empty)
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? ctx.api.value.translations.empty)
   },
 })
 
@@ -420,7 +420,7 @@ export const XhSelectLoading = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来；没写内容时显示 translations.loading
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -429,7 +429,7 @@ export const XhSelectError = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 整表取数失败的提示：与空态、在途占位同一个位置；没写内容时显示 translations.loadError
-    return () => h('div', ctx.api.value.getErrorProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loadError)
+    return () => h('div', ctx.api.value.getErrorProps(), slots.default?.() ?? ctx.api.value.translations.loadError)
   },
 })
 
@@ -438,7 +438,7 @@ export const XhSelectRetryTrigger = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 重试钮：没写内容时显示 translations.retry
-    return () => h('button', ctx.api.value.getRetryTriggerProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
+    return () => h('button', ctx.api.value.getRetryTriggerProps(), slots.default?.() ?? ctx.api.value.translations.retry)
   },
 })
 
@@ -452,7 +452,7 @@ export const XhSelectGroup = /* @__PURE__ */ defineComponent({
     const group = computed<SelectGroupProps>(() => ({ value: props.value }))
     provideSelectGroup({ group })
     // 分组容器：条目照常挂在它里面，role=group 是列表框允许拥有的两种子节点之一
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -461,7 +461,7 @@ export const XhSelectGroupLabel = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { group } = useSelectGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -502,7 +502,7 @@ export const XhSelectItem = /* @__PURE__ */ defineComponent({
     })
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps(item.value), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -513,7 +513,7 @@ export const XhSelectItemText = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { item } = useSelectItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -523,7 +523,7 @@ export const XhSelectItemPrefix = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { item } = useSelectItemContext()
-    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value), slots.default?.())
   },
 })
 
@@ -533,7 +533,7 @@ export const XhSelectItemSuffix = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { item } = useSelectItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -543,7 +543,7 @@ export const XhSelectItemDescription = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { item } = useSelectItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -552,7 +552,7 @@ export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     const { item } = useSelectItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 

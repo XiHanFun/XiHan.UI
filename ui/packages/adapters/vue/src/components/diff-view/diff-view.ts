@@ -52,7 +52,7 @@ export const XhDiffViewRoot = defineComponent({
       emit('update:expandedValue', details.value)
     }, details => emit('comment-request', details))
     provideDiffView(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       view: ctx.api.value.view,
       rows: ctx.api.value.rows,
       expandedValue: ctx.api.value.expandedValue,
@@ -77,7 +77,7 @@ export const XhDiffViewHeader = defineComponent({
     onBeforeUnmount(() => {
       ctx.headerCount.value--
     })
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -101,7 +101,7 @@ export const XhDiffViewSummary = defineComponent({
       const count = props.change === 'added' ? api.stats.added : api.stats.removed
       return h(
         'span',
-        api.getSummaryProps({ change: props.change }) as Record<string, unknown>,
+        api.getSummaryProps({ change: props.change }),
         slots.default?.({ count }) ?? `${props.change === 'added' ? '+' : '−'}${count}`,
       )
     }
@@ -113,7 +113,7 @@ export const XhDiffViewViewport = defineComponent({
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
     // 唯一的 Tab 停靠点，横纵滚动交给浏览器
-    return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getViewportProps(), slots.default?.())
   },
 })
 
@@ -130,39 +130,39 @@ export const XhDiffViewBody = defineComponent({
     return () => {
       const api = ctx.api.value
       const sides = diffViewSides(api.view)
-      return h('div', api.getBodyProps() as Record<string, unknown>, [
+      return h('div', api.getBodyProps(), [
         ...api.rows.map((row) => {
           if (row.kind === 'gap') {
             const gapId = row.gapId!
-            return h('div', { ...api.getGapProps({ gapId }) as Record<string, unknown>, key: `gap:${gapId}` }, [
-              h('div', api.getGapCellProps() as Record<string, unknown>, [
+            return h('div', { ...api.getGapProps({ gapId }), key: `gap:${gapId}` }, [
+              h('div', api.getGapCellProps(), [
                 h(
                   'button',
-                  api.getGapTriggerProps({ gapId }) as Record<string, unknown>,
+                  api.getGapTriggerProps({ gapId }),
                   `⋯ ${row.hiddenCount}`,
                 ),
               ]),
             ])
           }
           const { rowIndex } = row
-          return h('div', { ...api.getRowProps({ rowIndex }) as Record<string, unknown>, key: `row:${rowIndex}` }, sides.flatMap((side) => {
+          return h('div', { ...api.getRowProps({ rowIndex }), key: `row:${rowIndex}` }, sides.flatMap((side) => {
             const cell = { rowIndex, side }
             const ref = api.commentRefAt(cell)
             return [
-              h('span', { ...api.getLineNumberProps(cell) as Record<string, unknown>, key: `n:${side}` }),
-              h('span', { ...api.getLineContentProps(cell) as Record<string, unknown>, key: `c:${side}` }, [
+              h('span', { ...api.getLineNumberProps(cell), key: `n:${side}` }),
+              h('span', { ...api.getLineContentProps(cell), key: `c:${side}` }, [
                 // 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达
                 h(
                   'span',
-                  api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>,
+                  api.getChangeLabelProps({ change: row.line!.change }),
                   api.changeLabel(row.line!.change),
                 ),
                 // 评论钮放在正文最前面，由皮肤定位到正文让出的那一列里；空侧不建
-                api.commentable && ref !== undefined ? h('button', api.getCommentTriggerProps(cell) as Record<string, unknown>) : null,
+                api.commentable && ref !== undefined ? h('button', api.getCommentTriggerProps(cell)) : null,
                 ...renderCell(api, rowIndex, side),
                 // 挂着评论的行在代码下方铺出评论容器，与代码同住一个 cell，行序不受影响
                 api.hasComment(cell)
-                  ? h('div', api.getCommentThreadProps(cell) as Record<string, unknown>, slots.comment?.({ ...ref!, change: row.line!.change, text: row.line!.text }))
+                  ? h('div', api.getCommentThreadProps(cell), slots.comment?.({ ...ref!, change: row.line!.change, text: row.line!.text }))
                   : null,
               ]),
             ]
@@ -178,7 +178,7 @@ export const XhDiffViewBody = defineComponent({
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): VNode[] {
   return tokens.map((token, i) => h(
     'span',
-    { ...api.getTokenProps(token) as Record<string, unknown>, key: i },
+    { ...api.getTokenProps(token), key: i },
     token.text,
   ))
 }
@@ -189,7 +189,7 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): VNode[]
   if (segments.length > 0) {
     return segments.map((segment, i) => h(
       'span',
-      { ...api.getInlineChangeProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>, key: `s:${i}` },
+      { ...api.getInlineChangeProps({ rowIndex, changed: segment.changed }), key: `s:${i}` },
       segment.tokens.length === 0 ? segment.text : renderTokens(api, segment.tokens),
     ))
   }
@@ -205,7 +205,7 @@ export const XhDiffViewEmpty = defineComponent({
   name: 'XhDiffViewEmpty',
   setup(_, { slots }) {
     const ctx = useDiffViewContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -226,7 +226,7 @@ export const XhDiffViewTruncation = defineComponent({
       const api = ctx.api.value
       return h(
         'div',
-        api.getTruncationProps() as Record<string, unknown>,
+        api.getTruncationProps(),
         slots.default?.({ count: api.truncatedLines }) ?? api.truncationText,
       )
     }

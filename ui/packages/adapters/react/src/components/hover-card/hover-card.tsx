@@ -71,7 +71,7 @@ export function XhHoverCardRoot({
   } as HoverCardProps)
   return (
     <HoverCardProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </HoverCardProvider>
@@ -87,7 +87,7 @@ export function XhHoverCardTrigger({ children, asChild, ...rest }: XhHoverCardTr
   // 指针进出与聚焦装成原生监听器：这三个事件不冒泡，委派在根容器上的合成事件收不到。
   // onBlur 不动——connect 挂的是失焦离场判定，React 的 onBlur 收的正是冒泡的 focusout
   const bind = useNativeEvents(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
+    ctx.api.getTriggerProps(),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   const props = mergePartProps(
@@ -96,7 +96,7 @@ export function XhHoverCardTrigger({ children, asChild, ...rest }: XhHoverCardTr
       { ref: bind.ref },
       { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   return renderAsChild(asChild, children, props, 'hover-card', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -114,8 +114,8 @@ export function XhHoverCardPositioner({ children, container, ...rest }: XhHoverC
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -132,14 +132,14 @@ export function XhHoverCardContent({ children, ...rest }: XhHoverCardContentProp
   // 只摘指针进出：content 上那两个焦点处理器挂的是冒泡的 focusin / focusout，
   // 归一化后正好落在 React 的 onFocus / onBlur 上，改装成原生监听器反而收不到后代
   const bind = useNativeEvents(
-    ctx.api.getContentProps() as Record<string, unknown>,
+    ctx.api.getContentProps(),
     ['onPointerEnter', 'onPointerLeave'],
   )
   return (
     <div
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
@@ -161,8 +161,8 @@ export function XhHoverCardTitle({ children, ...rest }: XhHoverCardTitleProps): 
   return (
     <h2
       {...mergeReactProps(
-        ctx.api.getTitleProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTitleProps(),
+        rest,
       )}
     >
       {children}
@@ -178,8 +178,8 @@ export function XhHoverCardDescription({ children, ...rest }: XhHoverCardDescrip
   return (
     <p
       {...mergeReactProps(
-        ctx.api.getDescriptionProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getDescriptionProps(),
+        rest,
         { ref: el },
       )}
     >
@@ -191,5 +191,5 @@ export function XhHoverCardDescription({ children, ...rest }: XhHoverCardDescrip
 export interface XhHoverCardArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhHoverCardArrow({ children, ...rest }: XhHoverCardArrowProps): ReactNode {
   const ctx = useHoverCardContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
 }

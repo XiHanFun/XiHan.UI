@@ -151,7 +151,7 @@ export const XhTimeRangePickerRoot = defineComponent({
     provideTimeRangePicker(ctx)
 
     // 没写默认插槽时照 timeRangePickerStructure 铺整套结构
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+    return () => h('div', ctx.api.value.getRootProps(), !slots.default
       ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
       : slots.default({
           open: ctx.api.value.open,
@@ -181,7 +181,7 @@ export const XhTimeRangePickerLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -190,7 +190,7 @@ export const XhTimeRangePickerControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimeRangePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -207,7 +207,7 @@ export const XhTimeRangePickerSegmentGroup = defineComponent({
     const index = computed<TimeRangePickerEndIndex>(() => resolveTimeRangePickerEndIndex(props.index))
     // 组内的段位据此认领起止
     provideTimeRangePickerEnd({ index })
-    return () => h('div', ctx.api.value.getSegmentGroupProps({ index: index.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSegmentGroupProps({ index: index.value }), slots.default?.())
   },
 })
 
@@ -223,7 +223,7 @@ export const XhTimeRangePickerSegment = defineComponent({
     // 有插槽用插槽，否则显示该段的文字，空段为占位串
     return () => h(
       'span',
-      ctx.api.value.getSegmentProps({ index: end.index.value, segment: props.segment }) as Record<string, unknown>,
+      ctx.api.value.getSegmentProps({ index: end.index.value, segment: props.segment }),
       slots.default?.() ?? ctx.api.value.getSegmentText({ index: end.index.value, segment: props.segment }),
     )
   },
@@ -235,7 +235,7 @@ export const XhTimeRangePickerRangeSeparator = defineComponent({
     const ctx = useTimeRangePickerContext()
     return () => h(
       'span',
-      ctx.api.value.getRangeSeparatorProps() as Record<string, unknown>,
+      ctx.api.value.getRangeSeparatorProps(),
       slots.default?.() ?? '-',
     )
   },
@@ -252,7 +252,7 @@ export const XhTimeRangePickerTrigger = defineComponent({
     const ctx = useTimeRangePickerContext()
     return () => h('button', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...ctx.api.value.getTriggerProps(),
       // 归还焦点要落到它身上：锚点取的是整个输入行，那一层不可聚焦
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }), slots.default?.())
@@ -263,7 +263,7 @@ export const XhTimeRangePickerClearTrigger = defineComponent({
   name: 'XhTimeRangePickerClearTrigger',
   setup(_, { slots }) {
     const ctx = useTimeRangePickerContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -287,7 +287,7 @@ export const XhTimeRangePickerPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -299,7 +299,7 @@ export const XhTimeRangePickerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimeRangePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -333,14 +333,14 @@ export const XhTimeRangePickerPresetGroup = defineComponent({
         h(
           'div',
           {
-            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getPresetGroupProps(), attrs),
             ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
           },
           slotPaints(authored)
             ? authored
             : api.presets.map(preset => h(
                 'div',
-                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                { ...api.getPresetProps({ value: preset.value }), key: preset.value },
                 preset.label,
               )),
         ),
@@ -367,7 +367,7 @@ export const XhTimeRangePickerPreset = defineComponent({
       const authored = slots.default?.()
       return h(
         'div',
-        api.getPresetProps({ value: props.value }) as Record<string, unknown>,
+        api.getPresetProps({ value: props.value }),
         slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
       )
     }
@@ -390,7 +390,7 @@ export const XhTimeRangePickerColumnGroup = defineComponent({
     provideTimeRangePickerEnd({ index })
     return () => h(
       'div',
-      ctx.api.value.getColumnGroupProps({ index: index.value }) as Record<string, unknown>,
+      ctx.api.value.getColumnGroupProps({ index: index.value }),
       slots.default?.({ columns: ctx.api.value.columnGroups[index.value].columns }),
     )
   },
@@ -401,7 +401,7 @@ export const XhTimeRangePickerColumnGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimeRangePickerContext()
     const end = useTimeRangePickerEndContext()
-    return () => h('div', ctx.api.value.getColumnGroupLabelProps({ index: end.index.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getColumnGroupLabelProps({ index: end.index.value }), slots.default?.())
   },
 })
 
@@ -433,7 +433,7 @@ export const XhTimeRangePickerColumn = defineComponent({
       h(
         'div',
         {
-          ...mergeProps(ctx.api.value.getColumnProps({ index: end.index.value, unit: props.unit }) as Record<string, unknown>, attrs),
+          ...mergeProps(ctx.api.value.getColumnProps({ index: end.index.value, unit: props.unit }), attrs),
           ref: (el: unknown) => { columnRef.value = el as HTMLElement },
         },
         slots.default?.({ options: ctx.api.value.columnGroups[end.index.value].columns.find(c => c.unit === props.unit)?.options ?? [] }),
@@ -456,7 +456,7 @@ export const XhTimeRangePickerItem = defineComponent({
     // 有插槽用插槽，否则显示这一格该显示的文字（上下午列按 locale 译成「上午 / 下午」）
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ index: end.index.value, unit: unit.value, value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ index: end.index.value, unit: unit.value, value: props.value }),
       slots.default?.() ?? ctx.api.value.getItemText({ unit: unit.value, value: props.value }),
     )
   },
@@ -473,7 +473,7 @@ export const XhTimeRangePickerHiddenInput = defineComponent({
     const end = useTimeRangePickerEndContext()
     return () => {
       const index = props.index === undefined ? end.index.value : resolveTimeRangePickerEndIndex(props.index)
-      return h('input', ctx.api.value.getHiddenInputProps({ index }) as Record<string, unknown>)
+      return h('input', ctx.api.value.getHiddenInputProps({ index }))
     }
   },
 })

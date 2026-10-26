@@ -74,7 +74,7 @@ export const XhPopoverTrigger = defineComponent({
     const ctx = usePopoverContext()
     return () => {
       const part = mergePartProps({
-        ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+        ...ctx.api.value.getTriggerProps(),
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
       }, attrs)
       const children = slots.default?.()
@@ -104,7 +104,7 @@ export const XhPopoverPositioner = defineComponent({
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.portalSource.value, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -116,7 +116,7 @@ export const XhPopoverContent = defineComponent({
   setup(_, { slots }) {
     const ctx = usePopoverContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -130,7 +130,7 @@ export const XhPopoverTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = usePopoverContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h2', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -140,7 +140,7 @@ export const XhPopoverDescription = defineComponent({
     const ctx = usePopoverContext()
     // 读不出一句话的说明不进描述链
     const el = useDescriptionPart(ctx.presence)
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -148,7 +148,7 @@ export const XhPopoverCloseTrigger = defineComponent({
   name: 'XhPopoverCloseTrigger',
   setup(_, { slots }) {
     const ctx = usePopoverContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
 
@@ -156,6 +156,6 @@ export const XhPopoverArrow = defineComponent({
   name: 'XhPopoverArrow',
   setup() {
     const ctx = usePopoverContext()
-    return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getArrowProps())
   },
 })

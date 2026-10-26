@@ -52,7 +52,7 @@ export const XhBadgeRoot = defineComponent({
     const service = useMachine(badgeMachine, () => ({ ...configured }) as BadgeProps, scope)
     const api = computed(() => connectBadge(service, vueNormalize))
     provideBadge({ api })
-    return () => h('span', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -64,7 +64,7 @@ export const XhBadgeIndicator = defineComponent({
     const ctx = useBadgeContext()
     return () => h(
       'span',
-      ctx.api.value.getIndicatorProps() as Record<string, unknown>,
+      ctx.api.value.getIndicatorProps(),
       slots.default?.({ text: ctx.api.value.text }) ?? ctx.api.value.text,
     )
   },

@@ -71,7 +71,7 @@ export function XhLoadingBarRoot({
   const api = ctx.api
   return (
     <LoadingBarProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           phase: api.phase,
           value: api.value,
@@ -88,19 +88,19 @@ XhLoadingBarRoot.xhEvents = ['value-change'] as const
 export interface XhLoadingBarTrackProps extends ComponentPropsWithRef<'div'> {}
 export function XhLoadingBarTrack({ children, ...rest }: XhLoadingBarTrackProps): ReactNode {
   const ctx = useLoadingBarContext()
-  return <div {...mergeReactProps(ctx.api.getTrackProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getTrackProps(), rest)}>{children}</div>
 }
 
 export interface XhLoadingBarRangeProps extends ComponentPropsWithRef<'div'> {}
 /** 宽度与颜色由连接层写入内联样式。 */
 export function XhLoadingBarRange({ children, ...rest }: XhLoadingBarRangeProps): ReactNode {
   const ctx = useLoadingBarContext()
-  return <div {...mergeReactProps(ctx.api.getRangeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getRangeProps(), rest)}>{children}</div>
 }
 
 export interface XhLoadingBarPegProps extends ComponentPropsWithRef<'div'> {}
 /** 进度段末端的亮边，纯装饰；不渲染它时进度条照常成立。 */
 export function XhLoadingBarPeg({ children, ...rest }: XhLoadingBarPegProps): ReactNode {
   const ctx = useLoadingBarContext()
-  return <div {...mergeReactProps(ctx.api.getPegProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getPegProps(), rest)}>{children}</div>
 }

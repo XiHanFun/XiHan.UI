@@ -31,6 +31,6 @@ export const XhColorSwatch = defineComponent({
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('color-swatch', props)
     const api = computed(() => connectColorSwatch(configured as ColorSwatchProps, vueNormalize))
-    return () => h('span', api.value.getRootProps() as Record<string, unknown>)
+    return () => h('span', api.value.getRootProps())
   },
 })

@@ -204,7 +204,7 @@ export const XhDatePickerRoot = defineComponent({
     provideDatePicker(ctx)
     // 写了默认插槽时网格与段位由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ segments 自行渲染；
     // 没写时照 datePickerStructure 铺整套结构
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: rootRef }, !slots.default
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: rootRef }, !slots.default
       ? renderDefaultStructure(ctx.api.value, props.label, slots.label)
       : slots.default({
           open: ctx.api.value.open,
@@ -240,7 +240,7 @@ export const XhDatePickerLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 渲染为 span 而非 label，点击聚焦由连接层接管
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -249,7 +249,7 @@ export const XhDatePickerControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -260,7 +260,7 @@ export const XhDatePickerTagLabel = defineComponent({
   name: 'XhDatePickerTagLabel',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -280,7 +280,7 @@ export const XhDatePickerItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
     const tag = useDatePickerTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -294,7 +294,7 @@ export const XhDatePickerTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useDatePickerContext()
     provideDatePickerTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -305,7 +305,7 @@ export const XhDatePickerOverflowTag = defineComponent({
     const ctx = useDatePickerContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -319,7 +319,7 @@ export const XhDatePickerTagList = defineComponent({
   name: 'XhDatePickerTagList',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default
       ? slots.default()
       : [
           ...ctx.api.value.tags.map(tag => h(XhDatePickerTag, { key: tag.value, value: tag.value }, () => [
@@ -336,7 +336,7 @@ export const XhDatePickerSegmentGroup = defineComponent({
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
     // role=group 的分段容器，也是换段时的查询边界
-    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSegmentGroupProps(), slots.default?.())
   },
 })
 
@@ -363,7 +363,7 @@ export const XhDatePickerSegment = defineComponent({
       // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
-        field.getSegmentProps(declared) as Record<string, unknown>,
+        field.getSegmentProps(declared),
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }
@@ -374,7 +374,7 @@ export const XhDatePickerClearTrigger = defineComponent({
   name: 'XhDatePickerClearTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -387,7 +387,7 @@ export const XhDatePickerTrigger = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useDatePickerContext()
-    return () => h('button', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() as Record<string, unknown> }), slots.default?.())
+    return () => h('button', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() }), slots.default?.())
   },
 })
 
@@ -420,7 +420,7 @@ export const XhDatePickerPositioner = defineComponent({
         disabled: props.container == null && typeof target === 'string',
       }, () => [
         h('div', {
-          ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+          ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
           ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
         }, [...(slots.default?.() ?? []), ...bars.render()]),
       ])
@@ -433,7 +433,7 @@ export const XhDatePickerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -454,7 +454,7 @@ export const XhDatePickerCalendar = defineComponent({
     const ctx = useDatePickerContext()
     provideDatePickerPanel({ index: usePanelIndex(props) })
     // 内嵌日历的挂载点，同时是日历的根节点
-    return () => h('div', ctx.api.value.getCalendarProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCalendarProps(), slots.default?.())
   },
 })
 
@@ -484,14 +484,14 @@ export const XhDatePickerPresetGroup = defineComponent({
         h(
           'div',
           {
-            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getPresetGroupProps(), attrs),
             ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
           },
           slotPaints(authored)
             ? authored
             : api.presets.map(preset => h(
                 'div',
-                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                { ...api.getPresetProps({ value: preset.value }), key: preset.value },
                 preset.label,
               )),
         ),
@@ -518,7 +518,7 @@ export const XhDatePickerPreset = defineComponent({
       const authored = slots.default?.()
       return h(
         'div',
-        api.getPresetProps({ value: props.value }) as Record<string, unknown>,
+        api.getPresetProps({ value: props.value }),
         slotPaints(authored) ? authored : api.presets.find(p => p.value === props.value)?.label,
       )
     }
@@ -548,7 +548,7 @@ export const XhDatePickerTimeItem = defineComponent({
       const api = ctx.api.value
       const item = { unit: unit(), value: props.value }
       const authored = slots.default?.()
-      return h('div', api.getTimeItemProps(item) as Record<string, unknown>, slotPaints(authored) ? authored : api.getTimeItemText(item))
+      return h('div', api.getTimeItemProps(item), slotPaints(authored) ? authored : api.getTimeItemText(item))
     }
   },
 })
@@ -587,7 +587,7 @@ export const XhDatePickerTimeColumn = defineComponent({
         h(
           'div',
           {
-            ...api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>,
+            ...api.getTimeColumnProps({ unit: column.unit }),
             ref: (el: unknown) => { timeColumnRef.value = el as HTMLElement },
           },
           slots.default?.() ?? column.options.map(option => h(XhDatePickerTimeItem, { key: option, value: option })),
@@ -613,7 +613,7 @@ export const XhDatePickerConfirmTrigger = defineComponent({
   name: 'XhDatePickerConfirmTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConfirmTriggerProps(), slots.default?.())
   },
 })
 
@@ -623,7 +623,7 @@ export const XhDatePickerFooter = defineComponent({
     const ctx = useDatePickerContext()
     // 浮层底部的通栏操作区：写在 content 里、排在面板主体之后，确认钮通常放在这里；
     // 不进任何集合的拥有关系，方向键走不到，里面的按钮照常进 Tab 序列
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -631,7 +631,7 @@ export const XhDatePickerHeader = defineComponent({
   name: 'XhDatePickerHeader',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('div', ctx.api.value.calendar.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.calendar.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -639,7 +639,7 @@ export const XhDatePickerPrevYearTrigger = defineComponent({
   name: 'XhDatePickerPrevYearTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.calendar.getPrevYearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.calendar.getPrevYearTriggerProps(), slots.default?.())
   },
 })
 
@@ -647,7 +647,7 @@ export const XhDatePickerPrevTrigger = defineComponent({
   name: 'XhDatePickerPrevTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.calendar.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.calendar.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -655,7 +655,7 @@ export const XhDatePickerNextTrigger = defineComponent({
   name: 'XhDatePickerNextTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.calendar.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.calendar.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -663,7 +663,7 @@ export const XhDatePickerNextYearTrigger = defineComponent({
   name: 'XhDatePickerNextYearTrigger',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('button', ctx.api.value.calendar.getNextYearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.calendar.getNextYearTriggerProps(), slots.default?.())
   },
 })
 
@@ -679,7 +679,7 @@ export const XhDatePickerHeading = defineComponent({
     // 有插槽用插槽，否则渲染本面板的标题
     return () => h(
       'div',
-      ctx.api.value.calendar.getHeadingProps({ index: index.value }) as Record<string, unknown>,
+      ctx.api.value.calendar.getHeadingProps({ index: index.value }),
       slots.default?.() ?? (ctx.api.value.calendar.panels[index.value]?.headingLabel ?? ctx.api.value.calendar.headingLabel),
     )
   },
@@ -697,7 +697,7 @@ export const XhDatePickerHeadingYearTrigger = defineComponent({
     // 有插槽用插槽，否则渲染标题里年那一截；年视图下它是整个十年跨度
     return () => h(
       'button',
-      ctx.api.value.calendar.getHeadingYearTriggerProps({ index: index.value }) as Record<string, unknown>,
+      ctx.api.value.calendar.getHeadingYearTriggerProps({ index: index.value }),
       slots.default?.() ?? ctx.api.value.calendar.panels[index.value]?.headingYear,
     )
   },
@@ -714,7 +714,7 @@ export const XhDatePickerHeadingMonthTrigger = defineComponent({
     const index = usePanelIndex(props)
     return () => h(
       'button',
-      ctx.api.value.calendar.getHeadingMonthTriggerProps({ index: index.value }) as Record<string, unknown>,
+      ctx.api.value.calendar.getHeadingMonthTriggerProps({ index: index.value }),
       slots.default?.() ?? ctx.api.value.calendar.panels[index.value]?.headingMonth,
     )
   },
@@ -732,7 +732,7 @@ export const XhDatePickerGrid = defineComponent({
     return () => h(
       'div',
       {
-        ...ctx.api.value.calendar.getGridProps({ index: index.value }) as Record<string, unknown>,
+        ...ctx.api.value.calendar.getGridProps({ index: index.value }),
         // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
         ref: index.value === 0 ? ctx.gridRef : undefined,
       },
@@ -745,7 +745,7 @@ export const XhDatePickerGridHead = defineComponent({
   name: 'XhDatePickerGridHead',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('div', ctx.api.value.calendar.getGridHeadProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.calendar.getGridHeadProps(), slots.default?.())
   },
 })
 
@@ -753,7 +753,7 @@ export const XhDatePickerGridBody = defineComponent({
   name: 'XhDatePickerGridBody',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('div', ctx.api.value.calendar.getGridBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.calendar.getGridBodyProps(), slots.default?.())
   },
 })
 
@@ -762,7 +762,7 @@ export const XhDatePickerWeekRow = defineComponent({
   name: 'XhDatePickerWeekRow',
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
-    return () => h('div', ctx.api.value.calendar.getWeekRowProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.calendar.getWeekRowProps(), slots.default?.())
   },
 })
 
@@ -777,7 +777,7 @@ export const XhDatePickerWeekNumber = defineComponent({
     // 有插槽用插槽，否则显示这一行的周序号
     return () => h(
       'span',
-      ctx.api.value.calendar.getWeekNumberProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.calendar.getWeekNumberProps({ value: props.value }),
       slots.default?.() ?? ctx.api.value.calendar.getWeekNumberText({ value: props.value }),
     )
   },
@@ -794,7 +794,7 @@ export const XhDatePickerWeekDay = defineComponent({
     const index = computed(() => Number(props.value))
     return () => h(
       'span',
-      ctx.api.value.calendar.getWeekDayProps({ value: index.value }) as Record<string, unknown>,
+      ctx.api.value.calendar.getWeekDayProps({ value: index.value }),
       slots.default?.() ?? ctx.api.value.calendar.weekDays[index.value]?.label,
     )
   },
@@ -817,7 +817,7 @@ export const XhDatePickerCell = defineComponent({
     const cell = computed<CalendarCellProps>(() => ({ value: props.value, index: index.value }))
     provideDatePickerCell({ cell })
     // 不上报格子卸载，翻月后由日历机器按聚焦日重新落点
-    return () => h('div', ctx.api.value.calendar.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.calendar.getCellProps(cell.value), slots.default?.())
   },
 })
 
@@ -828,7 +828,7 @@ export const XhDatePickerCellTrigger = defineComponent({
     const { cell } = useDatePickerCellContext()
     return () => h(
       'div',
-      ctx.api.value.calendar.getCellTriggerProps(cell.value) as Record<string, unknown>,
+      ctx.api.value.calendar.getCellTriggerProps(cell.value),
       slots.default?.(),
     )
   },
@@ -840,8 +840,8 @@ export const XhDatePickerHiddenInput = defineComponent({
     const ctx = useDatePickerContext()
     // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
     return () => ctx.api.value.selectionMode === 'multiple'
-      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.field.getHiddenInputProps({ value }) as Record<string, unknown> }))
-      : h('input', ctx.api.value.field.getHiddenInputProps() as Record<string, unknown>)
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.field.getHiddenInputProps({ value }) }))
+      : h('input', ctx.api.value.field.getHiddenInputProps())
   },
 })
 

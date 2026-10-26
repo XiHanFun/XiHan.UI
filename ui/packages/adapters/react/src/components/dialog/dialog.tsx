@@ -106,8 +106,8 @@ export interface XhDialogTriggerProps extends ComponentPropsWithRef<'button'>, A
 export function XhDialogTrigger({ children, asChild, ...rest }: XhDialogTriggerProps): ReactNode {
   const ctx = useDialogContext()
   const props = mergePartProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getTriggerProps(),
+    rest,
   )
   return renderAsChild(asChild, children, props, 'dialog', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -124,7 +124,7 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
   // 没打开过、或退场播完且要卸载时整棵不渲染
   if (!api.isContentMounted(shown))
     return null
-  const backdrop = api.getBackdropProps() as Record<string, unknown>
+  const backdrop = api.getBackdropProps()
   // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
   return (
     <XhPortal container={container ?? ctx.portalContainer} present={shown}>
@@ -138,9 +138,9 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
             />
           )
         : null}
-      <div {...mergeReactProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS)}>
+      <div {...mergeReactProps(api.getPositionerProps(), shown ? {} : OVERLAY_STOWED_PROPS)}>
         <div
-          {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          {...mergeReactProps(api.getContentProps(), rest)}
           hidden={!shown || undefined}
           ref={(el: HTMLDivElement | null) => {
             ctx.contentRef.current = el
@@ -156,28 +156,28 @@ export function XhDialogContent({ children, container, ...rest }: XhDialogConten
 export interface XhDialogHeaderProps extends ComponentPropsWithRef<'header'> {}
 export function XhDialogHeader({ children, ...rest }: XhDialogHeaderProps): ReactNode {
   const ctx = useDialogContext()
-  return <header {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</header>
+  return <header {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</header>
 }
 
 export interface XhDialogDragTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 拖动把手：键盘挪动面板的入口；放在 XhDialogHeader 里时铺满标题栏。 */
 export function XhDialogDragTrigger({ children, ...rest }: XhDialogDragTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  return <button {...mergeReactProps(ctx.api.getDragTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getDragTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDialogIndicatorProps extends ComponentPropsWithRef<'span'> {}
 /** 语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，放入节点即整个替换。 */
 export function XhDialogIndicator({ children, ...rest }: XhDialogIndicatorProps): ReactNode {
   const ctx = useDialogContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhDialogTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhDialogTitle({ children, ...rest }: XhDialogTitleProps): ReactNode {
   const ctx = useDialogContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
+  return <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</h2>
 }
 
 export interface XhDialogDescriptionProps extends ComponentPropsWithRef<'p'> {}
@@ -191,33 +191,33 @@ export function XhDialogDescription({ children, ...rest }: XhDialogDescriptionPr
 export interface XhDialogBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDialogBody({ children, ...rest }: XhDialogBodyProps): ReactNode {
   const ctx = useDialogContext()
-  return <div {...mergeReactProps(ctx.api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getBodyProps(), rest)}>{children}</div>
 }
 
 export interface XhDialogFooterProps extends ComponentPropsWithRef<'footer'> {}
 export function XhDialogFooter({ children, ...rest }: XhDialogFooterProps): ReactNode {
   const ctx = useDialogContext()
-  return <footer {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</footer>
+  return <footer {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</footer>
 }
 
 export interface XhDialogConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 确定钮：页脚的主动作；点了调 onConfirm，异步确认挂起时转圈。 */
 export function XhDialogConfirmTrigger({ children, ...rest }: XhDialogConfirmTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDialogCancelTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 取消钮：页脚的次要出口；点了调 onCancelPress 并收起。 */
 export function XhDialogCancelTrigger({ children, ...rest }: XhDialogCancelTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDialogCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDialogCloseTrigger({ children, ...rest }: XhDialogCloseTriggerProps): ReactNode {
   const ctx = useDialogContext()
-  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>{children}</button>
 }
 
 const DIALOG_PARTS = {

@@ -54,7 +54,7 @@ export const XhScrollAreaRoot = defineComponent({
     provideScrollArea(ctx)
     const scrollTo = (options: ScrollAreaScrollToOptions): void => ctx.api.value.scrollTo(options)
     expose({ scrollTo })
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       vertical: ctx.api.value.vertical,
       horizontal: ctx.api.value.horizontal,
       draggingAxis: ctx.api.value.draggingAxis,
@@ -70,7 +70,7 @@ export const XhScrollAreaViewport = defineComponent({
     const ctx = useScrollAreaContext()
     // 视口节点交给两台机器，尺寸与滚动量在效应与事件里现量
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: ctx.viewportRef,
     }, slots.default?.())
   },
@@ -81,7 +81,7 @@ export const XhScrollAreaContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useScrollAreaContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       ref: ctx.contentRef,
     }, slots.default?.())
   },
@@ -99,7 +99,7 @@ export const XhScrollAreaScrollbar = defineComponent({
     const scrollbar = computed<ScrollAreaScrollbarProps>(() => ({ orientation: props.orientation }))
     provideScrollAreaScrollbar({ scrollbar })
     return () => h('div', {
-      ...ctx.api.value.getScrollbarProps(scrollbar.value) as Record<string, unknown>,
+      ...ctx.api.value.getScrollbarProps(scrollbar.value),
       // 根节点交给机器：指针进出它也算「手还在这儿」
       ref: ctx.scrollbarRefs[props.orientation],
     }, slots.default?.())
@@ -113,7 +113,7 @@ export const XhScrollAreaTrack = defineComponent({
     const { scrollbar } = useScrollAreaScrollbarContext()
     // 轨道节点交给机器，长度在按下滑块时现量
     return () => h('div', {
-      ...ctx.api.value.getTrackProps(scrollbar.value) as Record<string, unknown>,
+      ...ctx.api.value.getTrackProps(scrollbar.value),
       ref: ctx.trackRefs[scrollbar.value.orientation],
     }, slots.default?.())
   },
@@ -124,7 +124,7 @@ export const XhScrollAreaThumb = defineComponent({
   setup(_, { slots }) {
     const ctx = useScrollAreaContext()
     const { scrollbar } = useScrollAreaScrollbarContext()
-    return () => h('div', ctx.api.value.getThumbProps(scrollbar.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getThumbProps(scrollbar.value), slots.default?.())
   },
 })
 
@@ -133,6 +133,6 @@ export const XhScrollAreaCorner = defineComponent({
   name: 'XhScrollAreaCorner',
   setup(_, { slots }) {
     const ctx = useScrollAreaContext()
-    return () => h('div', ctx.api.value.getCornerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCornerProps(), slots.default?.())
   },
 })

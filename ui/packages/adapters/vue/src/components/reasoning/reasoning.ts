@@ -93,7 +93,7 @@ export const XhReasoningRoot = defineComponent({
     }
     const ctx = useReasoning(machineProps, viewProps)
     provideReasoning(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       open: ctx.api.value.open,
       streaming: ctx.api.value.streaming,
       disabled: ctx.api.value.disabled,
@@ -108,7 +108,7 @@ export const XhReasoningTrigger = defineComponent({
   name: 'XhReasoningTrigger',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })
 
@@ -117,7 +117,7 @@ export const XhReasoningIcon = defineComponent({
   setup(_, { slots }) {
     const ctx = useReasoningContext()
     // 状态图形位：跟着在不在想换色，对读屏隐藏
-    return () => h('span', ctx.api.value.getIconProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIconProps(), slots.default?.())
   },
 })
 
@@ -125,7 +125,7 @@ export const XhReasoningIndicator = defineComponent({
   name: 'XhReasoningIndicator',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -136,7 +136,7 @@ export const XhReasoningLabel = defineComponent({
     // 不给内容时显示当前状态那一句
     return () => h(
       'span',
-      ctx.api.value.getLabelProps() as Record<string, unknown>,
+      ctx.api.value.getLabelProps(),
       slots.default?.() ?? ctx.api.value.statusText,
     )
   },
@@ -146,7 +146,7 @@ export const XhReasoningDuration = defineComponent({
   name: 'XhReasoningDuration',
   setup(_, { slots }) {
     const ctx = useReasoningContext()
-    return () => h('span', ctx.api.value.getDurationProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getDurationProps(), slots.default?.())
   },
 })
 
@@ -155,7 +155,7 @@ export const XhReasoningContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useReasoningContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },

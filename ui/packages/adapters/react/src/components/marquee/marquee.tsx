@@ -68,7 +68,7 @@ export function XhMarqueeRoot({
   const api = connectMarquee(service, reactNormalize)
   return (
     <MarqueeProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </MarqueeProvider>
@@ -106,7 +106,7 @@ export function XhMarqueeContent({ children, ...rest }: XhMarqueeContentProps): 
     }
   }
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {copies}
     </div>
   )
@@ -118,7 +118,7 @@ export interface XhMarqueeAutoplayTriggerProps extends ComponentPropsWithRef<'bu
 export function XhMarqueeAutoplayTrigger({ children, ...rest }: XhMarqueeAutoplayTriggerProps): ReactNode {
   const ctx = useMarqueeContext()
   return (
-    <button {...mergeReactProps(ctx.api.getAutoplayTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getAutoplayTriggerProps(), rest)}>
       {children}
     </button>
   )

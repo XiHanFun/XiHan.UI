@@ -119,9 +119,9 @@ export class XhIconElement extends XhElement {
     const owned = glyph ? this.#ownsGlyph(glyph, root) : false
 
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
     if (glyph)
-      this.spreader.spread(glyph, api.getGlyphProps() as Record<string, unknown>)
+      this.spreader.spread(glyph, api.getGlyphProps())
 
     this.#paint(glyph, owned, api.content)
     this.#report(root, glyph, owned, api)

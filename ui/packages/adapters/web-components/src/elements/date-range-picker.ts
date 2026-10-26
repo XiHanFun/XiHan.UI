@@ -667,7 +667,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     // wire 跑在事件之前，换段时 data-scope/data-part 已在 DOM 上供现查
     this.partsIn(owner, 'segment').forEach((el, position) => {
       const declared = declaredSegment(el, position)
-      this.spreader.spread(el, field.getSegmentProps(declared) as Record<string, unknown>)
+      this.spreader.spread(el, field.getSegmentProps(declared))
       const state = field.segmentOf(declared)
       // 段位文字归元素写，比对后再赋值
       const text = state?.text ?? ''
@@ -691,38 +691,38 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       for (const el of this.getParts(name))
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('range-separator', api.getRangeSeparatorProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('range-separator', api.getRangeSeparatorProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    putAll('calendar', api.getCalendarProps() as Record<string, unknown>)
-    put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    putAll('calendar', api.getCalendarProps())
+    put('preset-group', api.getPresetGroupProps())
 
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
-      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }))
+    put('footer', api.getFooterProps())
+    put('confirm-trigger', api.getConfirmTriggerProps())
 
     // 时间组自报 index；组内的小标题、列与格跟着它走，列自报 unit、格自报 value
     this.getParts('column-group').forEach((groupEl, position) => {
       const index = declaredEndIndex(groupEl, position)
-      this.spreader.spread(groupEl, api.getColumnGroupProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(groupEl, api.getColumnGroupProps({ index }))
       for (const labelEl of this.partsIn(groupEl, 'column-group-label')) {
-        this.spreader.spread(labelEl, api.getColumnGroupLabelProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(labelEl, api.getColumnGroupLabelProps({ index }))
         this.fillText(labelEl, api.timeColumnGroups[index].label)
       }
       for (const columnEl of this.partsIn(groupEl, 'time-column')) {
         const unit = declaredTimeUnit(columnEl)
-        this.spreader.spread(columnEl, api.getTimeColumnProps({ index, unit }) as Record<string, unknown>)
+        this.spreader.spread(columnEl, api.getTimeColumnProps({ index, unit }))
         for (const itemEl of this.partsIn(columnEl, 'time-item')) {
           const value = itemEl.getAttribute('value') ?? ''
-          this.spreader.spread(itemEl, api.getTimeItemProps({ index, unit, value }) as Record<string, unknown>)
+          this.spreader.spread(itemEl, api.getTimeItemProps({ index, unit, value }))
           // 上下午那一格的字按 locale 现译；作者自己写了内容的不动
           this.fillText(itemEl, api.getTimeItemText({ unit, value }))
         }
@@ -738,16 +738,16 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       const field = dateRangePickerFieldAt(api, index)
       const segmentGroup = segmentGroups[index]
       if (segmentGroup)
-        this.spreader.spread(segmentGroup, api.getSegmentGroupProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(segmentGroup, api.getSegmentGroupProps({ index }))
       const owner = owners[index]
       if (owner)
         this.wireSegments(owner, field)
       for (const el of hiddenInputs[index] ?? [])
-        this.spreader.spread(el, field.getHiddenInputProps() as Record<string, unknown>)
+        this.spreader.spread(el, field.getHiddenInputProps())
     }
 
     // 内嵌范围日历的角色节点：行为取自本元素持有的那台日历机器
-    putAll('header', api.calendar.getHeaderProps() as Record<string, unknown>)
+    putAll('header', api.calendar.getHeaderProps())
     // 四颗翻页钮：作者在按钮上写了名字时以作者的为准
     for (const [name, props] of [
       ['prev-year-trigger', api.calendar.getPrevYearTriggerProps()],
@@ -756,23 +756,23 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       ['next-year-trigger', api.calendar.getNextYearTriggerProps()],
     ] as const) {
       for (const el of this.getParts(name))
-        this.spreader.spread(el, this.withAuthoredName(el, props as Record<string, unknown>))
+        this.spreader.spread(el, this.withAuthoredName(el, props))
     }
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
-      this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getHeadingProps({ index: declaredIndex(el, position) }))
     })
     // 标题里的年与月两个钮：属性由 connect 打，文字归元素填
     this.getParts('heading-year-trigger').forEach((el, position) => {
       const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.calendar.getHeadingYearTriggerProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getHeadingYearTriggerProps({ index }))
       const text = api.calendar.panels[index]?.headingYear ?? ''
       if (el.textContent !== text)
         el.textContent = text
     })
     this.getParts('heading-month-trigger').forEach((el, position) => {
       const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.calendar.getHeadingMonthTriggerProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getHeadingMonthTriggerProps({ index }))
       const text = api.calendar.panels[index]?.headingMonth ?? ''
       if (el.textContent !== text)
         el.textContent = text
@@ -780,16 +780,16 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
       this.setPartHidden(el, !api.calendar.canZoomOutMonth)
     })
     this.getParts('grid').forEach((el, position) => {
-      this.spreader.spread(el, api.calendar.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getGridProps({ index: declaredIndex(el, position) }))
     })
-    putAll('grid-head', api.calendar.getGridHeadProps() as Record<string, unknown>)
-    putAll('grid-body', api.calendar.getGridBodyProps() as Record<string, unknown>)
+    putAll('grid-head', api.calendar.getGridHeadProps())
+    putAll('grid-body', api.calendar.getGridBodyProps())
 
     // 表头行与日期行共用 role=row，一并打
     // 周序号格：身份取行首那天，文字由元素填
     for (const el of this.getParts('week-number')) {
       const value = el.getAttribute('value') ?? ''
-      this.spreader.spread(el, api.calendar.getWeekNumberProps({ value }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getWeekNumberProps({ value }))
       // 文字归元素写，比对后再赋值（这份元素没有 fillText，与段位那处同一套写法）
       const text = api.calendar.getWeekNumberText({ value })
       if (el.textContent !== text)
@@ -797,13 +797,13 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     }
 
     for (const el of this.getParts('week-row'))
-      this.spreader.spread(el, api.calendar.getWeekRowProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getWeekRowProps())
 
     // 列头身份取作者写的 value（列序 0-6）；漏写给 NaN，不写 aria-label
     for (const el of this.getParts('week-day')) {
       const raw = el.getAttribute('value')
       const index = raw == null || raw === '' ? Number.NaN : Number(raw)
-      this.spreader.spread(el, api.calendar.getWeekDayProps({ value: index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getWeekDayProps({ value: index }))
     }
 
     // 日期格逐个打，身份取 cell 上的 value，格内 trigger 跟着同一份声明走
@@ -816,9 +816,9 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         index: ownerGrid ? declaredIndex(ownerGrid, owner) : 0,
       }
-      this.spreader.spread(el, api.calendar.getCellProps(cell) as Record<string, unknown>)
+      this.spreader.spread(el, api.calendar.getCellProps(cell))
       for (const trigger of this.partsIn(el, 'cell-trigger'))
-        this.spreader.spread(trigger, api.calendar.getCellTriggerProps(cell) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.calendar.getCellTriggerProps(cell))
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）

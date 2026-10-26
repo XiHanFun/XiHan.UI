@@ -385,16 +385,16 @@ export class XhFormElement<TValues extends object = FormValues> extends XhElemen
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    const summaryProps = api.getErrorSummaryProps() as Record<string, unknown>
+    put('root', api.getRootProps())
+    const summaryProps = api.getErrorSummaryProps()
     put('error-summary', summaryProps)
-    put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
-    put('reset-trigger', api.getResetTriggerProps() as Record<string, unknown>)
+    put('submit-trigger', api.getSubmitTriggerProps())
+    put('reset-trigger', api.getResetTriggerProps())
 
     // 字段容器与摘要条目都是多实例 part，逐个打：身份取 name 或严格 data-path。
     for (const el of this.getParts('field-group')) {
       const name = fieldPathOf(el)
-      this.spreader.spread(el, api.getFieldGroupProps({ name, span: fieldSpanOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getFieldGroupProps({ name, span: fieldSpanOf(el) }))
       const state: FormControlState = {
         disabled: api.disabled,
         readOnly: api.readOnly,
@@ -423,7 +423,7 @@ export class XhFormElement<TValues extends object = FormValues> extends XhElemen
 
     for (const el of this.getParts('error-summary-item')) {
       const name = fieldPathOf(el)
-      const itemProps = api.getErrorSummaryItemProps({ name }) as Record<string, unknown>
+      const itemProps = api.getErrorSummaryItemProps({ name })
       this.spreader.spread(el, itemProps)
       // Light DOM 常驻，WC 自管可见性：作者层若给条目声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。显隐照连接层给的 hidden，

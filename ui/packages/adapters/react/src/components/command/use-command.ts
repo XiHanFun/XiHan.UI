@@ -54,9 +54,9 @@ export function useCommand(props: CommandSchema['props']): CommandContext {
     additionalExitNodes: () => [backdropRef.current],
     surfaces: () => [backdropRef.current].filter(Boolean) as Element[],
     refs: (service) => {
-      service.refs.set('getContentEl', (() => contentRef.current) as never)
-      service.refs.set('getListEl', (() => listRef.current) as never)
-      service.refs.set('getInputEl', (() => inputRef.current) as never)
+      service.refs.set('getContentEl', () => contentRef.current)
+      service.refs.set('getListEl', () => listRef.current)
+      service.refs.set('getInputEl', () => inputRef.current)
     },
   })
 

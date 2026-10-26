@@ -63,7 +63,7 @@ export const XhStepsRoot = defineComponent({
     const ctx = useSteps(withXhConfig('steps', props) as StepsProps, notify)
     provideSteps(ctx)
     // 经插槽暴露状态与前进/后退方法，供步骤条外的按钮使用
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       count: ctx.api.value.count,
       complete: ctx.api.value.complete,
@@ -78,7 +78,7 @@ export const XhStepsList = defineComponent({
   name: 'XhStepsList',
   setup(_, { slots }) {
     const ctx = useStepsContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps(), slots.default?.())
   },
 })
 
@@ -94,7 +94,7 @@ export const XhStepsItem = defineComponent({
     provideStepsItem(() => ({ index: Number(props.value), disabled: props.disabled }))
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ index: Number(props.value), disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ index: Number(props.value), disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -126,7 +126,7 @@ export const XhStepsTrigger = defineComponent({
     // 只读展示的 trigger 只排版，不是按钮
     return () => h(
       ctx.api.value.readOnly ? 'div' : 'button',
-      { ...ctx.api.value.getTriggerProps(item()) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getTriggerProps(item()), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -137,7 +137,7 @@ export const XhStepsIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useStepsContext()
     const item = useStepsItem()
-    return () => h('span', ctx.api.value.getIndicatorProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })
 
@@ -146,7 +146,7 @@ export const XhStepsTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useStepsContext()
     const item = useStepsItem()
-    return () => h('span', ctx.api.value.getTitleProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTitleProps(item()), slots.default?.())
   },
 })
 
@@ -155,7 +155,7 @@ export const XhStepsDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useStepsContext()
     const item = useStepsItem()
-    return () => h('span', ctx.api.value.getDescriptionProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getDescriptionProps(item()), slots.default?.())
   },
 })
 
@@ -165,7 +165,7 @@ export const XhStepsSeparator = defineComponent({
   setup(_, { slots }) {
     const ctx = useStepsContext()
     const item = useStepsItem()
-    return () => h('div', ctx.api.value.getSeparatorProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSeparatorProps(item()), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhStepsContent = defineComponent({
     const ctx = useStepsContext()
     return () => h(
       'div',
-      ctx.api.value.getContentProps({ index: Number(props.value) }) as Record<string, unknown>,
+      ctx.api.value.getContentProps({ index: Number(props.value) }),
       slots.default?.(),
     )
   },

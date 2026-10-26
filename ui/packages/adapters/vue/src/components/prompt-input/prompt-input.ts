@@ -59,7 +59,7 @@ export const XhPromptInputRoot = defineComponent({
       onStop: () => emit('stop'),
     })
     providePromptInput(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       isComposing: ctx.api.value.isComposing,
       canSubmit: ctx.api.value.canSubmit,
@@ -77,7 +77,7 @@ export const XhPromptInputControl = defineComponent({
   setup(_, { slots }) {
     const ctx = usePromptInputContext()
     // 渲了这一层，输入框与按钮并排收在它里面，root 翻成竖排
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -86,7 +86,7 @@ export const XhPromptInputInput = defineComponent({
   setup() {
     const ctx = usePromptInputContext()
     // 渲染原生 textarea，换行与撤销栈交给浏览器；自动长高是皮肤的两行 CSS
-    return () => h('textarea', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('textarea', ctx.api.value.getInputProps())
   },
 })
 
@@ -95,6 +95,6 @@ export const XhPromptInputSubmitTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = usePromptInputContext()
     // 生成期间原位切换为停止，只改 data-mode 与 aria-label
-    return () => h('button', ctx.api.value.getSubmitTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSubmitTriggerProps(), slots.default?.())
   },
 })

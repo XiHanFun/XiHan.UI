@@ -27,7 +27,7 @@ export const XhTypographyRoot = defineComponent({
     const configured = withXhConfig('typography', props)
     const api = computed(() => connectTypography(configured as TypographyProps, vueNormalize))
     provideTypography({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -45,7 +45,7 @@ export const XhTypographyHeading = defineComponent({
     const ctx = useTypographyContext()
     return () => h(
       props.as,
-      ctx.api.value.getHeadingProps({ level: props.level }) as Record<string, unknown>,
+      ctx.api.value.getHeadingProps({ level: props.level }),
       slots.default?.(),
     )
   },
@@ -55,7 +55,7 @@ export const XhTypographyParagraph = defineComponent({
   name: 'XhTypographyParagraph',
   setup(_, { slots }) {
     const ctx = useTypographyContext()
-    return () => h('p', ctx.api.value.getParagraphProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getParagraphProps(), slots.default?.())
   },
 })
 
@@ -88,7 +88,7 @@ export const XhTypographyText = defineComponent({
         strikethrough: props.strikethrough,
         underline: props.underline,
         mark: props.mark,
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },
@@ -105,7 +105,7 @@ export const XhTypographyProse = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useTypographyContext()
-    return () => h(props.as, ctx.api.value.getProseProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getProseProps(), slots.default?.())
   },
 })
 
@@ -114,6 +114,6 @@ export const XhTypographyLink = defineComponent({
   name: 'XhTypographyLink',
   setup(_, { slots }) {
     const ctx = useTypographyContext()
-    return () => h('a', ctx.api.value.getLinkProps() as Record<string, unknown>, slots.default?.())
+    return () => h('a', ctx.api.value.getLinkProps(), slots.default?.())
   },
 })

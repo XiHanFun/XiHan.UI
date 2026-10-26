@@ -45,7 +45,7 @@ export function XhTimestamp({ value, type, format, locale, timeZone, now, refres
   const service = useMachine(timestampMachine, () => props, { scope: useReactScope() })
   const api = connectTimestamp(service, reactNormalize)
   return (
-    <time {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <time {...mergeReactProps(api.getRootProps(), rest)}>
       {/* children 里只剩空白时不算写过东西，那种情况仍铺组件的文本 */}
       {slotPaints(children) ? children : api.text}
     </time>

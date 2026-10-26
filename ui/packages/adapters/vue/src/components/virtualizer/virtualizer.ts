@@ -60,7 +60,7 @@ export const XhVirtualizerRoot = defineComponent({
     const notify: VirtualizerProps['onRangeChange'] = (details: VirtualizerRangeChangeDetails) => emit('range-change', details)
     const ctx = useVirtualizer(props as VirtualizerProps, notify)
     provideVirtualizer(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       virtualItems: ctx.api.value.virtualItems,
       totalSize: ctx.api.value.totalSize,
       startIndex: ctx.api.value.startIndex,
@@ -81,7 +81,7 @@ export const XhVirtualizerViewport = defineComponent({
     const ctx = useVirtualizerContext()
     // 视口节点经 ref 交给机器，由内核在效应里接上
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: ctx.viewportRef,
     }, slots.default?.())
   },
@@ -92,7 +92,7 @@ export const XhVirtualizerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useVirtualizerContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       ref: ctx.contentRef,
     }, slots.default?.())
   },
@@ -135,7 +135,7 @@ export const XhVirtualizerItem = defineComponent({
     })
 
     return () => h('div', {
-      ...ctx.api.value.getItemProps({ index: Number(props.value) }) as Record<string, unknown>,
+      ...ctx.api.value.getItemProps({ index: Number(props.value) }),
       ref: bindItem,
     }, slots.default?.())
   },

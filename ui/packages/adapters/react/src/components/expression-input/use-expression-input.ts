@@ -61,10 +61,10 @@ export function useExpressionInput(props: ExpressionInputSchema['props']): Expre
     layer,
     node: () => contentRef.current,
     refs: (service) => {
-      service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
-      service.refs.set('getInputEl', (() => inputRef.current) as never)
-      service.refs.set('getHighlightEl', (() => highlightRef.current) as never)
+      service.refs.set('position', createPositionEngine())
+      service.refs.set('getFloatingEl', () => positionerRef.current)
+      service.refs.set('getInputEl', () => inputRef.current)
+      service.refs.set('getHighlightEl', () => highlightRef.current)
     },
   })
 

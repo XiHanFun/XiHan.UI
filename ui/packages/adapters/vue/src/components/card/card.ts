@@ -37,7 +37,7 @@ export const XhCardRoot = defineComponent({
     const configured = withXhConfig('card', props)
     const api = computed(() => connectCard(configured as CardProps, vueNormalize))
     provideCard({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default
+    return () => h('div', api.value.getRootProps(), slots.default
       ? slots.default()
       : renderDefaultStructure({ title: slots.title, description: slots.description, content: slots.content, footer: slots.footer }))
   },
@@ -47,7 +47,7 @@ export const XhCardHeader = defineComponent({
   name: 'XhCardHeader',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -55,7 +55,7 @@ export const XhCardTitle = defineComponent({
   name: 'XhCardTitle',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('h3', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h3', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -76,7 +76,7 @@ export const XhCardTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useCardContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       if (props.asChild)
         return mergeIntoChild(children, part, 'card')
@@ -91,7 +91,7 @@ export const XhCardDescription = defineComponent({
   name: 'XhCardDescription',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getDescriptionProps(), slots.default?.())
   },
 })
 
@@ -99,7 +99,7 @@ export const XhCardContent = defineComponent({
   name: 'XhCardContent',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
 
@@ -107,7 +107,7 @@ export const XhCardFooter = defineComponent({
   name: 'XhCardFooter',
   setup(_, { slots }) {
     const ctx = useCardContext()
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 

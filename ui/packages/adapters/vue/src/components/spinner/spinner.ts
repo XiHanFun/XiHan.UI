@@ -31,7 +31,7 @@ export const XhSpinner = defineComponent({
   setup(props, { slots }) {
     const ctx = useSpinner(withXhConfig('spinner', props) as SpinnerProps)
     provideSpinner(ctx)
-    return () => h('span', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -42,7 +42,7 @@ export const XhSpinnerLabel = defineComponent({
     const ctx = useSpinnerContext()
     return () => h(
       'span',
-      ctx.api.value.getLabelProps() as Record<string, unknown>,
+      ctx.api.value.getLabelProps(),
       slots.default?.() ?? ctx.api.value.label,
     )
   },

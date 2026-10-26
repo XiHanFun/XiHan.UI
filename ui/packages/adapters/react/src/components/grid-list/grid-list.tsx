@@ -79,10 +79,10 @@ export function XhGridListRoot({
     onAction,
   }) as GridListProps)
   const api = context.api
-  const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getRootProps(), ['onFocus'])
   return (
     <GridListProvider value={context}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children}
       </div>
     </GridListProvider>
@@ -96,7 +96,7 @@ export function XhGridListLabel({ children, ...rest }: XhGridListLabelProps): Re
   const { api, registerLabel } = useGridListContext()
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhGridListRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -106,10 +106,10 @@ export interface XhGridListRowProps extends Omit<ComponentPropsWithRef<'div'>, '
 export function XhGridListRow({ value, disabled, children, ...rest }: XhGridListRowProps): ReactNode {
   const { api } = useGridListContext()
   const row = useMemo(() => ({ value, disabled }), [value, disabled])
-  const bind = useNativeEvents(api.getRowProps(row) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getRowProps(row), ['onFocus'])
   return (
     <GridListRowProvider value={row}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>{children}</div>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</div>
     </GridListRowProvider>
   )
 }
@@ -117,7 +117,7 @@ export function XhGridListRow({ value, disabled, children, ...rest }: XhGridList
 function RowSelectionIndicator({ children, ...rest }: ComponentPropsWithRef<'span'>): ReactNode {
   const { api } = useGridListContext()
   const row = useGridListRow()
-  return <span {...mergeReactProps(api.getRowSelectionIndicatorProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getRowSelectionIndicatorProps(row), rest)}>{children}</span>
 }
 export const XhGridListRowSelectionIndicator = RowSelectionIndicator
 
@@ -128,7 +128,7 @@ function rowPart(
   const { api } = useGridListContext()
   const row = useGridListRow()
   const { children, ...rest } = props
-  return <div {...mergeReactProps(api[getter](row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(api[getter](row), rest)}>{children}</div>
 }
 
 export interface XhGridListRowPartProps extends ComponentPropsWithRef<'div'> {}
@@ -149,17 +149,17 @@ export interface XhGridListRowActionProps extends ComponentPropsWithRef<'button'
 export function XhGridListRowAction({ children, ...rest }: XhGridListRowActionProps): ReactNode {
   const { api } = useGridListContext()
   const row = useGridListRow()
-  return <button {...mergeReactProps(api.getRowActionProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(api.getRowActionProps(row), rest)}>{children}</button>
 }
 
 export interface XhGridListEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhGridListEmpty({ children, ...rest }: XhGridListEmptyProps): ReactNode {
   const { api } = useGridListContext()
-  return <div {...mergeReactProps(api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhGridListLoadingProps extends ComponentPropsWithRef<'div'> {}
 export function XhGridListLoading({ children, ...rest }: XhGridListLoadingProps): ReactNode {
   const { api } = useGridListContext()
-  return <div {...mergeReactProps(api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(api.getLoadingProps(), rest)}>{children}</div>
 }

@@ -97,13 +97,13 @@ export class XhImageElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
     // src 写在 onLoad/onError 之前也不漏事件：图片的 load/error 一律异步派发，
     // 而这两个监听器在同一段同步代码里就挂上了。
-    const imageProps = api.getImageProps() as Record<string, unknown>
-    const fallbackProps = api.getFallbackProps() as Record<string, unknown>
+    const imageProps = api.getImageProps()
+    const fallbackProps = api.getFallbackProps()
     put('image', imageProps)
-    put('placeholder', api.getPlaceholderProps() as Record<string, unknown>)
+    put('placeholder', api.getPlaceholderProps())
     put('fallback', fallbackProps)
 
     // 两个节点都常挂、互斥显隐，WC 自管可见性。connect 已置 hidden，但宿主不能指望作者装了

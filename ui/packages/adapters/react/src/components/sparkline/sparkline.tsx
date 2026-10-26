@@ -89,13 +89,13 @@ export function XhSparkline({
   return (
     <svg
       {...mergeReactProps(
-        api.getRootProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        api.getRootProps(),
+        rest,
         { ref: (el: SVGSVGElement | null) => { ctx.rootRef.current = el } },
       )}
     >
-      <desc {...api.getSummaryProps() as Record<string, unknown>}>{api.summary}</desc>
-      {[...back, ...layer, ...front].map(mark => <path key={mark.key} {...api.getMarkProps(mark) as Record<string, unknown>} />)}
+      <desc {...api.getSummaryProps()}>{api.summary}</desc>
+      {[...back, ...layer, ...front].map(mark => <path key={mark.key} {...api.getMarkProps(mark)} />)}
     </svg>
   )
 }

@@ -114,7 +114,7 @@ export function XhTimerRoot({
   })
   return (
     <TimerProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {/* children 为空（含条件渲染落空）时退回组件自己铺的时分秒 */}
         {slotPaints(content) ? content : <DefaultTree />}
       </div>
@@ -129,7 +129,7 @@ export interface XhTimerDisplayProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimerDisplay({ children, ...rest }: XhTimerDisplayProps): ReactNode {
   const ctx = useTimerContext()
   return (
-    <div {...mergeReactProps(ctx.api.getDisplayProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getDisplayProps(), rest)}>
       {children}
     </div>
   )
@@ -148,7 +148,7 @@ export function XhTimerItem({ unit, ...rest }: XhTimerItemProps): ReactNode {
   const ctx = useTimerContext()
   const { api } = ctx
   return (
-    <span {...mergeReactProps(api.getItemProps({ unit }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getItemProps({ unit }), rest)}>
       {api.segmentText(unit)}
     </span>
   )
@@ -160,7 +160,7 @@ export interface XhTimerSeparatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhTimerSeparator({ children, ...rest }: XhTimerSeparatorProps): ReactNode {
   const ctx = useTimerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>
       {slotPaints(children) ? children : ':'}
     </span>
   )
@@ -173,7 +173,7 @@ export function XhTimerControl({ children, ...rest }: XhTimerControlProps): Reac
   const ctx = useTimerContext()
   const { api } = ctx
   return (
-    <button {...mergeReactProps(api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getControlProps(), rest)}>
       {slotPaints(children) ? children : api.controlLabel}
     </button>
   )

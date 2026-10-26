@@ -225,16 +225,16 @@ export class XhTooltipElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
     // 提示内容常挂，收起时由 connect 输出 hidden。这里不做内联 display 兜底：
     // styles 的 [data-part=content] 只设 pointer-events/尺寸/配色，
     // [data-part=positioner] 只设 position/inset/z-index/pointer-events，两处都没有 display 声明，
     // UA 的 [hidden]{display:none} 压得住（collapsible/dialog 那两处 author 层给了 display，
     // 才必须用内联样式盖过）。
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('content', api.getContentProps())
+    put('arrow', api.getArrowProps())
     const shell = this.getPart('content')
     if (shell)
       this.syncDelegated(shell, api)
@@ -263,7 +263,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     const items: Array<'text' | 'shortcut'> = !api.delegated ? [] : api.shortcut === null ? ['text'] : ['text', 'shortcut']
     reconcile(content, items, this.generated, item => item, (item, reuse) => {
       const node = (reuse as HTMLElement | undefined) ?? createGeneratedElement(this.ownerDocument, 'span')
-      this.spreader.spread(node, (item === 'text' ? api.getTextProps() : api.getShortcutProps()) as Record<string, unknown>)
+      this.spreader.spread(node, (item === 'text' ? api.getTextProps() : api.getShortcutProps()))
       setText(node, item === 'text' ? api.text : api.shortcut ?? '')
       return node
     })

@@ -64,14 +64,14 @@ export class XhSeparatorElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 两条线共用同一份属性，逐个铺
     for (const line of this.getParts('line'))
-      this.spreader.spread(line, api.getLineProps() as Record<string, unknown>)
+      this.spreader.spread(line, api.getLineProps())
 
     const content = this.getPart('content')
     if (content)
-      this.spreader.spread(content, api.getContentProps() as Record<string, unknown>)
+      this.spreader.spread(content, api.getContentProps())
   }
 }

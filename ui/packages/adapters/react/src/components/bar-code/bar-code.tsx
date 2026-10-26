@@ -77,7 +77,7 @@ export function XhBarCode({
   })
 
   return (
-    <svg {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <svg {...mergeReactProps(api.getRootProps(), rest)}>
       {geometry}
     </svg>
   )

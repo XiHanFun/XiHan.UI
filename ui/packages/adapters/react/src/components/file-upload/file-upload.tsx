@@ -181,8 +181,8 @@ export function XhFileUploadRoot({
     <FileUploadProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -222,7 +222,7 @@ export function XhFileUploadLabel({ children, ...rest }: XhFileUploadLabelProps)
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -236,7 +236,7 @@ export function XhFileUploadDropzone({ children, ...rest }: XhFileUploadDropzone
   const fieldLabel = useFieldLabelWiring()
   const ctx = useFileUploadContext()
   return (
-    <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...ctx.api.getDropzoneProps() as Record<string, unknown> }), rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...ctx.api.getDropzoneProps() }), rest)}>
       {children}
     </div>
   )
@@ -247,8 +247,8 @@ export interface XhFileUploadTriggerProps extends ComponentPropsWithRef<'button'
 export function XhFileUploadTrigger({ children, asChild, ...rest }: XhFileUploadTriggerProps): ReactNode {
   const ctx = useFileUploadContext()
   const props = mergePartProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getTriggerProps(),
+    rest,
   )
   return renderAsChild(asChild, children, props, 'file-upload', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -260,7 +260,7 @@ export function XhFileUploadHiddenInput({ ...rest }: XhFileUploadHiddenInputProp
   // 隐藏输入也并进字段的标签：原生表单控件没有名字会被判为未标注
   const fieldLabel = useFieldLabelWiring()
   const ctx = useFileUploadContext()
-  return <input {...mergeReactProps(fieldLabel(ctx.api.getHiddenInputProps() as Record<string, unknown>), rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(fieldLabel(ctx.api.getHiddenInputProps()), rest)} />
 }
 
 export interface XhFileUploadListProps extends ComponentPropsWithRef<'div'> {}
@@ -268,7 +268,7 @@ export interface XhFileUploadListProps extends ComponentPropsWithRef<'div'> {}
 export function XhFileUploadList({ children, ...rest }: XhFileUploadListProps): ReactNode {
   const ctx = useFileUploadContext()
   return (
-    <div {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getListProps(), rest)}>
       {children}
     </div>
   )
@@ -299,7 +299,7 @@ export function XhFileUploadItem({ file, index, children, ...rest }: XhFileUploa
 
   return (
     <FileUploadItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         {children}
       </div>
     </FileUploadItemProvider>
@@ -313,7 +313,7 @@ export function XhFileUploadItemName({ children, ...rest }: XhFileUploadItemName
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <span {...mergeReactProps(ctx.api.getItemNameProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getItemNameProps(item), rest)}>
       {children ?? item.file.name}
     </span>
   )
@@ -326,7 +326,7 @@ export function XhFileUploadItemLink({ children, ...rest }: XhFileUploadItemLink
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <a {...mergeReactProps(ctx.api.getItemLinkProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <a {...mergeReactProps(ctx.api.getItemLinkProps(item), rest)}>
       {children ?? item.file.name}
     </a>
   )
@@ -339,7 +339,7 @@ export function XhFileUploadItemSizeText({ children, ...rest }: XhFileUploadItem
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <span {...mergeReactProps(ctx.api.getItemSizeTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getItemSizeTextProps(item), rest)}>
       {children ?? ctx.api.getFileSizeText(item.file)}
     </span>
   )
@@ -351,7 +351,7 @@ export function XhFileUploadItemPreview({ children, ...rest }: XhFileUploadItemP
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <div {...mergeReactProps(ctx.api.getItemPreviewProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getItemPreviewProps(item), rest)}>
       {children}
     </div>
   )
@@ -364,7 +364,7 @@ export function XhFileUploadItemProgress({ children, ...rest }: XhFileUploadItem
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <div {...mergeReactProps(ctx.api.getItemProgressProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getItemProgressProps(item), rest)}>
       {children}
     </div>
   )
@@ -376,7 +376,7 @@ export function XhFileUploadItemDeleteTrigger({ children, ...rest }: XhFileUploa
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
   return (
-    <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item), rest)}>
       {children}
     </button>
   )
@@ -387,7 +387,7 @@ export interface XhFileUploadClearTriggerProps extends ComponentPropsWithRef<'bu
 export function XhFileUploadClearTrigger({ children, ...rest }: XhFileUploadClearTriggerProps): ReactNode {
   const ctx = useFileUploadContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )

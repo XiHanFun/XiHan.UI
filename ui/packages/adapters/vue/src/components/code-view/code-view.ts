@@ -140,7 +140,7 @@ export const XhCodeViewRoot = defineComponent({
     }
     const ctx = useCodeView(forward)
     provideCodeView(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       lang: ctx.api.value.lang,
       lineCount: ctx.api.value.lineCount,
       lines: ctx.api.value.lines,
@@ -155,7 +155,7 @@ export const XhCodeViewHeader = defineComponent({
   name: 'XhCodeViewHeader',
   setup(_, { slots }) {
     const ctx = useCodeViewContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -176,7 +176,7 @@ export const XhCodeViewFilename = defineComponent({
     })
     return () => h(
       'span',
-      ctx.api.value.getFilenameProps() as Record<string, unknown>,
+      ctx.api.value.getFilenameProps(),
       slots.default?.() ?? props.filename ?? ctx.api.value.filename,
     )
   },
@@ -188,7 +188,7 @@ export const XhCodeViewLangLabel = defineComponent({
     const ctx = useCodeViewContext()
     return () => h(
       'span',
-      ctx.api.value.getLangLabelProps() as Record<string, unknown>,
+      ctx.api.value.getLangLabelProps(),
       slots.default?.() ?? ctx.api.value.lang,
     )
   },
@@ -199,7 +199,7 @@ export const XhCodeViewPre = defineComponent({
   setup(_, { slots }) {
     const ctx = useCodeViewContext()
     // 用 pre 保留代码里的空白与换行
-    return () => h('pre', ctx.api.value.getPreProps() as Record<string, unknown>, slots.default?.())
+    return () => h('pre', ctx.api.value.getPreProps(), slots.default?.())
   },
 })
 
@@ -213,25 +213,25 @@ export const XhCodeViewCode = defineComponent({
     // 行是算出来的派生结构，作者写不出 N 个节点，由组件铺；每行的内容可用 line 插槽接管
     return () => {
       const api = ctx.api.value
-      return h('code', api.getCodeProps() as Record<string, unknown>, api.lines.map((line, index) => h(
+      return h('code', api.getCodeProps(), api.lines.map((line, index) => h(
         'span',
-        { ...api.getLineProps({ index }) as Record<string, unknown>, key: index },
+        { ...api.getLineProps({ index }), key: index },
         [
           // 行号槽不开就不建节点，两个适配器同一条判据
-          api.lineNumbers ? h('span', api.getLineNumberProps({ index }) as Record<string, unknown>) : null,
+          api.lineNumbers ? h('span', api.getLineNumberProps({ index })) : null,
           h(
             'span',
-            api.getLineContentProps({ index }) as Record<string, unknown>,
+            api.getLineContentProps({ index }),
             [
               // 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建
-              api.isFoldStart(index) ? h('button', api.getLineFoldTriggerProps({ index }) as Record<string, unknown>) : null,
+              api.isFoldStart(index) ? h('button', api.getLineFoldTriggerProps({ index })) : null,
               slots.line?.({ line, index, number: api.lineNumberAt(index) })
               // 没有着色结果就一个文本节点，别平白多包一层 span
               ?? (line.tokens.length === 0
                 ? line.text
                 : line.tokens.map((token, i) => h(
                     'span',
-                    { ...api.getTokenProps(token) as Record<string, unknown>, key: i },
+                    { ...api.getTokenProps(token), key: i },
                     token.text,
                   ))),
             ],
@@ -246,6 +246,6 @@ export const XhCodeViewFoldTrigger = defineComponent({
   name: 'XhCodeViewFoldTrigger',
   setup(_, { slots }) {
     const ctx = useCodeViewContext()
-    return () => h('button', ctx.api.value.getFoldTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getFoldTriggerProps(), slots.default?.())
   },
 })

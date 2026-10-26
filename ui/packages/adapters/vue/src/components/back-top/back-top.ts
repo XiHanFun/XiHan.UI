@@ -44,7 +44,7 @@ export const XhBackTopRoot = defineComponent({
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useBackTop(withXhConfig('back-top', props) as BackTopProps, notify, () => props.target ?? null)
     provideBackTop(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       visible: ctx.api.value.visible,
     }))
   },
@@ -55,6 +55,6 @@ export const XhBackTopTrigger = defineComponent({
   name: 'XhBackTopTrigger',
   setup(_, { slots }) {
     const ctx = useBackTopContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })

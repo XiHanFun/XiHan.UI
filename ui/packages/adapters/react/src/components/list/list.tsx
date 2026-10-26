@@ -42,7 +42,7 @@ export function XhListRoot({
   const Tag = as as 'ul'
   return (
     <ListProvider value={{ api }}>
-      <Tag {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <Tag {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </Tag>
     </ListProvider>
@@ -58,7 +58,7 @@ export function XhListItem({ as = 'li', children, ...rest }: XhListItemProps): R
   const ctx = useListContext()
   const Tag = as as 'li'
   return (
-    <Tag {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getItemProps(), rest)}>
       {children}
     </Tag>
   )
@@ -68,31 +68,31 @@ export interface XhListItemMediaProps extends ComponentPropsWithRef<'div'> {}
 /** 媒体位排在条目最前，内容由作者放置（头像、图标、缩略图均可）。 */
 export function XhListItemMedia({ children, ...rest }: XhListItemMediaProps): ReactNode {
   const ctx = useListContext()
-  return <div {...mergeReactProps(ctx.api.getItemMediaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemMediaProps(), rest)}>{children}</div>
 }
 
 export interface XhListItemContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhListItemContent({ children, ...rest }: XhListItemContentProps): ReactNode {
   const ctx = useListContext()
-  return <div {...mergeReactProps(ctx.api.getItemContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemContentProps(), rest)}>{children}</div>
 }
 
 export interface XhListItemTitleProps extends ComponentPropsWithRef<'div'> {}
 /** 标题渲染为 div 而不是 hN：它只做视觉主次，不向文档大纲插入一级标题。 */
 export function XhListItemTitle({ children, ...rest }: XhListItemTitleProps): ReactNode {
   const ctx = useListContext()
-  return <div {...mergeReactProps(ctx.api.getItemTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemTitleProps(), rest)}>{children}</div>
 }
 
 export interface XhListItemDescriptionProps extends ComponentPropsWithRef<'div'> {}
 export function XhListItemDescription({ children, ...rest }: XhListItemDescriptionProps): ReactNode {
   const ctx = useListContext()
-  return <div {...mergeReactProps(ctx.api.getItemDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemDescriptionProps(), rest)}>{children}</div>
 }
 
 export interface XhListItemActionProps extends ComponentPropsWithRef<'div'> {}
 /** 操作位排在条目末尾，按钮由作者放进 children。 */
 export function XhListItemAction({ children, ...rest }: XhListItemActionProps): ReactNode {
   const ctx = useListContext()
-  return <div {...mergeReactProps(ctx.api.getItemActionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemActionProps(), rest)}>{children}</div>
 }

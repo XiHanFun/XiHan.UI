@@ -26,7 +26,7 @@ export function XhInputGroupRoot({ variant, size, children, ...rest }: XhInputGr
   const api = connectInputGroup(withXhConfig('input-group', { variant, size } as InputGroupProps), reactNormalize)
   return (
     <InputGroupProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </InputGroupProvider>
@@ -39,7 +39,7 @@ export interface XhInputGroupItemProps extends ComponentPropsWithRef<'span'> {}
 export function XhInputGroupItem({ children, ...rest }: XhInputGroupItemProps): ReactNode {
   const ctx = useInputGroupContext()
   return (
-    <span {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getItemProps(), rest)}>
       {children}
     </span>
   )

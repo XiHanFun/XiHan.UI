@@ -160,8 +160,8 @@ export function XhTagsInputRoot({
     <TagsInputProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -200,7 +200,7 @@ export function XhTagsInputLabel({ children, ...rest }: XhTagsInputLabelProps): 
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -213,8 +213,8 @@ export function XhTagsInputControl({ children, ...rest }: XhTagsInputControlProp
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -233,8 +233,8 @@ export function XhTagsInputInput({ ...rest }: XhTagsInputInputProps): ReactNode 
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() }),
+        rest,
       )}
     />
   )
@@ -276,8 +276,8 @@ export function XhTagsInputItem({ value, children, ...rest }: XhTagsInputItemPro
     <TagsInputItemProvider value={item}>
       <div
         {...mergeReactProps(
-          ctx.api.getItemProps(item) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getItemProps(item),
+          rest,
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
       >
@@ -293,7 +293,7 @@ export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPre
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
   return (
-    <span {...mergeReactProps(ctx.api.getItemPreviewProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getItemPreviewProps(item), rest)}>
       {children}
     </span>
   )
@@ -305,7 +305,7 @@ export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextPr
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
   return (
-    <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>
       {children}
     </span>
   )
@@ -317,7 +317,7 @@ export function XhTagsInputItemDeleteTrigger({ children, ...rest }: XhTagsInputI
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
   return (
-    <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item), rest)}>
       {children}
     </button>
   )
@@ -329,7 +329,7 @@ export function XhTagsInputItemInput({ ...rest }: XhTagsInputItemInputProps): Re
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
   return (
-    <input {...mergeReactProps(ctx.api.getItemInputProps(item) as Record<string, unknown>, rest as Record<string, unknown>)} />
+    <input {...mergeReactProps(ctx.api.getItemInputProps(item), rest)} />
   )
 }
 
@@ -337,7 +337,7 @@ export interface XhTagsInputClearTriggerProps extends ComponentPropsWithRef<'but
 export function XhTagsInputClearTrigger({ children, ...rest }: XhTagsInputClearTriggerProps): ReactNode {
   const ctx = useTagsInputContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -356,7 +356,7 @@ export function XhTagsInputCount({ children, ...rest }: XhTagsInputCountProps): 
     ? fallback
     : renderSlot(children, { count: api.count, max: api.max, atMax: api.atMax, overflow: api.overflow })
   return (
-    <span {...mergeReactProps(api.getCountProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getCountProps(), rest)}>
       {body}
     </span>
   )
@@ -369,11 +369,11 @@ export function XhTagsInputHiddenInput({ ...rest }: XhTagsInputHiddenInputProps)
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

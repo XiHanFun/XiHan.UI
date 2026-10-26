@@ -49,6 +49,6 @@ export class XhColorSwatchElement extends XhElement {
       size: this.size,
       label: this.label,
     } as ColorSwatchProps), wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
   }
 }

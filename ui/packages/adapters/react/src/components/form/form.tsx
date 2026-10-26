@@ -168,8 +168,8 @@ export function XhFormRoot<TValues extends object = FormValues>({
     <FormProvider value={ctx}>
       <form
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -235,8 +235,8 @@ export function XhFormFieldGroup<TValues = FormValues, P extends FormFieldPath<T
     <FormFieldProvider value={handle}>
       <div
         {...mergeReactProps(
-          api.getFieldGroupProps({ name, span }) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getFieldGroupProps({ name, span }),
+          rest,
         )}
       >
         {renderSlot(children, {
@@ -259,7 +259,7 @@ export interface XhFormErrorSummaryProps extends Omit<ComponentPropsWithRef<'div
 export function XhFormErrorSummary({ children, ...rest }: XhFormErrorSummaryProps): ReactNode {
   const api = useFormContext().api
   return (
-    <div {...mergeReactProps(api.getErrorSummaryProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getErrorSummaryProps(), rest)}>
       {/* 摘要读它自己那版错误表：退场途中文案与条数照撤下之前的写 */}
       {renderSlot(children, {
         errors: api.summaryErrors,
@@ -289,8 +289,8 @@ export function XhFormErrorSummaryItem<TValues = FormValues, P extends FormField
   return (
     <a
       {...mergeReactProps(
-        api.getErrorSummaryItemProps({ name }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        api.getErrorSummaryItemProps({ name }),
+        rest,
       )}
     >
       {renderSlot(children, { name: field, error: api.getSummaryError(name) })}
@@ -303,7 +303,7 @@ export interface XhFormSubmitTriggerProps extends ComponentPropsWithRef<'button'
 export function XhFormSubmitTrigger({ children, ...rest }: XhFormSubmitTriggerProps): ReactNode {
   const api = useFormContext().api
   return (
-    <button {...mergeReactProps(api.getSubmitTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getSubmitTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -314,7 +314,7 @@ export interface XhFormResetTriggerProps extends ComponentPropsWithRef<'button'>
 export function XhFormResetTrigger({ children, ...rest }: XhFormResetTriggerProps): ReactNode {
   const api = useFormContext().api
   return (
-    <button {...mergeReactProps(api.getResetTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(api.getResetTriggerProps(), rest)}>
       {children}
     </button>
   )

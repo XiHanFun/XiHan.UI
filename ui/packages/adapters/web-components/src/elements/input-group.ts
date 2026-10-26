@@ -44,10 +44,10 @@ export class XhInputGroupElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // item 可以有多枚：前缀一枚、后缀一枚，都拿同一份身份
     for (const item of this.getParts('item'))
-      this.spreader.spread(item, api.getItemProps() as Record<string, unknown>)
+      this.spreader.spread(item, api.getItemProps())
   }
 }

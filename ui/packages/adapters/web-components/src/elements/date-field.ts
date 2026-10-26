@@ -231,18 +231,18 @@ export class XhDateFieldElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('segment-group', api.getSegmentGroupProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 段位是多实例 part，逐个打。打上去的 data-scope/data-part 正是换段在事件那一刻
     // 现查 DOM 的依据，所以 wire 必须先于事件跑过——updated() 已保证。
     this.getParts('segment').forEach((el, position) => {
       const declared = declaredSegment(el, position)
-      this.spreader.spread(el, api.getSegmentProps(declared) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSegmentProps(declared))
       const state = api.segmentOf(declared)
       // 段位的文字归元素写：spreader 只管属性与事件，写不了文本。
       // 比一次再写：无谓的赋值会清掉这个节点里的选区，还会白白惊动一次变更记录

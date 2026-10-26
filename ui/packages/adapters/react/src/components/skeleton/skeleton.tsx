@@ -31,7 +31,7 @@ export function XhSkeletonRoot({
   const ctx = useSkeleton({ loading, shape, animation } as SkeletonProps)
   return (
     <SkeletonProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children}
       </div>
     </SkeletonProvider>
@@ -48,6 +48,6 @@ export interface XhSkeletonItemProps extends Omit<ComponentPropsWithRef<'div'>, 
 export function XhSkeletonItem({ shape, ...rest }: XhSkeletonItemProps): ReactNode {
   const ctx = useSkeletonContext()
   return (
-    <div {...mergeReactProps(ctx.api.getItemProps({ shape }) as Record<string, unknown>, rest as Record<string, unknown>)} />
+    <div {...mergeReactProps(ctx.api.getItemProps({ shape }), rest)} />
   )
 }

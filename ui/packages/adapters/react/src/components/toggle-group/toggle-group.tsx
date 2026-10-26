@@ -119,7 +119,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
   // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() }), ['onFocus'])
 
   const body = children ?? renderDefaultStructure(api, renderItem)
 
@@ -128,7 +128,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -179,8 +179,8 @@ export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhTogg
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getItemProps({ value, disabled }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps({ value, disabled }),
+        rest,
         { ref: (el: HTMLButtonElement | null) => { itemEl.current = el } },
       )}
     >
@@ -196,11 +196,11 @@ export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputPr
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

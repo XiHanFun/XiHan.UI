@@ -62,10 +62,10 @@ export class XhSkeletonElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 多实例 part 逐个打，形状取该节点自报的 shape
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps({ shape: itemShape(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ shape: itemShape(el) }))
   }
 }

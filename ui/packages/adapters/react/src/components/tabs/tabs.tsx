@@ -105,7 +105,7 @@ export function XhTabsRoot({
     : renderDefaultStructure(ctx.api, !!closable, renderPanel)
   return (
     <TabsProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>{body}</div>
     </TabsProvider>
   )
 }
@@ -120,13 +120,13 @@ export function XhTabsList({ children, ...rest }: XhTabsListProps): ReactNode {
   // 装成原生监听器，到达路径才与另外两家一致。onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它。
   // onWheel 同样装成原生监听器：React 把 wheel 委派在根容器上且登记为被动监听器，
   // 标签带挪不动时要 preventDefault 拦住页面横向滚动，被动路径上那一下是空操作
-  const bind = useNativeEvents(ctx.api.getListProps() as Record<string, unknown>, ['onFocus', 'onWheel'])
+  const bind = useNativeEvents(ctx.api.getListProps(), ['onFocus', 'onWheel'])
   return (
     <div
       {...mergeReactProps(
         bind.attrs,
         { ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.listRef.current = el } },
       )}
     >
@@ -139,14 +139,14 @@ export interface XhTabsIndicatorProps extends ComponentPropsWithRef<'div'> {}
 /** 选中标签下的滑条：位置由状态机测量后写入内联样式；位于 list 中，以 list 为定位参照系。 */
 export function XhTabsIndicator({ children, ...rest }: XhTabsIndicatorProps): ReactNode {
   const ctx = useTabsContext()
-  return <div {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</div>
 }
 
 export interface XhTabsSeparatorProps extends ComponentPropsWithRef<'div'> {}
 /** 标签之间的细分隔线，纯装饰。 */
 export function XhTabsSeparator({ children, ...rest }: XhTabsSeparatorProps): ReactNode {
   const ctx = useTabsContext()
-  return <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSeparatorProps(), rest)}>{children}</div>
 }
 
 export interface XhTabsPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -156,14 +156,14 @@ export interface XhTabsPrevTriggerProps extends ComponentPropsWithRef<'button'> 
  */
 export function XhTabsPrevTrigger({ children, ...rest }: XhTabsPrevTriggerProps): ReactNode {
   const ctx = useTabsContext()
-  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTabsNextTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 标签带的往后翻页钮：与 XhTabsPrevTrigger 成对，贴在结束端。 */
 export function XhTabsNextTrigger({ children, ...rest }: XhTabsNextTriggerProps): ReactNode {
   const ctx = useTabsContext()
-  return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTabsOverflowTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -176,7 +176,7 @@ export interface XhTabsOverflowTriggerProps extends ComponentPropsWithRef<'butto
 export function XhTabsOverflowTrigger({ children, ...rest }: XhTabsOverflowTriggerProps): ReactNode {
   const ctx = useTabsContext()
   const trigger = (
-    <button {...mergePartProps(ctx.api.getOverflowTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergePartProps(ctx.api.getOverflowTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -193,7 +193,7 @@ export interface XhTabsLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 export function XhTabsLiveRegion({ ...rest }: XhTabsLiveRegionProps): ReactNode {
   const ctx = useTabsContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {ctx.api.announcement}
     </div>
   )
@@ -233,7 +233,7 @@ export function XhTabsTrigger({ value, disabled, children, ...rest }: XhTabsTrig
 
   // 标签自己的 onFocus 同样是不冒泡的 DOM focus：改装成原生监听器，与另外两家同一条到达路径
   const bind = useNativeEvents(
-    ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
+    ctx.api.getTriggerProps({ value, disabled }),
     ['onFocus'],
   )
 
@@ -242,7 +242,7 @@ export function XhTabsTrigger({ value, disabled, children, ...rest }: XhTabsTrig
       {...mergeReactProps(
         bind.attrs,
         { ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
         { ref: (el: HTMLButtonElement | null) => { itemEl.current = el } },
       )}
     >
@@ -266,8 +266,8 @@ export function XhTabsCloseTrigger({ value, disabled, children, ...rest }: XhTab
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getCloseTriggerProps({ value, disabled }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getCloseTriggerProps({ value, disabled }),
+        rest,
       )}
     >
       {children}
@@ -289,8 +289,8 @@ export function XhTabsTabDragTrigger({ value, children, ...rest }: XhTabsTabDrag
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getTabDragTriggerProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTabDragTriggerProps({ value }),
+        rest,
       )}
     >
       {children}
@@ -305,7 +305,7 @@ export function XhTabsContent({ value, children, ...rest }: XhTabsContentProps):
   const ctx = useTabsContext()
   // 面板节点常在；里面的内容按 lazyMount / unmountOnExit 由 connect 判定渲不渲染
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps({ value }), rest)}>
       {ctx.api.isContentMounted(value) ? children : null}
     </div>
   )

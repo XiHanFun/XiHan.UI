@@ -183,8 +183,8 @@ export function XhColorPickerRoot({
     <ColorPickerProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -223,7 +223,7 @@ export function XhColorPickerLabel({ children, ...rest }: XhColorPickerLabelProp
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -235,7 +235,7 @@ export interface XhColorPickerControlProps extends ComponentPropsWithRef<'div'> 
 export function XhColorPickerControl({ children, ...rest }: XhColorPickerControlProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -254,8 +254,8 @@ export function XhColorPickerTrigger({ children, ...rest }: XhColorPickerTrigger
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() }),
+        rest,
         { ref: (el: HTMLButtonElement | null) => { ctx.triggerRef.current = el } },
       )}
     >
@@ -270,7 +270,7 @@ export interface XhColorPickerClearTriggerProps extends ComponentPropsWithRef<'b
 export function XhColorPickerClearTrigger({ children, ...rest }: XhColorPickerClearTriggerProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -282,7 +282,7 @@ export interface XhColorPickerValueTextProps extends ComponentPropsWithRef<'span
 export function XhColorPickerValueText({ children, ...rest }: XhColorPickerValueTextProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueTextProps(), rest)}>
       {children ?? ctx.api.valueText}
     </span>
   )
@@ -293,7 +293,7 @@ export interface XhColorPickerSwatchProps extends ComponentPropsWithRef<'span'> 
 export function XhColorPickerSwatch({ children, ...rest }: XhColorPickerSwatchProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSwatchProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSwatchProps(), rest)}>
       {children}
     </span>
   )
@@ -313,8 +313,8 @@ export function XhColorPickerPositioner({ children, container, ...rest }: XhColo
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -332,8 +332,8 @@ export function XhColorPickerContent({ children, ...rest }: XhColorPickerContent
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -355,8 +355,8 @@ export function XhColorPickerSaturationArea({ children, ...rest }: XhColorPicker
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getSaturationAreaProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getSaturationAreaProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.areaRef.current = el } },
       )}
     >
@@ -370,7 +370,7 @@ export interface XhColorPickerAreaThumbProps extends ComponentPropsWithRef<'div'
 export function XhColorPickerAreaThumb({ children, ...rest }: XhColorPickerAreaThumbProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <div {...mergeReactProps(ctx.api.getAreaThumbProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getAreaThumbProps(), rest)}>
       {children}
     </div>
   )
@@ -387,7 +387,7 @@ export function XhColorPickerHueSlider({ children, ...rest }: XhColorPickerHueSl
   const ctx = useColorPickerContext()
   return (
     <ColorSliderProvider value={ctx.hueSlider}>
-      <div {...mergeReactProps(ctx.api.getHueSliderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getHueSliderProps(), rest)}>
         {children ?? <SliderTree />}
       </div>
     </ColorSliderProvider>
@@ -401,7 +401,7 @@ export function XhColorPickerAlphaSlider({ children, ...rest }: XhColorPickerAlp
   const ctx = useColorPickerContext()
   return (
     <ColorSliderProvider value={ctx.alphaSlider}>
-      <div {...mergeReactProps(ctx.api.getAlphaSliderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getAlphaSliderProps(), rest)}>
         {children ?? <SliderTree />}
       </div>
     </ColorSliderProvider>
@@ -430,11 +430,11 @@ export function XhColorPickerChannelInput({ channel, ...rest }: XhColorPickerCha
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getChannelInputProps({ channel: resolved }) as Record<string, unknown>,
+        ctx.api.getChannelInputProps({ channel: resolved }),
         // 草稿攥在机器里，写回走连接层的 onInput。React 要求带 value 的输入交出一个 onChange，
         // 否则在开发构建里逐帧告警；真正的写回不经它
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -445,7 +445,7 @@ export interface XhColorPickerEyeDropperTriggerProps extends ComponentPropsWithR
 export function XhColorPickerEyeDropperTrigger({ children, ...rest }: XhColorPickerEyeDropperTriggerProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <button {...mergeReactProps(ctx.api.getEyeDropperTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getEyeDropperTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -463,10 +463,10 @@ export function XhColorPickerSwatchPicker({ children, ...rest }: XhColorPickerSw
   // 挂载点的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，格子得焦也会把它叫起来，那一下会把焦点从格子抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致
-  const bind = useNativeEvents(ctx.api.getSwatchPickerProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getSwatchPickerProps(), ['onFocus'])
   return (
     <ColorSwatchPickerProvider value={ctx.swatchPicker}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children ?? ctx.api.swatchPicker.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
       </div>
     </ColorSwatchPickerProvider>
@@ -482,10 +482,10 @@ export interface XhColorPickerRecentSwatchPickerProps extends ComponentPropsWith
 export function XhColorPickerRecentSwatchPicker({ children, ...rest }: XhColorPickerRecentSwatchPickerProps): ReactNode {
   const ctx = useColorPickerContext()
   // 与预设色板同理：挂载点的 onFocus 装成原生监听器，格子得焦不把焦点抢回锚点
-  const bind = useNativeEvents(ctx.api.getRecentSwatchPickerProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getRecentSwatchPickerProps(), ['onFocus'])
   return (
     <ColorSwatchPickerProvider value={ctx.recentSwatchPicker}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children ?? ctx.api.recentSwatchPicker.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
       </div>
     </ColorSwatchPickerProvider>
@@ -496,7 +496,7 @@ export interface XhColorPickerTagLabelProps extends ComponentPropsWithRef<'span'
 /** 标签文字所在的块（tag 的 label）。 */
 export function XhColorPickerTagLabel({ children, ...rest }: XhColorPickerTagLabelProps): ReactNode {
   const ctx = useColorPickerContext()
-  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps(), rest)}>{children}</span>
 }
 
 /** 标签内容：只有文字时替它包一层 label；作者自己写了节点则原样放行。库自身填入的文字（+N）恒包 label。 */
@@ -509,7 +509,7 @@ export interface XhColorPickerItemDeleteTriggerProps extends ComponentPropsWithR
 export function XhColorPickerItemDeleteTrigger({ children, ...rest }: XhColorPickerItemDeleteTriggerProps): ReactNode {
   const ctx = useColorPickerContext()
   const value = useColorPickerTagContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }), rest)}>{children}</button>
 }
 
 export interface XhColorPickerTagProps extends ComponentPropsWithRef<'span'> {
@@ -521,7 +521,7 @@ export function XhColorPickerTag({ value, children, ...rest }: XhColorPickerTagP
   const ctx = useColorPickerContext()
   return (
     <ColorPickerTagProvider value={value}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }), rest)}>{tagChildren(children)}</span>
     </ColorPickerTagProvider>
   )
 }
@@ -531,7 +531,7 @@ export interface XhColorPickerOverflowTagProps extends ComponentPropsWithRef<'sp
 export function XhColorPickerOverflowTag({ children, ...rest }: XhColorPickerOverflowTagProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps(), rest)}>
       {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
@@ -545,7 +545,7 @@ export interface XhColorPickerTagListProps extends ComponentPropsWithRef<'span'>
 export function XhColorPickerTagList({ children, ...rest }: XhColorPickerTagListProps): ReactNode {
   const ctx = useColorPickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getTagListProps(), rest)}>
       {children ?? (
         <>
           {ctx.api.tags.map(tag => (
@@ -565,7 +565,7 @@ export interface XhColorPickerConfirmTriggerProps extends ComponentPropsWithRef<
 /** 「添加」：多选时把工作色收进值，浮层不收；单选时连接层写 hidden。文字由作者写。 */
 export function XhColorPickerConfirmTrigger({ children, ...rest }: XhColorPickerConfirmTriggerProps): ReactNode {
   const ctx = useColorPickerContext()
-  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhColorPickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
@@ -578,9 +578,9 @@ export function XhColorPickerHiddenInput({ ...rest }: XhColorPickerHiddenInputPr
       <input
         key={value}
         {...mergeReactProps(
-          ctx.api.getHiddenInputProps({ value }) as Record<string, unknown>,
+          ctx.api.getHiddenInputProps({ value }),
           { onChange: noop },
-          rest as Record<string, unknown>,
+          rest,
         )}
       />
     ))
@@ -588,11 +588,11 @@ export function XhColorPickerHiddenInput({ ...rest }: XhColorPickerHiddenInputPr
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

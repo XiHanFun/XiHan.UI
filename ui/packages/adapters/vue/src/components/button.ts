@@ -58,7 +58,7 @@ export const XhButton = defineComponent({
     } as ButtonProps))
     const api = computed(() => connectButton(service, vueNormalize))
     provide(ButtonKey, api)
-    return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -66,7 +66,7 @@ export const XhButtonLabel = defineComponent({
   name: 'XhButtonLabel',
   setup(_, { slots }) {
     const api = useButtonApi()
-    return () => h('span', api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -74,7 +74,7 @@ export const XhButtonPrefix = defineComponent({
   name: 'XhButtonPrefix',
   setup(_, { slots }) {
     const api = useButtonApi()
-    return () => h('span', api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getPrefixProps(), slots.default?.())
   },
 })
 
@@ -82,7 +82,7 @@ export const XhButtonSuffix = defineComponent({
   name: 'XhButtonSuffix',
   setup(_, { slots }) {
     const api = useButtonApi()
-    return () => h('span', api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getSuffixProps(), slots.default?.())
   },
 })
 
@@ -91,6 +91,6 @@ export const XhButtonIndicator = defineComponent({
   name: 'XhButtonIndicator',
   setup(_, { slots }) {
     const api = useButtonApi()
-    return () => h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getIndicatorProps(), slots.default?.())
   },
 })

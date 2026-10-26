@@ -73,7 +73,7 @@ export const XhNotificationRoot = defineComponent({
     const ctx = useNotification(withXhConfig('notification', props) as NotificationProps, notify)
     provideNotification(ctx)
     // 根节点是地标容器，插槽作用域里一并暴露队列与增删改命令
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: ctx.rootRef }, slots.default?.({
       items: ctx.api.value.visibleNotifications,
       placements: ctx.api.value.placements,
       count: ctx.api.value.count,
@@ -104,7 +104,7 @@ export const XhNotificationGroup = defineComponent({
     const ctx = useNotificationContext()
     return () => {
       const api = ctx.api.value
-      const groupProps = api.getGroupProps({ placement: props.placement }) as Record<string, unknown>
+      const groupProps = api.getGroupProps({ placement: props.placement })
       // 落位从 group 自己的产出里读回，不在这边重算缺省
       const placement = groupProps['data-placement'] as NotificationPlacement
       const list = api.getItemsByPlacement(placement)
@@ -159,7 +159,7 @@ export const XhNotificationItem = defineComponent({
     provideNotificationItem(ctx)
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps() as Record<string, unknown>, ref: ctx.rootRef },
+      { ...ctx.api.value.getItemProps(), ref: ctx.rootRef },
       slots.default?.({ item: ctx.api.value }),
     )
   },
@@ -170,7 +170,7 @@ export const XhNotificationItemIndicator = defineComponent({
   name: 'XhNotificationItemIndicator',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhNotificationItemContent = defineComponent({
   name: 'XhNotificationItemContent',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
-    return () => h('div', ctx.api.value.getItemContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemContentProps(), slots.default?.())
   },
 })
 
@@ -191,7 +191,7 @@ export const XhNotificationItemTitle = defineComponent({
     // 作者没写内容就用队列里那条记录的标题
     return () => h(
       'div',
-      ctx.api.value.getItemTitleProps() as Record<string, unknown>,
+      ctx.api.value.getItemTitleProps(),
       slots.default?.() ?? ctx.api.value.title,
     )
   },
@@ -205,7 +205,7 @@ export const XhNotificationItemDescription = defineComponent({
     const el = useDescriptionPart(ctx.presence)
     return () => h(
       'div',
-      { ...ctx.api.value.getItemDescriptionProps() as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getItemDescriptionProps(), ref: el },
       slots.default?.() ?? ctx.api.value.description,
     )
   },
@@ -216,7 +216,7 @@ export const XhNotificationItemActionTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
     // 原生 <button>，激活行为交给平台
-    return () => h('button', ctx.api.value.getItemActionTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemActionTriggerProps(), slots.default?.())
   },
 })
 
@@ -224,7 +224,7 @@ export const XhNotificationItemProgress = defineComponent({
   name: 'XhNotificationItemProgress',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
-    return () => h('div', ctx.api.value.getItemProgressProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProgressProps(), slots.default?.())
   },
 })
 
@@ -232,6 +232,6 @@ export const XhNotificationItemCloseTrigger = defineComponent({
   name: 'XhNotificationItemCloseTrigger',
   setup(_, { slots }) {
     const ctx = useNotificationItemContext()
-    return () => h('button', ctx.api.value.getItemCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemCloseTriggerProps(), slots.default?.())
   },
 })

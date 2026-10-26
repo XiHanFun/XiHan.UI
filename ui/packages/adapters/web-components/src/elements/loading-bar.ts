@@ -115,10 +115,10 @@ export class XhLoadingBarElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('track', api.getTrackProps() as Record<string, unknown>)
-    put('range', api.getRangeProps() as Record<string, unknown>)
-    put('peg', api.getPegProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('track', api.getTrackProps())
+    put('range', api.getRangeProps())
+    put('peg', api.getPegProps())
 
     // 收起只写 hidden 属性是不够的：作者层给 root 声明的任何一条 display
     // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住

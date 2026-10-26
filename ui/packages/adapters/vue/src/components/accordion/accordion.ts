@@ -52,7 +52,7 @@ export const XhAccordionRoot = defineComponent({
     provideAccordion(ctx)
     return () => h(
       'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      ctx.api.value.getRootProps(),
       slots.default ? slots.default() : renderDefaultStructure(ctx.api.value, slots.content),
     )
   },
@@ -70,7 +70,7 @@ export const XhAccordionItem = defineComponent({
     provideAccordionItem(() => ({ value: props.value, disabled: props.disabled }))
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ value: props.value, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -81,7 +81,7 @@ export const XhAccordionItemSeparator = defineComponent({
   name: 'XhAccordionItemSeparator',
   setup(_, { slots }) {
     const ctx = useAccordionContext()
-    return () => h('div', ctx.api.value.getItemSeparatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemSeparatorProps(), slots.default?.())
   },
 })
 
@@ -91,7 +91,7 @@ export const XhAccordionHeader = defineComponent({
   setup(_, { slots }) {
     const ctx = useAccordionContext()
     const item = useAccordionItem()
-    return () => h('h3', ctx.api.value.getHeaderProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('h3', ctx.api.value.getHeaderProps(item()), slots.default?.())
   },
 })
 
@@ -100,7 +100,7 @@ export const XhAccordionTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useAccordionContext()
     const item = useAccordionItem()
-    return () => h('button', ctx.api.value.getTriggerProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(item()), slots.default?.())
   },
 })
 
@@ -117,7 +117,7 @@ export const XhAccordionContent = defineComponent({
       contentRef,
     })
     return () => h('div', {
-      ...ctx.api.value.getContentProps(item()) as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(item()),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: visible.value ? undefined : { display: 'none' },
@@ -131,7 +131,7 @@ export const XhAccordionIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useAccordionContext()
     const item = useAccordionItem()
-    return () => h('span', ctx.api.value.getIndicatorProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })
 

@@ -91,7 +91,7 @@ const XhCheckboxGroupRootImpl = defineComponent({
     return () => {
       // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
       const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
-      return h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default
+      return h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() }), slots.default
         ? [...renderLabel(title), ...slots.default({
             value: ctx.api.value.value,
             checkedState: ctx.api.value.checkedState,
@@ -144,7 +144,7 @@ export const XhCheckboxGroupLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -161,8 +161,8 @@ export const XhCheckboxGroupItem = defineComponent({
     const item = computed<CheckboxGroupItemProps<unknown>>(() => ({ value: props.value, disabled: props.disabled }))
     provideCheckboxGroupItem({ item })
     // 表单影子由条目自行装配，不暴露成独立组件，作者只写方框与文本
-    return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, [
-      h('input', ctx.api.value.getHiddenInputProps(item.value) as Record<string, unknown>),
+    return () => h('div', ctx.api.value.getItemProps(item.value), [
+      h('input', ctx.api.value.getHiddenInputProps(item.value)),
       ...(slots.default?.() ?? []),
     ])
   },
@@ -174,7 +174,7 @@ export const XhCheckboxGroupIndicator = defineComponent({
     const ctx = useCheckboxGroupContext()
     const { item } = useCheckboxGroupItemContext()
     // 插槽留给作者放对勾图形，方框本身对读屏隐藏
-    return () => h('span', ctx.api.value.getIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhCheckboxGroupItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     const { item } = useCheckboxGroupItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -192,7 +192,7 @@ export const XhCheckboxGroupItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     const { item } = useCheckboxGroupItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -201,7 +201,7 @@ export const XhCheckboxGroupSelectAllTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useCheckboxGroupContext()
     // 与条目同形的 role=checkbox 节点，渲染为 div，Space 由 connect 接管
-    return () => h('div', ctx.api.value.getSelectAllTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSelectAllTriggerProps(), slots.default?.())
   },
 })
 

@@ -49,7 +49,7 @@ export function XhDescriptionsRoot({
   return (
     <DescriptionsProvider value={{ api }}>
       {header}
-      <Tag {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <Tag {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </Tag>
     </DescriptionsProvider>
@@ -68,7 +68,7 @@ export function XhDescriptionsItem({ as = 'div', span, children, ...rest }: XhDe
   const ctx = useDescriptionsContext()
   const Tag = as as 'div'
   return (
-    <Tag {...mergeReactProps(ctx.api.getItemProps({ span }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getItemProps({ span }), rest)}>
       {children}
     </Tag>
   )
@@ -83,7 +83,7 @@ export function XhDescriptionsLabel({ as = 'dt', children, ...rest }: XhDescript
   const ctx = useDescriptionsContext()
   const Tag = as as 'dt'
   return (
-    <Tag {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </Tag>
   )
@@ -98,7 +98,7 @@ export function XhDescriptionsValue({ as = 'dd', children, ...rest }: XhDescript
   const ctx = useDescriptionsContext()
   const Tag = as as 'dd'
   return (
-    <Tag {...mergeReactProps(ctx.api.getValueProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getValueProps(), rest)}>
       {children}
     </Tag>
   )
@@ -110,7 +110,7 @@ export interface XhDescriptionsHeaderProps extends ComponentPropsWithRef<'div'> 
 export function XhDescriptionsHeader({ children, ...rest }: XhDescriptionsHeaderProps): ReactNode {
   const ctx = useDescriptionsContext()
   return (
-    <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>
       {children}
     </div>
   )
@@ -125,7 +125,7 @@ export function XhDescriptionsTitle({ as = 'div', children, ...rest }: XhDescrip
   const ctx = useDescriptionsContext()
   const Tag = as as 'div'
   return (
-    <Tag {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </Tag>
   )
@@ -136,7 +136,7 @@ export interface XhDescriptionsExtraProps extends ComponentPropsWithRef<'div'> {
 export function XhDescriptionsExtra({ children, ...rest }: XhDescriptionsExtraProps): ReactNode {
   const ctx = useDescriptionsContext()
   return (
-    <div {...mergeReactProps(ctx.api.getExtraProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getExtraProps(), rest)}>
       {children}
     </div>
   )

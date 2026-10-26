@@ -92,7 +92,7 @@ export const XhToolCallRoot = defineComponent({
     }
     const ctx = useToolCall(machineProps, viewProps)
     provideToolCall(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       open: ctx.api.value.open,
       phase: ctx.api.value.phase,
       running: ctx.api.value.running,
@@ -108,7 +108,7 @@ export const XhToolCallTrigger = defineComponent({
   name: 'XhToolCallTrigger',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })
 
@@ -116,7 +116,7 @@ export const XhToolCallIndicator = defineComponent({
   name: 'XhToolCallIndicator',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -124,7 +124,7 @@ export const XhToolCallLabel = defineComponent({
   name: 'XhToolCallLabel',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -133,7 +133,7 @@ export const XhToolCallSummary = defineComponent({
   setup(_, { slots }) {
     const ctx = useToolCallContext()
     // 一行参数摘要，收起时也看得见这次查的是什么
-    return () => h('span', ctx.api.value.getSummaryProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSummaryProps(), slots.default?.())
   },
 })
 
@@ -144,7 +144,7 @@ export const XhToolCallStatus = defineComponent({
     // 不给内容时念阶段对应的那一句
     return () => h(
       'span',
-      ctx.api.value.getStatusProps() as Record<string, unknown>,
+      ctx.api.value.getStatusProps(),
       slots.default?.() ?? ctx.api.value.statusText,
     )
   },
@@ -155,7 +155,7 @@ export const XhToolCallDuration = defineComponent({
   setup(_, { slots }) {
     const ctx = useToolCallContext()
     // 时长文案由作者现场代入：模板串里的秒数是宿主的事，连接层不做插值
-    return () => h('span', ctx.api.value.getDurationProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getDurationProps(), slots.default?.())
   },
 })
 
@@ -164,7 +164,7 @@ export const XhToolCallApproval = defineComponent({
   setup(_, { slots }) {
     const ctx = useToolCallContext()
     // 常驻在开关与详情之间：审批闸门不该被折叠藏起来
-    return () => h('div', ctx.api.value.getApprovalProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getApprovalProps(), slots.default?.())
   },
 })
 
@@ -173,7 +173,7 @@ export const XhToolCallContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useToolCallContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -186,7 +186,7 @@ export const XhToolCallInput = defineComponent({
   name: 'XhToolCallInput',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('div', ctx.api.value.getInputProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getInputProps(), slots.default?.())
   },
 })
 
@@ -194,7 +194,7 @@ export const XhToolCallOutput = defineComponent({
   name: 'XhToolCallOutput',
   setup(_, { slots }) {
     const ctx = useToolCallContext()
-    return () => h('div', ctx.api.value.getOutputProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getOutputProps(), slots.default?.())
   },
 })
 
@@ -203,6 +203,6 @@ export const XhToolCallError = defineComponent({
   setup(_, { slots }) {
     const ctx = useToolCallContext()
     // 流被中止时未拿到结果的调用会被收尾成出错但拿不到原因，这一格要容忍空内容
-    return () => h('div', ctx.api.value.getErrorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getErrorProps(), slots.default?.())
   },
 })

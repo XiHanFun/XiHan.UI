@@ -69,7 +69,7 @@ export function XhFieldRoot({
   const ctx = useField(withXhConfig('field', useFormControlProps({ invalid, required, disabled, readOnly, controlId })))
   return (
     <FieldProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children ?? renderDefaultStructure({ label, control, description, errorText })}
       </div>
     </FieldProvider>
@@ -82,7 +82,7 @@ export function XhFieldLabel({ children, ...rest }: XhFieldLabelProps): ReactNod
   const ctx = useFieldContext()
   useFieldPartPresence(ctx, 'label')
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -107,7 +107,7 @@ export function XhFieldControl({ asChild = true, children }: XhFieldControlProps
   const ctx = useFieldContext()
   // control 在场：label 的 for 指向它；不在场时由字段代为聚焦库内控件
   useFieldPartPresence(ctx, 'control')
-  const controlProps = ctx.api.getControlProps() as Record<string, unknown>
+  const controlProps = ctx.api.getControlProps()
   // control props 经函数式 children 交给作者，控件节点由作者渲染
   const rendered = renderSlot(children, controlProps)
   // 手工接线必须显式关闭 asChild，不能根据无效结构猜测作者意图。
@@ -141,7 +141,7 @@ export function XhFieldErrorText({ children, ...rest }: XhFieldErrorTextProps): 
   const given = slotPaints(children)
   const auto = !given && form && handle ? form.api.getFieldError(handle.name) : undefined
   return (
-    <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getErrorTextProps(), rest)}>
       {given ? children : auto}
     </p>
   )

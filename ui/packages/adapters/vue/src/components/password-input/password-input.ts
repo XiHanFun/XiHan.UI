@@ -79,7 +79,7 @@ export const XhPasswordInputRoot = defineComponent({
     providePasswordInput(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             empty: api.empty,
@@ -105,7 +105,7 @@ export const XhPasswordInputLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 必须是原生 <label>，connect 把 for 写向 input
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -114,7 +114,7 @@ export const XhPasswordInputControl = defineComponent({
   setup(_, { slots }) {
     const ctx = usePasswordInputContext()
     // 视觉盒：输入框、切换钮与大写锁定提示都排在它里面
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -129,7 +129,7 @@ export const XhPasswordInputInput = defineComponent({
     // 原生 <input>：光标、选区与撤销都归浏览器，label 的 for 也指着它
     // 输入框自己的描述链（大写锁定提示）与字段的拼起来，不互相顶掉
     return () => h('input', fieldLabel.value(withFieldDescription(
-      { ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> },
+      { ...fieldWiring.value, ...ctx.api.value.getInputProps() },
       fieldWiring.value['aria-describedby'] as string | undefined,
     )))
   },
@@ -140,7 +140,7 @@ export const XhPasswordInputVisibilityTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = usePasswordInputContext()
     // 原生 <button>，Enter / Space 的激活交给平台
-    return () => h('button', ctx.api.value.getVisibilityTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getVisibilityTriggerProps(), slots.default?.())
   },
 })
 
@@ -149,7 +149,7 @@ export const XhPasswordInputCapsLockIndicator = defineComponent({
   setup() {
     const ctx = usePasswordInputContext()
     // 区内文字由组件写：活区域播报的是内容，不是名字。关着时是空串，节点仍在场
-    return () => h('span', ctx.api.value.getCapsLockIndicatorProps() as Record<string, unknown>, ctx.api.value.capsLockMessage)
+    return () => h('span', ctx.api.value.getCapsLockIndicatorProps(), ctx.api.value.capsLockMessage)
   },
 })
 
@@ -158,7 +158,7 @@ export const XhPasswordInputStrengthMeter = defineComponent({
   name: 'XhPasswordInputStrengthMeter',
   setup(_, { slots }) {
     const ctx = usePasswordInputContext()
-    return () => h('div', ctx.api.value.getStrengthMeterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getStrengthMeterProps(), slots.default?.())
   },
 })
 

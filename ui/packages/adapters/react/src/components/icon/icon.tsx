@@ -23,7 +23,7 @@ import { renderStructure } from '../../runtime/structure'
 function renderNode(node: IconNode, key: number): ReactElement {
   return createElement(
     node.tag,
-    { ...reactNormalize.element((node.attrs ?? {}) as Record<string, unknown>), key },
+    { ...reactNormalize.element((node.attrs ?? {})), key },
     node.children?.map((child, index) => renderNode(child, index)),
   )
 }
@@ -32,7 +32,7 @@ const NO_PROPS: IconProps = {}
 
 /** glyph 空壳：只带解剖标记，图元由标准结构的内容回调铺进来。 */
 function XhIconGlyph({ children }: { children?: ReactNode }): ReactNode {
-  return <g {...connectIcon(NO_PROPS, reactNormalize).getGlyphProps() as Record<string, unknown>}>{children}</g>
+  return <g {...connectIcon(NO_PROPS, reactNormalize).getGlyphProps()}>{children}</g>
 }
 
 /** 标准结构里各部件对应的组件。 */
@@ -75,7 +75,7 @@ export function XhIcon({
   const configured = withXhConfig('icon', { icon, label, size, weight, tone, frame, rotate, flip } as IconProps)
   const api = connectIcon(configured, reactNormalize)
   return (
-    <svg {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <svg {...mergeReactProps(api.getRootProps(), rest)}>
       {slotPaints(children)
         ? children
         : renderStructure(iconStructure(), ICON_PARTS, () => api.nodes.map((node, index) => renderNode(node, index)))}

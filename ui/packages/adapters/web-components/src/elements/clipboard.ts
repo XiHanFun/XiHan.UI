@@ -102,17 +102,17 @@ export class XhClipboardElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('copy-trigger', api.getCopyTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('input', api.getInputProps())
+    put('copy-trigger', api.getCopyTriggerProps())
 
     // 播报区是可选角色节点；作者没写内容时由宿主填那一句，写了就以作者的为准。
     // 「作者写没写」只认头一回见到它那一刻——第二帧起读到的可能是宿主自己填的
     const status = this.getPart('status')
     if (status) {
-      this.spreader.spread(status, api.getStatusProps() as Record<string, unknown>)
+      this.spreader.spread(status, api.getStatusProps())
       if (!this.authoredStatus.has(status))
         this.authoredStatus.set(status, status.textContent!.trim().length > 0)
       if (!this.authoredStatus.get(status))
@@ -122,7 +122,7 @@ export class XhClipboardElement extends XhElement {
     // 指示器是多实例 part，逐个打：身份取作者写的 copied 属性
     for (const el of this.getParts('indicator')) {
       const indicator = { copied: el.hasAttribute('copied') }
-      this.spreader.spread(el, api.getIndicatorProps(indicator) as Record<string, unknown>)
+      this.spreader.spread(el, api.getIndicatorProps(indicator))
     }
   }
 }

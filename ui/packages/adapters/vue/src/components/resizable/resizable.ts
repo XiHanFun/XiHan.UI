@@ -62,7 +62,7 @@ export const XhResizableRoot = defineComponent({
     provideResizable(ctx)
 
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: ctx.rootRef,
     }, slots.default?.({
       dimensions: ctx.api.value.dimensions,
@@ -91,7 +91,7 @@ export const XhResizableHandle = defineComponent({
     const ctx = useResizableContext()
     return () => h(
       'span',
-      ctx.api.value.getHandleProps({ edge: props.edge }) as Record<string, unknown>,
+      ctx.api.value.getHandleProps({ edge: props.edge }),
       slots.default?.(),
     )
   },

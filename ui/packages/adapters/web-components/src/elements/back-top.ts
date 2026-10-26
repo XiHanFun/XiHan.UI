@@ -90,7 +90,7 @@ export class XhBackTopElement extends XhElement {
 
     const root = this.getPart('root')
     if (root) {
-      const props = api.getRootProps() as Record<string, unknown>
+      const props = api.getRootProps()
       this.spreader.spread(root, props)
       // Light DOM 常驻，WC 自管可见性：作者层若给这个 part 声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来
@@ -99,6 +99,6 @@ export class XhBackTopElement extends XhElement {
 
     const trigger = this.getPart('trigger')
     if (trigger)
-      this.spreader.spread(trigger, api.getTriggerProps() as Record<string, unknown>)
+      this.spreader.spread(trigger, api.getTriggerProps())
   }
 }

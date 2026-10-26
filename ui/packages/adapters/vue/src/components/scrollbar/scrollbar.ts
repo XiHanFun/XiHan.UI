@@ -74,7 +74,7 @@ export const XhScrollbarRoot = defineComponent({
     provideScrollbar(ctx)
 
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default?.({
       visible: ctx.api.value.visible,
@@ -98,7 +98,7 @@ export const XhScrollbarTrack = defineComponent({
     const ctx = useScrollbarContext()
     // 轨道节点交给机器，长度在按下滑块时现量
     return () => h('div', {
-      ...ctx.api.value.getTrackProps() as Record<string, unknown>,
+      ...ctx.api.value.getTrackProps(),
       ref: (el: unknown) => { ctx.trackRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -108,7 +108,7 @@ export const XhScrollbarThumb = defineComponent({
   name: 'XhScrollbarThumb',
   setup(_, { slots }) {
     const ctx = useScrollbarContext()
-    return () => h('div', ctx.api.value.getThumbProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getThumbProps(), slots.default?.())
   },
 })
 
@@ -117,6 +117,6 @@ export const XhScrollbarCorner = defineComponent({
   name: 'XhScrollbarCorner',
   setup(_, { slots }) {
     const ctx = useScrollbarContext()
-    return () => h('div', ctx.api.value.getCornerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCornerProps(), slots.default?.())
   },
 })

@@ -83,7 +83,7 @@ export const XhTimerRoot = defineComponent({
       })
       return h(
         'div',
-        api.getRootProps() as Record<string, unknown>,
+        api.getRootProps(),
         // 插槽为空（含 v-if 落空只剩注释节点）时退回组件自己铺的时分秒
         slotPaints(content) ? content : [renderDefaultTree()],
       )
@@ -95,7 +95,7 @@ export const XhTimerDisplay = defineComponent({
   name: 'XhTimerDisplay',
   setup(_, { slots }) {
     const ctx = useTimerContext()
-    return () => h('div', ctx.api.value.getDisplayProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getDisplayProps(), slots.default?.())
   },
 })
 
@@ -112,7 +112,7 @@ export const XhTimerItem = defineComponent({
       // 下一拍就会被新的数字盖掉，Web Components 侧也是元素接管这段文本
       return h(
         'span',
-        api.getItemProps({ unit: props.unit }) as Record<string, unknown>,
+        api.getItemProps({ unit: props.unit }),
         api.segmentText(props.unit),
       )
     }
@@ -128,7 +128,7 @@ export const XhTimerSeparator = defineComponent({
       // 缺省是冒号，换成别的记号写进插槽即可
       return h(
         'span',
-        ctx.api.value.getSeparatorProps() as Record<string, unknown>,
+        ctx.api.value.getSeparatorProps(),
         slotPaints(content) ? content : ':',
       )
     }
@@ -145,7 +145,7 @@ export const XhTimerControl = defineComponent({
       // 用原生 button，激活交给平台；没写内容时把当前动作的名字写上去
       return h(
         'button',
-        api.getControlProps() as Record<string, unknown>,
+        api.getControlProps(),
         slotPaints(content) ? content : api.controlLabel,
       )
     }

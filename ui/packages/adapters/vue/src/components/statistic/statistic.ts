@@ -27,7 +27,7 @@ export const XhStatisticRoot = defineComponent({
     const configured = withXhConfig('statistic', props)
     const api = computed(() => connectStatistic(configured as StatisticProps, vueNormalize))
     provideStatistic({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -36,7 +36,7 @@ export const XhStatisticLabel = defineComponent({
   name: 'XhStatisticLabel',
   setup(_, { slots }) {
     const ctx = useStatisticContext()
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -45,7 +45,7 @@ export const XhStatisticValue = defineComponent({
   name: 'XhStatisticValue',
   setup(_, { slots }) {
     const ctx = useStatisticContext()
-    return () => h('span', ctx.api.value.getValueProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getValueProps(), slots.default?.())
   },
 })
 
@@ -53,7 +53,7 @@ export const XhStatisticPrefix = defineComponent({
   name: 'XhStatisticPrefix',
   setup(_, { slots }) {
     const ctx = useStatisticContext()
-    return () => h('span', ctx.api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getPrefixProps(), slots.default?.())
   },
 })
 
@@ -61,7 +61,7 @@ export const XhStatisticSuffix = defineComponent({
   name: 'XhStatisticSuffix',
   setup(_, { slots }) {
     const ctx = useStatisticContext()
-    return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSuffixProps(), slots.default?.())
   },
 })
 
@@ -70,6 +70,6 @@ export const XhStatisticTrend = defineComponent({
   name: 'XhStatisticTrend',
   setup(_, { slots }) {
     const ctx = useStatisticContext()
-    return () => h('span', ctx.api.value.getTrendProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTrendProps(), slots.default?.())
   },
 })

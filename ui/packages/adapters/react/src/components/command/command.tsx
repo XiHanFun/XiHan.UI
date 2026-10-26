@@ -113,8 +113,8 @@ export interface XhCommandTriggerProps extends ComponentPropsWithRef<'button'>, 
 export function XhCommandTrigger({ children, asChild, ...rest }: XhCommandTriggerProps): ReactNode {
   const ctx = useCommandContext()
   const props = mergePartProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getTriggerProps(),
+    rest,
   )
   return renderAsChild(asChild, children, props, 'command', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -132,7 +132,7 @@ export function XhCommandContent({ children, container, ...rest }: XhCommandCont
   if (!ctx.rendered)
     return null
   const api = ctx.api
-  const backdrop = api.getBackdropProps() as Record<string, unknown>
+  const backdrop = api.getBackdropProps()
   return (
     <XhPortal container={container ?? ctx.portalContainer}>
       {!backdrop.hidden
@@ -143,11 +143,11 @@ export function XhCommandContent({ children, container, ...rest }: XhCommandCont
             />
           )
         : null}
-      <div {...api.getPositionerProps() as Record<string, unknown>}>
+      <div {...api.getPositionerProps()}>
         <div
           {...mergeReactProps(
-            api.getContentProps() as Record<string, unknown>,
-            rest as Record<string, unknown>,
+            api.getContentProps(),
+            rest,
             { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
           )}
         >
@@ -165,8 +165,8 @@ export function XhCommandInput({ ...rest }: XhCommandInputProps): ReactNode {
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getInputProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getInputProps(),
+        rest,
         { ref: (el: HTMLInputElement | null) => { ctx.inputRef.current = el } },
       )}
     />
@@ -189,8 +189,8 @@ export function XhCommandList({ children, ...rest }: XhCommandListProps): ReactN
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getListProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getListProps(),
+        rest,
         { ref: listRef },
       )}
     >
@@ -207,7 +207,7 @@ export function XhCommandGroup({ value, children, ...rest }: XhCommandGroupProps
   const group = useMemo(() => ({ value }), [value])
   return (
     <CommandGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </CommandGroupProvider>
   )
 }
@@ -216,7 +216,7 @@ export interface XhCommandGroupLabelProps extends ComponentPropsWithRef<'span'> 
 export function XhCommandGroupLabel({ children, ...rest }: XhCommandGroupLabelProps): ReactNode {
   const ctx = useCommandContext()
   const group = useCommandGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhCommandItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -228,10 +228,10 @@ export function XhCommandItem({ value, disabled, children, ...rest }: XhCommandI
   const ctx = useCommandContext()
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
   // 指针离开条目不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getItemProps(item) as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(ctx.api.getItemProps(item), ['onPointerLeave'])
   return (
     <CommandItemProvider value={item}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children}
       </div>
     </CommandItemProvider>
@@ -242,7 +242,7 @@ export interface XhCommandItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhCommandItemText({ children, ...rest }: XhCommandItemTextProps): ReactNode {
   const ctx = useCommandContext()
   const item = useCommandItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
@@ -250,7 +250,7 @@ export interface XhCommandItemPrefixProps extends ComponentPropsWithRef<'span'> 
 export function XhCommandItemPrefix({ children, ...rest }: XhCommandItemPrefixProps): ReactNode {
   const ctx = useCommandContext()
   const item = useCommandItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -258,7 +258,7 @@ export interface XhCommandItemSuffixProps extends ComponentPropsWithRef<'span'> 
 export function XhCommandItemSuffix({ children, ...rest }: XhCommandItemSuffixProps): ReactNode {
   const ctx = useCommandContext()
   const item = useCommandItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -266,7 +266,7 @@ export interface XhCommandItemDescriptionProps extends ComponentPropsWithRef<'sp
 export function XhCommandItemDescription({ children, ...rest }: XhCommandItemDescriptionProps): ReactNode {
   const ctx = useCommandContext()
   const item = useCommandItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 /** 命令行尾的快捷键提示，与说明同档同色；纯装饰。 */
@@ -274,27 +274,27 @@ export interface XhCommandItemShortcutProps extends ComponentPropsWithRef<'span'
 export function XhCommandItemShortcut({ children, ...rest }: XhCommandItemShortcutProps): ReactNode {
   const ctx = useCommandContext()
   const item = useCommandItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item), rest)}>{children}</span>
 }
 
 export interface XhCommandEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 放在 content 中作为 list 的兄弟节点，不进入 role=listbox。 */
 export function XhCommandEmpty({ children, ...rest }: XhCommandEmptyProps): ReactNode {
   const ctx = useCommandContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhCommandLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhCommandLoading({ children, ...rest }: XhCommandLoadingProps): ReactNode {
   const ctx = useCommandContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{children}</div>
 }
 
 export interface XhCommandFooterProps extends ComponentPropsWithRef<'footer'> {}
 export function XhCommandFooter({ children, ...rest }: XhCommandFooterProps): ReactNode {
   const ctx = useCommandContext()
-  return <footer {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</footer>
+  return <footer {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</footer>
 }
 
 /** 遮罩：XhCommandContent 连同定位层一起把它铺在浮层落点里，结构里这个节点不另渲。 */

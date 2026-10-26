@@ -270,22 +270,22 @@ export class XhFormatInputElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put(this.getPart('root'), api.getRootProps() as Record<string, unknown>)
-    put(this.getPart('label'), api.getLabelProps() as Record<string, unknown>)
-    put(this.getPart('kind'), api.getKindProps() as Record<string, unknown>)
-    put(this.getPart('field-group'), api.getFieldGroupProps() as Record<string, unknown>)
+    put(this.getPart('root'), api.getRootProps())
+    put(this.getPart('label'), api.getLabelProps())
+    put(this.getPart('kind'), api.getKindProps())
+    put(this.getPart('field-group'), api.getFieldGroupProps())
     for (const el of this.getParts('item')) {
       const option = el.getAttribute('value')
       if (option)
-        put(el, api.getItemProps(option as never) as Record<string, unknown>)
+        put(el, api.getItemProps(option as never))
     }
     for (const el of this.getParts('item-label')) {
       const option = el.getAttribute('value')
       if (option)
-        put(el, api.getItemLabelProps(option as never) as Record<string, unknown>)
+        put(el, api.getItemLabelProps(option as never))
     }
-    put(this.getPart('pattern-description'), api.getPatternDescriptionProps() as Record<string, unknown>)
-    put(this.getPart('preview'), api.getPreviewProps() as Record<string, unknown>)
-    put(this.getPart('error-text'), api.getErrorTextProps() as Record<string, unknown>)
+    put(this.getPart('pattern-description'), api.getPatternDescriptionProps())
+    put(this.getPart('preview'), api.getPreviewProps())
+    put(this.getPart('error-text'), api.getErrorTextProps())
   }
 }

@@ -89,7 +89,7 @@ export const XhFilterBuilderRoot = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     return () => {
       const api = ctx.api.value
-      return h('div', fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() as Record<string, unknown> }), slots.default
+      return h('div', fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() }), slots.default
         ? slots.default({
             value: api.value,
             tree: api.tree,
@@ -122,7 +122,7 @@ export const XhFilterBuilderLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -147,7 +147,7 @@ export const XhFilterBuilderGroup = defineComponent({
     const ctx = useFilterBuilderContext()
     const path = usePathOf(() => props.value, 'XhFilterBuilderGroup')
     provideFilterBuilderGroup(path)
-    return () => h('div', ctx.api.value.getGroupProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(path.value), slots.default?.())
   },
 })
 
@@ -156,7 +156,7 @@ export const XhFilterBuilderGroupHeader = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('div', ctx.api.value.getGroupHeaderProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupHeaderProps(path.value), slots.default?.())
   },
 })
 
@@ -165,7 +165,7 @@ export const XhFilterBuilderLogic = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('div', ctx.api.value.getLogicProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLogicProps(path.value), slots.default?.())
   },
 })
 
@@ -174,7 +174,7 @@ export const XhFilterBuilderGroupDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('button', ctx.api.value.getGroupDeleteTriggerProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getGroupDeleteTriggerProps(path.value), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhFilterBuilderGroupItems = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('div', ctx.api.value.getGroupItemsProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupItemsProps(path.value), slots.default?.())
   },
 })
 
@@ -192,7 +192,7 @@ export const XhFilterBuilderGroupFooter = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('div', ctx.api.value.getGroupFooterProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupFooterProps(path.value), slots.default?.())
   },
 })
 
@@ -201,7 +201,7 @@ export const XhFilterBuilderAddConditionTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('button', ctx.api.value.getAddConditionTriggerProps(path.value) as Record<string, unknown>, slots.default?.() ?? ctx.translations.value.addCondition)
+    return () => h('button', ctx.api.value.getAddConditionTriggerProps(path.value), slots.default?.() ?? ctx.translations.value.addCondition)
   },
 })
 
@@ -210,7 +210,7 @@ export const XhFilterBuilderAddGroupTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderGroup()
-    return () => h('button', ctx.api.value.getAddGroupTriggerProps(path.value) as Record<string, unknown>, slots.default?.() ?? ctx.translations.value.addGroup)
+    return () => h('button', ctx.api.value.getAddGroupTriggerProps(path.value), slots.default?.() ?? ctx.translations.value.addGroup)
   },
 })
 
@@ -224,7 +224,7 @@ export const XhFilterBuilderCondition = defineComponent({
     const ctx = useFilterBuilderContext()
     const path = usePathOf(() => props.value, 'XhFilterBuilderCondition')
     provideFilterBuilderCondition(path)
-    return () => h('div', ctx.api.value.getConditionProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionProps(path.value), slots.default?.())
   },
 })
 
@@ -233,7 +233,7 @@ export const XhFilterBuilderConditionField = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionFieldProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionFieldProps(path.value), slots.default?.())
   },
 })
 
@@ -242,7 +242,7 @@ export const XhFilterBuilderConditionOperator = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionOperatorProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionOperatorProps(path.value), slots.default?.())
   },
 })
 
@@ -251,7 +251,7 @@ export const XhFilterBuilderConditionSource = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionSourceProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionSourceProps(path.value), slots.default?.())
   },
 })
 
@@ -260,7 +260,7 @@ export const XhFilterBuilderConditionOperand = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionOperandProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionOperandProps(path.value), slots.default?.())
   },
 })
 
@@ -269,7 +269,7 @@ export const XhFilterBuilderConditionIgnoreCase = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionIgnoreCaseProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionIgnoreCaseProps(path.value), slots.default?.())
   },
 })
 
@@ -278,7 +278,7 @@ export const XhFilterBuilderConditionExtra = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('div', ctx.api.value.getConditionExtraProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getConditionExtraProps(path.value), slots.default?.())
   },
 })
 
@@ -287,7 +287,7 @@ export const XhFilterBuilderConditionDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('button', ctx.api.value.getConditionDeleteTriggerProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConditionDeleteTriggerProps(path.value), slots.default?.())
   },
 })
 
@@ -296,7 +296,7 @@ export const XhFilterBuilderConditionError = defineComponent({
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
     const path = useFilterBuilderCondition()
-    return () => h('p', ctx.api.value.getConditionErrorProps(path.value) as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getConditionErrorProps(path.value), slots.default?.())
   },
 })
 
@@ -304,7 +304,7 @@ export const XhFilterBuilderRangeSeparator = defineComponent({
   name: 'XhFilterBuilderRangeSeparator',
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
-    return () => h('span', ctx.api.value.getRangeSeparatorProps() as Record<string, unknown>, slots.default?.() ?? ctx.translations.value.rangeSeparator)
+    return () => h('span', ctx.api.value.getRangeSeparatorProps(), slots.default?.() ?? ctx.translations.value.rangeSeparator)
   },
 })
 
@@ -312,7 +312,7 @@ export const XhFilterBuilderEmpty = defineComponent({
   name: 'XhFilterBuilderEmpty',
   setup(_, { slots }) {
     const ctx = useFilterBuilderContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.translations.value.empty)
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? ctx.translations.value.empty)
   },
 })
 
@@ -320,7 +320,7 @@ export const XhFilterBuilderLiveRegion = defineComponent({
   name: 'XhFilterBuilderLiveRegion',
   setup() {
     const ctx = useFilterBuilderContext()
-    return () => h('div', ctx.api.value.getLiveRegionProps() as Record<string, unknown>, ctx.api.value.announcement)
+    return () => h('div', ctx.api.value.getLiveRegionProps(), ctx.api.value.announcement)
   },
 })
 

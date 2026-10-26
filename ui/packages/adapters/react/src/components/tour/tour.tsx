@@ -117,7 +117,7 @@ export function XhTourRoot({
   // 经 children 载荷交出状态与走步、放弃等命令，供浮层外的按钮使用
   return (
     <TourProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           open: api.open,
           value: api.value,
@@ -148,8 +148,8 @@ export function XhTourBackdrop({ children, ...rest }: XhTourBackdropProps): Reac
     <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getBackdropProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getBackdropProps(),
+          rest,
           {
             // 收起跟着退场闸门走：遮罩的淡出与气泡的退场并行播
             hidden: (!ctx.rendered || !ctx.showBackdrop) || undefined,
@@ -171,8 +171,8 @@ export function XhTourSpotlight({ ...rest }: XhTourSpotlightProps): ReactNode {
     <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getSpotlightProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getSpotlightProps(),
+          rest,
           // 收起跟着退场闸门走：高亮框的退场与气泡并行播；居中步照常不画
           {
             hidden: (!ctx.rendered || !ctx.api.anchored) || undefined,
@@ -192,8 +192,8 @@ export function XhTourPositioner({ children, ...rest }: XhTourPositionerProps): 
     <XhPortal container={ctx.portalContainer} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           {
             // 定位层收起跟着退场闸门走：它先 display:none 的话，里面气泡的退场一帧都播不出来
             hidden: !ctx.rendered || undefined,
@@ -213,8 +213,8 @@ export function XhTourContent({ children, ...rest }: XhTourContentProps): ReactN
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -234,7 +234,7 @@ export function XhTourTitle({ children, ...rest }: XhTourTitleProps): ReactNode 
   const ctx = useTourContext()
   useTitleDescriptionPart(ctx.presence, 'title')
   return (
-    <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {slotPaints(children) ? children : ctx.api.currentStep?.title}
     </h2>
   )
@@ -256,7 +256,7 @@ export interface XhTourProgressTextProps extends ComponentPropsWithRef<'span'> {
 export function XhTourProgressText({ children, ...rest }: XhTourProgressTextProps): ReactNode {
   const ctx = useTourContext()
   return (
-    <span {...mergeReactProps(ctx.api.getProgressTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getProgressTextProps(), rest)}>
       {slotPaints(children) ? children : ctx.api.progressText}
     </span>
   )
@@ -268,11 +268,11 @@ export function XhTourProgressIndicator({ children, ...rest }: XhTourProgressInd
   const ctx = useTourContext()
   const api = ctx.api
   return (
-    <div {...mergeReactProps(api.getProgressIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getProgressIndicatorProps(), rest)}>
       {slotPaints(children)
         ? children
         : Array.from({ length: api.count }, (_, index) => (
-            <div key={index} {...api.getProgressDotProps({ index }) as Record<string, unknown>} />
+            <div key={index} {...api.getProgressDotProps({ index })} />
           ))}
     </div>
   )
@@ -284,35 +284,35 @@ export interface XhTourProgressDotProps extends ComponentPropsWithRef<'div'> {
 }
 export function XhTourProgressDot({ index, ...rest }: XhTourProgressDotProps): ReactNode {
   const ctx = useTourContext()
-  return <div {...mergeReactProps(ctx.api.getProgressDotProps({ index: Number(index) }) as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getProgressDotProps({ index: Number(index) }), rest)} />
 }
 
 export interface XhTourPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTourPrevTrigger({ children, ...rest }: XhTourPrevTriggerProps): ReactNode {
   const ctx = useTourContext()
-  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTourNextTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTourNextTrigger({ children, ...rest }: XhTourNextTriggerProps): ReactNode {
   const ctx = useTourContext()
-  return <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTourSkipTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTourSkipTrigger({ children, ...rest }: XhTourSkipTriggerProps): ReactNode {
   const ctx = useTourContext()
-  return <button {...mergeReactProps(ctx.api.getSkipTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getSkipTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTourCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhTourCloseTrigger({ children, ...rest }: XhTourCloseTriggerProps): ReactNode {
   const ctx = useTourContext()
-  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhTourArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhTourArrow({ ...rest }: XhTourArrowProps): ReactNode {
   const ctx = useTourContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)} />
 }

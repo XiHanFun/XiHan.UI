@@ -77,7 +77,7 @@ export const XhFormatInputRoot = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     return () => {
       const api = ctx.api.value
-      return h('div', fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() as Record<string, unknown> }), slots.default
+      return h('div', fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() }), slots.default
         ? slots.default({
             value: api.value,
             kind: api.kind,
@@ -110,7 +110,7 @@ export const XhFormatInputLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -119,7 +119,7 @@ export const XhFormatInputKind = defineComponent({
   setup(_, { slots }) {
     const ctx = useFormatInputContext()
     // 分段切换时是 fieldset（名字在 legend），下拉时是 div
-    return () => h(formatInputItemTag('kind', ctx.api.value.kindControl), ctx.api.value.getKindProps() as Record<string, unknown>, slots.default?.())
+    return () => h(formatInputItemTag('kind', ctx.api.value.kindControl), ctx.api.value.getKindProps(), slots.default?.())
   },
 })
 
@@ -127,7 +127,7 @@ export const XhFormatInputFieldGroup = defineComponent({
   name: 'XhFormatInputFieldGroup',
   setup(_, { slots }) {
     const ctx = useFormatInputContext()
-    return () => h('div', ctx.api.value.getFieldGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFieldGroupProps(), slots.default?.())
   },
 })
 
@@ -140,7 +140,7 @@ export const XhFormatInputItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useFormatInputContext()
     // 分段切换那一行是 fieldset、开关那一行是 label，其余是 div
-    return () => h(formatInputItemTag(props.value, ctx.api.value.kindControl), ctx.api.value.getItemProps(props.value) as Record<string, unknown>, slots.default?.())
+    return () => h(formatInputItemTag(props.value, ctx.api.value.kindControl), ctx.api.value.getItemProps(props.value), slots.default?.())
   },
 })
 
@@ -153,7 +153,7 @@ export const XhFormatInputItemLabel = defineComponent({
   setup(props, { slots }) {
     const ctx = useFormatInputContext()
     // 在 fieldset 里是 legend，其余是 span
-    return () => h(formatInputItemLabelTag(props.value, ctx.api.value.kindControl), ctx.api.value.getItemLabelProps(props.value) as Record<string, unknown>, slots.default?.())
+    return () => h(formatInputItemLabelTag(props.value, ctx.api.value.kindControl), ctx.api.value.getItemLabelProps(props.value), slots.default?.())
   },
 })
 
@@ -161,7 +161,7 @@ export const XhFormatInputPatternDescription = defineComponent({
   name: 'XhFormatInputPatternDescription',
   setup(_, { slots }) {
     const ctx = useFormatInputContext()
-    return () => h('p', ctx.api.value.getPatternDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getPatternDescriptionProps(), slots.default?.())
   },
 })
 
@@ -169,7 +169,7 @@ export const XhFormatInputPreview = defineComponent({
   name: 'XhFormatInputPreview',
   setup(_, { slots }) {
     const ctx = useFormatInputContext()
-    return () => h('div', ctx.api.value.getPreviewProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.previewText)
+    return () => h('div', ctx.api.value.getPreviewProps(), slots.default?.() ?? ctx.api.value.previewText)
   },
 })
 
@@ -177,7 +177,7 @@ export const XhFormatInputErrorText = defineComponent({
   name: 'XhFormatInputErrorText',
   setup(_, { slots }) {
     const ctx = useFormatInputContext()
-    return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.issueText)
+    return () => h('p', ctx.api.value.getErrorTextProps(), slots.default?.() ?? ctx.api.value.issueText)
   },
 })
 

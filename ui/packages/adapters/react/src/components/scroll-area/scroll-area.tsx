@@ -64,7 +64,7 @@ export function XhScrollAreaRoot({
 
   return (
     <ScrollAreaProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           vertical: api.vertical,
           horizontal: api.horizontal,
@@ -87,8 +87,8 @@ export function XhScrollAreaViewport({ children, ...rest }: XhScrollAreaViewport
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: ctx.viewportRef },
       )}
     >
@@ -104,8 +104,8 @@ export function XhScrollAreaContent({ children, ...rest }: XhScrollAreaContentPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         { ref: ctx.contentRef },
       )}
     >
@@ -126,8 +126,8 @@ export function XhScrollAreaScrollbar({ orientation = 'vertical', children, ...r
     <ScrollAreaScrollbarProvider value={orientation}>
       <div
         {...mergeReactProps(
-          ctx.api.getScrollbarProps({ orientation }) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getScrollbarProps({ orientation }),
+          rest,
           // 根节点交给机器：指针进出它也算「手还在这儿」
           { ref: (el: HTMLDivElement | null) => { ctx.setScrollbarEl(orientation, el) } },
         )}
@@ -147,8 +147,8 @@ export function XhScrollAreaTrack({ children, ...rest }: XhScrollAreaTrackProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getTrackProps({ orientation }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTrackProps({ orientation }),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.setTrackEl(orientation, el) } },
       )}
     >
@@ -165,8 +165,8 @@ export function XhScrollAreaThumb({ children, ...rest }: XhScrollAreaThumbProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getThumbProps({ orientation }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getThumbProps({ orientation }),
+        rest,
       )}
     >
       {children}
@@ -180,7 +180,7 @@ export interface XhScrollAreaCornerProps extends ComponentPropsWithRef<'div'> {}
 export function XhScrollAreaCorner({ children, ...rest }: XhScrollAreaCornerProps): ReactNode {
   const ctx = useScrollAreaContext()
   return (
-    <div {...mergeReactProps(ctx.api.getCornerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getCornerProps(), rest)}>
       {children}
     </div>
   )

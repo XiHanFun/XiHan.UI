@@ -34,7 +34,7 @@ export const XhListRoot = defineComponent({
       size: configured.size,
     }, vueNormalize))
     provideList({ api })
-    return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -46,7 +46,7 @@ export const XhListItem = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useListContext()
-    return () => h(props.as, ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getItemProps(), slots.default?.())
   },
 })
 
@@ -55,7 +55,7 @@ export const XhListItemMedia = defineComponent({
   name: 'XhListItemMedia',
   setup(_, { slots }) {
     const ctx = useListContext()
-    return () => h('div', ctx.api.value.getItemMediaProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemMediaProps(), slots.default?.())
   },
 })
 
@@ -63,7 +63,7 @@ export const XhListItemContent = defineComponent({
   name: 'XhListItemContent',
   setup(_, { slots }) {
     const ctx = useListContext()
-    return () => h('div', ctx.api.value.getItemContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemContentProps(), slots.default?.())
   },
 })
 
@@ -72,7 +72,7 @@ export const XhListItemTitle = defineComponent({
   name: 'XhListItemTitle',
   setup(_, { slots }) {
     const ctx = useListContext()
-    return () => h('div', ctx.api.value.getItemTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemTitleProps(), slots.default?.())
   },
 })
 
@@ -80,7 +80,7 @@ export const XhListItemDescription = defineComponent({
   name: 'XhListItemDescription',
   setup(_, { slots }) {
     const ctx = useListContext()
-    return () => h('div', ctx.api.value.getItemDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemDescriptionProps(), slots.default?.())
   },
 })
 
@@ -89,6 +89,6 @@ export const XhListItemAction = defineComponent({
   name: 'XhListItemAction',
   setup(_, { slots }) {
     const ctx = useListContext()
-    return () => h('div', ctx.api.value.getItemActionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemActionProps(), slots.default?.())
   },
 })

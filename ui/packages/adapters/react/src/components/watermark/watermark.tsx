@@ -65,8 +65,8 @@ export function XhWatermarkRoot({
     <WatermarkProvider value={{ api }}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { rootRef.current = el } },
         )}
       >
@@ -82,7 +82,7 @@ export interface XhWatermarkContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhWatermarkContent({ children, ...rest }: XhWatermarkContentProps): ReactNode {
   const ctx = useWatermarkContext()
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </div>
   )
