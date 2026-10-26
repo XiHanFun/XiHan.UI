@@ -175,14 +175,14 @@ export class XhGridListElement extends XhElement {
       if (part)
         this.spreader.spread(part, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
 
     for (const rowElement of this.getParts('row')) {
       const row = this.rowProps(rowElement)
-      this.spreader.spread(rowElement, api.getRowProps(row) as Record<string, unknown>)
+      this.spreader.spread(rowElement, api.getRowProps(row))
       this.declaredRowDisabled.commit(rowElement)
       const bindings: Array<[string, (props: GridListRowProps) => unknown]> = [
         ['row-selection-indicator', api.getRowSelectionIndicatorProps],

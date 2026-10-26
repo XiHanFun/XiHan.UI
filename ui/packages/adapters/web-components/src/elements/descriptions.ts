@@ -61,7 +61,7 @@ export class XhDescriptionsElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 每一组都会出现多次，逐个打
     const putAll = (name: string, attrs: Record<string, unknown>): void => {
@@ -73,20 +73,20 @@ export class XhDescriptionsElement extends XhElement {
     for (const el of this.getParts('item')) {
       const raw = Number(el.getAttribute('span'))
       const span = Number.isFinite(raw) && raw > 0 ? raw : undefined
-      this.spreader.spread(el, api.getItemProps({ span }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ span }))
     }
-    putAll('label', api.getLabelProps() as Record<string, unknown>)
-    putAll('value', api.getValueProps() as Record<string, unknown>)
+    putAll('label', api.getLabelProps())
+    putAll('value', api.getValueProps())
 
     // 头部排在根之外（根常写成 dl），作者把它写成根的前一个兄弟
     const header = this.getPart('header')
     if (header)
-      this.spreader.spread(header, api.getHeaderProps() as Record<string, unknown>)
+      this.spreader.spread(header, api.getHeaderProps())
     const title = this.getPart('title')
     if (title)
-      this.spreader.spread(title, api.getTitleProps() as Record<string, unknown>)
+      this.spreader.spread(title, api.getTitleProps())
     const extra = this.getPart('extra')
     if (extra)
-      this.spreader.spread(extra, api.getExtraProps() as Record<string, unknown>)
+      this.spreader.spread(extra, api.getExtraProps())
   }
 }

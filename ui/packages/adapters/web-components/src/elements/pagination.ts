@@ -421,20 +421,20 @@ export class XhPaginationElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('summary', api.getSummaryProps() as Record<string, unknown>)
-    put('jumper', api.getJumperProps() as Record<string, unknown>)
-    put('first-trigger', api.getFirstTriggerProps() as Record<string, unknown>)
-    put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
-    put('last-trigger', api.getLastTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('summary', api.getSummaryProps())
+    put('jumper', api.getJumperProps())
+    put('first-trigger', api.getFirstTriggerProps())
+    put('prev-trigger', api.getPrevTriggerProps())
+    put('next-trigger', api.getNextTriggerProps())
+    put('last-trigger', api.getLastTriggerProps())
 
     // 页码是多实例 part，逐个打：身份取作者写的 value。
     // 漏写时给 NaN 而不是 Number(null) 的 0：NaN 与任何页都不相等，按钮点了会被机器
     // 夹回第 1 页，但绝不会冒充当前页；Vue 侧漏写 value 拿到的同样是 NaN，两侧一致。
     for (const el of this.getParts('item')) {
       const props = api.getItemProps({ page: itemPage(el) })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
     }
 
     // 省略位逐个打：身份取作者写的 side，缺省当 start。
@@ -442,14 +442,14 @@ export class XhPaginationElement extends XhPortalHostElement {
     // 拿产出当输入等于让第一帧（还没写过）与之后各帧的身份不一样
     for (const el of this.getParts('ellipsis-trigger')) {
       const side = (el.getAttribute('side') === 'end' ? 'end' : 'start') as PaginationEllipsisSide
-      this.spreader.spread(el, api.getEllipsisTriggerProps({ side }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getEllipsisTriggerProps({ side }))
     }
 
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
-    put('page-size-select', api.getPageSizeSelectProps() as Record<string, unknown>)
+    put('page-size-select', api.getPageSizeSelectProps())
     this.wirePageSizeSelect(api.pageSizeSelect)
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
 
     // Light DOM 的 content 常驻，可见性由宿主自管：皮肤给 content 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
@@ -535,15 +535,15 @@ export class XhPaginationElement extends XhPortalHostElement {
     if (!nodes)
       return
 
-    this.spreader.spread(nodes.root, select.getRootProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.control, select.getControlProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.trigger, select.getTriggerProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.valueText, select.getValueTextProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.root, select.getRootProps())
+    this.spreader.spread(nodes.control, select.getControlProps())
+    this.spreader.spread(nodes.trigger, select.getTriggerProps())
+    this.spreader.spread(nodes.valueText, select.getValueTextProps())
     nodes.valueText.textContent = select.displayText
-    this.spreader.spread(nodes.indicator, select.getIndicatorProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.positioner, select.getPositionerProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.content, select.getContentProps() as Record<string, unknown>)
-    this.spreader.spread(nodes.list, select.getListProps() as Record<string, unknown>)
+    this.spreader.spread(nodes.indicator, select.getIndicatorProps())
+    this.spreader.spread(nodes.positioner, select.getPositionerProps())
+    this.spreader.spread(nodes.content, select.getContentProps())
+    this.spreader.spread(nodes.list, select.getListProps())
 
     const alive = new Set<string>()
     for (const option of select.collection) {
@@ -556,10 +556,10 @@ export class XhPaginationElement extends XhPortalHostElement {
         nodes.list.append(entry.item)
         nodes.items.set(option.value, entry)
       }
-      this.spreader.spread(entry.item, select.getItemProps({ value: option.value }) as Record<string, unknown>)
-      this.spreader.spread(entry.text, select.getItemTextProps({ value: option.value }) as Record<string, unknown>)
+      this.spreader.spread(entry.item, select.getItemProps({ value: option.value }))
+      this.spreader.spread(entry.text, select.getItemTextProps({ value: option.value }))
       entry.text.textContent = option.label
-      this.spreader.spread(entry.indicator, select.getItemIndicatorProps({ value: option.value }) as Record<string, unknown>)
+      this.spreader.spread(entry.indicator, select.getItemIndicatorProps({ value: option.value }))
     }
     for (const [value, entry] of nodes.items) {
       if (alive.has(value))

@@ -63,7 +63,7 @@ export const XhNumberAnimation = defineComponent({
       const content = slots.default?.({ value: current.value, text: current.text })
       return h(
         'span',
-        current.getRootProps() as Record<string, unknown>,
+        current.getRootProps(),
         // 插槽为空（含 v-if 落空只剩注释节点）时退回组件自己铺好的那串字
         slotPaints(content) ? content : current.text,
       )

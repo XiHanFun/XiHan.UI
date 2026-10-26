@@ -108,7 +108,7 @@ export function XhFormatInputRoot({
   const api = ctx.api
   return (
     <FormatInputProvider value={ctx}>
-      <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...api.getRootProps() }), rest)}>
         {children != null
           ? renderSlot(children, {
               value: api.value,
@@ -142,20 +142,20 @@ export function XhFormatInputLabel({ children, ...rest }: XhFormatInputLabelProp
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhFormatInputKindProps extends ComponentPropsWithRef<'div'> {}
 /** 种类控件的外包：分段切换时是 fieldset（名字在 legend），下拉时是 div。 */
 export function XhFormatInputKind({ children, ...rest }: XhFormatInputKindProps): ReactNode {
   const ctx = useFormatInputContext()
-  return createElement(formatInputItemTag('kind', ctx.api.kindControl), mergeReactProps(ctx.api.getKindProps() as Record<string, unknown>, rest as Record<string, unknown>), children)
+  return createElement(formatInputItemTag('kind', ctx.api.kindControl), mergeReactProps(ctx.api.getKindProps(), rest), children)
 }
 
 export interface XhFormatInputFieldGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhFormatInputFieldGroup({ children, ...rest }: XhFormatInputFieldGroupProps): ReactNode {
   const ctx = useFormatInputContext()
-  return <div {...mergeReactProps(ctx.api.getFieldGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFieldGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhFormatInputItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -165,7 +165,7 @@ export interface XhFormatInputItemProps extends Omit<ComponentPropsWithRef<'div'
 /** 一个参数行：分段切换那一行是 fieldset、开关那一行是 label，其余是 div。 */
 export function XhFormatInputItem({ value, children, ...rest }: XhFormatInputItemProps): ReactNode {
   const ctx = useFormatInputContext()
-  return createElement(formatInputItemTag(value, ctx.api.kindControl), mergeReactProps(ctx.api.getItemProps(value) as Record<string, unknown>, rest as Record<string, unknown>), children)
+  return createElement(formatInputItemTag(value, ctx.api.kindControl), mergeReactProps(ctx.api.getItemProps(value), rest), children)
 }
 
 export interface XhFormatInputItemLabelProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
@@ -175,25 +175,25 @@ export interface XhFormatInputItemLabelProps extends Omit<ComponentPropsWithRef<
 /** 参数行的名字：在 fieldset 里是 legend，其余是 span。 */
 export function XhFormatInputItemLabel({ value, children, ...rest }: XhFormatInputItemLabelProps): ReactNode {
   const ctx = useFormatInputContext()
-  return createElement(formatInputItemLabelTag(value, ctx.api.kindControl), mergeReactProps(ctx.api.getItemLabelProps(value) as Record<string, unknown>, rest as Record<string, unknown>), children)
+  return createElement(formatInputItemLabelTag(value, ctx.api.kindControl), mergeReactProps(ctx.api.getItemLabelProps(value), rest), children)
 }
 
 export interface XhFormatInputPatternDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhFormatInputPatternDescription({ children, ...rest }: XhFormatInputPatternDescriptionProps): ReactNode {
   const ctx = useFormatInputContext()
-  return <p {...mergeReactProps(ctx.api.getPatternDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  return <p {...mergeReactProps(ctx.api.getPatternDescriptionProps(), rest)}>{children}</p>
 }
 
 export interface XhFormatInputPreviewProps extends ComponentPropsWithRef<'div'> {}
 export function XhFormatInputPreview({ children, ...rest }: XhFormatInputPreviewProps): ReactNode {
   const ctx = useFormatInputContext()
-  return <div {...mergeReactProps(ctx.api.getPreviewProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.previewText}</div>
+  return <div {...mergeReactProps(ctx.api.getPreviewProps(), rest)}>{children ?? ctx.api.previewText}</div>
 }
 
 export interface XhFormatInputErrorTextProps extends ComponentPropsWithRef<'p'> {}
 export function XhFormatInputErrorText({ children, ...rest }: XhFormatInputErrorTextProps): ReactNode {
   const ctx = useFormatInputContext()
-  return <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.api.issueText}</p>
+  return <p {...mergeReactProps(ctx.api.getErrorTextProps(), rest)}>{children ?? ctx.api.issueText}</p>
 }
 
 /** 标准结构里各部件对应的组件。 */

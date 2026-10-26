@@ -99,8 +99,8 @@ export function XhNotificationRoot({
     <NotificationProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -135,12 +135,12 @@ export interface XhNotificationGroupProps extends Omit<ComponentPropsWithRef<'di
 export function XhNotificationGroup({ placement, children, ...rest }: XhNotificationGroupProps): ReactNode {
   const ctx = useNotificationContext()
   const api = ctx.api
-  const groupProps = api.getGroupProps({ placement }) as Record<string, unknown>
+  const groupProps = api.getGroupProps({ placement })
   // 落位从 group 自己的产出里读回，不在这边重算缺省
   const resolved = groupProps['data-placement'] as NotificationPlacement
   const list = api.getItemsByPlacement(resolved)
   return (
-    <div {...mergeReactProps(groupProps, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(groupProps, rest)}>
       {/* 每条通知按队列身份 id 给 key，避免节点被就地复用 */}
       {children == null ? null : list.map(item => <Fragment key={item.id}>{renderSlot(children, { item })}</Fragment>)}
     </div>
@@ -208,10 +208,10 @@ export function XhNotificationItem({
   // 指针进出改装成原生监听器：pointerenter / pointerleave 不冒泡，委派在根容器上的合成事件收不到。
   // 焦点那两路留给合成事件：连接层派的是 focusin / focusout，React 的 onFocus / onBlur 挂的正是它们，
   // 改装后名字会变回不冒泡的 focus / blur，卡片内部的按钮得焦就按不住计时了
-  const bind = useNativeEvents(api.getItemProps() as Record<string, unknown>, ['onPointerEnter', 'onPointerLeave'])
+  const bind = useNativeEvents(api.getItemProps(), ['onPointerEnter', 'onPointerLeave'])
   return (
     <NotificationItemProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: ctx.rootRef })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, { item: api })}
       </div>
     </NotificationItemProvider>
@@ -224,14 +224,14 @@ export interface XhNotificationItemIndicatorProps extends ComponentPropsWithRef<
 /** 语气指示符：未提供内容时由皮肤按卡片上的 data-tone 绘制兜底字形，data-loading 时换为加载环。 */
 export function XhNotificationItemIndicator({ children, ...rest }: XhNotificationItemIndicatorProps): ReactNode {
   const ctx = useNotificationItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhNotificationItemContentProps extends ComponentPropsWithRef<'div'> {}
 /** 标题与说明的文本列。 */
 export function XhNotificationItemContent({ children, ...rest }: XhNotificationItemContentProps): ReactNode {
   const ctx = useNotificationItemContext()
-  return <div {...mergeReactProps(ctx.api.getItemContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemContentProps(), rest)}>{children}</div>
 }
 
 export interface XhNotificationItemTitleProps extends ComponentPropsWithRef<'div'> {}
@@ -240,7 +240,7 @@ export function XhNotificationItemTitle({ children, ...rest }: XhNotificationIte
   useTitleDescriptionPart(ctx.presence, 'title')
   // 作者没写内容就用队列里那条记录的标题
   return (
-    <div {...mergeReactProps(ctx.api.getItemTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getItemTitleProps(), rest)}>
       {slotPaints(children) ? children : ctx.api.title}
     </div>
   )
@@ -262,17 +262,17 @@ export interface XhNotificationItemActionTriggerProps extends ComponentPropsWith
 /** 原生 button，激活行为交给平台。 */
 export function XhNotificationItemActionTrigger({ children, ...rest }: XhNotificationItemActionTriggerProps): ReactNode {
   const ctx = useNotificationItemContext()
-  return <button {...mergeReactProps(ctx.api.getItemActionTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemActionTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhNotificationItemProgressProps extends ComponentPropsWithRef<'div'> {}
 export function XhNotificationItemProgress({ children, ...rest }: XhNotificationItemProgressProps): ReactNode {
   const ctx = useNotificationItemContext()
-  return <div {...mergeReactProps(ctx.api.getItemProgressProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getItemProgressProps(), rest)}>{children}</div>
 }
 
 export interface XhNotificationItemCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhNotificationItemCloseTrigger({ children, ...rest }: XhNotificationItemCloseTriggerProps): ReactNode {
   const ctx = useNotificationItemContext()
-  return <button {...mergeReactProps(ctx.api.getItemCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemCloseTriggerProps(), rest)}>{children}</button>
 }

@@ -226,13 +226,13 @@ export class XhTextFieldElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
     // 作者把 input 部件写成 <textarea> 即多行宿主：connect 撤掉 type、接上自动高度
     const inputEl = this.getPart('input')
     const host = inputEl?.tagName === 'TEXTAREA' ? 'textarea' as const : 'input' as const
-    put('input', api.getInputProps({ as: host }) as Record<string, unknown>)
+    put('input', api.getInputProps({ as: host }))
     // 程序化写值不触发 input 事件，spread 后补量一次
     const nextAutoSizeEl = host === 'textarea' && inputEl ? inputEl as HTMLTextAreaElement : null
     if (this.autoSizeEl && this.autoSizeEl !== nextAutoSizeEl)
@@ -240,10 +240,10 @@ export class XhTextFieldElement extends XhElement {
     this.autoSizeEl = nextAutoSizeEl
     if (this.autoSizeEl)
       autoSizeTextarea(this.autoSizeEl, api.autoSize)
-    put('prefix', api.getPrefixProps() as Record<string, unknown>)
-    put('suffix', api.getSuffixProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('count', api.getCountProps() as Record<string, unknown>)
+    put('prefix', api.getPrefixProps())
+    put('suffix', api.getSuffixProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('count', api.getCountProps())
     // 字数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
     const countEl = this.getPart('count')
     if (countEl)

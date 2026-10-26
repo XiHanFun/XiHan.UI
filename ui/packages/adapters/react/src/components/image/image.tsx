@@ -42,7 +42,7 @@ export function XhImageRoot({
   const api = ctx.api
   return (
     <ImageProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           status: api.status,
           loaded: api.loaded,
@@ -77,8 +77,8 @@ export function XhImageImage(props: XhImageImageProps): ReactNode {
   return (
     <img
       {...mergeReactProps(
-        api.getImageProps() as Record<string, unknown>,
-        props as Record<string, unknown>,
+        api.getImageProps(),
+        props,
         { ref: imageRef },
       )}
     />
@@ -91,7 +91,7 @@ export interface XhImagePlaceholderProps extends ComponentPropsWithRef<'div'> {}
 export function XhImagePlaceholder({ children, ...rest }: XhImagePlaceholderProps): ReactNode {
   const ctx = useImageContext()
   return (
-    <div {...mergeReactProps(ctx.api.getPlaceholderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getPlaceholderProps(), rest)}>
       {children}
     </div>
   )
@@ -103,7 +103,7 @@ export interface XhImageFallbackProps extends ComponentPropsWithRef<'div'> {}
 export function XhImageFallback({ children, ...rest }: XhImageFallbackProps): ReactNode {
   const ctx = useImageContext()
   return (
-    <div {...mergeReactProps(ctx.api.getFallbackProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getFallbackProps(), rest)}>
       {children}
     </div>
   )

@@ -57,7 +57,7 @@ export function XhBackTopRoot({
   }) as BackTopProps, target)
   return (
     <BackTopProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {renderSlot(children, { visible: ctx.api.visible })}
       </div>
     </BackTopProvider>
@@ -71,7 +71,7 @@ export interface XhBackTopTriggerProps extends ComponentPropsWithRef<'button'> {
 export function XhBackTopTrigger({ children, ...rest }: XhBackTopTriggerProps): ReactNode {
   const ctx = useBackTopContext()
   return (
-    <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>
       {children}
     </button>
   )

@@ -74,7 +74,7 @@ export const XhTabsRoot = defineComponent({
       const children = slotPaints(authored)
         ? authored
         : renderDefaultStructure(ctx.api.value, props.closable, slots.panel)
-      return h('div', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+      return h('div', ctx.api.value.getRootProps(), children)
     }
   },
 })
@@ -84,7 +84,7 @@ export const XhTabsList = defineComponent({
   setup(_, { slots }) {
     const ctx = useTabsContext()
     return () => h('div', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -95,7 +95,7 @@ export const XhTabsIndicator = defineComponent({
   name: 'XhTabsIndicator',
   setup() {
     const ctx = useTabsContext()
-    return () => h('div', ctx.api.value.getIndicatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getIndicatorProps())
   },
 })
 
@@ -104,7 +104,7 @@ export const XhTabsSeparator = defineComponent({
   name: 'XhTabsSeparator',
   setup() {
     const ctx = useTabsContext()
-    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getSeparatorProps())
   },
 })
 
@@ -116,7 +116,7 @@ export const XhTabsPrevTrigger = defineComponent({
   name: 'XhTabsPrevTrigger',
   setup(_, { slots }) {
     const ctx = useTabsContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -125,7 +125,7 @@ export const XhTabsNextTrigger = defineComponent({
   name: 'XhTabsNextTrigger',
   setup(_, { slots }) {
     const ctx = useTabsContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -142,7 +142,7 @@ export const XhTabsOverflowTrigger = defineComponent({
   setup(_, { slots, attrs }) {
     const ctx = useTabsContext()
     return () => h(XhMenuRoot, { ...tabsOverflowMenuProps(ctx.service), triggerAsChild: true }, {
-      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps() as Record<string, unknown>, attrs), slots.default?.())],
+      trigger: () => [h('button', mergePartProps(ctx.api.value.getOverflowTriggerProps(), attrs), slots.default?.())],
     })
   },
 })
@@ -159,7 +159,7 @@ export const XhTabsLiveRegion = defineComponent({
     const ctx = useTabsContext()
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       ctx.service.context.get('announcement'),
     )
   },
@@ -194,7 +194,7 @@ export const XhTabsTrigger = defineComponent({
     })
     return () => h(
       'button',
-      { ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -216,7 +216,7 @@ export const XhTabsCloseTrigger = defineComponent({
     const ctx = useTabsContext()
     return () => h(
       'button',
-      ctx.api.value.getCloseTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getCloseTriggerProps({ value: props.value, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -237,7 +237,7 @@ export const XhTabsTabDragTrigger = defineComponent({
     const ctx = useTabsContext()
     return () => h(
       'span',
-      ctx.api.value.getTabDragTriggerProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getTabDragTriggerProps({ value: props.value }),
       slots.default?.(),
     )
   },
@@ -253,7 +253,7 @@ export const XhTabsContent = defineComponent({
     // 面板节点常在；里面的内容按 lazyMount / unmountOnExit 由 connect 判定渲不渲染
     return () => h(
       'div',
-      ctx.api.value.getContentProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getContentProps({ value: props.value }),
       ctx.api.value.isContentMounted(props.value) ? slots.default?.() : undefined,
     )
   },

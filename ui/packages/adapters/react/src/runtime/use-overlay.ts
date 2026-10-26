@@ -96,9 +96,9 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
         node: () => latest.current.node(),
         surfaces: () => latest.current.surfaces?.() ?? [],
       })
-    service.refs.set('config', config as never)
-    service.refs.set('registerLayer', registerLayer as never)
-    service.refs.set('presence', presence as never)
+    service.refs.set('config', config)
+    service.refs.set('registerLayer', registerLayer)
+    service.refs.set('presence', presence)
     latest.current.refs?.(service, config)
     return () => {
       presence.dispose()

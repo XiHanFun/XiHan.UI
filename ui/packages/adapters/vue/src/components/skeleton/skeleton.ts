@@ -22,7 +22,7 @@ export const XhSkeletonRoot = defineComponent({
   setup(props, { slots }) {
     const ctx = useSkeleton(props as SkeletonProps)
     provideSkeleton(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -36,7 +36,7 @@ export const XhSkeletonItem = defineComponent({
     const ctx = useSkeletonContext()
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ shape: props.shape }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ shape: props.shape }),
     )
   },
 })

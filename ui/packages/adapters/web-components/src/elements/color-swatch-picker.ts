@@ -215,19 +215,19 @@ export class XhColorSwatchPickerElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
 
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const input of this.partsIn(el, 'hidden-input'))
-        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
+        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item))
       for (const swatch of this.partsIn(el, 'swatch'))
-        this.spreader.spread(swatch, api.getSwatchProps(item) as Record<string, unknown>)
+        this.spreader.spread(swatch, api.getSwatchProps(item))
       for (const indicator of this.partsIn(el, 'indicator'))
-        this.spreader.spread(indicator, api.getIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getIndicatorProps(item))
     }
   }
 }

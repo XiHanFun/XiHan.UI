@@ -53,7 +53,7 @@ export const XhMarqueeRoot = defineComponent({
     const service = useMachine(marqueeMachine, () => ({ ...config, onPausedChange }), scope)
     const api = computed(() => connectMarquee(service, vueNormalize))
     provideMarquee({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -85,7 +85,7 @@ export const XhMarqueeContent = defineComponent({
           ))
         }
       }
-      return h('div', ctx.api.value.getContentProps() as Record<string, unknown>, copies)
+      return h('div', ctx.api.value.getContentProps(), copies)
     }
   },
 })
@@ -95,6 +95,6 @@ export const XhMarqueeAutoplayTrigger = defineComponent({
   name: 'XhMarqueeAutoplayTrigger',
   setup(_, { slots }) {
     const ctx = useMarqueeContext()
-    return () => h('button', ctx.api.value.getAutoplayTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getAutoplayTriggerProps(), slots.default?.())
   },
 })

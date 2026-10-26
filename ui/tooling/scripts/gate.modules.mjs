@@ -167,6 +167,7 @@ export const MODULES = [
       'node tooling/scripts/adapter/check-cem-coverage.mjs',
       'node tooling/scripts/adapter/check-read-ports.mjs',
       'node tooling/scripts/adapter/check-structure-anatomy.mjs',
+      'node tooling/scripts/adapter/check-type-assertions.mjs',
       'node scripts/new-component.mjs --verify',
     ],
   },

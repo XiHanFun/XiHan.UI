@@ -84,7 +84,7 @@ export function XhPopconfirmRoot({
   } as PopconfirmOverlayProps, notify)
   return (
     <PopconfirmProvider value={ctx}>
-      <div {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {renderSlot(children, {
           open: ctx.api.open,
           pending: ctx.api.pending,
@@ -105,10 +105,10 @@ export function XhPopconfirmTrigger({ children, asChild, ...rest }: XhPopconfirm
   const ctx = usePopconfirmContext()
   const props = mergePartProps(
     mergeReactProps(
-      ctx.api.getTriggerProps() as Record<string, unknown>,
+      ctx.api.getTriggerProps(),
       { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   return renderAsChild(asChild, children, props, 'popconfirm', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -126,8 +126,8 @@ export function XhPopconfirmPositioner({ children, container, ...rest }: XhPopco
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -144,8 +144,8 @@ export function XhPopconfirmContent({ children, ...rest }: XhPopconfirmContentPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -163,7 +163,7 @@ export interface XhPopconfirmTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhPopconfirmTitle({ children, ...rest }: XhPopconfirmTitleProps): ReactNode {
   const ctx = usePopconfirmContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
+  return <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</h2>
 }
 
 export interface XhPopconfirmDescriptionProps extends ComponentPropsWithRef<'p'> {}
@@ -177,17 +177,17 @@ export function XhPopconfirmDescription({ children, ...rest }: XhPopconfirmDescr
 export interface XhPopconfirmConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPopconfirmConfirmTrigger({ children, ...rest }: XhPopconfirmConfirmTriggerProps): ReactNode {
   const ctx = usePopconfirmContext()
-  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPopconfirmCancelTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPopconfirmCancelTrigger({ children, ...rest }: XhPopconfirmCancelTriggerProps): ReactNode {
   const ctx = usePopconfirmContext()
-  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPopconfirmArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhPopconfirmArrow({ children, ...rest }: XhPopconfirmArrowProps): ReactNode {
   const ctx = usePopconfirmContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
 }

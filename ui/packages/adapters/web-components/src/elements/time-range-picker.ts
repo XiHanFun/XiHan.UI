@@ -412,34 +412,34 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('range-separator', api.getRangeSeparatorProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('range-separator', api.getRangeSeparatorProps())
+    put('trigger', api.getTriggerProps())
+    put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('preset-group', api.getPresetGroupProps())
     // 表单出口起止各一份：写了 index 按 index，没写按文档序
     this.getParts('hidden-input').forEach((el, position) => {
-      this.spreader.spread(el, api.getHiddenInputProps({ index: declaredEnd(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getHiddenInputProps({ index: declaredEnd(el, position) }))
     })
 
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
-      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }))
 
     // 段位容器起止各一组；组内的段逐个打，下标在组内从 0 数起。
     // wire 跑在事件之前，换段与自动跳段时 data-scope/data-part/data-value 已在 DOM 上
     this.getParts('segment-group').forEach((groupEl, groupPosition) => {
       const index = declaredEnd(groupEl, groupPosition)
-      this.spreader.spread(groupEl, api.getSegmentGroupProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(groupEl, api.getSegmentGroupProps({ index }))
       let position = 0
       for (const segmentEl of this.partsIn(groupEl, 'segment')) {
         const segment = declaredSegment(segmentEl, position++)
-        this.spreader.spread(segmentEl, api.getSegmentProps({ index, segment }) as Record<string, unknown>)
+        this.spreader.spread(segmentEl, api.getSegmentProps({ index, segment }))
         this.fillText(segmentEl, api.getSegmentText({ index, segment }))
         // 用内联 display 收起不参与显示的段（作者层的 display 声明会盖过 [hidden]）
         this.setPartHidden(segmentEl, !api.segments.includes(segment))
@@ -449,18 +449,18 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     // 时列外壳起止各一组；列与格子的归属按子树切分
     this.getParts('column-group').forEach((groupEl, groupPosition) => {
       const index = declaredEnd(groupEl, groupPosition)
-      this.spreader.spread(groupEl, api.getColumnGroupProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(groupEl, api.getColumnGroupProps({ index }))
       for (const labelEl of this.partsIn(groupEl, 'column-group-label'))
-        this.spreader.spread(labelEl, api.getColumnGroupLabelProps({ index }) as Record<string, unknown>)
+        this.spreader.spread(labelEl, api.getColumnGroupLabelProps({ index }))
       const columns = api.columnGroups[index].columns
       let position = 0
       for (const columnEl of this.partsIn(groupEl, 'column')) {
         const unit = declaredUnit(columnEl, position++)
-        this.spreader.spread(columnEl, api.getColumnProps({ index, unit }) as Record<string, unknown>)
+        this.spreader.spread(columnEl, api.getColumnProps({ index, unit }))
         this.setPartHidden(columnEl, !columns.some(column => column.unit === unit))
         for (const itemEl of this.partsIn(columnEl, 'item')) {
           const value = itemEl.getAttribute('value') ?? ''
-          this.spreader.spread(itemEl, api.getItemProps({ index, unit, value }) as Record<string, unknown>)
+          this.spreader.spread(itemEl, api.getItemProps({ index, unit, value }))
           this.fillText(itemEl, api.getItemText({ unit, value }))
         }
       }

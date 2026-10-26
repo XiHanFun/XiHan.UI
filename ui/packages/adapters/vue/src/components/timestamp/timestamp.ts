@@ -54,7 +54,7 @@ export const XhTimestamp = defineComponent({
       const content = slots.default?.()
       return h(
         'time',
-        api.value.getRootProps() as Record<string, unknown>,
+        api.value.getRootProps(),
         // 插槽里只剩注释或空白时不算写过东西，那种情况仍铺组件的文本
         slotPaints(content) ? content : api.value.text,
       )

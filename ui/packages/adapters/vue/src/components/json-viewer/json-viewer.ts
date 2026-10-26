@@ -25,14 +25,14 @@ export type JsonViewerToolbarSlotProps = Pick<JsonViewerApi, 'searchMatches' | '
 /** 按片段铺文字：命中搜索词的那一段包进 mark 部件，其余原样是文本。 */
 function renderSegments(api: JsonViewerApi, segments: readonly HighlightSegment[]): Array<VNode | string> {
   return segments.map(segment => (segment.matched
-    ? h('mark', api.getMarkProps() as Record<string, unknown>, segment.text)
+    ? h('mark', api.getMarkProps(), segment.text)
     : segment.text))
 }
 
 /** 原文按段铺：有类别的段包进 token 部件着色，空白与解析不了的原文是纯文本。 */
 function renderTextSegments(api: JsonViewerApi): Array<VNode | string> {
   return api.textSegments.map(segment => (segment.kind
-    ? h('span', api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>, segment.text)
+    ? h('span', api.getTokenProps({ kind: segment.kind }), segment.text)
     : segment.text))
 }
 
@@ -45,16 +45,16 @@ function renderToolbar(api: JsonViewerApi): VNode | null {
     return null
   const buttons: VNode[] = []
   if (api.tools.includes('expand'))
-    buttons.push(h('button', api.getExpandTriggerProps() as Record<string, unknown>))
+    buttons.push(h('button', api.getExpandTriggerProps()))
   if (api.tools.includes('wrap'))
-    buttons.push(h('button', api.getWrapTriggerProps() as Record<string, unknown>))
+    buttons.push(h('button', api.getWrapTriggerProps()))
   if (api.tools.includes('copy')) {
-    buttons.push(h('button', api.getCopyTriggerProps() as Record<string, unknown>))
-    buttons.push(h('span', api.getStatusProps() as Record<string, unknown>, api.announcement))
+    buttons.push(h('button', api.getCopyTriggerProps()))
+    buttons.push(h('span', api.getStatusProps(), api.announcement))
   }
   if (api.tools.includes('view'))
-    buttons.push(h('button', api.getViewTriggerProps() as Record<string, unknown>))
-  return h('div', api.getToolbarProps() as Record<string, unknown>, buttons)
+    buttons.push(h('button', api.getViewTriggerProps()))
+  return h('div', api.getToolbarProps(), buttons)
 }
 
 function renderRows(
@@ -79,32 +79,32 @@ function renderRow(
   if (!node.branch) {
     const parts: VNode[] = []
     if (node.key != null)
-      parts.push(h('span', api.getItemKeyProps(ref) as Record<string, unknown>, renderSegments(api, api.keySegments(node))))
-    parts.push(h('span', api.getItemValueProps(ref) as Record<string, unknown>, renderSegments(api, api.valueSegments(node))))
-    return h('div', { ...api.getItemProps(ref) as Record<string, unknown>, key: node.value }, parts)
+      parts.push(h('span', api.getItemKeyProps(ref), renderSegments(api, api.keySegments(node))))
+    parts.push(h('span', api.getItemValueProps(ref), renderSegments(api, api.valueSegments(node))))
+    return h('div', { ...api.getItemProps(ref), key: node.value }, parts)
   }
 
   const control: VNode[] = [
-    h('span', api.getBranchTriggerProps(ref) as Record<string, unknown>, [
-      h('span', api.getBranchIndicatorProps(ref) as Record<string, unknown>),
+    h('span', api.getBranchTriggerProps(ref), [
+      h('span', api.getBranchIndicatorProps(ref)),
     ]),
   ]
   if (node.key != null)
-    control.push(h('span', api.getBranchTextProps(ref) as Record<string, unknown>, renderSegments(api, api.keySegments(node))))
-  control.push(h('span', api.getPreviewProps(ref) as Record<string, unknown>, api.previewText(node)))
+    control.push(h('span', api.getBranchTextProps(ref), renderSegments(api, api.keySegments(node))))
+  control.push(h('span', api.getPreviewProps(ref), api.previewText(node)))
   // 分支的可及名字：视觉隐藏，读屏从这一行的内容里取到它
-  control.push(h('span', api.getBranchSummaryProps(ref) as Record<string, unknown>, api.branchSummary(node)))
+  control.push(h('span', api.getBranchSummaryProps(ref), api.branchSummary(node)))
 
-  const parts: VNode[] = [h('div', api.getBranchControlProps(ref) as Record<string, unknown>, control)]
+  const parts: VNode[] = [h('div', api.getBranchControlProps(ref), control)]
   // 收起的子层不渲染：一份大 JSON 全铺出来会把页面压住，展开集合本来也是逐层放开的
   if (api.isExpanded(node.value)) {
     parts.push(h(
       'div',
-      api.getBranchContentProps(ref) as Record<string, unknown>,
+      api.getBranchContentProps(ref),
       renderRows(api, children, node.value),
     ))
   }
-  return h('div', { ...api.getBranchProps(ref) as Record<string, unknown>, key: node.value }, parts)
+  return h('div', { ...api.getBranchProps(ref), key: node.value }, parts)
 }
 
 export const XhJsonViewerRoot = defineComponent({
@@ -178,16 +178,16 @@ export const XhJsonViewerRoot = defineComponent({
     // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
     const renderEmpty = (api: JsonViewerApi): VNode => h(
       'div',
-      api.getEmptyProps() as Record<string, unknown>,
+      api.getEmptyProps(),
       slots.empty?.() ?? api.emptyText,
     )
     const renderRoot = (api: JsonViewerApi): VNode => {
-      const rootProps = mergeProps(api.getRootProps() as Record<string, unknown>, attrs)
+      const rootProps = mergeProps(api.getRootProps(), attrs)
       // 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份
       if (api.view === 'text') {
         return h('div', rootProps, [
           renderToolbar(api),
-          h('pre', api.getTextProps() as Record<string, unknown>, renderTextSegments(api)),
+          h('pre', api.getTextProps(), renderTextSegments(api)),
           renderEmpty(api),
         ])
       }
@@ -195,7 +195,7 @@ export const XhJsonViewerRoot = defineComponent({
       const children = groupJsonViewerNodesByParent(api.visibleNodes)
       return h('div', rootProps, [
         renderToolbar(api),
-        h('div', api.getTreeProps() as Record<string, unknown>, renderRows(api, children, null)),
+        h('div', api.getTreeProps(), renderRows(api, children, null)),
         renderEmpty(api),
       ])
     }

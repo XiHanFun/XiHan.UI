@@ -76,7 +76,7 @@ export const XhPinInputRoot = defineComponent({
     // 放进表单字段时，字段的标题与说明接到整组上：读屏进组时念组名与说明，每格的名字仍是「第几格」
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), slots.default
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() }), slots.default
       ? slots.default({
           value: ctx.api.value.value,
           valueAsString: ctx.api.value.valueAsString,
@@ -100,7 +100,7 @@ export const XhPinInputLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 必须是原生 label，getLabelProps 的 for 恒写向首格
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -109,7 +109,7 @@ export const XhPinInputGroup = defineComponent({
   name: 'XhPinInputGroup',
   setup(_, { slots }) {
     const ctx = usePinInputContext()
-    return () => h('div', ctx.api.value.getGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(), slots.default?.())
   },
 })
 
@@ -118,7 +118,7 @@ export const XhPinInputSeparator = defineComponent({
   name: 'XhPinInputSeparator',
   setup(_, { slots }) {
     const ctx = usePinInputContext()
-    return () => h('span', ctx.api.value.getSeparatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSeparatorProps(), slots.default?.())
   },
 })
 
@@ -130,7 +130,7 @@ export const XhPinInputInput = defineComponent({
   },
   setup(props) {
     const ctx = usePinInputContext()
-    return () => h('input', ctx.api.value.getInputProps({ index: Math.trunc(Number(props.index)) }) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getInputProps({ index: Math.trunc(Number(props.index)) }))
   },
 })
 
@@ -138,7 +138,7 @@ export const XhPinInputHiddenInput = defineComponent({
   name: 'XhPinInputHiddenInput',
   setup() {
     const ctx = usePinInputContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

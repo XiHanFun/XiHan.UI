@@ -29,5 +29,5 @@ export interface XhColorSwatchProps extends ComponentPropsWithRef<'span'> {
 export function XhColorSwatch({ value, size, label, ...rest }: XhColorSwatchProps): ReactNode {
   const configured = withXhConfig('color-swatch', { value, size, label } as ColorSwatchProps)
   const api = connectColorSwatch(configured, reactNormalize)
-  return <span {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <span {...mergeReactProps(api.getRootProps(), rest)} />
 }

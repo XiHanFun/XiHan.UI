@@ -83,7 +83,7 @@ export const XhMarkdownStreamRoot = defineComponent({
     }
     const ctx = useMarkdownStream(forward)
     provideMarkdownStream(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       blocks: ctx.api.value.blocks,
       streaming: ctx.api.value.streaming,
       announcement: ctx.api.value.announcement,
@@ -130,7 +130,7 @@ export const XhMarkdownStreamContent = defineComponent({
     return () => {
       const api = ctx.api.value
       const blocks = api.blocks.map((block, index) => {
-        const attrs = { ...api.getBlockProps({ block }) as Record<string, unknown>, key: block.key }
+        const attrs = { ...api.getBlockProps({ block }), key: block.key }
         const authored = slots.block?.({ block, index })
         if (authored)
           return h('div', attrs, authored)
@@ -148,7 +148,7 @@ export const XhMarkdownStreamContent = defineComponent({
           : slots.math?.({ source: inline.source, display: inline.display, block, index })
         return h(Teleport, { key: mount.key, to: mount.element }, content ?? [])
       })
-      return h('div', { ...api.getContentProps() as Record<string, unknown>, ref: host }, [...blocks, ...inlines])
+      return h('div', { ...api.getContentProps(), ref: host }, [...blocks, ...inlines])
     }
   },
 })
@@ -159,7 +159,7 @@ export const XhMarkdownStreamLiveRegion = defineComponent({
     const ctx = useMarkdownStreamContext()
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },

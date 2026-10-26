@@ -49,7 +49,7 @@ export const XhLoadingBarRoot = defineComponent({
     }
     const ctx = useLoadingBar(withXhConfig('loading-bar', props) as LoadingBarProps, notify)
     provideLoadingBar(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       phase: ctx.api.value.phase,
       value: ctx.api.value.value,
       visible: ctx.api.value.visible,
@@ -62,7 +62,7 @@ export const XhLoadingBarTrack = defineComponent({
   name: 'XhLoadingBarTrack',
   setup(_, { slots }) {
     const ctx = useLoadingBarContext()
-    return () => h('div', ctx.api.value.getTrackProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTrackProps(), slots.default?.())
   },
 })
 
@@ -71,7 +71,7 @@ export const XhLoadingBarRange = defineComponent({
   setup(_, { slots }) {
     const ctx = useLoadingBarContext()
     // 宽度由 connect 写进内联样式
-    return () => h('div', ctx.api.value.getRangeProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRangeProps(), slots.default?.())
   },
 })
 
@@ -79,6 +79,6 @@ export const XhLoadingBarPeg = defineComponent({
   name: 'XhLoadingBarPeg',
   setup(_, { slots }) {
     const ctx = useLoadingBarContext()
-    return () => h('div', ctx.api.value.getPegProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getPegProps(), slots.default?.())
   },
 })

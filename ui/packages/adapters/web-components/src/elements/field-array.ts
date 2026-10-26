@@ -266,47 +266,47 @@ export class XhFieldArrayElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
     // 作者在表格节点上自己写了名字时不覆盖
     const tableEl = this.getPart('table')
     if (tableEl)
-      this.spreader.spread(tableEl, this.withAuthoredName(tableEl, api.getTableProps() as Record<string, unknown>))
-    put('header', api.getHeaderProps() as Record<string, unknown>)
+      this.spreader.spread(tableEl, this.withAuthoredName(tableEl, api.getTableProps()))
+    put('header', api.getHeaderProps())
     for (const el of this.getParts('column-header')) {
       const value = el.getAttribute('value') ?? ''
-      this.spreader.spread(el, api.getColumnHeaderProps({ value }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getColumnHeaderProps({ value }))
       const label = api.columns.find(column => column.id === value)?.label
       if (label != null)
         this.fillText(el, label)
     }
-    put('add-trigger', api.getAddTriggerProps() as Record<string, unknown>)
+    put('add-trigger', api.getAddTriggerProps())
 
     // 行是多实例 part，逐个打：身份取作者写在节点上的 index，缺省按文档序
     this.getParts('item').forEach((el, position) => {
       const item: FieldArrayItemProps = { index: declaredIndex(el, position) }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       for (const label of this.partsIn(el, 'item-label'))
-        this.spreader.spread(label, api.getItemLabelProps(item) as Record<string, unknown>)
+        this.spreader.spread(label, api.getItemLabelProps(item))
       for (const content of this.partsIn(el, 'item-content'))
-        this.spreader.spread(content, api.getItemContentProps(item) as Record<string, unknown>)
+        this.spreader.spread(content, api.getItemContentProps(item))
       for (const cell of this.partsIn(el, 'item-cell'))
-        this.spreader.spread(cell, api.getItemCellProps({ index: item.index, value: cell.getAttribute('value') ?? '' }) as Record<string, unknown>)
+        this.spreader.spread(cell, api.getItemCellProps({ index: item.index, value: cell.getAttribute('value') ?? '' }))
       for (const action of this.partsIn(el, 'item-action'))
-        this.spreader.spread(action, api.getItemActionProps(item) as Record<string, unknown>)
+        this.spreader.spread(action, api.getItemActionProps(item))
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))
-        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item))
       for (const trigger of this.partsIn(el, 'item-drag-trigger')) {
-        this.spreader.spread(trigger, api.getItemDragTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getItemDragTriggerProps(item))
         this.setPartHidden(trigger, !api.movable)
       }
       // 不换序时把这对把手收起。只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条
       // display 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
       for (const trigger of this.partsIn(el, 'move-up-trigger')) {
-        this.spreader.spread(trigger, api.getMoveUpTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getMoveUpTriggerProps(item))
         this.setPartHidden(trigger, !api.movable)
       }
       for (const trigger of this.partsIn(el, 'move-down-trigger')) {
-        this.spreader.spread(trigger, api.getMoveDownTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getMoveDownTriggerProps(item))
         this.setPartHidden(trigger, !api.movable)
       }
     })

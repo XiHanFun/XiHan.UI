@@ -28,7 +28,7 @@ export type DiffViewRootSlotProps = Pick<
 /** 着色记号逐个铺为 span。 */
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): ReactNode[] {
   return tokens.map((token, i) => (
-    <span key={i} {...api.getTokenProps(token) as Record<string, unknown>}>{token.text}</span>
+    <span key={i} {...api.getTokenProps(token)}>{token.text}</span>
   ))
 }
 
@@ -39,7 +39,7 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): ReactNo
     return segments.map((segment, i) => (
       <span
         key={`s:${i}`}
-        {...api.getInlineChangeProps({ rowIndex, changed: segment.changed }) as Record<string, unknown>}
+        {...api.getInlineChangeProps({ rowIndex, changed: segment.changed })}
       >
         {segment.tokens.length === 0 ? segment.text : renderTokens(api, segment.tokens)}
       </span>
@@ -110,7 +110,7 @@ export function XhDiffViewRoot({
   const { api } = ctx
   return (
     <DiffViewProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           view: api.view,
           rows: api.rows,
@@ -135,7 +135,7 @@ export function XhDiffViewHeader({ children, ...rest }: XhDiffViewHeaderProps): 
   // 渲出来了才登记：表格的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerHeader } = ctx
   useEffect(() => registerHeader(), [registerHeader])
-  return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
 }
 
 export interface XhDiffViewSummaryProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
@@ -154,8 +154,8 @@ export function XhDiffViewSummary({ change, children, ...rest }: XhDiffViewSumma
   return (
     <span
       {...mergeReactProps(
-        api.getSummaryProps({ change }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        api.getSummaryProps({ change }),
+        rest,
       )}
     >
       {children === undefined ? `${change === 'added' ? '+' : '−'}${count}` : renderSlot(children, { count })}
@@ -167,7 +167,7 @@ export interface XhDiffViewViewportProps extends ComponentPropsWithRef<'div'> {}
 /** 唯一的 Tab 停靠点，横纵滚动交给浏览器。 */
 export function XhDiffViewViewport({ children, ...rest }: XhDiffViewViewportProps): ReactNode {
   const ctx = useDiffViewContext()
-  return <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getViewportProps(), rest)}>{children}</div>
 }
 
 export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {
@@ -180,14 +180,14 @@ export function XhDiffViewBody({ children, renderComment, ...rest }: XhDiffViewB
   const { api } = ctx
   const sides = diffViewSides(api.view)
   return (
-    <div {...mergeReactProps(api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getBodyProps(), rest)}>
       {api.rows.map((row) => {
         if (row.kind === 'gap') {
           const gapId = row.gapId!
           return (
-            <div key={`gap:${gapId}`} {...api.getGapProps({ gapId }) as Record<string, unknown>}>
-              <div {...api.getGapCellProps() as Record<string, unknown>}>
-                <button {...api.getGapTriggerProps({ gapId }) as Record<string, unknown>}>
+            <div key={`gap:${gapId}`} {...api.getGapProps({ gapId })}>
+              <div {...api.getGapCellProps()}>
+                <button {...api.getGapTriggerProps({ gapId })}>
                   {`⋯ ${row.hiddenCount}`}
                 </button>
               </div>
@@ -196,25 +196,25 @@ export function XhDiffViewBody({ children, renderComment, ...rest }: XhDiffViewB
         }
         const { rowIndex } = row
         return (
-          <div key={`row:${rowIndex}`} {...api.getRowProps({ rowIndex }) as Record<string, unknown>}>
+          <div key={`row:${rowIndex}`} {...api.getRowProps({ rowIndex })}>
             {sides.map((side) => {
               const cell = { rowIndex, side }
               const ref = api.commentRefAt(cell)
               return (
                 <Fragment key={side}>
-                  <span {...api.getLineNumberProps(cell) as Record<string, unknown>} />
-                  <span {...api.getLineContentProps(cell) as Record<string, unknown>}>
+                  <span {...api.getLineNumberProps(cell)} />
+                  <span {...api.getLineContentProps(cell)}>
                     {/* 变更类型的读屏文字住在内容格里面：变更不能只靠颜色传达 */}
-                    <span {...api.getChangeLabelProps({ change: row.line!.change }) as Record<string, unknown>}>
+                    <span {...api.getChangeLabelProps({ change: row.line!.change })}>
                       {api.changeLabel(row.line!.change)}
                     </span>
                     {/* 评论钮放在正文最前面，由皮肤定位到正文让出的那一列里；空侧不建 */}
-                    {api.commentable && ref !== undefined ? <button {...api.getCommentTriggerProps(cell) as Record<string, unknown>} /> : null}
+                    {api.commentable && ref !== undefined ? <button {...api.getCommentTriggerProps(cell)} /> : null}
                     {renderCell(api, rowIndex, side)}
                     {/* 挂着评论的行在代码下方铺出评论容器，与代码同住一个 cell，行序不受影响 */}
                     {api.hasComment(cell)
                       ? (
-                          <div {...api.getCommentThreadProps(cell) as Record<string, unknown>}>
+                          <div {...api.getCommentThreadProps(cell)}>
                             {renderComment?.({ ...ref!, change: row.line!.change, text: row.line!.text })}
                           </div>
                         )
@@ -234,7 +234,7 @@ export function XhDiffViewBody({ children, renderComment, ...rest }: XhDiffViewB
 export interface XhDiffViewEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDiffViewEmpty({ children, ...rest }: XhDiffViewEmptyProps): ReactNode {
   const ctx = useDiffViewContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhDiffViewTruncationProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -250,7 +250,7 @@ export function XhDiffViewTruncation({ children, ...rest }: XhDiffViewTruncation
   const ctx = useDiffViewContext()
   const { api } = ctx
   return (
-    <div {...mergeReactProps(api.getTruncationProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getTruncationProps(), rest)}>
       {children === undefined ? api.truncationText : renderSlot(children, { count: api.truncatedLines })}
     </div>
   )

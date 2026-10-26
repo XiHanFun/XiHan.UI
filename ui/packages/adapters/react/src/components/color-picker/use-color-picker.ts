@@ -94,12 +94,12 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
     node: () => contentRef.current,
     refs: (service: Service<MachineSchema>) => {
       // 定位引擎由适配器注入，机器只经端口驱动
-      service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getAnchorEl', (() => triggerRef.current) as never)
-      service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
-      service.refs.set('getContentEl', (() => contentRef.current) as never)
+      service.refs.set('position', createPositionEngine())
+      service.refs.set('getAnchorEl', () => triggerRef.current)
+      service.refs.set('getFloatingEl', () => positionerRef.current)
+      service.refs.set('getContentEl', () => contentRef.current)
       // 传 getter 而非节点，ref 在挂载后才有值
-      service.refs.set('getAreaEl', (() => areaRef.current) as never)
+      service.refs.set('getAreaEl', () => areaRef.current)
     },
   })
 

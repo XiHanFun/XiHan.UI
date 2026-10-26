@@ -295,25 +295,25 @@ export class XhTagGroupElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('list', api.getListProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // 条目节点接成 tag 的 root，文字与摘除钮接成同一份 tag 的 label 与 close-trigger
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       // 标签内的那一格、文字与摘除钮跟着同一份声明走，样式层各处状态一致
       for (const cell of this.partsIn(el, 'cell'))
-        this.spreader.spread(cell, api.getCellProps(item) as Record<string, unknown>)
+        this.spreader.spread(cell, api.getCellProps(item))
       for (const indicator of this.partsIn(el, 'item-indicator'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item))
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))
-        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item))
     }
   }
 }

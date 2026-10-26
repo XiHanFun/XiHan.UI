@@ -147,13 +147,13 @@ export class XhReasoningElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('icon', api.getIconProps() as Record<string, unknown>)
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('duration', api.getDurationProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
+    put('icon', api.getIconProps())
+    put('indicator', api.getIndicatorProps())
+    put('label', api.getLabelProps())
+    put('duration', api.getDurationProps())
+    put('content', api.getContentProps())
 
     // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
     // 就一帧都播不出来），真正的收起在动画结束后落成内联 display

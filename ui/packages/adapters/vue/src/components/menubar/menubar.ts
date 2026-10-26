@@ -126,7 +126,7 @@ export const XhMenubarRoot = defineComponent({
     )
     provideMenubar(ctx)
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default
       ? slots.default({
@@ -179,7 +179,7 @@ export const XhMenubarTrigger = defineComponent({
     })
     return () => {
       const part = mergePartProps({
-        ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+        ...ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }),
         ref: (el: unknown) => {
           triggerEl.value = el as HTMLElement | null
           setEl(el as HTMLElement | null)
@@ -221,7 +221,7 @@ export const XhMenubarPositioner = defineComponent({
     // 关着的菜单不建视觉桥：菜单栏上每一项各有一个定位层，几项就是几台挂在祖先链上的观察
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef, present: visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps(menu.value) as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(menu.value), attrs),
         ref: (el: unknown) => setEl(el as HTMLElement | null),
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -258,7 +258,7 @@ export const XhMenubarContent = defineComponent({
     }
     const visible = useOverlayExit({
       config: typeof document === 'undefined' ? null : createRuntimeConfig(),
-      isOpen: () => (ctx.api.value.getContentProps(menu.value) as Record<string, unknown>).hidden !== true,
+      isOpen: () => (ctx.api.value.getContentProps(menu.value)).hidden !== true,
       contentRef,
       onPresence: (next) => {
         const previous = presence
@@ -281,7 +281,7 @@ export const XhMenubarContent = defineComponent({
       })
     }
     return () => h('div', {
-      ...ctx.api.value.getContentProps(menu.value) as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(menu.value),
       // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
       // 播不出来），所以真正的收起落成内联 display
       style: visible.value ? undefined : { display: 'none' },
@@ -305,7 +305,7 @@ export const XhMenubarGroup = defineComponent({
     const ctx = useMenubarContext()
     const group = computed<MenubarGroupProps>(() => ({ value: props.value }))
     provideMenubarGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -318,7 +318,7 @@ export const XhMenubarRadioGroup = defineComponent({
     const ctx = useMenubarContext()
     const group = computed<MenubarGroupProps>(() => ({ value: props.value }))
     provideMenubarGroup({ group })
-    return () => h('div', ctx.api.value.getRadioGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRadioGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -327,7 +327,7 @@ export const XhMenubarGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { group } = useMenubarGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -375,7 +375,7 @@ function createMenubarItemComponent(name: string, kind: 'item' | 'checkbox' | 'r
           : declaration.kind === 'radio'
             ? ctx.api.value.getRadioItemProps(declaration)
             : ctx.api.value.getItemProps(declaration)
-        return h('div', { ...part as Record<string, unknown>, ref: itemEl }, slots.default?.())
+        return h('div', { ...part, ref: itemEl }, slots.default?.())
       }
     },
   })
@@ -390,7 +390,7 @@ export const XhMenubarItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -399,7 +399,7 @@ export const XhMenubarItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -409,7 +409,7 @@ export const XhMenubarItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -419,7 +419,7 @@ export const XhMenubarItemIcon = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIconProps(item.value), slots.default?.())
   },
 })
 
@@ -429,7 +429,7 @@ export const XhMenubarItemShortcut = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemShortcutProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemShortcutProps(item.value), slots.default?.())
   },
 })
 
@@ -439,7 +439,7 @@ export const XhMenubarItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useMenubarContext()
     const { item } = useMenubarItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -451,7 +451,7 @@ export const XhMenubarArrow = defineComponent({
     const menu = useMenubarMenuContext()
     if (!menu)
       throw new Error('[xh] XhMenubarArrow 必须用在 XhMenubarPositioner 内')
-    return () => h('div', ctx.api.value.getArrowProps(menu.menu.value) as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getArrowProps(menu.menu.value))
   },
 })
 
@@ -459,7 +459,7 @@ export const XhMenubarSeparator = defineComponent({
   name: 'XhMenubarSeparator',
   setup() {
     const ctx = useMenubarContext()
-    return () => h('div', ctx.api.value.getSeparatorProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getSeparatorProps())
   },
 })
 
@@ -555,9 +555,9 @@ export const XhMenubarSubTrigger = defineComponent({
       // 反过来写会让节点带上 data-scope="menu"，菜单栏按自己的 scope 查条目就一条都找不到
       // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
       ...mergeProps(
-        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        withoutScopeClass(sub.api.value.getSubmenuTriggerProps({ value: handle.value, disabled: handle.disabled })),
         // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
-        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled }) as Record<string, unknown>),
+        withoutUndefined(handle.parent.api.value.getItemProps({ value: handle.value, disabled: handle.disabled })),
       ),
       // 子菜单的定位锚点就是这一条
       ref: (el: unknown) => {

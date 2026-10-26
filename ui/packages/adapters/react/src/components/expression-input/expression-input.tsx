@@ -164,8 +164,8 @@ export function XhExpressionInputRoot({
     <ExpressionInputProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -183,14 +183,14 @@ export function XhExpressionInputLabel({ children, ...rest }: XhExpressionInputL
   const ctx = useExpressionInputContext()
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
+  return <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</label>
 }
 
 export interface XhExpressionInputControlProps extends ComponentPropsWithRef<'div'> {}
 /** 字段视觉盒：输入框与镜像层叠在里面。 */
 export function XhExpressionInputControl({ children, ...rest }: XhExpressionInputControlProps): ReactNode {
   const ctx = useExpressionInputContext()
-  return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>{children}</div>
 }
 
 export interface XhExpressionInputInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'>, Pick<ComponentPropsWithRef<'textarea'>, 'rows' | 'cols' | 'wrap'> {
@@ -208,10 +208,10 @@ export function XhExpressionInputInput({ as, ...rest }: XhExpressionInputInputPr
   // 输入框自己的描述链（问题列表）与字段的拼起来，字段的在前
   const props = mergeReactProps(
     fieldLabel(withFieldDescription(
-      { ...fieldWiring, ...ctx.api.getInputProps({ as: tag }) as Record<string, unknown> },
+      { ...fieldWiring, ...ctx.api.getInputProps({ as: tag }) },
       fieldWiring['aria-describedby'] as string | undefined,
     )),
-    rest as Record<string, unknown>,
+    rest,
     { ref: (el: ExpressionInputEl | null) => { ctx.inputRef.current = el } },
   )
   return tag === 'textarea'
@@ -226,8 +226,8 @@ export function XhExpressionInputHighlight({ children, ...rest }: XhExpressionIn
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getHighlightProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getHighlightProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.highlightRef.current = el } },
       )}
     >
@@ -246,7 +246,7 @@ export function XhExpressionInputHighlightSegment({ index, children, ...rest }: 
   const segment = ctx.api.segments[Number(index)]
   if (!segment)
     return null
-  return <span {...mergeReactProps(ctx.api.getHighlightSegmentProps({ segment }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getHighlightSegmentProps({ segment }), rest)}>{children}</span>
 }
 
 export interface XhExpressionInputPositionerProps extends ComponentPropsWithRef<'div'> {
@@ -261,8 +261,8 @@ export function XhExpressionInputPositioner({ children, container, ...rest }: Xh
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -279,8 +279,8 @@ export function XhExpressionInputContent({ children, ...rest }: XhExpressionInpu
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           style: ctx.rendered ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
@@ -304,7 +304,7 @@ export function XhExpressionInputItem({ value, children, ...rest }: XhExpression
     return null
   return (
     <ExpressionInputItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps({ item }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getItemProps({ item }), rest)}>{children}</div>
     </ExpressionInputItemProvider>
   )
 }
@@ -320,31 +320,31 @@ function useItemPart(rest: Record<string, unknown>, props: (api: ExpressionInput
 export interface XhExpressionInputItemPrefixProps extends ItemPartProps {}
 /** 条目种类小标（变量 / 函数），对读屏隐藏。 */
 export function XhExpressionInputItemPrefix({ children, value: _value, ...rest }: XhExpressionInputItemPrefixProps): ReactNode {
-  return <span {...useItemPart(rest as Record<string, unknown>, (api, item) => api.getItemPrefixProps({ item }))}>{children}</span>
+  return <span {...useItemPart(rest, (api, item) => api.getItemPrefixProps({ item }))}>{children}</span>
 }
 
 export interface XhExpressionInputItemTextProps extends ItemPartProps {}
 export function XhExpressionInputItemText({ children, value: _value, ...rest }: XhExpressionInputItemTextProps): ReactNode {
-  return <span {...useItemPart(rest as Record<string, unknown>, (api, item) => api.getItemTextProps({ item }))}>{children}</span>
+  return <span {...useItemPart(rest, (api, item) => api.getItemTextProps({ item }))}>{children}</span>
 }
 
 export interface XhExpressionInputItemSuffixProps extends ItemPartProps {}
 /** 名字后面的提示：函数是签名。 */
 export function XhExpressionInputItemSuffix({ children, value: _value, ...rest }: XhExpressionInputItemSuffixProps): ReactNode {
-  return <span {...useItemPart(rest as Record<string, unknown>, (api, item) => api.getItemSuffixProps({ item }))}>{children}</span>
+  return <span {...useItemPart(rest, (api, item) => api.getItemSuffixProps({ item }))}>{children}</span>
 }
 
 export interface XhExpressionInputItemDescriptionProps extends ItemPartProps {}
 /** 条目的第 2 行说明。 */
 export function XhExpressionInputItemDescription({ children, value: _value, ...rest }: XhExpressionInputItemDescriptionProps): ReactNode {
-  return <span {...useItemPart(rest as Record<string, unknown>, (api, item) => api.getItemDescriptionProps({ item }))}>{children}</span>
+  return <span {...useItemPart(rest, (api, item) => api.getItemDescriptionProps({ item }))}>{children}</span>
 }
 
 export interface XhExpressionInputEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 没有匹配的补全时显示的空态；与 content 同级。 */
 export function XhExpressionInputEmpty({ children, ...rest }: XhExpressionInputEmptyProps): ReactNode {
   const ctx = useExpressionInputContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhExpressionInputIssuesProps extends ComponentPropsWithRef<'div'> {}
@@ -353,7 +353,7 @@ export function XhExpressionInputIssues({ children, ...rest }: XhExpressionInput
   const ctx = useExpressionInputContext()
   const { registerIssues } = ctx
   useEffect(() => registerIssues(), [registerIssues])
-  return <div {...mergeReactProps(ctx.api.getIssuesProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getIssuesProps(), rest)}>{children}</div>
 }
 
 export interface XhExpressionInputIssueProps extends ComponentPropsWithRef<'p'> {
@@ -366,7 +366,7 @@ export function XhExpressionInputIssue({ index, children, ...rest }: XhExpressio
   const issue = ctx.api.issues[Number(index)]
   if (!issue)
     return null
-  return <p {...mergeReactProps(ctx.api.getIssueProps({ issue }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  return <p {...mergeReactProps(ctx.api.getIssueProps({ issue }), rest)}>{children}</p>
 }
 
 /** 标准结构里各部件对应的组件。 */

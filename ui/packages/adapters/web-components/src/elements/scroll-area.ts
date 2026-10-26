@@ -171,20 +171,20 @@ export class XhScrollAreaElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put(this.getPart('root'), api.getRootProps() as Record<string, unknown>)
-    put(this.getPart('viewport'), api.getViewportProps() as Record<string, unknown>)
-    put(this.getPart('content'), api.getContentProps() as Record<string, unknown>)
+    put(this.getPart('root'), api.getRootProps())
+    put(this.getPart('viewport'), api.getViewportProps())
+    put(this.getPart('content'), api.getContentProps())
 
     // 滚动条是多实例 part，逐个打：轴向取作者写的 orientation，几何按轴取
     for (const el of this.getParts('scrollbar')) {
       const bar: ScrollAreaScrollbarProps = { orientation: this.barOrientation(el) }
-      this.spreader.spread(el, api.getScrollbarProps(bar) as Record<string, unknown>)
+      this.spreader.spread(el, api.getScrollbarProps(bar))
       for (const track of this.partsIn(el, 'track'))
-        this.spreader.spread(track, api.getTrackProps(bar) as Record<string, unknown>)
+        this.spreader.spread(track, api.getTrackProps(bar))
       // 滑块的 style 是对象（两条轴的键每帧写全），spreader 见对象 style 会逐条写内联样式
       for (const thumb of this.partsIn(el, 'thumb'))
-        this.spreader.spread(thumb, api.getThumbProps(bar) as Record<string, unknown>)
+        this.spreader.spread(thumb, api.getThumbProps(bar))
     }
-    put(this.getPart('corner'), api.getCornerProps() as Record<string, unknown>)
+    put(this.getPart('corner'), api.getCornerProps())
   }
 }

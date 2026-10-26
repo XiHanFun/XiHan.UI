@@ -61,7 +61,7 @@ export function XhLogRoot({
   const { api } = ctx
   return (
     <LogProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           rows: api.rows,
           loading: api.loading,
@@ -84,8 +84,8 @@ export function XhLogViewport({ children, ...rest }: XhLogViewportProps): ReactN
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -101,8 +101,8 @@ export function XhLogContent({ children, ...rest }: XhLogContentProps): ReactNod
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
       )}
     >
@@ -121,7 +121,7 @@ export interface XhLogLineProps extends ComponentPropsWithRef<'div'> {
 export function XhLogLine({ level, ansi, children, ...rest }: XhLogLineProps): ReactNode {
   const ctx = useLogContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLineProps({ level }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLineProps({ level }), rest)}>
       {children ?? (ansi === undefined ? undefined : parseAnsi(ansi).map((segment, index) => <XhLogSegment key={index} segment={segment} />))}
     </div>
   )
@@ -135,7 +135,7 @@ export interface XhLogSegmentProps extends ComponentPropsWithRef<'span'> {
 export function XhLogSegment({ segment, children, ...rest }: XhLogSegmentProps): ReactNode {
   const ctx = useLogContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSegmentProps(segment) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSegmentProps(segment), rest)}>
       {children ?? segment.text}
     </span>
   )
@@ -146,7 +146,7 @@ export interface XhLogScrollToEndTriggerProps extends ComponentPropsWithRef<'but
 export function XhLogScrollToEndTrigger({ children, ...rest }: XhLogScrollToEndTriggerProps): ReactNode {
   const ctx = useLogContext()
   return (
-    <button {...mergeReactProps(ctx.api.getScrollToEndTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getScrollToEndTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -157,7 +157,7 @@ export interface XhLogLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 export function XhLogLiveRegion({ children, ...rest }: XhLogLiveRegionProps): ReactNode {
   const ctx = useLogContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children}
     </div>
   )

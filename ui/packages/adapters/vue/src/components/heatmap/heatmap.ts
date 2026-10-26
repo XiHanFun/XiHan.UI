@@ -131,7 +131,7 @@ export const XhHeatmapRoot = defineComponent({
       return h(
         'div',
         {
-          ...api.getRootProps() as Record<string, unknown>,
+          ...api.getRootProps(),
           ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
         },
         slots.default
@@ -165,7 +165,7 @@ export const XhHeatmapGrid = defineComponent({
   name: 'XhHeatmapGrid',
   setup(_, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('div', ctx.api.value.getGridProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGridProps(), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhHeatmapMonthBlock = defineComponent({
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
     provideHeatmapMonth(computed(() => props.value))
-    return () => h('div', ctx.api.value.getMonthBlockProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getMonthBlockProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -206,7 +206,7 @@ export const XhHeatmapRow = defineComponent({
       return { weekDay: normalizeHeatmapNumber(props.value) }
     })
     provideHeatmapRow(computed(() => row.value.row))
-    return () => h('div', ctx.api.value.getRowProps(row.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRowProps(row.value), slots.default?.())
   },
 })
 
@@ -219,7 +219,7 @@ export const XhHeatmapWeekDay = defineComponent({
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
     const weekDay = computed(() => normalizeHeatmapNumber(props.value))
-    return () => h('span', ctx.api.value.getWeekDayProps({ weekDay: weekDay.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getWeekDayProps({ weekDay: weekDay.value }), slots.default?.())
   },
 })
 
@@ -231,7 +231,7 @@ export const XhHeatmapMonthLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('span', ctx.api.value.getMonthLabelProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getMonthLabelProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -243,7 +243,7 @@ export const XhHeatmapRowLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('span', ctx.api.value.getRowLabelProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getRowLabelProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -255,7 +255,7 @@ export const XhHeatmapColumnLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('span', ctx.api.value.getColumnLabelProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getColumnLabelProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -276,7 +276,7 @@ export const XhHeatmapCell = defineComponent({
     const cell = computed(() => ctx.api.value.variant === 'matrix'
       ? { row: props.row ?? parentRow?.value, column: props.value }
       : { date: props.value })
-    return () => h('div', ctx.api.value.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCellProps(cell.value), slots.default?.())
   },
 })
 
@@ -285,7 +285,7 @@ export const XhHeatmapTooltip = defineComponent({
   name: 'XhHeatmapTooltip',
   setup(_, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('div', ctx.api.value.getTooltipProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTooltipProps(), slots.default?.())
   },
 })
 
@@ -294,7 +294,7 @@ export const XhHeatmapLegend = defineComponent({
   name: 'XhHeatmapLegend',
   setup(_, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('div', ctx.api.value.getLegendProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLegendProps(), slots.default?.())
   },
 })
 
@@ -307,7 +307,7 @@ export const XhHeatmapLegendLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('span', ctx.api.value.getLegendLabelProps({ bound: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLegendLabelProps({ bound: props.value }), slots.default?.())
   },
 })
 
@@ -323,7 +323,7 @@ export const XhHeatmapLegendItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useHeatmapContext()
     const level = computed(() => Number(props.value) || 0)
-    return () => h('span', ctx.api.value.getLegendItemProps({ level: level.value, polarity: props.polarity ?? null }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLegendItemProps({ level: level.value, polarity: props.polarity ?? null }), slots.default?.())
   },
 })
 
@@ -332,7 +332,7 @@ export const XhHeatmapEmpty = defineComponent({
   name: 'XhHeatmapEmpty',
   setup(_, { slots }) {
     const ctx = useHeatmapContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 

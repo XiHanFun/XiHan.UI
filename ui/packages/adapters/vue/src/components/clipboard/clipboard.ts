@@ -45,7 +45,7 @@ export const XhClipboardRoot = defineComponent({
       onCopyError: details => emit('copy-error', details),
     })
     provideClipboard(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       status: ctx.api.value.status,
       copied: ctx.api.value.copied,
       value: ctx.api.value.value,
@@ -64,7 +64,7 @@ export const XhClipboardLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 必须是原生 <label>，connect 把 for 写向 input
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -72,7 +72,7 @@ export const XhClipboardControl = defineComponent({
   name: 'XhClipboardControl',
   setup(_, { slots }) {
     const ctx = useClipboardContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -81,7 +81,7 @@ export const XhClipboardInput = defineComponent({
   setup() {
     const ctx = useClipboardContext()
     // 自己渲染 <input>，label 的 for 指向这个节点
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getInputProps())
   },
 })
 
@@ -90,7 +90,7 @@ export const XhClipboardCopyTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useClipboardContext()
     // 原生 <button>，激活行为交给平台
-    return () => h('button', ctx.api.value.getCopyTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCopyTriggerProps(), slots.default?.())
   },
 })
 
@@ -101,7 +101,7 @@ export const XhClipboardStatus = defineComponent({
     const ctx = useClipboardContext()
     return () => h(
       'span',
-      ctx.api.value.getStatusProps() as Record<string, unknown>,
+      ctx.api.value.getStatusProps(),
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },
@@ -118,7 +118,7 @@ export const XhClipboardIndicator = defineComponent({
     // 节点常挂并叠在同一格，切换时保持按钮宽度
     return () => h(
       'span',
-      ctx.api.value.getIndicatorProps({ copied: props.copied }) as Record<string, unknown>,
+      ctx.api.value.getIndicatorProps({ copied: props.copied }),
       slots.default?.(),
     )
   },

@@ -343,7 +343,7 @@ export class XhJsonViewerElement extends XhElement {
     alive: Set<string>,
   ): void {
     const wanted: HTMLElement[] = []
-    const mark = (el: HTMLElement): void => this.spreader.spread(el, api.getMarkProps() as Record<string, unknown>)
+    const mark = (el: HTMLElement): void => this.spreader.spread(el, api.getMarkProps())
     for (const node of nodes) {
       alive.add(node.value)
       const shape = `${node.branch}|${node.key != null}`
@@ -354,20 +354,20 @@ export class XhJsonViewerElement extends XhElement {
       }
       const ref = { value: node.value }
       if (node.branch) {
-        this.spreader.spread(row.host, api.getBranchProps(ref) as Record<string, unknown>)
-        this.spreader.spread(row.control!, api.getBranchControlProps(ref) as Record<string, unknown>)
-        this.spreader.spread(row.trigger!, api.getBranchTriggerProps(ref) as Record<string, unknown>)
-        this.spreader.spread(row.indicator!, api.getBranchIndicatorProps(ref) as Record<string, unknown>)
+        this.spreader.spread(row.host, api.getBranchProps(ref))
+        this.spreader.spread(row.control!, api.getBranchControlProps(ref))
+        this.spreader.spread(row.trigger!, api.getBranchTriggerProps(ref))
+        this.spreader.spread(row.indicator!, api.getBranchIndicatorProps(ref))
         if (row.text) {
-          this.spreader.spread(row.text, api.getBranchTextProps(ref) as Record<string, unknown>)
+          this.spreader.spread(row.text, api.getBranchTextProps(ref))
           setSegments(row.text, api.keySegments(node), mark)
         }
-        this.spreader.spread(row.preview!, api.getPreviewProps(ref) as Record<string, unknown>)
+        this.spreader.spread(row.preview!, api.getPreviewProps(ref))
         setText(row.preview!, api.previewText(node))
-        this.spreader.spread(row.summary!, api.getBranchSummaryProps(ref) as Record<string, unknown>)
+        this.spreader.spread(row.summary!, api.getBranchSummaryProps(ref))
         setText(row.summary!, api.branchSummary(node))
         if (api.isExpanded(node.value)) {
-          this.spreader.spread(row.content!, api.getBranchContentProps(ref) as Record<string, unknown>)
+          this.spreader.spread(row.content!, api.getBranchContentProps(ref))
           // 已经挂着就别再 appendChild：那是一次真的移除再插入，焦点若在子层里会掉回 body
           if (row.content!.parentNode !== row.host)
             row.host.appendChild(row.content!)
@@ -378,12 +378,12 @@ export class XhJsonViewerElement extends XhElement {
         }
       }
       else {
-        this.spreader.spread(row.host, api.getItemProps(ref) as Record<string, unknown>)
+        this.spreader.spread(row.host, api.getItemProps(ref))
         if (row.itemKey) {
-          this.spreader.spread(row.itemKey, api.getItemKeyProps(ref) as Record<string, unknown>)
+          this.spreader.spread(row.itemKey, api.getItemKeyProps(ref))
           setSegments(row.itemKey, api.keySegments(node), mark)
         }
-        this.spreader.spread(row.itemValue!, api.getItemValueProps(ref) as Record<string, unknown>)
+        this.spreader.spread(row.itemValue!, api.getItemValueProps(ref))
         setSegments(row.itemValue!, api.valueSegments(node), mark)
       }
       wanted.push(row.host)
@@ -422,7 +422,7 @@ export class XhJsonViewerElement extends XhElement {
       return
 
     const api = connectJsonViewer(this.ctrl.service, wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
 
     this.paintEmpty(root, api)
     this.paintToolbar(root, api)
@@ -431,7 +431,7 @@ export class XhJsonViewerElement extends XhElement {
     if (api.view === 'text') {
       const pre = this.textEl ?? (this.textEl = this.ownerDocument.createElement('pre'))
       this.adopt(root, pre, this.treeEl)
-      this.spreader.spread(pre, api.getTextProps() as Record<string, unknown>)
+      this.spreader.spread(pre, api.getTextProps())
       this.paintText(pre, api)
       // 换回树档时缓存的行要重铺，这里先清空
       this.rows.clear()
@@ -440,7 +440,7 @@ export class XhJsonViewerElement extends XhElement {
 
     const tree = this.treeEl ?? (this.treeEl = this.ownerDocument.createElement('div'))
     this.adopt(root, tree, this.textEl)
-    this.spreader.spread(tree, api.getTreeProps() as Record<string, unknown>)
+    this.spreader.spread(tree, api.getTreeProps())
 
     const children = groupJsonViewerNodesByParent(api.visibleNodes)
     const alive = new Set<string>()
@@ -460,7 +460,7 @@ export class XhJsonViewerElement extends XhElement {
     const empty = this.emptyEl ?? (this.emptyEl = this.ownerDocument.createElement('div'))
     if (empty.parentNode !== root)
       root.appendChild(empty)
-    this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+    this.spreader.spread(empty, api.getEmptyProps())
     setText(empty, api.emptyText)
   }
 
@@ -479,7 +479,7 @@ export class XhJsonViewerElement extends XhElement {
       }
       const token = this.ownerDocument.createElement('span')
       token.textContent = segment.text
-      this.spreader.spread(token, api.getTokenProps({ kind: segment.kind }) as Record<string, unknown>)
+      this.spreader.spread(token, api.getTokenProps({ kind: segment.kind }))
       pre.append(token)
     }
     painted.set(pre, api.text)
@@ -496,7 +496,7 @@ export class XhJsonViewerElement extends XhElement {
     }
     const doc = this.ownerDocument
     const bar = this.toolbarEl ?? (this.toolbarEl = doc.createElement('div'))
-    this.spreader.spread(bar, api.getToolbarProps() as Record<string, unknown>)
+    this.spreader.spread(bar, api.getToolbarProps())
     const wanted: HTMLElement[] = []
     const place = (part: JsonViewerToolTrigger | 'status', tag: 'button' | 'span', props: unknown): HTMLElement => {
       let el = this.toolEls.get(part)

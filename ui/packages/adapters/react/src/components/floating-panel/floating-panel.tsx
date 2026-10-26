@@ -106,7 +106,7 @@ export function XhFloatingPanelRoot({
   const api = ctx.api
   return (
     <FloatingPanelProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           open: api.open,
           windowState: api.windowState,
@@ -140,7 +140,7 @@ export interface XhFloatingPanelTriggerProps extends ComponentPropsWithRef<'butt
 export function XhFloatingPanelTrigger({ children, ...rest }: XhFloatingPanelTriggerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -157,8 +157,8 @@ export function XhFloatingPanelPositioner({ children, container, ...rest }: XhFl
     <XhPortal container={container ?? ctx.portalContainer} present={ctx.visible}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           // 收起跟着退场闸门走：皮肤刻意没给 positioner 补 [hidden]{display:none}（补了
           // 退场就一帧都播不出来），所以真正的收起落成内联 display
           ctx.visible ? {} : { style: { display: 'none' } },
@@ -178,8 +178,8 @@ export function XhFloatingPanelContent({ children, ...rest }: XhFloatingPanelCon
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
       )}
     >
@@ -192,7 +192,7 @@ export interface XhFloatingPanelHeaderProps extends ComponentPropsWithRef<'div'>
 export function XhFloatingPanelHeader({ children, ...rest }: XhFloatingPanelHeaderProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>
       {children}
     </div>
   )
@@ -203,7 +203,7 @@ export function XhFloatingPanelTitle({ children, ...rest }: XhFloatingPanelTitle
   const ctx = useFloatingPanelContext()
   useTitleDescriptionPart(ctx.presence, 'title')
   return (
-    <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </h2>
   )
@@ -213,7 +213,7 @@ export interface XhFloatingPanelDragTriggerProps extends ComponentPropsWithRef<'
 export function XhFloatingPanelDragTrigger({ children, ...rest }: XhFloatingPanelDragTriggerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <button {...mergeReactProps(ctx.api.getDragTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getDragTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -229,8 +229,8 @@ export function XhFloatingPanelResizeTrigger({ edge, children, ...rest }: XhFloa
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getResizeTriggerProps({ edge }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getResizeTriggerProps({ edge }),
+        rest,
       )}
     >
       {children}
@@ -251,8 +251,8 @@ export function XhFloatingPanelWindowStateTrigger({
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getWindowStateTriggerProps({ windowState }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getWindowStateTriggerProps({ windowState }),
+        rest,
       )}
     >
       {children}
@@ -264,7 +264,7 @@ export interface XhFloatingPanelCloseTriggerProps extends ComponentPropsWithRef<
 export function XhFloatingPanelCloseTrigger({ children, ...rest }: XhFloatingPanelCloseTriggerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -274,7 +274,7 @@ export interface XhFloatingPanelBodyProps extends ComponentPropsWithRef<'div'> {
 export function XhFloatingPanelBody({ children, ...rest }: XhFloatingPanelBodyProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
-    <div {...mergeReactProps(ctx.api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getBodyProps(), rest)}>
       {children}
     </div>
   )

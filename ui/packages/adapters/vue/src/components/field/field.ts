@@ -45,7 +45,7 @@ export const XhFieldRoot = defineComponent({
     // 字段集压下来的作用域禁用也落到字段上：标题与说明随组内控件一起变淡
     const ctx = useField(withXhConfig('field', useFormControlProps(props)))
     provideField(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+    return () => h('div', ctx.api.value.getRootProps(), slots.default
       ? slots.default()
       : renderDefaultStructure(
           { label: props.label, description: props.description, errorText: props.errorText },
@@ -59,7 +59,7 @@ export const XhFieldLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldContext()
     useFieldPartPresence(ctx, 'label')
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -100,7 +100,7 @@ export const XhFieldControl = defineComponent({
     // control 在场：label 的 for 指向它；不在场时由字段代为聚焦库内控件
     useFieldPartPresence(ctx, 'control')
     return () => {
-      const controlProps = ctx.api.value.getControlProps() as Record<string, unknown>
+      const controlProps = ctx.api.value.getControlProps()
       // control props 经 slot props 交给作者，控件节点由作者渲染
       const children = slots.default?.(controlProps) ?? []
       // 手工接线必须显式关闭 asChild，不能根据无效结构猜测作者意图。
@@ -118,7 +118,7 @@ export const XhFieldDescription = defineComponent({
     const el = ref<HTMLElement | null>(null)
     // 读不出一句话的说明不进描述链
     useFieldPartPresence(ctx, 'description', () => el.value != null && hasNamingContent(el.value))
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -135,7 +135,7 @@ export const XhFieldErrorText = defineComponent({
       const auto = (!kids || kids.length === 0) && form && handle
         ? form.api.value.getFieldError(handle.name())
         : undefined
-      return h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, kids?.length ? kids : auto)
+      return h('p', ctx.api.value.getErrorTextProps(), kids?.length ? kids : auto)
     }
   },
 })

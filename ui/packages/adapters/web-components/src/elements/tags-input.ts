@@ -282,39 +282,39 @@ export class XhTagsInputElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('count', api.getCountProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('input', api.getInputProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('count', api.getCountProps())
     // 计数的数字由元素填；作者第一次就写了内容的节点判为归作者，之后一概不碰
     const countEl = this.getPart('count')
     if (countEl)
       this.fillOwnedText(countEl, api.max === undefined ? String(api.count) : `${api.count} / ${api.max}`)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('hidden-input', api.getHiddenInputProps())
     // 输入框的 value 不必另外回写：spreader 把 value/checked/selected 三个键当 property 写
     // （dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框
 
     // 标签是多实例 part，逐个打：身份取作者写在节点上的 value
     for (const el of this.getParts('item')) {
       const item: TagsInputItemProps = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       const editing = api.editedValue === item.value
       // 预览是 tag 的 root：就地编辑时 tag 按 open=false 给 hidden
       for (const preview of this.partsIn(el, 'item-preview')) {
-        this.spreader.spread(preview, api.getItemPreviewProps(item) as Record<string, unknown>)
+        this.spreader.spread(preview, api.getItemPreviewProps(item))
         // 只写 hidden 属性是不够的：作者层给这个 part 声明的任何一条 display
         // 都会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住
         this.setPartHidden(preview, editing)
       }
       // 文字与删除钮是同一份 tag 的 label 与 close-trigger
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))
-        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getItemDeleteTriggerProps(item))
       for (const input of this.partsIn(el, 'item-input')) {
-        this.spreader.spread(input, api.getItemInputProps(item) as Record<string, unknown>)
+        this.spreader.spread(input, api.getItemInputProps(item))
         this.setPartHidden(input, !editing)
       }
     }

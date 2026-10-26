@@ -41,8 +41,8 @@ export function useEditable(props: EditableSchema['props']): EditableContext {
 
   // 机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上；传取值器而非节点，进出编辑态时现取
   const onCreate = useCallback((service: Service<EditableSchema>) => {
-    service.refs.set('getInputEl', (() => inputRef.current) as never)
-    service.refs.set('getPreviewEl', (() => previewRef.current) as never)
+    service.refs.set('getInputEl', () => inputRef.current)
+    service.refs.set('getPreviewEl', () => previewRef.current)
   }, [])
 
   // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值

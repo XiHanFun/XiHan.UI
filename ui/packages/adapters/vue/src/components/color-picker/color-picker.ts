@@ -122,7 +122,7 @@ export const XhColorPickerRoot = defineComponent({
     provideColorPicker(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             open: api.open,
             value: api.value,
@@ -155,7 +155,7 @@ export const XhColorPickerLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -164,7 +164,7 @@ export const XhColorPickerControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     // 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhColorPickerTrigger = defineComponent({
     const ctx = useColorPickerContext()
     // 原生 button，激活交给平台；同时是浮层的定位锚点
     return () => h('button', {
-      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() as Record<string, unknown> }),
+      ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getTriggerProps() }),
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -190,7 +190,7 @@ export const XhColorPickerClearTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     // 触发钮的兄弟节点：单选有值时才显示，按下清回未选
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -201,7 +201,7 @@ export const XhColorPickerValueText = defineComponent({
     // 有插槽用插槽，否则显示工作色的值串；单选未选时是占位提示
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? ctx.api.value.valueText,
     )
   },
@@ -211,7 +211,7 @@ export const XhColorPickerSwatch = defineComponent({
   name: 'XhColorPickerSwatch',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('span', ctx.api.value.getSwatchProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSwatchProps(), slots.default?.())
   },
 })
 
@@ -230,7 +230,7 @@ export const XhColorPickerPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -242,7 +242,7 @@ export const XhColorPickerContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -257,7 +257,7 @@ export const XhColorPickerSaturationArea = defineComponent({
     const ctx = useColorPickerContext()
     // 区域节点交给机器，矩形在指针事件里现量
     return () => h('div', {
-      ...ctx.api.value.getSaturationAreaProps() as Record<string, unknown>,
+      ...ctx.api.value.getSaturationAreaProps(),
       ref: (el: unknown) => { ctx.areaRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -267,7 +267,7 @@ export const XhColorPickerAreaThumb = defineComponent({
   name: 'XhColorPickerAreaThumb',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('div', ctx.api.value.getAreaThumbProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getAreaThumbProps(), slots.default?.())
   },
 })
 
@@ -281,7 +281,7 @@ export const XhColorPickerHueSlider = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     provideColorSlider(ctx.hueSlider)
-    return () => h('div', ctx.api.value.getHueSliderProps() as Record<string, unknown>, slots.default?.() ?? renderSliderTree())
+    return () => h('div', ctx.api.value.getHueSliderProps(), slots.default?.() ?? renderSliderTree())
   },
 })
 
@@ -291,7 +291,7 @@ export const XhColorPickerAlphaSlider = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     provideColorSlider(ctx.alphaSlider)
-    return () => h('div', ctx.api.value.getAlphaSliderProps() as Record<string, unknown>, slots.default?.() ?? renderSliderTree())
+    return () => h('div', ctx.api.value.getAlphaSliderProps(), slots.default?.() ?? renderSliderTree())
   },
 })
 
@@ -310,7 +310,7 @@ export const XhColorPickerChannelInput = defineComponent({
     const ctx = useColorPickerContext()
     const channel = computed(() => colorPickerToInputChannel(props.channel))
     // 通道身份由本部件自己声明，不必嵌在通道滑杆内
-    return () => h('input', ctx.api.value.getChannelInputProps({ channel: channel.value }) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getChannelInputProps({ channel: channel.value }))
   },
 })
 
@@ -318,7 +318,7 @@ export const XhColorPickerEyeDropperTrigger = defineComponent({
   name: 'XhColorPickerEyeDropperTrigger',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('button', ctx.api.value.getEyeDropperTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getEyeDropperTriggerProps(), slots.default?.())
   },
 })
 
@@ -334,7 +334,7 @@ export const XhColorPickerSwatchPicker = defineComponent({
     provideColorSwatchPicker(ctx.swatchPicker)
     return () => h(
       'div',
-      ctx.api.value.getSwatchPickerProps() as Record<string, unknown>,
+      ctx.api.value.getSwatchPickerProps(),
       slots.default?.() ?? ctx.api.value.swatchPicker.swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
     )
   },
@@ -351,7 +351,7 @@ export const XhColorPickerRecentSwatchPicker = defineComponent({
     provideColorSwatchPicker(ctx.recentSwatchPicker)
     return () => h(
       'div',
-      ctx.api.value.getRecentSwatchPickerProps() as Record<string, unknown>,
+      ctx.api.value.getRecentSwatchPickerProps(),
       slots.default?.() ?? ctx.api.value.recentSwatchPicker.swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
     )
   },
@@ -362,7 +362,7 @@ export const XhColorPickerTagLabel = defineComponent({
   name: 'XhColorPickerTagLabel',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -379,7 +379,7 @@ export const XhColorPickerItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
     const tag = useColorPickerTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -393,7 +393,7 @@ export const XhColorPickerTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useColorPickerContext()
     provideColorPickerTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -404,7 +404,7 @@ export const XhColorPickerOverflowTag = defineComponent({
     const ctx = useColorPickerContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -418,7 +418,7 @@ export const XhColorPickerTagList = defineComponent({
   name: 'XhColorPickerTagList',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default
       ? slots.default()
       : [
           ...ctx.api.value.tags.map(tag => h(XhColorPickerTag, { key: tag.value, value: tag.value }, () => [
@@ -435,7 +435,7 @@ export const XhColorPickerConfirmTrigger = defineComponent({
   name: 'XhColorPickerConfirmTrigger',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConfirmTriggerProps(), slots.default?.())
   },
 })
 
@@ -445,8 +445,8 @@ export const XhColorPickerHiddenInput = defineComponent({
     const ctx = useColorPickerContext()
     // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
     return () => ctx.api.value.selectionMode === 'multiple'
-      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown> }))
-      : h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+      ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.getHiddenInputProps({ value }) }))
+      : h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

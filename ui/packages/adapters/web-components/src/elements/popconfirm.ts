@@ -257,17 +257,17 @@ export class XhPopconfirmElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
-    put('cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('confirm-trigger', api.getConfirmTriggerProps())
+    put('cancel-trigger', api.getCancelTriggerProps())
+    put('arrow', api.getArrowProps())
 
     // content 常驻 Light DOM，收起态由宿主用内联 display 兜住：皮肤给 content 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}，只有内联 style.display 压得住。

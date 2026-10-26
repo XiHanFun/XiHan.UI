@@ -329,14 +329,14 @@ export class XhImageCropperElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('image', api.getImageProps() as Record<string, unknown>)
-    put('crop-area', api.getCropAreaProps() as Record<string, unknown>)
-    put('grid', api.getGridProps() as Record<string, unknown>)
-    put('zoom-slider', api.getZoomSliderProps() as Record<string, unknown>)
-    put('rotate-slider', api.getRotateSliderProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('viewport', api.getViewportProps())
+    put('image', api.getImageProps())
+    put('crop-area', api.getCropAreaProps())
+    put('grid', api.getGridProps())
+    put('zoom-slider', api.getZoomSliderProps())
+    put('rotate-slider', api.getRotateSliderProps())
+    put('hidden-input', api.getHiddenInputProps())
 
     // 把手是多实例 part：身份取节点自报的 position 属性。
     // 报不出合法方位就整个不铺——退回某个缺省方位的话八个把手会全拉同一个角，界面看着正常、拖谁都一样
@@ -353,7 +353,7 @@ export class XhImageCropperElement extends XhElement {
         })
         continue
       }
-      this.spreader.spread(el, api.getCropHandleProps({ position }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getCropHandleProps({ position }))
     }
 
     // 翻转按钮同样是多实例 part，身份取节点自报的 axis 属性；报不出合法轴就不接行为
@@ -370,7 +370,7 @@ export class XhImageCropperElement extends XhElement {
         })
         continue
       }
-      this.spreader.spread(el, api.getFlipTriggerProps({ axis }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getFlipTriggerProps({ axis }))
     }
   }
 }

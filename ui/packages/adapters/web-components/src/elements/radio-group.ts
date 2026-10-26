@@ -223,28 +223,28 @@ export class XhRadioGroupElement<V = string> extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
 
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const input of this.partsIn(el, 'hidden-input'))
-        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
+        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item))
       for (const indicator of this.partsIn(el, 'indicator'))
-        this.spreader.spread(indicator, api.getIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getIndicatorProps(item))
       for (const icon of this.partsIn(el, 'item-icon'))
-        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
+        this.spreader.spread(icon, api.getItemIconProps(item))
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
     }
 
     const thumb = this.getPart('thumb')
     if (thumb) {
-      const props = api.getThumbProps() as Record<string, unknown>
+      const props = api.getThumbProps()
       this.spreader.spread(thumb, props)
       // 按本帧产出的 hidden 用内联 display 收起
       this.setPartHidden(thumb, props.hidden === true)

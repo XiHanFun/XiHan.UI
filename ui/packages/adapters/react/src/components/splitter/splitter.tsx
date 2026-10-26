@@ -89,8 +89,8 @@ export function XhSplitterRoot({
       {/* 容器节点交给机器，矩形在拖拽开始时现量 */}
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -121,8 +121,8 @@ export function XhSplitterPanel({ index = 0, children, ...rest }: XhSplitterPane
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getPanelProps(normalizeItemIndex(index)) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getPanelProps(normalizeItemIndex(index)),
+        rest,
       )}
     >
       {children}
@@ -141,11 +141,11 @@ export function XhSplitterResizeTrigger({ index = 0, children, ...rest }: XhSpli
   // 后代得焦会被算成分隔条自己得焦，键盘操作的那一条于是认错人。装成原生监听器，
   // 到达路径才与另外两家一致
   const bind = useNativeEvents(
-    ctx.api.getResizeTriggerProps(normalizeItemIndex(index)) as Record<string, unknown>,
+    ctx.api.getResizeTriggerProps(normalizeItemIndex(index)),
     ['onFocus'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </div>
   )

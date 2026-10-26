@@ -203,11 +203,11 @@ export class XhCitationElement extends XhPortalHostElement {
       for (const element of this.getParts(name))
         this.spreader.spread(element, props)
     }
-    spread('root', api.getRootProps() as Record<string, unknown>)
-    spread('text', api.getTextProps() as Record<string, unknown>)
+    spread('root', api.getRootProps())
+    spread('text', api.getTextProps())
 
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
-    spread('positioner', api.getPositionerProps() as Record<string, unknown>)
+    spread('positioner', api.getPositionerProps())
 
     for (const trigger of this.getParts('trigger')) {
       // value 写来源 id，一处引多个来源时写成空白分隔的几个
@@ -218,12 +218,12 @@ export class XhCitationElement extends XhPortalHostElement {
         anchorIndex: numberAttr(trigger, 'data-anchor-index'),
         disabled: trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true',
       }
-      this.spreader.spread(trigger, api.getTriggerProps(item) as Record<string, unknown>)
+      this.spreader.spread(trigger, api.getTriggerProps(item))
     }
 
     for (const preview of this.getParts('preview')) {
       const item = previewProps(preview)
-      this.spreader.spread(preview, api.getPreviewProps(item) as Record<string, unknown>)
+      this.spreader.spread(preview, api.getPreviewProps(item))
     }
 
     const previewPart = (
@@ -236,15 +236,15 @@ export class XhCitationElement extends XhPortalHostElement {
           this.spreader.spread(element, getter(previewProps(preview)))
       }
     }
-    previewPart('preview-header', item => api.getPreviewHeaderProps(item) as Record<string, unknown>)
-    previewPart('preview-title', item => api.getPreviewTitleProps(item) as Record<string, unknown>)
-    previewPart('preview-meta', item => api.getPreviewMetaProps(item) as Record<string, unknown>)
-    previewPart('quote', item => api.getQuoteProps(item) as Record<string, unknown>)
-    previewPart('preview-link', item => api.getPreviewLinkProps(item) as Record<string, unknown>)
-    previewPart('dismiss-trigger', item => api.getDismissTriggerProps(item) as Record<string, unknown>)
-    previewPart('prev-trigger', item => api.getPrevTriggerProps(item) as Record<string, unknown>)
-    previewPart('next-trigger', item => api.getNextTriggerProps(item) as Record<string, unknown>)
-    previewPart('preview-index', item => api.getPreviewIndexProps(item) as Record<string, unknown>)
+    previewPart('preview-header', item => api.getPreviewHeaderProps(item))
+    previewPart('preview-title', item => api.getPreviewTitleProps(item))
+    previewPart('preview-meta', item => api.getPreviewMetaProps(item))
+    previewPart('quote', item => api.getQuoteProps(item))
+    previewPart('preview-link', item => api.getPreviewLinkProps(item))
+    previewPart('dismiss-trigger', item => api.getDismissTriggerProps(item))
+    previewPart('prev-trigger', item => api.getPrevTriggerProps(item))
+    previewPart('next-trigger', item => api.getNextTriggerProps(item))
+    previewPart('preview-index', item => api.getPreviewIndexProps(item))
     // 位置是运行期才知道的：元素写进 preview-index 里
     for (const element of this.getParts('preview-index')) {
       const preview = element.closest<HTMLElement>(citationAnatomy.build().preview.selector)
@@ -254,10 +254,10 @@ export class XhCitationElement extends XhPortalHostElement {
         element.textContent = text
     }
 
-    spread('list', api.getListProps() as Record<string, unknown>)
+    spread('list', api.getListProps())
     for (const source of this.getParts('source')) {
       const item = sourceItem(source)
-      this.spreader.spread(source, api.getSourceProps(item) as Record<string, unknown>)
+      this.spreader.spread(source, api.getSourceProps(item))
     }
     const sourcePart = (
       name: string,
@@ -269,10 +269,10 @@ export class XhCitationElement extends XhPortalHostElement {
           this.spreader.spread(element, getter(sourceItem(source)))
       }
     }
-    sourcePart('source-link', item => api.getSourceLinkProps(item) as Record<string, unknown>)
-    sourcePart('source-index', item => api.getSourceIndexProps(item) as Record<string, unknown>)
-    sourcePart('source-title', item => api.getSourceTitleProps(item) as Record<string, unknown>)
-    sourcePart('source-meta', item => api.getSourceMetaProps(item) as Record<string, unknown>)
+    sourcePart('source-link', item => api.getSourceLinkProps(item))
+    sourcePart('source-index', item => api.getSourceIndexProps(item))
+    sourcePart('source-title', item => api.getSourceTitleProps(item))
+    sourcePart('source-meta', item => api.getSourceMetaProps(item))
 
     // hover 档卡片在场（没带 hidden）时才搬到 portal 落点
     const positioner = this.getPart('positioner')

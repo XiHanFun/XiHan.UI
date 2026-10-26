@@ -139,16 +139,16 @@ export class XhFieldsetElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('legend', api.getLegendProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('legend', api.getLegendProps())
+    put('description', api.getDescriptionProps())
     // 一段与一行按钮都可以有多个，逐个打
     for (const el of this.getParts('field-group'))
-      this.spreader.spread(el, api.getFieldGroupProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getFieldGroupProps())
     for (const el of this.getParts('actions'))
-      this.spreader.spread(el, api.getActionsProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getActionsProps())
     // 错误文案常挂，非 invalid 时由 connect 给的 hidden 属性收起
-    put('error-text', api.getErrorTextProps() as Record<string, unknown>)
+    put('error-text', api.getErrorTextProps())
   }
 
   /**

@@ -119,7 +119,7 @@ export function XhFilterBuilderRoot({
   const api = ctx.api
   return (
     <FilterBuilderProvider value={ctx}>
-      <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(fieldLabel({ ...fieldWiring, ...api.getRootProps() }), rest)}>
         {children != null
           ? renderSlot(children, {
               value: api.value,
@@ -153,7 +153,7 @@ export function XhFilterBuilderLabel({ children, ...rest }: XhFilterBuilderLabel
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 /** 组与条件部件上的 value 换成路径；树里没有这个节点是作者写错了。 */
@@ -173,7 +173,7 @@ export function XhFilterBuilderGroup({ value, children, ...rest }: XhFilterBuild
   const path = pathOf(ctx.api, value, 'XhFilterBuilderGroup')
   return (
     <FilterBuilderGroupProvider value={path}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(path), rest)}>{children}</div>
     </FilterBuilderGroupProvider>
   )
 }
@@ -182,49 +182,49 @@ export interface XhFilterBuilderGroupHeaderProps extends ComponentPropsWithRef<'
 export function XhFilterBuilderGroupHeader({ children, ...rest }: XhFilterBuilderGroupHeaderProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <div {...mergeReactProps(ctx.api.getGroupHeaderProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupHeaderProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderLogicProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderLogic({ children, ...rest }: XhFilterBuilderLogicProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <div {...mergeReactProps(ctx.api.getLogicProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLogicProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderGroupDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFilterBuilderGroupDeleteTrigger({ children, ...rest }: XhFilterBuilderGroupDeleteTriggerProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <button {...mergeReactProps(ctx.api.getGroupDeleteTriggerProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getGroupDeleteTriggerProps(path), rest)}>{children}</button>
 }
 
 export interface XhFilterBuilderGroupItemsProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderGroupItems({ children, ...rest }: XhFilterBuilderGroupItemsProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <div {...mergeReactProps(ctx.api.getGroupItemsProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupItemsProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderGroupFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderGroupFooter({ children, ...rest }: XhFilterBuilderGroupFooterProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <div {...mergeReactProps(ctx.api.getGroupFooterProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupFooterProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderAddConditionTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFilterBuilderAddConditionTrigger({ children, ...rest }: XhFilterBuilderAddConditionTriggerProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <button {...mergeReactProps(ctx.api.getAddConditionTriggerProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.translations.addCondition}</button>
+  return <button {...mergeReactProps(ctx.api.getAddConditionTriggerProps(path), rest)}>{children ?? ctx.translations.addCondition}</button>
 }
 
 export interface XhFilterBuilderAddGroupTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFilterBuilderAddGroupTrigger({ children, ...rest }: XhFilterBuilderAddGroupTriggerProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderGroupContext()
-  return <button {...mergeReactProps(ctx.api.getAddGroupTriggerProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.translations.addGroup}</button>
+  return <button {...mergeReactProps(ctx.api.getAddGroupTriggerProps(path), rest)}>{children ?? ctx.translations.addGroup}</button>
 }
 
 export interface XhFilterBuilderConditionProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -236,7 +236,7 @@ export function XhFilterBuilderCondition({ value, children, ...rest }: XhFilterB
   const path = pathOf(ctx.api, value, 'XhFilterBuilderCondition')
   return (
     <FilterBuilderConditionProvider value={path}>
-      <div {...mergeReactProps(ctx.api.getConditionProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getConditionProps(path), rest)}>{children}</div>
     </FilterBuilderConditionProvider>
   )
 }
@@ -245,74 +245,74 @@ export interface XhFilterBuilderConditionFieldProps extends ComponentPropsWithRe
 export function XhFilterBuilderConditionField({ children, ...rest }: XhFilterBuilderConditionFieldProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionFieldProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionFieldProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionOperatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderConditionOperator({ children, ...rest }: XhFilterBuilderConditionOperatorProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionOperatorProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionOperatorProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionSourceProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderConditionSource({ children, ...rest }: XhFilterBuilderConditionSourceProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionSourceProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionSourceProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionOperandProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderConditionOperand({ children, ...rest }: XhFilterBuilderConditionOperandProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionOperandProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionOperandProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionIgnoreCaseProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderConditionIgnoreCase({ children, ...rest }: XhFilterBuilderConditionIgnoreCaseProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionIgnoreCaseProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionIgnoreCaseProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionExtraProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderConditionExtra({ children, ...rest }: XhFilterBuilderConditionExtraProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <div {...mergeReactProps(ctx.api.getConditionExtraProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getConditionExtraProps(path), rest)}>{children}</div>
 }
 
 export interface XhFilterBuilderConditionDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhFilterBuilderConditionDeleteTrigger({ children, ...rest }: XhFilterBuilderConditionDeleteTriggerProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <button {...mergeReactProps(ctx.api.getConditionDeleteTriggerProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConditionDeleteTriggerProps(path), rest)}>{children}</button>
 }
 
 export interface XhFilterBuilderConditionErrorProps extends ComponentPropsWithRef<'p'> {}
 export function XhFilterBuilderConditionError({ children, ...rest }: XhFilterBuilderConditionErrorProps): ReactNode {
   const ctx = useFilterBuilderContext()
   const path = useFilterBuilderConditionContext()
-  return <p {...mergeReactProps(ctx.api.getConditionErrorProps(path) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  return <p {...mergeReactProps(ctx.api.getConditionErrorProps(path), rest)}>{children}</p>
 }
 
 export interface XhFilterBuilderRangeSeparatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhFilterBuilderRangeSeparator({ children, ...rest }: XhFilterBuilderRangeSeparatorProps): ReactNode {
   const ctx = useFilterBuilderContext()
-  return <span {...mergeReactProps(ctx.api.getRangeSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.translations.rangeSeparator}</span>
+  return <span {...mergeReactProps(ctx.api.getRangeSeparatorProps(), rest)}>{children ?? ctx.translations.rangeSeparator}</span>
 }
 
 export interface XhFilterBuilderEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhFilterBuilderEmpty({ children, ...rest }: XhFilterBuilderEmptyProps): ReactNode {
   const ctx = useFilterBuilderContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children ?? ctx.translations.empty}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children ?? ctx.translations.empty}</div>
 }
 
 export interface XhFilterBuilderLiveRegionProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
 export function XhFilterBuilderLiveRegion(props: XhFilterBuilderLiveRegionProps): ReactNode {
   const ctx = useFilterBuilderContext()
-  return <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, props as Record<string, unknown>)}>{ctx.api.announcement}</div>
+  return <div {...mergeReactProps(ctx.api.getLiveRegionProps(), props)}>{ctx.api.announcement}</div>
 }
 
 /** 标准结构里各部件对应的组件。 */

@@ -37,6 +37,6 @@ export const XhToggle = defineComponent({
       emit('update:pressed', details.pressed)
     }
     const { api } = useToggle(props as ToggleProps, notify)
-    return () => h('button', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', api.value.getRootProps(), slots.default?.())
   },
 })

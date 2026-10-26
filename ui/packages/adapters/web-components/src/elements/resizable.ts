@@ -164,9 +164,9 @@ export class XhResizableElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     for (const el of this.getParts('handle'))
-      this.spreader.spread(el, api.getHandleProps({ edge: this.edgeOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getHandleProps({ edge: this.edgeOf(el) }))
   }
 }

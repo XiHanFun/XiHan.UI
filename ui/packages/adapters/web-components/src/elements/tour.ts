@@ -307,26 +307,26 @@ export class XhTourElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('backdrop', api.getBackdropProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('backdrop', api.getBackdropProps())
     // spotlight 与 positioner 的 style 是对象（position/inset/尺寸），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
-    put('spotlight', api.getSpotlightProps() as Record<string, unknown>)
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('progress-text', api.getProgressTextProps() as Record<string, unknown>)
-    put('progress-indicator', api.getProgressIndicatorProps() as Record<string, unknown>)
-    put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
-    put('skip-trigger', api.getSkipTriggerProps() as Record<string, unknown>)
-    put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('spotlight', api.getSpotlightProps())
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('progress-text', api.getProgressTextProps())
+    put('progress-indicator', api.getProgressIndicatorProps())
+    put('prev-trigger', api.getPrevTriggerProps())
+    put('next-trigger', api.getNextTriggerProps())
+    put('skip-trigger', api.getSkipTriggerProps())
+    put('close-trigger', api.getCloseTriggerProps())
+    put('arrow', api.getArrowProps())
 
     // 圆点是多实例 part，逐个打：身份取作者写的 index，缺省按文档序
     this.getParts('progress-dot').forEach((el, position) => {
-      this.spreader.spread(el, api.getProgressDotProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getProgressDotProps({ index: declaredIndex(el, position) }))
     })
 
     this.fillText(this.getPart('title'), api.currentStep?.title)

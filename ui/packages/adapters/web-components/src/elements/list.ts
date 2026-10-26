@@ -62,7 +62,7 @@ export class XhListElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 条目与条目内的四个位都可以出现多次，逐个打
     const putAll = (name: string, attrs: Record<string, unknown>): void => {
@@ -70,11 +70,11 @@ export class XhListElement extends XhElement {
         this.spreader.spread(el, attrs)
     }
 
-    putAll('item', api.getItemProps() as Record<string, unknown>)
-    putAll('item-media', api.getItemMediaProps() as Record<string, unknown>)
-    putAll('item-content', api.getItemContentProps() as Record<string, unknown>)
-    putAll('item-title', api.getItemTitleProps() as Record<string, unknown>)
-    putAll('item-description', api.getItemDescriptionProps() as Record<string, unknown>)
-    putAll('item-action', api.getItemActionProps() as Record<string, unknown>)
+    putAll('item', api.getItemProps())
+    putAll('item-media', api.getItemMediaProps())
+    putAll('item-content', api.getItemContentProps())
+    putAll('item-title', api.getItemTitleProps())
+    putAll('item-description', api.getItemDescriptionProps())
+    putAll('item-action', api.getItemActionProps())
   }
 }

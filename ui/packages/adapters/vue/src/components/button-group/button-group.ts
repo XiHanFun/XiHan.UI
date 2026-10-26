@@ -72,7 +72,7 @@ export const XhButtonGroup = defineComponent({
     // 组内每一段是作者放进插槽的按钮，直接当直接子节点摆
     return () => h(
       'div',
-      api.value.getRootProps() as Record<string, unknown>,
+      api.value.getRootProps(),
       renderChildren(slots.default?.() ?? [], api.value),
     )
   },

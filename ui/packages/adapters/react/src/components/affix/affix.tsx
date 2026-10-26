@@ -41,8 +41,8 @@ export function XhAffixRoot({
     <AffixProvider value={ctx}>
       <div
         {...mergeReactProps(
-          ctx.api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -59,7 +59,7 @@ export interface XhAffixContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhAffixContent({ children, ...rest }: XhAffixContentProps): ReactNode {
   const ctx = useAffixContext()
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </div>
   )

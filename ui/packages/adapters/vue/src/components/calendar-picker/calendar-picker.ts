@@ -100,7 +100,7 @@ export const XhCalendarPickerRoot = defineComponent({
     const ctx = useCalendarPicker(withXhConfig('calendar-picker', props) as CalendarPickerProps, notifyValue, notifyFocus, notifyActiveView)
     provideCalendarPicker(ctx)
     // 网格与表头由作者照插槽里的 weeks（日视图）/ rows（周期视图）/ weekDays 自行渲染
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: ctx.rootRef }, slots.default?.({
       value: ctx.api.value.value,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.visibleMonth,
@@ -127,7 +127,7 @@ export const XhCalendarPickerHeader = defineComponent({
   name: 'XhCalendarPickerHeader',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -135,7 +135,7 @@ export const XhCalendarPickerPrevYearTrigger = defineComponent({
   name: 'XhCalendarPickerPrevYearTrigger',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('button', ctx.api.value.getPrevYearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevYearTriggerProps(), slots.default?.())
   },
 })
 
@@ -143,7 +143,7 @@ export const XhCalendarPickerPrevTrigger = defineComponent({
   name: 'XhCalendarPickerPrevTrigger',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -151,7 +151,7 @@ export const XhCalendarPickerNextTrigger = defineComponent({
   name: 'XhCalendarPickerNextTrigger',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -159,7 +159,7 @@ export const XhCalendarPickerNextYearTrigger = defineComponent({
   name: 'XhCalendarPickerNextYearTrigger',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('button', ctx.api.value.getNextYearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextYearTriggerProps(), slots.default?.())
   },
 })
 
@@ -174,7 +174,7 @@ export const XhCalendarPickerHeading = defineComponent({
     // 有插槽用插槽，否则渲染本面板的标题
     return () => h(
       'div',
-      ctx.api.value.getHeadingProps({ index: props.index }) as Record<string, unknown>,
+      ctx.api.value.getHeadingProps({ index: props.index }),
       slots.default?.() ?? (ctx.api.value.panels[props.index]?.headingLabel ?? ctx.api.value.headingLabel),
     )
   },
@@ -191,7 +191,7 @@ export const XhCalendarPickerHeadingYearTrigger = defineComponent({
     // 有插槽用插槽，否则渲染标题里年那一截；年视图下它是整个十年跨度
     return () => h(
       'button',
-      ctx.api.value.getHeadingYearTriggerProps({ index: props.index }) as Record<string, unknown>,
+      ctx.api.value.getHeadingYearTriggerProps({ index: props.index }),
       slots.default?.() ?? ctx.api.value.panels[props.index]?.headingYear,
     )
   },
@@ -207,7 +207,7 @@ export const XhCalendarPickerHeadingMonthTrigger = defineComponent({
     const ctx = useCalendarPickerContext()
     return () => h(
       'button',
-      ctx.api.value.getHeadingMonthTriggerProps({ index: props.index }) as Record<string, unknown>,
+      ctx.api.value.getHeadingMonthTriggerProps({ index: props.index }),
       slots.default?.() ?? ctx.api.value.panels[props.index]?.headingMonth,
     )
   },
@@ -224,7 +224,7 @@ export const XhCalendarPickerGrid = defineComponent({
     return () => h(
       'div',
       {
-        ...ctx.api.value.getGridProps({ index: props.index }) as Record<string, unknown>,
+        ...ctx.api.value.getGridProps({ index: props.index }),
         // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
         ref: props.index === 0 ? ctx.gridRef : undefined,
       },
@@ -237,7 +237,7 @@ export const XhCalendarPickerGridHead = defineComponent({
   name: 'XhCalendarPickerGridHead',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('div', ctx.api.value.getGridHeadProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGridHeadProps(), slots.default?.())
   },
 })
 
@@ -245,7 +245,7 @@ export const XhCalendarPickerGridBody = defineComponent({
   name: 'XhCalendarPickerGridBody',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('div', ctx.api.value.getGridBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGridBodyProps(), slots.default?.())
   },
 })
 
@@ -254,7 +254,7 @@ export const XhCalendarPickerWeekRow = defineComponent({
   name: 'XhCalendarPickerWeekRow',
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
-    return () => h('div', ctx.api.value.getWeekRowProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getWeekRowProps(), slots.default?.())
   },
 })
 
@@ -269,7 +269,7 @@ export const XhCalendarPickerWeekNumber = defineComponent({
     // 有插槽用插槽，否则显示这一行的周序号
     return () => h(
       'span',
-      ctx.api.value.getWeekNumberProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getWeekNumberProps({ value: props.value }),
       slots.default?.() ?? ctx.api.value.getWeekNumberText({ value: props.value }),
     )
   },
@@ -286,7 +286,7 @@ export const XhCalendarPickerWeekDay = defineComponent({
     const index = computed(() => Number(props.value))
     return () => h(
       'span',
-      ctx.api.value.getWeekDayProps({ value: index.value }) as Record<string, unknown>,
+      ctx.api.value.getWeekDayProps({ value: index.value }),
       slots.default?.() ?? ctx.api.value.weekDays[index.value]?.label,
     )
   },
@@ -308,7 +308,7 @@ export const XhCalendarPickerCell = defineComponent({
     const cell = computed<CalendarCellProps>(() => ({ value: props.value, index: props.index }))
     provideCalendarPickerCell({ cell })
     // 不上报格子卸载，翻月后由机器按聚焦日重新落点
-    return () => h('div', ctx.api.value.getCellProps(cell.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCellProps(cell.value), slots.default?.())
   },
 })
 
@@ -317,6 +317,6 @@ export const XhCalendarPickerCellTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useCalendarPickerContext()
     const { cell } = useCalendarPickerCellContext()
-    return () => h('div', ctx.api.value.getCellTriggerProps(cell.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCellTriggerProps(cell.value), slots.default?.())
   },
 })

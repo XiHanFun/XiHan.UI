@@ -70,7 +70,7 @@ export const XhFloatButtonRoot = defineComponent({
     }
     const ctx = useFloatButton(withXhConfig('float-button', props) as FloatButtonProps, notify)
     provideFloatButton(ctx)
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: ctx.rootRef }, slots.default?.({
       open: ctx.api.value.open,
       setOpen: ctx.api.value.setOpen,
     }))
@@ -82,7 +82,7 @@ export const XhFloatButtonTrigger = defineComponent({
   name: 'XhFloatButtonTrigger',
   setup(_, { slots }) {
     const ctx = useFloatButtonContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })
 
@@ -91,6 +91,6 @@ export const XhFloatButtonList = defineComponent({
   name: 'XhFloatButtonList',
   setup(_, { slots }) {
     const ctx = useFloatButtonContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps(), slots.default?.())
   },
 })

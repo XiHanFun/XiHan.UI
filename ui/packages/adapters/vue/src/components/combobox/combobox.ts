@@ -137,7 +137,7 @@ const XhComboboxRootImpl = defineComponent({
 
     return () => h(
       'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      ctx.api.value.getRootProps(),
       slots.default
         ? slots.default({
             open: ctx.api.value.open,
@@ -207,7 +207,7 @@ export const XhComboboxLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 用原生 label，connect 给的 for 指向输入框
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -216,7 +216,7 @@ export const XhComboboxControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -227,7 +227,7 @@ export const XhComboboxTagList = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     // 标签行：盒里、输入框之前，可见标签与 +N 那一枚在里面并排；单选或无选中时连接层给 hidden
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default?.())
   },
 })
 
@@ -236,7 +236,7 @@ export const XhComboboxTagLabel = defineComponent({
   name: 'XhComboboxTagLabel',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -261,7 +261,7 @@ export const XhComboboxTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useComboboxContext()
     provideComboboxTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -272,7 +272,7 @@ export const XhComboboxOverflowTag = defineComponent({
     const ctx = useComboboxContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -284,7 +284,7 @@ export const XhComboboxItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const tag = useComboboxTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -305,7 +305,7 @@ export const XhComboboxInput = defineComponent({
     const ctx = useComboboxContext()
     return () => h(props.as, fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+      ...ctx.api.value.getInputProps({ as: props.as }),
       ref: (el: unknown) => { ctx.inputRef.value = el as ComboboxInputEl },
     }))
   },
@@ -315,7 +315,7 @@ export const XhComboboxTrigger = defineComponent({
   name: 'XhComboboxTrigger',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })
 
@@ -323,7 +323,7 @@ export const XhComboboxClearTrigger = defineComponent({
   name: 'XhComboboxClearTrigger',
   setup(_, { slots }) {
     const ctx = useComboboxContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -342,7 +342,7 @@ export const XhComboboxPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -354,7 +354,7 @@ export const XhComboboxContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -372,7 +372,7 @@ export const XhComboboxGroup = defineComponent({
     const ctx = useComboboxContext()
     const group = computed<ComboboxGroupProps>(() => ({ value: props.value }))
     provideComboboxItemGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -381,7 +381,7 @@ export const XhComboboxGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { group } = useComboboxItemGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -402,7 +402,7 @@ export const XhComboboxItem = defineComponent({
     onUnmounted(ctx.syncItems)
     // 节点就地复用时数量不变但身份换了，需按 value 另行上报
     watch(() => props.value, ctx.syncItems)
-    return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProps(item.value), slots.default?.())
   },
 })
 
@@ -411,7 +411,7 @@ export const XhComboboxItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { item } = useComboboxItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -421,7 +421,7 @@ export const XhComboboxItemPrefix = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { item } = useComboboxItemContext()
-    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value), slots.default?.())
   },
 })
 
@@ -431,7 +431,7 @@ export const XhComboboxItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { item } = useComboboxItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -441,7 +441,7 @@ export const XhComboboxItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { item } = useComboboxItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -450,7 +450,7 @@ export const XhComboboxItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     const { item } = useComboboxItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -464,12 +464,12 @@ export const XhComboboxHiddenInput = defineComponent({
     // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
     return () => [
       ...ctx.api.value.valueKeys.map(value => h('input', {
-        ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getHiddenInputProps({ value }), attrs),
         key: value,
       })),
       // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
       ...(ctx.api.value.value.length === 0 && ctx.api.value.required
-        ? [h('input', { ...mergeProps(ctx.api.value.getHiddenInputProps() as Record<string, unknown>, attrs), key: 'required' })]
+        ? [h('input', { ...mergeProps(ctx.api.value.getHiddenInputProps(), attrs), key: 'required' })]
         : []),
     ]
   },
@@ -480,7 +480,7 @@ export const XhComboboxEmpty = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     // 放在 positioner 里作 content 的兄弟节点，不进 role=listbox
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -489,7 +489,7 @@ export const XhComboboxLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useComboboxContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来；没写内容时显示 translations.loading
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 

@@ -27,7 +27,7 @@ export function useTruncate(props: TruncateSchema['props']): TruncateContext {
 
   // 机器的挂载效应立刻读 refs 挂观察器，交在 onCreate 里才赶得上；传取值器而非节点，重渲时现取
   const onCreate = useCallback((service: Service<TruncateSchema>) => {
-    service.refs.set('getRootEl', (() => rootRef.current) as never)
+    service.refs.set('getRootEl', () => rootRef.current)
   }, [])
 
   // 展开按钮以 aria-controls 指回文字盒子，id 要按实例派生

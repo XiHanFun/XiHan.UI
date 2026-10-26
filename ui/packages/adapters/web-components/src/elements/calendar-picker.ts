@@ -241,8 +241,8 @@ export class XhCalendarPickerElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
     // 四颗翻页钮：作者在按钮上写了名字时以作者的为准
     for (const [name, props] of [
       ['prev-year-trigger', api.getPrevYearTriggerProps()],
@@ -251,23 +251,23 @@ export class XhCalendarPickerElement extends XhElement {
       ['next-year-trigger', api.getNextYearTriggerProps()],
     ] as const) {
       for (const el of this.getParts(name))
-        this.spreader.spread(el, this.withAuthoredName(el, props as Record<string, unknown>))
+        this.spreader.spread(el, this.withAuthoredName(el, props))
     }
     // 面板逐个打：下标取作者写的 index，没写就按文档序（第 N 张就是第 N 个面板）
     this.getParts('heading').forEach((el, position) => {
-      this.spreader.spread(el, api.getHeadingProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getHeadingProps({ index: declaredIndex(el, position) }))
     })
     // 标题里的年与月两个钮：属性由 connect 打，文字归元素填（spreader 只管属性与事件）
     this.getParts('heading-year-trigger').forEach((el, position) => {
       const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.getHeadingYearTriggerProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getHeadingYearTriggerProps({ index }))
       const text = api.panels[index]?.headingYear ?? ''
       if (el.textContent !== text)
         el.textContent = text
     })
     this.getParts('heading-month-trigger').forEach((el, position) => {
       const index = declaredIndex(el, position)
-      this.spreader.spread(el, api.getHeadingMonthTriggerProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getHeadingMonthTriggerProps({ index }))
       const text = api.panels[index]?.headingMonth ?? ''
       if (el.textContent !== text)
         el.textContent = text
@@ -275,19 +275,19 @@ export class XhCalendarPickerElement extends XhElement {
       this.setPartHidden(el, !api.canZoomOutMonth)
     })
     this.getParts('grid').forEach((el, position) => {
-      this.spreader.spread(el, api.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGridProps({ index: declaredIndex(el, position) }))
     })
     // 多面板时每张 grid 各有一对表头组与日期组，逐个打；两组的属性不带面板下标
     for (const el of this.getParts('grid-head'))
-      this.spreader.spread(el, api.getGridHeadProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getGridHeadProps())
     for (const el of this.getParts('grid-body'))
-      this.spreader.spread(el, api.getGridBodyProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getGridBodyProps())
 
     // 表头行与日期行共用 role=row，一并打
     // 周序号格：身份取行首那天，文字由元素填
     for (const el of this.getParts('week-number')) {
       const value = el.getAttribute('value') ?? ''
-      this.spreader.spread(el, api.getWeekNumberProps({ value }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getWeekNumberProps({ value }))
       // 文字归元素写，比对后再赋值
       const text = api.getWeekNumberText({ value })
       if (el.textContent !== text)
@@ -295,13 +295,13 @@ export class XhCalendarPickerElement extends XhElement {
     }
 
     for (const el of this.getParts('week-row'))
-      this.spreader.spread(el, api.getWeekRowProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getWeekRowProps())
 
     // 列头身份取作者写的 value（列序 0-6）；漏写给 NaN，不写 aria-label
     for (const el of this.getParts('week-day')) {
       const raw = el.getAttribute('value')
       const index = raw == null || raw === '' ? Number.NaN : Number(raw)
-      this.spreader.spread(el, api.getWeekDayProps({ value: index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getWeekDayProps({ value: index }))
     }
 
     // 日期格逐个打，身份取 cell 上的 value，格内 trigger 跟着同一份声明走
@@ -314,9 +314,9 @@ export class XhCalendarPickerElement extends XhElement {
         value: el.getAttribute('value') ?? '',
         index: ownerGrid ? declaredIndex(ownerGrid, owner) : 0,
       }
-      this.spreader.spread(el, api.getCellProps(cell) as Record<string, unknown>)
+      this.spreader.spread(el, api.getCellProps(cell))
       for (const trigger of this.partsIn(el, 'cell-trigger'))
-        this.spreader.spread(trigger, api.getCellTriggerProps(cell) as Record<string, unknown>)
+        this.spreader.spread(trigger, api.getCellTriggerProps(cell))
     }
   }
 }

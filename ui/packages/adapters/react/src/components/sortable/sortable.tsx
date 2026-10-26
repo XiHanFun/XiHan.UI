@@ -98,8 +98,8 @@ export function XhSortableRoot({
     <SortableProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -132,8 +132,8 @@ export function XhSortableItem({ itemId, disabled, children, ...rest }: XhSortab
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getItemProps({ id: itemId, disabled }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps({ id: itemId, disabled }),
+        rest,
       )}
     >
       {renderSlot(children, { dragging: state?.dragging ?? false, index: state?.index ?? -1 })}
@@ -153,8 +153,8 @@ export function XhSortableItemDragTrigger({ itemId, disabled, children, ...rest 
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getItemDragTriggerProps({ id: itemId, disabled }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemDragTriggerProps({ id: itemId, disabled }),
+        rest,
       )}
     >
       {children}
@@ -171,7 +171,7 @@ export interface XhSortableDropIndicatorProps extends ComponentPropsWithRef<'div
  */
 export function XhSortableDropIndicator({ ...rest }: XhSortableDropIndicatorProps): ReactNode {
   const ctx = useSortableContext()
-  return <div {...mergeReactProps(ctx.api.getDropIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getDropIndicatorProps(), rest)} />
 }
 
 export interface XhSortableLiveRegionProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
@@ -185,7 +185,7 @@ export interface XhSortableLiveRegionProps extends Omit<ComponentPropsWithRef<'d
 export function XhSortableLiveRegion({ ...rest }: XhSortableLiveRegionProps): ReactNode {
   const ctx = useSortableContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {ctx.service.context.get('announcement')}
     </div>
   )

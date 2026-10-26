@@ -72,7 +72,7 @@ export const XhColorFieldRoot = defineComponent({
     provideColorField(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             empty: api.empty,
@@ -100,7 +100,7 @@ export const XhColorFieldLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 必须是原生 <label>，connect 把 for 写向 input
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -109,7 +109,7 @@ export const XhColorFieldControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useColorFieldContext()
     // 视觉盒：色块、输入框与清空按钮都放进来，皮肤把描边、底色、聚焦环画在它身上
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -118,7 +118,7 @@ export const XhColorFieldSwatch = defineComponent({
   name: 'XhColorFieldSwatch',
   setup() {
     const ctx = useColorFieldContext()
-    return () => h('span', ctx.api.value.getSwatchProps() as Record<string, unknown>)
+    return () => h('span', ctx.api.value.getSwatchProps())
   },
 })
 
@@ -132,7 +132,7 @@ export const XhColorFieldInput = defineComponent({
     const ctx = useColorFieldContext()
     return () => h('input', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getInputProps() as Record<string, unknown>,
+      ...ctx.api.value.getInputProps(),
     }))
   },
 })
@@ -141,7 +141,7 @@ export const XhColorFieldClearTrigger = defineComponent({
   name: 'XhColorFieldClearTrigger',
   setup(_, { slots }) {
     const ctx = useColorFieldContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -149,7 +149,7 @@ export const XhColorFieldHiddenInput = defineComponent({
   name: 'XhColorFieldHiddenInput',
   setup() {
     const ctx = useColorFieldContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

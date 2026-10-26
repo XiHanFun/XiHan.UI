@@ -123,7 +123,7 @@ export function XhCodeViewRoot({
   const { api } = ctx
   return (
     <CodeViewProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           lang: api.lang,
           lineCount: api.lineCount,
@@ -142,7 +142,7 @@ XhCodeViewRoot.xhEvents = ['clamp-toggle', 'folded-change'] as const
 export interface XhCodeViewHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): ReactNode {
   const ctx = useCodeViewContext()
-  return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
 }
 
 export interface XhCodeViewFilenameProps extends ComponentPropsWithRef<'span'> {
@@ -155,7 +155,7 @@ export function XhCodeViewFilename({ children, filename, ...rest }: XhCodeViewFi
   const { registerFilename } = ctx
   useEffect(() => registerFilename(), [registerFilename])
   return (
-    <span {...mergeReactProps(ctx.api.getFilenameProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getFilenameProps(), rest)}>
       {children ?? filename ?? ctx.api.filename}
     </span>
   )
@@ -165,7 +165,7 @@ export interface XhCodeViewLangLabelProps extends ComponentPropsWithRef<'span'> 
 export function XhCodeViewLangLabel({ children, ...rest }: XhCodeViewLangLabelProps): ReactNode {
   const ctx = useCodeViewContext()
   return (
-    <span {...mergeReactProps(ctx.api.getLangLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLangLabelProps(), rest)}>
       {children ?? ctx.api.lang}
     </span>
   )
@@ -175,7 +175,7 @@ export interface XhCodeViewPreProps extends ComponentPropsWithRef<'pre'> {}
 /** 用 pre 保留代码中的空白与换行。 */
 export function XhCodeViewPre({ children, ...rest }: XhCodeViewPreProps): ReactNode {
   const ctx = useCodeViewContext()
-  return <pre {...mergeReactProps(ctx.api.getPreProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</pre>
+  return <pre {...mergeReactProps(ctx.api.getPreProps(), rest)}>{children}</pre>
 }
 
 export interface XhCodeViewCodeProps extends Omit<ComponentPropsWithRef<'code'>, 'children'> {
@@ -187,20 +187,20 @@ export function XhCodeViewCode({ children, ...rest }: XhCodeViewCodeProps): Reac
   const ctx = useCodeViewContext()
   const { api } = ctx
   return (
-    <code {...mergeReactProps(api.getCodeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <code {...mergeReactProps(api.getCodeProps(), rest)}>
       {api.lines.map((line, index) => (
-        <span key={index} {...api.getLineProps({ index }) as Record<string, unknown>}>
+        <span key={index} {...api.getLineProps({ index })}>
           {/* 行号槽不开就不建节点，两个适配器同一条判据 */}
-          {api.lineNumbers ? <span {...api.getLineNumberProps({ index }) as Record<string, unknown>} /> : null}
-          <span {...api.getLineContentProps({ index }) as Record<string, unknown>}>
+          {api.lineNumbers ? <span {...api.getLineNumberProps({ index })} /> : null}
+          <span {...api.getLineContentProps({ index })}>
             {/* 块头的折叠钮放在正文最前面，由皮肤定位到正文让出的那一列里；不是块头的行不建 */}
-            {api.isFoldStart(index) ? <button {...api.getLineFoldTriggerProps({ index }) as Record<string, unknown>} /> : null}
+            {api.isFoldStart(index) ? <button {...api.getLineFoldTriggerProps({ index })} /> : null}
             {children === undefined
               // 没有着色结果就一个文本节点，别平白多包一层 span
               ? (line.tokens.length === 0
                   ? line.text
                   : line.tokens.map((token, i) => (
-                      <span key={i} {...api.getTokenProps(token) as Record<string, unknown>}>{token.text}</span>
+                      <span key={i} {...api.getTokenProps(token)}>{token.text}</span>
                     )))
               : renderSlot(children, { line, index, number: api.lineNumberAt(index) })}
           </span>
@@ -213,5 +213,5 @@ export function XhCodeViewCode({ children, ...rest }: XhCodeViewCodeProps): Reac
 export interface XhCodeViewFoldTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhCodeViewFoldTrigger({ children, ...rest }: XhCodeViewFoldTriggerProps): ReactNode {
   const ctx = useCodeViewContext()
-  return <button {...mergeReactProps(ctx.api.getFoldTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getFoldTriggerProps(), rest)}>{children}</button>
 }

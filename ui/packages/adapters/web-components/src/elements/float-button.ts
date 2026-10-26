@@ -178,12 +178,12 @@ export class XhFloatButtonElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
 
     const list = this.getPart('list')
     if (list) {
-      const props = api.getListProps() as Record<string, unknown>
+      const props = api.getListProps()
       this.spreader.spread(list, props)
       // Light DOM 常驻，WC 自管可见性：作者层若给这个 part 声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来

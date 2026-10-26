@@ -55,13 +55,13 @@ export function XhToolbarRoot({
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getRootProps(), ['onFocus'])
   return (
     <ToolbarProvider value={ctx}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -79,14 +79,14 @@ export function XhToolbarRoot({
 export interface XhToolbarGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhToolbarGroup({ children, ...rest }: XhToolbarGroupProps): ReactNode {
   const ctx = useToolbarContext()
-  return <div {...mergeReactProps(ctx.api.getGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhToolbarSeparatorProps extends ComponentPropsWithRef<'div'> {}
 /** 分隔线不渲染内容。 */
 export function XhToolbarSeparator({ ...rest }: XhToolbarSeparatorProps): ReactNode {
   const ctx = useToolbarContext()
-  return <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getSeparatorProps(), rest)} />
 }
 
 export interface XhToolbarItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
@@ -103,7 +103,7 @@ export function XhToolbarItem({ value, disabled, iconOnly, as = 'button', childr
   const previous = useRef(value)
   // 条目的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getItemProps({ value, disabled, iconOnly }) as Record<string, unknown>,
+    ctx.api.getItemProps({ value, disabled, iconOnly }),
     ['onFocus'],
   )
 
@@ -133,7 +133,7 @@ export function XhToolbarItem({ value, disabled, iconOnly, as = 'button', childr
     as,
     mergeReactProps(
       bind.attrs,
-      rest as Record<string, unknown>,
+      rest,
       { ref: bind.ref },
       { ref: (el: HTMLElement | null) => { itemEl.current = el } },
     ),
@@ -151,9 +151,9 @@ export interface XhToolbarOverflowTriggerProps extends ComponentPropsWithRef<'bu
 export function XhToolbarOverflowTrigger({ children, ...rest }: XhToolbarOverflowTriggerProps): ReactNode {
   const ctx = useToolbarContext()
   // 钮的聚焦上报不冒泡，与条目一样改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getOverflowTriggerProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getOverflowTriggerProps(), ['onFocus'])
   const trigger = (
-    <button {...mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest as Record<string, unknown>)}>
+    <button {...mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest)}>
       {children}
     </button>
   )

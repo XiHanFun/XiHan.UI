@@ -93,7 +93,7 @@ export const XhFieldArrayRoot = defineComponent({
     const ctx = useFieldArray(withXhConfig('field-array', useFormControlProps(props)) as FieldArrayProps, { onValueChange }, form?.service)
     provideFieldArray(ctx)
     // 写了默认插槽时 items 里每一项都带 key，作者铺行时直接 :key="row.key"；没写时照 fieldArrayStructure 铺整套结构
-    return () => h('div', { ...(ctx.api.value.getRootProps() as Record<string, unknown>), ref: ctx.rootRef }, !slots.default
+    return () => h('div', { ...(ctx.api.value.getRootProps()), ref: ctx.rootRef }, !slots.default
       ? renderDefaultStructure(ctx.api.value, { 'item-content': slots['item-content'], 'item-cell': slots['item-cell'] })
       : slots.default({
           items: ctx.api.value.items,
@@ -122,7 +122,7 @@ export const XhFieldArrayTable = defineComponent({
     const fieldLabel = useFieldLabelWiring()
     const ctx = useFieldArrayContext()
     return () => {
-      const props = ctx.api.value.getTableProps() as Record<string, unknown>
+      const props = ctx.api.value.getTableProps()
       return h('div', ctx.api.value.layout === 'table' ? fieldLabel.value({ ...fieldWiring.value, ...props }) : props, slots.default?.())
     }
   },
@@ -132,7 +132,7 @@ export const XhFieldArrayHeader = defineComponent({
   name: 'XhFieldArrayHeader',
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -145,7 +145,7 @@ export const XhFieldArrayColumnHeader = defineComponent({
   setup(props, { slots }) {
     const ctx = useFieldArrayContext()
     // 没写内容时显示这一列的 label
-    return () => h('div', ctx.api.value.getColumnHeaderProps({ value: props.value }) as Record<string, unknown>, slots.default?.()
+    return () => h('div', ctx.api.value.getColumnHeaderProps({ value: props.value }), slots.default?.()
       ?? ctx.api.value.columns.find(column => column.id === props.value)?.label)
   },
 })
@@ -159,7 +159,7 @@ export const XhFieldArrayItemCell = defineComponent({
   setup(props, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('div', ctx.api.value.getItemCellProps({ index: item.value.index, value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemCellProps({ index: item.value.index, value: props.value }), slots.default?.())
   },
 })
 
@@ -173,7 +173,7 @@ export const XhFieldArrayItem = defineComponent({
     const ctx = useFieldArrayContext()
     const item = computed<FieldArrayItemProps>(() => ({ index: Math.trunc(Number(props.index)) }))
     provideFieldArrayItem({ item })
-    return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProps(item.value), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhFieldArrayItemLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('span', ctx.api.value.getItemLabelProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemLabelProps(item.value), slots.default?.())
   },
 })
 
@@ -192,7 +192,7 @@ export const XhFieldArrayItemContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('div', ctx.api.value.getItemContentProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemContentProps(item.value), slots.default?.())
   },
 })
 
@@ -201,7 +201,7 @@ export const XhFieldArrayItemAction = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('div', ctx.api.value.getItemActionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemActionProps(item.value), slots.default?.())
   },
 })
 
@@ -209,7 +209,7 @@ export const XhFieldArrayAddTrigger = defineComponent({
   name: 'XhFieldArrayAddTrigger',
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
-    return () => h('button', ctx.api.value.getAddTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getAddTriggerProps(), slots.default?.())
   },
 })
 
@@ -218,7 +218,7 @@ export const XhFieldArrayItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value), slots.default?.())
   },
 })
 
@@ -228,7 +228,7 @@ export const XhFieldArrayItemDragTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('button', ctx.api.value.getItemDragTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDragTriggerProps(item.value), slots.default?.())
   },
 })
 
@@ -237,7 +237,7 @@ export const XhFieldArrayMoveUpTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('button', ctx.api.value.getMoveUpTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getMoveUpTriggerProps(item.value), slots.default?.())
   },
 })
 
@@ -246,7 +246,7 @@ export const XhFieldArrayMoveDownTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFieldArrayContext()
     const { item } = useFieldArrayItemContext()
-    return () => h('button', ctx.api.value.getMoveDownTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getMoveDownTriggerProps(item.value), slots.default?.())
   },
 })
 

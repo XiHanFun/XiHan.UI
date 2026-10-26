@@ -104,7 +104,7 @@ export const XhTooltipTrigger = defineComponent({
     const ctx = useTooltipContext()
     return () => {
       const part = mergePartProps({
-        ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+        ...ctx.api.value.getTriggerProps(),
         ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
       }, attrs)
       const children = slots.default?.()
@@ -133,7 +133,7 @@ export const XhTooltipPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, slots.default?.()),
     ])
@@ -145,7 +145,7 @@ export const XhTooltipText = defineComponent({
   name: 'XhTooltipText',
   setup(_, { slots }) {
     const ctx = useTooltipContext()
-    return () => h('span', ctx.api.value.getTextProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.text)
+    return () => h('span', ctx.api.value.getTextProps(), slots.default?.() ?? ctx.api.value.text)
   },
 })
 
@@ -154,7 +154,7 @@ export const XhTooltipShortcut = defineComponent({
   name: 'XhTooltipShortcut',
   setup(_, { slots }) {
     const ctx = useTooltipContext()
-    return () => h('span', ctx.api.value.getShortcutProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.shortcut ?? undefined)
+    return () => h('span', ctx.api.value.getShortcutProps(), slots.default?.() ?? ctx.api.value.shortcut ?? undefined)
   },
 })
 
@@ -167,7 +167,7 @@ export const XhTooltipContent = defineComponent({
       ? [...(slots.default?.() ?? []), h(XhTooltipText), ctx.api.value.shortcut === null ? null : h(XhTooltipShortcut)]
       : slots.default?.()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤给 content 声明了 display 来盖掉 UA 的 [hidden]{display:none}
       // （盒子得先在，退场才播得出来），所以真正的收起落成内联 display
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -180,6 +180,6 @@ export const XhTooltipArrow = defineComponent({
   name: 'XhTooltipArrow',
   setup(_, { slots }) {
     const ctx = useTooltipContext()
-    return () => h('div', ctx.api.value.getArrowProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getArrowProps(), slots.default?.())
   },
 })

@@ -43,7 +43,7 @@ export function createOwnedMachine<T extends MachineSchema>(
   ensureDevChecks()
   const runtime = createReactRuntime()
   const service = createService(machine, {
-    props: () => applyXhConfigDefaults(machine.name, { ...getProps() }, getConfig()) as never,
+    props: () => applyXhConfigDefaults(machine.name, { ...getProps() }, getConfig()),
     runtime,
   })
   runtime.mount()

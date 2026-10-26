@@ -108,7 +108,7 @@ export class XhNumberAnimationElement extends XhElement {
     const root = this.getPart('root')
     if (!root)
       return
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     // 数字归元素写：spreader 只管属性与事件，写不了文本。
     // 比一次再写：值没动时的赋值会白白惊动一次变更记录，而这里每帧都会走一遍
     if (root.textContent !== api.text)

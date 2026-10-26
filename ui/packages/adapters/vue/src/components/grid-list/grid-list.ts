@@ -53,7 +53,7 @@ export const XhGridListRoot = defineComponent({
     provideGridList(context)
     return () => {
       const api = context.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default?.())
+      return h('div', api.getRootProps(), slots.default?.())
     }
   },
 })
@@ -67,7 +67,7 @@ export const XhGridListLabel = defineComponent({
     onUnmounted(() => {
       context.labelCount.value--
     })
-    return () => h('span', context.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', context.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -81,7 +81,7 @@ export const XhGridListRow = defineComponent({
     const context = useGridListContext()
     const row = computed<GridListRowProps>(() => ({ value: props.value, disabled: props.disabled }))
     provideGridListRow(row)
-    return () => h('div', context.api.value.getRowProps(row.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', context.api.value.getRowProps(row.value), slots.default?.())
   },
 })
 
@@ -111,7 +111,7 @@ export const XhGridListRowAction = defineComponent({
   setup(_, { slots }) {
     const context = useGridListContext()
     const row = useGridListRow()
-    return () => h('button', context.api.value.getRowActionProps(row.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', context.api.value.getRowActionProps(row.value), slots.default?.())
   },
 })
 
@@ -119,7 +119,7 @@ export const XhGridListEmpty = defineComponent({
   name: 'XhGridListEmpty',
   setup(_, { slots }) {
     const context = useGridListContext()
-    return () => h('div', context.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', context.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -127,6 +127,6 @@ export const XhGridListLoading = defineComponent({
   name: 'XhGridListLoading',
   setup(_, { slots }) {
     const context = useGridListContext()
-    return () => h('div', context.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', context.api.value.getLoadingProps(), slots.default?.())
   },
 })

@@ -131,8 +131,8 @@ export function XhRatingRoot({
     <RatingProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: rootRef },
         )}
       >
@@ -163,7 +163,7 @@ export function XhRatingLabel({ children, ...rest }: XhRatingLabelProps): ReactN
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </span>
   )
@@ -181,11 +181,11 @@ export function XhRatingControl({ children, ...rest }: XhRatingControlProps): Re
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
   const bind = useNativeEvents(
-    fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() as Record<string, unknown> }),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() }),
     ['onFocus', 'onPointerLeave'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </div>
   )
@@ -197,7 +197,7 @@ export interface XhRatingValueTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhRatingValueText({ children, ...rest }: XhRatingValueTextProps): ReactNode {
   const ctx = useRatingContext()
   return (
-    <span {...mergeReactProps(ctx.api.getValueTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getValueTextProps(), rest)}>
       {children ?? ctx.api.valueText}
     </span>
   )
@@ -248,7 +248,7 @@ export function XhRatingItem({ value, children, ...rest }: XhRatingItemProps): R
   // onClick 与 onPointerMove 要读 offsetX 判断指针落在这颗星的哪半边，
   // 而 React 的合成鼠标事件不带 offsetX，半档会被一律算成整颗
   const bind = useNativeEvents(
-    ctx.api.getItemProps({ ...item, authored }) as Record<string, unknown>,
+    ctx.api.getItemProps({ ...item, authored }),
     ['onFocus', 'onClick', 'onPointerMove'],
   )
 
@@ -257,7 +257,7 @@ export function XhRatingItem({ value, children, ...rest }: XhRatingItemProps): R
       {...mergeReactProps(
         bind.attrs,
         { ref: bind.ref },
-        rest as Record<string, unknown>,
+        rest,
         { ref: (el: HTMLSpanElement | null) => { itemEl.current = el } },
       )}
     >
@@ -274,11 +274,11 @@ export function XhRatingHiddenInput({ ...rest }: XhRatingHiddenInputProps): Reac
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

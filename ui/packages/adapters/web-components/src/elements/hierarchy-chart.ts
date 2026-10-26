@@ -262,28 +262,28 @@ export class XhHierarchyChartElement extends XhElement {
         this.spreader.spread(el, props)
       return el
     }
-    const root = put('root', api.getRootProps() as Record<string, unknown>)
-    put('caption', api.getCaptionProps() as Record<string, unknown>)
+    const root = put('root', api.getRootProps())
+    put('caption', api.getCaptionProps())
 
-    const path = put('path', api.getPathProps() as Record<string, unknown>)
+    const path = put('path', api.getPathProps())
     if (path)
       this.#paintPath(path, api)
 
-    const legend = put('legend', api.getLegendProps() as Record<string, unknown>)
+    const legend = put('legend', api.getLegendProps())
     if (legend)
       this.#paintLegend(legend, api)
 
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
+    put('viewport', api.getViewportProps())
 
-    const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
+    const plot = put('plot', api.getPlotProps())
     if (plot)
       this.#paintMarks(plot, [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over], api)
 
-    const tooltip = put('tooltip', api.getTooltipProps() as Record<string, unknown>)
+    const tooltip = put('tooltip', api.getTooltipProps())
     if (tooltip)
       this.#paintTooltip(tooltip, api)
 
-    const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
+    const empty = put('empty', api.getEmptyProps())
     if (empty && !hasAuthorContent(empty)) {
       const [own] = generatedChildren(empty)
       const span = own ?? empty.appendChild(createGeneratedElement(empty.ownerDocument, 'span'))
@@ -304,7 +304,7 @@ export class XhHierarchyChartElement extends XhElement {
     const tag = api.markTag(mark)
     const node = reuse?.localName === tag ? reuse : doc.createElementNS(SVG_NS, tag)
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark))
     if (mark.kind === 'group')
       this.#paintMarks(node, mark.children, api)
     else if (mark.kind === 'text' && node.textContent !== mark.text)
@@ -317,7 +317,7 @@ export class XhHierarchyChartElement extends XhElement {
     const doc = path.ownerDocument
     reconcile(path, api.path, this.#keys, item => item.key ?? TOP_KEY, (item, reuse) => {
       const button = reuse instanceof HTMLButtonElement ? reuse : createGeneratedElement(doc, 'button')
-      this.spreader.spread(button, api.getPathItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(button, api.getPathItemProps(item))
       if (button.textContent !== item.name)
         button.textContent = item.name
       return button
@@ -332,11 +332,11 @@ export class XhHierarchyChartElement extends XhElement {
       if (node.children.length !== 4)
         node.replaceChildren(...Array.from({ length: 4 }, () => doc.createElement('span')))
       const [name, min, bar, max] = Array.from(node.children) as HTMLElement[]
-      this.spreader.spread(node as HTMLElement, api.getLegendScaleProps(scale) as Record<string, unknown>)
-      this.spreader.spread(name!, api.getLegendScaleNameProps() as Record<string, unknown>)
-      this.spreader.spread(min!, api.getLegendScaleValueProps('min') as Record<string, unknown>)
-      this.spreader.spread(bar!, api.getLegendScaleBarProps() as Record<string, unknown>)
-      this.spreader.spread(max!, api.getLegendScaleValueProps('max') as Record<string, unknown>)
+      this.spreader.spread(node as HTMLElement, api.getLegendScaleProps(scale))
+      this.spreader.spread(name!, api.getLegendScaleNameProps())
+      this.spreader.spread(min!, api.getLegendScaleValueProps('min'))
+      this.spreader.spread(bar!, api.getLegendScaleBarProps())
+      this.spreader.spread(max!, api.getLegendScaleValueProps('max'))
       for (const [el, text] of [[name!, scale.name], [min!, scale.min], [max!, scale.max]] as const) {
         if (el.textContent !== text)
           el.textContent = text
@@ -360,18 +360,18 @@ export class XhHierarchyChartElement extends XhElement {
       return
     const doc = tooltip.ownerDocument
     const header = createGeneratedElement(doc, 'div')
-    this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
+    this.spreader.spread(header, api.getTooltipHeaderProps())
     header.textContent = model.header
     const rows = model.rows.map((row) => {
       const line = createGeneratedElement(doc, 'div')
-      this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
+      this.spreader.spread(line, api.getTooltipRowProps(row))
       const swatch = doc.createElement('span')
-      this.spreader.spread(swatch, api.getTooltipSwatchProps(row) as Record<string, unknown>)
+      this.spreader.spread(swatch, api.getTooltipSwatchProps(row))
       const value = doc.createElement('span')
-      this.spreader.spread(value, api.getTooltipValueProps(row) as Record<string, unknown>)
+      this.spreader.spread(value, api.getTooltipValueProps(row))
       value.textContent = row.value
       const name = doc.createElement('span')
-      this.spreader.spread(name, api.getTooltipNameProps(row) as Record<string, unknown>)
+      this.spreader.spread(name, api.getTooltipNameProps(row))
       name.textContent = row.name
       line.append(swatch, value, name)
       return line
@@ -392,11 +392,11 @@ export class XhHierarchyChartElement extends XhElement {
       this.#table = null
     }
     const table = region.firstElementChild as HTMLElement
-    this.spreader.spread(summary, api.getSummaryProps() as Record<string, unknown>)
+    this.spreader.spread(summary, api.getSummaryProps())
     if (summary.textContent !== api.summary)
       summary.textContent = api.summary
-    this.spreader.spread(region, api.getTableRegionProps() as Record<string, unknown>)
-    this.spreader.spread(table, api.getTableProps() as Record<string, unknown>)
+    this.spreader.spread(region, api.getTableRegionProps())
+    this.spreader.spread(table, api.getTableProps())
     if (this.#table === api.table && this.#tableHost === table)
       return
     this.#table = api.table

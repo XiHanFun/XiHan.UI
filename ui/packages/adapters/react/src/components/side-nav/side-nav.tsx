@@ -123,7 +123,7 @@ export function XhSideNavRoot({
   // 经 children 载荷交出状态与命令，供折叠开关这类外部控件使用
   return (
     <SideNavProvider value={ctx}>
-      <nav {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <nav {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           value: api.value,
           expandedValue: api.expandedValue,
@@ -153,14 +153,14 @@ XhSideNavRoot.xhEvents = ['value-change', 'expanded-value-change'] as const
 export interface XhSideNavListProps extends ComponentPropsWithRef<'ul'> {}
 export function XhSideNavList({ children, ...rest }: XhSideNavListProps): ReactNode {
   const ctx = useSideNavContext()
-  return <ul {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ul>
+  return <ul {...mergeReactProps(ctx.api.getListProps(), rest)}>{children}</ul>
 }
 
 export interface XhSideNavInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'children'> {}
 /** 搜索框：放在 list 之前，输入即按标签过滤导航树。 */
 export function XhSideNavInput(rest: XhSideNavInputProps): ReactNode {
   const ctx = useSideNavContext()
-  return <input {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <input {...mergeReactProps(ctx.api.getInputProps(), rest)} />
 }
 
 export interface XhSideNavEmptyProps extends ComponentPropsWithRef<'div'> {}
@@ -168,7 +168,7 @@ export interface XhSideNavEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhSideNavEmpty({ children, ...rest }: XhSideNavEmptyProps): ReactNode {
   const ctx = useSideNavContext()
   return (
-    <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>
       {children ?? ctx.api.translations.noMatch}
     </div>
   )
@@ -188,7 +188,7 @@ export function XhSideNavItem({ children, ...rest }: XhSideNavItemProps): ReactN
   const [linkValue, setLinkValue] = useState<string | null>(null)
   return (
     <SideNavItemProvider value={setLinkValue}>
-      <li {...mergeReactProps(ctx.api.getItemProps({ value: linkValue ?? undefined }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+      <li {...mergeReactProps(ctx.api.getItemProps({ value: linkValue ?? undefined }), rest)}>{children}</li>
     </SideNavItemProvider>
   )
 }
@@ -212,7 +212,7 @@ export function XhSideNavGroup({ value, children, ...rest }: XhSideNavGroupProps
   const group = useMemo(() => ({ value, join }), [value, join])
   return (
     <SideNavGroupProvider value={group}>
-      <li {...mergeReactProps(ctx.api.getGroupProps({ value, members }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+      <li {...mergeReactProps(ctx.api.getGroupProps({ value, members }), rest)}>{children}</li>
     </SideNavGroupProvider>
   )
 }
@@ -222,7 +222,7 @@ export interface XhSideNavGroupLabelProps extends Omit<ComponentPropsWithRef<'di
 }
 export function XhSideNavGroupLabel({ value, children, ...rest }: XhSideNavGroupLabelProps): ReactNode {
   const ctx = useSideNavContext()
-  return <div {...mergeReactProps(ctx.api.getGroupLabelProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupLabelProps({ value }), rest)}>{children}</div>
 }
 
 export interface XhSideNavGroupListProps extends ComponentPropsWithRef<'ul'> {}
@@ -232,7 +232,7 @@ export function XhSideNavGroupList({ children, ...rest }: XhSideNavGroupListProp
   const group = useSideNavGroupContext()
   if (!group)
     throw new Error('XhSideNavGroupList 要放在 XhSideNavGroup 里')
-  return <ul {...mergeReactProps(ctx.api.getGroupListProps({ value: group.value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ul>
+  return <ul {...mergeReactProps(ctx.api.getGroupListProps({ value: group.value }), rest)}>{children}</ul>
 }
 
 export interface XhSideNavBranchProps extends Omit<ComponentPropsWithRef<'li'>, 'value'> {
@@ -244,7 +244,7 @@ export function XhSideNavBranch({ value, children, ...rest }: XhSideNavBranchPro
   useJoinGroup(value)
   return (
     <SideNavNodeProvider value={node}>
-      <li {...mergeReactProps(ctx.api.getBranchProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+      <li {...mergeReactProps(ctx.api.getBranchProps({ value }), rest)}>{children}</li>
     </SideNavNodeProvider>
   )
 }
@@ -255,18 +255,18 @@ export function XhSideNavBranchTrigger({ children, ...rest }: XhSideNavBranchTri
   const node = useSideNavNodeContext()
   // 分支入口的聚焦上报与指针进出都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getBranchTriggerProps({ value: node.value }) as Record<string, unknown>,
+    ctx.api.getBranchTriggerProps({ value: node.value }),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   return (
-    <button {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>{children}</button>
+    <button {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</button>
   )
 }
 
 export interface XhSideNavBranchTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSideNavBranchText({ children, ...rest }: XhSideNavBranchTextProps): ReactNode {
   const ctx = useSideNavContext()
-  return <span {...mergeReactProps(ctx.api.getBranchTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getBranchTextProps(), rest)}>{children}</span>
 }
 
 export interface XhSideNavBranchIndicatorProps extends ComponentPropsWithRef<'span'> {}
@@ -274,7 +274,7 @@ export function XhSideNavBranchIndicator({ children, ...rest }: XhSideNavBranchI
   const ctx = useSideNavContext()
   const node = useSideNavNodeContext()
   return (
-    <span {...mergeReactProps(ctx.api.getBranchIndicatorProps({ value: node.value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getBranchIndicatorProps({ value: node.value }), rest)}>
       {children}
     </span>
   )
@@ -294,7 +294,7 @@ export function XhSideNavBranchContent({ children, container, ...rest }: XhSideN
   const presenceRef = useRef<PresenceHandle | null>(null)
   const visible = useOverlayExit({
     config: ctx.config,
-    isOpen: () => (ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>).hidden !== true,
+    isOpen: () => (ctx.api.getPopoutPositionerProps({ value })).hidden !== true,
     contentRef: panelRef,
     onPresence: (next) => {
       const previous = presenceRef.current
@@ -318,10 +318,10 @@ export function XhSideNavBranchContent({ children, container, ...rest }: XhSideN
     }
   }, [ctx.service, value])
 
-  const contentProps = ctx.api.getBranchContentProps({ value }) as Record<string, unknown>
+  const contentProps = ctx.api.getBranchContentProps({ value })
   if (!ctx.api.isPopoutPanel(value)) {
     // 平铺分支没有定位层，原地渲染
-    return <ul {...mergeReactProps(contentProps, rest as Record<string, unknown>)}>{children}</ul>
+    return <ul {...mergeReactProps(contentProps, rest)}>{children}</ul>
   }
 
   // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文。
@@ -330,11 +330,11 @@ export function XhSideNavBranchContent({ children, container, ...rest }: XhSideN
   // 关着的弹出面板不建视觉桥：折叠态下每个分支各有一个定位层
   return (
     <XhPortal container={container ?? ctx.portalContainer} present={visible}>
-      <div {...ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>} hidden={hidden}>
+      <div {...ctx.api.getPopoutPositionerProps({ value })} hidden={hidden}>
         <ul
           {...mergeReactProps(
             contentProps,
-            rest as Record<string, unknown>,
+            rest,
             { hidden, ref: (el: HTMLUListElement | null) => { panelRef.current = el } },
           )}
         >
@@ -376,10 +376,10 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
     layer: () => ({ kind: 'inline', branches: () => [anchor()].filter(Boolean) as Element[], isModal: () => false }),
     node: () => contentRef.current,
     refs: (service) => {
-      service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getAnchorEl', anchor as never)
-      service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
-      service.refs.set('group', group as never)
+      service.refs.set('position', createPositionEngine())
+      service.refs.set('getAnchorEl', anchor)
+      service.refs.set('getFloatingEl', () => positionerRef.current)
+      service.refs.set('group', group)
     },
   })
   const hint = useMachine<TooltipSchema>(tooltipMachine, () => sideNavTooltipProps(nav), {
@@ -397,12 +397,12 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
 
   const api = connectSideNav(nav, reactNormalize, hint)
   // 指针进出装成原生监听器：移入提示要能撤销收起等待
-  const bind = useNativeEvents(api.getTooltipContentProps() as Record<string, unknown>)
+  const bind = useNativeEvents(api.getTooltipContentProps())
   return (
     <XhPortal container={container ?? ctx.portalContainer} present={overlay.rendered}>
       <div
         {...mergeReactProps(
-          api.getTooltipPositionerProps() as Record<string, unknown>,
+          api.getTooltipPositionerProps(),
           { ref: (el: HTMLDivElement | null) => { positionerRef.current = el } },
         )}
       >
@@ -427,7 +427,7 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
 export interface XhSideNavLinkTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhSideNavLinkText({ children, ...rest }: XhSideNavLinkTextProps): ReactNode {
   const ctx = useSideNavContext()
-  return <span {...mergeReactProps(ctx.api.getLinkTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLinkTextProps(), rest)}>{children}</span>
 }
 
 export interface XhSideNavLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'value'>, AsChildProps {
@@ -447,9 +447,9 @@ export function XhSideNavLink({ value, asChild, children, ...rest }: XhSideNavLi
   useJoinGroup(value)
   // 链接的聚焦上报与指针进出（图标栏的名称提示）都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getLinkProps({ value }) as Record<string, unknown>,
+    ctx.api.getLinkProps({ value }),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
-  const props = mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest as Record<string, unknown>)
+  const props = mergePartProps(mergeReactProps(bind.attrs, { ref: bind.ref }), rest)
   return renderAsChild(asChild, children, props, 'side-nav', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }

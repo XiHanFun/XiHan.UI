@@ -78,7 +78,7 @@ export const XhTextFieldRoot = defineComponent({
     provideTextField(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             empty: api.empty,
@@ -103,7 +103,7 @@ export const XhTextFieldLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 必须是原生 <label>，connect 把 for 写向 input
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -112,7 +112,7 @@ export const XhTextFieldControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useTextFieldContext()
     // 视觉盒：输入框与清空按钮都放进来，皮肤把描边、底色、聚焦环画在它身上
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -150,7 +150,7 @@ export const XhTextFieldInput = defineComponent({
     // 自己渲染宿主节点，label 的 for 指向它
     return () => h(props.as, fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+      ...ctx.api.value.getInputProps({ as: props.as }),
       ref: setInputRef,
     }))
   },
@@ -160,7 +160,7 @@ export const XhTextFieldPrefix = defineComponent({
   name: 'XhTextFieldPrefix',
   setup(_, { slots }) {
     const ctx = useTextFieldContext()
-    return () => h('span', ctx.api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getPrefixProps(), slots.default?.())
   },
 })
 
@@ -168,7 +168,7 @@ export const XhTextFieldSuffix = defineComponent({
   name: 'XhTextFieldSuffix',
   setup(_, { slots }) {
     const ctx = useTextFieldContext()
-    return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSuffixProps(), slots.default?.())
   },
 })
 
@@ -176,7 +176,7 @@ export const XhTextFieldClearTrigger = defineComponent({
   name: 'XhTextFieldClearTrigger',
   setup(_, { slots }) {
     const ctx = useTextFieldContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -193,7 +193,7 @@ export const XhTextFieldCount = defineComponent({
       const fallback = api.maxLength === undefined ? `${api.count}` : `${api.count} / ${api.maxLength}`
       return h(
         'span',
-        api.getCountProps() as Record<string, unknown>,
+        api.getCountProps(),
         slots.default?.({ count: api.count, maxLength: api.maxLength, atLimit: api.atLimit }) ?? fallback,
       )
     }

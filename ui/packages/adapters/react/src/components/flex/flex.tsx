@@ -23,7 +23,7 @@ export interface XhFlexSplitProps extends ComponentPropsWithRef<'span'> {}
 export function XhFlexSplit({ children, ...rest }: XhFlexSplitProps): ReactNode {
   const ctx = useFlexContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSplitProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSplitProps(), rest)}>
       {children}
     </span>
   )
@@ -84,7 +84,7 @@ export function XhFlex({
   const content = split == null ? children : interleave(flexItems(children), split)
   return (
     <FlexProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {content}
       </div>
     </FlexProvider>

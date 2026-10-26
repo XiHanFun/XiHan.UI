@@ -157,7 +157,7 @@ export function XhDrawerRoot({
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
   return (
     <DrawerProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children !== undefined
           ? renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })
           : renderDefaultStructure({ actions, confirmText, cancelText, resizable, translations: ctx.service.prop('translations') }, { trigger, title, description, body, footer })}
@@ -173,8 +173,8 @@ export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, A
 export function XhDrawerTrigger({ children, asChild, ...rest }: XhDrawerTriggerProps): ReactNode {
   const ctx = useDrawerContext()
   const props = mergePartProps(
-    ctx.api.getTriggerProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    ctx.api.getTriggerProps(),
+    rest,
   )
   return renderAsChild(asChild, children, props, 'drawer', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -188,7 +188,7 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
   const shown = ctx.rendered
   if (!api.isContentMounted(shown))
     return null
-  const backdrop = api.getBackdropProps() as Record<string, unknown>
+  const backdrop = api.getBackdropProps()
   // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
   return (
     <XhPortal container={ctx.portalContainer} present={shown}>
@@ -200,9 +200,9 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
             />
           )
         : null}
-      <div {...mergeReactProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS)}>
+      <div {...mergeReactProps(api.getPositionerProps(), shown ? {} : OVERLAY_STOWED_PROPS)}>
         <div
-          {...mergeReactProps(api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}
+          {...mergeReactProps(api.getContentProps(), rest)}
           hidden={!shown || undefined}
           ref={(el: HTMLDivElement | null) => { ctx.contentRef.current = el }}
         >
@@ -216,14 +216,14 @@ export function XhDrawerContent({ children, ...rest }: XhDrawerContentProps): Re
 export interface XhDrawerHeaderProps extends ComponentPropsWithRef<'header'> {}
 export function XhDrawerHeader({ children, ...rest }: XhDrawerHeaderProps): ReactNode {
   const ctx = useDrawerContext()
-  return <header {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</header>
+  return <header {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</header>
 }
 
 export interface XhDrawerTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhDrawerTitle({ children, ...rest }: XhDrawerTitleProps): ReactNode {
   const ctx = useDrawerContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
+  return <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</h2>
 }
 
 export interface XhDrawerDescriptionProps extends ComponentPropsWithRef<'p'> {}
@@ -237,33 +237,33 @@ export function XhDrawerDescription({ children, ...rest }: XhDrawerDescriptionPr
 export interface XhDrawerBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDrawerBody({ children, ...rest }: XhDrawerBodyProps): ReactNode {
   const ctx = useDrawerContext()
-  return <div {...mergeReactProps(ctx.api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getBodyProps(), rest)}>{children}</div>
 }
 
 export interface XhDrawerFooterProps extends ComponentPropsWithRef<'footer'> {}
 export function XhDrawerFooter({ children, ...rest }: XhDrawerFooterProps): ReactNode {
   const ctx = useDrawerContext()
-  return <footer {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</footer>
+  return <footer {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</footer>
 }
 
 export interface XhDrawerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 确定钮：页脚的主动作；点了调 onConfirm，异步确认挂起时转圈。 */
 export function XhDrawerConfirmTrigger({ children, ...rest }: XhDrawerConfirmTriggerProps): ReactNode {
   const ctx = useDrawerContext()
-  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDrawerCancelTriggerProps extends ComponentPropsWithRef<'button'> {}
 /** 取消钮：页脚的次要出口；点了调 onCancelPress 并收起。 */
 export function XhDrawerCancelTrigger({ children, ...rest }: XhDrawerCancelTriggerProps): ReactNode {
   const ctx = useDrawerContext()
-  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDrawerCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDrawerCloseTrigger({ children, ...rest }: XhDrawerCloseTriggerProps): ReactNode {
   const ctx = useDrawerContext()
-  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDrawerResizeTriggerProps extends ComponentPropsWithRef<'div'> {}
@@ -271,7 +271,7 @@ export interface XhDrawerResizeTriggerProps extends ComponentPropsWithRef<'div'>
 export function XhDrawerResizeTrigger(props: XhDrawerResizeTriggerProps): ReactNode {
   const ctx = useDrawerContext()
   // 得焦量厚度挂在 focus 上：它不冒泡，委派在根容器上的合成事件收不到，装成原生监听器
-  const bind = useNativeEvents(ctx.api.getResizeTriggerProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getResizeTriggerProps(), ['onFocus'])
   return <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, props as Record<string, unknown>)} />
 }
 

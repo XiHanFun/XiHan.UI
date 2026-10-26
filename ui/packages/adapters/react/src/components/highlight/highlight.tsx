@@ -30,9 +30,9 @@ export interface XhHighlightProps extends Omit<ComponentPropsWithRef<'span'>, 'c
  */
 export function XhHighlight({ text, keyword, caseSensitive, tone, ...rest }: XhHighlightProps): ReactNode {
   const api = connectHighlight({ text, keyword, caseSensitive, tone } satisfies HighlightProps, reactNormalize)
-  const markProps = api.getMarkProps() as Record<string, unknown>
+  const markProps = api.getMarkProps()
   return (
-    <span {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getRootProps(), rest)}>
       {/* 片段每次整份重算，位置即身份：命中的那几段按下标认领自己那一格 */}
       {api.segments.map((segment, index) => (segment.matched
         ? <mark key={index} {...markProps}>{segment.text}</mark>

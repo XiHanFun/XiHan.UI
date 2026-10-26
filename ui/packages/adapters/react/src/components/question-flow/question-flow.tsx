@@ -126,7 +126,7 @@ export function XhQuestionFlowRoot({
   const { api } = ctx
   return (
     <QuestionFlowProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           status: api.status,
           submitted: api.submitted,
@@ -161,7 +161,7 @@ export interface XhQuestionFlowViewportProps extends ComponentPropsWithRef<'div'
 export function XhQuestionFlowViewport({ children, ...rest }: XhQuestionFlowViewportProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getViewportProps(), rest)}>
       {children}
     </div>
   )
@@ -174,8 +174,8 @@ export function XhQuestionFlowTrack({ children, ...rest }: XhQuestionFlowTrackPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getTrackProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTrackProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.trackRef.current = el } },
       )}
     >
@@ -192,8 +192,8 @@ export function XhQuestionFlowQuestion({ questionId, children, ...rest }: XhQues
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getQuestionProps({ id: questionId }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getQuestionProps({ id: questionId }),
+        rest,
       )}
     >
       {children}
@@ -209,8 +209,8 @@ export function XhQuestionFlowPrompt({ questionId, children, ...rest }: XhQuesti
   return (
     <p
       {...mergeReactProps(
-        ctx.api.getPromptProps({ id: questionId }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getPromptProps({ id: questionId }),
+        rest,
       )}
     >
       {children}
@@ -230,8 +230,8 @@ export function XhQuestionFlowDescription({ questionId, children, ...rest }: XhQ
   return (
     <p
       {...mergeReactProps(
-        ctx.api.getDescriptionProps({ id: questionId }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getDescriptionProps({ id: questionId }),
+        rest,
       )}
     >
       {children ?? ctx.api.descriptionOf(questionId)}
@@ -247,8 +247,8 @@ export function XhQuestionFlowGroup({ questionId, children, ...rest }: XhQuestio
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getGroupProps({ id: questionId }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getGroupProps({ id: questionId }),
+        rest,
       )}
     >
       {children}
@@ -276,9 +276,9 @@ export function XhQuestionFlowItem({
     questionId,
     value: optionValue,
     disabled: optionDisabled,
-  }) as Record<string, unknown>
+  })
   return (
-    <button {...mergeReactProps(attrs, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(attrs, rest)}>
       {renderSlot(children, {
         questionId,
         value: optionValue,
@@ -299,8 +299,8 @@ export function XhQuestionFlowItemIndicator({
   ...rest
 }: XhQuestionFlowItemIndicatorProps): ReactNode {
   const ctx = useQuestionFlowContext()
-  const attrs = ctx.api.getItemIndicatorProps({ questionId, value: optionValue }) as Record<string, unknown>
-  return <span {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</span>
+  const attrs = ctx.api.getItemIndicatorProps({ questionId, value: optionValue })
+  return <span {...mergeReactProps(attrs, rest)}>{children}</span>
 }
 
 export interface XhQuestionFlowItemTextProps extends ComponentPropsWithRef<'span'> {
@@ -315,8 +315,8 @@ export function XhQuestionFlowItemText({
   ...rest
 }: XhQuestionFlowItemTextProps): ReactNode {
   const ctx = useQuestionFlowContext()
-  const attrs = ctx.api.getItemTextProps({ questionId, value: optionValue }) as Record<string, unknown>
-  return <span {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</span>
+  const attrs = ctx.api.getItemTextProps({ questionId, value: optionValue })
+  return <span {...mergeReactProps(attrs, rest)}>{children}</span>
 }
 
 export interface XhQuestionFlowItemDescriptionProps extends ComponentPropsWithRef<'span'> {
@@ -331,8 +331,8 @@ export function XhQuestionFlowItemDescription({
   ...rest
 }: XhQuestionFlowItemDescriptionProps): ReactNode {
   const ctx = useQuestionFlowContext()
-  const attrs = ctx.api.getItemDescriptionProps({ questionId, value: optionValue }) as Record<string, unknown>
-  return <span {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</span>
+  const attrs = ctx.api.getItemDescriptionProps({ questionId, value: optionValue })
+  return <span {...mergeReactProps(attrs, rest)}>{children}</span>
 }
 
 export interface XhQuestionFlowNoteProps extends Omit<ComponentPropsWithRef<'input'>, 'children' | 'value' | 'defaultValue' | 'type'> {
@@ -344,8 +344,8 @@ export function XhQuestionFlowNote({ questionId, ...rest }: XhQuestionFlowNotePr
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getNoteProps({ id: questionId }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getNoteProps({ id: questionId }),
+        rest,
       )}
     />
   )
@@ -355,7 +355,7 @@ export interface XhQuestionFlowFooterProps extends ComponentPropsWithRef<'div'> 
 export function XhQuestionFlowFooter({ children, ...rest }: XhQuestionFlowFooterProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>
       {children}
     </div>
   )
@@ -365,7 +365,7 @@ export interface XhQuestionFlowPrevTriggerProps extends ComponentPropsWithRef<'b
 export function XhQuestionFlowPrevTrigger({ children, ...rest }: XhQuestionFlowPrevTriggerProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <button {...mergeReactProps(ctx.api.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getPrevTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -376,7 +376,7 @@ export interface XhQuestionFlowCounterProps extends ComponentPropsWithRef<'span'
 export function XhQuestionFlowCounter({ children, ...rest }: XhQuestionFlowCounterProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <span {...mergeReactProps(ctx.api.getCounterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getCounterProps(), rest)}>
       {children ?? ctx.api.counter}
     </span>
   )
@@ -386,7 +386,7 @@ export interface XhQuestionFlowNextTriggerProps extends ComponentPropsWithRef<'b
 export function XhQuestionFlowNextTrigger({ children, ...rest }: XhQuestionFlowNextTriggerProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <button {...mergeReactProps(ctx.api.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getNextTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -396,7 +396,7 @@ export interface XhQuestionFlowSkipTriggerProps extends ComponentPropsWithRef<'b
 export function XhQuestionFlowSkipTrigger({ children, ...rest }: XhQuestionFlowSkipTriggerProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSkipTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSkipTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -407,7 +407,7 @@ export interface XhQuestionFlowSubmitTriggerProps extends ComponentPropsWithRef<
 export function XhQuestionFlowSubmitTrigger({ children, ...rest }: XhQuestionFlowSubmitTriggerProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSubmitTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -418,7 +418,7 @@ export interface XhQuestionFlowResultProps extends ComponentPropsWithRef<'div'> 
 export function XhQuestionFlowResult({ children, ...rest }: XhQuestionFlowResultProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <div {...mergeReactProps(ctx.api.getResultProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getResultProps(), rest)}>
       {children}
     </div>
   )
@@ -429,7 +429,7 @@ export interface XhQuestionFlowLiveRegionProps extends ComponentPropsWithRef<'di
 export function XhQuestionFlowLiveRegion({ children, ...rest }: XhQuestionFlowLiveRegionProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children ?? ctx.api.announcement}
     </div>
   )

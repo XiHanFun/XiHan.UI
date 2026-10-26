@@ -121,7 +121,7 @@ export const XhDialogTrigger = /* @__PURE__ */ defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useDialogContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -150,7 +150,7 @@ export const XhDialogContent = /* @__PURE__ */ defineComponent({
       // 没打开过、或退场播完且要卸载时整棵不渲染
       if (!api.isContentMounted(shown))
         return null
-      const backdrop = api.getBackdropProps() as Record<string, unknown>
+      const backdrop = api.getBackdropProps()
       // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
       return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: shown }, () => [
         shown && !backdrop.hidden
@@ -159,9 +159,9 @@ export const XhDialogContent = /* @__PURE__ */ defineComponent({
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
-        h('div', mergeProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS), [
+        h('div', mergeProps(api.getPositionerProps(), shown ? {} : OVERLAY_STOWED_PROPS), [
           h('div', {
-            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getContentProps(), attrs),
             hidden: !shown || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
@@ -175,7 +175,7 @@ export const XhDialogHeader = /* @__PURE__ */ defineComponent({
   name: 'XhDialogHeader',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('header', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('header', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -184,7 +184,7 @@ export const XhDialogDragTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogDragTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('button', ctx.api.value.getDragTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getDragTriggerProps(), slots.default?.())
   },
 })
 
@@ -193,7 +193,7 @@ export const XhDialogIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhDialogIndicator',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -202,7 +202,7 @@ export const XhDialogTitle = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useDialogContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h2', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -212,7 +212,7 @@ export const XhDialogDescription = /* @__PURE__ */ defineComponent({
     const ctx = useDialogContext()
     // 读不出一句话的说明不进描述链
     const el = useDescriptionPart(ctx.presence)
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -220,7 +220,7 @@ export const XhDialogBody = /* @__PURE__ */ defineComponent({
   name: 'XhDialogBody',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBodyProps(), slots.default?.())
   },
 })
 
@@ -228,7 +228,7 @@ export const XhDialogFooter = /* @__PURE__ */ defineComponent({
   name: 'XhDialogFooter',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('footer', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('footer', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -237,7 +237,7 @@ export const XhDialogConfirmTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogConfirmTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConfirmTriggerProps(), slots.default?.())
   },
 })
 
@@ -246,7 +246,7 @@ export const XhDialogCancelTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogCancelTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('button', ctx.api.value.getCancelTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCancelTriggerProps(), slots.default?.())
   },
 })
 
@@ -254,7 +254,7 @@ export const XhDialogCloseTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogCloseTrigger',
   setup(_, { slots }) {
     const ctx = useDialogContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
 

@@ -73,7 +73,7 @@ export const XhNumberFieldRoot = defineComponent({
     provideNumberField(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             valueAsNumber: api.valueAsNumber,
@@ -99,7 +99,7 @@ export const XhNumberFieldLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -108,7 +108,7 @@ export const XhNumberFieldControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
     // 视觉盒：输入框与加减钮都放进来，皮肤把描边、底色、聚焦环画在它身上
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -116,7 +116,7 @@ export const XhNumberFieldPrefix = defineComponent({
   name: 'XhNumberFieldPrefix',
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
-    return () => h('span', ctx.api.value.getPrefixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getPrefixProps(), slots.default?.())
   },
 })
 
@@ -124,7 +124,7 @@ export const XhNumberFieldSuffix = defineComponent({
   name: 'XhNumberFieldSuffix',
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
-    return () => h('span', ctx.api.value.getSuffixProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getSuffixProps(), slots.default?.())
   },
 })
 
@@ -136,7 +136,7 @@ export const XhNumberFieldInput = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useNumberFieldContext()
-    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() }))
   },
 })
 
@@ -144,7 +144,7 @@ export const XhNumberFieldIncrementTrigger = defineComponent({
   name: 'XhNumberFieldIncrementTrigger',
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
-    return () => h('button', ctx.api.value.getIncrementTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getIncrementTriggerProps(), slots.default?.())
   },
 })
 
@@ -152,7 +152,7 @@ export const XhNumberFieldDecrementTrigger = defineComponent({
   name: 'XhNumberFieldDecrementTrigger',
   setup(_, { slots }) {
     const ctx = useNumberFieldContext()
-    return () => h('button', ctx.api.value.getDecrementTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getDecrementTriggerProps(), slots.default?.())
   },
 })
 

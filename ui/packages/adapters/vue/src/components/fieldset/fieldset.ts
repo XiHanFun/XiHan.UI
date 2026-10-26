@@ -42,7 +42,7 @@ export const XhFieldsetRoot = defineComponent({
     provideXhConfig(() => ({ disabled: ctx.api.value.disabled || undefined }))
     provideFieldsetOuterDisabled(computed(() => outer.value.disabled === true))
     // 必须是原生 <fieldset>：整组禁用连坐组内控件是浏览器给的，换成 div 就只剩一层灰样式
-    return () => h('fieldset', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+    return () => h('fieldset', ctx.api.value.getRootProps(), slots.default
       ? slots.default()
       : renderDefaultStructure(props.legend, {
           'legend': slots.legend,
@@ -62,7 +62,7 @@ export const XhFieldsetLegend = defineComponent({
     const outer = useFieldsetOuterDisabled()
     provideXhConfig(() => ({ disabled: outer?.value ?? false }))
     // 原生 <legend> 只有作为 <fieldset> 的首个子节点时才充当这一组的名字
-    return () => h('legend', ctx.api.value.getLegendProps() as Record<string, unknown>, slots.default?.())
+    return () => h('legend', ctx.api.value.getLegendProps(), slots.default?.())
   },
 })
 
@@ -73,7 +73,7 @@ export const XhFieldsetDescription = defineComponent({
     const el = ref<HTMLElement | null>(null)
     // 读不出一句话的说明不进描述链
     useFieldsetPartPresence(ctx, 'description', () => el.value != null && hasNamingContent(el.value))
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -82,7 +82,7 @@ export const XhFieldsetFieldGroup = defineComponent({
   name: 'XhFieldsetFieldGroup',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
-    return () => h('div', ctx.api.value.getFieldGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFieldGroupProps(), slots.default?.())
   },
 })
 
@@ -91,7 +91,7 @@ export const XhFieldsetActions = defineComponent({
   name: 'XhFieldsetActions',
   setup(_, { slots }) {
     const ctx = useFieldsetContext()
-    return () => h('div', ctx.api.value.getActionsProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getActionsProps(), slots.default?.())
   },
 })
 
@@ -101,7 +101,7 @@ export const XhFieldsetErrorText = defineComponent({
     const ctx = useFieldsetContext()
     useFieldsetPartPresence(ctx, 'errorText')
     // 节点常挂，靠 hidden 显隐：活区要先在场才播报得出来，卸载重挂读屏读不到
-    return () => h('p', ctx.api.value.getErrorTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getErrorTextProps(), slots.default?.())
   },
 })
 

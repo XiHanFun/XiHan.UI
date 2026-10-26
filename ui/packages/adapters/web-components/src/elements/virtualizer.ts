@@ -194,7 +194,7 @@ export class XhVirtualizerElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
     // Light DOM 常驻，WC 自管可见性：窗口外的条目收起。作者层若给这个 part 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。先收再接线，量尺寸时只量露着的
     for (const el of this.getParts('item'))

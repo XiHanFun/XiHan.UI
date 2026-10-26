@@ -158,12 +158,12 @@ export class XhFieldElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
     // 控件上只落 data-disabled，原生 disabled 归作者自己写
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('error-text', api.getErrorTextProps() as Record<string, unknown>)
+    put('control', api.getControlProps())
+    put('description', api.getDescriptionProps())
+    put('error-text', api.getErrorTextProps())
 
     // Field 套库内控件时，状态必须进那台控件机器；只把 ARIA 铺在包装根上不足以挡住输入。
     const wiring = fieldControlWiring(api)

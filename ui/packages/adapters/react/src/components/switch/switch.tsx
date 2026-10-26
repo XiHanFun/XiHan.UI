@@ -53,12 +53,12 @@ function useSwitchApi(): SwitchApi {
 
 /** 滑块。 */
 function SwitchThumb(): ReactNode {
-  return <span {...useSwitchApi().getThumbProps() as Record<string, unknown>} />
+  return <span {...useSwitchApi().getThumbProps()} />
 }
 
 /** 表单影子：单体控件的轨道里没有子部件插槽，作者递不进来，由组件自己渲。 */
 function SwitchHiddenInput(): ReactNode {
-  return <input {...useSwitchApi().getHiddenInputProps() as Record<string, unknown>} />
+  return <input {...useSwitchApi().getHiddenInputProps()} />
 }
 
 /** 标准结构里各部件对应的组件。 */
@@ -121,11 +121,11 @@ export function XhSwitch({
       {...mergeReactProps(
         fieldLabel({
           ...fieldWiring,
-          ...api.getRootProps() as Record<string, unknown>,
+          ...api.getRootProps(),
           // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
           ...(labelled ? { 'aria-labelledby': textId } : null),
         }),
-        rest as Record<string, unknown>,
+        rest,
         labelled ? {} : { ref: rootRef },
       )}
     >
@@ -139,9 +139,9 @@ export function XhSwitch({
     return track
 
   return (
-    <label {...api.getLabelProps() as Record<string, unknown>} ref={rootRef as React.RefObject<HTMLLabelElement>}>
+    <label {...api.getLabelProps()} ref={rootRef as React.RefObject<HTMLLabelElement>}>
       {track}
-      <span {...api.getTextProps() as Record<string, unknown>} id={textId}>{children}</span>
+      <span {...api.getTextProps()} id={textId}>{children}</span>
     </label>
   )
 }

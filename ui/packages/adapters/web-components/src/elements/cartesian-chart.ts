@@ -339,29 +339,29 @@ export class XhCartesianChartElement extends XhElement {
         this.spreader.spread(el, props)
       return el
     }
-    const root = put('root', api.getRootProps() as Record<string, unknown>)
-    put('caption', api.getCaptionProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
+    const root = put('root', api.getRootProps())
+    put('caption', api.getCaptionProps())
+    put('viewport', api.getViewportProps())
 
-    const legend = put('legend', api.getLegendProps() as Record<string, unknown>)
+    const legend = put('legend', api.getLegendProps())
     if (legend)
       this.#paintLegend(legend, api)
 
-    const plot = put('plot', api.getPlotProps() as Record<string, unknown>)
+    const plot = put('plot', api.getPlotProps())
     if (plot) {
       this.#paintLayers(plot, api)
       this.#paintPlot(plot, api.layers.plot, api)
     }
 
-    const slider = put('zoom-slider', api.getZoomSliderProps() as Record<string, unknown>)
+    const slider = put('zoom-slider', api.getZoomSliderProps())
     if (slider)
       this.#paintZoomSlider(slider, api)
 
-    const tooltip = put('tooltip', api.getTooltipProps() as Record<string, unknown>)
+    const tooltip = put('tooltip', api.getTooltipProps())
     if (tooltip)
       this.#paintTooltip(tooltip, api)
 
-    const empty = put('empty', api.getEmptyProps() as Record<string, unknown>)
+    const empty = put('empty', api.getEmptyProps())
     if (empty)
       this.#paintOwnText(empty, api.emptyText)
 
@@ -399,8 +399,8 @@ export class XhCartesianChartElement extends XhElement {
       parent.insertBefore(underlay, plot)
       parent.insertBefore(canvas, plot)
     }
-    this.spreader.spread(underlay as HTMLElement, api.getUnderlayProps() as Record<string, unknown>)
-    this.spreader.spread(canvas, api.getCanvasProps() as Record<string, unknown>)
+    this.spreader.spread(underlay as HTMLElement, api.getUnderlayProps())
+    this.spreader.spread(canvas, api.getCanvasProps())
     this.#paintMarks(underlay, api.layers.underlay, api)
     this.#canvas = canvas
   }
@@ -420,7 +420,7 @@ export class XhCartesianChartElement extends XhElement {
     const tag = api.markTag(mark)
     const node = reuse?.localName === tag ? reuse : doc.createElementNS(SVG_NS, tag)
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark))
     if (mark.kind === 'group')
       this.#paintMarks(node, mark.children, api)
     else if (mark.kind === 'text' && node.textContent !== mark.text)
@@ -432,7 +432,7 @@ export class XhCartesianChartElement extends XhElement {
   #paintDefs(doc: Document, reuse: Element | undefined, api: CartesianChartApi): Element {
     const defs = reuse?.localName === 'defs' ? reuse : doc.createElementNS(SVG_NS, 'defs')
     defs.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(defs as HTMLElement, api.getDefsProps() as Record<string, unknown>)
+    this.spreader.spread(defs as HTMLElement, api.getDefsProps())
     // 纹理之后是缩放后的裁剪区：窗外的系列与注释按它裁掉
     const entries: (CartesianChartApi['patterns'][number] | null)[] = [...api.patterns, ...(api.clip ? [null] : [])]
     reconcile(defs, entries, this.#keys, pattern => pattern?.id ?? 'clip', (pattern, old) => {
@@ -440,14 +440,14 @@ export class XhCartesianChartElement extends XhElement {
         return this.#paintClip(doc, old, api)
       const node = old ?? doc.createElementNS(SVG_NS, 'pattern')
       node.setAttribute(GEN_ATTR, '')
-      this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern) as Record<string, unknown>)
+      this.spreader.spread(node as HTMLElement, api.getPatternProps(pattern))
       let line = generatedChildren(node)[0]
       if (!line) {
         line = doc.createElementNS(SVG_NS, 'path')
         line.setAttribute(GEN_ATTR, '')
         node.append(line)
       }
-      this.spreader.spread(line as HTMLElement, api.getPatternLineProps(pattern) as Record<string, unknown>)
+      this.spreader.spread(line as HTMLElement, api.getPatternLineProps(pattern))
       return node
     })
     return defs
@@ -457,14 +457,14 @@ export class XhCartesianChartElement extends XhElement {
   #paintClip(doc: Document, reuse: Element | undefined, api: CartesianChartApi): Element {
     const node = reuse?.localName === 'clipPath' ? reuse : doc.createElementNS(SVG_NS, 'clipPath')
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getClipPathProps() as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getClipPathProps())
     let rect = generatedChildren(node)[0]
     if (!rect) {
       rect = doc.createElementNS(SVG_NS, 'rect')
       rect.setAttribute(GEN_ATTR, '')
       node.append(rect)
     }
-    this.spreader.spread(rect as HTMLElement, api.getClipRectProps() as Record<string, unknown>)
+    this.spreader.spread(rect as HTMLElement, api.getClipRectProps())
     return node
   }
 
@@ -487,12 +487,12 @@ export class XhCartesianChartElement extends XhElement {
     }
     const [win, preview] = generatedChildren(track) as HTMLElement[]
     const [start, end] = generatedChildren(win!) as HTMLElement[]
-    this.spreader.spread(track, api.getZoomTrackProps() as Record<string, unknown>)
-    this.spreader.spread(win!, api.getZoomWindowProps() as Record<string, unknown>)
-    this.spreader.spread(start!, api.getZoomHandleProps('start') as Record<string, unknown>)
-    this.spreader.spread(end!, api.getZoomHandleProps('end') as Record<string, unknown>)
-    this.spreader.spread(preview!, api.getZoomPreviewProps() as Record<string, unknown>)
-    this.spreader.spread(generatedChildren(preview!)[0] as HTMLElement, api.getZoomPreviewLineProps() as Record<string, unknown>)
+    this.spreader.spread(track, api.getZoomTrackProps())
+    this.spreader.spread(win!, api.getZoomWindowProps())
+    this.spreader.spread(start!, api.getZoomHandleProps('start'))
+    this.spreader.spread(end!, api.getZoomHandleProps('end'))
+    this.spreader.spread(preview!, api.getZoomPreviewProps())
+    this.spreader.spread(generatedChildren(preview!)[0] as HTMLElement, api.getZoomPreviewLineProps())
   }
 
   /** 图例项：一个系列一个按钮，色标与名字各一个 span；末尾是色阶，没有按值着色时收起，节点常在。 */
@@ -507,9 +507,9 @@ export class XhCartesianChartElement extends XhElement {
         button.append(doc.createElement('span'), doc.createElement('span'))
       }
       const [marker, label] = Array.from(button.children) as HTMLElement[]
-      this.spreader.spread(button, api.getLegendItemProps(item) as Record<string, unknown>)
-      this.spreader.spread(marker!, api.getLegendSwatchProps(item) as Record<string, unknown>)
-      this.spreader.spread(label!, api.getLegendLabelProps(item) as Record<string, unknown>)
+      this.spreader.spread(button, api.getLegendItemProps(item))
+      this.spreader.spread(marker!, api.getLegendSwatchProps(item))
+      this.spreader.spread(label!, api.getLegendLabelProps(item))
       if (label!.textContent !== item.name)
         label!.textContent = item.name
       return button
@@ -519,7 +519,7 @@ export class XhCartesianChartElement extends XhElement {
   /** 色阶：名字、低端的值、渐变条、高端的值。 */
   #paintLegendScale(node: Element, api: CartesianChartApi): Element {
     const doc = node.ownerDocument
-    this.spreader.spread(node as HTMLElement, api.getLegendScaleProps() as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getLegendScaleProps())
     const scale = api.legendScale
     if (!scale) {
       node.replaceChildren()
@@ -528,10 +528,10 @@ export class XhCartesianChartElement extends XhElement {
     if (node.children.length !== 4)
       node.replaceChildren(...Array.from({ length: 4 }, () => doc.createElement('span')))
     const [name, min, bar, max] = Array.from(node.children) as HTMLElement[]
-    this.spreader.spread(name!, api.getLegendScaleNameProps() as Record<string, unknown>)
-    this.spreader.spread(min!, api.getLegendScaleValueProps('min') as Record<string, unknown>)
-    this.spreader.spread(bar!, api.getLegendScaleBarProps() as Record<string, unknown>)
-    this.spreader.spread(max!, api.getLegendScaleValueProps('max') as Record<string, unknown>)
+    this.spreader.spread(name!, api.getLegendScaleNameProps())
+    this.spreader.spread(min!, api.getLegendScaleValueProps('min'))
+    this.spreader.spread(bar!, api.getLegendScaleBarProps())
+    this.spreader.spread(max!, api.getLegendScaleValueProps('max'))
     for (const [el, text] of [[name!, scale.name], [min!, scale.min], [max!, scale.max]] as const) {
       if (el.textContent !== text)
         el.textContent = text
@@ -555,18 +555,18 @@ export class XhCartesianChartElement extends XhElement {
       return
     const doc = tooltip.ownerDocument
     const header = createGeneratedElement(doc, 'div')
-    this.spreader.spread(header, api.getTooltipHeaderProps() as Record<string, unknown>)
+    this.spreader.spread(header, api.getTooltipHeaderProps())
     header.textContent = model.header
     const rows = model.rows.map((row) => {
       const line = createGeneratedElement(doc, 'div')
-      this.spreader.spread(line, api.getTooltipRowProps(row) as Record<string, unknown>)
+      this.spreader.spread(line, api.getTooltipRowProps(row))
       const marker = doc.createElement('span')
-      this.spreader.spread(marker, api.getTooltipSwatchProps(row) as Record<string, unknown>)
+      this.spreader.spread(marker, api.getTooltipSwatchProps(row))
       const value = doc.createElement('span')
-      this.spreader.spread(value, api.getTooltipValueProps(row) as Record<string, unknown>)
+      this.spreader.spread(value, api.getTooltipValueProps(row))
       value.textContent = row.value
       const name = doc.createElement('span')
-      this.spreader.spread(name, api.getTooltipNameProps(row) as Record<string, unknown>)
+      this.spreader.spread(name, api.getTooltipNameProps(row))
       name.textContent = row.name
       line.append(marker, value, name)
       return line
@@ -597,11 +597,11 @@ export class XhCartesianChartElement extends XhElement {
       this.#table = null
     }
     const table = region.firstElementChild as HTMLElement
-    this.spreader.spread(summary, api.getSummaryProps() as Record<string, unknown>)
+    this.spreader.spread(summary, api.getSummaryProps())
     if (summary.textContent !== api.summary)
       summary.textContent = api.summary
-    this.spreader.spread(region, api.getTableRegionProps() as Record<string, unknown>)
-    this.spreader.spread(table, api.getTableProps() as Record<string, unknown>)
+    this.spreader.spread(region, api.getTableRegionProps())
+    this.spreader.spread(table, api.getTableProps())
     if (this.#table === api.table && this.#tableHost === table)
       return
     this.#table = api.table

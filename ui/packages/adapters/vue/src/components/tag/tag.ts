@@ -21,7 +21,7 @@ export const XhTagLabel = defineComponent({
   name: 'XhTagLabel',
   setup(_, { slots }) {
     const ctx = useTagContext()
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -57,7 +57,7 @@ export const XhTagRoot = defineComponent({
       // 默认插槽里只有文字时替它包一层 label：截断规则挂在 label 上，
       // 直接摊在 root 上的文字过长会把关闭钮挤出去。作者自己写了节点就原样放行
       const children = slotIsPlainText(content) ? [h(XhTagLabel, null, () => content)] : content
-      return h('span', ctx.api.value.getRootProps() as Record<string, unknown>, children)
+      return h('span', ctx.api.value.getRootProps(), children)
     }
   },
 })
@@ -67,6 +67,6 @@ export const XhTagCloseTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagContext()
     // 用原生 button，Enter/Space 的激活交给平台
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })

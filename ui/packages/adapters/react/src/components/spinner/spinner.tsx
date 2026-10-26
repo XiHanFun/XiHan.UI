@@ -42,7 +42,7 @@ export function XhSpinner({
   const ctx = useSpinner(withXhConfig('spinner', { label, size, variant, tone, orientation, delay, translations }) as SpinnerProps)
   return (
     <SpinnerProvider value={ctx}>
-      <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <span {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children}
       </span>
     </SpinnerProvider>
@@ -55,7 +55,7 @@ export interface XhSpinnerLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhSpinnerLabel({ children, ...rest }: XhSpinnerLabelProps): ReactNode {
   const ctx = useSpinnerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children ?? ctx.api.label}
     </span>
   )

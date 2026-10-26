@@ -72,7 +72,7 @@ export const XhEditableRoot = defineComponent({
       },
     })
     provideEditable(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       displayValue: ctx.api.value.displayValue,
       editing: ctx.api.value.editing,
@@ -94,7 +94,7 @@ export const XhEditableLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -105,7 +105,7 @@ export const XhEditablePreview = defineComponent({
     // 有插槽用插槽，否则显示当前值，值为空时显示 placeholder
     return () => h(
       'span',
-      { ...ctx.api.value.getPreviewProps() as Record<string, unknown>, ref: ctx.previewRef },
+      { ...ctx.api.value.getPreviewProps(), ref: ctx.previewRef },
       slots.default?.() ?? ctx.api.value.displayValue,
     )
   },
@@ -115,7 +115,7 @@ export const XhEditableInput = defineComponent({
   name: 'XhEditableInput',
   setup() {
     const ctx = useEditableContext()
-    return () => h('input', { ...ctx.api.value.getInputProps() as Record<string, unknown>, ref: ctx.inputRef })
+    return () => h('input', { ...ctx.api.value.getInputProps(), ref: ctx.inputRef })
   },
 })
 
@@ -123,7 +123,7 @@ export const XhEditableEditTrigger = defineComponent({
   name: 'XhEditableEditTrigger',
   setup(_, { slots }) {
     const ctx = useEditableContext()
-    return () => h('button', ctx.api.value.getEditTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getEditTriggerProps(), slots.default?.())
   },
 })
 
@@ -131,7 +131,7 @@ export const XhEditableSubmitTrigger = defineComponent({
   name: 'XhEditableSubmitTrigger',
   setup(_, { slots }) {
     const ctx = useEditableContext()
-    return () => h('button', ctx.api.value.getSubmitTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSubmitTriggerProps(), slots.default?.())
   },
 })
 
@@ -139,7 +139,7 @@ export const XhEditableCancelTrigger = defineComponent({
   name: 'XhEditableCancelTrigger',
   setup(_, { slots }) {
     const ctx = useEditableContext()
-    return () => h('button', ctx.api.value.getCancelTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCancelTriggerProps(), slots.default?.())
   },
 })
 
@@ -147,6 +147,6 @@ export const XhEditableControl = defineComponent({
   name: 'XhEditableControl',
   setup(_, { slots }) {
     const ctx = useEditableContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })

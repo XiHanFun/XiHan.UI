@@ -64,11 +64,11 @@ export function useTimeRangePicker(props: TimeRangePickerSchema['props']): TimeR
     node: () => contentRef.current,
     refs: (service: Service<MachineSchema>) => {
       // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
-      service.refs.set('position', createPositionEngine() as never)
-      service.refs.set('getAnchorEl', (() => controlRef.current) as never)
-      service.refs.set('getTriggerEl', (() => triggerRef.current) as never)
-      service.refs.set('getFloatingEl', (() => positionerRef.current) as never)
-      service.refs.set('getContentEl', (() => contentRef.current) as never)
+      service.refs.set('position', createPositionEngine())
+      service.refs.set('getAnchorEl', () => controlRef.current)
+      service.refs.set('getTriggerEl', () => triggerRef.current)
+      service.refs.set('getFloatingEl', () => positionerRef.current)
+      service.refs.set('getContentEl', () => contentRef.current)
     },
   })
 

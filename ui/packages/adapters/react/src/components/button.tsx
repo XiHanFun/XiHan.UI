@@ -74,18 +74,18 @@ export function XhButton({
     tone: tone ?? group?.tone,
     size: size ?? group?.size,
     as,
-    ariaLabel: (rest as Record<string, unknown>)['aria-label'] as string | undefined,
-    ariaLabelledby: (rest as Record<string, unknown>)['aria-labelledby'] as string | undefined,
+    ariaLabel: (rest)['aria-label'] as string | undefined,
+    ariaLabelledby: (rest)['aria-labelledby'] as string | undefined,
   } as ButtonProps))
   const api = connectButton(service, reactNormalize)
   // 连接层的 onClick 在载入态里调 stopImmediatePropagation 把同节点上作者的处理器一并拦下。
   // 那是 DOM 语义：React 的合成事件既没有这个方法，两个处理器也早被合成一条链，拦不住。
   // 装成原生监听器之后，事件在节点上就被截住、根本到不了 React 委派的那一层
-  const bind = useNativeEvents(api.getRootProps() as Record<string, unknown>)
+  const bind = useNativeEvents(api.getRootProps())
   const Tag = as as 'button' | 'a'
   return (
     <ButtonCtx value={api}>
-      <Tag {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+      <Tag {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
         {children}
       </Tag>
     </ButtonCtx>
@@ -95,24 +95,24 @@ export function XhButton({
 export interface XhButtonLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhButtonLabel({ children, ...rest }: XhButtonLabelProps): ReactNode {
   const api = useButtonApi()
-  return <span {...mergeReactProps(api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhButtonPrefixProps extends ComponentPropsWithRef<'span'> {}
 export function XhButtonPrefix({ children, ...rest }: XhButtonPrefixProps): ReactNode {
   const api = useButtonApi()
-  return <span {...mergeReactProps(api.getPrefixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getPrefixProps(), rest)}>{children}</span>
 }
 
 export interface XhButtonSuffixProps extends ComponentPropsWithRef<'span'> {}
 export function XhButtonSuffix({ children, ...rest }: XhButtonSuffixProps): ReactNode {
   const api = useButtonApi()
-  return <span {...mergeReactProps(api.getSuffixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getSuffixProps(), rest)}>{children}</span>
 }
 
 export interface XhButtonIndicatorProps extends ComponentPropsWithRef<'span'> {}
 /** 载入态的旋转标记；皮肤为它挂载旋转动画，作者只需放置位置。 */
 export function XhButtonIndicator({ children, ...rest }: XhButtonIndicatorProps): ReactNode {
   const api = useButtonApi()
-  return <span {...mergeReactProps(api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(api.getIndicatorProps(), rest)}>{children}</span>
 }

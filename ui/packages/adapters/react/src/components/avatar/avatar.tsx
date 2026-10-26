@@ -40,7 +40,7 @@ export function XhAvatarRoot({
   const ctx = useAvatar({ src, alt, size, tone, fallbackDelay, onStatusChange })
   return (
     <AvatarProvider value={ctx}>
-      <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <span {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children}
       </span>
     </AvatarProvider>
@@ -70,8 +70,8 @@ export function XhAvatarImage(props: XhAvatarImageProps): ReactNode {
   return (
     <img
       {...mergeReactProps(
-        api.getImageProps() as Record<string, unknown>,
-        props as Record<string, unknown>,
+        api.getImageProps(),
+        props,
         { ref: imageRef },
       )}
     />
@@ -84,7 +84,7 @@ export interface XhAvatarFallbackProps extends ComponentPropsWithRef<'span'> {}
 export function XhAvatarFallback({ children, ...rest }: XhAvatarFallbackProps): ReactNode {
   const ctx = useAvatarContext()
   return (
-    <span {...mergeReactProps(ctx.api.getFallbackProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getFallbackProps(), rest)}>
       {children}
     </span>
   )

@@ -107,8 +107,8 @@ export function XhColorFieldRoot({
     <ColorFieldProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -142,7 +142,7 @@ export function XhColorFieldLabel({ children, ...rest }: XhColorFieldLabelProps)
   useEffect(() => registerLabel(), [registerLabel])
   // 必须是原生 <label>，connect 把 for 写向 input
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -154,7 +154,7 @@ export function XhColorFieldControl({ children, ...rest }: XhColorFieldControlPr
   const ctx = useColorFieldContext()
   // 视觉盒：色块、输入框与清空按钮都放进来，皮肤把描边、底色、聚焦环画在它身上
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -179,7 +179,7 @@ export function XhColorFieldInput(props: XhColorFieldInputProps): ReactNode {
   return (
     <input
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() as Record<string, unknown> }),
+        fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps() }),
         props as Record<string, unknown>,
       )}
     />
@@ -191,7 +191,7 @@ export interface XhColorFieldClearTriggerProps extends ComponentPropsWithRef<'bu
 export function XhColorFieldClearTrigger({ children, ...rest }: XhColorFieldClearTriggerProps): ReactNode {
   const ctx = useColorFieldContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )

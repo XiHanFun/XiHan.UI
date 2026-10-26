@@ -159,7 +159,7 @@ export function XhMenubarRoot({
   // 菜单栏根上的 onFocus 是 DOM 的 focus（不冒泡，只在根自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，trigger 得焦也会把它叫起来——装成原生监听器，到达路径才与另外两家一致。
   // onFocusOut 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(ctx.api.getRootProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getRootProps(), ['onFocus'])
 
   const body = children != null
     ? renderSlot(children, {
@@ -178,7 +178,7 @@ export function XhMenubarRoot({
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -203,7 +203,7 @@ export function XhMenubarTrigger({ value, disabled, asChild, children, ...rest }
   const triggerEl = useRef<HTMLElement | null>(null)
   // 入口的聚焦上报与指针掠过都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
+    ctx.api.getTriggerProps({ value, disabled }),
     ['onFocus', 'onPointerEnter'],
   )
   // 卸载时上报菜单栏失焦：按「本入口当下正持有焦点」判定，不按 value 比对
@@ -222,7 +222,7 @@ export function XhMenubarTrigger({ value, disabled, asChild, children, ...rest }
       { ref: setEl },
       { ref: triggerEl },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   return renderAsChild(asChild, children, props, 'menubar', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -256,8 +256,8 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
         <XhPortal container={container ?? ctx.portalContainer} source={source} present={present}>
           <div
             {...mergeReactProps(
-              ctx.api.getPositionerProps(menu) as Record<string, unknown>,
-              rest as Record<string, unknown>,
+              ctx.api.getPositionerProps(menu),
+              rest,
               { ref: setEl },
             )}
           >
@@ -301,7 +301,7 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   // 开合判据直接取 connect 这一帧的产出，不另起一套——两边各判一次迟早会说岔
   const visible = useOverlayExit({
     config: ctx.config,
-    isOpen: () => (ctx.api.getContentProps(menu) as Record<string, unknown>).hidden !== true,
+    isOpen: () => (ctx.api.getContentProps(menu)).hidden !== true,
     contentRef,
     onPresence: (next) => {
       const previous = presenceRef.current
@@ -324,8 +324,8 @@ export function XhMenubarContent({ value, children, ...rest }: XhMenubarContentP
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps(menu) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(menu),
+        rest,
         {
           // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
           // 播不出来），所以真正的收起落成内联 display
@@ -354,7 +354,7 @@ export function XhMenubarGroup({ value, children, ...rest }: XhMenubarGroupProps
   const group = useMemo<MenubarGroupProps>(() => ({ value }), [value])
   return (
     <MenubarGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>{children}</div>
     </MenubarGroupProvider>
   )
 }
@@ -367,7 +367,7 @@ export function XhMenubarRadioGroup({ value, children, ...rest }: XhMenubarRadio
   const group = useMemo<MenubarGroupProps>(() => ({ value }), [value])
   return (
     <MenubarGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getRadioGroupProps(group), rest)}>{children}</div>
     </MenubarGroupProvider>
   )
 }
@@ -376,7 +376,7 @@ export interface XhMenubarGroupLabelProps extends ComponentPropsWithRef<'span'> 
 export function XhMenubarGroupLabel({ children, ...rest }: XhMenubarGroupLabelProps): ReactNode {
   const ctx = useMenubarContext()
   const group = useMenubarGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -398,7 +398,7 @@ function MenubarItemImpl({ item, children, ...rest }: MenubarItemImplProps): Rea
       : ctx.api.getItemProps(item)
   // 条目的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    headlessProps as Record<string, unknown>,
+    headlessProps,
     ['onFocus'],
   )
 
@@ -429,7 +429,7 @@ function MenubarItemImpl({ item, children, ...rest }: MenubarItemImplProps): Rea
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
@@ -463,7 +463,7 @@ export interface XhMenubarItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhMenubarItemText({ children, ...rest }: XhMenubarItemTextProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
@@ -471,7 +471,7 @@ export interface XhMenubarItemIndicatorProps extends ComponentPropsWithRef<'span
 export function XhMenubarItemIndicator({ children, ...rest }: XhMenubarItemIndicatorProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
@@ -479,7 +479,7 @@ export interface XhMenubarItemDescriptionProps extends ComponentPropsWithRef<'sp
 export function XhMenubarItemDescription({ children, ...rest }: XhMenubarItemDescriptionProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemIconProps extends ComponentPropsWithRef<'span'> {}
@@ -487,7 +487,7 @@ export interface XhMenubarItemIconProps extends ComponentPropsWithRef<'span'> {}
 export function XhMenubarItemIcon({ children, ...rest }: XhMenubarItemIconProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemShortcutProps extends ComponentPropsWithRef<'span'> {}
@@ -495,7 +495,7 @@ export interface XhMenubarItemShortcutProps extends ComponentPropsWithRef<'span'
 export function XhMenubarItemShortcut({ children, ...rest }: XhMenubarItemShortcutProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemShortcutProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarItemSuffixProps extends ComponentPropsWithRef<'span'> {}
@@ -503,13 +503,13 @@ export interface XhMenubarItemSuffixProps extends ComponentPropsWithRef<'span'> 
 export function XhMenubarItemSuffix({ children, ...rest }: XhMenubarItemSuffixProps): ReactNode {
   const ctx = useMenubarContext()
   const item = useMenubarItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 export interface XhMenubarSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhMenubarSeparator({ ...rest }: XhMenubarSeparatorProps): ReactNode {
   const ctx = useMenubarContext()
-  return <div {...mergeReactProps(ctx.api.getSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getSeparatorProps(), rest)} />
 }
 
 export interface XhMenubarArrowProps extends ComponentPropsWithRef<'div'> {}
@@ -519,7 +519,7 @@ export function XhMenubarArrow({ ...rest }: XhMenubarArrowProps): ReactNode {
   const menu = useMenubarMenuContext()
   if (!menu)
     throw new Error('XhMenubarArrow 要放在 XhMenubarPositioner 里')
-  return <div {...mergeReactProps(ctx.api.getArrowProps(menu) as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <div {...mergeReactProps(ctx.api.getArrowProps(menu), rest)} />
 }
 
 /** 子菜单函数式 children 的载荷：该层子菜单自己的展开态与开合命令。 */
@@ -624,9 +624,9 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
   const bind = useNativeEvents(
     mergeProps(
       // 子层的挂载类让给父层：节点只认父层那一个 scope，两个挂载类都挂着，菜单条目的皮肤也会落到它身上
-      withoutScopeClass(sub.api.getSubmenuTriggerProps(item) as Record<string, unknown>),
+      withoutScopeClass(sub.api.getSubmenuTriggerProps(item)),
       // 父层没给的键不盖掉子层给的：子层的 data-state、aria-expanded 等照留
-      withoutUndefined(handle.parent.api.getItemProps(item) as Record<string, unknown>),
+      withoutUndefined(handle.parent.api.getItemProps(item)),
     ),
     ['onFocus', 'onPointerEnter'],
   )
@@ -634,7 +634,7 @@ export function XhMenubarSubTrigger({ children, ...rest }: XhMenubarSubTriggerPr
     <div
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
         // 子菜单的定位锚点就是这一条
         { ref: (el: HTMLDivElement | null) => { sub.triggerRef.current = el } },

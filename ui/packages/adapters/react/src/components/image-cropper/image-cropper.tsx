@@ -143,8 +143,8 @@ export function XhImageCropperRoot({
     <ImageCropperProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -180,8 +180,8 @@ export function XhImageCropperViewport({ children, ...rest }: XhImageCropperView
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -197,8 +197,8 @@ export function XhImageCropperImage({ ...rest }: XhImageCropperImageProps): Reac
   return (
     <img
       {...mergeReactProps(
-        ctx.api.getImageProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getImageProps(),
+        rest,
         { ref: (el: HTMLImageElement | null) => { ctx.imageRef.current = el } },
       )}
     />
@@ -209,7 +209,7 @@ export interface XhImageCropperCropAreaProps extends ComponentPropsWithRef<'div'
 export function XhImageCropperCropArea({ children, ...rest }: XhImageCropperCropAreaProps): ReactNode {
   const ctx = useImageCropperContext()
   return (
-    <div {...mergeReactProps(ctx.api.getCropAreaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getCropAreaProps(), rest)}>
       {children}
     </div>
   )
@@ -225,8 +225,8 @@ export function XhImageCropperCropHandle({ position, children, ...rest }: XhImag
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getCropHandleProps({ position }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getCropHandleProps({ position }),
+        rest,
       )}
     >
       {children}
@@ -238,7 +238,7 @@ export interface XhImageCropperGridProps extends ComponentPropsWithRef<'div'> {}
 export function XhImageCropperGrid({ children, ...rest }: XhImageCropperGridProps): ReactNode {
   const ctx = useImageCropperContext()
   return (
-    <div {...mergeReactProps(ctx.api.getGridProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getGridProps(), rest)}>
       {children}
     </div>
   )
@@ -251,11 +251,11 @@ export function XhImageCropperZoomSlider({ ...rest }: XhImageCropperZoomSliderPr
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getZoomSliderProps() as Record<string, unknown>,
+        ctx.api.getZoomSliderProps(),
         // 倍率攥在机器里，写回走连接层的 onInput。React 要求带 value 的输入交出一个 onChange，
         // 否则在开发构建里逐帧告警
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -267,9 +267,9 @@ export function XhImageCropperRotateSlider({ ...rest }: XhImageCropperRotateSlid
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getRotateSliderProps() as Record<string, unknown>,
+        ctx.api.getRotateSliderProps(),
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -285,8 +285,8 @@ export function XhImageCropperFlipTrigger({ axis, children, ...rest }: XhImageCr
   return (
     <button
       {...mergeReactProps(
-        ctx.api.getFlipTriggerProps({ axis }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getFlipTriggerProps({ axis }),
+        rest,
       )}
     >
       {children}
@@ -301,10 +301,10 @@ export function XhImageCropperHiddenInput({ ...rest }: XhImageCropperHiddenInput
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

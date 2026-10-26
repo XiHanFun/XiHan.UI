@@ -460,14 +460,14 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('tag-list', api.getTagListProps())
     // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
-    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    const tagLabelProps = api.getTagLabelProps()
     for (const el of this.getParts('tag')) {
-      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }))
       const label = this.ensureTagLabel(el)
       if (label)
         this.spreader.spread(label, tagLabelProps)
@@ -478,12 +478,12 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }))
     }
     // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
-      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      this.spreader.spread(overflowTag, api.getOverflowTagProps())
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
@@ -492,29 +492,29 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     }
     // 宿主标签直接读作者写的标记：作者摆的是 input 还是 textarea，DOM 已经说明白了
     const inputHost: ComboboxInputHost = this.getPart('input')?.tagName === 'TEXTAREA' ? 'textarea' : 'input'
-    put('input', api.getInputProps({ as: inputHost }) as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('input', api.getInputProps({ as: inputHost }))
+    put('trigger', api.getTriggerProps())
+    put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
     // 留空时由元素填文字：作者写了就归作者
     const loadingEl = this.getPart('loading')
     if (loadingEl)
       this.fillText(loadingEl, api.translations.loading)
     // 必填且没选值时补一份空值占位，原生 required 才拦得住空表单
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
-      ? [api.getHiddenInputProps() as Record<string, unknown>]
+      ? [api.getHiddenInputProps()]
       // 表单提交的是键：字符串值即它本身，数字转成字符串，对象按 valueKey
-      : api.valueKeys.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
+      : api.valueKeys.map(value => api.getHiddenInputProps({ value })))
 
     for (const el of this.getParts('group')) {
       const group = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+      this.spreader.spread(el, api.getGroupProps(group))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     // 候选逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
@@ -524,18 +524,18 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const prefix of this.partsIn(el, 'item-prefix'))
-        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+        this.spreader.spread(prefix, api.getItemPrefixProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
       for (const indicator of this.partsIn(el, 'item-indicator'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item))
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）

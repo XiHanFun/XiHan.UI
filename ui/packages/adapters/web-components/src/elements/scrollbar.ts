@@ -160,10 +160,10 @@ export class XhScrollbarElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('track', api.getTrackProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('track', api.getTrackProps())
     // 滑块的 style 是对象（两条轴的键每帧写全），spreader 见对象 style 会逐条写内联样式
-    put('thumb', api.getThumbProps() as Record<string, unknown>)
-    put('corner', api.getCornerProps() as Record<string, unknown>)
+    put('thumb', api.getThumbProps())
+    put('corner', api.getCornerProps())
   }
 }

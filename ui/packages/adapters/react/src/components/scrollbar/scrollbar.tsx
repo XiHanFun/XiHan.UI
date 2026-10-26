@@ -107,8 +107,8 @@ export function XhScrollbarRoot({
     <ScrollbarProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -140,8 +140,8 @@ export function XhScrollbarTrack({ children, ...rest }: XhScrollbarTrackProps): 
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getTrackProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTrackProps(),
+        rest,
         { ref: ctx.trackRef },
       )}
     >
@@ -155,7 +155,7 @@ export interface XhScrollbarThumbProps extends ComponentPropsWithRef<'div'> {}
 export function XhScrollbarThumb({ children, ...rest }: XhScrollbarThumbProps): ReactNode {
   const ctx = useScrollbarContext()
   return (
-    <div {...mergeReactProps(ctx.api.getThumbProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getThumbProps(), rest)}>
       {children}
     </div>
   )
@@ -167,7 +167,7 @@ export interface XhScrollbarCornerProps extends ComponentPropsWithRef<'div'> {}
 export function XhScrollbarCorner({ children, ...rest }: XhScrollbarCornerProps): ReactNode {
   const ctx = useScrollbarContext()
   return (
-    <div {...mergeReactProps(ctx.api.getCornerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getCornerProps(), rest)}>
       {children}
     </div>
   )

@@ -151,16 +151,16 @@ export class XhMessageFeedElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
-    put('scroll-to-end-trigger', api.getScrollToEndTriggerProps() as Record<string, unknown>)
-    put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('viewport', api.getViewportProps())
+    put('list', api.getListProps())
+    put('scroll-to-end-trigger', api.getScrollToEndTriggerProps())
+    put('live-region', api.getLiveRegionProps())
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
     const unread = this.getPart('unread-count')
     if (unread) {
-      const props = api.getUnreadCountProps() as Record<string, unknown>
+      const props = api.getUnreadCountProps()
       this.spreader.spread(unread, props)
       // 条数是运行期才知道的：元素写进去
       const text = String(api.unreadCount)
@@ -170,7 +170,7 @@ export class XhMessageFeedElement extends XhElement {
     }
     const pending = this.getPart('pending-indicator')
     if (pending) {
-      const props = api.getPendingIndicatorProps() as Record<string, unknown>
+      const props = api.getPendingIndicatorProps()
       this.spreader.spread(pending, props)
       // Light DOM 常驻，WC 自管可见性：作者层声明了 display 时光靠 hidden 属性收不起来
       this.setPartHidden(pending, props.hidden === true)
@@ -179,9 +179,9 @@ export class XhMessageFeedElement extends XhElement {
     // 多实例 part 逐个打，消息有几条打几条
     this.getParts('item').forEach((el, index) => {
       const item = this.itemProps(el, index)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       for (const label of el.querySelectorAll<HTMLElement>('[data-xh-part="item-label"]'))
-        this.spreader.spread(label, api.getItemLabelProps({ id: item.id }) as Record<string, unknown>)
+        this.spreader.spread(label, api.getItemLabelProps({ id: item.id }))
     })
   }
 }

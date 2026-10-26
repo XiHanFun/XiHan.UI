@@ -44,7 +44,7 @@ export const XhLayoutRoot = defineComponent({
     const notifyBreakpoint: LayoutProps['onSiderBreakpoint'] = details => emit('sider-breakpoint', details)
     const ctx = useLayout(props as LayoutProps, notify, notifyBreakpoint)
     provideLayout(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -52,7 +52,7 @@ export const XhLayoutHeader = defineComponent({
   name: 'XhLayoutHeader',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -61,7 +61,7 @@ export const XhLayoutSiderBackdrop = defineComponent({
   name: 'XhLayoutSiderBackdrop',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('div', ctx.api.value.getSiderBackdropProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSiderBackdropProps(), slots.default?.())
   },
 })
 
@@ -69,7 +69,7 @@ export const XhLayoutSider = defineComponent({
   name: 'XhLayoutSider',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('div', ctx.api.value.getSiderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSiderProps(), slots.default?.())
   },
 })
 
@@ -77,7 +77,7 @@ export const XhLayoutContent = defineComponent({
   name: 'XhLayoutContent',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
 
@@ -85,7 +85,7 @@ export const XhLayoutFooter = defineComponent({
   name: 'XhLayoutFooter',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -94,6 +94,6 @@ export const XhLayoutSiderTrigger = defineComponent({
   name: 'XhLayoutSiderTrigger',
   setup(_, { slots }) {
     const ctx = useLayoutContext()
-    return () => h('button', ctx.api.value.getSiderTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSiderTriggerProps(), slots.default?.())
   },
 })

@@ -25,7 +25,7 @@ export const XhEmptyStateRoot = defineComponent({
   setup(props, { slots }) {
     const ctx = useEmptyState(withXhConfig('empty-state', props as EmptyStateProps))
     provideEmptyState(ctx)
-    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.())
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: ctx.rootRef }, slots.default?.())
   },
 })
 
@@ -34,7 +34,7 @@ export const XhEmptyStateMedia = defineComponent({
   name: 'XhEmptyStateMedia',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('div', ctx.api.value.getMediaProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getMediaProps(), slots.default?.())
   },
 })
 
@@ -43,7 +43,7 @@ export const XhEmptyStateIndicator = defineComponent({
   name: 'XhEmptyStateIndicator',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -52,7 +52,7 @@ export const XhEmptyStateTitle = defineComponent({
   name: 'XhEmptyStateTitle',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('p', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -60,7 +60,7 @@ export const XhEmptyStateDescription = defineComponent({
   name: 'XhEmptyStateDescription',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('p', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('p', ctx.api.value.getDescriptionProps(), slots.default?.())
   },
 })
 
@@ -69,6 +69,6 @@ export const XhEmptyStateAction = defineComponent({
   name: 'XhEmptyStateAction',
   setup(_, { slots }) {
     const ctx = useEmptyStateContext()
-    return () => h('div', ctx.api.value.getActionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getActionProps(), slots.default?.())
   },
 })

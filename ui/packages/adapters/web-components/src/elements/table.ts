@@ -566,20 +566,20 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', this.hostNaming(api.getRootProps() as Record<string, unknown>))
-    put('caption', api.getCaptionProps() as Record<string, unknown>)
+    put('root', this.hostNaming(api.getRootProps()))
+    put('caption', api.getCaptionProps())
     // 工具条与列设置区都写在 root 之外：root 是 role=grid，子节点只能是 row 与 rowgroup
-    put('toolbar', api.getToolbarProps() as Record<string, unknown>)
-    put('column-list', api.getColumnListProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('body', api.getBodyProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('toolbar', api.getToolbarProps())
+    put('column-list', api.getColumnListProps())
+    put('header', api.getHeaderProps())
+    put('body', api.getBodyProps())
+    put('footer', api.getFooterProps())
     // 两个状态节点的显隐直接读连接层给的 hidden
-    const emptyProps = api.getEmptyProps() as Record<string, unknown>
-    const loadingProps = api.getLoadingProps() as Record<string, unknown>
+    const emptyProps = api.getEmptyProps()
+    const loadingProps = api.getLoadingProps()
     put('empty', emptyProps)
     put('loading', loadingProps)
-    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
+    put('load-more-trigger', api.getLoadMoreTriggerProps())
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供连接层现查。
@@ -632,7 +632,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
     // （root 是 role=grid，塞活动区域进去是 aria-required-children），
     // 而作者是把整棵子树写在元素里的，位置由不得约束。挂在元素自己身上两个条件都满足。
     const live = this.ensureLiveRegion()
-    this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+    this.spreader.spread(live, api.getLiveRegionProps())
     // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
     live.textContent = this.ctrl.service.context.get('announcement')
 

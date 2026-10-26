@@ -70,7 +70,7 @@ export function XhAnchorRoot({
   }) as AnchorProps, target)
   return (
     <AnchorProvider value={ctx}>
-      <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <nav {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {children}
       </nav>
     </AnchorProvider>
@@ -86,8 +86,8 @@ export function XhAnchorList({ children, ...rest }: XhAnchorListProps): ReactNod
   return (
     <ul
       {...mergeReactProps(
-        ctx.api.getListProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getListProps(),
+        rest,
         { ref: (el: HTMLUListElement | null) => { ctx.listRef.current = el } },
       )}
     >
@@ -99,7 +99,7 @@ export function XhAnchorList({ children, ...rest }: XhAnchorListProps): ReactNod
 export interface XhAnchorItemProps extends ComponentPropsWithRef<'li'> {}
 export function XhAnchorItem({ children, ...rest }: XhAnchorItemProps): ReactNode {
   const ctx = useAnchorContext()
-  return <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  return <li {...mergeReactProps(ctx.api.getItemProps(), rest)}>{children}</li>
 }
 
 export interface XhAnchorLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'value'> {
@@ -108,19 +108,19 @@ export interface XhAnchorLinkProps extends Omit<ComponentPropsWithRef<'a'>, 'val
 /** href 由 value 派生为 `#id`；smooth 关闭时退化为原生片段跳转。 */
 export function XhAnchorLink({ value, children, ...rest }: XhAnchorLinkProps): ReactNode {
   const ctx = useAnchorContext()
-  return <a {...mergeReactProps(ctx.api.getLinkProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</a>
+  return <a {...mergeReactProps(ctx.api.getLinkProps({ value }), rest)}>{children}</a>
 }
 
 export interface XhAnchorLinkTextProps extends ComponentPropsWithRef<'span'> {}
 /** 链接中的文字载体：链接内另有图标时，省略号只裁剪这一段。 */
 export function XhAnchorLinkText({ children, ...rest }: XhAnchorLinkTextProps): ReactNode {
   const ctx = useAnchorContext()
-  return <span {...mergeReactProps(ctx.api.getLinkTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLinkTextProps(), rest)}>{children}</span>
 }
 
 export interface XhAnchorIndicatorProps extends ComponentPropsWithRef<'li'> {}
 /** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系。 */
 export function XhAnchorIndicator({ ...rest }: XhAnchorIndicatorProps): ReactNode {
   const ctx = useAnchorContext()
-  return <li {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <li {...mergeReactProps(ctx.api.getIndicatorProps(), rest)} />
 }

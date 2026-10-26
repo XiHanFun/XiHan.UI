@@ -214,24 +214,24 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
     // trigger 是多实例 part，逐个接线；root/label 只认头一个（label 的 id 是 aria-labelledby 的唯一目标）
     for (const el of this.getParts('select-all-trigger'))
-      this.spreader.spread(el, api.getSelectAllTriggerProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSelectAllTriggerProps())
 
     for (const el of this.getParts('item')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const input of this.partsIn(el, 'hidden-input'))
-        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item) as Record<string, unknown>)
+        this.spreadHiddenInput(input as HTMLInputElement, api.getHiddenInputProps(item))
       for (const control of this.partsIn(el, 'indicator'))
-        this.spreader.spread(control, api.getIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(control, api.getIndicatorProps(item))
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
     }
   }
 }

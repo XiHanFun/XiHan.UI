@@ -82,7 +82,7 @@ export class XhTimelineElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
 
     // 集合类 part 逐个 spread：条目数由作者的 DOM 决定，不依赖下标，增删无需记账
     const putAll = (name: string, get: (el: HTMLElement) => unknown): void => {

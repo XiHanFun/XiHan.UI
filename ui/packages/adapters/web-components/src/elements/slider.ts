@@ -254,27 +254,27 @@ export class XhSliderElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('track', api.getTrackProps() as Record<string, unknown>)
-    put('range', api.getRangeProps() as Record<string, unknown>)
-    put('tick-group', api.getTickGroupProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('track', api.getTrackProps())
+    put('range', api.getRangeProps())
+    put('tick-group', api.getTickGroupProps())
 
     // 刻度是多实例 part：身份取节点自报的 value 属性
     for (const el of this.getParts('tick'))
-      this.spreader.spread(el, api.getTickProps({ value: Number(el.getAttribute('value')) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTickProps({ value: Number(el.getAttribute('value')) }))
     for (const el of this.getParts('tick-label'))
-      this.spreader.spread(el, api.getTickLabelProps({ value: Number(el.getAttribute('value')) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTickLabelProps({ value: Number(el.getAttribute('value')) }))
 
     for (const el of this.getParts('thumb')) {
       const index = this.thumbIndex(el)
-      this.spreader.spread(el, api.getThumbProps(index) as Record<string, unknown>)
+      this.spreader.spread(el, api.getThumbProps(index))
       for (const input of this.partsIn(el, 'hidden-input'))
-        this.spreader.spread(input, api.getHiddenInputProps(index) as Record<string, unknown>)
+        this.spreader.spread(input, api.getHiddenInputProps(index))
       // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
       for (const bubble of this.partsIn(el, 'value-text')) {
-        this.spreader.spread(bubble, api.getValueTextProps(index) as Record<string, unknown>)
+        this.spreader.spread(bubble, api.getValueTextProps(index))
         this.fillValueText(bubble, api.valueText(index))
       }
     }

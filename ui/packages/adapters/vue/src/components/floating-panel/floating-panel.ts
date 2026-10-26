@@ -89,7 +89,7 @@ export const XhFloatingPanelRoot = defineComponent({
       onDragEnd: details => emit('drag-end', details),
     })
     provideFloatingPanel(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       open: ctx.api.value.open,
       windowState: ctx.api.value.windowState,
       position: ctx.api.value.position,
@@ -111,7 +111,7 @@ export const XhFloatingPanelTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
     // 用原生 button，激活交给平台
-    return () => h('button', ctx.api.value.getTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getTriggerProps(), slots.default?.())
   },
 })
 
@@ -131,7 +131,7 @@ export const XhFloatingPanelPositioner = defineComponent({
         'div',
         {
           ...mergeProps(
-            ctx.api.value.getPositionerProps() as Record<string, unknown>,
+            ctx.api.value.getPositionerProps(),
             attrs,
             // 收起跟着退场闸门走：皮肤刻意没给 positioner 补 [hidden]{display:none}（补了
             // 退场就一帧都播不出来），所以真正的收起落成内联 display
@@ -152,7 +152,7 @@ export const XhFloatingPanelContent = defineComponent({
     // 节点交给机器：跟手期间的指针监听要挂在它所在的那个文档上
     return () => h(
       'div',
-      { ...ctx.api.value.getContentProps() as Record<string, unknown>, ref: ctx.contentRef },
+      { ...ctx.api.value.getContentProps(), ref: ctx.contentRef },
       slots.default?.(),
     )
   },
@@ -162,7 +162,7 @@ export const XhFloatingPanelHeader = defineComponent({
   name: 'XhFloatingPanelHeader',
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -171,7 +171,7 @@ export const XhFloatingPanelTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h2', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -179,7 +179,7 @@ export const XhFloatingPanelDragTrigger = defineComponent({
   name: 'XhFloatingPanelDragTrigger',
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
-    return () => h('button', ctx.api.value.getDragTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getDragTriggerProps(), slots.default?.())
   },
 })
 
@@ -194,7 +194,7 @@ export const XhFloatingPanelResizeTrigger = defineComponent({
     // 把手是 role=separator 的元素而不是按钮：方向键推边，按钮的激活键在这里没有语义
     return () => h(
       'div',
-      ctx.api.value.getResizeTriggerProps({ edge: props.edge }) as Record<string, unknown>,
+      ctx.api.value.getResizeTriggerProps({ edge: props.edge }),
       slots.default?.(),
     )
   },
@@ -210,7 +210,7 @@ export const XhFloatingPanelWindowStateTrigger = defineComponent({
     const ctx = useFloatingPanelContext()
     return () => h(
       'button',
-      ctx.api.value.getWindowStateTriggerProps({ windowState: props.windowState }) as Record<string, unknown>,
+      ctx.api.value.getWindowStateTriggerProps({ windowState: props.windowState }),
       slots.default?.(),
     )
   },
@@ -220,7 +220,7 @@ export const XhFloatingPanelCloseTrigger = defineComponent({
   name: 'XhFloatingPanelCloseTrigger',
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
 
@@ -228,6 +228,6 @@ export const XhFloatingPanelBody = defineComponent({
   name: 'XhFloatingPanelBody',
   setup(_, { slots }) {
     const ctx = useFloatingPanelContext()
-    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBodyProps(), slots.default?.())
   },
 })

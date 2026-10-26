@@ -116,8 +116,8 @@ export function XhTextFieldRoot({
     <TextFieldProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -147,7 +147,7 @@ export function XhTextFieldLabel({ children, ...rest }: XhTextFieldLabelProps): 
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -158,7 +158,7 @@ export interface XhTextFieldControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhTextFieldControl({ children, ...rest }: XhTextFieldControlProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -205,9 +205,9 @@ export function XhTextFieldInput({ as = 'input', ...rest }: XhTextFieldInputProp
   const props = mergeReactProps(
     fieldLabel({
       ...fieldWiring,
-      ...ctx.api.getInputProps({ as }) as Record<string, unknown>,
+      ...ctx.api.getInputProps({ as }),
     }),
-    rest as Record<string, unknown>,
+    rest,
     {
       ref: setInputRef,
     },
@@ -223,7 +223,7 @@ export interface XhTextFieldPrefixProps extends ComponentPropsWithRef<'span'> {}
 export function XhTextFieldPrefix({ children, ...rest }: XhTextFieldPrefixProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
-    <span {...mergeReactProps(ctx.api.getPrefixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getPrefixProps(), rest)}>
       {children}
     </span>
   )
@@ -233,7 +233,7 @@ export interface XhTextFieldSuffixProps extends ComponentPropsWithRef<'span'> {}
 export function XhTextFieldSuffix({ children, ...rest }: XhTextFieldSuffixProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
-    <span {...mergeReactProps(ctx.api.getSuffixProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getSuffixProps(), rest)}>
       {children}
     </span>
   )
@@ -243,7 +243,7 @@ export interface XhTextFieldClearTriggerProps extends ComponentPropsWithRef<'but
 export function XhTextFieldClearTrigger({ children, ...rest }: XhTextFieldClearTriggerProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -262,7 +262,7 @@ export function XhTextFieldCount({ children, ...rest }: XhTextFieldCountProps): 
     ? fallback
     : renderSlot(children, { count: api.count, maxLength: api.maxLength, atLimit: api.atLimit })
   return (
-    <span {...mergeReactProps(api.getCountProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getCountProps(), rest)}>
       {body}
     </span>
   )

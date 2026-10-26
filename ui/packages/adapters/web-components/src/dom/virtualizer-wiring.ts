@@ -49,17 +49,17 @@ export class VirtualizerWiring {
   wire(api: VirtualizerApi): void {
     const viewport = this.host.viewport()
     if (viewport)
-      this.spreader.spread(viewport, api.getViewportProps() as Record<string, unknown>)
+      this.spreader.spread(viewport, api.getViewportProps())
     const content = this.host.content()
     if (content)
-      this.spreader.spread(content, api.getContentProps() as Record<string, unknown>)
+      this.spreader.spread(content, api.getContentProps())
 
     // 条目是多实例 part，逐个打：身份取作者写的 value
     const next = new Set<number>()
     for (const el of this.host.items()) {
       const index = itemIndex(el)
       next.add(index)
-      this.spreader.spread(el, api.getItemProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ index }))
       api.registerItemElement(index, el)
       // 量尺寸放在这里而不是连接期：wire 跑在 updated 之后，此刻节点的布局才是这一帧的。
       // 每个外壳只交一次：内核量过即挂上自己的尺寸观察，之后的变化由它报。每轮接线都同步再量会强制布局，

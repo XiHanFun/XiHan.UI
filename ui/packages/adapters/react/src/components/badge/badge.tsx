@@ -65,7 +65,7 @@ export function XhBadgeRoot({
   const api = connectBadge(service, reactNormalize)
   return (
     <BadgeProvider value={{ api }}>
-      <span {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <span {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </span>
     </BadgeProvider>
@@ -103,7 +103,7 @@ export function XhBadgeIndicator({ children, ...rest }: XhBadgeIndicatorProps): 
   const text = ctx.api.text
   const body = children == null ? text : renderSlot(children, { text })
   return (
-    <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>
       {body}
     </span>
   )

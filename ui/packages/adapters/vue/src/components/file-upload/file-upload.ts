@@ -114,7 +114,7 @@ export const XhFileUploadRoot = defineComponent({
     const onUploadCancel: FileUploadProps['onUploadCancel'] = details => emit('upload-cancel', details)
     const ctx = useFileUpload(withHandlers(withXhConfig('file-upload', useFormControlProps(props)), { onClear: () => emit('clear') }) as FileUploadProps, { onFilesChange, onFileAccept, onFileReject, onRemoteFilesChange, onUploadComplete, onUploadError, onUploadCancel })
     provideFileUpload(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, !slots.default
+    return () => h('div', ctx.api.value.getRootProps(), !slots.default
       ? renderDefaultStructure(ctx.api.value, { label: props.label, clearable: props.clearable }, { label: slots.label, dropzone: slots.dropzone })
       : slots.default({
           acceptedFiles: ctx.api.value.acceptedFiles,
@@ -147,7 +147,7 @@ export const XhFileUploadLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 用原生 label，getLabelProps 的 for 指向隐藏输入
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -158,7 +158,7 @@ export const XhFileUploadDropzone = defineComponent({
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
     const ctx = useFileUploadContext()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getDropzoneProps() as Record<string, unknown> }), slots.default?.())
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getDropzoneProps() }), slots.default?.())
   },
 })
 
@@ -173,7 +173,7 @@ export const XhFileUploadTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useFileUploadContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -192,7 +192,7 @@ export const XhFileUploadHiddenInput = defineComponent({
     // 隐藏输入也并进字段的标签：原生表单控件没有名字会被判为未标注
     const fieldLabel = useFieldLabelWiring()
     const ctx = useFileUploadContext()
-    return () => h('input', fieldLabel.value(ctx.api.value.getHiddenInputProps() as Record<string, unknown>))
+    return () => h('input', fieldLabel.value(ctx.api.value.getHiddenInputProps()))
   },
 })
 
@@ -200,7 +200,7 @@ export const XhFileUploadList = defineComponent({
   name: 'XhFileUploadList',
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps(), slots.default?.())
   },
 })
 
@@ -228,7 +228,7 @@ export const XhFileUploadItem = defineComponent({
       // 下标指向的文件不存在时只渲染空壳，不打组件属性也不渲染子部件
       if (!file.value)
         return h('div')
-      return h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+      return h('div', ctx.api.value.getItemProps(item.value), slots.default?.())
     }
   },
 })
@@ -241,7 +241,7 @@ export const XhFileUploadItemName = defineComponent({
     // 有插槽用插槽，否则显示文件名
     return () => h(
       'span',
-      ctx.api.value.getItemNameProps(item.value) as Record<string, unknown>,
+      ctx.api.value.getItemNameProps(item.value),
       slots.default?.() ?? item.value.file.name,
     )
   },
@@ -253,7 +253,7 @@ export const XhFileUploadItemLink = defineComponent({
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
     const { item } = useFileUploadItemContext()
-    return () => h('a', ctx.api.value.getItemLinkProps(item.value) as Record<string, unknown>, slots.default?.() ?? item.value.file.name)
+    return () => h('a', ctx.api.value.getItemLinkProps(item.value), slots.default?.() ?? item.value.file.name)
   },
 })
 
@@ -265,7 +265,7 @@ export const XhFileUploadItemSizeText = defineComponent({
     // 有插槽用插槽，否则显示格式化后的文件大小
     return () => h(
       'span',
-      ctx.api.value.getItemSizeTextProps(item.value) as Record<string, unknown>,
+      ctx.api.value.getItemSizeTextProps(item.value),
       slots.default?.() ?? ctx.api.value.getFileSizeText(item.value.file),
     )
   },
@@ -276,7 +276,7 @@ export const XhFileUploadItemPreview = defineComponent({
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
     const { item } = useFileUploadItemContext()
-    return () => h('div', ctx.api.value.getItemPreviewProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemPreviewProps(item.value), slots.default?.())
   },
 })
 
@@ -285,7 +285,7 @@ export const XhFileUploadItemProgress = defineComponent({
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
     const { item } = useFileUploadItemContext()
-    return () => h('div', ctx.api.value.getItemProgressProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProgressProps(item.value), slots.default?.())
   },
 })
 
@@ -296,7 +296,7 @@ export const XhFileUploadItemDeleteTrigger = defineComponent({
     const { item } = useFileUploadItemContext()
     return () => h(
       'button',
-      ctx.api.value.getItemDeleteTriggerProps(item.value) as Record<string, unknown>,
+      ctx.api.value.getItemDeleteTriggerProps(item.value),
       slots.default?.(),
     )
   },
@@ -306,7 +306,7 @@ export const XhFileUploadClearTrigger = defineComponent({
   name: 'XhFileUploadClearTrigger',
   setup(_, { slots }) {
     const ctx = useFileUploadContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 

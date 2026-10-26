@@ -247,7 +247,7 @@ export class XhMenubarElement extends XhPortalHostElement {
     this.spreader.spread(child.trigger, api.getItemProps({
       value: child.trigger.getAttribute('value') ?? '',
       disabled: child.getDisabled(),
-    }) as Record<string, unknown>)
+    }))
   }
 
   private submenuOwnerValue(trigger: HTMLElement): string {
@@ -422,7 +422,7 @@ export class XhMenubarElement extends XhPortalHostElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // trigger 逐个打：身份取作者写的 value，禁用经 authorDisabled 归一到 aria-disabled。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
@@ -431,20 +431,20 @@ export class XhMenubarElement extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         disabled: this.authorDisabled(el),
       })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
       this.declaredDisabled.commit(el)
     }
 
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     for (const el of this.getParts('positioner'))
-      this.spreader.spread(el, api.getPositionerProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getPositionerProps({ value: el.getAttribute('value') ?? '' }))
 
     // 菜单常挂，按本帧产出的 hidden 用内联 display 收起
     const contents = this.getParts('content')
     const liveContents = new Set(contents)
     for (const el of contents) {
       const value = el.getAttribute('value') ?? ''
-      const props = api.getContentProps({ value }) as Record<string, unknown>
+      const props = api.getContentProps({ value })
       this.spreader.spread(el, props)
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
@@ -485,9 +485,9 @@ export class XhMenubarElement extends XhPortalHostElement {
       const group = { value: el.getAttribute('value') ?? '' }
       const isRadio = el.getAttribute('kind') === 'radio'
         || api.collection.some(menu => menu.items.some(node => node.kind === 'radio' && node.group === group.value))
-      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)) as Record<string, unknown>)
+      this.spreader.spread(el, (isRadio ? api.getRadioGroupProps(group) : api.getGroupProps(group)))
       for (const label of this.partsIn(el, 'group-label'))
-        this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+        this.spreader.spread(label, api.getGroupLabelProps(group))
     }
 
     for (const el of this.getParts('item')) {
@@ -507,21 +507,21 @@ export class XhMenubarElement extends XhPortalHostElement {
         : item.kind === 'radio'
           ? api.getRadioItemProps(item)
           : api.getItemProps(item)
-      this.spreader.spread(el, itemProps as Record<string, unknown>)
+      this.spreader.spread(el, itemProps)
       this.declaredDisabled.commit(el)
       // 条目内的文本与标记位跟着同一份声明走
       for (const icon of this.partsIn(el, 'item-icon'))
-        this.spreader.spread(icon, api.getItemIconProps(item) as Record<string, unknown>)
+        this.spreader.spread(icon, api.getItemIconProps(item))
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const indicator of this.partsIn(el, 'item-indicator'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const shortcut of this.partsIn(el, 'item-shortcut'))
-        this.spreader.spread(shortcut, api.getItemShortcutProps(item) as Record<string, unknown>)
+        this.spreader.spread(shortcut, api.getItemShortcutProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
     }
     for (const child of this.submenuBridges.values())
       this.wireSubmenuChild(child)
@@ -530,12 +530,12 @@ export class XhMenubarElement extends XhPortalHostElement {
     for (const el of this.getParts('positioner')) {
       const menu = { value: el.getAttribute('value') ?? '' }
       for (const arrow of this.partsIn(el, 'arrow'))
-        this.spreader.spread(arrow, api.getArrowProps(menu) as Record<string, unknown>)
+        this.spreader.spread(arrow, api.getArrowProps(menu))
     }
 
     // 分隔线不带身份，属性对每个都一样
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     this.bars.wire()
   }

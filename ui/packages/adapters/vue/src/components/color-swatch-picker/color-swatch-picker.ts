@@ -72,7 +72,7 @@ export const XhColorSwatchPickerRoot = defineComponent({
       const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
       return h(
         'div',
-        fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() as Record<string, unknown> }),
+        fieldLabel.value({ ...fieldWiring.value, ...api.getRootProps() }),
         slots.default
           ? [...renderLabel(title), ...slots.default({
               value: api.value,
@@ -96,7 +96,7 @@ export const XhColorSwatchPickerLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -132,10 +132,10 @@ export const XhColorSwatchPickerItem = defineComponent({
       if (itemEl.value && service.scope.getActiveElement() === itemEl.value)
         service.send({ type: 'GROUP.BLUR' })
     })
-    return () => h('div', { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl }, [
-      h('input', ctx.api.value.getHiddenInputProps(item.value) as Record<string, unknown>),
-      h('span', ctx.api.value.getSwatchProps(item.value) as Record<string, unknown>),
-      h('span', ctx.api.value.getIndicatorProps(item.value) as Record<string, unknown>),
+    return () => h('div', { ...ctx.api.value.getItemProps(item.value), ref: itemEl }, [
+      h('input', ctx.api.value.getHiddenInputProps(item.value)),
+      h('span', ctx.api.value.getSwatchProps(item.value)),
+      h('span', ctx.api.value.getIndicatorProps(item.value)),
       ...(slots.default?.() ?? []),
     ])
   },

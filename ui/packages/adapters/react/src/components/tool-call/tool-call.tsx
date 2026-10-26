@@ -96,7 +96,7 @@ export function XhToolCallRoot({
   const { api } = ctx
   return (
     <ToolCallProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           open: api.open,
           phase: api.phase,
@@ -116,26 +116,26 @@ XhToolCallRoot.xhEvents = ['open-change'] as const
 export interface XhToolCallTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhToolCallTrigger({ children, ...rest }: XhToolCallTriggerProps): ReactNode {
   const ctx = useToolCallContext()
-  return <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhToolCallIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhToolCallIndicator({ children, ...rest }: XhToolCallIndicatorProps): ReactNode {
   const ctx = useToolCallContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>{children}</span>
 }
 
 export interface XhToolCallLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhToolCallLabel({ children, ...rest }: XhToolCallLabelProps): ReactNode {
   const ctx = useToolCallContext()
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhToolCallSummaryProps extends ComponentPropsWithRef<'span'> {}
 /** 一行参数摘要，收起时也能看到本次查询的内容。 */
 export function XhToolCallSummary({ children, ...rest }: XhToolCallSummaryProps): ReactNode {
   const ctx = useToolCallContext()
-  return <span {...mergeReactProps(ctx.api.getSummaryProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getSummaryProps(), rest)}>{children}</span>
 }
 
 export interface XhToolCallStatusProps extends ComponentPropsWithRef<'span'> {}
@@ -143,7 +143,7 @@ export interface XhToolCallStatusProps extends ComponentPropsWithRef<'span'> {}
 export function XhToolCallStatus({ children, ...rest }: XhToolCallStatusProps): ReactNode {
   const ctx = useToolCallContext()
   return (
-    <span {...mergeReactProps(ctx.api.getStatusProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getStatusProps(), rest)}>
       {children ?? ctx.api.statusText}
     </span>
   )
@@ -153,14 +153,14 @@ export interface XhToolCallDurationProps extends ComponentPropsWithRef<'span'> {
 /** 时长文案由作者现场代入：模板串中的秒数由宿主处理，连接层不做插值。 */
 export function XhToolCallDuration({ children, ...rest }: XhToolCallDurationProps): ReactNode {
   const ctx = useToolCallContext()
-  return <span {...mergeReactProps(ctx.api.getDurationProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getDurationProps(), rest)}>{children}</span>
 }
 
 export interface XhToolCallApprovalProps extends ComponentPropsWithRef<'div'> {}
 /** 常驻在开关与详情之间：审批闸门不应被折叠隐藏。 */
 export function XhToolCallApproval({ children, ...rest }: XhToolCallApprovalProps): ReactNode {
   const ctx = useToolCallContext()
-  return <div {...mergeReactProps(ctx.api.getApprovalProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getApprovalProps(), rest)}>{children}</div>
 }
 
 export interface XhToolCallContentProps extends ComponentPropsWithRef<'div'> {}
@@ -169,8 +169,8 @@ export function XhToolCallContent({ children, ...rest }: XhToolCallContentProps)
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -187,18 +187,18 @@ export function XhToolCallContent({ children, ...rest }: XhToolCallContentProps)
 export interface XhToolCallInputProps extends ComponentPropsWithRef<'div'> {}
 export function XhToolCallInput({ children, ...rest }: XhToolCallInputProps): ReactNode {
   const ctx = useToolCallContext()
-  return <div {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getInputProps(), rest)}>{children}</div>
 }
 
 export interface XhToolCallOutputProps extends ComponentPropsWithRef<'div'> {}
 export function XhToolCallOutput({ children, ...rest }: XhToolCallOutputProps): ReactNode {
   const ctx = useToolCallContext()
-  return <div {...mergeReactProps(ctx.api.getOutputProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getOutputProps(), rest)}>{children}</div>
 }
 
 export interface XhToolCallErrorProps extends ComponentPropsWithRef<'div'> {}
 /** 流被中止时未获得结果的调用会被收尾为出错但没有原因，该格要容忍空内容。 */
 export function XhToolCallError({ children, ...rest }: XhToolCallErrorProps): ReactNode {
   const ctx = useToolCallContext()
-  return <div {...mergeReactProps(ctx.api.getErrorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getErrorProps(), rest)}>{children}</div>
 }

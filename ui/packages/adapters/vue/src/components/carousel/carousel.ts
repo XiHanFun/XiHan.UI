@@ -74,7 +74,7 @@ export const XhCarouselRoot = defineComponent({
     }
     const ctx = useCarousel(withXhConfig('carousel', props) as CarouselProps, notify)
     provideCarousel(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       page: ctx.api.value.page,
       totalPages: ctx.api.value.totalPages,
       slideCount: ctx.api.value.slideCount,
@@ -101,7 +101,7 @@ export const XhCarouselViewport = defineComponent({
   name: 'XhCarouselViewport',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getViewportProps(), slots.default?.())
   },
 })
 
@@ -109,7 +109,7 @@ export const XhCarouselList = defineComponent({
   name: 'XhCarouselList',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getListProps(), slots.default?.())
   },
 })
 
@@ -123,7 +123,7 @@ export const XhCarouselItem = defineComponent({
     const ctx = useCarouselContext()
     return () => h(
       'div',
-      ctx.api.value.getItemProps({ index: Number(props.index) }) as Record<string, unknown>,
+      ctx.api.value.getItemProps({ index: Number(props.index) }),
       slots.default?.(),
     )
   },
@@ -133,7 +133,7 @@ export const XhCarouselPrevTrigger = defineComponent({
   name: 'XhCarouselPrevTrigger',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -141,7 +141,7 @@ export const XhCarouselNextTrigger = defineComponent({
   name: 'XhCarouselNextTrigger',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -160,7 +160,7 @@ export const XhCarouselAutoplayTrigger = defineComponent({
     const ctx = useCarouselContext()
     return () => h(
       'button',
-      ctx.api.value.getAutoplayTriggerProps() as Record<string, unknown>,
+      ctx.api.value.getAutoplayTriggerProps(),
       slots.default?.({ stopped: ctx.api.value.autoplayStopped }),
     )
   },
@@ -170,7 +170,7 @@ export const XhCarouselIndicatorGroup = defineComponent({
   name: 'XhCarouselIndicatorGroup',
   setup(_, { slots }) {
     const ctx = useCarouselContext()
-    return () => h('div', ctx.api.value.getIndicatorGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getIndicatorGroupProps(), slots.default?.())
   },
 })
 
@@ -184,7 +184,7 @@ export const XhCarouselIndicator = defineComponent({
     const ctx = useCarouselContext()
     return () => h(
       'button',
-      ctx.api.value.getIndicatorProps({ index: Number(props.index) }) as Record<string, unknown>,
+      ctx.api.value.getIndicatorProps({ index: Number(props.index) }),
       slots.default?.(),
     )
   },

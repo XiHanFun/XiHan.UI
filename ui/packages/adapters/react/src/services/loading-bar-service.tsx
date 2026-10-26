@@ -102,9 +102,9 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
     const api = connectLoadingBar(service, reactNormalize)
     return (
       <XhConfigProvider config={configSource.read()}>
-        <div {...api.getRootProps() as Record<string, unknown>}>
-          <div {...api.getTrackProps() as Record<string, unknown>}>
-            <div {...api.getRangeProps() as Record<string, unknown>} />
+        <div {...api.getRootProps()}>
+          <div {...api.getTrackProps()}>
+            <div {...api.getRangeProps()} />
           </div>
         </div>
       </XhConfigProvider>

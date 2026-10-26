@@ -172,13 +172,13 @@ export class XhPasswordInputElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('visibility-trigger', api.getVisibilityTriggerProps() as Record<string, unknown>)
-    put('caps-lock-indicator', api.getCapsLockIndicatorProps() as Record<string, unknown>)
-    put('strength-meter', api.getStrengthMeterProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('input', api.getInputProps())
+    put('visibility-trigger', api.getVisibilityTriggerProps())
+    put('caps-lock-indicator', api.getCapsLockIndicatorProps())
+    put('strength-meter', api.getStrengthMeterProps())
     // 输入框的 value 不必在这里另外回写：spreader 把 value/checked/selected 三个键当 property 写，
     // 属性写法只管初值、盖不住用户输入过的框
 

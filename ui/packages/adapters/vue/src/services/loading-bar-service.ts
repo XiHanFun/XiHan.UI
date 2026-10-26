@@ -93,9 +93,9 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
         translations: toValue(translations),
       }))
       const api = computed(() => connectLoadingBar(service, vueNormalize))
-      return () => h('div', api.value.getRootProps() as Record<string, unknown>, [
-        h('div', api.value.getTrackProps() as Record<string, unknown>, [
-          h('div', api.value.getRangeProps() as Record<string, unknown>),
+      return () => h('div', api.value.getRootProps(), [
+        h('div', api.value.getTrackProps(), [
+          h('div', api.value.getRangeProps()),
         ]),
       ])
     },

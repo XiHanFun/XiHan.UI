@@ -92,7 +92,7 @@ export const XhQuestionFlowRoot = defineComponent({
       onSubmit: details => emit('submit', details),
     })
     provideQuestionFlow(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       status: ctx.api.value.status,
       submitted: ctx.api.value.submitted,
       index: ctx.api.value.index,
@@ -122,7 +122,7 @@ export const XhQuestionFlowViewport = defineComponent({
   name: 'XhQuestionFlowViewport',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
-    return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getViewportProps(), slots.default?.())
   },
 })
 
@@ -133,7 +133,7 @@ export const XhQuestionFlowTrack = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'div',
-      { ...ctx.api.value.getTrackProps() as Record<string, unknown>, ref: ctx.trackRef },
+      { ...ctx.api.value.getTrackProps(), ref: ctx.trackRef },
       slots.default?.(),
     )
   },
@@ -148,7 +148,7 @@ export const XhQuestionFlowQuestion = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'div',
-      ctx.api.value.getQuestionProps({ id: props.questionId }) as Record<string, unknown>,
+      ctx.api.value.getQuestionProps({ id: props.questionId }),
       slots.default?.(),
     )
   },
@@ -163,7 +163,7 @@ export const XhQuestionFlowPrompt = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'p',
-      ctx.api.value.getPromptProps({ id: props.questionId }) as Record<string, unknown>,
+      ctx.api.value.getPromptProps({ id: props.questionId }),
       slots.default?.(),
     )
   },
@@ -182,7 +182,7 @@ export const XhQuestionFlowDescription = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'p',
-      ctx.api.value.getDescriptionProps({ id: props.questionId }) as Record<string, unknown>,
+      ctx.api.value.getDescriptionProps({ id: props.questionId }),
       slots.default?.() ?? ctx.api.value.descriptionOf(props.questionId),
     )
   },
@@ -197,7 +197,7 @@ export const XhQuestionFlowGroup = defineComponent({
     const ctx = useQuestionFlowContext()
     return () => h(
       'div',
-      ctx.api.value.getGroupProps({ id: props.questionId }) as Record<string, unknown>,
+      ctx.api.value.getGroupProps({ id: props.questionId }),
       slots.default?.(),
     )
   },
@@ -223,7 +223,7 @@ export const XhQuestionFlowItem = defineComponent({
         questionId: props.questionId,
         value: props.optionValue,
         disabled: props.optionDisabled,
-      }) as Record<string, unknown>,
+      }),
       slots.default?.({
         questionId: props.questionId,
         value: props.optionValue,
@@ -246,7 +246,7 @@ export const XhQuestionFlowItemIndicator = defineComponent({
       ctx.api.value.getItemIndicatorProps({
         questionId: props.questionId,
         value: props.optionValue,
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },
@@ -266,7 +266,7 @@ export const XhQuestionFlowItemText = defineComponent({
       ctx.api.value.getItemTextProps({
         questionId: props.questionId,
         value: props.optionValue,
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },
@@ -286,7 +286,7 @@ export const XhQuestionFlowItemDescription = defineComponent({
       ctx.api.value.getItemDescriptionProps({
         questionId: props.questionId,
         value: props.optionValue,
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },
@@ -300,7 +300,7 @@ export const XhQuestionFlowNote = defineComponent({
   setup(props) {
     const ctx = useQuestionFlowContext()
     // 自闭合的输入格，内容由 value 给，不收插槽
-    return () => h('input', ctx.api.value.getNoteProps({ id: props.questionId }) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getNoteProps({ id: props.questionId }))
   },
 })
 
@@ -308,7 +308,7 @@ export const XhQuestionFlowFooter = defineComponent({
   name: 'XhQuestionFlowFooter',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -316,7 +316,7 @@ export const XhQuestionFlowPrevTrigger = defineComponent({
   name: 'XhQuestionFlowPrevTrigger',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
-    return () => h('button', ctx.api.value.getPrevTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getPrevTriggerProps(), slots.default?.())
   },
 })
 
@@ -327,7 +327,7 @@ export const XhQuestionFlowCounter = defineComponent({
     // 不给内容时显示 N / M；这一格对读屏隐藏，进度由播报区念
     return () => h(
       'span',
-      ctx.api.value.getCounterProps() as Record<string, unknown>,
+      ctx.api.value.getCounterProps(),
       slots.default?.() ?? ctx.api.value.counter,
     )
   },
@@ -337,7 +337,7 @@ export const XhQuestionFlowNextTrigger = defineComponent({
   name: 'XhQuestionFlowNextTrigger',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
-    return () => h('button', ctx.api.value.getNextTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getNextTriggerProps(), slots.default?.())
   },
 })
 
@@ -345,7 +345,7 @@ export const XhQuestionFlowSkipTrigger = defineComponent({
   name: 'XhQuestionFlowSkipTrigger',
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
-    return () => h('button', ctx.api.value.getSkipTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSkipTriggerProps(), slots.default?.())
   },
 })
 
@@ -354,7 +354,7 @@ export const XhQuestionFlowSubmitTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
     // 一颗按钮两个身份：不是末题时继续，末题时发送，原位换 data-mode 与可访问名
-    return () => h('button', ctx.api.value.getSubmitTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSubmitTriggerProps(), slots.default?.())
   },
 })
 
@@ -363,7 +363,7 @@ export const XhQuestionFlowResult = defineComponent({
   setup(_, { slots }) {
     const ctx = useQuestionFlowContext()
     // 交卷之后才露出；文字由播报区念，这一格对读屏隐藏
-    return () => h('div', ctx.api.value.getResultProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getResultProps(), slots.default?.())
   },
 })
 
@@ -374,7 +374,7 @@ export const XhQuestionFlowLiveRegion = defineComponent({
     // 不给内容时念进度，交卷后念结果
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },

@@ -206,14 +206,14 @@ export class XhHoverCardElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('arrow', api.getArrowProps())
 
     // Light DOM content 常驻，WC 自管可见性：本仓的 hover-card.css 给 content 设了 display:flex，
     // 任何 display 都会盖过 UA 的 [hidden]{display:none}。那份样式自带

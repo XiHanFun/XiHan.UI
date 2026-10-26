@@ -149,8 +149,8 @@ export function XhSliderRoot({
     <SliderProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: ctx.rootRef },
         )}
       >
@@ -179,7 +179,7 @@ export function XhSliderLabel({ children, ...rest }: XhSliderLabelProps): ReactN
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </label>
   )
@@ -191,7 +191,7 @@ export interface XhSliderControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhSliderControl({ children, ...rest }: XhSliderControlProps): ReactNode {
   const ctx = useSliderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>
       {children}
     </div>
   )
@@ -205,8 +205,8 @@ export function XhSliderTrack({ children, ...rest }: XhSliderTrackProps): ReactN
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getTrackProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getTrackProps(),
+        rest,
         { ref: ctx.trackRef },
       )}
     >
@@ -220,7 +220,7 @@ export interface XhSliderRangeProps extends ComponentPropsWithRef<'div'> {}
 export function XhSliderRange({ children, ...rest }: XhSliderRangeProps): ReactNode {
   const ctx = useSliderContext()
   return (
-    <div {...mergeReactProps(ctx.api.getRangeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getRangeProps(), rest)}>
       {children}
     </div>
   )
@@ -236,11 +236,11 @@ export function XhSliderTickGroup({ tick, ...rest }: XhSliderTickGroupProps): Re
   const ctx = useSliderContext()
   const api = ctx.api
   return (
-    <div {...mergeReactProps(api.getTickGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getTickGroupProps(), rest)}>
       {api.marks.map(mark => (
         <Fragment key={mark.value}>
-          <span {...api.getTickProps({ value: mark.value }) as Record<string, unknown>} />
-          <span {...api.getTickLabelProps({ value: mark.value }) as Record<string, unknown>}>
+          <span {...api.getTickProps({ value: mark.value })} />
+          <span {...api.getTickLabelProps({ value: mark.value })}>
             {tick == null ? mark.label : renderSlot(tick, { tick: mark })}
           </span>
         </Fragment>
@@ -262,10 +262,10 @@ export function XhSliderThumb({ index = 0, children, ...rest }: XhSliderThumbPro
   // 放进表单字段时，字段的标题与说明接到拇指上：焦点落在拇指，读屏在这里念名字与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getThumbProps(at) as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getThumbProps(at) }), ['onFocus'])
   return (
     <SliderThumbProvider value={at}>
-      <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
         {children}
       </div>
     </SliderThumbProvider>
@@ -281,8 +281,8 @@ export function XhSliderValueText({ children, ...rest }: XhSliderValueTextProps)
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getValueTextProps(index) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getValueTextProps(index),
+        rest,
       )}
     >
       {children ?? ctx.api.valueText(index)}
@@ -299,11 +299,11 @@ export function XhSliderHiddenInput({ ...rest }: XhSliderHiddenInputProps): Reac
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps(index) as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(index),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

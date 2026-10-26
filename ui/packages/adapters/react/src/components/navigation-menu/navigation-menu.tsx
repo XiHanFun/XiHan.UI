@@ -83,7 +83,7 @@ export function XhNavigationMenuRoot({
   const ctx = useNavigationMenu(withXhConfig('navigation-menu', machineProps) as NavigationMenuProps)
   // 根上的指针离开不冒泡，改装成原生监听器；onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
   const bind = useNativeEvents(
-    ctx.api.getRootProps() as Record<string, unknown>,
+    ctx.api.getRootProps(),
     ['onPointerLeave'],
   )
   // children 里有真会画出东西的节点就照旧交给作者；只剩空白时当没写，照标准结构铺开
@@ -95,7 +95,7 @@ export function XhNavigationMenuRoot({
       <nav
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -115,8 +115,8 @@ export function XhNavigationMenuList({ children, ...rest }: XhNavigationMenuList
   return (
     <ul
       {...mergeReactProps(
-        ctx.api.getListProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getListProps(),
+        rest,
         { ref: (el: HTMLUListElement | null) => { ctx.listRef.current = el } },
       )}
     >
@@ -129,7 +129,7 @@ export interface XhNavigationMenuItemProps extends ComponentPropsWithRef<'li'> {
 /** 一项渲染为一个 li；面板 content 写在同一个 li 内、紧跟 trigger 之后。 */
 export function XhNavigationMenuItem({ children, ...rest }: XhNavigationMenuItemProps): ReactNode {
   const ctx = useNavigationMenuContext()
-  return <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</li>
+  return <li {...mergeReactProps(ctx.api.getItemProps(), rest)}>{children}</li>
 }
 
 export interface XhNavigationMenuTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
@@ -141,14 +141,14 @@ export function XhNavigationMenuTrigger({ value, disabled, children, ...rest }: 
   const ctx = useNavigationMenuContext()
   // 入口的聚焦上报与指针进入都不冒泡，改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.getTriggerProps({ value, disabled }) as Record<string, unknown>,
+    ctx.api.getTriggerProps({ value, disabled }),
     ['onFocus', 'onPointerEnter'],
   )
   return (
     <button
       {...mergeReactProps(
         bind.attrs,
-        rest as Record<string, unknown>,
+        rest,
         { ref: bind.ref },
       )}
     >
@@ -165,7 +165,7 @@ export interface XhNavigationMenuTriggerIndicatorProps extends Omit<ComponentPro
 export function XhNavigationMenuTriggerIndicator({ value, disabled, children, ...rest }: XhNavigationMenuTriggerIndicatorProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return (
-    <span {...mergeReactProps(ctx.api.getTriggerIndicatorProps({ value, disabled }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getTriggerIndicatorProps({ value, disabled }), rest)}>
       {children}
     </span>
   )
@@ -212,8 +212,8 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps({ value }),
+        rest,
         {
           // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
           // 播不出来），所以真正的收起落成内联 display
@@ -236,7 +236,7 @@ export interface XhNavigationMenuBranchTriggerProps extends Omit<ComponentPropsW
 export function XhNavigationMenuBranchTrigger({ value, disabled, children, ...rest }: XhNavigationMenuBranchTriggerProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return (
-    <button {...mergeReactProps(ctx.api.getBranchTriggerProps({ value, disabled }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getBranchTriggerProps({ value, disabled }), rest)}>
       {children}
     </button>
   )
@@ -249,7 +249,7 @@ export interface XhNavigationMenuBranchIndicatorProps extends Omit<ComponentProp
 export function XhNavigationMenuBranchIndicator({ value, children, ...rest }: XhNavigationMenuBranchIndicatorProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return (
-    <span {...mergeReactProps(ctx.api.getBranchIndicatorProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getBranchIndicatorProps({ value }), rest)}>
       {children}
     </span>
   )
@@ -262,7 +262,7 @@ export interface XhNavigationMenuBranchContentProps extends Omit<ComponentPropsW
 export function XhNavigationMenuBranchContent({ value, children, ...rest }: XhNavigationMenuBranchContentProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return (
-    <div {...mergeReactProps(ctx.api.getBranchContentProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getBranchContentProps({ value }), rest)}>
       {children}
     </div>
   )
@@ -279,7 +279,7 @@ export function XhNavigationMenuLink({ current, asChild, children, ...rest }: Xh
   const ctx = useNavigationMenuContext()
   // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
   const value = useId()
-  const props = mergePartProps(ctx.api.getLinkProps({ value, current }) as Record<string, unknown>, rest as Record<string, unknown>)
+  const props = mergePartProps(ctx.api.getLinkProps({ value, current }), rest)
   return renderAsChild(asChild, children, props, 'navigation-menu', (p, kids) => <a {...p}>{kids}</a>, { applyAnatomy: true })
 }
 
@@ -287,14 +287,14 @@ export interface XhNavigationMenuIndicatorProps extends ComponentPropsWithRef<'l
 /** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系。 */
 export function XhNavigationMenuIndicator({ ...rest }: XhNavigationMenuIndicatorProps): ReactNode {
   const ctx = useNavigationMenuContext()
-  return <li {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <li {...mergeReactProps(ctx.api.getIndicatorProps(), rest)} />
 }
 
 export interface XhNavigationMenuViewportProps extends ComponentPropsWithRef<'div'> {}
 /** 可选的共享面板外壳，放在 root 内、list 之后。 */
 export function XhNavigationMenuViewport({ children, ...rest }: XhNavigationMenuViewportProps): ReactNode {
   const ctx = useNavigationMenuContext()
-  return <div {...mergeReactProps(ctx.api.getViewportProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getViewportProps(), rest)}>{children}</div>
 }
 
 /** 按数据铺的链接：结构节点上的 current 是作者声明（在场即是），交给链接时换成布尔。 */

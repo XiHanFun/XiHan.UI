@@ -106,8 +106,8 @@ export function XhSignaturePadRoot({
     <SignaturePadProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -143,7 +143,7 @@ export function XhSignaturePadLabel({ children, ...rest }: XhSignaturePadLabelPr
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </span>
   )
@@ -162,8 +162,8 @@ export function XhSignaturePadControl({ children, ...rest }: XhSignaturePadContr
   return (
     <svg
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getControlProps() }),
+        rest,
         { ref: (el: SVGSVGElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -175,21 +175,21 @@ export function XhSignaturePadControl({ children, ...rest }: XhSignaturePadContr
 export interface XhSignaturePadGuideProps extends ComponentPropsWithRef<'line'> {}
 export function XhSignaturePadGuide({ ...rest }: XhSignaturePadGuideProps): ReactNode {
   const ctx = useSignaturePadContext()
-  return <line {...mergeReactProps(ctx.api.getGuideProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <line {...mergeReactProps(ctx.api.getGuideProps(), rest)} />
 }
 
 export interface XhSignaturePadPathProps extends Omit<ComponentPropsWithRef<'path'>, 'd'> {}
 /** 全部笔迹落在这一条路径上，每一笔是它的一条子路径。 */
 export function XhSignaturePadPath({ ...rest }: XhSignaturePadPathProps): ReactNode {
   const ctx = useSignaturePadContext()
-  return <path {...mergeReactProps(ctx.api.getPathProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
+  return <path {...mergeReactProps(ctx.api.getPathProps(), rest)} />
 }
 
 export interface XhSignaturePadClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhSignaturePadClearTrigger({ children, ...rest }: XhSignaturePadClearTriggerProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
-    <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -199,7 +199,7 @@ export interface XhSignaturePadUndoTriggerProps extends ComponentPropsWithRef<'b
 export function XhSignaturePadUndoTrigger({ children, ...rest }: XhSignaturePadUndoTriggerProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
-    <button {...mergeReactProps(ctx.api.getUndoTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getUndoTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -209,7 +209,7 @@ export interface XhSignaturePadRedoTriggerProps extends ComponentPropsWithRef<'b
 export function XhSignaturePadRedoTrigger({ children, ...rest }: XhSignaturePadRedoTriggerProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
-    <button {...mergeReactProps(ctx.api.getRedoTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getRedoTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -220,7 +220,7 @@ export interface XhSignaturePadStatusProps extends ComponentPropsWithRef<'span'>
 export function XhSignaturePadStatus({ children, ...rest }: XhSignaturePadStatusProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
-    <span {...mergeReactProps(ctx.api.getStatusProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getStatusProps(), rest)}>
       {slotPaints(children) ? children : ctx.api.statusText}
     </span>
   )
@@ -233,11 +233,11 @@ export function XhSignaturePadHiddenInput({ ...rest }: XhSignaturePadHiddenInput
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点对读屏与 Tab 都不可及，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

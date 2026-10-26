@@ -51,11 +51,11 @@ export const XhSparkline = defineComponent({
       const api = ctx.api.value
       const { back, data, front } = api.scene.layers
       return h('svg', {
-        ...api.getRootProps() as Record<string, unknown>,
+        ...api.getRootProps(),
         ref: (el: unknown) => { ctx.rootRef.value = el as SVGSVGElement },
       }, [
-        h('desc', api.getSummaryProps() as Record<string, unknown>, api.summary),
-        ...[...back, ...data, ...front].map(mark => h('path', { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key })),
+        h('desc', api.getSummaryProps(), api.summary),
+        ...[...back, ...data, ...front].map(mark => h('path', { ...api.getMarkProps(mark), key: mark.key })),
       ])
     }
   },

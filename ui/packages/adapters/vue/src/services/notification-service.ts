@@ -192,10 +192,10 @@ export function createNotificationService(options: NotificationServiceOptions = 
       return () => {
         const value = api.value
         controller.syncItems(value.visibleNotifications.map(item => item.id))
-        return h('div', { ...value.getRootProps() as Record<string, unknown>, ref: rootRef }, value.placements.map(placement =>
+        return h('div', { ...value.getRootProps(), ref: rootRef }, value.placements.map(placement =>
           h(
             'div',
-            { key: placement, ...value.getGroupProps({ placement }) as Record<string, unknown> },
+            { key: placement, ...value.getGroupProps({ placement }) },
             // 按队列身份 id 给 key，避免节点被就地复用
             value.getItemsByPlacement(placement).map(item => h(Fragment, { key: item.id }, [
               defaultCard(

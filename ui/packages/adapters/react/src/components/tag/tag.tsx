@@ -76,7 +76,7 @@ function MachineTagRoot({
     translations,
     onOpenChange,
   }) as TagProps)
-  return renderTagRoot(ctx, rest as Record<string, unknown>, children)
+  return renderTagRoot(ctx, rest, children)
 }
 
 /** 不建立状态机的路径。 */
@@ -106,7 +106,7 @@ function StaticTagRoot({
     translations,
     onOpenChange,
   }) as TagProps)
-  return renderTagRoot(ctx, rest as Record<string, unknown>, children)
+  return renderTagRoot(ctx, rest, children)
 }
 
 /** 两条路径共用的结构；不含 hook，直接调用不占一层组件。 */
@@ -116,7 +116,7 @@ function renderTagRoot(ctx: TagContext, rest: Record<string, unknown>, children:
   const body = slotIsPlainText(children) ? <XhTagLabel>{children}</XhTagLabel> : children
   return (
     <TagProvider value={ctx}>
-      <span {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest)}>
+      <span {...mergeReactProps(ctx.api.getRootProps(), rest)}>
         {body}
       </span>
     </TagProvider>
@@ -129,7 +129,7 @@ export interface XhTagLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTagLabel({ children, ...rest }: XhTagLabelProps): ReactNode {
   const ctx = useTagContext()
   return (
-    <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </span>
   )
@@ -141,7 +141,7 @@ export interface XhTagCloseTriggerProps extends ComponentPropsWithRef<'button'> 
 export function XhTagCloseTrigger({ children, ...rest }: XhTagCloseTriggerProps): ReactNode {
   const ctx = useTagContext()
   return (
-    <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>
       {children}
     </button>
   )

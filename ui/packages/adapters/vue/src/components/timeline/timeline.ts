@@ -28,7 +28,7 @@ export const XhTimelineRoot = defineComponent({
     const configured = withXhConfig('timeline', props)
     const api = computed(() => connectTimeline(configured as TimelineProps, vueNormalize))
     provideTimeline({ api })
-    return () => h('ol', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('ol', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -41,7 +41,7 @@ export const XhTimelineItem = defineComponent({
   setup(props, { slots }) {
     const ctx = useTimelineContext()
     provideTimelineItem(() => ({ tone: props.tone }))
-    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getItemProps(), slots.default?.())
   },
 })
 
@@ -50,7 +50,7 @@ export const XhTimelineLabel = defineComponent({
   name: 'XhTimelineLabel',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('div', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -59,7 +59,7 @@ export const XhTimelineIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTimelineContext()
     const item = useTimelineItem()
-    return () => h('span', ctx.api.value.getIndicatorProps(item()) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(item()), slots.default?.())
   },
 })
 
@@ -67,7 +67,7 @@ export const XhTimelineConnector = defineComponent({
   name: 'XhTimelineConnector',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('span', ctx.api.value.getConnectorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getConnectorProps(), slots.default?.())
   },
 })
 
@@ -75,7 +75,7 @@ export const XhTimelineContent = defineComponent({
   name: 'XhTimelineContent',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
 
@@ -83,7 +83,7 @@ export const XhTimelineTitle = defineComponent({
   name: 'XhTimelineTitle',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('div', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -91,7 +91,7 @@ export const XhTimelineDescription = defineComponent({
   name: 'XhTimelineDescription',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('div', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getDescriptionProps(), slots.default?.())
   },
 })
 
@@ -100,6 +100,6 @@ export const XhTimelineTime = defineComponent({
   name: 'XhTimelineTime',
   setup(_, { slots }) {
     const ctx = useTimelineContext()
-    return () => h('time', ctx.api.value.getTimeProps() as Record<string, unknown>, slots.default?.())
+    return () => h('time', ctx.api.value.getTimeProps(), slots.default?.())
   },
 })

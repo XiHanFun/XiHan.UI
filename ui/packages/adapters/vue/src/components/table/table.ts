@@ -321,7 +321,7 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
         empty: ctx.api.value.empty,
         loading: ctx.api.value.loading,
       }) ?? null,
-      h('div', mergeProps(ctx.api.value.getRootProps() as Record<string, unknown>, attrs, {
+      h('div', mergeProps(ctx.api.value.getRootProps(), attrs, {
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement | null },
       }), !slots.default
         // 不写默认插槽：照 headless 的 tableStructure 铺，与 Web Components 只写 root 时元素生成的节点出自同一份
@@ -363,7 +363,7 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
       // root 是 role=grid，塞活动区域进去是 aria-required-children（critical）
       h(
         'div',
-        ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+        ctx.api.value.getLiveRegionProps(),
         ctx.service.context.get('announcement'),
       ),
     ])
@@ -404,7 +404,7 @@ export const XhTableToolbar = /* @__PURE__ */ defineComponent({
   name: 'XhTableToolbar',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getToolbarProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getToolbarProps(), slots.default?.())
   },
 })
 
@@ -413,7 +413,7 @@ export const XhTableColumnList = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnList',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getColumnListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getColumnListProps(), slots.default?.())
   },
 })
 
@@ -435,7 +435,7 @@ export const XhTableColumnVisibilityTrigger = /* @__PURE__ */ defineComponent({
     }))
     return () => h(
       'span',
-      ctx.api.value.getColumnVisibilityTriggerProps(column.value) as Record<string, unknown>,
+      ctx.api.value.getColumnVisibilityTriggerProps(column.value),
       slots.default?.(),
     )
   },
@@ -450,7 +450,7 @@ export const XhTableCaption = /* @__PURE__ */ defineComponent({
     onUnmounted(() => {
       ctx.captionCount.value--
     })
-    return () => h('div', ctx.api.value.getCaptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getCaptionProps(), slots.default?.())
   },
 })
 
@@ -459,7 +459,7 @@ export const XhTableHeader = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useTableContext()
     provideTableSection('header')
-    return () => h('div', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -469,7 +469,7 @@ export const XhTableBody = /* @__PURE__ */ defineComponent({
     const ctx = useTableContext()
     provideTableSection('body')
     // 键盘与 roving 的兜底 Tab 位落在表体上，不在 root 上
-    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBodyProps(), slots.default?.())
   },
 })
 
@@ -478,7 +478,7 @@ export const XhTableFooter = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useTableContext()
     provideTableSection('footer')
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -502,7 +502,7 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
         'div',
         (section === 'header'
           ? ctx.api.value.getHeaderRowProps({ level: levelOf(props.level) })
-          : ctx.api.value.getFooterRowProps({ level: levelOf(props.level) })) as Record<string, unknown>,
+          : ctx.api.value.getFooterRowProps({ level: levelOf(props.level) })),
         slots.default?.(),
       )
     }
@@ -513,7 +513,7 @@ export const XhTableRow = /* @__PURE__ */ defineComponent({
     reportRowFocus(ctx, el, () => row.value.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getRowProps(row.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getRowProps(row.value), ref: el },
       slots.default?.(),
     )
   },
@@ -533,7 +533,7 @@ export const XhTableColumnHeader = /* @__PURE__ */ defineComponent({
     provideTableColumn({ column })
     return () => h(
       'div',
-      ctx.api.value.getColumnHeaderProps(column.value) as Record<string, unknown>,
+      ctx.api.value.getColumnHeaderProps(column.value),
       slots.default?.(),
     )
   },
@@ -548,7 +548,7 @@ export const XhTableColumnLabel = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnLabel',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('span', ctx.api.value.getColumnLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getColumnLabelProps(), slots.default?.())
   },
 })
 
@@ -573,7 +573,7 @@ export const XhTableCell = /* @__PURE__ */ defineComponent({
         row: rowCtx?.row.value.value,
         footer: section === 'footer' && !rowCtx ? (footerLevel?.value ?? 1) : undefined,
         colSpan: props.colspan == null ? undefined : Number(props.colspan),
-      }) as Record<string, unknown>,
+      }),
       slots.default?.(),
     )
   },
@@ -585,7 +585,7 @@ export const XhTableSelectAllTrigger = /* @__PURE__ */ defineComponent({
     const ctx = useTableContext()
     return () => h(
       'span',
-      ctx.api.value.getSelectAllTriggerProps() as Record<string, unknown>,
+      ctx.api.value.getSelectAllTriggerProps(),
       slots.default?.(),
     )
   },
@@ -598,7 +598,7 @@ export const XhTableRowSelectTrigger = /* @__PURE__ */ defineComponent({
     const { row } = useTableRowContext()
     return () => h(
       'span',
-      ctx.api.value.getRowSelectTriggerProps(row.value) as Record<string, unknown>,
+      ctx.api.value.getRowSelectTriggerProps(row.value),
       slots.default?.(),
     )
   },
@@ -615,7 +615,7 @@ export const XhTableSortTrigger = /* @__PURE__ */ defineComponent({
     const { column } = useTableColumnContext()
     return () => h(
       'span',
-      ctx.api.value.getSortTriggerProps(column.value) as Record<string, unknown>,
+      ctx.api.value.getSortTriggerProps(column.value),
       slots.default?.(),
     )
   },
@@ -629,7 +629,7 @@ export const XhTableColumnResizeTrigger = /* @__PURE__ */ defineComponent({
     const { column } = useTableColumnContext()
     return () => h(
       'span',
-      ctx.api.value.getColumnResizeTriggerProps(column.value) as Record<string, unknown>,
+      ctx.api.value.getColumnResizeTriggerProps(column.value),
       slots.default?.(),
     )
   },
@@ -643,7 +643,7 @@ export const XhTableColumnDragTrigger = /* @__PURE__ */ defineComponent({
     const { column } = useTableColumnContext()
     return () => h(
       'span',
-      ctx.api.value.getColumnDragTriggerProps(column.value) as Record<string, unknown>,
+      ctx.api.value.getColumnDragTriggerProps(column.value),
       slots.default?.(),
     )
   },
@@ -662,7 +662,7 @@ export const XhTableRowDragTrigger = /* @__PURE__ */ defineComponent({
     const { row } = useTableRowContext()
     return () => h(
       'span',
-      ctx.api.value.getRowDragTriggerProps(row.value) as Record<string, unknown>,
+      ctx.api.value.getRowDragTriggerProps(row.value),
       slots.default?.(),
     )
   },
@@ -675,7 +675,7 @@ export const XhTableExpandTrigger = /* @__PURE__ */ defineComponent({
     const { row } = useTableRowContext()
     return () => h(
       'span',
-      ctx.api.value.getExpandTriggerProps(row.value) as Record<string, unknown>,
+      ctx.api.value.getExpandTriggerProps(row.value),
       slots.default?.(),
     )
   },
@@ -693,7 +693,7 @@ export const XhTableExpandedRow = /* @__PURE__ */ defineComponent({
     // 不 provide 行上下文；收起只加 hidden，不卸载内部节点
     return () => h(
       'div',
-      ctx.api.value.getExpandedRowProps(row.value) as Record<string, unknown>,
+      ctx.api.value.getExpandedRowProps(row.value),
       slots.default?.(),
     )
   },
@@ -703,7 +703,7 @@ export const XhTableEmpty = /* @__PURE__ */ defineComponent({
   name: 'XhTableEmpty',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -711,7 +711,7 @@ export const XhTableLoading = /* @__PURE__ */ defineComponent({
   name: 'XhTableLoading',
   setup(_, { slots }) {
     const ctx = useTableContext()
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.())
   },
 })
 
@@ -720,7 +720,7 @@ export const XhTableLoadMoreTrigger = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useTableContext()
     // 取下一页的入口：摆在表尾，点了做什么归作者
-    return () => h('button', ctx.api.value.getLoadMoreTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getLoadMoreTriggerProps(), slots.default?.())
   },
 })
 

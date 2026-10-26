@@ -96,7 +96,7 @@ export function XhColorSwatchPickerRoot({
   // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() }), ['onFocus'])
   // 标题文字不论手写格子还是数据驱动都由根铺出：手写格子时不必再写 label 部件
   const title = label != null ? <XhColorSwatchPickerLabel>{label}</XhColorSwatchPickerLabel> : null
   const body = children
@@ -113,7 +113,7 @@ export function XhColorSwatchPickerRoot({
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -134,7 +134,7 @@ export function XhColorSwatchPickerLabel({ children, ...rest }: XhColorSwatchPic
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhColorSwatchPickerItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -174,19 +174,19 @@ export function XhColorSwatchPickerItem({ value, label, disabled, children, ...r
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getItemProps(item) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemProps(item),
+        rest,
         { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
       )}
     >
       <input
-        {...ctx.api.getHiddenInputProps(item) as Record<string, unknown>}
+        {...ctx.api.getHiddenInputProps(item)}
         // 选中态由机器持有，这份影子输入没有自己的变更出口。React 要求带 checked 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 inert，这个出口不会被调用
         onChange={noop}
       />
-      <span {...ctx.api.getSwatchProps(item) as Record<string, unknown>} />
-      <span {...ctx.api.getIndicatorProps(item) as Record<string, unknown>} />
+      <span {...ctx.api.getSwatchProps(item)} />
+      <span {...ctx.api.getIndicatorProps(item)} />
       {children}
     </div>
   )

@@ -45,13 +45,13 @@ export interface SankeyChartTooltipSlotProps {
 
 /** 渐变定义：绘图区的第一个子节点，linkColor="gradient" 时每条流带一个渐变、两端各一个色标。 */
 function renderDefs(api: SankeyChartApi): ReactNode {
-  return createElement('defs', api.getDefsProps() as Record<string, unknown>, api.gradients.map(gradient =>
-    createElement('linearGradient', { ...api.getGradientProps(gradient) as Record<string, unknown>, key: gradient.id }, createElement('stop', api.getGradientStopProps(gradient, 'from') as Record<string, unknown>), createElement('stop', api.getGradientStopProps(gradient, 'to') as Record<string, unknown>))))
+  return createElement('defs', api.getDefsProps(), api.gradients.map(gradient =>
+    createElement('linearGradient', { ...api.getGradientProps(gradient), key: gradient.id }, createElement('stop', api.getGradientStopProps(gradient, 'from')), createElement('stop', api.getGradientStopProps(gradient, 'to')))))
 }
 
 /** 一个场景标记画成 SVG 元素；文字标记带文字。 */
 function renderMark(api: SankeyChartApi, mark: ChartMark): ReactNode {
-  const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
+  const props = { ...api.getMarkProps(mark), key: mark.key }
   if (mark.kind === 'group')
     return createElement('g', props, mark.children.map(child => renderMark(api, child)))
   if (mark.kind === 'text')
@@ -66,12 +66,12 @@ function TooltipContent({ api }: { api: SankeyChartApi }): ReactNode {
     return null
   return (
     <>
-      <div {...api.getTooltipHeaderProps() as Record<string, unknown>}>{tooltip.header}</div>
+      <div {...api.getTooltipHeaderProps()}>{tooltip.header}</div>
       {tooltip.rows.map(row => (
-        <div key={row.key} {...api.getTooltipRowProps(row) as Record<string, unknown>}>
-          <span {...api.getTooltipSwatchProps(row) as Record<string, unknown>} />
-          <span {...api.getTooltipValueProps(row) as Record<string, unknown>}>{row.value}</span>
-          <span {...api.getTooltipNameProps(row) as Record<string, unknown>}>{row.name}</span>
+        <div key={row.key} {...api.getTooltipRowProps(row)}>
+          <span {...api.getTooltipSwatchProps(row)} />
+          <span {...api.getTooltipValueProps(row)}>{row.value}</span>
+          <span {...api.getTooltipNameProps(row)}>{row.name}</span>
         </div>
       ))}
     </>
@@ -83,10 +83,10 @@ function A11y({ api }: { api: SankeyChartApi }): ReactNode {
   const { columns, rows } = api.table
   return (
     <>
-      <p {...api.getSummaryProps() as Record<string, unknown>}>{api.summary}</p>
+      <p {...api.getSummaryProps()}>{api.summary}</p>
       {/* 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度 */}
-      <div {...api.getTableRegionProps() as Record<string, unknown>}>
-        <table {...api.getTableProps() as Record<string, unknown>}>
+      <div {...api.getTableRegionProps()}>
+        <table {...api.getTableProps()}>
           <caption>{api.tableCaption}</caption>
           <thead>
             <tr>{columns.map(column => <th key={column.id} scope="col">{column.label}</th>)}</tr>
@@ -112,7 +112,7 @@ export interface XhSankeyChartCaptionProps extends ComponentPropsWithRef<'figcap
 export function XhSankeyChartCaption({ children, ...rest }: XhSankeyChartCaptionProps): ReactNode {
   const { api } = useSankeyChartContext()
   return (
-    <figcaption {...mergeReactProps(api.getCaptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <figcaption {...mergeReactProps(api.getCaptionProps(), rest)}>
       {children}
     </figcaption>
   )
@@ -124,7 +124,7 @@ export interface XhSankeyChartLegendProps extends Omit<ComponentPropsWithRef<'di
 export function XhSankeyChartLegend(props: XhSankeyChartLegendProps): ReactNode {
   const { api } = useSankeyChartContext()
   return (
-    <div {...mergeReactProps(api.getLegendProps() as Record<string, unknown>, props as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getLegendProps(), props)}>
       {api.legendItems.map(item => <LegendItem key={item.id} api={api} item={item} />)}
     </div>
   )
@@ -133,13 +133,13 @@ export function XhSankeyChartLegend(props: XhSankeyChartLegendProps): ReactNode 
 /** 图例项：焦点与指针进出是不冒泡的事件，改挂原生监听器。 */
 function LegendItem({ api, item }: { api: SankeyChartApi, item: SankeyLegendItem }): ReactNode {
   const bind = useNativeEvents(
-    api.getLegendItemProps(item) as Record<string, unknown>,
+    api.getLegendItemProps(item),
     ['onFocus', 'onPointerEnter', 'onPointerLeave'],
   )
   return (
     <button {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
-      <span {...api.getLegendSwatchProps(item) as Record<string, unknown>} />
-      <span {...api.getLegendLabelProps(item) as Record<string, unknown>}>{item.name}</span>
+      <span {...api.getLegendSwatchProps(item)} />
+      <span {...api.getLegendLabelProps(item)}>{item.name}</span>
     </button>
   )
 }
@@ -152,8 +152,8 @@ export function XhSankeyChartViewport({ children, ...rest }: XhSankeyChartViewpo
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getViewportProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getViewportProps(),
+        rest,
         { ref: (el: HTMLElement | null) => { ctx.viewportRef.current = el } },
       )}
     >
@@ -168,10 +168,10 @@ export interface XhSankeyChartPlotProps extends Omit<ComponentPropsWithRef<'svg'
 export function XhSankeyChartPlot(props: XhSankeyChartPlotProps): ReactNode {
   const { api } = useSankeyChartContext()
   // 指针离开是不冒泡的事件，改挂原生监听器；focusin / focusout 留给 React 的 onFocus / onBlur
-  const bind = useNativeEvents(api.getPlotProps() as Record<string, unknown>, ['onPointerLeave'])
+  const bind = useNativeEvents(api.getPlotProps(), ['onPointerLeave'])
   const marks = [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over]
   return (
-    <svg {...mergeReactProps(bind.attrs, props as Record<string, unknown>, { ref: bind.ref })}>
+    <svg {...mergeReactProps(bind.attrs, props, { ref: bind.ref })}>
       {renderDefs(api)}
       {marks.map(mark => renderMark(api, mark))}
     </svg>
@@ -187,7 +187,7 @@ export interface XhSankeyChartTooltipProps extends Omit<ComponentPropsWithRef<'d
 export function XhSankeyChartTooltip({ children, ...rest }: XhSankeyChartTooltipProps): ReactNode {
   const { api } = useSankeyChartContext()
   return (
-    <div {...mergeReactProps(api.getTooltipProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getTooltipProps(), rest)}>
       {children === undefined
         ? <TooltipContent api={api} />
         : renderSlot(children, { active: api.active, tooltip: api.tooltip })}
@@ -201,7 +201,7 @@ export interface XhSankeyChartEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhSankeyChartEmpty({ children, ...rest }: XhSankeyChartEmptyProps): ReactNode {
   const { api } = useSankeyChartContext()
   return (
-    <div {...mergeReactProps(api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getEmptyProps(), rest)}>
       {children ?? api.emptyText}
     </div>
   )
@@ -322,8 +322,8 @@ export function XhSankeyChartRoot({
     <SankeyChartProvider value={ctx}>
       <figure
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLElement | null) => { ctx.rootRef.current = el } },
         )}
       >

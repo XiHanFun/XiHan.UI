@@ -133,7 +133,7 @@ export function XhTagGroupRoot({
 
   return (
     <TagGroupProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{body}</div>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>{body}</div>
     </TagGroupProvider>
   )
 }
@@ -146,7 +146,7 @@ export function XhTagGroupLabel({ children, ...rest }: XhTagGroupLabelProps): Re
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhTagGroupListProps extends ComponentPropsWithRef<'div'> {}
@@ -160,9 +160,9 @@ export function XhTagGroupList({ children, ...rest }: XhTagGroupListProps): Reac
   // 放进表单字段时，字段的标题与说明接到标签列表上：读屏进列表时念字段名与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps() as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps() }), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )
@@ -182,7 +182,7 @@ export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }
   const itemEl = useRef<HTMLElement | null>(null)
   const previous = useRef(value)
   // 标签的聚焦上报不冒泡，改装成原生监听器：留在合成事件上，摘除钮得焦也会被算成标签得焦
-  const bind = useNativeEvents(ctx.api.getItemProps(item) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getItemProps(item), ['onFocus'])
 
   // 本标签持有焦点时，value 变更重报焦点条目
   useEffect(() => {
@@ -211,7 +211,7 @@ export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }
       <span
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLSpanElement | null) => { itemEl.current = el } },
         )}
@@ -228,7 +228,7 @@ export interface XhTagGroupCellProps extends ComponentPropsWithRef<'span'> {}
 export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getCellProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getCellProps(item), rest)}>{children}</span>
 }
 
 export interface XhTagGroupItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
@@ -237,7 +237,7 @@ export interface XhTagGroupItemIndicatorProps extends ComponentPropsWithRef<'spa
 export function XhTagGroupItemIndicator({ children, ...rest }: XhTagGroupItemIndicatorProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
@@ -246,7 +246,7 @@ export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {
 export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 export interface XhTagGroupItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -255,7 +255,7 @@ export interface XhTagGroupItemDeleteTriggerProps extends ComponentPropsWithRef<
 export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupItemDeleteTriggerProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps(item), rest)}>{children}</button>
 }
 
 /** 标准结构里各部件对应的组件；标签、标签文字与摘除钮委派给 tag，按「tag/部件名」找。 */

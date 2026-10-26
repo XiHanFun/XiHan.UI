@@ -29,7 +29,7 @@ export const XhPageHeaderRoot = defineComponent({
     const configured = withXhConfig('page-header', props)
     const api = computed(() => connectPageHeader(configured as PageHeaderProps, vueNormalize))
     providePageHeader({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -38,7 +38,7 @@ export const XhPageHeaderBreadcrumb = defineComponent({
   name: 'XhPageHeaderBreadcrumb',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getBreadcrumbProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBreadcrumbProps(), slots.default?.())
   },
 })
 
@@ -47,7 +47,7 @@ export const XhPageHeaderMedia = defineComponent({
   name: 'XhPageHeaderMedia',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getMediaProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getMediaProps(), slots.default?.())
   },
 })
 
@@ -64,7 +64,7 @@ export const XhPageHeaderBackTrigger = defineComponent({
     const ctx = usePageHeaderContext()
     return () => h(
       props.as,
-      ctx.api.value.getBackTriggerProps() as Record<string, unknown>,
+      ctx.api.value.getBackTriggerProps(),
       slots.default?.(),
     )
   },
@@ -81,7 +81,7 @@ export const XhPageHeaderTitle = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h(props.as, ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h(props.as, ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -90,7 +90,7 @@ export const XhPageHeaderDescription = defineComponent({
   name: 'XhPageHeaderDescription',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getDescriptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getDescriptionProps(), slots.default?.())
   },
 })
 
@@ -99,7 +99,7 @@ export const XhPageHeaderExtra = defineComponent({
   name: 'XhPageHeaderExtra',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getExtraProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getExtraProps(), slots.default?.())
   },
 })
 
@@ -108,6 +108,6 @@ export const XhPageHeaderFooter = defineComponent({
   name: 'XhPageHeaderFooter',
   setup(_, { slots }) {
     const ctx = usePageHeaderContext()
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })

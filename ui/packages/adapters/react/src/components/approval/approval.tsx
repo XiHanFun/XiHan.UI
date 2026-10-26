@@ -117,7 +117,7 @@ export function XhApprovalRoot({
   const { api } = ctx
   return (
     <ApprovalProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           status: api.status,
           settled: api.settled,
@@ -142,7 +142,7 @@ export interface XhApprovalTitleProps extends ComponentPropsWithRef<'h3'> {}
 export function XhApprovalTitle({ children, ...rest }: XhApprovalTitleProps): ReactNode {
   const ctx = useApprovalContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <h3 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h3>
+  return <h3 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</h3>
 }
 
 export interface XhApprovalDescriptionProps extends ComponentPropsWithRef<'p'> {}
@@ -158,7 +158,7 @@ export interface XhApprovalLiveRegionProps extends ComponentPropsWithRef<'div'> 
 export function XhApprovalLiveRegion({ children, ...rest }: XhApprovalLiveRegionProps): ReactNode {
   const ctx = useApprovalContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLiveRegionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLiveRegionProps(), rest)}>
       {children ?? ctx.api.announcement}
     </div>
   )
@@ -167,7 +167,7 @@ export function XhApprovalLiveRegion({ children, ...rest }: XhApprovalLiveRegion
 export interface XhApprovalGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhApprovalGroup({ children, ...rest }: XhApprovalGroupProps): ReactNode {
   const ctx = useApprovalContext()
-  return <div {...mergeReactProps(ctx.api.getGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhApprovalItemProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -193,7 +193,7 @@ export function XhApprovalItem({
     [scopeValue, scopeLabel, scopeRequired, scopeDisabled],
   )
   return (
-    <div {...mergeReactProps(ctx.api.getItemProps(scope) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getItemProps(scope), rest)}>
       {renderSlot(children, { scope, granted: ctx.api.isScopeGranted(scopeValue) })}
     </div>
   )
@@ -207,8 +207,8 @@ export function XhApprovalItemIndicator({ scopeValue, children, ...rest }: XhApp
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getItemIndicatorProps({ value: scopeValue }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemIndicatorProps({ value: scopeValue }),
+        rest,
       )}
     >
       {children}
@@ -225,8 +225,8 @@ export function XhApprovalItemText({ scopeValue, children, ...rest }: XhApproval
   return (
     <span
       {...mergeReactProps(
-        ctx.api.getItemTextProps({ value: scopeValue }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getItemTextProps({ value: scopeValue }),
+        rest,
       )}
     >
       {children}
@@ -241,11 +241,11 @@ export function XhApprovalNote({ ...rest }: XhApprovalNoteProps): ReactNode {
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getNoteProps() as Record<string, unknown>,
+        ctx.api.getNoteProps(),
         // 备注攥在机器里，写回走连接层的 onInput。React 要求带 value 的输入交出一个 onChange，
         // 否则在开发构建里逐帧告警；真正的写回不经它
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -255,34 +255,34 @@ export interface XhApprovalPendingIndicatorProps extends Omit<ComponentPropsWith
 /** 待决时的呼吸点：放在标题旁，判过即收。 */
 export function XhApprovalPendingIndicator(props: XhApprovalPendingIndicatorProps): ReactNode {
   const ctx = useApprovalContext()
-  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps() as Record<string, unknown>, props as Record<string, unknown>)} />
+  return <span {...mergeReactProps(ctx.api.getPendingIndicatorProps(), props)} />
 }
 
 export interface XhApprovalTimerProps extends ComponentPropsWithRef<'div'> {}
 /** 对读屏隐藏：逐秒变化的数字进入活区会不断打断朗读。 */
 export function XhApprovalTimer({ children, ...rest }: XhApprovalTimerProps): ReactNode {
   const ctx = useApprovalContext()
-  return <div {...mergeReactProps(ctx.api.getTimerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getTimerProps(), rest)}>{children}</div>
 }
 
 export interface XhApprovalResultProps extends ComponentPropsWithRef<'div'> {}
 /** 判定落定后才显示；文字由播报区朗读，该格对读屏隐藏。 */
 export function XhApprovalResult({ children, ...rest }: XhApprovalResultProps): ReactNode {
   const ctx = useApprovalContext()
-  return <div {...mergeReactProps(ctx.api.getResultProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getResultProps(), rest)}>{children}</div>
 }
 
 export interface XhApprovalFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhApprovalFooter({ children, ...rest }: XhApprovalFooterProps): ReactNode {
   const ctx = useApprovalContext()
-  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</div>
 }
 
 export interface XhApprovalApproveTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhApprovalApproveTrigger({ children, ...rest }: XhApprovalApproveTriggerProps): ReactNode {
   const ctx = useApprovalContext()
   return (
-    <button {...mergeReactProps(ctx.api.getApproveTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getApproveTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -292,7 +292,7 @@ export interface XhApprovalDenyTriggerProps extends ComponentPropsWithRef<'butto
 export function XhApprovalDenyTrigger({ children, ...rest }: XhApprovalDenyTriggerProps): ReactNode {
   const ctx = useApprovalContext()
   return (
-    <button {...mergeReactProps(ctx.api.getDenyTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getDenyTriggerProps(), rest)}>
       {children}
     </button>
   )

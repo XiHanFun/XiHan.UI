@@ -67,7 +67,7 @@ export const XhSplitterRoot = defineComponent({
     provideSplitter(ctx)
     // 容器节点交给机器，矩形在拖拽开始时现量
     return () => h('div', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: ctx.rootRef,
     }, slots.default?.({
       size: ctx.api.value.sizes,
@@ -91,7 +91,7 @@ export const XhSplitterPanel = defineComponent({
   setup(props, { slots }) {
     const ctx = useSplitterContext()
     const index = computed(() => normalizeItemIndex(props.index))
-    return () => h('div', ctx.api.value.getPanelProps(index.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getPanelProps(index.value), slots.default?.())
   },
 })
 
@@ -104,6 +104,6 @@ export const XhSplitterResizeTrigger = defineComponent({
   setup(props, { slots }) {
     const ctx = useSplitterContext()
     const index = computed(() => normalizeItemIndex(props.index))
-    return () => h('div', ctx.api.value.getResizeTriggerProps(index.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getResizeTriggerProps(index.value), slots.default?.())
   },
 })

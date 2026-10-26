@@ -312,22 +312,22 @@ export class XhMentionElement extends XhPortalHostElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
-    put('loading', api.getLoadingProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('empty', api.getEmptyProps())
+    put('loading', api.getLoadingProps())
 
     const inputEl = this.getPart('input') as MentionInputEl | null
     // 宿主标签直接读作者写的标记：作者摆的是 input 还是 textarea，DOM 已经说明白了
-    const inputProps = api.getInputProps({ as: inputEl?.tagName === 'TEXTAREA' ? 'textarea' : 'input' }) as Record<string, unknown>
+    const inputProps = api.getInputProps({ as: inputEl?.tagName === 'TEXTAREA' ? 'textarea' : 'input' })
     // 值一样就别重写：给 value 重新赋值会把光标弹到末尾，正文中间的提及就插不进去了
     if (inputEl && inputEl.value === inputProps.value)
       delete inputProps.value
     put('input', inputProps)
 
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
 
     // 候选逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
@@ -336,16 +336,16 @@ export class XhMentionElement extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         disabled: this.declaredDisabled.read(el),
       }
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       this.declaredDisabled.commit(el)
       for (const text of this.partsIn(el, 'item-text'))
-        this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(text, api.getItemTextProps(item))
       for (const description of this.partsIn(el, 'item-description'))
-        this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+        this.spreader.spread(description, api.getItemDescriptionProps(item))
       for (const prefix of this.partsIn(el, 'item-prefix'))
-        this.spreader.spread(prefix, api.getItemPrefixProps(item) as Record<string, unknown>)
+        this.spreader.spread(prefix, api.getItemPrefixProps(item))
       for (const suffix of this.partsIn(el, 'item-suffix'))
-        this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+        this.spreader.spread(suffix, api.getItemSuffixProps(item))
     }
 
     // 节点常驻，用内联 display 收起（作者层的 display 声明会盖过 [hidden]）

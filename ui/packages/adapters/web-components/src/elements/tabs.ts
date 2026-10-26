@@ -240,14 +240,14 @@ export class XhTabsElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('list', api.getListProps())
 
     // 播报区收作者写的那个节点：root 自己不带角色，作者把它放在 root 里、与 list 部件平级即可，
     // 不必由元素代建。没写就是不要读屏播报，跳过。
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
       live.textContent = this.ctrl.service.context.get('announcement')
     }
@@ -255,22 +255,22 @@ export class XhTabsElement extends XhPortalHostElement {
     // 指示条的 style 是对象（主轴的落点与长度），spreader 会逐条写成内联样式
     const indicator = this.getPart('indicator')
     if (indicator) {
-      const props = api.getIndicatorProps() as Record<string, unknown>
+      const props = api.getIndicatorProps()
       this.spreader.spread(indicator, props)
       // 按本帧产出的 hidden 用内联 display 收起
       this.setPartHidden(indicator, props.hidden === true)
     }
 
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     // 翻页钮：放得下时 hidden，按本帧产出的 hidden 用内联 display 收起（与 indicator 同一路）
-    const prevProps = api.getPrevTriggerProps() as Record<string, unknown>
+    const prevProps = api.getPrevTriggerProps()
     for (const prev of this.getParts('prev-trigger')) {
       this.spreader.spread(prev, prevProps)
       this.setPartHidden(prev, prevProps.hidden === true)
     }
-    const nextProps = api.getNextTriggerProps() as Record<string, unknown>
+    const nextProps = api.getNextTriggerProps()
     for (const next of this.getParts('next-trigger')) {
       this.spreader.spread(next, nextProps)
       this.setPartHidden(next, nextProps.hidden === true)
@@ -282,7 +282,7 @@ export class XhTabsElement extends XhPortalHostElement {
         value: el.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled.read(el) : this.declaredDisabled.read(el) ?? false,
       })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
       this.declaredDisabled.commit(el)
     }
 
@@ -292,7 +292,7 @@ export class XhTabsElement extends XhPortalHostElement {
       const props = api.getCloseTriggerProps({
         value: close.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled.read(close) : this.declaredDisabled.read(close) ?? false,
-      }) as Record<string, unknown>
+      })
       this.spreader.spread(close, props)
       this.declaredDisabled.commit(close)
       this.setPartHidden(close, props.hidden === true)
@@ -307,19 +307,19 @@ export class XhTabsElement extends XhPortalHostElement {
         value: trigger.getAttribute('value') ?? '',
         disabled: this.collection ? this.declaredDisabled.read(trigger) : this.declaredDisabled.read(trigger) ?? false,
       })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
     }
 
     // 面板常挂，未选中的由 connect 输出的 hidden 收起；写在面板里 <template> 中的内容按 isContentMounted 克隆进来或撤走
     for (const el of this.getParts('content')) {
       const value = el.getAttribute('value') ?? ''
       const props = api.getContentProps({ value })
-      this.spreader.spread(el, props as Record<string, unknown>)
+      this.spreader.spread(el, props)
       this.syncTemplateContent(el, api.isContentMounted(value))
     }
 
     // 「更多」钮与它弹出的下拉：钮是作者写的标签页部件，下拉那一套由共用的控制器自建
-    this.overflowMenu.wire(api.getOverflowTriggerProps() as Record<string, unknown>)
+    this.overflowMenu.wire(api.getOverflowTriggerProps())
   }
 
   override disconnectedCallback(): void {

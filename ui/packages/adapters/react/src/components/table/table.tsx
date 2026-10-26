@@ -404,8 +404,8 @@ export function XhTableRoot<TRow extends object = TableRecord>({
       })}
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -447,7 +447,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
       {structured && renderStructure(tablePaginationStructure(api), {}, undefined, instances)}
       {/* 播报区由根组件自己渲，作者插不进 root 的兄弟位。它不能进 root：
           root 是 role=grid，塞活动区域进去是 aria-required-children（critical） */}
-      <div {...api.getLiveRegionProps() as Record<string, unknown>}>{api.announcement}</div>
+      <div {...api.getLiveRegionProps()}>{api.announcement}</div>
     </TableProvider>
   )
 }
@@ -471,14 +471,14 @@ export interface XhTableToolbarProps extends ComponentPropsWithRef<'div'> {}
  */
 export function XhTableToolbar({ children, ...rest }: XhTableToolbarProps): ReactNode {
   const ctx = useTableContext()
-  return <div {...mergeReactProps(ctx.api.getToolbarProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getToolbarProps(), rest)}>{children}</div>
 }
 
 export interface XhTableColumnListProps extends ComponentPropsWithRef<'div'> {}
 /** 列设置区：一列一行，渲染内容按根槽载荷中的 columnSettings 决定。 */
 export function XhTableColumnList({ children, ...rest }: XhTableColumnListProps): ReactNode {
   const ctx = useTableContext()
-  return <div {...mergeReactProps(ctx.api.getColumnListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getColumnListProps(), rest)}>{children}</div>
 }
 
 export interface XhTableColumnVisibilityTriggerProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
@@ -494,7 +494,7 @@ export function XhTableColumnVisibilityTrigger({ value, children, ...rest }: XhT
   const inherited = useOptionalTableColumnContext()
   const column = useMemo(() => ({ value: value ?? inherited?.value ?? '' }), [value, inherited])
   return (
-    <span {...mergeReactProps(ctx.api.getColumnVisibilityTriggerProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getColumnVisibilityTriggerProps(column), rest)}>
       {children}
     </span>
   )
@@ -506,7 +506,7 @@ export function XhTableCaption({ children, ...rest }: XhTableCaptionProps): Reac
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerCaption } = ctx
   useEffect(() => registerCaption(), [registerCaption])
-  return <div {...mergeReactProps(ctx.api.getCaptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getCaptionProps(), rest)}>{children}</div>
 }
 
 export interface XhTableHeaderProps extends ComponentPropsWithRef<'div'> {}
@@ -514,7 +514,7 @@ export function XhTableHeader({ children, ...rest }: XhTableHeaderProps): ReactN
   const ctx = useTableContext()
   return (
     <TableSectionProvider value="header">
-      <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
     </TableSectionProvider>
   )
 }
@@ -525,10 +525,10 @@ export function XhTableBody({ children, ...rest }: XhTableBodyProps): ReactNode 
   // 键盘与 roving 的兜底 Tab 位落在表体上，不在 root 上。
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）：React 的同名合成事件
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回去
-  const bind = useNativeEvents(ctx.api.getBodyProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getBodyProps(), ['onFocus'])
   return (
     <TableSectionProvider value="body">
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>{children}</div>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>{children}</div>
     </TableSectionProvider>
   )
 }
@@ -538,7 +538,7 @@ export function XhTableFooter({ children, ...rest }: XhTableFooterProps): ReactN
   const ctx = useTableContext()
   return (
     <TableSectionProvider value="footer">
-      <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</div>
     </TableSectionProvider>
   )
 }
@@ -564,11 +564,11 @@ export function XhTableRow(props: XhTableRowProps): ReactNode {
 function TableSectionRow({ section, value: _value, level: rawLevel, children, ...rest }: XhTableRowProps & { section: TableSection }): ReactNode {
   const ctx = useTableContext()
   const level = levelOf(rawLevel)
-  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps({ level })) as Record<string, unknown>
+  const attrs = (section === 'header' ? ctx.api.getHeaderRowProps({ level }) : ctx.api.getFooterRowProps({ level }))
   return (
     <TableHeaderLevelProvider value={section === 'header' ? level : undefined}>
       <TableFooterLevelProvider value={section === 'footer' ? level : undefined}>
-        <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+        <div {...mergeReactProps(attrs, rest)}>{children}</div>
       </TableFooterLevelProvider>
     </TableHeaderLevelProvider>
   )
@@ -580,14 +580,14 @@ function TableDataRow({ value, level: _level, children, ...rest }: XhTableRowPro
   const row = useMemo(() => ({ value: value ?? '' }), [value])
   const el = useRef<HTMLElement | null>(null)
   // 行的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getRowProps(row) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getRowProps(row), ['onFocus'])
   useRowFocusReport(ctx.service, el, row.value)
   return (
     <TableRowProvider value={row}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (n: HTMLDivElement | null) => { el.current = n } },
         )}
@@ -609,7 +609,7 @@ export function XhTableColumnHeader({ value, level, children, ...rest }: XhTable
   const column = useMemo(() => ({ value, level: levelOf(level) ?? rowLevel }), [value, level, rowLevel])
   return (
     <TableColumnProvider value={column}>
-      <div {...mergeReactProps(ctx.api.getColumnHeaderProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getColumnHeaderProps(column), rest)}>
         {children}
       </div>
     </TableColumnProvider>
@@ -624,7 +624,7 @@ export interface XhTableColumnLabelProps extends ComponentPropsWithRef<'span'> {
  */
 export function XhTableColumnLabel({ children, ...rest }: XhTableColumnLabelProps): ReactNode {
   const ctx = useTableContext()
-  return <span {...mergeReactProps(ctx.api.getColumnLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getColumnLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhTableCellProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -644,21 +644,21 @@ export function XhTableCell({ value, colspan, children, ...rest }: XhTableCellPr
     row: rowCtx?.value,
     footer: section === 'footer' && !rowCtx ? (footerLevel ?? 1) : undefined,
     colSpan: colspan == null ? undefined : Number(colspan),
-  }) as Record<string, unknown>
-  return <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
+  })
+  return <div {...mergeReactProps(attrs, rest)}>{children}</div>
 }
 
 export interface XhTableSelectAllTriggerProps extends ComponentPropsWithRef<'span'> {}
 export function XhTableSelectAllTrigger({ children, ...rest }: XhTableSelectAllTriggerProps): ReactNode {
   const ctx = useTableContext()
-  return <span {...mergeReactProps(ctx.api.getSelectAllTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getSelectAllTriggerProps(), rest)}>{children}</span>
 }
 
 export interface XhTableRowSelectTriggerProps extends ComponentPropsWithRef<'span'> {}
 export function XhTableRowSelectTrigger({ children, ...rest }: XhTableRowSelectTriggerProps): ReactNode {
   const ctx = useTableContext()
   const row = useTableRowContext()
-  return <span {...mergeReactProps(ctx.api.getRowSelectTriggerProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getRowSelectTriggerProps(row), rest)}>{children}</span>
 }
 
 export interface XhTableSortTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -669,7 +669,7 @@ export interface XhTableSortTriggerProps extends ComponentPropsWithRef<'span'> {
 export function XhTableSortTrigger({ children, ...rest }: XhTableSortTriggerProps): ReactNode {
   const ctx = useTableContext()
   const column = useTableColumnContext()
-  return <span {...mergeReactProps(ctx.api.getSortTriggerProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getSortTriggerProps(column), rest)}>{children}</span>
 }
 
 export interface XhTableColumnResizeTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -677,7 +677,7 @@ export interface XhTableColumnResizeTriggerProps extends ComponentPropsWithRef<'
 export function XhTableColumnResizeTrigger({ children, ...rest }: XhTableColumnResizeTriggerProps): ReactNode {
   const ctx = useTableContext()
   const column = useTableColumnContext()
-  return <span {...mergeReactProps(ctx.api.getColumnResizeTriggerProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getColumnResizeTriggerProps(column), rest)}>{children}</span>
 }
 
 export interface XhTableColumnDragTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -685,7 +685,7 @@ export interface XhTableColumnDragTriggerProps extends ComponentPropsWithRef<'sp
 export function XhTableColumnDragTrigger({ children, ...rest }: XhTableColumnDragTriggerProps): ReactNode {
   const ctx = useTableContext()
   const column = useTableColumnContext()
-  return <span {...mergeReactProps(ctx.api.getColumnDragTriggerProps(column) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getColumnDragTriggerProps(column), rest)}>{children}</span>
 }
 
 export interface XhTableRowDragTriggerProps extends ComponentPropsWithRef<'span'> {}
@@ -698,14 +698,14 @@ export interface XhTableRowDragTriggerProps extends ComponentPropsWithRef<'span'
 export function XhTableRowDragTrigger({ children, ...rest }: XhTableRowDragTriggerProps): ReactNode {
   const ctx = useTableContext()
   const row = useTableRowContext()
-  return <span {...mergeReactProps(ctx.api.getRowDragTriggerProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getRowDragTriggerProps(row), rest)}>{children}</span>
 }
 
 export interface XhTableExpandTriggerProps extends ComponentPropsWithRef<'span'> {}
 export function XhTableExpandTrigger({ children, ...rest }: XhTableExpandTriggerProps): ReactNode {
   const ctx = useTableContext()
   const row = useTableRowContext()
-  return <span {...mergeReactProps(ctx.api.getExpandTriggerProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getExpandTriggerProps(row), rest)}>{children}</span>
 }
 
 export interface XhTableExpandedRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -717,7 +717,7 @@ export function XhTableExpandedRow({ value, children, ...rest }: XhTableExpanded
   const ctx = useTableContext()
   const row = useMemo(() => ({ value }), [value])
   return (
-    <div {...mergeReactProps(ctx.api.getExpandedRowProps(row) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getExpandedRowProps(row), rest)}>
       {children}
     </div>
   )
@@ -726,13 +726,13 @@ export function XhTableExpandedRow({ value, children, ...rest }: XhTableExpanded
 export interface XhTableEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhTableEmpty({ children, ...rest }: XhTableEmptyProps): ReactNode {
   const ctx = useTableContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhTableLoadingProps extends ComponentPropsWithRef<'div'> {}
 export function XhTableLoading({ children, ...rest }: XhTableLoadingProps): ReactNode {
   const ctx = useTableContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{children}</div>
 }
 
 export interface XhTableLoadMoreTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -740,7 +740,7 @@ export interface XhTableLoadMoreTriggerProps extends ComponentPropsWithRef<'butt
 export function XhTableLoadMoreTrigger({ children, ...rest }: XhTableLoadMoreTriggerProps): ReactNode {
   const ctx = useTableContext()
   return (
-    <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getLoadMoreTriggerProps(), rest)}>
       {children}
     </button>
   )

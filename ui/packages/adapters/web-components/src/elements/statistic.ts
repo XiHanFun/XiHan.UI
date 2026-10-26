@@ -57,11 +57,11 @@ export class XhStatisticElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('value', api.getValueProps() as Record<string, unknown>)
-    put('prefix', api.getPrefixProps() as Record<string, unknown>)
-    put('suffix', api.getSuffixProps() as Record<string, unknown>)
-    put('trend', api.getTrendProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('value', api.getValueProps())
+    put('prefix', api.getPrefixProps())
+    put('suffix', api.getSuffixProps())
+    put('trend', api.getTrendProps())
   }
 }

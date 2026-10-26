@@ -32,7 +32,7 @@ export const XhSeparatorRoot = defineComponent({
   setup(props, { slots }) {
     const api = computed(() => connectSeparator(props as SeparatorProps, vueNormalize))
     provideSeparator({ api })
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -41,7 +41,7 @@ export const XhSeparatorLine = defineComponent({
   name: 'XhSeparatorLine',
   setup() {
     const ctx = useSeparatorContext()
-    return () => h('div', ctx.api.value.getLineProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getLineProps())
   },
 })
 
@@ -50,7 +50,7 @@ export const XhSeparatorContent = defineComponent({
   name: 'XhSeparatorContent',
   setup(_, { slots }) {
     const ctx = useSeparatorContext()
-    return () => h('span', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getContentProps(), slots.default?.())
   },
 })
 

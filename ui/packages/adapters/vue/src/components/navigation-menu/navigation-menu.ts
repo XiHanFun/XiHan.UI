@@ -60,7 +60,7 @@ export const XhNavigationMenuRoot = defineComponent({
         ? authored
         : renderDefaultStructure(ctx.api.value, slots.panel)
       return h('nav', {
-        ...ctx.api.value.getRootProps() as Record<string, unknown>,
+        ...ctx.api.value.getRootProps(),
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
       }, children)
     }
@@ -73,7 +73,7 @@ export const XhNavigationMenuList = defineComponent({
   setup(_, { slots }) {
     const ctx = useNavigationMenuContext()
     return () => h('ul', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -84,7 +84,7 @@ export const XhNavigationMenuItem = defineComponent({
   name: 'XhNavigationMenuItem',
   setup(_, { slots }) {
     const ctx = useNavigationMenuContext()
-    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getItemProps(), slots.default?.())
   },
 })
 
@@ -99,7 +99,7 @@ export const XhNavigationMenuTrigger = defineComponent({
     const ctx = useNavigationMenuContext()
     return () => h(
       'button',
-      ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getTriggerProps({ value: props.value, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -117,7 +117,7 @@ export const XhNavigationMenuTriggerIndicator = defineComponent({
     const ctx = useNavigationMenuContext()
     return () => h(
       'span',
-      ctx.api.value.getTriggerIndicatorProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getTriggerIndicatorProps({ value: props.value, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -162,7 +162,7 @@ export const XhNavigationMenuContent = defineComponent({
     return () => h(
       'div',
       {
-        ...ctx.api.value.getContentProps({ value: props.value }) as Record<string, unknown>,
+        ...ctx.api.value.getContentProps({ value: props.value }),
         // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
         // 播不出来），所以真正的收起落成内联 display
         style: visible.value ? undefined : { display: 'none' },
@@ -185,7 +185,7 @@ export const XhNavigationMenuBranchTrigger = defineComponent({
     const ctx = useNavigationMenuContext()
     return () => h(
       'button',
-      ctx.api.value.getBranchTriggerProps({ value: props.value, disabled: props.disabled }) as Record<string, unknown>,
+      ctx.api.value.getBranchTriggerProps({ value: props.value, disabled: props.disabled }),
       slots.default?.(),
     )
   },
@@ -201,7 +201,7 @@ export const XhNavigationMenuBranchIndicator = defineComponent({
     const ctx = useNavigationMenuContext()
     return () => h(
       'span',
-      ctx.api.value.getBranchIndicatorProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getBranchIndicatorProps({ value: props.value }),
       slots.default?.(),
     )
   },
@@ -217,7 +217,7 @@ export const XhNavigationMenuBranchContent = defineComponent({
     const ctx = useNavigationMenuContext()
     return () => h(
       'div',
-      ctx.api.value.getBranchContentProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getBranchContentProps({ value: props.value }),
       slots.default?.(),
     )
   },
@@ -238,7 +238,7 @@ export const XhNavigationMenuLink = defineComponent({
     // 链接身份：按压通道按它记按住的那一条，按实例生成，作者不必提供
     const value = useId()
     return () => {
-      const part = mergePartProps(ctx.api.value.getLinkProps({ value, current: props.current }) as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getLinkProps({ value, current: props.current }), attrs)
       const children = slots.default?.()
       if (props.asChild)
         return mergeIntoChild(children, part, 'navigation-menu', { applyAnatomy: true })
@@ -252,7 +252,7 @@ export const XhNavigationMenuIndicator = defineComponent({
   name: 'XhNavigationMenuIndicator',
   setup() {
     const ctx = useNavigationMenuContext()
-    return () => h('li', ctx.api.value.getIndicatorProps() as Record<string, unknown>)
+    return () => h('li', ctx.api.value.getIndicatorProps())
   },
 })
 
@@ -261,7 +261,7 @@ export const XhNavigationMenuViewport = defineComponent({
   name: 'XhNavigationMenuViewport',
   setup(_, { slots }) {
     const ctx = useNavigationMenuContext()
-    return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getViewportProps(), slots.default?.())
   },
 })
 

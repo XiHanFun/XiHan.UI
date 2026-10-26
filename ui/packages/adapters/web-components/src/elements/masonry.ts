@@ -149,7 +149,7 @@ export class XhMasonryElement extends XhElement {
       gap: this.gap,
       sequential: this.sequential,
     } satisfies MasonryProps, wcNormalize)
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     if (!columnEls.length)
       return
 
@@ -166,12 +166,12 @@ export class XhMasonryElement extends XhElement {
     const assign = distributeMasonry(heights, columnCount, this.sequential ?? false)
 
     this.getParts('column').forEach((el, index) => {
-      this.spreader.spread(el, api.getColumnProps({ index }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getColumnProps({ index }))
       // 当前档位用不上的那几列收起来，否则空列照样等分掉一份宽度
       this.setPartHidden(el, index >= columnCount)
     })
     items.forEach((el, index) => {
-      this.spreader.spread(el, api.getItemProps({ index, column: assign[index]! }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ index, column: assign[index]! }))
     })
 
     this.place(columnEls.slice(0, columnCount), items, assign)

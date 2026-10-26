@@ -220,14 +220,14 @@ export class XhEditableElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('preview', api.getPreviewProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('edit-trigger', api.getEditTriggerProps() as Record<string, unknown>)
-    put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
-    put('cancel-trigger', api.getCancelTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('preview', api.getPreviewProps())
+    put('input', api.getInputProps())
+    put('control', api.getControlProps())
+    put('edit-trigger', api.getEditTriggerProps())
+    put('submit-trigger', api.getSubmitTriggerProps())
+    put('cancel-trigger', api.getCancelTriggerProps())
     // 输入框的 value 不必在这里另外回写：spreader 把 value 当 property 写
     // （dom/spread.ts 的 PROP_KEYS），属性写法只管初值、盖不住用户输入过的框
 

@@ -86,7 +86,7 @@ export const XhSliderRoot = defineComponent({
     provideSlider(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             thumbs: api.thumbs,
@@ -109,7 +109,7 @@ export const XhSliderLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -117,7 +117,7 @@ export const XhSliderControl = defineComponent({
   name: 'XhSliderControl',
   setup(_, { slots }) {
     const ctx = useSliderContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -127,7 +127,7 @@ export const XhSliderTrack = defineComponent({
     const ctx = useSliderContext()
     // 轨道节点交给机器，矩形在指针事件里现量
     return () => h('div', {
-      ...ctx.api.value.getTrackProps() as Record<string, unknown>,
+      ...ctx.api.value.getTrackProps(),
       ref: ctx.trackRef,
     }, slots.default?.())
   },
@@ -141,11 +141,11 @@ export const XhSliderTickGroup = defineComponent({
   setup(_, { slots }) {
     const ctx = useSliderContext()
     // 刻度整组自动铺：圆点 + 文案（点文案跳值）；tick 插槽可换文案内容
-    return () => h('div', ctx.api.value.getTickGroupProps() as Record<string, unknown>, ctx.api.value.marks.flatMap(tick => [
-      h('span', { ...ctx.api.value.getTickProps({ value: tick.value }) as Record<string, unknown>, key: `dot-${tick.value}` }),
+    return () => h('div', ctx.api.value.getTickGroupProps(), ctx.api.value.marks.flatMap(tick => [
+      h('span', { ...ctx.api.value.getTickProps({ value: tick.value }), key: `dot-${tick.value}` }),
       h(
         'span',
-        { ...ctx.api.value.getTickLabelProps({ value: tick.value }) as Record<string, unknown>, key: `label-${tick.value}` },
+        { ...ctx.api.value.getTickLabelProps({ value: tick.value }), key: `label-${tick.value}` },
         slots.tick ? slots.tick({ tick }) : tick.label,
       ),
     ]))
@@ -156,7 +156,7 @@ export const XhSliderRange = defineComponent({
   name: 'XhSliderRange',
   setup(_, { slots }) {
     const ctx = useSliderContext()
-    return () => h('div', ctx.api.value.getRangeProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getRangeProps(), slots.default?.())
   },
 })
 
@@ -173,7 +173,7 @@ export const XhSliderThumb = defineComponent({
     // 放进表单字段时，字段的标题与说明接到拇指上：焦点落在拇指，读屏在这里念名字与说明
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getThumbProps(index.value) as Record<string, unknown> }), slots.default?.())
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getThumbProps(index.value) }), slots.default?.())
   },
 })
 
@@ -185,7 +185,7 @@ export const XhSliderValueText = defineComponent({
     // 值气泡：写在拇指里，没给内容就填这一个拇指的值文本
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps(index.value) as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(index.value),
       slots.default?.() ?? ctx.api.value.valueText(index.value),
     )
   },
@@ -196,7 +196,7 @@ export const XhSliderHiddenInput = defineComponent({
   setup() {
     const { index } = useSliderThumbContext()
     const ctx = useSliderContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps(index.value) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps(index.value))
   },
 })
 

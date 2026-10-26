@@ -124,7 +124,7 @@ export const XhDrawerRoot = defineComponent({
     })
     provideDrawer(ctx)
     // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+    return () => h('div', ctx.api.value.getRootProps(), slots.default
       ? slots.default({
           open: ctx.api.value.open,
           side: ctx.api.value.side,
@@ -154,7 +154,7 @@ export const XhDrawerTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useDrawerContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -179,7 +179,7 @@ export const XhDrawerContent = defineComponent({
       const shown = ctx.rendered.value
       if (!api.isContentMounted(shown))
         return null
-      const backdrop = api.getBackdropProps() as Record<string, unknown>
+      const backdrop = api.getBackdropProps()
       // 收起后常驻（unmountOnExit 为 false）：遮罩不留，定位层以内联 display 收起，视觉桥随之断开
       return h(XhPortal, { to: ctx.portalTarget.value, present: shown }, () => [
         shown && !backdrop.hidden
@@ -188,9 +188,9 @@ export const XhDrawerContent = defineComponent({
               ref: (el: unknown) => { ctx.backdropRef.value = el as HTMLElement },
             })
           : null,
-        h('div', mergeProps(api.getPositionerProps() as Record<string, unknown>, shown ? {} : OVERLAY_STOWED_PROPS), [
+        h('div', mergeProps(api.getPositionerProps(), shown ? {} : OVERLAY_STOWED_PROPS), [
           h('div', {
-            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getContentProps(), attrs),
             hidden: !shown || undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, slots.default?.()),
@@ -204,7 +204,7 @@ export const XhDrawerHeader = defineComponent({
   name: 'XhDrawerHeader',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('header', ctx.api.value.getHeaderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('header', ctx.api.value.getHeaderProps(), slots.default?.())
   },
 })
 
@@ -213,7 +213,7 @@ export const XhDrawerTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useDrawerContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('h2', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h2', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -223,7 +223,7 @@ export const XhDrawerDescription = defineComponent({
     const ctx = useDrawerContext()
     // 读不出一句话的说明不进描述链
     const el = useDescriptionPart(ctx.presence)
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -231,7 +231,7 @@ export const XhDrawerBody = defineComponent({
   name: 'XhDrawerBody',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('div', ctx.api.value.getBodyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBodyProps(), slots.default?.())
   },
 })
 
@@ -239,7 +239,7 @@ export const XhDrawerFooter = defineComponent({
   name: 'XhDrawerFooter',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('footer', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('footer', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -248,7 +248,7 @@ export const XhDrawerConfirmTrigger = defineComponent({
   name: 'XhDrawerConfirmTrigger',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getConfirmTriggerProps(), slots.default?.())
   },
 })
 
@@ -257,7 +257,7 @@ export const XhDrawerCancelTrigger = defineComponent({
   name: 'XhDrawerCancelTrigger',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('button', ctx.api.value.getCancelTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCancelTriggerProps(), slots.default?.())
   },
 })
 
@@ -265,7 +265,7 @@ export const XhDrawerCloseTrigger = defineComponent({
   name: 'XhDrawerCloseTrigger',
   setup(_, { slots }) {
     const ctx = useDrawerContext()
-    return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getCloseTriggerProps(), slots.default?.())
   },
 })
 
@@ -274,7 +274,7 @@ export const XhDrawerResizeTrigger = defineComponent({
   name: 'XhDrawerResizeTrigger',
   setup() {
     const ctx = useDrawerContext()
-    return () => h('div', ctx.api.value.getResizeTriggerProps() as Record<string, unknown>)
+    return () => h('div', ctx.api.value.getResizeTriggerProps())
   },
 })
 

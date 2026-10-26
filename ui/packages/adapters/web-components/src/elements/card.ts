@@ -66,12 +66,12 @@ export class XhCardElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('header', api.getHeaderProps())
+    put('title', api.getTitleProps())
+    put('trigger', api.getTriggerProps())
+    put('description', api.getDescriptionProps())
+    put('content', api.getContentProps())
+    put('footer', api.getFooterProps())
   }
 }

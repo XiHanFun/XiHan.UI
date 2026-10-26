@@ -134,8 +134,8 @@ export function XhDateFieldRoot({
     <DateFieldProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -167,19 +167,19 @@ export function XhDateFieldLabel({ children, ...rest }: XhDateFieldLabelProps): 
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhDateFieldControlProps extends ComponentPropsWithRef<'div'> {}
 export function XhDateFieldControl({ children, ...rest }: XhDateFieldControlProps): ReactNode {
   const ctx = useDateFieldContext()
-  return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getControlProps(), rest)}>{children}</div>
 }
 
 export interface XhDateFieldSegmentGroupProps extends ComponentPropsWithRef<'div'> {}
 export function XhDateFieldSegmentGroup({ children, ...rest }: XhDateFieldSegmentGroupProps): ReactNode {
   const ctx = useDateFieldContext()
-  return <div {...mergeReactProps(ctx.api.getSegmentGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSegmentGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhDateFieldSegmentProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -197,9 +197,9 @@ export function XhDateFieldSegment({ index, segment, children, ...rest }: XhDate
   const declared = segment != null ? { segment } : { index: Math.trunc(Number(index)) }
   const state = api.segmentOf(declared)
   // 段位的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(api.getSegmentProps(declared) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(api.getSegmentProps(declared), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children == null ? state?.text : renderSlot(children, { segment: state })}
     </div>
   )
@@ -209,7 +209,7 @@ export interface XhDateFieldClearTriggerProps extends ComponentPropsWithRef<'but
 /** 未写内容时由皮肤绘制兜底字形。 */
 export function XhDateFieldClearTrigger({ children, ...rest }: XhDateFieldClearTriggerProps): ReactNode {
   const ctx = useDateFieldContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDateFieldHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
@@ -218,11 +218,11 @@ export function XhDateFieldHiddenInput({ ...rest }: XhDateFieldHiddenInputProps)
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

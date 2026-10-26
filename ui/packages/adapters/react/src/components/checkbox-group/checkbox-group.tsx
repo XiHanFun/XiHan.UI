@@ -137,8 +137,8 @@ export function XhCheckboxGroupRoot<V = string>({
     <CheckboxGroupProvider value={ctx}>
       <div
         {...mergeReactProps(
-          fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }),
-          rest as Record<string, unknown>,
+          fieldLabel({ ...fieldWiring, ...api.getRootProps() }),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -157,7 +157,7 @@ export function XhCheckboxGroupLabel({ children, ...rest }: XhCheckboxGroupLabel
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhCheckboxGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -172,9 +172,9 @@ export function XhCheckboxGroupItem({ value, disabled, children, ...rest }: XhCh
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
   return (
     <CheckboxGroupItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         <input
-          {...ctx.api.getHiddenInputProps(item) as Record<string, unknown>}
+          {...ctx.api.getHiddenInputProps(item)}
           // 选中态由机器持有，这份影子输入没有自己的变更出口。React 要求带 checked 的输入
           // 交出一个出口，否则在开发构建里逐帧告警；节点是 inert，这个出口不会被调用
           onChange={noop}
@@ -190,14 +190,14 @@ export interface XhCheckboxGroupIndicatorProps extends ComponentPropsWithRef<'sp
 export function XhCheckboxGroupIndicator({ children, ...rest }: XhCheckboxGroupIndicatorProps): ReactNode {
   const ctx = useCheckboxGroupContext()
   const item = useCheckboxGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhCheckboxGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhCheckboxGroupItemText({ children, ...rest }: XhCheckboxGroupItemTextProps): ReactNode {
   const ctx = useCheckboxGroupContext()
   const item = useCheckboxGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 export interface XhCheckboxGroupItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
@@ -205,14 +205,14 @@ export interface XhCheckboxGroupItemDescriptionProps extends ComponentPropsWithR
 export function XhCheckboxGroupItemDescription({ children, ...rest }: XhCheckboxGroupItemDescriptionProps): ReactNode {
   const ctx = useCheckboxGroupContext()
   const item = useCheckboxGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhCheckboxGroupSelectAllTriggerProps extends ComponentPropsWithRef<'div'> {}
 /** 与条目同形的 role=checkbox 节点，渲染为 div，Space 由 connect 接管。 */
 export function XhCheckboxGroupSelectAllTrigger({ children, ...rest }: XhCheckboxGroupSelectAllTriggerProps): ReactNode {
   const ctx = useCheckboxGroupContext()
-  return <div {...mergeReactProps(ctx.api.getSelectAllTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSelectAllTriggerProps(), rest)}>{children}</div>
 }
 
 function noop(): void {}

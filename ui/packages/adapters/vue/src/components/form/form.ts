@@ -146,7 +146,7 @@ const XhFormRootImpl = defineComponent({
 
     // 根节点渲染为原生 form，隐式提交与 submit 事件都依赖它
     return () => h('form', {
-      ...ctx.api.value.getRootProps() as Record<string, unknown>,
+      ...ctx.api.value.getRootProps(),
       ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
     }, slots.default?.({
       values: ctx.api.value.values,
@@ -223,7 +223,7 @@ export const XhFormFieldGroup = defineComponent({
     // 作用域插槽暴露本字段的值、错误与写入方法
     return () => h(
       'div',
-      ctx.api.value.getFieldGroupProps({ name: props.name, span: props.span }) as Record<string, unknown>,
+      ctx.api.value.getFieldGroupProps({ name: props.name, span: props.span }),
       slots.default?.({
         name: props.name,
         value: ctx.api.value.getFieldValue(props.name),
@@ -244,7 +244,7 @@ export const XhFormErrorSummary = defineComponent({
   setup(_, { slots }) {
     const ctx = useFormContext()
     // 摘要读它自己那版错误表：退场途中文案与条数照撤下之前的写
-    return () => h('div', ctx.api.value.getErrorSummaryProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getErrorSummaryProps(), slots.default?.({
       errors: ctx.api.value.summaryErrors,
       errorNames: ctx.api.value.summaryErrorNames,
       errorCount: ctx.api.value.summaryErrorCount,
@@ -266,7 +266,7 @@ export const XhFormErrorSummaryItem = defineComponent({
     // 渲染为原生 a，href 指向字段容器的 id
     return () => h(
       'a',
-      ctx.api.value.getErrorSummaryItemProps({ name: props.name }) as Record<string, unknown>,
+      ctx.api.value.getErrorSummaryItemProps({ name: props.name }),
       slots.default?.({ name: props.name, error: ctx.api.value.getSummaryError(props.name) }),
     )
   },
@@ -276,7 +276,7 @@ export const XhFormSubmitTrigger = defineComponent({
   name: 'XhFormSubmitTrigger',
   setup(_, { slots }) {
     const ctx = useFormContext()
-    return () => h('button', ctx.api.value.getSubmitTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSubmitTriggerProps(), slots.default?.())
   },
 })
 
@@ -284,7 +284,7 @@ export const XhFormResetTrigger = defineComponent({
   name: 'XhFormResetTrigger',
   setup(_, { slots }) {
     const ctx = useFormContext()
-    return () => h('button', ctx.api.value.getResetTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getResetTriggerProps(), slots.default?.())
   },
 })
 

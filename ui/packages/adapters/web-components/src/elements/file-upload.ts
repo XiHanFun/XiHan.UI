@@ -375,13 +375,13 @@ export class XhFileUploadElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('dropzone', api.getDropzoneProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('dropzone', api.getDropzoneProps())
+    put('trigger', api.getTriggerProps())
+    put('hidden-input', api.getHiddenInputProps())
+    put('list', api.getListProps())
+    put('clear-trigger', api.getClearTriggerProps())
 
     // 条目逐个打，身份取 allFiles 里对应位置的那个文件：远程附件在前，上传后转入远程的那一条行照样在
     const files = api.allFiles
@@ -393,27 +393,27 @@ export class XhFileUploadElement extends XhElement {
       }
       const item = { file }
       this.setPartHidden(el, false)
-      this.spreader.spread(el, api.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(item))
       for (const preview of this.partsIn(el, 'item-preview'))
-        this.spreader.spread(preview, api.getItemPreviewProps(item) as Record<string, unknown>)
+        this.spreader.spread(preview, api.getItemPreviewProps(item))
       for (const progress of this.partsIn(el, 'item-progress'))
-        this.spreader.spread(progress, api.getItemProgressProps(item) as Record<string, unknown>)
+        this.spreader.spread(progress, api.getItemProgressProps(item))
       for (const name of this.partsIn(el, 'item-name')) {
-        this.spreader.spread(name, api.getItemNameProps(item) as Record<string, unknown>)
+        this.spreader.spread(name, api.getItemNameProps(item))
         // 文件名里写了链接时字归链接
         if (this.partsIn(name, 'item-link').length === 0)
           this.fillText(name, file.name)
       }
       for (const link of this.partsIn(el, 'item-link')) {
-        this.spreader.spread(link, api.getItemLinkProps(item) as Record<string, unknown>)
+        this.spreader.spread(link, api.getItemLinkProps(item))
         this.fillText(link, file.name)
       }
       for (const size of this.partsIn(el, 'item-size-text')) {
-        this.spreader.spread(size, api.getItemSizeTextProps(item) as Record<string, unknown>)
+        this.spreader.spread(size, api.getItemSizeTextProps(item))
         this.fillText(size, api.getFileSizeText(file))
       }
       for (const del of this.partsIn(el, 'item-delete-trigger'))
-        this.spreader.spread(del, api.getItemDeleteTriggerProps(item) as Record<string, unknown>)
+        this.spreader.spread(del, api.getItemDeleteTriggerProps(item))
     })
   }
 }

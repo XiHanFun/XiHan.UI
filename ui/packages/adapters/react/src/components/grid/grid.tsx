@@ -74,7 +74,7 @@ export function XhGridRoot({
   }, reactNormalize)
   return (
     <GridProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </GridProvider>
@@ -97,9 +97,9 @@ export function XhGridItem({ span, offset, rowSpan, children, ...rest }: XhGridI
     span: normalizeGridTier(span) as GridItemProps['span'],
     offset: normalizeGridTier(offset) as GridItemProps['offset'],
     rowSpan: normalizeGridTier(rowSpan) as GridItemProps['rowSpan'],
-  }) as Record<string, unknown>
+  })
   return (
-    <div {...mergeReactProps(props, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(props, rest)}>
       {children}
     </div>
   )

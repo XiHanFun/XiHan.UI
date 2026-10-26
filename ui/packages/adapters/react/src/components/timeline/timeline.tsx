@@ -32,7 +32,7 @@ export function XhTimelineRoot({ orientation, placement, size, children, ...rest
   )
   return (
     <TimelineProvider value={{ api }}>
-      <ol {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <ol {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </ol>
     </TimelineProvider>
@@ -50,7 +50,7 @@ export function XhTimelineItem({ tone, children, ...rest }: XhTimelineItemProps)
   const item = useMemo(() => ({ tone }), [tone])
   return (
     <TimelineItemProvider value={item}>
-      <li {...mergeReactProps(ctx.api.getItemProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <li {...mergeReactProps(ctx.api.getItemProps(), rest)}>
         {children}
       </li>
     </TimelineItemProvider>
@@ -63,7 +63,7 @@ export interface XhTimelineLabelProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimelineLabel({ children, ...rest }: XhTimelineLabelProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <div {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getLabelProps(), rest)}>
       {children}
     </div>
   )
@@ -75,7 +75,7 @@ export function XhTimelineIndicator({ children, ...rest }: XhTimelineIndicatorPr
   const ctx = useTimelineContext()
   const item = useTimelineItemContext()
   return (
-    <span {...mergeReactProps(ctx.api.getIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getIndicatorProps(item), rest)}>
       {children}
     </span>
   )
@@ -86,7 +86,7 @@ export interface XhTimelineConnectorProps extends ComponentPropsWithRef<'span'> 
 export function XhTimelineConnector({ children, ...rest }: XhTimelineConnectorProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <span {...mergeReactProps(ctx.api.getConnectorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getConnectorProps(), rest)}>
       {children}
     </span>
   )
@@ -97,7 +97,7 @@ export interface XhTimelineContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimelineContent({ children, ...rest }: XhTimelineContentProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </div>
   )
@@ -108,7 +108,7 @@ export interface XhTimelineTitleProps extends ComponentPropsWithRef<'div'> {}
 export function XhTimelineTitle({ children, ...rest }: XhTimelineTitleProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <div {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </div>
   )
@@ -119,7 +119,7 @@ export interface XhTimelineDescriptionProps extends ComponentPropsWithRef<'div'>
 export function XhTimelineDescription({ children, ...rest }: XhTimelineDescriptionProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <div {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getDescriptionProps(), rest)}>
       {children}
     </div>
   )
@@ -131,7 +131,7 @@ export interface XhTimelineTimeProps extends ComponentPropsWithRef<'time'> {}
 export function XhTimelineTime({ children, ...rest }: XhTimelineTimeProps): ReactNode {
   const ctx = useTimelineContext()
   return (
-    <time {...mergeReactProps(ctx.api.getTimeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <time {...mergeReactProps(ctx.api.getTimeProps(), rest)}>
       {children}
     </time>
   )

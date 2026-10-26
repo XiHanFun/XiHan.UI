@@ -148,11 +148,11 @@ export class OverflowMenuController {
       return
     }
     const menu = connectMenu(this.menuCtrl.service as Service<MenuSchema>, wcNormalize)
-    this.options.spreader.spread(trigger, mergeAsChildProps(menu.getTriggerProps() as Record<string, unknown>, triggerProps))
+    this.options.spreader.spread(trigger, mergeAsChildProps(menu.getTriggerProps(), triggerProps))
 
     const nodes = this.ensureNodes()
-    this.options.spreader.spread(nodes.positioner, menu.getPositionerProps() as Record<string, unknown>)
-    this.options.spreader.spread(nodes.content, menu.getContentProps() as Record<string, unknown>)
+    this.options.spreader.spread(nodes.positioner, menu.getPositionerProps())
+    this.options.spreader.spread(nodes.content, menu.getContentProps())
     this.wireEntries(menu, nodes)
 
     // Light DOM 的 content 常驻，可见性由宿主自管：皮肤给 content 设了 display，会盖过 UA 的
@@ -238,7 +238,7 @@ export class OverflowMenuController {
         entry.separator = null
       }
       if (entry.separator) {
-        spreader.spread(entry.separator, menu.getSeparatorProps() as Record<string, unknown>)
+        spreader.spread(entry.separator, menu.getSeparatorProps())
         place(entry.separator)
       }
       // 禁用与选完收起都由 collection 定案，条目只报身份
@@ -246,15 +246,15 @@ export class OverflowMenuController {
         ? { value: meta.value, kind: 'checkbox' }
         : { value: meta.value, kind: 'item' }
       const itemProps = declaration.kind === 'checkbox' ? menu.getCheckboxItemProps(declaration) : menu.getItemProps(declaration)
-      spreader.spread(entry.item, itemProps as Record<string, unknown>)
+      spreader.spread(entry.item, itemProps)
       if (entry.indicator)
-        spreader.spread(entry.indicator, menu.getItemIndicatorProps(declaration) as Record<string, unknown>)
+        spreader.spread(entry.indicator, menu.getItemIndicatorProps(declaration))
       if (entry.icon) {
-        spreader.spread(entry.icon.cell, menu.getItemIconProps(declaration) as Record<string, unknown>)
+        spreader.spread(entry.icon.cell, menu.getItemIconProps(declaration))
         if (entry.icon.glyph.icon !== meta.icon)
           entry.icon.glyph.icon = meta.icon ?? undefined
       }
-      spreader.spread(entry.text, menu.getItemTextProps(declaration) as Record<string, unknown>)
+      spreader.spread(entry.text, menu.getItemTextProps(declaration))
       if (entry.text.textContent !== meta.label)
         entry.text.textContent = meta.label
       place(entry.item)

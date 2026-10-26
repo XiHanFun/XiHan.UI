@@ -131,7 +131,7 @@ export const XhTransferRoot = defineComponent({
       onSelectionChange: notifySelection,
     })
     provideTransfer(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [slots.default
+    return () => h('div', ctx.api.value.getRootProps(), [slots.default
       ? slots.default({
           value: ctx.api.value.value,
           selection: ctx.api.value.selection,
@@ -147,11 +147,11 @@ export const XhTransferRoot = defineComponent({
           move: ctx.api.value.move,
         })
       : renderDefaultStructure(ctx.api.value), ...ctx.api.value.value.map(value => h('input', {
-      ...ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>,
+      ...ctx.api.value.getHiddenInputProps({ value }),
       key: value,
     })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
       // 必填且没有值：补一份空值占位，原生 required 才拦得住空表单
-      ? [h('input', { ...ctx.api.value.getHiddenInputProps() as Record<string, unknown>, key: 'required' })]
+      ? [h('input', { ...ctx.api.value.getHiddenInputProps(), key: 'required' })]
       : [])])
   },
 })
@@ -162,7 +162,7 @@ function panelSetup(side: TransferSide): (props: unknown, ctx: { slots: Transfer
     const ctx = useTransferContext()
     const panel = computed<TransferPanelProps>(() => ({ side }))
     provideTransferPanel({ panel })
-    return () => h('div', ctx.api.value.getPanelProps(panel.value) as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getPanelProps(panel.value), slots.default?.({
       side,
       // 这一侧当下看得见的条目（分侧 + 搜索之后），不是数据入口：入口叫 collection，是整份全集
       items: ctx.api.value.visibleItems(side),
@@ -193,7 +193,7 @@ export const XhTransferPanelHeader = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    return () => h('div', ctx.api.value.getPanelHeaderProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getPanelHeaderProps(panel.value), slots.default?.())
   },
 })
 
@@ -202,7 +202,7 @@ export const XhTransferPanelTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    return () => h('span', ctx.api.value.getPanelTitleProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getPanelTitleProps(panel.value), slots.default?.())
   },
 })
 
@@ -212,7 +212,7 @@ export const XhTransferPanelCount = defineComponent({
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     // 只带 data-checked-count / data-count 属性，文案由作者或皮肤层提供
-    return () => h('span', ctx.api.value.getPanelCountProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getPanelCountProps(panel.value), slots.default?.())
   },
 })
 
@@ -221,7 +221,7 @@ export const XhTransferSearch = defineComponent({
   setup() {
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
-    return () => h('input', ctx.api.value.getSearchProps(panel.value) as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getSearchProps(panel.value))
   },
 })
 
@@ -250,7 +250,7 @@ export const XhTransferList = defineComponent({
     onUpdated(() => bars.measure())
     return () => [
       h('div', {
-        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps(panel.value) as Record<string, unknown> }), attrs),
+        ...mergeProps(fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps(panel.value) }), attrs),
         ref: (el: unknown) => { listRef.value = el as HTMLElement | null },
       }, slots.default?.()),
       ...bars.render(),
@@ -264,7 +264,7 @@ export const XhTransferSelectAllTrigger = defineComponent({
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     // 用原生 button，激活与禁用交给平台
-    return () => h('button', ctx.api.value.getSelectAllTriggerProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getSelectAllTriggerProps(panel.value), slots.default?.())
   },
 })
 
@@ -274,7 +274,7 @@ export const XhTransferEmpty = defineComponent({
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     // 空态占位：写在面板里、list 的兄弟；本侧没有可见条目时由连接层放它出面
-    return () => h('div', ctx.api.value.getEmptyProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(panel.value), slots.default?.())
   },
 })
 
@@ -284,7 +284,7 @@ export const XhTransferLoading = defineComponent({
     const ctx = useTransferContext()
     const { panel } = useTransferPanelContext()
     // 在途占位：与空态占位同一个位置，取数期间顶上来
-    return () => h('div', ctx.api.value.getLoadingProps(panel.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(panel.value), slots.default?.())
   },
 })
 
@@ -299,7 +299,7 @@ export const XhTransferGroup = defineComponent({
     // 两侧各挂一份同名分组，身份连 side 一起算，两边的标题 id 才不撞
     const group = computed<TransferGroupProps>(() => ({ value: props.value, side: panel.value.side }))
     provideTransferGroup({ group })
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -308,7 +308,7 @@ export const XhTransferGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { group } = useTransferGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -348,7 +348,7 @@ export const XhTransferItem = defineComponent({
     })
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps(item.value), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -359,7 +359,7 @@ export const XhTransferItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { item } = useTransferItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -369,7 +369,7 @@ export const XhTransferItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { item } = useTransferItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -379,7 +379,7 @@ export const XhTransferItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { item } = useTransferItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -388,7 +388,7 @@ export const XhTransferItemCheckbox = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     const { item } = useTransferItemContext()
-    return () => h('span', ctx.api.value.getItemCheckboxProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemCheckboxProps(item.value), slots.default?.())
   },
 })
 
@@ -397,7 +397,7 @@ export const XhTransferToTargetTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTransferContext()
     // 用原生 button，激活与禁用交给平台
-    return () => h('button', ctx.api.value.getToTargetTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getToTargetTriggerProps(), slots.default?.())
   },
 })
 
@@ -405,7 +405,7 @@ export const XhTransferToSourceTrigger = defineComponent({
   name: 'XhTransferToSourceTrigger',
   setup(_, { slots }) {
     const ctx = useTransferContext()
-    return () => h('button', ctx.api.value.getToSourceTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getToSourceTriggerProps(), slots.default?.())
   },
 })
 

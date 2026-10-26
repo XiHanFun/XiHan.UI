@@ -332,7 +332,7 @@ export class XhTransferElement extends XhElement {
       const input = this.formInputs[index] ?? this.ownerDocument.createElement('input')
       this.formInputs[index] = input
       const value = api.value[index]
-      this.spreader.spread(input, api.getHiddenInputProps(value === undefined ? undefined : { value }) as Record<string, unknown>)
+      this.spreader.spread(input, api.getHiddenInputProps(value === undefined ? undefined : { value }))
       if (input.parentElement !== this)
         this.append(input)
     }
@@ -341,45 +341,45 @@ export class XhTransferElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put(this.getPart('root'), api.getRootProps() as Record<string, unknown>)
-    put(this.getPart('to-target-trigger'), api.getToTargetTriggerProps() as Record<string, unknown>)
-    put(this.getPart('to-source-trigger'), api.getToSourceTriggerProps() as Record<string, unknown>)
+    put(this.getPart('root'), api.getRootProps())
+    put(this.getPart('to-target-trigger'), api.getToTargetTriggerProps())
+    put(this.getPart('to-source-trigger'), api.getToSourceTriggerProps())
 
     for (const side of SIDES) {
       const panel = this.getPart(`${side}-panel`)
       if (!panel)
         continue
       const props = { side }
-      this.spreader.spread(panel, api.getPanelProps(props) as Record<string, unknown>)
+      this.spreader.spread(panel, api.getPanelProps(props))
       for (const el of this.partsIn(panel, 'panel-header'))
-        this.spreader.spread(el, api.getPanelHeaderProps(props) as Record<string, unknown>)
+        this.spreader.spread(el, api.getPanelHeaderProps(props))
       for (const el of this.partsIn(panel, 'panel-title'))
-        this.spreader.spread(el, api.getPanelTitleProps(props) as Record<string, unknown>)
+        this.spreader.spread(el, api.getPanelTitleProps(props))
       for (const el of this.partsIn(panel, 'panel-count'))
-        this.spreader.spread(el, api.getPanelCountProps(props) as Record<string, unknown>)
+        this.spreader.spread(el, api.getPanelCountProps(props))
       for (const el of this.partsIn(panel, 'select-all-trigger'))
-        this.spreader.spread(el, api.getSelectAllTriggerProps(props) as Record<string, unknown>)
+        this.spreader.spread(el, api.getSelectAllTriggerProps(props))
 
       // Light DOM 常驻，WC 自管可见性：作者层若给这些 part 声明了 display，
       // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。
       // 收不收起的判据一律取 connect 的产出，不在这里重算一遍——重算就会分叉。
       for (const el of this.partsIn(panel, 'search')) {
-        const search = api.getSearchProps(props) as Record<string, unknown>
+        const search = api.getSearchProps(props)
         this.spreader.spread(el, search)
         this.setPartHidden(el, search.hidden === true)
       }
 
       for (const el of this.partsIn(panel, 'list'))
-        this.spreader.spread(el, api.getListProps(props) as Record<string, unknown>)
+        this.spreader.spread(el, api.getListProps(props))
 
       for (const el of this.partsIn(panel, 'empty')) {
-        const empty = api.getEmptyProps(props) as Record<string, unknown>
+        const empty = api.getEmptyProps(props)
         this.spreader.spread(el, empty)
         this.setPartHidden(el, empty.hidden === true)
       }
 
       for (const el of this.partsIn(panel, 'loading')) {
-        const pending = api.getLoadingProps(props) as Record<string, unknown>
+        const pending = api.getLoadingProps(props)
         this.spreader.spread(el, pending)
         this.setPartHidden(el, pending.hidden === true)
       }
@@ -387,27 +387,27 @@ export class XhTransferElement extends XhElement {
       // 分组是多实例 part：身份取自己的 value 属性加上所在面板的 side，组内标题跟着同一份身份
       for (const el of this.partsIn(panel, 'group')) {
         const group = { value: el.getAttribute('value') ?? '', side }
-        this.spreader.spread(el, api.getGroupProps(group) as Record<string, unknown>)
+        this.spreader.spread(el, api.getGroupProps(group))
         for (const label of this.partsIn(el, 'group-label'))
-          this.spreader.spread(label, api.getGroupLabelProps(group) as Record<string, unknown>)
+          this.spreader.spread(label, api.getGroupLabelProps(group))
       }
 
       // 条目是多实例 part，逐个打：身份取作者写的 value，归属取它落在哪个面板里
       for (const el of this.partsIn(panel, 'item')) {
         stripNativeDisabled(el)
         const item = { value: el.getAttribute('value') ?? '', side }
-        const itemProps = api.getItemProps(item) as Record<string, unknown>
+        const itemProps = api.getItemProps(item)
         this.spreader.spread(el, itemProps)
         this.setPartHidden(el, itemProps.hidden === true)
         // 条目内的文本与勾选标记跟着同一份声明走，样式层各处状态一致
         for (const text of this.partsIn(el, 'item-text'))
-          this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
+          this.spreader.spread(text, api.getItemTextProps(item))
         for (const description of this.partsIn(el, 'item-description'))
-          this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+          this.spreader.spread(description, api.getItemDescriptionProps(item))
         for (const suffix of this.partsIn(el, 'item-suffix'))
-          this.spreader.spread(suffix, api.getItemSuffixProps(item) as Record<string, unknown>)
+          this.spreader.spread(suffix, api.getItemSuffixProps(item))
         for (const box of this.partsIn(el, 'item-checkbox')) {
-          const boxProps = api.getItemCheckboxProps(item) as Record<string, unknown>
+          const boxProps = api.getItemCheckboxProps(item)
           this.spreader.spread(box, boxProps)
           this.setPartHidden(box, boxProps.hidden === true)
         }

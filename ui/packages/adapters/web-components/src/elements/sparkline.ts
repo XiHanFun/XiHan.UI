@@ -140,7 +140,7 @@ export class XhSparklineElement extends XhElement {
     const root = this.getPart('root')
     if (!root)
       return
-    this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+    this.spreader.spread(root, api.getRootProps())
     const { back, data, front } = api.scene.layers
     // 摘要排在最前，其后是场景标记；两者同一次排序，重画时一起复用
     reconcile<ChartMark | null>(root, [null, ...back, ...data, ...front], this.#keys, mark => mark?.key ?? SUMMARY_KEY, (mark, reuse) =>
@@ -150,7 +150,7 @@ export class XhSparklineElement extends XhElement {
   #paintSummary(doc: Document, reuse: Element | undefined, api: SparklineApi): Element {
     const node = reuse?.localName === 'desc' ? reuse : doc.createElementNS(SVG_NS, 'desc')
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getSummaryProps() as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getSummaryProps())
     if (node.textContent !== api.summary)
       node.textContent = api.summary
     return node
@@ -160,7 +160,7 @@ export class XhSparklineElement extends XhElement {
   #paintMark(doc: Document, mark: ChartMark, reuse: Element | undefined, api: SparklineApi): Element {
     const node = reuse?.localName === 'path' ? reuse : doc.createElementNS(SVG_NS, 'path')
     node.setAttribute(GEN_ATTR, '')
-    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark) as Record<string, unknown>)
+    this.spreader.spread(node as HTMLElement, api.getMarkProps(mark))
     return node
   }
 }

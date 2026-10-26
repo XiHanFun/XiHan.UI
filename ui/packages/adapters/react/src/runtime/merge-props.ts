@@ -28,7 +28,7 @@ function composeRefs(a: AnyRef, b: AnyRef): AnyRef {
 /** 回调式 ref 的返回值在 React 19 中是清理函数，要原样带回。 */
 function assign(ref: AnyRef, node: unknown): (() => void) | undefined {
   if (typeof ref === 'function')
-    return ref(node as never) as (() => void) | undefined
+    return ref(node) as (() => void) | undefined
   if (ref && typeof ref === 'object')
     (ref as { current: unknown }).current = node
   return undefined

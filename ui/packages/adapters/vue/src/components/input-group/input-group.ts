@@ -27,7 +27,7 @@ export const XhInputGroupRoot = defineComponent({
     const api = computed(() => connectInputGroup(configured as InputGroupProps, vueNormalize))
     provideInputGroup({ api })
     // 组内每一段是作者放进插槽的控件，直接当直接子节点摆
-    return () => h('div', api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -36,6 +36,6 @@ export const XhInputGroupItem = defineComponent({
   setup(_, { slots }) {
     const ctx = useInputGroupContext()
     // 前后缀文本由作者写进插槽
-    return () => h('span', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemProps(), slots.default?.())
   },
 })

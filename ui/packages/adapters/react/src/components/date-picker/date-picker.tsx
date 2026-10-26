@@ -280,8 +280,8 @@ export function XhDatePickerRoot({
     <DatePickerProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -323,7 +323,7 @@ export function XhDatePickerLabel({ children, ...rest }: XhDatePickerLabelProps)
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhDatePickerControlProps extends ComponentPropsWithRef<'div'> {}
@@ -332,8 +332,8 @@ export function XhDatePickerControl({ children, ...rest }: XhDatePickerControlPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getControlProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getControlProps(),
+        rest,
         { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
       )}
     >
@@ -346,7 +346,7 @@ export interface XhDatePickerTagLabelProps extends ComponentPropsWithRef<'span'>
 /** 标签文字所在的块（tag 的 label）：截断规则挂在这一层。 */
 export function XhDatePickerTagLabel({ children, ...rest }: XhDatePickerTagLabelProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <span {...mergeReactProps(ctx.api.getTagLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTagLabelProps(), rest)}>{children}</span>
 }
 
 /**
@@ -362,7 +362,7 @@ export interface XhDatePickerItemDeleteTriggerProps extends ComponentPropsWithRe
 export function XhDatePickerItemDeleteTrigger({ children, ...rest }: XhDatePickerItemDeleteTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
   const value = useDatePickerTagContext()
-  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getItemDeleteTriggerProps({ value }), rest)}>{children}</button>
 }
 
 export interface XhDatePickerTagProps extends ComponentPropsWithRef<'span'> {
@@ -374,7 +374,7 @@ export function XhDatePickerTag({ value, children, ...rest }: XhDatePickerTagPro
   const ctx = useDatePickerContext()
   return (
     <DatePickerTagProvider value={value}>
-      <span {...mergeReactProps(ctx.api.getTagProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>{tagChildren(children)}</span>
+      <span {...mergeReactProps(ctx.api.getTagProps({ value }), rest)}>{tagChildren(children)}</span>
     </DatePickerTagProvider>
   )
 }
@@ -384,7 +384,7 @@ export interface XhDatePickerOverflowTagProps extends ComponentPropsWithRef<'spa
 export function XhDatePickerOverflowTag({ children, ...rest }: XhDatePickerOverflowTagProps): ReactNode {
   const ctx = useDatePickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getOverflowTagProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getOverflowTagProps(), rest)}>
       {tagChildren(children ?? ctx.api.overflowText)}
     </span>
   )
@@ -398,7 +398,7 @@ export interface XhDatePickerTagListProps extends ComponentPropsWithRef<'span'> 
 export function XhDatePickerTagList({ children, ...rest }: XhDatePickerTagListProps): ReactNode {
   const ctx = useDatePickerContext()
   return (
-    <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(ctx.api.getTagListProps(), rest)}>
       {children ?? (
         <>
           {ctx.api.tags.map(tag => (
@@ -419,7 +419,7 @@ export interface XhDatePickerSegmentGroupProps extends ComponentPropsWithRef<'di
 export function XhDatePickerSegmentGroup({ children, ...rest }: XhDatePickerSegmentGroupProps): ReactNode {
   const ctx = useDatePickerContext()
   return (
-    <div {...mergeReactProps(ctx.api.getSegmentGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getSegmentGroupProps(), rest)}>
       {children}
     </div>
   )
@@ -440,9 +440,9 @@ export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDat
   const declared = segment != null ? { segment } : { index: Math.trunc(Number(index)) }
   const state = field.segmentOf(declared)
   // 段位的聚焦上报不冒泡（连接层直接转交分段输入那一份），改装成原生监听器
-  const bind = useNativeEvents(field.getSegmentProps(declared) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(field.getSegmentProps(declared), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children == null ? state?.text : renderSlot(children, { segment: state })}
     </div>
   )
@@ -451,7 +451,7 @@ export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDat
 export interface XhDatePickerClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerClearTrigger({ children, ...rest }: XhDatePickerClearTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getClearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -465,8 +465,8 @@ export function XhDatePickerTrigger({ children, ...rest }: XhDatePickerTriggerPr
   return (
     <button
       {...mergeReactProps(
-        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() as Record<string, unknown> }),
-        rest as Record<string, unknown>,
+        fieldLabel({ ...fieldWiring, ...ctx.api.getTriggerProps() }),
+        rest,
       )}
     >
       {children}
@@ -492,8 +492,8 @@ export function XhDatePickerPositioner({ children, container, ...rest }: XhDateP
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -510,8 +510,8 @@ export function XhDatePickerContent({ children, ...rest }: XhDatePickerContentPr
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -537,7 +537,7 @@ export function XhDatePickerCalendar({ index = 0, children, ...rest }: XhDatePic
   const panel = usePanelIndex(index)
   return (
     <DatePickerPanelProvider value={panel}>
-      <div {...mergeReactProps(ctx.api.getCalendarProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.getCalendarProps(), rest)}>{children}</div>
     </DatePickerPanelProvider>
   )
 }
@@ -561,11 +561,11 @@ export function XhDatePickerPresetGroup({ children, ...rest }: XhDatePickerPrese
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
     <>
-      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+      <div {...mergeReactProps(api.getPresetGroupProps(), rest, { ref: presetGroupRef })}>
         {slotPaints(authored)
           ? authored
           : api.presets.map(preset => (
-              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value })}>
                 {preset.label}
               </div>
             ))}
@@ -584,7 +584,7 @@ export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPre
   const ctx = useDatePickerContext()
   const api = ctx.api
   return (
-    <div {...mergeReactProps(api.getPresetProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(api.getPresetProps({ value }), rest)}>
       {slotPaints(children) ? children : api.presets.find(p => p.value === value)?.label}
     </div>
   )
@@ -601,7 +601,7 @@ export function XhDatePickerTimeItem({ value, children, ...rest }: XhDatePickerT
   const unit = useDatePickerTimeUnitContext()
   const item = { unit, value }
   return (
-    <div {...mergeReactProps(ctx.api.getTimeItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getTimeItemProps(item), rest)}>
       {slotPaints(children) ? children : ctx.api.getTimeItemText(item)}
     </div>
   )
@@ -631,7 +631,7 @@ export function XhDatePickerTimeColumn({ unit, children, ...rest }: XhDatePicker
     return null
   return (
     <DatePickerTimeUnitProvider value={column.unit}>
-      <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, rest as Record<string, unknown>, { ref: timeColumnRef })}>
+      <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }), rest, { ref: timeColumnRef })}>
         {children ?? column.options.map(option => <XhDatePickerTimeItem key={option} value={option} />)}
       </div>
       {bars.render()}
@@ -654,7 +654,7 @@ export function XhDatePickerTimePanel(): ReactNode {
 export interface XhDatePickerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerConfirmTrigger({ children, ...rest }: XhDatePickerConfirmTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerFooterProps extends ComponentPropsWithRef<'div'> {}
@@ -664,37 +664,37 @@ export interface XhDatePickerFooterProps extends ComponentPropsWithRef<'div'> {}
  */
 export function XhDatePickerFooter({ children, ...rest }: XhDatePickerFooterProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>{children}</div>
 }
 
 export interface XhDatePickerHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhDatePickerHeader({ children, ...rest }: XhDatePickerHeaderProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <div {...mergeReactProps(ctx.api.calendar.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.calendar.getHeaderProps(), rest)}>{children}</div>
 }
 
 export interface XhDatePickerPrevYearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerPrevYearTrigger({ children, ...rest }: XhDatePickerPrevYearTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.calendar.getPrevYearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.calendar.getPrevYearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerPrevTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerPrevTrigger({ children, ...rest }: XhDatePickerPrevTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.calendar.getPrevTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.calendar.getPrevTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerNextTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerNextTrigger({ children, ...rest }: XhDatePickerNextTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.calendar.getNextTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.calendar.getNextTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerNextYearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerNextYearTrigger({ children, ...rest }: XhDatePickerNextYearTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <button {...mergeReactProps(ctx.api.calendar.getNextYearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.calendar.getNextYearTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhDatePickerHeadingProps extends ComponentPropsWithRef<'div'> {
@@ -707,7 +707,7 @@ export function XhDatePickerHeading({ index, children, ...rest }: XhDatePickerHe
   const panel = usePanelIndex(index)
   const cal = ctx.api.calendar
   return (
-    <div {...mergeReactProps(cal.getHeadingProps({ index: panel }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(cal.getHeadingProps({ index: panel }), rest)}>
       {children ?? (cal.panels[panel]?.headingLabel ?? cal.headingLabel)}
     </div>
   )
@@ -723,7 +723,7 @@ export function XhDatePickerHeadingYearTrigger({ index, children, ...rest }: XhD
   const panel = usePanelIndex(index)
   const cal = ctx.api.calendar
   return (
-    <button {...mergeReactProps(cal.getHeadingYearTriggerProps({ index: panel }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(cal.getHeadingYearTriggerProps({ index: panel }), rest)}>
       {children ?? cal.panels[panel]?.headingYear}
     </button>
   )
@@ -738,7 +738,7 @@ export function XhDatePickerHeadingMonthTrigger({ index, children, ...rest }: Xh
   const panel = usePanelIndex(index)
   const cal = ctx.api.calendar
   return (
-    <button {...mergeReactProps(cal.getHeadingMonthTriggerProps({ index: panel }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(cal.getHeadingMonthTriggerProps({ index: panel }), rest)}>
       {children ?? cal.panels[panel]?.headingMonth}
     </button>
   )
@@ -754,8 +754,8 @@ export function XhDatePickerGrid({ index, children, ...rest }: XhDatePickerGridP
   return (
     <div
       {...mergeReactProps(
-        ctx.api.calendar.getGridProps({ index: panel }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.calendar.getGridProps({ index: panel }),
+        rest,
         // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
         panel === 0 ? { ref: (el: HTMLDivElement | null) => { ctx.gridRef.current = el } } : {},
       )}
@@ -768,20 +768,20 @@ export function XhDatePickerGrid({ index, children, ...rest }: XhDatePickerGridP
 export interface XhDatePickerGridHeadProps extends ComponentPropsWithRef<'div'> {}
 export function XhDatePickerGridHead({ children, ...rest }: XhDatePickerGridHeadProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <div {...mergeReactProps(ctx.api.calendar.getGridHeadProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.calendar.getGridHeadProps(), rest)}>{children}</div>
 }
 
 export interface XhDatePickerGridBodyProps extends ComponentPropsWithRef<'div'> {}
 export function XhDatePickerGridBody({ children, ...rest }: XhDatePickerGridBodyProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <div {...mergeReactProps(ctx.api.calendar.getGridBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.calendar.getGridBodyProps(), rest)}>{children}</div>
 }
 
 export interface XhDatePickerWeekRowProps extends ComponentPropsWithRef<'div'> {}
 /** 表头行与日期行共用同一个 role=row。 */
 export function XhDatePickerWeekRow({ children, ...rest }: XhDatePickerWeekRowProps): ReactNode {
   const ctx = useDatePickerContext()
-  return <div {...mergeReactProps(ctx.api.calendar.getWeekRowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.calendar.getWeekRowProps(), rest)}>{children}</div>
 }
 
 export interface XhDatePickerWeekNumberProps extends ComponentPropsWithRef<'span'> {
@@ -793,7 +793,7 @@ export function XhDatePickerWeekNumber({ value, children, ...rest }: XhDatePicke
   const ctx = useDatePickerContext()
   const cal = ctx.api.calendar
   return (
-    <span {...mergeReactProps(cal.getWeekNumberProps({ value }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(cal.getWeekNumberProps({ value }), rest)}>
       {children ?? cal.getWeekNumberText({ value })}
     </span>
   )
@@ -808,7 +808,7 @@ export function XhDatePickerWeekDay({ value, children, ...rest }: XhDatePickerWe
   const cal = ctx.api.calendar
   const index = Number(value)
   return (
-    <span {...mergeReactProps(cal.getWeekDayProps({ value: index }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(cal.getWeekDayProps({ value: index }), rest)}>
       {children ?? cal.weekDays[index]?.label}
     </span>
   )
@@ -830,7 +830,7 @@ export function XhDatePickerCell({ value, index, children, ...rest }: XhDatePick
   const cell = useMemo(() => ({ value, index: panel }), [value, panel])
   return (
     <DatePickerCellProvider value={cell}>
-      <div {...mergeReactProps(ctx.api.calendar.getCellProps(cell) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+      <div {...mergeReactProps(ctx.api.calendar.getCellProps(cell), rest)}>{children}</div>
     </DatePickerCellProvider>
   )
 }
@@ -841,11 +841,11 @@ export function XhDatePickerCellTrigger({ children, ...rest }: XhDatePickerCellT
   const cell = useDatePickerCellContext()
   // 格子的聚焦上报不冒泡（连接层直接转交日历那一份），改装成原生监听器
   const bind = useNativeEvents(
-    ctx.api.calendar.getCellTriggerProps(cell) as Record<string, unknown>,
+    ctx.api.calendar.getCellTriggerProps(cell),
     ['onFocus'],
   )
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+    <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref })}>
       {children}
     </div>
   )
@@ -860,9 +860,9 @@ export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): Rea
       <input
         key={value}
         {...mergeReactProps(
-          ctx.api.field.getHiddenInputProps({ value }) as Record<string, unknown>,
+          ctx.api.field.getHiddenInputProps({ value }),
           { onChange: noop },
-          rest as Record<string, unknown>,
+          rest,
         )}
       />
     ))
@@ -870,11 +870,11 @@ export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): Rea
   return (
     <input
       {...mergeReactProps(
-        ctx.api.field.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.field.getHiddenInputProps(),
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )

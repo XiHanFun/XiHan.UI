@@ -66,7 +66,7 @@ const XhRadioGroupRootImpl = defineComponent({
       const title = slots.label?.() ?? (props.label != null ? [props.label] : null)
       return h(
         'div',
-        { ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() as Record<string, unknown> }), ref: ctx.rootRef },
+        { ...fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getRootProps() }), ref: ctx.rootRef },
         slots.default
           ? [...renderLabel(title), ...slots.default()]
           : renderDefaultStructure(ctx.api.value, props.label, { label: slots.label, item: slots.item }),
@@ -111,7 +111,7 @@ export const XhRadioGroupLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -120,7 +120,7 @@ export const XhRadioGroupThumb = defineComponent({
   name: 'XhRadioGroupThumb',
   setup() {
     const ctx = useRadioGroupContext()
-    return () => h('span', ctx.api.value.getThumbProps() as Record<string, unknown>)
+    return () => h('span', ctx.api.value.getThumbProps())
   },
 })
 
@@ -157,9 +157,9 @@ export const XhRadioGroupItem = defineComponent({
         service.send({ type: 'GROUP.BLUR' })
     })
     // 隐藏输入与 indicator 由条目自行装配，不暴露成独立组件
-    return () => h('div', { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl }, [
-      h('input', ctx.api.value.getHiddenInputProps(item.value) as Record<string, unknown>),
-      h('span', ctx.api.value.getIndicatorProps(item.value) as Record<string, unknown>),
+    return () => h('div', { ...ctx.api.value.getItemProps(item.value), ref: itemEl }, [
+      h('input', ctx.api.value.getHiddenInputProps(item.value)),
+      h('span', ctx.api.value.getIndicatorProps(item.value)),
       ...(slots.default?.() ?? []),
     ])
   },
@@ -171,7 +171,7 @@ export const XhRadioGroupItemIcon = defineComponent({
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
     const { item } = useRadioGroupItemContext()
-    return () => h('span', ctx.api.value.getItemIconProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIconProps(item.value), slots.default?.())
   },
 })
 
@@ -180,7 +180,7 @@ export const XhRadioGroupItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
     const { item } = useRadioGroupItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -189,7 +189,7 @@ export const XhRadioGroupItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useRadioGroupContext()
     const { item } = useRadioGroupItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 

@@ -457,14 +457,14 @@ export class XhTimePickerElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('tag-list', api.getTagListProps())
     // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
-    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    const tagLabelProps = api.getTagLabelProps()
     for (const el of this.getParts('tag')) {
-      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }))
       const label = this.ensureTagLabel(el)
       if (label)
         this.spreader.spread(label, tagLabelProps)
@@ -474,40 +474,40 @@ export class XhTimePickerElement extends XhPortalHostElement {
     // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }))
     }
     // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
-      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      this.spreader.spread(overflowTag, api.getOverflowTagProps())
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
         this.fillText(label, api.overflowText)
       }
     }
-    put('segment-group', api.getSegmentGroupProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('segment-group', api.getSegmentGroupProps())
+    put('footer', api.getFooterProps())
+    put('confirm-trigger', api.getConfirmTriggerProps())
+    put('trigger', api.getTriggerProps())
+    put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
     // 多选时一个选中值一份同名输入，单选仍是一份
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
-      ? api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>)
-      : [api.getHiddenInputProps() as Record<string, unknown>])
-    put('preset-group', api.getPresetGroupProps() as Record<string, unknown>)
+      ? api.value.map(value => api.getHiddenInputProps({ value }))
+      : [api.getHiddenInputProps()])
+    put('preset-group', api.getPresetGroupProps())
 
     // 快捷选项是多实例 part：条目自报 value
     for (const el of this.getParts('preset'))
-      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getPresetProps({ value: el.getAttribute('value') ?? '' }))
 
     // 段逐个打；wire 跑在事件之前，换段与自动跳段时 data-scope/data-part/data-value 已在 DOM 上
     this.getParts('segment').forEach((el, position) => {
       const segment = declaredSegment(el, position)
-      this.spreader.spread(el, api.getSegmentProps({ segment }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getSegmentProps({ segment }))
       this.fillText(el, api.getSegmentText({ segment }))
       // 用内联 display 收起不参与显示的段（作者层的 display 声明会盖过 [hidden]）
       this.setPartHidden(el, !api.segments.includes(segment))
@@ -516,11 +516,11 @@ export class XhTimePickerElement extends XhPortalHostElement {
     // 列同理，格子归属按子树切分
     this.getParts('column').forEach((columnEl, position) => {
       const unit = declaredUnit(columnEl, position)
-      this.spreader.spread(columnEl, api.getColumnProps({ unit }) as Record<string, unknown>)
+      this.spreader.spread(columnEl, api.getColumnProps({ unit }))
       this.setPartHidden(columnEl, !api.columns.some(column => column.unit === unit))
       for (const itemEl of this.getParts('item').filter(el => columnEl.contains(el))) {
         const value = itemEl.getAttribute('value') ?? ''
-        this.spreader.spread(itemEl, api.getItemProps({ unit, value }) as Record<string, unknown>)
+        this.spreader.spread(itemEl, api.getItemProps({ unit, value }))
         this.fillText(itemEl, api.getItemText({ unit, value }))
       }
     })

@@ -129,7 +129,7 @@ export class XhLogElement extends XhElement {
       line.replaceChildren(...segments.map((segment) => {
         const span = doc.createElement('span')
         span.textContent = segment.text
-        this.spreader.spread(span, api.getSegmentProps(segment) as Record<string, unknown>)
+        this.spreader.spread(span, api.getSegmentProps(segment))
         return span
       }))
       this.#ansiText.set(line, line.textContent ?? '')
@@ -156,16 +156,16 @@ export class XhLogElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    const triggerProps = api.getScrollToEndTriggerProps() as Record<string, unknown>
+    put('root', api.getRootProps())
+    put('viewport', api.getViewportProps())
+    put('content', api.getContentProps())
+    const triggerProps = api.getScrollToEndTriggerProps()
     put('scroll-to-end-trigger', triggerProps)
-    put('live-region', api.getLiveRegionProps() as Record<string, unknown>)
+    put('live-region', api.getLiveRegionProps())
 
     // 多实例 part 逐个打，行有几条打几条；级别取作者写在节点上的 level
     for (const el of this.getParts('line')) {
-      this.spreader.spread(el, api.getLineProps({ level: lineLevel(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLineProps({ level: lineLevel(el) }))
       if (el.hasAttribute('ansi'))
         this.#paintAnsi(el, api)
     }

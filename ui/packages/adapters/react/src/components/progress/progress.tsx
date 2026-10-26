@@ -135,8 +135,8 @@ export function XhProgress({
     reactNormalize,
   )
   const rootProps = mergeReactProps(
-    api.getRootProps() as Record<string, unknown>,
-    rest as Record<string, unknown>,
+    api.getRootProps(),
+    rest,
   )
 
   if (api.variant === 'line') {
@@ -167,7 +167,7 @@ export function XhProgress({
       </svg>
       <Scale api={api} withTicks={false} />
       {slotPaints(children)
-        ? <div {...api.getLabelProps() as Record<string, unknown>}>{children}</div>
+        ? <div {...api.getLabelProps()}>{children}</div>
         : null}
     </div>
   )

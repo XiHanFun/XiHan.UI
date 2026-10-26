@@ -91,7 +91,7 @@ export const XhDateFieldRoot = defineComponent({
     provideDateField(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             valueAsDate: api.valueAsDate,
@@ -119,7 +119,7 @@ export const XhDateFieldLabel = defineComponent({
       ctx.labelCount.value--
     })
     // 渲染为 span 而非 label，段位不是可被 for 标注的控件；点标题聚焦由连接层接管
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -127,7 +127,7 @@ export const XhDateFieldControl = defineComponent({
   name: 'XhDateFieldControl',
   setup(_, { slots }) {
     const ctx = useDateFieldContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -135,7 +135,7 @@ export const XhDateFieldSegmentGroup = defineComponent({
   name: 'XhDateFieldSegmentGroup',
   setup(_, { slots }) {
     const ctx = useDateFieldContext()
-    return () => h('div', ctx.api.value.getSegmentGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getSegmentGroupProps(), slots.default?.())
   },
 })
 
@@ -162,7 +162,7 @@ export const XhDateFieldSegment = defineComponent({
       // 有插槽用插槽，否则渲染连接层算好的段位文本
       return h(
         'div',
-        api.getSegmentProps(declared) as Record<string, unknown>,
+        api.getSegmentProps(declared),
         slots.default ? slots.default({ segment: state }) : state?.text,
       )
     }
@@ -174,7 +174,7 @@ export const XhDateFieldClearTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useDateFieldContext()
     // 没有默认插槽时由皮肤画兜底字形
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -182,7 +182,7 @@ export const XhDateFieldHiddenInput = defineComponent({
   name: 'XhDateFieldHiddenInput',
   setup() {
     const ctx = useDateFieldContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

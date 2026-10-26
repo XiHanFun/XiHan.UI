@@ -112,21 +112,21 @@ export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   const corner = (bar: Bar): VNode[] =>
     axes.length > 1 && bar.axis === 'vertical'
       ? [h('div', {
-          ...bar.api.value.getCornerProps() as Record<string, unknown>,
+          ...bar.api.value.getCornerProps(),
           hidden: both() ? undefined : true,
         })]
       : []
 
   return {
     render: () => bars.map(bar => h('div', {
-      ...bar.api.value.getRootProps() as Record<string, unknown>,
+      ...bar.api.value.getRootProps(),
       key: `xh-scrollbar-${bar.axis}`,
       ref: bar.rootRef,
     }, [
       h('div', {
-        ...bar.api.value.getTrackProps() as Record<string, unknown>,
+        ...bar.api.value.getTrackProps(),
         ref: bar.trackRef,
-      }, [h('div', bar.api.value.getThumbProps() as Record<string, unknown>)]),
+      }, [h('div', bar.api.value.getThumbProps())]),
       ...corner(bar),
     ])),
     measure: () => {

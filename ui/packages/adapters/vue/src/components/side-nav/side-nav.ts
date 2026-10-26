@@ -94,7 +94,7 @@ export const XhSideNavRoot = defineComponent({
     })
     provideSideNav(ctx)
     // 经插槽暴露状态与命令，供折叠开关这类外部控件使用
-    return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('nav', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       expandedValue: ctx.api.value.expandedValue,
       collapsed: ctx.api.value.collapsed,
@@ -120,7 +120,7 @@ export const XhSideNavList = defineComponent({
   name: 'XhSideNavList',
   setup(_, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('ul', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('ul', ctx.api.value.getListProps(), slots.default?.())
   },
 })
 
@@ -129,7 +129,7 @@ export const XhSideNavInput = defineComponent({
   name: 'XhSideNavInput',
   setup() {
     const ctx = useSideNavContext()
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getInputProps())
   },
 })
 
@@ -138,7 +138,7 @@ export const XhSideNavEmpty = defineComponent({
   name: 'XhSideNavEmpty',
   setup(_, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.noMatch)
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? ctx.api.value.translations.noMatch)
   },
 })
 
@@ -160,7 +160,7 @@ export const XhSideNavItem = defineComponent({
     provideSideNavItem((value) => {
       linkValue.value = value
     })
-    return () => h('li', ctx.api.value.getItemProps({ value: linkValue.value ?? undefined }) as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getItemProps({ value: linkValue.value ?? undefined }), slots.default?.())
   },
 })
 
@@ -188,7 +188,7 @@ export const XhSideNavGroup = defineComponent({
         }
       },
     })
-    return () => h('li', ctx.api.value.getGroupProps({ value: props.value, members: members.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getGroupProps({ value: props.value, members: members.value }), slots.default?.())
   },
 })
 
@@ -199,7 +199,7 @@ export const XhSideNavGroupLabel = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('div', ctx.api.value.getGroupLabelProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupLabelProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -211,7 +211,7 @@ export const XhSideNavGroupList = defineComponent({
     const group = useSideNavGroupContext()
     if (!group)
       throw new Error('[xh] XhSideNavGroupList 必须用在 XhSideNavGroup 内')
-    return () => h('ul', ctx.api.value.getGroupListProps({ value: group.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('ul', ctx.api.value.getGroupListProps({ value: group.value }), slots.default?.())
   },
 })
 
@@ -224,7 +224,7 @@ export const XhSideNavBranch = defineComponent({
     const ctx = useSideNavContext()
     provideSideNavNode(props)
     joinGroup(() => props.value)
-    return () => h('li', ctx.api.value.getBranchProps({ value: props.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getBranchProps({ value: props.value }), slots.default?.())
   },
 })
 
@@ -233,7 +233,7 @@ export const XhSideNavBranchTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
-    return () => h('button', ctx.api.value.getBranchTriggerProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getBranchTriggerProps({ value: node.value }), slots.default?.())
   },
 })
 
@@ -241,7 +241,7 @@ export const XhSideNavBranchText = defineComponent({
   name: 'XhSideNavBranchText',
   setup(_, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('span', ctx.api.value.getBranchTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchTextProps(), slots.default?.())
   },
 })
 
@@ -250,7 +250,7 @@ export const XhSideNavBranchIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useSideNavContext()
     const node = useSideNavNodeContext()
-    return () => h('span', ctx.api.value.getBranchIndicatorProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchIndicatorProps({ value: node.value }), slots.default?.())
   },
 })
 
@@ -269,7 +269,7 @@ export const XhSideNavBranchContent = defineComponent({
     let presence: PresenceHandle | null = null
     const visible = useOverlayExit({
       config: ctx.config,
-      isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>).hidden !== true,
+      isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value })).hidden !== true,
       contentRef: panelRef,
       onPresence: (next) => {
         const previous = presence
@@ -291,20 +291,20 @@ export const XhSideNavBranchContent = defineComponent({
     return () => {
       if (!ctx.api.value.isPopoutPanel(node.value)) {
         // 平铺分支没有定位层，原地渲染
-        return h('ul', ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>, slots.default?.())
+        return h('ul', ctx.api.value.getBranchContentProps({ value: node.value }), slots.default?.())
       }
       // 折叠态的弹出面板：定位层搬到浮层落点，逃开祖先的层叠上下文。
       // 收起跟着退场闸门走：定位层与面板的 hidden 都押后到退场动画播完
       const hidden = !visible.value || undefined
       const content = h('ul', {
-        ...ctx.api.value.getBranchContentProps({ value: node.value }) as Record<string, unknown>,
+        ...ctx.api.value.getBranchContentProps({ value: node.value }),
         hidden,
         ref: (el: unknown) => { panelRef.value = el as HTMLElement | null },
       }, slots.default?.())
       // 关着的弹出面板不建视觉桥：折叠态下每个分支各有一个定位层
       return h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: visible.value }, () => [
         h('div', {
-          ...ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>,
+          ...ctx.api.value.getPopoutPositionerProps({ value: node.value }),
           hidden,
         }, [content]),
       ])
@@ -362,11 +362,11 @@ export const XhSideNavTooltip = defineComponent({
     const api = computed(() => connectSideNav(ctx.service, vueNormalize, hint))
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, present: visible.value }, () => [
       h('div', {
-        ...api.value.getTooltipPositionerProps() as Record<string, unknown>,
+        ...api.value.getTooltipPositionerProps(),
         ref: (el: unknown) => { positionerRef.value = el as HTMLElement | null },
       }, [
         h('div', {
-          ...api.value.getTooltipContentProps() as Record<string, unknown>,
+          ...api.value.getTooltipContentProps(),
           // 收起跟着退场闸门走：皮肤给 content 声明了 display，真正的收起落成内联 display
           style: visible.value ? undefined : { display: 'none' },
           ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
@@ -380,7 +380,7 @@ export const XhSideNavLinkText = defineComponent({
   name: 'XhSideNavLinkText',
   setup(_, { slots }) {
     const ctx = useSideNavContext()
-    return () => h('span', ctx.api.value.getLinkTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLinkTextProps(), slots.default?.())
   },
 })
 
@@ -403,7 +403,7 @@ export const XhSideNavLink = defineComponent({
     }
     joinGroup(() => props.value)
     return () => {
-      const part = mergePartProps(ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getLinkProps({ value: props.value }), attrs)
       const children = slots.default?.()
       if (props.asChild)
         return mergeIntoChild(children, part, 'side-nav', { applyAnatomy: true })

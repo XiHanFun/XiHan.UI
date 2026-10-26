@@ -63,10 +63,10 @@ export function XhPopoverTrigger({ children, asChild, ...rest }: XhPopoverTrigge
   const ctx = usePopoverContext()
   const props = mergePartProps(
     mergeReactProps(
-      ctx.api.getTriggerProps() as Record<string, unknown>,
+      ctx.api.getTriggerProps(),
       { ref: (el: HTMLElement | null) => { ctx.triggerRef.current = el } },
     ),
-    rest as Record<string, unknown>,
+    rest,
   )
   return renderAsChild(asChild, children, props, 'popover', (p, kids) => <button {...p}>{kids}</button>)
 }
@@ -84,8 +84,8 @@ export function XhPopoverPositioner({ children, container, ...rest }: XhPopoverP
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.portalSource} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -102,8 +102,8 @@ export function XhPopoverContent({ children, ...rest }: XhPopoverContentProps): 
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -121,7 +121,7 @@ export interface XhPopoverTitleProps extends ComponentPropsWithRef<'h2'> {}
 export function XhPopoverTitle({ children, ...rest }: XhPopoverTitleProps): ReactNode {
   const ctx = usePopoverContext()
   useTitleDescriptionPart(ctx.presence, 'title')
-  return <h2 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</h2>
+  return <h2 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>{children}</h2>
 }
 
 export interface XhPopoverDescriptionProps extends ComponentPropsWithRef<'p'> {}
@@ -135,11 +135,11 @@ export function XhPopoverDescription({ children, ...rest }: XhPopoverDescription
 export interface XhPopoverCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhPopoverCloseTrigger({ children, ...rest }: XhPopoverCloseTriggerProps): ReactNode {
   const ctx = usePopoverContext()
-  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+  return <button {...mergeReactProps(ctx.api.getCloseTriggerProps(), rest)}>{children}</button>
 }
 
 export interface XhPopoverArrowProps extends ComponentPropsWithRef<'div'> {}
 export function XhPopoverArrow({ children, ...rest }: XhPopoverArrowProps): ReactNode {
   const ctx = usePopoverContext()
-  return <div {...mergeReactProps(ctx.api.getArrowProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getArrowProps(), rest)}>{children}</div>
 }

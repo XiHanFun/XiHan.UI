@@ -75,7 +75,7 @@ export const XhApprovalRoot = defineComponent({
       },
     })
     provideApproval(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       status: ctx.api.value.status,
       settled: ctx.api.value.settled,
       loading: ctx.api.value.loading,
@@ -96,7 +96,7 @@ export const XhApprovalPendingIndicator = defineComponent({
   name: 'XhApprovalPendingIndicator',
   setup() {
     const ctx = useApprovalContext()
-    return () => h('span', ctx.api.value.getPendingIndicatorProps() as Record<string, unknown>)
+    return () => h('span', ctx.api.value.getPendingIndicatorProps())
   },
 })
 
@@ -105,7 +105,7 @@ export const XhApprovalTitle = defineComponent({
   setup(_, { slots }) {
     const ctx = useApprovalContext()
     useTitleDescriptionPart(ctx.presence, 'title')
-    return () => h('h3', ctx.api.value.getTitleProps() as Record<string, unknown>, slots.default?.())
+    return () => h('h3', ctx.api.value.getTitleProps(), slots.default?.())
   },
 })
 
@@ -115,7 +115,7 @@ export const XhApprovalDescription = defineComponent({
     const ctx = useApprovalContext()
     // 读不出一句话的说明不进描述链
     const el = useDescriptionPart(ctx.presence)
-    return () => h('p', { ...ctx.api.value.getDescriptionProps() as Record<string, unknown>, ref: el }, slots.default?.())
+    return () => h('p', { ...ctx.api.value.getDescriptionProps(), ref: el }, slots.default?.())
   },
 })
 
@@ -126,7 +126,7 @@ export const XhApprovalLiveRegion = defineComponent({
     // 不给内容时念状态对应的那一句
     return () => h(
       'div',
-      ctx.api.value.getLiveRegionProps() as Record<string, unknown>,
+      ctx.api.value.getLiveRegionProps(),
       slots.default?.() ?? ctx.api.value.announcement,
     )
   },
@@ -136,7 +136,7 @@ export const XhApprovalGroup = defineComponent({
   name: 'XhApprovalGroup',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('div', ctx.api.value.getGroupProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(), slots.default?.())
   },
 })
 
@@ -161,7 +161,7 @@ export const XhApprovalItem = defineComponent({
     })
     return () => h(
       'div',
-      ctx.api.value.getItemProps(scope()) as Record<string, unknown>,
+      ctx.api.value.getItemProps(scope()),
       slots.default?.({ scope: scope(), granted: ctx.api.value.isScopeGranted(props.scopeValue) }),
     )
   },
@@ -176,7 +176,7 @@ export const XhApprovalItemIndicator = defineComponent({
     const ctx = useApprovalContext()
     return () => h(
       'span',
-      ctx.api.value.getItemIndicatorProps({ value: props.scopeValue }) as Record<string, unknown>,
+      ctx.api.value.getItemIndicatorProps({ value: props.scopeValue }),
       slots.default?.(),
     )
   },
@@ -192,7 +192,7 @@ export const XhApprovalItemText = defineComponent({
     // 排在勾选项之内，文本自然构成它的可及名
     return () => h(
       'span',
-      ctx.api.value.getItemTextProps({ value: props.scopeValue }) as Record<string, unknown>,
+      ctx.api.value.getItemTextProps({ value: props.scopeValue }),
       slots.default?.(),
     )
   },
@@ -203,7 +203,7 @@ export const XhApprovalNote = defineComponent({
   setup() {
     const ctx = useApprovalContext()
     // 自闭合的输入格，内容由 value 给，不收插槽
-    return () => h('input', ctx.api.value.getNoteProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getNoteProps())
   },
 })
 
@@ -212,7 +212,7 @@ export const XhApprovalTimer = defineComponent({
   setup(_, { slots }) {
     const ctx = useApprovalContext()
     // 对读屏隐藏：逐秒变化的数字进活区会不停打断
-    return () => h('div', ctx.api.value.getTimerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getTimerProps(), slots.default?.())
   },
 })
 
@@ -221,7 +221,7 @@ export const XhApprovalResult = defineComponent({
   setup(_, { slots }) {
     const ctx = useApprovalContext()
     // 判定落定后才露出；文字由播报区念，这一格对读屏隐藏
-    return () => h('div', ctx.api.value.getResultProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getResultProps(), slots.default?.())
   },
 })
 
@@ -229,7 +229,7 @@ export const XhApprovalFooter = defineComponent({
   name: 'XhApprovalFooter',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -237,7 +237,7 @@ export const XhApprovalApproveTrigger = defineComponent({
   name: 'XhApprovalApproveTrigger',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('button', ctx.api.value.getApproveTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getApproveTriggerProps(), slots.default?.())
   },
 })
 
@@ -245,6 +245,6 @@ export const XhApprovalDenyTrigger = defineComponent({
   name: 'XhApprovalDenyTrigger',
   setup(_, { slots }) {
     const ctx = useApprovalContext()
-    return () => h('button', ctx.api.value.getDenyTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getDenyTriggerProps(), slots.default?.())
   },
 })

@@ -37,7 +37,7 @@ export function XhCardRoot({ variant, interactive, title, description, content, 
   const api = connectCard(withXhConfig('card', { variant, interactive }) as CardProps, reactNormalize)
   return (
     <CardProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children ?? renderDefaultStructure({ title, description, content, footer })}
       </div>
     </CardProvider>
@@ -49,7 +49,7 @@ export interface XhCardHeaderProps extends ComponentPropsWithRef<'div'> {}
 export function XhCardHeader({ children, ...rest }: XhCardHeaderProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>
       {children}
     </div>
   )
@@ -60,7 +60,7 @@ export interface XhCardTitleProps extends ComponentPropsWithRef<'h3'> {}
 export function XhCardTitle({ children, ...rest }: XhCardTitleProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <h3 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <h3 {...mergeReactProps(ctx.api.getTitleProps(), rest)}>
       {children}
     </h3>
   )
@@ -74,7 +74,7 @@ export interface XhCardTriggerProps extends ComponentPropsWithRef<'a'>, AsChildP
  */
 export function XhCardTrigger({ children, asChild, ...rest }: XhCardTriggerProps): ReactNode {
   const ctx = useCardContext()
-  const props = mergePartProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)
+  const props = mergePartProps(ctx.api.getTriggerProps(), rest)
   return renderAsChild(asChild, children, props, 'card', (p, kids) => p.href == null
     ? <button type="button" {...p}>{kids}</button>
     : <a {...p}>{kids}</a>)
@@ -85,7 +85,7 @@ export interface XhCardDescriptionProps extends ComponentPropsWithRef<'p'> {}
 export function XhCardDescription({ children, ...rest }: XhCardDescriptionProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getDescriptionProps(), rest)}>
       {children}
     </p>
   )
@@ -96,7 +96,7 @@ export interface XhCardContentProps extends ComponentPropsWithRef<'div'> {}
 export function XhCardContent({ children, ...rest }: XhCardContentProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps(), rest)}>
       {children}
     </div>
   )
@@ -107,7 +107,7 @@ export interface XhCardFooterProps extends ComponentPropsWithRef<'div'> {}
 export function XhCardFooter({ children, ...rest }: XhCardFooterProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getFooterProps(), rest)}>
       {children}
     </div>
   )

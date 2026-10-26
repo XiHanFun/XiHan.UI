@@ -36,7 +36,7 @@ export const XhImageRoot = defineComponent({
     const notify: ImageProps['onStatusChange'] = details => emit('status-change', details)
     const ctx = useImage(props as ImageProps, notify)
     provideImage(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       status: ctx.api.value.status,
       loaded: ctx.api.value.loaded,
       showFallback: ctx.api.value.showFallback,
@@ -63,7 +63,7 @@ export const XhImageImage = defineComponent({
 
     // 节点常挂，靠 hidden 显隐
     return () => h('img', {
-      ...ctx.api.value.getImageProps() as Record<string, unknown>,
+      ...ctx.api.value.getImageProps(),
       ref: imageEl,
     })
   },
@@ -74,7 +74,7 @@ export const XhImagePlaceholder = defineComponent({
   setup(_, { slots }) {
     const ctx = useImageContext()
     // 节点常挂，靠 hidden 显隐
-    return () => h('div', ctx.api.value.getPlaceholderProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getPlaceholderProps(), slots.default?.())
   },
 })
 
@@ -83,6 +83,6 @@ export const XhImageFallback = defineComponent({
   setup(_, { slots }) {
     const ctx = useImageContext()
     // 节点常挂，靠 hidden 显隐
-    return () => h('div', ctx.api.value.getFallbackProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFallbackProps(), slots.default?.())
   },
 })

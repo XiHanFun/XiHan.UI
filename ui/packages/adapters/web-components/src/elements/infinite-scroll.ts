@@ -91,8 +91,8 @@ export class XhInfiniteScrollElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('sentinel', api.getSentinelProps() as Record<string, unknown>)
-    put('load-more-trigger', api.getLoadMoreTriggerProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('sentinel', api.getSentinelProps())
+    put('load-more-trigger', api.getLoadMoreTriggerProps())
   }
 }

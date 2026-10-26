@@ -101,8 +101,8 @@ export class XhBreadcrumbElement extends XhElement {
       if (el)
         this.spreader.spread(el, attrs)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('list', api.getListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('list', api.getListProps())
 
     // 多实例 part 逐个打，link 的当前页事实取作者写的 current；
     // 身份取作者写的 value，没写就按文档序派生（只作按压通道的键，不写回 DOM）
@@ -111,25 +111,25 @@ export class XhBreadcrumbElement extends XhElement {
     let index = 0
     for (const el of this.getParts('item')) {
       const collapsed = range != null && index >= range.start && index < range.end
-      this.spreader.spread(el, { ...api.getItemProps() as Record<string, unknown>, hidden: collapsed || undefined })
+      this.spreader.spread(el, { ...api.getItemProps(), hidden: collapsed || undefined })
       index += 1
     }
 
     this.getParts('link').forEach((el, index) => {
       const attrs = api.getLinkProps({ value: el.getAttribute('value') ?? `link:${index}`, current: authorFlag(el, 'current') })
-      this.spreader.spread(el, attrs as Record<string, unknown>)
+      this.spreader.spread(el, attrs)
     })
 
     for (const el of this.getParts('link-icon'))
-      this.spreader.spread(el, api.getLinkIconProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getLinkIconProps())
 
     for (const el of this.getParts('separator'))
-      this.spreader.spread(el, api.getSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getSeparatorProps())
 
     for (const el of this.getParts('ellipsis'))
-      this.spreader.spread(el, api.getEllipsisProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getEllipsisProps())
 
     for (const el of this.getParts('ellipsis-trigger'))
-      this.spreader.spread(el, api.getEllipsisTriggerProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getEllipsisTriggerProps())
   }
 }

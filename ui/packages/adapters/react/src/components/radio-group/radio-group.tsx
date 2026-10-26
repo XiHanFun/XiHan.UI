@@ -111,7 +111,7 @@ export function XhRadioGroupRoot<V = string>({
   // 放进表单字段时，字段的标题与说明接到组上：读屏进组时念组名与说明
   const fieldWiring = useFieldGroupWiring()
   const fieldLabel = useFieldLabelWiring()
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...api.getRootProps() }), ['onFocus'])
 
   // 标题文字不论手写选项还是数据驱动都由根铺出：手写选项时不必再写 label 部件
   const body = children != null
@@ -128,7 +128,7 @@ export function XhRadioGroupRoot<V = string>({
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
@@ -147,14 +147,14 @@ export function XhRadioGroupLabel({ children, ...rest }: XhRadioGroupLabelProps)
   // 渲出来了才登记：根的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</span>
 }
 
 export interface XhRadioGroupThumbProps extends ComponentPropsWithRef<'span'> {}
 /** segmented 形态里滑动的选中标记，位置由状态机测量后写入内联样式的私有槽；没有落点时收起。须写在条目之前。 */
 export function XhRadioGroupThumb({ children, ...rest }: XhRadioGroupThumbProps): ReactNode {
   const ctx = useRadioGroupContext()
-  return <span {...mergeReactProps(ctx.api.getThumbProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getThumbProps(), rest)}>{children}</span>
 }
 
 export interface XhRadioGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -197,18 +197,18 @@ export function XhRadioGroupItem({ value, disabled, children, ...rest }: XhRadio
     <RadioGroupItemProvider value={item}>
       <div
         {...mergeReactProps(
-          ctx.api.getItemProps(item) as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getItemProps(item),
+          rest,
           { ref: (el: HTMLDivElement | null) => { itemEl.current = el } },
         )}
       >
         <input
-          {...ctx.api.getHiddenInputProps(item) as Record<string, unknown>}
+          {...ctx.api.getHiddenInputProps(item)}
           // 选中态由机器持有，这份影子输入没有自己的变更出口。React 要求带 checked 的输入
           // 交出一个出口，否则在开发构建里逐帧告警；节点是 inert，这个出口不会被调用
           onChange={noop}
         />
-        <span {...ctx.api.getIndicatorProps(item) as Record<string, unknown>} />
+        <span {...ctx.api.getIndicatorProps(item)} />
         {children}
       </div>
     </RadioGroupItemProvider>
@@ -220,14 +220,14 @@ export interface XhRadioGroupItemIconProps extends ComponentPropsWithRef<'span'>
 export function XhRadioGroupItemIcon({ children, ...rest }: XhRadioGroupItemIconProps): ReactNode {
   const ctx = useRadioGroupContext()
   const item = useRadioGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemIconProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemIconProps(item), rest)}>{children}</span>
 }
 
 export interface XhRadioGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhRadioGroupItemText({ children, ...rest }: XhRadioGroupItemTextProps): ReactNode {
   const ctx = useRadioGroupContext()
   const item = useRadioGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 export interface XhRadioGroupItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
@@ -235,7 +235,7 @@ export interface XhRadioGroupItemDescriptionProps extends ComponentPropsWithRef<
 export function XhRadioGroupItemDescription({ children, ...rest }: XhRadioGroupItemDescriptionProps): ReactNode {
   const ctx = useRadioGroupContext()
   const item = useRadioGroupItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 function noop(): void {}

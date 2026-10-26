@@ -218,15 +218,15 @@ export class XhPopoverElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
+    put('trigger', api.getTriggerProps())
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
-    put('arrow', api.getArrowProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('close-trigger', api.getCloseTriggerProps())
+    put('arrow', api.getArrowProps())
 
     // Light DOM content 常驻，WC 自管可见性。读 styles/css/popover.css 的结论：
     // content 是 display:flex，positioner 只声明 position/z-index/pointer-events、没有 display，

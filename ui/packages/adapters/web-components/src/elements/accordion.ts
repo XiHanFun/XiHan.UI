@@ -153,7 +153,7 @@ export class XhAccordionElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     // 集合类 part 逐个 spread，身份由节点自报，不依赖下标。
     const putAll = (name: string, get: (item: AccordionItemProps) => unknown): void => {
@@ -162,14 +162,14 @@ export class XhAccordionElement extends XhElement {
     }
     putAll('item', item => api.getItemProps(item))
     for (const el of this.getParts('item-separator'))
-      this.spreader.spread(el, api.getItemSeparatorProps() as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemSeparatorProps())
     putAll('header', item => api.getHeaderProps(item))
     putAll('trigger', item => api.getTriggerProps(item))
     // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
     // 就一帧都播不出来），真正的收起在动画结束后落成内联 display
     for (const el of this.getParts('content')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getContentProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, api.getContentProps(item))
       const open = api.isOpen(item.value)
       let exit = this.exits.get(item.value)
       if (!exit) {

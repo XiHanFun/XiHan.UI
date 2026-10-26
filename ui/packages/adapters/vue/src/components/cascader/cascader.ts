@@ -171,7 +171,7 @@ export const XhCascaderRoot = defineComponent({
     })
     provideCascader(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [!slots.default
+    return () => h('div', ctx.api.value.getRootProps(), [!slots.default
       ? renderDefaultStructure(ctx.api.value, { label: props.label, clearable: props.clearable, searchable: props.searchable }, slots.label)
       : slots.default({
           open: ctx.api.value.open,
@@ -198,11 +198,11 @@ export const XhCascaderRoot = defineComponent({
           clear: ctx.api.value.clear,
           deselect: ctx.api.value.deselect,
         }), ...ctx.api.value.value.map(path => h('input', {
-      ...ctx.api.value.getHiddenInputProps({ path }) as Record<string, unknown>,
+      ...ctx.api.value.getHiddenInputProps({ path }),
       key: JSON.stringify(path),
     })), ...(ctx.api.value.value.length === 0 && ctx.api.value.required
       // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
-      ? [h('input', { ...ctx.api.value.getHiddenInputProps() as Record<string, unknown>, key: 'required' })]
+      ? [h('input', { ...ctx.api.value.getHiddenInputProps(), key: 'required' })]
       : [])])
   },
 })
@@ -216,7 +216,7 @@ export const XhCascaderLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -226,7 +226,7 @@ export const XhCascaderControl = defineComponent({
     const ctx = useCascaderContext()
     // 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -242,7 +242,7 @@ export const XhCascaderTrigger = defineComponent({
     const ctx = useCascaderContext()
     return () => h('button', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...ctx.api.value.getTriggerProps(),
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }), slots.default?.())
   },
@@ -255,7 +255,7 @@ export const XhCascaderValueText = defineComponent({
     // 有插槽用插槽，否则显示整条路径或 placeholder
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? ctx.api.value.displayText,
     )
   },
@@ -266,7 +266,7 @@ export const XhCascaderTagList = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default?.())
   },
 })
 
@@ -275,7 +275,7 @@ export const XhCascaderTagLabel = defineComponent({
   name: 'XhCascaderTagLabel',
   setup(_, { slots }) {
     const ctx = useCascaderContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -300,7 +300,7 @@ export const XhCascaderTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useCascaderContext()
     provideCascaderTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -311,7 +311,7 @@ export const XhCascaderOverflowTag = defineComponent({
     const ctx = useCascaderContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -323,7 +323,7 @@ export const XhCascaderItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const tag = useCascaderTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -331,7 +331,7 @@ export const XhCascaderIndicator = defineComponent({
   name: 'XhCascaderIndicator',
   setup(_, { slots }) {
     const ctx = useCascaderContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -339,7 +339,7 @@ export const XhCascaderClearTrigger = defineComponent({
   name: 'XhCascaderClearTrigger',
   setup(_, { slots }) {
     const ctx = useCascaderContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -365,7 +365,7 @@ export const XhCascaderPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -382,7 +382,7 @@ export const XhCascaderLoading = defineComponent({
     // 在途占位：作者没写内容时使用 Cascader 自己的翻译合同。
     return () => h(
       'div',
-      ctx.api.value.getLoadingProps() as Record<string, unknown>,
+      ctx.api.value.getLoadingProps(),
       slots.default?.() ?? ctx.api.value.translations.loading,
     )
   },
@@ -397,7 +397,7 @@ const XhCascaderAutoLoading = defineComponent({
     return () => content.authoredLoadingCount.value > 0
       ? null
       : h('div', {
-          ...ctx.api.value.getLoadingProps() as Record<string, unknown>,
+          ...ctx.api.value.getLoadingProps(),
           'data-xh-cascader-auto-loading': '',
         }, ctx.api.value.translations.loading)
   },
@@ -424,7 +424,7 @@ export const XhCascaderContent = defineComponent({
       const api = ctx.api.value
       const children = slots.default?.() ?? []
       return h('div', {
-        ...api.getContentProps() as Record<string, unknown>,
+        ...api.getContentProps(),
         // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
         // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
         style: ctx.visible.value ? undefined : { display: 'none' },
@@ -434,7 +434,7 @@ export const XhCascaderContent = defineComponent({
         // 空态占位常挂在列后，露不露面归连接层；empty 插槽可换内容，缺省文案按视图取无匹配或无数据
         h(
           'div',
-          api.getEmptyProps() as Record<string, unknown>,
+          api.getEmptyProps(),
           slots.empty ? slots.empty() : (api.searching ? api.translations.noMatch : api.translations.empty),
         ),
         h(XhCascaderAutoLoading),
@@ -448,7 +448,7 @@ export const XhCascaderInput = defineComponent({
   setup() {
     const ctx = useCascaderContext()
     // 搜索框放在 content 顶部；没开 searchable 时连接层给 hidden
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getInputProps())
   },
 })
 
@@ -478,12 +478,12 @@ export const XhCascaderSearchList = defineComponent({
     // 候选整组自动铺：整条路径连缀成一行；item 插槽可换内容
     return () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getSearchListProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getSearchListProps(), attrs),
         ref: (el: unknown) => { searchListRef.value = el as HTMLElement },
       }, ctx.api.value.searchResults.map(result =>
         h(
           'div',
-          { ...ctx.api.value.getSearchItemProps({ path: result.path }) as Record<string, unknown>, key: result.key },
+          { ...ctx.api.value.getSearchItemProps({ path: result.path }), key: result.key },
           slots.item ? slots.item({ result }) : result.labels.join(' / '),
         ),
       )),
@@ -501,9 +501,9 @@ function renderBranchFeedback(ctx: CascaderContext, level: number): VNode[] {
   if (api.columnLoadState(level) == null)
     return []
   return [
-    h('div', { ...api.getBranchLoadingProps({ level }) as Record<string, unknown>, key: 'branch-loading' }, api.translations.loading),
-    h('div', { ...api.getBranchErrorProps({ level }) as Record<string, unknown>, key: 'branch-error' }, api.translations.branchError),
-    h('button', { ...api.getBranchRetryTriggerProps({ level }) as Record<string, unknown>, key: 'branch-retry-trigger' }, api.translations.retry),
+    h('div', { ...api.getBranchLoadingProps({ level }), key: 'branch-loading' }, api.translations.loading),
+    h('div', { ...api.getBranchErrorProps({ level }), key: 'branch-error' }, api.translations.branchError),
+    h('button', { ...api.getBranchRetryTriggerProps({ level }), key: 'branch-retry-trigger' }, api.translations.retry),
   ]
 }
 
@@ -531,7 +531,7 @@ export const XhCascaderColumn = defineComponent({
       h(
         'div',
         {
-          ...mergeProps(ctx.api.value.getColumnProps({ level: Number(props.level) }) as Record<string, unknown>, attrs),
+          ...mergeProps(ctx.api.value.getColumnProps({ level: Number(props.level) }), attrs),
           ref: (el: unknown) => { columnRef.value = el as HTMLElement },
         },
         [...(slots.default?.() ?? []), ...renderBranchFeedback(ctx, Number(props.level))],
@@ -551,7 +551,7 @@ export const XhCascaderGroup = defineComponent({
     const group = computed<CascaderGroupProps>(() => ({ value: props.value }))
     provideCascaderGroup({ group })
     // 分组容器：写在列里，条目照常挂在它下面
-    return () => h('div', ctx.api.value.getGroupProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getGroupProps(group.value), slots.default?.())
   },
 })
 
@@ -560,7 +560,7 @@ export const XhCascaderGroupLabel = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const { group } = useCascaderGroupContext()
-    return () => h('span', ctx.api.value.getGroupLabelProps(group.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getGroupLabelProps(group.value), slots.default?.())
   },
 })
 
@@ -577,7 +577,7 @@ export const XhCascaderItem = defineComponent({
     reportItemFocus(ctx, el, () => props.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getItemProps(item.value), ref: el },
       slots.default?.(),
     )
   },
@@ -588,7 +588,7 @@ export const XhCascaderItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const { item } = useCascaderItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -598,7 +598,7 @@ export const XhCascaderItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const { item } = useCascaderItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 
@@ -608,7 +608,7 @@ export const XhCascaderItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const { item } = useCascaderItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -617,7 +617,7 @@ export const XhCascaderItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useCascaderContext()
     const { item } = useCascaderItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -627,7 +627,7 @@ export const XhCascaderFooter = defineComponent({
     const ctx = useCascaderContext()
     // 浮层底部的操作区：写在 content 里、与列并列，横跨全部列；
     // 列表框语义在每一列上，放在这里的按钮既不进列的拥有关系，也走不到方向键
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 

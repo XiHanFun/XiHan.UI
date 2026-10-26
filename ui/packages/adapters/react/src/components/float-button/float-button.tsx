@@ -90,12 +90,12 @@ export function XhFloatButtonRoot({
   // 悬停展开挂的是 pointerenter / pointerleave，两者都不冒泡：留在 React 的合成事件上
   // 收到的是从 pointerover / pointerout 合出来的那一档，直接派到壳上的事件到不了
   const bind = useNativeEvents(
-    ctx.api.getRootProps() as Record<string, unknown>,
+    ctx.api.getRootProps(),
     ['onPointerEnter', 'onPointerLeave'],
   )
   return (
     <FloatButtonProvider value={ctx}>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: ctx.rootRef })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref }, { ref: ctx.rootRef })}>
         {renderSlot(children, { open: ctx.api.open, setOpen: ctx.api.setOpen })}
       </div>
     </FloatButtonProvider>
@@ -109,7 +109,7 @@ export interface XhFloatButtonTriggerProps extends ComponentPropsWithRef<'button
 export function XhFloatButtonTrigger({ children, ...rest }: XhFloatButtonTriggerProps): ReactNode {
   const ctx = useFloatButtonContext()
   return (
-    <button {...mergeReactProps(ctx.api.getTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -120,7 +120,7 @@ export interface XhFloatButtonListProps extends ComponentPropsWithRef<'div'> {}
 export function XhFloatButtonList({ children, ...rest }: XhFloatButtonListProps): ReactNode {
   const ctx = useFloatButtonContext()
   return (
-    <div {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getListProps(), rest)}>
       {children}
     </div>
   )

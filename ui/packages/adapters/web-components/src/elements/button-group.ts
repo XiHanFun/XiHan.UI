@@ -96,7 +96,7 @@ export class XhButtonGroupElement extends XhElement {
     const root = this.getPart('root')
     this.observeSegments(root)
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     const separators = root ? this.syncAutomaticSeparators(root, api.separators) : []
     for (const separator of separators) {

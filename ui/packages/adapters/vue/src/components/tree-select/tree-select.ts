@@ -183,7 +183,7 @@ export const XhTreeSelectRoot = defineComponent({
     })
     provideTreeSelect(ctx)
 
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default
+    return () => h('div', ctx.api.value.getRootProps(), slots.default
       ? slots.default({
           open: ctx.api.value.open,
           searching: ctx.api.value.searching,
@@ -227,7 +227,7 @@ export const XhTreeSelectLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -237,7 +237,7 @@ export const XhTreeSelectControl = defineComponent({
     const ctx = useTreeSelectContext()
     // 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排
     return () => h('div', {
-      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ...ctx.api.value.getControlProps(),
       ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -253,7 +253,7 @@ export const XhTreeSelectTrigger = defineComponent({
     const ctx = useTreeSelectContext()
     return () => h('button', fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getTriggerProps() as Record<string, unknown>,
+      ...ctx.api.value.getTriggerProps(),
       ref: (el: unknown) => { ctx.triggerRef.value = el as HTMLElement },
     }), slots.default?.())
   },
@@ -266,7 +266,7 @@ export const XhTreeSelectValueText = defineComponent({
     // 有插槽用插槽，否则显示选中项文本或 placeholder
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? ctx.api.value.displayText,
     )
   },
@@ -277,7 +277,7 @@ export const XhTreeSelectTagList = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     // 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字
-    return () => h('span', ctx.api.value.getTagListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagListProps(), slots.default?.())
   },
 })
 
@@ -286,7 +286,7 @@ export const XhTreeSelectTagLabel = defineComponent({
   name: 'XhTreeSelectTagLabel',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    return () => h('span', ctx.api.value.getTagLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getTagLabelProps(), slots.default?.())
   },
 })
 
@@ -311,7 +311,7 @@ export const XhTreeSelectTag = defineComponent({
   setup(props, { slots }) {
     const ctx = useTreeSelectContext()
     provideTreeSelectTag({ value: () => props.value })
-    return () => h('span', ctx.api.value.getTagProps({ value: props.value }) as Record<string, unknown>, tagChildren(slots.default?.()))
+    return () => h('span', ctx.api.value.getTagProps({ value: props.value }), tagChildren(slots.default?.()))
   },
 })
 
@@ -322,7 +322,7 @@ export const XhTreeSelectOverflowTag = defineComponent({
     const ctx = useTreeSelectContext()
     return () => h(
       'span',
-      ctx.api.value.getOverflowTagProps() as Record<string, unknown>,
+      ctx.api.value.getOverflowTagProps(),
       tagChildren(slots.default?.() ?? ctx.api.value.overflowText),
     )
   },
@@ -334,7 +334,7 @@ export const XhTreeSelectItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const tag = useTreeSelectTagContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps({ value: tag.value() }), slots.default?.())
   },
 })
 
@@ -342,7 +342,7 @@ export const XhTreeSelectIndicator = defineComponent({
   name: 'XhTreeSelectIndicator',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    return () => h('span', ctx.api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -350,7 +350,7 @@ export const XhTreeSelectClearTrigger = defineComponent({
   name: 'XhTreeSelectClearTrigger',
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
-    return () => h('button', ctx.api.value.getClearTriggerProps() as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getClearTriggerProps(), slots.default?.())
   },
 })
 
@@ -377,7 +377,7 @@ export const XhTreeSelectPositioner = defineComponent({
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -393,7 +393,7 @@ const XhTreeSelectAutoEmpty = defineComponent({
     return () => content.authoredEmptyCount.value > 0
       ? null
       : h('div', {
-          ...ctx.api.value.getEmptyProps() as Record<string, unknown>,
+          ...ctx.api.value.getEmptyProps(),
           'data-xh-tree-select-auto-empty': '',
         }, ctx.api.value.searching ? ctx.api.value.translations.noMatch : ctx.api.value.translations.empty)
   },
@@ -407,7 +407,7 @@ const XhTreeSelectAutoLoading = defineComponent({
     return () => content.authoredLoadingCount.value > 0
       ? null
       : h('div', {
-          ...ctx.api.value.getLoadingProps() as Record<string, unknown>,
+          ...ctx.api.value.getLoadingProps(),
           'data-xh-tree-select-auto-loading': '',
         }, ctx.api.value.translations.loading)
   },
@@ -437,7 +437,7 @@ export const XhTreeSelectContent = defineComponent({
     })
     // 收起时只隐藏不卸载
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -451,7 +451,7 @@ export const XhTreeSelectInput = defineComponent({
   name: 'XhTreeSelectInput',
   setup() {
     const ctx = useTreeSelectContext()
-    return () => h('input', ctx.api.value.getInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getInputProps())
   },
 })
 
@@ -460,7 +460,7 @@ export const XhTreeSelectTree = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     return () => h('div', {
-      ...ctx.api.value.getTreeProps() as Record<string, unknown>,
+      ...ctx.api.value.getTreeProps(),
       ref: (el: unknown) => { ctx.treeRef.value = el as HTMLElement | null },
     }, slots.default?.())
   },
@@ -479,7 +479,7 @@ export const XhTreeSelectItem = defineComponent({
     reportNodeFocus(ctx, el, () => props.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getItemProps(node.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getItemProps(node.value), ref: el },
       slots.default?.(),
     )
   },
@@ -490,7 +490,7 @@ export const XhTreeSelectItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getItemTextProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(node.value), slots.default?.())
   },
 })
 
@@ -500,7 +500,7 @@ export const XhTreeSelectItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(node.value), slots.default?.())
   },
 })
 
@@ -510,7 +510,7 @@ export const XhTreeSelectItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(node.value), slots.default?.())
   },
 })
 
@@ -519,7 +519,7 @@ export const XhTreeSelectItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(node.value), slots.default?.())
   },
 })
 
@@ -527,10 +527,10 @@ function renderBranchFeedback(ctx: TreeSelectContext, node: TreeSelectNodeProps)
   if (ctx.api.value.branchLoadState(node.value) == null)
     return []
   return [
-    h('div', ctx.api.value.getBranchLoadingProps(node) as Record<string, unknown>, ctx.api.value.translations.loading),
-    h('div', ctx.api.value.getBranchErrorProps(node) as Record<string, unknown>, ctx.api.value.translations.branchError),
-    h('button', ctx.api.value.getBranchRetryTriggerProps(node) as Record<string, unknown>, ctx.api.value.translations.retry),
-    h('div', ctx.api.value.getBranchEmptyProps(node) as Record<string, unknown>, ctx.api.value.translations.branchEmpty),
+    h('div', ctx.api.value.getBranchLoadingProps(node), ctx.api.value.translations.loading),
+    h('div', ctx.api.value.getBranchErrorProps(node), ctx.api.value.translations.branchError),
+    h('button', ctx.api.value.getBranchRetryTriggerProps(node), ctx.api.value.translations.retry),
+    h('div', ctx.api.value.getBranchEmptyProps(node), ctx.api.value.translations.branchEmpty),
   ]
 }
 
@@ -548,7 +548,7 @@ export const XhTreeSelectBranch = defineComponent({
     reportNodeFocus(ctx, el, () => props.value)
     return () => h(
       'div',
-      { ...ctx.api.value.getBranchProps(node.value) as Record<string, unknown>, ref: el },
+      { ...ctx.api.value.getBranchProps(node.value), ref: el },
       [slots.default?.(), ...renderBranchFeedback(ctx, node.value)],
     )
   },
@@ -559,7 +559,7 @@ export const XhTreeSelectBranchControl = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('div', ctx.api.value.getBranchControlProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBranchControlProps(node.value), slots.default?.())
   },
 })
 
@@ -568,7 +568,7 @@ export const XhTreeSelectBranchTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getBranchTriggerProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchTriggerProps(node.value), slots.default?.())
   },
 })
 
@@ -577,7 +577,7 @@ export const XhTreeSelectBranchIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getBranchIndicatorProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchIndicatorProps(node.value), slots.default?.())
   },
 })
 
@@ -586,7 +586,7 @@ export const XhTreeSelectBranchText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('span', ctx.api.value.getBranchTextProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getBranchTextProps(node.value), slots.default?.())
   },
 })
 
@@ -596,7 +596,7 @@ export const XhTreeSelectBranchContent = defineComponent({
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
     // 收起只加 hidden，不卸载子树节点
-    return () => h('div', ctx.api.value.getBranchContentProps(node.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getBranchContentProps(node.value), slots.default?.())
   },
 })
 
@@ -605,7 +605,7 @@ export const XhTreeSelectBranchLoading = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+    return () => h('div', ctx.api.value.getBranchLoadingProps(node.value), slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -614,7 +614,7 @@ export const XhTreeSelectBranchError = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('div', ctx.api.value.getBranchErrorProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchError)
+    return () => h('div', ctx.api.value.getBranchErrorProps(node.value), slots.default?.() ?? ctx.api.value.translations.branchError)
   },
 })
 
@@ -623,7 +623,7 @@ export const XhTreeSelectBranchRetryTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.retry)
+    return () => h('button', ctx.api.value.getBranchRetryTriggerProps(node.value), slots.default?.() ?? ctx.api.value.translations.retry)
   },
 })
 
@@ -632,7 +632,7 @@ export const XhTreeSelectBranchEmpty = defineComponent({
   setup(_, { slots }) {
     const ctx = useTreeSelectContext()
     const { node } = useTreeSelectNodeContext()
-    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value) as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.branchEmpty)
+    return () => h('div', ctx.api.value.getBranchEmptyProps(node.value), slots.default?.() ?? ctx.api.value.translations.branchEmpty)
   },
 })
 
@@ -643,7 +643,7 @@ export const XhTreeSelectEmpty = defineComponent({
     const content = useTreeSelectContentContext()
     const unregister = content.registerEmpty()
     onBeforeUnmount(unregister)
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? (ctx.api.value.searching ? ctx.api.value.translations.noMatch : ctx.api.value.translations.empty))
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? (ctx.api.value.searching ? ctx.api.value.translations.noMatch : ctx.api.value.translations.empty))
   },
 })
 
@@ -654,7 +654,7 @@ export const XhTreeSelectLoading = defineComponent({
     const content = useTreeSelectContentContext()
     const unregister = content.registerLoading()
     onBeforeUnmount(unregister)
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.translations.loading)
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.() ?? ctx.api.value.translations.loading)
   },
 })
 
@@ -664,7 +664,7 @@ export const XhTreeSelectFooter = defineComponent({
     const ctx = useTreeSelectContext()
     // 浮层底部的操作区：写在 content 里、tree 的兄弟，
     // 放在这里的按钮既不进 role=tree 的拥有关系，也走不到方向键与连打检索
-    return () => h('div', ctx.api.value.getFooterProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getFooterProps(), slots.default?.())
   },
 })
 
@@ -677,12 +677,12 @@ export const XhTreeSelectHiddenInput = defineComponent({
     // 合并而不是展开：作者的 class 与部件的挂载类拼起来，不互相覆盖
     return () => [
       ...ctx.api.value.value.map(value => h('input', {
-        ...mergeProps(ctx.api.value.getHiddenInputProps({ value }) as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getHiddenInputProps({ value }), attrs),
         key: value,
       })),
       // 必填且没选值：补一份空值占位，原生 required 才拦得住空表单
       ...(ctx.api.value.value.length === 0 && ctx.api.value.required
-        ? [h('input', { ...mergeProps(ctx.api.value.getHiddenInputProps() as Record<string, unknown>, attrs), key: 'required' })]
+        ? [h('input', { ...mergeProps(ctx.api.value.getHiddenInputProps(), attrs), key: 'required' })]
         : []),
     ]
   },

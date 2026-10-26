@@ -592,18 +592,18 @@ export class XhColorPickerElement extends XhPortalHostElement {
       return
     this.spreader.spread(mount, mountProps)
     for (const el of this.partsIn(mount, 'label'))
-      this.spreader.spread(el, slider.getLabelProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getLabelProps())
     for (const el of this.partsIn(mount, 'control'))
-      this.spreader.spread(el, slider.getControlProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getControlProps())
     for (const el of this.partsIn(mount, 'track'))
-      this.spreader.spread(el, slider.getTrackProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getTrackProps())
     for (const el of this.partsIn(mount, 'thumb'))
-      this.spreader.spread(el, slider.getThumbProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getThumbProps())
     for (const el of this.partsIn(mount, 'hidden-input'))
-      this.spreader.spread(el, slider.getHiddenInputProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getHiddenInputProps())
     // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
     for (const el of this.partsIn(mount, 'value-text')) {
-      this.spreader.spread(el, slider.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(el, slider.getValueTextProps())
       this.fillValueText(el, String(slider.channelValue))
     }
   }
@@ -615,16 +615,16 @@ export class XhColorPickerElement extends XhPortalHostElement {
       return
     this.spreader.spread(mount, mountProps)
     for (const el of this.partsIn(mount, 'label'))
-      this.spreader.spread(el, picker.getLabelProps() as Record<string, unknown>)
+      this.spreader.spread(el, picker.getLabelProps())
     for (const el of this.partsIn(mount, 'item')) {
       const item: ColorSwatchPickerItemProps = { value: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, picker.getItemProps(item) as Record<string, unknown>)
+      this.spreader.spread(el, picker.getItemProps(item))
       for (const input of this.partsIn(el, 'hidden-input'))
-        this.spreadHiddenInput(input as HTMLInputElement, picker.getHiddenInputProps(item) as Record<string, unknown>)
+        this.spreadHiddenInput(input as HTMLInputElement, picker.getHiddenInputProps(item))
       for (const swatch of this.partsIn(el, 'swatch'))
-        this.spreader.spread(swatch, picker.getSwatchProps(item) as Record<string, unknown>)
+        this.spreader.spread(swatch, picker.getSwatchProps(item))
       for (const indicator of this.partsIn(el, 'indicator'))
-        this.spreader.spread(indicator, picker.getIndicatorProps(item) as Record<string, unknown>)
+        this.spreader.spread(indicator, picker.getIndicatorProps(item))
     }
   }
 
@@ -637,14 +637,14 @@ export class XhColorPickerElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('tag-list', api.getTagListProps())
     // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
-    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    const tagLabelProps = api.getTagLabelProps()
     for (const el of this.getParts('tag')) {
-      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }))
       const label = this.ensureTagLabel(el)
       if (label)
         this.spreader.spread(label, tagLabelProps)
@@ -654,54 +654,54 @@ export class XhColorPickerElement extends XhPortalHostElement {
     // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }))
     }
     // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
-      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      this.spreader.spread(overflowTag, api.getOverflowTagProps())
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
         this.fillValueText(label, api.overflowText)
       }
     }
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
-    put('swatch', api.getSwatchProps() as Record<string, unknown>)
+    put('trigger', api.getTriggerProps())
+    put('clear-trigger', api.getClearTriggerProps())
+    put('swatch', api.getSwatchProps())
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('saturation-area', api.getSaturationAreaProps() as Record<string, unknown>)
-    put('area-thumb', api.getAreaThumbProps() as Record<string, unknown>)
-    put('eye-dropper-trigger', api.getEyeDropperTriggerProps() as Record<string, unknown>)
-    put('confirm-trigger', api.getConfirmTriggerProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('saturation-area', api.getSaturationAreaProps())
+    put('area-thumb', api.getAreaThumbProps())
+    put('eye-dropper-trigger', api.getEyeDropperTriggerProps())
+    put('confirm-trigger', api.getConfirmTriggerProps())
     // 多选时一个选中值一份同名输入，单选仍是一份
     this.hiddenInputs.sync(this.ownPart('hidden-input'), api.selectionMode === 'multiple'
-      ? api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>)
-      : [api.getHiddenInputProps() as Record<string, unknown>])
+      ? api.value.map(value => api.getHiddenInputProps({ value }))
+      : [api.getHiddenInputProps()])
 
     // 工作色值串（单选未选时是占位提示）的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
     const valueText = this.ownPart('value-text')
     if (valueText) {
-      this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(valueText, api.getValueTextProps())
       this.fillValueText(valueText, api.valueText)
     }
 
     // 两条内嵌颜色滑块
-    this.wireSlider('hue-slider', api.getHueSliderProps() as Record<string, unknown>, api.hueSlider)
-    this.wireSlider('alpha-slider', api.getAlphaSliderProps() as Record<string, unknown>, api.alphaSlider)
+    this.wireSlider('hue-slider', api.getHueSliderProps(), api.hueSlider)
+    this.wireSlider('alpha-slider', api.getAlphaSliderProps(), api.alphaSlider)
 
     // 数值框不必住在滑块里（多半与滑块各占一行），身份由它自己声明
     for (const el of this.getParts('channel-input')) {
       const channel = colorPickerToInputChannel(el.getAttribute('channel') ?? undefined)
-      this.spreader.spread(el, api.getChannelInputProps({ channel }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getChannelInputProps({ channel }))
     }
 
     // 预设色板与最近使用色：挂载点顶替色板的 root；每格身份取作者写的 value 属性，名字与禁用回各自的数据里查
-    this.wireSwatchPicker('swatch-picker', api.getSwatchPickerProps() as Record<string, unknown>, api.swatchPicker)
-    this.wireSwatchPicker('recent-swatch-picker', api.getRecentSwatchPickerProps() as Record<string, unknown>, api.recentSwatchPicker)
+    this.wireSwatchPicker('swatch-picker', api.getSwatchPickerProps(), api.swatchPicker)
+    this.wireSwatchPicker('recent-swatch-picker', api.getRecentSwatchPickerProps(), api.recentSwatchPicker)
 
     // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。

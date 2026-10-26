@@ -33,7 +33,7 @@ const SwitchThumb = defineComponent({
   name: 'XhSwitchThumb',
   setup() {
     const api = useSwitchApi()
-    return () => h('span', api.value.getThumbProps() as Record<string, unknown>)
+    return () => h('span', api.value.getThumbProps())
   },
 })
 
@@ -42,7 +42,7 @@ const SwitchHiddenInput = defineComponent({
   name: 'XhSwitchHiddenInput',
   setup() {
     const api = useSwitchApi()
-    return () => h('input', api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', api.value.getHiddenInputProps())
   },
 })
 
@@ -97,15 +97,15 @@ export const XhSwitch = defineComponent({
       const labelled = slotPaints(text)
       const track = h('button', fieldLabel.value({
         ...fieldWiring.value,
-        ...api.value.getRootProps() as Record<string, unknown>,
+        ...api.value.getRootProps(),
         // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
         ...(labelled ? { 'aria-labelledby': textId } : null),
       }), renderStructure(switchStructure({ hiddenInput: props.name !== undefined }), SWITCH_PARTS))
       if (!labelled)
         return track
-      return h('label', api.value.getLabelProps() as Record<string, unknown>, [
+      return h('label', api.value.getLabelProps(), [
         track,
-        h('span', { ...api.value.getTextProps() as Record<string, unknown>, id: textId }, text),
+        h('span', { ...api.value.getTextProps(), id: textId }, text),
       ])
     }
   },

@@ -298,11 +298,11 @@ export class XhHeatmapElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('grid', api.getGridProps() as Record<string, unknown>)
-    put('tooltip', api.getTooltipProps() as Record<string, unknown>)
-    put('legend', api.getLegendProps() as Record<string, unknown>)
-    put('empty', api.getEmptyProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('grid', api.getGridProps())
+    put('tooltip', api.getTooltipProps())
+    put('legend', api.getLegendProps())
+    put('empty', api.getEmptyProps())
 
     // 空态留空时写入文案：取数中是加载文案，否则是空态文案
     const empty = this.getPart('empty')
@@ -314,22 +314,22 @@ export class XhHeatmapElement extends XhElement {
     }
 
     for (const el of this.getParts('month-block'))
-      this.spreader.spread(el, api.getMonthBlockProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getMonthBlockProps({ value: el.getAttribute('value') ?? '' }))
 
     for (const el of this.getParts('row'))
-      this.spreader.spread(el, api.getRowProps(this.rowProps(el, variant)) as Record<string, unknown>)
+      this.spreader.spread(el, api.getRowProps(this.rowProps(el, variant)))
 
     for (const el of this.getParts('week-day'))
-      this.spreader.spread(el, api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(el.getAttribute('value')) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getWeekDayProps({ weekDay: normalizeHeatmapNumber(el.getAttribute('value')) }))
 
     for (const el of this.getParts('month-label'))
-      this.spreader.spread(el, api.getMonthLabelProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getMonthLabelProps({ value: el.getAttribute('value') ?? '' }))
 
     for (const el of this.getParts('row-label'))
-      this.spreader.spread(el, api.getRowLabelProps({ value: normalizeHeatmapString(el.getAttribute('value')) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getRowLabelProps({ value: normalizeHeatmapString(el.getAttribute('value')) }))
 
     for (const el of this.getParts('column-label'))
-      this.spreader.spread(el, api.getColumnLabelProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getColumnLabelProps({ value: el.getAttribute('value') ?? '' }))
 
     // 格子逐个打：日期形态身份就是 value，矩阵形态还要往上取一次行身份。
     // 打上去的 data-scope/data-part/data-value 正是键盘导航在事件那一刻查 DOM 的依据，
@@ -338,14 +338,14 @@ export class XhHeatmapElement extends XhElement {
       const props = variant === 'matrix'
         ? { row: ancestorValue(el, 'row'), column: el.getAttribute('value') ?? '' }
         : { date: el.getAttribute('value') ?? '' }
-      this.spreader.spread(el, api.getCellProps(props) as Record<string, unknown>)
+      this.spreader.spread(el, api.getCellProps(props))
     }
 
     // 两端那两个字：value 写 low 或 high，不写即当起点那一端
     for (const el of this.getParts('legend-label'))
-      this.spreader.spread(el, api.getLegendLabelProps({ bound: normalizeHeatmapString(el.getAttribute('value')) === 'high' ? 'high' : 'low' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLegendLabelProps({ bound: normalizeHeatmapString(el.getAttribute('value')) === 'high' ? 'high' : 'low' }))
 
     for (const el of this.getParts('legend-item'))
-      this.spreader.spread(el, api.getLegendItemProps({ level: normalizeHeatmapNumber(el.getAttribute('value')) ?? 0, polarity: legendPolarity(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getLegendItemProps({ level: normalizeHeatmapNumber(el.getAttribute('value')) ?? 0, polarity: legendPolarity(el) }))
   }
 }

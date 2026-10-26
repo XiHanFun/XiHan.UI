@@ -40,7 +40,7 @@ export const XhWatermarkRoot = defineComponent({
     const api = computed(() => connectWatermark(service, vueNormalize))
     provideWatermark({ api })
     return () => h('div', {
-      ...api.value.getRootProps() as Record<string, unknown>,
+      ...api.value.getRootProps(),
       ref: (el: unknown) => { rootRef.value = el as HTMLElement | null },
     }, slots.default?.())
   },
@@ -51,6 +51,6 @@ export const XhWatermarkContent = defineComponent({
   name: 'XhWatermarkContent',
   setup(_, { slots }) {
     const ctx = useWatermarkContext()
-    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getContentProps(), slots.default?.())
   },
 })

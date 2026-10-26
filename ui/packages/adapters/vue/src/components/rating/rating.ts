@@ -81,7 +81,7 @@ export const XhRatingRoot = defineComponent({
     provideRating(ctx)
     return () => {
       const api = ctx.api.value
-      return h('div', api.getRootProps() as Record<string, unknown>, slots.default
+      return h('div', api.getRootProps(), slots.default
         ? slots.default({
             value: api.value,
             hoveredValue: api.hoveredValue,
@@ -107,7 +107,7 @@ export const XhRatingLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -118,7 +118,7 @@ export const XhRatingControl = defineComponent({
     // 放进表单字段时，字段的标题与说明接到星组上：读屏进组时念组名与说明
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() as Record<string, unknown> }), slots.default?.())
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getControlProps() }), slots.default?.())
   },
 })
 
@@ -129,7 +129,7 @@ export const XhRatingValueText = defineComponent({
     // 分值文本：写在 root 里、control 的兄弟；没给内容就填当前该点亮到的那个数
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? ctx.api.value.valueText,
     )
   },
@@ -178,7 +178,7 @@ export const XhRatingItem = defineComponent({
     onUpdated(readAuthored)
 
     return () => h('span', {
-      ...ctx.api.value.getItemProps({ ...item.value, authored: authored.value }) as Record<string, unknown>,
+      ...ctx.api.value.getItemProps({ ...item.value, authored: authored.value }),
       ref: itemEl,
     }, slots.default?.(ctx.api.value.getItemState(item.value)))
   },
@@ -188,7 +188,7 @@ export const XhRatingHiddenInput = defineComponent({
   name: 'XhRatingHiddenInput',
   setup() {
     const ctx = useRatingContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })
 

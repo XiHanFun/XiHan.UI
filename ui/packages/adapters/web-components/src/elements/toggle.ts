@@ -75,6 +75,6 @@ export class XhToggleElement extends XhElement {
     const api = connectToggle(this.ctrl.service, wcNormalize)
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
   }
 }

@@ -78,7 +78,7 @@ export const XhMatrixCode = defineComponent({
         children.push(h('rect', { 'data-xh-geom': 'logo-clear', 'x': area.x, 'y': area.y, 'width': area.size, 'height': area.size }))
       children.push(...content)
 
-      return h('svg', current.getRootProps() as Record<string, unknown>, children)
+      return h('svg', current.getRootProps(), children)
     }
   },
 })
@@ -91,6 +91,6 @@ export const XhMatrixCodeLogo = defineComponent({
   name: 'XhMatrixCodeLogo',
   setup(_, { slots }) {
     const ctx = useMatrixCodeContext()
-    return () => h('svg', ctx.api.value.getLogoProps() as Record<string, unknown>, slots.default?.())
+    return () => h('svg', ctx.api.value.getLogoProps(), slots.default?.())
   },
 })

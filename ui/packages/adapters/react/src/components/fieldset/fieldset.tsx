@@ -62,7 +62,7 @@ export function XhFieldsetRoot({
     <FieldsetProvider value={ctx}>
       <FieldsetOuterDisabled value={outerDisabled}>
         <XhConfigProvider config={scope}>
-          <fieldset {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+          <fieldset {...mergeReactProps(ctx.api.getRootProps(), rest)}>
             {children ?? renderDefaultStructure(legend, { 'description': description, 'field-group': fieldGroup, 'error-text': errorText, 'actions': actions })}
           </fieldset>
         </XhConfigProvider>
@@ -79,7 +79,7 @@ export function XhFieldsetLegend({ children, ...rest }: XhFieldsetLegendProps): 
   const outerDisabled = useContext(FieldsetOuterDisabled)
   const scope = useMemo(() => ({ disabled: outerDisabled }), [outerDisabled])
   return (
-    <legend {...mergeReactProps(ctx.api.getLegendProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <legend {...mergeReactProps(ctx.api.getLegendProps(), rest)}>
       <XhConfigProvider config={scope}>{children}</XhConfigProvider>
     </legend>
   )
@@ -98,14 +98,14 @@ export interface XhFieldsetFieldGroupProps extends ComponentPropsWithRef<'div'> 
 /** 把并排的几个字段圈为一段；纯排版。 */
 export function XhFieldsetFieldGroup({ children, ...rest }: XhFieldsetFieldGroupProps): ReactNode {
   const ctx = useFieldsetContext()
-  return <div {...mergeReactProps(ctx.api.getFieldGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getFieldGroupProps(), rest)}>{children}</div>
 }
 
 export interface XhFieldsetActionsProps extends ComponentPropsWithRef<'div'> {}
 /** 组末尾的按钮行；纯排版。 */
 export function XhFieldsetActions({ children, ...rest }: XhFieldsetActionsProps): ReactNode {
   const ctx = useFieldsetContext()
-  return <div {...mergeReactProps(ctx.api.getActionsProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getActionsProps(), rest)}>{children}</div>
 }
 
 export interface XhFieldsetErrorTextProps extends ComponentPropsWithRef<'p'> {}
@@ -113,7 +113,7 @@ export interface XhFieldsetErrorTextProps extends ComponentPropsWithRef<'p'> {}
 export function XhFieldsetErrorText({ children, ...rest }: XhFieldsetErrorTextProps): ReactNode {
   const ctx = useFieldsetContext()
   useFieldsetPartPresence(ctx, 'errorText')
-  return <p {...mergeReactProps(ctx.api.getErrorTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</p>
+  return <p {...mergeReactProps(ctx.api.getErrorTextProps(), rest)}>{children}</p>
 }
 
 /** 标准结构里各部件对应的组件。 */

@@ -33,7 +33,7 @@ const CheckboxIndicator = defineComponent({
   name: 'XhCheckboxIndicator',
   setup(_, { slots }) {
     const api = useCheckboxApi()
-    return () => h('span', api.value.getIndicatorProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', api.value.getIndicatorProps(), slots.default?.())
   },
 })
 
@@ -42,7 +42,7 @@ const CheckboxHiddenInput = defineComponent({
   name: 'XhCheckboxHiddenInput',
   setup() {
     const api = useCheckboxApi()
-    return () => h('input', api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', api.value.getHiddenInputProps())
   },
 })
 
@@ -102,7 +102,7 @@ export const XhCheckbox = defineComponent({
       const labelled = slotPaints(text)
       const box = h('button', fieldLabel.value({
         ...fieldWiring.value,
-        ...api.value.getRootProps() as Record<string, unknown>,
+        ...api.value.getRootProps(),
         // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
         ...(labelled ? { 'aria-labelledby': textId } : null),
       }), renderStructure(
@@ -112,9 +112,9 @@ export const XhCheckbox = defineComponent({
       ))
       if (!labelled)
         return box
-      return h('label', api.value.getLabelProps() as Record<string, unknown>, [
+      return h('label', api.value.getLabelProps(), [
         box,
-        h('span', { ...api.value.getTextProps() as Record<string, unknown>, id: textId }, text),
+        h('span', { ...api.value.getTextProps(), id: textId }, text),
       ])
     }
   },

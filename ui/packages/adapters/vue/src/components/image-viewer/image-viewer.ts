@@ -124,7 +124,7 @@ export const XhImageViewerTrigger = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useImageViewerContext()
     return () => {
-      const part = mergePartProps(ctx.api.value.getTriggerProps() as Record<string, unknown>, attrs)
+      const part = mergePartProps(ctx.api.value.getTriggerProps(), attrs)
       const children = slots.default?.()
       // asChild：把触发器属性合到作者的节点上，不再自己渲染包裹元素
       if (props.asChild) {
@@ -153,14 +153,14 @@ export const XhImageViewerContent = defineComponent({
       const api = ctx.api.value
       return h(XhPortal, { to: props.container ?? ctx.portalTarget.value }, () => [
         h('div', {
-          ...api.getBackdropProps() as Record<string, unknown>,
+          ...api.getBackdropProps(),
           ref: (el: unknown) => {
             ctx.backdropRef.value = el as HTMLElement
           },
         }),
-        h('div', api.getPositionerProps() as Record<string, unknown>, [
+        h('div', api.getPositionerProps(), [
           h('div', {
-            ...mergeProps(api.getContentProps() as Record<string, unknown>, attrs),
+            ...mergeProps(api.getContentProps(), attrs),
             ref: (el: unknown) => {
               ctx.contentRef.value = el as HTMLElement
             },
@@ -175,7 +175,7 @@ export const XhImageViewerViewport = defineComponent({
   name: 'XhImageViewerViewport',
   setup(_, { slots }) {
     const ctx = useImageViewerContext()
-    return () => h('div', ctx.api.value.getViewportProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getViewportProps(), slots.default?.())
   },
 })
 
@@ -183,7 +183,7 @@ export const XhImageViewerImage = defineComponent({
   name: 'XhImageViewerImage',
   setup() {
     const ctx = useImageViewerContext()
-    return () => h('img', ctx.api.value.getImageProps() as Record<string, unknown>)
+    return () => h('img', ctx.api.value.getImageProps())
   },
 })
 
@@ -191,7 +191,7 @@ export const XhImageViewerToolbar = defineComponent({
   name: 'XhImageViewerToolbar',
   setup(_, { slots }) {
     const ctx = useImageViewerContext()
-    return () => h('div', ctx.api.value.getToolbarProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getToolbarProps(), slots.default?.())
   },
 })
 
@@ -201,21 +201,21 @@ function toolTrigger(name: string, getProps: (api: ReturnType<typeof useImageVie
     name,
     setup(_, { slots }) {
       const ctx = useImageViewerContext()
-      return () => h('button', getProps(ctx.api.value) as Record<string, unknown>, slots.default?.())
+      return () => h('button', getProps(ctx.api.value), slots.default?.())
     },
   })
 }
 
-export const XhImageViewerZoomInTrigger = toolTrigger('XhImageViewerZoomInTrigger', api => api.getZoomInTriggerProps() as Record<string, unknown>)
-export const XhImageViewerZoomOutTrigger = toolTrigger('XhImageViewerZoomOutTrigger', api => api.getZoomOutTriggerProps() as Record<string, unknown>)
-export const XhImageViewerRotateLeftTrigger = toolTrigger('XhImageViewerRotateLeftTrigger', api => api.getRotateLeftTriggerProps() as Record<string, unknown>)
-export const XhImageViewerRotateRightTrigger = toolTrigger('XhImageViewerRotateRightTrigger', api => api.getRotateRightTriggerProps() as Record<string, unknown>)
-export const XhImageViewerFlipHorizontalTrigger = toolTrigger('XhImageViewerFlipHorizontalTrigger', api => api.getFlipHorizontalTriggerProps() as Record<string, unknown>)
-export const XhImageViewerFlipVerticalTrigger = toolTrigger('XhImageViewerFlipVerticalTrigger', api => api.getFlipVerticalTriggerProps() as Record<string, unknown>)
-export const XhImageViewerResetTrigger = toolTrigger('XhImageViewerResetTrigger', api => api.getResetTriggerProps() as Record<string, unknown>)
-export const XhImageViewerPrevTrigger = toolTrigger('XhImageViewerPrevTrigger', api => api.getPrevTriggerProps() as Record<string, unknown>)
-export const XhImageViewerNextTrigger = toolTrigger('XhImageViewerNextTrigger', api => api.getNextTriggerProps() as Record<string, unknown>)
-export const XhImageViewerCloseTrigger = toolTrigger('XhImageViewerCloseTrigger', api => api.getCloseTriggerProps() as Record<string, unknown>)
+export const XhImageViewerZoomInTrigger = toolTrigger('XhImageViewerZoomInTrigger', api => api.getZoomInTriggerProps())
+export const XhImageViewerZoomOutTrigger = toolTrigger('XhImageViewerZoomOutTrigger', api => api.getZoomOutTriggerProps())
+export const XhImageViewerRotateLeftTrigger = toolTrigger('XhImageViewerRotateLeftTrigger', api => api.getRotateLeftTriggerProps())
+export const XhImageViewerRotateRightTrigger = toolTrigger('XhImageViewerRotateRightTrigger', api => api.getRotateRightTriggerProps())
+export const XhImageViewerFlipHorizontalTrigger = toolTrigger('XhImageViewerFlipHorizontalTrigger', api => api.getFlipHorizontalTriggerProps())
+export const XhImageViewerFlipVerticalTrigger = toolTrigger('XhImageViewerFlipVerticalTrigger', api => api.getFlipVerticalTriggerProps())
+export const XhImageViewerResetTrigger = toolTrigger('XhImageViewerResetTrigger', api => api.getResetTriggerProps())
+export const XhImageViewerPrevTrigger = toolTrigger('XhImageViewerPrevTrigger', api => api.getPrevTriggerProps())
+export const XhImageViewerNextTrigger = toolTrigger('XhImageViewerNextTrigger', api => api.getNextTriggerProps())
+export const XhImageViewerCloseTrigger = toolTrigger('XhImageViewerCloseTrigger', api => api.getCloseTriggerProps())
 
 export const XhImageViewerCounter = defineComponent({
   name: 'XhImageViewerCounter',
@@ -229,7 +229,7 @@ export const XhImageViewerCounter = defineComponent({
         api.index,
         api.count,
       )
-      return h('div', api.getCounterProps() as Record<string, unknown>, slots.default ? slots.default() : fallback)
+      return h('div', api.getCounterProps(), slots.default ? slots.default() : fallback)
     }
   },
 })

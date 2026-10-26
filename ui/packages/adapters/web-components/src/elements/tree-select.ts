@@ -558,15 +558,15 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('label', api.getLabelProps() as Record<string, unknown>)
-    put('control', api.getControlProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('tag-list', api.getTagListProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('label', api.getLabelProps())
+    put('control', api.getControlProps())
+    put('trigger', api.getTriggerProps())
+    put('tag-list', api.getTagListProps())
     // 标签是多实例 part，接的是 tag 的 root：身份取自己的 value 属性；只有文字的补一层 label
-    const tagLabelProps = api.getTagLabelProps() as Record<string, unknown>
+    const tagLabelProps = api.getTagLabelProps()
     for (const el of this.getParts('tag')) {
-      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getTagProps({ value: el.getAttribute('value') ?? '' }))
       const label = this.ensureTagLabel(el)
       if (label)
         this.spreader.spread(label, tagLabelProps)
@@ -574,46 +574,46 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     // 删除钮是所在标签那份 tag 的 close-trigger：身份取所在 tag 的 value 属性
     for (const el of this.getParts('item-delete-trigger')) {
       const owner = el.closest<HTMLElement>('[data-xh-part="tag"]')
-      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDeleteTriggerProps({ value: owner?.getAttribute('value') ?? '' }))
     }
     // +N 那一枚：属性先落，文字填进 label；作者写了子节点就归作者
     const overflowTag = this.getPart('overflow-tag')
     if (overflowTag) {
-      this.spreader.spread(overflowTag, api.getOverflowTagProps() as Record<string, unknown>)
+      this.spreader.spread(overflowTag, api.getOverflowTagProps())
       const label = this.ensureTagLabel(overflowTag)
       if (label) {
         this.spreader.spread(label, tagLabelProps)
         this.feedback.fillText(label, api.overflowText)
       }
     }
-    put('indicator', api.getIndicatorProps() as Record<string, unknown>)
-    put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
+    put('indicator', api.getIndicatorProps())
+    put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('input', api.getInputProps() as Record<string, unknown>)
-    put('tree', api.getTreeProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('input', api.getInputProps())
+    put('tree', api.getTreeProps())
+    put('footer', api.getFooterProps())
     const empty = this.feedback.ensure(this.getPart('content'), 'empty')
     if (empty) {
-      this.spreader.spread(empty, api.getEmptyProps() as Record<string, unknown>)
+      this.spreader.spread(empty, api.getEmptyProps())
       // 搜索视图里的空是「没有匹配」，与整棵树没有节点分开说
       this.feedback.fillText(empty, api.searching ? api.translations.noMatch : api.translations.empty)
     }
     const loading = this.feedback.ensure(this.getPart('content'), 'loading')
     if (loading) {
-      this.spreader.spread(loading, api.getLoadingProps() as Record<string, unknown>)
+      this.spreader.spread(loading, api.getLoadingProps())
       this.feedback.fillText(loading, api.translations.loading)
     }
     // 表单出口可缺省；必填且没选值时补一份空值占位，原生 required 才拦得住空表单
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.value.length === 0 && api.required
-      ? [api.getHiddenInputProps() as Record<string, unknown>]
-      : api.value.map(value => api.getHiddenInputProps({ value }) as Record<string, unknown>))
+      ? [api.getHiddenInputProps()]
+      : api.value.map(value => api.getHiddenInputProps({ value })))
 
     // 属性先落，再填显示文字
     const valueText = this.getPart('value-text')
     if (valueText) {
-      this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
+      this.spreader.spread(valueText, api.getValueTextProps())
       this.fillValueText(valueText, api.displayText)
     }
 
@@ -650,7 +650,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
         const el = this.feedback.ensure(branch, name, tag, BRANCH_SELECTOR)
         if (!el)
           continue
-        this.spreader.spread(el, props as Record<string, unknown>)
+        this.spreader.spread(el, props)
         this.feedback.fillText(el, text)
       }
     }

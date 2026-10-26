@@ -112,11 +112,11 @@ export class XhTruncateElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     const trigger = this.getPart('trigger')
     if (trigger) {
-      this.spreader.spread(trigger, api.getTriggerProps() as Record<string, unknown>)
+      this.spreader.spread(trigger, api.getTriggerProps())
       if (!this.authoredTrigger.has(trigger))
         this.authoredTrigger.set(trigger, (trigger.textContent ?? '').trim() !== '' || trigger.children.length > 0)
       if (!this.authoredTrigger.get(trigger) && trigger.textContent !== api.triggerLabel)

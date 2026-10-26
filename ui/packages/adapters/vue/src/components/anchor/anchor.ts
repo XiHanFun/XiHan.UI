@@ -48,7 +48,7 @@ export const XhAnchorRoot = defineComponent({
     // 传响应式 props 对象本身而非快照，供机器每次读时重新展开
     const ctx = useAnchor(withXhConfig('anchor', props) as AnchorProps, notify, () => props.target ?? null)
     provideAnchor(ctx)
-    return () => h('nav', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.())
+    return () => h('nav', ctx.api.value.getRootProps(), slots.default?.())
   },
 })
 
@@ -58,7 +58,7 @@ export const XhAnchorList = defineComponent({
   setup(_, { slots }) {
     const ctx = useAnchorContext()
     return () => h('ul', {
-      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ...ctx.api.value.getListProps(),
       ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -68,7 +68,7 @@ export const XhAnchorItem = defineComponent({
   name: 'XhAnchorItem',
   setup(_, { slots }) {
     const ctx = useAnchorContext()
-    return () => h('li', ctx.api.value.getItemProps() as Record<string, unknown>, slots.default?.())
+    return () => h('li', ctx.api.value.getItemProps(), slots.default?.())
   },
 })
 
@@ -82,7 +82,7 @@ export const XhAnchorLink = defineComponent({
     const ctx = useAnchorContext()
     return () => h(
       'a',
-      ctx.api.value.getLinkProps({ value: props.value }) as Record<string, unknown>,
+      ctx.api.value.getLinkProps({ value: props.value }),
       slots.default?.(),
     )
   },
@@ -93,7 +93,7 @@ export const XhAnchorLinkText = defineComponent({
   name: 'XhAnchorLinkText',
   setup(_, { slots }) {
     const ctx = useAnchorContext()
-    return () => h('span', ctx.api.value.getLinkTextProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLinkTextProps(), slots.default?.())
   },
 })
 
@@ -102,6 +102,6 @@ export const XhAnchorIndicator = defineComponent({
   name: 'XhAnchorIndicator',
   setup() {
     const ctx = useAnchorContext()
-    return () => h('li', ctx.api.value.getIndicatorProps() as Record<string, unknown>)
+    return () => h('li', ctx.api.value.getIndicatorProps())
   },
 })

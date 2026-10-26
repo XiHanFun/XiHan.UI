@@ -67,7 +67,7 @@ export const XhColorSliderRoot = defineComponent({
     const configured = withXhConfig('color-slider', useFormControlProps(props) as ColorSliderProps)
     const ctx = useColorSlider(configured, { onValueChange: notify, onValueChangeEnd: notifyEnd })
     provideColorSlider(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
       value: ctx.api.value.value,
       channel: ctx.api.value.channel,
       channelValue: ctx.api.value.channelValue,
@@ -88,7 +88,7 @@ export const XhColorSliderLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -96,7 +96,7 @@ export const XhColorSliderControl = defineComponent({
   name: 'XhColorSliderControl',
   setup(_, { slots }) {
     const ctx = useColorSliderContext()
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getControlProps(), slots.default?.())
   },
 })
 
@@ -106,7 +106,7 @@ export const XhColorSliderTrack = defineComponent({
     const ctx = useColorSliderContext()
     // 轨道节点交给内嵌滑杆，矩形在指针事件里现量
     return () => h('div', {
-      ...ctx.api.value.getTrackProps() as Record<string, unknown>,
+      ...ctx.api.value.getTrackProps(),
       ref: ctx.trackRef,
     }, slots.default?.())
   },
@@ -116,7 +116,7 @@ export const XhColorSliderThumb = defineComponent({
   name: 'XhColorSliderThumb',
   setup(_, { slots }) {
     const ctx = useColorSliderContext()
-    return () => h('div', ctx.api.value.getThumbProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getThumbProps(), slots.default?.())
   },
 })
 
@@ -127,7 +127,7 @@ export const XhColorSliderValueText = defineComponent({
     // 值气泡：没给内容就填本通道的当前数值
     return () => h(
       'span',
-      ctx.api.value.getValueTextProps() as Record<string, unknown>,
+      ctx.api.value.getValueTextProps(),
       slots.default?.() ?? String(ctx.api.value.channelValue),
     )
   },
@@ -137,6 +137,6 @@ export const XhColorSliderHiddenInput = defineComponent({
   name: 'XhColorSliderHiddenInput',
   setup() {
     const ctx = useColorSliderContext()
-    return () => h('input', ctx.api.value.getHiddenInputProps() as Record<string, unknown>)
+    return () => h('input', ctx.api.value.getHiddenInputProps())
   },
 })

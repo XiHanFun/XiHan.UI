@@ -55,7 +55,7 @@ export function useImageViewer(props: ImageViewerSchema['props']): ImageViewerCo
     // 内容和遮罩各自有退场动画；两张退出租约均完成前不能释放模态资源。
     additionalExitNodes: () => [backdropRef.current],
     refs: (service) => {
-      service.refs.set('getContentEl', (() => contentRef.current) as never)
+      service.refs.set('getContentEl', () => contentRef.current)
     },
   })
 

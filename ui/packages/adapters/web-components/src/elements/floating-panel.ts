@@ -239,21 +239,21 @@ export class XhFloatingPanelElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('trigger', api.getTriggerProps() as Record<string, unknown>)
-    put('positioner', api.getPositionerProps() as Record<string, unknown>)
-    put('content', api.getContentProps() as Record<string, unknown>)
-    put('header', api.getHeaderProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('drag-trigger', api.getDragTriggerProps() as Record<string, unknown>)
-    put('close-trigger', api.getCloseTriggerProps() as Record<string, unknown>)
-    put('body', api.getBodyProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('trigger', api.getTriggerProps())
+    put('positioner', api.getPositionerProps())
+    put('content', api.getContentProps())
+    put('header', api.getHeaderProps())
+    put('title', api.getTitleProps())
+    put('drag-trigger', api.getDragTriggerProps())
+    put('close-trigger', api.getCloseTriggerProps())
+    put('body', api.getBodyProps())
 
     // 把手与形态按钮是多实例 part，逐个打：身份取作者写在节点上的声明
     for (const el of this.getParts('resize-trigger'))
-      this.spreader.spread(el, api.getResizeTriggerProps({ edge: this.edgeOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getResizeTriggerProps({ edge: this.edgeOf(el) }))
     for (const el of this.getParts('window-state-trigger'))
-      this.spreader.spread(el, api.getWindowStateTriggerProps({ windowState: this.windowStateOf(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getWindowStateTriggerProps({ windowState: this.windowStateOf(el) }))
 
     // 收起用内联 display，优先级高于样式表对 [hidden] 的覆盖：
     // 作者给这两个节点写了 display 时，光靠 hidden 属性压不住。

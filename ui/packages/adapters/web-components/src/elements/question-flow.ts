@@ -195,63 +195,63 @@ export class XhQuestionFlowElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('viewport', api.getViewportProps() as Record<string, unknown>)
-    put('track', api.getTrackProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('prev-trigger', api.getPrevTriggerProps() as Record<string, unknown>)
-    put('next-trigger', api.getNextTriggerProps() as Record<string, unknown>)
-    put('result', api.getResultProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('viewport', api.getViewportProps())
+    put('track', api.getTrackProps())
+    put('footer', api.getFooterProps())
+    put('prev-trigger', api.getPrevTriggerProps())
+    put('next-trigger', api.getNextTriggerProps())
+    put('result', api.getResultProps())
 
     const skip = this.getPart('skip-trigger')
     if (skip) {
-      const props = api.getSkipTriggerProps() as Record<string, unknown>
+      const props = api.getSkipTriggerProps()
       this.spreader.spread(skip, props)
       // 按本帧产出的 hidden 用内联 display 收起
       this.setPartHidden(skip, props.hidden === true)
     }
 
-    put('submit-trigger', api.getSubmitTriggerProps() as Record<string, unknown>)
+    put('submit-trigger', api.getSubmitTriggerProps())
 
     const counter = this.getPart('counter')
     if (counter) {
-      this.spreader.spread(counter, api.getCounterProps() as Record<string, unknown>)
+      this.spreader.spread(counter, api.getCounterProps())
       counter.textContent = api.counter
     }
 
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       live.textContent = api.announcement
     }
 
     // 多实例 part 逐个打，题有几道打几道
     for (const question of this.getParts('question')) {
       const id = this.questionIdOf(question)
-      this.spreader.spread(question, api.getQuestionProps({ id }) as Record<string, unknown>)
+      this.spreader.spread(question, api.getQuestionProps({ id }))
       for (const prompt of this.partsIn(question, 'prompt'))
-        this.spreader.spread(prompt, api.getPromptProps({ id }) as Record<string, unknown>)
+        this.spreader.spread(prompt, api.getPromptProps({ id }))
       for (const description of this.partsIn(question, 'description')) {
-        const props = api.getDescriptionProps({ id }) as Record<string, unknown>
+        const props = api.getDescriptionProps({ id })
         this.spreader.spread(description, props)
         // 作者没写内容就由元素写上数据里的说明（或多选的数量要求），与另两端同一条规则
         this.#fillDescription(description, api.descriptionOf(id))
         this.setPartHidden(description, props.hidden === true)
       }
       for (const group of this.partsIn(question, 'group'))
-        this.spreader.spread(group, api.getGroupProps({ id }) as Record<string, unknown>)
+        this.spreader.spread(group, api.getGroupProps({ id }))
       for (const note of this.partsIn(question, 'note'))
-        this.spreader.spread(note, api.getNoteProps({ id }) as Record<string, unknown>)
+        this.spreader.spread(note, api.getNoteProps({ id }))
       for (const option of this.partsIn(question, 'item')) {
         // 选项节点上可以只写 option-value，题的身份从它所属的那一题上取
         const item = { ...this.optionOf(option), questionId: id }
-        this.spreader.spread(option, api.getItemProps(item) as Record<string, unknown>)
+        this.spreader.spread(option, api.getItemProps(item))
         for (const indicator of this.partsIn(option, 'item-indicator'))
-          this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
+          this.spreader.spread(indicator, api.getItemIndicatorProps(item))
         for (const label of this.partsIn(option, 'item-text'))
-          this.spreader.spread(label, api.getItemTextProps(item) as Record<string, unknown>)
+          this.spreader.spread(label, api.getItemTextProps(item))
         for (const description of this.partsIn(option, 'item-description'))
-          this.spreader.spread(description, api.getItemDescriptionProps(item) as Record<string, unknown>)
+          this.spreader.spread(description, api.getItemDescriptionProps(item))
       }
     }
   }

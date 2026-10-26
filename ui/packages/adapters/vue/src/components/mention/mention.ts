@@ -108,7 +108,7 @@ export const XhMentionRoot = defineComponent({
 
     return () => h(
       'div',
-      ctx.api.value.getRootProps() as Record<string, unknown>,
+      ctx.api.value.getRootProps(),
       slots.default
         ? slots.default({
             open: ctx.api.value.open,
@@ -141,7 +141,7 @@ export const XhMentionLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('label', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('label', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -163,7 +163,7 @@ export const XhMentionInput = defineComponent({
     const ctx = useMentionContext()
     return () => h(props.as, fieldLabel.value({
       ...fieldWiring.value,
-      ...ctx.api.value.getInputProps({ as: props.as }) as Record<string, unknown>,
+      ...ctx.api.value.getInputProps({ as: props.as }),
       ref: (el: unknown) => { ctx.inputRef.value = el as MentionInputEl },
     }))
   },
@@ -184,7 +184,7 @@ export const XhMentionPositioner = defineComponent({
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef, present: ctx.visible.value }, () => [
       h('div', {
-        ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
+        ...mergeProps(ctx.api.value.getPositionerProps(), attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
       }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
@@ -196,7 +196,7 @@ export const XhMentionContent = defineComponent({
   setup(_, { slots }) {
     const ctx = useMentionContext()
     return () => h('div', {
-      ...ctx.api.value.getContentProps() as Record<string, unknown>,
+      ...ctx.api.value.getContentProps(),
       // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
       // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
       style: ctx.visible.value ? undefined : { display: 'none' },
@@ -210,7 +210,7 @@ export const XhMentionEmpty = defineComponent({
   name: 'XhMentionEmpty',
   setup(_, { slots }) {
     const ctx = useMentionContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.())
   },
 })
 
@@ -219,7 +219,7 @@ export const XhMentionLoading = defineComponent({
   name: 'XhMentionLoading',
   setup(_, { slots }) {
     const ctx = useMentionContext()
-    return () => h('div', ctx.api.value.getLoadingProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getLoadingProps(), slots.default?.())
   },
 })
 
@@ -239,7 +239,7 @@ export const XhMentionItem = defineComponent({
     onUnmounted(ctx.syncItems)
     // 节点就地复用时数量不变但身份换了，需按 value 另行上报
     watch(() => props.value, ctx.syncItems)
-    return () => h('div', ctx.api.value.getItemProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('div', ctx.api.value.getItemProps(item.value), slots.default?.())
   },
 })
 
@@ -248,7 +248,7 @@ export const XhMentionItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useMentionContext()
     const { item } = useMentionItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -258,7 +258,7 @@ export const XhMentionItemPrefix = defineComponent({
   setup(_, { slots }) {
     const ctx = useMentionContext()
     const { item } = useMentionItemContext()
-    return () => h('span', ctx.api.value.getItemPrefixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemPrefixProps(item.value), slots.default?.())
   },
 })
 
@@ -268,7 +268,7 @@ export const XhMentionItemSuffix = defineComponent({
   setup(_, { slots }) {
     const ctx = useMentionContext()
     const { item } = useMentionItemContext()
-    return () => h('span', ctx.api.value.getItemSuffixProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemSuffixProps(item.value), slots.default?.())
   },
 })
 
@@ -278,7 +278,7 @@ export const XhMentionItemDescription = defineComponent({
   setup(_, { slots }) {
     const ctx = useMentionContext()
     const { item } = useMentionItemContext()
-    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemDescriptionProps(item.value), slots.default?.())
   },
 })
 

@@ -173,21 +173,21 @@ export class XhSortableElement extends XhElement {
 
     const root = this.getPart('root')
     if (root)
-      this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
+      this.spreader.spread(root, api.getRootProps())
 
     for (const el of this.getParts('item'))
-      this.spreader.spread(el, api.getItemProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps({ id: this.partId(el), disabled: this.partDisabled(el) }))
 
     for (const el of this.getParts('item-drag-trigger'))
-      this.spreader.spread(el, api.getItemDragTriggerProps({ id: this.partId(el), disabled: this.partDisabled(el) }) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemDragTriggerProps({ id: this.partId(el), disabled: this.partDisabled(el) }))
 
     const indicator = this.getPart('drop-indicator')
     if (indicator)
-      this.spreader.spread(indicator, api.getDropIndicatorProps() as Record<string, unknown>)
+      this.spreader.spread(indicator, api.getDropIndicatorProps())
 
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       // 播报文案由元素写，不经属性铺开：它是文本内容不是属性
       live.textContent = this.ctrl.service.context.get('announcement')
     }

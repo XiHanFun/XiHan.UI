@@ -31,7 +31,7 @@ export function XhTypographyRoot({ size, align, weight, children, ...rest }: XhT
   )
   return (
     <TypographyProvider value={{ api }}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children}
       </div>
     </TypographyProvider>
@@ -50,7 +50,7 @@ export function XhTypographyHeading({ level, as = 'p', children, ...rest }: XhTy
   const ctx = useTypographyContext()
   const Tag = as as 'p'
   return (
-    <Tag {...mergeReactProps(ctx.api.getHeadingProps({ level }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getHeadingProps({ level }), rest)}>
       {children}
     </Tag>
   )
@@ -61,7 +61,7 @@ export interface XhTypographyParagraphProps extends ComponentPropsWithRef<'p'> {
 export function XhTypographyParagraph({ children, ...rest }: XhTypographyParagraphProps): ReactNode {
   const ctx = useTypographyContext()
   return (
-    <p {...mergeReactProps(ctx.api.getParagraphProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getParagraphProps(), rest)}>
       {children}
     </p>
   )
@@ -90,7 +90,7 @@ export function XhTypographyText({ tone, variant, weight, strikethrough, underli
   const Tag = as as 'span'
   const own = ctx.api.getTextProps({ tone, variant, weight, strikethrough, underline, mark })
   return (
-    <Tag {...mergeReactProps(own as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(own, rest)}>
       {children}
     </Tag>
   )
@@ -106,7 +106,7 @@ export function XhTypographyProse({ as = 'div', children, ...rest }: XhTypograph
   const ctx = useTypographyContext()
   const Tag = as as 'div'
   return (
-    <Tag {...mergeReactProps(ctx.api.getProseProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <Tag {...mergeReactProps(ctx.api.getProseProps(), rest)}>
       {children}
     </Tag>
   )
@@ -118,7 +118,7 @@ export interface XhTypographyLinkProps extends ComponentPropsWithRef<'a'> {}
 export function XhTypographyLink({ children, ...rest }: XhTypographyLinkProps): ReactNode {
   const ctx = useTypographyContext()
   return (
-    <a {...mergeReactProps(ctx.api.getLinkProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <a {...mergeReactProps(ctx.api.getLinkProps(), rest)}>
       {children}
     </a>
   )

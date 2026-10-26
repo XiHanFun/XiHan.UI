@@ -176,38 +176,38 @@ export class XhApprovalElement extends XhElement {
       if (el)
         this.spreader.spread(el, props)
     }
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('group', api.getGroupProps() as Record<string, unknown>)
-    put('note', api.getNoteProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('group', api.getGroupProps())
+    put('note', api.getNoteProps())
     const indicator = this.getPart('pending-indicator')
     if (indicator) {
-      const props = api.getPendingIndicatorProps() as Record<string, unknown>
+      const props = api.getPendingIndicatorProps()
       this.spreader.spread(indicator, props)
       // Light DOM 常驻，WC 自管可见性：作者层声明了 display 时光靠 hidden 属性收不起来
       this.setPartHidden(indicator, props.hidden === true)
     }
-    put('timer', api.getTimerProps() as Record<string, unknown>)
-    put('result', api.getResultProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
-    put('approve-trigger', api.getApproveTriggerProps() as Record<string, unknown>)
-    put('deny-trigger', api.getDenyTriggerProps() as Record<string, unknown>)
+    put('timer', api.getTimerProps())
+    put('result', api.getResultProps())
+    put('footer', api.getFooterProps())
+    put('approve-trigger', api.getApproveTriggerProps())
+    put('deny-trigger', api.getDenyTriggerProps())
 
     const live = this.getPart('live-region')
     if (live) {
-      this.spreader.spread(live, api.getLiveRegionProps() as Record<string, unknown>)
+      this.spreader.spread(live, api.getLiveRegionProps())
       live.textContent = api.announcement
     }
 
     // 多实例 part 逐个打，授权项有几条打几条
     for (const el of this.getParts('item')) {
       const scope = this.scopeOf(el)
-      this.spreader.spread(el, api.getItemProps(scope) as Record<string, unknown>)
+      this.spreader.spread(el, api.getItemProps(scope))
       for (const indicator of el.querySelectorAll<HTMLElement>('[data-xh-part="item-indicator"]'))
-        this.spreader.spread(indicator, api.getItemIndicatorProps(scope) as Record<string, unknown>)
+        this.spreader.spread(indicator, api.getItemIndicatorProps(scope))
       for (const label of el.querySelectorAll<HTMLElement>('[data-xh-part="item-text"]'))
-        this.spreader.spread(label, api.getItemTextProps(scope) as Record<string, unknown>)
+        this.spreader.spread(label, api.getItemTextProps(scope))
     }
   }
 }

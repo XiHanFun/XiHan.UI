@@ -41,16 +41,16 @@ export interface SankeyChartTooltipSlotProps {
 
 /** 渐变定义：绘图区的第一个子节点，linkColor="gradient" 时每条流带一个渐变、两端各一个色标。 */
 function renderDefs(api: SankeyChartApi): VNode {
-  return h('defs', api.getDefsProps() as Record<string, unknown>, api.gradients.map(gradient =>
-    h('linearGradient', { ...api.getGradientProps(gradient) as Record<string, unknown>, key: gradient.id }, [
-      h('stop', api.getGradientStopProps(gradient, 'from') as Record<string, unknown>),
-      h('stop', api.getGradientStopProps(gradient, 'to') as Record<string, unknown>),
+  return h('defs', api.getDefsProps(), api.gradients.map(gradient =>
+    h('linearGradient', { ...api.getGradientProps(gradient), key: gradient.id }, [
+      h('stop', api.getGradientStopProps(gradient, 'from')),
+      h('stop', api.getGradientStopProps(gradient, 'to')),
     ])))
 }
 
 /** 一个场景标记画成 SVG 元素；文字标记带文字。 */
 function renderMark(api: SankeyChartApi, mark: ChartMark): VNode {
-  const props = { ...api.getMarkProps(mark) as Record<string, unknown>, key: mark.key }
+  const props = { ...api.getMarkProps(mark), key: mark.key }
   if (mark.kind === 'group')
     return h('g', props, mark.children.map(child => renderMark(api, child)))
   if (mark.kind === 'text')
@@ -64,11 +64,11 @@ function renderTooltipContent(api: SankeyChartApi): VNode[] {
   if (!tooltip)
     return []
   return [
-    h('div', api.getTooltipHeaderProps() as Record<string, unknown>, tooltip.header),
-    ...tooltip.rows.map(row => h('div', { ...api.getTooltipRowProps(row) as Record<string, unknown>, key: row.key }, [
-      h('span', api.getTooltipSwatchProps(row) as Record<string, unknown>),
-      h('span', api.getTooltipValueProps(row) as Record<string, unknown>, row.value),
-      h('span', api.getTooltipNameProps(row) as Record<string, unknown>, row.name),
+    h('div', api.getTooltipHeaderProps(), tooltip.header),
+    ...tooltip.rows.map(row => h('div', { ...api.getTooltipRowProps(row), key: row.key }, [
+      h('span', api.getTooltipSwatchProps(row)),
+      h('span', api.getTooltipValueProps(row), row.value),
+      h('span', api.getTooltipNameProps(row), row.name),
     ])),
   ]
 }
@@ -77,10 +77,10 @@ function renderTooltipContent(api: SankeyChartApi): VNode[] {
 function renderA11y(api: SankeyChartApi): VNode[] {
   const { columns, rows } = api.table
   return [
-    h('p', api.getSummaryProps() as Record<string, unknown>, api.summary),
+    h('p', api.getSummaryProps(), api.summary),
     // 视觉隐藏落在包着表格的区域上，表格在里面照常排版：隐藏写在表格上收不住它的高度
-    h('div', api.getTableRegionProps() as Record<string, unknown>, [
-      h('table', api.getTableProps() as Record<string, unknown>, [
+    h('div', api.getTableRegionProps(), [
+      h('table', api.getTableProps(), [
         h('caption', api.tableCaption),
         h('thead', [h('tr', columns.map(column => h('th', { key: column.id, scope: 'col' }, column.label)))]),
         h('tbody', rows.map((row, i) => h('tr', { key: i }, row.cells.map((cell, c) =>
@@ -95,7 +95,7 @@ export const XhSankeyChartCaption = defineComponent({
   name: 'XhSankeyChartCaption',
   setup(_, { slots }) {
     const ctx = useSankeyChartContext()
-    return () => h('figcaption', ctx.api.value.getCaptionProps() as Record<string, unknown>, slots.default?.())
+    return () => h('figcaption', ctx.api.value.getCaptionProps(), slots.default?.())
   },
 })
 
@@ -106,10 +106,10 @@ export const XhSankeyChartLegend = defineComponent({
     const ctx = useSankeyChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getLegendProps() as Record<string, unknown>, api.legendItems.map(item =>
-        h('button', { ...api.getLegendItemProps(item) as Record<string, unknown>, key: item.id }, [
-          h('span', api.getLegendSwatchProps(item) as Record<string, unknown>),
-          h('span', api.getLegendLabelProps(item) as Record<string, unknown>, item.name),
+      return h('div', api.getLegendProps(), api.legendItems.map(item =>
+        h('button', { ...api.getLegendItemProps(item), key: item.id }, [
+          h('span', api.getLegendSwatchProps(item)),
+          h('span', api.getLegendLabelProps(item), item.name),
         ])))
     }
   },
@@ -121,7 +121,7 @@ export const XhSankeyChartViewport = defineComponent({
   setup(_, { slots }) {
     const ctx = useSankeyChartContext()
     return () => h('div', {
-      ...ctx.api.value.getViewportProps() as Record<string, unknown>,
+      ...ctx.api.value.getViewportProps(),
       ref: (el: unknown) => { ctx.viewportRef.value = el as HTMLElement },
     }, slots.default?.())
   },
@@ -135,7 +135,7 @@ export const XhSankeyChartPlot = defineComponent({
     return () => {
       const api = ctx.api.value
       const marks = [...api.scene.layers.data, ...api.scene.layers.front, ...api.overlay.over]
-      return h('svg', api.getPlotProps() as Record<string, unknown>, [renderDefs(api), ...marks.map(mark => renderMark(api, mark))])
+      return h('svg', api.getPlotProps(), [renderDefs(api), ...marks.map(mark => renderMark(api, mark))])
     }
   },
 })
@@ -150,7 +150,7 @@ export const XhSankeyChartTooltip = defineComponent({
     const ctx = useSankeyChartContext()
     return () => {
       const api = ctx.api.value
-      return h('div', api.getTooltipProps() as Record<string, unknown>, slots.default
+      return h('div', api.getTooltipProps(), slots.default
         ? slots.default({ active: api.active, tooltip: api.tooltip })
         : renderTooltipContent(api))
     }
@@ -162,7 +162,7 @@ export const XhSankeyChartEmpty = defineComponent({
   name: 'XhSankeyChartEmpty',
   setup(_, { slots }) {
     const ctx = useSankeyChartContext()
-    return () => h('div', ctx.api.value.getEmptyProps() as Record<string, unknown>, slots.default?.() ?? ctx.api.value.emptyText)
+    return () => h('div', ctx.api.value.getEmptyProps(), slots.default?.() ?? ctx.api.value.emptyText)
   },
 })
 
@@ -244,7 +244,7 @@ export const XhSankeyChartRoot = defineComponent({
             h(XhSankeyChartTooltip, null, slots.tooltip ? { default: slots.tooltip } : undefined),
           ]
       return h('figure', {
-        ...api.getRootProps() as Record<string, unknown>,
+        ...api.getRootProps(),
         ref: (el: unknown) => { ctx.rootRef.value = el as HTMLElement },
       }, [...content, ...renderA11y(api)])
     }

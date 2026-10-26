@@ -26,7 +26,7 @@ export function useFieldControl(): ComputedRef<Record<string, unknown>> {
   return computed(() => {
     if (!ctx)
       return {}
-    return wiringOnly(ctx.api.value.getControlProps() as Record<string, unknown>)
+    return wiringOnly(ctx.api.value.getControlProps())
   })
 }
 

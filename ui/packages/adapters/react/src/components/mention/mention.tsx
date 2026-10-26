@@ -165,8 +165,8 @@ export function XhMentionRoot({
     <MentionProvider value={ctx}>
       <div
         {...mergeReactProps(
-          api.getRootProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          api.getRootProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
         )}
       >
@@ -185,7 +185,7 @@ export function XhMentionLabel({ children, ...rest }: XhMentionLabelProps): Reac
   // 渲出来了才登记：可聚焦部件的 aria-labelledby 只在这个节点真在场时才指过来
   const { registerLabel } = ctx
   useEffect(() => registerLabel(), [registerLabel])
-  return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
+  return <label {...mergeReactProps(ctx.api.getLabelProps(), rest)}>{children}</label>
 }
 
 /** 多行宿主另认 textarea 自己的几个排版属性（起始行数、列数与折行方式）。 */
@@ -204,8 +204,8 @@ export function XhMentionInput({ as = 'input', ...rest }: XhMentionInputProps): 
   // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
   const fieldLabel = useFieldLabelWiring()
   const props = mergeReactProps(
-    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) as Record<string, unknown> }),
-    rest as Record<string, unknown>,
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as }) }),
+    rest,
     { ref: (el: MentionInputEl | null) => { ctx.inputRef.current = el } },
   )
   // 自己渲染宿主节点，label 的 for 指向它
@@ -227,8 +227,8 @@ export function XhMentionPositioner({ children, container, ...rest }: XhMentionP
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef} present={ctx.rendered}>
       <div
         {...mergeReactProps(
-          ctx.api.getPositionerProps() as Record<string, unknown>,
-          rest as Record<string, unknown>,
+          ctx.api.getPositionerProps(),
+          rest,
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >
@@ -245,8 +245,8 @@ export function XhMentionContent({ children, ...rest }: XhMentionContentProps): 
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps() as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps(),
+        rest,
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
@@ -264,14 +264,14 @@ export interface XhMentionEmptyProps extends ComponentPropsWithRef<'div'> {}
 /** 没有任何候选时显示的空态；与候选面板同级，不进入 role=listbox。 */
 export function XhMentionEmpty({ children, ...rest }: XhMentionEmptyProps): ReactNode {
   const ctx = useMentionContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(), rest)}>{children}</div>
 }
 
 export interface XhMentionLoadingProps extends ComponentPropsWithRef<'div'> {}
 /** 候选仍在获取时显示的在途占位；与候选面板同级。 */
 export function XhMentionLoading({ children, ...rest }: XhMentionLoadingProps): ReactNode {
   const ctx = useMentionContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(), rest)}>{children}</div>
 }
 
 export interface XhMentionItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -293,7 +293,7 @@ export function XhMentionItem({ value, disabled, children, ...rest }: XhMentionI
 
   return (
     <MentionItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         {children}
       </div>
     </MentionItemProvider>
@@ -304,7 +304,7 @@ export interface XhMentionItemTextProps extends ComponentPropsWithRef<'span'> {}
 export function XhMentionItemText({ children, ...rest }: XhMentionItemTextProps): ReactNode {
   const ctx = useMentionContext()
   const item = useMentionItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目行首的作者内容（图标、色块、头像），对读屏隐藏。 */
@@ -312,7 +312,7 @@ export interface XhMentionItemPrefixProps extends ComponentPropsWithRef<'span'> 
 export function XhMentionItemPrefix({ children, ...rest }: XhMentionItemPrefixProps): ReactNode {
   const ctx = useMentionContext()
   const item = useMentionItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemPrefixProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -320,7 +320,7 @@ export interface XhMentionItemSuffixProps extends ComponentPropsWithRef<'span'> 
 export function XhMentionItemSuffix({ children, ...rest }: XhMentionItemSuffixProps): ReactNode {
   const ctx = useMentionContext()
   const item = useMentionItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -328,7 +328,7 @@ export interface XhMentionItemDescriptionProps extends ComponentPropsWithRef<'sp
 export function XhMentionItemDescription({ children, ...rest }: XhMentionItemDescriptionProps): ReactNode {
   const ctx = useMentionContext()
   const item = useMentionItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 /** 标准结构里各部件对应的组件。 */

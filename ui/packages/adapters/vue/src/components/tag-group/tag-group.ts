@@ -76,7 +76,7 @@ export const XhTagGroupRoot = defineComponent({
     }
     const ctx = useTagGroup(withXhConfig('tag-group', useFormControlProps(props)) as TagGroupProps, notify, notifyDelete)
     provideTagGroup(ctx)
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, [
+    return () => h('div', ctx.api.value.getRootProps(), [
       ...(slots.default
         ? slots.default({
           value: ctx.api.value.value,
@@ -102,7 +102,7 @@ export const XhTagGroupLabel = defineComponent({
     onUnmounted(() => {
       ctx.labelCount.value--
     })
-    return () => h('span', ctx.api.value.getLabelProps() as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getLabelProps(), slots.default?.())
   },
 })
 
@@ -113,7 +113,7 @@ export const XhTagGroupList = defineComponent({
     // 放进表单字段时，字段的标题与说明接到标签列表上：读屏进列表时念字段名与说明
     const fieldWiring = useFieldGroupWiring()
     const fieldLabel = useFieldLabelWiring()
-    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps() as Record<string, unknown> }), slots.default?.())
+    return () => h('div', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getListProps() }), slots.default?.())
   },
 })
 
@@ -155,7 +155,7 @@ export const XhTagGroupItem = defineComponent({
     })
     return () => h(
       'span',
-      { ...ctx.api.value.getItemProps(item.value) as Record<string, unknown>, ref: itemEl },
+      { ...ctx.api.value.getItemProps(item.value), ref: itemEl },
       slots.default?.(),
     )
   },
@@ -166,7 +166,7 @@ export const XhTagGroupCell = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagGroupContext()
     const { item } = useTagGroupItemContext()
-    return () => h('span', ctx.api.value.getCellProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getCellProps(item.value), slots.default?.())
   },
 })
 
@@ -176,7 +176,7 @@ export const XhTagGroupItemIndicator = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagGroupContext()
     const { item } = useTagGroupItemContext()
-    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value), slots.default?.())
   },
 })
 
@@ -186,7 +186,7 @@ export const XhTagGroupItemText = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagGroupContext()
     const { item } = useTagGroupItemContext()
-    return () => h('span', ctx.api.value.getItemTextProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('span', ctx.api.value.getItemTextProps(item.value), slots.default?.())
   },
 })
 
@@ -196,7 +196,7 @@ export const XhTagGroupItemDeleteTrigger = defineComponent({
   setup(_, { slots }) {
     const ctx = useTagGroupContext()
     const { item } = useTagGroupItemContext()
-    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value) as Record<string, unknown>, slots.default?.())
+    return () => h('button', ctx.api.value.getItemDeleteTriggerProps(item.value), slots.default?.())
   },
 })
 

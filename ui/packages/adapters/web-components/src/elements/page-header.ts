@@ -63,13 +63,13 @@ export class XhPageHeaderElement extends XhElement {
         this.spreader.spread(el, props)
     }
 
-    put('root', api.getRootProps() as Record<string, unknown>)
-    put('breadcrumb', api.getBreadcrumbProps() as Record<string, unknown>)
-    put('back-trigger', api.getBackTriggerProps() as Record<string, unknown>)
-    put('media', api.getMediaProps() as Record<string, unknown>)
-    put('title', api.getTitleProps() as Record<string, unknown>)
-    put('description', api.getDescriptionProps() as Record<string, unknown>)
-    put('extra', api.getExtraProps() as Record<string, unknown>)
-    put('footer', api.getFooterProps() as Record<string, unknown>)
+    put('root', api.getRootProps())
+    put('breadcrumb', api.getBreadcrumbProps())
+    put('back-trigger', api.getBackTriggerProps())
+    put('media', api.getMediaProps())
+    put('title', api.getTitleProps())
+    put('description', api.getDescriptionProps())
+    put('extra', api.getExtraProps())
+    put('footer', api.getFooterProps())
   }
 }

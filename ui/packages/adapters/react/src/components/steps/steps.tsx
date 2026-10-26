@@ -104,7 +104,7 @@ export function XhStepsRoot({
   // 经 children 载荷交出状态与前进/后退方法，供步骤条外的按钮使用
   return (
     <StepsProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getRootProps(), rest)}>
         {renderSlot(children, {
           value: api.value,
           count: api.count,
@@ -126,9 +126,9 @@ export function XhStepsList({ children, ...rest }: XhStepsListProps): ReactNode 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上——
   // 装成原生监听器，到达路径才与另外两家一致。onFocusout 归到的 onBlur 本就是冒泡的 focusout，不动它
-  const bind = useNativeEvents(ctx.api.getListProps() as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getListProps(), ['onFocus'])
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest)}>
       {children}
     </div>
   )
@@ -144,7 +144,7 @@ export function XhStepsItem({ value, disabled, children, ...rest }: XhStepsItemP
   const item = useMemo(() => ({ index: Number(value), disabled }), [value, disabled])
   return (
     <StepsItemProvider value={item}>
-      <div {...mergeReactProps(ctx.api.getItemProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getItemProps(item), rest)}>
         {children}
       </div>
     </StepsItemProvider>
@@ -181,12 +181,12 @@ export function XhStepsTrigger({ children, ...rest }: XhStepsTriggerProps): Reac
   }, [ctx.service])
 
   // 步骤自己的 onFocus 同样是不冒泡的 DOM focus：改装成原生监听器，与另外两家同一条到达路径
-  const bind = useNativeEvents(ctx.api.getTriggerProps(item) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getTriggerProps(item), ['onFocus'])
 
   const props = mergeReactProps(
     bind.attrs,
     { ref: bind.ref },
-    rest as Record<string, unknown>,
+    rest,
     { ref: (el: HTMLElement | null) => { itemEl.current = el } },
   )
   // 只读展示的 trigger 只排版，不是按钮
@@ -197,21 +197,21 @@ export interface XhStepsIndicatorProps extends ComponentPropsWithRef<'span'> {}
 export function XhStepsIndicator({ children, ...rest }: XhStepsIndicatorProps): ReactNode {
   const ctx = useStepsContext()
   const item = useStepsItemContext()
-  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getIndicatorProps(item), rest)}>{children}</span>
 }
 
 export interface XhStepsTitleProps extends ComponentPropsWithRef<'span'> {}
 export function XhStepsTitle({ children, ...rest }: XhStepsTitleProps): ReactNode {
   const ctx = useStepsContext()
   const item = useStepsItemContext()
-  return <span {...mergeReactProps(ctx.api.getTitleProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getTitleProps(item), rest)}>{children}</span>
 }
 
 export interface XhStepsDescriptionProps extends ComponentPropsWithRef<'span'> {}
 export function XhStepsDescription({ children, ...rest }: XhStepsDescriptionProps): ReactNode {
   const ctx = useStepsContext()
   const item = useStepsItemContext()
-  return <span {...mergeReactProps(ctx.api.getDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getDescriptionProps(item), rest)}>{children}</span>
 }
 
 export interface XhStepsSeparatorProps extends ComponentPropsWithRef<'div'> {}
@@ -219,7 +219,7 @@ export interface XhStepsSeparatorProps extends ComponentPropsWithRef<'div'> {}
 export function XhStepsSeparator({ children, ...rest }: XhStepsSeparatorProps): ReactNode {
   const ctx = useStepsContext()
   const item = useStepsItemContext()
-  return <div {...mergeReactProps(ctx.api.getSeparatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getSeparatorProps(item), rest)}>{children}</div>
 }
 
 export interface XhStepsContentProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -231,8 +231,8 @@ export function XhStepsContent({ value, children, ...rest }: XhStepsContentProps
   return (
     <div
       {...mergeReactProps(
-        ctx.api.getContentProps({ index: Number(value) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
+        ctx.api.getContentProps({ index: Number(value) }),
+        rest,
       )}
     >
       {children}

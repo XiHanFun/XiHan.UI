@@ -85,7 +85,7 @@ export function XhNumberAnimation({
   const api = connectNumberAnimation(service, reactNormalize)
   const content = children == null ? null : renderSlot(children, { value: api.value, text: api.text })
   return (
-    <span {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <span {...mergeReactProps(api.getRootProps(), rest)}>
       {/* children 落空（条件渲染没画出东西）时退回组件自己铺好的那串字 */}
       {slotPaints(content) ? content : api.text}
     </span>

@@ -167,7 +167,7 @@ export function XhTransferRoot({
   const api = ctx.api
   return (
     <TransferProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: ctx.rootRef })}>
+      <div {...mergeReactProps(api.getRootProps(), rest, { ref: ctx.rootRef })}>
         {children != null
           ? renderSlot(children, {
               value: api.value,
@@ -184,9 +184,9 @@ export function XhTransferRoot({
               move: api.move,
             })
           : renderDefaultStructure(api)}
-        {api.value.map(value => <input key={value} {...api.getHiddenInputProps({ value }) as Record<string, unknown>} />)}
+        {api.value.map(value => <input key={value} {...api.getHiddenInputProps({ value })} />)}
         {/* 必填且没有值：补一份空值占位，原生 required 才拦得住空表单 */}
-        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps() as Record<string, unknown>, { onChange: noop })} />}
+        {api.value.length === 0 && api.required && <input {...mergeReactProps(api.getHiddenInputProps(), { onChange: noop })} />}
       </div>
     </TransferProvider>
   )
@@ -205,7 +205,7 @@ function TransferPanel({ side, children, ...rest }: XhTransferPanelProps & { sid
   const api = ctx.api
   return (
     <TransferPanelProvider value={panel}>
-      <div {...mergeReactProps(api.getPanelProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getPanelProps(panel), rest)}>
         {renderSlot(children, {
           side,
           // 这一侧当下看得见的条目（分侧 + 搜索之后），不是数据入口：入口叫 collection，是整份全集
@@ -234,14 +234,14 @@ export interface XhTransferPanelHeaderProps extends ComponentPropsWithRef<'div'>
 export function XhTransferPanelHeader({ children, ...rest }: XhTransferPanelHeaderProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
-  return <div {...mergeReactProps(ctx.api.getPanelHeaderProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getPanelHeaderProps(panel), rest)}>{children}</div>
 }
 
 export interface XhTransferPanelTitleProps extends ComponentPropsWithRef<'span'> {}
 export function XhTransferPanelTitle({ children, ...rest }: XhTransferPanelTitleProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
-  return <span {...mergeReactProps(ctx.api.getPanelTitleProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getPanelTitleProps(panel), rest)}>{children}</span>
 }
 
 export interface XhTransferPanelCountProps extends ComponentPropsWithRef<'span'> {}
@@ -249,7 +249,7 @@ export interface XhTransferPanelCountProps extends ComponentPropsWithRef<'span'>
 export function XhTransferPanelCount({ children, ...rest }: XhTransferPanelCountProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
-  return <span {...mergeReactProps(ctx.api.getPanelCountProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getPanelCountProps(panel), rest)}>{children}</span>
 }
 
 export interface XhTransferSearchProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
@@ -259,11 +259,11 @@ export function XhTransferSearch({ ...rest }: XhTransferSearchProps): ReactNode 
   return (
     <input
       {...mergeReactProps(
-        ctx.api.getSearchProps(panel) as Record<string, unknown>,
+        ctx.api.getSearchProps(panel),
         // 搜索串攥在机器里，写回走 onInput。React 要求带 value 的输入交出一个 onChange，
         // 否则在开发构建里逐帧告警；真正的写回不经它
         { onChange: noop },
-        rest as Record<string, unknown>,
+        rest,
       )}
     />
   )
@@ -278,7 +278,7 @@ export function XhTransferList({ children, ...rest }: XhTransferListProps): Reac
   const panel = useTransferPanelContext()
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上
-  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps(panel) as Record<string, unknown> }), ['onFocus'])
+  const bind = useNativeEvents(fieldLabel({ ...fieldWiring, ...ctx.api.getListProps(panel) }), ['onFocus'])
   const listRef = useRef<HTMLDivElement | null>(null)
   // 两侧定高小列表各走一路自绘条：虚拟化时滚动层改为 Virtualizer viewport，
   // 条子仍紧跟在列表后面、贴实际滚动层自己的盒子上，
@@ -294,7 +294,7 @@ export function XhTransferList({ children, ...rest }: XhTransferListProps): Reac
   useEffect(() => bars.measure())
   return (
     <>
-      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: listRef })}>
+      <div {...mergeReactProps(bind.attrs, rest, { ref: bind.ref }, { ref: listRef })}>
         {children}
       </div>
       {bars.render()}
@@ -308,7 +308,7 @@ export function XhTransferSelectAllTrigger({ children, ...rest }: XhTransferSele
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
   return (
-    <button {...mergeReactProps(ctx.api.getSelectAllTriggerProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getSelectAllTriggerProps(panel), rest)}>
       {children}
     </button>
   )
@@ -319,7 +319,7 @@ export interface XhTransferEmptyProps extends ComponentPropsWithRef<'div'> {}
 export function XhTransferEmpty({ children, ...rest }: XhTransferEmptyProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
-  return <div {...mergeReactProps(ctx.api.getEmptyProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getEmptyProps(panel), rest)}>{children}</div>
 }
 
 export interface XhTransferLoadingProps extends ComponentPropsWithRef<'div'> {}
@@ -327,7 +327,7 @@ export interface XhTransferLoadingProps extends ComponentPropsWithRef<'div'> {}
 export function XhTransferLoading({ children, ...rest }: XhTransferLoadingProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
-  return <div {...mergeReactProps(ctx.api.getLoadingProps(panel) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return <div {...mergeReactProps(ctx.api.getLoadingProps(panel), rest)}>{children}</div>
 }
 
 export interface XhTransferGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
@@ -340,7 +340,7 @@ export function XhTransferGroup({ value, children, ...rest }: XhTransferGroupPro
   const group = useMemo(() => ({ value, side: panel.side }), [value, panel.side])
   return (
     <TransferGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getGroupProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(ctx.api.getGroupProps(group), rest)}>
         {children}
       </div>
     </TransferGroupProvider>
@@ -351,7 +351,7 @@ export interface XhTransferGroupLabelProps extends ComponentPropsWithRef<'span'>
 export function XhTransferGroupLabel({ children, ...rest }: XhTransferGroupLabelProps): ReactNode {
   const ctx = useTransferContext()
   const group = useTransferGroupContext()
-  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group), rest)}>{children}</span>
 }
 
 /** 本条目持有焦点时，value 变更重新报告焦点条目，卸载时上报本侧列表失焦。 */
@@ -397,14 +397,14 @@ export function XhTransferItem({ value, children, ...rest }: XhTransferItemProps
   const item = useMemo(() => ({ value, side: panel.side }), [value, panel.side])
   const el = useRef<HTMLElement | null>(null)
   // 条目的聚焦上报不冒泡，改装成原生监听器
-  const bind = useNativeEvents(ctx.api.getItemProps(item) as Record<string, unknown>, ['onFocus'])
+  const bind = useNativeEvents(ctx.api.getItemProps(item), ['onFocus'])
   useItemFocusReport(ctx.service, el, value, panel.side)
   return (
     <TransferItemProvider value={item}>
       <div
         {...mergeReactProps(
           bind.attrs,
-          rest as Record<string, unknown>,
+          rest,
           { ref: bind.ref },
           { ref: (n: HTMLDivElement | null) => { el.current = n } },
         )}
@@ -419,7 +419,7 @@ export interface XhTransferItemTextProps extends ComponentPropsWithRef<'span'> {
 export function XhTransferItemText({ children, ...rest }: XhTransferItemTextProps): ReactNode {
   const ctx = useTransferContext()
   const item = useTransferItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemTextProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemTextProps(item), rest)}>{children}</span>
 }
 
 /** 条目的第 2 行副文本，跨文字槽、走 muted 档。 */
@@ -427,7 +427,7 @@ export interface XhTransferItemDescriptionProps extends ComponentPropsWithRef<'s
 export function XhTransferItemDescription({ children, ...rest }: XhTransferItemDescriptionProps): ReactNode {
   const ctx = useTransferContext()
   const item = useTransferItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemDescriptionProps(item), rest)}>{children}</span>
 }
 
 /** 条目行尾的作者内容（计数、徽标）。 */
@@ -435,14 +435,14 @@ export interface XhTransferItemSuffixProps extends ComponentPropsWithRef<'span'>
 export function XhTransferItemSuffix({ children, ...rest }: XhTransferItemSuffixProps): ReactNode {
   const ctx = useTransferContext()
   const item = useTransferItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemSuffixProps(item), rest)}>{children}</span>
 }
 
 export interface XhTransferItemCheckboxProps extends ComponentPropsWithRef<'span'> {}
 export function XhTransferItemCheckbox({ children, ...rest }: XhTransferItemCheckboxProps): ReactNode {
   const ctx = useTransferContext()
   const item = useTransferItemContext()
-  return <span {...mergeReactProps(ctx.api.getItemCheckboxProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+  return <span {...mergeReactProps(ctx.api.getItemCheckboxProps(item), rest)}>{children}</span>
 }
 
 export interface XhTransferToTargetTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -450,7 +450,7 @@ export interface XhTransferToTargetTriggerProps extends ComponentPropsWithRef<'b
 export function XhTransferToTargetTrigger({ children, ...rest }: XhTransferToTargetTriggerProps): ReactNode {
   const ctx = useTransferContext()
   return (
-    <button {...mergeReactProps(ctx.api.getToTargetTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getToTargetTriggerProps(), rest)}>
       {children}
     </button>
   )
@@ -460,7 +460,7 @@ export interface XhTransferToSourceTriggerProps extends ComponentPropsWithRef<'b
 export function XhTransferToSourceTrigger({ children, ...rest }: XhTransferToSourceTriggerProps): ReactNode {
   const ctx = useTransferContext()
   return (
-    <button {...mergeReactProps(ctx.api.getToSourceTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <button {...mergeReactProps(ctx.api.getToSourceTriggerProps(), rest)}>
       {children}
     </button>
   )
