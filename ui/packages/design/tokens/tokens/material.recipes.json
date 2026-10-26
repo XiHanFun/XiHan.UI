@@ -98,7 +98,7 @@
     },
     "frosted": {
       "id": "M2",
-      "description": "M2 浮层面：下拉、菜单、气泡等锚定瞬态浮层。实体白底 + 1px 描边 + 一层柔和投影，不采样背后内容。",
+      "description": "M2 浮层面：下拉、菜单、气泡等锚定瞬态浮层。实体白底 + 1px 描边 + md 档投影（浅色引 shadow.md，深色是同样三层的深色投影），不采样背后内容。",
       "light": {
         "tint": "{bg.surface}",
         "alpha": "{alpha.opaque}",
@@ -111,7 +111,7 @@
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
           "contact": "none",
-          "ambient": "0 4px 10px oklch(0 0 0 / 0.1)",
+          "ambient": "{shadow.md}",
           "sheet": "none"
         },
         "separator": "{border.subtle}",
@@ -127,7 +127,7 @@
           },
           "shadows": {
             "contact": "none",
-            "ambient": "0 4px 10px oklch(0 0 0 / 0.1)",
+            "ambient": "{shadow.md}",
             "sheet": "none"
           }
         }
@@ -144,7 +144,7 @@
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
           "contact": "none",
-          "ambient": "0 4px 10px oklch(0 0 0 / 0.36)",
+          "ambient": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4)",
           "sheet": "none"
         },
         "separator": "{border.subtle}",
@@ -160,7 +160,7 @@
           },
           "shadows": {
             "contact": "none",
-            "ambient": "0 4px 10px oklch(0 0 0 / 0.36)",
+            "ambient": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4)",
             "sheet": "none"
           }
         }
@@ -168,7 +168,7 @@
     },
     "elevated": {
       "id": "M4",
-      "description": "M4 高层实体面（sheet）：Dialog、Drawer、Notification 等模态与强反馈面，不透明、不采样背景，1px 描边 + 一层投影。",
+      "description": "M4 高层实体面（sheet）：Dialog、Drawer、Notification 等模态与强反馈面，不透明、不采样背景，1px 描边 + lg 档投影（浅色引 shadow.lg，深色是同样三层的深色投影）。",
       "light": {
         "tint": "{bg.surface}",
         "alpha": "{alpha.opaque}",
@@ -181,7 +181,7 @@
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
           "contact": "none",
-          "ambient": "0 4px 12px oklch(0 0 0 / 0.15)",
+          "ambient": "{shadow.lg}",
           "sheet": "none"
         },
         "separator": "{border.subtle}",
@@ -201,7 +201,7 @@
         "highlight": "oklch(0 0 0 / 0)",
         "shadows": {
           "contact": "none",
-          "ambient": "0 4px 12px oklch(0 0 0 / 0.4)",
+          "ambient": "0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45)",
           "sheet": "none"
         },
         "separator": "{border.subtle}",

@@ -579,22 +579,26 @@
     }
   },
   "elevation": {
+    "$description": "阴影只有三档，按面的类型取，组件不自选（设计真源 §5.3）：raised 取 sm，floating 与 frosted 取 md，sheet 取 lg。lifted 不另成一档，与 floating 同取 md。",
     "raised": {
+      "$description": "Card 与可抬起的部件（Tabs segment 滑块、Switch thumb、Button soft）：贴在页面上的一层薄影，面的边界仍由描边承担。",
       "$type": "shadow",
-      "$value": "none"
+      "$value": "{shadow.sm}"
     },
     "lifted": {
-      "$description": "被指针拎起来、正跟着手移动的东西：滑杆拇指、拖动中的排序项、取色器的拇指。它比贴在页面上的 raised 抬得高，又没到 floating 那一层——floating 是 portal 出去的锚定浮层，抬到那一档，拖动中的拇指会和下拉面板一样重。三层与投影色都照 shadow.* 那份配方，取值逐层落在 raised 与 floating 中间：主层偏移 2→3→4、模糊 3→6→8，环境层偏移 3→6→10。不写 shadow.* 原语是因为原语只有 sm / md / lg / xl 四档，两档之间没有位置。",
+      "$description": "被指针拎起来、正跟着手移动的东西：拖动中的排序项与字段组条目、悬停抬起的卡片。阴影只有三档，拎起来的东西与锚定浮层同取 md。",
       "$type": "shadow",
-      "$value": "0 4px 10px oklch(0 0 0 / 0.1)"
+      "$value": "{shadow.md}"
     },
     "floating": {
+      "$description": "锚定浮层：含网格或多列的面板；短列表、菜单与 tooltip 走 frosted 配方，投影同为 md。",
       "$type": "shadow",
-      "$value": "0 4px 10px oklch(0 0 0 / 0.1)"
+      "$value": "{shadow.md}"
     },
     "sheet": {
+      "$description": "模态与强反馈面：Dialog、Drawer、Command、Notification、Tour。",
       "$type": "shadow",
-      "$value": "0 4px 12px oklch(0 0 0 / 0.15)"
+      "$value": "{shadow.lg}"
     }
   },
   "motion": {

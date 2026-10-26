@@ -81,7 +81,7 @@
   "elevation": {
     "$description": "深色档的投影色留在纯黑：中性色阶最暗的一档（0.145）比页面底还亮，拿它当投影压不出任何深度。四档都在末尾带一条 1px 的浅色描边把面的上沿提出来——raised 与 lifted 那条写成 inset 且只画上边缘，不绕四周：这两档落在自带 --xh-border-control 的输入框壳与自带 2px 描边的滑杆拇指上，绕一圈就与那条描边并成相距 1px 的两道线。",
     "raised": { "$type": "shadow", "$value": "0 1px 1px -0.5px oklch(0 0 0 / 0.4), 0 2px 3px -1.5px oklch(0 0 0 / 0.36), 0 3px 6px -3px oklch(0 0 0 / 0.3), inset 0 1px 0 0 oklch(1 0 0 / 0.05)" },
-    "lifted": { "$description": "深色档同样落在两档中间：三层的偏移与模糊照浅色档的几何，主层不透明度 0.4→0.45→0.5。", "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.45), 0 3px 6px -2px oklch(0 0 0 / 0.42), 0 6px 12px -5px oklch(0 0 0 / 0.36), inset 0 1px 0 0 oklch(1 0 0 / 0.06)" },
+    "lifted": { "$description": "深色档同样只有三档：拎起来的东西与锚定浮层同取 floating 那一档。", "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
     "floating": { "$type": "shadow", "$value": "0 1px 2px -0.5px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 10px 20px -6px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.06)" },
     "sheet": { "$type": "shadow", "$value": "0 1px 3px -0.5px oklch(0 0 0 / 0.6), 0 8px 16px -4px oklch(0 0 0 / 0.5), 0 20px 40px -12px oklch(0 0 0 / 0.45), 0 0 0 1px oklch(1 0 0 / 0.08)" }
   },

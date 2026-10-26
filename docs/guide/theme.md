@@ -31,7 +31,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
 --xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
+--xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -223,11 +223,11 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 | --- | --- | --- | --- |
 | M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，一层 `0 4px 10px` 柔和投影，无顶光 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，一层 `0 4px 12px` 投影 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给一层影 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，一层 `0 4px 10px` 柔和投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 取 sm 档 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，md 档投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -239,7 +239,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，缺省 none）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，sm 档）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
 环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
@@ -259,7 +259,7 @@ Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边�
 | --- | --- |
 | `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
 | `--xh-material-frosted-compact-backdrop` | none，无模糊 |
-| `--xh-material-frosted-compact-shadow` | 一层 `0 4px 10px` 投影（浅色 10% 黑、深色 36% 黑） |
+| `--xh-material-frosted-compact-shadow` | md 档投影（浅色引 `--xh-shadow-md`，深色是同样三层的深色投影） |
 
 高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 

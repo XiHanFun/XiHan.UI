@@ -19,8 +19,8 @@ const TARGETS = [
 ]
 const PRE_RECIPE_HASHES = {
   'semantic.base.json': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
-  'semantic.light.json': '53f6f686bf6b42aa2edcadf7015a6307b8c54cd1d0a2de1405bc9682d8e28d5b',
-  'semantic.dark.json': 'd81c1c0e506560cd2ea1f54ea406e3e17078a476c6b6d24a0c2879f7f50c85e7',
+  'semantic.light.json': '6b72e0b35ce543bd09a49b4122112577fe4d34071d1036cc9edbf0f0515162c8',
+  'semantic.dark.json': 'b905bba19d890ef5b945cf459809e672daba44a8c135d52c82e3fe895e71b60c',
   'semantic.light.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
   'semantic.dark.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
   'semantic.transparency.reduce.json': '3a6161972abaa3cf6119b41ee68dce090bc8e22d52e0fee0f26b52de30b348dc',
