@@ -1,5 +1,5 @@
 {
-  "$description": "由 build/emit-brand-presets.mjs 从 brand.presets.json 生成，不要手改。预设品牌：每档 × 11 级，相对亮度逐级与 color.brand 一致。",
+  "$description": "由 build/emit-brand-presets.mjs 从 brand.presets.json 生成，不要手改。预设品牌：每档 × 11 级，相对亮度逐级与基线品牌曲线（色相 258）一致，与缺省品牌 color.brand 同一做法。",
   "brandPresets": {
     "blue": {
       "50": {
@@ -46,7 +46,7 @@
         "$type": "color",
         "$value": "oklch(0.27 0.089 237)"
       },
-      "$description": "预设品牌 blue（基础色板 blue，色相 237）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 blue（基础色板 blue，色相 237）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "cyan": {
       "50": {
@@ -93,7 +93,7 @@
         "$type": "color",
         "$value": "oklch(0.259 0.089 215)"
       },
-      "$description": "预设品牌 cyan（基础色板 cyan，色相 215）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 cyan（基础色板 cyan，色相 215）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "teal": {
       "50": {
@@ -140,7 +140,7 @@
         "$type": "color",
         "$value": "oklch(0.256 0.089 180)"
       },
-      "$description": "预设品牌 teal（基础色板 teal，色相 180）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 teal（基础色板 teal，色相 180）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "green": {
       "50": {
@@ -187,7 +187,7 @@
         "$type": "color",
         "$value": "oklch(0.267 0.089 149)"
       },
-      "$description": "预设品牌 green（基础色板 green，色相 149）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 green（基础色板 green，色相 149）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "orange": {
       "50": {
@@ -234,7 +234,7 @@
         "$type": "color",
         "$value": "oklch(0.287 0.089 50)"
       },
-      "$description": "预设品牌 orange（基础色板 orange，色相 50）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 orange（基础色板 orange，色相 50）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "red": {
       "50": {
@@ -281,7 +281,7 @@
         "$type": "color",
         "$value": "oklch(0.29 0.089 25)"
       },
-      "$description": "预设品牌 red（基础色板 red，色相 25）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 red（基础色板 red，色相 25）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "pink": {
       "50": {
@@ -328,7 +328,7 @@
         "$type": "color",
         "$value": "oklch(0.291 0.089 345)"
       },
-      "$description": "预设品牌 pink（基础色板 pink，色相 345）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 pink（基础色板 pink，色相 345）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     },
     "purple": {
       "50": {
@@ -375,7 +375,54 @@
         "$type": "color",
         "$value": "oklch(0.289 0.089 302)"
       },
-      "$description": "预设品牌 purple（基础色板 purple，色相 302）：11 档由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生，改预设请改 brand.presets.json。"
+      "$description": "预设品牌 purple（基础色板 purple，色相 302）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
+    },
+    "indigo": {
+      "50": {
+        "$type": "color",
+        "$value": "oklch(0.971 0.014 258)"
+      },
+      "100": {
+        "$type": "color",
+        "$value": "oklch(0.936 0.032 258)"
+      },
+      "200": {
+        "$type": "color",
+        "$value": "oklch(0.885 0.062 258)"
+      },
+      "300": {
+        "$type": "color",
+        "$value": "oklch(0.809 0.105 258)"
+      },
+      "400": {
+        "$type": "color",
+        "$value": "oklch(0.702 0.165 258)"
+      },
+      "500": {
+        "$type": "color",
+        "$value": "oklch(0.623 0.214 258)"
+      },
+      "600": {
+        "$type": "color",
+        "$value": "oklch(0.546 0.216 258)"
+      },
+      "700": {
+        "$type": "color",
+        "$value": "oklch(0.488 0.196 258)"
+      },
+      "800": {
+        "$type": "color",
+        "$value": "oklch(0.424 0.164 258)"
+      },
+      "900": {
+        "$type": "color",
+        "$value": "oklch(0.379 0.132 258)"
+      },
+      "950": {
+        "$type": "color",
+        "$value": "oklch(0.282 0.089 258)"
+      },
+      "$description": "预设品牌 indigo（基础色板 indigo，色相 258）：11 档由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生，改预设请改 brand.presets.json。"
     }
   }
 }

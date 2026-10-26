@@ -1,10 +1,11 @@
 // 基础色板：十二个色相 × 11 档，由 build/emit-palette.mjs 从 palette.seeds.json 派生。
-// 这里核三件事：生成物没有漂移、每档明度与 color.brand 同值（换色相不改对比度）、
-// 曲线与运行时 deriveBrandScale 的基线同源。
+// 这里核三件事：生成物没有漂移、每档明度取基线曲线（换色相不改对比度）、
+// 曲线与运行时 deriveBrandScale 的基线同源。基线就是色相 258 那一族（indigo，原缺省品牌，现为 data-brand="indigo"
+// 预设）；缺省品牌 color.brand 换成色相 277 后按基线的相对亮度反求明度，由 brand-presets.spec.ts 核对。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { derivePalette } from '../build/emit-palette.mjs'
+import { BASE_HUE, derivePalette } from '../build/emit-palette.mjs'
 import { deriveBrandScale } from '../src/runtime'
 
 const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const
@@ -18,7 +19,7 @@ function loadJson<T>(name: string): T {
 
 const seeds = loadJson<Record<string, { hue: number } | string>>('palette.seeds.json')
 const palette = loadJson<{ color: Record<string, Scale> }>('primitive.palette.json').color
-const brand = loadJson<{ color: { brand: Record<string, ColorToken> } }>('primitive.json').color.brand
+const presets = loadJson<{ brandPresets: Record<string, Record<string, ColorToken | string>> }>('primitive.brand-presets.json').brandPresets
 
 const HUES = Object.entries(seeds).filter((entry): entry is [string, { hue: number }] => !entry[0].startsWith('$'))
 
@@ -63,10 +64,10 @@ describe('基础色板的生成物', () => {
       expect(value(palette[name]!, step), `${name}.${step}`).toBe(derived[step])
   })
 
-  it.each(HUES)('%s 每档明度与 color.brand 同值、色相恒定、彩度不高过基线且落在 sRGB 色域内', (name, seed) => {
+  it.each(HUES)('%s 每档明度与基线（indigo）同值、色相恒定、彩度不高过基线且落在 sRGB 色域内', (name, seed) => {
     for (const step of STEPS) {
       const [l, c, h] = parts(value(palette[name]!, step))
-      const [brandL, brandC] = parts(brand[step]!.$value)
+      const [brandL, brandC] = parts(value(palette.indigo!, step))
       expect(l, `${name}.${step} L`).toBe(brandL)
       expect(h, `${name}.${step} H`).toBe(seed.hue)
       expect(c, `${name}.${step} C`).toBeLessThanOrEqual(brandC)
@@ -84,13 +85,14 @@ describe('基础色板的生成物', () => {
     }
   })
 
-  it('色相 258 那一族（indigo）与 color.brand 逐值一致：品牌就是色板里的一员', () => {
+  it('色相 258 那一族（indigo）就是基线，与 data-brand="indigo" 预设逐值一致：原缺省品牌留作预设', () => {
+    expect(seeds.indigo).toEqual({ hue: BASE_HUE })
     for (const step of STEPS)
-      expect(value(palette.indigo!, step)).toBe(brand[step]!.$value)
+      expect(value(palette.indigo!, step)).toBe(value(presets.indigo!, step))
   })
 
   it('曲线与运行时 deriveBrandScale 同源：拿基线 600 档当种子派生出的就是 indigo', () => {
-    const runtime = deriveBrandScale(brand[600]!.$value)
+    const runtime = deriveBrandScale(value(palette.indigo!, '600'))
     for (const step of STEPS)
       expect(value(palette.indigo!, step)).toBe(runtime[step])
   })

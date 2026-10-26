@@ -133,6 +133,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: 'Rot',
     brandPink: 'Pink',
     brandPurple: 'Lila',
+    brandIndigo: 'Indigo',
     toolbarDisplay: 'Schaltflächen-Darstellung',
     toolbarDisplayHint: 'Wie die Schaltflächen der Symbolleiste angezeigt werden.',
     toolbarDisplayIcon: 'Symbole',

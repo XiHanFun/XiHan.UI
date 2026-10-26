@@ -1,9 +1,10 @@
-// 预设品牌：brand.presets.json 里每档取基础色板的一个色相，由 build/emit-brand-presets.mjs 按缺省品牌的相对亮度派生。
-// 这里核四件事：生成物没有漂移、每级相对亮度与缺省品牌对齐、导出的 id 清单与源一致、tokens.css 里每档都有取值块。
+// 预设品牌：brand.presets.json 里每档取基础色板的一个色相，由 build/emit-brand-presets.mjs 按基线品牌曲线的相对亮度派生。
+// 这里核五件事：生成物没有漂移、每级相对亮度与缺省品牌对齐、缺省品牌就是色相 277 上同样派生的一套、
+// 导出的 id 清单与源一致、tokens.css 里每档都有取值块。
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { deriveBrandPreset, relativeLuminance } from '../build/emit-brand-presets.mjs'
+import { baselineScale, DEFAULT_BRAND_HUE, deriveBrandPreset, relativeLuminance } from '../build/emit-brand-presets.mjs'
 import { BRAND_PRESET_COLORS, BRAND_PRESETS } from '../src'
 
 const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const
@@ -17,7 +18,8 @@ const source = loadJson<Record<string, { palette: string } | string>>('brand.pre
 const seeds = loadJson<Record<string, { hue: number } | string>>('palette.seeds.json')
 const generated = loadJson<{ brandPresets: Record<string, Record<string, { $value: string } | string>> }>('primitive.brand-presets.json').brandPresets
 const brand = loadJson<{ color: { brand: Record<string, { $value: string } | string> } }>('primitive.json').color.brand
-const base = Object.fromEntries(STEPS.map(step => [step, (brand[step] as { $value: string }).$value])) as Record<Step, string>
+const brandScale = Object.fromEntries(STEPS.map(step => [step, (brand[step] as { $value: string }).$value])) as Record<Step, string>
+const base = baselineScale()
 const ids = Object.keys(source).filter(key => !key.startsWith('$'))
 
 function parse(css: string): [number, number, number] {
@@ -51,14 +53,25 @@ describe('预设品牌', () => {
 
   it.each(ids)('%s：每级相对亮度与缺省品牌对齐（相差不到 2%）', (id) => {
     for (const step of STEPS) {
-      const target = luminanceOf(base[step])
+      const target = luminanceOf(brandScale[step])
       const actual = luminanceOf((generated[id]![step] as { $value: string }).$value)
       expect(Math.abs(actual - target) / target, step).toBeLessThan(0.02)
     }
   })
 
-  it('色相取缺省品牌的那一个时，派生出的就是缺省品牌', () => {
+  it('色相取基线的那一个时，派生出的就是基线本身', () => {
     expect(deriveBrandPreset(parse(base['600'])[2], base)).toEqual(base)
+  })
+
+  it('缺省品牌 color.brand 就是色相 277 上按基线相对亮度派生的一套，600 档白字不低于 5:1', () => {
+    expect(DEFAULT_BRAND_HUE).toBe(277)
+    expect(brandScale).toEqual(deriveBrandPreset(DEFAULT_BRAND_HUE, base))
+    expect((1 + 0.05) / (luminanceOf(brandScale['600']) + 0.05)).toBeGreaterThanOrEqual(5)
+  })
+
+  it('indigo 预设逐级就是原缺省品牌（基线曲线）', () => {
+    for (const step of STEPS)
+      expect((generated.indigo![step] as { $value: string }).$value, step).toBe(base[step])
   })
 
   it('tokens.css 里每档预设都有一个只换品牌原语的取值块', () => {

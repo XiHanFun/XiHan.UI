@@ -139,6 +139,7 @@ export const DESIGNER_SETTINGS_EN_US: DesignerShellLocaleTranslations['xh-design
   brandRed: 'Red',
   brandPink: 'Pink',
   brandPurple: 'Purple',
+  brandIndigo: 'Indigo',
   toolbarDisplay: 'Button style',
   toolbarDisplayHint: 'How the buttons on the toolbar are shown.',
   toolbarDisplayIcon: 'Icons',

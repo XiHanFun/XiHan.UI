@@ -85,16 +85,16 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: oklch(0.546 0.216 258)
-border-right-color: oklch(0.546 0.216 258)
-border-bottom-color: oklch(0.546 0.216 258)
-border-left-color: oklch(0.546 0.216 258)
+border-top-color: oklch(0.557 0.216 277)
+border-right-color: oklch(0.557 0.216 277)
+border-bottom-color: oklch(0.557 0.216 277)
+border-left-color: oklch(0.557 0.216 277)
 min-height: auto
 font-size: 16px
 line-height: 16px
 font-weight: 500
 color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: background-color, border-color, box-shadow, color
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)

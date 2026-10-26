@@ -3,48 +3,49 @@
     "brand": {
       "50": {
         "$type": "color",
-        "$value": "oklch(0.971 0.014 258)"
+        "$value": "oklch(0.972 0.014 277)"
       },
       "100": {
         "$type": "color",
-        "$value": "oklch(0.936 0.032 258)"
+        "$value": "oklch(0.937 0.032 277)"
       },
       "200": {
         "$type": "color",
-        "$value": "oklch(0.885 0.062 258)"
+        "$value": "oklch(0.888 0.062 277)"
       },
       "300": {
         "$type": "color",
-        "$value": "oklch(0.809 0.105 258)"
+        "$value": "oklch(0.813 0.103 277)"
       },
       "400": {
         "$type": "color",
-        "$value": "oklch(0.702 0.165 258)"
+        "$value": "oklch(0.709 0.162 277)"
       },
       "500": {
         "$type": "color",
-        "$value": "oklch(0.623 0.214 258)"
+        "$value": "oklch(0.632 0.209 277)"
       },
       "600": {
         "$type": "color",
-        "$value": "oklch(0.546 0.216 258)"
+        "$value": "oklch(0.557 0.216 277)"
       },
       "700": {
         "$type": "color",
-        "$value": "oklch(0.488 0.196 258)"
+        "$value": "oklch(0.498 0.196 277)"
       },
       "800": {
         "$type": "color",
-        "$value": "oklch(0.424 0.164 258)"
+        "$value": "oklch(0.432 0.164 277)"
       },
       "900": {
         "$type": "color",
-        "$value": "oklch(0.379 0.132 258)"
+        "$value": "oklch(0.385 0.132 277)"
       },
       "950": {
         "$type": "color",
-        "$value": "oklch(0.282 0.089 258)"
-      }
+        "$value": "oklch(0.286 0.089 277)"
+      },
+      "$description": "缺省品牌：OKLCH 色相 277 的靛蓝。各档明度按基线曲线（基础色板 indigo，色相 258，即原缺省品牌）那一档的 WCAG 相对亮度反求，彩度取基线彩度、收进 sRGB 色域，与 data-brand 预设同一做法（build/emit-brand-presets.mjs 的 deriveBrandPreset），600 档实心底上的白字 5.08:1。原缺省色相 258 保留为 data-brand=\"indigo\" 预设。tests/brand-presets.spec.ts 守着这里与派生结果逐值一致。"
     },
     "neutral": {
       "0": {

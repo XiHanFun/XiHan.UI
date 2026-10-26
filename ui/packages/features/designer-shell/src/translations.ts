@@ -251,6 +251,7 @@ export interface DesignerSettingsTranslations {
   readonly brandRed: string
   readonly brandPink: string
   readonly brandPurple: string
+  readonly brandIndigo: string
   /** 工具栏显示方式条目的标签。 */
   readonly toolbarDisplay: string
   /** 工具栏显示方式条目的说明。 */

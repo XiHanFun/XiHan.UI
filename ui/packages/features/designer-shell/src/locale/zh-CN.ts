@@ -133,6 +133,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: '红',
     brandPink: '粉',
     brandPurple: '紫',
+    brandIndigo: '靛蓝',
     toolbarDisplay: '按钮显示方式',
     toolbarDisplayHint: '工具栏上的按钮怎么显示。',
     toolbarDisplayIcon: '图标',

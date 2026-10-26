@@ -133,6 +133,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: '赤',
     brandPink: 'ピンク',
     brandPurple: '紫',
+    brandIndigo: '藍',
     toolbarDisplay: 'ボタンの表示',
     toolbarDisplayHint: 'ツールバーのボタンの表示方法です。',
     toolbarDisplayIcon: 'アイコン',

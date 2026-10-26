@@ -133,6 +133,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: 'Rouge',
     brandPink: 'Rose',
     brandPurple: 'Violet',
+    brandIndigo: 'Indigo',
     toolbarDisplay: 'Affichage des boutons',
     toolbarDisplayHint: 'Comment les boutons de la barre d’outils sont affichés.',
     toolbarDisplayIcon: 'Icônes',

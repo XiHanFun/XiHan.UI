@@ -1,5 +1,5 @@
 {
-  "$description": "由 build/emit-palette.mjs 从 palette.seeds.json 生成，不要手改。基础色板：十二个色相 × 11 档，明度逐档与 color.brand 同值。",
+  "$description": "由 build/emit-palette.mjs 从 palette.seeds.json 生成，不要手改。基础色板：十二个色相 × 11 档，明度逐档取基线品牌曲线（色相 258 的 indigo 就是基线本身）。",
   "color": {
     "red": {
       "50": {

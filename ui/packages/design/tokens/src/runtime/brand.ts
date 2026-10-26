@@ -19,7 +19,8 @@ export type BrandStep = (typeof BRAND_STEPS)[number]
 /** 一套完整的品牌原语：11 档，值是任意可解析的 CSS 颜色。 */
 export type BrandScale = Record<BrandStep, string>
 
-/* 基线品牌曲线（与 tokens/primitive.json 的 color.brand 逐值一致，有测试守着不漂移）。
+/* 基线品牌曲线（与基础色板色相 258 的 indigo 逐值一致，有测试守着不漂移；那是原缺省品牌，现为 data-brand="indigo"
+   预设。缺省品牌 color.brand 换成色相 277 后按这条曲线的相对亮度反求明度，不在这里）。
    L 决定对比度，C 决定饱和感；派生时 L 原样保留、C 按种子等比缩放。 */
 const BASE_L: Record<BrandStep, number> = {
   50: 0.971,

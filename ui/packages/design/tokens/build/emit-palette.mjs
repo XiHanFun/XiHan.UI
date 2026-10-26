@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // 读 tokens/palette.seeds.json（十二个色相角）→ 按品牌曲线派生每个色相的 11 档 → 写 tokens/primitive.palette.json。
 //
-// 曲线与 src/runtime/brand.ts 的 BASE_L / BASE_C 逐值同源（tests/palette.spec.ts 拿 color.brand 与运行时的
-// deriveBrandScale 逐档核对，两处漂移就红）：明度逐档与 color.brand 同值，彩度取基线彩度在该明度、该色相下
-// 收进 sRGB 色域的最大值。同一档跨色相同一明度，换色相不改对比度。
+// 曲线与 src/runtime/brand.ts 的 BASE_L / BASE_C 逐值同源（tests/palette.spec.ts 拿色相 258 那一族与运行时的
+// deriveBrandScale 逐档核对，两处漂移就红）：明度逐档取基线，彩度取基线彩度在该明度、该色相下收进 sRGB 色域的
+// 最大值。同一档跨色相同一明度，换色相不改对比度。基线就是色相 258 那一族（indigo，原缺省品牌）；缺省品牌
+// color.brand 改取色相 277 之后，按这条基线的相对亮度反求明度（build/emit-brand-presets.mjs），不再与色板同明度。
 import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -15,7 +16,8 @@ const OUT = join(TOKENS_DIR, 'primitive.palette.json')
 
 export const STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
 
-/* 基线品牌曲线，与 src/runtime/brand.ts 逐值一致。 */
+/* 基线品牌曲线，与 src/runtime/brand.ts 逐值一致。BASE_HUE 是这条曲线的色相：在它上面派生出的那一族就是基线本身。 */
+export const BASE_HUE = 258
 export const BASE_L = { 50: 0.971, 100: 0.936, 200: 0.885, 300: 0.809, 400: 0.702, 500: 0.623, 600: 0.546, 700: 0.488, 800: 0.424, 900: 0.379, 950: 0.282 }
 export const BASE_C = { 50: 0.014, 100: 0.032, 200: 0.062, 300: 0.105, 400: 0.165, 500: 0.214, 600: 0.216, 700: 0.196, 800: 0.164, 900: 0.132, 950: 0.089 }
 const GAMUT_EPS = 0.05
@@ -61,7 +63,7 @@ export const fmtChroma = c => String(Math.floor(c * 1000 + 1e-9) / 1000)
 /**
  * 一个色相的 11 档：明度与彩度逐档取基线，彩度再按该档明度、该色相收进 sRGB 色域。
  * 不像 deriveBrandScale 那样按种子彩度等比缩放：种子是色相角而不是一枚颜色，黄、青这类在中档
- * 装不下基线彩度的色相，浅档仍取得到基线的鲜度。色相 258 与 color.brand 逐值一致。
+ * 装不下基线彩度的色相，浅档仍取得到基线的鲜度。色相 BASE_HUE（258）那一族就是基线本身。
  */
 export function derivePalette(hue) {
   const out = {}
@@ -84,7 +86,7 @@ async function main() {
       color[name][step] = { $type: 'color', $value: scale[step] }
   }
   const document = {
-    $description: '由 build/emit-palette.mjs 从 palette.seeds.json 生成，不要手改。基础色板：十二个色相 × 11 档，明度逐档与 color.brand 同值。',
+    $description: '由 build/emit-palette.mjs 从 palette.seeds.json 生成，不要手改。基础色板：十二个色相 × 11 档，明度逐档取基线品牌曲线（色相 258 的 indigo 就是基线本身）。',
     color,
   }
   await writeFile(OUT, `${JSON.stringify(document, null, 2)}\n`)

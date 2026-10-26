@@ -144,6 +144,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: 'Красный',
     brandPink: 'Розовый',
     brandPurple: 'Фиолетовый',
+    brandIndigo: 'Индиго',
     toolbarDisplay: 'Вид кнопок',
     toolbarDisplayHint: 'Как показываются кнопки на панели инструментов.',
     toolbarDisplayIcon: 'Значки',

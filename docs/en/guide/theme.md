@@ -13,7 +13,7 @@ itself          meaning         a single component
 **primitive**: raw values independent of context. They never change in any scope and are declared once.
 
 ```css
---xh-color-brand-500: oklch(0.623 0.214 258);
+--xh-color-brand-500: oklch(0.632 0.209 277);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
 --xh-radius-md: 4px;
@@ -188,7 +188,7 @@ On a light system it takes the same values as `light`. When the system switches 
 visual.setPreference({ brand: brandId("green") });
 ```
 
-Each preset takes the hue of the same name from the base palette, and every step is derived from the relative luminance of the same step of the default brand. Contrasts that involve the brand (text on solid backgrounds, brand text color, the brand tint with text on it, the focus ring) therefore meet the same targets as the default brand; light, dark and both high-contrast levels are checked step by step by a gate. A value block of the same name injected by `registerBrand` is not layered and wins over the preset.
+Each preset takes the hue of the same name from the base palette, and every step is derived from the relative luminance of the same step of the default brand; `indigo` is the former default brand (hue 258), kept as a preset after the default moved to an indigo at hue 277. Contrasts that involve the brand (text on solid backgrounds, brand text color, the brand tint with text on it, the focus ring) therefore meet the same targets as the default brand; light, dark and both high-contrast levels are checked step by step by a gate. A value block of the same name injected by `registerBrand` is not layered and wins over the preset.
 
 `data-brand` only switches the brand when it sits on the same element as `data-theme`: semantic tokens are declared at the theme boundary, so swapping brand primitives on a child element leaves the semantic tokens at the values resolved outside. The visual environment controller always writes both attributes on its root; when writing them by hand, put `data-theme` on the same element as well.
 

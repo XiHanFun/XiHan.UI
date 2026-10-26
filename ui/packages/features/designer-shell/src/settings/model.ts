@@ -160,6 +160,7 @@ const BRAND_NAMES: Readonly<Record<BrandPreset, keyof DesignerSettingsTranslatio
   red: 'brandRed',
   pink: 'brandPink',
   purple: 'brandPurple',
+  indigo: 'brandIndigo',
 }
 
 /**

@@ -234,7 +234,7 @@ font-size: 12px
 line-height: 18px
 font-weight: 400
 color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: opacity, scale
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)

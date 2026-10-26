@@ -133,6 +133,7 @@ const translations: DesignerShellLocaleTranslations = {
     brandRed: '빨강',
     brandPink: '분홍',
     brandPurple: '보라',
+    brandIndigo: '남색',
     toolbarDisplay: '버튼 표시 방식',
     toolbarDisplayHint: '도구 모음 단추를 표시하는 방식입니다.',
     toolbarDisplayIcon: '아이콘',

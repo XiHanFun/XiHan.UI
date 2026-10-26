@@ -268,7 +268,7 @@ min-height: 0px
 font-size: 14px
 line-height: 14px
 font-weight: 400
-color: oklch(0.546 0.216 258)
+color: oklch(0.557 0.216 277)
 background-color: oklab(0 0 0 / 0.047)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -278,7 +278,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.546 0.216 258)
+outline-color: oklch(0.557 0.216 277)
 
 [preview-meta]
 padding-top: 0px
@@ -368,7 +368,7 @@ border-left-width: 2px
 border-top-color: oklch(0.461 0.018 258)
 border-right-color: oklch(0.461 0.018 258)
 border-bottom-color: oklch(0.461 0.018 258)
-border-left-color: oklch(0.546 0.216 258)
+border-left-color: oklch(0.557 0.216 277)
 min-height: 0px
 font-size: 13px
 line-height: 21.125px
@@ -479,7 +479,7 @@ font-size: 12px
 line-height: 12px
 font-weight: 400
 color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: background-color, color
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
@@ -514,7 +514,7 @@ font-size: 14px
 line-height: 14px
 font-weight: 400
 color: oklch(0.208 0.006 258)
-background-color: oklab(0.94552 -0.00538907 -0.0253536)
+background-color: oklab(0.94684 0.00315886 -0.0257268)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
@@ -653,7 +653,7 @@ min-height: 0px
 font-size: 12px
 line-height: 12px
 font-weight: 400
-color: oklch(0.546 0.216 258)
+color: oklch(0.557 0.216 277)
 background-color: oklab(0 0 0 / 0.047)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
@@ -663,4 +663,4 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.546 0.216 258)
+outline-color: oklch(0.557 0.216 277)

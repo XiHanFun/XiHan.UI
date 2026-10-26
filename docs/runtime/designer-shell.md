@@ -887,7 +887,7 @@ dialog.show();
 | 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
 | --- | --- | --- | --- | --- |
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
-| 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
+| 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 9 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 自动保存 | `general.autoSave` | 开关：有未保存的修改时停手约一秒，在这台浏览器里存一份草稿 | `false` | 总有 |
 | 开发者模式 | `general.developer` | 开关：关闭后将隐藏 JSON / Blob 调试查看入口 | `false` | 总有 |

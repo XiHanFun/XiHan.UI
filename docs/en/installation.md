@@ -265,7 +265,7 @@ The machine-readable form of the tokens can also be used directly, to generate F
 
 ```ts
 import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
-// { "--xh-color-brand-500": "oklch(0.623 0.214 258)", ... }
+// { "--xh-color-brand-500": "oklch(0.632 0.209 277)", ... }
 ```
 
 ## Use the unlayered build when the host has an unlayered reset
