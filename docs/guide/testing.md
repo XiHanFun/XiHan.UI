@@ -297,7 +297,8 @@ pnpm gate:nuxt    # 本仓的包打出来装进 examples/nuxt，类型检查、�
 pnpm size
 ```
 
-73 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+75 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+量的是首屏同步加载的那一份：`pnpm size` 经 `ui/tooling/size-limit.config.mjs` 把动态 `import()` 的目标留在包外——使用者的打包器都会把它们切成按需块，首屏不下载（选择器开了 `virtual` 才加载虚拟化内核）。按需块自己另记一条，连同它的依赖一起称，同样受预算管。
 
 
 ## 相关

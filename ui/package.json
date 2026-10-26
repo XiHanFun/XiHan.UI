@@ -36,7 +36,7 @@
     "lint:fix": "eslint . --fix",
     "prepare": "node scripts/install-git-hooks.mjs",
     "release": "turbo run build && changeset publish --no-git-tag",
-    "size": "turbo run build && size-limit",
+    "size": "turbo run build && size-limit --config tooling/size-limit.config.mjs",
     "surface:update": "node tooling/scripts/build-public-surface.mjs",
     "test": "node tooling/scripts/test-unit.mjs",
     "test:browser": "node tooling/scripts/test-browser.mjs",
