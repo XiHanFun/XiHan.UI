@@ -10,7 +10,7 @@ import type { SideNavApi, SideNavSchema, TooltipSchema } from '@xihan-ui/headles
 import type { ComputedRef, ShallowRef } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, sideNavMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, shallowRef } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -63,7 +63,7 @@ export function useSideNav(
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getPopoutAnchorEl', value => popoutEl('trigger', value))
     service.refs.set('getPopoutPositionerEl', value => popoutEl('positioner', value))
     service.refs.set('getPopoutContentEl', value => popoutEl('content', value))

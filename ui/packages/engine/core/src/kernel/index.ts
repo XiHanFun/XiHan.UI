@@ -73,8 +73,13 @@ export { createScope, getActiveElementDeep } from './scope'
 export type { Layer, LayerKind, LayerRegistry, LayerVisual, LayerVisualBindingOptions } from './structure/layer-registry'
 export { bindLayerVisual, createLayerRegistry, getLayerRegistry, LAYER_VISUAL_PROPERTY } from './structure/layer-registry'
 
+// 结构：浮层按需块
+export type { OverlayKit } from './structure/overlay-kit'
+export { loadOverlayKit, overlayKit, prefetchOverlayKit, requireOverlayKit, whenOverlayKit } from './structure/overlay-kit'
+
 export type { PerDocumentRegistry } from './structure/per-document-registry'
 export { createPerDocumentRegistry } from './structure/per-document-registry'
+export { connectPortalVisualBridge } from './structure/portal-bridge-connect'
 // 结构：portal 落点
 export type { PortalLease, PortalLeaseOptions } from './structure/portal-lease'
 export { createPortalLease } from './structure/portal-lease'
@@ -110,5 +115,6 @@ export type {
 export type { VirtualItem, VirtualizerOptions, VirtualizerPort } from './types/virtualizer'
 
 export { isDev } from './utils/dev'
+export { onFirstInteraction } from './utils/first-interaction'
 // 工具
 export { invariant, warn } from './utils/invariant'

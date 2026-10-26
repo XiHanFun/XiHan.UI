@@ -10,6 +10,32 @@
 
 `createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
 
+## 浮层第一次打开时才加载
+
+消隐层、焦点域、滚动锁、背景失活、Portal 视觉桥与多选标签动效只在浮层打开时才用得上。库内的浮层组件不从主入口同步引入它们，而是第一次要用时经 `loadOverlayKit()` 取一块按需块；定位引擎（`@xihan-ui/position` 的 `createDeferredPositionEngine`，见[浮层定位](./position#延迟引擎)）与浮层里的自绘滚动条同样按需。使用者的打包器（Vite、Rollup、webpack）会把这几块切成单独的文件，首屏不下载：只用一个选择器时首屏从 53 kB 降到 33 kB（gzip，见[体积棘轮](./testing#体积棘轮)）。
+
+- 何时取：浮层挂载后，文档上第一次有交互（指针移进来、按下、按键、聚焦、触摸）就在后台取。键盘打开前焦点先到，指针点开前先移进来，真打开时多半已经到了。挂载时就开着的浮层立刻取。
+- 没到时打开：展开态当场生效，状态、ARIA、`data-state` 与事件照常；资源到了再接上。靠定位的浮层落位前本就藏着；对话框、抽屉、图片查看器、命令面板这类不靠落位藏面板的，内容等按需块到了才露出来。等的这段时间按 Escape、点外面不收起，焦点留在原处；等的时候已经关掉就不再接，不抢焦点。
+- 第一次打开也要同步：应用启动时调一次适配器导出的 `preloadOverlay()`（`@xihan-ui/vue`、`@xihan-ui/react`、`@xihan-ui/web-components` 都有），之后与静态引入完全一样。
+- 加载失败不缓存，下一次打开重新取。
+
+自己写浮层时：`whenOverlayKit(kit => …)` 在按需块到了时回调（已经到了当场调），返回的函数撤掉还在排的那一次；`overlayKit()` 已到返回它，没到返回 `null`；`prefetchOverlayKit(document)` 登记交互预取，底下用的是 `onFirstInteraction(document, run)`。给 Portal 壳接来源用 `connectPortalVisualBridge({ source, shell })`：逻辑来源当场登记，搬进壳的控件马上就能沿逻辑祖先链找到所在位置的配置与语言包；视觉桥等按需块到了再建，返回的函数一并撤掉。主入口照旧导出 `createDismissLayer`、`createFocusScope` 等，直接引入就是同步的，下文的示例都这样写。
+
+```ts
+import { prefetchOverlayKit, whenOverlayKit } from "@xihan-ui/core";
+
+prefetchOverlayKit(document);
+
+let dismiss = null;
+const cancel = whenOverlayKit((kit) => {
+  dismiss = kit.createDismissLayer({ config, layer, onDismiss: close });
+});
+
+// 收起或卸载时：还没到就撤掉排队，到了就释放
+cancel();
+dismiss?.dispose();
+```
+
 ## Portal 的视觉环境
 
 Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；语气经 `data-tone` 属性一并带过去，浮层内按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点取到的是来源那一族。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。

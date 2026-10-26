@@ -8,7 +8,7 @@
 
 import type { ControlVariant, NormalizeProps, PropTypes, Size, Tone } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
-import { trackListMotion } from '@xihan-ui/core'
+import { whenOverlayKit } from '@xihan-ui/core'
 import { connectStaticTag, tagVariantForControl } from '../tag'
 
 /** 未指定 maxTagCount 时最多摆几枚标签，其余折进 +N 那一枚。 */
@@ -25,6 +25,9 @@ export const SELECTION_TAG_SELECTOR = '[data-scope="tag"][data-part="root"][data
  * 标签行的到达、离场与换位：首帧就在的标签直接呈现，之后新选的播进场，取消选中的在原处播完退场，
  * 其余标签滑到新位置。没有标签行（单选或作者没写）就不接。
  * React 的祖先 ref 在子组件 layout effect 之后才附着，延到提交后的微任务再取，仍在首帧绘制之前。
+ *
+ * 列表动效住在 core 的浮层按需块里：有标签行才去取（单选不付这份下载），没到之前标签行带着
+ * data-instant，选中与取消直接呈现、不播动效，到了再接上。
  */
 export function trackSelectionTagMotion(options: {
   flush: (fn: () => void) => void
@@ -35,17 +38,25 @@ export function trackSelectionTagMotion(options: {
 }): () => void {
   let disposed = false
   let stop: (() => void) | undefined
+  let waitingKit: (() => void) | undefined
   options.flush(() => {
     queueMicrotask(() => {
-      const list = options.list()
-      if (disposed || !list)
+      if (disposed || !options.list())
         return
-      stop = trackListMotion(list, { item: SELECTION_TAG_SELECTOR })
-      options.onTracked?.()
+      waitingKit = whenOverlayKit((kit) => {
+        waitingKit = undefined
+        // 等的这段时间标签行可能换过节点：接到时再取一次
+        const list = options.list()
+        if (disposed || !list)
+          return
+        stop = kit.trackListMotion(list, { item: SELECTION_TAG_SELECTOR })
+        options.onTracked?.()
+      })
     })
   })
   return () => {
     disposed = true
+    waitingKit?.()
     stop?.()
   }
 }

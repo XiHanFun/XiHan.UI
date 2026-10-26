@@ -10,7 +10,7 @@ import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -114,7 +114,7 @@ export function useMenubar(props: MenubarSchema['props']): MenubarContext {
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     // 定位引擎由适配器注入，机器只经端口驱动
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
   }, [config, registry])
 
   const service = useMachine(menubarMachine, () => props, { scope, onCreate })

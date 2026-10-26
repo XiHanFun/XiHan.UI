@@ -10,7 +10,7 @@ import type { CitationApi, CitationSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, connectCitation } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -55,7 +55,7 @@ export function useCitation(props: CitationSchema['props'], callbacks: CitationC
     })
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
   }
   service.refs.set('getFloatingEl', () => positionerRef.value)
 

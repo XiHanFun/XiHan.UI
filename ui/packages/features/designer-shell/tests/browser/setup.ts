@@ -1,3 +1,4 @@
+import { preloadOverlay } from '@xihan-ui/web-components'
 import { beforeAll } from 'vitest'
 import { userEvent } from 'vitest/browser'
 
@@ -15,4 +16,9 @@ async function parkPointer(): Promise<void> {
   await userEvent.hover(park)
 }
 
+/**
+ * 库内浮层（对话框、菜单、提示）的按需块先取齐：用例断言的是打开之后的同步行为，
+ * 第一次打开时按需块还没到的那条路径由 Web Components 适配器自己的用例测。
+ */
+beforeAll(preloadOverlay)
 beforeAll(parkPointer)

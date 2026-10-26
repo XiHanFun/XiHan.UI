@@ -12,7 +12,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
@@ -376,7 +376,7 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
     layer: () => ({ kind: 'inline', branches: () => [anchor()].filter(Boolean) as Element[], isModal: () => false }),
     node: () => contentRef.current,
     refs: (service) => {
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getAnchorEl', anchor)
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('group', group)

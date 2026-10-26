@@ -18,6 +18,7 @@ export type { Spreader } from './dom/spread'
 export { createLitRuntime } from './runtime/lit-runtime'
 export type { LitRuntime } from './runtime/lit-runtime'
 export { MachineController } from './runtime/machine-controller'
+export { preloadOverlay } from './runtime/preload-overlay'
 export { defineElement } from './runtime/registry'
 // 列式数据仓：图表的大数据（行情、采集）由它承载，从 headless 转发，docs 与应用不必另装依赖
 export { createColumnStore } from '@xihan-ui/headless'

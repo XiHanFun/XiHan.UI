@@ -16,7 +16,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -358,7 +358,7 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
     // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
     // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
     // 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：自绘条跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
-    const bars = useScrollbars({ scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.value, props: () => ({ size: 'sm', disabled: !ctx.api.value.isContentMounted() }) })
+    const bars = useOverlayScrollbars({ present: () => ctx.visible.value, scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.value, props: () => ({ size: 'sm', disabled: !ctx.api.value.isContentMounted() }) })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {

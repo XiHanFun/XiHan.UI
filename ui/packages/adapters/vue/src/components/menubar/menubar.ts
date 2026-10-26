@@ -21,7 +21,7 @@ import { mergePartProps, withoutScopeClass, withoutUndefined } from '../../runti
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { XhIcon } from '../icon/icon'
 import { provideMenu, provideMenuItem, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
@@ -216,7 +216,7 @@ export const XhMenubarPositioner = defineComponent({
     const setEl = useMenubarPart(ctx.registerPositioner, () => props.value)
     // 这张菜单的条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
     // 一张菜单一套，浮层里的条子走 4px 档
-    const bars = useScrollbars({ scrollable: () => contentRef.value, props: { size: 'sm' } })
+    const bars = useOverlayScrollbars({ present: () => visible.value, scrollable: () => contentRef.value, props: { size: 'sm' } })
     // 每张菜单各搬各的定位层到 portal 落点，逃开祖先的层叠上下文
     // 关着的菜单不建视觉桥：菜单栏上每一项各有一个定位层，几项就是几台挂在祖先链上的观察
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.rootRef, present: visible.value }, () => [

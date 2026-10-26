@@ -19,7 +19,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { StructureVirtualProvider, useStructureVirtualParts } from '../virtualizer/structure-slot'
@@ -394,7 +394,7 @@ export function XhSelectPositioner({ children, container, ...rest }: XhSelectPos
   // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
   // 列表内容懒挂载、还没展开过时轴先禁用着：容器暂缺属于预期
   // 虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：自绘条跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法
-  const bars = useScrollbars({ scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.listRef.current, props: () => ({ size: 'sm', disabled: !ctx.api.isContentMounted() }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef} present={ctx.rendered}>
       <div

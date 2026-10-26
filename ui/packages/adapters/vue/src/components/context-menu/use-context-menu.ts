@@ -10,7 +10,7 @@ import type { ContextMenuApi, ContextMenuSchema, MenuTreeNode } from '@xihan-ui/
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectContextMenu, contextMenuMachine, createMenuTreeNode } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -76,7 +76,7 @@ export function useContextMenu(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点是光标坐标，故无 getAnchorEl
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getFloatingEl', () => positionerRef.value)
     // 触发区兼作两用：收起时焦点归还它，没有光标坐标时它的起始角就是锚点
     service.refs.set('getTriggerEl', () => triggerRef.value)

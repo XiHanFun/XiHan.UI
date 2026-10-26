@@ -10,7 +10,7 @@ import type { MentionApi, MentionInputEl, MentionSchema } from '@xihan-ui/headle
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMention, mentionMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, nextTick, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -73,7 +73,7 @@ export function useMention(
     // 定位引擎由适配器注入，机器只经端口驱动；锚点就是输入框本身
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)
     service.refs.set('getInputEl', () => inputRef.value)

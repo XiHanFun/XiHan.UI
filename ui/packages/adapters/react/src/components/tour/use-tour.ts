@@ -11,7 +11,7 @@ import type { RefObject } from 'react'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectTour, resolveTourBoundary, tourMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -68,7 +68,7 @@ export function useTour(props: TourSchema['props'], container?: () => Element | 
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('getContentEl', () => contentRef.current)
       // 定位引擎由适配器注入，机器只经端口驱动；锚点由机器按每步 target 自行解析。
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
     },
   })
 

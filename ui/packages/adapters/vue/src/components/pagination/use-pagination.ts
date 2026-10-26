@@ -10,7 +10,7 @@ import type { PaginationApi, PaginationSchema, PaginationServices, SelectSchema 
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPagination, paginationMachine, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -98,11 +98,11 @@ export function usePagination(
 
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
 
     pageSizeSelect.refs.set('config', config)
     pageSizeSelect.refs.set('registerLayer', registerPageSizeLayer)
-    pageSizeSelect.refs.set('position', createPositionEngine())
+    pageSizeSelect.refs.set('position', createDeferredPositionEngine())
   }
 
   pageSizeSelect.refs.set('getAnchorEl', () => pageSizeTriggerRef.value)

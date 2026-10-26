@@ -35,7 +35,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -455,7 +455,8 @@ export function XhDateRangePickerPositioner({ children, container, ...rest }: Xh
   const ctx = useDateRangePickerContext()
   // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
   // 面板皮肤两轴都滚，条子走浮层 4px 档
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     scrollable: () => ctx.contentRef.current,
     axes: ['vertical', 'horizontal'],
     props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -523,7 +524,8 @@ export function XhDateRangePickerPresetGroup({ children, ...rest }: XhDateRangeP
   const api = ctx.api
   const presetGroupRef = useRef<HTMLDivElement | null>(null)
   // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     scrollable: () => presetGroupRef.current,
     anchor: 'layer',
     axes: ['vertical', 'horizontal'],
@@ -592,7 +594,8 @@ export function XhDateRangePickerTimeColumn({ unit, children, ...rest }: XhDateR
   const index = useDateRangePickerColumnGroupContext()
   const timeColumnRef = useRef<HTMLDivElement | null>(null)
   // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     scrollable: () => timeColumnRef.current,
     anchor: 'layer',
     props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

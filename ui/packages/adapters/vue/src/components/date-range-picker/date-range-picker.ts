@@ -33,7 +33,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -378,7 +378,8 @@ export const XhDateRangePickerPositioner = defineComponent({
     const ctx = useDateRangePickerContext()
     // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
     // 面板皮肤两轴都滚，条子走浮层 4px 档
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => ctx.contentRef.value,
       scope: ctx.services.root.scope,
       axes: ['vertical', 'horizontal'],
@@ -445,7 +446,8 @@ export const XhDateRangePickerPresetGroup = defineComponent({
     const ctx = useDateRangePickerContext()
     const presetGroupRef = ref<HTMLElement | null>(null)
     // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => presetGroupRef.value,
       anchor: 'layer',
       axes: ['vertical', 'horizontal'],
@@ -544,7 +546,8 @@ export const XhDateRangePickerTimeColumn = defineComponent({
     provideDateRangePickerTimeColumn({ unit: computed(() => props.unit) })
     const timeColumnRef = ref<HTMLElement | null>(null)
     // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => timeColumnRef.value,
       anchor: 'layer',
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

@@ -12,7 +12,7 @@ import type { KeyedChildren } from '../dom/generated-nodes'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTooltip, createTooltipGroup, tooltipAnatomy, tooltipMachine, tooltipMeta } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
@@ -185,7 +185,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   private injectRefs(svc: Service<TooltipSchema>): void {
     // 无 DOM（SSR / 纯逻辑测试）时不建引擎，机器读到 null 会跳过定位
     if (!this.engine && typeof document !== 'undefined')
-      this.engine = createPositionEngine()
+      this.engine = createDeferredPositionEngine()
     this.ensureConfig()
     this.exit ??= createOverlayExit({
       open: (this.open ?? this.defaultOpen) ?? false,

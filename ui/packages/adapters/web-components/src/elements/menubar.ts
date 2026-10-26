@@ -12,15 +12,15 @@ import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarAnatomy, menubarMachine, menubarMeta, menubarStructure } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 import { XhIconElement } from './icon'
 import { XhMenuElement } from './menu'
 
@@ -108,7 +108,8 @@ export class XhMenubarElement extends XhPortalHostElement {
   private currentMenu: string | null = null
 
   /** 条目列表的自绘条：壳是当前那张菜单已经 fixed 的 positioner，滚动层是它的 content；浮层里的条子走 4px 档 */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => [...this.exits.values()].some(entry => entry.gate.visible),
     shell: () => this.partFor('positioner', this.currentMenu),
     scrollable: () => this.partFor('content', this.currentMenu),
     props: () => ({ size: 'sm' }),
@@ -202,7 +203,7 @@ export class XhMenubarElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // trigger 与 content 按 value 逐对互指的 id 由 scope 派生
   private readonly barScope = createScope(this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 子菜单 trigger 的 WC 属性铺设桥；逻辑树由 headless 节点维护。 */
   private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()

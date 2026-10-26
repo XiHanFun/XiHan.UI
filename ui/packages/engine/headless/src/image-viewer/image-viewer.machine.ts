@@ -9,13 +9,13 @@ import type { ContextFacade, PropFn, RefsFacade } from '@xihan-ui/core'
 import type { SpringPhysical, SpringPresetName, SpringValue } from '@xihan-ui/motion'
 import type { PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerPressedPart, ImageViewerRefs, ImageViewerSchema, ImageViewerTransform } from './image-viewer.types'
-import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
+import { requireOverlayKit, setup } from '@xihan-ui/core'
 import { createSpringValue, glideSpring, projectRelease, rubberClamp } from '@xihan-ui/motion'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
-import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
 
@@ -547,8 +547,9 @@ export const imageViewerMachine = createMachine({
         let revealBackgroundNow: ((then?: () => void) => void) | undefined
         let resyncModalNow: (() => void) | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
+          const kit = requireOverlayKit()
           const getContentEl = refs.get('getContentEl')
-          const dismiss = createDismissLayer({
+          const dismiss = kit.createDismissLayer({
             config,
             layer,
             // 逻辑关闭后的退场帧仍在层栈里，不能再次消解或重复发 close 意图。
@@ -565,7 +566,7 @@ export const imageViewerMachine = createMachine({
           })
           defer(() => dismiss.dispose())
 
-          const focus = createFocusScope({
+          const focus = kit.createFocusScope({
             config,
             layer,
             flush,
@@ -613,6 +614,8 @@ export const imageViewerMachine = createMachine({
         let disposed = false
         let release: (() => void) | undefined
         let lastOpen = false
+        // 消解层、焦点域与模态资源在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
+        const gate = createOverlayKitGate(scope.getDoc())
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
@@ -630,6 +633,8 @@ export const imageViewerMachine = createMachine({
           const closing = !open && lastOpen
           lastOpen = open
           if (open) {
+            if (!release && !gate.ready(sync))
+              return
             // 重开沿用原 layer/focus scope；Presence 会撤销旧视觉租约。
             release ??= acquire()
             if (reopening) {
@@ -661,12 +666,14 @@ export const imageViewerMachine = createMachine({
         }
         catch (error) {
           disposed = true
+          gate.dispose()
           offExit?.()
           release?.()
           throw error
         }
         return () => {
           disposed = true
+          gate.dispose()
           offExit?.()
           const cleanup = release
           release = undefined

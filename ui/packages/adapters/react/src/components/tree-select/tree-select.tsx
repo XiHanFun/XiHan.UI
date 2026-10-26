@@ -18,7 +18,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TreeSelectContentProvider, TreeSelectNodeProvider, TreeSelectProvider, TreeSelectTagProvider, useTreeSelectContentContext, useTreeSelectContext, useTreeSelectNodeContext, useTreeSelectTagContext } from './context'
@@ -424,7 +424,8 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
   // 树的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
   // 两条轴都摆：深层节点靠缩进往行末推，横向溢出与纵向一样是常态。
   // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走
     scrollable: () => ctx.service.prop('virtualizer')?.getViewportElement() ?? ctx.treeRef.current,
     axes: ['vertical', 'horizontal'],

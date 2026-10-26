@@ -10,7 +10,7 @@ import type { ComboboxApi, ComboboxInputEl, ComboboxSchema } from '@xihan-ui/hea
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { comboboxMachine, connectCombobox } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -68,7 +68,7 @@ export function useCombobox(props: ComboboxSchema['props']): ComboboxContext {
     node: () => contentRef.current,
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getAnchorEl', () => controlRef.current)
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('getContentEl', () => contentRef.current)

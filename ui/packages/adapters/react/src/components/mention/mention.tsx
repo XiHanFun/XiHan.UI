@@ -16,7 +16,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { MentionItemProvider, MentionProvider, useMentionContext, useMentionItemContext } from './context'
@@ -222,7 +222,7 @@ export interface XhMentionPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhMentionPositioner({ children, container, ...rest }: XhMentionPositionerProps): ReactNode {
   const ctx = useMentionContext()
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef} present={ctx.rendered}>
       <div

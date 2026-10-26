@@ -21,7 +21,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { XhIcon } from '../icon/icon'
 import {
   MenuGroupProvider,
@@ -157,7 +157,7 @@ export interface XhMenuPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhMenuPositioner({ children, container, ...rest }: XhMenuPositionerProps): ReactNode {
   const ctx = useMenuContext()
   // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.portalSource} present={ctx.rendered}>
       <div

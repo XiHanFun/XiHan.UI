@@ -18,7 +18,7 @@ import { liveProps } from '../../runtime/live-props'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { XhIcon } from '../icon/icon'
 import { provideMenu, provideMenuGroup, provideMenuItem, provideMenuSub, useMenuContext, useMenuGroupContext, useMenuItemContext, useMenuSubContext } from './context'
 import { useMenu, useMenuWithParent } from './use-menu'
@@ -160,7 +160,7 @@ export const XhMenuPositioner = /* @__PURE__ */ defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useMenuContext()
     // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里的条子走 4px 档
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
+    const bars = useOverlayScrollbars({ present: () => ctx.visible.value, scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 定位层搬到 portal 落点，逃开祖先的层叠上下文
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.portalSource.value, present: ctx.visible.value }, () => [
       h('div', {

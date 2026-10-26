@@ -7,10 +7,60 @@
 
 import type { Anchor, Cleanup, Dep, DismissReason, FocusScopeHandle, Layer, LayerRegistry, PositionEnginePort, PositionOptions, PositionResult, RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import { acquireScrollLock, bindLayerVisual, createDismissLayer, createFocusScope, hideOutside } from '@xihan-ui/core'
+import { bindLayerVisual, overlayKit, prefetchOverlayKit, requireOverlayKit, whenOverlayKit } from '@xihan-ui/core'
 
 // 「浮层 + 候选导航」这一族组件的外壳：进入展开态时定位、入层栈、挂消解层与焦点域，
 // 退出时逆序拆。各家不同的那几处（锚点怎么解析、焦点落在哪、归还给谁）由调用方交回调进来。
+//
+// 消解层、焦点域、滚动锁与背景失活住在 core 的浮层按需块里，第一次打开时才加载（见 core 的
+// kernel/structure/overlay-kit）。这里一律经 requireOverlayKit() 取，调用前由 createOverlayKitGate
+// 确认已经到了：trackPresenceResources 内置这道闸门，自己管租约的机器（dialog、popover、tour……）各建一道。
+
+/** 资源等浮层按需块的闸门。 */
+export interface OverlayKitGate {
+  /**
+   * 按需块已经到了返回 true；还没到返回 false，并在第一次没到时排下 retry，到了调它一次
+   * （之后再没到的调用不再重复排）。retry 多半就是调用方自己：到了重走一遍，以那一刻的状态为准。
+   */
+  ready: (retry: () => void) => boolean
+  /** 撤掉还在排的那一次，之后 ready() 不再排。 */
+  dispose: Cleanup
+}
+
+/**
+ * 建一道等浮层按需块的闸门：资源要在展开时同步建立，按需块没到就先不建，到了调 retry 重走一遍，
+ * 以那一刻的展开态为准（等的时候已经关掉就什么也不建，不抢焦点）。
+ *
+ * 建闸门时顺带登记预取：文档上第一次有交互就在后台取，键盘打开前焦点先到、指针点开前先移进来，
+ * 真打开时多半已经到了。不给 doc 时登记在页面文档上；没有 document（SSR / 纯逻辑宿主）时不登记。
+ */
+export function createOverlayKitGate(doc?: Document | null): OverlayKitGate {
+  const target = doc ?? (typeof document === 'undefined' ? null : document)
+  if (target)
+    prefetchOverlayKit(target)
+  let waiting: Cleanup | undefined
+  let disposed = false
+  return {
+    ready(retry) {
+      if (overlayKit())
+        return true
+      if (!disposed) {
+        waiting ??= whenOverlayKit(() => {
+          waiting = undefined
+          if (!disposed)
+            retry()
+        })
+      }
+      return false
+    },
+    dispose() {
+      disposed = true
+      const stop = waiting
+      waiting = undefined
+      stop?.()
+    },
+  }
+}
 
 /** 定位效应的入参。 */
 export interface OverlayPositionOptions {
@@ -188,7 +238,8 @@ function mountModalUnderlay(layer: Layer): Cleanup {
 
 /**
  * 管理一层可动态切换的模态资源：滚动锁与背景失活同进同退，只有关闭那一刻背景先解除失活。
- * 层登记、消解层与焦点域仍由调用方持有，不因 modal 改值而重建。
+ * 层登记、消解层与焦点域仍由调用方持有，不因 modal 改值而重建。滚动锁与背景失活取自浮层按需块，
+ * 只在层事务里建（那时闸门已经放行）。
  *
  * 背景失活由两件事组成，都不碰背景节点的样式：背景打 aria-hidden（hideOutside），对读屏隐藏；
  * 没有遮罩的层在自己下面垫一块透明底板（mountModalUnderlay），拦下落到背景上的指针。键盘由焦点域
@@ -207,7 +258,7 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
     o.run(() => {
       if (!o.targets().length)
         return
-      const showOutside = hideOutside(o.targets, o.config)
+      const showOutside = requireOverlayKit().hideOutside(o.targets, o.config)
       let removeUnderlay: Cleanup
       try {
         removeUnderlay = mountModalUnderlay(o.layer)
@@ -235,7 +286,7 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
   }
 
   const acquire = (): void => {
-    const lock = o.run(() => acquireScrollLock({ config: o.config }))
+    const lock = o.run(() => requireOverlayKit().acquireScrollLock({ config: o.config }))
     revealed = false
     let alive = true
     const cleanup = (): void => {
@@ -434,6 +485,9 @@ export interface PresenceResourceOptions {
  * - 逻辑关闭但 Presence 仍 rendered 时继续持有；
  * - 退出完成后释放；
  * - 中途重开复用原资源，并通知调用方恢复需重新激活的能力。
+ *
+ * acquire 用到的消解层、焦点域在浮层按需块里：展开时还没到就先不 acquire，到了按那一刻的展开态重走一遍。
+ * 有 document 的宿主才有这道闸门；SSR 与纯逻辑宿主的 acquire 本来就不建资源，照旧同步调。
  */
 export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let disposed = false
@@ -442,6 +496,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let presence: PresenceHandle | null = null
   let offExit: Cleanup | undefined
   let offReleaseReady: Cleanup | undefined
+  const gate = typeof document === 'undefined' ? null : createOverlayKitGate()
 
   const finish = (): void => {
     if (disposed || o.open() || !release)
@@ -479,6 +534,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       offReleaseReady = undefined
       stopWaiting?.()
       currentPresence?.update(true)
+      if (!release && gate && !gate.ready(sync))
+        return
       release ??= o.acquire()
       if (reopening)
         o.onReopen?.()
@@ -518,6 +575,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   }
   catch (error) {
     disposed = true
+    gate?.dispose()
     offExit?.()
     offReleaseReady?.()
     disposeRelease()
@@ -528,6 +586,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     if (disposed)
       return
     disposed = true
+    gate?.dispose()
     offExit?.()
     offReleaseReady?.()
     disposeRelease()
@@ -539,17 +598,19 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
  *
  * 层只在展开期间入栈，常驻会占死栈顶把它下面每一层的 Escape 堵死。
  * 消解层与焦点域绑在同一个效应里，三者生命周期必须一致。
+ * 调用前浮层按需块须已经到了：经 trackPresenceResources 调即有闸门，直接调的自己建一道 createOverlayKitGate。
  */
 export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | undefined {
   const { config, registerLayer } = o
   if (!config || !registerLayer)
     return undefined
 
+  const kit = requireOverlayKit()
   let focusScope: FocusScopeHandle | null = null
   const cleanup = setupLayerTransaction(registerLayer, (layer, defer) => {
     o.onLayer?.(layer)
     defer(() => o.onLayer?.(null))
-    const dismiss = createDismissLayer({
+    const dismiss = kit.createDismissLayer({
       config,
       layer,
       onEscapeKeyDown: (event) => {
@@ -569,7 +630,7 @@ export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | unde
 
     const spec = o.focusScope
     if (spec) {
-      const focus = createFocusScope({
+      const focus = kit.createFocusScope({
         config,
         layer,
         flush: o.flush,

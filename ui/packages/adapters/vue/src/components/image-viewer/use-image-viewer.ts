@@ -68,6 +68,8 @@ export function useImageViewer(
     contentRef,
     additionalExitRefs: [backdropRef],
     onPresence: presence => service.refs.set('presence', presence),
+    // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+    awaitOverlayKit: true,
   })
 
   const api = computed(() => connectImageViewer(service, vueNormalize))

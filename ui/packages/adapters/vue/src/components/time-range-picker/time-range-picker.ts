@@ -28,7 +28,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -279,7 +279,8 @@ export const XhTimeRangePickerPositioner = defineComponent({
     const ctx = useTimeRangePickerContext()
     // 浮层面板的自绘条：两组时列并排放不下时面板整体横滚，横条与 content 同级挂在已经 fixed 的 positioner 上，
     // 条子走浮层 4px 档；各列自己竖滚的条子贴在列上、挂在 content 里
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => ctx.contentRef.value,
       axes: ['horizontal'],
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -320,7 +321,8 @@ export const XhTimeRangePickerPresetGroup = defineComponent({
     const ctx = useTimeRangePickerContext()
     const presetGroupRef = ref<HTMLElement | null>(null)
     // 快捷选项列定高自己竖滚：条子贴在它的盒子上、紧跟在它后面（浮层 4px 档）
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => presetGroupRef.value,
       anchor: 'layer',
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -423,7 +425,8 @@ export const XhTimeRangePickerColumn = defineComponent({
     provideTimeRangePickerColumn({ unit })
     const columnRef = ref<HTMLElement | null>(null)
     // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => columnRef.value,
       anchor: 'layer',
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

@@ -24,7 +24,7 @@ import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { XhIcon } from '../icon/icon'
 import { MenuItemProvider, MenuProvider, useMenuContext } from '../menu/context'
 import { MenuDefaultNodes, XhMenuContent, XhMenuItemIcon, XhMenuItemText, XhMenuPositioner } from '../menu/menu'
@@ -246,9 +246,9 @@ export function XhMenubarPositioner({ value, container, children, ...rest }: XhM
   // 这张菜单的内容节点由 content 挂载后写回；条目列表的自绘条与 content 同级、绝对定位不占布局，
   // 壳是这层已经 fixed 的 positioner；一张菜单一套，浮层里的条子走 4px 档
   const contentRef = useRef<HTMLElement | null>(null)
-  const bars = useScrollbars({ scrollable: () => contentRef.current, props: () => ({ size: 'sm' }) })
   // 关着的菜单不建视觉桥：菜单栏上每一项各有一个定位层，几项就是几台挂在祖先链上的观察
   const [present, setPresent] = useState(false)
+  const bars = useOverlayScrollbars({ present: () => present, scrollable: () => contentRef.current, props: () => ({ size: 'sm' }) })
   const link = useMemo(() => ({ contentRef, setPresent }), [])
   return (
     <MenubarMenuProvider value={menu}>

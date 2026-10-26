@@ -17,7 +17,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { PaginationProvider, usePaginationContext } from './context'
 import { usePagination } from './use-pagination'
 
@@ -355,7 +355,7 @@ export function XhPaginationPositioner({ children, container, ...rest }: XhPagin
   const ctx = usePaginationContext()
   // 折叠页码列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
   // 浮层里的条子走 4px 档
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.visible, scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.rootRef} present={ctx.visible}>
       <div

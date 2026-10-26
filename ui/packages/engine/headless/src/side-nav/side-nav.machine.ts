@@ -10,7 +10,7 @@ import type { SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.
 import { focusItem, HOVER_INTENT_OPEN_DELAY, navigateItems, setTimeoutEffect, setup, trackHoverIntent } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
-import { trackOverlayLayer } from '../shared/overlay-shell'
+import { createOverlayKitGate, trackOverlayLayer } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
 import { isSideNavSearching, resolveSideNavSearch } from './side-nav.search'
 
@@ -400,6 +400,10 @@ export const sideNavMachine = createMachine({
         const isCurrent = (value: string): boolean =>
           state.get() === 'popout' && context.get('popoutValue') === value
 
+        // 消解层与焦点域在浮层按需块里：弹出时还没到就记下最近这一次，到了还是当前弹出项才开
+        let pendingOpen: { value: string, intent: 'first' | 'none' } | null = null
+        const gate = createOverlayKitGate()
+
         const releaseSession = (session: Session, force = false): void => {
           if (sessions.get(session.value) !== session)
             return
@@ -483,6 +487,16 @@ export const sideNavMachine = createMachine({
           const registerLayer = refs.get('registerLayer')
           if (!config || !registerLayer)
             return
+          pendingOpen = { value, intent }
+          const ready = gate.ready(() => {
+            const next = pendingOpen
+            pendingOpen = null
+            if (next && !disposed && isCurrent(next.value))
+              openSession(next.value, next.intent)
+          })
+          if (!ready)
+            return
+          pendingOpen = null
           let reactivate: (() => void) | null = null
           let created: Session | null = null
           let ownedLayer: Layer | null = null
@@ -565,6 +579,7 @@ export const sideNavMachine = createMachine({
 
         return () => {
           disposed = true
+          gate.dispose()
           refs.set('openPopoutLayer', () => {})
           refs.set('closePopoutLayer', () => {})
           refs.set('syncPopoutPresence', () => {})

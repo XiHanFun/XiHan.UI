@@ -8,6 +8,7 @@
 import type { RuntimeConfig } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MaybeRefOrGetter, Ref } from 'vue'
+import { overlayKit, whenOverlayKit } from '@xihan-ui/core'
 import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, watch } from 'vue'
 
@@ -40,6 +41,13 @@ export interface OverlayExitOptions {
   additionalExitRefs?: Array<Ref<HTMLElement | null>>
   /** Presence 建立后交给需要共用退出生命周期的 Headless 状态机；卸载时回传 null。 */
   onPresence?: (presence: PresenceHandle | null) => void
+  /**
+   * 展开后等 core 的浮层按需块到了才露出内容。焦点陷阱、滚动锁与背景失活都在那一块里，
+   * 不靠落位藏面板的浮层（对话框、抽屉、图片查看器、命令面板）第一次打开时若按需块还没到，
+   * 露出来的那一下焦点与滚动都还没被接管；靠定位的浮层落位前本就藏着，不用开。
+   * 只管挂载之后的展开：挂载时就开着的照常露出，与服务端直出的标记对齐。
+   */
+  awaitOverlayKit?: boolean
 }
 
 /**
@@ -53,23 +61,49 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   const tracked = new Map<HTMLElement, () => void>()
   let stopOpen: (() => void) | undefined
   let stopContent: (() => void) | undefined
+  let stopGate: (() => void) | undefined
+  // 可见 = presence 还在场，且没在等浮层按需块
+  let rendered = visible.value
+  let gated = false
+  let waitingKit: (() => void) | null = null
+  const apply = (): void => {
+    visible.value = rendered && !gated
+  }
 
   const start = (config: RuntimeConfig | null): void => {
     if (!config) {
       stopOpen = watch(isOpen, (open) => {
-        visible.value = open
+        rendered = open
+        apply()
       })
       return
     }
 
+    if (options.awaitOverlayKit) {
+      // 挂载之后才展开、且按需块还没到：先藏着，到了再露。排在渲染之前跑，展开那一帧就不露
+      stopGate = watch(isOpen, (open) => {
+        if (!open || waitingKit || overlayKit())
+          return
+        gated = true
+        apply()
+        waitingKit = whenOverlayKit(() => {
+          waitingKit = null
+          gated = false
+          apply()
+        })
+      })
+    }
+
     presence = createPresence({
       open: isOpen(),
-      onRenderedChange: (rendered) => {
-        visible.value = rendered
+      onRenderedChange: (next) => {
+        rendered = next
+        apply()
       },
     })
     options.onPresence?.(presence)
-    visible.value = presence.rendered
+    rendered = presence.rendered
+    apply()
 
     // data-state 提交到 DOM 之后再驱动 presence，让退场探测读到正确的 animationName
     stopOpen = watch(isOpen, open => presence?.update(open), { flush: 'post' })
@@ -110,6 +144,9 @@ export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {
   onBeforeUnmount(() => {
     stopOpen?.()
     stopContent?.()
+    stopGate?.()
+    waitingKit?.()
+    waitingKit = null
     for (const detach of tracked.values()) detach()
     tracked.clear()
     presence?.dispose()

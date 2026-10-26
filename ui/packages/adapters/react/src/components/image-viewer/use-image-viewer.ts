@@ -47,6 +47,8 @@ export function useImageViewer(props: ImageViewerSchema['props']): ImageViewerCo
     scope,
     idGenerator,
     initialOpen,
+    // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+    awaitOverlayKit: true,
     isOpen: () => serviceRef.current?.state.get() === 'open',
     layer,
     node: () => contentRef.current,

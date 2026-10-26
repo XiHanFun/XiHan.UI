@@ -9,7 +9,7 @@ import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { SideNavApi, SideNavSchema, TooltipSchema } from '@xihan-ui/headless'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { connectSideNav, sideNavMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useState } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -60,7 +60,7 @@ export function useSideNav(props: SideNavSchema['props']): SideNavContext {
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getPopoutAnchorEl', value => popoutEl('trigger', value))
     service.refs.set('getPopoutPositionerEl', value => popoutEl('positioner', value))
     service.refs.set('getPopoutContentEl', value => popoutEl('content', value))

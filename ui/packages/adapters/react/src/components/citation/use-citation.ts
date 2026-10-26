@@ -10,7 +10,7 @@ import type { CitationApi, CitationSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, connectCitation } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -54,7 +54,7 @@ export function useCitation(props: CitationSchema['props']): CitationContext {
     })
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     return () => {}
   }, [config])
 

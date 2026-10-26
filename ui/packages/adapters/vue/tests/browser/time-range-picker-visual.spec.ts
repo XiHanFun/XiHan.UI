@@ -396,6 +396,9 @@ describe('时间范围选择器的家族观感', () => {
   it('两组之间只隔一道竖线、不另留空当；组里的列顶画一道线，列 64 宽、七格整行高', async () => {
     await mountPicker({ defaultOpen: true, defaultValue: ['09:30', '10:00'] })
     await nextTick()
+    // 命中测试要等面板落位：落位前定位层按基线藏着（visibility: hidden），点不中任何格子。
+    // 落位在首帧绘制之前到，但不一定赶在某一次 nextTick 之前
+    await expect.poll(() => part('positioner').hasAttribute('data-positioned')).toBe(true)
     const content = part('content')
     const [start, end] = parts('column-group')
     const endStyle = getComputedStyle(end!)

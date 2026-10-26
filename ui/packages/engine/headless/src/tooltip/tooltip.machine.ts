@@ -8,7 +8,7 @@
 import type { PositionResult, Transition, VirtualAnchor } from '@xihan-ui/core'
 import type { TooltipGroup } from './tooltip.group'
 import type { TooltipAnchor, TooltipRefs, TooltipSchema } from './tooltip.types'
-import { createDismissLayer, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -327,7 +327,8 @@ export const tooltipMachine = createMachine({
             return undefined
 
           return setupLayerTransaction(registerLayer, (layer, defer) => {
-            const dismiss = createDismissLayer({
+            // trackPresenceResources 的闸门放行之后才走到这里，按需块已经到了
+            const dismiss = requireOverlayKit().createDismissLayer({
               config,
               layer,
               onEscapeKeyDown: (event) => {

@@ -18,7 +18,7 @@ import type { ReactiveControllerHost } from '../reactive'
 import type { AnchoredPortalController, AnchoredPortalControllerOptions } from './anchored-portal-controller'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenu, menuMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { mergeAsChildProps } from '../dom/as-child'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -131,7 +131,7 @@ export class OverflowMenuController {
     svc.refs.set('config', this.ensureConfig())
     svc.refs.set('registerLayer', this.registerLayer)
     svc.refs.set('presence', this.ensureExit(svc.state.get() === 'open').presence)
-    svc.refs.set('position', createPositionEngine())
+    svc.refs.set('position', createDeferredPositionEngine())
     svc.refs.set('getAnchorEl', this.options.trigger)
     svc.refs.set('getFloatingEl', () => this.nodes?.positioner ?? null)
     svc.refs.set('getContentEl', () => this.nodes?.content ?? null)
