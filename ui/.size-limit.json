@@ -429,7 +429,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "43 kB",
+    "limit": "42 kB",
     "ignore": [
       "vue"
     ]
@@ -439,7 +439,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "56 kB",
+    "limit": "54 kB",
     "ignore": [
       "vue"
     ]
@@ -461,10 +461,28 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "57 kB",
+    "limit": "56 kB",
     "ignore": [
-      "vue",
-      "*/structure-virtual.js"
+      "vue"
+    ]
+  },
+  {
+    "name": "vue：标准结构虚拟化（按需块，连同它的依赖）",
+    "path": "packages/adapters/vue/dist/components/virtualizer/structure-virtual.js",
+    "gzip": true,
+    "limit": "19 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "react：标准结构虚拟化（按需块，连同它的依赖）",
+    "path": "packages/adapters/react/dist/components/virtualizer/structure-virtual.js",
+    "gzip": true,
+    "limit": "21 kB",
+    "ignore": [
+      "react",
+      "react-dom"
     ]
   },
   {
