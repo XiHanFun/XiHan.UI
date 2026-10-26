@@ -478,9 +478,10 @@
     }
   },
   "duration": {
+    "$description": "时长两档基调：换色 150ms（fast），几何 200ms（normal）；slow 只给整幅位移。",
     "fast": {
       "$type": "duration",
-      "$value": "120ms"
+      "$value": "150ms"
     },
     "normal": {
       "$type": "duration",

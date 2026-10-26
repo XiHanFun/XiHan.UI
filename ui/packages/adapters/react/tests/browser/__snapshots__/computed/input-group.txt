@@ -61,7 +61,7 @@ font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklab(0 0 0 / 0.02585)
 transition-property: background-color, box-shadow
-transition-duration: 0.12s, 0.12s
+transition-duration: 0.15s, 0.15s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s

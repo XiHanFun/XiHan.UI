@@ -53,7 +53,7 @@ const frame = (): Promise<unknown> => new Promise(resolve => requestAnimationFra
 describe('alert 关闭的退场', () => {
   it('先淡出、再收起占位：下面的内容一路平移上来，不整块跳；收完才藏起', async () => {
     const below = await mount()
-    // 点击经 CDP 往返，CI 并行负载下回来时淡出 + 收高（各 120ms）已经播完，逐帧采样一帧都采不到。
+    // 点击经 CDP 往返，CI 并行负载下回来时淡出 + 收高（各 150ms）已经播完，逐帧采样一帧都采不到。
     // 退场两段直接取这两支令牌，在宿主上拉长到往返追不上，整段又仍在采样上限（120 帧，至少 2s）里播完
     host!.style.setProperty('--xh-motion-duration-exit', '1s')
     host!.style.setProperty('--xh-motion-duration-collapse', '500ms')

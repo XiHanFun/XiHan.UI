@@ -634,9 +634,9 @@
       "$value": "{duration.slow}"
     },
     "duration-nudge": {
-      "$description": "紧跟操作的小幅几何变化：开关滑块、勾选标记、展开箭头原地的位移、缩放与旋转，拖拽时的让位与查看器的缩放平移。",
+      "$description": "紧跟操作的小幅几何变化：开关滑块、勾选标记、展开箭头原地的位移、缩放与旋转，拖拽时的让位与查看器的缩放平移。几何一档，与 duration-move 同为 normal（200ms）。",
       "$type": "duration",
-      "$value": "{duration.fast}"
+      "$value": "{duration.normal}"
     },
     "duration-press": {
       "$description": "统一点击触感的按下段：scale 1 → 0.97，背景进入 active。",

@@ -189,7 +189,7 @@ describe('时间选择浮层', () => {
     }
   })
 
-  it('减弱动效沿用令牌通道，进出场只剩 120ms 淡变且没有空间位移', async () => {
+  it('减弱动效沿用令牌通道，进出场只剩 150ms 淡变且没有空间位移', async () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
     const content = part('content')
@@ -197,7 +197,7 @@ describe('时间选择浮层', () => {
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)
-      expect(style.animationDuration).toBe('0.12s')
+      expect(style.animationDuration).toBe('0.15s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
       expect(style.scale).toBe('none')
     }

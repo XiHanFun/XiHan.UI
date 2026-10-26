@@ -172,7 +172,7 @@ describe('xh-tabs 横线档的当前页对比度', () => {
         const label = `${environment.theme} / ${environment.contrast} / ${backdrop}`
         const { violations } = await runAxe(stage!)
         expect(violations.filter(v => v.id === 'color-contrast').map(v => v.nodes.map(n => n.failureSummary)), label).toEqual([])
-        // 过渡缺省 120ms：量够十帧，从停住那一刻到落定
+        // 过渡缺省 150ms：量够十帧，从停住那一刻到落定
         for (let i = 0; i < 10; i++) {
           expect(read(trigger).ratio, `${label} 第 ${i} 帧`).toBeGreaterThanOrEqual(4.5)
           await frame()

@@ -199,7 +199,7 @@ describe('就地编辑的左内容右动作布局', () => {
     expect(getComputedStyle(submit).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(submit).color).toBe(tokenColor('--xh-fg-muted'))
     await userEvent.hover(submit)
-    // 底色带 120ms 过渡，等过渡走完再对账
+    // 底色带 150ms 过渡，等过渡走完再对账
     await expect.poll(() => getComputedStyle(submit).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
     expect(getComputedStyle(part('control')).outlineStyle).toBe('none')
     // 指针挪开再读聚焦描边：悬停与聚焦叠在一起时取哪一档归字段外壳配方，这里只看聚焦

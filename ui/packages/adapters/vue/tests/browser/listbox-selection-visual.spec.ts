@@ -165,7 +165,7 @@ describe('列表框的选中反馈', () => {
     await mount()
     const apple = item('apple')
     const banana = item('banana')
-    // 指针可能还停在上一条用例松手的 banana 上：移开时的 120ms 淡出会让它读到过渡中途的面
+    // 指针可能还停在上一条用例松手的 banana 上：移开时的 150ms 淡出会让它读到过渡中途的面
     for (const row of [apple, banana])
       row.style.transition = 'none'
     await userEvent.hover(item('cherry'))

@@ -158,7 +158,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     expect(getComputedStyle(part('content')).scale).toBe('none')
   })
 
-  it('减弱动效进出场只剩 120ms 淡变，没有空间位移', async () => {
+  it('减弱动效进出场只剩 150ms 淡变，没有空间位移', async () => {
     await mount('light')
     part('positioner').dataset.motion = 'reduce'
     // 撤掉首帧标记：量的是用户开合时的进退场
@@ -166,7 +166,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     for (const state of ['open', 'closed']) {
       part('content').dataset.state = state
       const style = getComputedStyle(part('content'))
-      expect(style.animationDuration).toBe('0.12s')
+      expect(style.animationDuration).toBe('0.15s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
       expect(style.scale).toBe('none')
     }

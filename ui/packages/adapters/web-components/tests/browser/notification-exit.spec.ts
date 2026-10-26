@@ -71,12 +71,12 @@ describe('通知卡片的退场', () => {
     await holdsUntilExitFinishes('xh-fade-out', () => notify.success('已保存', { duration: 80 }))
   })
 
-  it('减弱动效下退场只剩 120ms 淡出，照样等它播完', async () => {
+  it('减弱动效下退场只剩 150ms 淡出，照样等它播完', async () => {
     // 与视觉环境控制器一致：JS 覆盖与根上的 data-motion 同时置为减弱
     setMotionOverride('reduce')
     document.documentElement.dataset.motion = 'reduce'
     const toast = createNotificationService({ preset: 'toast' })
     dispose = () => toast.dispose()
-    await holdsUntilExitFinishes('xh-notification-stack-out', () => toast.success('已保存', { duration: 80 }), 120)
+    await holdsUntilExitFinishes('xh-notification-stack-out', () => toast.success('已保存', { duration: 80 }), 150)
   })
 })

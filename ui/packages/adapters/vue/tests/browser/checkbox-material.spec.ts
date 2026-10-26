@@ -189,7 +189,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(off.backdropFilter).toBe('none')
   })
 
-  it('勾常驻并只用 opacity/scale 在 120ms 内切换，勾与短横使用同一光学盒', async () => {
+  it('勾常驻并只用 opacity（150ms）/ scale（200ms）切换，勾与短横使用同一光学盒', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'live' }),
       h(XhCheckbox, { 'data-testid': 'mixed', 'defaultChecked': 'indeterminate' }),
@@ -202,8 +202,8 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(before.opacity).toBe('0')
     const properties = before.transitionProperty.split(', ')
     const durations = before.transitionDuration.split(', ')
-    expect(durations[properties.indexOf('opacity')]).toBe('0.12s')
-    expect(durations[properties.indexOf('scale')]).toBe('0.12s')
+    expect(durations[properties.indexOf('opacity')]).toBe('0.15s')
+    expect(durations[properties.indexOf('scale')]).toBe('0.2s')
     expect(before.width).toBe(line.width)
     expect(before.height).toBe(line.height)
     expect(shownMask(live, '::before')).not.toBe(shownMask(mixed, '::before'))

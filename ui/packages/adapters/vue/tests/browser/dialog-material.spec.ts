@@ -208,8 +208,8 @@ describe('dialog 的实体 sheet 面', () => {
     expect(content.backdropFilter).toBe('none')
     expect(content.boxShadow).toBe('none')
     expect(backdrop.backdropFilter).toBe('none')
-    // 减弱动效下进出场只剩 120ms 淡变：位移与缩放幅度归零，animation 本身保留，退场生命周期照常可观察。
-    expect(content.animationDuration).toBe('0.12s')
-    expect(backdrop.animationDuration).toBe('0.12s')
+    // 减弱动效下进出场只剩 150ms 淡变：位移与缩放幅度归零，animation 本身保留，退场生命周期照常可观察。
+    expect(content.animationDuration).toBe('0.15s')
+    expect(backdrop.animationDuration).toBe('0.15s')
   })
 })

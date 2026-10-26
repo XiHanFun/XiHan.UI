@@ -153,7 +153,7 @@ describe('级联选择首次加载表面', () => {
       content.dataset.state = state
       const style = getComputedStyle(content)
       expect(style.animationName).toBe(`xh-overlay-slide-${state === 'open' ? 'in' : 'out'}`)
-      expect(style.animationDuration).toBe('0.12s')
+      expect(style.animationDuration).toBe('0.15s')
       expect(style.scale).toBe('none')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
     }

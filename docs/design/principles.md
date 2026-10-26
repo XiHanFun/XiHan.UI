@@ -32,7 +32,7 @@
 
 ## 有反馈，且反馈一致
 
-定尺的独立动作控件按下 120ms 换到 active 底，缩放倍率取 `--xh-motion-scale-press`（缺省 1，只换面；主题写回 0.97 即恢复按下回弹），释放 200ms 回到 rest（换面按 120ms 回到 hover / rest）；行级条目与 disclosure trigger 只换面、不缩放；不允许零反馈。错误、选择、加载与警告不能只靠颜色，必须有图标、形状、文案或结构通道；disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互。
+定尺的独立动作控件按下 150ms 换到 active 底，缩放倍率取 `--xh-motion-scale-press`（缺省 1，只换面；主题写回 0.97 即恢复按下回弹），释放 200ms 回到 rest（换面按 150ms 回到 hover / rest）；行级条目与 disclosure trigger 只换面、不缩放；不允许零反馈。错误、选择、加载与警告不能只靠颜色，必须有图标、形状、文案或结构通道；disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互。
 
 ## 九个切面一起成立
 

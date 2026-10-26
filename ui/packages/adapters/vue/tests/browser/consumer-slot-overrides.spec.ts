@@ -129,7 +129,7 @@ async function park(): Promise<void> {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 }
 
-/** 悬停并等过渡跑完：颜色类过渡走 micro 档（120ms），中途读到的是插值不是终值。 */
+/** 悬停并等过渡跑完：颜色类过渡走 micro 档（150ms），中途读到的是插值不是终值。 */
 async function hover(el: HTMLElement): Promise<void> {
   await userEvent.hover(el)
   await new Promise(r => setTimeout(r, 300))

@@ -118,11 +118,11 @@ describe('m2 磨砂令牌在浏览器中的组合', () => {
     const before = recipe(view)
     view.surface.dataset.motion = 'reduce'
     expect(recipe(view)).toEqual(before)
-    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.12s')
+    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.15s')
     expect(getComputedStyle(view.surface).getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
     expect(getComputedStyle(view.surface).getPropertyValue('--xh-motion-duration-move').trim()).toBe('1ms')
     view.boundary.dataset.contrast = 'more'
-    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.12s')
+    expect(getComputedStyle(view.surface).transitionDuration).toBe('0.15s')
     expect(recipe(view).backdrop).toBe('none')
   })
 
