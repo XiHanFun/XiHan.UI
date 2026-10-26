@@ -208,10 +208,10 @@
 --xh-direction-sign: 1
 --xh-direction-start: 0%
 --xh-dropzone-min-h: 10rem
---xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1)
---xh-elevation-lifted: 0 4px 10px oklch(0 0 0 / 0.1)
---xh-elevation-raised: none
---xh-elevation-sheet: 0 4px 12px oklch(0 0 0 / 0.15)
+--xh-elevation-floating: 0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)  ← var(--xh-shadow-md)
+--xh-elevation-lifted: 0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)  ← var(--xh-shadow-md)
+--xh-elevation-raised: 0 1px 1px -0.5px oklch(0.145 0.005 258 / 0.05), 0 2px 3px -1.5px oklch(0.145 0.005 258 / 0.04), 0 3px 6px -3px oklch(0.145 0.005 258 / 0.03)  ← var(--xh-shadow-sm)
+--xh-elevation-sheet: 0 1px 3px -0.5px oklch(0.145 0.005 258 / 0.08), 0 8px 16px -4px oklch(0.145 0.005 258 / 0.1), 0 20px 40px -12px oklch(0.145 0.005 258 / 0.12)  ← var(--xh-shadow-lg)
 --xh-fg-brand: oklch(0.557 0.216 277)  ← var(--xh-color-brand-600)
 --xh-fg-brand-strong: oklch(0.498 0.196 277)  ← var(--xh-color-brand-700)
 --xh-fg-danger: oklch(0.5 0.2 25)  ← var(--xh-color-danger-700)

@@ -53,7 +53,7 @@
 
 - 有框 / 无框只走 `variant` 这一条轴：`outline | subtle | ghost`，可按下的表面多一档 `solid`。不存在 `bordered`、`borderless`、`plain | surface` 这类私有轴。
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能作 `border-block-start` 类分隔线与 `::after` 分隔伪元素。
-- raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 缺省 none，主题要抬起感时再给它一层影；只有可交互时允许 hover 抬升。
+- raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 取阴影三档里的 sm；只有可交互时允许 hover 抬升（抬到 md）。
 
 ## 字段外壳：淡底、聚焦换白底
 

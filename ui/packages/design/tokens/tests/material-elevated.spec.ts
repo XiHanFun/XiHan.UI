@@ -44,9 +44,11 @@ describe('高层实体面 M4 材质', () => {
     const surface = resolve('material.elevated.bg', values)
     expect(colorParseOklch(surface)!.a).toBe(1)
     expect(resolve('material.elevated.backdrop', values)).toBe('none')
-    // 一层投影：模态由遮罩隔开，通知面靠描边与这一层投影浮起来
-    expect(resolve('material.elevated.shadow', values).split(',')).toHaveLength(1)
+    // lg 档投影（三档里最高的一档）：模态由遮罩隔开，通知面靠描边与这一档投影浮起来；浅色直接引 shadow.lg
+    expect(resolve('material.elevated.shadow', values).split(/,(?![^(]*\))/)).toHaveLength(3)
     expect(resolve('material.elevated.shadow', values)).not.toContain('inset')
+    if (theme === 'light')
+      expect(resolve('material.elevated.shadow', values)).toBe(resolve('shadow.lg', values))
     expect(colorParseOklch(resolve('material.elevated.highlight', values))!.a).toBe(0)
     for (const name of ['border', 'separator'])
       expect(colorParseOklch(resolve(`material.elevated.${name}`, values))!.a).toBeGreaterThan(0)

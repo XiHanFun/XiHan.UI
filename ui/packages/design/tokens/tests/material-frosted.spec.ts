@@ -102,7 +102,7 @@ describe('m2 Frosted Surface 材质令牌', () => {
     ])
   })
 
-  it.each(['light', 'dark'] as const)('%s 档配方完整：浮层面是实体底 + 实色描边 + 一层投影，不采样背后内容', (theme) => {
+  it.each(['light', 'dark'] as const)('%s 档配方完整：浮层面是实体底 + 实色描边 + md 档投影，不采样背后内容', (theme) => {
     const tokens = themeTokens(theme)
     expect(materialNames(tokens)).toEqual(REQUIRED_RECIPE)
 
@@ -116,9 +116,11 @@ describe('m2 Frosted Surface 材质令牌', () => {
     expect(resolve('material.frosted.backdrop', tokens)).toBe('none')
     expect(Number(resolve('material.frosted.compact.alpha', tokens))).toBe(1)
     expect(resolve('material.frosted.compact.backdrop', tokens)).toBe('none')
+    // 阴影三档里的 md：浅色直接引 shadow.md，深色是同样三层的深色投影
     const shadow = resolve('material.frosted.shadow', tokens)
-    expect(shadow.split(',')).toHaveLength(1)
-    expect(shadow).toMatch(/^0 4px 10px oklch\(0 0 0 \/ 0\.\d+\)$/)
+    expect(shadow.split(/,(?![^(]*\))/)).toHaveLength(3)
+    if (theme === 'light')
+      expect(shadow).toBe(resolve('shadow.md', tokens))
     expect(resolve('material.frosted.compact.shadow', tokens)).toBe(shadow)
   })
 

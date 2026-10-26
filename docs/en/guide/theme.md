@@ -32,7 +32,7 @@ Colors use `oklch` instead of `hex` / `hsl`: different hues at the same lightnes
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
 --xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
+--xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -224,11 +224,11 @@ There are five token recipes, each providing the same nine tokens: `bg`, `backdr
 | --- | --- | --- | --- |
 | M0 solid | `--xh-material-solid-*` | Default for static content surfaces: border-default stroke + surface background + no shadow; fields at rest are stroked the same way, with an extra `--xh-bg-field` tint | Solid background, no highlight, no shadow |
 | M1 soft | `--xh-material-soft-*` | Secondary surfaces with a soft tint; not for Card or fields. Button and Tag are flat surfaces and do not take its top light or shadow | Solid background, a subtle top light and a two-step contact shadow, no backdrop blur |
-| M2 frosted | `--xh-material-frosted-*` | Anchored transient overlays such as short lists, menus, tooltips and bubbles; anchored panels with grids or several columns use solid + border-default + `--xh-elevation-floating` instead | Solid surface background, no backdrop blur, 1px border-default stroke, one soft `0 4px 10px` shadow, no top light |
-| M4 elevated | `--xh-material-elevated-*` | Modal and strong-feedback surfaces (sheets) such as Dialog, Drawer, Command, Tour and Notification; always with a 1px stroke | Solid surface background, no backdrop blur, one `0 4px 12px` shadow |
+| M2 frosted | `--xh-material-frosted-*` | Anchored transient overlays such as short lists, menus, tooltips and bubbles; anchored panels with grids or several columns use solid + border-default + `--xh-elevation-floating` instead | Solid surface background, no backdrop blur, 1px border-default stroke, a medium (md) shadow, no top light |
+| M4 elevated | `--xh-material-elevated-*` | Modal and strong-feedback surfaces (sheets) such as Dialog, Drawer, Command, Tour and Notification; always with a 1px stroke | Solid surface background, no backdrop blur, a large (lg) shadow |
 | M5 liquid | `--xh-material-liquid-*` | Only under `data-material="liquid"`: the navigation layer floating above content — float buttons (FloatButton, BackTop, the scroll-to-bottom of MessageFeed / Log), media controls (Carousel controls and pagination bar, the ImageViewer control layer), the sticky Layout header | Readable floor of 0.48 (light) / 0.61 (dark) opacity, 8px blur, 140% saturation, an ink hairline plus a 1px rim light, edge refraction in Chromium |
-| raised (stacking level) | solid stroke + solid background + `--xh-elevation-raised` | Card and parts that can be lifted or dragged (the slider of Tabs segment, switch thumbs and the like), registered per part; the stroke must be there and the shadow is only a bonus; hover lifting only when interactive | Solid background; `--xh-elevation-raised` is none (flat) by default, a theme adds a shadow when it wants a lifted feel |
-| floating (stacking level) | solid background + `--xh-border-default` + `--xh-elevation-floating` | Anchored panels with grids or several columns: NavigationMenu content, Date / Time / DateRange / TimeRange picker content | Solid background, no translucency, one soft `0 4px 10px` shadow |
+| raised (stacking level) | solid stroke + solid background + `--xh-elevation-raised` | Card and parts that can be lifted or dragged (the slider of Tabs segment, switch thumbs and the like), registered per part; the stroke must be there and the shadow is only a bonus; hover lifting only when interactive | Solid background; `--xh-elevation-raised` takes the small (sm) shadow |
+| floating (stacking level) | solid background + `--xh-border-default` + `--xh-elevation-floating` | Anchored panels with grids or several columns: NavigationMenu content, Date / Time / DateRange / TimeRange picker content | Solid background, no translucency, a medium (md) shadow |
 
 | Suffix | Use |
 | --- | --- |
@@ -240,7 +240,7 @@ There are five token recipes, each providing the same nine tokens: `bg`, `backdr
 
 M2 frosted has a single implementation in the library: the material family recipe `@xihan-ui/styles/material.css`. Components project `data-xh-material="frosted"` onto a part; the recipe paints the stroke, background, foreground and shadow of the content surface of anchored overlays, while the backdrop filter and the 1px top light are empty by default and left to themes that want translucency. The surfaces of float buttons belong to Action Control, and the recipe gives them the interaction steps (tint one and two on hover and press, `focus-surface` on keyboard focus). A custom overlay surface joins by writing the same attribute and overrides with `--xh-frosted-bg`, `--xh-frosted-border`, `--xh-frosted-fg`, `--xh-frosted-shadow`, `--xh-frosted-backdrop` and `--xh-frosted-highlight`.
 
-Card has only three forms: `outline` (default, solid stroke + surface background + `--xh-elevation-raised`, none by default), `subtle` (`--xh-bg-subtle` + a transparent placeholder border + no shadow) and `ghost` (no border, background or shadow; only dividers are allowed). Boundaries are drawn only by the stroke; neither shadows nor tints serve as boundaries.
+Card has only three forms: `outline` (default, solid stroke + surface background + `--xh-elevation-raised`, the small shadow), `subtle` (`--xh-bg-subtle` + a transparent placeholder border + no shadow) and `ghost` (no border, background or shadow; only dividers are allowed). Boundaries are drawn only by the stroke; neither shadows nor tints serve as boundaries.
 
 The environment axes degrade in place under the same token names: high contrast strengthens boundaries; reduced transparency and print force solid backgrounds and turn off backdrop filters (even when a theme turned translucency on); forced colors express everything through `Canvas` / `CanvasText`. All four levels are verified in both the light and the dark theme against black, white, mid gray, the page and the brand background: body text at least 4.5:1 and the focus ring at least 3:1 against its isolation layer.
 
@@ -260,7 +260,7 @@ Tooltip keeps its inverted identity and combines M2's foreground with three comp
 | --- | --- |
 | `--xh-material-frosted-compact-alpha` | Opaque (`--xh-alpha-opaque`) |
 | `--xh-material-frosted-compact-backdrop` | none, no blur |
-| `--xh-material-frosted-compact-shadow` | One `0 4px 10px` shadow (10% black in light, 36% black in dark) |
+| `--xh-material-frosted-compact-shadow` | The medium (md) shadow (`--xh-shadow-md` in light, the same three dark layers in dark) |
 
 High contrast, forced colors and print remove the shadow; reduced transparency keeps a small shadow to show the overlay's position. Components consume the optical parameters only through these three recipes and never pick alpha or blur primitives directly.
 
