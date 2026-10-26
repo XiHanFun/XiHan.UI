@@ -149,7 +149,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 ## 语气轴
 
-`data-tone` 是六族语气的切换轴：brand、neutral、danger、warning、success、info。写在任何节点上，节点内即可取到整族 `--xh-tone-*`：实心底、实心底上的前景、淡底、淡底文字、描边、控件边界。组件按语气换色只经这条轴，不自行挑原语。取用方式与全表见 [皮肤与样式分层 · 在自定义节点上使用语气](/guide/styling#在自定义节点上使用语气)。
+`data-tone` 是六族语气的切换轴：brand、neutral、danger、warning、success、info。写在任何节点上，节点内即可取到整族 `--xh-tone-*`：实心底、实心底上的前景、淡底、淡底文字、描边、控件边界。组件按语气换色只经这条轴，不自行挑原语。按钮一类的动作控件上，neutral 与不写等价：描边、淡底、幽灵形态就是缺省的中性面，不另铺 neutral 淡底、不换深色描边；实心形态仍是中性那一族的实心底。Tag、Alert、Badge 这类语气面的 neutral 照常取 neutral 淡底。取用方式与全表见 [皮肤与样式分层 · 在自定义节点上使用语气](/guide/styling#在自定义节点上使用语气)。
 
 ## 彩色面与墨色域
 

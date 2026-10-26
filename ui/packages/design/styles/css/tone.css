@@ -169,6 +169,20 @@
     --xh-tone-soft: var(--xh-_tone-soft);
   }
 
+  /* Action Control 上的 neutral 与不写等价（设计真源 §7.2 第 2 条）：中性就是缺省面，非实心形态不另铺
+     neutral 淡底、不换深色描边，同一个次要动作只有一副长相。撤掉的只是非实心形态读的淡底、字色与描边几支，
+     家族配方非实心形态读的就是这五支，随之落回缺省值；实心底与选中标记读的 --xh-_tone / -on / -hover / -active 照旧是中性那一族。
+     语气写在控件自己身上，或写在组类的根上、条目继承（ToggleGroup、Pagination 等「三个视觉轴只写在 root 上」），
+     两种都算；条目自己另写了语气的不在此列。Tag、Alert、Badge 这类语气面不是 Action Control，neutral 仍取淡底 */
+  [data-tone='neutral'][data-xh-action-control]:not([data-xh-action-variant='solid']),
+  [data-tone='neutral'] [data-xh-action-control]:not([data-tone]):not([data-xh-action-variant='solid']) {
+    --xh-_tone-subtle: initial;
+    --xh-_tone-subtle-hover: initial;
+    --xh-_tone-subtle-active: initial;
+    --xh-_tone-fg: initial;
+    --xh-_tone-border-control: initial;
+  }
+
   /* 实心面顶边的内高光：一条极浅的内阴影，把一块实心底衬出厚度。
      全库十六处实心档共用这两条，别再逐个组件把式子抄一遍。
 
