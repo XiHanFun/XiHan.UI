@@ -64,6 +64,8 @@ function hasCustomConverter(host: HTMLElement, key: string): boolean {
 const WC_PROP_NAMES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   // title 写在宿主上会出浏览器原生提示，还会进宿主的可及描述
   'xh-notification-item': { title: 'titleText' },
+  'xh-dialog': { title: 'titleText' },
+  'xh-drawer': { title: 'titleText' },
 }
 
 // 标量 → 属性，对象/函数 → 属性(property)

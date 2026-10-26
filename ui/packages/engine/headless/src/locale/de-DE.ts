@@ -280,7 +280,7 @@ const translations = {
       : `${count} weitere Zeilen wurden abgeschnitten und werden nicht angezeigt`),
     commentOn: (line, side) => `Zeile ${line} der ${side === 'old' ? 'alten' : 'neuen'} Version kommentieren`,
   },
-  'drawer': { close: 'Schließen', resizeTrigger: 'Größe des Bereichs ändern' },
+  'drawer': { close: 'Schließen', resizeTrigger: 'Größe des Bereichs ändern', ok: 'OK', cancel: 'Abbrechen' },
   'expression-input': {
     content: 'Vorschläge',
     noMatches: 'Keine Treffer',

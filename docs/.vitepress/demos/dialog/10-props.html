@@ -1,0 +1,22 @@
+<!-- props 写法 | 不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈 -->
+<xh-dialog
+  id="dialog-props"
+  trigger-text="归档这个项目"
+  title-text="归档项目"
+  description="归档后项目转为只读，随时可以恢复。"
+  confirm-text="确认归档"
+></xh-dialog>
+<span data-demo-output>项目状态：<span id="dialog-props-state">未归档</span></span>
+
+<script type="module">
+  const dialog = document.getElementById("dialog-props");
+  const state = document.getElementById("dialog-props-state");
+
+  // 事件拿不到监听函数的返回值：异步动作交给 confirmAction，元素等它兑现才收起
+  dialog.confirmAction = () => new Promise((resolve) => {
+    setTimeout(() => {
+      state.textContent = "已归档";
+      resolve();
+    }, 1200);
+  });
+</script>

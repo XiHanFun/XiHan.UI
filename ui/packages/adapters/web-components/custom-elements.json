@@ -23173,7 +23173,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。",
+          "description": "`<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写\n`slot=\"trigger\"`、`slot=\"title\"`、`slot=\"description\"`、`slot=\"body\"`、`slot=\"footer\"` 的节点）给出各段内容，\n页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋\n`confirmAction = () => thenable`：面板等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。",
           "name": "XhDialogElement",
           "cssParts": [
             {
@@ -23221,6 +23221,14 @@
               "name": "footer"
             },
             {
+              "description": "确定钮：页脚的主动作，异步确认挂起时转圈",
+              "name": "confirm-trigger"
+            },
+            {
+              "description": "取消钮：页脚的次要出口",
+              "name": "cancel-trigger"
+            },
+            {
               "description": "关闭按钮",
               "name": "close-trigger"
             }
@@ -23242,6 +23250,15 @@
               },
               "static": true,
               "default": "{ anatomy: dialogAnatomy, meta: dialogMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhDialogElement>"
+              },
+              "static": true,
+              "default": "{ rootless: true, build: host => dialogStructure({ ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }), ...(host.titleText === undefined ? {} : { title: host.titleText }), ...(host.description === undefined ? {} : { description: host.description }), ...(host.actions === undefined ? {} : { actions: host.actions }), ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }), ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }), translations: host.translations, slotted: (name, key) => host.slotted(name, key), }), }"
             },
             {
               "kind": "field",
@@ -23350,6 +23367,114 @@
                 "text": "DialogSchema['props']['translations'] | undefined"
               },
               "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。"
+            },
+            {
+              "kind": "field",
+              "name": "triggerText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "trigger-text"
+            },
+            {
+              "kind": "field",
+              "name": "titleText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "title-text"
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "description"
+            },
+            {
+              "kind": "field",
+              "name": "actions",
+              "privacy": "public",
+              "type": {
+                "text": "DialogStructureActions | undefined"
+              },
+              "attribute": "actions"
+            },
+            {
+              "kind": "field",
+              "name": "confirmText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "confirm-text"
+            },
+            {
+              "kind": "field",
+              "name": "cancelText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "cancel-text"
+            },
+            {
+              "kind": "field",
+              "name": "confirmAction",
+              "type": {
+                "text": "() => void | PromiseLike<unknown> | undefined"
+              },
+              "description": "确定钮的异步门：返回 thenable 即挂起，等兑现才收起、确定钮转圈；拒绝留在原地并发 confirm-error。\nconfirm 事件照常触发，仅作通知。"
+            },
+            {
+              "kind": "field",
+              "name": "pendingState",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "异步确认进行中；Escape 与层外交互此时不收起。"
+            },
+            {
+              "kind": "field",
+              "name": "actionErrorState",
+              "type": {
+                "text": "DialogConfirmErrorDetails | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "最近一次确认动作的错误。"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "actionError",
+              "type": {
+                "text": "DialogConfirmErrorDetails | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "actionIntents",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "DialogActionIntents"
+                }
+              }
             },
             {
               "kind": "field",
@@ -23521,6 +23646,27 @@
           ],
           "events": [
             {
+              "name": "confirm",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知"
+            },
+            {
+              "name": "confirm-error",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因"
+            },
+            {
+              "name": "cancel-press",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change"
+            },
+            {
               "name": "exit-complete",
               "type": {
                 "text": "CustomEvent"
@@ -23623,6 +23769,54 @@
               "description": "收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 \"false\" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻",
               "name": "unmount-on-exit",
               "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里触发按钮的文字；没有它也没有 slot=\"trigger\" 时不生成触发器",
+              "name": "trigger-text",
+              "fieldName": "triggerText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示",
+              "name": "title-text",
+              "fieldName": "titleText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的说明文字",
+              "name": "description",
+              "fieldName": "description"
+            },
+            {
+              "type": {
+                "text": "DialogStructureActions | undefined"
+              },
+              "description": "标准结构的页脚：confirm 为取消 + 确定（缺省），alert 只有确定，none 不铺；slot=\"footer\" 整段接管",
+              "name": "actions",
+              "fieldName": "actions"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "确定钮的文字，缺省取语言包",
+              "name": "confirm-text",
+              "fieldName": "confirmText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "取消钮的文字，缺省取语言包",
+              "name": "cancel-text",
+              "fieldName": "cancelText"
             }
           ],
           "superclass": {
@@ -24647,7 +24841,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。",
+          "description": "`<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。\n\n不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写\n`slot=\"trigger\"`、`slot=\"title\"`、`slot=\"description\"`、`slot=\"body\"`、`slot=\"footer\"` 的节点）给出各段内容，\n页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋\n`confirmAction = () => thenable`：抽屉等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。",
           "name": "XhDrawerElement",
           "cssParts": [
             {
@@ -24691,6 +24885,14 @@
               "name": "footer"
             },
             {
+              "description": "确定钮：页脚的主动作，异步确认挂起时转圈",
+              "name": "confirm-trigger"
+            },
+            {
+              "description": "取消钮：页脚的次要出口",
+              "name": "cancel-trigger"
+            },
+            {
               "description": "关闭按钮",
               "name": "close-trigger"
             },
@@ -24716,6 +24918,15 @@
               },
               "static": true,
               "default": "{ anatomy: drawerAnatomy, meta: drawerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "structure",
+              "type": {
+                "text": "ElementStructure<XhDrawerElement>"
+              },
+              "static": true,
+              "default": "{ build: host => drawerStructure({ ...(host.triggerText === undefined ? {} : { triggerText: host.triggerText }), ...(host.titleText === undefined ? {} : { title: host.titleText }), ...(host.description === undefined ? {} : { description: host.description }), ...(host.actions === undefined ? {} : { actions: host.actions }), ...(host.confirmText === undefined ? {} : { confirmText: host.confirmText }), ...(host.cancelText === undefined ? {} : { cancelText: host.cancelText }), ...(host.resizable === undefined ? {} : { resizable: host.resizable }), translations: host.translations, slotted: (name, key) => host.slotted(name, key), }), }"
             },
             {
               "kind": "field",
@@ -24876,6 +25087,114 @@
               "privacy": "public",
               "type": {
                 "text": "DrawerSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "triggerText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "trigger-text"
+            },
+            {
+              "kind": "field",
+              "name": "titleText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "title-text"
+            },
+            {
+              "kind": "field",
+              "name": "description",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "description"
+            },
+            {
+              "kind": "field",
+              "name": "actions",
+              "privacy": "public",
+              "type": {
+                "text": "DrawerStructureActions | undefined"
+              },
+              "attribute": "actions"
+            },
+            {
+              "kind": "field",
+              "name": "confirmText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "confirm-text"
+            },
+            {
+              "kind": "field",
+              "name": "cancelText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "cancel-text"
+            },
+            {
+              "kind": "field",
+              "name": "confirmAction",
+              "type": {
+                "text": "() => void | PromiseLike<unknown> | undefined"
+              },
+              "description": "确定钮的异步门：返回 thenable 即挂起，等兑现才收起、确定钮转圈；拒绝留在原地并发 confirm-error。\nconfirm 事件照常触发，仅作通知。"
+            },
+            {
+              "kind": "field",
+              "name": "pendingState",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "异步确认进行中；Escape 与层外交互此时不收起。"
+            },
+            {
+              "kind": "field",
+              "name": "actionErrorState",
+              "type": {
+                "text": "DrawerConfirmErrorDetails | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "最近一次确认动作的错误。"
+            },
+            {
+              "kind": "field",
+              "name": "pending",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "actionError",
+              "type": {
+                "text": "DrawerConfirmErrorDetails | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "actionIntents",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "DrawerActionIntents"
+                }
               }
             },
             {
@@ -25048,6 +25367,27 @@
           ],
           "events": [
             {
+              "name": "confirm",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () => thenable` 即挂起确认门，confirm 事件照发只作通知"
+            },
+            {
+              "name": "confirm-error",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因"
+            },
+            {
+              "name": "cancel-press",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change"
+            },
+            {
               "name": "exit-complete",
               "type": {
                 "text": "CustomEvent"
@@ -25205,6 +25545,54 @@
               "description": "收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 \"false\" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻",
               "name": "unmount-on-exit",
               "fieldName": "unmountOnExit"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里触发按钮的文字；没有它也没有 slot=\"trigger\" 时不生成触发器",
+              "name": "trigger-text",
+              "fieldName": "triggerText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的标题文字。不用 HTML 全局属性 title：写在宿主上会出浏览器原生提示",
+              "name": "title-text",
+              "fieldName": "titleText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "标准结构里的说明文字",
+              "name": "description",
+              "fieldName": "description"
+            },
+            {
+              "type": {
+                "text": "DrawerStructureActions | undefined"
+              },
+              "description": "标准结构的页脚：confirm 为取消 + 确定（缺省），alert 只有确定，none 不铺；slot=\"footer\" 整段接管",
+              "name": "actions",
+              "fieldName": "actions"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "确定钮的文字，缺省取语言包",
+              "name": "confirm-text",
+              "fieldName": "confirmText"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "取消钮的文字，缺省取语言包",
+              "name": "cancel-text",
+              "fieldName": "cancelText"
             }
           ],
           "superclass": {

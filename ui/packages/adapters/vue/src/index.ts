@@ -464,7 +464,9 @@ export type { DescriptionsContext } from './components/descriptions/context'
 export { XhDescriptionsExtra, XhDescriptionsHeader, XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsTitle, XhDescriptionsValue } from './components/descriptions/descriptions'
 export {
   XhDialogBody,
+  XhDialogCancelTrigger,
   XhDialogCloseTrigger,
+  XhDialogConfirmTrigger,
   XhDialogContent,
   XhDialogDescription,
   XhDialogDragTrigger,
@@ -489,7 +491,9 @@ export { useDownloadTrigger } from './components/download-trigger/use-download-t
 export type { DownloadTriggerContext } from './components/download-trigger/use-download-trigger'
 export {
   XhDrawerBody,
+  XhDrawerCancelTrigger,
   XhDrawerCloseTrigger,
+  XhDrawerConfirmTrigger,
   XhDrawerContent,
   XhDrawerDescription,
   XhDrawerFooter,

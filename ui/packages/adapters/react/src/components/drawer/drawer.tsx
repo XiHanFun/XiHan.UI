@@ -6,16 +6,18 @@
 // 提供 drawer 相关实现。
 
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { DrawerApi, DrawerSchema, DrawerSide } from '@xihan-ui/headless'
+import type { DrawerActionIntents, DrawerApi, DrawerSchema, DrawerSide, DrawerStructureActions } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { drawerStructure, withoutPanelShell } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { renderAsChild } from '../../runtime/as-child'
 import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
+import { renderStructure } from '../../runtime/structure'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { DrawerProvider, useDrawerContext } from './context'
@@ -26,7 +28,7 @@ type DrawerProps = DrawerSchema['props']
 /** 函数式 children 的载荷：展开状态、已解析的滑出边，与开合命令。 */
 export interface DrawerRootSlotProps extends Pick<DrawerApi, 'open' | 'side' | 'setOpen'> {}
 
-export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
+export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'title'> {
   open?: boolean
   defaultOpen?: boolean
   modal?: boolean
@@ -62,6 +64,32 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
   onExitComplete?: DrawerProps['onExitComplete']
   /** 厚度变化意图：拖动途中连续发出，键盘每推一步发一次。 */
   onPanelSizeChange?: DrawerProps['onPanelSizeChange']
+  // —— 不给 children 时的标准结构（drawerStructure）——
+  /** 触发按钮的内容。不给时不铺触发器，开合交给受控的 open。 */
+  trigger?: ReactNode
+  /** 标题。 */
+  title?: ReactNode
+  /** 标题下的说明。 */
+  description?: ReactNode
+  /** 正文：面板里唯一会滚动的段。 */
+  body?: ReactNode
+  /** 整段页脚：给了它，取消与确定两颗钮不再代铺。 */
+  footer?: ReactNode
+  /** 页脚铺哪几颗钮：confirm（取消 + 确定，缺省）、alert（只有确定）、none。 */
+  actions?: DrawerStructureActions
+  /** 确定钮的文字，缺省取语言包。 */
+  confirmText?: string
+  /** 取消钮的文字，缺省取语言包。 */
+  cancelText?: string
+  /**
+   * 点了确定钮。返回 thenable 即挂起：抽屉等它兑现才收起、确定钮转圈，
+   * 拒绝则保持打开并经 onConfirmError 报告。同步返回照常立即收起。
+   */
+  onConfirm?: DrawerActionIntents['onConfirm']
+  /** 确认回调同步抛出或 thenable 拒绝；details.cause 是原始原因。 */
+  onConfirmError?: DrawerActionIntents['onConfirmError']
+  /** 点了取消钮，随后抽屉收起。Escape、层外交互与关闭钮不发它。 */
+  onCancelPress?: DrawerActionIntents['onCancelPress']
   children?: SlotChildren<DrawerRootSlotProps>
 }
 
@@ -87,6 +115,17 @@ export function XhDrawerRoot({
   onOpenChange,
   onExitComplete,
   onPanelSizeChange,
+  trigger,
+  title,
+  description,
+  body,
+  footer,
+  actions,
+  confirmText,
+  cancelText,
+  onConfirm,
+  onConfirmError,
+  onCancelPress,
   children,
   container,
   ...rest
@@ -113,19 +152,21 @@ export function XhDrawerRoot({
     onOpenChange,
     onExitComplete,
     onPanelSizeChange,
-  }) as DrawerProps, container)
+  }) as DrawerProps, container, { onConfirm, onConfirmError, onCancelPress })
   const api = ctx.api
   // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
   return (
     <DrawerProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })}
+        {children !== undefined
+          ? renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })
+          : renderDefaultStructure({ actions, confirmText, cancelText, resizable, translations: ctx.service.prop('translations') }, { trigger, title, description, body, footer })}
       </div>
     </DrawerProvider>
   )
 }
 
-XhDrawerRoot.xhEvents = ['open-change', 'exit-complete', 'panel-size-change'] as const
+XhDrawerRoot.xhEvents = ['open-change', 'exit-complete', 'panel-size-change', 'confirm-error', 'cancel-press'] as const
 
 export interface XhDrawerTriggerProps extends ComponentPropsWithRef<'button'>, AsChildProps {}
 
@@ -205,6 +246,20 @@ export function XhDrawerFooter({ children, ...rest }: XhDrawerFooterProps): Reac
   return <footer {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</footer>
 }
 
+export interface XhDrawerConfirmTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 确定钮：页脚的主动作；点了调 onConfirm，异步确认挂起时转圈。 */
+export function XhDrawerConfirmTrigger({ children, ...rest }: XhDrawerConfirmTriggerProps): ReactNode {
+  const ctx = useDrawerContext()
+  return <button {...mergeReactProps(ctx.api.getConfirmTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
+export interface XhDrawerCancelTriggerProps extends ComponentPropsWithRef<'button'> {}
+/** 取消钮：页脚的次要出口；点了调 onCancelPress 并收起。 */
+export function XhDrawerCancelTrigger({ children, ...rest }: XhDrawerCancelTriggerProps): ReactNode {
+  const ctx = useDrawerContext()
+  return <button {...mergeReactProps(ctx.api.getCancelTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
+}
+
 export interface XhDrawerCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDrawerCloseTrigger({ children, ...rest }: XhDrawerCloseTriggerProps): ReactNode {
   const ctx = useDrawerContext()
@@ -218,4 +273,30 @@ export function XhDrawerResizeTrigger(props: XhDrawerResizeTriggerProps): ReactN
   // 得焦量厚度挂在 focus 上：它不冒泡，委派在根容器上的合成事件收不到，装成原生监听器
   const bind = useNativeEvents(ctx.api.getResizeTriggerProps() as Record<string, unknown>, ['onFocus'])
   return <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, props as Record<string, unknown>)} />
+}
+
+const DRAWER_PARTS = {
+  'trigger': XhDrawerTrigger,
+  'content': XhDrawerContent,
+  'header': XhDrawerHeader,
+  'title': XhDrawerTitle,
+  'description': XhDrawerDescription,
+  'body': XhDrawerBody,
+  'footer': XhDrawerFooter,
+  'cancel-trigger': XhDrawerCancelTrigger,
+  'confirm-trigger': XhDrawerConfirmTrigger,
+  'close-trigger': XhDrawerCloseTrigger,
+  'resize-trigger': XhDrawerResizeTrigger,
+}
+
+type DrawerSections = Readonly<Partial<Record<'trigger' | 'title' | 'description' | 'body' | 'footer', ReactNode>>>
+type DrawerTextOptions = Omit<NonNullable<Parameters<typeof drawerStructure>[0]>, 'slotted'>
+
+/**
+ * 未写 children 时铺开的整套结构：照 headless 的 drawerStructure 渲；遮罩与定位层由 XhDrawerContent 自己装配，摘掉。
+ * 给了哪段内容才铺哪一段。
+ */
+function renderDefaultStructure(options: DrawerTextOptions, sections: DrawerSections): ReactNode[] {
+  const nodes = withoutPanelShell(drawerStructure({ ...options, slotted: name => sections[name as keyof DrawerSections] != null }))
+  return renderStructure(nodes, DRAWER_PARTS, node => (node.slot ? sections[node.slot.name as keyof DrawerSections] : undefined))
 }

@@ -309,5 +309,54 @@ export const dialogSuite: ConformanceSuite = {
         expectInlineSlot('dialog', 'content', '--xh-_dialog-drag-x', '0px', '回到居中落点，位移归零'),
       ],
     },
+    {
+      name: '作者不写结构：三端都照 dialogStructure 铺出页头、页脚的取消与确定和关闭钮；标题与说明接上 content 的名字与描述',
+      spec: { apg: `${APG}#roles_states_properties` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultOpen: true, title: '删除文件？', description: '删除后无法恢复。' },
+      initial: {
+        order: ['backdrop', 'positioner', 'content', 'header', 'title', 'description', 'footer', 'cancel-trigger', 'confirm-trigger', 'close-trigger'],
+        parts: {
+          'content': { 'aria-labelledby': '@part(title)', 'aria-describedby': '@part(description)' },
+          // 页脚两颗动作钮与命令式服务同一档：text 档 md，确定 solid、取消 outline
+          'confirm-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'solid',
+            'aria-busy': null,
+            'data-loading': null,
+          },
+          'cancel-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
+          },
+        },
+      },
+    },
+    {
+      name: '作者不写结构：点取消发 cancel-press 并收起',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultOpen: true, title: '删除文件？' },
+      steps: [
+        { kind: 'click', part: 'cancel-trigger', expect: { events: [{ type: 'cancel-press' }, { type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] } },
+        { kind: 'settle', until: { absent: 'content' }, expect: { counts: { content: 0 } } },
+      ],
+    },
+    {
+      name: '作者不写结构：点确定收起（确认回调同步返回）',
+      spec: { apg: `${APG}#keyboardinteraction` },
+      fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
+      props: { defaultOpen: true, title: '删除文件？' },
+      steps: [
+        { kind: 'click', part: 'confirm-trigger', expect: { events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }] } },
+        { kind: 'settle', until: { absent: 'content' }, expect: { counts: { content: 0 } } },
+      ],
+    },
   ],
 }

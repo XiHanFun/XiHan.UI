@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `close-trigger`
+`data-scope="dialog"`：`trigger` · `backdrop` · `positioner` · **`content`** · `header` · `drag-trigger` · `indicator` · `title` · `description` · `body` · `footer` · `confirm-trigger` · `cancel-trigger` · `close-trigger`
 
 ## 示例
 
@@ -72,6 +72,12 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 <XhDemo src="dialog/09-service" />
 
+### props 写法
+
+不写结构时按标准结构铺：标题、说明与触发器文字三项写出一个确认对话框；确认动作返回 Promise 时等它落定才收起，期间确定钮转圈
+
+<XhDemo src="dialog/10-props" />
+
 ## 设计指引
 
 ### 何时使用
@@ -96,6 +102,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 - 面板走 sheet 三件套（1px 描边、不透明底、单层投影），圆角 4px，不叠渐变与顶光。分三段时头部是一条 48px 的带（紧凑档 44px），横向内衬 20px；正文纵 24 横 20，尾段纵 16 横 20；头下、尾上各一条贴边的 1px 内部分隔线。不分三段时标题行同样落在顶上那条 48px 带的中线上。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。关闭钮的叉 12px，距右 16px、落在头部带的中线上。标题取页面级面板标题档（heading-3）、正文色，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
+- 不写子内容时按标准结构铺：`title`、`description` 与触发器文字给出页头与触发器（Vue 是 `trigger-text`，React 是 `trigger`，Web Components 是 `title-text`、`description`、`trigger-text` 三个属性），页脚铺取消与确定两颗钮；`actions` 换成只有确定（`alert`）或不铺（`none`），`confirmText` / `cancelText` 改字，缺省取语言包里 `translations.dialog` 的 `ok` / `cancel`。正文与整段页脚经 `body`、`footer` 插槽给出（React 是同名属性，Web Components 是 `slot="body"` / `slot="footer"` 的节点）。一个组件加三个 prop 就是一个确认对话框。
+- 确定钮发 `confirm`：`onConfirm` 返回 Promise 时对话框等它兑现才收起、确定钮转圈，期间 Escape 与点外面关不掉，拒绝则留在原地并发 `confirm-error`（Web Components 把异步动作交给 `confirmAction` 属性，`confirm` 事件只作通知）。取消钮发 `cancel-press` 并收起；关闭钮随时收得起，挂起中的确认随之作废。手写部件时 `XhDialogConfirmTrigger` / `XhDialogCancelTrigger` 是同一对按钮，组合写法照旧。
 - 另有命令式服务，业务代码一次调用即可弹出。
 - 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 - 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。
@@ -124,7 +132,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-dialog>` |
-| Vue 组件 | `XhDialogBody` `XhDialogCloseTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
+| Vue 组件 | `XhDialogBody` `XhDialogCancelTrigger` `XhDialogCloseTrigger` `XhDialogConfirmTrigger` `XhDialogContent` `XhDialogDescription` `XhDialogDragTrigger` `XhDialogFooter` `XhDialogHeader` `XhDialogIndicator` `XhDialogRoot` `XhDialogTitle` `XhDialogTrigger` |
 | 组合式函数 | `useDialog` |
 | 状态机 | `dialogMachine` |
 | 皮肤 | `@xihan-ui/styles/dialog.css` |
@@ -156,6 +164,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `confirm` | `CustomEvent` | 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门，confirm 事件照发只作通知 |
+| `confirm-error` | `CustomEvent` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
+| `cancel-press` | `CustomEvent` | 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
 | `open-change` | `DialogOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
@@ -166,6 +177,11 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDialogRoot` | `default` | `DialogRootSlotProps` |  |
+| `XhDialogRoot` | `trigger` | — | 触发按钮的内容，压过 trigger-text。 |
+| `XhDialogRoot` | `title` | — | 标题，压过 title。 |
+| `XhDialogRoot` | `description` | — | 说明，压过 description。 |
+| `XhDialogRoot` | `body` | — | 正文：面板里唯一会滚动的段。 |
+| `XhDialogRoot` | `footer` | — | 整段页脚：写了它，取消与确定两颗钮不再代铺。 |
 
 ### React 适配器 props
 
@@ -174,6 +190,17 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhDialogContent` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhDialogRoot` | `trigger` | `ReactNode` |  | 触发按钮的内容。不给时不铺触发器，开合交给受控的 open。 |
+| `XhDialogRoot` | `title` | `ReactNode` |  | 标题。 |
+| `XhDialogRoot` | `description` | `ReactNode` |  | 标题下的说明。 |
+| `XhDialogRoot` | `body` | `ReactNode` |  | 正文：面板里唯一会滚动的段。 |
+| `XhDialogRoot` | `footer` | `ReactNode` |  | 整段页脚：给了它，取消与确定两颗钮不再代铺。 |
+| `XhDialogRoot` | `actions` | `DialogStructureActions` |  | 页脚铺哪几颗钮：confirm（取消 + 确定，缺省）、alert（只有确定）、none。 |
+| `XhDialogRoot` | `confirmText` | `string` |  | 确定钮的文字，缺省取语言包。 |
+| `XhDialogRoot` | `cancelText` | `string` |  | 取消钮的文字，缺省取语言包。 |
+| `XhDialogRoot` | `onConfirm` | `DialogActionIntents['onConfirm']` |  | 点了确定钮。返回 thenable 即挂起：面板等它兑现才收起、确定钮转圈， 拒绝则保持打开并经 onConfirmError 报告。同步返回照常立即收起。 |
+| `XhDialogRoot` | `onConfirmError` | `DialogActionIntents['onConfirmError']` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是原始原因。 |
+| `XhDialogRoot` | `onCancelPress` | `DialogActionIntents['onCancelPress']` |  | 点了取消钮，随后面板收起。Escape、层外交互与关闭钮不发它。 |
 | `XhDialogRoot` | `children` | `SlotChildren<DialogRootSlotProps>` |  |  |
 
 ### 状态
@@ -204,7 +231,11 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `open` | `boolean` |  |
 | `offset` | `DialogOffset` | 当前的拖动位移。 |
 | `dragging` | `boolean` | 正在被指针拖动。 |
-| `setOpen` | `(next: boolean) => void` |  |
+| `pending` | `boolean` | 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起面板。 |
+| `actionError` | `DialogConfirmErrorDetails \| null` | 最近一次确认动作的错误；新确认或取消时清空。 |
+| `setOpen` | `(next: boolean) => void` | 确认异步挂起期间，收起只能经取消钮或关闭钮：程序与触发器的 setOpen(false) 无效。 |
+| `confirm` | `() => void` | 发出确认意图，确认落定后收起；异步确认挂起期间再次调用无效。 |
+| `cancel` | `() => void` | 发出取消意图并收起；挂起中的确认作废。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -216,6 +247,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
+| `getConfirmTriggerProps` | `() => T['button']` | 确认钮：页脚的主动作，solid；异步确认挂起时转圈。 |
+| `getCancelTriggerProps` | `() => T['button']` | 取消钮：页脚的次要出口，outline。 |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `isContentMounted` | `(present: boolean) => boolean` | 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。 |
 
@@ -253,6 +286,8 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `drag-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `drag-trigger` | `aria-label` | translations.dragTrigger |
 | `indicator` | `aria-hidden` | 'true' |
+| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `close-trigger` | `aria-label` | translations.close |
 
 ## 样式参考
@@ -290,6 +325,21 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `title` | `data-draggable` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'md' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `confirm-trigger` | `data-xh-loading-ring` | 'overlay' |
+| `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `cancel-trigger` | `data-xh-action-control` | '' |
+| `cancel-trigger` | `data-xh-action-display` | 'always' |
+| `cancel-trigger` | `data-xh-action-profile` | 'text' |
+| `cancel-trigger` | `data-xh-action-size` | 'md' |
+| `cancel-trigger` | `data-xh-action-variant` | 'outline' |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -356,9 +406,9 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（面板）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（面板） · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；状态切换走 `transition`，属性由 `transition-*` 分项给定。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

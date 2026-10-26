@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `close-trigger` · `resize-trigger`
+`data-scope="drawer"`：**`root`** · `trigger` · `backdrop` · `positioner` · **`content`** · `header` · `title` · `description` · `body` · `footer` · `confirm-trigger` · `cancel-trigger` · `close-trigger` · `resize-trigger`
 
 ## 示例
 
@@ -66,6 +66,12 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 <XhDemo src="drawer/08-contained" />
 
+### props 写法
+
+不写结构时按标准结构铺：标题与触发器文字两项，正文另给；页脚的取消与确定照铺，点确定记一次「应用」
+
+<XhDemo src="drawer/09-props" />
+
 ## 设计指引
 
 ### 何时使用
@@ -91,6 +97,8 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 - 面板走 sheet 三件套（1px 描边、不透明底、单层投影），边界由描边承担，不只靠影分层；贴住视口的两个角不取圆角、朝向页面的两个角取浮层圆角，不叠渐变与顶光。分三段时头部是一条 48px 的带（紧凑档 44px），三段横向内衬 16px，正文纵 12、尾段纵 16，头下、尾上各一条贴边的 1px 内部分隔线；不分三段时标题行同样落在顶上那条 48px 带的中线上。入场是整面板从画外推入的大尺度位移，走 slide 时长与曲线，退场仍走 exit 档。
 - 触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，展开期间压住为悬停同档的中性面；关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底；Space / Enter 与触屏按住期间投影 `data-pressed`。关闭钮的叉 12px，距右 16px、落在头部带的中线上。标题取页面级面板标题档（heading-3）、正文色，说明文字为 13px 说明档。
 - Body 是模态滚动面：滚到头不带动页面，内容高度变化时保留稳定的滚动条空道；不用三段结构时 content 自身是唯一滚动层。
+- 不写子内容时按标准结构铺：`title`、`description` 与触发器文字给出页头与触发器（Vue 是 `trigger-text`，React 是 `trigger`，Web Components 是 `title-text`、`description`、`trigger-text` 三个属性），页脚铺取消与确定两颗钮；`actions` 换成只有确定（`alert`）或不铺（`none`），`confirmText` / `cancelText` 改字，缺省取语言包里 `translations.drawer` 的 `ok` / `cancel`。正文与整段页脚经 `body`、`footer` 插槽给出（React 是同名属性，Web Components 是 `slot="body"` / `slot="footer"` 的节点）。一个组件加三个 prop 就是一个确认抽屉。
+- 确定钮发 `confirm`：`onConfirm` 返回 Promise 时抽屉等它兑现才收起、确定钮转圈，期间 Escape 与点外面关不掉，拒绝则留在原地并发 `confirm-error`（Web Components 把异步动作交给 `confirmAction` 属性，`confirm` 事件只作通知）。取消钮发 `cancel-press` 并收起；关闭钮随时收得起，挂起中的确认随之作废。手写部件时 `XhDrawerConfirmTrigger` / `XhDrawerCancelTrigger` 是同一对按钮，组合写法照旧。
 
 ### 组合
 
@@ -113,7 +121,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-drawer>` |
-| Vue 组件 | `XhDrawerBody` `XhDrawerCloseTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerResizeTrigger` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
+| Vue 组件 | `XhDrawerBody` `XhDrawerCancelTrigger` `XhDrawerCloseTrigger` `XhDrawerConfirmTrigger` `XhDrawerContent` `XhDrawerDescription` `XhDrawerFooter` `XhDrawerHeader` `XhDrawerResizeTrigger` `XhDrawerRoot` `XhDrawerTitle` `XhDrawerTrigger` |
 | 组合式函数 | `useDrawer` |
 | 状态机 | `drawerMachine` |
 | 皮肤 | `@xihan-ui/styles/drawer.css` |
@@ -151,6 +159,9 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
+| `confirm` | `CustomEvent` | 点了确定钮；随后收起。异步门经 confirmAction 属性：事件拿不到监听函数的返回值， 给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门，confirm 事件照发只作通知 |
+| `confirm-error` | `CustomEvent` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
+| `cancel-press` | `CustomEvent` | 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
 | `panel-size-change` | `CustomEvent` | 厚度变化意图；detail 为 `{ panelSize: number }` |
 | `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
@@ -162,6 +173,11 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDrawerRoot` | `default` | `DrawerRootSlotProps` |  |
+| `XhDrawerRoot` | `trigger` | — | 触发按钮的内容，压过 trigger-text。 |
+| `XhDrawerRoot` | `title` | — | 标题，压过 title。 |
+| `XhDrawerRoot` | `description` | — | 说明，压过 description。 |
+| `XhDrawerRoot` | `body` | — | 正文：面板里唯一会滚动的段。 |
+| `XhDrawerRoot` | `footer` | — | 整段页脚：写了它，取消与确定两颗钮不再代铺。 |
 
 ### React 适配器 props
 
@@ -170,6 +186,17 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhDrawerRoot` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 提供后即为局部抽屉：遮罩与定位层从 fixed 换为 absolute，只覆盖该容器而不是整屏。 该容器要自带 position（relative 等），否则 absolute 会向上找到其他定位祖先。 |
+| `XhDrawerRoot` | `trigger` | `ReactNode` |  | 触发按钮的内容。不给时不铺触发器，开合交给受控的 open。 |
+| `XhDrawerRoot` | `title` | `ReactNode` |  | 标题。 |
+| `XhDrawerRoot` | `description` | `ReactNode` |  | 标题下的说明。 |
+| `XhDrawerRoot` | `body` | `ReactNode` |  | 正文：面板里唯一会滚动的段。 |
+| `XhDrawerRoot` | `footer` | `ReactNode` |  | 整段页脚：给了它，取消与确定两颗钮不再代铺。 |
+| `XhDrawerRoot` | `actions` | `DrawerStructureActions` |  | 页脚铺哪几颗钮：confirm（取消 + 确定，缺省）、alert（只有确定）、none。 |
+| `XhDrawerRoot` | `confirmText` | `string` |  | 确定钮的文字，缺省取语言包。 |
+| `XhDrawerRoot` | `cancelText` | `string` |  | 取消钮的文字，缺省取语言包。 |
+| `XhDrawerRoot` | `onConfirm` | `DrawerActionIntents['onConfirm']` |  | 点了确定钮。返回 thenable 即挂起：抽屉等它兑现才收起、确定钮转圈， 拒绝则保持打开并经 onConfirmError 报告。同步返回照常立即收起。 |
+| `XhDrawerRoot` | `onConfirmError` | `DrawerActionIntents['onConfirmError']` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是原始原因。 |
+| `XhDrawerRoot` | `onCancelPress` | `DrawerActionIntents['onCancelPress']` |  | 点了取消钮，随后抽屉收起。Escape、层外交互与关闭钮不发它。 |
 | `XhDrawerRoot` | `children` | `SlotChildren<DrawerRootSlotProps>` |  |  |
 
 ### 状态
@@ -202,7 +229,11 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `panelSize` | `number \| null` | 当前厚度；没被调过、也没给初值时为 null。 |
 | `resizing` | `boolean` | 正在被指针调厚度。 |
 | `side` | `DrawerSide` | 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 |
-| `setOpen` | `(next: boolean) => void` |  |
+| `pending` | `boolean` | 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起抽屉。 |
+| `actionError` | `DrawerConfirmErrorDetails \| null` | 最近一次确认动作的错误；新确认或取消时清空。 |
+| `setOpen` | `(next: boolean) => void` | 确认异步挂起期间，收起只能经取消钮或关闭钮：程序与触发器的 setOpen(false) 无效。 |
+| `confirm` | `() => void` | 发出确认意图，确认落定后收起；异步确认挂起期间再次调用无效。 |
+| `cancel` | `() => void` | 发出取消意图并收起；挂起中的确认作废。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
@@ -213,6 +244,8 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
+| `getConfirmTriggerProps` | `() => T['button']` | 确认钮：页脚的主动作，solid；异步确认挂起时转圈。 |
+| `getCancelTriggerProps` | `() => T['button']` | 取消钮：页脚的次要出口，outline。 |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getResizeTriggerProps` | `() => T['element']` | 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 |
 | `isContentMounted` | `(present: boolean) => boolean` | 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。 没打开过恒为假；unmountOnExit 为 false 时打开过之后恒为真，闸门落下的那段由适配器隐藏而不卸载。 |
@@ -248,6 +281,8 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `content` | `aria-labelledby` | `title` 部件的 id \| undefined |
 | `content` | `aria-modal` | 'true' \| 'false' |
 | `content` | `role` | props.role |
+| `confirm-trigger` | `aria-busy` | 'true' \| undefined |
+| `confirm-trigger` | `aria-disabled` | 'true' \| undefined |
 | `close-trigger` | `aria-label` | translations.close |
 | `resize-trigger` | `aria-controls` | `content` 部件的 id |
 | `resize-trigger` | `aria-label` | translations.resizeTrigger |
@@ -295,6 +330,21 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `confirm-trigger` | `data-xh-action-control` | '' |
+| `confirm-trigger` | `data-xh-action-display` | 'always' |
+| `confirm-trigger` | `data-xh-action-profile` | 'text' |
+| `confirm-trigger` | `data-xh-action-size` | 'md' |
+| `confirm-trigger` | `data-xh-action-variant` | 'solid' |
+| `confirm-trigger` | `data-xh-ink-surface` | '' |
+| `confirm-trigger` | `data-xh-loading-ring` | 'overlay' |
+| `cancel-trigger` | `data-pressed` | ''（条件成立时才出现） |
+| `cancel-trigger` | `data-xh-action-control` | '' |
+| `cancel-trigger` | `data-xh-action-display` | 'always' |
+| `cancel-trigger` | `data-xh-action-profile` | 'text' |
+| `cancel-trigger` | `data-xh-action-size` | 'md' |
+| `cancel-trigger` | `data-xh-action-variant` | 'outline' |
 | `close-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `close-trigger` | `data-xh-action-control` | '' |
 | `close-trigger` | `data-xh-action-display` | 'always' |
@@ -374,7 +424,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现 · 导航（整幅滑入）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 导航（整幅滑入） · 循环（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-slide-fade-in` · `xh-slide-fade-out` · `xh-slide-in` · `xh-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

@@ -7,10 +7,11 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DialogPressedPart } from '../dialog'
-import type { DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
+import type { DrawerActionIntents, DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { DRAWER_EN_US } from '../locale/en-US'
 import { RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from '../resizable'
+import { createConfirmGate } from '../shared/confirm-gate'
 import { disclosureContentMounted } from '../shared/disclosure-mount'
 import { resolveTranslations } from '../shared/translations'
 import { drawerAnatomy } from './drawer.anatomy'
@@ -29,9 +30,13 @@ const ARROW_DELTA: Readonly<Record<string, { dx: number, dy: number } | undefine
   ArrowUp: { dx: 0, dy: -1 },
 }
 
+/**
+ * intents 是页脚确定与取消两颗钮的意图与状态通道（见 DrawerActionIntents）；不用这两颗钮时省略。
+ */
 export function connectDrawer<T extends PropTypes>(
   service: Service<DrawerSchema>,
   normalize: NormalizeProps<T>,
+  intents: DrawerActionIntents = {},
 ): DrawerApi<T> {
   const { state, prop, send, context, scope } = service
   const translations = resolveTranslations(DRAWER_EN_US, prop('translations'))
@@ -49,7 +54,14 @@ export function connectDrawer<T extends PropTypes>(
   // 首帧标记：挂载时就开着、还没收起过（与对话框共用的机器记下）
   const instant = dataAttr(context.get('openedAtMount'))
 
+  // 确认门：确定与取消都是明确的按钮关闭，以 close-trigger 上报
+  const gate = createConfirmGate(service, intents, () => send({ type: 'CLOSE', src: 'close-trigger' }))
+  const pending = gate.isPending()
+
   const setOpen = (next: boolean): void => {
+    // 确认尚未落定时，程序调用与触发器都不能从侧门收起；取消钮、关闭钮与兑现各有显式出口
+    if (!next && gate.isLocked())
+      return
     if (next !== open)
       send({ type: next ? 'OPEN' : 'CLOSE' })
   }
@@ -78,7 +90,11 @@ export function connectDrawer<T extends PropTypes>(
     side,
     panelSize,
     resizing,
+    pending,
+    actionError: intents.actionError ?? null,
     setOpen,
+    confirm: gate.confirm,
+    cancel: gate.cancel,
     // 浮层恒为懒挂载：第一次打开才有内容；收起之后卸不卸由 unmountOnExit 定，缺省卸
     isContentMounted: present => disclosureContentMounted({
       lazyMount: true,
@@ -111,7 +127,11 @@ export function connectDrawer<T extends PropTypes>(
       'data-xh-action-size': 'md',
       'data-xh-action-variant': 'outline',
       ...press('trigger'),
-      'onClick': () => send({ type: 'TOGGLE' }),
+      // 确认挂起时触发器收不起抽屉（非模态时它点得到）
+      'onClick': () => {
+        if (!(open && gate.isLocked()))
+          send({ type: 'TOGGLE' })
+      },
     }),
     getBackdropProps: () => normalize.element({
       ...parts.backdrop.attrs,
@@ -163,6 +183,37 @@ export function connectDrawer<T extends PropTypes>(
     getDescriptionProps: () => normalize.element({ ...parts.description.attrs, id: ids.description }),
     getBodyProps: () => normalize.element({ ...parts.body.attrs }),
     getFooterProps: () => normalize.element({ ...parts.footer.attrs }),
+    // 页脚两颗动作钮：text 档 md，确定 solid、取消 outline，与对话框同一档
+    getConfirmTriggerProps: () => normalize.button({
+      ...parts['confirm-trigger'].attrs,
+      'type': 'button',
+      // 挂起不改原生 disabled，焦点不会被踢走；aria-disabled 明确说明重复确认不可用
+      'aria-busy': pending ? 'true' : undefined,
+      'aria-disabled': pending ? 'true' : undefined,
+      'data-loading': dataAttr(pending),
+      // 异步确认挂起：加载环配方把环压在确认钮正中，挂起一个 micro 之后才淡入
+      'data-xh-loading-ring': 'overlay',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'solid',
+      'data-xh-ink-surface': '',
+      ...press('confirm-trigger'),
+      'onClick': gate.confirm,
+    }),
+    getCancelTriggerProps: () => normalize.button({
+      ...parts['cancel-trigger'].attrs,
+      'type': 'button',
+      // 中性的次要出口：outline 描边，不参与语气
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      'data-xh-action-variant': 'outline',
+      ...press('cancel-trigger'),
+      'onClick': gate.cancel,
+    }),
     getCloseTriggerProps: () => normalize.button({
       ...parts['close-trigger'].attrs,
       'type': 'button',
@@ -174,7 +225,11 @@ export function connectDrawer<T extends PropTypes>(
       'data-xh-action-size': 'sm',
       'data-xh-action-variant': 'ghost',
       ...press('close-trigger'),
-      'onClick': () => send({ type: 'CLOSE', src: 'close-trigger' }),
+      // 关闭钮随时收得起：挂起中的确认作废（不发取消意图——点的不是取消钮）
+      'onClick': () => {
+        gate.abort()
+        send({ type: 'CLOSE', src: 'close-trigger' })
+      },
     }),
     // 把手是一条能被方向键推来推去的分隔条，不是按钮：激活键在这里没有语义
     getResizeTriggerProps: () => {

@@ -7,6 +7,7 @@
 
 import type { OverlayBackdropVariant, OverlayCloseReason, PropTypes, Size } from '@xihan-ui/core'
 import type { DialogPoint, DialogRefs, DialogSchema } from '../dialog/dialog.types'
+import type { ConfirmErrorDetails, ConfirmIntents } from '../shared/confirm-gate'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
 /** 抽屉贴靠的视口边，也是滑入方向的来源。 */
@@ -16,6 +17,10 @@ export interface DrawerTranslations {
   close: string
   /** 改尺把手的 aria-label：把手是一条透明的命中区，读屏读不出它推的是哪条边。 */
   resizeTrigger: string
+  /** 确认钮（confirm-trigger）在标准结构里的缺省文字。 */
+  ok: string
+  /** 取消钮（cancel-trigger）在标准结构里的缺省文字。 */
+  cancel: string
 }
 
 export interface DrawerPanelSizeChangeDetails {
@@ -118,6 +123,15 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | '
   action: DialogSchema['action'] | 'startResize' | 'nudgeResize' | 'resizeToBound' | 'measurePanel'
 }
 
+/** 确认动作失败；cause 保留回调同步抛出或 thenable 拒绝时的原值。 */
+export type DrawerConfirmErrorDetails = ConfirmErrorDetails
+
+/**
+ * 页脚确定与取消两颗钮的意图，以及由适配器持有的 pending / actionError 两个状态通道。
+ * 它们除了收起抽屉不改别的状态，不进机器，作为 connect 的第三个参数传入。
+ */
+export type DrawerActionIntents = ConfirmIntents
+
 export interface DrawerApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 当前厚度；没被调过、也没给初值时为 null。 */
@@ -126,7 +140,16 @@ export interface DrawerApi<T extends PropTypes = PropTypes> {
   resizing: boolean
   /** 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 */
   side: DrawerSide
+  /** 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起抽屉。 */
+  pending: boolean
+  /** 最近一次确认动作的错误；新确认或取消时清空。 */
+  actionError: DrawerConfirmErrorDetails | null
+  /** 确认异步挂起期间，收起只能经取消钮或关闭钮：程序与触发器的 setOpen(false) 无效。 */
   setOpen: (next: boolean) => void
+  /** 发出确认意图，确认落定后收起；异步确认挂起期间再次调用无效。 */
+  confirm: () => void
+  /** 发出取消意图并收起；挂起中的确认作废。 */
+  cancel: () => void
   getRootProps: () => T['element']
   getTriggerProps: () => T['button']
   getBackdropProps: () => T['element']
@@ -137,6 +160,10 @@ export interface DrawerApi<T extends PropTypes = PropTypes> {
   getDescriptionProps: () => T['element']
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
+  /** 确认钮：页脚的主动作，solid；异步确认挂起时转圈。 */
+  getConfirmTriggerProps: () => T['button']
+  /** 取消钮：页脚的次要出口，outline。 */
+  getCancelTriggerProps: () => T['button']
   getCloseTriggerProps: () => T['button']
   /** 改尺把手：role=separator，落在朝向页面的那条边上；没开 resizable 时带 hidden。 */
   getResizeTriggerProps: () => T['element']

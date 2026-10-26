@@ -278,7 +278,7 @@ const translations = {
     truncated: count => `另有 ${count} 行已截斷，未顯示`,
     commentOn: (line, side) => `對${side === 'old' ? '舊' : '新'}版本第 ${line} 行留言`,
   },
-  'drawer': { close: '關閉', resizeTrigger: '調整抽屜大小' },
+  'drawer': { close: '關閉', resizeTrigger: '調整抽屜大小', ok: '確定', cancel: '取消' },
   'expression-input': {
     content: '建議',
     noMatches: '沒有符合的項目',

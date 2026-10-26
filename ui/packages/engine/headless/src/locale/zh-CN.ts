@@ -277,7 +277,7 @@ const translations = {
     truncated: count => `另有 ${count} 行已截断，未显示`,
     commentOn: (line, side) => `评论${side === 'old' ? '旧' : '新'}版本第 ${line} 行`,
   },
-  'drawer': { close: '关闭', resizeTrigger: '调整抽屉大小' },
+  'drawer': { close: '关闭', resizeTrigger: '调整抽屉大小', ok: '确定', cancel: '取消' },
   'expression-input': {
     content: '补全',
     noMatches: '没有匹配项',

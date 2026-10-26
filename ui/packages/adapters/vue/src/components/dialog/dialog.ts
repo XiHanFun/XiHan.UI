@@ -6,14 +6,16 @@
 // 提供 dialog 相关实现。
 
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { DialogApi, DialogSchema } from '@xihan-ui/headless'
+import type { DialogActionIntents, DialogApi, DialogConfirmErrorDetails, DialogSchema, DialogStructureActions } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { dialogStructure, withoutPanelShell } from '@xihan-ui/headless'
 import { defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
+import { renderStructure } from '../../runtime/structure'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
 import { OVERLAY_STOWED_PROPS } from '../../runtime/use-overlay-exit'
 import { provideDialog, useDialogContext } from './context'
@@ -42,24 +44,69 @@ export const XhDialogRoot = /* @__PURE__ */ defineComponent({
     /** 收起动画播完后卸载内容，默认 true；false 时第一次打开才挂载、此后收起只隐藏，再打开不重挂。 */
     unmountOnExit: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DialogProps['translations']> },
+    // —— 不写默认插槽时的标准结构（dialogStructure）——
+    /** 触发按钮的文字；trigger 插槽有内容时以插槽为准。两者都没有时不铺触发器，开合交给 v-model:open。 */
+    triggerText: { type: String },
+    /** 标题文字；title 插槽有内容时以插槽为准。 */
+    title: { type: String },
+    /** 说明文字；description 插槽有内容时以插槽为准。 */
+    description: { type: String },
+    /** 页脚铺哪几颗钮：confirm（取消 + 确定，缺省）、alert（只有确定）、none；footer 插槽有内容时整段归作者。 */
+    actions: { type: String as PropType<DialogStructureActions> },
+    /** 确定钮的文字，缺省取语言包。 */
+    confirmText: { type: String },
+    /** 取消钮的文字，缺省取语言包。 */
+    cancelText: { type: String },
+    /**
+     * 点了确定钮。返回 thenable 即挂起：面板等它兑现才收起、确定钮转圈，拒绝则留在原地并触发 confirm-error。
+     * 模板里照常写 @confirm，Vue 会把它落到这个 prop 上。
+     */
+    onConfirm: { type: Function as PropType<DialogActionIntents['onConfirm']> },
   },
   // open-change 携带 { open }，update:open 携带裸布尔
   emits: {
     'open-change': (_details: PayloadOf<DialogProps, 'onOpenChange'>) => true,
     'update:open': (_open: PayloadOf<DialogProps, 'onOpenChange'>['open']) => true,
     'exit-complete': () => true,
+    'confirm-error': (_details: DialogConfirmErrorDetails) => true,
+    'cancel-press': () => true,
   },
   slots: Object as SlotsType<{
     default?: (props: DialogRootSlotProps) => VNode[]
+    /** 触发按钮的内容，压过 trigger-text。 */
+    trigger?: () => VNode[]
+    /** 标题，压过 title。 */
+    title?: () => VNode[]
+    /** 说明，压过 description。 */
+    description?: () => VNode[]
+    /** 正文：面板里唯一会滚动的段。 */
+    body?: () => VNode[]
+    /** 整段页脚：写了它，取消与确定两颗钮不再代铺。 */
+    footer?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
     const notify: DialogProps['onOpenChange'] = (details) => {
       emit('open-change', details)
       emit('update:open', details.open)
     }
-    const ctx = useDialog(withXhConfig('dialog', props) as DialogProps, notify, () => emit('exit-complete'))
+    const config = withXhConfig('dialog', props)
+    const ctx = useDialog(config as DialogProps, notify, () => emit('exit-complete'), {
+      onConfirm: () => props.onConfirm?.(),
+      onConfirmError: details => emit('confirm-error', details),
+      onCancelPress: () => emit('cancel-press'),
+    })
     provideDialog(ctx)
-    return () => slots.default?.({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+    return () => (slots.default
+      ? slots.default({ open: ctx.api.value.open, setOpen: ctx.api.value.setOpen })
+      : renderDefaultStructure({
+          triggerText: props.triggerText,
+          title: props.title,
+          description: props.description,
+          actions: props.actions,
+          confirmText: props.confirmText,
+          cancelText: props.cancelText,
+          translations: config.translations,
+        }, { trigger: slots.trigger, title: slots.title, description: slots.description, body: slots.body, footer: slots.footer }))
   },
 })
 
@@ -185,6 +232,24 @@ export const XhDialogFooter = /* @__PURE__ */ defineComponent({
   },
 })
 
+/** 确定钮：页脚的主动作；点了发 confirm，异步确认挂起时转圈。 */
+export const XhDialogConfirmTrigger = /* @__PURE__ */ defineComponent({
+  name: 'XhDialogConfirmTrigger',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('button', ctx.api.value.getConfirmTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
+/** 取消钮：页脚的次要出口；点了发 cancel-press 并收起。 */
+export const XhDialogCancelTrigger = /* @__PURE__ */ defineComponent({
+  name: 'XhDialogCancelTrigger',
+  setup(_, { slots }) {
+    const ctx = useDialogContext()
+    return () => h('button', ctx.api.value.getCancelTriggerProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhDialogCloseTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhDialogCloseTrigger',
   setup(_, { slots }) {
@@ -192,3 +257,28 @@ export const XhDialogCloseTrigger = /* @__PURE__ */ defineComponent({
     return () => h('button', ctx.api.value.getCloseTriggerProps() as Record<string, unknown>, slots.default?.())
   },
 })
+
+const DIALOG_PARTS = {
+  'trigger': XhDialogTrigger,
+  'content': XhDialogContent,
+  'header': XhDialogHeader,
+  'title': XhDialogTitle,
+  'description': XhDialogDescription,
+  'body': XhDialogBody,
+  'footer': XhDialogFooter,
+  'cancel-trigger': XhDialogCancelTrigger,
+  'confirm-trigger': XhDialogConfirmTrigger,
+  'close-trigger': XhDialogCloseTrigger,
+}
+
+type DialogSectionSlots = Readonly<Partial<Record<'trigger' | 'title' | 'description' | 'body' | 'footer', () => VNode[]>>>
+type DialogTextOptions = Omit<NonNullable<Parameters<typeof dialogStructure>[0]>, 'slotted'>
+
+/**
+ * 未写默认插槽时铺开的整套结构：照 headless 的 dialogStructure 渲；遮罩与定位层由 XhDialogContent 自己装配，摘掉。
+ * 带 slot 的部件放作者在同名插槽里写的内容。
+ */
+function renderDefaultStructure(options: DialogTextOptions, sections: DialogSectionSlots): VNode[] {
+  const nodes = withoutPanelShell(dialogStructure({ ...options, slotted: name => sections[name as keyof DialogSectionSlots] != null }))
+  return renderStructure(nodes, DIALOG_PARTS, node => (node.slot ? sections[node.slot.name as keyof DialogSectionSlots]?.() : undefined))
+}

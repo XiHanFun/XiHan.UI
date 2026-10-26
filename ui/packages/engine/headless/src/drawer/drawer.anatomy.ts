@@ -20,6 +20,9 @@ export const drawerAnatomy = createAnatomy('drawer', [
   'description',
   'body',
   'footer',
+  // 页脚的两颗动作钮：确认门的确定与取消（标准结构按 actions 铺，组合写法放进 footer）
+  'confirm-trigger',
+  'cancel-trigger',
   'close-trigger',
   // 改尺把手：落在朝向页面的那条边上，拖动或方向键推面板的厚度
   'resize-trigger',

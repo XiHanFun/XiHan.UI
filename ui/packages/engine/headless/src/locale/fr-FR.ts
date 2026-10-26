@@ -280,7 +280,7 @@ const translations = {
       : `${count} lignes supplémentaires tronquées, non affichées`),
     commentOn: (line, side) => `Commenter la ligne ${line} de ${side === 'old' ? 'l’ancienne' : 'la nouvelle'} version`,
   },
-  'drawer': { close: 'Fermer', resizeTrigger: 'Redimensionner le panneau' },
+  'drawer': { close: 'Fermer', resizeTrigger: 'Redimensionner le panneau', ok: 'OK', cancel: 'Annuler' },
   'expression-input': {
     content: 'Suggestions',
     noMatches: 'Aucun résultat',

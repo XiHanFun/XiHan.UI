@@ -7,15 +7,16 @@
 
 import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayCloseReason, PropTypes, RuntimeConfig, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ConfirmErrorDetails, ConfirmIntents } from '../shared/confirm-gate'
 import type { TitleDescriptionParts } from '../shared/title-description'
 
 export interface DialogTranslations {
   close: string
   /** 拖动把手的 aria-label：把手是一块透明的命中区，读屏读不出它的用途。 */
   dragTrigger: string
-  /** 命令式对话框服务（createDialogService）确认钮的文字；组件本身不渲这颗钮。 */
+  /** 确认钮（confirm-trigger）在标准结构里的缺省文字，命令式对话框服务的确认钮同用。 */
   ok: string
-  /** 命令式对话框服务取消钮的文字。 */
+  /** 取消钮（cancel-trigger）在标准结构里的缺省文字，命令式对话框服务的取消钮同用。 */
   cancel: string
   /** 命令式对话框服务里确认动作抛错后，正文下方那句提示。 */
   actionError: string
@@ -91,7 +92,16 @@ export interface DialogRefs {
  * 正被按住的按钮：开合触发器或角落的关闭钮。drawer 跑的是同一台机器，它的两颗同名按钮也记在这里；
  * 两颗按钮只记一个布尔分不清按住的是哪颗。
  */
-export type DialogPressedPart = 'trigger' | 'close-trigger'
+export type DialogPressedPart = 'trigger' | 'close-trigger' | 'confirm-trigger' | 'cancel-trigger'
+
+/** 确认动作失败；cause 保留回调同步抛出或 thenable 拒绝时的原值。 */
+export type DialogConfirmErrorDetails = ConfirmErrorDetails
+
+/**
+ * 页脚确定与取消两颗钮的意图，以及由适配器持有的 pending / actionError 两个状态通道。
+ * 它们除了收起面板不改别的状态，不进机器，作为 connect 的第三个参数传入。
+ */
+export type DialogActionIntents = ConfirmIntents
 
 export interface DialogOpenChangeDetails {
   open: boolean
@@ -194,7 +204,16 @@ export interface DialogApi<T extends PropTypes = PropTypes> {
   offset: DialogOffset
   /** 正在被指针拖动。 */
   dragging: boolean
+  /** 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起面板。 */
+  pending: boolean
+  /** 最近一次确认动作的错误；新确认或取消时清空。 */
+  actionError: DialogConfirmErrorDetails | null
+  /** 确认异步挂起期间，收起只能经取消钮或关闭钮：程序与触发器的 setOpen(false) 无效。 */
   setOpen: (next: boolean) => void
+  /** 发出确认意图，确认落定后收起；异步确认挂起期间再次调用无效。 */
+  confirm: () => void
+  /** 发出取消意图并收起；挂起中的确认作废。 */
+  cancel: () => void
   getTriggerProps: () => T['button']
   getBackdropProps: () => T['element']
   getPositionerProps: () => T['element']
@@ -207,6 +226,10 @@ export interface DialogApi<T extends PropTypes = PropTypes> {
   getDescriptionProps: () => T['element']
   getBodyProps: () => T['element']
   getFooterProps: () => T['element']
+  /** 确认钮：页脚的主动作，solid；异步确认挂起时转圈。 */
+  getConfirmTriggerProps: () => T['button']
+  /** 取消钮：页脚的次要出口，outline。 */
+  getCancelTriggerProps: () => T['button']
   getCloseTriggerProps: () => T['button']
   /**
    * 浮层此刻该不该挂载。`present` 是适配器的退场闸门：打开中或收起动画还没播完为真。

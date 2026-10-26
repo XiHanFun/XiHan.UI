@@ -278,7 +278,7 @@ const translations = {
     truncated: count => (count === 1 ? 'Hay 1 línea más recortada que no se muestra' : `Hay ${count} líneas más recortadas que no se muestran`),
     commentOn: (line, side) => `Comentar la línea ${line} de la versión ${side === 'old' ? 'anterior' : 'nueva'}`,
   },
-  'drawer': { close: 'Cerrar', resizeTrigger: 'Cambiar el tamaño del panel lateral' },
+  'drawer': { close: 'Cerrar', resizeTrigger: 'Cambiar el tamaño del panel lateral', ok: 'Aceptar', cancel: 'Cancelar' },
   'expression-input': {
     content: 'Sugerencias',
     noMatches: 'Sin coincidencias',

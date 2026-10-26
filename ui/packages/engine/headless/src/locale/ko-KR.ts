@@ -278,7 +278,7 @@ const translations = {
     truncated: count => `${count}개 줄이 더 있지만 잘려서 표시되지 않습니다`,
     commentOn: (line, side) => `${side === 'old' ? '이전' : '새'} 버전 줄 ${line}에 댓글 달기`,
   },
-  'drawer': { close: '닫기', resizeTrigger: '드로어 크기 조정' },
+  'drawer': { close: '닫기', resizeTrigger: '드로어 크기 조정', ok: '확인', cancel: '취소' },
   'expression-input': {
     content: '추천',
     noMatches: '일치하는 항목 없음',

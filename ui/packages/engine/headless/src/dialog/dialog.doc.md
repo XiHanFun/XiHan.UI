@@ -24,6 +24,8 @@
 - 面板走 sheet 三件套（1px 描边、不透明底、单层投影），圆角 4px，不叠渐变与顶光。分三段时头部是一条 48px 的带（紧凑档 44px），横向内衬 20px；正文纵 24 横 20，尾段纵 16 横 20；头下、尾上各一条贴边的 1px 内部分隔线。不分三段时标题行同样落在顶上那条 48px 带的中线上。触发器与关闭按钮走 Action Control 家族配方：触发器为 text 档中性描边，关闭按钮为 icon 档 ghost 面，悬停与按下沿画布承载阶梯换底，Space / Enter 与触屏按住期间投影 `data-pressed`。关闭钮的叉 12px，距右 16px、落在头部带的中线上。标题取页面级面板标题档（heading-3）、正文色，说明文字为 13px 说明档。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
 - 内容第一次打开才挂载，缺省在退场动画播完后卸载、下次打开重新挂载。反复开合而内容又重时（设置面板、长表单）把 `unmountOnExit` 设为 false：打开过之后收起只隐藏——定位层以内联 `display: none` 收起、遮罩不留、Portal 视觉桥断开——面板里的组件状态、输入与滚动位置都留着，再打开不必重挂。Web Components 的作者节点一向常驻；写进 content 里一个 `<template>` 的内容按同一规则挂卸：第一次打开克隆，缺省退场播完撤走，`unmount-on-exit="false"` 时克隆一次之后常驻。
+- 不写子内容时按标准结构铺：`title`、`description` 与触发器文字给出页头与触发器（Vue 是 `trigger-text`，React 是 `trigger`，Web Components 是 `title-text`、`description`、`trigger-text` 三个属性），页脚铺取消与确定两颗钮；`actions` 换成只有确定（`alert`）或不铺（`none`），`confirmText` / `cancelText` 改字，缺省取语言包里 `translations.dialog` 的 `ok` / `cancel`。正文与整段页脚经 `body`、`footer` 插槽给出（React 是同名属性，Web Components 是 `slot="body"` / `slot="footer"` 的节点）。一个组件加三个 prop 就是一个确认对话框。
+- 确定钮发 `confirm`：`onConfirm` 返回 Promise 时对话框等它兑现才收起、确定钮转圈，期间 Escape 与点外面关不掉，拒绝则留在原地并发 `confirm-error`（Web Components 把异步动作交给 `confirmAction` 属性，`confirm` 事件只作通知）。取消钮发 `cancel-press` 并收起；关闭钮随时收得起，挂起中的确认随之作废。手写部件时 `XhDialogConfirmTrigger` / `XhDialogCancelTrigger` 是同一对按钮，组合写法照旧。
 - 另有命令式服务，业务代码一次调用即可弹出。
 - 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 - 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。
