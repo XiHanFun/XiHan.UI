@@ -136,7 +136,7 @@ Vue、React、Web Components 只负责：
 | RadioGroup segmented 形态的轨道 | 字段外壳同款的静息面 | 轨道就是 root：`--xh-bg-field` + 1px `--xh-border-control` + control 形状 + `--xh-space-0_5` 内衬（加描边段离外沿 3px）；见 §6.3 |
 | Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | RadioGroup segmented 形态的滑块 thumb | 选中面 | 平面的品牌淡底 `--xh-bg-segment-selected`，无边无影；见 §7.3。滑块另立 `thumb` 部件，不占行首单选圆圈的 `indicator` |
-| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底是最浅一档淡底，按白底承载阶梯 100 → 200；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
+| RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底与字段外壳同为白底，按白底承载阶梯 100 → 200，段与滑块取 inset 形状（§6.3 嵌套圆角）；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
 | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
 | Toolbar 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与条目同档 | 不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与两端翻页钮同档 | root 的孩子、排在 list 之后（不进 tablist），自占一个 Tab 位、不是方向键走位的一站；盒取标签同高的正方形（竖排横贯列宽），不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
@@ -160,7 +160,7 @@ Vue、React、Web Components 只负责：
 | Tag / TagsInput 标签内的移除钮 | 行内标记，不投影 Action Control | 字形与命中区取指示符档（`--xh-control-indicator-size`），悬停只换 currentColor 淡底；胶囊内放不下 xs 视觉盒 |
 | 图例色标 | 标记 | 柱、面积系列为方块（inset）；折线为 2px 短线（pill）；散点为该系列的符号 |
 | 图表提示框（含 Heatmap 详情条） | Overlay：frosted | 不反白；见 §8.4 |
-| 图表十字准线标签 | 反白小标签 | 与 Tooltip 同一身份：反白底、control 4px |
+| 图表十字准线标签 | 反白小标签 | 与 Tooltip 同一身份：反白底、control 形状 |
 | 图表参考线 | 图表家具 | 1px 虚线 `--xh-fg-muted`：虚线只表达阈值 / 目标，网格不用虚线 |
 | 图表缩放窗口、刷选框 | 选中范围 | `--xh-bg-brand-subtle`（选中语义）；刷选框另加 1px `--xh-border-control-focus` |
 | 图表缩放手柄 | 拖动手柄 | pill；粗指针 44px 命中区 |
@@ -214,9 +214,10 @@ canvas → solid（描边面）/ subtle（淡底面）→ raised → floating / 
 - 页面背景使用 canvas；页面级的底（布局内容区）取 `--xh-bg-page`（亮色 neutral 100 的冷灰），白卡放在灰底上，层级差交给描边与底色差，subtle 阶梯不动。
 - 静态内容面缺省使用 solid：`--xh-border-default` 描边 + `--xh-bg-surface` + 无影（§8.3）。
 - 淡底面使用 subtle：`--xh-bg-subtle` + 透明边位 + 无影；淡底与描边互斥、淡底与阴影互斥。
-- raised 只给 Card 与「可抬起 / 可拖起」的部件（Tabs segment 滑块、Switch thumb、Button soft），逐部件登记；raised 面必须带 `--xh-border-default` 描边，影只是加成——`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给它一层影；亮色 raised 背景不分档。
+- raised 只给 Card 与「可抬起 / 可拖起」的部件（Tabs segment 滑块、Switch thumb、Button soft），逐部件登记；raised 面必须带 `--xh-border-default` 描边，影只是加成——`--xh-elevation-raised` 缺省取阴影三档的 sm（见下）；亮色 raised 背景不分档。
 - 锚定瞬态浮层按内容判定：短列表 / 菜单 / tooltip 用 frosted（名字沿用，取值是实体弹出层，§8.1）；含网格或多列的锚定面板用 floating（§8.4）。
 - Dialog、Drawer、Command、Notification、Tour 等模态与强反馈面统一 sheet（`--xh-material-elevated-*`）。
+- 阴影只有三档，按面的类型取，组件不自选：raised 取 sm（`--xh-shadow-sm`，Card 与可抬起部件），floating 与 frosted 取 md（`--xh-shadow-md`，锚定浮层），sheet 取 lg（`--xh-shadow-lg`，模态与强反馈面）。暗色另有一套同样三档的深色投影。
 
 同一页面不允许用更多阴影表达同一级别。层级优先通过描边和间距确定，背景差只在暗色下补充，阴影只表达真实抬升；`--xh-border-subtle` 只作内部分隔，不作任何根面外边。
 
@@ -305,12 +306,15 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 ### 6.3 形状身份
 
+圆角只有一颗种子 `--xh-radius-seed`（缺省 8px），各档都是它的正系数倍：2xs 0.25 / xs 0.5 / sm 0.75 / md 1 / lg 1.25（缺省 2 / 4 / 6 / 8 / 10px）。角色只引档，换风格只改种子；系数恒为正，任何种子都得到单调递增、嵌套比例不漂的刻度。
+
 | 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 2px | 嵌在 control 内的小块：checkbox 系方框、页内列表的候选行（Listbox / Tree 的行）、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
-| control | 2px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道与段；日期与时间面板的快捷项（24 高的淡底小钮） |
-| surface | 4px | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
-| overlay | 4px | Popover、Menu、Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角；Notification 轻提示预设是一行短消息，取 control）。令牌层引用 surface：使用者只改承载面圆角时浮层跟着走，面与浮层不各圆各的 |
+| inset | 4px（xs） | 嵌在 control、surface、overlay 内的小块：checkbox 系方框、集合行（浮层里的选项与菜单项、页内 Listbox / Tree 的行）、嵌在轨道里的段与滑块（Tabs segment 的 trigger 与滑块、RadioGroup segmented 形态的段与滑块）、字段里的已选标签、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item、骨架屏文本条；数据标记：柱的远端（基线端直角）、矩形树图 / 冰柱格、桑基节点、图例的柱色标（均夹到短边一半） |
+| control | 8px（md） | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger；随文方签 Tag 与状态方签 ToolCall status、Approval result、QuestionFlow result；Alert 提示条；RadioGroup segmented 形态的轨道；日期与时间面板的快捷项（24 高的淡底小钮） |
+| surface | 8px（md） | Card、Panel、列表容器、Tabs segment 的轨道、选择卡片（RadioGroup / CheckboxGroup card 档条目） |
+| overlay | 8px（md） | Popover、Menu、Select / Combobox 等候选面板、Tooltip 以外的锚定浮层与无锚弹层（Tooltip 是随文反白小标签，取 control）。令牌层引用 surface：使用者只改承载面圆角时浮层跟着走，面与浮层不各圆各的 |
+| sheet | 10px（lg） | 模态与强反馈面：Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角；Notification 轻提示预设是一行短消息，取 control）。比浮层再圆一档，读得出「这是一张独立的面」 |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
 | pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger）、日期区间轨道的两端帽 |
 
@@ -321,11 +325,11 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - 位置指示点（Carousel indicator、Tour progress-dot）统一为一种语言：6px 圆点（circle）、点距 8px，当前项拉长为 20px 胶囊（pill）。
 - 序号状态圆点（Steps / Timeline indicator）取 circle；可点分页按钮（Pagination item）是描边方块，取 surface，二者不互相对齐。
 - 盛内容的圆（Avatar、带框 Icon）直径同一把尺：`--xh-control-h-sm/md/lg`，随密度换档，与同档控件等高；圆里的字形另按字形或指示符档取尺。Avatar 的回退字号取直径的一半，底取 `--xh-bg-subtle-active-opaque`、字取 `--xh-fg-default`；AvatarGroup 三档叠放量同为 8px，「+N」与组里的头像同一副面。Steps 序号圆点是状态圆，取 `--xh-marker-size-sm/md/lg`（24 / 28 / 32px，比同档控件矮一档，随密度换档），圆里的序号 16px（sm 14px）。Timeline 圆点与 Steps 点状形态（`variant="dot"`）的圆点不盛内容，是纯位置标记，走自己的小尺（`--xh-space-*`，不随密度换档）：Timeline 圆点 sm / md / lg = 4 / 6 / 8px，缺省品牌色；Steps 点状 md 8px、当前步放大一档到 10px（sm 6 / 8px、lg 10 / 12px），每个点都按当前步的直径占位。
-- 组件不得写 6px、10px 等独立圆角。
-- 内层圆角不得大于外层圆角减去内边距（surface 4px 轨道内 2px 内距，滑块 2px 满足）。
+- 组件不得写字面圆角，只引形状角色；角色之外的档（种子的其他倍数）不直接给部件用。
+- 内层圆角不得大于外层圆角减去内边距：surface 8px 轨道内 2px 内衬，滑块取 inset 4px 满足；浮层 8px 内衬 4px，选项行取 inset 4px 满足；字段 8px、有标签时起始内衬 4px，标签取 inset 4px 满足。
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
 - 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边，圆了会在两个角露出底下的页面。
-- 贴边面板（Drawer）贴住视口的那两个角不取圆角，朝向页面的那两个角取 overlay 圆角，与别的浮层同一把尺；要另定经 `--xh-drawer-radius`，同样只作用于朝向页面的那两个角。
+- 贴边面板（Drawer）贴住视口的那两个角不取圆角，朝向页面的那两个角取 sheet 圆角，与 Dialog 同一把尺；要另定经 `--xh-drawer-radius`，同样只作用于朝向页面的那两个角。
 - 亮色、暗色和 compact 不改变形状身份。
 - 取 circle / pill 的新部件必须在 check-shape-scale 的身份表登记。
 - 数据标记之间用 2px 表面间隙分隔，不画描边；数据标记的圆角只取 inset 或 circle。
@@ -501,7 +505,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | RadioGroup segmented | 轨道外盒高 `control-h`（段高 = control-h − 2 × 2px 内衬 − 2 × 1px 描边），内衬 `--xh-space-0_5`；段横向内距 `control-px`（md 12px）；段间分隔线长 control-h / 2 − 2px（md 14px）；粗指针命中区由段的伪元素补足到 `--xh-control-hit-coarse`，轨道 `isolation: isolate`、伪元素垫在负一层，折行与竖排时相邻段的盒压过别段外扩的那一截；块首最多越出轨道外沿一格 `--xh-space-2`（不压字段标签），少扩的落到块尾 |
 | ColorSwatchPicker 色块 | `control-h` 随 size |
 | Switch | 轨道高 `switch-track-h` 随 size；宽 = 2 × 高 − 2 × 内距；滑块 = 高 − 2 × 内距 |
-| Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 `--xh-track-thumb-size-*` 12px（sm 10 / lg 16px；悬停与拖动放大 `--xh-motion-scale-drag`）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，静止不投影、拖动中 lifted，不走 raised。粗指针下控件沿交叉轴外扩，总量为 `--xh-control-hit-coarse` − 拇指直径；横排块首不越过标签间距（`--xh-slider-label-gap`），余下挪到块尾 |
+| Slider | 轨道 2px（`--xh-stroke-thick`，lg 3px）、拇指 `--xh-track-thumb-size-*` 12px（sm 10 / lg 16px；悬停与拖动都不放大）、刻度点 8px；竖向长度 10rem。拇指是白底 + 2px 品牌描边的平面圆，不投影、不走 raised；拖动中画与聚焦同一副光环 `--xh-ring-halo`，ColorSlider、ColorPicker 的拇指同此。粗指针下控件沿交叉轴外扩，总量为 `--xh-control-hit-coarse` − 拇指直径；横排块首不越过标签间距（`--xh-slider-label-gap`），余下挪到块尾 |
 | ColorSlider | 轨道 12px、滑块 `--xh-track-thumb-size` 18px；竖向长度 10rem |
 | Rating | 星 sm / md / lg 取 `glyph-size-md / lg / xl`（20 / 24 / 32px，星是主体，比控件内图标大一档），盒比星大 4px；悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis`（1.2，减弱动效 1），按下保持放大并换 200 档面（按压反馈的登记例外，见 §9.1） |
 
@@ -592,14 +596,15 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 每个实色和柔和语气必须提供匹配的 foreground；组件不得自行计算文字颜色。
 - 基础色板：十二个色相 × 11 档（`--xh-color-<red|orange|amber|yellow|lime|green|teal|cyan|blue|indigo|purple|pink>-<50…950>`），由 `tokens/palette.seeds.json` 经 `build/emit-palette.mjs` 按品牌曲线派生，同一档跨色相同一明度。它只给使用者、按颜色点名的色板轴（Heatmap `purple`）与数据色语义层（§7.6）用；皮肤只消费语义角色、语气轴与 `--xh-chart-*` 数据色，不直接取色板。
+- 缺省品牌：OKLCH 色相 277 的靛蓝。各档明度按原缺省品牌（色相 258）那一档的 WCAG 相对亮度反求，与 `data-brand` 预设同一做法，brand-600 实心底上的白字保持 5.08:1。不直接取 Tailwind 的 indigo-500：它上面的白字只有 4.47:1。原缺省色相 258 即基础色板的 `indigo`，作为 `data-brand="indigo"` 预设保留。
 
 ### 7.2 使用规则
 
 1. 页面主体保持中性，品牌色只用于主要动作、选中 / 当前、焦点和关键进度。
-2. 缺省语气：只有 Button 缺省为品牌实心（`solid`）；其余按钮形触发器（Toggle、ToggleGroup item、Clipboard、DownloadTrigger、FloatButton、BackTop、Pagination 非当前、Toolbar item、Tabs trigger、RadioGroup segmented 形态的段、Accordion / Collapsible / Menu / Menubar / NavigationMenu trigger、Carousel / Calendar / ImageViewer 控制、所有 field-inset 动作）缺省中性，只有写了 `data-tone` 才切到语气淡底。浮层里的确认 / 主线动作钮（Popconfirm confirm、Tour next）是该浮层的主要动作，与 Button 主动作同待遇，由连接层显式投影 `solid`；这不属缺省语气，同一浮层里的次要出口（Popconfirm cancel）仍是中性 `outline`。
+2. 缺省语气：只有 Button 缺省为品牌实心（`solid`）；其余按钮形触发器（Toggle、ToggleGroup item、Clipboard、DownloadTrigger、FloatButton、BackTop、Pagination 非当前、Toolbar item、Tabs trigger、RadioGroup segmented 形态的段、Accordion / Collapsible / Menu / Menubar / NavigationMenu trigger、Carousel / Calendar / ImageViewer 控制、所有 field-inset 动作）缺省中性，只有写了 `data-tone` 才切到语气淡底。浮层里的确认 / 主线动作钮（Popconfirm confirm、Tour next）是该浮层的主要动作，与 Button 主动作同待遇，由连接层显式投影 `solid`；这不属缺省语气，同一浮层里的次要出口（Popconfirm cancel）仍是中性 `outline`。Action Control 上写 `data-tone="neutral"` 与不写等价：中性就是缺省面，不另铺 neutral 淡底、不换深色描边，同一个次要动作只有一副长相；Tag、Alert、Badge 等语气面的 neutral 仍取 neutral 淡底。
 3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。Collection Item 的 `nav` 语境固定按白底承载阶梯生成（rest 透明面 + `--xh-fg-muted` + regular，hover 100 + `--xh-fg-default`，pressed 200 只换面）。承载面通过 `--xh-action-host-bg-hover / -pressed` 向内下发（Action Control 配方的 ghost / outline 悬停与按下面读这两支，缺省画布承载）；`--xh-action-bg-hover / -pressed` 是控件自身的桥接槽，控件皮肤在自己身上赋值，不能作容器下发口。一个部件既投影 Action Control 又承载内嵌标记时，自己的面必须用 `--xh-action-bg-*` 钉住，`--xh-action-host-bg-*` 只对后代生效（否则 ghost / outline 会把自己身上的 host 槽读成自己的面）。
 4. 品牌淡底上的阶梯：rest `--xh-bg-brand-subtle`（12%）→ hover `--xh-bg-brand-subtle-hover`（20%）→ pressed `--xh-bg-brand-subtle-active`（28%）；前景一律 `--xh-fg-on-brand-subtle`。
-5. 焦点边框一律 `--xh-border-control-focus`，不随 tone；焦点环 `--xh-ring-focus` 不随 tone。
+5. 焦点边框一律 `--xh-border-control-focus`，不随 tone；焦点环两层都不随 tone：1px 品牌色内圈 `--xh-ring-focus`（outline，偏移 0）+ 3px 品牌色 30% 光环 `--xh-ring-halo`（box-shadow，叠在元素原有投影之前）。光环只是观感，对比度由内圈承担（WCAG 1.4.11 的 3:1）；字段的内圈就是换色后的描边，不另画 outline。强制色档 box-shadow 被去掉，只剩内圈，换 Highlight。
 6. 状态色表达任务结果，不表达空间层级。
 7. danger 动作与 error 状态分开定义，不共用业务语义。
 8. hover、active、selected 从当前语义面派生，不切换到无关颜色；open / in-path 与所在家族的 hover 同档。
@@ -788,6 +793,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 白底阶梯 hover → pressed | 墨色 4.5% → 10% |
 | 淡底阶梯 hover → pressed | 墨色 10% → 17% |
 | `--xh-ring-focus`、`--xh-border-control-focus` | 墨色 |
+| `--xh-ring-halo` | 墨色 30% |
 | Button solid | 墨色实心 + 域底色字 |
 | 选中面（原 `--xh-bg-brand-subtle`） | 墨色 12% + 选中字重 |
 | 分段选中面（`--xh-bg-segment-selected` / `-hover` / `-disabled`） | 墨色 12% / 18% / 8%（白墨 20% / 28% / 8%，与深色主题同口径）；选中字取墨色，禁用选中字墨色 50% |
@@ -814,13 +820,13 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | soft | 次级操作（Button soft、Tag 等已登记消费者） | 柔和淡底，不加无意义阴影；不用于字段与内容面 |
 | raised | Card 与可抬起 / 可拖起部件，逐部件登记 | solid 描边 + solid 底 + `--xh-elevation-raised`；描边必须在，影只是加成；只有可交互时允许 hover 抬升 |
 | floating | 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content、Cascader content） | solid 底 + `--xh-border-default` + `--xh-elevation-floating`，不透景；面内分隔取 `--xh-material-solid-separator` |
-| frosted | 短列表 / 菜单 / tooltip 等锚定瞬态浮层 | `--xh-material-frosted-*` 四件套：实体 `--xh-bg-surface` 底 + 无背景滤镜 + `--xh-border-default` 描边 + 一层投影 |
+| frosted | 短列表 / 菜单 / tooltip 等锚定瞬态浮层 | `--xh-material-frosted-*` 四件套：实体 `--xh-bg-surface` 底 + 无背景滤镜 + `--xh-border-default` 描边 + md 档投影 |
 | sheet | Dialog、Drawer、Command、Tour、Notification | `--xh-material-elevated-border` + `--xh-material-elevated-bg` + `--xh-material-elevated-shadow` 三件套，必有 1px 描边 |
 | liquid | `data-material="liquid"` 下浮在内容之上的导航层：浮动钮、媒体控制、悬浮栏（§8.5） | `--xh-material-liquid-*`：取样 + 折射 + 按下层着色 + 墨色细线与 1px 边缘光 + floating 影；standard 档下这些部件取原材质 |
 
 ### 8.1 Frosted（浮层面）
 
-- 名字沿用 frosted，取值是实体弹出层：`--xh-bg-surface` 不透明底、`--xh-border-default` 1px 描边、一层 `0 4px 10px` 柔和投影（亮色 10% 黑、深色 36% 黑），不采样背后内容，没有顶部边界光。
+- 名字沿用 frosted，取值是实体弹出层：`--xh-bg-surface` 不透明底、`--xh-border-default` 1px 描边、阴影三档的 md（`--xh-shadow-md`；深色取深色那一套的 md），不采样背后内容，没有顶部边界光。
 - 只用于锚定瞬态浮层（短列表、菜单、气泡、提示框）；大段正文、表单、Card、Table、Notification、Dialog 主阅读面不使用 frosted。
 - 必须有 1px 可见边界，不能只靠投影分层。
 - 背景滤镜与顶光两条通道保留：主题要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；reduced transparency、forced colors 和 print 下这些通道一律退回实体面。
@@ -844,11 +850,11 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 无壳 | ghost | 不写 | 不写 | 不写；只允许分隔线 |
 
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中；唯一的状态例外是字段外壳的悬停描边（下一条）。
-- 字段静息形态 = 描边：字段淡底 `--xh-bg-field`（淡底兑一半）+ `--xh-border-control` + `--xh-shape-control` + 无影；hover 底不变、描边升 `--xh-border-strong`；focus-within 换承载面 `--xh-bg-surface` + `--xh-border-control-focus`，不画聚焦环——焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环；invalid 用 `--xh-border-invalid` + 4% 失效色淡底，聚焦时让位给聚焦态；readOnly / disabled 填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
+- 字段静息形态 = 描边：`--xh-bg-field`（缺省与承载面同色，即白底；主题要淡底字段只改这一支）+ `--xh-border-control` + `--xh-shape-control` + 无影；hover 底不变、描边升 `--xh-border-strong`；focus-within 底换 `--xh-bg-surface`（缺省档与静息同色）、描边换 `--xh-border-control-focus`，再画聚焦光环 `--xh-ring-halo`——换色后的描边就是焦点环的内圈，不另画 outline；强制色档光环被去掉，描边换 Highlight；invalid 用 `--xh-border-invalid` + 4% 失效色淡底，聚焦时让位给聚焦态；readOnly / disabled 填 `--xh-bg-subtle`。字段家族不消费 `--xh-elevation-raised`。
 - 所有带边框的控件盒描边同一条规则：字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息铺 `--xh-bg-field`，FileUpload 拖放区静息铺 `--xh-bg-subtle`（1px 虚线，悬停升 `--xh-border-strong` + 淡底一档，拖入换品牌描边、底仍是中性淡底一档），描边都取 `--xh-border-control`；Switch 轨道是实体面，静息不画描边，只读 / 失效才换有色的一圈；Checkbox / CheckboxGroup / Transfer / Table 的方框与 RadioGroup / QuestionFlow 的圆圈是 16px 的小盒，透明底、描边重一档取 `--xh-border-strong`，悬停升 `--xh-border-control-hover`。`--xh-border-control` 在缺省档与浮层面板、卡片的 `--xh-border-default` 同色，`prefers-contrast: more` 才换到 3:1 的 neutral 600 / 400。`--xh-bg-canvas` 保留给自动填充遮罩、色块选中环等必须不透明的地方，不再是控件盒的底。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
-- 字段里的 field-inset 钮（清空、可见性、增减、就地编辑）按盒的承载面取阶梯：盒没聚焦时铺着字段淡底（描边档）或淡底（subtle 档），钮走淡底承载阶梯 `--xh-bg-subtle-hover` → `--xh-bg-subtle-active`；聚焦后盒换成白色承载面、ghost 档静息透明，钮走白底阶梯 100 → 200。由 Field Chrome 配方经 `--xh-action-host-bg-*` 向内下发，组件皮肤不各写一套。
-- 字段里的已选标签（标签行家族的多选控件与 TagsInput）：盒没聚焦时淡底标签换白底 `--xh-bg-surface` + `--xh-border-default`、叉悬停 / 按下走白底阶梯 100 → 200，聚焦后回到标签自己的淡底；写了语气的、禁用盒里的不换。有标签时盒的起始内衬与标签间距都是 `--xh-space-1`，lg 档字段里标签字号钉 `--xh-text-caption-size`。标签面写在 tag.css 的字段宿主档，`--xh-tag-*` 覆盖槽照旧优先。
+- 字段里的 field-inset 钮（清空、可见性、增减、就地编辑）按盒当前铺的底取阶梯：白底（描边档静息与聚焦、任何档聚焦后）与透明（ghost 档静息）走白底阶梯 100 → 200；淡底（subtle 档没聚焦时，或主题把 `--xh-bg-field` 改回淡底）走淡底承载阶梯 `--xh-bg-subtle-hover` → `--xh-bg-subtle-active`。由 Field Chrome 配方经 `--xh-action-host-bg-*` 向内下发，组件皮肤不各写一套。
+- 字段里的已选标签（标签行家族的多选控件与 TagsInput）取 inset 圆角（§6.3 嵌套圆角）。白底盒里标签保持自己的淡底；只有盒铺着淡底时（subtle 档没聚焦，或主题把 `--xh-bg-field` 改回淡底）才把淡底标签换成白底 `--xh-bg-surface` + `--xh-border-default`、叉悬停 / 按下走白底阶梯 100 → 200，聚焦后回到标签自己的淡底；写了语气的、禁用盒里的不换。有标签时盒的起始内衬与标签间距都是 `--xh-space-1`，lg 档字段里标签字号钉 `--xh-text-caption-size`。标签面写在 tag.css 的字段宿主档，`--xh-tag-*` 覆盖槽照旧优先。
 - 刻意例外（须登记）：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）不画字段外壳，只画一道 `border-block-end` 下划线，五处同一种写法：通栏一行，块尺寸取所在尺寸档的 `--xh-control-h-*`、字号取 `--xh-control-font-*`；下划线是面内分隔，取所在面材质的分隔令牌（实体面与 floating 取 `--xh-material-solid-separator`，sheet 取 `--xh-material-elevated-separator`），不取字段边 `--xh-border-control`；连接层投影 `data-xh-field-input`，重置与占位前景走字段家族，自动填充铺的底取所在面板的面；聚焦不画环、下划线也不换色，插入符就是焦点指示（框没有外壳，全局那圈环只会压在通栏一行上），五份皮肤各在搜索框的 `:focus-visible` 上关环并登进焦点环门禁的 ringless；PromptInput 允许 `--xh-shape-surface`，但静息描边仍为 `--xh-border-control`、不用 soft；SignaturePad 画布是画布型字段，按 `aspect-ratio` 撑高、吃不下字段家族配方钉死的控件行高，允许不投影 `data-xh-field-chrome` 而自绘外壳，但值必须与字段规则一致（静息 `--xh-bg-field` 底 + `--xh-border-control` + `--xh-shape-control` + 无影，悬停描边升 `--xh-border-strong`，落笔与字段聚焦同一副面：`--xh-bg-surface` + `--xh-border-control-focus`，校验失败铺 `--xh-bg-field-invalid`（失效色兑 4%），disabled / readOnly 按 §7.2 第 9 条；强制色档落笔与失效的描边换 Highlight）。
 - Form 内外字段同形；InputGroup 组壳画 outline 描边并铺字段淡底，子字段压平为透明；悬停、只读与禁用面只认组里带字段外壳的那一段，单独禁用一颗按钮不影响整组；前后缀块铺 `--xh-bg-subtle`、取正文色（组里的字段禁用时随禁用面取 `--xh-fg-disabled`）、两侧内距对称，与相邻段之间一道满高的 `--xh-border-default`（只画朝里那一侧，两块前后缀相邻时只由后一块画）。
 - 贴边通栏（Alert `banner`）不画边：面本身就是语气淡底，贴边的三条边是页面或容器自己的边。底色与页内提示相同。
@@ -889,7 +895,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 折射只在 Chromium 内核启用，按内核品牌门控（其余引擎能解析 SVG 背景滤镜却不渲染，不能用 `CSS.supports` 判断）；其余引擎为模糊 + 饱和。尺寸超过 640 × 120 或同一视口超过 3 个时只取样不折射。
 - 选中不用品牌色字：品牌字压在彩色下层上会失去对比。选中只用指示块 + 字重。
 - 形状：不贴边的一维栏取 pill，浮动钮与媒体控制钮取 circle，贴边铺满的栏不取圆角。
-- 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 120ms 淡变、光源固定。
+- 环境：reduced transparency 下不透明度 1、无背景滤镜与折射，细线与边缘光保留；contrast more 下不透明度 1、细线 3:1、无光环；forced colors 下 `Canvas` / `CanvasText` + 系统边框；print 随导航层隐藏；reduced motion 下色调切换保留 `micro`（150ms）淡变、光源固定。
 - 投影了 `data-xh-material` 的部件，液态档的取值由材质家族配方在同一组私有槽上换出（皮肤不另写液态块）；其余液态部件（Carousel 分页条、ImageViewer 控制层、Layout 顶栏）直接读液态层的 `--xh-_liquid-*`。
 - 下层判定、折射与光源由 core 的液态面（`@xihan-ui/core/visual-environment` 的 `trackLiquidSurface`）承担，同一文档的部件共用一套监听；组件的状态机在启动时把投影了 `data-xh-liquid` 的部件挂进去，作者只需写 `data-material`，不再额外安装或调用。这些行为不改变结构、语义与状态表达；服务端与挂载前输出静态形态（色调随主题、不透明度取可读下限）。
 - 按下形变：按住液态面时面朝手指鼓出、沿指向拉长、另一个方向压扁（不低于 `--xh-motion-scale-squash`）；拖离时越拉越长，按越界跟手的衰减趋近上限（沿指向伸长 35%）。松手由 `spring-toggle` 带回原形。形变写成 `--xh-_liquid-deform`，只挂在可交互的面上，定位壳上不挂 transform（会抢走 fixed 的包含块）；减弱动效下不形变。
@@ -903,7 +909,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | --- | --- | --- | --- | --- |
 | 按压 | 确认按下（§9.1–§9.3） | `scale` + 换面 | `press` / `press`，`release` / `release` | 只换面 |
 | 状态 | hover、选中、焦点、校验的换色；liquid 档的交互光（§9.12） | 颜色、描边色、阴影、`opacity`；交互光只动描边上的渐变位置；焦点环即时 | `micro` / `enter`；交互光 `glint` / `enter` | 保留淡变；交互光不播 |
-| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `nudge` / `continuous`；短边 ≤ 32px 部件的缩放可用 `settle`；liquid 档的滑块用弹簧 `spring-toggle` | 瞬时 |
+| 切换 | 开关滑块、单选圆点、勾选标记（§9.13） | `translate`、`scale`；勾选标记另可动 `clip-path`（描线）与 `mask-size`（全选 / 半选换形） | `nudge` / `continuous`（勾选标记的缓动取 `enter`）；短边 ≤ 32px 部件的缩放可用 `settle`；liquid 档的滑块用弹簧 `spring-toggle` | 瞬时 |
 | 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous`；liquid 档用双沿弹簧 `spring-lead` / `spring-trail` | 瞬时 |
 | 披露 | 内容展开收起（§9.4） | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
@@ -918,12 +924,14 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`；弹簧名是 `@xihan-ui/motion` 的预设，由令牌生成。
 
+- 时长只有两档基调：换色 150ms（`micro`、`press`、`exit`、`collapse` 都引 `--xh-duration-fast`），几何 200ms（`nudge`、`move`、`enter`、`release`、`expand` 都引 `--xh-duration-normal`）；`slide`（320ms）与循环、数据、氛围、注意类另计。同值的几支仍按角色分开写，主题可以只调其中一支。
+
 - 带位移、缩放、旋转或尺寸变化的动画不得使用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变（§14.4）。
 - 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动、指示器滑移）归指示 / 列表的 `move`，不归导航；导航只管整幅位移。
-- 走马灯的淡变换页（Carousel `effect="fade"`）仍归导航：各张叠放在同一格，新一张压在上面淡入、旧一张同一段淡出、淡完才藏起，取 `slide` / `slide`，与平移换页同一档；减弱动效下与平移一样直接换，不按状态换色保留 120ms 淡变——两张叠着淡过去读起来是重影。淡变一页只放一张，一页多张时两页共有的那几张得在途中换格。
+- 走马灯的淡变换页（Carousel `effect="fade"`）仍归导航：各张叠放在同一格，新一张压在上面淡入、旧一张同一段淡出、淡完才藏起，取 `slide` / `slide`，与平移换页同一档；减弱动效下与平移一样直接换，不按状态换色保留 `micro` 淡变——两张叠着淡过去读起来是重影。淡变一页只放一张，一页多张时两页共有的那几张得在途中换格。
 - 时间列（TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间列）打开时每一列都把选中的那一格停到列顶，几列的选中落在同一行；这一下是首帧内容，直接到位。之后选中值变了，只有换了格的那一列平滑滚过去（导航角色的平滑滚动，减弱动效下直接到位），没换的列留在用户自己滚到的位置。
-- 焦点环（`outline` 与字段外壳的环）即时出现、即时撤下，不进过渡：键盘用户要焦点当场落位；字段的描边与底色换色照常 `micro` 淡变。
-- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（120ms）。
+- 焦点环（内圈 `outline` 与光环 `box-shadow`）即时出现、即时撤下，不进过渡：键盘用户要焦点当场落位；部件的 `box-shadow` 另有过渡（投影抬升）时，聚焦态把它的过渡归零，光环不跟着投影慢慢长出来。字段的描边与底色换色照常 `micro` 淡变。
+- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（缺省与 `move` 同为 200ms）。
 - 例外：进出场（出现、列表加入与移除、整幅滑出）用 `enter` / `exit` 与对应曲线，关键帧与过渡同一条，前提是其中的位移与缩放只取 `--xh-motion-distance-*`、`--xh-motion-scale-*`、`--xh-motion-travel`：减弱动效下归零，剩下的只有淡变。整幅滑入仍走 `slide`。
 
 ### 9.1 离散动作控件
@@ -932,7 +940,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（120ms） | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） | `--xh-motion-ease-press` |
+| 按下 | `--xh-motion-duration-press`（150ms） | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） | `--xh-motion-ease-press` |
 | 释放 | `--xh-motion-duration-release`（200ms） | 背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover/rest；scale 回到 1 | `--xh-motion-ease-release`（换面 `--xh-motion-ease-enter`） |
 
 - transform origin 固定为 center。
@@ -947,7 +955,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex 或高度随内容多行的部件——Menu Item、Listbox Item、Tree Node、Table Row、SideNav link、Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger、Tabs trigger、RadioGroup segmented 形态的段、NavigationMenu / Menubar trigger、Anchor / Breadcrumb link、load-more trigger：
 
-- 按下 120ms 切到 active 面；松开与悬停进入一样按 micro 回到 hover / rest。换面的过渡分不出「悬停进入」与「按压释放」两种来路，所以换面只取一个时长，释放时长只给缩放。
+- 按下 `press`（150ms）切到 active 面；松开与悬停进入一样按 micro 回到 hover / rest。换面的过渡分不出「悬停进入」与「按压释放」两种来路，所以换面只取一个时长，释放时长只给缩放。
 - 只换面：active 背景，不缩放整个条目。
 - 集合行投影 `data-xh-collection-item`（Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger 投影 `nav` 语境）；铺满一行的独立动作条目（load-more trigger、审批项）登记 Action Control `row` profile，disclosure trigger 登记 `disclosure-trigger` profile。两档 `press: surface`、`fill: true`：宽度由容器给、高度随内容、按下 `scale: none` 只换面；不允许零反馈。
 - Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。
@@ -980,15 +988,13 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 关系 | 关键帧 | 组件 |
 | --- | --- | --- |
-| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 省略页码面板、Tooltip（入场 `--xh-motion-duration-enter`） |
-| 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
-| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
+| 弹层（锚定与无锚定同一套） | `xh-overlay-pop-in` / `xh-pop-out`：淡入 + 从 `--xh-motion-scale-enter` 放大 + 从锚点一侧移 `--xh-motion-distance-sm`；无锚定时不写方向，位移为 0 | 锚定列表与菜单：Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 省略页码面板、Tooltip（入场 `--xh-motion-duration-enter`）；锚定面板：Popover、HoverCard、Popconfirm、Tour、Command；无锚定：NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
 | 面板（sheet） | `xh-sheet-in / out`（位移 md + scale-enter） | Dialog、逐条排开的轻提示 |
 | 整幅滑入（slide） | `xh-slide-in / out`（位移 `--xh-motion-travel`） | Drawer、Layout 抽屉式侧栏：入场 `--xh-motion-duration-slide` + `--xh-motion-ease-slide`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit` |
 
 遮罩与全屏面 `xh-fade-in / out`。皮肤内不得重定义共享关键帧。
 
-锚定关系按面板贴不贴着一个锚点、里面是不是一列可选的去处来判：SideNav 折叠态的弹出分支贴着分支行、是一列导航去处，Pagination 摊开的页码面板贴着省略位、是一组可选的页码，两者都归锚定列表，从锚点一侧短移淡入、不缩放；Pagination 的页大小选择是 Select，归 Select。
+弹层只有一套进出场，锚定关系只决定有没有位移：面板贴着一个锚点就从锚点一侧短移，不贴锚点就原地淡入放大。SideNav 折叠态的弹出分支贴着分支行，Pagination 摊开的页码面板贴着省略位，两者都按锚定取位移；Pagination 的页大小选择是 Select，归 Select。浮层不再引 `xh-overlay-slide-*` 与 `xh-pop-in`；`xh-pop-in` 只留给页内浮现的小件与标签行的列表加入（§9.6）。
 
 - Notification 从视口边缘推入属出现，不属整幅滑入：卡片小、距离短，时长取 `enter` / `exit`；`slide` 时长只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。
   - 逐条排开的卡片预设从所贴的那条边整张推进来、边推边淡入（`xh-slide-in` + `xh-slide-fade-in`，位移取卡片自身的整宽或整高 `--xh-motion-travel`）：贴行尾 / 行首的从行尾 / 行首进，居中的顶、底两个位从顶边、底边进，中线那一行只上浮 `--xh-motion-distance-lg`。退场只淡出（`xh-fade-out`）、不往回推，空位由列表换位以 `move` 收拢。逐条排开的轻提示走 `xh-sheet-in / out`。
@@ -1098,6 +1104,23 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 光只走描边，不进面：浅色档 Button solid（品牌 600 底、白字）面内叠 8% 白光，文字对比就从 5.08:1 降到 4.46:1。凡是字压在面上的部件，面内都不加光。
 - 融合分离（FloatButton 菜单展开）：列表项从触发器里分离出来，收起时融回，融回落定后才藏起列表，其间列表 `inert`。离触发器近的先走、相邻两项错开交错步长，起点缩放 0.6、淡入晚于位移；位移用 `spring-merge`。粘连只作用在不含文字与图标的装饰色块层（§8.5 液态组），图标在上层保持清晰；只在 liquid 档，减弱动效下不分离、收起当场藏起。
 
+### 9.13 勾选标记与单选圆点
+
+勾选格里的勾与半选杠只有一份实现：`family/check-mark.css`，Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用。标记常驻，不按状态生成或撤掉。
+
+| 变化 | 做法 | 时长 / 缓动 |
+| --- | --- | --- |
+| 勾上 | 勾从左到右描出：`clip-path: inset(0 100% 0 0)` → `inset(0)`，先露短边再露长边；同时淡入 | 描线 `nudge` / `enter`；淡入 `micro` / `enter` |
+| 取消 | 倒擦回去并淡出 | `exit` / `exit` |
+| 全选 ↔ 半选 | 勾与横杠两层遮罩以中心为原点交叉缩放：一层 `mask-size` 100% → 0，另一层 0 → 100% | `nudge` / `enter` |
+| 进出未选态 | 形状切换延后一个 `micro`，淡出途中保持原形，半选淡出时不闪出一枚勾 | — |
+
+- 勾的字形不随书写方向镜像，描线方向在 RTL 下同样从左到右。
+- 方框填色只换色（`micro`），不做由中心铺开；未选中的方框与圆圈描边取中性 `--xh-border-strong`，不取语气色。
+- 单选圆点：选中时 `scale` 0 → 1 带轻微过冲（`nudge` / `settle`，过冲量落在圈内、不碰描边）；收起用强减速、不过冲（`nudge` / `enter-strong`），过冲曲线收到 0 会冲成负缩放。
+- 开关滑块：平移 `nudge` / `continuous`；按住时向行进方向拉长（§9.8 登记的布局属性例外），松开收回。
+- 减弱动效：描线、换形、圆点缩放与滑块平移瞬时完成，只留淡变与换色。
+
 ## 10. Anatomy
 
 - 每个可样式化节点必须有稳定 `data-scope` + `data-part`。
@@ -1117,7 +1140,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | rest | 可识别但不过度强调 | 原生语义成立 |
 | hover | 面或前景变化 | 不能成为唯一入口 |
 | active/pressed | 统一触感或集合项换面 | 不延迟事件 |
-| focus-visible | 2px 可见焦点环 | 键盘路径完整 |
+| focus-visible | 1px 内圈 + 3px 光环（§7.2 第 5 条） | 键盘路径完整 |
 | disabled | 前景和表面同时降级 | 不响应、不提交 |
 | loading/pending | 尺寸不跳动 | 防重复提交 |
 | invalid/error | 语气 + 非颜色通道 | 关联错误说明 |
@@ -1236,7 +1259,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 类别 | 减弱动效下 |
 | --- | --- |
 | 位移、缩放、旋转、尺寸变化 | 瞬时完成：幅度令牌归零、缩放归 1，`move`、`expand`、`collapse`、`slide`、`nudge`、`press`、`release` 为 1ms |
-| 透明度、颜色、描边、阴影 | 保留短淡变：`micro`、`enter`、`exit` 为 120ms |
+| 透明度、颜色、描边、阴影 | 保留短淡变：`micro`、`enter`、`exit` 为 150ms（与常态换色同值） |
 | 错开 | 取消 |
 | 循环 | 停止，并显示静态替代（虚线圆、静态底色、常亮光标、半透明条） |
 | 注意动效 | 不播放 |
@@ -1364,7 +1387,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 卡片底 | 不画，透出卡片的 `--xh-bg-page` |
 | 内容面 | `--xh-bg-surface` 底 + `--xh-border-default` 描边 |
 | 浮层面 | `--xh-bg-surface-raised` 底 + `--xh-border-default` 描边 |
-| 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格、签名画布 | `--xh-bg-field` 底 + `--xh-border-control` 描边；聚焦换 `--xh-bg-surface` 底 + `--xh-border-control-focus`；校验失败换 `--xh-border-invalid` 描边 + `--xh-bg-field-invalid` 底 |
+| 字段外壳：输入框、选择器触发器、日期与时间字段、输入组、PinInput 格、签名画布 | `--xh-bg-field` 底（缺省白底）+ `--xh-border-control` 描边；聚焦换 `--xh-border-control-focus` 描边 + `--xh-ring-halo` 光环；校验失败换 `--xh-border-invalid` 描边 + `--xh-bg-field-invalid` 底 |
 | 只读输入框（Clipboard） | `--xh-bg-subtle` 底 + `--xh-border-control` 描边；与复制钮共一个外框时只铺输入框那段，复制钮那段透明 |
 | 复选框、单选圈 | 只描 `--xh-border-strong`（比字段边重一档），不填底 |
 | 拖放区 | `--xh-bg-subtle` 底 + `--xh-border-control` 虚线描边 |
@@ -1495,9 +1518,9 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] Core/Headless 是行为唯一真源。
 - [ ] anatomy、状态、事件和键盘表完整。
 - [ ] 三个适配器契约一致。
-- [ ] 使用 2 / 4 / 4px（control / surface / overlay）圆角体系。
+- [ ] 圆角按 §6.3 角色取档（缺省 inset 4 / control 8 / surface 8 / overlay 8 / sheet 10px，都由 `--xh-radius-seed` 派生），嵌套圆角成立。
 - [ ] 根面边界取描边 / 淡底 / 无壳之一；raised 已逐部件登记且带 border-default。
-- [ ] 字段静息为描边式、铺 `--xh-bg-field` 淡底，聚焦换承载面底 + 品牌描边且不画聚焦环，variant 缺省落 outline；带边框的控件盒描边取 `--xh-border-control`。
+- [ ] 字段静息为描边式、铺 `--xh-bg-field`（缺省白底），聚焦换品牌描边 + `--xh-ring-halo` 光环，variant 缺省落 outline；带边框的控件盒描边取 `--xh-border-control`。
 - [ ] 单行字段根缺省宽走 `--xh-<c>-control-w` → `--xh-control-w`，地板不高过缺省宽；例外已登记。
 - [ ] selected / current 按 §7.3 语义表取唯一标记；open / in-path 与 hover 同档。
 - [ ] 交互阶梯按承载面取档；缺省语气正确（只有 Button 品牌实心）。
@@ -1568,3 +1591,13 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
+| §7.1 缺省品牌 | `color.brand` 换色相 277 并按相对亮度反求明度；`src/runtime/brand.ts` 与 `tests/palette.spec.ts` 同步；`brand.presets.json` 加 `indigo`；主题设计器缺省种子换掉；`check-tone-contrast` 复核 |
+| §6.3 圆角 | 令牌加 `radius.seed` 与系数档、新增 `shape.sheet`；`shape.inset` 改 xs、`shape.control` / `surface` 改 md；集合行配方（`family/collection-item.css`）与 Tabs segment trigger / 滑块、RadioGroup segmented 段与滑块、字段里的标签从 control 改 inset；Dialog、Drawer、Notification 卡片改 sheet；`check-shape-scale` 登记 sheet；主题设计器圆角档改为只调种子 |
+| §8.3 字段、§7.2 第 5 条 焦点环 | `bg.field` 改取承载面；令牌加 `ring.halo`、`ring.offset` 改 0、内圈 1px；`css/focus.css` 改内圈 + 光环并撤掉实心面取 currentColor 的规则；`family/field-chrome.css` 聚焦加光环、field-inset 阶梯按盒的底取档、字段里的标签只在淡底盒里换白；`check-focus-ring`、`check-focus-ring-surface`、`check-state-ladder`、`check-catalog-preview` 登记表 |
+| §7.2 第 2 条 neutral | `css/tone.css` 让 Action Control 上的 `data-tone="neutral"` 不灌语气槽 |
+| §5.3 阴影三档、§8.1 | 亮色 `elevation.raised` / `floating` / `sheet` 与 frosted、elevated 投影改引 `shadow.sm` / `md` / `lg`；`check-elevation-role` 复核 |
+| §9 时长 | `duration.fast` 改 150ms，`motion.duration.nudge` 改引 `duration.normal`；`semantic.reduce.json` 的短淡变改 150ms |
+| §9.5 弹层进出场 | 锚定列表、菜单、Tooltip 与无锚弹层改引 `xh-overlay-pop-in` / `xh-pop-out`，删 `xh-overlay-slide-*`；`check-keyframe-registry`、`check-keyframe-refs`、`check-presence-pair` 登记表 |
+| §9.13 勾选标记 | `family/check-mark.css` 加描线与全选 / 半选交叉缩放；`check-motion-role`、`check-reduced-motion-channel` 登记 `clip-path` / `mask-size` |
+| §6.8 Slider | `css/slider.css`、`css/color-slider.css`、`css/color-picker.css` 拖动改画光环、不再放大与投影 |
+| 上面各条的生成物与文档 | 三端计算样式快照、像素基线、无层 CSS、组件令牌、文档数值重新生成；文档站手写的设计页随实现同提交改写（`docs/design/shape.md`、`motion.md`、`colors.md`、`principles.md`，`docs/guide/theme.md`、`motion.md`、`behavior.md` 及英文版，Tooltip、RadioGroup、Scrollbar 组件页里写死的旧数值）；`@xihan-ui/tokens` 与 `@xihan-ui/styles` 记 major changeset |

@@ -6,34 +6,37 @@
 
 ### 1.1 形状映射
 
+圆角只有一颗种子 `--xh-radius-seed`（缺省 8px），各档是它的正系数倍（xs 0.5 / md 1 / lg 1.25），角色只引档。完整身份表以《统一组件设计方案》§6.3 为准。
+
 | 语义角色 | 圆角 | 适用对象 |
 | --- | ---: | --- |
-| inset | 4px | 内嵌项、菜单项、标签内部、微型状态块 |
-| control | 4px | Button、Input、Select Trigger、Toggle、分页按钮 |
-| surface | 8px | Card、Alert、Panel、列表容器、RadioGroup segmented 形态与 Tabs segment 轨道 |
-| overlay | 12px | Popover、Menu、Dialog、Drawer、Notification |
+| inset | 4px（xs） | 勾选方框、集合行（菜单项、候选项、页内列表行）、轨道里的段与滑块、字段里的已选标签、骨架屏文本条 |
+| control | 8px（md） | Button、Input、Select Trigger、Toggle、Tag 等方签、Tooltip、RadioGroup segmented 轨道 |
+| surface | 8px（md） | Card、Panel、列表容器、Tabs segment 轨道、分页按钮 |
+| overlay | 8px（md） | Popover、Menu、候选面板等弹层 |
+| sheet | 10px（lg） | Dialog、Drawer 朝内两角、Notification 卡片预设 |
 | circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
-| pill | 9999px | 状态 chip（Badge、Tag、ToolCall status、Approval / QuestionFlow result）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、skeleton text、位置指示点当前拉长态） |
+| pill | 9999px | 状态 chip（Badge）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、位置指示点当前拉长态） |
 
 规则：
 
 1. 普通按钮、字段和浮层不得因为“更现代”而使用 pill。
 2. 同一组件的内外层圆角遵循嵌套关系：内层圆角不得大于外层圆角减去内边距。
 3. 相连组件消除相接侧圆角；不通过负 margin 伪造连接。
-4. 圆角值只能来自语义形状令牌，不允许组件 CSS 写 6px、10px 等散值。
-5. 圆形和 pill 是形状身份，不进入 control/surface/overlay 的大小阶梯。
+4. 圆角值只能来自语义形状令牌，不允许组件 CSS 写字面圆角。
+5. 圆形和 pill 是形状身份，不进入 inset/control/surface/overlay/sheet 的大小阶梯。
 6. 正方盒必须取 circle，不得用 pill 冒充圆。
-7. 位置指示点统一 8px 圆点 + 当前项 20px 胶囊；序号状态圆点 circle，可点分页按钮 control。
+7. 位置指示点统一 6px 圆点、点距 8px，当前项 20px 胶囊；序号状态圆点 circle，可点分页按钮是描边方块、取 surface。
 8. 取 circle / pill 的新部件必须在 check-shape-scale 的身份表登记。
 
 ### 1.2 验收
 
-- 默认 Button 的四角为 4px，不呈胶囊形。
+- 默认 Button 的四角为 8px，不呈胶囊形。
 - Card 和静态容器为 8px。
-- Popover、Dialog、Notification 等浮层不超过 12px。
+- Popover、Menu 等弹层为 8px；Dialog、Drawer、Notification 卡片为 10px。
 - 亮色、暗色和 compact 不改变圆角身份。
-- Tag 为胶囊，与 Button 4px 形成可点 / 不可点识别差。
-- RadioGroup segmented 形态 / Tabs segment 轨道为 8px，滑块 ≥ 4px。
+- Tag 是方签、取 control；只有 Badge 是胶囊。
+- RadioGroup segmented 形态 / Tabs segment 轨道为 8px，轨道里的段与滑块取 inset 4px（8px 减 2px 内衬后仍不小于它）。
 
 ## 2. 统一点击触感
 
@@ -42,18 +45,18 @@
 ```text
 rest
   └─ pointerdown / Space / Enter
-       └─ 0–120ms：scale 1 → --xh-motion-scale-press（缺省 1，只换面），背景进入 active
+       └─ 0–150ms：scale 1 → --xh-motion-scale-press（缺省 1，只换面），背景进入 active
             └─ release / keyup
-                 └─ 0–200ms：scale 回到 1；背景、描边、字色 0–120ms 回到 hover/rest
+                 └─ 0–200ms：scale 回到 1；背景、描边、字色 0–150ms 回到 hover/rest
 ```
 
 固定参数：
 
 | 参数 | 值 | 说明 |
 | --- | ---: | --- |
-| press duration | `--xh-motion-duration-press`（120ms） | 必须先于业务请求反馈 |
+| press duration | `--xh-motion-duration-press`（150ms） | 必须先于业务请求反馈 |
 | release duration | `--xh-motion-duration-release`（200ms） | 只作用于缩放；允许轻微回弹但不得过冲明显 |
-| surface duration | `--xh-motion-duration-micro`（120ms） | 底色、描边、字色的换面，悬停进入与按压释放同一时长 |
+| surface duration | `--xh-motion-duration-micro`（150ms） | 底色、描边、字色的换面，悬停进入与按压释放同一时长 |
 | press scale | `--xh-motion-scale-press`（缺省 1，只换面；主题写回 0.97 即恢复缩放） | 所有离散 Action Control 一致；评分星例外：悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis`，按下保持放大 |
 | press easing | `--xh-motion-ease-press` | 按下稳定，不使用弹簧 |
 | release easing | `--xh-motion-ease-release` | 快速恢复，末端柔和 |
@@ -78,7 +81,7 @@ rest
 - 共边相接的分段：ButtonGroup 段、ToggleGroup item、Toolbar group 里的 item（定尺但零间距相接，缩放会撕开接缝，皮肤写 `--xh-action-scale-pressed: none`）。
 - 大面积 Card Action、导航项、可选择列表行。
 
-这些部件在 120ms 内切到 active 面，松开后按 micro（120ms）回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
+这些部件在 `press`（150ms）内切到 active 面，松开后按 `micro`（150ms）回到 hover / rest；不允许零反馈。原因是缩放整行会让文字发虚、边界漂移并影响相邻内容感知。
 
 不播放点击反馈（须在门禁登记理由）：
 
@@ -139,14 +142,16 @@ rest
 
 | 锚定关系 | 关键帧 |
 | --- | --- |
-| 锚定列表 / 菜单 / tooltip（含 ColorPicker） | `xh-overlay-slide-in / out`；tooltip 入场 `--xh-motion-duration-enter` |
-| 锚定面板（Popover、HoverCard、Popconfirm、Tour、Command） | `xh-overlay-pop-in` / `xh-pop-out` |
-| 无锚定弹出（NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、BackTop、回底按钮） | `xh-pop-in / out` |
-| 面板（Dialog、Notification） | `xh-sheet-in / out` |
+| 弹层：锚定列表 / 菜单 / tooltip（含 ColorPicker）、锚定面板（Popover、HoverCard、Popconfirm、Tour、Command）、无锚定弹出（NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、BackTop、回底按钮） | 同一套 `xh-overlay-pop-in` / `xh-pop-out`：淡入 + 从 `--xh-motion-scale-enter` 放大 + 从锚点一侧移 `--xh-motion-distance-sm`，无锚定时位移为 0；tooltip 入场 `--xh-motion-duration-enter` |
+| 面板（Dialog、逐条排开的轻提示） | `xh-sheet-in / out` |
 | 整幅滑入（Drawer、Layout 抽屉式侧栏） | `xh-slide-in / out`，位移 `--xh-motion-travel`；入 `--xh-motion-duration-slide` / `--xh-motion-ease-slide`，出 `--xh-motion-duration-exit` / `--xh-motion-ease-exit` |
 | 遮罩与全屏面 | `xh-fade-in / out` |
 
-共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。
+共享关键帧集中在 `family/motion.css`；皮肤不得重定义。进场必有退场，退场经 Presence；分层、打断与焦点规则见《统一组件设计方案》§9.5。Notification 卡片的推入与叠摞是登记例外，见同节。
+
+### 2.9 勾选标记与单选圆点
+
+参数与《统一组件设计方案》§9.13 一致：勾上时勾从左到右描出（`nudge` / `enter`），取消时倒擦（`exit` / `exit`）；全选与半选之间两层遮罩交叉缩放（`nudge` / `enter`）；方框只换色；单选圆点 0 → 1 带轻微过冲（`nudge` / `settle`）；开关滑块平移 `nudge`，按住拉长。减弱动效下几何部分瞬时完成，只留淡变与换色。
 
 ## 3. Frosted 柔和模糊材质
 
@@ -226,26 +231,27 @@ liquid 是导航层材质，细则见《统一组件设计方案》§8.5。它�
 
 ### 4.1 形状
 
-- [ ] 已归入 inset/control/surface/overlay/circle/pill 之一。
-- [ ] 普通 control 为 4px，未自行使用 pill。
+- [ ] 已归入 inset/control/surface/overlay/sheet/circle/pill 之一。
+- [ ] 普通 control 为 8px（`--xh-radius-seed` 的 md 档），未自行使用 pill。
 - [ ] 嵌套圆角关系正确。
 - [ ] 正方盒取 circle，状态 chip 与一维对象取 pill，轨道取 surface。
 
 ### 4.2 触感
 
-- [ ] 定尺离散 Action Control 接入 120ms / `--xh-motion-scale-press` / 200ms 配方并同时换底。
+- [ ] 定尺离散 Action Control 接入 150ms / `--xh-motion-scale-press` / 200ms 配方并同时换底。
+- [ ] 聚焦画 1px 内圈 + 3px 光环，即时出现、不进过渡；字段的内圈就是品牌描边。
 - [ ] 行级与 disclosure trigger 只换面，无零反馈。
 - [ ] 指针、触摸和键盘 Press 的视觉一致（`data-pressed`）。
 - [ ] 手势松手用弹簧并交接松手速度；standard 档超调 ≤ 3%。
 - [ ] disabled、pending、selected、danger 组合状态明确。
 - [ ] reduced motion 下仍有非位移反馈。
-- [ ] disclosure 与浮层进出场按 §2.7、§2.8 取关键帧与时长。
+- [ ] disclosure、浮层进出场与勾选标记按 §2.7、§2.8、§2.9 取关键帧与时长。
 - [ ] 动效已按《统一组件设计方案》§9 选定角色；有进场即有退场；初始内容不播进场。
 
 ### 4.3 边界与选中
 
 - [ ] 根面取描边 / 淡底 / 无壳之一；raised 带 border-default 且已登记。
-- [ ] 字段静息为描边式；variant 缺省 outline。
+- [ ] 字段静息为描边式、缺省白底；variant 缺省 outline。
 - [ ] selected / current 按语义表取唯一标记；open 与 hover 同档。
 - [ ] 交互阶梯按承载面；缺省语气正确。
 
