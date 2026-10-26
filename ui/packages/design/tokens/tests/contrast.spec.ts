@@ -671,11 +671,11 @@ describe('热力图色板轴：格子的描边', () => {
 })
 
 // 紫不对应任何语气，只服务色板轴，取基础色板 purple 族的 600 档：
-// 明度与彩度就是品牌曲线的 600 档、只换色相，色阶的单调与分档质量与 brand 那一列逐值相同。
+// 明度与彩度就是基线品牌曲线（色相 258 的 indigo）的 600 档、只换色相，色阶的单调与分档质量与基线那一列逐值相同。
 describe('紫色原语来自基础色板', () => {
-  it('purple.600 与 brand.600 只差色相', () => {
+  it('purple.600 与基线 indigo.600 只差色相', () => {
     const [purpleL, purpleC, purpleH] = oklchParts(primitiveValue('color.purple.600'))
-    const [brandL, brandC] = oklchParts(primitiveValue('color.brand.600'))
+    const [brandL, brandC] = oklchParts(primitiveValue('color.indigo.600'))
     expect(purpleL).toBe(brandL)
     expect(purpleC).toBe(brandC)
     expect(purpleH).toBe(302)

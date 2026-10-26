@@ -51,7 +51,7 @@ const SCHEME_DESCRIPTIONS = {
   muted: '莫兰迪柔彩：基础色板的色往浅灰里在 oklab 里混出的带灰浅色，彩度 0.035–0.10。',
 }
 
-/** 色槽 1 的色相：基础色板里与品牌色逐值相同的那一族。 */
+/** 色槽 1 的色相：基础色板里离缺省品牌色相（277）最近的那一族，相差 19°，在 hueTolerance 之内；它也是原缺省品牌（data-brand="indigo"）。 */
 export const FIRST_HUE = 'indigo'
 /** 不进分类色板的色相与理由。 */
 export const EXCLUDED_HUES = {

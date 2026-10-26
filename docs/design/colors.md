@@ -8,7 +8,7 @@
 
 ## 基础色板
 
-十二个色相，每个色相 11 档（50 – 950）。每档的明度与彩度取品牌曲线的基线，彩度再按该档明度与色相收进 sRGB 色域。色相 258 那一族（indigo）与品牌色逐值相同——品牌就是色板里的一员。
+十二个色相，每个色相 11 档（50 – 950）。每档的明度与彩度取品牌曲线的基线，彩度再按该档明度与色相收进 sRGB 色域。色相 258 那一族（indigo）就是这条基线本身，也是原来的缺省品牌，现在作为 `data-brand="indigo"` 预设保留；缺省品牌换成了色相 277 的靛蓝（见[品牌色](#品牌色)）。
 
 <XhTokenSwatches prefix="--xh-color-red-" label="red · 25" />
 <XhTokenSwatches prefix="--xh-color-orange-" label="orange · 50" />
@@ -19,7 +19,7 @@
 <XhTokenSwatches prefix="--xh-color-teal-" label="teal · 180" />
 <XhTokenSwatches prefix="--xh-color-cyan-" label="cyan · 215" />
 <XhTokenSwatches prefix="--xh-color-blue-" label="blue · 237" />
-<XhTokenSwatches prefix="--xh-color-indigo-" label="indigo · 258（= brand）" />
+<XhTokenSwatches prefix="--xh-color-indigo-" label="indigo · 258（基线）" />
 <XhTokenSwatches prefix="--xh-color-purple-" label="purple · 302" />
 <XhTokenSwatches prefix="--xh-color-pink-" label="pink · 345" />
 
@@ -52,6 +52,8 @@
 ## 品牌色
 
 品牌色不是一枚颜色，是一条从种子派生出来的 11 档梯度。派生只取种子的色相与彩度，明度曲线原样保留——语义层与语气层建立在明度之上的对比度保证，对任何种子都成立。
+
+缺省品牌是 OKLCH 色相 277 的靛蓝。它和预设品牌同一个做法：每一档的明度按基线（色相 258 那一族）那一档的 WCAG 相对亮度反求，600 档实心底上的白字是 5.08:1。没有直接取 Tailwind 的 indigo-500，是因为它上面的白字只有 4.47:1，过不了正文的 4.5:1。
 
 <XhTokenSwatches prefix="--xh-color-brand-" />
 

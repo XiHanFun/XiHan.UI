@@ -129,7 +129,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -190,10 +190,10 @@ border-top-width: 2px
 border-right-width: 2px
 border-bottom-width: 2px
 border-left-width: 2px
-border-top-color: oklch(0.546 0.216 258)
-border-right-color: oklch(0.546 0.216 258)
-border-bottom-color: oklch(0.546 0.216 258)
-border-left-color: oklch(0.546 0.216 258)
+border-top-color: oklch(0.557 0.216 277)
+border-right-color: oklch(0.557 0.216 277)
+border-bottom-color: oklch(0.557 0.216 277)
+border-left-color: oklch(0.557 0.216 277)
 min-height: 0px
 font-size: 16px
 line-height: normal

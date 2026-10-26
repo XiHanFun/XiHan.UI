@@ -864,7 +864,7 @@ font-size: 14px
 line-height: normal
 font-weight: 400
 color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -1039,7 +1039,7 @@ font-size: 14px
 line-height: normal
 font-weight: 400
 color: oklch(0.208 0.006 258)
-background-color: oklab(0.94552 -0.00538907 -0.0253536)
+background-color: oklab(0.94684 0.00315886 -0.0257268)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

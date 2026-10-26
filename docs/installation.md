@@ -267,7 +267,7 @@ if (import.meta.env.DEV) {
 
 ```ts
 import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
-// { "--xh-color-brand-500": "oklch(0.623 0.214 258)", ... }
+// { "--xh-color-brand-500": "oklch(0.632 0.209 277)", ... }
 ```
 
 ## 宿主有无层 reset 时改用无层版

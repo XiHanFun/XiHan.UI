@@ -1,5 +1,5 @@
 {
-  "$description": "预设品牌：几档有名字的品牌，色相取基础色板里同名的那一个（palette.seeds.json）。由 build/emit-brand-presets.mjs 派生 11 档写进 primitive.brand-presets.json，再由 emit-tokens 写成 tokens.css 里的 [data-brand='<id>'] 取值块。每档按缺省品牌（color.brand）那一档的 WCAG 相对亮度反求明度，彩度取基线彩度、收进 sRGB 色域：相对亮度逐档与缺省品牌一致，语义层与语气层的对比度对每一档预设都与缺省品牌同样成立。缺省品牌本身不在这里：不写 data-brand 就是它。",
+  "$description": "预设品牌：几档有名字的品牌，色相取基础色板里同名的那一个（palette.seeds.json）。由 build/emit-brand-presets.mjs 派生 11 档写进 primitive.brand-presets.json，再由 emit-tokens 写成 tokens.css 里的 [data-brand='<id>'] 取值块。每档按基线品牌曲线（基础色板色相 258 的 indigo）那一档的 WCAG 相对亮度反求明度，彩度取基线彩度、收进 sRGB 色域：缺省品牌（color.brand，色相 277）也是这样派生的，相对亮度逐档与缺省品牌一致，语义层与语气层的对比度对每一档预设都与缺省品牌同样成立。缺省品牌本身不在这里：不写 data-brand 就是它。indigo 是原缺省品牌（色相 258），换缺省色相后留作预设。",
   "blue": { "palette": "blue" },
   "cyan": { "palette": "cyan" },
   "teal": { "palette": "teal" },
@@ -7,5 +7,6 @@
   "orange": { "palette": "orange" },
   "red": { "palette": "red" },
   "pink": { "palette": "pink" },
-  "purple": { "palette": "purple" }
+  "purple": { "palette": "purple" },
+  "indigo": { "palette": "indigo" }
 }

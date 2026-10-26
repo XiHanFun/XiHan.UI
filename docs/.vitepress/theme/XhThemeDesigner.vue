@@ -50,12 +50,12 @@ const presetGroups: { label: string; presets: Preset[] }[] = [
   {
     label: "基础",
     presets: [
-      { id: "default", name: "默认", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
-      { id: "dark", name: "暗黑", seed: "#0067ea", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
-      { id: "compact", name: "紧凑", seed: "#0067ea", mode: "light", density: "compact", contrast: "default", radius: "default" },
-      { id: "contrast", name: "高对比", seed: "#0067ea", mode: "light", density: "comfortable", contrast: "more", radius: "default" },
-      { id: "dark-compact", name: "暗黑紧凑", seed: "#0067ea", mode: "dark", density: "compact", contrast: "default", radius: "default" },
-      { id: "dark-contrast", name: "暗黑高对比", seed: "#0067ea", mode: "dark", density: "comfortable", contrast: "more", radius: "default" },
+      { id: "default", name: "默认", seed: "#5b5aee", mode: "light", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "dark", name: "暗黑", seed: "#5b5aee", mode: "dark", density: "comfortable", contrast: "default", radius: "default" },
+      { id: "compact", name: "紧凑", seed: "#5b5aee", mode: "light", density: "compact", contrast: "default", radius: "default" },
+      { id: "contrast", name: "高对比", seed: "#5b5aee", mode: "light", density: "comfortable", contrast: "more", radius: "default" },
+      { id: "dark-compact", name: "暗黑紧凑", seed: "#5b5aee", mode: "dark", density: "compact", contrast: "default", radius: "default" },
+      { id: "dark-contrast", name: "暗黑高对比", seed: "#5b5aee", mode: "dark", density: "comfortable", contrast: "more", radius: "default" },
     ],
   },
   {

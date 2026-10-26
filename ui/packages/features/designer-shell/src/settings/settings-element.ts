@@ -66,6 +66,7 @@ const DEFAULT_TRANSLATIONS: DesignerSettingsTranslations = {
   brandRed: 'Red',
   brandPink: 'Pink',
   brandPurple: 'Purple',
+  brandIndigo: 'Indigo',
   toolbarDisplay: 'Button style',
   toolbarDisplayHint: 'How the buttons on the toolbar are shown.',
   toolbarDisplayIcon: 'Icons',

@@ -199,7 +199,7 @@ font-size: 13px
 line-height: 13px
 font-weight: 400
 color: oklch(1 0 0)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: background-color, border-color, color, box-shadow, opacity, scale
 transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
@@ -304,7 +304,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: oklch(0.208 0.006 258)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: inline-size, background-color
 transition-duration: 0.12s, 0.12s
 transition-timing-function: cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0, 0, 0.2, 1)

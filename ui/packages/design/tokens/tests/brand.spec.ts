@@ -31,11 +31,12 @@ function toLinearRgb({ l, c, h }: { l: number, c: number, h: number }): [number,
   ]
 }
 
+/** 基线品牌曲线：基础色板色相 258 的 indigo（原缺省品牌）。缺省品牌 color.brand 换成色相 277 后不再是这条曲线本身。 */
 const brandPrimitives = (() => {
   const raw = JSON.parse(
-    readFileSync(join(import.meta.dirname, '../tokens/primitive.json'), 'utf8'),
-  ) as { color: { brand: Record<string, { $value: string }> } }
-  return raw.color.brand
+    readFileSync(join(import.meta.dirname, '../tokens/primitive.palette.json'), 'utf8'),
+  ) as { color: { indigo: Record<string, { $value: string }> } }
+  return raw.color.indigo
 })()
 
 describe('deriveBrandScale', () => {
@@ -43,7 +44,7 @@ describe('deriveBrandScale', () => {
     expect(() => deriveBrandScale('rgb(59 130 246 / 50%)')).toThrow(/不透明/)
   })
 
-  it('基线 600 档当种子 → 派生结果与 primitive.json 逐值一致', () => {
+  it('基线 600 档当种子 → 派生结果与基线曲线逐值一致', () => {
     const scale = deriveBrandScale(brandPrimitives['600']!.$value)
     for (const step of STEPS) {
       const derived = parseOklchString(scale[step])

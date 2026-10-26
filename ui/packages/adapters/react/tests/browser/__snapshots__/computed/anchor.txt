@@ -24,7 +24,7 @@ font-size: 14px
 line-height: 21px
 font-weight: 400
 color: oklch(0.461 0.018 258)
-background-color: oklch(0.546 0.216 258)
+background-color: oklch(0.557 0.216 277)
 transition-property: none
 transition-duration: 0s
 transition-timing-function: ease

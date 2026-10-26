@@ -17,6 +17,7 @@ import {
   MUTED_TINT,
   paletteDocument,
   parseOklch,
+  RULES,
   SCHEMES,
   SLOTS,
   solveCategorical,
@@ -79,12 +80,18 @@ describe('图表分类色板', () => {
     }
   })
 
-  it('色槽 1 取品牌色相', () => {
+  it('色槽 1 取基础色板里离品牌色相最近的一族，相差不超过色相容差', () => {
     expect(hueOf(slotRefs(group('light', 'categorical'))[0]!)).toBe(FIRST_HUE)
     const brand = toOklch(parseOklch(primitive.color.brand!['600']!.$value)).h
-    const palette = JSON.parse(readFileSync(join(TOKENS_DIR, 'primitive.palette.json'), 'utf8')) as { color: Record<string, Record<string, ColorToken>> }
-    const indigo = toOklch(parseOklch(palette.color[FIRST_HUE]!['600']!.$value)).h
-    expect(Math.abs(indigo - brand)).toBeLessThan(1)
+    const palette = JSON.parse(readFileSync(join(TOKENS_DIR, 'primitive.palette.json'), 'utf8')) as { color: Record<string, Record<string, ColorToken | string>> }
+    const distance = (name: string): number => {
+      const h = toOklch(parseOklch((palette.color[name]!['600'] as ColorToken).$value)).h
+      const d = Math.abs(h - brand) % 360
+      return Math.min(d, 360 - d)
+    }
+    const nearest = Object.keys(palette.color).reduce((best, name) => distance(name) < distance(best) ? name : best)
+    expect(nearest).toBe(FIRST_HUE)
+    expect(distance(FIRST_HUE)).toBeLessThanOrEqual(RULES.hueTolerance)
   })
 
   it('每套方案亮暗各 8 个色块与 8 个色块内文字，缺省方案与 chart.categorical 同值', () => {
