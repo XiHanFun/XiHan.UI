@@ -148,14 +148,15 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 ### 样式
 
 - 统一设计真源是 `.agents/skills/component-design/references/component-design.md`。
-- 普通 control 使用 2px 圆角，surface 4px（含 RadioGroup segmented 形态 / Tabs segment 轨道），overlay 4px；pill 只给状态 chip 与一维对象，正方盒取 circle。
+- 圆角由一颗种子 `--xh-radius-seed`（8px）派生：inset 4px（勾选方框、集合行、轨道里的段与滑块、字段里的标签），control / surface / overlay 8px（含 RadioGroup segmented 形态 / Tabs segment 轨道），sheet 10px（Dialog、Drawer、Notification 卡片）；内层圆角不大于外层减内衬；pill 只给状态 chip 与一维对象，正方盒取 circle。
 - 组件的缺省、下限与上限尺寸按设计真源 §6.8 取档，只经语义尺寸令牌：控件高 sm/md/lg 28/32/36（compact 24/28/32），md 缺省；字段缺省宽 16rem、压缩底线 12rem、上限 100%，放进 Field 即铺满；Tooltip / Popover 上限 20rem（size 16/20/24），菜单 10–20rem，候选面板与字段盒等宽，Dialog 上限 24/32/48rem，Drawer 16/20/28rem；滚动面限高只取 viewport-h-sm/md/lg（12/16/24rem）与 viewport-max-h，浮层取 overlay-max-h / overlay-menu-max-h；浮层上限再与可用区取 min。表里没有的尺寸先加语义令牌。
-- 定尺离散 Action Control 使用统一按压反馈：120ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1，只换面），释放 200ms 回到 rest；行级与 disclosure trigger 只换面，不允许零反馈。登记例外：Rating 的星悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis` 强调落点、按下保持放大，减弱动效下归 1。
-- 动效按设计真源 §9 的角色取令牌：几何动画不用 `micro` / `enter` / `exit` 时长，有进场即有退场，初始内容不播进场；减弱动效去位移、留淡变；JS 动效只经 `@xihan-ui/motion`，不写固定毫秒。
-- 禁止 glass 材质及兼容别名；锚定浮层走 frosted 配方（缺省是实体底 + 描边 + 一层柔和投影，透景只作主题档）；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。
+- 定尺离散 Action Control 使用统一按压反馈：150ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1，只换面），释放 200ms 回到 rest；行级与 disclosure trigger 只换面，不允许零反馈。登记例外：Rating 的星悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis` 强调落点、按下保持放大，减弱动效下归 1。
+- 动效按设计真源 §9 的角色取令牌，时长两档：换色 150ms、几何 200ms。几何动画不用 `micro` / `enter` / `exit` 时长，有进场即有退场，初始内容不播进场；弹层只有一套进出场（§9.5）；勾选标记描线生长、全选与半选交叉缩放（§9.13）；减弱动效去位移、留淡变；JS 动效只经 `@xihan-ui/motion`，不写固定毫秒。
+- 禁止 glass 材质及兼容别名；锚定浮层走 frosted 配方（缺省是实体底 + 描边 + md 档投影，透景只作主题档）；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。
 - 彩色面声明墨色域，中性描边与淡底取墨色比例；弹簧只用于手势松手与 liquid 档的切换、指示；断点按视口，低于断点用补集写法，不用容器查询。
-- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 `--xh-bg-field` 淡底 + `--xh-border-control` + 无影，聚焦换承载面底 + 品牌描边、不画聚焦环。
-- 只有 Button 缺省品牌实心；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
+- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 `--xh-bg-field`（缺省白底）+ `--xh-border-control` + 无影，聚焦换品牌描边 + 光环。阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg。
+- 聚焦环两层：1px 品牌内圈（outline）+ 3px 品牌 30% 光环（box-shadow），不随 tone、即时出现；字段的内圈就是品牌描边，强制色档只剩内圈。
+- 只有 Button 缺省品牌实心；Action Control 上 `tone="neutral"` 与不写等价；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
 - 图表按数据任务与坐标系划分组件，同一标记的不同外观是样式轴，不另建组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
 - 不写颜色、间距、圆角、阴影和动效散值；新增槽必须被真实消费并进入生成物。
 - 亮色、暗色、comfortable/compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 必须一起审查。

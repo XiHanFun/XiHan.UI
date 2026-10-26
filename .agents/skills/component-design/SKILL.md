@@ -17,11 +17,13 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 
 ## 强制设计规则
 
-- 普通 control 2px、surface 4px、overlay 4px；pill 只用于明确的胶囊身份。
+- 圆角由一颗种子 `--xh-radius-seed`（8px）派生：inset 4px、control / surface / overlay 8px、sheet 10px（Dialog、Drawer、Notification 卡片）；内层圆角不大于外层减内衬；pill 只用于明确的胶囊身份。
 - 尺寸按 §6.8 的缺省 / 下限 / 上限表取档：新组件先找同类组件，取同一组语义尺寸令牌；有上限就要有面内滚动或条目截断，浮层上限再与可用区取 `min()`；表里没有的档先加语义令牌，不在皮肤写字面尺寸。
-- 离散 Action Control 按下 120ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1）；释放 200ms 回到 rest；集合项只换面、不整体缩放。
-- 动效按 §9 的角色取令牌：几何动画不用 `micro` / `enter` / `exit` 时长；有进场即有退场；初始内容不播进场；减弱动效去位移、留淡变（§14.4）。
-- 禁止 glass 材质和兼容别名；锚定浮层走 frosted 配方（缺省实体底 + 描边 + 一层柔和投影）；导航层在 `data-material="liquid"` 下可用 liquid（§8.5），内容层、浮层与模态不用。
+- 离散 Action Control 按下 150ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1）；释放 200ms 回到 rest；集合项只换面、不整体缩放。
+- 动效按 §9 的角色取令牌，时长两档：换色 150ms、几何 200ms；几何动画不用 `micro` / `enter` / `exit` 时长；有进场即有退场；初始内容不播进场；弹层只有一套进出场（§9.5）；勾选标记描线生长、全选与半选交叉缩放（§9.13）；减弱动效去位移、留淡变（§14.4）。
+- 字段缺省白底（`--xh-bg-field`）+ `--xh-border-control`；聚焦环两层：1px 品牌内圈 + 3px 品牌 30% 光环，不随 tone、即时出现，字段的内圈就是品牌描边（§7.2、§8.3）。
+- 阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg（§5.3）。
+- 禁止 glass 材质和兼容别名；锚定浮层走 frosted 配方（缺省实体底 + 描边 + md 档投影）；导航层在 `data-material="liquid"` 下可用 liquid（§8.5），内容层、浮层与模态不用。
 - 彩色面声明墨色域（§7.7），中性描边与淡底取墨色比例，不直接取中性原语。
 - 弹簧只用于手势松手（缺省）与 liquid 档的切换、指示（§9.11）；断点按视口，低于断点用补集写法，不用容器查询（§14.6）。
 - 颜色、间距、圆角、阴影和动效只使用令牌，不在组件中增加散值。
