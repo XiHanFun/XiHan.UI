@@ -7,7 +7,7 @@
 
 import type { IdGenerator, Layer, MachineSchema, RuntimeConfig, Scope, Service } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import { createRuntimeConfig } from '@xihan-ui/core'
+import { createRuntimeConfig, overlayKit, whenOverlayKit } from '@xihan-ui/core'
 import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useXhConfig } from '../config/config'
@@ -51,6 +51,13 @@ export interface UseOverlayOptions {
   refs?: (service: Service<MachineSchema>, config: RuntimeConfig) => void
   /** 作者写在实例上的浮层容器。 */
   container?: () => Element | null
+  /**
+   * 展开后等 core 的浮层按需块到了才露出内容。焦点陷阱、滚动锁与背景失活都在那一块里，
+   * 不靠落位藏面板的浮层（对话框、抽屉、图片查看器、命令面板）第一次打开时若按需块还没到，
+   * 露出来的那一下焦点与滚动都还没被接管；靠定位的浮层落位前本就藏着，不用开。
+   * 只管挂载之后的展开：挂载时就开着的照常露出，与服务端直出的标记对齐。
+   */
+  awaitOverlayKit?: boolean
 }
 
 /**
@@ -63,6 +70,10 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
   const { scope, idGenerator, initialOpen, container } = options
   const xhConfig = useXhConfig()
   const [rendered, setRendered] = useState(initialOpen)
+  // 在等浮层按需块：展开了先藏着，到了再露。挂载时就开着的不等，关过一次之后按常规等
+  const [gated, setGated] = useState(false)
+  const kitExempt = useRef(initialOpen)
+  const waitingKit = useRef<(() => void) | null>(null)
 
   // 取值器随渲染换，接线只建一次：拿 ref 转一道，别让它成为重建的理由
   const latest = useRef(options)
@@ -141,10 +152,29 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
     presence.update(open)
   })
 
+  // 与上面驱动 presence 的那条同一轮布局效应里定下来：展开那一帧 rendered 还没翻真，两处一并重渲，一帧都不露
+  useIsomorphicLayoutEffect(() => {
+    if (!latest.current.awaitOverlayKit || !parts)
+      return
+    if (!latest.current.isOpen()) {
+      kitExempt.current = false
+      return
+    }
+    if (kitExempt.current || waitingKit.current || overlayKit())
+      return
+    setGated(true)
+    waitingKit.current = whenOverlayKit(() => {
+      waitingKit.current = null
+      setGated(false)
+    })
+  })
+
   useEffect(() => () => {
     for (const detach of observed.current.nodes.values()) detach()
     observed.current.nodes.clear()
     observed.current.presence = null
+    waitingKit.current?.()
+    waitingKit.current = null
   }, [])
 
   const portalContainer = useCallback(
@@ -152,7 +182,7 @@ export function useOverlay(options: UseOverlayOptions): OverlayWiring {
     [container, xhConfig, parts],
   )
 
-  return { rendered, portalContainer, onCreate }
+  return { rendered: rendered && !gated, portalContainer, onCreate }
 }
 
 export type { PresenceHandle }

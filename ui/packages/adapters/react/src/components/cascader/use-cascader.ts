@@ -10,7 +10,7 @@ import type { CascaderApi, CascaderSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { cascaderMachine, connectCascader } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -63,7 +63,7 @@ export function useCascader(props: CascaderSchema['props']): CascaderContext {
     node: () => contentRef.current,
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       // 锚点是字段盒：面板起始缘与盒对齐；作者没写 control 时退回触发器
       service.refs.set('getAnchorEl', () => controlRef.current ?? triggerRef.current)
       service.refs.set('getTriggerEl', () => triggerRef.current)

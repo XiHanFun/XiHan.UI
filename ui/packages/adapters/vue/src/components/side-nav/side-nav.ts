@@ -12,7 +12,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { createScope } from '@xihan-ui/core'
 import { connectSideNav, findSideNavRowEl, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { mergeIntoChild } from '../../runtime/as-child'
@@ -341,7 +341,7 @@ export const XhSideNavTooltip = defineComponent({
         isModal: () => false,
         surfaces: () => [],
       }))
-      hint.refs.set('position', createPositionEngine())
+      hint.refs.set('position', createDeferredPositionEngine())
     }
     hint.refs.set('getAnchorEl', anchor)
     hint.refs.set('getFloatingEl', () => positionerRef.value)

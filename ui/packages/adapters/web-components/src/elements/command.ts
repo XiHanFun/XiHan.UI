@@ -322,6 +322,8 @@ export class XhCommandElement extends XhPortalHostElement {
     this.exit ??= createOverlayExit({
       open: (this.open ?? this.defaultOpen) ?? false,
       onExitComplete: () => this.requestUpdate(),
+      // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+      onOverlayKitReady: () => this.requestUpdate(),
     })
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerLayer)
@@ -415,6 +417,8 @@ export class XhCommandElement extends XhPortalHostElement {
     this.exit ??= createOverlayExit({
       open: api.open,
       onExitComplete: () => this.requestUpdate(),
+      // 不靠落位藏面板：焦点陷阱与滚动锁所在的浮层按需块到了才露出内容
+      onOverlayKitReady: () => this.requestUpdate(),
     })
     this.exit.track(this.getPart('content'), this.getPart('backdrop'))
     this.exit.update(api.open)

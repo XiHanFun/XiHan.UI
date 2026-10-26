@@ -4,7 +4,8 @@
  */
 
 // Portal 外壳的逻辑来源：浮层内容搬进外壳后，沿逻辑祖先链走到外壳时跳回它在原 DOM 里的来源节点。
-// 登记由视觉桥在建桥时写入、释放时撤销，与视觉桥抄视觉轴用的是同一个来源。
+// 登记在 Portal 接上来源时当场写入（connectPortalVisualBridge，不等浮层按需块），视觉桥建好后由桥再写同一对，
+// 释放时撤销；与视觉桥抄视觉轴用的是同一个来源。
 // 登记表挂在 Document 上，页面上装了几份 core 时取到的是同一张。
 
 import type { Cleanup } from '../types'
@@ -26,7 +27,7 @@ export function bindPortalSource(shell: Element, source: Element): Cleanup {
  * 逻辑父元素：Portal 外壳的逻辑父元素是它的来源，其余节点就是 parentElement，到文档根为 null。
  *
  * 沿它往上走，浮层搬进 Portal 落点的内容也能走回来源所在的子树，找到原来包着浮层的作用域。
- * 外壳与来源的对应由 Portal 视觉桥在建桥时登记、释放时撤销。
+ * 外壳与来源的对应在 Portal 接上来源时当场登记（视觉桥晚到也不影响），释放时撤销。
  *
  * @example
  * ```ts

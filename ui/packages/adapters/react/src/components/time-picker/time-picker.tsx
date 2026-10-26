@@ -30,7 +30,7 @@ import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldGroupWiring, useFieldLabelWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TimePickerColumnProvider, TimePickerProvider, TimePickerTagProvider, useTimePickerColumnContext, useTimePickerContext, useTimePickerTagContext } from './context'
@@ -419,7 +419,8 @@ export function XhTimePickerPresetGroup({ children, ...rest }: XhTimePickerPrese
   const api = ctx.api
   const presetGroupRef = useRef<HTMLDivElement | null>(null)
   // 快捷选项列定高自己竖滚：条子贴在它的盒子上、紧跟在它后面（浮层 4px 档）
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     scrollable: () => presetGroupRef.current,
     anchor: 'layer',
     props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -466,7 +467,8 @@ export function XhTimePickerColumn({ unit, children, ...rest }: XhTimePickerColu
   const api = ctx.api
   const columnRef = useRef<HTMLDivElement | null>(null)
   // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
-  const bars = useScrollbars({
+  const bars = useOverlayScrollbars({
+    present: () => ctx.rendered,
     scrollable: () => columnRef.current,
     anchor: 'layer',
     props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

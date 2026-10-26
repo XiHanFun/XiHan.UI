@@ -6,6 +6,12 @@
     "limit": "43 kB"
   },
   {
+    "name": "core：浮层按需块（浮层第一次打开时才加载，连同它的依赖）",
+    "path": "packages/engine/core/dist/overlay-kit.js",
+    "gzip": true,
+    "limit": "24 kB"
+  },
+  {
     "name": "core/date",
     "path": "packages/engine/core/dist/date.js",
     "gzip": true,
@@ -92,6 +98,12 @@
   {
     "name": "position",
     "path": "packages/engine/position/dist/index.js",
+    "gzip": true,
+    "limit": "4 kB"
+  },
+  {
+    "name": "position：定位引擎本体（延迟引擎第一次 attach 时才加载）",
+    "path": "packages/engine/position/dist/engine.js",
     "gzip": true,
     "limit": "3.1 kB"
   },
@@ -429,7 +441,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhDialogRoot }",
     "gzip": true,
-    "limit": "42 kB",
+    "limit": "30 kB",
     "ignore": [
       "vue"
     ]
@@ -439,7 +451,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMenuRoot }",
     "gzip": true,
-    "limit": "54 kB",
+    "limit": "37 kB",
     "ignore": [
       "vue"
     ]
@@ -461,7 +473,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhSelectRoot }",
     "gzip": true,
-    "limit": "56 kB",
+    "limit": "36 kB",
     "ignore": [
       "vue"
     ]
@@ -480,6 +492,25 @@
     "path": "packages/adapters/react/dist/components/virtualizer/structure-virtual.js",
     "gzip": true,
     "limit": "21 kB",
+    "ignore": [
+      "react",
+      "react-dom"
+    ]
+  },
+  {
+    "name": "vue：浮层自绘滚动条（按需块，连同它的依赖）",
+    "path": "packages/adapters/vue/dist/runtime/scrollbars-host.js",
+    "gzip": true,
+    "limit": "17 kB",
+    "ignore": [
+      "vue"
+    ]
+  },
+  {
+    "name": "react：浮层自绘滚动条（按需块，连同它的依赖）",
+    "path": "packages/adapters/react/dist/runtime/scrollbar-bars.js",
+    "gzip": true,
+    "limit": "18 kB",
     "ignore": [
       "react",
       "react-dom"

@@ -25,14 +25,14 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { PART_ATTR } from '../dom/parts'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器会把缺席落成 null/false，表达不了"未指定"。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -233,7 +233,7 @@ export class XhCascaderElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly cascaderScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
@@ -372,7 +372,8 @@ export class XhCascaderElement extends XhPortalHostElement {
    * 只排布横向：列多到放不下时整体横向滚动，纵向溢出归每一列自身；
    * 横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。
    */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     axes: ['horizontal'],
@@ -384,14 +385,16 @@ export class XhCascaderElement extends XhPortalHostElement {
    * 每一列自己的竖条：列并排住在 content 里，条子贴在各列的盒子上、紧跟在那一列后面，
    * 按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。
    */
-  private readonly columnBars = new ScrollbarsController(this, {
+  private readonly columnBars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('content'),
     scrollables: () => this.getParts('column'),
     anchor: 'layer',
     props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
-  private readonly searchBars = new ScrollbarsController(this, {
+  private readonly searchBars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('content'),
     scrollable: () => this.getPart('search-list'),
     anchor: 'layer',

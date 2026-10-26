@@ -10,7 +10,7 @@ import type { ExpressionInputApi, ExpressionInputEl, ExpressionInputSchema } fro
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectExpressionInput, expressionInputMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -61,7 +61,7 @@ export function useExpressionInput(props: ExpressionInputSchema['props']): Expre
     layer,
     node: () => contentRef.current,
     refs: (service) => {
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('getInputEl', () => inputRef.current)
       service.refs.set('getHighlightEl', () => highlightRef.current)

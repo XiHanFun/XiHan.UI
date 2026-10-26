@@ -6,7 +6,7 @@
 // 提供 portal 相关实现。
 
 import type { ReactNode } from 'react'
-import { createPortalVisualBridge } from '@xihan-ui/core'
+import { connectPortalVisualBridge } from '@xihan-ui/core'
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { XhFieldBoundary } from '../components/field/boundary'
@@ -111,8 +111,10 @@ function PortalWithVisualBridge({ target, source, present, children }: {
     // 定位引擎第一次量尺寸时壳上已经是来源的环境
     if (!sourceNode || !shell || !present)
       return
-    const bridge = createPortalVisualBridge({ source: sourceNode, shell })
-    bridgeRef.current = { source: sourceNode, shell, dispose: bridge.dispose }
+    // 逻辑来源当场登记（搬进壳的控件照旧找得到所在位置的配置）；视觉桥住在 core 的浮层按需块里，
+    // 已经到了当场建，第一次打开时还没到就等它到了再建。定位引擎同样等这一块到了才第一次量，
+    // 壳上的环境照旧先到位
+    bridgeRef.current = { source: sourceNode, shell, dispose: connectPortalVisualBridge({ source: sourceNode, shell }) }
   })
 
   useEffect(() => () => {

@@ -10,7 +10,7 @@ import type { TooltipSchema } from '@xihan-ui/headless'
 import type { TooltipContext } from './context'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -53,7 +53,7 @@ export function useTooltip(
     // 定位引擎经 refs 注入，展开态由机器的 effect 驱动
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
   }
   service.refs.set('getAnchorEl', () => triggerRef.value)
   service.refs.set('getFloatingEl', () => positionerRef.value)

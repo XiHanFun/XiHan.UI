@@ -7,10 +7,10 @@
 
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
-import { canTakeFocus, createDismissLayer, createFocusScope, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { canTakeFocus, requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -513,8 +513,9 @@ export const tourMachine = createMachine({
         let reactivateFocus: (() => void) | undefined
         let returnFocusNow: (() => void) | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer) => {
+          const kit = requireOverlayKit()
           const getContentEl = refs.get('getContentEl')
-          const dismiss = createDismissLayer({
+          const dismiss = kit.createDismissLayer({
             config,
             layer,
             // 退场帧仍持有 Layer，但不能再接受第二次关闭意图。
@@ -541,7 +542,7 @@ export const tourMachine = createMachine({
           })
           defer(() => dismiss.dispose())
 
-          const focus = createFocusScope({
+          const focus = kit.createFocusScope({
             config,
             layer,
             flush,
@@ -573,6 +574,8 @@ export const tourMachine = createMachine({
         let disposed = false
         let release: (() => void) | undefined
         let lastOpen = false
+        // 消解层与焦点域在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
+        const gate = createOverlayKitGate(scope.getDoc())
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
@@ -590,6 +593,11 @@ export const tourMachine = createMachine({
           const closing = !open && lastOpen
           lastOpen = open
           if (open) {
+            // 按需块没到：资源等它到了再建，视觉 Presence 照常跟着展开
+            if (!release && !gate.ready(sync)) {
+              presence?.update(true)
+              return
+            }
             // 退场中重开沿用原 Layer；Presence 会结清旧视觉租约。
             release ??= acquire()
             presence?.update(true)
@@ -615,12 +623,14 @@ export const tourMachine = createMachine({
         }
         catch (error) {
           disposed = true
+          gate.dispose()
           offExit?.()
           release?.()
           throw error
         }
         return () => {
           disposed = true
+          gate.dispose()
           offExit?.()
           const cleanup = release
           release = undefined

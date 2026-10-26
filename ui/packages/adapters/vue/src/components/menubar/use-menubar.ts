@@ -10,7 +10,7 @@ import type { MenubarApi, MenubarSchema, MenuTreeNode } from '@xihan-ui/headless
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectMenubar, createMenuTreeNode, menubarMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref, shallowReactive } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -101,7 +101,7 @@ export function useMenubar(
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getAnchorEl', current(triggers))
     service.refs.set('getFloatingEl', current(positioners))
     service.refs.set('getContentEl', current(contents))

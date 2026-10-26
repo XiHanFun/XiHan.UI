@@ -10,7 +10,7 @@ import type { ContextMenuApi, ContextMenuSchema, MenuTreeNode } from '@xihan-ui/
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectContextMenu, contextMenuMachine, createMenuTreeNode } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -66,7 +66,7 @@ export function useContextMenu(props: ContextMenuSchema['props']): ContextMenuCo
     node: () => contentRef.current,
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动；锚点是光标坐标，故无 getAnchorEl
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('getTriggerEl', () => triggerRef.current)
       service.refs.set('getContentEl', () => contentRef.current)

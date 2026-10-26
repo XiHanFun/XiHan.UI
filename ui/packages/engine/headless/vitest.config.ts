@@ -5,6 +5,7 @@ import { defineConfig } from 'vitest/config'
 // 阈值待后续按实测定，现在只出报告不判红。
 export default defineConfig({
   test: {
+    setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],

@@ -41,7 +41,7 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { calendarRangePickerAnatomy, calendarRangePickerMachine, connectDateRangePicker, dateFieldAnatomy, dateFieldMachine, dateRangePickerAnatomy, dateRangePickerCalendarProps, dateRangePickerFieldAt, dateRangePickerFieldEndProps, dateRangePickerFieldProps, dateRangePickerMachine, dateRangePickerMeta, dateRangePickerStructure, resolveDateRangePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
@@ -49,8 +49,8 @@ import { wcNormalize } from '../dom/normalize'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -333,7 +333,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 四台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
@@ -410,7 +410,8 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   )
 
   /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     axes: ['vertical', 'horizontal'],
@@ -421,7 +422,8 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
    * 快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；
    * 窄视口横排横滚、宽视口竖排竖滚，两轴都摆。
    */
-  private readonly presetBars = new ScrollbarsController(this, {
+  private readonly presetBars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('content'),
     scrollable: () => this.getPart('preset-group'),
     anchor: 'layer',
@@ -430,7 +432,8 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   })
 
   /** 每一列时间选项自己竖滚：每列一套贴层的竖条，紧跟在那一列后面（浮层 4px 档）。 */
-  private readonly timeBars = new ScrollbarsController(this, {
+  private readonly timeBars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('content'),
     scrollables: () => this.getParts('time-column'),
     anchor: 'layer',

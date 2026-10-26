@@ -7,7 +7,7 @@
 
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
-import { contains, createDismissLayer, focusItem, itemValue, queryItems, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { contains, focusItem, itemValue, overlayKit, prefetchOverlayKit, queryItems, requireOverlayKit, setTimeoutEffect, setup, whenOverlayKit } from '@xihan-ui/core'
 import { openedAtMountCell } from '../shared/first-frame'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
@@ -85,6 +85,7 @@ export const navigationMenuMachine = createMachine({
     detachedValues: new Set(),
     layerValue: null,
     exitDispose: null,
+    layerKitWait: null,
   }),
   initialState: () => 'idle',
   // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈，它的子级按当前页落定
@@ -300,6 +301,9 @@ export const navigationMenuMachine = createMachine({
         const value = context.get('value') ?? null
         const open = value != null
         const live = refs.get('layerDispose') != null
+        // 有 DOM 的宿主登记预取：文档上第一次有交互就在后台取浮层按需块
+        if (refs.get('config'))
+          prefetchOverlayKit(scope.getDoc())
         if (open) {
           // 重开或切项先废弃旧退场订阅，沿用原 Layer；旧 Presence 租约由适配器取消。
           const exitDispose = refs.get('exitDispose')
@@ -352,6 +356,16 @@ export const navigationMenuMachine = createMachine({
         // 无 DOM 环境（纯逻辑测试 / SSR）：状态照常转移，不入栈
         if (!config || !registerLayer)
           return
+        // 消解层在浮层按需块里：还没到就等它，到了重走一遍本动作，以那一刻的展开项为准
+        if (!overlayKit()) {
+          if (!refs.get('layerKitWait')) {
+            refs.set('layerKitWait', whenOverlayKit(() => {
+              refs.set('layerKitWait', null)
+              action(['syncLayer'])
+            }))
+          }
+          return
+        }
 
         /** 当前展开项对应的 trigger，集合现查不缓存。 */
         const openTrigger = (): HTMLElement | null => {
@@ -363,7 +377,7 @@ export const navigationMenuMachine = createMachine({
         }
 
         const cleanup = setupLayerTransaction(registerLayer, (layer, defer) => {
-          const dismiss = createDismissLayer({
+          const dismiss = requireOverlayKit().createDismissLayer({
             config,
             layer,
             onDismiss: (reason) => {
@@ -387,6 +401,9 @@ export const navigationMenuMachine = createMachine({
         refs.set('layerDispose', cleanup)
       },
       dropLayer: ({ refs, context }) => {
+        const kitWait = refs.get('layerKitWait')
+        refs.set('layerKitWait', null)
+        kitWait?.()
         const exitDispose = refs.get('exitDispose')
         refs.set('exitDispose', null)
         exitDispose?.()

@@ -6,10 +6,9 @@
 // 提供 portal lease 相关实现。
 
 import type { Cleanup } from '../types'
-import type { PortalVisualBridge } from './portal-visual-bridge'
 import { isHTMLElement } from '../guards'
 import { isRendered } from '../utils/rendered'
-import { createPortalVisualBridge } from './portal-visual-bridge'
+import { connectPortalVisualBridge } from './portal-bridge-connect'
 
 /**
  * 一个物理搬迁根在租约开始前的精确落点。占位节点始终插在根的原位置，释放时只替换
@@ -28,7 +27,7 @@ export interface PortalLeaseOptions {
   /** 此次租约独占搬迁的根；允许来自多个作者父节点。 */
   readonly roots: readonly HTMLElement[]
   /**
-   * 壳已经创建、视觉桥已经就绪，但 roots 尚未搬迁时调用。
+   * 壳已经创建、视觉桥已经就绪（浮层按需块还没到时随后补建），但 roots 尚未搬迁时调用。
    *
    * 适配器可在这里把逻辑所有权挂在壳上；返回的清理会在 roots 精确归位之后执行。
    */
@@ -158,8 +157,10 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
   shell.dataset.xhPortalShell = ''
   shell.style.display = 'contents'
   const slots: PortalSlot[] = []
-  let bridge: PortalVisualBridge | null = null
+  // 逻辑来源当场登记；视觉桥住在浮层按需块里，已经到了当场建（与静态引入时同一时机），没到等它到了再补建
+  let disconnectBridge: Cleanup | null = null
   let shellCleanup: Cleanup | null = null
+  let released = false
 
   try {
     for (const root of roots) {
@@ -169,7 +170,7 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
       slots.push({ root, placeholder })
     }
     target.appendChild(shell)
-    bridge = createPortalVisualBridge({ source, shell })
+    disconnectBridge = connectPortalVisualBridge({ source, shell })
     shellCleanup = options.onShellReady?.(shell) ?? null
     const focused = focusWithin(doc, roots)
     for (const slot of slots)
@@ -177,9 +178,10 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
     refocus(doc, focused)
   }
   catch (primary) {
+    released = true
     const rollbackErrors: unknown[] = []
     try {
-      bridge?.dispose()
+      disconnectBridge?.()
     }
     catch (error) {
       rollbackErrors.push(error)
@@ -200,7 +202,6 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
     throwWithRollback(primary, rollbackErrors, '[xh] Portal 租约初始化与回滚同时失败')
   }
 
-  let released = false
   return {
     source,
     target,
@@ -214,7 +215,7 @@ export function createPortalLease(options: PortalLeaseOptions): PortalLease {
       released = true
       const errors: unknown[] = []
       try {
-        bridge!.dispose()
+        disconnectBridge?.()
       }
       catch (error) {
         errors.push(error)

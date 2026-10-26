@@ -12,15 +12,15 @@ import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta, menuStructure } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { findMenuSubmenuOwner, setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 import { XhIconElement } from './icon'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -184,7 +184,7 @@ export class XhMenuElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly menuScope = createScope(this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 直属子菜单触发条目由父机补齐 item 身份；这里只保留 WC 的属性铺设桥。 */
   private readonly submenuBridges = new Map<HTMLElement, MenuSubmenuChild>()
@@ -251,7 +251,8 @@ export class XhMenuElement extends XhPortalHostElement {
   )
 
   /** 条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档 */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     props: () => ({ size: 'sm' }),

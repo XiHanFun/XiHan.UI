@@ -14,7 +14,7 @@ import { mergeIntoChild } from '../../runtime/as-child'
 import { mergePartProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { provideHoverCard, useHoverCardContext } from './context'
 import { useHoverCard } from './use-hover-card'
 
@@ -97,7 +97,7 @@ export const XhHoverCardPositioner = defineComponent({
   setup(props, { slots, attrs }) {
     const ctx = useHoverCardContext()
     // 卡片内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里走 4px 档
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
+    const bars = useOverlayScrollbars({ present: () => ctx.visible.value, scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef, present: ctx.visible.value }, () => [
       h('div', {

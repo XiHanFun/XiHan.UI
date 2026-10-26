@@ -11,7 +11,7 @@ import type { RefObject } from 'react'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef, useState } from 'react'
 import { invalidateMachineProps } from '../../runtime/create-react-runtime'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -69,7 +69,7 @@ export function usePopconfirm(
     node: () => contentRef.current,
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getAnchorEl', () => triggerRef.current)
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('getContentEl', () => contentRef.current)

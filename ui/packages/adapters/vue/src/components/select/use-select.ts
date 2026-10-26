@@ -10,7 +10,7 @@ import type { SelectApi, SelectSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSelect, selectMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -78,7 +78,7 @@ export function useSelect(
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     // 锚点是字段盒：列表面板与盒子同宽、左缘对齐；作者没写 control 时退回触发器
     service.refs.set('getAnchorEl', () => controlRef.value ?? triggerRef.value)
     service.refs.set('getTriggerEl', () => triggerRef.value)

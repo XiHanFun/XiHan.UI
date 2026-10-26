@@ -6,7 +6,7 @@
 // 提供 command 相关实现。
 
 import type { CommandNodeMeta, CommandSchema } from './command.types'
-import { createDismissLayer, createFocusScope, setup, trackArrivals } from '@xihan-ui/core'
+import { requireOverlayKit, setup, trackArrivals } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
@@ -310,9 +310,11 @@ export const commandMachine = createMachine({
               return undefined
 
             const release = setupLayerTransaction(registerLayer, (layer, defer, run) => {
+              // trackPresenceResources 的闸门放行之后才走到这里，按需块已经到了
+              const kit = requireOverlayKit()
               const getContentEl = refs.get('getContentEl')
 
-              const dismiss = createDismissLayer({
+              const dismiss = kit.createDismissLayer({
                 config,
                 layer,
                 // 退场期只占原栈位屏蔽下层，不再重复发关闭；两个公开开关仍可动态更新。
@@ -332,7 +334,7 @@ export const commandMachine = createMachine({
               defer(() => dismiss.dispose())
 
               // 焦点域无条件建，modal 只决定陷不陷焦点；逻辑关闭后内容立即 inert，焦点约束同步停用。
-              const focus = createFocusScope({
+              const focus = kit.createFocusScope({
                 config,
                 layer,
                 flush,

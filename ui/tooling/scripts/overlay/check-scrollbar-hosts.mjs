@@ -44,15 +44,20 @@ const REGISTRY = 'tooling/scripts/scroll-surface-registry.json'
 /** 组件总数的分母：一个组件一份套件。 */
 const SUITES_DIR = 'tooling/testing/src/suites'
 
-/** Vue 侧的调用点。 */
-const VUE_CALL = 'useScrollbars('
-/** WC 侧的调用点。 */
-const WC_CALL = 'new ScrollbarsController('
+/** Vue 侧的调用点：常显滚动面同步接，浮层里的经 useOverlayScrollbars 按需接，两种同形。 */
+const VUE_CALL = ['useScrollbars(', 'useOverlayScrollbars(']
+/** WC 侧的调用点：同上，浮层里的是 OverlayScrollbarsController。 */
+const WC_CALL = ['new ScrollbarsController(', 'new OverlayScrollbarsController(']
 /** WC 侧共用的「更多」菜单控制器：Toolbar、Tabs 经它自建菜单浮层，条子在它里面接。 */
 const WC_OVERFLOW_MENU = 'packages/adapters/web-components/src/runtime/overflow-menu-controller.ts'
 const WC_OVERFLOW_MENU_CALL = 'new OverflowMenuController('
 /** React 侧的调用点：与 Vue 同为 hook，同名。 */
-const REACT_CALL = 'useScrollbars('
+const REACT_CALL = ['useScrollbars(', 'useOverlayScrollbars(']
+
+/** 源码里有没有接这条线：任一种调用写法都算。 */
+function callsScrollbars(src, calls) {
+  return calls.some(call => src.includes(call))
+}
 
 async function read(path) {
   try {
@@ -125,8 +130,14 @@ function declares(body, property) {
   return new RegExp(`(?:^|[;\\s{])${property}\\s*:`).test(body)
 }
 
-/** 取出每一处调用点之后配平括号内的那段实参；缺省取 WC 的 `new ScrollbarsController(`。 */
-function callBlocks(src, call = WC_CALL) {
+/** 取出每一处调用点之后配平括号内的那段实参，按出现先后排；缺省取 WC 的两种写法。 */
+function callBlocks(src, calls = WC_CALL) {
+  return calls.flatMap(call => callBlocksOf(src, call).map(block => ({ at: src.indexOf(block), block })))
+    .sort((a, b) => a.at - b.at)
+    .map(({ block }) => block)
+}
+
+function callBlocksOf(src, call) {
   const blocks = []
   let from = 0
   while (true) {
@@ -388,7 +399,7 @@ for await (const file of walk(VUE)) {
   const bucket = vueSources.get(comp) ?? []
   bucket.push({ file, src })
   vueSources.set(comp, bucket)
-  if (src.includes(VUE_CALL))
+  if (callsScrollbars(src, VUE_CALL))
     vueHosts.set(comp, file)
 }
 
@@ -401,7 +412,7 @@ for (const name of await readdir(WC)) {
   const src = stripSourceComments(await readFile(join(WC, name), 'utf8'))
   if (src.includes(WC_OVERFLOW_MENU_CALL))
     wcOverflowMenuHosts.add(basename(name, '.ts'))
-  if (!src.includes(WC_CALL))
+  if (!callsScrollbars(src, WC_CALL))
     continue
   wcHosts.set(basename(name, '.ts'), { blocks: callBlocks(src), src })
 }
@@ -413,7 +424,7 @@ for (const comp of wcOverflowMenuHosts) {
 // 控制器自己得真接了条子：元素经它自建浮层，就靠它那一处调用配条子
 if (wcOverflowMenuHosts.size > 0) {
   const controller = await read(WC_OVERFLOW_MENU)
-  if (controller === null || !stripSourceComments(controller).includes(WC_CALL))
+  if (controller === null || !callsScrollbars(stripSourceComments(controller), WC_CALL))
     problems.push(`${WC_OVERFLOW_MENU}：${[...wcOverflowMenuHosts].join(' / ')} 经它自建「更多」菜单，它却没接 ScrollbarsController，菜单列表跟着缺条子`)
 }
 
@@ -423,7 +434,7 @@ for await (const file of walk(REACT)) {
   const src = stripSourceComments(await readFile(file, 'utf8'))
   const dir = basename(dirname(file))
   const comp = dir === basename(REACT) ? basename(file).replace(/\.tsx?$/, '') : dir
-  if (src.includes(REACT_CALL))
+  if (callsScrollbars(src, REACT_CALL))
     reactHosts.set(comp, { file, src })
 }
 

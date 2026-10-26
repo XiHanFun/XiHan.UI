@@ -113,6 +113,8 @@ export interface NavigationMenuRefs {
   layerValue: string | null
   /** 正在等待的退出完成订阅；重开或停机时先撤销，避免旧退出误拆新会话。 */
   exitDispose: Cleanup | null
+  /** 正在等浮层按需块（消解层在里面）的那一次排队；到了重走 syncLayer，收起或停机时撤销。 */
+  layerKitWait: Cleanup | null
 }
 
 export interface NavigationMenuSchema extends MachineSchema {

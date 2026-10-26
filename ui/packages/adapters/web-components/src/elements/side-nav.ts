@@ -10,7 +10,7 @@ import type { SideNavApi, SideNavExpandedValueChangeDetails, SideNavNode, SideNa
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideNavMeta, sideNavTooltipProps, tooltipMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -131,7 +131,7 @@ export class XhSideNavElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly navScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 每个弹出面板的定位层一份退场闸门：退场动画播完才真收。 */
   private readonly exits = new Map<HTMLElement, { value: string, gate: OverlayExit }>()
@@ -168,7 +168,7 @@ export class XhSideNavElement extends XhPortalHostElement {
     { scope: this.navScope, onBuilt: svc => this.injectHintRefs(svc) },
   )
 
-  private readonly hintEngine: PositionEnginePort = createPositionEngine()
+  private readonly hintEngine: PositionEnginePort = createDeferredPositionEngine()
   /** 名称提示的退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private hintExit: OverlayExit | null = null
   /** 名称提示的定位层显示期间搬到浮层落点，视觉环境取自它对着的那一行。 */

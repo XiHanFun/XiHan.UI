@@ -16,7 +16,7 @@ import { mergePartProps, mergeReactProps } from '../../runtime/merge-props'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useDescriptionPart, useTitleDescriptionPart } from '../../runtime/title-description'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { PopoverProvider, usePopoverContext } from './context'
 import { usePopover } from './use-popover'
 
@@ -79,7 +79,7 @@ export interface XhPopoverPositionerProps extends ComponentPropsWithRef<'div'> {
 export function XhPopoverPositioner({ children, container, ...rest }: XhPopoverPositionerProps): ReactNode {
   const ctx = usePopoverContext()
   // 面板内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；浮层里走 4px 档
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
+  const bars = useOverlayScrollbars({ present: () => ctx.rendered, scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.portalSource} present={ctx.rendered}>
       <div

@@ -9,7 +9,7 @@ import type { Layer, Service } from '@xihan-ui/core'
 import type { TooltipSchema } from '@xihan-ui/headless'
 import type { TooltipContext } from './context'
 import { connectTooltip, tooltipMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useContext, useRef } from 'react'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
@@ -47,7 +47,7 @@ export function useTooltip(props: TooltipSchema['props']): TooltipContext {
     node: () => contentRef.current,
     refs: (service) => {
       // 定位引擎由适配器注入，机器只经端口驱动
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
       service.refs.set('getAnchorEl', () => triggerRef.current)
       service.refs.set('getFloatingEl', () => positionerRef.current)
       service.refs.set('group', group)

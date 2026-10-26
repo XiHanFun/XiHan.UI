@@ -1456,6 +1456,7 @@ export type { XhConfig, XhTranslationOverrides, XhVisualEnvironmentConfig } from
 export { createVueRuntime } from './runtime/create-vue-runtime'
 export { vueNormalize } from './runtime/normalize-props'
 export type { PayloadOf } from './runtime/payload'
+export { preloadOverlay } from './runtime/preload-overlay'
 export { useMachine } from './runtime/use-machine'
 export { createVueIdGenerator } from './runtime/vue-id'
 export { createDialogService } from './services/dialog-service'

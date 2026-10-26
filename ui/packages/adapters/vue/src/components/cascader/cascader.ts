@@ -27,7 +27,7 @@ import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { withHandlers } from '../../runtime/with-handlers'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
@@ -356,7 +356,8 @@ export const XhCascaderPositioner = defineComponent({
     // 列区的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
     // 只摆横的：列多到放不下时整体横向滚动，纵向溢出归每一列自己。
     // 横条的正负按排版方向算，而组件不读计算样式，把 positioner 上那份显式交过去
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => ctx.contentRef.value,
       axes: ['horizontal'],
       // 条子走浮层 4px 档
@@ -468,7 +469,8 @@ export const XhCascaderSearchList = defineComponent({
     const ctx = useCascaderContext()
     const searchListRef = ref<HTMLElement | null>(null)
     // 候选列表自己竖滚，条子贴在它的盒子上、紧跟在它后面（与列同一形态：浮层 4px 档）
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => searchListRef.value,
       anchor: 'layer',
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
@@ -519,7 +521,8 @@ export const XhCascaderColumn = defineComponent({
     const ctx = useCascaderContext()
     const columnRef = ref<HTMLElement | null>(null)
     // 每列自己竖滚：条子贴在本列的盒子上、紧跟在它后面；content 那条横的归浮层壳
-    const bars = useScrollbars({
+    const bars = useOverlayScrollbars({
+      present: () => ctx.visible.value,
       scrollable: () => columnRef.value,
       anchor: 'layer',
       props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),

@@ -15,7 +15,7 @@ import { computed, defineComponent, h, inject, mergeProps, onUnmounted, provide,
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { renderStructure } from '../../runtime/structure'
-import { useScrollbars } from '../../runtime/use-scrollbars'
+import { useOverlayScrollbars } from '../../runtime/use-overlay-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideExpressionInput, useExpressionInputContext } from './context'
@@ -207,7 +207,7 @@ export const XhExpressionInputPositioner = defineComponent({
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     const ctx = useExpressionInputContext()
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
+    const bars = useOverlayScrollbars({ present: () => ctx.visible.value, scrollable: () => ctx.contentRef.value, props: { size: 'sm' } })
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.inputRef, present: ctx.visible.value }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps(), attrs),

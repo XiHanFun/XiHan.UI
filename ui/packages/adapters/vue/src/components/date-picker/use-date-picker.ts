@@ -17,7 +17,7 @@ import {
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref, shallowRef, watch } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -137,7 +137,7 @@ function createDatePickerContext(
     }
 
     // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
-    root.refs.set('position', createPositionEngine())
+    root.refs.set('position', createDeferredPositionEngine())
     root.refs.set('getAnchorEl', () => controlRef.value)
     root.refs.set('getFloatingEl', () => positionerRef.value)
   }

@@ -11,13 +11,13 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta, paginationPageSizeSelectProps, paginationStructure, selectMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 数值属性统一走这个转换器：属性缺席即 undefined，缺省值的唯一事实源留在 connect。
 // 空串也当缺席：`page=""` 经 Number() 会变成 0，那是个不存在的页。
@@ -149,7 +149,7 @@ export class XhPaginationElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly paginationScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着展开态走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
@@ -202,7 +202,8 @@ export class XhPaginationElement extends XhPortalHostElement {
   })
 
   /** 折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档 */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     props: () => ({ size: 'sm' }),
@@ -280,7 +281,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     svc.refs.set('config', this.config)
     svc.refs.set('registerLayer', this.registerPageSizeLayer)
     svc.refs.set('presence', this.ensurePageSizeExit(svc.state.get() === 'open').presence)
-    svc.refs.set('position', createPositionEngine())
+    svc.refs.set('position', createDeferredPositionEngine())
     svc.refs.set('getAnchorEl', () => this.pageSizeNodes?.trigger ?? null)
     svc.refs.set('getTriggerEl', () => this.pageSizeNodes?.trigger ?? null)
     svc.refs.set('getFloatingEl', () => this.pageSizeNodes?.positioner ?? null)

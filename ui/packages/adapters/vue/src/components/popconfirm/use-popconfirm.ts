@@ -11,7 +11,7 @@ import type { ComputedRef, Ref } from 'vue'
 import type { TitleDescriptionPresence } from '../../runtime/title-description'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopconfirm, popoverMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
@@ -87,7 +87,7 @@ export function usePopconfirm(
     // 定位引擎由适配器注入，机器只经端口驱动
     service.refs.set('config', config!)
     service.refs.set('registerLayer', registerLayer)
-    service.refs.set('position', createPositionEngine())
+    service.refs.set('position', createDeferredPositionEngine())
     service.refs.set('getAnchorEl', () => triggerRef.value)
     service.refs.set('getFloatingEl', () => positionerRef.value)
     service.refs.set('getContentEl', () => contentRef.value)

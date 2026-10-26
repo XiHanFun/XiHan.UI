@@ -6,10 +6,10 @@
 // 提供 dialog 相关实现。
 
 import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
-import { createDismissLayer, createFocusScope, getTabbables, removeLinks, setup, warn } from '@xihan-ui/core'
+import { getTabbables, removeLinks, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { createModalLayerResources, setupLayerTransaction } from '../shared/overlay-shell'
+import { createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
 
 const { createMachine } = setup<DialogSchema>()
@@ -226,11 +226,12 @@ export const dialogMachine = createMachine({
         let revealBackgroundNow: ((then?: () => void) => void) | undefined
         let resourcePolicy: string | undefined
         const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
+          const kit = requireOverlayKit()
           const role = prop('role') ?? 'dialog'
           resourcePolicy = role
           const getContentEl = refs.get('getContentEl')
 
-          const dismiss = createDismissLayer({
+          const dismiss = kit.createDismissLayer({
             config,
             layer,
             // 两个开关都现读 prop，展开中途改也立刻生效
@@ -254,7 +255,7 @@ export const dialogMachine = createMachine({
 
           // 焦点域无条件建，modal 只决定陷不陷焦点；放进 if (modal) 会让非模态
           // 既不初始聚焦也不归还焦点，restoreFocus 失效
-          const focus = createFocusScope({
+          const focus = kit.createFocusScope({
             config,
             layer,
             flush,
@@ -333,6 +334,8 @@ export const dialogMachine = createMachine({
         let disposed = false
         let release: (() => void) | undefined
         let lastOpen = false
+        // 消解层、焦点域与模态资源在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
+        const gate = createOverlayKitGate(scope.getDoc())
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
@@ -358,6 +361,11 @@ export const dialogMachine = createMachine({
               release = undefined
               cleanup?.()
               reopening = false
+            }
+            // 按需块没到：资源等它到了再建，视觉 Presence 照常跟着展开（内容由适配器藏到那时）
+            if (!release && !gate.ready(sync)) {
+              presence?.update(true)
+              return
             }
             // 退场中重开沿用原资源，旧租约由 Presence 撤销，不重复登记或抢回焦点。
             release ??= acquire()
@@ -390,12 +398,14 @@ export const dialogMachine = createMachine({
         }
         catch (error) {
           disposed = true
+          gate.dispose()
           offExit?.()
           release?.()
           throw error
         }
         return () => {
           disposed = true
+          gate.dispose()
           offExit?.()
           const cleanup = release
           release = undefined

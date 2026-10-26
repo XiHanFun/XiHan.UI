@@ -19,7 +19,7 @@ import type {
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { citationAnatomy, citationMachine, citationMeta, connectCitation } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { MachineController } from '../runtime/machine-controller'
@@ -113,7 +113,7 @@ export class XhCitationElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly citationScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** hover 档的卡片搬到 portal 落点；inline 档不搬。 */
   private readonly portal = this.createAnchoredPortalController({

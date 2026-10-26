@@ -26,15 +26,15 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { FeedbackNodes } from '../dom/feedback-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
+import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
-import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定；Lit 自带转换器把缺席落成 null/false，
 // value 落成 null 就分不出"非受控"与"受控且当前无选中"。
@@ -236,7 +236,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly treeSelectScope = createScope(() => this, this.idGen)
-  private readonly positionEngine: PositionEnginePort = createPositionEngine()
+  private readonly positionEngine: PositionEnginePort = createDeferredPositionEngine()
   private config: RuntimeConfig | null = null
   /** 退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。 */
   private exit: OverlayExit | null = null
@@ -368,7 +368,8 @@ export class XhTreeSelectElement extends XhPortalHostElement {
    * 两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；
    * 横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。
    */
-  private readonly bars = new ScrollbarsController(this, {
+  private readonly bars = new OverlayScrollbarsController(this, {
+    present: () => this.exit?.visible ?? false,
     shell: () => this.getPart('positioner'),
     // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走
     scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'),

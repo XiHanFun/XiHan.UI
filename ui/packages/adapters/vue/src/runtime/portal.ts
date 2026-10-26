@@ -5,9 +5,9 @@
 
 // 提供 portal 相关实现。
 
-import type { PortalVisualBridge } from '@xihan-ui/core'
+import type { Cleanup } from '@xihan-ui/core'
 import type { PropType, Ref, VNode } from 'vue'
-import { createPortalVisualBridge } from '@xihan-ui/core'
+import { connectPortalVisualBridge } from '@xihan-ui/core'
 import { defineComponent, h, onBeforeUnmount, ref, Teleport, watch } from 'vue'
 import { clearFieldContext } from '../components/field/context'
 
@@ -36,26 +36,30 @@ export const XhPortal = defineComponent({
     clearFieldContext()
     const sourceRef = ref<HTMLTemplateElement | null>(null)
     const shellRef = ref<HTMLElement | null>(null)
-    let bridge: PortalVisualBridge | null = null
+    let disconnectBridge: Cleanup | null = null
+
+    const disconnect = (): void => {
+      disconnectBridge?.()
+      disconnectBridge = null
+    }
 
     const connect = (): void => {
-      bridge?.dispose()
-      bridge = null
+      disconnect()
       const source = props.source?.value ?? sourceRef.value
       const shell = shellRef.value
       if (!source || !shell || !props.present)
         return
-      bridge = createPortalVisualBridge({ source, shell })
+      // 逻辑来源当场登记（搬进壳的控件照旧找得到所在位置的配置）；视觉桥住在 core 的浮层按需块里，
+      // 已经到了当场建，第一次打开时还没到就等它到了再建。定位引擎同样等这一块到了才第一次量，
+      // 所以量尺寸时壳上照旧已经是来源的环境
+      disconnectBridge = connectPortalVisualBridge({ source, shell })
     }
 
     watch([sourceRef, shellRef, () => props.source?.value, () => props.to, () => props.disabled], connect, { flush: 'post' })
     // 来源与壳在挂载时就已就位，转为呈现时赶在本轮渲染之前建桥：内容第一次排版、定位引擎第一次
     // 量尺寸时，壳上已经是来源的环境（密度、方向、主题），不会先按落点的环境量一遍再跳
     watch(() => props.present, connect, { flush: 'pre' })
-    onBeforeUnmount(() => {
-      bridge?.dispose()
-      bridge = null
-    })
+    onBeforeUnmount(disconnect)
 
     return (): VNode | VNode[] => [
       ...(props.source ? [] : [h('template', { 'ref': sourceRef, 'data-xh-portal-source': '' })]),

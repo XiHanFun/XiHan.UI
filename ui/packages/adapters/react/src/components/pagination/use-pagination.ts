@@ -10,7 +10,7 @@ import type { PaginationApi, PaginationSchema, SelectSchema } from '@xihan-ui/he
 import type { RefObject } from 'react'
 import { createRuntimeConfig } from '@xihan-ui/core'
 import { connectPagination, paginationMachine, paginationPageSizeSelectProps, selectMachine } from '@xihan-ui/headless'
-import { createPositionEngine } from '@xihan-ui/position'
+import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { useCallback, useMemo, useRef } from 'react'
 import { useXhConfig } from '../../config/config'
 import { reactNormalize } from '../../runtime/normalize-props'
@@ -75,7 +75,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
       })
       service.refs.set('config', config)
       service.refs.set('registerLayer', registerLayer)
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
     }
     // 元素 getter 在无 DOM 环境下也要设：连接层与效应经它们取节点
     service.refs.set('getAnchorEl', () => ellipsisRef.current)
@@ -95,7 +95,7 @@ export function usePagination(props: PaginationSchema['props']): PaginationConte
       })
       service.refs.set('config', config)
       service.refs.set('registerLayer', registerLayer)
-      service.refs.set('position', createPositionEngine())
+      service.refs.set('position', createDeferredPositionEngine())
     }
     service.refs.set('getAnchorEl', () => pageSizeTriggerRef.current)
     service.refs.set('getTriggerEl', () => pageSizeTriggerRef.current)
