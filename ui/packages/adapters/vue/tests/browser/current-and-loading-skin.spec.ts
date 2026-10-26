@@ -86,7 +86,7 @@ function part(scope: string, name: string, index = 0): HTMLElement {
   return el
 }
 
-/** 等颜色过渡跑完再读：micro 档 120ms，中途读到的是插值。 */
+/** 等颜色过渡跑完再读：micro 档 150ms，中途读到的是插值。 */
 const settled = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 300))
 
 const styleOf = (el: HTMLElement, prop: string): string => getComputedStyle(el).getPropertyValue(prop)
@@ -122,7 +122,7 @@ describe('「当前项」的三家槽名收成同一副构词', () => {
     setSlot('--xh-anchor-link-font-weight-current', '800')
     setSlot('--xh-breadcrumb-link-font-weight-current', '800')
     setSlot('--xh-navigation-menu-link-font-weight-current', '800')
-    // 前景色走 micro 档过渡（120ms），中途读到的是插值不是终值
+    // 前景色走 micro 档过渡（150ms），中途读到的是插值不是终值
     await settled()
 
     expect(styleOf(part('anchor', 'link'), 'color')).toBe(RED)
@@ -173,7 +173,7 @@ describe('取数与写入在途的转圈', () => {
     expect(root.getBoundingClientRect().width).toBeCloseTo(width, 4)
     expect(beforeOf(root, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(root, 'animation-play-state')).toBe('running')
-    expect(beforeOf(root, 'transition-delay')).toBe('0.12s')
+    expect(beforeOf(root, 'transition-delay')).toBe('0.15s')
     expect(Number.parseFloat(beforeOf(root, 'width'))).toBeGreaterThan(0)
     // 270° 的弧随钮的字色，起始边是缺口
     expect(beforeOf(root, 'border-right-color')).toBe(foreground)
@@ -211,7 +211,7 @@ describe('取数与写入在途的转圈', () => {
     busy(true)
     expect(styleOf(trigger, 'cursor')).toBe('progress')
     expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
-    expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0.15s')
     // 270° 的弧随钮的字色，起始边是缺口
     expect(beforeOf(trigger, 'border-right-color')).toBe(foreground)
     expect(beforeOf(trigger, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')
@@ -246,7 +246,7 @@ describe('取数与写入在途的转圈', () => {
     pending(true)
     expect(beforeOf(trigger, 'animation-name')).toBe('xh-spin')
     expect(beforeOf(trigger, 'position')).toBe('absolute')
-    expect(beforeOf(trigger, 'transition-delay')).toBe('0.12s')
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0.15s')
     // 270° 的弧随钮的字色，起始边是缺口
     expect(beforeOf(trigger, 'border-right-color')).toBe(foreground)
     expect(beforeOf(trigger, 'border-top-color')).toBe('rgba(0, 0, 0, 0)')

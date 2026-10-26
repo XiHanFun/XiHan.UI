@@ -56,12 +56,12 @@ describe('抽屉的整幅推入', () => {
     expect(getComputedStyle(content).opacity).toBe('1')
   })
 
-  it('减弱动效：不再位移，改为 120ms 淡入', async () => {
+  it('减弱动效：不再位移，改为 150ms 淡入', async () => {
     document.documentElement.dataset.motion = 'reduce'
     const content = await openDrawer()
     const slide = running(content, 'xh-slide-in')
     const fade = running(content, 'xh-slide-fade-in')
-    expect(fade.effect?.getComputedTiming().endTime).toBe(120)
+    expect(fade.effect?.getComputedTiming().endTime).toBe(150)
     slide.pause()
     fade.pause()
     slide.currentTime = 0
@@ -88,7 +88,7 @@ describe('布局覆盖档侧栏的整幅推出', () => {
     expect(style.translate).toBe('0px')
     const fade = sider.getAnimations().find(a => (a as CSSTransition).transitionProperty === 'opacity')
     expect(fade, '收起时应有一段不透明度过渡').toBeDefined()
-    expect(fade!.effect?.getComputedTiming().endTime).toBe(120)
+    expect(fade!.effect?.getComputedTiming().endTime).toBe(150)
     expect(style.visibility).toBe('visible')
   })
 })
@@ -111,7 +111,7 @@ describe('复制钮在途的圆环', () => {
     expect(ring.animationName).toBe('none')
     expect(ring.borderTopStyle).toBe('dotted')
     // 淡入的那一段等待与淡变照常
-    expect(ring.transitionDelay).toBe('0.12s')
+    expect(ring.transitionDelay).toBe('0.15s')
     await new Promise<void>(resolve => setTimeout(resolve, 400))
     expect(Number.parseFloat(getComputedStyle(trigger, '::before').opacity)).toBeGreaterThan(0.9)
   })

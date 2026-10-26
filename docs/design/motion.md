@@ -35,15 +35,15 @@
 
 | 令牌 | 取值 | 减弱动效 | 角色 |
 | --- | ---: | ---: | --- |
-| `--xh-motion-duration-micro` | 120ms | 120ms | 状态 |
-| `--xh-motion-duration-enter` | 200ms | 120ms | 出现、列表加入 |
-| `--xh-motion-duration-exit` | 120ms | 120ms | 出现、列表移除、导航出 |
+| `--xh-motion-duration-micro` | 150ms | 150ms | 状态 |
+| `--xh-motion-duration-enter` | 200ms | 150ms | 出现、列表加入 |
+| `--xh-motion-duration-exit` | 150ms | 150ms | 出现、列表移除、导航出 |
 | `--xh-motion-duration-move` | 200ms | 1ms | 指示、列表重排、数值 |
 | `--xh-motion-duration-expand` | 200ms | 1ms | 披露展开 |
-| `--xh-motion-duration-collapse` | 120ms | 1ms | 披露收起 |
+| `--xh-motion-duration-collapse` | 150ms | 1ms | 披露收起 |
 | `--xh-motion-duration-slide` | 320ms | 1ms | 导航进 |
-| `--xh-motion-duration-nudge` | 120ms | 1ms | 切换、跟手让位 |
-| `--xh-motion-duration-press` / `-release` | 120 / 200ms | 1ms | 按压 |
+| `--xh-motion-duration-nudge` | 200ms | 1ms | 切换、跟手让位 |
+| `--xh-motion-duration-press` / `-release` | 150 / 200ms | 1ms | 按压 |
 | `--xh-motion-duration-attention` | 640ms | 1ms（预设不播） | 注意 |
 | `--xh-motion-duration-reveal` | 960ms | 1ms | 数据首次出现 |
 | `--xh-motion-duration-morph` | 400ms | 1ms | 数据更新 |
@@ -104,7 +104,7 @@
 
 ## 编排
 
-- **进出不对称**：进场比退场长一档（`enter` 200ms、`exit` 120ms），进场减速、退场加速；退场是让路。
+- **进出不对称**：进场比退场长一档（`enter` 200ms、`exit` 150ms），进场减速、退场加速；退场是让路。
 - **方向**：从哪来回哪去——锚定浮层从锚点一侧滑出，抽屉从所在边推入，通知从视口边缘进出；RTL 下横向位移随书写方向翻转。
 - **错开**：只对同一批到达的条目按到达顺序计数，步长 `--xh-motion-stagger-step`，最多 5 步，后面的与第 5 步同时出现；不按 DOM 位置（`nth-child`）计数。每次都是同一批一起露面的（浮动按钮列表、级联列、问答选项）位次就是到达顺序。
 - **分层**：遮罩与面板同时开始、同时退场，在最长的那个结束后卸载；面板内列表的错开从面板进场开始计时。
@@ -119,8 +119,8 @@
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
-| 按下 | 120ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
+| 按下 | 150ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
+| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 150ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。
@@ -193,7 +193,7 @@ transition 列表写长名：`background-color`、`border-color`、`outline-colo
 
 ## 减弱动效
 
-`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（几何类时长为 1ms，位移与整幅位移归零，缩放归 1，错开步长归 0），换色与出现的淡变保留为 120ms（`micro` / `enter` / `exit`）。按下仍然换底，浮层仍然淡入淡出、退场照样等 120ms 的淡出播完再卸载，只是不再滑动与缩放；抽屉与覆盖式侧栏改为淡入淡出；循环动画停止并显示静态替代；`@xihan-ui/animations` 的预设不播。
+`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（几何类时长为 1ms，位移与整幅位移归零，缩放归 1，错开步长归 0），换色与出现的淡变保留为 150ms（`micro` / `enter` / `exit`）。按下仍然换底，浮层仍然淡入淡出、退场照样等 150ms 的淡出播完再卸载，只是不再滑动与缩放；抽屉与覆盖式侧栏改为淡入淡出；循环动画停止并显示静态替代；`@xihan-ui/animations` 的预设不播。
 
 `data-motion="default"` 恢复完整动效：系统要求减弱、而产品设置或某个局部容器选择完整动效时，该子树的令牌回到基线取值。两者可以嵌套，最近的一层生效。JS 侧经 `resolveMotionPreference(el)` 按元素读同一个答案——Presence、贴底滚动、平滑滚动、数字动画、轮播起播、背景层全部走这一条通道；产品自己的「减弱动效」设置用 `setMotionOverride` 一处设置、处处生效。
 

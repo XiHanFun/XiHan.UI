@@ -166,7 +166,7 @@ describe('tooltip 反白实底', () => {
         .toBe(direction === activeDirection ? '1' : '0')
     }
     expect(content.animationName).toBe('xh-overlay-slide-in')
-    // 入场走 enter 档（--xh-motion-duration-enter = duration-normal 200ms），不再借退场的 120ms
+    // 入场走 enter 档（--xh-motion-duration-enter = duration-normal 200ms），不再借退场的 150ms
     expect(content.animationDuration).toBe('0.2s')
     // 打开态不常驻合成层：常驻的 will-change 会让静止画面沿用入场动画中途的栅格而发虚
     expect(content.willChange).toBe('auto')

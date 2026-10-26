@@ -96,7 +96,7 @@ describe('命令对话框真实退出队列', () => {
     expect(document.body.textContent).not.toContain('第三问')
   })
 
-  it('减弱动效下退场只剩 120ms 淡出，队列等它播完才推进', async () => {
+  it('减弱动效下退场只剩 150ms 淡出，队列等它播完才推进', async () => {
     // 与视觉环境控制器一致：JS 覆盖与根上的 data-motion 同时置为减弱
     setMotionOverride('reduce')
     document.documentElement.dataset.motion = 'reduce'
@@ -112,7 +112,7 @@ describe('命令对话框真实退出队列', () => {
 
     const animations = held()
     expect(animations).toHaveLength(2)
-    expect(animations.map(animation => animation.effect?.getComputedTiming().endTime)).toEqual([120, 120])
+    expect(animations.map(animation => animation.effect?.getComputedTiming().endTime)).toEqual([150, 150])
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(title()).toBe('第一问')
 

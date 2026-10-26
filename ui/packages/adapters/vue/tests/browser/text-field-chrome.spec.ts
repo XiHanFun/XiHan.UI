@@ -36,12 +36,12 @@ function field(props: Record<string, unknown> = {}, textarea = false): VNode {
   ])
 }
 
-/** 减弱动效下字段外壳只剩换色过渡，每一项都保留 120ms 的淡变，没有几何属性。 */
+/** 减弱动效下字段外壳只剩换色过渡，每一项都保留 150ms 的淡变，没有几何属性。 */
 function expectColorFadesOnly(style: CSSStyleDeclaration): void {
   const properties = style.transitionProperty.split(', ')
   // 焦点环即时出现、不淡入，不在过渡清单里
   expect(properties).toEqual(['background-color', 'border-color', 'box-shadow'])
-  expect(style.transitionDuration.split(', ')).toEqual(properties.map(() => '0.12s'))
+  expect(style.transitionDuration.split(', ')).toEqual(properties.map(() => '0.15s'))
 }
 
 afterEach(async () => {
@@ -154,7 +154,7 @@ describe('field Chrome 状态与字段内动作', () => {
     expect(Number.parseFloat(target.minBlockSize)).toBeGreaterThanOrEqual(44)
   })
 
-  it('loading 与局部 reduced-motion 由 Field Chrome 自己解析：换色淡变保留为 120ms', () => {
+  it('loading 与局部 reduced-motion 由 Field Chrome 自己解析：换色淡变保留为 150ms', () => {
     mount(() => h('div'))
     document.documentElement.dataset.motion = 'reduce'
     const loading = document.createElement('div')

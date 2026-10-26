@@ -1595,7 +1595,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | §8.3 字段、§7.2 第 5 条 焦点环 | `bg.field` 改取承载面；令牌加 `ring.halo`、`ring.offset` 改 0、内圈 1px；`css/focus.css` 改内圈 + 光环并撤掉实心面取 currentColor 的规则；`family/field-chrome.css` 聚焦加光环、field-inset 阶梯按盒的底取档、字段里的标签只在淡底盒里换白；`check-focus-ring`、`check-focus-ring-surface`、`check-state-ladder`、`check-catalog-preview` 登记表 |
 | §7.2 第 2 条 neutral | `css/tone.css` 让 Action Control 上的 `data-tone="neutral"` 不灌语气槽 |
 | §5.3 阴影三档、§8.1 | 亮色 `elevation.raised` / `floating` / `sheet` 与 frosted、elevated 投影改引 `shadow.sm` / `md` / `lg`；`check-elevation-role` 复核 |
-| §9 时长 | `duration.fast` 改 150ms，`motion.duration.nudge` 改引 `duration.normal`；`semantic.reduce.json` 的短淡变改 150ms |
 | §9.5 弹层进出场 | 锚定列表、菜单、Tooltip 与无锚弹层改引 `xh-overlay-pop-in` / `xh-pop-out`，删 `xh-overlay-slide-*`；`check-keyframe-registry`、`check-keyframe-refs`、`check-presence-pair` 登记表 |
 | §9.13 勾选标记 | `family/check-mark.css` 加描线与全选 / 半选交叉缩放；`check-motion-role`、`check-reduced-motion-channel` 登记 `clip-path` / `mask-size` |
 | §6.8 Slider | `css/slider.css`、`css/color-slider.css`、`css/color-picker.css` 拖动改画光环、不再放大与投影 |

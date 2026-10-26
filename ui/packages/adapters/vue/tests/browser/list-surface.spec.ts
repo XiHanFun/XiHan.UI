@@ -24,7 +24,7 @@ function mount(variant: 'ghost' | 'outline' | 'subtle' = 'ghost', hoverable = fa
   const host = document.createElement('div')
   hosts.push(host)
   // 令过渡即时完成：断言的是悬停稳定态的底色，不是过渡中间帧。真实指针是整个浏览器共用的一颗，
-  // 并行跑的别份用例一起步就把它停回角落，等 120ms 过渡走完再读，读到的多半已是失去悬停的透明底
+  // 并行跑的别份用例一起步就把它停回角落，等 150ms 过渡走完再读，读到的多半已是失去悬停的透明底
   host.style.setProperty('--xh-motion-duration-micro', '0ms')
   host.innerHTML = `
     <ul data-scope="list" class="xh-scope-list" data-part="root" data-variant="${variant}"${hoverable ? ' data-hoverable' : ''} data-split>

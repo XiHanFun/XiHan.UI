@@ -20,7 +20,7 @@ export const motionDurations = {
   expand: durations.normal,
   collapse: durations.fast,
   slide: durations.slow,
-  nudge: durations.fast,
+  nudge: durations.normal,
   press: durations.fast,
   release: durations.normal,
   attention: durations.slow * 2,

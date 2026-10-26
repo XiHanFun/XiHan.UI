@@ -63,12 +63,12 @@ Discrete action controls (Button, Toggle, icon buttons, pagination buttons, tool
 
 | Phase | Duration | Easing | Result |
 | --- | ---: | --- | --- |
-| Press | `--xh-motion-duration-press` (120ms) | `--xh-motion-ease-press` | Background enters active; scale goes from 1 to `--xh-motion-scale-press` (1 by default, only the face changes) |
+| Press | `--xh-motion-duration-press` (150ms) | `--xh-motion-ease-press` | Background enters active; scale goes from 1 to `--xh-motion-scale-press` (1 by default, only the face changes) |
 | Release | `--xh-motion-duration-release` (200ms) | `--xh-motion-ease-release` | Scale returns to 1; background, stroke and text color return to hover / rest over `--xh-motion-duration-micro` |
 
 By default only the face changes and nothing scales; for a press bounce, set `--xh-motion-scale-press` back to 0.97 on the root, with no change to the timeline.
 
-Collection items such as Menu Item, Listbox Item, Tree Node and Table Row, and disclosure triggers such as Accordion / Collapsible, follow the same rhythm (120ms to the active face on press, back to hover / rest over micro on release), but only switch the surface: they never scale the whole row, and zero feedback is not allowed. With reduced motion, `--xh-motion-scale-press` becomes 1 and both durations become 1ms, while the color feedback stays.
+Collection items such as Menu Item, Listbox Item, Tree Node and Table Row, and disclosure triggers such as Accordion / Collapsible, follow the same rhythm (150ms to the active face on press, back to hover / rest over micro on release), but only switch the surface: they never scale the whole row, and zero feedback is not allowed. With reduced motion, `--xh-motion-scale-press` becomes 1 and both durations become 1ms, while the color feedback stays.
 
 ## Scrolling inside components
 
