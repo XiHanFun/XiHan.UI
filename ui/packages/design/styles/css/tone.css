@@ -169,6 +169,99 @@
     --xh-tone-soft: var(--xh-_tone-soft);
   }
 
+  /* 语气边界：有语气轴的组件没写 tone 时用自己的缺省语气，不接外层容器的。
+     语气槽声明在 [data-tone] 上、靠继承流到部件，这条继承同样会越过组件边界——没写 tone 的按钮
+     放进 danger 的 Alert 就被染成 danger。这里在这些组件的根上把整族私有槽清回未声明，读槽处落回
+     各自 var() 的兜底，也就是组件自己的缺省；组件里的部件照旧从根继承。
+     组要把语气给到子组件，由连接层显式写到子组件的 data-tone 上（ButtonGroup 的段、TagGroup 与
+     选择器里的值标签、菜单的子菜单），不靠继承。没有语气轴的组件（布局、滚动区、虚拟列表）不在名单里，
+     夹在组与条目之间也不挡继承。Menu 与 Tooltip 没有根，语气写在内容部件上，边界也就落在那里。
+     浮层壳同样是边界：视觉桥不带语气，浮层也不从落点那边接。
+     逐个组件写而不收进一个 :is()：产物里各自落进组件的挂载类桶，收成一条会进通配桶、每个元素都试一遍。
+     名单与连接层核对，见 check-tone-boundary */
+  [data-scope='accordion'][data-part='root']:not([data-tone]),
+  [data-scope='alert'][data-part='root']:not([data-tone]),
+  [data-scope='anchor'][data-part='root']:not([data-tone]),
+  [data-scope='approval'][data-part='root']:not([data-tone]),
+  [data-scope='avatar'][data-part='root']:not([data-tone]),
+  [data-scope='back-top'][data-part='root']:not([data-tone]),
+  [data-scope='breadcrumb'][data-part='root']:not([data-tone]),
+  [data-scope='button'][data-part='root']:not([data-tone]),
+  [data-scope='button-group'][data-part='root']:not([data-tone]),
+  [data-scope='cascader'][data-part='root']:not([data-tone]),
+  [data-scope='checkbox'][data-part='root']:not([data-tone]),
+  [data-scope='checkbox-group'][data-part='root']:not([data-tone]),
+  [data-scope='clipboard'][data-part='root']:not([data-tone]),
+  [data-scope='collapsible'][data-part='root']:not([data-tone]),
+  [data-scope='color-field'][data-part='root']:not([data-tone]),
+  [data-scope='color-swatch-picker'][data-part='root']:not([data-tone]),
+  [data-scope='combobox'][data-part='root']:not([data-tone]),
+  [data-scope='context-menu'][data-part='root']:not([data-tone]),
+  [data-scope='date-field'][data-part='root']:not([data-tone]),
+  [data-scope='date-picker'][data-part='root']:not([data-tone]),
+  [data-scope='date-range-picker'][data-part='root']:not([data-tone]),
+  [data-scope='download-trigger'][data-part='root']:not([data-tone]),
+  [data-scope='editable'][data-part='root']:not([data-tone]),
+  [data-scope='empty-state'][data-part='root']:not([data-tone]),
+  [data-scope='expression-input'][data-part='root']:not([data-tone]),
+  [data-scope='float-button'][data-part='root']:not([data-tone]),
+  [data-scope='grid-list'][data-part='root']:not([data-tone]),
+  [data-scope='heatmap'][data-part='root']:not([data-tone]),
+  [data-scope='highlight'][data-part='root']:not([data-tone]),
+  [data-scope='icon'][data-part='root']:not([data-tone]),
+  [data-scope='listbox'][data-part='root']:not([data-tone]),
+  [data-scope='loading-bar'][data-part='root']:not([data-tone]),
+  [data-scope='mention'][data-part='root']:not([data-tone]),
+  [data-scope='menubar'][data-part='root']:not([data-tone]),
+  [data-scope='navigation-menu'][data-part='root']:not([data-tone]),
+  [data-scope='number-animation'][data-part='root']:not([data-tone]),
+  [data-scope='number-field'][data-part='root']:not([data-tone]),
+  [data-scope='pagination'][data-part='root']:not([data-tone]),
+  [data-scope='password-input'][data-part='root']:not([data-tone]),
+  [data-scope='pin-input'][data-part='root']:not([data-tone]),
+  [data-scope='progress'][data-part='root']:not([data-tone]),
+  [data-scope='prompt-input'][data-part='root']:not([data-tone]),
+  [data-scope='question-flow'][data-part='root']:not([data-tone]),
+  [data-scope='radio-group'][data-part='root']:not([data-tone]),
+  [data-scope='rating'][data-part='root']:not([data-tone]),
+  [data-scope='reasoning'][data-part='root']:not([data-tone]),
+  [data-scope='select'][data-part='root']:not([data-tone]),
+  [data-scope='side-nav'][data-part='root']:not([data-tone]),
+  [data-scope='slider'][data-part='root']:not([data-tone]),
+  [data-scope='sparkline'][data-part='root']:not([data-tone]),
+  [data-scope='spinner'][data-part='root']:not([data-tone]),
+  [data-scope='statistic'][data-part='root']:not([data-tone]),
+  [data-scope='steps'][data-part='root']:not([data-tone]),
+  [data-scope='switch'][data-part='root']:not([data-tone]),
+  [data-scope='tabs'][data-part='root']:not([data-tone]),
+  [data-scope='tag'][data-part='root']:not([data-tone]),
+  [data-scope='tags-input'][data-part='root']:not([data-tone]),
+  [data-scope='text-field'][data-part='root']:not([data-tone]),
+  [data-scope='time-field'][data-part='root']:not([data-tone]),
+  [data-scope='time-picker'][data-part='root']:not([data-tone]),
+  [data-scope='time-range-picker'][data-part='root']:not([data-tone]),
+  [data-scope='toggle'][data-part='root']:not([data-tone]),
+  [data-scope='toggle-group'][data-part='root']:not([data-tone]),
+  [data-scope='tool-call'][data-part='root']:not([data-tone]),
+  [data-scope='transfer'][data-part='root']:not([data-tone]),
+  [data-scope='tree-select'][data-part='root']:not([data-tone]),
+  [data-scope='menu'][data-part='content']:not([data-tone]),
+  [data-scope='tooltip'][data-part='content']:not([data-tone]),
+  [data-xh-portal-shell]:not([data-tone]) {
+    --xh-_tone: initial;
+    --xh-_tone-on: initial;
+    --xh-_tone-shift: initial;
+    --xh-_tone-hover: initial;
+    --xh-_tone-active: initial;
+    --xh-_tone-subtle: initial;
+    --xh-_tone-subtle-hover: initial;
+    --xh-_tone-subtle-active: initial;
+    --xh-_tone-border: initial;
+    --xh-_tone-border-control: initial;
+    --xh-_tone-soft: initial;
+    --xh-_tone-fg: initial;
+  }
+
   /* Action Control 上的 neutral 与不写等价（设计真源 §7.2 第 2 条）：中性就是缺省面，非实心形态不另铺
      neutral 淡底、不换深色描边，同一个次要动作只有一副长相。撤掉的只是非实心形态读的淡底、字色与描边几支，
      家族配方非实心形态读的就是这五支，随之落回缺省值；实心底与选中标记读的 --xh-_tone / -on / -hover / -active 照旧是中性那一族。

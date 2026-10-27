@@ -199,16 +199,16 @@ describe('portal 视觉环境桥', () => {
     expect(reads).toBe(0)
   })
 
-  it('来源祖先覆盖根上的令牌仍投影到壳；语气经 data-tone 带过去，浮层内自定义节点取得同一族颜色', async () => {
+  it('来源祖先覆盖根上的令牌仍投影到壳；语气 data-tone 不带过去，浮层内的节点要用语气自己写', async () => {
     const host = document.createElement('div')
     document.body.append(host)
     app = createApp({
       render: () => h('section', { 'data-tone': 'danger', 'style': '--xh-color-brand-500: rgb(1, 2, 3)' }, [
         h('span', { 'data-testid': 'inline-probe', 'style': 'background: var(--xh-tone-subtle)' }, '行内'),
-        h(XhPortal, { to: document.body }, () => h('span', {
-          'data-testid': 'portal-probe',
-          'style': 'background: var(--xh-tone-subtle)',
-        }, '浮层')),
+        h(XhPortal, { to: document.body }, () => [
+          h('span', { 'data-testid': 'portal-probe', 'style': 'background: var(--xh-tone-subtle)' }, '浮层'),
+          h('span', { 'data-testid': 'portal-toned', 'data-tone': 'danger', 'style': 'background: var(--xh-tone-subtle)' }, '自写语气'),
+        ]),
       ]),
     })
     app.mount(host)
@@ -219,13 +219,13 @@ describe('portal 视觉环境桥', () => {
     expect(getComputedStyle(shell).getPropertyValue('--xh-color-brand-500')).toBe('rgb(1, 2, 3)')
     expect(inlineCustomProperties(shell)).toEqual(['--xh-color-brand-500'])
 
-    expect(shell.getAttribute('data-tone')).toBe('danger')
+    expect(shell.hasAttribute('data-tone')).toBe(false)
     const inline = document.querySelector<HTMLElement>('[data-testid="inline-probe"]')!
     const probe = document.querySelector<HTMLElement>('[data-testid="portal-probe"]')!
-    const subtle = getComputedStyle(inline).getPropertyValue('--xh-tone-subtle')
-    expect(subtle).not.toBe('')
-    expect(getComputedStyle(probe).getPropertyValue('--xh-tone-subtle')).toBe(subtle)
-    expect(getComputedStyle(probe).backgroundColor).toBe(getComputedStyle(inline).backgroundColor)
-    expect(getComputedStyle(probe).backgroundColor).not.toBe(TRANSPARENT)
+    const toned = document.querySelector<HTMLElement>('[data-testid="portal-toned"]')!
+    expect(getComputedStyle(probe).getPropertyValue('--xh-tone-subtle')).toBe('')
+    expect(getComputedStyle(probe).backgroundColor).toBe(TRANSPARENT)
+    expect(getComputedStyle(toned).backgroundColor).toBe(getComputedStyle(inline).backgroundColor)
+    expect(getComputedStyle(toned).backgroundColor).not.toBe(TRANSPARENT)
   })
 })

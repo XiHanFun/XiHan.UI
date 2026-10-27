@@ -5,16 +5,18 @@
 
 // Portal 视觉桥：把逻辑来源所处的视觉环境投影到该 Portal 实例独占的壳上。
 //
-// 壳上承接三样东西，都取「来源 composed 祖先链上最近的显式声明」：
-// - 七个视觉 DOM 轴（主题、品牌、密度、对比度、动效、透明度、方向）；
-// - 语气 data-tone。它不是视觉轴，语气在来源那里是靠这个属性表达的（tone.css 把整族
-//   --xh-tone-* 声明在 [data-tone] 上），所以带属性过去而不是带派生出来的槽；
+// 壳上承接两样东西，都取「来源 composed 祖先链上最近的显式声明」：
+// - 八个视觉 DOM 轴（主题、品牌、密度、对比度、动效、透明度、材质、方向）；
 // - CSS 自定义属性里，壳自己解析不出来、且属于「来源视觉环境」的那部分：
 //   作者自定义属性（不以 --xh- 开头）照投；--xh- 命名空间只投根上有声明的名字——令牌层把
 //   全部令牌声明在 :where(:root) 上，作者按三种粒度在 :root 写的组件槽覆盖也在根上；
 //   皮肤写在组件 / 家族元素上的公开槽（--xh-<组件>-*、--xh-collection-* 等）、私有槽
 //   --xh-_* 与 [data-tone] 上的 --xh-tone-* 根上没有，它们是组件内部级联，不跨 Portal。
 //   否则斑马行改写的 --xh-collection-bg-rest 会顺着行内的触发器一路继承进菜单项。
+//
+// 语气 data-tone 不带：语气是组件自己的属性，不是来源所处的环境。浮层要用语气的组件
+// （Select、Menu、Tooltip 等）由连接层把自己的 tone 写到定位层或内容部件上；没写的落回缺省，
+// 不接触发器外层容器的语气（tone.css 的语气边界把浮层壳也算在内）。
 //
 // 「壳自己解析不出来」由两层判据收窄，见 portal-visual-index：只由文档根或桥复制过去的那些
 // 属性选中的规则（令牌层的 :where(:root) 与 :where([data-density='compact']) 之类），壳带着
@@ -28,6 +30,10 @@ import { isShadowRoot } from '../guards'
 import { bindPortalSource } from './portal-source'
 import { collectReferences, portalVisualIndex } from './portal-visual-index'
 
+/**
+ * 逐项复制到壳上的八个视觉轴。材质轴（standard / liquid）写在根或容器上，浮层里的导航层部件
+ * 按它换材质，同样带属性。
+ */
 const VISUAL_AXES = [
   'data-theme',
   'data-brand',
@@ -39,28 +45,21 @@ const VISUAL_AXES = [
   'dir',
 ] as const
 
-/**
- * 逐项复制到壳上的属性：八个视觉轴，外加语气 data-tone。语气不是视觉轴，只是它在来源
- * 那里靠属性表达、整族 --xh-tone-* 都挂在 [data-tone] 上，所以带属性而不是带派生槽。
- * 材质轴（standard / liquid）写在根或容器上，浮层里的导航层部件按它换材质，同样带属性。
- */
-const VISUAL_ATTRIBUTES = [...VISUAL_AXES, 'data-tone'] as const
-
 /** 库自己的命名空间：令牌、组件槽、家族槽、私有槽与语气族都以它开头。 */
 const LIBRARY_NAMESPACE = '--xh-'
 
 /**
- * 祖先链上值得重算环境的属性：八个视觉轴与语气、inline 样式、匹配样式表声明的 class，
+ * 祖先链上值得重算环境的属性：八个视觉轴、inline 样式、匹配样式表声明的 class，
  * 以及决定 composed 链走向的 slot。来源自身的 data-state / aria-* 状态翻转不在其列：
  * 触发器每开合一次都会改它们，而它们不改变来源所处的视觉环境。
  */
-const OBSERVED_ATTRIBUTES: readonly string[] = [...VISUAL_ATTRIBUTES, 'style', 'class', 'slot']
+const OBSERVED_ATTRIBUTES: readonly string[] = [...VISUAL_AXES, 'style', 'class', 'slot']
 
 /** 文档索引的入参：壳带得走的属性就是「规则能在壳上再命中一次」的全部条件。 */
-const INDEX_INPUT = { reproduced: new Set<string>(VISUAL_ATTRIBUTES) } as const
+const INDEX_INPUT = { reproduced: new Set<string>(VISUAL_AXES) } as const
 
-type VisualAttribute = typeof VISUAL_ATTRIBUTES[number]
-type AttributeSnapshot = ReadonlyMap<VisualAttribute, string | null>
+type VisualAxis = typeof VISUAL_AXES[number]
+type AttributeSnapshot = ReadonlyMap<VisualAxis, string | null>
 type CustomPropertySnapshot = Readonly<{ value: string, priority: string }>
 type CustomPropertySnapshots = ReadonlyMap<string, CustomPropertySnapshot>
 
@@ -151,13 +150,13 @@ function indexOf(context: SyncContext): PortalVisualIndex {
   return context.index
 }
 
-function snapshotAttributes(element: Element): Map<VisualAttribute, string | null> {
-  return new Map(VISUAL_ATTRIBUTES.map(name => [name, element.getAttribute(name)]))
+function snapshotAttributes(element: Element): Map<VisualAxis, string | null> {
+  return new Map(VISUAL_AXES.map(name => [name, element.getAttribute(name)]))
 }
 
 function applyAttributes(element: Element, values: AttributeSnapshot): boolean {
   let changed = false
-  for (const name of VISUAL_ATTRIBUTES) {
+  for (const name of VISUAL_AXES) {
     const value = values.get(name) ?? null
     if (value === null) {
       if (element.hasAttribute(name)) {
@@ -249,15 +248,15 @@ function chainOf(source: Element): AncestorChain {
   return { elements, slots, observations, nodes, crossesShadowRoot }
 }
 
-function visualSnapshot(chain: AncestorChain): Map<VisualAttribute, string | null> {
-  const values = new Map<VisualAttribute, string | null>()
+function visualSnapshot(chain: AncestorChain): Map<VisualAxis, string | null> {
+  const values = new Map<VisualAxis, string | null>()
   for (const node of chain.elements) {
-    for (const name of VISUAL_ATTRIBUTES) {
+    for (const name of VISUAL_AXES) {
       if (!values.has(name) && node.hasAttribute(name))
         values.set(name, node.getAttribute(name))
     }
   }
-  for (const name of VISUAL_ATTRIBUTES) {
+  for (const name of VISUAL_AXES) {
     if (!values.has(name))
       values.set(name, null)
   }
@@ -557,7 +556,7 @@ function changedClassDeclares(record: MutationRecord, classes: ReadonlySet<strin
 /**
  * 一批变更记录里是否有会改变来源视觉环境的那种。
  *
- * - 视觉轴、语气与 slot 的属性变化一律算。
+ * - 视觉轴与 slot 的属性变化一律算。
  * - inline 样式只在有自定义属性的值或优先级真的变了时才算：body 滚动锁定写的 overflow / padding、
  *   定位引擎写的 transform 都落在链上，但改不了任何自定义属性；文档根上早就挂着一串应用主题变量时，
  *   旁的属性改动也不该把它们当成变化。变了的若落在公共祖先上且两侧各自继承得到，同样不算
@@ -597,7 +596,7 @@ function collectedError(primary: unknown, rollback: unknown[], message: string):
 /**
  * 把逻辑来源最近显式声明的视觉环境投影到单个 Portal 壳。
  *
- * 桥接七个视觉 DOM 轴与语气 data-tone，以及来源祖先链上局部覆盖的 CSS 自定义属性：
+ * 桥接八个视觉 DOM 轴，以及来源祖先链上局部覆盖的 CSS 自定义属性（语气 data-tone 不带）：
  * 作者自定义属性照投；--xh- 命名空间只投文档根上有声明的名字（令牌与 :root 上的组件槽
  * 覆盖），皮肤写在组件 / 家族元素上的公开槽、私有槽与 --xh-tone-* 是组件内部级联，
  * 不跨 Portal。壳靠自己的属性就能命中同一条规则的不复制，普通计算样式不会被复制。

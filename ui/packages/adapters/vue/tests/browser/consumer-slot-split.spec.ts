@@ -113,14 +113,16 @@ describe('toggle-group 的语气轴', () => {
     expect(success.off).toBe(plain.off)
   })
 
-  it('落在语气区域里跟着变，与自己写 tone 同值', async () => {
+  it('落在语气区域里不跟着变：没写 tone 用自己的缺省，写了才换', async () => {
     const plain = await toggleGroupBg({})
     const ambient = await toggleGroupBg({}, { 'data-tone': 'danger' })
     const declared = await toggleGroupBg({ tone: 'danger' })
+    const both = await toggleGroupBg({ tone: 'danger' }, { 'data-tone': 'success' })
 
-    expect(ambient.on).not.toBe(plain.on)
-    expect(ambient.on).toBe(declared.on)
+    expect(ambient.on).toBe(plain.on)
     expect(ambient.off).toBe(plain.off)
+    expect(declared.on).not.toBe(plain.on)
+    expect(both.on).toBe(declared.on)
   })
 
   it('条目圆角槽带 item 段，摘掉的 --xh-toggle-group-radius 一点效果都没有', async () => {

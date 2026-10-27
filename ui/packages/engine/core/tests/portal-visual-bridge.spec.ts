@@ -493,18 +493,13 @@ describe('portal 视觉环境桥', () => {
     document.documentElement.style.removeProperty('--xh-color-brand-500')
   })
 
-  it('语气经 data-tone 属性带到壳上，取最近显式声明并跟随变化', async () => {
+  it('语气 data-tone 不带到壳上：语气是组件自己的属性，不是来源所处的环境', async () => {
     const { outer, inner, source, shell } = fixture()
     outer.setAttribute('data-tone', 'danger')
     const bridge = createPortalVisualBridge({ source, shell })
-    expect(shell.getAttribute('data-tone')).toBe('danger')
+    expect(shell.hasAttribute('data-tone')).toBe(false)
 
     inner.setAttribute('data-tone', 'success')
-    await settleMutations()
-    expect(shell.getAttribute('data-tone')).toBe('success')
-
-    inner.removeAttribute('data-tone')
-    outer.removeAttribute('data-tone')
     await settleMutations()
     expect(shell.hasAttribute('data-tone')).toBe(false)
     bridge.dispose()
