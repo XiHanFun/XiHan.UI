@@ -19,6 +19,8 @@ import {
   paddingEdgesOf,
   VIEWPORT_FRAME,
   viewportEdges,
+  zoomFrame,
+  zoomOf,
 } from './dom'
 import { observePosition } from './observe'
 
@@ -61,7 +63,10 @@ export function createPositionEngine(): PositionEnginePort {
         // 浮层写回 left/top 用的是包含块的布局坐标，锚点、可用区域、自身尺寸全换算到这套坐标里
         const strategy = options.strategy ?? DEFAULTS.strategy
         const block = getContainingBlock(floating, strategy)
-        const frame = block ? frameOf(block, win) : (strategy === 'fixed' ? VIEWPORT_FRAME : frameOf(null, win))
+        const frame = zoomFrame(
+          block ? frameOf(block, win) : (strategy === 'fixed' ? VIEWPORT_FRAME : frameOf(null, win)),
+          zoomOf(floating) / (block ? zoomOf(block) : 1),
+        )
         const floatingRect = floating.getBoundingClientRect()
 
         // fixed 只被劫持了它包含块的那个祖先及其内层裁；没有这样的祖先时只受视口约束。

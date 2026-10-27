@@ -818,4 +818,113 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
       }
     })
   })
+
+  hooks.describe(`定位引擎：CSS zoom（${engineName}）`, () => {
+    // 视觉矩形已经乘过 zoom，写进 left/top 的长度渲染时还要再乘一次浮层自己的有效 zoom。
+    // 后台模板常在 html / body 上写 zoom 做整页缩放：少除这一次，浮层落在锚点坐标乘以 zoom 的地方，
+    // 离页面原点越远偏得越多——页面顶上那张表的提示还贴着，往下几张表的就离开了触发器。
+    // 浮层与锚点同处缩放之下，看到的间距是 offset 乘以 zoom，与「锚点与浮层同在缩放子树里」同理。
+
+    /** 在 target 上写 zoom 跑完 body，再原样还回去。 */
+    async function withZoom(target: HTMLElement, zoom: number, body: () => Promise<void>): Promise<void> {
+      const before = target.style.getPropertyValue('zoom')
+      target.style.setProperty('zoom', String(zoom))
+      try {
+        await body()
+      }
+      finally {
+        if (before)
+          target.style.setProperty('zoom', before)
+        else
+          target.style.removeProperty('zoom')
+      }
+    }
+
+    for (const zoom of [0.8, 1.25]) {
+      hooks.it(`html 上整页 zoom: ${zoom}，挂在 body 上的 fixed 浮层仍贴合`, async () => {
+        await withZoom(document.documentElement, zoom, async () => {
+          const stage = createStage()
+          try {
+            const anchor = stage.putAnchor(160, 200)
+            const floating = stage.putFloating(40, 24, document.body)
+            const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET, strategy: 'fixed', flip: false, shift: false })
+            await probe.settle()
+
+            expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom-start', OFFSET * zoom)
+            probe.stop()
+          }
+          finally {
+            stage.cleanup()
+          }
+        })
+      })
+
+      hooks.it(`body 上整页 zoom: ${zoom}，文档滚动之后挂在 body 上的 absolute 浮层仍贴合`, async () => {
+        await withZoom(document.body, zoom, async () => {
+          const filler = document.createElement('div')
+          filler.style.cssText = 'height:3000px'
+          const anchor = document.createElement('button')
+          anchor.type = 'button'
+          anchor.style.cssText = 'position:absolute;left:120px;top:1200px;width:100px;height:40px;margin:0;padding:0;border:0'
+          const floating = document.createElement('div')
+          floating.style.cssText = 'position:absolute;left:0;top:0;width:40px;height:24px'
+          document.body.append(filler, anchor, floating)
+          try {
+            window.scrollTo(0, 1200 * zoom - 200)
+            await nextFrame()
+            const probe = attachProbe(engine, anchor, floating, { placement: 'bottom-start', offset: OFFSET, flip: false, shift: false })
+            await probe.settle()
+
+            expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom-start', OFFSET * zoom)
+            probe.stop()
+          }
+          finally {
+            window.scrollTo(0, 0)
+            filler.remove()
+            anchor.remove()
+            floating.remove()
+          }
+        })
+      })
+    }
+
+    hooks.it('zoom 写在中间一层容器上：锚点与 fixed 浮层都在里面', async () => {
+      const stage = createStage()
+      try {
+        const zoomed = document.createElement('div')
+        zoomed.style.cssText = 'position:absolute;left:40px;top:40px;width:400px;height:300px;zoom:1.5'
+        stage.root.appendChild(zoomed)
+        const anchor = stage.putAnchor(60, 80, 100, 40, zoomed)
+        const floating = stage.putFloating(40, 24, zoomed)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'bottom', offset: OFFSET, strategy: 'fixed', flip: false, shift: false })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'bottom', OFFSET * 1.5)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('包含块与浮层之间还隔着一层 zoom：absolute 浮层仍贴合', async () => {
+      const stage = createStage()
+      try {
+        // 舞台是包含块、自己不缩放；浮层套在一层不定位的 zoom 里，多出来的那一截只在浮层这边
+        const zoomed = document.createElement('div')
+        zoomed.style.cssText = 'zoom:1.5'
+        stage.root.appendChild(zoomed)
+        const anchor = stage.putAnchor(200, 160)
+        const floating = stage.putFloating(40, 24, zoomed)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'right-start', offset: OFFSET, flip: false, shift: false })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'right-start', OFFSET * 1.5)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+  })
 }

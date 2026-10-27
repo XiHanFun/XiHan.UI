@@ -3,7 +3,7 @@
 // 包含块解析与裁剪链是纯 DOM 遍历，不需要真实布局，放 jsdom 这层验。
 // 真正的几何贴合在 tests/browser/ 里，jsdom 没有布局，量不出来。
 import { afterEach, describe, expect, it } from 'vitest'
-import { clippingAncestors, getContainingBlock } from '../src/dom'
+import { clippingAncestors, getContainingBlock, VIEWPORT_FRAME, zoomFrame, zoomOf } from '../src/dom'
 
 function el(css = ''): HTMLElement {
   const node = document.createElement('div')
@@ -150,5 +150,22 @@ describe('clippingAncestors', () => {
     const outer = el('overflow: hidden')
     const floating = chain(outer, el())
     expect(clippingAncestors(floating)).toEqual([outer])
+  })
+})
+
+describe('zoomFrame', () => {
+  it('比例为 1 时原样返回，没写 zoom 的页面一点不变', () => {
+    expect(zoomFrame(VIEWPORT_FRAME, 1)).toBe(VIEWPORT_FRAME)
+  })
+
+  it('缩放比乘上比例，滚动量换进浮层的单位要除掉它', () => {
+    const frame = { originX: 10, originY: 20, scaleX: 0.5, scaleY: 0.5, scrollX: 100, scrollY: 300 }
+    expect(zoomFrame(frame, 1.25)).toEqual({ originX: 10, originY: 20, scaleX: 0.625, scaleY: 0.625, scrollX: 80, scrollY: 240 })
+  })
+})
+
+describe('zoomOf', () => {
+  it('不认 currentCSSZoom 的环境按 1 处理', () => {
+    expect(zoomOf(chain(el('zoom: 2')))).toBe(1)
   })
 })
