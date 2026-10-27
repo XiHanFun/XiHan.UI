@@ -216,10 +216,6 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default-opaque` |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` |
-| `--xh-color-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `dragging` | `--xh-motion-scale-drag` |
-| `--xh-color-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` |
-| `--xh-color-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` |
-| `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` |
 | `--xh-color-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-3`<br>`--xh-space-6`<br>`--xh-track-thumb-size` |
 | `--xh-color-slider-track-border` | `track` | `box-shadow` | `default` | `--xh-border-default` |
 | `--xh-color-slider-track-radius` | `track` | `border-radius` | `default` | `--xh-shape-pill` |

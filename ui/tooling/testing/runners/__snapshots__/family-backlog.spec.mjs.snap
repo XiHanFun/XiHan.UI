@@ -2,7 +2,7 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 2,
+  "edge": 1,
   "ladder": 1,
   "motion": 0,
   "press": 0,
@@ -16,7 +16,6 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
-  "color-picker:area-thumb:raised",
 ]
 `;
 

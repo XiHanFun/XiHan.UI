@@ -14165,6 +14165,9 @@
               "name": "--xh-color-picker-control-border-hover"
             },
             {
+              "name": "--xh-color-picker-control-border-invalid"
+            },
+            {
               "name": "--xh-color-picker-control-fg"
             },
             {
@@ -14312,13 +14315,10 @@
               "name": "--xh-color-picker-thumb-border"
             },
             {
+              "name": "--xh-color-picker-thumb-edge"
+            },
+            {
               "name": "--xh-color-picker-thumb-radius"
-            },
-            {
-              "name": "--xh-color-picker-thumb-scale-dragging"
-            },
-            {
-              "name": "--xh-color-picker-thumb-shadow"
             },
             {
               "name": "--xh-color-picker-thumb-size"
@@ -14805,18 +14805,6 @@
             },
             {
               "name": "--xh-color-slider-thumb-radius"
-            },
-            {
-              "name": "--xh-color-slider-thumb-scale-dragging"
-            },
-            {
-              "name": "--xh-color-slider-thumb-shadow"
-            },
-            {
-              "name": "--xh-color-slider-thumb-shadow-disabled"
-            },
-            {
-              "name": "--xh-color-slider-thumb-shadow-dragging"
             },
             {
               "name": "--xh-color-slider-thumb-size"
@@ -65269,18 +65257,6 @@
             },
             {
               "name": "--xh-slider-thumb-radius"
-            },
-            {
-              "name": "--xh-slider-thumb-scale-dragging"
-            },
-            {
-              "name": "--xh-slider-thumb-shadow"
-            },
-            {
-              "name": "--xh-slider-thumb-shadow-disabled"
-            },
-            {
-              "name": "--xh-slider-thumb-shadow-dragging"
             },
             {
               "name": "--xh-slider-thumb-size"

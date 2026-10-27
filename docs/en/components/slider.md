@@ -257,10 +257,6 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-slider-thumb-border-disabled` | `thumb` | `border-color` | `disabled` | `--xh-bg-subtle-hover-opaque` |
 | `--xh-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` |
 | `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` |
-| `--xh-slider-thumb-scale-dragging` | `thumb`<br>`value-text` | `scale` | `@media (hover: hover)`<br>`disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-motion-scale-drag` |
-| `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `none` |
-| `--xh-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` |
-| `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` |
 | `--xh-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `@media (pointer: coarse)`<br>`default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-track-thumb-size-lg`<br>`--xh-track-thumb-size-md`<br>`--xh-track-thumb-size-sm` |
 | `--xh-slider-tick-bg` | `tick` | `background` | `default` | `--xh-bg-surface` |
 | `--xh-slider-tick-border` | `tick` | `border` | `default` | `--xh-bg-subtle-hover` |

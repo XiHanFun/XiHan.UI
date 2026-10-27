@@ -397,6 +397,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-color-picker-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` |
 | `--xh-color-picker-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` |
 | `--xh-color-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` |
+| `--xh-color-picker-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` |
 | `--xh-color-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` |
 | `--xh-color-picker-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-picker-gap` |
 | `--xh-color-picker-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-picker-h` |
@@ -446,9 +447,8 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-color-picker-tag-dot-size` | `root`<br>`tag-list` | `block-size`<br>`inline-size` | `value` | `--xh-control-indicator-sm` |
 | `--xh-color-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` |
+| `--xh-color-picker-thumb-edge` | `area-thumb` | `box-shadow` | `default`<br>`dragging`<br>`is(:focus-visible, [data-dragging])` | `--xh-border-default-opaque` |
 | `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` |
-| `--xh-color-picker-thumb-scale-dragging` | `area-thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` |
-| `--xh-color-picker-thumb-shadow` | `area-thumb` | `box-shadow` | `default` | `--xh-elevation-raised` |
 | `--xh-color-picker-thumb-size` | `area-thumb` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `default` | `--xh-control-indicator-md` |
 | `--xh-color-picker-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` |
 | `--xh-color-picker-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-text-body-size` |

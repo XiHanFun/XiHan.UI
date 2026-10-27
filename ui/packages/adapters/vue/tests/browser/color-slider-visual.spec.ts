@@ -34,6 +34,16 @@ function resolvedToken(name: string): string {
   return value
 }
 
+/** 与焦点环同一副的光环：从描边外沿起铺内圈宽 + 光环宽，颜色取 --xh-ring-halo。 */
+function haloShadow(): string {
+  const probe = document.createElement('span')
+  probe.style.boxShadow = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
+  document.body.append(probe)
+  const value = getComputedStyle(probe).boxShadow
+  probe.remove()
+  return value
+}
+
 async function mountSlider(props: Record<string, unknown> = {}, hostStyle = ''): Promise<void> {
   host = document.createElement('div')
   host.style.cssText = `inline-size: 300px; padding: 24px; ${hostStyle}`
@@ -101,22 +111,31 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(trackRect.bottom - center).toBeCloseTo(trackRect.height * 0.965, -1)
   })
 
-  it('三档尺寸换的是拇指直径与颜色带厚度；拖动时拇指放大并抬高海拔', async () => {
+  it('三档尺寸换的是拇指直径与颜色带厚度；拖动中拇指不放大、画与聚焦同一副光环', async () => {
     await mountSlider({ size: 'lg' })
-    expect(part('thumb').getBoundingClientRect().width).toBe(24)
+    const thumb = part('thumb')
+    expect(thumb.getBoundingClientRect().width).toBe(24)
     expect(part('track').getBoundingClientRect().height).toBe(16)
-    const before = getComputedStyle(part('thumb')).boxShadow
+    expect(getComputedStyle(thumb).boxShadow).toBe('none')
     const control = part('control')
     const rect = control.getBoundingClientRect()
     await userEvent.click(control, { position: { x: rect.width / 2, y: rect.height / 2 } })
     // 点轨道即跳：色相落到中点附近
-    expect(Number(part('thumb').getAttribute('aria-valuenow'))).toBeGreaterThan(150)
-    expect(Number(part('thumb').getAttribute('aria-valuenow'))).toBeLessThan(210)
-    expect(getComputedStyle(part('thumb')).boxShadow).toBe(before)
+    expect(Number(thumb.getAttribute('aria-valuenow'))).toBeGreaterThan(150)
+    expect(Number(thumb.getAttribute('aria-valuenow'))).toBeLessThan(210)
+    // 松手后不留拖动态
+    expect(thumb.hasAttribute('data-dragging')).toBe(false)
+    thumb.blur()
+    expect(getComputedStyle(thumb).boxShadow).toBe('none')
+    // 拖动中：只画光环，直径不变
+    thumb.setAttribute('data-dragging', '')
+    expect(getComputedStyle(thumb).boxShadow).toBe(haloShadow())
+    expect(thumb.getBoundingClientRect().width).toBe(24)
+    thumb.removeAttribute('data-dragging')
   })
 
-  it('字段标签 14 / 标签字重 / fg-muted 与控件隔 space-2；拇指是 raised 面，描边 border-default', async () => {
-    // 抬起影缺省是平面（none），拇指接没接令牌读出来一样：宿主给它一层看得见的影再比
+  it('字段标签 14 / 标签字重 / fg-muted 与控件隔 space-2；拇指是平面圆、不投影，描边 border-default', async () => {
+    // 宿主给 raised 一层看得见的影：拇指读到 none 才说明它不走 raised
     await mountSlider({}, '--xh-elevation-raised: 0 1px 2px rgb(0, 255, 0)')
     const label = getComputedStyle(part('label'))
     expect(label.fontSize).toBe('14px')
@@ -127,11 +146,11 @@ describe('颜色滑块的轨道与拇指', () => {
     const thumb = getComputedStyle(part('thumb'))
     expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default-opaque'))
     expect(thumb.borderTopWidth).toBe('2px')
-    expect(thumb.boxShadow).toBe('rgb(0, 255, 0) 0px 1px 2px 0px')
+    expect(thumb.boxShadow).toBe('none')
   })
 
-  it('禁用：不整体压暗，标签不另变色，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
-    // 给抬起影一层看得见的值：禁用档读到 none 才说明它真把影收掉了
+  it('禁用：不整体压暗，标签不另变色，颜色带与拇指压暗一次、拇指不投影且面仍是当前色', async () => {
+    // 给抬起影一层看得见的值：禁用档同样读到 none
     await mountSlider({ disabled: true }, '--xh-elevation-raised: 0 1px 2px rgb(0, 255, 0)')
     expect(getComputedStyle(part('root')).opacity).toBe('1')
     expect(getComputedStyle(part('label')).color).toBe(resolvedToken('--xh-fg-muted'))
