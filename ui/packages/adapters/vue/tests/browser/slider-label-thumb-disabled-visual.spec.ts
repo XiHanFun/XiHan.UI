@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -73,7 +74,7 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(getComputedStyle(range).backgroundColor).toBe(resolvedToken('--xh-bg-brand', 'background-color'))
   })
 
-  it('拇指 12px 圆：白底 + 2px 品牌描边，静止不投影', () => {
+  it('拇指 12px 圆：白底 + 2px 品牌描边，不投影', () => {
     const { thumb } = mount()
     const style = getComputedStyle(thumb)
     expect(thumb.getBoundingClientRect().width).toBe(12)
@@ -92,13 +93,19 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(thumb.getBoundingClientRect().height).toBe(tokenLength(`--xh-track-thumb-size-${tier}`))
   })
 
-  it('拖动中的拇指放大一档并抬起', () => {
+  it('拖动中的拇指不放大、不投影，画与聚焦同一副光环；悬停也不放大', async () => {
     const { thumb } = mount()
-    thumb.style.setProperty('--xh-motion-duration-nudge', '0ms')
+    await userEvent.hover(thumb)
+    expect(getComputedStyle(thumb).scale).toBe('none')
     thumb.setAttribute('data-dragging', '')
     const style = getComputedStyle(thumb)
-    expect(Number(style.scale)).toBeGreaterThan(1)
-    expect(style.boxShadow).not.toBe('none')
+    expect(style.scale).toBe('none')
+    expect(thumb.getBoundingClientRect().width).toBe(12)
+    const probe = document.createElement('span')
+    probe.style.boxShadow = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
+    thumb.parentElement!.append(probe)
+    expect(style.boxShadow).toBe(getComputedStyle(probe).boxShadow)
+    probe.remove()
   })
 
   it('刻度点 8px 圆：白底 + 2px 描边，没过的取轨道色、走过的取品牌色', () => {

@@ -93,6 +93,7 @@
     --xh-field-border-rest: var(--xh-color-picker-control-border, var(--xh-_field-variant-border-rest));
     --xh-field-border-hover: var(--xh-color-picker-control-border-hover, var(--xh-_field-variant-border-hover));
     --xh-field-border-focus: var(--xh-color-picker-control-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-border-invalid: var(--xh-color-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
     --xh-field-shadow-rest: var(--xh-color-picker-control-shadow, none);
     --xh-field-cursor-rest: pointer;
   }
@@ -413,8 +414,13 @@
      刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，
      位移量是物理方向的，会把拇指推向错误的一侧；负的逻辑外边距自己就跟着换向。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比变量宽两条边，回拉就对不上圆心。
+     与 Slider 的拇指同一副平面圆：不投影、不走 raised，拖动时不放大、画与聚焦同一副光环。
+     白环压在取色区左上的白里看不见，环内侧补一道 1px 不透明装饰边（inset，不外扩、不是投影）把它框出来；
+     聚焦与拖动时这道边与光环并在同一条 box-shadow 里。
      两条滑块的拇指归 color-slider 那份皮，与这一颗同一副长相。 */
   [data-scope='color-picker'][data-part='area-thumb'] {
+    --xh-_color-picker-thumb-edge: inset 0 0 0 var(--xh-stroke-thin) var(--xh-color-picker-thumb-edge, var(--xh-border-default-opaque));
+
     position: absolute;
     box-sizing: border-box;
     inline-size: var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md));
@@ -423,9 +429,8 @@
     border: var(--xh-stroke-thick) solid var(--xh-color-picker-thumb-border, var(--xh-color-neutral-0));
     border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-circle));
     background: transparent;
-    box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-_color-picker-thumb-edge);
     cursor: grab;
-    transition: scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
   }
 
   /* 取色区的纵轴也由连接层给（inset-block-start），回拉同样按 block-start 那侧 */
@@ -433,10 +438,13 @@
     margin-block-start: calc(var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md)) / -2);
   }
 
-  /* 只有手真正拖着时带 data-dragging：放大与光标不会几处一起变。
-     放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式不用跟着改 */
+  /* 拇指自己写了 box-shadow，focus.css 的零特指度光环压不过它：聚焦与拖动时把光环并进来。
+     只有手真正拖着时带 data-dragging，光标与光环不会几处一起变 */
+  [data-scope='color-picker'][data-part='area-thumb']:is(:focus-visible, [data-dragging]) {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo), var(--xh-_color-picker-thumb-edge);
+  }
+
   [data-scope='color-picker'][data-part='area-thumb'][data-dragging] {
-    scale: var(--xh-color-picker-thumb-scale-dragging, var(--xh-motion-scale-drag));
     cursor: grabbing;
   }
 

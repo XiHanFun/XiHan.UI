@@ -17302,6 +17302,25 @@
       "description": "color-picker 的 control 部件 border-color 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-control-border-invalid",
+      "component": "color-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 control 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-control-fg",
       "component": "color-picker",
       "part": [
@@ -18225,6 +18244,26 @@
       "description": "color-picker 的 area-thumb 部件 border 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-thumb-edge",
+      "component": "color-picker",
+      "part": [
+        "area-thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default",
+        "dragging",
+        "is(:focus-visible, [data-dragging])"
+      ],
+      "defaultToken": [
+        "--xh-border-default-opaque"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 area-thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-thumb-radius",
       "component": "color-picker",
       "part": [
@@ -18241,42 +18280,6 @@
       ],
       "visibility": "public",
       "description": "color-picker 的 area-thumb 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-thumb-scale-dragging",
-      "component": "color-picker",
-      "part": [
-        "area-thumb"
-      ],
-      "property": [
-        "scale"
-      ],
-      "state": [
-        "dragging"
-      ],
-      "defaultToken": [
-        "--xh-motion-scale-drag"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 area-thumb 部件 scale 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-thumb-shadow",
-      "component": "color-picker",
-      "part": [
-        "area-thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 area-thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-size",
@@ -18606,79 +18609,6 @@
       ],
       "visibility": "public",
       "description": "color-slider 的 thumb 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-slider-thumb-scale-dragging",
-      "component": "color-slider",
-      "part": [
-        "thumb",
-        "value-text"
-      ],
-      "property": [
-        "scale"
-      ],
-      "state": [
-        "dragging"
-      ],
-      "defaultToken": [
-        "--xh-motion-scale-drag"
-      ],
-      "visibility": "public",
-      "description": "color-slider 的 thumb、value-text 部件 scale 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-slider-thumb-shadow",
-      "component": "color-slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-slider-thumb-shadow-disabled",
-      "component": "color-slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-slider-thumb-shadow-dragging",
-      "component": "color-slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "dragging"
-      ],
-      "defaultToken": [
-        "--xh-elevation-lifted"
-      ],
-      "visibility": "public",
-      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-slider-thumb-size",
@@ -71239,84 +71169,6 @@
       ],
       "visibility": "public",
       "description": "slider 的 thumb 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-slider-thumb-scale-dragging",
-      "component": "slider",
-      "part": [
-        "thumb",
-        "value-text"
-      ],
-      "property": [
-        "scale"
-      ],
-      "state": [
-        "@media (hover: hover)",
-        "disabled",
-        "dragging",
-        "hover",
-        "not([data-disabled], [data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-motion-scale-drag"
-      ],
-      "visibility": "public",
-      "description": "slider 的 thumb、value-text 部件 scale 覆盖槽。"
-    },
-    {
-      "name": "--xh-slider-thumb-shadow",
-      "component": "slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-slider-thumb-shadow-disabled",
-      "component": "slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "none"
-      ],
-      "visibility": "public",
-      "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-slider-thumb-shadow-dragging",
-      "component": "slider",
-      "part": [
-        "thumb"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "dragging"
-      ],
-      "defaultToken": [
-        "--xh-elevation-lifted"
-      ],
-      "visibility": "public",
-      "description": "slider 的 thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-slider-thumb-size",

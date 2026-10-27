@@ -525,7 +525,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Cascader | 每列自然宽、下限 `--xh-overlay-cascade-min-w`（7.5rem），条目上限 20rem；整面上限为可用宽，超出横滚 | 列定高 `viewport-h-sm`，列内滚 |
 | DatePicker、DateRangePicker | 内容宽（面板不留内衬，由日历的七列与内衬撑出）；时间列下限 3.5rem；底栏 `footer` 不参与撑宽 | 上限为可用高；时间列与日历网格同高（`overlay-calendar-column-h`，粗指针下日历格长到 44 见方，取 `overlay-calendar-column-h-coarse`），列顶让出标题栏那一带；时间格 `control-action-size` 高、列内间距 8；快捷项 `control-action-size` 高；预设组上限 `viewport-h-lg`；底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，确认钮落在行尾 |
 | TimePicker、TimeRangePicker | 内容宽（面板不留内衬）；列宽 `overlay-time-column-w`；TimePicker 的底栏 `footer` 不参与撑宽 | 列定高 `overlay-time-column-h`，列底留白让末格滚到列顶；列与底栏都按 px 排，面板缺省不另设上限；预设组上限 `overlay-time-column-h`；TimePicker 的底栏 `footer` 独占末行、内衬 8，上沿一道 `border-default`，「添加」落在行尾 |
-| ColorPicker | 定宽 `overlay-max-w-sm`（16rem）；取色区高 `--xh-overlay-color-area-h`（11rem），排在最前时贴顶通栏、不取圆角；取色区拇指与内嵌滑块拇指 `control-indicator-md`（16px），滑块拇指是白盘 + 1px 描边 + 8px 当前色点；色板区上方一条通栏分隔（材质描边档），预设色块 16px、间距 8px（16px 格要 24px 间距才过 2.5.8 的间隔例外），粗指针格子回到 `control-h-sm`；通道输入照字段外壳、高 `control-action-size`、说明档字号 | 上限 `viewport-h-lg` |
+| ColorPicker | 定宽 `overlay-max-w-sm`（16rem）；取色区高 `--xh-overlay-color-area-h`（11rem），排在最前时贴顶通栏、不取圆角；取色区拇指与内嵌滑块拇指 `control-indicator-md`（16px），滑块拇指是白盘 + 1px 描边 + 8px 当前色点；取色区拇指是白环，环内侧一道 1px `--xh-border-default-opaque` 装饰边（inset，不是投影）把它从取色区左上的白里框出来，聚焦与拖动时与光环并画；色板区上方一条通栏分隔（材质描边档），预设色块 16px、间距 8px（16px 格要 24px 间距才过 2.5.8 的间隔例外），粗指针格子回到 `control-h-sm`；通道输入照字段外壳、高 `control-action-size`、说明档字号 | 上限 `viewport-h-lg` |
 | Pagination 下拉 | 上限 20rem | 上限 `overlay-max-h` |
 | Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚；分三段时内衬由三段各给（头横 20、正文纵 24 横 20、尾纵 16 横 20），头下尾上各一条贴边的 1px `--xh-border-subtle` 分隔线，面是实体 sheet，不叠渐变与顶光 |
 | Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |
@@ -931,7 +931,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 走马灯的淡变换页（Carousel `effect="fade"`）仍归导航：各张叠放在同一格，新一张压在上面淡入、旧一张同一段淡出、淡完才藏起，取 `slide` / `slide`，与平移换页同一档；减弱动效下与平移一样直接换，不按状态换色保留 `micro` 淡变——两张叠着淡过去读起来是重影。淡变一页只放一张，一页多张时两页共有的那几张得在途中换格。
 - 时间列（TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间列）打开时每一列都把选中的那一格停到列顶，几列的选中落在同一行；这一下是首帧内容，直接到位。之后选中值变了，只有换了格的那一列平滑滚过去（导航角色的平滑滚动，减弱动效下直接到位），没换的列留在用户自己滚到的位置。
 - 焦点环（内圈 `outline` 与光环 `box-shadow`）即时出现、即时撤下，不进过渡：键盘用户要焦点当场落位；部件的 `box-shadow` 另有过渡（投影抬升）时，聚焦态把它的过渡归零，光环不跟着投影慢慢长出来。字段的描边与底色换色照常 `micro` 淡变。
-- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的拖拽让位、查看器缩放平移取 `nudge`（缺省与 `move` 同为 200ms）。
+- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`（200ms）；原地的小幅几何变化（开关滑块、勾选标记、展开箭头）与跟手的拖拽让位、查看器缩放平移取 `nudge`（缺省与 `move` 同为 200ms）。
 - 例外：进出场（出现、列表加入与移除、整幅滑出）用 `enter` / `exit` 与对应曲线，关键帧与过渡同一条，前提是其中的位移与缩放只取 `--xh-motion-distance-*`、`--xh-motion-scale-*`、`--xh-motion-travel`：减弱动效下归零，剩下的只有淡变。整幅滑入仍走 `slide`。
 
 ### 9.1 离散动作控件
@@ -1591,5 +1591,4 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §6.8 Slider | `css/slider.css`、`css/color-slider.css`、`css/color-picker.css` 拖动改画光环、不再放大与投影 |
 | 上面各条的生成物与文档 | 三端计算样式快照、像素基线、无层 CSS、组件令牌、文档数值重新生成；文档站手写的设计页随实现同提交改写（`docs/design/shape.md`、`motion.md`、`colors.md`、`principles.md`，`docs/guide/theme.md`、`motion.md`、`behavior.md` 及英文版，Tooltip、RadioGroup、Scrollbar 组件页里写死的旧数值）；`@xihan-ui/tokens` 与 `@xihan-ui/styles` 记 major changeset |

@@ -79,6 +79,30 @@ describe('color-picker 常驻形态（Chromium）', () => {
     expect(Math.round(root.getBoundingClientRect().width)).toBe(Math.round(content.getBoundingClientRect().width))
   })
 
+  it('取色区拇指是平面圆环：不投影、不放大，环内侧一道装饰边；键盘聚焦与拖动时并上与焦点环同一副光环', async () => {
+    const { thumb } = await mount()
+    const shadowOf = (value: string): string => {
+      const probe = document.createElement('span')
+      probe.style.boxShadow = value
+      document.body.append(probe)
+      const resolved = getComputedStyle(probe).boxShadow
+      probe.remove()
+      return resolved
+    }
+    const edge = 'inset 0 0 0 var(--xh-stroke-thin) var(--xh-border-default-opaque)'
+    const halo = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
+    expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(edge))
+    const width = thumb.getBoundingClientRect().width
+    thumb.setAttribute('data-dragging', '')
+    expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(`${halo}, ${edge}`))
+    expect(thumb.getBoundingClientRect().width).toBe(width)
+    thumb.removeAttribute('data-dragging')
+    await userEvent.tab()
+    expect(document.activeElement).toBe(thumb)
+    expect(thumb.matches(':focus-visible')).toBe(true)
+    expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(`${halo}, ${edge}`))
+  })
+
   it('键盘改色后焦点离开取色面，最近使用色的格子出现', async () => {
     const { thumb, recent, after } = await mount()
     expect(recent.hidden).toBe(true)

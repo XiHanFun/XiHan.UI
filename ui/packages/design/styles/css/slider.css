@@ -185,7 +185,8 @@
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上，不必再堆 z-index。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
-     拇指是平面的白底圆：2px 强调色描边就是它的边界，静止不投影；跟着手走时才抬起（见拖动那档） */
+     拇指是平面的白底圆：2px 强调色描边就是它的边界，不投影、不走 raised，悬停与拖动都不放大；
+     拖动中画与聚焦同一副光环（见拖动那档）。不写 box-shadow：键盘聚焦时 focus.css 的光环才落得下来 */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
@@ -194,18 +195,7 @@
     border: var(--xh-stroke-thick) solid var(--xh-slider-thumb-border, var(--xh-_tone, var(--xh-bg-brand)));
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-slider-thumb-shadow, none);
     cursor: grab;
-    transition:
-      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-  }
-
-  /* 可悬停设备上指针落到拇指即放大一档，与拖动中同一比例：提示它抓得起来 */
-  @media (hover: hover) {
-    [data-scope='slider'][data-part='thumb']:hover:not([data-disabled], [data-readonly]) {
-      scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
-    }
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
@@ -226,17 +216,12 @@
     margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
-  /* 多拇指时只有手真正推着的那一个带 data-dragging，放大与光标因此不会全组一起变。
-     放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式也不用跟着改。
-     静止时不投影，拖动中才抬起到 lifted：跟着手走的东西离开页面一档，
-     又不到锚定浮层那一层——用 floating 会让拇指和下拉面板一样重。 */
+  /* 多拇指时只有手真正推着的那一个带 data-dragging，光环与光标因此不会全组一起变。
+     拖动中画与聚焦同一副光环：从描边外沿起铺内圈宽 + 光环宽，与焦点环同色同宽，
+     键盘聚焦着又被拖动时两者叠成同一圈；光环即时出现、即时撤下，与焦点环一样不淡变 */
   [data-scope='slider'][data-part='thumb'][data-dragging] {
-    /* 放大比例落进私有槽：挂在拇指里的值气泡读同一支反向缩回原尺寸 */
-    --xh-_slider-thumb-scale: var(--xh-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
-
-    scale: var(--xh-_slider-thumb-scale);
     cursor: grabbing;
-    box-shadow: var(--xh-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo);
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {
@@ -247,11 +232,10 @@
     cursor: default;
   }
 
-  /* 禁用：白面留着、描边退到 200 档（不透明档：描边压在拇指自己的白底上，半透明的墨色要先兑实）、影收掉 */
+  /* 禁用：白面留着、描边退到 200 档（不透明档：描边压在拇指自己的白底上，半透明的墨色要先兑实） */
   [data-scope='slider'][data-part='thumb'][data-disabled] {
     border-color: var(--xh-slider-thumb-border-disabled, var(--xh-bg-subtle-hover-opaque));
     background: var(--xh-slider-thumb-bg-disabled, var(--xh-bg-surface));
-    box-shadow: var(--xh-slider-thumb-shadow-disabled, none);
     cursor: not-allowed;
   }
 
@@ -259,7 +243,6 @@
      气泡宽度由文字撑出，只能靠平移回中。不能两侧 inset 都钉在 50% 再靠自动外边距回中：
      那样可用宽度是 0，气泡比它宽，自动外边距按规范取 0，气泡从拇指中线起排、偏出半个自身宽。
      起点是逻辑属性、平移是物理通道：平移乘书写方向的符号，rtl 下行内分量掉头，气泡才落回拇指正上方。
-     拖动时拇指放大，气泡按同一比例反向缩回、与拇指同一段过渡：文字不跟着放大，缩放原点在贴着拇指那一边。
      默认只在推动那一刻露面，静止时留在 DOM 里但不占视线 */
   [data-scope='slider'][data-part='value-text'] {
     position: absolute;
@@ -268,7 +251,6 @@
     inline-size: max-content;
     margin-block-end: var(--xh-slider-value-text-offset, var(--xh-space-2));
     translate: calc(-50% * var(--xh-direction-sign)) 0;
-    transform-origin: 50% 100%;
     padding-block: var(--xh-slider-value-text-py, var(--xh-space-0_5));
     padding-inline: var(--xh-slider-value-text-px, var(--xh-space-2));
     border-radius: var(--xh-slider-value-text-radius, var(--xh-shape-control));
@@ -280,9 +262,7 @@
     /* 气泡贴在拇指上方，指针要落到拇指上，不能被它挡住 */
     pointer-events: none;
     opacity: 0;
-    transition:
-      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='slider'][data-part='value-text'][hidden] {
@@ -292,17 +272,15 @@
   /* 只有手真正推着的那一个拇指带 data-dragging，多拇指时气泡不会全组一起冒出来 */
   [data-scope='slider'][data-part='value-text'][data-dragging] {
     opacity: 1;
-    scale: calc(1 / var(--xh-_slider-thumb-scale, 1));
   }
 
-  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值；反向缩放的原点换到贴着拇指的行首那一侧 */
+  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值 */
   [data-scope='slider'][data-part='value-text'][data-orientation='vertical'] {
     inset-block: 50%;
     inset-inline: 100% auto;
     block-size: max-content;
     margin-block: auto;
     margin-inline: var(--xh-slider-value-text-offset, var(--xh-space-2)) 0;
-    transform-origin: calc(50% - 50% * var(--xh-direction-sign)) 50%;
   }
 
   /* —— 尺寸 —— */
