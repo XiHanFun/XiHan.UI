@@ -2894,40 +2894,12 @@
  * --xh-_overlay-enter-* 由浮层皮肤按 placement 写在 positioner 上，四个都没写时位移退回 0。
  */
 
-/* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
-   Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
-   Date / Time picker、ColorPicker、Tooltip */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: var(--xh-_enter-from-opacity, 0);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
-/* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
-   Popover、HoverCard、Popconfirm、Tour、Command。
-   起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
+/* ── 弹层：锚定与无锚定同一套进出场（设计真源 §9.5）──
+   淡入 + 从 --xh-motion-scale-enter 放大 + 从锚点那一侧移 --xh-motion-distance-sm。
+   锚定关系只决定有没有位移：贴着锚点的面（Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、
+   TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 页码面板、Tooltip、Popover、HoverCard、
+   Popconfirm、Tour、Command）由浮层皮肤按 placement 把那一侧的方向槽写 1；不贴锚点的面（NavigationMenu、FloatingPanel、
+   FloatButton 列表、BackTop、Log / MessageFeed 回底钮）四个都不写，位移退回 0，原地淡入放大 */
 @keyframes xh-overlay-pop-in {
   from {
     opacity: var(--xh-_enter-from-opacity, 0);
@@ -2944,7 +2916,7 @@
   }
 }
 
-/* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
+/* 弹层退场：只缩放淡出，不再沿方向退让 */
 @keyframes xh-pop-out {
   from {
     opacity: 1;
@@ -2957,10 +2929,10 @@
   }
 }
 
-/* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
-   页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮；
-   行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳 */
+/* ── 页内浮现的小件：原地缩放淡入，没有方向 ──
+   Approval、QuestionFlow 的结果标记，Badge 计数，PromptInput 换上的停止字形；
+   行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳。
+   弹层不引它，弹层走上面那一套 */
 @keyframes xh-pop-in {
   from {
     opacity: var(--xh-_enter-from-opacity, 0);
@@ -3492,7 +3464,7 @@
 
 /* 过线露面时弹出；退回线内时先播完退场、连接层才给根写 hidden 收起。退场途中不再接指针 */
 .xh-scope-back-top[data-part='trigger'][data-state='visible'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 .xh-scope-back-top[data-part='trigger'][data-state='hidden'] {
@@ -6230,7 +6202,7 @@
    动作项只读槽。主体无特征的规则挂在 data-instant / data-state 后面，页面上任何元素翻转这两个属性
    都会让它整棵子树重算 */
 .xh-scope-float-button[data-part='list']:where(:not([data-instant])) {
-  --xh-_float-button-item-enter: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+  --xh-_float-button-item-enter: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
 /* 原生按钮直接作为动作项时，沿用触发器的视觉面（同一组公开槽、同一张形态表）；XhButton 保留自己的皮肤。 */
@@ -6467,7 +6439,7 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-floating-panel[data-part='positioner'][data-state='open']:not([data-instant]) {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧由退场闸门押后，这里才播得出来。forwards 把末态钉住，
@@ -10745,7 +10717,7 @@
 /* 收起不卸载：离底时冒出来播进场，回底时先播完退场、连接层才写 hidden 藏起。
    不写 display，可见性归上面那条 [hidden] 管；退场途中不再接指针 */
 .xh-scope-log[data-part='scroll-to-end-trigger'][data-state='visible'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 .xh-scope-log[data-part='scroll-to-end-trigger'][data-state='hidden']:not([hidden]) {
@@ -11700,13 +11672,13 @@
 }
 
 .xh-scope-mention[data-part='content'][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-mention[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 候选行：网格、尺寸档、悬停 / 高亮 100、按下 200 与禁用面由 Collection Item 家族按 overlay 语境给，
@@ -22009,13 +21981,13 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-cascader[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-cascader[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 一列：宽度由内容撑出、设下限防塌，高度定死——切换展开路径时浮层不上下跳动，
@@ -23440,7 +23412,7 @@
   -webkit-line-clamp: var(--xh-citation-card-quote-lines, 6);
 }
 
-/* 出现与退场按锚定面板那一组：开着时 pop-in，收起时 pop-out 播完才藏起；卡片里轮换来源不再播 */
+/* 出现与退场走弹层那一套：开着时 pop-in，收起时 pop-out 播完才藏起；卡片里轮换来源不再播 */
 .xh-scope-citation[data-part='preview'][data-preview-mode='hover'][data-state='open']:not([data-instant]) {
   animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
@@ -25083,13 +25055,13 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现；常驻形态的取色面一直在，没有进退场 */
 .xh-scope-color-picker[data-part='content'][data-state='open']:not([data-instant], [data-inline]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-color-picker[data-part='content'][data-state='closed']:not([data-inline]) {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
@@ -26364,13 +26336,13 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-combobox[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-combobox[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 .xh-scope-combobox[data-part='group'] {
@@ -27228,14 +27200,14 @@
 /* 首帧落位后从锚点一侧淡入短移，不缩放整张面。 */
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-context-menu[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-context-menu[data-part='content'][data-state='closed'] {
-  will-change: opacity, translate;
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, scale;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 .xh-scope-context-menu[data-part='group'] {
@@ -28215,13 +28187,13 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-date-picker[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-date-picker[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
@@ -29137,13 +29109,13 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-date-range-picker[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-date-range-picker[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
@@ -31352,11 +31324,11 @@
 }
 
 .xh-scope-expression-input[data-part='content'][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 .xh-scope-expression-input[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 补全条目：即选即插入，aria-selected 只标当前高亮那一条，overlay 语境的选中面透明，高亮与悬停同一面 */
@@ -35500,14 +35472,14 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-menu[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-menu[data-part='content'][data-state='closed'] {
-  will-change: opacity, translate;
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, scale;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 尺寸 —— */
@@ -36016,13 +35988,13 @@
 
 /* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */
 .xh-scope-menubar[data-part='content'][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 末收向锚点一侧淡出；forwards 防止动画完成到真正隐藏之间闪回原样。 */
 .xh-scope-menubar[data-part='content'][data-state='closed'] {
-  will-change: opacity, translate;
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, scale;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 在一排入口间换张时两侧都瞬时：交叉淡变读起来就是闪烁。原生菜单栏的成规——首开有进场、末收有退场、
@@ -36498,7 +36470,7 @@
 /* 收起不卸载：离底时冒出来播进场，回底时先播完退场、连接层才写 hidden 藏起。
    不写 display，可见性归上面那条 [hidden] 管；退场途中不再接指针 */
 .xh-scope-message-feed[data-part='scroll-to-end-trigger'][data-state='visible'] {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 .xh-scope-message-feed[data-part='scroll-to-end-trigger'][data-state='hidden']:not([hidden]) {
@@ -36808,7 +36780,7 @@
 /* 首开弹出、末收收回；在两张之间换张时两侧都带 data-instant，瞬时换张——与菜单栏同一条成规，
    交叉的进退场读起来就是闪烁。挂载时就展开着的那一项同样带它，直接呈现 */
 .xh-scope-navigation-menu[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来 */
@@ -37086,7 +37058,7 @@
 /* 共享外壳是面板那一面：首开弹出、末收收回，换张时外壳留在原处、高度即刻换成新的一张。
    挂载时就展开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-navigation-menu[data-part='viewport'][data-state='open']:not([data-instant]) {
-  animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 .xh-scope-navigation-menu[data-part='viewport'][data-state='closed'] {
@@ -38564,15 +38536,15 @@
   pointer-events: auto;
 }
 
-/* 摊开的页码面板锚定在省略位上、从中挑一页，与菜单同属锚定列表：从锚点一侧短移淡入，不缩放 */
+/* 摊开的页码面板锚定在省略位上、从中挑一页：弹层那一套进出场，从锚点一侧短移、淡入放大（设计真源 §9.5） */
 .xh-scope-pagination[data-part='content'][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-pagination[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }：
@@ -42469,14 +42441,14 @@
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-select[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-select[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-  will-change: opacity, translate;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, scale;
 }
 
 /* 空态占位：待在 content 里、list 的兄弟；盒与阴影归 content，这里只画一句居中的次要文字 */
@@ -43058,17 +43030,17 @@
   pointer-events: none;
 }
 
-/* 入场走 enter 档（锚定列表族的 tooltip 入场 --xh-motion-duration-enter），退场仍是 exit。
+/* 弹层那一套进出场：入场走 enter 档（--xh-motion-duration-enter），退场仍是 exit。
    接替上一个提示打开的（data-instant）直接呈现：横扫一排钮时提示一个个跟上，不再一个个滑入 */
 .xh-scope-tooltip[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-tooltip[data-part='content'][data-state='closed'] {
-  will-change: opacity, translate;
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  will-change: opacity, scale;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* —— 尺寸 —— */
@@ -43498,15 +43470,15 @@
   overscroll-behavior: contain;
 }
 
-/* 弹出分支是锚定在分支行旁侧的一列导航，与菜单同属锚定列表：从锚点一侧短移淡入，不缩放 */
+/* 弹出分支是锚定在分支行旁侧的一列导航：弹层那一套进出场，从锚点一侧短移、淡入放大（设计真源 §9.5） */
 .xh-scope-side-nav[data-part='branch-content'][data-popout][data-state='open'] {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到收起落下来之间闪一下原样 */
 .xh-scope-side-nav[data-part='branch-content'][data-popout][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 箭头是行尾的后缀：auto 外边距把它顶到行尾，家族按 suffix 槽下发的外边距已在行上归零。
@@ -49223,13 +49195,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-time-picker[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-time-picker[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 有底栏时面板折行：各列与快捷选项列排在第一行，底栏独占下一行。
@@ -50069,13 +50041,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-time-range-picker[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-time-range-picker[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 快捷选项也是一列，与时分秒那几列并排，排在行内起始一侧；限高与时间列同一档 */
@@ -54125,13 +54097,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
 .xh-scope-tree-select[data-part='content'][data-state='open']:not([data-instant]) {
-  animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
    免得动画结束到真收起之间闪一下原样 */
 .xh-scope-tree-select[data-part='content'][data-state='closed'] {
-  animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 边框与底色归 content，树只管滚动并把行竖着排开。

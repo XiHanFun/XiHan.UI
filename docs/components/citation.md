@@ -372,7 +372,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 
 ### 动效
 
-动效角色：按压 · 状态 · 披露 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
 关键帧 `xh-citation-preview-collapse` · `xh-citation-preview-expand` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

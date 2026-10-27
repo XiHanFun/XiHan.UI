@@ -410,7 +410,7 @@
      动作项只读槽。主体无特征的规则挂在 data-instant / data-state 后面，页面上任何元素翻转这两个属性
      都会让它整棵子树重算 */
   [data-scope='float-button'][data-part='list']:where(:not([data-instant])) {
-    --xh-_float-button-item-enter: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    --xh-_float-button-item-enter: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
   }
 
   /* 原生按钮直接作为动作项时，沿用触发器的视觉面（同一组公开槽、同一张形态表）；XhButton 保留自己的皮肤。 */

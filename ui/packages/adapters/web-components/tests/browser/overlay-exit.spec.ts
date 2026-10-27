@@ -458,7 +458,7 @@ describe('wc tooltip 退场', () => {
     await settle()
 
     expect(content.style.display, '退场动画播完之前不能写 display:none').not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
 
     expect(await animationEnd(content), '退场动画应当真的结束一次').toBe(true)
     await settle()
@@ -522,7 +522,7 @@ describe('wc floating-panel 退场', () => {
     await settle()
 
     expect(positioner.style.display).not.toBe('none')
-    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-in')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-overlay-pop-in')
 
     await new Promise(resolve => setTimeout(resolve, 400))
     expect(positioner.style.display, '重新展开后不该被上一轮退场收起').not.toBe('none')

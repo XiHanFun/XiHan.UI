@@ -298,15 +298,15 @@
     pointer-events: auto;
   }
 
-  /* 摊开的页码面板锚定在省略位上、从中挑一页，与菜单同属锚定列表：从锚点一侧短移淡入，不缩放 */
+  /* 摊开的页码面板锚定在省略位上、从中挑一页：弹层那一套进出场，从锚点一侧短移、淡入放大（设计真源 §9.5） */
   [data-scope='pagination'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 退场：收起那一帧 hidden 由退场闸门押后，这里才播得出来。forwards 把末态钉住，
      免得动画结束到真收起之间闪一下原样 */
   [data-scope='pagination'][data-part='content'][data-state='closed'] {
-    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：

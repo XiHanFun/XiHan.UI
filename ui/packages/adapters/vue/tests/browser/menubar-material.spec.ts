@@ -143,7 +143,7 @@ describe('menubar M2 菜单面与条目几何', () => {
     expect(getComputedStyle(byTestId('disabled')).cursor).toBe('not-allowed')
   })
 
-  it('实际 placement 选择单一入场方向，菜单面使用 translate 动效而非 zoom', async () => {
+  it('实际 placement 选择单一入场方向，菜单面走弹层那一套：短移并淡入放大', async () => {
     await mountMenubar()
     const positioner = part('positioner')
     const placement = positioner.dataset.placement ?? ''
@@ -167,7 +167,8 @@ describe('menubar M2 菜单面与条目几何', () => {
     // 挂载时就展开着的这一张属于首帧、不播进场；撤掉首帧标记，量的是用户展开时的那条进场
     delete part('content').dataset.instant
     const content = getComputedStyle(part('content'))
-    expect(content.animationName).toContain('xh-overlay-slide-in')
-    expect(content.getPropertyValue('scale')).toBe('none')
+    expect(content.animationName).toContain('xh-overlay-pop-in')
+    // 入场第一帧落在 --xh-motion-scale-enter
+    expect(content.getPropertyValue('scale')).toBe(content.getPropertyValue('--xh-motion-scale-enter').trim())
   })
 })

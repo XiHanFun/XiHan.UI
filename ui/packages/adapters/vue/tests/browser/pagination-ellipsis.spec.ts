@@ -132,14 +132,14 @@ describe('摊开省略号', () => {
     expect(content().getBoundingClientRect().height).toBeGreaterThan(0)
   })
 
-  it('摊开的页码面板锚定在省略位上：按锚定列表从锚点一侧短移淡入，不缩放', async () => {
+  it('摊开的页码面板锚定在省略位上：走弹层那一套，从锚点一侧短移、淡入放大', async () => {
     await mount()
     ellipses()[1]!.click()
     await nextTick()
     await nextTick()
     const style = getComputedStyle(content())
-    expect(style.animationName).toBe('xh-overlay-slide-in')
-    expect(style.scale).toBe('none')
+    expect(style.animationName).toBe('xh-overlay-pop-in')
+    expect(style.scale).toBe(style.getPropertyValue('--xh-motion-scale-enter').trim())
   })
 
   it('浮层被搬到统一落点，不留在分页行里', async () => {

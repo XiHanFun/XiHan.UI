@@ -87,6 +87,8 @@ describe('vue menubar：下拉只按可用高度封顶', () => {
     await userEvent.keyboard('{ArrowDown}')
     await settle()
     const content = openContent('menu')
+    // 入场从 scale-enter 放大，播完再量变换后的高度
+    await Promise.all(content.getAnimations().map(animation => animation.finished))
     expect(content.getBoundingClientRect().height).toBeCloseTo(MENU_CAP, 0)
     expect(content.scrollHeight).toBeGreaterThan(content.clientHeight)
   })

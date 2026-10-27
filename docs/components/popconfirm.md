@@ -304,7 +304,7 @@ size 改变面板的内边距与最大宽度，三个档位落在 content 上
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板） · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-popconfirm-loading-duration`。
 

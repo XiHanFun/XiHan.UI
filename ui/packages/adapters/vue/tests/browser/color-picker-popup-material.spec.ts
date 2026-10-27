@@ -132,7 +132,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     expect(swatchFaceColor()).toBe('rgb(0, 255, 0)')
   })
 
-  it('四向短位移不缩放，嵌套面板不继承祖先方向', async () => {
+  it('四向短位移并淡入放大，嵌套面板不继承祖先方向', async () => {
     await mount('light')
     const outer = part('positioner')
     const inner = document.createElement('div')
@@ -154,8 +154,9 @@ describe('颜色选择器浮层：floating 实体面', () => {
     }
     // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
     delete part('content').dataset.instant
-    expect(getComputedStyle(part('content')).animationName).toBe('xh-overlay-slide-in')
-    expect(getComputedStyle(part('content')).scale).toBe('none')
+    expect(getComputedStyle(part('content')).animationName).toBe('xh-overlay-pop-in')
+    // 弹层那一套：入场第一帧落在 --xh-motion-scale-enter
+    expect(getComputedStyle(part('content')).scale).toBe(getComputedStyle(part('content')).getPropertyValue('--xh-motion-scale-enter').trim())
   })
 
   it('减弱动效进出场只剩 150ms 淡变，没有空间位移', async () => {
@@ -168,7 +169,8 @@ describe('颜色选择器浮层：floating 实体面', () => {
       const style = getComputedStyle(part('content'))
       expect(style.animationDuration).toBe('0.15s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
-      expect(style.scale).toBe('none')
+      // 缩放幅度归一：进退场第一帧都是原尺寸
+      expect(style.scale).toBe('1')
     }
   })
 
@@ -195,7 +197,7 @@ describe('颜色选择器浮层：floating 实体面', () => {
     expect(content.dataset.state).toBe('closed')
     expect(content.hidden).toBe(true)
     expect(getComputedStyle(content).display).not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
     expect(content.getBoundingClientRect().height).toBeGreaterThan(0)
     content.getAnimations().forEach(animation => animation.finish())
     await expect.poll(() => content.getBoundingClientRect().height).toBe(0)

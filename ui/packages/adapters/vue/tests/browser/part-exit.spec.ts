@@ -47,7 +47,7 @@ describe('message-feed 回到底部按钮', () => {
     viewport.scrollTop = 0
     await until(() => trigger.hidden === false)
     expect(trigger.dataset.state).toBe('visible')
-    expect(running(trigger)).toEqual(['xh-pop-in'])
+    expect(running(trigger)).toEqual(['xh-overlay-pop-in'])
 
     viewport.scrollTop = viewport.scrollHeight
     await until(() => trigger.dataset.state === 'hidden')
@@ -76,7 +76,7 @@ describe('back-top 按钮', () => {
     window.scrollTo(0, 600)
     await until(() => root.hidden === false)
     expect(trigger.dataset.state).toBe('visible')
-    expect(running(trigger)).toEqual(['xh-pop-in'])
+    expect(running(trigger)).toEqual(['xh-overlay-pop-in'])
 
     window.scrollTo(0, 0)
     await until(() => trigger.dataset.state === 'hidden')

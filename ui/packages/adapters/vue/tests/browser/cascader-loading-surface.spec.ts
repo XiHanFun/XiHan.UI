@@ -129,7 +129,7 @@ describe('级联选择首次加载表面', () => {
     expect([part('content'), part('empty'), part('loading')].filter(paintsSurface)).toEqual([part('content')])
   })
 
-  it('嵌套方向互不叠加，进出场无缩放且服从减弱动效通道', async () => {
+  it('嵌套方向互不叠加，进出场淡入放大且服从减弱动效通道', async () => {
     await mountCascader()
     const outer = part('positioner')
     outer.dataset.placement = 'bottom-start'
@@ -145,15 +145,17 @@ describe('级联选择首次加载表面', () => {
     const content = part('content')
     // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户开合时的进退场
     delete content.dataset.instant
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
-    expect(getComputedStyle(content).scale).toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-pop-in')
+    // 弹层那一套：入场第一帧落在 --xh-motion-scale-enter
+    expect(getComputedStyle(content).scale).toBe(getComputedStyle(content).getPropertyValue('--xh-motion-scale-enter').trim())
     outer.dataset.motion = 'reduce'
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)
-      expect(style.animationName).toBe(`xh-overlay-slide-${state === 'open' ? 'in' : 'out'}`)
+      expect(style.animationName).toBe(state === 'open' ? 'xh-overlay-pop-in' : 'xh-pop-out')
       expect(style.animationDuration).toBe('0.15s')
-      expect(style.scale).toBe('none')
+      // 减弱动效下缩放幅度归一：进退场第一帧都是原尺寸
+      expect(style.scale).toBe('1')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
     }
   })

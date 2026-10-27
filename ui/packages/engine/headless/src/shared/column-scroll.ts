@@ -30,10 +30,14 @@ function selectedOption(column: HTMLElement): HTMLElement | null {
   return column.querySelector<HTMLElement>('[role="option"][aria-selected="true"]')
 }
 
-/** 这一格停到列顶时列的滚动位置：它与第一格之间的距离（与此刻滚到哪儿无关），越界由浏览器夹进可滚范围。 */
+/**
+ * 这一格停到列顶时列的滚动位置：它与第一格之间的距离（与此刻滚到哪儿无关），越界由浏览器夹进可滚范围。
+ * 读 offsetTop 排布位而不是 getBoundingClientRect：浮层入场时整面从 --xh-motion-scale-enter 放大，
+ * 变换后的距离比布局距离短一截，按它滚会停在选中格上方。
+ */
 function alignedTop(column: HTMLElement, option: HTMLElement): number {
   const first = column.querySelector<HTMLElement>('[role="option"]')
-  return first ? option.getBoundingClientRect().top - first.getBoundingClientRect().top : 0
+  return first ? option.offsetTop - first.offsetTop : 0
 }
 
 function liveColumns(target: ColumnScrollTarget): HTMLElement[] {

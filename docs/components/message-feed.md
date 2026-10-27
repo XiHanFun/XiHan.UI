@@ -336,9 +336,9 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板） · 出现（无锚定弹出） · 列表 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

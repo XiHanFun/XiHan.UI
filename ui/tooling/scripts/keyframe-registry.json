@@ -278,66 +278,37 @@
         "family/motion.css"
       ],
       "consumers": [
+        "back-top",
+        "cascader",
         "citation",
+        "color-picker",
+        "combobox",
         "command",
+        "context-menu",
+        "date-picker",
+        "date-range-picker",
+        "expression-input",
+        "float-button",
+        "floating-panel",
         "hover-card",
+        "log",
+        "mention",
+        "menu",
+        "menubar",
+        "message-feed",
+        "navigation-menu",
+        "pagination",
         "popconfirm",
         "popover",
-        "tour"
-      ],
-      "relation": "anchored-panel"
-    },
-    "xh-overlay-slide-in": {
-      "content": "from{opacity:var(--xh-_enter-from-opacity,0);translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}to{opacity:1;translate:0 0}",
-      "definedIn": [
-        "family/motion.css"
-      ],
-      "consumers": [
-        "cascader",
-        "color-picker",
-        "combobox",
-        "context-menu",
-        "date-picker",
-        "date-range-picker",
-        "expression-input",
-        "mention",
-        "menu",
-        "menubar",
-        "pagination",
         "select",
         "side-nav",
         "time-picker",
         "time-range-picker",
         "tooltip",
+        "tour",
         "tree-select"
       ],
-      "relation": "anchored-list"
-    },
-    "xh-overlay-slide-out": {
-      "content": "from{opacity:1;translate:0 0}to{opacity:0;translate:calc((var(--xh-_overlay-enter-right,0) - var(--xh-_overlay-enter-left,0)) * var(--xh-motion-distance-sm)) calc((var(--xh-_overlay-enter-down,0) - var(--xh-_overlay-enter-up,0)) * var(--xh-motion-distance-sm))}",
-      "definedIn": [
-        "family/motion.css"
-      ],
-      "consumers": [
-        "cascader",
-        "color-picker",
-        "combobox",
-        "context-menu",
-        "date-picker",
-        "date-range-picker",
-        "expression-input",
-        "mention",
-        "menu",
-        "menubar",
-        "pagination",
-        "select",
-        "side-nav",
-        "time-picker",
-        "time-range-picker",
-        "tooltip",
-        "tree-select"
-      ],
-      "relation": "anchored-list"
+      "relation": "overlay"
     },
     "xh-pop-in": {
       "content": "from{opacity:var(--xh-_enter-from-opacity,0);scale:var(--xh-motion-scale-enter)}to{opacity:1;scale:1}",
@@ -346,17 +317,11 @@
       ],
       "consumers": [
         "approval",
-        "back-top",
         "badge",
         "cascader",
         "color-picker",
         "combobox",
         "date-picker",
-        "float-button",
-        "floating-panel",
-        "log",
-        "message-feed",
-        "navigation-menu",
         "prompt-input",
         "question-flow",
         "select",
@@ -365,7 +330,7 @@
         "time-picker",
         "tree-select"
       ],
-      "relation": "detached"
+      "relation": "list"
     },
     "xh-pop-out": {
       "content": "from{opacity:1;scale:1}to{opacity:0;scale:var(--xh-motion-scale-exit)}",
@@ -375,19 +340,36 @@
       "consumers": [
         "back-top",
         "badge",
+        "cascader",
         "citation",
+        "color-picker",
+        "combobox",
         "command",
+        "context-menu",
+        "date-picker",
+        "date-range-picker",
+        "expression-input",
         "float-button",
         "floating-panel",
         "hover-card",
         "log",
+        "mention",
+        "menu",
+        "menubar",
         "message-feed",
         "navigation-menu",
+        "pagination",
         "popconfirm",
         "popover",
-        "tour"
+        "select",
+        "side-nav",
+        "time-picker",
+        "time-range-picker",
+        "tooltip",
+        "tour",
+        "tree-select"
       ],
-      "relation": "anchored-panel"
+      "relation": "overlay"
     },
     "xh-progress-indeterminate": {
       "content": "from{translate:var(--xh-_progress-sweep-from,-100%) 0}to{translate:var(--xh-_progress-sweep-to,250%) 0}",
@@ -618,6 +600,8 @@
     "xh-drawer-out-top": "并入 xh-slide-out（family/motion.css）",
     "xh-drawer-out-bottom": "并入 xh-slide-out（family/motion.css）",
     "xh-toast-in": "改名 xh-notification-stack-in（notification.css）：轻提示并入通知的叠放档",
-    "xh-toast-out": "改名 xh-notification-stack-out（notification.css）：轻提示并入通知的叠放档"
+    "xh-toast-out": "改名 xh-notification-stack-out（notification.css）：轻提示并入通知的叠放档",
+    "xh-overlay-slide-in": "并入 xh-overlay-pop-in（family/motion.css）：弹层只有一套进出场，锚定关系只决定有没有位移",
+    "xh-overlay-slide-out": "并入 xh-pop-out（family/motion.css）：弹层只有一套进出场"
   }
 }

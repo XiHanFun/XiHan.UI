@@ -1,4 +1,4 @@
-// 共享关键帧与关系组的登记：浮层按锚定关系分锚定列表 / 锚定面板 / 无锚定弹出三组，
+// 共享关键帧与关系组的登记：弹层只有一组（overlay，锚定与无锚定同一套进出场，设计真源 §9.5），
 // 另有淡入淡出（fade）、披露（disclosure）、列表条目（list）、面板（sheet）、整幅滑入（slide）、
 // 循环（loop）、数值（value）、交互光（light）与数据（data）。共享关键帧只定义在 family/motion.css，皮肤 @import 它。
 //
@@ -11,11 +11,10 @@ export const MOTION_FAMILY = 'family/motion.css'
 
 /** 关键帧名 → 锚定关系。 */
 export const SHARED_RELATION = Object.freeze({
-  'xh-overlay-slide-in': 'anchored-list',
-  'xh-overlay-slide-out': 'anchored-list',
-  'xh-overlay-pop-in': 'anchored-panel',
-  'xh-pop-out': 'anchored-panel',
-  'xh-pop-in': 'detached',
+  'xh-overlay-pop-in': 'overlay',
+  'xh-pop-out': 'overlay',
+  // 页内浮现的小件与标签行的列表加入，弹层不引
+  'xh-pop-in': 'list',
   'xh-fade-in': 'fade',
   'xh-fade-out': 'fade',
   'xh-rise-in': 'fade',
@@ -38,42 +37,43 @@ export const SHARED_RELATION = Object.freeze({
   'xh-draw': 'data',
 })
 
-export const RELATIONS = Object.freeze(['anchored-list', 'anchored-panel', 'detached', 'fade', 'disclosure', 'list', 'sheet', 'slide', 'loop', 'value', 'light', 'data'])
+export const RELATIONS = Object.freeze(['overlay', 'fade', 'disclosure', 'list', 'sheet', 'slide', 'loop', 'value', 'light', 'data'])
 
 /**
- * 浮层的三种锚定关系各自许用的进出场关键帧（表）。
- * xh-pop-out 同时是锚定面板与无锚定弹出的退场；fade 与 disclosure 不表达锚定关系，任何组件都可引。
+ * 弹层许用的进出场关键帧（表）。锚定关系只决定有没有位移（方向槽写不写），不再分组。
+ * fade 与 disclosure 不表达锚定关系，任何组件都可引。
  */
 export const RELATION_KEYFRAMES = Object.freeze({
-  'anchored-list': Object.freeze(['xh-overlay-slide-in', 'xh-overlay-slide-out']),
-  'anchored-panel': Object.freeze(['xh-overlay-pop-in', 'xh-pop-out']),
-  'detached': Object.freeze(['xh-pop-in', 'xh-pop-out']),
+  overlay: Object.freeze(['xh-overlay-pop-in', 'xh-pop-out']),
 })
 
-/** 组件 → 锚定关系，逐行照抄锚定关系表的三行；没登记的组件不受关系判据管。 */
+/** 组件 → 弹层关系，逐行照抄设计真源 §9.5 弹层那一行列的组件；没登记的组件不受关系判据管。 */
 export const OVERLAY_RELATION = Object.freeze({
-  'menu': 'anchored-list',
-  'select': 'anchored-list',
-  'combobox': 'anchored-list',
-  'cascader': 'anchored-list',
-  'context-menu': 'anchored-list',
-  'menubar': 'anchored-list',
-  'mention': 'anchored-list',
-  'tree-select': 'anchored-list',
-  'date-picker': 'anchored-list',
-  'date-range-picker': 'anchored-list',
-  'time-picker': 'anchored-list',
-  'time-range-picker': 'anchored-list',
-  'tooltip': 'anchored-list',
-  'color-picker': 'anchored-list',
-  'side-nav': 'anchored-list',
-  'pagination': 'anchored-list',
-  'popover': 'anchored-panel',
-  'hover-card': 'anchored-panel',
-  'popconfirm': 'anchored-panel',
-  'tour': 'anchored-panel',
-  'command': 'anchored-panel',
-  'navigation-menu': 'detached',
-  'floating-panel': 'detached',
-  'float-button': 'detached',
+  'menu': 'overlay',
+  'select': 'overlay',
+  'combobox': 'overlay',
+  'cascader': 'overlay',
+  'context-menu': 'overlay',
+  'menubar': 'overlay',
+  'mention': 'overlay',
+  'tree-select': 'overlay',
+  'date-picker': 'overlay',
+  'date-range-picker': 'overlay',
+  'time-picker': 'overlay',
+  'time-range-picker': 'overlay',
+  'tooltip': 'overlay',
+  'color-picker': 'overlay',
+  'side-nav': 'overlay',
+  'pagination': 'overlay',
+  'popover': 'overlay',
+  'hover-card': 'overlay',
+  'popconfirm': 'overlay',
+  'tour': 'overlay',
+  'command': 'overlay',
+  'navigation-menu': 'overlay',
+  'floating-panel': 'overlay',
+  'float-button': 'overlay',
+  'back-top': 'overlay',
+  'log': 'overlay',
+  'message-feed': 'overlay',
 })

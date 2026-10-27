@@ -123,7 +123,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 - 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
 - 每列 64px 宽、七格整行高，格是 24px 高的通栏条；列底留白让末尾几格（23 时、55–59 分）也能滚到列顶，几列的选中落在同一行。快捷选项是淡底小钮，选中时在末端画对号。
 - 输入框走 Field Chrome 描边式；浮层为 floating 实体面（border-default + floating 海拔）；时分秒与快捷列各自接自绘条。
-- 浮层按实际弹出方向短距离淡入淡出，不缩放文字与数字；减弱动效和增强对比度沿用主题设置。
+- 浮层走弹层那一套进出场：按实际弹出方向短移、淡入放大，退场缩小淡出；减弱动效和增强对比度沿用主题设置。
 - 空值时显示时钟入口；有值且渲染了清空按钮时，由清空按钮原位接替时钟图标。
 - 聚焦边界与当前段位使用短过渡，不以瞬时跳色表达焦点。
 
@@ -623,9 +623,9 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

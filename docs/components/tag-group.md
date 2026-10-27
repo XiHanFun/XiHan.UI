@@ -312,7 +312,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位 · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

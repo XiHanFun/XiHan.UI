@@ -184,7 +184,7 @@ describe('日期选择浮层', () => {
     expect(document.querySelectorAll(`[data-scope='date-picker'][data-part='calendar']`)).toHaveLength(1)
   })
 
-  it('四向短位移不缩放，嵌套层不继承父层方向', async () => {
+  it('四向短位移并淡入放大，嵌套层不继承父层方向', async () => {
     await mount('light')
     const outer = part('positioner')
     const inner = document.createElement('div')
@@ -210,8 +210,9 @@ describe('日期选择浮层', () => {
     for (const state of ['open', 'closed']) {
       content.dataset.state = state
       const style = getComputedStyle(content)
-      expect(style.animationName).toBe(state === 'open' ? 'xh-overlay-slide-in' : 'xh-overlay-slide-out')
-      expect(style.scale).toBe('none')
+      expect(style.animationName).toBe(state === 'open' ? 'xh-overlay-pop-in' : 'xh-pop-out')
+      // 弹层那一套：入场第一帧落在 --xh-motion-scale-enter，退场从原尺寸缩小
+      expect(style.scale).toBe(state === 'open' ? style.getPropertyValue('--xh-motion-scale-enter').trim() : '1')
     }
   })
 
@@ -226,7 +227,8 @@ describe('日期选择浮层', () => {
       const style = getComputedStyle(content)
       expect(style.animationDuration).toBe('0.15s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
-      expect(style.scale).toBe('none')
+      // 缩放幅度归一：进退场第一帧都是原尺寸
+      expect(style.scale).toBe('1')
     }
   })
 
@@ -249,7 +251,7 @@ describe('日期选择浮层', () => {
     expect(content.offsetWidth).toBe(before.width)
     expect(content.offsetHeight).toBe(before.height)
     expect(calendars.map(calendar => [calendar.offsetLeft, calendar.offsetTop])).toEqual(offsets)
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
     const exitAnimations = content.getAnimations()
     expect(exitAnimations.length).toBeGreaterThan(0)
     exitAnimations.forEach(animation => animation.finish())

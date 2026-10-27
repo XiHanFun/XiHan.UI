@@ -267,11 +267,11 @@
   }
 
   [data-scope='expression-input'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='expression-input'][data-part='content'][data-state='closed'] {
-    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 补全条目：即选即插入，aria-selected 只标当前高亮那一条，overlay 语境的选中面透明，高亮与悬停同一面 */

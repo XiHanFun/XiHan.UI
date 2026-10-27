@@ -203,7 +203,7 @@
     -webkit-line-clamp: var(--xh-citation-card-quote-lines, 6);
   }
 
-  /* 出现与退场按锚定面板那一组：开着时 pop-in，收起时 pop-out 播完才藏起；卡片里轮换来源不再播 */
+  /* 出现与退场走弹层那一套：开着时 pop-in，收起时 pop-out 播完才藏起；卡片里轮换来源不再播 */
   [data-scope='citation'][data-part='preview'][data-preview-mode='hover'][data-state='open']:not([data-instant]) {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }

@@ -50,7 +50,7 @@ describe('family/motion.css 共享关键帧', () => {
     const expected = Object.keys(SHARED_RELATION).sort()
 
     expect([...found.keys()].sort()).toEqual(expected)
-    expect(expected).toHaveLength(25)
+    expect(expected).toHaveLength(23)
     for (const name of expected) {
       expect(found.get(name).count, name).toBe(1)
       expect(found.get(name).layered, `${name} 不在 @layer xihan.motion 里`).toBe(true)
@@ -87,18 +87,16 @@ describe('family/motion.css 共享关键帧', () => {
     }
   })
 
-  it('锚定关系登记与锚定关系表的分组一致', () => {
+  it('关系登记与关系表的分组一致：弹层只有一组', () => {
     const byRelation = {}
     for (const [name, relation] of Object.entries(SHARED_RELATION)) {
       expect(RELATIONS, `${name} 的 relation ${relation}`).toContain(relation)
       ;(byRelation[relation] ??= []).push(name)
     }
-    expect(byRelation['anchored-list'].sort()).toEqual(['xh-overlay-slide-in', 'xh-overlay-slide-out'])
-    expect(byRelation['anchored-panel'].sort()).toEqual(['xh-overlay-pop-in', 'xh-pop-out'])
-    expect(byRelation.detached).toEqual(['xh-pop-in'])
+    expect(byRelation.overlay.sort()).toEqual(['xh-overlay-pop-in', 'xh-pop-out'])
     expect(byRelation.fade.sort()).toEqual(['xh-drop-in', 'xh-fade-in', 'xh-fade-out', 'xh-rise-in'])
     expect(byRelation.disclosure.sort()).toEqual(['xh-disclosure-collapse', 'xh-disclosure-expand'])
-    expect(byRelation.list).toEqual(['xh-item-in'])
+    expect(byRelation.list.sort()).toEqual(['xh-item-in', 'xh-pop-in'])
     expect(byRelation.sheet.sort()).toEqual(['xh-sheet-in', 'xh-sheet-out'])
     expect(byRelation.slide.sort()).toEqual(['xh-slide-fade-in', 'xh-slide-fade-out', 'xh-slide-in', 'xh-slide-out'])
     expect(byRelation.loop.sort()).toEqual(['xh-breathe', 'xh-breathe-halo', 'xh-shimmer', 'xh-spin'])

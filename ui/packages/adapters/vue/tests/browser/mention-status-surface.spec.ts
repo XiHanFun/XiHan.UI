@@ -254,7 +254,7 @@ describe('mention 单一状态表面', () => {
     expect(input.getAttribute('aria-expanded')).toBe('false')
     expect(content.getAttribute('data-state')).toBe('closed')
     expect(getComputedStyle(content).display).not.toBe('none')
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
     expect(content.getBoundingClientRect().height).toBeGreaterThanOrEqual(minimum * 0.9)
   })
 })
