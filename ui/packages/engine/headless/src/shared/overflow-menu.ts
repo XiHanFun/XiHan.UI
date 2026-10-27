@@ -58,6 +58,8 @@ export interface OverflowMenuOptions {
   orientation: Orientation
   dir: Direction | undefined
   size: Size | undefined
+  /** 整张菜单的语气，由宿主显式给：浮层不从触发钮所在的容器继承语气。 */
+  tone?: Tone
   disabled?: boolean
   /** 选中一项：由组件替那个条目完成它的动作。 */
   onSelect: (value: string) => void
@@ -97,6 +99,7 @@ export function overflowMenuProps(options: OverflowMenuOptions): MenuSchema['pro
     placement: overflowPlacement(options.orientation, options.dir),
     dir: options.dir,
     size: options.size,
+    tone: options.tone,
     disabled: options.disabled,
     onItemSelect: ({ value }) => options.onSelect(value),
   }

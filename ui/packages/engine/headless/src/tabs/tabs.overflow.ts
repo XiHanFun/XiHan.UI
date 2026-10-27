@@ -54,6 +54,8 @@ export function tabsOverflowMenuProps(service: Service<TabsSchema>): MenuSchema[
     orientation: prop('orientation') ?? 'horizontal',
     dir: prop('dir'),
     size: prop('size'),
+    // 下拉渲在浮层里，接不到标签页根上的语气，跟尺寸一样由这里给
+    tone: prop('tone'),
     onSelect: value => send({ type: 'OVERFLOW.SELECT', value }),
   })
 }

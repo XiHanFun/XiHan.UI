@@ -6,7 +6,7 @@ import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput, setDiagnos
 import { DIAGNOSTIC_CODES } from '../src/kernel/diagnostics/codes'
 import { portalVisualIndex } from '../src/kernel/structure/portal-visual-index'
 
-const INPUT = { reproduced: new Set(['data-theme', 'data-density', 'data-tone', 'dir']) }
+const INPUT = { reproduced: new Set(['data-theme', 'data-density', 'data-material', 'dir']) }
 
 let sheets: HTMLStyleElement[] = []
 
@@ -39,7 +39,7 @@ describe('portal 视觉索引', () => {
     css('[data-theme=\'dark\'] { --d: 1; }')
     css(':is(:root, [data-density=\'compact\']) { --e: 1; }')
     css(':where(:root), :where([data-density=\'compact\']) { --f: 1; }')
-    css('[data-tone] { --g: 1; }')
+    css('[data-material] { --g: 1; }')
     expect(names()).toEqual([])
   })
 

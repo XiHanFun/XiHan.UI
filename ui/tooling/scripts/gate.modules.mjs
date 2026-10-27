@@ -56,6 +56,7 @@ export const MODULES = [
       'node tooling/scripts/skin/check-skin-parts.mjs',
       'node tooling/scripts/skin/check-visually-hidden.mjs',
       'node tooling/scripts/skin/check-axis-declaration.mjs',
+      'node tooling/scripts/skin/check-tone-boundary.mjs',
       'node tooling/scripts/skin/check-placeholder-fg.mjs',
       'node tooling/scripts/skin/check-autofill.mjs',
       'node tooling/scripts/skin/check-container-scope.mjs',

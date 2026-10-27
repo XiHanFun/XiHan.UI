@@ -216,6 +216,14 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 对比度已按 WCAG 逐族验证：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。自定义配色时，文字与底色按上表成对取用，不把 `--xh-tone-fg` 放在 `--xh-tone-solid` 上。
 
+## 语气不跨组件继承
+
+库内有 `tone` 的组件，自己写了就用自己的，没写就用组件自己的缺省语气，不接外层容器的：没写 `tone` 的 Button 放进 `tone="danger"` 的 Alert，或放进一个写了 `data-tone="danger"` 的自定义节点，仍是缺省的品牌色；没写 `tone` 的 Tooltip 从这样的容器里打开，仍是缺省的反白底。
+
+组把语气交给子组件，是组件显式下发的：ButtonGroup 写到没写 `tone` 的段上，TagGroup、TagsInput 与选择器写到值标签上，Menu 写到子菜单上；子组件自己写了 `tone` 的，以子组件为准。CheckboxGroup、RadioGroup、ToggleGroup、Tabs 这类组的条目是组自己的部件，跟着组的语气走，条目外面再包一层布局组件（Flex、Grid、ScrollArea 等没有 `tone` 的组件）也不影响。
+
+上一节的 `--xh-tone-*` 只给自定义节点用，照旧按继承取：自定义节点取到的是最近一个写了 `data-tone` 的祖先那一族。
+
 ## 聚焦环
 
 键盘焦点的环两层，由公共皮肤 `focus.css` 统一绘制，组件不需要自行编写：
