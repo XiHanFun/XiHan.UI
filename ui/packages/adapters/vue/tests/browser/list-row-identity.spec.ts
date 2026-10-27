@@ -1,4 +1,5 @@
-// 形状与分隔按身份取令牌：锚定浮层里的候选行贴着面板两侧铺满、不画圆角，主题改 inset 时行与字段盒都不动；
+// 形状与分隔按身份取令牌：锚定浮层里的候选行嵌在面板的 4px 内距里、取 inset 圆角（内层圆角不大于外层减内衬），
+// 主题改 inset 时行跟着变、字段盒不动；
 // floating 面板（日期、时间）里时间列之间的分隔取实体面的描边令牌
 // （border-default 档），不取 frosted 的。判据是计算样式：把令牌换成一眼能认出的值，看部件是否跟着变。
 import type { App, VNode } from 'vue'
@@ -57,15 +58,17 @@ function part(scope: string, name: string, index = 0): HTMLElement {
   return el
 }
 
-describe('浮层里的候选行贴边铺满', () => {
-  it('select 的选项不取 --xh-shape-inset 圆角，字段盒仍是 control 圆角', async () => {
+describe('浮层里的候选行嵌在面板内距里', () => {
+  it('select 的选项取 --xh-shape-inset 圆角、列表两侧各留 4px，字段盒仍是 control 圆角', async () => {
     document.documentElement.style.setProperty('--xh-shape-inset', '3px')
     await mount(() => h(XhSelectRoot, { collection: [{ value: 'a', label: '甲' }], defaultOpen: true }, () => [
       h(XhSelectControl, null, () => h(XhSelectTrigger)),
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () =>
         h(XhSelectItem, { value: 'a' }, () => h(XhSelectItemText, null, () => '甲'))))),
     ]))
-    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('0px')
+    expect(getComputedStyle(part('select', 'item')).borderTopLeftRadius).toBe('3px')
+    expect(getComputedStyle(part('select', 'content')).paddingInlineStart).toBe(`${tokenLength('--xh-space-1')}px`)
+    expect(getComputedStyle(part('select', 'content')).paddingInlineEnd).toBe(`${tokenLength('--xh-space-1')}px`)
     expect(getComputedStyle(part('select', 'control')).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
   })
 })

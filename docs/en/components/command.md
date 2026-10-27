@@ -334,10 +334,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-command-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-command-item-px` | `item` | `padding-inline` | `default` | `--xh-_command-px` |
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` |
-| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` |
-| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` |
+| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` |

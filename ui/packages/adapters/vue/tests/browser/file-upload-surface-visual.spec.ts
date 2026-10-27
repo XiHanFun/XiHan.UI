@@ -98,7 +98,7 @@ describe('file-upload 拖放区', () => {
     expect(style.borderTopWidth).toBe('1px')
     expect(style.borderTopStyle).toBe('dashed')
     expect(style.borderTopColor).toBe(token('borderTopColor', '--xh-border-control'))
-    expect(style.borderTopLeftRadius).toBe('2px')
+    expect(style.borderTopLeftRadius).toBe('8px')
     expect(style.backgroundColor).toBe(token('backgroundColor', '--xh-bg-subtle'))
     expect(style.color).toBe(token('color', '--xh-fg-default'))
     expect(style.minHeight).toBe('160px')

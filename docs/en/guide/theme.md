@@ -16,7 +16,7 @@ itself          meaning         a single component
 --xh-color-brand-500: oklch(0.632 0.209 277);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 4px;
+--xh-radius-seed: 8px;
 ```
 
 Colors use `oklch` instead of `hex` / `hsl`: different hues at the same lightness look equally bright, so dark inversion and contrast adjustments need no color-by-color hand tuning.
@@ -31,7 +31,7 @@ Colors use `oklch` instead of `hex` / `hsl`: different hues at the same lightnes
 --xh-fg-muted: var(--xh-color-neutral-600);
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
---xh-shape-control: var(--xh-radius-sm);
+--xh-shape-control: var(--xh-radius-md);
 --xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);

@@ -1105,7 +1105,7 @@
   min-block-size: var(--xh-collection-row-h, auto);
   padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
   padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
-  border-radius: var(--xh-collection-radius, var(--xh-shape-control));
+  border-radius: var(--xh-collection-radius, var(--xh-shape-inset));
   outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
   outline-offset: var(--xh-ring-offset);
   background-color: var(--xh-_collection-bg);
@@ -11689,7 +11689,7 @@
   min-block-size: var(--xh-mention-content-min-h, var(--xh-_mention-h));
   max-block-size: min(var(--xh-mention-content-max-h, var(--xh-overlay-max-h)), var(--xh-_mention-available-h));
   padding-block: var(--xh-mention-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-mention-content-px, 0);
+  padding-inline: var(--xh-mention-content-px, var(--xh-space-1));
   border-radius: var(--xh-mention-content-radius, var(--xh-shape-overlay));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -11728,7 +11728,7 @@
   --xh-collection-inline-padding: var(--xh-mention-item-px, var(--xh-_mention-item-px));
   --xh-collection-gap: var(--xh-mention-item-gap, var(--xh-_mention-gap));
   --xh-collection-font-size: var(--xh-mention-item-font-size, var(--xh-_mention-font-size));
-  --xh-collection-radius: var(--xh-mention-item-radius, 0);
+  --xh-collection-radius: var(--xh-mention-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-mention-item-fg, var(--xh-material-frosted-fg));
@@ -14305,6 +14305,11 @@
    大档字段里字号也钉在说明档，换成正文字号会与输入的文字抢层级。排在尺寸档之后，同特指度下压得住 */
 :where([data-xh-field-chrome]) .xh-scope-tag[data-part='root'][data-size='lg'] {
   --xh-_tag-font-size: var(--xh-text-caption-size);
+}
+
+/* 嵌在字段盒里取 inset：盒是 control 圆角、有标签时起始内衬 4px，标签的圆角不得大于外层减内衬（§6.3） */
+:where([data-xh-field-chrome]) .xh-scope-tag[data-part='root'] {
+  border-radius: var(--xh-tag-radius, var(--xh-shape-inset));
 }
 
 /* 盒没聚焦时铺着字段淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
@@ -22097,7 +22102,7 @@
   min-inline-size: var(--xh-cascader-column-min-w, var(--xh-overlay-cascade-min-w));
   block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
-  padding-inline: var(--xh-cascader-column-px, 0);
+  padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
@@ -22170,7 +22175,7 @@
   --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
   --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
   --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
-  --xh-collection-radius: var(--xh-cascader-item-radius, 0);
+  --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-inset));
   --xh-collection-glyph-size: var(--xh-cascader-icon-size, var(--xh-_collection-glyph-size));
   --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
@@ -22463,7 +22468,7 @@
   --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
   --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
   --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
-  --xh-collection-radius: var(--xh-cascader-item-radius, 0);
+  --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
@@ -26413,7 +26418,7 @@
   min-block-size: var(--xh-combobox-content-min-h, var(--xh-_combobox-h));
   max-block-size: min(var(--xh-combobox-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_combobox-available-h));
   padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-combobox-content-px, 0);
+  padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
   border-radius: var(--xh-combobox-content-radius, var(--xh-shape-overlay));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -26486,7 +26491,7 @@
   --xh-collection-inline-padding: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
   --xh-collection-gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
   --xh-collection-font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
-  --xh-collection-radius: var(--xh-combobox-item-radius, 0);
+  --xh-collection-radius: var(--xh-combobox-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
@@ -26910,7 +26915,7 @@
   min-block-size: 0;
   /* 行通栏：列表左右不留内衬，行面贴到面板两缘；上下各留 4px */
   padding-block: var(--xh-command-list-py, var(--xh-space-1));
-  padding-inline: var(--xh-command-list-px, var(--xh-space-0));
+  padding-inline: var(--xh-command-list-px, var(--xh-space-1));
   /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -26967,7 +26972,7 @@
   --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
   --xh-collection-gap: 0;
   --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
-  --xh-collection-radius: var(--xh-command-item-radius, 0);
+  --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-command-item-fg, var(--xh-fg-default));
   --xh-collection-fg-hover: var(--xh-command-item-fg, var(--xh-fg-default));
   --xh-collection-fg-keyboard-highlight: var(--xh-command-item-fg, var(--xh-fg-default));
@@ -27225,7 +27230,7 @@
   /* 两道上限取更小的那道：自己的高度上限，以及落定那一侧真正剩下的空间。 */
   max-block-size: min(var(--xh-context-menu-max-h, var(--xh-_context-menu-max-h)), var(--xh-_context-menu-available-h));
   padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-context-menu-content-px, 0);
+  padding-inline: var(--xh-context-menu-content-px, var(--xh-space-1));
   border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-overlay));
   /* 条目超过上限就在菜单内部滚；内收焦点环不会被内边距缘裁掉。
      浮层滚动面：到底后不把滚动链穿透给页面 */
@@ -27343,7 +27348,7 @@
   --xh-collection-inline-padding: var(--xh-context-menu-item-px, var(--xh-_context-menu-item-px));
   --xh-collection-gap: 0;
   --xh-collection-font-size: var(--xh-context-menu-item-font-size, var(--xh-_context-menu-font-size));
-  --xh-collection-radius: var(--xh-context-menu-item-radius, 0);
+  --xh-collection-radius: var(--xh-context-menu-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-context-menu-item-fg, var(--xh-material-frosted-fg));
@@ -28514,7 +28519,7 @@
   /* 列底留出一截空白：末尾几格（23 时、55–59 分）也能滚到列顶，各列的选中落在同一行 */
   padding-block: var(--xh-_date-picker-time-column-py)
     calc(var(--xh-_date-picker-time-column-h) - var(--xh-date-picker-time-item-h, var(--xh-control-action-size)) - var(--xh-_date-picker-time-column-py));
-  padding-inline: var(--xh-date-picker-time-column-px, 0);
+  padding-inline: var(--xh-date-picker-time-column-px, var(--xh-space-1));
   overflow-x: hidden;
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -28547,7 +28552,7 @@
   --xh-collection-inline-padding: var(--xh-_date-picker-time-item-rail);
   --xh-collection-font-size: var(--xh-date-picker-time-item-font-size, var(--xh-_date-picker-font-size));
   /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-  --xh-collection-radius: var(--xh-date-picker-time-item-radius, 0);
+  --xh-collection-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -28635,7 +28640,7 @@
 @media not all and (min-width: 768px) {
   .xh-scope-date-picker[data-part='time-column'] {
     min-inline-size: var(--xh-date-picker-time-column-min-w-mobile, 2.75rem);
-    padding-inline: var(--xh-date-picker-time-column-px-mobile, 0);
+    padding-inline: var(--xh-date-picker-time-column-px-mobile, var(--xh-space-1));
   }
 
   .xh-scope-date-picker[data-part='time-item'] {
@@ -29460,7 +29465,7 @@
   /* 列底留出一截空白：末尾几格（23 时、55–59 分）也能滚到列顶，各列的选中落在同一行 */
   padding-block: var(--xh-_date-range-picker-time-column-py)
     calc(var(--xh-_date-range-picker-time-column-h) - var(--xh-date-range-picker-time-item-h, var(--xh-control-action-size)) - var(--xh-_date-range-picker-time-column-py));
-  padding-inline: var(--xh-date-range-picker-time-column-px, 0);
+  padding-inline: var(--xh-date-range-picker-time-column-px, var(--xh-space-1));
   overflow-x: hidden;
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -29491,7 +29496,7 @@
   --xh-collection-inline-padding: var(--xh-_date-range-picker-time-item-rail);
   --xh-collection-font-size: var(--xh-date-range-picker-time-item-font-size, var(--xh-_date-range-picker-font-size));
   /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-  --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, 0);
+  --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -29895,7 +29900,7 @@
   padding-block-end: var(--xh-dialog-py, var(--xh-overlay-sheet-body-py));
   padding-inline: var(--xh-dialog-px, var(--xh-overlay-sheet-px));
   border: var(--xh-stroke-thin) solid var(--xh-dialog-border, var(--xh-material-elevated-border));
-  border-radius: var(--xh-dialog-radius, var(--xh-shape-overlay));
+  border-radius: var(--xh-dialog-radius, var(--xh-shape-sheet));
   /* sheet 实体面：1px 描边 + 不透明底 + 单层投影，不叠渐变与顶光 */
   background: var(--xh-dialog-bg, var(--xh-material-elevated-bg));
   color: var(--xh-dialog-fg, var(--xh-material-elevated-fg));
@@ -30515,18 +30520,18 @@
   max-inline-size: 100%;
 }
 
-/* 贴住视口（或容器）的那条边不取圆角：圆了反而露出底下的页面。朝向页面那两个角与别的浮层同一把尺，
-   取 overlay 圆角：使用者把圆角调大时抽屉不会单独方着；要另定经 --xh-drawer-radius */
+/* 贴住视口（或容器）的那条边不取圆角：圆了反而露出底下的页面。朝向页面那两个角与 Dialog 同一把尺，
+   取 sheet 圆角：使用者把圆角种子调大时抽屉不会单独方着；要另定经 --xh-drawer-radius */
 .xh-scope-drawer[data-part='content'][data-side='left'] {
   inset-inline-start: 0;
-  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
+  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
 }
 
 .xh-scope-drawer[data-part='content'][data-side='right'] {
   inset-inline-end: 0;
-  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
+  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
 }
 
 /* 上下：满宽、定高 */
@@ -30539,14 +30544,14 @@
 
 .xh-scope-drawer[data-part='content'][data-side='top'] {
   inset-block-start: 0;
-  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
+  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
 }
 
 .xh-scope-drawer[data-part='content'][data-side='bottom'] {
   inset-block-end: 0;
-  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
-  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
+  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
 }
 
 /* 滑入/滑出共用整幅滑入关键帧，四条边只在两个方向槽里写起点。位移取整幅位移令牌，
@@ -31408,7 +31413,7 @@
   );
   max-block-size: min(var(--xh-expression-input-content-max-h, var(--xh-overlay-max-h)), var(--xh-_expression-input-available-h));
   padding-block: var(--xh-expression-input-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-expression-input-content-px, 0);
+  padding-inline: var(--xh-expression-input-content-px, var(--xh-space-1));
   border-radius: var(--xh-expression-input-content-radius, var(--xh-shape-overlay));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -31434,7 +31439,7 @@
   --xh-collection-inline-padding: var(--xh-expression-input-item-px, var(--xh-_expression-input-px));
   --xh-collection-gap: var(--xh-expression-input-item-gap, var(--xh-_expression-input-gap));
   --xh-collection-font-size: var(--xh-expression-input-item-font-size, var(--xh-_expression-input-font-size));
-  --xh-collection-radius: var(--xh-expression-input-item-radius, 0);
+  --xh-collection-radius: var(--xh-expression-input-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
@@ -35548,7 +35553,7 @@
      列表族的 16rem 对命令菜单偏矮，这里另给一档 */
   max-block-size: min(var(--xh-menu-max-h, var(--xh-_menu-max-h)), var(--xh-_menu-available-h));
   padding-block: var(--xh-menu-content-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-menu-content-px, 0);
+  padding-inline: var(--xh-menu-content-px, var(--xh-space-1));
   border-radius: var(--xh-menu-content-radius, var(--xh-shape-overlay));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
      浮层滚动面：到底后不把滚动链穿透给页面 */
@@ -35617,7 +35622,7 @@
   --xh-collection-inline-padding: var(--xh-menu-item-px, var(--xh-_menu-item-px));
   --xh-collection-gap: 0;
   --xh-collection-font-size: var(--xh-menu-item-font-size, var(--xh-_menu-font-size));
-  --xh-collection-radius: var(--xh-menu-item-radius, 0);
+  --xh-collection-radius: var(--xh-menu-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-menu-item-fg, var(--xh-material-frosted-fg));
@@ -36068,7 +36073,7 @@
      子菜单由菜单栏传 fitAvailableHeight，同一种上限 */
   max-block-size: min(var(--xh-menubar-max-h, var(--xh-_menubar-max-h)), var(--xh-_menubar-available-h));
   padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
-  padding-inline: var(--xh-menubar-content-px, 0);
+  padding-inline: var(--xh-menubar-content-px, var(--xh-space-1));
   border-radius: var(--xh-menubar-content-radius, var(--xh-shape-overlay));
   /* 条目超过上限就在菜单内部滚。条目的焦点环是内收的，滚动容器裁在内边距缘上，环切不着。
      浮层滚动面：到底后不把滚动链穿透给页面 */
@@ -36143,7 +36148,7 @@
   --xh-collection-inline-padding: var(--xh-menubar-item-px, var(--xh-_menubar-item-px));
   --xh-collection-gap: 0;
   --xh-collection-font-size: var(--xh-menubar-item-font-size, var(--xh-_menubar-font-size));
-  --xh-collection-radius: var(--xh-menubar-item-radius, 0);
+  --xh-collection-radius: var(--xh-menubar-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-menubar-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-menubar-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-menubar-item-fg, var(--xh-material-frosted-fg));
@@ -37426,7 +37431,7 @@
  * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
  * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
  * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
- * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、浮层圆角；
+ * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、sheet 圆角；
  * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
  *
  * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
@@ -37450,7 +37455,7 @@
   padding-block: var(--xh-notification-item-py, var(--xh-overlay-notification-p));
   padding-inline: var(--xh-notification-item-px, var(--xh-overlay-notification-p));
   border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
-  border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
+  border-radius: var(--xh-notification-item-radius, var(--xh-shape-sheet));
   background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
   color: var(--xh-notification-item-fg, var(--xh-material-elevated-fg));
   box-shadow: var(--xh-notification-item-shadow, var(--xh-material-elevated-shadow));
@@ -41177,7 +41182,7 @@
   block-size: var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h));
   padding-inline: var(--xh-radio-group-segment-px, var(--xh-_radio-group-segment-px));
   border: 0;
-  border-radius: var(--xh-radio-group-segment-radius, var(--xh-shape-control));
+  border-radius: var(--xh-radio-group-segment-radius, var(--xh-shape-inset));
   background: transparent;
   color: var(--xh-radio-group-segment-fg, var(--xh-fg-muted));
   font-weight: var(--xh-radio-group-segment-font-weight, var(--xh-text-label-weight));
@@ -42469,7 +42474,7 @@
   max-inline-size: var(--xh-select-content-max-w, none);
   max-block-size: min(var(--xh-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_select-available-h));
   padding-block: var(--xh-select-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-select-content-px, 0);
+  padding-inline: var(--xh-select-content-px, var(--xh-space-1));
   border-radius: var(--xh-select-content-radius, var(--xh-shape-overlay));
   /* 条目的悬停底色是方角，滚到两端时会探出外壳的圆角 */
   overflow: hidden;
@@ -42659,7 +42664,7 @@
   --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
   --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
   --xh-collection-font-size: var(--xh-select-item-font-size, var(--xh-_select-font-size));
-  --xh-collection-radius: var(--xh-select-item-radius, 0);
+  --xh-collection-radius: var(--xh-select-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
@@ -46996,13 +47001,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-tabs[data-part='root'][data-variant='segment'] {
   --xh-_tabs-list-gap: var(--xh-space-0_5);
   --xh-_tabs-list-bg: var(--xh-bg-subtle);
-  /* 轨道内衬 2px：滑块的 control 圆角不得大于轨道 surface 圆角减去内衬 */
+  /* 轨道内衬 2px：段与滑块嵌在轨道里，取 inset，不大于轨道 surface 圆角减去内衬（§6.3） */
   --xh-_tabs-list-p: var(--xh-space-0_5);
   --xh-_tabs-list-radius: var(--xh-shape-surface);
   --xh-_tabs-list-border-width: 0;
   --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
   --xh-_tabs-trigger-border: transparent;
-  --xh-_tabs-trigger-radius: var(--xh-shape-control);
+  --xh-_tabs-trigger-radius: var(--xh-shape-inset);
   --xh-_tabs-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_tabs-trigger-bg-pressed: var(--xh-bg-subtle-active);
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
@@ -47398,7 +47403,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   block-size: var(--xh-_tabs-indicator-h);
   box-sizing: border-box;
   border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
-  border-radius: var(--xh-tabs-trigger-radius, var(--xh-_tabs-trigger-radius));
+  border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-inset));
   background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
   box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
   pointer-events: none;
@@ -48308,7 +48313,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
   padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
   border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
-  border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-control));
+  border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-inset));
   background: var(--xh-tags-input-item-input-bg, var(--xh-bg-field));
   color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
   font-family: inherit;
@@ -49513,7 +49518,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   block-size: var(--xh-_time-picker-column-h);
   padding-block: var(--xh-_time-picker-column-py)
     calc(var(--xh-_time-picker-column-h) - var(--xh-time-picker-item-h, var(--xh-control-action-size)) - var(--xh-_time-picker-column-py));
-  padding-inline: var(--xh-time-picker-column-px, 0);
+  padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
@@ -49556,7 +49561,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-collection-inline-padding: var(--xh-_time-picker-item-rail);
   --xh-collection-font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
   /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-  --xh-collection-radius: var(--xh-time-picker-item-radius, 0);
+  --xh-collection-radius: var(--xh-time-picker-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
@@ -50316,7 +50321,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   block-size: var(--xh-_time-range-picker-column-h);
   padding-block: var(--xh-_time-range-picker-column-py)
     calc(var(--xh-_time-range-picker-column-h) - var(--xh-time-range-picker-item-h, var(--xh-control-action-size)) - var(--xh-_time-range-picker-column-py));
-  padding-inline: var(--xh-time-range-picker-column-px, 0);
+  padding-inline: var(--xh-time-range-picker-column-px, var(--xh-space-1));
   overflow-y: auto;
   /* 浮层滚动面：滚到头不把页面一起带走 */
   overscroll-behavior: contain;
@@ -50364,7 +50369,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-collection-inline-padding: var(--xh-_time-range-picker-item-rail);
   --xh-collection-font-size: var(--xh-time-range-picker-item-font-size, var(--xh-_time-range-picker-font-size));
   /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-  --xh-collection-radius: var(--xh-time-range-picker-item-radius, 0);
+  --xh-collection-radius: var(--xh-time-range-picker-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-time-range-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-time-range-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-keyboard-highlight: var(--xh-time-range-picker-item-fg, var(--xh-material-frosted-fg));
@@ -52631,7 +52636,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   /* 行通栏：列表不留内衬，行面直接贴到面板两缘 */
   block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-sm));
   padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
-  padding-inline: var(--xh-transfer-list-px, var(--xh-space-0));
+  padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
   overflow: auto;
 }
 
@@ -52776,7 +52781,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-collection-inline-padding: var(--xh-transfer-item-px, var(--xh-_transfer-px));
   --xh-collection-gap: 0;
   --xh-collection-font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
-  --xh-collection-radius: var(--xh-transfer-item-radius, 0);
+  --xh-collection-radius: var(--xh-transfer-item-radius, var(--xh-shape-inset));
   /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
   --xh-collection-glyph-size: var(--xh-transfer-icon-size, var(--xh-_collection-glyph-size));
   --xh-collection-fg-rest: var(--xh-transfer-item-fg, var(--xh-fg-default));
@@ -54177,7 +54182,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   max-inline-size: var(--xh-tree-select-content-max-w, none);
   max-block-size: min(var(--xh-tree-select-content-max-h, var(--xh-overlay-menu-max-h)), var(--xh-_tree-select-available-h));
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-tree-select-content-px, 0);
+  padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
   border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-overlay));
   /* 面板只是外壳，滚动归树：搜索框与底部操作区因此钉在树的上下沿，不随行滚走。
      行的悬停底色是方角，滚到两端时会探出外壳的圆角 */
@@ -54371,7 +54376,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-collection-inline-padding: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
   --xh-collection-gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
   --xh-collection-font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));
-  --xh-collection-radius: var(--xh-tree-select-item-radius, 0);
+  --xh-collection-radius: var(--xh-tree-select-item-radius, var(--xh-shape-inset));
   --xh-collection-glyph-size: var(--xh-tree-select-icon-size, var(--xh-_collection-glyph-size));
   --xh-collection-fg-rest: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));

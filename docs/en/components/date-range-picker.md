@@ -470,7 +470,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-date-range-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `@media (pointer: coarse)`<br>`default` | `--xh-overlay-calendar-column-h`<br>`--xh-overlay-calendar-column-h-coarse` |
 | `--xh-date-range-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` |
 | `--xh-date-range-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media not all and (min-width: 768px)` | `--xh-overlay-column-min-w` |
-| `--xh-date-range-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `0` |
+| `--xh-date-range-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-date-range-picker-time-column-py` | `time-column` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-date-range-picker-time-item-bg-hover` | `time-item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` |
 | `--xh-date-range-picker-time-item-bg-pressed` | `time-item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` |
@@ -482,4 +482,4 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-date-range-picker-time-item-font-weight-selected` | `time-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` |
 | `--xh-date-range-picker-time-item-h` | `time-column`<br>`time-item` | `block-size`<br>`padding-block` | `default` | `--xh-control-action-size` |
 | `--xh-date-range-picker-time-item-px` | `time-item` | `inset-inline-end`<br>`padding-inline` | `default` | `--xh-space-0_5` |
-| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `0` |
+| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-inset` |

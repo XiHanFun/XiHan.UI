@@ -573,7 +573,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-time-column-h` | `time-column` | `block-size`<br>`padding-block` | `@media (pointer: coarse)`<br>`default` | `--xh-overlay-calendar-column-h`<br>`--xh-overlay-calendar-column-h-coarse` | date-range-picker 的 time-column 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-date-range-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-range-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-range-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media not all and (min-width: 768px)` | `--xh-overlay-column-min-w` | date-range-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
-| `--xh-date-range-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `0` | date-range-picker 的 time-column 部件 padding-inline 覆盖槽。 |
+| `--xh-date-range-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `--xh-space-1` | date-range-picker 的 time-column 部件 padding-inline 覆盖槽。 |
 | `--xh-date-range-picker-time-column-py` | `time-column` | `padding-block` | `default` | `--xh-space-1` | date-range-picker 的 time-column 部件 padding-block 覆盖槽。 |
 | `--xh-date-range-picker-time-item-bg-hover` | `time-item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | date-range-picker 的 time-item 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-time-item-bg-pressed` | `time-item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | date-range-picker 的 time-item 部件 background-color 覆盖槽。 |
@@ -585,7 +585,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-time-item-font-weight-selected` | `time-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | date-range-picker 的 time-item 部件 font-weight 覆盖槽。 |
 | `--xh-date-range-picker-time-item-h` | `time-column`<br>`time-item` | `block-size`<br>`padding-block` | `default` | `--xh-control-action-size` | date-range-picker 的 time-column、time-item 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-date-range-picker-time-item-px` | `time-item` | `inset-inline-end`<br>`padding-inline` | `default` | `--xh-space-0_5` | date-range-picker 的 time-item 部件 inset-inline-end、padding-inline 覆盖槽。 |
-| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `0` | date-range-picker 的 time-item 部件 border-radius 覆盖槽。 |
+| `--xh-date-range-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-inset` | date-range-picker 的 time-item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

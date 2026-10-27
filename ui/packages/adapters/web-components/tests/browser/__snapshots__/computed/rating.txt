@@ -77,10 +77,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 2px
-border-top-right-radius: 2px
-border-bottom-right-radius: 2px
-border-bottom-left-radius: 2px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px

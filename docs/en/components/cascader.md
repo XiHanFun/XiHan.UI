@@ -473,7 +473,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` |
 | `--xh-cascader-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-cascade-min-w` |
-| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `0` |
+| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-cascader-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-cascader-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` |
 | `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-border-default` |
@@ -539,7 +539,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-cascader-item-max-w` | `item` | `max-inline-size` | `default` | `--xh-overlay-max-w` |
 | `--xh-cascader-item-px` | `item`<br>`search-item` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_cascader-row-px` |
 | `--xh-cascader-item-py` | `item`<br>`search-item` | `padding-block` | `default` | `--xh-_cascader-row-py` |
-| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `0` |
+| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-cascader-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-cascader-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |
 | `--xh-cascader-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` |

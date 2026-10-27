@@ -9625,7 +9625,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "cascader 的 column 部件 padding-inline 覆盖槽。"
@@ -10972,7 +10972,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "cascader 的 item、search-item 部件 border-radius 覆盖槽。"
@@ -19700,7 +19700,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "combobox 的 content 部件 padding-inline 覆盖槽。"
@@ -20767,7 +20767,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "combobox 的 item 部件 border-radius 覆盖槽。"
@@ -21773,7 +21773,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "command 的 item 部件 border-radius 覆盖槽。"
@@ -21827,7 +21827,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "command 的 list 部件 padding-inline 覆盖槽。"
@@ -22180,7 +22180,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "context-menu 的 content 部件 padding-inline 覆盖槽。"
@@ -22699,7 +22699,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "context-menu 的 item 部件 border-radius 覆盖槽。"
@@ -25445,7 +25445,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 padding-inline 覆盖槽。"
@@ -25463,7 +25463,7 @@
         "@media not all and (min-width: 768px)"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 padding-inline 覆盖槽。"
@@ -25732,7 +25732,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 border-radius 覆盖槽。"
@@ -27525,7 +27525,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 time-column 部件 padding-inline 覆盖槽。"
@@ -27794,7 +27794,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 time-item 部件 border-radius 覆盖槽。"
@@ -29047,7 +29047,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "--xh-shape-sheet"
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 border-radius 覆盖槽。"
@@ -31092,7 +31092,7 @@
         "side=top"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "--xh-shape-sheet"
       ],
       "visibility": "public",
       "description": "drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -33083,7 +33083,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "expression-input 的 content 部件 padding-inline 覆盖槽。"
@@ -33992,7 +33992,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "expression-input 的 item 部件 border-radius 覆盖槽。"
@@ -50605,7 +50605,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "mention 的 content 部件 padding-inline 覆盖槽。"
@@ -51306,7 +51306,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "mention 的 item 部件 border-radius 覆盖槽。"
@@ -51658,7 +51658,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "menu 的 content 部件 padding-inline 覆盖槽。"
@@ -52176,7 +52176,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "menu 的 item 部件 border-radius 覆盖槽。"
@@ -52531,7 +52531,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "menubar 的 content 部件 padding-inline 覆盖槽。"
@@ -53090,7 +53090,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "menubar 的 item 部件 border-radius 覆盖槽。"
@@ -55588,7 +55588,7 @@
       ],
       "defaultToken": [
         "--xh-shape-control",
-        "--xh-shape-overlay"
+        "--xh-shape-sheet"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 border-radius 覆盖槽。"
@@ -65151,7 +65151,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "radio-group 的 item、root 部件 border-radius 覆盖槽。"
@@ -67419,7 +67419,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 padding-inline 覆盖槽。"
@@ -68575,7 +68575,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "select 的 item 部件 border-radius 覆盖槽。"
@@ -77888,7 +77888,8 @@
         "variant=segment"
       ],
       "defaultToken": [
-        "--xh-_tabs-trigger-radius"
+        "--xh-_tabs-trigger-radius",
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tabs 的 indicator、trigger 部件 border-radius 覆盖槽。"
@@ -78308,10 +78309,13 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "where([data-xh-field-chrome])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-control",
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 border-radius 覆盖槽。"
@@ -79576,7 +79580,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tags-input 的 item-input 部件 border-radius 覆盖槽。"
@@ -81728,7 +81732,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "time-picker 的 column 部件 padding-inline 覆盖槽。"
@@ -82865,7 +82869,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 border-radius 覆盖槽。"
@@ -83905,7 +83909,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 column 部件 padding-inline 覆盖槽。"
@@ -84708,7 +84712,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 item 部件 border-radius 覆盖槽。"
@@ -90821,7 +90825,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "transfer 的 item 部件 border-radius 覆盖槽。"
@@ -90875,7 +90879,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "transfer 的 list 部件 padding-inline 覆盖槽。"
@@ -93514,7 +93518,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "tree-select 的 content 部件 padding-inline 覆盖槽。"
@@ -94624,7 +94628,7 @@
         "default"
       ],
       "defaultToken": [
-        "0"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "tree-select 的 branch-control、item 部件 border-radius 覆盖槽。"

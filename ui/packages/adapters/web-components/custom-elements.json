@@ -8172,7 +8172,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "列区的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n只排布横向：列多到放不下时整体横向滚动，纵向溢出归每一列自身；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -8180,7 +8180,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "每一列自己的竖条：列并排住在 content 里，条子贴在各列的盒子上、紧跟在那一列后面，\n按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。"
             },
             {
@@ -8188,7 +8188,7 @@
               "name": "searchBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "field",
@@ -13307,7 +13307,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；条子走浮层 4px 档"
             },
             {
@@ -16098,7 +16098,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档"
             },
             {
@@ -18572,7 +18572,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里的条子走 4px 档 props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里的条子走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
@@ -20263,7 +20263,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
@@ -20271,7 +20271,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面。\n快捷列窄视口横排横滚、宽视口竖排竖滚，两轴都摆；时间列按在场的列逐列建一套，列离场即拆。"
             },
             {
@@ -20279,7 +20279,7 @@
               "name": "timeBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "method",
@@ -21979,7 +21979,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
@@ -21987,7 +21987,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；\n窄视口横排横滚、宽视口竖排竖滚，两轴都摆。"
             },
             {
@@ -21995,7 +21995,7 @@
               "name": "timeBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "每一列时间选项自己竖滚：每列一套贴层的竖条，紧跟在那一列后面（浮层 4px 档）。"
             },
             {
@@ -27057,7 +27057,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
             },
             {
               "kind": "field",
@@ -38147,7 +38147,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里走 4px 档 props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), // 浮层里走 4px 档 props: () => ({ size: 'sm' }), })",
               "description": "卡片内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
             },
             {
@@ -45352,7 +45352,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档"
             },
             {
@@ -46373,7 +46373,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；浮层里的条子走 4px 档"
             },
             {
@@ -46975,7 +46975,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.partFor('positioner', this.currentMenu), scrollable: () => this.partFor('content', this.currentMenu), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => [...this.exits.values()].some(entry => entry.gate.visible), shell: () => this.partFor('positioner', this.currentMenu), scrollable: () => this.partFor('content', this.currentMenu), props: () => ({ size: 'sm' }), })",
               "description": "条目列表的自绘条：壳是当前那张菜单已经 fixed 的 positioner，滚动层是它的 content；浮层里的条子走 4px 档"
             },
             {
@@ -51223,7 +51223,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "折叠页码列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里的条子走 4px 档"
             },
             {
@@ -54029,7 +54029,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
             },
             {
@@ -54653,7 +54653,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板内容的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，浮层里走 4px 档"
             },
             {
@@ -61914,7 +61914,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'), props: () => ({ size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.currentVirtualizer()?.getViewportElement() ?? this.getPart('list'), props: () => ({ size: 'sm' }), })",
               "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档。\n虚拟化时滚的是 Virtualizer 的视口，列表只是视口里的一层：条子跟着桥交出的视口走，与 TreeSelect、Transfer 同一做法"
             },
             {
@@ -73760,7 +73760,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆。条子走浮层 4px 档"
             },
             {
@@ -73768,7 +73768,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "field",
@@ -75019,7 +75019,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "浮层面板的自绘横条：两组时列并排放不下时面板整体横滚，条子与 content 同级挂在已经 fixed 的 positioner 上，走浮层 4px 档"
             },
             {
@@ -75027,7 +75027,7 @@
               "name": "presetBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "快捷选项列与各时间列各自的竖条：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆"
             },
             {
@@ -75035,7 +75035,7 @@
               "name": "columnBars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
               "kind": "field",
@@ -81485,7 +81485,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {

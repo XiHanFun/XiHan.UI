@@ -18,13 +18,13 @@ pageClass: xh-designer-page
 | 明暗 | `data-theme`；「跟随系统」写 `system`，不跑脚本由 `prefers-color-scheme` 切换 | 视觉环境控制器的 `mode`，或根元素上的 `data-theme` |
 | 密度 | `data-density` | 控制器的 `density` |
 | 对比度 | `data-contrast` | 控制器的 `contrast` |
-| 圆角 | 原始阶梯 `--xh-radius-sm / md / lg` | 导出的 `:root` 覆盖 |
+| 圆角 | 圆角种子 `--xh-radius-seed`（方正取一半、圆润取一倍半） | 导出的 `:root` 覆盖 |
 
 预设只是上面五项的一组取值，选中后照样可以逐项微调；与哪套预设完全一致，哪套就显示为选中。
 
 品牌色只取种子的色相与彩度，明度曲线沿用基线，所以换任何种子，语义层（实心按钮、链接、选中态）的对比度保证都不变；种子本身的明暗不会被原样搬进来。圆角改的是原始阶梯，控件、表面、浮层三档形状语义跟着走，组件之间的层次关系保持不变：
 
-| 圆角 | `--xh-radius-sm / md / lg` | 控件 / 表面 / 浮层 |
+| 圆角 | `--xh-radius-seed` | 各档圆角按 0.25 – 1.25 倍派生，inset / control / surface / overlay / sheet 随之一起变 |
 | --- | --- | --- |
 | 方正 | 0 / 2 / 4px | 0 / 2 / 2px |
 | 默认 | 2 / 4 / 8px（令牌缺省，不导出覆盖） | 2 / 4 / 4px |

@@ -10,6 +10,7 @@ import {
   XhPasswordInputRoot,
   XhPasswordInputVisibilityTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -143,7 +144,7 @@ describe('password-input Field Chrome 细节', () => {
       expect(distance(caps.getBoundingClientRect(), trigger.getBoundingClientRect())).toBeCloseTo(gap, 1)
       // 钮与输入之间不再画半高分隔线；圆角取 inset 档
       expect(separator.backgroundSize).not.toBe('1px 50%')
-      expect(getComputedStyle(trigger).borderRadius).toBe(getComputedStyle(field(id)).getPropertyValue('--xh-shape-inset').trim())
+      expect(getComputedStyle(trigger).borderRadius).toBe(tokenValue('border-radius', '--xh-shape-inset', field(id)))
     }
   })
 

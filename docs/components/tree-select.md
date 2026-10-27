@@ -695,7 +695,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | tree-select 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-tree-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` | tree-select 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-tree-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | tree-select 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `0` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | tree-select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-tree-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tree-select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | tree-select 的 content 部件 box-shadow 覆盖槽。 |
@@ -748,7 +748,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` | tree-select 的 branch-control、item 部件 line-height 覆盖槽。 |
 | `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-_tree-select-row-px` | tree-select 的 branch-control、item 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` | tree-select 的 branch-control、item 部件 padding-block 覆盖槽。 |
-| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `0` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | tree-select 的 branch-control、item 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | tree-select 的 label 部件 color 覆盖槽。 |
 | `--xh-tree-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tree-select 的 label 部件 font-size 覆盖槽。 |

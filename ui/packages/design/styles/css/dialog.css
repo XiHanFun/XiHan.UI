@@ -115,7 +115,7 @@
     padding-block-end: var(--xh-dialog-py, var(--xh-overlay-sheet-body-py));
     padding-inline: var(--xh-dialog-px, var(--xh-overlay-sheet-px));
     border: var(--xh-stroke-thin) solid var(--xh-dialog-border, var(--xh-material-elevated-border));
-    border-radius: var(--xh-dialog-radius, var(--xh-shape-overlay));
+    border-radius: var(--xh-dialog-radius, var(--xh-shape-sheet));
     /* sheet 实体面：1px 描边 + 不透明底 + 单层投影，不叠渐变与顶光 */
     background: var(--xh-dialog-bg, var(--xh-material-elevated-bg));
     color: var(--xh-dialog-fg, var(--xh-material-elevated-fg));

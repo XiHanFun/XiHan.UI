@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // 门禁：圆角只走语义档，不许直接下探到 primitive。
 //
-// 语义档六级：inset(4px 嵌在控件里的小标记) · control(4px 控件本体，以及尺寸接近控件的
-// 小浮层，tooltip 这类一行字的气泡按这档走) · surface(8px 成面的容器与卡片) ·
-// overlay(12px 浮层) · circle(50% 圆点) · pill(9999px 胶囊)。
+// 语义档七级（设计真源 §6.3，都由 --xh-radius-seed 派生，缺省值括注）：inset(4px 嵌在控件、面与浮层里的
+// 小块：勾选方框、集合行、轨道里的段与滑块、字段里的标签) · control(8px 控件本体，以及 tooltip 这类一行字的
+// 随文小标签) · surface(8px 成面的容器与卡片) · overlay(8px 弹层) · sheet(10px 模态与强反馈面) ·
+// circle(50% 圆点) · pill(9999px 胶囊)。
 //
 // 这条是补出来的：审计时查到 20 份皮肤在 border-radius 上写 var(--xh-radius-sm|md|full)，
 // 绕过整个语义层。原因不是谁偷懒，是语义层当时缺 4px 那一档——小内嵌方块没处可去，
@@ -61,6 +62,8 @@ const NO_SLOT = {
  * 形状身份表：键「组件:部件[::伪元素][属性限定]」，值是该部件的圆角档。
  * 按形状身份表与部件归族表登记；同名部件跨组件语义不同，逐 scope 列出，不通配。
  * 值写成 { shape, floating: true } 的是悬浮单图标动作，还要接 Action Control floating profile。
+ * 值写成数组的，是同一部件按形态取不同档（形态写在根上、经私有槽传给部件，扫描时分不出是哪一档），
+ * 数组里的每一档都要在条目旁写明由哪个形态取。
  * circle / pill 的登记部件形状即身份，可以没有使用者覆盖槽（与 NO_SLOT 并存）。
  */
 const IDENTITY = {
@@ -165,8 +168,9 @@ const IDENTITY = {
   'steps:separator': 'pill',
   'timeline:connector': 'pill',
   'tabs:indicator': 'pill',
-  // segment 档的部件是整块白色抬起面（与 RadioGroup segmented 滑块同身份的盒），不是一维对象
-  'tabs:indicator[data-variant=\'segment\']': 'control',
+  // segment 档的部件是嵌在轨道里的整块抬起面（与 RadioGroup segmented 滑块同身份的盒），不是一维对象；
+  // 轨道 surface 圆角内衬 2px，取 inset（§6.3 嵌套圆角）
+  'tabs:indicator[data-variant=\'segment\']': 'inset',
   // line 档没放 indicator 部件时选中标签自画的静态线：与部件同规格的一维对象
   'tabs:trigger::after': 'pill',
   'anchor:indicator': 'pill',
@@ -193,7 +197,8 @@ const IDENTITY = {
   'kbd:root': 'control',
   'tooltip:content': 'control',
   'rating:item': 'control',
-  'tabs:trigger': 'control',
+  // line 等形态的标签是 control；segment 形态的标签嵌在轨道里，与滑块同取 inset
+  'tabs:trigger': ['control', 'inset'],
   'steps:trigger': 'control',
   // RadioGroup segmented 形态的根就是那条轨道：与字段外壳同款（淡底 + 字段描边），取 control
   'radio-group:root': 'control',
@@ -216,8 +221,10 @@ const IDENTITY = {
   'color-swatch-picker:item': 'inset',
   // 骨架屏的文本条是一行还没排出来的字：高一行正文行框的小圆角方条，不是一维对象
   'skeleton:item[data-shape=\'text\']': 'inset',
-  // RadioGroup segmented 形态轨道里的滑块：嵌在 surface 轨道内的小块（段与 Tabs segment 的标签同取 control）
+  // RadioGroup segmented 形态轨道里的滑块：嵌在 control 轨道内的小块，与段、Tabs segment 的标签与滑块同取 inset
   'radio-group:thumb': 'inset',
+  // sheet：模态与强反馈面，比浮层再圆一档（Drawer 只取朝向页面的两个角，逻辑角长属性不在本表管辖）
+  'dialog:content': 'sheet',
 }
 /** 所有 *close-trigger / *clear-trigger 都是 control 档：按部件名后缀登记，不逐组件列。 */
 const IDENTITY_SUFFIX = { 'close-trigger': 'control', 'clear-trigger': 'control' }
@@ -308,7 +315,11 @@ function wantOf(key, part) {
   }
   if (entry == null)
     return null
-  return typeof entry === 'string' ? { shape: entry, floating: false } : { shape: entry.shape, floating: Boolean(entry.floating) }
+  if (typeof entry === 'string')
+    return { shapes: [entry], floating: false }
+  if (Array.isArray(entry))
+    return { shapes: entry, floating: false }
+  return { shapes: [entry.shape], floating: Boolean(entry.floating) }
 }
 
 for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()) {
@@ -365,8 +376,8 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
           identityChecked++
           identitySeen.add(hit.key)
           for (const shape of shapes) {
-            if (shape !== want.shape && !backlog.excuse(hit.key))
-              identity.push(`${where}  ${hit.key}  取了 ${shape}，身份表登记的是 ${want.shape}`)
+            if (!want.shapes.includes(shape) && !backlog.excuse(hit.key))
+              identity.push(`${where}  ${hit.key}  取了 ${shape}，身份表登记的是 ${want.shapes.join(' / ')}`)
           }
         }
         else if (shapes.some(shape => shape === 'circle' || shape === 'pill') && !backlog.excuse(hit.key)) {

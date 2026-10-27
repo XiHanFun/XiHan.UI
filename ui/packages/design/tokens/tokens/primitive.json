@@ -238,25 +238,34 @@
     }
   },
   "radius": {
+    "$description": "圆角只有一颗种子 seed，各档都是它的正系数倍：2xs 0.25 / xs 0.5 / sm 0.75 / md 1 / lg 1.25（缺省 2 / 4 / 6 / 8 / 10px）。换风格只改种子；系数恒为正，任何种子都得到单调递增、嵌套比例不漂的刻度。组件不引这一层，只引 shape.* 角色。",
     "none": {
       "$type": "dimension",
       "$value": "0px"
     },
-    "sm": {
-      "$type": "dimension",
-      "$value": "2px"
-    },
-    "md": {
-      "$type": "dimension",
-      "$value": "4px"
-    },
-    "lg": {
+    "seed": {
       "$type": "dimension",
       "$value": "8px"
     },
-    "xl": {
+    "2xs": {
       "$type": "dimension",
-      "$value": "16px"
+      "$value": "calc({radius.seed} * 0.25)"
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": "calc({radius.seed} * 0.5)"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "calc({radius.seed} * 0.75)"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "{radius.seed}"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "calc({radius.seed} * 1.25)"
     },
     "full": {
       "$type": "dimension",

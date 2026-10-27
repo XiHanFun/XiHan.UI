@@ -401,7 +401,7 @@
     block-size: var(--xh-radio-group-segment-h, var(--xh-_radio-group-segment-h));
     padding-inline: var(--xh-radio-group-segment-px, var(--xh-_radio-group-segment-px));
     border: 0;
-    border-radius: var(--xh-radio-group-segment-radius, var(--xh-shape-control));
+    border-radius: var(--xh-radio-group-segment-radius, var(--xh-shape-inset));
     background: transparent;
     color: var(--xh-radio-group-segment-fg, var(--xh-fg-muted));
     font-weight: var(--xh-radio-group-segment-font-weight, var(--xh-text-label-weight));

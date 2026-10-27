@@ -292,5 +292,5 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` |
 | `--xh-tabs-trigger-h` | `close-trigger`<br>`next-trigger`<br>`overflow-trigger`<br>`prev-trigger`<br>`root`<br>`trigger` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-end`<br>`margin-inline-start`<br>`padding-inline-end` | `default`<br>`has(+ [data-scope='tabs'][data-part='close-trigger']:not([hidden])`<br>`orientation=vertical`<br>`xh-action-profile=icon` | `--xh-_tabs-trigger-h` |
 | `--xh-tabs-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_tabs-trigger-px` |
-| `--xh-tabs-trigger-radius` | `indicator`<br>`trigger` | `border-radius` | `default`<br>`variant=segment` | `--xh-_tabs-trigger-radius` |
+| `--xh-tabs-trigger-radius` | `indicator`<br>`trigger` | `border-radius` | `default`<br>`variant=segment` | `--xh-_tabs-trigger-radius`<br>`--xh-shape-inset` |
 | `--xh-tabs-trigger-shadow-active` | `indicator`<br>`root`<br>`trigger` | `box-shadow` | `is([data-variant='card'], [data-variant='segment'])`<br>`state=active`<br>`variant=card`<br>`variant=segment` | `--xh-_tabs-trigger-shadow-active`<br>`--xh-elevation-raised` |

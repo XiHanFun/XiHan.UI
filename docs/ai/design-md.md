@@ -9,7 +9,7 @@
 - **YAML 头**：机读令牌，包括 `colors`、`typography`、`rounded`、`spacing` 与 `components`。取值在构建时从 `@xihan-ui/tokens` 的 `tokens.json` 展开，不手抄，令牌改了它跟着改；组件条目引用前面的令牌，如 `{colors.primary}`、`{rounded.control}`。
 - **正文**：按 Overview、Colors、Typography、Layout、Elevation & Depth、Shapes、Components、Do's and Don'ts 的顺序说明视觉规则，最后一节 Customization 说明怎样改品牌色、视觉环境与令牌。
 
-正文是 [设计](/design/) 一册的浓缩：中性克制、边界由描边承担、4px 网格、圆角只有 control / surface / overlay 三个角色、阴影只表达抬升、组件按六个家族取样式。
+正文是 [设计](/design/) 一册的浓缩：中性克制、边界由描边承担、4px 网格、圆角由一颗种子派生、只有 inset / control / surface / overlay / sheet 五个角色、阴影只表达抬升、组件按六个家族取样式。
 
 ## 使用方式
 

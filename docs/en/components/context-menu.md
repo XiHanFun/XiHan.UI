@@ -308,7 +308,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-context-menu-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` |
 | `--xh-context-menu-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` |
 | `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` |
-| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `0` |
+| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` |
 | `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
 | `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` |
@@ -335,7 +335,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` |
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` |
-| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-context-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` |
 | `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_context-menu-max-h` |
 | `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` |

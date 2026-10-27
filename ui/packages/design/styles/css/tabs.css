@@ -138,13 +138,13 @@
   [data-scope='tabs'][data-part='root'][data-variant='segment'] {
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
-    /* 轨道内衬 2px：滑块的 control 圆角不得大于轨道 surface 圆角减去内衬 */
+    /* 轨道内衬 2px：段与滑块嵌在轨道里，取 inset，不大于轨道 surface 圆角减去内衬（§6.3） */
     --xh-_tabs-list-p: var(--xh-space-0_5);
     --xh-_tabs-list-radius: var(--xh-shape-surface);
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
     --xh-_tabs-trigger-border: transparent;
-    --xh-_tabs-trigger-radius: var(--xh-shape-control);
+    --xh-_tabs-trigger-radius: var(--xh-shape-inset);
     --xh-_tabs-trigger-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_tabs-trigger-bg-pressed: var(--xh-bg-subtle-active);
     --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface-raised));
@@ -540,7 +540,7 @@
     block-size: var(--xh-_tabs-indicator-h);
     box-sizing: border-box;
     border: var(--xh-stroke-thin) solid var(--xh-tabs-trigger-border-active, var(--xh-_tone-border, var(--xh-border-default)));
-    border-radius: var(--xh-tabs-trigger-radius, var(--xh-_tabs-trigger-radius));
+    border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-inset));
     background: var(--xh-tabs-trigger-bg-active, var(--xh-_tone-subtle, var(--xh-bg-surface-raised)));
     box-shadow: var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
     pointer-events: none;

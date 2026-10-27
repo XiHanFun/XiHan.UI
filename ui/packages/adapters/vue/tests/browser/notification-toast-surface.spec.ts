@@ -87,7 +87,7 @@ describe('轻提示预设的中性浮层', () => {
     ))
     expect(style.paddingBlock).toBe('10px')
     expect(style.paddingInline).toBe('16px')
-    expect(style.borderRadius).toBe('2px')
+    expect(style.borderRadius).toBe('8px')
     expect(style.backgroundColor).toBe(resolvedColor(item, 'background', 'var(--xh-material-elevated-bg)'))
     expect(style.borderTopColor).toBe(resolvedColor(item, 'color', 'var(--xh-material-elevated-border)'))
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')

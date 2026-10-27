@@ -353,7 +353,7 @@
 | `--xh-expression-input-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | expression-input 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-expression-input-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | expression-input 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-expression-input-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | expression-input 的 content 部件 min-inline-size 覆盖槽。 |
-| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `0` | expression-input 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | expression-input 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-expression-input-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | expression-input 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-expression-input-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | expression-input 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-expression-input-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | expression-input 的 content 部件 box-shadow 覆盖槽。 |
@@ -399,7 +399,7 @@
 | `--xh-expression-input-item-prefix-w` | `item-prefix` | `min-inline-size` | `default` | `--xh-space-8` | expression-input 的 item-prefix 部件 min-inline-size 覆盖槽。 |
 | `--xh-expression-input-item-px` | `item` | `padding-inline` | `default` | `--xh-_expression-input-px` | expression-input 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-expression-input-item-py` | `item` | `padding-block` | `default` | `--xh-_expression-input-item-py` | expression-input 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `0` | expression-input 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | expression-input 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-expression-input-item-suffix-fg` | `item-suffix` | `color` | `default` | `--xh-material-frosted-fg-muted` | expression-input 的 item-suffix 部件 color 覆盖槽。 |
 | `--xh-expression-input-item-suffix-font-size` | `item-suffix` | `font-size` | `default` | `--xh-_expression-input-caption-size` | expression-input 的 item-suffix 部件 font-size 覆盖槽。 |
 | `--xh-expression-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | expression-input 的 label 部件 color 覆盖槽。 |

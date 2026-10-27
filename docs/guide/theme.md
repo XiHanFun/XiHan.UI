@@ -15,7 +15,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-color-brand-500: oklch(0.632 0.209 277);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 4px;
+--xh-radius-seed: 8px;
 ```
 
 颜色使用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上亮度一致，深色反转与对比度调整不需要逐色手工修正。
@@ -30,7 +30,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-fg-muted: var(--xh-color-neutral-600);
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
---xh-shape-control: var(--xh-radius-sm);
+--xh-shape-control: var(--xh-radius-md);
 --xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);

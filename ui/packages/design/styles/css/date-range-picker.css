@@ -625,7 +625,7 @@
     /* 列底留出一截空白：末尾几格（23 时、55–59 分）也能滚到列顶，各列的选中落在同一行 */
     padding-block: var(--xh-_date-range-picker-time-column-py)
       calc(var(--xh-_date-range-picker-time-column-h) - var(--xh-date-range-picker-time-item-h, var(--xh-control-action-size)) - var(--xh-_date-range-picker-time-column-py));
-    padding-inline: var(--xh-date-range-picker-time-column-px, 0);
+    padding-inline: var(--xh-date-range-picker-time-column-px, var(--xh-space-1));
     overflow-x: hidden;
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
@@ -656,7 +656,7 @@
     --xh-collection-inline-padding: var(--xh-_date-range-picker-time-item-rail);
     --xh-collection-font-size: var(--xh-date-range-picker-time-item-font-size, var(--xh-_date-range-picker-font-size));
     /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-    --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, 0);
+    --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));

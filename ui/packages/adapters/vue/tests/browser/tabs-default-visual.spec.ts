@@ -136,11 +136,11 @@ describe('tabs 默认视觉', () => {
     expect(getComputedStyle(segment.indicator).height).toBe('36px')
     expect(paint(segment.active, 'background-color')).toBe('rgba(0, 0, 0, 0)')
     expect(paint(segment.active, 'box-shadow')).toBe('none')
-    // 标签带是 surface 面，标签本体与滑块都是 control；内层圆角不超过外层圆角减去衬距
+    // 标签带是 surface 面，标签本体与滑块嵌在带里都取 inset；内层圆角不超过外层圆角减去衬距
     const listRadius = Number.parseFloat(getComputedStyle(segment.list).borderRadius)
     const triggerRadius = Number.parseFloat(getComputedStyle(segment.active).borderRadius)
     expect(listRadius).toBe(shapePx(segment.list, '--xh-shape-surface'))
-    expect(triggerRadius).toBe(shapePx(segment.list, '--xh-shape-control'))
+    expect(triggerRadius).toBe(shapePx(segment.list, '--xh-shape-inset'))
     expect(Number.parseFloat(getComputedStyle(segment.indicator).borderRadius)).toBe(triggerRadius)
     expect(triggerRadius).toBeLessThanOrEqual(listRadius - Number.parseFloat(segmentPaint.listPadding))
     expect(segment.active.offsetWidth).toBe(segment.inactive.offsetWidth)

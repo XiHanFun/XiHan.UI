@@ -12,6 +12,7 @@ import {
   XhEditableRoot,
   XhEditableSubmitTrigger,
 } from '../../src'
+import { tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -48,11 +49,6 @@ async function mountEditable(density: 'comfortable' | 'compact' = 'comfortable',
   await nextTick()
 }
 
-/** 读一枚令牌在文档上解析出的值。 */
-function token(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-}
-
 /** 颜色的 alpha 通道（0 – 255）：经 canvas 铺一像素读回，不同序列化的透明色都归到同一个数。 */
 function alpha(color: string): number {
   const canvas = document.createElement('canvas')
@@ -81,7 +77,7 @@ function expectIconButton(name: string, size: number): void {
   expect(button.getAttribute('aria-label')).not.toBeNull()
   expect(rect.width).toBe(size)
   expect(rect.height).toBe(size)
-  expect(getComputedStyle(button).borderRadius).toBe(token('--xh-shape-inset'))
+  expect(getComputedStyle(button).borderRadius).toBe(tokenValue('border-radius', '--xh-shape-inset'))
   const mark = getComputedStyle(button, '::before')
   expect(mark.content).toBe('""')
   expect(mark.maskImage).not.toBe('none')

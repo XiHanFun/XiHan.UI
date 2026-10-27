@@ -84,16 +84,14 @@ const baseline = presets[0];
 
 const swatches = [...new Set(presets.map(preset => preset.seed))];
 
-type RadiusStep = "sm" | "md" | "lg";
+/** 令牌里的圆角种子（px）：各档圆角都是它的正系数倍 */
+const tokenSeed = Number.parseFloat(tokens["--xh-radius-seed"]);
 
-/** 令牌里的原始圆角（px） */
-const tokenRadius = (step: RadiusStep): number => Number.parseFloat(tokens[`--xh-radius-${step}`]);
-
-/** 原始圆角阶梯：sm 给控件与内层，md 给表面与浮层；默认一档就是令牌本身，导出时不写覆盖 */
-const radiusScales: Record<Radius, Record<RadiusStep, number>> = {
-  tight: { sm: 0, md: 2, lg: 4 },
-  default: { sm: tokenRadius("sm"), md: tokenRadius("md"), lg: tokenRadius("lg") },
-  round: { sm: 4, md: 8, lg: 12 },
+/** 圆角只调种子：方正取一半、圆润取一倍半，嵌套比例随之不变；默认一档就是令牌本身，导出时不写覆盖 */
+const radiusSeeds: Record<Radius, number> = {
+  tight: tokenSeed / 2,
+  default: tokenSeed,
+  round: tokenSeed * 1.5,
 };
 
 const seed = ref<string[]>([baseline.seed]);
@@ -144,21 +142,21 @@ const scale = computed<BrandScale>(() => {
 /** 品牌实心面上白字的对比度 */
 const onBrandContrast = computed(() => contrastRatio("#ffffff", scale.value["600"]).toFixed(1));
 
-/** 引用圆角原语的形状令牌 */
-const shapeTokens = Object.entries(tokens).filter(([name, value]) => name.startsWith("--xh-shape-") && value.includes("--xh-radius-"));
+/** 由种子派生的圆角档与引用它们的形状令牌：种子写在根以外的元素上时，这些要在同一个元素上重算一遍 */
+const derivedRadiusTokens = Object.entries(tokens).filter(([name, value]) =>
+  (name.startsWith("--xh-radius-") || name.startsWith("--xh-shape-")) && /var\(--xh-(?:radius|shape)-/.test(value));
 
-function radiusBlock(selector: string, value: Radius, withShapes = false): string {
-  const r = radiusScales[value];
-  const lines = [`--xh-radius-sm: ${r.sm}px;`, `--xh-radius-md: ${r.md}px;`, `--xh-radius-lg: ${r.lg}px;`];
-  if (withShapes)
-    lines.push(...shapeTokens.map(([name, ref]) => `${name}: ${ref};`));
+function radiusBlock(selector: string, value: Radius, withDerived = false): string {
+  const lines = [`--xh-radius-seed: ${radiusSeeds[value]}px;`];
+  if (withDerived)
+    lines.push(...derivedRadiusTokens.map(([name, ref]) => `${name}: ${ref};`));
   return `${selector} {\n${lines.map(line => `  ${line}`).join("\n")}\n}`;
 }
 
 const cssCode = computed(() => {
   const blocks = [`/* 品牌色：根元素写 data-brand="${EXPORT_BRAND}" 即生效 */\n${brandScaleCss(EXPORT_BRAND, state.value.seed)}`];
   if (state.value.radius !== "default")
-    blocks.push(`/* 圆角阶梯 */\n${radiusBlock(":root", state.value.radius)}`);
+    blocks.push(`/* 圆角种子：各档圆角由它按比例派生 */\n${radiusBlock(":root", state.value.radius)}`);
   return blocks.join("\n\n");
 });
 
@@ -221,7 +219,7 @@ function applyBrand(): void {
 
 /**
  * 预览圆角挂在同一个品牌选择器上，随品牌属性一起桥接到浮层；
- * 紧凑密度的作用域不重算形状令牌，这里随原语一起重声明
+ * 派生的圆角档与形状令牌声明在根上，种子换在这里得把它们一起重声明
  */
 function applyRadius(): void {
   if (!radiusStyle) {

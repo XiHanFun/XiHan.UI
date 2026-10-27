@@ -38,6 +38,12 @@ export function renderDesignMd({ version, site, values }) {
     return resolveTokenValue(values, values[key])
   }
   const num = name => Number(t(name))
+  /** 圆角档是种子的 calc 倍数：解到像素，DESIGN.md 的尺寸只认字面量。 */
+  const px = (name) => {
+    const value = t(name)
+    const hit = /^calc\(([\d.]+)px \* ([\d.]+)\)$/.exec(value)
+    return hit ? `${Number(hit[1]) * Number(hit[2])}px` : value
+  }
 
   const colors = [
     ['primary', t('bg-brand')],
@@ -83,14 +89,16 @@ export function renderDesignMd({ version, site, values }) {
 
   const rounded = [
     ['none', t('radius-none')],
-    ['sm', t('radius-sm')],
-    ['md', t('radius-md')],
-    ['lg', t('radius-lg')],
-    ['xl', t('radius-xl')],
+    ['xs', px('radius-xs')],
+    ['sm', px('radius-sm')],
+    ['md', px('radius-md')],
+    ['lg', px('radius-lg')],
     ['full', t('radius-full')],
-    ['control', t('shape-control')],
-    ['surface', t('shape-surface')],
-    ['overlay', t('shape-overlay')],
+    ['inset', px('shape-inset')],
+    ['control', px('shape-control')],
+    ['surface', px('shape-surface')],
+    ['overlay', px('shape-overlay')],
+    ['sheet', px('shape-sheet')],
   ]
 
   const spacing = [
@@ -121,7 +129,7 @@ export function renderDesignMd({ version, site, values }) {
     ['menu', { backgroundColor: '{colors.surface}', textColor: '{colors.on-surface}', typography: '{typography.body}', rounded: '{rounded.overlay}' }],
     ['menu-item-hover', { backgroundColor: '{colors.subtle}' }],
     ['list-item-selected', { backgroundColor: '{colors.primary-subtle}', textColor: '{colors.on-primary-subtle}' }],
-    ['dialog', { backgroundColor: '{colors.surface}', textColor: '{colors.on-surface}', rounded: '{rounded.overlay}' }],
+    ['dialog', { backgroundColor: '{colors.surface}', textColor: '{colors.on-surface}', rounded: '{rounded.sheet}' }],
     ['tooltip', { backgroundColor: '{colors.on-surface}', textColor: '{colors.surface}', typography: '{typography.secondary}', rounded: '{rounded.control}' }],
     ['badge', { backgroundColor: '{colors.danger}', textColor: '{colors.on-primary}', typography: '{typography.caption}', rounded: '{rounded.full}' }],
   ]
@@ -184,26 +192,26 @@ XiHan.UI 是框架无关的设计系统运行时：组件行为住在 Headless �
 - floating：含网格或多列的锚定面板（日期面板、多列级联），\`${t('elevation-floating')}\`。
 - sheet：模态与强反馈面（Dialog、Drawer、Command、Notification），\`${t('elevation-sheet')}\`。
 
-锚定瞬态浮层（菜单、气泡）是实体白底 + 1px 描边 + 一层柔和投影，不采样背后内容；没有玻璃拟态材质。
+锚定瞬态浮层（菜单、气泡）是实体白底 + 1px 描边 + md 档投影，不采样背后内容；没有玻璃拟态材质。阴影只有三档，按面的类型取：贴在页面上的抬起面 sm、锚定浮层 md、模态与强反馈面 lg。
 
 ## Shapes
 
-圆角只有一条语义阶梯：控件本体（Button、Input、Select、Tag 方签、Alert 提示条）${t('shape-control')}，成面的静态容器（Card、Panel、列表容器）${t('shape-surface')}，脱离文档流的浮层（Popover、Menu、Dialog）${t('shape-overlay')}。
+圆角只有一颗种子 \`--xh-radius-seed\`（${t('radius-seed')}），各档按比例派生，组件只引语义角色：嵌在控件、面与浮层里的小块（勾选方框、集合行、轨道里的段与滑块、字段里的标签）${px('shape-inset')}，控件本体（Button、Input、Select、Tag 方签、Alert 提示条）${px('shape-control')}，成面的静态容器（Card、Panel、列表容器）${px('shape-surface')}，脱离文档流的弹层（Popover、Menu、候选面板）${px('shape-overlay')}，模态与强反馈面（Dialog、Drawer、Notification 卡片）${px('shape-sheet')}。
 
 - pill 只给两类身份：状态 chip（Badge）与一维对象（轨道、进度条、指示条、滚动条滑块）；普通按钮、字段、卡片与浮层不用 pill。
 - 宽高相等的圆（头像、单选圈、拇指、圆形图标钮）取 circle，不用 pill 冒充。
-- 内层圆角不超过外层圆角减去内边距；相连控件（输入组、按钮组）消除相接侧圆角；锚定浮层里的列表行是通栏行，不取圆角。
+- 内层圆角不超过外层圆角减去内边距：浮层留 4px 内距，里面的列表行取 inset；相连控件（输入组、按钮组）消除相接侧圆角。
 - 描边只有 ${t('stroke-thin')} / ${t('stroke-thick')} / ${t('stroke-strong')} 三档：一切描边与分隔线用细档，焦点环与选中指示条用粗档。
 
 ## Components
 
 组件先归族再画样式，同族同类部件逐条同值：
 
-- **Action Control**（Button、Toggle、图标按钮、分页按钮、各类 trigger）：只有 Button 缺省品牌实心，其余缺省中性；按下 120ms 换到 active 底、释放 200ms 回到 rest，缺省只换面不缩放。
+- **Action Control**（Button、Toggle、图标按钮、分页按钮、各类 trigger）：只有 Button 缺省品牌实心，其余缺省中性；按下 150ms 换到 active 底、释放 200ms 回到 rest，缺省只换面不缩放。
 - **Field Chrome**（Input、Select trigger、日期与时间字段、Combobox）：静息是淡底 \`--xh-bg-field\` + 控件描边、无影；聚焦换承载面底 + 品牌描边，不画聚焦环；校验失败换 danger 描边与淡底。
 - **Collection Item**（菜单项、列表项、树节点、表格行）：悬停在白底上取 hover 100 档、按下 200 档；选中按语境只有一种标记——浮层集合是行尾对号，页内集合是品牌淡底，导航是指示条或品牌字色。
 - **Surface**（Card、Alert、Panel）：边界三选一——描边（缺省）、淡底、无壳；Card 的抬起影是加成，描边必须在。
-- **Overlay**（Popover、Menu、Tooltip、Dialog、Drawer）：浮层圆角 overlay，模态取 sheet 海拔并带遮罩；有进场就有退场。
+- **Overlay**（Popover、Menu、Tooltip、Dialog、Drawer）：弹层圆角 overlay，模态取 sheet 圆角与海拔并带遮罩；有进场就有退场。
 - **Feedback**（Notification、Progress、Skeleton）：状态语气配图标与文案，进行中给可感知的进度。
 
 公共视觉轴只有 \`size\`（sm / md / lg）、\`variant\`（outline / subtle / ghost，可按下的面多一档 solid）与 \`tone\`（brand / neutral / danger / warning / success / info），没有私有的 bordered、primary 之类开关。
@@ -211,7 +219,7 @@ XiHan.UI 是框架无关的设计系统运行时：组件行为住在 Headless �
 ## Do's and Don'ts
 
 - Do：颜色、间距、圆角、阴影与动效只取 \`--xh-*\` 令牌；缺令牌时先加语义令牌，不写散值。
-- Don't：写 5px、6px、10px 这类独立圆角或 5 / 7 / 9 / 13px 这类散值间距。
+- Don't：写 5px、6px 这类字面圆角或 5 / 7 / 9 / 13px 这类散值间距。
 - Do：用描边划分边界，阴影只表达抬升。
 - Don't：用阴影或大面积色块代替描边做分区，也不要做玻璃拟态的半透明面。
 - Do：主要动作用 Button 缺省的品牌实心，次要动作用中性的 outline / subtle / ghost 形态。

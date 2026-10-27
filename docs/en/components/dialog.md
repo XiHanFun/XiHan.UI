@@ -286,7 +286,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` |
 | `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-overlay-sheet-px` |
 | `--xh-dialog-py` | `content` | `padding-block-end`<br>`padding-block-start` | `default` | `--xh-_dialog-header-pt`<br>`--xh-overlay-sheet-body-py` |
-| `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
+| `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-sheet` |
 | `--xh-dialog-separator` | `content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` |
 | `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` |
 | `--xh-dialog-title-fg` | `title` | `color` | `default` | `--xh-fg-default` |
