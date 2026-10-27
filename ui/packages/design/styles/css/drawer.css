@@ -80,11 +80,6 @@
     --xh-action-border-focus-visible: var(--xh-drawer-trigger-border-open, var(--xh-border-control-hover));
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色 */
-  [data-scope='drawer'][data-part='trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   [data-scope='drawer'][data-part='backdrop'] {
     position: fixed;
     inset: 0;
@@ -222,6 +217,7 @@
   /* 面板是焦点陷阱的兜底落点（tabindex="-1"），落焦不画环：环长在里面的可聚焦控件上 */
   [data-scope='drawer'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* —— 尺寸 —— */
@@ -423,11 +419,6 @@
     transition-delay: var(--xh-motion-duration-micro);
   }
 
-  /* 实心面上环色与面同族，画在面里看不出来：环改取面自己的前景色 */
-  [data-scope='drawer'][data-part='confirm-trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 面板标题：页面级面板标题档、正文色；行高钉在 normal，头部带按它算标题行居中 */
   [data-scope='drawer'][data-part='title'] {
     margin: 0;
@@ -541,6 +532,7 @@
     --xh-_drawer-resize-indicator: var(--xh-ring-focus);
 
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='drawer'][data-part='resize-trigger'][data-side='left'],

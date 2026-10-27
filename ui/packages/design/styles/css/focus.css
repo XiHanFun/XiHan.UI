@@ -6,41 +6,37 @@
 /*
  * 聚焦环的公共层：全库共用一份。
  *
- * 解剖给每个部件打上 data-scope 与 data-part，键盘焦点落在哪个部件上，环就由这里画：
- * 粗细取 --xh-ring-width，颜色取 --xh-_ring-color（默认 --xh-ring-focus），
- * 偏移取 --xh-ring-offset——这个令牌是负的一个环宽，环的外沿与元素边框外沿重合，
- * 元素聚焦前后占的地方一样大。全库只有这一种偏移，要另画的组件把整条环重写。
+ * 环两层（设计真源 §7.2 第 5 条），两层都不随 data-tone、即时出现、不进过渡：
+ *   内圈  outline：粗细取 --xh-ring-width（1px），颜色取 --xh-_ring-color（缺省 --xh-ring-focus），
+ *         偏移取 --xh-ring-offset（0）——贴着元素的边框外沿画，压在承载面上，与元素自己的面无关，
+ *         实心面上也不换环色。对比度由内圈承担（WCAG 1.4.11 的 3:1）；outline 不占布局，聚焦前后盒子一样大。
+ *   光环  box-shadow：从边框外沿起铺，扩散量 = 内圈宽 + --xh-ring-halo-width（3px），颜色 --xh-ring-halo
+ *         （内圈色 30%）。只是观感。强制色档系统去掉 box-shadow，只剩内圈。
  *
- * 环往内收之后，内侧紧挨着的是环压着的那块面。面是实心的那几档，环色与面同族、贴上去就
- * 看不出来；那几档在各自皮肤的 :focus-visible 规则里把 --xh-_ring-color 灌成 currentColor，
- * 环随之取这块面配对的前景色——那一支色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
- * 取的是「面配对的前景色」，不是语气色：环仍然不随 data-tone 走，没有实心面的那些档
- * 一律是 --xh-ring-focus 这一支。
+ * 光环这条规则零特指度、排在全部家族配方与组件皮肤之前：部件自己写了 box-shadow（抬起影、浮层投影）时
+ * 由它自己的规则胜出，光环让位，不会把浮层面板的投影冲掉；要在自己的投影之前叠光环的部件（Action Control
+ * 等家族配方、带抬起影的拇指）在自己的聚焦规则里把光环接进去。
  *
- * 灌 currentColor 的档要同时成立三件事：
- *   一、面画在谁身上——画在祖先上（标签里那颗透空的关闭钮坐在标签那块实心底上）时
- *       规则写成后代选择器，槽仍然灌在拿焦点的那个节点上；
- *   二、部件得有 color——圆点、滑块这类没有字的部件先补一支与面配对的墨色，
- *       不补则 currentColor 取到继承下来的正文色或原生控件的 UA 前景色；
- *       只有一档要换的（开关选中的轨道）把那支色直接写进槽，不绕 currentColor；
- *   三、面被换走的档要退出——失效档把面换成置灰底、前景换成置灰色或透明，
- *       中性轻档把实心底换成灰底，currentColor 在这些档上会把环跟着糊掉甚至整条画成透明。
- *       靠收窄选择器退回本份的默认值，或把槽显式写回 var(--xh-ring-focus)。
+ * 关环的部件（outline: none，焦点由别处画）同时写 --xh-_ring-halo: transparent，光环随之透明。
+ * 这支槽登记成不继承：只作用于写它的那个节点，关环的容器里自己会落焦的部件照常画光环。
+ * --xh-_ring-color 同理只在拿着焦点的节点上读，:focus-visible 不匹配祖先，后代读不到。
  *
- * 槽在这里只留一个默认值，名单不收在本份里——谁的面是实心的由那份皮肤自己知道，
- * 也只有引了那份皮肤的人该为它付字节。
- * :focus-visible 只匹配拿着焦点的那一个节点，祖先不匹配，所以这个槽不会被后代读到。
- *
- * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里
- * [data-scope='x'][data-part='y']:focus-visible 同级，组件皮肤排在本份之后，
- * 要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
+ * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里 [data-scope='x'][data-part='y']:focus-visible
+ * 同级，组件皮肤排在本份之后，要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
  * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
- *
- * 排在全部组件皮肤之前：组件不必为了换个环色把整条环重写一遍。
  */
+@property --xh-_ring-halo {
+  syntax: '*';
+  inherits: false;
+}
+
 @layer xihan.components {
   [data-scope][data-part]:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
     outline-offset: var(--xh-ring-offset);
+  }
+
+  :where([data-scope][data-part]:focus-visible) {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
   }
 }

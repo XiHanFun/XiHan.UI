@@ -132,15 +132,14 @@ function highlightOf(el: Element): string {
 }
 
 describe('mention 单一状态表面', () => {
-  it.each(['light', 'dark'] as const)('%s：输入取字段淡底、候选面实体底，状态文字保持在面板上方', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：输入取字段底（缺省与承载面同色）、候选面实体底，状态文字保持在面板上方', async (theme) => {
     const state = mountMention(true, false, theme)
     await typeMention('@nobody')
     const content = byTestId('content')
     const empty = byTestId('empty')
     finishAnimations(content)
-    const inputAlpha = alpha(getComputedStyle(byTestId('input')).backgroundColor)
-    expect(inputAlpha).toBeGreaterThan(0)
-    expect(inputAlpha).toBeLessThan(255)
+    expect(alpha(getComputedStyle(byTestId('input')).backgroundColor)).toBe(255)
+    expect(getComputedStyle(byTestId('input')).backgroundColor).toBe(getComputedStyle(content).backgroundColor)
     expect(getComputedStyle(byTestId('input')).backdropFilter).toBe('none')
     expect(getComputedStyle(content).backdropFilter).toBe('none')
     expect(alpha(getComputedStyle(content).backgroundColor)).toBe(255)

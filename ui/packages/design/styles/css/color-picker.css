@@ -340,6 +340,7 @@
   /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
   [data-scope='color-picker'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 常驻形态：根不再取字段缺省宽，跟着取色面走 */
@@ -503,13 +504,15 @@
   }
 
   [data-scope='color-picker'][data-part='channel-input']:focus {
-    /* 焦点边一律 --xh-border-control-focus，不随语气 */
+    /* 焦点边一律 --xh-border-control-focus，不随语气；描边就是焦点环的内圈，再画光环 */
     border-color: var(--xh-color-picker-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-color-picker-input-bg-focus, var(--xh-bg-surface));
+    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   [data-scope='color-picker'][data-part='channel-input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */

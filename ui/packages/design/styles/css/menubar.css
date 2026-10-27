@@ -45,6 +45,7 @@
   /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
   [data-scope='menubar'][data-part='root']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='menubar'][data-part='root'][data-disabled] {
@@ -211,6 +212,7 @@
   /* 容器只是"没有条目锚点时"的 Tab 兜底落点，落焦不画环：高亮永远长在条目上 */
   [data-scope='menubar'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */

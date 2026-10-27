@@ -243,6 +243,7 @@
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   [data-scope='mention'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='mention'][data-part='content'][data-state='open'] {

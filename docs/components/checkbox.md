@@ -271,7 +271,7 @@ tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
 | `--xh-checkbox-label-gap` | `label` | `gap` | `default` | `--xh-_checkbox-label-gap` | checkbox 的 label 部件 gap 覆盖槽。 |
 | `--xh-checkbox-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` | checkbox 的 label 部件 line-height 覆盖槽。 |
 | `--xh-checkbox-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | checkbox 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | checkbox 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

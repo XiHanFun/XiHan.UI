@@ -102,6 +102,7 @@
      落焦不画环：高亮永远长在星星上，容器再画一圈只是重影。 */
   [data-scope='rating'][data-part='control']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='rating'][data-part='control'][data-readonly]:not([data-disabled]) {

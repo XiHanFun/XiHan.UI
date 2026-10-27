@@ -78,6 +78,11 @@
     color: var(--xh-editable-label-fg-disabled, var(--xh-fg-muted));
   }
 
+  /* 预览区落焦：自己写了 box-shadow: none，公共层零特指度的光环压不过它，这里接上（设计真源 §7.2 第 5 条） */
+  [data-scope='editable'][data-part='preview']:focus-visible {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+  }
+
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
   [data-scope='editable'][data-part='preview'] {
     display: inline-flex;

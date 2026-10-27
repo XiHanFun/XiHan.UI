@@ -338,6 +338,7 @@
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   [data-scope='combobox'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

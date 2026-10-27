@@ -340,6 +340,7 @@
   /* 容器只是焦点域的兜底落点，落焦不画环：高亮永远长在条目上 */
   [data-scope='cascader'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -388,6 +389,7 @@
 
   [data-scope='cascader'][data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='cascader'][data-part='group'] {
@@ -671,6 +673,7 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   [data-scope='cascader'][data-part='input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='cascader'][data-part='input'][hidden] {

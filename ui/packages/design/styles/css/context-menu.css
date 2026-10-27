@@ -172,6 +172,7 @@
 
   [data-scope='context-menu'][data-part='content']:not([tabindex='0']):focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 首帧落位后从锚点一侧淡入短移，不缩放整张面。 */

@@ -295,11 +295,6 @@
     left: 100%;
   }
 
-  /* 环往内收、压在品牌色的竖条上：换成与面配对的前景色才看得见 */
-  [data-scope='cartesian-chart'][data-part='zoom-handle']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
   [data-scope='cartesian-chart'][data-part='empty'][data-state='loading'] {
     --xh-_chart-empty-gap: var(--xh-cartesian-chart-empty-gap, var(--xh-space-2));
   }

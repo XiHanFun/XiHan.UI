@@ -138,6 +138,7 @@
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   [data-scope='listbox'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='listbox'][data-part='group'] {

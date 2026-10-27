@@ -168,6 +168,7 @@
     background: var(--xh-time-field-segment-bg-focus, var(--xh-_time-field-segment-bg));
     color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */

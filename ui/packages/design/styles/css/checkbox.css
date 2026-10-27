@@ -76,8 +76,7 @@
 
   /* 半选与全选同样是「有值」，方框都得填上：
      只填全选的话，半选那条横杠是实心底上的前景色，压在同色画布上等于没画。
-     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     焦点环画在方框外沿、压在承载面上，不随实心面换色。
      勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态；按下换到语气的 active 档 */
   [data-scope='checkbox'][data-part='root'][data-state='checked'],
   [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
@@ -85,7 +84,6 @@
     --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_checkbox-border: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
     --xh-_checkbox-border-hover: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 高对比轴把未选中边界提到 strong；有值两态仍由实心语气底与配对勾形表达。 */

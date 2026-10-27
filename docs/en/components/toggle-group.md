@@ -219,7 +219,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` |
 | `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`invalid`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` |
-| `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-highlight-on` |
+| `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_toggle-group-item-highlight-on` |
 | `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` |
 | `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` |
 | `--xh-toggle-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-toggle-group-separator` | `--xh-border-subtle` |

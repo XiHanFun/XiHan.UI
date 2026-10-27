@@ -142,6 +142,7 @@
   /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
   [data-scope='calendar-picker'][data-part='grid']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='calendar-picker'][data-part='grid-head'],
@@ -388,8 +389,7 @@
   }
 
   /* 实心强调面给单选 / 多选的选中格（格状当前）：悬停不换面，按下压到 active 档。
-     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+     焦点环画在格子外沿、压在面板上，不随实心面换色 */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
     --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
@@ -403,7 +403,6 @@
     --xh-action-fg-hover: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
     --xh-action-fg-pressed: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
     --xh-action-fg-focus-visible: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   @media (forced-colors: active) {
@@ -426,7 +425,6 @@
      那一档不落焦点环的灌色（环取过来就跟底一起糊了），环由公共层画 */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled] {
     --xh-action-fg-disabled: var(--xh-fg-disabled);
-    --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
   }
 
   /* 不可用又选中的格：压在淡底横条上，钮退到再深一档的中性面 + 置灰字（禁用面），

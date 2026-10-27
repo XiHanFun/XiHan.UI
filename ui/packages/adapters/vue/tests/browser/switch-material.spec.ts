@@ -313,9 +313,10 @@ describe('switch 实体轨道与 raised 滑块', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        // 轨道底是墨色按比例透明：叠在页面画布上算
+        // 环画在轨道外侧（偏移 0）、压在页面画布上，选中的实心轨道也不换环色
         const page = getComputedStyle(document.body).backgroundColor
-        expect(contrast(style.outlineColor, style.backgroundColor, page), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        expect(style.outlineOffset).toBe('0px')
+        expect(contrast(style.outlineColor, page), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
       }
 
       app?.unmount()

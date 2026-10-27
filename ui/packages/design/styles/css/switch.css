@@ -73,7 +73,6 @@
     --xh-action-shadow-disabled: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     /* 内收环压在实体轨道上，直接取轨道的配对前景：未选中与只读 checked 的中性轨道配 fg-default，
        选中的语气轨道配它的 on 色 */
-    --xh-action-ring-color-focus-visible: currentColor;
 
     /* 滑块贴 inline-start 起步，checked 才位移到另一端；家族的居中排布在轨道上不成立 */
     justify-content: start;

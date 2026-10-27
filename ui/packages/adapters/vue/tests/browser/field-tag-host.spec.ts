@@ -1,6 +1,6 @@
 // 字段里的已选标签（标签行家族的 Select / Combobox / Cascader / TreeSelect / 各类 Picker，以及 TagsInput）：
-// 字段没聚焦时盒铺着字段淡底，标签换白底 + 缺省描边一枚枚立出来，叉悬停 / 按下走白底阶梯；
-// 聚焦后盒换成白色承载面，标签回到自己的淡底。有标签时盒的起始内衬收到 --xh-space-1，标签之间隔 --xh-space-1，
+// 描边档的盒缺省就是白底，标签保持自己的淡底；淡底档的盒没聚焦时铺着淡底，标签换白底 + 缺省描边一枚枚立出来，
+// 叉悬停 / 按下走白底阶梯，聚焦后盒换成白色承载面，标签回到自己的淡底。有标签时盒的起始内衬收到 --xh-space-1，标签之间隔 --xh-space-1，
 // lg 档字段里的标签字号钉在说明档。判据是计算样式与几何，jsdom 不算级联也不排版。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -81,8 +81,13 @@ function focusInside(scope: string): void {
 }
 
 describe('字段里的已选标签按盒的承载面换面', () => {
-  it.each(HOSTS)('%s：没聚焦时标签白底 + 缺省描边，聚焦后回到淡底', async (scope, render, selector) => {
+  it.each(HOSTS)('%s：描边档的盒是白底，标签保持自己的淡底', async (_scope, render, selector) => {
     await mount(() => render())
+    expect(getComputedStyle(tags(selector)[0]!).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
+  })
+
+  it.each(HOSTS)('%s：淡底档没聚焦时标签白底 + 缺省描边，聚焦后回到淡底', async (scope, render, selector) => {
+    await mount(() => render({ variant: 'subtle' }))
     const tag = tags(selector)[0]!
     expect(getComputedStyle(tag).backgroundColor).toBe(resolve('var(--xh-bg-surface)'))
     expect(getComputedStyle(tag).borderTopColor).toBe(resolve('var(--xh-border-default)', 'color'))
@@ -93,15 +98,15 @@ describe('字段里的已选标签按盒的承载面换面', () => {
   })
 
   // Select 的缺省结构不渲染叉，只在 TagsInput 上量
-  it.each(HOSTS.filter(([scope]) => scope === 'tags-input'))('%s：没聚焦时叉悬停取 --xh-bg-subtle', async (_scope, render, selector) => {
-    await mount(() => render())
+  it.each(HOSTS.filter(([scope]) => scope === 'tags-input'))('%s：淡底档没聚焦时叉悬停取 --xh-bg-subtle', async (_scope, render, selector) => {
+    await mount(() => render({ variant: 'subtle' }))
     const close = tags(selector)[0]!.querySelector<HTMLElement>(`[data-scope='tag'][data-part='close-trigger']`)!
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
   })
 
   it.each(HOSTS)('%s：禁用的盒里标签不换白底，照禁用档置灰', async (_scope, render, selector) => {
-    await mount(() => render({ disabled: true }))
+    await mount(() => render({ variant: 'subtle', disabled: true }))
     expect(getComputedStyle(tags(selector)[0]!).backgroundColor).not.toBe(resolve('var(--xh-bg-surface)'))
   })
 })

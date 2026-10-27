@@ -72,7 +72,7 @@
     "rest": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
     "hover": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
     "pressed": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
-    "focus-visible": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
+    "focus-visible": { "highlight": "transparent", "shadow": "0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo))", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
     "disabled": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "not-allowed", "scale": "none" },
     "loading": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "progress", "scale": "none" }
   },

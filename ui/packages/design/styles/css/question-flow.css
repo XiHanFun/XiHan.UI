@@ -364,14 +364,17 @@
     border-color: var(--xh-question-flow-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 聚焦换承载面底 + 品牌描边，不画环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环 */
+  /* 照字段外壳标出焦点：换承载面底 + 品牌描边，描边就是焦点环的内圈，再画光环；
+     强制色档光环被去掉，系统色环由下面的强制色规则补 */
   [data-scope='question-flow'][data-part='note']:focus-within {
     border-color: var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
     background: var(--xh-question-flow-note-bg-focus, var(--xh-bg-surface));
+    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   [data-scope='question-flow'][data-part='note']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='question-flow'][data-part='note']:disabled {
@@ -495,13 +498,6 @@
     --xh-action-shadow-rest: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-hover: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-pressed: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     置灰档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
-  [data-scope='question-flow'][data-part='submit-trigger']:not([data-disabled]) {
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 交卷之后才露出的那一格：与 Tag 的 sm 档同一副方签——control 圆角、块尺寸取 chip 档、竖向内衬为 0 */

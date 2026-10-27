@@ -378,13 +378,6 @@
     animation: none;
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     置灰后矩阵把面换成中性淡底，公共环压上去足够对比，不再另灌 */
-  [data-scope='float-button'][data-part='trigger'][data-xh-action-variant='solid']:not([data-disabled]):focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* —— 展开的那一组 —— */
   [data-scope='float-button'][data-part='list'] {
     display: flex;

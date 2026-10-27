@@ -129,7 +129,8 @@ describe('轻提示预设的中性浮层', () => {
     expect(closeRect.width).toBe(24)
     expect(closeRect.height).toBe(24)
     expect(getComputedStyle(close).backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(close).boxShadow).toBe('none')
+    // 键盘焦点在钮上：家族画焦点环的光环，除此之外不铺投影
+    expect(getComputedStyle(close).boxShadow).toContain('0px 0px 0px')
     expect(getComputedStyle(close, '::before').width).toBe('12px')
     expect(closeRect.left).toBeGreaterThanOrEqual(itemRect.left)
     expect(closeRect.right).toBeLessThanOrEqual(itemRect.right)

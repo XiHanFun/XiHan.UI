@@ -123,12 +123,6 @@
     --xh-action-highlight-focus-visible: var(--xh-_highlight-tone);
   }
 
-  /* 只有 solid 按下后才是实心面：环色与面同族画在面里看不出来，环改取面自己的前景色；
-     品牌淡底不是实心面，吃库环 */
-  [data-scope='toggle'][data-part='root'][data-variant='solid'][data-state='on']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   [data-scope='toggle'][data-part='root'][data-full-width] {
     inline-size: 100%;
   }

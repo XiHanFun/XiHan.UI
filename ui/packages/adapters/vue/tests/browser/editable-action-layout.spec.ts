@@ -83,13 +83,24 @@ function expectIconButton(name: string, size: number): void {
   expect(mark.maskImage).not.toBe('none')
 }
 
+/** 字段外壳聚焦时的光环：描边就是内圈，光环从描边外沿铺开。 */
+function fieldHalo(): string {
+  const probe = document.createElement('span')
+  probe.style.boxShadow = '0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo)'
+  document.body.append(probe)
+  const value = getComputedStyle(probe).boxShadow
+  probe.remove()
+  return value
+}
+
 /** 一体式盒：描边只在 control 上，盒内分段无边无影；盒不裁剪，家族热区伪元素才伸得出去。 */
 function expectUnifiedControl(...partNames: string[]): void {
   const control = part('control')
   const controlRect = control.getBoundingClientRect()
   const controlStyle = getComputedStyle(control)
   expect(controlStyle.borderTopWidth).not.toBe('0px')
-  expect(controlStyle.boxShadow).toBe('none')
+  // 盒里有焦点时画焦点环的光环（描边就是内圈），此外静息无影
+  expect(controlStyle.boxShadow).toBe(control.matches(':focus-within') ? fieldHalo() : 'none')
   expect(controlStyle.overflow).toBe('visible')
   expect(controlStyle.gap).toBe('0px')
 

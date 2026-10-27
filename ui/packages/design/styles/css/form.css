@@ -223,6 +223,7 @@
   /* 摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报，落焦时不画环 */
   [data-scope='form'][data-part='error-summary']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
@@ -368,9 +369,7 @@
     --xh-action-shadow-pressed: none;
   }
 
-  /* 提交钮：品牌实心，顶边一条极浅的内高光把这块面衬出厚度（三态同一支，禁用面由家族收掉）。
-     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+  /* 提交钮：品牌实心，顶边一条极浅的内高光把这块面衬出厚度（三态同一支，禁用面由家族收掉） */
   [data-scope='form'][data-part='submit-trigger'] {
     --xh-action-bg-rest: var(--xh-form-submit-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-form-submit-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -387,7 +386,6 @@
     --xh-action-shadow-rest: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
     --xh-action-shadow-hover: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
     --xh-action-shadow-pressed: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 提交回调在途：环由加载环配方压在提交钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，

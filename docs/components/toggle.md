@@ -234,7 +234,7 @@
 | `--xh-toggle-icon-size` | `*`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_action-profile-glyph-size` | toggle 的 *、root 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-toggle-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toggle 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `none` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `none` | toggle 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

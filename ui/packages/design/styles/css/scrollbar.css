@@ -155,15 +155,11 @@
     );
   }
 
-  /* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
-  [data-scope='scrollbar'][data-part='thumb']:not([data-disabled]):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
   /* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
   [data-scope='scrollbar'][data-part='root']:focus-visible,
   [data-scope='scrollbar'][data-part='track']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */

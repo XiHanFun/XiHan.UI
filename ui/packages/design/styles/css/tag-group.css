@@ -57,6 +57,7 @@
   /* 焦点在组外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在标签上 */
   [data-scope='tag-group'][data-part='list']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 一枚标签就是 tag 的 root（data-scope="tag"）：形态、语气、尺寸、置灰、截断、摘除钮的样子全归 tag.css。

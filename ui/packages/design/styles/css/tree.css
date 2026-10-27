@@ -162,6 +162,7 @@
   /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
   [data-scope='tree'][data-part='tree']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 分支只是"这一行 + 它的子层"的外壳，不自带内边距：
@@ -181,11 +182,12 @@
      整棵子树套一圈描边会把展开的层级全框进去 */
   [data-scope='tree'][data-part='branch']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='tree'][data-part='branch']:focus-visible > [data-scope='tree'][data-part='branch-control'] {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: var(--xh-ring-offset-inset);
   }
 
   /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。

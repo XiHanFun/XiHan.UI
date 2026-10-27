@@ -161,6 +161,7 @@
   /* 卡片是可编程聚焦的容器（tabindex=-1），焦点环留给里面真正的可聚焦元素 */
   [data-scope='hover-card'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

@@ -563,14 +563,26 @@
     }
   },
   "ring": {
+    "$description": "聚焦环两层（设计真源 §7.2 第 5 条）：1px 品牌内圈（outline）+ 3px 品牌 30% 光环（box-shadow）。两层都不随语气，即时出现；对比度由内圈承担，光环只是观感。",
     "width": {
+      "$description": "内圈的粗细。",
       "$type": "dimension",
-      "$value": "{stroke.thick}"
+      "$value": "{stroke.thin}"
     },
     "offset": {
-      "$description": "聚焦环画在元素自己那一圈：往内收一个环宽，环的外沿与元素的边框外沿重合，聚焦前后绘制外沿一样大。",
+      "$description": "内圈贴着元素的边框外沿画，不往里收：环压在承载面上，与元素自己的面无关，实心面上也不必换环色。outline 不占布局，聚焦前后盒子一样大。",
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "offset-inset": {
+      "$description": "首尾相接的行与格（集合行、表格单元格、时间列、树行）：内圈往里收一个环宽，不压到相邻的行、也不被滚动容器裁掉；这类部件不画光环。",
       "$type": "dimension",
       "$value": "calc(-1 * {ring.width})"
+    },
+    "halo-width": {
+      "$description": "光环露在内圈外面的那一截宽度。box-shadow 的扩散量写成内圈宽 + 这一截，光环从元素边框外沿起铺、被内圈盖住的那 1px 不算。",
+      "$type": "dimension",
+      "$value": "{stroke.strong}"
     }
   },
   "state": {

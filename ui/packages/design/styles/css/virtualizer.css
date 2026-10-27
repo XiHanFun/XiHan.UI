@@ -146,6 +146,7 @@
   [data-scope='virtualizer'][data-part='content']:focus-visible,
   [data-scope='virtualizer'][data-part='item']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* root 上还有一个 data-scrolling 标记（手正在滚时在场）。这份皮肤刻意不用它：

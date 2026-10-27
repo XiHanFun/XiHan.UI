@@ -224,7 +224,7 @@
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-6` | back-top 的 root 部件 inset-inline-end 覆盖槽。 |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | back-top 的 root 部件 z-index 覆盖槽。 |
 | `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
-| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_material-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_material-shadow`<br>`none` | back-top 的 root、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_back-top-size` | back-top 的 trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

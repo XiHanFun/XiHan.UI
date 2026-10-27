@@ -240,6 +240,7 @@
   /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
   [data-scope='select'][data-part='trigger']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -388,6 +389,7 @@
 
   [data-scope='select'][data-part='list']:not([tabindex='0']):focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

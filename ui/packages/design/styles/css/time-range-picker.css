@@ -280,6 +280,7 @@
     background: var(--xh-time-range-picker-segment-bg-focus, var(--xh-_time-range-picker-segment-bg));
     color: var(--xh-time-range-picker-segment-fg-focus, var(--xh-_time-range-picker-segment-fg));
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
@@ -394,6 +395,7 @@
   /* 面板本身不承载焦点（焦点在某一列的某一格上），落焦时不画环 */
   [data-scope='time-range-picker'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -613,11 +615,13 @@
      那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
   [data-scope='time-range-picker'][data-part='column'][tabindex='0']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: var(--xh-ring-offset-inset);
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='time-range-picker'][data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按

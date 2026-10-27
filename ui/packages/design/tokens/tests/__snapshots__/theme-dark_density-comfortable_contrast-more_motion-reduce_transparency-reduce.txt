@@ -23,7 +23,7 @@
 --xh-bg-brand-subtle-active: color-mix(in oklab, oklch(0.632 0.209 277) 28%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))
 --xh-bg-brand-subtle-hover: color-mix(in oklab, oklch(0.632 0.209 277) 20%, oklch(0.208 0.006 258))  ← color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))
 --xh-bg-canvas: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-bg-field: color-mix(in oklab, color-mix(in oklab, oklch(1 0 0) 6.2%, transparent) 55%, transparent)  ← color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)
+--xh-bg-field: oklch(0.208 0.006 258)  ← var(--xh-bg-surface)
 --xh-bg-field-invalid: color-mix(in oklab, oklch(0.7 0.185 25) 4%, transparent)  ← color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)
 --xh-bg-mark: oklch(0.379 0.132 95)  ← var(--xh-color-yellow-900)
 --xh-bg-media-chrome: color-mix(in oklab, oklch(0.145 0.005 258) 55%, transparent)  ← color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)
@@ -426,9 +426,12 @@
 --xh-overlay-time-column-w: 4rem
 --xh-overlay-toast-w: 28.75rem
 --xh-ring-focus: oklch(0.709 0.162 277)  ← var(--xh-color-brand-400)
+--xh-ring-halo: color-mix(in oklab, oklch(0.709 0.162 277) 30%, transparent)  ← color-mix(in oklab, var(--xh-ring-focus) 30%, transparent)
+--xh-ring-halo-width: 3px  ← var(--xh-stroke-strong)
 --xh-ring-invalid: oklch(0.7 0.185 25)  ← var(--xh-color-danger-400)
---xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))
---xh-ring-width: 2px  ← var(--xh-stroke-thick)
+--xh-ring-offset: 0px
+--xh-ring-offset-inset: calc(-1 * 1px)  ← calc(-1 * var(--xh-ring-width))
+--xh-ring-width: 1px  ← var(--xh-stroke-thin)
 --xh-scrollbar-gutter: 1px
 --xh-scrollbar-thickness-lg: 8px
 --xh-scrollbar-thickness-md: 6px
@@ -438,11 +441,12 @@
 --xh-section-py-md: 20px  ← var(--xh-space-5)
 --xh-section-py-sm: 16px  ← var(--xh-space-4)
 --xh-shape-circle: 50%
---xh-shape-control: 2px  ← var(--xh-radius-sm)
---xh-shape-inset: 2px  ← var(--xh-radius-sm)
---xh-shape-overlay: 4px  ← var(--xh-shape-surface)
+--xh-shape-control: 8px  ← var(--xh-radius-md)
+--xh-shape-inset: calc(8px * 0.5)  ← var(--xh-radius-xs)
+--xh-shape-overlay: 8px  ← var(--xh-shape-surface)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
---xh-shape-surface: 4px  ← var(--xh-radius-md)
+--xh-shape-sheet: calc(8px * 1.25)  ← var(--xh-radius-lg)
+--xh-shape-surface: 8px  ← var(--xh-radius-md)
 --xh-sider-collapsed-w: 4rem
 --xh-sider-w: 13.75rem
 --xh-stack-gap-lg: 24px  ← var(--xh-space-6)

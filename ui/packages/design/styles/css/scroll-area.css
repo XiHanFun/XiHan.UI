@@ -231,6 +231,7 @@
   [data-scope='scroll-area'][data-part='content']:focus-visible,
   [data-scope='scroll-area'][data-part='scrollbar']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
