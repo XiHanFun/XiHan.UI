@@ -17,7 +17,7 @@ afterEach(() => {
 })
 
 describe('骨架屏的内容节奏', () => {
-  it('文字条高一行正文行框（14 × 1.5 = 21px）、条间距 16px、圆角 2px，且不接管指针', async () => {
+  it('文字条高一行正文行框（14 × 1.5 = 21px）、条间距 16px、inset 圆角 4px，且不接管指针', async () => {
     host = document.createElement('div')
     document.body.append(host)
     app = createApp({
@@ -30,7 +30,7 @@ describe('骨架屏的内容节奏', () => {
     const item = document.querySelector<HTMLElement>('[data-scope="skeleton"][data-part="item"]')!
     expect(getComputedStyle(root).gap).toBe('16px')
     expect(item.getBoundingClientRect().height).toBe(21)
-    expect(getComputedStyle(item).borderRadius).toBe('2px')
+    expect(getComputedStyle(item).borderRadius).toBe('4px')
     expect(getComputedStyle(item).pointerEvents).toBe('none')
   })
 

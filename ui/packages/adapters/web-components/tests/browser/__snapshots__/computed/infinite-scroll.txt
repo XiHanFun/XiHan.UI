@@ -7,10 +7,10 @@ padding-bottom: 6px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 2px
-border-top-right-radius: 2px
-border-bottom-right-radius: 2px
-border-bottom-left-radius: 2px
+border-top-left-radius: 8px
+border-top-right-radius: 8px
+border-bottom-right-radius: 8px
+border-bottom-left-radius: 8px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px

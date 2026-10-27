@@ -396,7 +396,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-combobox-content-max-w` | `content` | `max-inline-size` | `default` | `none` |
 | `--xh-combobox-content-min-h` | `content` | `min-block-size` | `default` | `--xh-_combobox-h` |
 | `--xh-combobox-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` |
-| `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `0` |
+| `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
 | `--xh-combobox-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` |
@@ -448,7 +448,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` |
 | `--xh-combobox-item-py` | `item` | `padding-block` | `default` | `--xh-_combobox-item-py` |
-| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |
 | `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` |

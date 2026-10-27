@@ -225,7 +225,7 @@
     padding-block: var(--xh-tags-input-item-py, var(--xh-_tags-input-item-py));
     padding-inline: var(--xh-tags-input-item-px, var(--xh-_tags-input-item-px));
     border: var(--xh-stroke-thin) solid var(--xh-tags-input-item-input-border, var(--xh-border-control));
-    border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-control));
+    border-radius: var(--xh-tags-input-item-radius, var(--xh-shape-inset));
     background: var(--xh-tags-input-item-input-bg, var(--xh-bg-field));
     color: var(--xh-tags-input-item-input-fg, var(--xh-fg-default));
     font-family: inherit;

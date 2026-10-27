@@ -302,7 +302,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-tags-input-item-input-fg` | `item-input` | `color` | `default` | `--xh-fg-default` |
 | `--xh-tags-input-item-px` | `item-input` | `padding-inline` | `default` | `--xh-_tags-input-item-px` |
 | `--xh-tags-input-item-py` | `item-input` | `padding-block` | `default` | `--xh-_tags-input-item-py` |
-| `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-control` |
+| `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |
 | `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` |

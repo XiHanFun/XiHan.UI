@@ -397,7 +397,7 @@ segmented 形态加 block 使整组占满一行，各段等分剩余空间，长
 | `--xh-radio-group-segment-font-weight-checked` | `item`<br>`root` | `font-weight` | `state=checked`<br>`variant=segmented` | `--xh-font-weight-medium` | radio-group 的 item、root 部件 font-weight 覆盖槽。 |
 | `--xh-radio-group-segment-h` | `item`<br>`root` | `block-size`<br>`min-block-size` | `orientation=horizontal`<br>`variant=segmented` | `--xh-_radio-group-segment-h` | radio-group 的 item、root 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-radio-group-segment-px` | `item`<br>`root` | `padding-inline` | `variant=segmented` | `--xh-_radio-group-segment-px` | radio-group 的 item、root 部件 padding-inline 覆盖槽。 |
-| `--xh-radio-group-segment-radius` | `item`<br>`root` | `border-radius` | `variant=segmented` | `--xh-shape-control` | radio-group 的 item、root 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-segment-radius` | `item`<br>`root` | `border-radius` | `variant=segmented` | `--xh-shape-inset` | radio-group 的 item、root 部件 border-radius 覆盖槽。 |
 | `--xh-radio-group-segment-separator` | `item`<br>`root` | `background-color` | `orientation=horizontal`<br>`variant=segmented` | `--xh-border-default` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
 | `--xh-radio-group-thumb-bg` | `thumb` | `background` | `default` | `--xh-_radio-group-thumb-bg` | radio-group 的 thumb 部件 background 覆盖槽。 |
 | `--xh-radio-group-thumb-bg-disabled` | `root`<br>`thumb` | `background` | `disabled`<br>`has(> [data-scope='radio-group'][data-part='item'][data-state='checked'][data-disabled])`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-thumb-bg-disabled` | radio-group 的 root、thumb 部件 background 覆盖槽。 |

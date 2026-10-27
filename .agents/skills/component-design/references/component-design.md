@@ -1591,7 +1591,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §6.3 圆角 | 令牌加 `radius.seed` 与系数档、新增 `shape.sheet`；`shape.inset` 改 xs、`shape.control` / `surface` 改 md；集合行配方（`family/collection-item.css`）与 Tabs segment trigger / 滑块、RadioGroup segmented 段与滑块、字段里的标签从 control 改 inset；Dialog、Drawer、Notification 卡片改 sheet；`check-shape-scale` 登记 sheet；主题设计器圆角档改为只调种子 |
 | §8.3 字段、§7.2 第 5 条 焦点环 | `bg.field` 改取承载面；令牌加 `ring.halo`、`ring.offset` 改 0、内圈 1px；`css/focus.css` 改内圈 + 光环并撤掉实心面取 currentColor 的规则；`family/field-chrome.css` 聚焦加光环、field-inset 阶梯按盒的底取档、字段里的标签只在淡底盒里换白；`check-focus-ring`、`check-focus-ring-surface`、`check-state-ladder`、`check-catalog-preview` 登记表 |
 | §9.5 弹层进出场 | 锚定列表、菜单、Tooltip 与无锚弹层改引 `xh-overlay-pop-in` / `xh-pop-out`，删 `xh-overlay-slide-*`；`check-keyframe-registry`、`check-keyframe-refs`、`check-presence-pair` 登记表 |
 | §9.13 勾选标记 | `family/check-mark.css` 加描线与全选 / 半选交叉缩放；`check-motion-role`、`check-reduced-motion-channel` 登记 `clip-path` / `mask-size` |

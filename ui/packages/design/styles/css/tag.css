@@ -247,6 +247,11 @@
     --xh-_tag-font-size: var(--xh-text-caption-size);
   }
 
+  /* 嵌在字段盒里取 inset：盒是 control 圆角、有标签时起始内衬 4px，标签的圆角不得大于外层减内衬（§6.3） */
+  :where([data-xh-field-chrome]) [data-scope='tag'][data-part='root'] {
+    border-radius: var(--xh-tag-radius, var(--xh-shape-inset));
+  }
+
   /* 盒没聚焦时铺着字段淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
      走白底阶梯 100 → 200；聚焦后盒换成白色承载面，标签回到自己的淡底。禁用的盒不换（标签照禁用档置灰），
      写了语气的、实心与无壳的标签保留自己的面；--xh-tag-* 覆盖槽照旧优先 */

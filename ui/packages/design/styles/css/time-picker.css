@@ -621,7 +621,7 @@
     block-size: var(--xh-_time-picker-column-h);
     padding-block: var(--xh-_time-picker-column-py)
       calc(var(--xh-_time-picker-column-h) - var(--xh-time-picker-item-h, var(--xh-control-action-size)) - var(--xh-_time-picker-column-py));
-    padding-inline: var(--xh-time-picker-column-px, 0);
+    padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
@@ -664,7 +664,7 @@
     --xh-collection-inline-padding: var(--xh-_time-picker-item-rail);
     --xh-collection-font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
     /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
-    --xh-collection-radius: var(--xh-time-picker-item-radius, 0);
+    --xh-collection-radius: var(--xh-time-picker-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));

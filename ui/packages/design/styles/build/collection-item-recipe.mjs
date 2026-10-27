@@ -378,7 +378,7 @@ ${rest}
     min-block-size: var(--xh-collection-row-h, auto);
     padding-block: var(--xh-collection-block-padding, var(--xh-_collection-block-padding));
     padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
-    border-radius: var(--xh-collection-radius, var(--xh-shape-control));
+    border-radius: var(--xh-collection-radius, var(--xh-shape-inset));
     outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
     outline-offset: var(--xh-ring-offset);
     background-color: var(--xh-_collection-bg);

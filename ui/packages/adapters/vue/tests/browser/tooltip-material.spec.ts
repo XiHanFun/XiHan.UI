@@ -101,7 +101,7 @@ describe('tooltip 反白实底', () => {
     expect(content.paddingLeft).toBe('12px')
     expect(content.paddingRight).toBe('12px')
     expect(content.borderTopWidth).toBe('1px')
-    expect(content.borderRadius).toBe('2px')
+    expect(content.borderRadius).toBe('8px')
     expect(content.boxShadow).not.toBe('none')
     // 不用顶部高光：内描边式顶光缺省透明，只剩海拔那一层影
     expect(content.boxShadow.startsWith('rgba(0, 0, 0, 0) 0px 1px 0px 0px inset')).toBe(true)

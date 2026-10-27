@@ -403,7 +403,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-time-range-picker-column-group-py` | `column-group`<br>`column-group-label` | `block-size`<br>`padding-block-start` | `default` | `--xh-time-range-picker-column-group-label-py` |
 | `--xh-time-range-picker-column-h` | `column` | `block-size`<br>`padding-block` | `default` | `--xh-overlay-time-column-h` |
 | `--xh-time-range-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-time-column-w` |
-| `--xh-time-range-picker-column-px` | `column` | `padding-inline` | `default` | `0` |
+| `--xh-time-range-picker-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-time-range-picker-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-time-range-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` |
 | `--xh-time-range-picker-content-border` | `content` | `border` | `default` | `--xh-border-default` |
@@ -442,7 +442,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-time-range-picker-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` |
 | `--xh-time-range-picker-item-h` | `column`<br>`item` | `block-size`<br>`padding-block` | `default` | `--xh-control-action-size` |
 | `--xh-time-range-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` |
-| `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-time-range-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-time-range-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-time-range-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |
 | `--xh-time-range-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` |

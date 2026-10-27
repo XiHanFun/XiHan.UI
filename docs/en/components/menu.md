@@ -324,7 +324,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-menu-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` |
 | `--xh-menu-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` |
 | `--xh-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` |
-| `--xh-menu-content-px` | `content` | `padding-inline` | `default` | `0` |
+| `--xh-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` |
 | `--xh-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
 | `--xh-menu-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` |
@@ -351,7 +351,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_menu-item-px` |
 | `--xh-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_menu-item-py` |
-| `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` |
 | `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_menu-max-h` |
 | `--xh-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` |

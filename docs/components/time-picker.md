@@ -529,7 +529,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-column-gap` | `column`<br>`item` | `gap`<br>`inset-block` | `default` | `--xh-space-2` | time-picker 的 column、item 部件 gap、inset-block 覆盖槽。 |
 | `--xh-time-picker-column-h` | `column` | `block-size`<br>`padding-block` | `default` | `--xh-overlay-time-column-h` | time-picker 的 column 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-time-column-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
-| `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
+| `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` | time-picker 的 column 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-time-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-picker 的 confirm-trigger 部件 background-color 覆盖槽。 |
@@ -585,7 +585,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | time-picker 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-time-picker-item-h` | `column`<br>`item` | `block-size`<br>`padding-block` | `default` | `--xh-control-action-size` | time-picker 的 column、item 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-time-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `0` | time-picker 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | time-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-picker-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | time-picker 的 label 部件 color 覆盖槽。 |
 | `--xh-time-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | time-picker 的 label 部件 font-size 覆盖槽。 |

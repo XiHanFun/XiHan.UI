@@ -254,7 +254,7 @@
     );
     max-block-size: min(var(--xh-expression-input-content-max-h, var(--xh-overlay-max-h)), var(--xh-_expression-input-available-h));
     padding-block: var(--xh-expression-input-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-expression-input-content-px, 0);
+    padding-inline: var(--xh-expression-input-content-px, var(--xh-space-1));
     border-radius: var(--xh-expression-input-content-radius, var(--xh-shape-overlay));
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -280,7 +280,7 @@
     --xh-collection-inline-padding: var(--xh-expression-input-item-px, var(--xh-_expression-input-px));
     --xh-collection-gap: var(--xh-expression-input-item-gap, var(--xh-_expression-input-gap));
     --xh-collection-font-size: var(--xh-expression-input-item-font-size, var(--xh-_expression-input-font-size));
-    --xh-collection-radius: var(--xh-expression-input-item-radius, 0);
+    --xh-collection-radius: var(--xh-expression-input-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-hover: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-keyboard-highlight: var(--xh-expression-input-item-fg, var(--xh-material-frosted-fg));

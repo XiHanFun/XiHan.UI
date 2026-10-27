@@ -525,26 +525,31 @@
     }
   },
   "shape": {
-    "$description": "形状身份。inset / control / surface / overlay 是 4 / 8 / 12px 的小圆角阶梯；circle 与 pill 是形状身份，不进入阶梯。",
+    "$description": "形状身份（设计真源 §6.3）。inset / control / surface / overlay / sheet 引 radius.* 的种子刻度：缺省 4 / 8 / 8 / 8 / 10px；circle 与 pill 是形状身份，不进入刻度。内层圆角不大于外层减内衬：8px 的面内衬 2–4px，里面的块取 inset。",
     "inset": {
-      "$description": "嵌在控件里的内层：菜单项、标签内部、微型状态块。",
+      "$description": "嵌在控件、面与浮层里的小块：勾选方框、集合行（浮层里的选项与菜单项、页内 Listbox / Tree 的行）、轨道里的段与滑块、字段里的已选标签、field-inset 钮。",
       "$type": "dimension",
-      "$value": "{radius.sm}"
+      "$value": "{radius.xs}"
     },
     "control": {
-      "$description": "控件本体：Button、Input、Select Trigger、Toggle、分页按钮。",
+      "$description": "控件本体：Button、Input、Select Trigger、Toggle、分页按钮、Tooltip、随文方签。",
       "$type": "dimension",
-      "$value": "{radius.sm}"
+      "$value": "{radius.md}"
     },
     "surface": {
-      "$description": "成面的静态容器：Card、Alert、Panel、列表容器。",
+      "$description": "成面的静态容器：Card、Alert、Panel、列表容器、Tabs segment 的轨道。",
       "$type": "dimension",
       "$value": "{radius.md}"
     },
     "overlay": {
-      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Notification。与 surface 同一把尺：使用者只改承载面圆角时浮层跟着走，卡片、对话框、抽屉与弹出层不会各圆各的。",
+      "$description": "脱离文档流的弹层：Popover、Menu、候选面板与无锚弹层。与 surface 同一把尺：使用者只改承载面圆角时浮层跟着走，面与浮层不会各圆各的。",
       "$type": "dimension",
       "$value": "{shape.surface}"
+    },
+    "sheet": {
+      "$description": "模态与强反馈面：Dialog、Notification 卡片、Drawer 朝向页面的两个角。比浮层再圆一档，读得出这是一张独立的面。",
+      "$type": "dimension",
+      "$value": "{radius.lg}"
     },
     "circle": {
       "$description": "正圆：头像、圆形图标按钮、单选指示器。",

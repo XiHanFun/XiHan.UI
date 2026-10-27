@@ -115,7 +115,7 @@ describe('气泡族的面与排版', () => {
     expect(content.paddingBottom).toBe('12px')
     expect(content.paddingLeft).toBe('16px')
     expect(content.paddingRight).toBe('16px')
-    expect(content.borderRadius).toBe('4px')
+    expect(content.borderRadius).toBe('8px')
     expect(content.borderTopWidth).toBe('1px')
     expect(content.borderTopColor).toBe(resolvedColor(scope, '--xh-material-frosted-border'))
     expect(content.boxShadow).toBe(resolved(scope, 'box-shadow', '--xh-material-frosted-shadow'))

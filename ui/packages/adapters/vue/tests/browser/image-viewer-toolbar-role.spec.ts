@@ -258,9 +258,9 @@ describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子�
     const zoomRect = zoomIn.getBoundingClientRect()
     expect([zoomRect.width, zoomRect.height]).toEqual([36, 36])
     expect(getComputedStyle(zoomIn, '::before').width).toBe('16px')
-    // 工具条外壳与计数气泡按身份取圆角：容器 surface 4px、一行字的气泡 control 2px
-    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('4px')
-    expect(getComputedStyle(part('counter')).borderRadius).toBe('2px')
+    // 工具条外壳与计数气泡按身份取圆角：容器 surface 8px、一行字的气泡 control 8px
+    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('8px')
+    expect(getComputedStyle(part('counter')).borderRadius).toBe('8px')
   })
 
   it('翻页钮距左右边 20px，关闭钮距右上角 32px', async () => {

@@ -220,7 +220,7 @@
    * 一张通知：底与描边一律中性，面走 sheet 三件套（--xh-material-elevated-bg / -border / -shadow，
    * 亮暗两档同有 1px 描边）。两种预设共用这张面，排版分开写在下面：
    * 卡片是两列网格，左列一枚 24px 类型字形、右列「标题 + 说明 + 操作」、叉钉在右上角，
-   * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、浮层圆角；
+   * 缺省宽 300px、四边内衬 20px（--xh-overlay-notification-p，紧凑 16px）、sheet 圆角；
    * 轻提示是一行，行首字形、文本列、操作钮与叉依次排开，圆角取 control、内衬纵 10 横 16。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
@@ -244,7 +244,7 @@
     padding-block: var(--xh-notification-item-py, var(--xh-overlay-notification-p));
     padding-inline: var(--xh-notification-item-px, var(--xh-overlay-notification-p));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
-    border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
+    border-radius: var(--xh-notification-item-radius, var(--xh-shape-sheet));
     background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
     color: var(--xh-notification-item-fg, var(--xh-material-elevated-fg));
     box-shadow: var(--xh-notification-item-shadow, var(--xh-material-elevated-shadow));

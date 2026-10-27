@@ -214,7 +214,7 @@
     min-block-size: 0;
     /* 行通栏：列表左右不留内衬，行面贴到面板两缘；上下各留 4px */
     padding-block: var(--xh-command-list-py, var(--xh-space-1));
-    padding-inline: var(--xh-command-list-px, var(--xh-space-0));
+    padding-inline: var(--xh-command-list-px, var(--xh-space-1));
     /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -271,7 +271,7 @@
     --xh-collection-inline-padding: var(--xh-command-item-px, var(--xh-_command-px));
     --xh-collection-gap: 0;
     --xh-collection-font-size: var(--xh-command-item-font-size, var(--xh-_command-font-size));
-    --xh-collection-radius: var(--xh-command-item-radius, 0);
+    --xh-collection-radius: var(--xh-command-item-radius, var(--xh-shape-inset));
     --xh-collection-fg-rest: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-hover: var(--xh-command-item-fg, var(--xh-fg-default));
     --xh-collection-fg-keyboard-highlight: var(--xh-command-item-fg, var(--xh-fg-default));

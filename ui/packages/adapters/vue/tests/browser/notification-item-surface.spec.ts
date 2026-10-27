@@ -80,7 +80,7 @@ describe('通知卡片的表面与两颗钮', () => {
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-elevated-shadow', item))
     expect(style.boxShadow).not.toBe('none')
-    expect(style.borderRadius).toBe('4px')
+    expect(style.borderRadius).toBe('10px')
     expect(item.getBoundingClientRect().width).toBe(resolvedLength(item, 'var(--xh-overlay-notification-w)'))
     // 四边同一支名实相符的内衬令牌：横向内衬那支（overlay-sheet-px）只管对话框三段的行内两侧
     const pad = `${resolvedLength(item, 'var(--xh-overlay-notification-p)')}px`

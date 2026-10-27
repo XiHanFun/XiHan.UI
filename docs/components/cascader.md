@@ -559,7 +559,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |
 | `--xh-cascader-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-cascade-min-w` | cascader 的 column 部件 min-inline-size 覆盖槽。 |
-| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `0` | cascader 的 column 部件 padding-inline 覆盖槽。 |
+| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-block 覆盖槽。 |
 | `--xh-cascader-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | cascader 的 content 部件 background 覆盖槽。 |
 | `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-border-default` | cascader 的 content 部件 border 覆盖槽。 |
@@ -625,7 +625,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-item-max-w` | `item` | `max-inline-size` | `default` | `--xh-overlay-max-w` | cascader 的 item 部件 max-inline-size 覆盖槽。 |
 | `--xh-cascader-item-px` | `item`<br>`search-item` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_cascader-row-px` | cascader 的 item、search-item 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-py` | `item`<br>`search-item` | `padding-block` | `default` | `--xh-_cascader-row-py` | cascader 的 item、search-item 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `0` | cascader 的 item、search-item 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `--xh-shape-inset` | cascader 的 item、search-item 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | cascader 的 label 部件 color 覆盖槽。 |
 | `--xh-cascader-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | cascader 的 label 部件 color 覆盖槽。 |
 | `--xh-cascader-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | cascader 的 label 部件 font-size 覆盖槽。 |

@@ -22,13 +22,21 @@ import {
 
 const TOKENS = JSON.parse(readFileSync(join(import.meta.dirname, '../../../design/tokens/tokens.json'), 'utf8')) as Record<string, string>
 
-/** 令牌沿 var() 追到字面量，再换成 px（rem 按 16px）。 */
+/** 令牌沿 var() 展开到字面量，再换成 px（rem 按 16px）；圆角档是种子的 calc 倍数，一并算掉。 */
 function tokenPx(name: string): number {
-  let value = TOKENS[name]
-  for (let i = 0; i < 10 && value?.startsWith('var('); i++)
-    value = TOKENS[value.slice(4, -1)]
-  if (value == null)
+  const expand = (value: string, depth = 0): string => depth > 10
+    ? value
+    : value.replace(/var\((--[\w-]+)\)/g, (_, ref: string) => {
+        if (TOKENS[ref] == null)
+          throw new Error(`令牌 ${ref} 不存在`)
+        return expand(TOKENS[ref], depth + 1)
+      })
+  if (TOKENS[name] == null)
     throw new Error(`令牌 ${name} 不存在`)
+  const value = expand(TOKENS[name])
+  const product = /^calc\(([\d.]+)px \* ([\d.]+)\)$/.exec(value)
+  if (product)
+    return Number(product[1]) * Number(product[2])
   const hit = /^([\d.]+)(px|rem)$/.exec(value)
   if (!hit)
     throw new Error(`令牌 ${name} 的值 ${value} 不是长度`)

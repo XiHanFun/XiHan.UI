@@ -147,5 +147,5 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-tag-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` |
 | `--xh-tag-px` | `root` | `padding-inline` | `default` | `--xh-_tag-px` |
 | `--xh-tag-py` | `root` | `padding-block` | `default` | `--xh-_tag-py` |
-| `--xh-tag-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` |
+| `--xh-tag-radius` | `root` | `border-radius` | `default`<br>`where([data-xh-field-chrome])`<br>`xh-field-chrome` | `--xh-shape-control`<br>`--xh-shape-inset` |
 | `--xh-tag-shadow` | `root` | `box-shadow` | `default`<br>`variant=solid` | `none` |

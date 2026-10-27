@@ -279,7 +279,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-expression-input-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` |
 | `--xh-expression-input-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` |
 | `--xh-expression-input-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` |
-| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `0` |
+| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-expression-input-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-expression-input-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
 | `--xh-expression-input-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` |
@@ -325,7 +325,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-expression-input-item-prefix-w` | `item-prefix` | `min-inline-size` | `default` | `--xh-space-8` |
 | `--xh-expression-input-item-px` | `item` | `padding-inline` | `default` | `--xh-_expression-input-px` |
 | `--xh-expression-input-item-py` | `item` | `padding-block` | `default` | `--xh-_expression-input-item-py` |
-| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-expression-input-item-suffix-fg` | `item-suffix` | `color` | `default` | `--xh-material-frosted-fg-muted` |
 | `--xh-expression-input-item-suffix-font-size` | `item-suffix` | `font-size` | `default` | `--xh-_expression-input-caption-size` |
 | `--xh-expression-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |

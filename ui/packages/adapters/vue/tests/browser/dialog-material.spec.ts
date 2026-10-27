@@ -100,7 +100,7 @@ describe('dialog 的实体 sheet 面', () => {
     const content = getComputedStyle(part('content'))
     const backdrop = getComputedStyle(part('backdrop'))
     expect(content.borderTopWidth).toBe('1px')
-    expect(content.borderRadius).toBe('4px')
+    expect(content.borderRadius).toBe('10px')
     expect(content.backgroundImage).toBe('none')
     expect(content.backgroundColor).toBe(resolved('color', '--xh-bg-surface'))
     expect(content.backdropFilter).toBe('none')

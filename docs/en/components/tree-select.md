@@ -558,7 +558,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-tree-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` |
 | `--xh-tree-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` |
 | `--xh-tree-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` |
-| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `0` |
+| `--xh-tree-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-tree-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` |
 | `--xh-tree-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` |
 | `--xh-tree-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` |
@@ -611,7 +611,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-tree-select-item-leading` | `branch-control`<br>`item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-tree-select-item-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-_tree-select-row-px` |
 | `--xh-tree-select-item-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_tree-select-row-py` |
-| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `0` |
+| `--xh-tree-select-item-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-tree-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-tree-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |
 | `--xh-tree-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` |

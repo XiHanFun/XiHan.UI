@@ -209,11 +209,11 @@ describe('时间选择浮层', () => {
     const columns = document.querySelectorAll<HTMLElement>(`[data-scope='time-picker'][data-part='column']`)
     const hours = columns[0]!
     const minutes = columns[1]!
-    // 列宽取时间列档、列高七格整行；时间格是 24 高的通栏条，不随尺寸档变高
+    // 列宽取时间列档、列高七格整行；时间格是 24 高的条，嵌在列的 4px 内距里取 inset 圆角，不随尺寸档变高
     expect(hours.getBoundingClientRect().width).toBe(resolveLength('--xh-overlay-time-column-w', content))
     expect(hours.getBoundingClientRect().height).toBe(resolveLength('--xh-overlay-time-column-h', content))
     expect(part('item').getBoundingClientRect().height).toBe(resolveLength('--xh-control-action-size', content))
-    expect(getComputedStyle(part('item')).borderTopLeftRadius).toBe('0px')
+    expect(getComputedStyle(part('item')).borderTopLeftRadius).toBe('4px')
     expect(hours.scrollHeight).toBeGreaterThan(hours.clientHeight)
     const minuteScroll = minutes.scrollTop
     hours.scrollTop = 80

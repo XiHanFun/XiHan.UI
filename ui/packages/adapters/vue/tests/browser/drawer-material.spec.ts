@@ -104,7 +104,7 @@ afterEach(async () => {
 })
 
 describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
-  it.each(['light', 'dark'] as const)('%s：面板有 1px 非透明描边、不透明底与单层 sheet 投影，不只靠影分层', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：面板有 1px 非透明描边、不透明底与 lg 档 sheet 投影，不只靠影分层', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -129,28 +129,28 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     ['left', ['borderTopRightRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderBottomLeftRadius']],
     ['top', ['borderBottomLeftRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderTopRightRadius']],
     ['bottom', ['borderTopLeftRadius', 'borderTopRightRadius'], ['borderBottomLeftRadius', 'borderBottomRightRadius']],
-  ] as const satisfies ReadonlyArray<readonly [string, readonly Corner[], readonly Corner[]]>)('%s：朝向页面的两个角取浮层圆角，贴住视口的两个角不圆', async (side, inner, edge) => {
+  ] as const satisfies ReadonlyArray<readonly [string, readonly Corner[], readonly Corner[]]>)('%s：朝向页面的两个角取 sheet 圆角，贴住视口的两个角不圆', async (side, inner, edge) => {
     mount(side)
     await settle()
 
     const content = getComputedStyle(part('content'))
-    const overlay = resolved('border-top-left-radius', '--xh-shape-overlay')
-    expect(Number.parseFloat(overlay)).toBeGreaterThan(0)
+    const sheet = resolved('border-top-left-radius', '--xh-shape-sheet')
+    expect(Number.parseFloat(sheet)).toBeGreaterThan(Number.parseFloat(resolved('border-top-left-radius', '--xh-shape-overlay')))
     for (const corner of inner)
-      expect(content[corner]).toBe(overlay)
+      expect(content[corner]).toBe(sheet)
     for (const corner of edge)
       expect(content[corner]).toBe('0px')
   })
 
-  it('使用者只改承载面圆角：浮层圆角跟着走，抽屉朝向页面的角一起变', async () => {
-    document.documentElement.style.setProperty('--xh-shape-surface', '12px')
+  it('使用者只改圆角种子：各档按比例跟着走，抽屉朝向页面的角取 1.25 倍', async () => {
+    document.documentElement.style.setProperty('--xh-radius-seed', '12px')
     try {
       mount('right')
       await settle()
-      expect(getComputedStyle(part('content')).borderTopLeftRadius).toBe('12px')
+      expect(getComputedStyle(part('content')).borderTopLeftRadius).toBe('15px')
     }
     finally {
-      document.documentElement.style.removeProperty('--xh-shape-surface')
+      document.documentElement.style.removeProperty('--xh-radius-seed')
     }
   })
 

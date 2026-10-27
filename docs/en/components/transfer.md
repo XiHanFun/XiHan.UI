@@ -372,10 +372,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-transfer-item-px` | `item` | `padding-inline` | `default` | `--xh-_transfer-px` |
 | `--xh-transfer-item-py` | `item` | `padding-block` | `default` | `--xh-_transfer-item-py` |
-| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `0` |
+| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` |
 | `--xh-transfer-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` |
 | `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-sm` |
-| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` |
+| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` |
 | `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-0` |
 | `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-transfer-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_transfer-font-size` |

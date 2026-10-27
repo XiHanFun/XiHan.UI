@@ -255,7 +255,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-notification-item-leading` | `item` | `line-height` | `default` | `--xh-text-body-leading` |
 | `--xh-notification-item-px` | `item` | `inset-inline-start`<br>`padding-inline` | `default`<br>`preset=toast` | `--xh-overlay-notification-p`<br>`--xh-space-4` |
 | `--xh-notification-item-py` | `item`<br>`item-close-trigger` | `inset-block-start`<br>`padding-block` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-overlay-notification-p`<br>`--xh-space-2_5` |
-| `--xh-notification-item-radius` | `item` | `border-radius` | `default`<br>`preset=toast` | `--xh-shape-control`<br>`--xh-shape-overlay` |
+| `--xh-notification-item-radius` | `item` | `border-radius` | `default`<br>`preset=toast` | `--xh-shape-control`<br>`--xh-shape-sheet` |
 | `--xh-notification-item-row-gap` | `item`<br>`item-content` | `row-gap` | `default` | `--xh-space-2` |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-material-elevated-shadow` |
 | `--xh-notification-item-w` | `group`<br>`item` | `inline-size` | `default`<br>`preset=toast`<br>`stacked` | `--xh-overlay-notification-w`<br>`--xh-overlay-toast-w` |
