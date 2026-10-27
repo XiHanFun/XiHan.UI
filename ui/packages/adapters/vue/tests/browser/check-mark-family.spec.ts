@@ -1,6 +1,6 @@
 // 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选同一份标记语言。
-// 标记常驻、不按状态生成或撤掉；按状态以 opacity（micro）淡变并从 --xh-motion-scale-enter 回到 1（nudge）；
-// 半选淡出途中保持横杠，不闪出一枚勾。GridList 的行勾选框按同一副取值画。
+// 标记常驻、不按状态生成或撤掉：勾上从左往右描出（clip-path，nudge）并淡入（micro），取消倒擦淡出（exit）；
+// 全选与半选之间两层遮罩交叉缩放（mask-size，nudge）；半选淡出途中保持横杠，不闪出一枚勾。GridList 的行勾选框按同一副取值画。
 import type { App, Ref, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -105,22 +105,26 @@ function finish(): void {
     animation.finish()
 }
 
-/** 标记常驻，状态只换透明度、缩放与露出的那层遮罩 */
+/** 标记常驻，状态只换透明度、右侧裁切与露出的那层遮罩；不缩放 */
 function expectMark(el: HTMLElement, pseudo: string, mark: Mark): void {
   const style = getComputedStyle(el, pseudo)
+  const duration = (token: string): string => resolve('transition-duration', `var(${token})`)
   expect(style.content, `${pseudo} 常驻`).not.toBe('none')
   expect(style.opacity).toBe(mark === 'unchecked' ? '0' : '1')
-  expect(style.scale).toBe(mark === 'unchecked' ? resolve('scale', 'var(--xh-motion-scale-enter)') : '1')
+  expect(style.scale).toBe('none')
+  expect(style.clipPath).toBe(mark === 'unchecked' ? 'inset(0px 100% 0px 0px)' : 'inset(0px)')
   const properties = style.transitionProperty.split(', ')
   const durations = style.transitionDuration.split(', ')
-  expect(durations[properties.indexOf('opacity')]).toBe(resolve('transition-duration', 'var(--xh-motion-duration-micro)'))
-  expect(durations[properties.indexOf('scale')]).toBe(resolve('transition-duration', 'var(--xh-motion-duration-nudge)'))
+  // 进未选态那一程：倒擦与淡出走 exit；进勾选态那一程：淡入 micro、描线与交叉缩放 nudge
+  expect(durations[properties.indexOf('opacity')]).toBe(duration(mark === 'unchecked' ? '--xh-motion-duration-exit' : '--xh-motion-duration-micro'))
+  expect(durations[properties.indexOf('clip-path')]).toBe(duration(mark === 'unchecked' ? '--xh-motion-duration-exit' : '--xh-motion-duration-nudge'))
+  expect(durations[properties.indexOf('mask-size')]).toBe(mark === 'unchecked' ? '0s' : duration('--xh-motion-duration-nudge'))
   if (mark !== 'unchecked')
     expect(shownMask(el, pseudo)).toBe(glyphMask(mark === 'checked' ? '--xh-glyph-mark-check' : '--xh-glyph-mark-minus'))
 }
 
 describe('勾选标记家族', () => {
-  it('checkbox：勾上时淡入并回到原尺寸，半选淡出途中保持横杠', async () => {
+  it('checkbox：勾上时从左往右描出并淡入，半选淡出途中保持横杠', async () => {
     const checked: Ref<boolean | 'indeterminate'> = ref(false)
     await mount(() => h(XhCheckbox, { 'checked': checked.value, 'onUpdate:checked': (next: boolean) => checked.value = next }))
     const indicator = part('checkbox', 'indicator')
@@ -129,12 +133,14 @@ describe('勾选标记家族', () => {
     await userEvent.click(part('checkbox', 'root'))
     await nextTick()
     expect(running(indicator, '::before', 'opacity')).toBe(true)
-    expect(running(indicator, '::before', 'scale')).toBe(true)
+    expect(running(indicator, '::before', 'clip-path')).toBe(true)
     finish()
     expectMark(indicator, '::before', 'checked')
 
     checked.value = 'indeterminate'
     await nextTick()
+    // 全选换半选：两层遮罩交叉缩放，不瞬间换形
+    expect(running(indicator, '::before', 'mask-size')).toBe(true)
     finish()
     expectMark(indicator, '::before', 'indeterminate')
 
