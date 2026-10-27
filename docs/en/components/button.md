@@ -142,11 +142,11 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` |
 | `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` |
 | `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` |
-| `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` |
+| `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` |
-| `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` |
+| `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` |
 | `--xh-button-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-action-variant=solid` | `--xh-motion-duration-glint` |
-| `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_button-group-h` |
+| `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` |
 | `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` |
 | `--xh-button-px` | `root` | `padding-inline` | `default` | `--xh-_button-group-px` |
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` |
