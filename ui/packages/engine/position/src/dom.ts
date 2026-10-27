@@ -53,6 +53,15 @@ export function scaleOf(el: HTMLElement): { x: number, y: number } {
   }
 }
 
+/**
+ * 元素实际生效的 CSS zoom：自身与全部祖先的 zoom 连乘。
+ * 不认 currentCSSZoom 的环境（较旧的引擎、无头 DOM）按 1 处理。
+ */
+export function zoomOf(el: Element): number {
+  const zoom = el.currentCSSZoom
+  return typeof zoom === 'number' && Number.isFinite(zoom) && zoom > 0 ? zoom : 1
+}
+
 /** 未设置的属性在部分无头 DOM 实现里回空串而不是 none，两者一并当没设。 */
 function isNone(value: string): boolean {
   return !value || value === 'none'
@@ -129,6 +138,27 @@ export function frameOf(block: HTMLElement | null, win: Window): PositionFrame {
     scaleY: scale.y,
     scrollX: block.scrollLeft,
     scrollY: block.scrollTop,
+  }
+}
+
+/**
+ * 把浮层自己的 CSS zoom 补进坐标系。
+ * 浮层写进 left/top 的长度渲染时要乘上它的有效 zoom。包含块的缩放比（scaleOf）里已经有包含块那一层的 zoom，
+ * 这里乘进去的是浮层比包含块多出来的那一截；没有包含块时就是浮层自己的全部 zoom。
+ * 宿主在 html 或 body 上写 zoom 做整页缩放时，不补这一截，浮层会落在锚点视口坐标乘以 zoom 的地方，
+ * 离页面原点越远偏得越多。滚动量是按包含块（或视口）的单位量的，换进浮层的单位时同样除掉。
+ * @param frame 按包含块推出的坐标系。
+ * @param ratio 浮层的有效 zoom 除以包含块的有效 zoom。
+ */
+export function zoomFrame(frame: PositionFrame, ratio: number): PositionFrame {
+  if (ratio === 1)
+    return frame
+  return {
+    ...frame,
+    scaleX: frame.scaleX * ratio,
+    scaleY: frame.scaleY * ratio,
+    scrollX: frame.scrollX / ratio,
+    scrollY: frame.scrollY / ratio,
   }
 }
 

@@ -123,8 +123,9 @@ engine.attach(virtual, floatingEl, { placement: "bottom-start" }, apply);
 - 视口尺寸变化
 - 锚点或浮层自身尺寸变化
 - 祖先链上的 `transform` / 缩放容器
+- `html`、`body` 或任一祖先上的 CSS `zoom`（整页缩放）：浮层照样贴着锚点，间距随 `zoom` 一起缩放
 
-静置时不空转，`stop()` 之后不再有任何回调。这两条与十二种 placement 的贴边对齐、翻面与避让（各配一条关闭后应当溢出的对照）、缩放容器、裁剪后的 `hidden` 一起，构成在浏览器中运行的定位契约判据。
+静置时不空转，`stop()` 之后不再有任何回调。这两条与十二种 placement 的贴边对齐、翻面与避让（各配一条关闭后应当溢出的对照）、缩放容器、CSS `zoom`、裁剪后的 `hidden` 一起，构成在浏览器中运行的定位契约判据。
 
 ## 相关
 
