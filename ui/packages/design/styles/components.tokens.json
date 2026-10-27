@@ -34486,17 +34486,20 @@
       ],
       "property": [
         "block-size",
-        "font-size"
+        "font-size",
+        "margin-block-end",
+        "padding-block-end"
       ],
       "state": [
         "default",
+        "has(> [data-scope='field'][data-part='error-text'][hidden])",
         "not(:has(> [data-scope='field'][data-part='description']:not([hidden])"
       ],
       "defaultToken": [
         "--xh-text-caption-size"
       ],
       "visibility": "public",
-      "description": "field 的 error-text、root 部件 block-size、font-size 覆盖槽。"
+      "description": "field 的 error-text、root 部件 block-size、font-size、margin-block-end、padding-block-end 覆盖槽。"
     },
     {
       "name": "--xh-field-gap",

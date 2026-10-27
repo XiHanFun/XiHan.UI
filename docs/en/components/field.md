@@ -162,7 +162,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` |
 | `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-caption-size` |
 | `--xh-field-error-fg` | `error-text` | `color` | `default` | `--xh-fg-danger` |
-| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size` | `default`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-caption-size` |
+| `--xh-field-error-font-size` | `error-text`<br>`root` | `block-size`<br>`font-size`<br>`margin-block-end`<br>`padding-block-end` | `default`<br>`has(> [data-scope='field'][data-part='error-text'][hidden])`<br>`not(:has(> [data-scope='field'][data-part='description']:not([hidden])` | `--xh-text-caption-size` |
 | `--xh-field-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-0` |
 | `--xh-field-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` |

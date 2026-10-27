@@ -211,6 +211,23 @@ describe('表单项距', () => {
       expect(between(index)).toBe(px('--xh-space-5'))
   })
 
+  it('宿主把带 hidden 的节点强制收成 display: none 时，留给错误文案的那一行照样是项距', async () => {
+    // Tailwind v4 的 preflight、VitePress 默认主题都带这一条：无层又带 !important，库里没有写法能把收起的错误文案
+    // 留在流里，那一行得由字段根自己留，不然项距塌成 0
+    const reset = document.createElement('style')
+    reset.textContent = '[hidden]:where(:not([hidden="until-found"])) { display: none !important; }'
+    document.head.append(reset)
+    try {
+      await mount(() => h(XhFormRoot, null, () => [field('甲', { error: true }), bareField('乙', { error: true }), field('丙')]))
+      expect(getComputedStyle(all('field', 'error-text')[0]!).display).toBe('none')
+      expect(between(0)).toBe(px('--xh-space-5'))
+      expect(between(1)).toBe(px('--xh-space-5'))
+    }
+    finally {
+      reset.remove()
+    }
+  })
+
   it('校验失败收起了说明、又没渲染错误文案的字段没有辅助行，照常留项距', async () => {
     await mount(() => h(XhFormRoot, null, () => [field('甲', { description: '一行说明', invalid: true }), field('乙')]))
     expect(getComputedStyle(all('field', 'description')[0]!).display).toBe('none')
