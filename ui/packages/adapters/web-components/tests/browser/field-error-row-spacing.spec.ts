@@ -59,4 +59,27 @@ describe('字段错误文案的辅助行', () => {
     expect(Math.abs(shown.step - collapsed.step)).toBeLessThan(0.5)
     expect(collapsed.gap).toBeGreaterThanOrEqual(px('--xh-space-5') - 0.5)
   })
+
+  it('宿主把带 hidden 的节点强制收成 display: none 时，辅助行照样留着', async () => {
+    // Tailwind v4 的 preflight、VitePress 默认主题都带这一条：收起的错误文案生成不了盒，那一行由字段根自己留
+    const reset = document.createElement('style')
+    reset.textContent = '[hidden]:where(:not([hidden="until-found"])) { display: none !important; }'
+    document.head.append(reset)
+    try {
+      document.body.innerHTML = `<div style="inline-size: 320px"><xh-form><form data-xh-part="root">${FIELD}${FIELD}</form></xh-form></div>`
+      await settle()
+      const collapsed = measure()
+      expect(getComputedStyle(document.querySelector('[data-scope="field"][data-part="error-text"]')!).display).toBe('none')
+
+      document.querySelector('xh-field')!.setAttribute('invalid', '')
+      await settle()
+      const shown = measure()
+
+      expect(Math.abs(shown.height - collapsed.height)).toBeLessThan(0.5)
+      expect(Math.abs(collapsed.gap - px('--xh-space-5'))).toBeLessThan(0.5)
+    }
+    finally {
+      reset.remove()
+    }
+  })
 })

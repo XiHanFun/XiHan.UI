@@ -139,7 +139,7 @@ describe('横排表单里同样不改变高度', () => {
 
   it('报错前后等高，占位落在控件那一列', () => {
     const normal = horizontal(false)
-    // 占住那一行的是收起的错误文案自己：它另起一行跑到标签列的话，标签列会被撑开，高度就对不上了
+    // 那一行由字段根留，收起的错误文案在里面淡出：它得落在控件那一列，退场才在控件正下方，而不是标签底下
     expect(horizontal(true).height).toBe(normal.height)
     expect(normal.columnStart).toBe('2')
   })

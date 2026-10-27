@@ -5220,13 +5220,22 @@
     border-inline-start-color: var(--xh-field-array-frozen-edge, var(--xh-border-default));
   }
 
-  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开 */
+  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开。
+     占位那一行是字段根的下内边距加收起的错误文案（见 field.css），两处一起还回去；
+     根这条带上 :has() 才压得过 field.css 那条（不带时两条同特指度，而 field.css 排在后面） */
+  .xh-scope-field-array[data-part='item'][data-layout='table']
+    > .xh-scope-field-array[data-part='item-cell'][data-layout='table']
+    .xh-scope-field[data-part='root']:has(> .xh-scope-field[data-part='error-text']) {
+    padding-block-end: 0;
+  }
+
   .xh-scope-field-array[data-part='item'][data-layout='table']
     > .xh-scope-field-array[data-part='item-cell'][data-layout='table']
     .xh-scope-field[data-part='root']
     > .xh-scope-field[data-part='error-text'][hidden] {
     position: absolute;
     block-size: 0;
+    margin-block-end: 0;
     transition: none;
   }
 
@@ -31794,24 +31803,40 @@
     font-size: var(--xh-field-error-font-size, var(--xh-text-caption-size));
   }
 
-  /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，收起的错误文案自己留在流里占住一行
-     （不可见、不进可及树），与报错时的错误文案等高。字段的外框高度前后一样，表单不会因为一段错误文字
-     重新排版，定高或限高的父级里也不会把控件挤出去；退场就在这一行里淡出，播完才藏起。
+  /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，字段在下方留出一行（下内边距），
+     与报错时的错误文案等高。字段的外框高度前后一样，表单不会因为一段错误文字重新排版，
+     定高或限高的父级里也不会把控件挤出去。
 
-     没有在场的 description 才这样占：描述已经占着这一行了，报错时由描述让位给错误文案（见 description.css），
+     这一行由根自己留，不靠收起的错误文案在流里撑：宿主写了 [hidden] { display: none !important }
+     （Tailwind v4 的 preflight、VitePress 默认主题都这样写）时，收起的错误文案生成不了盒，
+     靠它撑的那一行跟着没了，表单项距塌成 0；根上的内边距不受那一条影响。
+
+     没有在场的 description 才这样留：描述已经占着这一行了，报错时由描述让位给错误文案（见 description.css），
      收起的错误文案按公共层不占位。没渲染错误文案的字段本来就没有这一行。
 
-     高度取辅助行的最小高与错误文案一行（字号乘行距）里大的那个，得到的正是它报错时的高度。
+     高度取辅助行的最小高与错误文案一行（字号乘行距）里大的那个，得到的正是它报错时的高度；
+     记在私有槽里，根留的那一行与下面收起的错误文案读同一个值，两处不会差开。
      不写 1lh：那个单位晚于本库声明的浏览器地板，取不到时整条声明被丢弃、占位高退回 0，
-     字段又会随报错撑高一次，而这种失效不报错。
-     与前一块的距离由根的 gap 给，和错误文案顶上来时是同一段；横排表单里它与别的子块一样落在控件那一列。 */
-  .xh-scope-field[data-part='root']:not(:has(> .xh-scope-field[data-part='description']:not([hidden])))
-    > .xh-scope-field[data-part='error-text'][hidden] {
-    position: static;
-    block-size: max(
+     字段又会随报错撑高一次，而这种失效不报错。 */
+  .xh-scope-field[data-part='root']:has(> .xh-scope-field[data-part='error-text'][hidden]):not(:has(> .xh-scope-field[data-part='description']:not([hidden]))) {
+    --xh-_field-assist-h: max(
       var(--xh-space-5),
       calc(var(--xh-field-error-font-size, var(--xh-text-caption-size)) * var(--xh-leading-normal))
     );
+
+    padding-block-end: var(--xh-_field-assist-h);
+  }
+
+  /* 收起的错误文案（不可见、不进可及树）回到流里、与报错时等高，再用同高的负下外边距把自己在流里的份额抵掉：
+     它落在根留出的那一行里，退场就在这一行里淡出，播完才藏起。与前一块的距离仍由根的 gap 给，
+     和错误文案顶上来时是同一段；横排表单里它与别的子块一样落在控件那一列。
+     宿主把收起的节点强制收成 display: none 时只少了这段淡出，那一行照样由根留着。
+     匹配这条的错误文案，它的根必然匹配上面那条，私有槽从根上继承下来 */
+  .xh-scope-field[data-part='root']:not(:has(> .xh-scope-field[data-part='description']:not([hidden])))
+    > .xh-scope-field[data-part='error-text'][hidden] {
+    position: static;
+    block-size: var(--xh-_field-assist-h);
+    margin-block-end: calc(-1 * var(--xh-_field-assist-h));
     transition:
       opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
       visibility 0s var(--xh-motion-duration-exit);

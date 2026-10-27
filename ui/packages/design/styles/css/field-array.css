@@ -427,13 +427,22 @@
     border-inline-start-color: var(--xh-field-array-frozen-edge, var(--xh-border-default));
   }
 
-  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开 */
+  /* 格里的字段不留辅助行占位：没报错时一行一格紧凑排，报错时错误文案再把这一行撑开。
+     占位那一行是字段根的下内边距加收起的错误文案（见 field.css），两处一起还回去；
+     根这条带上 :has() 才压得过 field.css 那条（不带时两条同特指度，而 field.css 排在后面） */
+  [data-scope='field-array'][data-part='item'][data-layout='table']
+    > [data-scope='field-array'][data-part='item-cell'][data-layout='table']
+    [data-scope='field'][data-part='root']:has(> [data-scope='field'][data-part='error-text']) {
+    padding-block-end: 0;
+  }
+
   [data-scope='field-array'][data-part='item'][data-layout='table']
     > [data-scope='field-array'][data-part='item-cell'][data-layout='table']
     [data-scope='field'][data-part='root']
     > [data-scope='field'][data-part='error-text'][hidden] {
     position: absolute;
     block-size: 0;
+    margin-block-end: 0;
     transition: none;
   }
 
