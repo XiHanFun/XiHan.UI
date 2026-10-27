@@ -7,7 +7,7 @@
 //
 // 曲线两档的分界按被动的属性算：
 //   move  —— 元素被推到新位置或尺寸被推到新值（inset-* / inline-size / translate / transform / clip-path…）→ continuous
-//   shape —— 元素原地形变（scale / rotate）→ enter-strong；按压缩放的释放段走统一点击时间线的 release
+//   shape —— 元素原地形变（scale / rotate / mask-size）→ enter-strong；按压缩放的释放段走统一点击时间线的 release
 //
 // 时长另核一条：几何类不许取 micro / enter / exit 三支。这三支在减弱动效下保留为淡变，
 // 几何变化挂在它们上面，减弱档下照样会动；几何类取 move / nudge / expand / collapse / slide / press / release，
@@ -17,6 +17,7 @@
 // 曲线随之取进出场那一对（退场 -exit，入场 -enter / -enter-strong）。
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
+// 时长写字面 0 的项是瞬时切换（只借 delay 把切换押后，如勾选标记出未选态时的换形），没有动画，两条都不判。
 //
 // 书写另核一条：transition 列表（简写与 transition-property 长写，皮肤与家族配方）只写长名。
 // 简写会把同组的属性一起挂上过渡，计算样式里的 transition-property 也对不上真正在动的那一个；
@@ -76,8 +77,8 @@ const MOVE = new Set([
   'stroke-dashoffset',
 ])
 
-/** 原地形变的属性。 */
-const SHAPE = new Set(['scale', 'rotate'])
+/** 原地形变的属性。mask-size：遮罩层以中心为原点的缩放（勾选标记全选 ↔ 半选的交叉缩放）。 */
+const SHAPE = new Set(['scale', 'rotate', 'mask-size'])
 
 /** 几何类不许取的时长：减弱动效下保留为淡变的三支。 */
 const FADE_DURATIONS = new Set(['--xh-motion-duration-micro', '--xh-motion-duration-enter', '--xh-motion-duration-exit'])
@@ -162,6 +163,13 @@ function animatedProp(item) {
 function easeToken(item) {
   const all = [...item.matchAll(/--xh-motion-ease-[\w-]+/g)].map(m => m[0])
   return all.length ? all[all.length - 1] : null
+}
+
+/** 一项过渡的时长是字面 0：瞬时切换，后面跟着的时长令牌是 delay，不是动画时长。 */
+function instant(item) {
+  const bare = item.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ')
+  const first = bare.match(/(?<![\w.-])(\d*\.?\d+)m?s(?![\w-])/)
+  return first != null && Number(first[1]) === 0
 }
 
 /** 一项实际生效的时长档：私有槽或组件槽兜底时取兜底那支。 */
@@ -334,7 +342,7 @@ function checkDurations(label, css, keyframes) {
   for (const m of css.matchAll(TRANSITION_DECL)) {
     for (const item of splitTopLevel(m[1])) {
       const prop = animatedProp(item)
-      if (!prop || !(MOVE.has(prop) || SHAPE.has(prop)))
+      if (!prop || !(MOVE.has(prop) || SHAPE.has(prop)) || instant(item))
         continue
       count++
       const dur = durationToken(item)
@@ -492,7 +500,7 @@ for (const file of files) {
       if (!prop)
         continue
       const role = MOVE.has(prop) ? 'move' : SHAPE.has(prop) ? 'shape' : null
-      if (!role)
+      if (!role || instant(item))
         continue
       checked++
 

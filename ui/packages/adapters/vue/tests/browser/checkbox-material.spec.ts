@@ -189,7 +189,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(off.backdropFilter).toBe('none')
   })
 
-  it('勾常驻并只用 opacity（150ms）/ scale（200ms）切换，勾与短横使用同一光学盒', async () => {
+  it('勾常驻：勾上从左往右描出（200ms）并淡入（150ms），取消倒擦淡出（150ms），勾与短横使用同一光学盒', async () => {
     await mount([
       h(XhCheckbox, { 'data-testid': 'live' }),
       h(XhCheckbox, { 'data-testid': 'mixed', 'defaultChecked': 'indeterminate' }),
@@ -198,12 +198,20 @@ describe('checkbox 字段家族控制盒与三态', () => {
     const mixed = indicator('mixed')
     const before = getComputedStyle(live, '::before')
     const line = getComputedStyle(mixed, '::before')
+    const timing = (style: CSSStyleDeclaration): Record<string, string> => {
+      const durations = style.transitionDuration.split(', ')
+      return Object.fromEntries(style.transitionProperty.split(', ').map((prop, i) => [prop, durations[i % durations.length]!]))
+    }
     expect(getComputedStyle(live).display).toBe('flex')
     expect(before.opacity).toBe('0')
-    const properties = before.transitionProperty.split(', ')
-    const durations = before.transitionDuration.split(', ')
-    expect(durations[properties.indexOf('opacity')]).toBe('0.15s')
-    expect(durations[properties.indexOf('scale')]).toBe('0.2s')
+    // 未勾：右侧整幅裁掉，不再靠缩放藏起
+    expect(before.clipPath).toBe('inset(0px 100% 0px 0px)')
+    expect(before.scale).toBe('none')
+    // 进未选态那一程：倒擦与淡出都走 exit；形状切换延后一个 micro
+    expect(timing(before)).toMatchObject({ 'opacity': '0.15s', 'clip-path': '0.15s', 'mask-size': '0s' })
+    // 进勾选态那一程：描线 nudge、淡入 micro，全选与半选之间的交叉缩放 nudge
+    expect(timing(line)).toMatchObject({ 'opacity': '0.15s', 'clip-path': '0.2s', 'mask-size': '0.2s' })
+    expect(line.clipPath).toBe('inset(0px)')
     expect(before.width).toBe(line.width)
     expect(before.height).toBe(line.height)
     expect(shownMask(live, '::before')).not.toBe(shownMask(mixed, '::before'))
@@ -211,11 +219,23 @@ describe('checkbox 字段家族控制盒与三态', () => {
     box('live').click()
     await finishMotion()
     expect(getComputedStyle(live, '::before').opacity).toBe('1')
-    expect(getComputedStyle(live, '::before').scale).toBe('1')
+    expect(getComputedStyle(live, '::before').clipPath).toBe('inset(0px)')
     box('live').click()
     await finishMotion()
     expect(getComputedStyle(live, '::before').opacity).toBe('0')
-    expect(getComputedStyle(live, '::before').scale).not.toBe('1')
+    expect(getComputedStyle(live, '::before').clipPath).toBe('inset(0px 100% 0px 0px)')
+  })
+
+  it('勾上的描线在 RTL 下同样从左往右；减弱动效下不裁切、只剩淡变', async () => {
+    await mount([
+      h('div', { dir: 'rtl' }, [h(XhCheckbox, { 'data-testid': 'rtl' })]),
+      h('div', { 'data-motion': 'reduce' }, [h(XhCheckbox, { 'data-testid': 'reduce' })]),
+    ])
+    // 勾的字形不镜像：裁的仍是物理右侧
+    expect(getComputedStyle(indicator('rtl'), '::before').clipPath).toBe('inset(0px 100% 0px 0px)')
+    const reduce = getComputedStyle(indicator('reduce'), '::before')
+    expect(reduce.clipPath).toBe('inset(0px)')
+    expect(reduce.opacity).toBe('0')
   })
 
   it('整行 hover 时未勾方框描边升一档，勾中方框不换描边；按下缩放并换底；disabled、readonly 与 invalid 不伪装可操作', async () => {

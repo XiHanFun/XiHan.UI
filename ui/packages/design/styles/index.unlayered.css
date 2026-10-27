@@ -1883,7 +1883,7 @@
 
 /* family/check-mark.css */
 /*
- * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用一份标记语言。
+ * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用一份标记语言（设计真源 §9.13）。
  *
  * 连接层在画标记的节点上投影两位：data-xh-check-mark 是标记的状态（checked / indeterminate / unchecked），
  * data-xh-check-mark-profile 说标记画在哪——
@@ -1891,9 +1891,13 @@
  *   row：节点是一整行，方框由皮肤画在它的 ::before 上，标记是 ::after，叠在方框正中；
  *        皮肤写两支桥接槽：--xh-check-mark-box-size（方框边长）与 --xh-check-mark-fg（标记色）。
  *
- * 标记常驻，不按状态生成或撤掉：未勾时透明并略缩，勾上时淡入并回到原尺寸——淡变走 micro，
- * 缩放走 nudge，减弱动效下缩放归一、只剩淡变。勾与半选杠叠成两层遮罩，按状态只换两层的尺寸；
- * 离开勾选时尺寸的切换延后一个 micro，淡出途中标记保持原来的形状，半选淡出时不会闪出一枚勾。
+ * 标记常驻，不按状态生成或撤掉：
+ *   勾上    —— 从左往右描出（clip-path 右侧裁掉的那一截收回 0，先露短边再露长边），同时淡入；描线 nudge / enter，淡入 micro / enter。
+ *   取消    —— 倒擦回去并淡出，两样都走 exit / exit。
+ *   全选 ↔ 半选 —— 勾与横杠叠成两层遮罩，以中心为原点交叉缩放：一层 mask-size 100% → 0，另一层 0 → 100%，nudge / enter。
+ *   进出未选态 —— 形状切换延后一个 micro：淡出途中标记保持原来的形状，半选淡出时不会闪出一枚勾。
+ * 裁切量取 --xh-motion-travel：减弱动效下它归零，描线与倒擦都不再发生，只剩淡变；交叉缩放挂在 nudge 上，减弱档下瞬时完成。
+ * 勾的字形不随书写方向镜像，裁切写物理的右侧，RTL 下同样从左往右描。
  *
  * 尺寸读节点上的 --xh-icon-size（方框边长 × 0.75，由各皮肤按方框的尺改接）；
  * 选择器只让 [data-xh-check-mark] 计入特指度，状态与形态包在 :where() 里，皮肤按部件覆盖即可压过。
@@ -1909,13 +1913,13 @@
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: var(--xh-check-mark-fg, currentColor);
   opacity: 0;
-  scale: var(--xh-motion-scale-enter);
+  clip-path: inset(0 var(--xh-motion-travel) 0 0);
   pointer-events: none;
   -webkit-mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
   mask: var(--xh-glyph-mark-check) center / 100% 100% no-repeat, var(--xh-glyph-mark-minus) center / 0 0 no-repeat;
   transition:
-    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+    opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+    clip-path var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
     -webkit-mask-size 0s var(--xh-motion-duration-micro),
     mask-size 0s var(--xh-motion-duration-micro);
 }
@@ -1939,8 +1943,12 @@
 [data-scope][data-xh-check-mark]:where([data-scope][data-xh-check-mark='checked'], [data-scope][data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='box']):empty::before,
 [data-scope][data-xh-check-mark]:where([data-scope][data-xh-check-mark='checked'], [data-scope][data-xh-check-mark='indeterminate']):where([data-xh-check-mark-profile='row'])::after {
   opacity: 1;
-  scale: 1;
-  transition-delay: 0s;
+  clip-path: inset(0);
+  transition:
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    clip-path var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter),
+    -webkit-mask-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter),
+    mask-size var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter);
 }
 
 /* 半选：aria-checked=mixed 在视觉上也得与全选分得开，横杠与勾同走字形令牌 */

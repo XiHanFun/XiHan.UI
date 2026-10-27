@@ -907,11 +907,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-`-webkit-mask-size` · `background-color` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
