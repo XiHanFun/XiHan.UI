@@ -50,13 +50,13 @@ function column(unit: string): HTMLElement {
   return found
 }
 
-/** 选中的那一格停到列顶时列该滚到的位置。 */
+/** 选中的那一格停到列顶时列该滚到的位置。读布局位置：浮层入场时整面从 scale-enter 放大，变换后的盒子距离会随动画变。 */
 function alignedTop(list: HTMLElement): number {
   const options = [...list.querySelectorAll<HTMLElement>('[role="option"]')]
   const selected = options.find(el => el.getAttribute('aria-selected') === 'true')
   if (!selected)
     throw new Error('这一列没有选中的格')
-  const distance = selected.getBoundingClientRect().top - options[0]!.getBoundingClientRect().top
+  const distance = selected.offsetTop - options[0]!.offsetTop
   return Math.min(distance, list.scrollHeight - list.clientHeight)
 }
 

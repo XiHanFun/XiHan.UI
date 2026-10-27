@@ -606,7 +606,7 @@ describe('select 退场', () => {
 
     const closing = part('select', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-overlay-slide-out')
+    expectPlaying(closing, 'xh-pop-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -665,7 +665,7 @@ describe('date-picker 退场', () => {
 
     const closing = part('date-picker', 'content')
     expect(getComputedStyle(closing).display, '退场帧若退回 block，两张日历会竖着堆起来闪一下').toBe('flex')
-    expectPlaying(closing, 'xh-overlay-slide-out')
+    expectPlaying(closing, 'xh-pop-out')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -723,7 +723,7 @@ describe('floating-panel 退场', () => {
     await setOpen(true)
 
     expect(getComputedStyle(positioner).display).not.toBe('none')
-    expectPlaying(positioner, 'xh-pop-in')
+    expectPlaying(positioner, 'xh-overlay-pop-in')
 
     // 被打断的那张退场租约要在重新展开时归还：没归还的话下一次收起等不到
     // 「所有租约归还」，面板就永远停在退场态、内联收起再也落不下来

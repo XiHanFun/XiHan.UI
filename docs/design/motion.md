@@ -138,13 +138,11 @@
 
 ## 浮层进出场
 
-按锚定关系与面的类型分组，关键帧集中在 `family/motion.css`，皮肤不得重定义：
+按面的类型分组，关键帧集中在 `family/motion.css`，皮肤不得重定义。弹层只有一套进出场，锚定关系只决定有没有位移：贴着锚点的面从锚点一侧短移，不贴锚点的面原地淡入放大：
 
 | 关系 | 关键帧 | 组件 |
 | --- | --- | --- |
-| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、Tooltip |
-| 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
-| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层、BackTop、Log / MessageFeed 回底按钮 |
+| 弹层（锚定与无锚定同一套） | `xh-overlay-pop-in` / `xh-pop-out`：淡入 + 从 `--xh-motion-scale-enter` 放大 + 从锚点一侧移 `--xh-motion-distance-sm`，无锚定时位移为 0 | 锚定：Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 页码面板、Tooltip、Popover、HoverCard、Popconfirm、Tour、Command；无锚定：NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
 | 面板（sheet） | `xh-sheet-in / out` | Dialog、Notification |
 | 整幅滑入 | `xh-slide-in / out` | Drawer、Layout 抽屉式侧栏：入场 `slide` + `ease-slide`，退场 `exit` + `ease-exit` |
 

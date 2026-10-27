@@ -140,7 +140,7 @@ describe('side-nav 折叠', () => {
 })
 
 describe('side-nav 折叠态的弹出分支', () => {
-  it('锚定在分支行旁侧，按锚定列表从锚点一侧短移淡入', async () => {
+  it('锚定在分支行旁侧，走弹层那一套：从锚点一侧短移、淡入放大', async () => {
     host = document.createElement('div')
     document.body.append(host)
     const collection = [{ value: 'users', label: '用户', children: [{ value: 'list', label: '列表', href: '#list' }] }]
@@ -156,7 +156,7 @@ describe('side-nav 折叠态的弹出分支', () => {
     part('branch-trigger').click()
     await frames(1)
     const content = document.querySelector<HTMLElement>(`[data-scope='side-nav'][data-part='branch-content'][data-popout]`)!
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-pop-in')
   })
 })
 

@@ -211,7 +211,7 @@ describe('右键菜单 flex 行与反馈', () => {
 })
 
 describe('右键菜单四向短位移', () => {
-  it('共享 slide 动画不含 scale，placement 每次只激活一个物理方向', async () => {
+  it('共享弹层动画淡入放大，placement 每次只激活一个物理方向', async () => {
     await mountContextMenu()
     const positioner = part('positioner')
     const content = part('content')
@@ -230,13 +230,15 @@ describe('右键菜单四向短位移', () => {
     // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
     delete content.dataset.instant
     content.dataset.state = 'open'
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-pop-in')
     // 打开态不常驻合成层：常驻的 will-change 会让静止画面沿用入场动画中途的栅格而发虚
     expect(getComputedStyle(content).willChange).toBe('auto')
-    expect(getComputedStyle(content).scale).toBe('none')
+    // 弹层那一套：入场第一帧落在 --xh-motion-scale-enter
+    expect(getComputedStyle(content).scale).toBe(getComputedStyle(content).getPropertyValue('--xh-motion-scale-enter').trim())
     content.dataset.state = 'closed'
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
-    expect(getComputedStyle(content).scale).toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
+    // 退场从原尺寸缩小
+    expect(getComputedStyle(content).scale).toBe('1')
   })
 
   it('嵌套 positioner 先清父层方向，再按自己的 placement 决定单轴位移', async () => {

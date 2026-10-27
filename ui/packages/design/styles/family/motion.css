@@ -18,40 +18,12 @@
  * --xh-_overlay-enter-* 由浮层皮肤按 placement 写在 positioner 上，四个都没写时位移退回 0。
  */
 @layer xihan.motion {
-  /* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
-     Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
-     Date / Time picker、ColorPicker、Tooltip */
-  @keyframes xh-overlay-slide-in {
-    from {
-      opacity: var(--xh-_enter-from-opacity, 0);
-      translate:
-        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-    }
-
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-overlay-slide-out {
-    from {
-      opacity: 1;
-      translate: 0 0;
-    }
-
-    to {
-      opacity: 0;
-      translate:
-        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-    }
-  }
-
-  /* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
-     Popover、HoverCard、Popconfirm、Tour、Command。
-     起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
+  /* ── 弹层：锚定与无锚定同一套进出场（设计真源 §9.5）──
+     淡入 + 从 --xh-motion-scale-enter 放大 + 从锚点那一侧移 --xh-motion-distance-sm。
+     锚定关系只决定有没有位移：贴着锚点的面（Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、
+     TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 页码面板、Tooltip、Popover、HoverCard、
+     Popconfirm、Tour、Command）由浮层皮肤按 placement 把那一侧的方向槽写 1；不贴锚点的面（NavigationMenu、FloatingPanel、
+     FloatButton 列表、BackTop、Log / MessageFeed 回底钮）四个都不写，位移退回 0，原地淡入放大 */
   @keyframes xh-overlay-pop-in {
     from {
       opacity: var(--xh-_enter-from-opacity, 0);
@@ -68,7 +40,7 @@
     }
   }
 
-  /* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
+  /* 弹层退场：只缩放淡出，不再沿方向退让 */
   @keyframes xh-pop-out {
     from {
       opacity: 1;
@@ -81,10 +53,10 @@
     }
   }
 
-  /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
-     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层；
-     页内浮现的小件也取它：Approval、QuestionFlow 的结果标记，MessageFeed、Log 的回底钮；
-     行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳 */
+  /* ── 页内浮现的小件：原地缩放淡入，没有方向 ──
+     Approval、QuestionFlow 的结果标记，Badge 计数，PromptInput 换上的停止字形；
+     行内横排的胶囊集合（TagsInput、TagGroup、Select 标签行）加入一枚也取它：竖向上浮与来源方向不符，还会探出字段外壳。
+     弹层不引它，弹层走上面那一套 */
   @keyframes xh-pop-in {
     from {
       opacity: var(--xh-_enter-from-opacity, 0);

@@ -27,8 +27,8 @@
 //   时长 —— 关键帧里的几何量写的是字面量（fr / % / deg / px…）而不是幅度令牌时，不许取 micro / enter / exit；
 //           只由 --xh-motion-distance-* / --xh-motion-scale-* / --xh-motion-travel 驱动的出现类关键帧，
 //           减弱档下幅度归零、只剩淡变，照常取 enter / exit。
-//   关系 —— 浮层按锚定关系三分，登记在 OVERLAY_RELATION 里的组件，其 animation
-//           引用的共享进出场关键帧只能是本关系那一对（RELATION_KEYFRAMES）；fade / disclosure
+//   关系 —— 弹层只有一套进出场（锚定关系只决定有没有位移），登记在 OVERLAY_RELATION 里的组件，其 animation
+//           引用的共享进出场关键帧只能是弹层那一对（RELATION_KEYFRAMES）；fade / disclosure
 //           不表达锚定关系，不受限。共享关键帧住在 family/motion.css，关系表在 lib/keyframe-relations.mjs。
 //   大尺度 —— 关键帧里动到 SLIDE_REQUIRED 登记的属性时，入场声明的曲线要走 --xh-motion-ease-slide；
 //           退场走 -exit，不在此列。关键帧体从本皮肤与它 @import 的家族文件里解。

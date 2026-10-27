@@ -127,7 +127,7 @@ describe('组合框 M2 浮层', () => {
     expect(alpha(highlightOf(part('content')))).toBe(0)
   })
 
-  it('四向短位移不缩放，嵌套面板不继承外层方向', async () => {
+  it('四向短位移并淡入放大，嵌套面板不继承外层方向', async () => {
     await mount('light')
     const outer = part('positioner')
     const inner = document.createElement('div')
@@ -150,10 +150,11 @@ describe('组合框 M2 浮层', () => {
     const content = part('content')
     // 挂载即开的这一段属于首帧、不播进场；撤掉首帧标记，量的是用户打开时的那条进场
     delete content.dataset.instant
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-in')
-    expect(getComputedStyle(content).scale).toBe('none')
+    expect(getComputedStyle(content).animationName).toBe('xh-overlay-pop-in')
+    // 弹层那一套：入场第一帧落在 --xh-motion-scale-enter
+    expect(getComputedStyle(content).scale).toBe(getComputedStyle(content).getPropertyValue('--xh-motion-scale-enter').trim())
     content.dataset.state = 'closed'
-    expect(getComputedStyle(content).animationName).toBe('xh-overlay-slide-out')
+    expect(getComputedStyle(content).animationName).toBe('xh-pop-out')
   })
 
   it('减弱动效进退场只剩 150ms 淡变，位移归零', async () => {
@@ -166,7 +167,8 @@ describe('组合框 M2 浮层', () => {
       const style = getComputedStyle(part('content'))
       expect(style.animationDuration).toBe('0.15s')
       expect(style.getPropertyValue('--xh-motion-distance-sm').trim()).toBe('0px')
-      expect(style.scale).toBe('none')
+      // 缩放幅度归一：进退场第一帧都是原尺寸
+      expect(style.scale).toBe('1')
     }
   })
 

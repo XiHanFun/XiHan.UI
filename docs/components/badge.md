@@ -227,7 +227,7 @@ pulse 让圆点呼吸，表达正在进行、给不出进度的状态；状态�
 
 ### 动效
 
-动效角色：出现（锚定面板） · 出现（无锚定弹出） · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

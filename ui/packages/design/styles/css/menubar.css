@@ -217,13 +217,13 @@
 
   /* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */
   [data-scope='menubar'][data-part='content'][data-state='open'] {
-    animation: xh-overlay-slide-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 末收向锚点一侧淡出；forwards 防止动画完成到真正隐藏之间闪回原样。 */
   [data-scope='menubar'][data-part='content'][data-state='closed'] {
-    will-change: opacity, translate;
-    animation: xh-overlay-slide-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    will-change: opacity, scale;
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 在一排入口间换张时两侧都瞬时：交叉淡变读起来就是闪烁。原生菜单栏的成规——首开有进场、末收有退场、

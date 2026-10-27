@@ -61,7 +61,7 @@ describe('tooltip 跳过延迟', () => {
     const first = content('保存')
     await expect.poll(() => first.dataset.state, { timeout: 2000 }).toBe('open')
     expect(first.hasAttribute('data-instant')).toBe(false)
-    expect(getComputedStyle(first).animationName).toBe('xh-overlay-slide-in')
+    expect(getComputedStyle(first).animationName).toBe('xh-overlay-pop-in')
 
     await userEvent.hover(trigger('撤销'))
     const second = content('撤销')

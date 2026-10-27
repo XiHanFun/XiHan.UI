@@ -153,10 +153,10 @@ function option(list: HTMLElement, value: string): HTMLElement {
   return found
 }
 
-/** 这一格停到列顶时列该滚到的位置：它与第一格之间的距离，夹进可滚范围。 */
+/** 这一格停到列顶时列该滚到的位置：它与第一格之间的排布距离（不受浮层入场缩放影响），夹进可滚范围。 */
 function alignedTop(list: HTMLElement, value: string): number {
   const first = list.querySelector<HTMLElement>('[role="option"]')!
-  const distance = option(list, value).getBoundingClientRect().top - first.getBoundingClientRect().top
+  const distance = option(list, value).offsetTop - first.offsetTop
   return Math.min(distance, list.scrollHeight - list.clientHeight)
 }
 

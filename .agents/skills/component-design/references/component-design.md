@@ -1591,7 +1591,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §9.5 弹层进出场 | 锚定列表、菜单、Tooltip 与无锚弹层改引 `xh-overlay-pop-in` / `xh-pop-out`，删 `xh-overlay-slide-*`；`check-keyframe-registry`、`check-keyframe-refs`、`check-presence-pair` 登记表 |
 | §9.13 勾选标记 | `family/check-mark.css` 加描线与全选 / 半选交叉缩放；`check-motion-role`、`check-reduced-motion-channel` 登记 `clip-path` / `mask-size` |
 | §6.8 Slider | `css/slider.css`、`css/color-slider.css`、`css/color-picker.css` 拖动改画光环、不再放大与投影 |
 | 上面各条的生成物与文档 | 三端计算样式快照、像素基线、无层 CSS、组件令牌、文档数值重新生成；文档站手写的设计页随实现同提交改写（`docs/design/shape.md`、`motion.md`、`colors.md`、`principles.md`，`docs/guide/theme.md`、`motion.md`、`behavior.md` 及英文版，Tooltip、RadioGroup、Scrollbar 组件页里写死的旧数值）；`@xihan-ui/tokens` 与 `@xihan-ui/styles` 记 major changeset |

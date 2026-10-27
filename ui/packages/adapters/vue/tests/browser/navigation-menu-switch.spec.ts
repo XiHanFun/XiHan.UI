@@ -94,7 +94,7 @@ describe('navigation-menu 共享外壳的进退场', () => {
     await frames(2)
     value.value = 'docs'
     await frames(1)
-    expect(running(viewport())).toEqual(['xh-pop-in'])
+    expect(running(viewport())).toEqual(['xh-overlay-pop-in'])
     const docs = contents().find(el => entryOf(el) === 'docs')!
     expect(running(docs)).toEqual(['xh-fade-in'])
   })

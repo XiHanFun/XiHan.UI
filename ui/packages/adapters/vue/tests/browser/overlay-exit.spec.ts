@@ -461,6 +461,6 @@ describe('floating-panel 退场', () => {
     await settle()
 
     expect(getComputedStyle(positioner).display).not.toBe('none')
-    expect(getComputedStyle(positioner).animationName).toBe('xh-pop-in')
+    expect(getComputedStyle(positioner).animationName).toBe('xh-overlay-pop-in')
   })
 })

@@ -127,7 +127,8 @@ describe('select 使用 Collection Item', () => {
     expect(getComputedStyle(selected!).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', selected!))
     expect(getComputedStyle(plain!).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', plain!))
 
-    const width = selected!.getBoundingClientRect().width
+    // 读布局宽度：浮层入场时整面从 scale-enter 放大，变换后的盒子宽会随动画变
+    const width = selected!.offsetWidth
     const rest = getComputedStyle(plain!).backgroundColor
     await userEvent.hover(plain!)
     await nextTick()
@@ -141,7 +142,7 @@ describe('select 使用 Collection Item', () => {
     expect(document.activeElement).toBe(selected)
     expect(selected!.matches(':focus-visible')).toBe(true)
     expect(isTransparentColor(getComputedStyle(selected!).outlineColor)).toBe(false)
-    expect(selected!.getBoundingClientRect().width).toBe(width)
+    expect(selected!.offsetWidth).toBe(width)
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
 
     // overlay 的选中项悬停仍走中性 hover 面，不铺品牌淡底

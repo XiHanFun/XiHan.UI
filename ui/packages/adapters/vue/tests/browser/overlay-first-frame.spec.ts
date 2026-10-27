@@ -200,7 +200,7 @@ const CASES: Record<string, Case> = {
   },
   'tooltip': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhTooltipRoot, props, () => [
       h(XhTooltipTrigger, null, () => '说明'),
       h(XhTooltipPositioner, null, () => h(XhTooltipContent, null, () => '提示内容')),
@@ -208,7 +208,7 @@ const CASES: Record<string, Case> = {
   },
   'menu': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhMenuRoot, props, () => [
       h(XhMenuTrigger, null, () => '打开'),
       h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => FRUITS.map(node =>
@@ -218,7 +218,7 @@ const CASES: Record<string, Case> = {
   },
   'context-menu': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhContextMenuRoot, props, () => [
       h(XhContextMenuTrigger, null, () => '右键这块区域'),
       h(XhContextMenuPositioner, null, () => h(XhContextMenuContent, null, () => FRUITS.map(node =>
@@ -228,7 +228,7 @@ const CASES: Record<string, Case> = {
   },
   'menubar': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhMenubarRoot, valueOf(props), () => [
       h(XhMenubarTrigger, { value: 'file' }, () => '文件'),
       h(XhMenubarPositioner, { value: 'file' }, () => h(XhMenubarContent, null, () => [
@@ -238,7 +238,7 @@ const CASES: Record<string, Case> = {
   },
   'navigation-menu': {
     parts: ['content'],
-    enter: 'xh-pop-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhNavigationMenuRoot, valueOf(props), () => [
       h(XhNavigationMenuList, null, () => [
         h(XhNavigationMenuItem, null, () => [
@@ -250,7 +250,7 @@ const CASES: Record<string, Case> = {
   },
   'select': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhSelectRoot, props, () => [
       h(XhSelectTrigger, null, () => h(XhSelectValueText)),
       h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => h(XhSelectList, null, () => FRUITS.map(node =>
@@ -260,7 +260,7 @@ const CASES: Record<string, Case> = {
   },
   'combobox': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhComboboxRoot, { ...props, collection: FRUITS }, () => [
       h(XhComboboxControl, null, () => h(XhComboboxInput)),
       h(XhComboboxPositioner, null, () => h(XhComboboxContent, null, () => FRUITS.map(node =>
@@ -270,7 +270,7 @@ const CASES: Record<string, Case> = {
   },
   'tree-select': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhTreeSelectRoot, { ...props, collection: FRUITS }, () => [
       h(XhTreeSelectTrigger, null, () => h(XhTreeSelectValueText)),
       h(XhTreeSelectPositioner, null, () => h(XhTreeSelectContent, null, () => h(XhTreeSelectTree, null, () => FRUITS.map(node =>
@@ -280,7 +280,7 @@ const CASES: Record<string, Case> = {
   },
   'cascader': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhCascaderRoot, { ...props, collection: FRUITS }, () => [
       h(XhCascaderTrigger, null, () => h(XhCascaderValueText)),
       h(XhCascaderPositioner, null, () => h(XhCascaderContent, null, () => h(XhCascaderColumn, { level: 0 }, () => FRUITS.map(node =>
@@ -290,7 +290,7 @@ const CASES: Record<string, Case> = {
   },
   'date-picker': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhDatePickerRoot, props, () => [
       h(XhDatePickerControl, null, () => h(XhDatePickerSegmentGroup, null, () => h(XhDatePickerSegment, { index: 0 }))),
       h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => h(XhDatePickerConfirmTrigger, null, () => '确定'))),
@@ -298,7 +298,7 @@ const CASES: Record<string, Case> = {
   },
   'date-range-picker': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhDateRangePickerRoot, props, () => [
       h(XhDateRangePickerControl, null, () => [
         h(XhDateRangePickerSegmentGroup, { index: 0 }, () => h(XhDateRangePickerSegment, { index: 0 })),
@@ -310,7 +310,7 @@ const CASES: Record<string, Case> = {
   },
   'time-picker': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhTimePickerRoot, { ...props, defaultValue: '09:30' }, () => [
       h(XhTimePickerControl, null, () => h(XhTimePickerSegment, { segment: 'hour' })),
       h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () => h(XhTimePickerColumn, { unit: 'hour' }, () => [
@@ -321,7 +321,7 @@ const CASES: Record<string, Case> = {
   },
   'time-range-picker': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhTimeRangePickerRoot, props, () => [
       h(XhTimeRangePickerControl, null, () => [
         h(XhTimeRangePickerSegmentGroup, { index: 0 }, () => h(XhTimeRangePickerSegment, { segment: 'hour' })),
@@ -338,7 +338,7 @@ const CASES: Record<string, Case> = {
   },
   'color-picker': {
     parts: ['content'],
-    enter: 'xh-overlay-slide-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhColorPickerRoot, { ...props, defaultValue: '#ff0000' }, () => [
       h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
       h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => h(XhColorPickerHueSlider))),
@@ -368,12 +368,12 @@ const CASES: Record<string, Case> = {
   },
   'floating-panel': {
     parts: ['positioner'],
-    enter: 'xh-pop-in',
+    enter: 'xh-overlay-pop-in',
     render: props => h(XhFloatingPanelRoot, props, () => h(XhFloatingPanelPositioner, null, () => h(XhFloatingPanelContent, null, () => h(XhFloatingPanelTitle, null, () => '面板')))),
   },
   'float-button': {
     parts: ['list'],
-    enter: 'xh-pop-in',
+    enter: 'xh-overlay-pop-in',
     targets: list => [...list.children],
     render: props => h(XhFloatButtonRoot, props, () => [
       h(XhFloatButtonTrigger, null, () => '操作'),
