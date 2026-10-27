@@ -3635,28 +3635,26 @@
 }
 
 /* —— 尺寸 —— */
-/* 高度、内边距、间距、字号在容器上写一次，沿继承流给组内每一段。
-   三档都写出来：自定义属性会一路继承，组里再套一组时内层不写就会沿用外层的档。
-   写私有槽而非 --xh-button-*：后者是使用者的入口，组内某一枚自己写了档位时要压得住容器 */
+/* 段的高度、间距与字号归段自己的档：段没写 size 时适配器把组的档写到它身上，写了就按它自己的，
+   组的档压不过段。此前这几支由组写成私有槽、排在段的档之前，组写 lg 时段写的 sm 照样被撑成 lg。
+   组只给一样东西：段焊在一起时比独立按钮更紧的内衬。三档都写出来，段按自己的档去取（见 button.css）；
+   写私有槽而非 --xh-button-px：后者是使用者的入口。高度那一支只给分隔线定长 */
+.xh-scope-button-group[data-part='root'][data-size] {
+  --xh-_button-group-px-sm: var(--xh-control-px-sm);
+  --xh-_button-group-px-md: var(--xh-control-px-md);
+  --xh-_button-group-px-lg: var(--xh-control-px-lg);
+}
+
 .xh-scope-button-group[data-part='root'][data-size='sm'] {
   --xh-_button-group-h: var(--xh-control-h-sm);
-  --xh-_button-group-px: var(--xh-control-px-sm);
-  --xh-_button-group-gap: var(--xh-control-gap-sm);
-  --xh-_button-group-font-size: var(--xh-control-font-sm);
 }
 
 .xh-scope-button-group[data-part='root'][data-size='md'] {
   --xh-_button-group-h: var(--xh-control-h-md);
-  --xh-_button-group-px: var(--xh-control-px-md);
-  --xh-_button-group-gap: var(--xh-control-gap-md);
-  --xh-_button-group-font-size: var(--xh-control-font-md);
 }
 
 .xh-scope-button-group[data-part='root'][data-size='lg'] {
   --xh-_button-group-h: var(--xh-control-h-lg);
-  --xh-_button-group-px: var(--xh-control-px-lg);
-  --xh-_button-group-gap: var(--xh-control-gap-lg);
-  --xh-_button-group-font-size: var(--xh-control-font-lg);
 }
 
 /* —— 形态 —— */
@@ -18363,17 +18361,31 @@
   --xh-action-shadow-hover: var(--xh-_button-shadow-hover);
   --xh-action-shadow-pressed: var(--xh-_button-shadow-pressed);
   --xh-action-radius: var(--xh-button-radius, var(--xh-_button-radius));
-  /* 成组时几何从 ButtonGroup 的私有槽取：高度、内距、间距与字号沿继承流下来 */
-  --xh-action-visual-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-_action-profile-visual-size)));
+  /* 高度、间距与字号按按钮自己的档；成组时只有内衬取 ButtonGroup 给的紧凑值，也按自己的档取（见下） */
+  --xh-action-visual-size: var(--xh-button-h, var(--xh-_action-profile-visual-size));
   --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
-  --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
-  --xh-action-font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-_action-profile-font-size)));
+  --xh-action-gap: var(--xh-button-gap, var(--xh-_action-profile-gap));
+  --xh-action-font-size: var(--xh-button-font-size, var(--xh-_action-profile-font-size));
   /* 圆角只有一个身份：普通 control 的 4px，与 toggle / button-group 一致，按钮没有 shape 轴；
      成组时由按钮组接管相接侧，要换档写 --xh-button-radius */
   --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-_action-profile-glyph-size));
 
   font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
+}
+
+/* 成组时的紧凑内衬按按钮自己的档取：组写 lg、段自己写 sm，段拿的是 sm 那一档。
+   不在组里时三支都没声明，这一支随之无效，内衬退回自己的尺寸档 */
+.xh-scope-button[data-part='root'][data-xh-action-size='sm'] {
+  --xh-_button-group-px: var(--xh-_button-group-px-sm);
+}
+
+.xh-scope-button[data-part='root'][data-xh-action-size='md'] {
+  --xh-_button-group-px: var(--xh-_button-group-px-md);
+}
+
+.xh-scope-button[data-part='root'][data-xh-action-size='lg'] {
+  --xh-_button-group-px: var(--xh-_button-group-px-lg);
 }
 
 /* Button 是登记在册的 raised 消费者：solid 一档悬停抬到 raised。raised 缺省 none，实心钮是平的——

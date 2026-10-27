@@ -37,17 +37,31 @@
     --xh-action-shadow-hover: var(--xh-_button-shadow-hover);
     --xh-action-shadow-pressed: var(--xh-_button-shadow-pressed);
     --xh-action-radius: var(--xh-button-radius, var(--xh-_button-radius));
-    /* 成组时几何从 ButtonGroup 的私有槽取：高度、内距、间距与字号沿继承流下来 */
-    --xh-action-visual-size: var(--xh-button-h, var(--xh-_button-group-h, var(--xh-_action-profile-visual-size)));
+    /* 高度、间距与字号按按钮自己的档；成组时只有内衬取 ButtonGroup 给的紧凑值，也按自己的档取（见下） */
+    --xh-action-visual-size: var(--xh-button-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
-    --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
-    --xh-action-font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-_action-profile-font-size)));
+    --xh-action-gap: var(--xh-button-gap, var(--xh-_action-profile-gap));
+    --xh-action-font-size: var(--xh-button-font-size, var(--xh-_action-profile-font-size));
     /* 圆角只有一个身份：普通 control 的 4px，与 toggle / button-group 一致，按钮没有 shape 轴；
        成组时由按钮组接管相接侧，要换档写 --xh-button-radius */
     --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-_action-profile-glyph-size));
 
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 成组时的紧凑内衬按按钮自己的档取：组写 lg、段自己写 sm，段拿的是 sm 那一档。
+     不在组里时三支都没声明，这一支随之无效，内衬退回自己的尺寸档 */
+  [data-scope='button'][data-part='root'][data-xh-action-size='sm'] {
+    --xh-_button-group-px: var(--xh-_button-group-px-sm);
+  }
+
+  [data-scope='button'][data-part='root'][data-xh-action-size='md'] {
+    --xh-_button-group-px: var(--xh-_button-group-px-md);
+  }
+
+  [data-scope='button'][data-part='root'][data-xh-action-size='lg'] {
+    --xh-_button-group-px: var(--xh-_button-group-px-lg);
   }
 
   /* Button 是登记在册的 raised 消费者：solid 一档悬停抬到 raised。raised 缺省 none，实心钮是平的——

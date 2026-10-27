@@ -4341,7 +4341,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_button-group-font-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 font-size 覆盖槽。"
@@ -4377,7 +4377,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_button-group-gap"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 gap 覆盖槽。"
@@ -4423,7 +4423,7 @@
         "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-_button-group-h"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "button 的 root 部件 block-size、inline-size 覆盖槽。"
