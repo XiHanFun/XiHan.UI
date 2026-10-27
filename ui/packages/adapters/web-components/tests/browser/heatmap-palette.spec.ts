@@ -6,6 +6,7 @@
 // 相邻两档的对比度棘轮在令牌层的 contrast.spec 里。
 import type { XhHeatmapElement } from '../../src/elements/heatmap'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -217,9 +218,9 @@ describe('热力图色板轴：三种形态都吃这条轴', () => {
   }
 })
 
-// 聚焦环往内收（--xh-ring-offset 是负的一个环宽），外沿与格子边框外沿重合，整圈落在格子
-// 自己的盒子里。格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap，环一旦改成往外扩就会压上
-// 相邻的格子。这是一条几何前提，只有真浏览器量得到：给热力图单独把环偏移改成正数，这里会红。
+// 格子是首尾相接的格：聚焦环的内圈往里收（--xh-ring-offset-inset 是负的一个环宽），外沿与格子边框外沿重合，
+// 整圈落在格子自己的盒子里，也不画光环。格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap，环一旦往外画就会
+// 压上相邻的格子。这是一条几何前提，只有真浏览器量得到：热力图的格子退回公共层画在外侧的环，这里会红。
 describe('热力图的聚焦环：环落在格子自己的盒子里', () => {
   it('环不越出格子边框，压不到相邻的格子', async () => {
     host = document.createElement('div')
@@ -239,13 +240,15 @@ describe('热力图的聚焦环：环落在格子自己的盒子里', () => {
     await host.querySelector<XhHeatmapElement>('xh-heatmap')!.updateComplete
     const root = host.querySelector<HTMLElement>('[data-xh-part="root"]')!
 
-    // 环宽与环偏移是自定义属性，套一个探针把它们解析成像素
-    const probe = document.createElement('div')
-    probe.style.cssText = 'outline-style:solid;outline-width:var(--xh-ring-width);outline-offset:var(--xh-ring-offset)'
-    root.append(probe)
-    const probeStyle = getComputedStyle(probe)
-    const width = Number.parseFloat(probeStyle.outlineWidth)
-    const offset = Number.parseFloat(probeStyle.outlineOffset)
+    // 落焦之后读格子自己算完的环宽与环偏移
+    const [cell] = [...root.querySelectorAll<HTMLElement>('[data-part="cell"]')]
+    // 先按一次真实的 Tab 进键盘模态，程序化落焦才匹配 :focus-visible
+    await userEvent.tab()
+    cell!.focus()
+    expect(cell!.matches(':focus-visible')).toBe(true)
+    const cellStyle = getComputedStyle(cell!)
+    const width = Number.parseFloat(cellStyle.outlineWidth)
+    const offset = Number.parseFloat(cellStyle.outlineOffset)
     expect(width).toBeGreaterThan(0)
 
     // 环的外沿相对格子边框外沿的位置：不大于 0 即整圈在格子里

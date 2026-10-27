@@ -362,6 +362,7 @@
   /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，在它身上画环只会闪一下就跳走 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-invalid] {

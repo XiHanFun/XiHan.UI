@@ -37,8 +37,7 @@
     cursor: var(--xh-field-cursor-rest, text);
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-field-chrome][data-variant='outline'] {
@@ -142,6 +141,7 @@
   [data-xh-field-chrome]:focus-within:not([data-disabled]) {
     background-color: var(--xh-field-bg-focus, var(--xh-_field-variant-bg-focus));
     border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
+    box-shadow: var(--xh-field-shadow-focus, 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo));
     outline: none;
   }
 
@@ -167,7 +167,7 @@
     cursor: var(--xh-field-cursor-disabled, not-allowed);
   }
 
-  [data-xh-field-chrome]:not([data-variant='ghost']):not(:focus-within) {
+  [data-xh-field-chrome][data-variant='subtle']:not(:focus-within) {
     --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
   }
@@ -206,10 +206,12 @@
 
   [data-xh-field-chrome] [data-xh-field-input]:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-xh-field-chrome] [data-xh-action-profile='field-inset']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-xh-field-input][data-disabled] {
@@ -258,8 +260,6 @@
 
     [data-xh-field-chrome]:focus-within:not([data-disabled]) {
       border-color: Highlight;
-      outline: var(--xh-ring-width) solid Highlight;
-      outline-offset: var(--xh-ring-offset);
     }
 
     [data-xh-field-chrome][data-readonly] {

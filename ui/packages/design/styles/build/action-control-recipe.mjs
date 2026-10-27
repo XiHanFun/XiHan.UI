@@ -325,7 +325,7 @@ export function compileActionControlRecipe(source) {
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
     `      color ${source.motion.duration} ${source.motion.easing},`,
-    `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
+    // box-shadow 不进过渡：聚焦光环即时出现、即时撤下；家族各档的投影槽缺省都是 none，换面不靠投影
     `      opacity ${source.motion.duration} ${source.motion.easing},`,
     `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
   ].join('\n'))
@@ -416,6 +416,10 @@ export function compileActionControlRecipe(source) {
     rule(`${profileSelector(surfaceProfiles)}:not([data-disabled]):not([data-loading])${PRESSED}`, '    scale: none;')
   rule('[data-xh-action-control][data-disabled]', stateDeclarations(source, 'disabled'))
   rule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', stateDeclarations(source, 'loading'))
+  /* 键盘焦点还落在控件上时，悬停、按下与在途照常换面，光环不让位（设计真源 §7.2 第 5 条）：
+     排在这几档之后，同特指度靠源序压过它们的投影槽，投影换成聚焦档那一支（缺省就是光环） */
+  rule('[data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading])', `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
+  rule(`[data-xh-action-control]:focus-visible:not([data-disabled])${PRESSED}`, `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
 
   rule('[data-xh-action-control][data-xh-action-display=\'always\']', '    visibility: visible;')
   rule('[data-xh-action-control][data-xh-action-display=\'has-value\']:not([data-xh-action-has-value])', '    visibility: hidden;\n    pointer-events: none;')

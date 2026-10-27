@@ -124,6 +124,7 @@
   /* 焦点环画在整张卡片外沿：环是点击区的轮廓，读者看到的可交互范围与点得到的范围一致 */
   [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='trigger']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='card'][data-part='root'][data-interactive] [data-scope='card'][data-part='trigger']:focus-visible::after {

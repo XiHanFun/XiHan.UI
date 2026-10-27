@@ -100,6 +100,7 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   [data-scope='side-nav'][data-part='input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色，盖得过 background 与 color。

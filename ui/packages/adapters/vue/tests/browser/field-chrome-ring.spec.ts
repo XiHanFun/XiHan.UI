@@ -15,7 +15,6 @@ import {
   XhTextFieldInput,
   XhTextFieldRoot,
 } from '../../src'
-import { tokenLength } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -101,7 +100,7 @@ describe('原生控件即外壳的聚焦', () => {
     expect(getComputedStyle(control).outlineStyle).toBe('none')
   })
 
-  it.each(Object.keys(NATIVE_SHELLS) as Array<keyof typeof NATIVE_SHELLS>)('%s：强制色档键盘聚焦补一圈 Highlight 环', async (name) => {
+  it.each(Object.keys(NATIVE_SHELLS) as Array<keyof typeof NATIVE_SHELLS>)('%s：强制色档光环被去掉，内圈就是换成 Highlight 的描边、不另画 outline', async (name) => {
     await cdp().send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] })
     const shell = NATIVE_SHELLS[name]
     await mount(shell.render)
@@ -110,8 +109,7 @@ describe('原生控件即外壳的聚焦', () => {
     await userEvent.tab()
     expect(document.activeElement).toBe(control)
     const style = getComputedStyle(control)
-    expect(style.outlineStyle).toBe('solid')
-    expect(Number.parseFloat(style.outlineWidth)).toBe(tokenLength('--xh-ring-width', control.parentElement!))
-    expect(style.outlineColor).toBe(resolveColor('Highlight', control.parentElement!))
+    expect(style.outlineStyle).toBe('none')
+    expect(style.borderTopColor).toBe(resolveColor('Highlight', control.parentElement!))
   })
 })

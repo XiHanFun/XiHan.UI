@@ -30,9 +30,9 @@
       "$value": "{color.neutral.300}"
     },
     "field": {
-      "$description": "字段外壳的静息底：淡底兑一半，比淡底再浅一档，字段在白卡与灰页上都读得出是一块可填的盒。悬停不变，聚焦换成承载面。",
+      "$description": "字段外壳的静息底：缺省与承载面同色（白底），盒的边界由字段描边承担；悬停不变，聚焦换品牌描边并画光环。主题要淡底字段只改这一支。",
       "$type": "color",
-      "$value": "color-mix(in oklab, {bg.subtle} 55%, transparent)"
+      "$value": "{bg.surface}"
     },
     "field-invalid": {
       "$description": "字段外壳校验失败时的底：失效色兑 4%，与失效描边一起标出这一格，聚焦时让位给承载面。",
@@ -233,9 +233,14 @@
   },
   "ring": {
     "focus": {
-      "$description": "浅色面上的公共键盘焦点环。取 brand.600，确保压在 canvas、surface 与 neutral.200 高亮面上都达到 3:1 非文本对比。",
+      "$description": "浅色面上的公共键盘焦点环（内圈）。取 brand.600，确保压在 canvas、surface 与 neutral.200 高亮面上都达到 3:1 非文本对比。",
       "$type": "color",
       "$value": "{color.brand.600}"
+    },
+    "halo": {
+      "$description": "焦点环的光环：内圈色 30%。只是观感，不承担对比度；墨色域里内圈换成墨色，光环随之是墨色 30%。强制色档 box-shadow 被系统去掉，只剩内圈。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {ring.focus} 30%, transparent)"
     },
     "invalid": {
       "$type": "color",

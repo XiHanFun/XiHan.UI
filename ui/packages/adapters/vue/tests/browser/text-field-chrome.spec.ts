@@ -39,8 +39,8 @@ function field(props: Record<string, unknown> = {}, textarea = false): VNode {
 /** 减弱动效下字段外壳只剩换色过渡，每一项都保留 150ms 的淡变，没有几何属性。 */
 function expectColorFadesOnly(style: CSSStyleDeclaration): void {
   const properties = style.transitionProperty.split(', ')
-  // 焦点环即时出现、不淡入，不在过渡清单里
-  expect(properties).toEqual(['background-color', 'border-color', 'box-shadow'])
+  // 焦点环（光环画在 box-shadow 上）即时出现、不淡入，不在过渡清单里
+  expect(properties).toEqual(['background-color', 'border-color'])
   expect(style.transitionDuration.split(', ')).toEqual(properties.map(() => '0.15s'))
 }
 

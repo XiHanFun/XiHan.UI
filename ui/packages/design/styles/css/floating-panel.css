@@ -64,11 +64,6 @@
     display: none;
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色 */
-  [data-scope='floating-panel'][data-part='trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
   [data-scope='floating-panel'][data-part='positioner'] {
     --xh-_floating-panel-handle: var(--xh-floating-panel-handle-size, var(--xh-space-2));
@@ -151,6 +146,7 @@
   /* 面板本体不接收焦点，只是键盘事件的收口点，画环反而像是选中了整块 */
   [data-scope='floating-panel'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 跟手期间整块不许选中文字：手在标题栏上来回蹭时会顺带把正文刷成高亮 */

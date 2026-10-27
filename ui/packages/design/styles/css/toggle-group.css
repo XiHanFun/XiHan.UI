@@ -168,6 +168,7 @@
      在它身上画环只会闪一下就跳走，高亮要长在条目上 */
   [data-scope='toggle-group'][data-part='root']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 段是 Action Control 的 text 档定尺按钮：盒型、三档几何、悬停 / 按下 / 焦点 / 禁用面与过渡都由家族给，
@@ -290,12 +291,6 @@
     /* 抬一层，让 brand 描边压住邻居的灰边。共边处两条边重合在同一像素上，
        不抬层就由文档序决定谁在上，选中段的左右两侧会一边有色一边灰 */
     z-index: 1;
-  }
-
-  /* solid 档的选中面是实心语气底，默认环压上去不足 3:1：环色改取配对前景色，经家族的焦点环桥接槽灌入 */
-  [data-scope='toggle-group'][data-part='root'][data-variant='solid']
-    [data-scope='toggle-group'][data-part='item'][data-state='on'] {
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），禁用面由家族按 data-disabled 给：

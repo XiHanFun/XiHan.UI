@@ -240,6 +240,7 @@
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
   [data-scope='date-picker'][data-part='segment-group']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 多选的标签行：段位让位，选中的日期在盒里排成标签，超过 maxTagCount 的折进 +N。
@@ -364,6 +365,7 @@
      程序化落焦时不该再画一圈环 */
   [data-scope='date-picker'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

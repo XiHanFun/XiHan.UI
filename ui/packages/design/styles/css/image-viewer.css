@@ -429,15 +429,6 @@
     --xh-action-radius: var(--xh-image-viewer-close-radius, var(--xh-shape-circle));
   }
 
-  /* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
-     content 把前景钉死在浅字上、三颗钮的前景随它继承，环取 currentColor 即是那支浅字，
-     不随图片内容也不随主题翻 */
-  [data-scope='image-viewer'][data-part='close-trigger']:focus-visible,
-  [data-scope='image-viewer'][data-part='prev-trigger']:focus-visible,
-  [data-scope='image-viewer'][data-part='next-trigger']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   [data-scope='image-viewer'][data-part='close-trigger'][hidden] {
     display: none;
   }

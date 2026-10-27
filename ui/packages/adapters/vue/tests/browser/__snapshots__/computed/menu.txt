@@ -101,8 +101,8 @@ transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
-outline-width: 2px
-outline-offset: -2px
+outline-width: 1px
+outline-offset: -1px
 outline-color: rgba(0, 0, 0, 0)
 
 [positioner]

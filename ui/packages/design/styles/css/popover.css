@@ -143,6 +143,7 @@
 
   [data-scope='popover'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

@@ -157,11 +157,6 @@
     align-self: flex-start;
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色 */
-  [data-scope='signature-pad'][data-part='clear-trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 签没签的那句话是说明角色：13 / fg-muted / leading-normal。读屏靠它播报，看得见的人也用得上，因此不做视觉隐藏 */
   [data-scope='signature-pad'][data-part='status'] {
     color: var(--xh-signature-pad-status-fg, var(--xh-fg-muted));

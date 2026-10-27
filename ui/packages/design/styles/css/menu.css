@@ -129,6 +129,7 @@
   /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
   [data-scope='menu'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */

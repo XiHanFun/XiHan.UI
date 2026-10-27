@@ -71,12 +71,6 @@
     display: none;
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='download-trigger'][data-part='root'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 没写内容就由皮肤画兜底字形；作者往按钮里塞了文字或自己的图形，这几条即不命中。
      字形另起一颗 ::after：::before 是加载环，mask 会把描边裁成字形轮廓、环就此消失。
      字形取前景色：取数在途时随前景一起淡到透明，把位置让给环 */

@@ -59,15 +59,6 @@
     --xh-_clipboard-font-size: var(--xh-control-font-lg);
   }
 
-  /* —— 形态 ——
-     四档的底 / 前景 / 描边由家族形态矩阵按复制钮上的 data-xh-action-variant 给出（缺省 subtle 由连接层显式
-     投影，只有 solid 才品牌实心），用哪族颜色由 data-tone 决定；这里只剩实心面上的环色。
-     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='clipboard'][data-part='copy-trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 整件禁用：输入框仍可选中复制，只有那颗写剪贴板的钮点不动 */
   [data-scope='clipboard'][data-part='root'][data-disabled] {
     cursor: not-allowed;
@@ -130,14 +121,16 @@
     border-end-end-radius: 0;
   }
 
-  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），不画环；点进去选字也算聚焦 */
+  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），描边就是焦点环的内圈，再画光环；点进去选字也算聚焦 */
   [data-scope='clipboard'][data-part='input']:focus-within {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-clipboard-input-bg-focus, var(--xh-bg-surface));
+    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   [data-scope='clipboard'][data-part='input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，

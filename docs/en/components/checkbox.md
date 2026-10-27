@@ -195,4 +195,4 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-checkbox-label-gap` | `label` | `gap` | `default` | `--xh-_checkbox-label-gap` |
 | `--xh-checkbox-label-leading` | `label` | `line-height` | `default` | `--xh-leading-normal` |
 | `--xh-checkbox-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` |
-| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` |
+| `--xh-checkbox-shadow` | `root` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` |

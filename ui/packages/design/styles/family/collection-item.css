@@ -45,7 +45,7 @@
     padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
     border-radius: var(--xh-collection-radius, var(--xh-shape-inset));
     outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: var(--xh-ring-offset-inset);
     background-color: var(--xh-_collection-bg);
     color: var(--xh-_collection-fg);
     font-size: var(--xh-collection-font-size, var(--xh-_collection-font-size));

@@ -65,7 +65,7 @@
     },
     "focus": {
       "color": "var(--xh-fg-default)",
-      "shadow": "none",
+      "shadow": "0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo)",
       "cursor": "text",
       "ringColor": "none"
     },

@@ -145,6 +145,7 @@
 
   [data-scope='dialog'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -364,11 +365,6 @@
     --xh-action-fg-loading: transparent;
 
     transition-delay: var(--xh-motion-duration-micro);
-  }
-
-  /* 实心面上环色与面同族，画在面里看不出来：环改取面自己的前景色 */
-  [data-scope='dialog'][data-part='confirm-trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 面板标题：页面级面板标题档、正文色；行高钉在 normal，头部带按它算标题行居中 */

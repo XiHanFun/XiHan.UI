@@ -209,6 +209,7 @@
     background: var(--xh-date-field-segment-bg-focus, var(--xh-_date-field-segment-bg));
     color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */

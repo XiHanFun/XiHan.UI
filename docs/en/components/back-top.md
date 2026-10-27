@@ -159,5 +159,5 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-6` |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` |
 | `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` |
-| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_material-shadow`<br>`none` |
+| `--xh-back-top-shadow` | `root`<br>`trigger` | `box-shadow` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`variant=outline` | `--xh-_material-shadow`<br>`none` |
 | `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_back-top-size` |

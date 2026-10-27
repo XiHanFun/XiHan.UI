@@ -38,6 +38,7 @@
   /* 纯容器，焦点长在分隔条上，这里画环只会闪一下 */
   [data-scope='splitter'][data-part='root']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
@@ -83,6 +84,7 @@
 
   [data-scope='splitter'][data-part='panel']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 折叠 / 展开（Enter、双击、命令式）时面板尺寸走过渡，与 Layout 侧栏折叠同一种节奏；
@@ -126,11 +128,6 @@
   /* 只有正被拖的那条带 data-dragging：多条分隔条时全高亮就分不出手在哪一条上 */
   [data-scope='splitter'][data-part='resize-trigger'][data-dragging] {
     background: var(--xh-splitter-trigger-bg-dragging, var(--xh-bg-brand));
-  }
-
-  /* 常态灰面与公共品牌环已经过线；拖动态才改用品牌面配对前景，避免同色环。 */
-  [data-scope='splitter'][data-part='resize-trigger'][data-dragging]:focus-visible {
-    --xh-_ring-color: var(--xh-fg-on-brand);
   }
 
   /* 分隔条是 div、role=separator，原生 disabled 在它身上不生效，

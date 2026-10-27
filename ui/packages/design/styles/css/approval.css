@@ -297,14 +297,17 @@
     border-color: var(--xh-approval-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 聚焦换承载面底 + 品牌描边，不画环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环 */
+  /* 照字段外壳标出焦点（设计真源 §8.3）：换承载面底 + 品牌描边，描边就是焦点环的内圈，再画光环；
+     强制色档光环被去掉，系统色环由下面的强制色规则补 */
   [data-scope='approval'][data-part='note']:focus-within {
     border-color: var(--xh-approval-note-border-focus, var(--xh-border-control-focus));
     background: var(--xh-approval-note-bg-focus, var(--xh-bg-surface));
+    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   [data-scope='approval'][data-part='note']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 要求写理由而空着就按了拒绝：换无效淡底 + 无效描边；焦点也已带到这里，聚焦时同样不画环 */
@@ -418,14 +421,6 @@
     --xh-action-shadow-hover: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-pressed: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-loading: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     只对着还铺着实心底的那两档：按得动的常态，与判定在途那一档；
-     禁用档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
-  [data-scope='approval'][data-part='approve-trigger']:not([data-disabled]) {
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 拒绝钮：中性描边，底 / 边 / 字与禁用面映到 outline 档的桥接槽（透明底 → 100 → 200；

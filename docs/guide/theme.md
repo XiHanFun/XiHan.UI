@@ -221,7 +221,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，铺 `--xh-bg-field`（缺省白底） | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
 | M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
 | M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |

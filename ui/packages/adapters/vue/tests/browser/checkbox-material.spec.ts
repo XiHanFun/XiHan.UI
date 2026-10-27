@@ -332,7 +332,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
   it('键盘 focus 在明暗三态下都达到 3:1，聚焦不改变 16px 控制盒几何', async () => {
     for (const theme of THEMES) {
       document.documentElement.dataset.theme = theme
-      // 未勾方框不填底：环压在页面底上，页面底随主题走
+      // 环画在方框外侧（偏移 0）、压在页面底上，页面底随主题走；勾上的实心方框不换环色
       document.body.style.backgroundColor = 'var(--xh-bg-canvas)'
       await mount([
         h(XhCheckbox, { 'data-testid': 'off' }),
@@ -347,9 +347,8 @@ describe('checkbox 字段家族控制盒与三态', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        // 未勾方框不填底，环压在它露出的页面底上
-        const face = style.backgroundColor === 'rgba(0, 0, 0, 0)' ? getComputedStyle(document.body).backgroundColor : style.backgroundColor
-        expect(contrast(style.outlineColor, face), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        expect(style.outlineOffset).toBe('0px')
+        expect(contrast(style.outlineColor, getComputedStyle(document.body).backgroundColor), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
         const after = element.getBoundingClientRect()
         expect(after.width).toBe(before.width)
         expect(after.height).toBe(before.height)

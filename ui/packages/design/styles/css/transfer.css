@@ -199,6 +199,7 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   [data-scope='transfer'][data-part='search']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
@@ -253,6 +254,7 @@
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   [data-scope='transfer'][data-part='list']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
@@ -443,12 +445,6 @@
   [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:focus-visible {
-    --xh-_ring-color: currentColor;
   }
 
   /* 格子里的勾与全选格的三态标记（all 打勾、some 打横杠、none 留空）由勾选标记配方画：常驻、按状态淡变

@@ -161,6 +161,7 @@
     --xh-_image-cropper-handle-color: var(--xh-ring-focus);
 
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* —— 八个方位：落点 + 光标 —— */

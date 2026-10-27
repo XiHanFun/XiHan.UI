@@ -55,7 +55,6 @@
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
@@ -339,7 +338,7 @@
     color: var(--xh-action-fg-focus-visible, var(--xh-_action-variant-fg-focus-visible));
     border-color: var(--xh-action-border-focus-visible, var(--xh-_action-variant-border-focus-visible));
     --xh-_action-current-highlight: var(--xh-action-highlight-focus-visible, transparent);
-    box-shadow: var(--xh-action-shadow-focus-visible, none);
+    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
     opacity: var(--xh-action-opacity-focus-visible, 1);
     cursor: var(--xh-action-cursor-focus-visible, pointer);
     scale: var(--xh-action-scale-focus-visible, none);
@@ -394,6 +393,14 @@
     opacity: var(--xh-action-opacity-loading, 1);
     cursor: var(--xh-action-cursor-loading, progress);
     scale: var(--xh-action-scale-loading, none);
+  }
+
+  [data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading]) {
+    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+  }
+
+  [data-xh-action-control]:focus-visible:not([data-disabled]):is(:active, [data-pressed]) {
+    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
   }
 
   [data-xh-action-control][data-xh-action-display='always'] {

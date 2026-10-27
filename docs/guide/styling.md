@@ -216,79 +216,43 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 对比度已按 WCAG 逐族验证：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。自定义配色时，文字与底色按上表成对取用，不把 `--xh-tone-fg` 放在 `--xh-tone-solid` 上。
 
-## 聚焦环与实心面
+## 聚焦环
 
-键盘焦点的环由公共皮肤 `focus.css` 统一绘制，组件不需要自行写 `outline`：
+键盘焦点的环两层，由公共皮肤 `focus.css` 统一绘制，组件不需要自行编写：
 
 ```css
 [data-scope][data-part]:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
   outline-offset: var(--xh-ring-offset);
 }
+
+:where([data-scope][data-part]:focus-visible) {
+  box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+}
 ```
 
-偏移是负的一个环宽：环向元素内收，外沿与元素边框外沿重合，聚焦前后占位一致。因此环内侧紧邻的是元素自己的面。面为实心的档位上，环色与面同族，对比度最低可到 1.00:1。这些档位把环色槽设为 `currentColor`，环改取该面配对的前景色：
+内圈 1px、偏移 0，贴着边框外沿画，压在元素所在的承载面上，与元素自己的面无关：实心面上也使用库环，不换环色。光环 3px、内圈色 30%，只是观感。两层都不随语气变化，即时出现、不进过渡。
+
+光环这条规则零特指度：部件自己写了 `box-shadow`（浮层面板的投影、卡片的抬起影）时由部件自己胜出，光环让位。要在自己的投影之前叠光环的部件，在自己的聚焦规则里把光环接进去：
 
 ```css
-[data-scope='tag'][data-part='root'][data-variant='solid'] {
-  background: var(--xh-tag-bg, var(--xh-bg-brand));
-  color: var(--xh-tag-fg, var(--xh-fg-on-brand));
-}
-
-[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
-  --xh-_ring-color: currentColor;
+[data-scope='tag'][data-part='root']:focus-visible:not([data-disabled]) {
+  box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
 }
 ```
 
-环不随语气变化。`currentColor` 取的是该面配对的前景色（实心底上是 `--xh-tone-on`），不是语气色本体：语气色本体作为环色时，warning 对白底只有 2.70:1、success 3.04:1，达不到 3:1。没有实心面的档位一律使用 `--xh-ring-focus`。判据是环压着的面，不是组件的语气。
-
-达标的面不为统一而改环色。淡底、透空等非实心档一律使用默认环；一条改环色的规则覆盖到非实心档（同一部件的另一形态、失效档、只读档）时门禁判红，应把选择器收窄到实心档，而不是登记豁免。
-
-改环色按求值判定，不按写法判定。门禁检查三条声明的求值结果：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写。沿皮肤中的槽展开、再沿令牌链解到颜色，在任一主题 × 语气下与库的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等即视为改环色；解不出的值（`currentColor`、使用者传入的色值、没有兜底的使用者令牌）同样视为改环色。以下写法与写 `currentColor` 受同一套判据约束：
+焦点由别处绘制时，关环要连光环一起关，并在门禁的 `ringless` 中登记由谁绘制：
 
 ```css
-/* 与面配对的前景色令牌：开关选中的轨道是 <button>、皮肤没有给它 color，只能这样写 */
-[data-scope='switch'][data-part='root'][data-state='checked']:focus-visible {
-  --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
-}
-
-/* 不经槽、直接写长属性：同样视为改环色 */
-[data-scope='x'][data-part='y']:focus-visible {
-  outline-color: var(--xh-fg-default);
-}
-
-/* 包进 @supports：块内条件按成立处理 */
-@supports (color: red) {
-  [data-scope='x'][data-part='y']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-}
-
-/* 包进 @media screen / @container：静态无法判断何时不成立，按成立处理 */
-@media screen {
-  [data-scope='x'][data-part='y']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-}
-
-/* 写在裸 :focus 里的 outline 简写：:focus 包含键盘聚焦；未写颜色时等于 currentColor */
-[data-scope='x'][data-part='y']:focus {
-  outline: var(--xh-ring-width) solid var(--xh-fg-default);
-}
-
-/* 没有兜底的使用者令牌：值由使用者决定，无法解出 */
-[data-scope='x'][data-part='y']:focus-visible {
-  --xh-_ring-color: var(--xh-tag-fg);
+[data-scope='menu'][data-part='content']:focus-visible {
+  outline: none;
+  --xh-_ring-halo: transparent;
 }
 ```
 
-显式写回 `var(--xh-ring-focus)`、校验失败时换 `var(--xh-ring-invalid)` 不算改环色。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块。用 `[data-variant]` / `[data-state]` 等属性存在式选择器一次覆盖多个形态时，每个形态各算一档，覆盖到的非实心档逐档判红：规则写了但档位未写取值的属性，存在式一律视为覆盖；写了取值的（`[data-state='on']`）按是否有兄弟档认领判定。库的两支环令牌与它们解析链上经过的名称（如 `--xh-color-brand-500`）在皮肤内一律不允许赋值。浏览器测试 `focus-ring-inset-grpring` 按同一定义从样式表读出改环色的规则，逐条测量落焦对比度是否达到 3:1；静态放行的别名色（例如在实心底上写同族的 `var(--xh-color-brand-600)`）在那里测量为 1:1。
+`--xh-_ring-halo` 登记为不继承，只作用于写它的节点：关环的容器里，自己会获得焦点的部件照常绘制光环。首尾相接的行与格（表格单元格、时间列、树行）用 `--xh-ring-offset-inset` 把内圈收进元素里，同时关闭光环。
 
-自行编写皮肤时，改环色前核对三件事：
-
-1. 面画在哪个节点上。画在祖先上时（透空的关闭按钮位于标签的实心底上），规则写成后代选择器，槽仍然设在获得焦点的节点上。
-2. 部件是否有 `color`。圆点、滑块等没有文字的部件先补一支与面配对的前景色；否则 `currentColor` 会取到继承的正文色或原生控件的 UA 前景色。只有一档需要更换时把该色直接写进槽，不经过 `currentColor`。
-3. 面被替换的档位要退出。失效档把面换成置灰底、前景换成置灰色甚至透明（`color: transparent` 会让整条环一起透明），中性轻档把实心底换成灰底。收窄选择器退回默认值，或把槽显式写回 `var(--xh-ring-focus)`。
+改环色按求值判定：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 都判红。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块，块里的系统色不受这条约束。库环令牌与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值。
 
 ## 切换品牌色
 
@@ -375,7 +339,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-token-refs` | 皮肤引用了令牌产物中不存在的令牌名。孤儿引用不报错也不降级，整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件中作为默认值。这是一条未命名的设计决策，应先建立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠加 `opacity`。两种手段同时使用会把对比度压到无法阅读 |
-| `check-focus-ring-surface` | 可聚焦部件的面对环的对比度不到 3:1，该档位却没有规则更换环色（`--xh-_ring-color` / `outline-color` / 聚焦规则中的 `outline` 简写求值后仍是库环）。反之改环色的规则覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明直接判红，失效档只豁免对比度，环不允许消失。`@supports` 块内的规则按条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤中给库环令牌链上的名称赋值直接判红 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；键盘聚焦规则关了环却没在同一块里关光环（`--xh-_ring-halo: transparent`）；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |

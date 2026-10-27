@@ -161,13 +161,13 @@ describe('password-input Field Chrome 细节', () => {
 
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(readonlyInput)
-    // 盒聚焦不画环，由聚焦描边标出；钮自己占一个 Tab 位，落到钮上时钮画自己的环
+    // 盒聚焦不画 outline，由聚焦描边（焦点环的内圈）与光环标出；钮自己占一个 Tab 位，落到钮上时钮画自己往里收的环
     expect(getComputedStyle(readonlyControl).outlineStyle).toBe('none')
     expect(getComputedStyle(readonlyInput).outlineStyle).toBe('none')
     await userEvent.keyboard('{Tab}')
     expect(document.activeElement).toBe(readonlyTrigger)
     expect(getComputedStyle(readonlyTrigger).outlineStyle).toBe('solid')
-    expect(getComputedStyle(readonlyTrigger).outlineOffset).toBe('-2px')
+    expect(getComputedStyle(readonlyTrigger).outlineOffset).toBe('-1px')
 
     const disabledInput = part('disabled', 'input') as HTMLInputElement
     const disabledTrigger = part('disabled', 'visibility-trigger') as HTMLButtonElement

@@ -1,6 +1,6 @@
-// 字段内动作钮（field-inset ghost）的悬停 / 按下面按所在承载面取阶梯：字段没聚焦时盒铺字段淡底，
-// 钮走淡底承载阶梯 200 → 300；聚焦后盒换成白色承载面，钮回到白底阶梯 100 → 200。ghost 形态的字段
-// 静息透明，仍按白底阶梯。判据是悬停后的计算底色，jsdom 不算级联。
+// 字段内动作钮（field-inset ghost）的悬停 / 按下面按盒当前铺的底取阶梯：描边档的盒缺省是白底（--xh-bg-field
+// 与承载面同色），钮走白底阶梯 100 → 200；淡底档的盒没聚焦时铺着淡底，钮走淡底承载阶梯 200 → 300；任何档聚焦后
+// 都是白色承载面。ghost 形态的字段静息透明，仍按白底阶梯。判据是悬停后的计算底色，jsdom 不算级联。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -51,16 +51,24 @@ function clear(): HTMLElement {
 }
 
 describe('字段内动作钮的承载面阶梯', () => {
-  it('字段没聚焦：悬停取 --xh-bg-subtle-hover、按下取 --xh-bg-subtle-active', async () => {
+  it('描边档字段没聚焦：盒是白底，悬停取 --xh-bg-subtle、按下取 --xh-bg-subtle-hover', async () => {
     await mount()
+    await userEvent.hover(clear())
+    await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
+    await pressPointer(clear())
+    await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)'))
+  })
+
+  it('淡底档字段没聚焦：盒铺淡底，悬停取 --xh-bg-subtle-hover、按下取 --xh-bg-subtle-active', async () => {
+    await mount({ variant: 'subtle' })
     await userEvent.hover(clear())
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)'))
     await pressPointer(clear())
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-active)'))
   })
 
-  it('字段聚焦后：盒是白色承载面，悬停回到 --xh-bg-subtle', async () => {
-    await mount()
+  it('淡底档字段聚焦后：盒是白色承载面，悬停回到 --xh-bg-subtle', async () => {
+    await mount({ variant: 'subtle' })
     host!.querySelector<HTMLInputElement>('input')!.focus()
     await userEvent.hover(clear())
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))

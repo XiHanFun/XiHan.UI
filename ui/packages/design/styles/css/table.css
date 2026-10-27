@@ -71,6 +71,7 @@
   /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
   [data-scope='table'][data-part='root']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* —— 密度 —— */
@@ -175,6 +176,7 @@
   /* 表体是行级 roving 的兜底 Tab 位：落焦不画环，环归行 */
   [data-scope='table'][data-part='body']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发；
@@ -287,7 +289,8 @@
      收在格子里面，不压到相邻的格子与行间线上；所在的行照旧按焦点行换面 */
   [data-scope='table'][data-part='cell'][tabindex]:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline-offset: var(--xh-ring-offset-inset);
+    --xh-_ring-halo: transparent;
   }
 
   /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器。
@@ -617,15 +620,6 @@
     --xh-_table-trigger-border: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     置灰那档不在其列：底已换成淡底，aria-disabled 的把手仍能落焦，环退回默认那一支 */
-  [data-scope='table'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]),
-  [data-scope='table'][data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]),
-  [data-scope='table'][data-part='row-select-trigger']:is([data-selected], [data-indeterminate]):not([data-disabled]) {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 勾，与独立 Checkbox 同一档；
      家族的禁用块按映射给 */
   [data-scope='table'][data-part='select-all-trigger'][data-disabled],
@@ -639,6 +633,7 @@
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
   [data-scope='table'][data-part='row-select-trigger']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
@@ -676,6 +671,7 @@
 
   [data-scope='table'][data-part='expand-trigger']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 排序钮是列头里独立的定尺图标钮：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它

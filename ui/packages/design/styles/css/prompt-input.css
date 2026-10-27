@@ -170,10 +170,6 @@
     /* 输入为空时按钮转灰但不收起 */
     --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
     --xh-action-font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
-    /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-       那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-    --xh-action-ring-color-focus-visible: currentColor;
-
     /* 按钮不参与弹性伸缩 */
     flex: none;
     border-width: 0;
@@ -186,7 +182,7 @@
   }
 
   /* 停止身份只换配色，从主色降到中性淡底（连接层同时把家族档切成 subtle）；文案与可访问名由连接层切换。
-     淡底面上没有厚度可言，内高光收掉；环色回到公共焦点色 */
+     淡底面上没有厚度可言，内高光收掉 */
   [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop'] {
     --xh-action-bg-rest: var(--xh-prompt-input-stop-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -197,7 +193,6 @@
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: none;
     --xh-action-shadow-pressed: none;
-    --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
   }
 
   /* 按钮没写内容就由皮肤画兜底字形，两种身份各画一枚；

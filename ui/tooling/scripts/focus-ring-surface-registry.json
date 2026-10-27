@@ -1,21 +1,7 @@
 {
-  "backlog": {},
-  "declared": {
-    "carousel [data-part='indicator'][data-scope='carousel']:not([data-current]):is(:hover, :active, [data-pressed])": "分页点悬停 / 按下的面是前景色阶梯（fg-muted → fg-default）：浅色档悬停面 neutral-500 与库环 brand-600 同一明度（1.0），深色档按下面就是白点（2.59）；本脚本把 :hover / :active 归进 conditional 不判定。环取前景色的配对面 --xh-bg-canvas",
-    "scrollbar [data-part='thumb'][data-scope='scrollbar']:not([data-disabled])": "滑块面为半透明中性色，聚焦环改取不透明的 currentColor，避免环色随滑块透明度一起变淡",
-    "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）换成当前项淡底后的语气面；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
-    "tag [data-part='close-trigger'][data-scope='tag']:is(:active, [data-pressed])": "叉自己的面是从 currentColor 兑出的 22% 底，压在标签的淡底 / 选中面上把面往字色那头带一档，库环在浅色档只剩 2.2–2.9；本脚本看不见 color-mix 的 currentColor 也看不见祖先铺的面。环取叉自己的字色，按压面正是从它兑出来的",
-    "tag [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": "关闭钮自己的面是透空的，环压着的是标签根那块实心语气底；本脚本按部件自己那条面规则算，看不到祖先铺的底",
-    "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": "连接层给这颗把手发 aria-hidden: true，焦点落不上去，这条 :focus-visible 规则画不出来"
-  },
-  "opaque": {
-    "approval [note] var(--xh-bg-field-invalid)": "备注框照字段外壳不画环（见 ringless），这块半透明的无效淡底上没有环要对比；无效由描边换无效色标出",
-    "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
-    "scrollbar [thumb] var(--xh-fg-scrollbar-thumb-active)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
-    "scrollbar [thumb] var(--xh-fg-scrollbar-thumb)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环"
-  },
+  "$description": "check-focus-ring-surface 的登记表：ringless 逐条登记关掉聚焦环（outline: none）的键盘聚焦规则，写明这一档的环由谁画、或为什么不画。关环的规则同一块里还要把光环关掉（--xh-_ring-halo: transparent）。键是「组件 + 选择器」，属性排序固定。",
   "ringless": {
-    "approval [data-part='note'][data-scope='approval']": "备注框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环",
+    "approval [data-part='note'][data-scope='approval']": "备注框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边（焦点环的内圈）并画光环，自身不另画 outline；强制色档光环被去掉，皮肤补一圈 Highlight 环",
     "calendar-picker [data-part='grid'][data-scope='calendar-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
     "calendar-range-picker [data-part='grid'][data-scope='calendar-range-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
     "card [data-interactive][data-part='root'][data-scope='card'] [data-part='trigger'][data-scope='card']": "环画在 trigger 的 ::after 上：伪元素铺满整张卡片，环落在卡片外沿，与点击区是同一块轮廓；trigger 本体是标题文字，再画一圈会与卡片的环重叠",
@@ -27,10 +13,10 @@
     "cascader [data-part='control'][data-scope='cascader'] [data-part='input'][data-scope='cascader']": "家族随皮肤引入的规则：cascader 的内容区是 trigger 按钮，投影 data-xh-field-input 的搜索框在浮层面板里、不在盒内，这条命不中；焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "cascader [data-part='control'][data-scope='cascader'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "cascader [data-part='input'][data-scope='cascader']": "面板内嵌的搜索框不画环：插入符就是焦点指示；框没有字段外壳，全局那圈环只会压在通栏一行上",
-    "clipboard [data-part='input'][data-scope='clipboard']": "只读框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环",
+    "clipboard [data-part='input'][data-scope='clipboard']": "只读框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边（焦点环的内圈）并画光环，自身不另画 outline；强制色档光环被去掉，皮肤补一圈 Highlight 环",
     "color-field [data-part='control'][data-scope='color-field'] [data-part='input'][data-scope='color-field']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "color-field [data-part='control'][data-scope='color-field'] [data-xh-action-profile='field-inset']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
-    "color-picker [data-part='channel-input'][data-scope='color-picker']": "通道输入照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环",
+    "color-picker [data-part='channel-input'][data-scope='color-picker']": "通道输入照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边（焦点环的内圈）并画光环，自身不另画 outline；强制色档光环被去掉，皮肤补一圈 Highlight 环",
     "color-picker [data-part='content'][data-scope='color-picker']": "浮层只是容器，tabindex=-1 是焦点域的兜底落点，环长在里面的控件上",
     "color-picker [data-part='control'][data-scope='color-picker'] [data-part='input'][data-scope='color-picker']": "家族随皮肤引入的规则：color-picker 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "color-picker [data-part='control'][data-scope='color-picker'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：color-picker 的盒里没有字段内嵌钮（吸管钮长在浮层里），这条命不中；焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
@@ -90,7 +76,7 @@
     "popover [data-part='content'][data-scope='popover']": "面板是焦点域的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "prompt-input [data-part='control'][data-scope='prompt-input'] [data-part='input'][data-scope='prompt-input']": "家族随皮肤引入的关环规则（chrome 是 root 而不是 control）：输入段自身不画环，焦点由 root 的 :focus-within 换成聚焦描边标在整个框上",
     "prompt-input [data-part='control'][data-scope='prompt-input'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的关环规则：本组件没有 field-inset 档的钮（发送钮走 text 档），这条命不中",
-    "question-flow [data-part='note'][data-scope='question-flow']": "备注框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环",
+    "question-flow [data-part='note'][data-scope='question-flow']": "备注框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边（焦点环的内圈）并画光环，自身不另画 outline；强制色档光环被去掉，皮肤补一圈 Highlight 环",
     "radio-group [data-part='root'][data-scope='radio-group'][data-variant='segmented']": "segmented 形态的 root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给段，高亮长在条目上",
     "rating [data-part='control'][data-scope='rating']": "焦点域的兜底落点：焦点从带外进来先落在它身上，随即转投给某颗星；高亮永远长在星星上",
     "resizable [data-part='handle'][data-scope='resizable']": "把手本体是覆盖整条边的透明命中区，聚焦时由 ::after 的短条或折角自身切换为焦点色",
@@ -115,7 +101,7 @@
     "tag-group [data-part='list'][data-scope='tag-group']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在标签上",
     "tags-input [data-part='control'][data-scope='tags-input'] [data-part='input'][data-scope='tags-input']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "tags-input [data-part='control'][data-scope='tags-input'] [data-xh-action-profile='field-inset']": "焦点落到盒内清空钮（tabindex=-1，只接程序化落焦）时 control 已经 :focus-within 换上聚焦描边",
-    "tags-input [data-part='item-input'][data-scope='tags-input']": "就地编辑框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边、不画环，焦点由描边换色与底色差标出；强制色档在皮肤里补一圈 Highlight 环；外层 control 同时按 :focus-within 换成聚焦面",
+    "tags-input [data-part='item-input'][data-scope='tags-input']": "就地编辑框照字段外壳：聚焦换承载面底与 --xh-border-control-focus 描边（焦点环的内圈），自身不另画 outline；外层 control 同时按 :focus-within 换成聚焦面并画光环",
     "text-field [data-part='control'][data-scope='text-field'] [data-part='input'][data-scope='text-field']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "text-field [data-part='control'][data-scope='text-field'] [data-xh-action-profile='field-inset']": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上",
     "time-field [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": "焦点由 control 的 :focus-within 换成聚焦描边标在外框上，段位只反白标出当前段",
@@ -151,57 +137,5 @@
     "virtualizer [data-part='content'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
     "virtualizer [data-part='item'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
     "virtualizer [data-part='root'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环"
-  },
-  "unfocusable": {
-    "badge [indicator]": "角标是贴在别的东西上的标记，不接焦点",
-    "bar-code [root]": "条形码的底色块，纯展示不接焦点",
-    "icon [root]": "图标是展示节点，加了底框也只是外观，不接焦点",
-    "json-viewer [mark]": "搜索命中的片段是行内文字的一截底色，不接焦点；焦点在它所在的行上",
-    "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
-    "matrix-code [root]": "二维码的底色块，纯展示不接焦点",
-    "progress [range]": "进度条的已完成段，纯展示不接焦点",
-    "progress [target]": "目标刻度是横穿轨道的一道细线，纯标注不接焦点",
-    "separator [line]": "分隔线，不接焦点",
-    "separator [root]": "分隔线，不接焦点",
-    "slider [range]": "滑杆的已选区间，焦点落在拇指上",
-    "toolbar [separator]": "工具栏分隔线只区分相邻操作，不接焦点",
-    "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
-  },
-  "solid": {
-    "carousel [data-part='root'][data-scope='carousel']:not([data-autoplay]):not([data-paused]) [data-current][data-part='indicator'][data-scope='carousel']": {
-      "parts": [
-        "indicator"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "cartesian-chart [data-part='zoom-handle'][data-scope='cartesian-chart']": {
-      "parts": [
-        "zoom-handle"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
-      "parts": [
-        "resize-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "tag [data-part='root'][data-scope='tag'][data-variant='solid']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    }
   }
 }

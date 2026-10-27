@@ -100,14 +100,13 @@ afterEach(() => {
 })
 
 describe('级联选择首次加载表面', () => {
-  it.each(['light', 'dark'] as const)('%s：触发框是字段淡底、面板是不透景的实体浮起面', async (theme) => {
+  it.each(['light', 'dark'] as const)('%s：触发框是字段底（缺省与承载面同色）、面板是不透景的实体浮起面', async (theme) => {
     await mountCascader({ theme })
     const control = getComputedStyle(part('control'))
     const content = part('content')
     const style = getComputedStyle(content)
-    // 字段外壳静息铺字段淡底：半透明的底不是磨砂，没有背景滤镜
-    expect(colorAlpha(control.backgroundColor)).toBeGreaterThan(0)
-    expect(colorAlpha(control.backgroundColor)).toBeLessThan(255)
+    // 字段外壳静息铺 --xh-bg-field（缺省白底，与承载面同色），没有背景滤镜
+    expect(control.backgroundColor).toBe(getComputedStyle(content).backgroundColor)
     expect(control.backdropFilter).toBe('none')
     // 多列面板取 floating：实体底、无背景滤镜、有浮起投影
     expect(style.backdropFilter).toBe('none')

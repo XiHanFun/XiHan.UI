@@ -263,6 +263,7 @@
 
   [data-scope='expression-input'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='expression-input'][data-part='content'][data-state='open'] {

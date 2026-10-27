@@ -222,7 +222,7 @@ There are five token recipes, each providing the same nine tokens: `bg`, `backdr
 
 | Id | Tokens | Use | Optics |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | Default for static content surfaces: border-default stroke + surface background + no shadow; fields at rest are stroked the same way, with an extra `--xh-bg-field` tint | Solid background, no highlight, no shadow |
+| M0 solid | `--xh-material-solid-*` | Default for static content surfaces: border-default stroke + surface background + no shadow; fields at rest are stroked the same way on `--xh-bg-field` (white by default) | Solid background, no highlight, no shadow |
 | M1 soft | `--xh-material-soft-*` | Secondary surfaces with a soft tint; not for Card or fields. Button and Tag are flat surfaces and do not take its top light or shadow | Solid background, a subtle top light and a two-step contact shadow, no backdrop blur |
 | M2 frosted | `--xh-material-frosted-*` | Anchored transient overlays such as short lists, menus, tooltips and bubbles; anchored panels with grids or several columns use solid + border-default + `--xh-elevation-floating` instead | Solid surface background, no backdrop blur, 1px border-default stroke, a medium (md) shadow, no top light |
 | M4 elevated | `--xh-material-elevated-*` | Modal and strong-feedback surfaces (sheets) such as Dialog, Drawer, Command, Tour and Notification; always with a 1px stroke | Solid surface background, no backdrop blur, a large (lg) shadow |

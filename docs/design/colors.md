@@ -102,7 +102,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-bg-subtle': '淡底；白底上的 hover',
     '--xh-bg-subtle-hover': '白底上的 pressed；淡底上的 hover',
     '--xh-bg-subtle-active': '淡底上的 pressed，只留给按下',
-    '--xh-bg-field': '字段外壳静息的底：淡底兑一半；聚焦换回 surface',
+    '--xh-bg-field': '字段外壳静息的底：缺省与承载面同色（白底），边界由字段描边承担；主题要淡底字段只改这一支',
     '--xh-bg-muted': '禁用实心钮退到的中性面',
     '--xh-bg-subtle-opaque': '淡底的不透明档：要盖住下层内容的面（吸顶表头、浮动钮、层叠头像）',
     '--xh-bg-subtle-hover-opaque': '淡底 hover 档的不透明档',
@@ -134,7 +134,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
+  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-halo', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
     '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（取色滑杆的拇指）',
@@ -142,8 +142,9 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-border-strong': '只作高对比档与登记过的强调边：字段悬停边、勾选方框与单选圈的静息边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
     '--xh-border-control-hover': '控件悬停边',
-    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦只换这条边与底色，不画环',
-    '--xh-ring-focus': '公共键盘焦点环，对画布、面与淡底都 ≥ 3:1',
+    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦时它就是焦点环的内圈，外面再画光环',
+    '--xh-ring-focus': '公共键盘焦点环的内圈，画在元素外侧、压在承载面上，对页面底、画布、面与淡底都 ≥ 3:1',
+    '--xh-ring-halo': '焦点环的光环：内圈色 30%，只是观感；墨色域里随内圈换成墨色',
   }"
 />
 

@@ -202,13 +202,6 @@
     color: var(--xh-tags-input-item-fg-highlight, var(--xh-_tags-input-accent-fg));
   }
 
-  /* 反白的面是语气淡底，环压上去与面同族看不出来；叉自己的面是透空的，环取它的字色——
-     上面那条反白规则已经把它换成配对的那支色 */
-  [data-scope='tags-input'][data-part='item'][data-highlighted]:not([data-disabled]) > [data-scope='tag'][data-part='root']
-    [data-scope='tag'][data-part='close-trigger']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
   /* 就地编辑框：尺寸对齐胶囊，看起来像是在原地把标签改了，而不是另开一个框。
      阶梯照 tag 的档走：行框取指示符档，竖向内衬、横向内衬与字号随档从 root 的私有槽取。
      不声明 display —— 收起态靠 UA 的 [hidden]{display:none} 就够，
@@ -234,8 +227,8 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
   }
 
-  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边，不画环；
-     外层 control 同时按 :focus-within 换成聚焦面，两层一起说明焦点在框内 */
+  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边（焦点环的内圈）；
+     外层 control 同时按 :focus-within 换成聚焦面并画光环，两层一起说明焦点在框内，这一格不再叠一圈光环 */
   [data-scope='tags-input'][data-part='item-input']:focus-within {
     border-color: var(--xh-tags-input-item-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-tags-input-item-input-bg-focus, var(--xh-bg-surface));
@@ -243,6 +236,7 @@
 
   [data-scope='tags-input'][data-part='item-input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 校验失败时描边跟着外框换无效色，两层相邻不至于一红一蓝 */

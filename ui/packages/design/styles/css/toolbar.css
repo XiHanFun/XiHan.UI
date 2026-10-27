@@ -112,6 +112,7 @@
      在它身上画环只会闪一下就跳走，高亮要长在条目上 */
   [data-scope='toolbar'][data-part='root']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='toolbar'][data-part='root'][data-disabled] {

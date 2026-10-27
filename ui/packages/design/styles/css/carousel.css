@@ -231,6 +231,7 @@
   [data-scope='carousel'][data-part='list']:focus-visible,
   [data-scope='carousel'][data-part='indicator-group']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='carousel'][data-part='indicator-group'] {
@@ -356,13 +357,6 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  /* 悬停 / 按下的点是前景色阶梯上的两档（fg-muted → fg-default），落着焦点时默认环压在这块前景色的点上
-     没有对比（浅色档悬停面 neutral-500 与环 brand-600 同一明度，深色档按下面就是白点）；
-     环取这块面配对的那支——前景色的配对面是画布色，与实心面取配对前景同一口径 */
-  [data-scope='carousel'][data-part='indicator']:not([data-current]):is(:hover, :active, [data-pressed]):focus-visible {
-    --xh-_ring-color: var(--xh-bg-canvas);
-  }
-
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职。
      拉长成胶囊并换品牌色（格状当前 = 实心品牌） */
@@ -371,18 +365,12 @@
     border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
   }
 
-  /* 没开自动播放：整颗品牌胶囊。面是品牌实心，环色与面同族画在面里看不出来：
-     环取面配对的前景色（聚焦规则灌 currentColor）。两条都带「没开自动播放」的祖先条件，
-     与下面自动播放那一档互斥，环色只灌给实心那一档 */
+  /* 没开自动播放：整颗品牌胶囊。带「没开自动播放」的祖先条件，与下面自动播放那一档互斥；
+     焦点环画在胶囊外沿，不随实心面换色 */
   [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
     [data-scope='carousel'][data-part='indicator'][data-current] {
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
     color: var(--xh-carousel-indicator-fg-selected, var(--xh-fg-on-brand));
-  }
-
-  [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
-    [data-scope='carousel'][data-part='indicator'][data-current]:focus-visible {
-    --xh-_ring-color: currentColor;
   }
 
   [data-scope='carousel'][data-part='indicator'][data-current]:is(:active, [data-pressed]) {

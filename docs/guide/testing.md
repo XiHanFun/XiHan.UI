@@ -257,7 +257,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-skin-parts` | 皮肤选择器中的 `[data-part]` 不在所属 scope 的解剖中：部件退役后遗留的规则永远无法选中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器计算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都约束这一节，未写的沿用左侧最近一节，`:is()` / `:where()` 中一致的 scope 带回外层，`:not()` / `:has()` 中各自计算），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器无法读取的（转义、匹配符不是全等）同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量）；查询用了 `max-width` / `max-height` 上界写法：它在断点值上与 `min-width` 同时成立，窄档专属规则写补集 `not all and (min-width: …)` |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
-| `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；键盘聚焦规则关了环却没在同一块里关光环（`--xh-_ring-halo: transparent`）；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
 | `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |

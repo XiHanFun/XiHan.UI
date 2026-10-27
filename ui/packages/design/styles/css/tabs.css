@@ -340,6 +340,24 @@
     box-shadow: none;
   }
 
+  /* 键盘焦点落在选中标签上：card 档的顶边条、segment 档的抬起影照旧画，焦点环的光环叠在它们之前
+     （设计真源 §7.2 第 5 条）；标签带里放了 indicator 部件时面在部件上，标签自己只画光环 */
+  [data-scope='tabs'][data-part='root'][data-variant='card']
+    [data-scope='tabs'][data-part='trigger'][data-state='active']:focus-visible {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)), var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
+  }
+
+  [data-scope='tabs'][data-part='root'][data-variant='segment']
+    [data-scope='tabs'][data-part='trigger'][data-state='active']:focus-visible {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)), var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
+  }
+
+  [data-scope='tabs'][data-part='root'][data-variant='segment']
+    [data-scope='tabs'][data-part='list']:has([data-scope='tabs'][data-part='indicator']:not([hidden]))
+    [data-scope='tabs'][data-part='trigger'][data-state='active']:focus-visible {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+  }
+
   /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
      不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
   [data-scope='tabs'][data-part='root']:is([data-variant='card'], [data-variant='segment'])

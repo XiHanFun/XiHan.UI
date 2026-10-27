@@ -273,6 +273,13 @@
     transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap：首尾相接的格子把聚焦环的内圈收进自己的盒子里，
+     不画光环，压不到相邻的格子（设计真源 §7.2 第 5 条） */
+  [data-scope='heatmap'][data-part='cell']:focus-visible {
+    outline-offset: var(--xh-ring-offset-inset);
+    --xh-_ring-halo: transparent;
+  }
+
   /* 详情条正在说的那一格（指针停着或焦点落着）描一圈正文色的粗线：扫过一片格子时看得出条说的是哪一格 */
   [data-scope='heatmap'][data-part='cell'][data-highlighted] {
     box-shadow: inset 0 0 0 var(--xh-stroke-thick) var(--xh-heatmap-cell-border-highlighted, var(--xh-fg-default));

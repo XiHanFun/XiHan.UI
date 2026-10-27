@@ -334,6 +334,7 @@
   /* 容器只是焦点域的兜底落点，落焦不画环：高亮永远长在行上 */
   [data-scope='tree-select'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -393,6 +394,7 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   [data-scope='tree-select'][data-part='input']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   [data-scope='tree-select'][data-part='input'][hidden] {
@@ -479,6 +481,7 @@
 
   [data-scope='tree-select'][data-part='tree']:not([tabindex='0']):focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 分支是"这一行 + 它的子层"的外壳，不自带内边距：真正长成一行的是 branch-control，
@@ -499,6 +502,7 @@
      整棵子树套一圈描边会把展开的层级全框进去 */
   [data-scope='tree-select'][data-part='branch']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。网格、尺寸档、悬停 / 高亮 100、按下 200 与

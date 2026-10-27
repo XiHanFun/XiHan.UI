@@ -160,4 +160,4 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-toggle-icon-size` | `*`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_action-profile-glyph-size` |
 | `--xh-toggle-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` |
 | `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` |
-| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `none` |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `none` |

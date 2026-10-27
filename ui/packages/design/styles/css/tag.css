@@ -125,14 +125,6 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  /* 按住的叉落着焦点（focus-visible + pressed 保留焦点环）：按压面是从字色兑出的 22% 底，
-     压在淡底 / 选中面上把面往字色那头带了一档，默认环与这块混色面在浅色档上只剩 2.2–2.9。
-     环改取叉自己的字色：按压面正是从这支色兑出来的，字色压在它上面的对比与字压在标签面上同源，
-     六族语气与深浅两态都过 3:1；实心档本来就取字色，这条与它同一口径 */
-  [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
   [data-scope='tag'][data-part='close-trigger']:disabled {
     color: var(--xh-fg-disabled);
   }
@@ -148,20 +140,6 @@
     background: var(--xh-tag-bg, var(--xh-bg-brand));
     color: var(--xh-tag-fg, var(--xh-fg-on-brand));
     box-shadow: var(--xh-tag-shadow, none);
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     置灰那档的底已换成静默色、字换成置灰色，不在其列：环退回默认那一支 */
-  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled]):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
-  /* 关闭钮自己的面是透空的，环压着的是标签那块实心底；它的字色就是那块底上的前景色，
-     环跟着取过来 */
-  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled])
-    [data-scope='tag'][data-part='close-trigger']:focus-visible {
-    --xh-_ring-color: currentColor;
   }
 
   [data-scope='tag'][data-part='root'][data-variant='solid'][data-tone] {
@@ -252,20 +230,26 @@
     border-radius: var(--xh-tag-radius, var(--xh-shape-inset));
   }
 
-  /* 盒没聚焦时铺着字段淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
-     走白底阶梯 100 → 200；聚焦后盒换成白色承载面，标签回到自己的淡底。禁用的盒不换（标签照禁用档置灰），
-     写了语气的、实心与无壳的标签保留自己的面；--xh-tag-* 覆盖槽照旧优先 */
-  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) {
+  /* 淡底档的盒没聚焦时铺着淡底，淡底标签几乎化进底里：换成白底 + 缺省描边一枚枚立出来，叉的悬停 / 按下随之
+     走白底阶梯 100 → 200；聚焦后盒换成白色承载面，标签回到自己的淡底。描边档的盒缺省就是白底，标签保持自己的淡底。
+     禁用的盒不换（标签照禁用档置灰），写了语气的、实心与无壳的标签保留自己的面；--xh-tag-* 覆盖槽照旧优先 */
+  :where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) {
     border-color: var(--xh-tag-border, var(--xh-border-default));
     background: var(--xh-tag-bg, var(--xh-bg-surface));
   }
 
-  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
+  :where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:hover:not(:disabled) {
     background: var(--xh-tag-close-bg-hover, var(--xh-bg-subtle));
   }
 
-  :where([data-xh-field-chrome]:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
+  :where([data-xh-field-chrome][data-variant='subtle']:not(:focus-within):not([data-disabled])) [data-scope='tag'][data-part='root']:is(:not([data-variant]), [data-variant='subtle'], [data-variant='outline']):not([data-tone], [data-disabled]) [data-scope='tag'][data-part='close-trigger']:not(:disabled):is(:active, [data-pressed]) {
     background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
+  }
+
+  /* 键盘焦点落在标签上：形态档自己写了投影（实心档的内高光、描边与无壳档的 none），光环排在它们之后接上
+     （设计真源 §7.2 第 5 条）；聚焦期间实心档的内高光让位给光环 */
+  [data-scope='tag'][data-part='root']:focus-visible:not([data-disabled]) {
+    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
   }
 
   /* —— 禁用 —— */

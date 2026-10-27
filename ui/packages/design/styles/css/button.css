@@ -57,11 +57,6 @@
     --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
   }
 
-  /* 实心面用对比前景作内环，再加品牌外环；不覆盖表面 box-shadow。 */
-  [data-scope='button'][data-part='root'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
-  }
-
   [data-scope='button'][data-part='root'][data-xh-action-variant='solid']:focus-visible::before {
     content: '';
     position: absolute;

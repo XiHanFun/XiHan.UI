@@ -37,12 +37,12 @@
   :names="['--xh-stroke-thin', '--xh-stroke-thick', '--xh-stroke-strong']"
   :notes="{
     '--xh-stroke-thin': '一切描边与分隔线',
-    '--xh-stroke-thick': '焦点环、选中指示条、滑杆拇指描边',
+    '--xh-stroke-thick': '选中指示条、滑杆拇指描边',
     '--xh-stroke-strong': '只给刻意登记的粗把手（图片裁切框、可调尺寸的拖柄）',
   }"
 />
 
-焦点环一律 `--xh-ring-width`（= thick，2px）+ `--xh-ring-offset`（画在盒内一圈，不改布局盒），环色 `--xh-ring-focus` 不随语气；实心面上的环取 `currentColor`。字段外壳聚焦不画环，焦点由描边换色与底色差标出（见下文「字段外壳」）。
+焦点环两层，都不随语气：1px 内圈 `--xh-ring-width`（= thin）+ `--xh-ring-offset`（0，贴着边框外沿画，不改布局盒），环色 `--xh-ring-focus`，实心面上也不换；外面一圈 3px 光环 `--xh-ring-halo`（内圈色 30%，`box-shadow`）。首尾相接的行与格内圈往里收（`--xh-ring-offset-inset`）、不画光环。字段外壳聚焦时换色的描边就是内圈，再画光环（见下文「字段外壳」）。
 
 ## 边界三选一
 
@@ -50,7 +50,7 @@
 
 | 形态 | variant | 描边 | 底 | 影 |
 | --- | --- | --- | --- | --- |
-| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，缺省 none） |
+| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，sm 档） |
 | 淡底 | `subtle` | `--xh-stroke-thin solid transparent`（占位边，尺寸不跳） | `--xh-bg-subtle`（有语气时 `--xh-tone-subtle`） | none |
 | 无壳 | `ghost` | 不写 | 不写 | 不写；只允许分隔线 |
 
@@ -58,19 +58,19 @@
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能作 `border-block-start` 类分隔线与 `::after` 分隔伪元素。
 - raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 取阴影三档里的 sm；只有可交互时允许 hover 抬升（抬到 md）。
 
-## 字段外壳：淡底、聚焦换白底
+## 字段外壳：白底、聚焦换品牌描边与光环
 
-字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态，但铺一层淡底：
+字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态：
 
-- 静息 `--xh-bg-field`（淡底兑一半）+ `--xh-border-control` + `--xh-shape-control` + 无影。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
+- 静息 `--xh-bg-field`（缺省与承载面同色，即白底）+ `--xh-border-control` + `--xh-shape-control` + 无影。主题要淡底字段只改 `--xh-bg-field` 这一支。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
 - hover 底不变，描边升 `--xh-border-strong`。
-- focus-within 换成承载面 `--xh-bg-surface` + `--xh-border-control-focus`，不画聚焦环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环。
+- focus-within 底换 `--xh-bg-surface`（缺省档与静息同色）、描边换 `--xh-border-control-focus`：换色后的描边就是焦点环的内圈，外面再画 3px 光环 `--xh-ring-halo`，不另画 outline；强制色档光环被去掉，描边换 Highlight。
 - invalid 换 `--xh-border-invalid` 并铺 4% 失效色淡底，聚焦时让位给聚焦态。
 - readOnly 只填 `--xh-bg-subtle` 不动描边；disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，不靠 opacity。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 登记过的例外：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav）不画字段外壳，只画一道 `border-block-end` 下划线，聚焦不画环、下划线也不换色；SignaturePad 不投影字段配方而自绘外壳，值必须与字段规则一致。
 
-需要白底的宿主写对应组件的底色槽，如 `--xh-text-field-control-bg: var(--xh-bg-surface)`。
+需要淡底的宿主写对应组件的底色槽，如 `--xh-text-field-control-bg: var(--xh-bg-subtle)`；盒里的清空钮、可见性钮等按盒铺的底取承载阶梯，淡底档没聚焦时走淡底阶梯。
 
 ## 其余控件盒
 

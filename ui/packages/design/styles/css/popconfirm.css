@@ -161,6 +161,7 @@
 
   [data-scope='popconfirm'][data-part='content']:focus-visible {
     outline: none;
+    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -263,12 +264,6 @@
     --xh-action-fg-focus-visible: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-focus-visible));
     --xh-action-fg-loading: var(--xh-popconfirm-confirm-fg, var(--xh-_action-variant-fg-loading));
     --xh-action-shadow-rest: var(--xh-popconfirm-confirm-shadow, var(--xh-popconfirm-action-shadow, none));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='popconfirm'][data-part='confirm-trigger'][data-xh-action-variant='solid']:focus-visible {
-    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 异步确认挂起：环由加载环配方压在确认钮正中（连接层投影 data-xh-loading-ring="overlay"），直径取钮的图标档，
