@@ -75,14 +75,14 @@ afterEach(async () => {
 })
 
 describe('警告提示的表面与信息层级', () => {
-  it('使用语气淡底面（透明边位、无影），彩色只落在底与图标上，标题取正文色', async () => {
+  it('使用语气淡底面（语气淡边、无影），彩色只落在边、底与图标上，标题取正文色', async () => {
     await mount()
     const root = part('root')
     const style = getComputedStyle(root)
 
     expect(style.backgroundColor).toBe(tokenColor('--xh-_tone-subtle', root))
     expect(style.borderTopWidth).toBe('1px')
-    expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.borderTopColor).toBe(tokenColor('--xh-_tone-border', root))
     expect(style.boxShadow).toBe('none')
     expect(style.borderRadius).toBe(`${tokenLength('--xh-shape-control')}px`)
     expect(style.paddingTop).toBe(`${tokenLength('--xh-space-2')}px`)

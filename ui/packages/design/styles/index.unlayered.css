@@ -16002,8 +16002,9 @@
   --xh-alert-skin: 1;
 }
 
-/* 提示本体是一块语气淡底面（淡底形态：透明边位 + 语气 12% 淡底、无影），语气由底色与图标表达；
-   标题与正文仍取正文色，彩色只落在底与图标上，不让整段文字变色抢走层级。 */
+/* 提示本体是一块语气淡底面（语气淡边 + 语气 12% 淡底、无影），语气由边、底色与图标表达；
+   边取语气 40% 混承载面（--xh-_tone-border），淡底与页面之间有一道看得见的界；
+   标题与正文仍取正文色，彩色只落在边、底与图标上，不让整段文字变色抢走层级。 */
 .xh-scope-alert[data-part='root'] {
   /* 作者塞进指示符槽的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档 */
   --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-md));
@@ -16014,7 +16015,7 @@
   gap: var(--xh-alert-gap, var(--xh-space-2));
   padding-block: var(--xh-alert-py, var(--xh-space-2));
   padding-inline: var(--xh-alert-px, var(--xh-surface-px-sm));
-  border: var(--xh-stroke-thin) solid var(--xh-alert-border, transparent);
+  border: var(--xh-stroke-thin) solid var(--xh-alert-border, var(--xh-_tone-border, var(--xh-border-default)));
   border-radius: var(--xh-alert-radius, var(--xh-shape-control));
   background: var(--xh-alert-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
   box-shadow: var(--xh-alert-shadow, none);
@@ -16023,8 +16024,9 @@
   line-height: var(--xh-alert-leading, var(--xh-leading-normal));
 }
 
-/* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。面本身就是语气淡底，不另画边；贴边铺满的栏不取圆角：
-   圆了会在两个角露出底下的页面。面与语气规则与页内提示相同，横幅不换底色 */
+/* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。贴边的三条边是页面或容器自己的边，不画，
+   只留朝内容那一侧（block-end）的语气淡边；贴边铺满的栏不取圆角：圆了会在两个角露出底下的页面。
+   面与语气规则与页内提示相同，横幅不换底色 */
 .xh-scope-alert[data-part='root'][data-banner] {
   inline-size: 100%;
   border-block-start-width: 0;

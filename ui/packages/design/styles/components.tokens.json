@@ -603,7 +603,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_tone-border"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 border 覆盖槽。"
