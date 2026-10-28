@@ -21,9 +21,9 @@ export const TOOLTIP_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 const { createMachine } = setup<TooltipSchema>()
 
 /** 悬停进入到展开的默认等待毫秒。 */
-const OPEN_DELAY = 700
+const OPEN_DELAY = 150
 /** 悬停移出到收起的默认等待毫秒。 */
-const CLOSE_DELAY = 300
+const CLOSE_DELAY = 100
 /** 跳过等待的默认窗口毫秒：另一个提示开着或刚收起不到这么久时，下一个直接接替。 */
 const SKIP_DELAY = 300
 

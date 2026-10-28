@@ -1595,7 +1595,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §9.9 Tooltip 停留 | `openDelay` / `closeDelay` 缺省改 150 / 100ms；WC 属性说明、延时演示与停留时长页同步 |
 | §8.4 Tooltip 的面 | 皮肤改取 frosted 材质的底、字、边，写了 tone 才换语气实底；连接层只在写了 tone 时打 `data-xh-ink-surface`；`check-surface-edge` 的反白名单清空，`axis-scope` 登记 tooltip 消费 tone |
 | §8.3 字段清空钮 | 令牌加 `fg.field-clear`；14 份字段皮肤的清空钮取圆形、静息字形取它；Action Control 配方的 has-value 档在精细指针下改为宿主悬停或聚焦才显出，`data-xh-action-owner` 挪到字段盒；下拉一类的展开箭头只在清空钮显出时让位、焦点在它身上时不让；`check-clear-trigger`、`check-shape-scale` 登记 |
 | §6.4 字体 | 令牌加 `font-family.sans`；`@xihan-ui/styles` 加可选入口 `global.css`（不进 index.css），主题指南写接法 |

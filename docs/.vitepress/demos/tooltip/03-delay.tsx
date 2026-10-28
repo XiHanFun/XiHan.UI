@@ -1,4 +1,4 @@
-// 延时 | openDelay 默认 700ms 用于防误触，closeDelay 默认 300ms 留出指针移动的余地；聚焦不经这两段等待
+// 延时 | openDelay 默认 150ms 用于防误触，closeDelay 默认 100ms 留出指针移动的余地；聚焦不经这两段等待
 import type { ReactNode } from "react";
 import {
   XhTooltipContent,
@@ -11,9 +11,9 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
       <XhTooltipRoot>
-        <XhTooltipTrigger>默认（700 / 300）</XhTooltipTrigger>
+        <XhTooltipTrigger>默认（150 / 100）</XhTooltipTrigger>
         <XhTooltipPositioner>
-          <XhTooltipContent>停够 700ms 才出来</XhTooltipContent>
+          <XhTooltipContent>停够 150ms 才出来</XhTooltipContent>
         </XhTooltipPositioner>
       </XhTooltipRoot>
 

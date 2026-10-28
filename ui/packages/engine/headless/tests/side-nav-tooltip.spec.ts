@@ -13,9 +13,9 @@ type Props = SideNavSchema['props']
 type Attrs = Record<string, unknown>
 type Handlers = Record<string, (event?: unknown) => void>
 
-/** Tooltip 的内建缺省：悬停进入到展开 700ms、移出到收起 300ms、接替窗口 300ms。 */
-const OPEN_DELAY = 700
-const CLOSE_DELAY = 300
+/** Tooltip 的内建缺省：悬停进入到展开 150ms、移出到收起 100ms、接替窗口 300ms。 */
+const OPEN_DELAY = 150
+const CLOSE_DELAY = 100
 
 const COLLECTION: SideNavNode[] = [
   { value: 'home', label: '工作台', href: '#home' },
