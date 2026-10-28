@@ -13,7 +13,7 @@
     --xh-button-skin: 1;
   }
 
-  /* 四种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出（缺省 solid 由连接层显式投影，
+  /* 六种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出（缺省 solid 由连接层显式投影，
      只有 Button 缺省品牌实心）；这里只把公开颜色槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省，
      再映射几何、海拔与顶光。状态选择器、命中区与尺寸 profile 不在这里复制。 */
   [data-scope='button'][data-part='root'] {

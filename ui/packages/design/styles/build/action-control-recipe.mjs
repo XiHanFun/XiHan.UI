@@ -12,7 +12,7 @@ const PROFILES = ['text', 'icon', 'field-inset', 'floating', 'row', 'disclosure-
 const SIZES = ['xs', 'sm', 'md', 'lg']
 const DISPLAYS = ['always', 'has-value', 'hover-focus']
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'loading']
-const VARIANTS = ['solid', 'subtle', 'outline', 'ghost']
+const VARIANTS = ['solid', 'subtle', 'outline', 'ghost', 'dashed', 'link']
 const SIZE_FIELDS = ['visualSize', 'paddingInline', 'paddingBlock', 'gap', 'glyphSize', 'fontSize']
 /* 颜色三通道由形态矩阵给出；states 只留与形态无关的通道。 */
 const COLOR_FIELDS = ['backgroundColor', 'color', 'borderColor']
@@ -21,7 +21,7 @@ const FORCED_FIELDS = ['backgroundColor', 'color', 'borderColor', 'outlineColor'
 const LAYOUT_JUSTIFY = ['center', 'start', 'space-between']
 const LAYOUT_PRESS = ['scale', 'surface']
 /* 承载面阶梯只对静息透明的形态有意义：ghost / outline 的悬停与按下面按容器下发的阶梯取值。 */
-const HOST_LADDER_VARIANTS = ['outline', 'ghost']
+const HOST_LADDER_VARIANTS = ['outline', 'ghost', 'dashed']
 /* 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档。 */
 const PRESSED = ':is(:active, [data-pressed])'
 /* 深色实心只覆盖非禁用态：disabled 仍走中性面。 */
@@ -337,9 +337,11 @@ export function compileActionControlRecipe(source) {
   rule('[data-xh-action-control]', '      justify-content: safe center;', 'supports-safe-align', safeAlign, '    ')
   chunks.push(`  @supports (justify-content: safe center) {\n${safeAlign.join('\n')}\n  }`)
 
-  /* 形态由元素自身的 data-xh-action-variant 选择；四条都发，默认形态也有可读的落点。 */
+  /* 形态由元素自身的 data-xh-action-variant 选择；每条都发，默认形态也有可读的落点。 */
+  /* Button 才开放的两档（设计真源 §5.2）：dashed 与 outline 同一套面，只把描边改成虚线；
+     link 不铺面，悬停与按下在换一档字色之外加下划线，禁用与在途不画 */
   for (const variant of VARIANTS)
-    rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant))
+    rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant) + (variant === 'dashed' ? '\n    border-style: dashed;' : ''))
 
   /* 深色主题下无 tone 或 tone=brand 的实心面固定用深品牌面与浅字；focus-visible / loading 与 rest 同面。 */
   rule(
@@ -420,6 +422,11 @@ export function compileActionControlRecipe(source) {
      排在这几档之后，同特指度靠源序压过它们的投影槽，投影换成聚焦档那一支（缺省就是光环） */
   rule('[data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading])', `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
   rule(`[data-xh-action-control]:focus-visible:not([data-disabled])${PRESSED}`, `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
+  /* link 档的下划线排在家族按压块之后：悬停与按下在换一档字色之外加下划线，禁用与在途不画 */
+  rule(
+    `[data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,\n  [data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading])${PRESSED}`,
+    '    text-decoration-line: underline;\n    text-underline-offset: var(--xh-space-1);',
+  )
 
   rule('[data-xh-action-control][data-xh-action-display=\'always\']', '    visibility: visible;')
   rule('[data-xh-action-control][data-xh-action-display=\'has-value\']:not([data-xh-action-has-value])', '    visibility: hidden;\n    pointer-events: none;')

@@ -93,6 +93,13 @@ export type ControlVariant = 'outline' | 'subtle' | 'ghost'
 export type ActionVariant = ControlVariant | 'solid'
 
 /**
+ * Button 的形态六档：在可按下表面的四档之上多 `dashed`（与 outline 同一套面，描边改虚线，
+ * 用于「添加一项」一类入口）与 `link`（不铺面的文字钮，悬停与按下加下划线）。
+ * 只给 Button：按钮组的段、Toggle 等其余按钮形触发器仍取 ActionVariant。
+ */
+export type ButtonVariant = ActionVariant | 'dashed' | 'link'
+
+/**
  * 有遮罩的浮层的遮罩形态三档：`opaque` 是缺省档，只铺底色；`blur` 在同一层底色上再糊背后的页面；
  * `transparent` 去掉底色，只留下吃指针的那一层。
  * dialog / drawer / image-viewer 共用。

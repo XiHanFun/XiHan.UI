@@ -53,7 +53,7 @@ export function connectButton<T extends PropTypes>(
       // 两件事都成立。同族的 switch / popconfirm / table 都发这一条
       'aria-busy': loading ? 'true' : undefined,
       // Family Recipe 只需要稳定的视觉角色事实；具体尺寸与状态值全部由样式层配方决定。
-      // 四种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出，皮肤只桥接海拔与高光
+      // 六种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出，皮肤只桥接海拔与高光
       'data-xh-action-control': '',
       'data-xh-action-profile': iconOnly ? 'icon' : 'text',
       'data-xh-action-display': 'always',

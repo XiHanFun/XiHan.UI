@@ -5796,6 +5796,7 @@
       "BaseSchema",
       "Bindable",
       "BrandId",
+      "ButtonVariant",
       "COMBINATOR",
       "CascadeNodeLike",
       "CascadeState",

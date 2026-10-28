@@ -91,7 +91,7 @@ export { createPortalVisualBridge } from './structure/portal-visual-bridge'
 export type { WindowStack } from './structure/window-stack'
 export { getWindowStack } from './structure/window-stack'
 // 类型与生命周期
-export type { ActionVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, FocusableElement, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
+export type { ActionVariant, ButtonVariant, Cleanup, ControlVariant, Dict, Direction, Disposable, FocusableElement, MaybeBooleanish, Orientation, OverlayBackdropVariant, OverlayCloseReason, Size, Tone } from './types'
 export { toCleanup } from './types'
 
 // 端口类型
