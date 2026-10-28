@@ -36,7 +36,7 @@ Descriptions of individual props, events and slots are written in Chinese and ap
 | `type` | `'button' \| 'submit' \| 'reset'` |  |
 | `disabled` | `boolean` |  |
 | `loading` | `boolean` |  |
-| `variant` | `ActionVariant` |  |
+| `variant` | `ButtonVariant` |  |
 | `tone` | `Tone` |  |
 | `size` | `Size` |  |
 | `iconOnly` | `boolean` |  |

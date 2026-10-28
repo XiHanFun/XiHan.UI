@@ -136,7 +136,7 @@
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `disabled` | `boolean` |  |  |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 |
+| `variant` | `ButtonVariant` |  | 变体：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  |  |
 | `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |

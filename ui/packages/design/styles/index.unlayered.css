@@ -411,6 +411,49 @@
   --xh-_action-variant-border-loading: transparent;
 }
 
+[data-scope][data-xh-action-control][data-xh-action-variant='dashed'] {
+  --xh-_action-variant-bg-rest: var(--xh-_tone-subtle, transparent);
+  --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_action-variant-border-rest: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_action-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)));
+  --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_action-variant-border-hover: var(--xh-_tone-border-control, var(--xh-border-control-hover));
+  --xh-_action-variant-bg-pressed: var(--xh-_tone-subtle-active, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)));
+  --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_action-variant-border-pressed: var(--xh-_tone-border-control, var(--xh-border-control-hover));
+  --xh-_action-variant-bg-focus-visible: var(--xh-_tone-subtle, transparent);
+  --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_action-variant-border-focus-visible: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_action-variant-bg-disabled: transparent;
+  --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
+  --xh-_action-variant-border-disabled: var(--xh-border-default);
+  --xh-_action-variant-bg-loading: var(--xh-_tone-subtle, transparent);
+  --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_action-variant-border-loading: var(--xh-_tone-border-control, var(--xh-border-control));
+  border-style: dashed;
+}
+
+[data-scope][data-xh-action-control][data-xh-action-variant='link'] {
+  --xh-_action-variant-bg-rest: transparent;
+  --xh-_action-variant-fg-rest: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_action-variant-border-rest: transparent;
+  --xh-_action-variant-bg-hover: transparent;
+  --xh-_action-variant-fg-hover: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  --xh-_action-variant-border-hover: transparent;
+  --xh-_action-variant-bg-pressed: transparent;
+  --xh-_action-variant-fg-pressed: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+  --xh-_action-variant-border-pressed: transparent;
+  --xh-_action-variant-bg-focus-visible: transparent;
+  --xh-_action-variant-fg-focus-visible: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_action-variant-border-focus-visible: transparent;
+  --xh-_action-variant-bg-disabled: transparent;
+  --xh-_action-variant-fg-disabled: var(--xh-fg-disabled);
+  --xh-_action-variant-border-disabled: transparent;
+  --xh-_action-variant-bg-loading: transparent;
+  --xh-_action-variant-fg-loading: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_action-variant-border-loading: transparent;
+}
+
 :is([data-theme='dark'] *, [data-theme='dark'])[data-scope][data-xh-action-control][data-xh-action-variant='solid']:is(:not([data-tone]), [data-tone='brand']) {
   --xh-_action-variant-bg-rest: var(--xh-action-brand-solid);
   --xh-_action-variant-bg-hover: var(--xh-action-brand-solid-hover);
@@ -677,6 +720,12 @@
 
 [data-scope][data-xh-action-control]:focus-visible:not([data-disabled]):is(:active, [data-pressed]) {
   box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+}
+
+[data-scope][data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,
+[data-scope][data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
+  text-decoration-line: underline;
+  text-underline-offset: var(--xh-space-1);
 }
 
 [data-scope][data-xh-action-control][data-xh-action-display='always'] {
@@ -18445,7 +18494,7 @@
   --xh-button-skin: 1;
 }
 
-/* 四种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出（缺省 solid 由连接层显式投影，
+/* 六种形态的底 / 前景 / 描边由家族形态矩阵按 data-xh-action-variant 给出（缺省 solid 由连接层显式投影，
    只有 Button 缺省品牌实心）；这里只把公开颜色槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省，
    再映射几何、海拔与顶光。状态选择器、命中区与尺寸 profile 不在这里复制。 */
 .xh-scope-button[data-part='root'] {

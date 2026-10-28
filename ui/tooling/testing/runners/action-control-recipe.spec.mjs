@@ -7,7 +7,7 @@ const UI_ROOT = join(import.meta.dirname, '..', '..', '..')
 const SOURCE = join(UI_ROOT, 'packages/design/styles/recipes/action-control.recipe.json')
 const BUTTON = join(UI_ROOT, 'packages/design/styles/css/button.css')
 
-const VARIANTS = ['solid', 'subtle', 'outline', 'ghost']
+const VARIANTS = ['solid', 'subtle', 'outline', 'ghost', 'dashed', 'link']
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'loading']
 
 async function source() {
@@ -47,7 +47,7 @@ describe('action Control Family Recipe', () => {
     expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
   })
 
-  it('四形态 × 六态只含颜色三通道，states 只留与形态无关的通道', async () => {
+  it('六形态 × 六态只含颜色三通道，states 只留与形态无关的通道', async () => {
     const recipe = await source()
     expect(recipe.variants).toEqual(VARIANTS)
     expect(recipe.defaultVariant).toBe('subtle')
