@@ -15,7 +15,7 @@
 | surface | 8px（md） | Card、Panel、列表容器、Tabs segment 轨道、分页按钮 |
 | overlay | 8px（md） | Popover、Menu、候选面板等弹层 |
 | sheet | 10px（lg） | Dialog、Drawer 朝内两角、Notification 卡片预设 |
-| circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
+| circle | 50% | 宽高相等的圆形对象（头像、单选指示器、thumb、steps / timeline indicator、加载环、字段里的清空钮）与悬浮于内容之上的单图标动作（FloatButton、BackTop、翻页、回底） |
 | pill | 9999px | 状态 chip（Badge）与一维对象（轨道、track / range、tick、hairline 分隔线、滑动指示条、手柄、scrollbar thumb、位置指示点当前拉长态） |
 
 规则：
@@ -168,7 +168,7 @@ Frosted 是可读性优先的半透明柔和模糊面。它允许隐约感知背
 | border | 1px 低对比边界，确保浅色与暗色都能识别轮廓 |
 | shadow | 使用 floating 或 sheet 海拔角色，不自定义另一套彩色影 |
 | foreground | 使用正常 overlay foreground，不降低正文透明度 |
-| highlight | 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`，只表达厚度），不允许更大范围的玻璃高光或反射线；Tooltip 反白 compact 档不画 |
+| highlight | 允许 1px 内侧顶部边界光（`--xh-material-frosted-highlight`，只表达厚度），不允许更大范围的玻璃高光或反射线；Tooltip 的 compact 档不画 |
 
 具体颜色不在组件内写死，由亮色、暗色和 contrast-more 主题派生。
 

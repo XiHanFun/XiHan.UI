@@ -24,6 +24,9 @@ description: 设计、重构或审查 XiHan.UI 组件的视觉、交互、状态
 - 字段缺省白底（`--xh-bg-field`）+ `--xh-border-control`；聚焦环两层：1px 品牌内圈 + 3px 品牌 30% 光环，不随 tone、即时出现，字段的内圈就是品牌描边（§7.2、§8.3）。
 - 阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg（§5.3）。
 - 禁止 glass 材质和兼容别名；锚定浮层走 frosted 配方（缺省实体底 + 描边 + md 档投影）；导航层在 `data-material="liquid"` 下可用 liquid（§8.5），内容层、浮层与模态不用。
+- Tooltip 两个主题都不反白，与 Popover 同一副浮层面，写了 tone 才取语气实底；悬停 150ms 出、100ms 收（§8.4、§9.9）。模态遮罩浅色 40%、深色 60%。
+- 控件内图标 sm / md / lg 为 16 / 18 / 20（§6.5）；字段清空钮圆形、有值且悬停或聚焦才出现，触屏常显（§8.3）；Alert 带语气淡边；Progress 线形厚 4 / 8 / 12。
+- 字体继承宿主，皮肤不写 `font-family`；缺省栈 `--xh-font-family-sans` 只经可选入口 `@xihan-ui/styles/global.css` 落到 `:root`（§6.4）。Button 另有 `dashed` / `link` 两档变体，其余按钮形触发器不开放（§5.2）。
 - 彩色面声明墨色域（§7.7），中性描边与淡底取墨色比例，不直接取中性原语。
 - 弹簧只用于手势松手（缺省）与 liquid 档的切换、指示（§9.11）；断点按视口，低于断点用补集写法，不用容器查询（§14.6）。
 - 颜色、间距、圆角、阴影和动效只使用令牌，不在组件中增加散值。
