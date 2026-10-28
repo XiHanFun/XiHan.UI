@@ -100,7 +100,15 @@ The `text-*` typography tokens are picked by role. Hierarchy is expressed by siz
 | Large numbers (Statistic, Timer, NumberAnimation) | sm / md / lg take heading-2 / heading-1 / display (`--xh-text-display-size`): 20 / 24 / 28 | — |
 | Secondary marks (counts, shortcuts, timestamps, ordinals) | `--xh-text-caption-size` 12 | — |
 
-The required asterisk and error messages are common-layer rules: the asterisk `--xh-glyph-mark-required` sits before the label text, takes `--xh-text-caption-size` + `--xh-fg-danger` and is `--xh-space-1` away from the text; fields with their own label do not draw a separate one. Field labels and field descriptions do not change color when disabled, other labels take `--xh-fg-subtle` when disabled, and single-line labels use `--xh-leading-none`. Icons inside controls follow the size step with `--xh-glyph-size-sm / md / lg` (16 / 20 / 24); `--xh-glyph-size-text` (1em, following the text) is only for purely inline text components such as Tag, Kbd, Breadcrumb, Typography and Highlight.
+The required asterisk and error messages are common-layer rules: the asterisk `--xh-glyph-mark-required` sits before the label text, takes `--xh-text-caption-size` + `--xh-fg-danger` and is `--xh-space-1` away from the text; fields with their own label do not draw a separate one. Field labels and field descriptions do not change color when disabled, other labels take `--xh-fg-subtle` when disabled, and single-line labels use `--xh-leading-none`. Icons inside controls follow the size step with `--xh-glyph-size-sm / md / lg` (16 / 18 / 20); `--xh-glyph-size-text` (1em, following the text) is only for purely inline text components such as Tag, Kbd, Breadcrumb, Typography and Highlight.
+
+Components do not set a font; `font-family` is inherited from the host as usual. The library's default sans-serif stack lives in `--xh-font-family-sans` (system UI fonts first, then PingFang, Hiragino Sans GB, Microsoft YaHei and Noto Sans SC for Chinese) and only reaches the page root when you import the optional entry:
+
+```ts
+import '@xihan-ui/styles/global.css'
+```
+
+This entry is not part of the main `@xihan-ui/styles` entry. The rule sits in the lowest `xihan.reset` layer with its selector wrapped in `:where()`, so any font the host sets still wins. Code and tabular figures use `--xh-font-family-mono`.
 
 ## The eight-axis visual environment runtime
 

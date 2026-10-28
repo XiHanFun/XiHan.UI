@@ -132,7 +132,7 @@ Web Components 有两处与另两端不同：`<xh-config>` 不收 `disabled`，�
 
 基线比对的是逐像素的位图。字体、字形栅格化与子像素平滑在 Windows 与 Linux 上不同，同一份 CSS 在两边渲染出的位图不同：在开发机上生成的基线，CI 上无法匹配。
 
-字体是最大的不确定性：全库皮肤写的是 `font-family: inherit`，没有 sans 字体令牌，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
+字体是最大的不确定性：全库皮肤不定字体（`font-family: inherit`），sans 字体令牌只经可选的 `global.css` 落到根上、截图用例不引它，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
 
 反过来，环境中多安装字体不影响基线：字体族按名字确定，默认 `sans-serif` 落到 Noto Sans 或其他字体，画面不变。核对字体时核对的是这个名字（`fc-match 'DejaVu Sans'`），不是默认 `sans-serif`。
 

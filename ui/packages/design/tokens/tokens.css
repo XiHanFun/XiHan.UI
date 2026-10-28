@@ -205,6 +205,7 @@
     --xh-radius-md: var(--xh-radius-seed);
     --xh-radius-lg: calc(var(--xh-radius-seed) * 1.25);
     --xh-radius-full: 9999px;
+    --xh-font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
     --xh-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --xh-font-size-xs: 0.75rem;
     --xh-font-size-sm: 0.8125rem;
