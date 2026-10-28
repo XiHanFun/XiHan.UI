@@ -1,6 +1,6 @@
 // 列表框自绘的状态字形——行尾对号所在的标记盒与盒里皮肤画的兜底勾——是指示符，不是控件内图标：
 // 它们同属 --xh-control-indicator-* 一族，条目上由家族按档下发的 --xh-icon-size（桥自
-// --xh-listbox-icon-size，md 20px）只管作者直接放进条目里的图标。
+// --xh-listbox-icon-size，md 18px）只管作者直接放进条目里的图标。
 // 此前标记盒与兜底勾都读行上的 --xh-icon-size：20 的盒与勾比 16px 的指示符档大一圈，compact 下指示符
 // 收到 14 时它们仍是 20。两档密度一起量：盒与勾同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径），
 // 作者塞进标记盒的 XhIcon 与盒同尺，作者直接放进条目的图标两档都恒 20。
@@ -143,13 +143,13 @@ describe.each(['comfortable', 'compact'] as const)('列表框自绘状态字形�
     expect(rect.height, `标记位图标 ${rect.width}×${rect.height}`).toBe(indicator)
   })
 
-  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const row = item('banana')
-    expect(Number.parseFloat(getComputedStyle(row).getPropertyValue('--xh-icon-size'))).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(row).getPropertyValue('--xh-icon-size'))).toBe(18)
     const svg = row.querySelector<HTMLElement>(':scope > [data-scope=\'icon\'][data-part=\'root\']')!
     const rect = svg.getBoundingClientRect()
-    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
-    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
+    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
+    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
   })
 })

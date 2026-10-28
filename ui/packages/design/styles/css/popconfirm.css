@@ -25,7 +25,7 @@
   /*
    * 触发器是页面上的独立文字按钮：盒型、md 档几何、outline 四态面、0.97 按压并换底与粗指针命中区
    * 由家族配方按连接层投影的 data-xh-action-variant / -size 给出。皮肤没有自己的外观规则，
-   * 只把作者塞进按钮的图标接到随档字形尺（md = 20px）。
+   * 只把作者塞进按钮的图标接到随档字形尺（md = 18px）。
    */
   [data-scope='popconfirm'][data-part='trigger'] {
     --xh-icon-size: var(--xh-popconfirm-icon-size, var(--xh-_action-profile-glyph-size));

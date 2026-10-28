@@ -185,10 +185,10 @@ describe.each(['comfortable', 'compact'] as const)('树自绘状态字形按指�
     expect(getComputedStyle(index).paddingInlineStart).toBe(getComputedStyle(app).paddingInlineStart)
   })
 
-  it('作者塞进行里的图标仍按 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者塞进行里的图标仍按 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const icon = Number.parseFloat(getComputedStyle(part('branch-control')).getPropertyValue('--xh-icon-size'))
-    expect(icon).toBe(20)
+    expect(icon).toBe(18)
     const icons = [...host!.querySelectorAll<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')]
     expect(icons.length).toBe(2)
     for (const svg of icons) {

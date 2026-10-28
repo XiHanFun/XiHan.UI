@@ -549,7 +549,7 @@
      与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
      作者换掉标记时换不动它，RTL 还得再翻一次旋转角。
      箭头是指示符：与同一行的标记盒同走 --xh-control-indicator-size，不读家族按档下发的
-     --xh-icon-size——按图标档取的 20px 会比 16px 的标记盒大一圈 */
+     --xh-icon-size——按图标档取的 18px 会比 16px 的标记盒大一圈 */
   [data-scope='cascader'][data-part='item'][data-branch]::after {
     content: '';
     grid-column: suffix;
@@ -584,7 +584,7 @@
      未选中时占位不塌，切换选中不引起行宽抖动。
      盒里的勾与半选杠是指示符：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
      塞进盒里的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺）；
-     不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 20px 会比 16 / 14 的盒还大 */
+     不读家族按档下发到行的 --xh-icon-size——那支只管作者放进条目里的图标，按图标档取的 18px 会比 16 / 14 的盒还大 */
   [data-scope='cascader'][data-part='item-indicator'] {
     --xh-icon-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
 

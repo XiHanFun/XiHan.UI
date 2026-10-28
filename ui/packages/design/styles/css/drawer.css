@@ -59,7 +59,7 @@
     --xh-action-border-hover: var(--xh-drawer-trigger-border-hover, var(--xh-_action-variant-border-hover));
     --xh-action-border-pressed: var(--xh-drawer-trigger-border-hover, var(--xh-_action-variant-border-pressed));
     --xh-action-border-focus-visible: var(--xh-drawer-trigger-border, var(--xh-_action-variant-border-focus-visible));
-    /* 作者塞进按钮的图标随档取字形尺（md = 20px） */
+    /* 作者塞进按钮的图标随档取字形尺（md = 18px） */
     --xh-icon-size: var(--xh-drawer-icon-size, var(--xh-_action-profile-glyph-size));
 
     /* 触发器的文字与 Button 同一字重（家族配方不管字重） */

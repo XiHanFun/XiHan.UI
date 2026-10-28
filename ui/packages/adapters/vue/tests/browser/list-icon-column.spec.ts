@@ -41,10 +41,10 @@ function contentStart(doc: Document, value: string): number {
   return entry.getBoundingClientRect().left + Number.parseFloat(doc.defaultView!.getComputedStyle(entry).paddingInlineStart)
 }
 
-/** 一条集合行：带行首格时里面是一枚 20px 的图形。部件都挂上组件的挂载类，皮肤按挂载类选中。 */
+/** 一条集合行：带行首格时里面是一枚 18px 的图形（md 档控件内图标）。部件都挂上组件的挂载类，皮肤按挂载类选中。 */
 function row(scope: string, value: string, prefix: boolean): string {
   const lead = prefix
-    ? `<span class="xh-scope-${scope}" data-scope="${scope}" data-part="item-prefix" data-xh-collection-slot="prefix"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 12h16" stroke="currentColor"/></svg></span>`
+    ? `<span class="xh-scope-${scope}" data-scope="${scope}" data-part="item-prefix" data-xh-collection-slot="prefix"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 12h16" stroke="currentColor"/></svg></span>`
     : ''
   return `<div class="xh-scope-${scope}" data-scope="${scope}" data-part="item" data-value="${value}" data-xh-collection-item="" data-xh-collection-context="overlay" data-xh-collection-size="md">${lead}<span class="xh-scope-${scope}" data-scope="${scope}" data-part="item-text" data-xh-collection-slot="text">${value}</span></div>`
 }

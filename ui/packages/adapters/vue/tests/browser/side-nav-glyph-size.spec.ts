@@ -137,17 +137,17 @@ describe.each(['comfortable', 'compact'] as const)('侧栏导航自绘状态字�
     }
   })
 
-  it('作者塞进行里的图标仍按 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者塞进行里的图标仍按 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     for (const row of [part('link', 0), part('branch-trigger', 0)]) {
       const icon = Number.parseFloat(getComputedStyle(row).getPropertyValue('--xh-icon-size'))
-      expect(icon, row.dataset.part).toBe(20)
+      expect(icon, row.dataset.part).toBe(18)
     }
     const icons = [...host!.querySelectorAll<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')]
     expect(icons.length).toBe(2)
     for (const svg of icons) {
-      expect(svg.getBoundingClientRect().width).toBe(20)
-      expect(svg.getBoundingClientRect().height).toBe(20)
+      expect(svg.getBoundingClientRect().width).toBe(18)
+      expect(svg.getBoundingClientRect().height).toBe(18)
     }
   })
 })

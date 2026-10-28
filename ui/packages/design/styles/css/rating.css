@@ -18,11 +18,11 @@
   [data-scope='rating'][data-part='root'] {
     /* 尺寸档只换这三个私有槽，星星与分值都从 root 继承它们，换档不必给每个部件各写一条选择器。
        星是评分的主体而不是控件里的附属图标，比同档控件内图标大一档：sm / md / lg 取
-       --xh-glyph-size-md / lg / xl（20 / 24 / 32px）；盒比星大一圈 4px（24 / 28 / 36px），星落在家族那圈透明边位之内、
-       不被挤偏。标签字号不随档 */
+       --xh-glyph-size-md / lg / xl（18 / 20 / 32px）；盒比星大一圈 4px，星落在家族那圈透明边位之内、不被挤偏，
+       但不小于细指针的最小目标 --xh-control-target-min（24 / 24 / 36px：sm 的 18 + 4 不够 24）。标签字号不随档 */
     --xh-_rating-item-gap: var(--xh-control-gap-md);
     --xh-_rating-item-size: var(--xh-glyph-size-lg);
-    --xh-_rating-item-box-size: calc(var(--xh-_rating-item-size) + var(--xh-space-1));
+    --xh-_rating-item-box-size: max(calc(var(--xh-_rating-item-size) + var(--xh-space-1)), var(--xh-control-target-min));
     --xh-_rating-font-size: var(--xh-control-font-md);
     --xh-icon-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
     /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */

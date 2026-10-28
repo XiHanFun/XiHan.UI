@@ -31,8 +31,8 @@ async function mount(size?: Size, variant?: 'ring' | 'arc' | 'dots'): Promise<HT
 describe('加载指示器的默认渐隐弧', () => {
   it.each([
     { size: 'sm', edge: 16 },
-    { size: undefined, edge: 20 },
-    { size: 'lg', edge: 24 },
+    { size: undefined, edge: 18 },
+    { size: 'lg', edge: 20 },
   ] as const)('$size 档直径为 $edge px', async ({ size, edge }) => {
     const root = await mount(size)
     const graphic = getComputedStyle(root, '::before')

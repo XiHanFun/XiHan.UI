@@ -1,5 +1,5 @@
 // 涨跌箭头的尺寸：皮肤画的兜底字形与作者塞进来的图标读同一把尺 --xh-icon-size，
-// 缺省跟着前后缀那一档字走（sm 字形 16px），lg 档抬到 md 20px，作者槽 --xh-statistic-icon-size 仍能覆盖。
+// 缺省跟着前后缀那一档字走（sm 字形 16px），lg 档抬到 md 18px，作者槽 --xh-statistic-icon-size 仍能覆盖。
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -33,11 +33,11 @@ function arrowSize(trend: HTMLElement): number {
 }
 
 describe('statistic 涨跌箭头', () => {
-  it('缺省与 sm 档取 sm 字形 16px，lg 档抬到 md 20px', () => {
+  it('缺省与 sm 档取 sm 字形 16px，lg 档抬到 md 18px', () => {
     expect(arrowSize(mount().trend)).toBe(16)
     expect(arrowSize(mount('sm').trend)).toBe(16)
     expect(arrowSize(mount('md').trend)).toBe(16)
-    expect(arrowSize(mount('lg').trend)).toBe(20)
+    expect(arrowSize(mount('lg').trend)).toBe(18)
   })
 
   it('箭头与作者图标读同一把尺：根上的 --xh-icon-size 就是箭头的边长', () => {

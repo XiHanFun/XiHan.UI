@@ -245,7 +245,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-notification-icon-size` | `item`<br>`item-action-trigger`<br>`item-close-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-xs` |
 | `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `background-color`<br>`border`<br>`border-color`<br>`color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`preset=toast`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-_tone-fg` |
 | `--xh-notification-indicator-p` | `item`<br>`item-indicator` | `padding` | `preset=toast` | `--xh-space-1` |
-| `--xh-notification-indicator-size` | `item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size` | `default`<br>`preset=toast` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md` |
+| `--xh-notification-indicator-size` | `item`<br>`item-indicator` | `--xh-icon-size`<br>`inline-size` | `default`<br>`preset=toast` | `--xh-_notification-title-line`<br>`--xh-glyph-size-md` |
 | `--xh-notification-inset` | `group` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start`<br>`padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default`<br>`not([data-stacked])`<br>`placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top`<br>`preset=toast`<br>`stacked` | `--xh-space-4`<br>`--xh-space-6` |
 | `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-material-elevated-bg` |
 | `--xh-notification-item-border` | `item` | `border` | `default` | `--xh-material-elevated-border` |
@@ -266,6 +266,6 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-notification-progress-thickness` | `item-progress` | `block-size` | `default` | `--xh-space-0_5` |
 | `--xh-notification-stack-scale` | `*`<br>`group`<br>`item` | `scale` | `@keyframes xh-notification-stack-in`<br>`@keyframes xh-notification-stack-out`<br>`preset=toast`<br>`stacked` | `--xh-_notification-stack-scale` |
 | `--xh-notification-title-fg` | `item`<br>`item-title` | `color` | `default`<br>`preset=toast` | `--xh-_tone-fg`<br>`--xh-fg-default` |
-| `--xh-notification-title-font-size` | `item`<br>`item-close-trigger`<br>`item-indicator`<br>`item-title` | `block-size`<br>`font-size`<br>`inset-block-start` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-heading-3-size` |
+| `--xh-notification-title-font-size` | `item`<br>`item-close-trigger`<br>`item-indicator`<br>`item-title` | `--xh-icon-size`<br>`block-size`<br>`font-size`<br>`inline-size`<br>`inset-block-start` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-heading-3-size` |
 | `--xh-notification-title-font-weight` | `item`<br>`item-title` | `font-weight` | `default`<br>`preset=toast` | `--xh-font-weight-medium`<br>`--xh-text-heading-3-weight` |
 | `--xh-notification-title-leading` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`line-height` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-leading-normal`<br>`--xh-leading-tight` |

@@ -107,16 +107,16 @@ describe.each(['comfortable', 'compact'] as const)('json 查看器自绘状态�
     }
   })
 
-  it('作者塞进空态格里的图标仍按 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者塞进空态格里的图标仍按 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const empty = part('empty', 1)
     expect(empty.hidden).toBe(false)
-    expect(Number.parseFloat(getComputedStyle(empty).getPropertyValue('--xh-icon-size'))).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(empty).getPropertyValue('--xh-icon-size'))).toBe(18)
     const icons = [...host!.querySelectorAll<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')]
     expect(icons.length).toBe(1)
     for (const svg of icons) {
-      expect(svg.getBoundingClientRect().width).toBe(20)
-      expect(svg.getBoundingClientRect().height).toBe(20)
+      expect(svg.getBoundingClientRect().width).toBe(18)
+      expect(svg.getBoundingClientRect().height).toBe(18)
     }
   })
 })

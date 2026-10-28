@@ -69,7 +69,7 @@ describe('颜色字段的盒与色块', () => {
     const swatch = part('swatch')
     const input = part('input')
     expect(control.getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-md'))
-    expect(swatch.getBoundingClientRect().width).toBe(20)
+    expect(swatch.getBoundingClientRect().width).toBe(18)
     expect(swatch.getBoundingClientRect().right).toBeLessThanOrEqual(input.getBoundingClientRect().left)
     // 色块垂直居中在盒里
     const c = control.getBoundingClientRect()
@@ -115,7 +115,7 @@ describe('颜色字段的盒与色块', () => {
   it('尺寸档同时换盒高与色块边长；清空后色块只剩棋盘格', async () => {
     await mountField({ size: 'lg' })
     expect(part('control').getBoundingClientRect().height).toBe(tokenLength('--xh-control-h-lg'))
-    expect(part('swatch').getBoundingClientRect().width).toBe(24)
+    expect(part('swatch').getBoundingClientRect().width).toBe(20)
     await userEvent.click(part('input'))
     await userEvent.keyboard('{Escape}')
     await nextTick()

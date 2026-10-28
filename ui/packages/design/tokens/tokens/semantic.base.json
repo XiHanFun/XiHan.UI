@@ -169,16 +169,17 @@
       "$value": "12px"
     },
     "size-sm": {
+      "$description": "控件内图标三档 sm / md / lg = 16 / 18 / 20px：14px 字的 md 控件配 18px 图标（naive、vean 为 17.5–18），24 格 2px 线的图标在 20px 下比同行文字重一圈。",
       "$type": "dimension",
       "$value": "16px"
     },
     "size-md": {
       "$type": "dimension",
-      "$value": "20px"
+      "$value": "18px"
     },
     "size-lg": {
       "$type": "dimension",
-      "$value": "24px"
+      "$value": "20px"
     },
     "size-xl": {
       "$description": "展示型大图标四档（空态、结果页的主图标）：从这一档起不再对齐单行控件。",

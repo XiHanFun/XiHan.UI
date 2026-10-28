@@ -23,7 +23,7 @@ const SIZES: readonly Size[] = ['sm', 'md', 'lg']
 /** 三档框（= 头像）的直径取同档控件高、随密度换档；框里图元取同档字形直径。 */
 const EXPECTED = {
   box: { sm: '--xh-control-h-sm', md: '--xh-control-h-md', lg: '--xh-control-h-lg' },
-  glyph: { sm: 16, md: 20, lg: 24 },
+  glyph: { sm: 16, md: 18, lg: 20 },
 } as const
 
 const TRANSPARENT = 'rgba(0, 0, 0, 0)'
@@ -132,14 +132,14 @@ describe('icon 底框的尺寸', () => {
     // 不加框的图标照旧跟随外层通道
     expect(plain!.getBoundingClientRect().width).toBe(12)
     expect(framed!.getBoundingClientRect().width).toBe(tokenLength('--xh-control-h-lg', host!))
-    expect(contentBox(framed!)).toEqual({ width: 24, height: 24 })
+    expect(contentBox(framed!)).toEqual({ width: 20, height: 20 })
   })
 
   it('不加框的图标尺寸不受影响：没有内衬、没有描边', async () => {
     mount(() => h(XhIcon, { icon: CHECK, size: 'lg' }))
     await nextTick()
     const style = getComputedStyle(icons()[0]!)
-    expect(icons()[0]!.getBoundingClientRect().width).toBe(24)
+    expect(icons()[0]!.getBoundingClientRect().width).toBe(20)
     expect(style.paddingTop).toBe('0px')
     expect(style.borderTopWidth).toBe('0px')
   })
