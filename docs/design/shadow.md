@@ -39,7 +39,7 @@
 - 背景滤镜与顶光两条通道保留给主题：要磨砂透景时，给 `--xh-material-frosted-bg` 半透明底、给 backdrop 一档 blur（不高于 16px，saturate 不高于 1.08）、给 highlight 不超过 1px 的内侧顶光；减少透明度、强制色与打印下这些通道一律退回实体面。开了透景的主题不把 `backdrop-filter` 放在页面根、大滚动区或重叠的多层表面，不对模糊半径做动画。
 - 没有 glass 材质，也没有任何兼容别名。
 
-Tooltip 保留反白身份，用三支 compact 配方（`--xh-material-frosted-compact-alpha / -backdrop / -shadow`，缺省不透明、无模糊、md 档投影）组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界。
+Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质，再用三支 compact 配方（`--xh-material-frosted-compact-alpha / -backdrop / -shadow`，缺省不透明、无模糊、md 档投影）组合；写了 `tone` 才换语气实底，边改取 on 色 20% 拼色承担 1px 可见边界。
 
 ## 深色档的投影
 

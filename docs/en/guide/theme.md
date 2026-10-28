@@ -254,7 +254,7 @@ Theme and contrast can be declared on different levels: each level takes the nea
 
 ### The compact recipe (Tooltip)
 
-Tooltip keeps its inverted identity and combines M2's foreground with three compact recipes. Its edge does not take the frosted stroke (a decorative edge is invisible on an inverted dark background); a 20% mix of the on-color carries the 1px visible boundary instead:
+Tooltip is not inverted: it uses the same overlay face as Popover, taking its background, text and edge from the frosted material (M2) and combining three compact recipes. Only when `tone` is set does it switch to a solid tone fill, and then a 20% mix of the on-color carries the 1px visible boundary (a neutral stroke is invisible on a colored fill):
 
 | Recipe | Normal value |
 | --- | --- |

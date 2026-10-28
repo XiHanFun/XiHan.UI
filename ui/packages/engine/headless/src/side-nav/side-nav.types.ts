@@ -316,7 +316,7 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
    */
   getTooltipPositionerProps: () => T['element']
   /**
-   * 名称提示本体：即库内 tooltip 的 content，反白面、进退场与接替窗口都随 Tooltip；
+   * 名称提示本体：即库内 tooltip 的 content，浮层面、进退场与接替窗口都随 Tooltip；
    * 对读屏隐藏（行文字已是可及名，不再念第二遍）。只在 connect 拿到内嵌提示机时可用，否则直接报错。
    */
   getTooltipContentProps: () => T['element']

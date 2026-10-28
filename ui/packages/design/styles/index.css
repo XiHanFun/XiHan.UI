@@ -43323,7 +43323,7 @@
    本皮肤 @import 它们，单独引入仍成立。 */
 
 /* 图标栏的名称提示就是库内的 Tooltip（data-scope="tooltip" 的 positioner 与 content），
-   反白面、进退场与各环境档都由它的皮肤给；本皮肤 @import 它，单独引入仍成立 */
+   浮层面、进退场与各环境档都由它的皮肤给；本皮肤 @import 它，单独引入仍成立 */
 
 /* css/tooltip.css */
 /* 定义 tooltip 样式。 */
@@ -43402,14 +43402,13 @@
     --xh-_tooltip-py: var(--xh-space-2);
     --xh-_tooltip-px: var(--xh-space-3);
     --xh-_tooltip-font-size: var(--xh-text-body-size);
-    /* Tooltip 保留反白身份（登记的反白 compact frosted）：短提示要与可交互的普通主题浮层一眼分开。
-       底取正文色、字取承载面色：浅色主题下是深底白字，深色主题下整块翻成浅底深字，两头都是同一对反色。
+    /* Tooltip 不反白，两个主题都与 Popover 同一副浮层面（compact 档 frosted）：底、字、边取 frosted 材质，
+       与普通浮层靠一行字的尺寸与 control 圆角区分，不靠反色——深色主题下也就不会翻成一块刺眼的浅色块。
        compact 档的透明度缺省不透明，底是实底；主题要透景时再由材质令牌给。
-       边不取 --xh-material-frosted-border：那是中性描边色，压在反白深底上看不见，
-       浮层要的 1px 可见边界由 on 色 20% 拼色承担；浮层不用玻璃高光，顶光缺省不画 */
-    --xh-_tooltip-solid: var(--xh-_tone, var(--xh-fg-default));
-    --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-bg-surface));
-    --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
+       写了 tone 才换语气实底 + on 色（见下面带 data-tone 的那条）；浮层不用玻璃高光，顶光缺省不画 */
+    --xh-_tooltip-solid: var(--xh-material-frosted-bg);
+    --xh-_tooltip-on: var(--xh-material-frosted-fg);
+    --xh-_tooltip-border: var(--xh-material-frosted-border);
 
     /* 与 positioner 相反：浮层本体要能接指针，指针停在提示上就不该收起
        （长文案需要停留细看）。positioner 仍是 none，空白区域照样点得穿。 */
@@ -43442,13 +43441,20 @@
     backdrop-filter: var(--xh-tooltip-backdrop, var(--xh-material-frosted-compact-backdrop));
   }
 
+  /* 写了 tone 是一块语气实底面：字取 on 色；中性描边压在彩色底上看不见，1px 可见边界由 on 色 20% 拼色承担 */
+  .xh-scope-tooltip[data-part='content'][data-tone] {
+    --xh-_tooltip-solid: var(--xh-_tone, var(--xh-material-frosted-bg));
+    --xh-_tooltip-on: var(--xh-_tone-on, var(--xh-material-frosted-fg));
+    --xh-_tooltip-border: color-mix(in oklab, var(--xh-_tooltip-on) 20%, transparent);
+  }
+
   /* 跟随鼠标的提示压在指针旁边、随指针挪：它接了指针就会挡住 trigger 上的移动，指针一滑进去便算离开了 trigger。
      这一档浮层本体同样让指针穿过去，停留细看交给 trigger 本身 */
   .xh-scope-tooltip[data-part='positioner'][data-follow-cursor] .xh-scope-tooltip[data-part='content'] {
     pointer-events: none;
   }
 
-  /* 反白面是一块彩色面（连接层打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
+  /* 语气实底是一块彩色面（写了 tone 时连接层才打 data-xh-ink-surface）：面内的作者内容按这块底取墨色。
      底色取自被墨色域改写的令牌，所以域只落在面内的子元素上，这里的取值仍按外层主题解析 */
   .xh-scope-tooltip[data-part='content'][data-xh-ink-surface] {
     --xh-ink-surface: var(--xh-tooltip-bg, var(--xh-_tooltip-solid));
@@ -43513,8 +43519,8 @@
     opacity: var(--xh-material-frosted-compact-alpha);
   }
 
-  /* 高对比仍保持反白语义：compact 配方已把 tint / blur / shadow 换成实体档，此处只加强同色边界。 */
-  :is([data-contrast='more'] :where(.xh-scope-tooltip), [data-contrast='more']).xh-scope-tooltip[data-part='content'] {
+  /* 高对比：compact 配方已把 tint / blur / shadow 换成实体档；语气实底面的拼色边换成满色 on 色，浮层面的边由材质令牌给 */
+  :is([data-contrast='more'] :where(.xh-scope-tooltip), [data-contrast='more']).xh-scope-tooltip[data-part='content'][data-tone] {
     --xh-_tooltip-border: var(--xh-_tooltip-on);
   }
 

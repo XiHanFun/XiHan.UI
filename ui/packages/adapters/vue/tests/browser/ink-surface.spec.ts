@@ -126,9 +126,9 @@ describe('实心语气面', () => {
   })
 })
 
-describe('tooltip 反白面', () => {
-  async function mountTooltip(theme: 'light' | 'dark'): Promise<void> {
-    await mount(() => h(XhTooltipRoot, { open: true }, () => [
+describe('tooltip 的面', () => {
+  async function mountTooltip(theme: 'light' | 'dark', tone?: 'danger'): Promise<void> {
+    await mount(() => h(XhTooltipRoot, { open: true, tone }, () => [
       h(XhTooltipTrigger, null, () => '目标'),
       h(XhTooltipPositioner, null, () => [
         h(XhTooltipContent, null, () => ['快捷键 ', probe(), h(XhTooltipArrow)]),
@@ -136,21 +136,21 @@ describe('tooltip 反白面', () => {
     ]), { 'data-theme': theme })
   }
 
-  it('浅色主题下是深底，面内取白墨；箭头的底色仍与面同色', async () => {
+  it('没写 tone 是普通浮层面，不是彩色面：不成墨色域，面内照页面主题取墨', async () => {
     await mountTooltip('light')
+    const content = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="content"]')!
+    expect(content.hasAttribute('data-xh-ink-surface')).toBe(false)
+    expectInk(probeBorder(), 0)
+  })
+
+  it('写了 tone 是语气实底面：面内按这块底取白墨；箭头的底色仍与面同色', async () => {
+    await mountTooltip('light', 'danger')
     const content = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="content"]')!
     expect(content.hasAttribute('data-xh-ink-surface')).toBe(true)
     expectInk(probeBorder(), 1)
     const arrow = document.querySelector<HTMLElement>('[data-scope="tooltip"][data-part="arrow"]')!
     const surface = rgba(getComputedStyle(content, '::before').backgroundColor)
     expect(rgba(getComputedStyle(arrow).backgroundColor)).toEqual(surface)
-    // 面是深底：底色的分量都在暗端
-    expect(Math.max(...surface.slice(0, 3))).toBeLessThan(0.3)
-  })
-
-  it('深色主题下是浅底，面内取黑墨', async () => {
-    await mountTooltip('dark')
-    expectInk(probeBorder(), 0)
   })
 })
 

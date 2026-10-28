@@ -34,7 +34,7 @@ interface MountOptions {
 
 /**
  * 在定位层里放一个探针，按气泡所在的主题解出某个颜色令牌。
- * 不放进气泡：反白面内是墨色域，域里的正文色已被改写成墨色。
+ * 不放进气泡：写了 tone 的语气实底面内是墨色域，域里的正文色已被改写成墨色。
  */
 function resolvedColor(token: string): string {
   const probe = document.createElement('span')
@@ -83,17 +83,19 @@ afterEach(() => {
   host = null
 })
 
-describe('tooltip 反白实底', () => {
-  it.each(['light', 'dark'] as const)('%s：反色中性实底、白面字色，14px 字、控件圆角，箭头与气泡同面同边', async (theme) => {
+describe('tooltip 浮层面', () => {
+  it.each(['light', 'dark'] as const)('%s：不反白，与 Popover 同一副浮层面，14px 字、控件圆角，箭头与气泡同面同边', async (theme) => {
     await mountTooltip({ theme })
     const content = getComputedStyle(part('content'))
     const surface = getComputedStyle(part('content'), '::before')
     const arrow = getComputedStyle(part('arrow'))
 
-    // 底取正文色、字取承载面色：浅色主题下是深底白字，深色主题下整块翻过来
+    // 底、字、边都取 frosted 材质：两个主题都不反白，深色主题下也不翻成浅色块；没写 tone 不是彩色面
     expect(surface.opacity).toBe('1')
-    expect(surface.backgroundColor).toBe(resolvedColor('--xh-fg-default'))
-    expect(content.color).toBe(resolvedColor('--xh-bg-surface'))
+    expect(surface.backgroundColor).toBe(resolvedColor('--xh-material-frosted-bg'))
+    expect(content.color).toBe(resolvedColor('--xh-material-frosted-fg'))
+    expect(content.borderTopColor).toBe(resolvedColor('--xh-material-frosted-border'))
+    expect(part('content').hasAttribute('data-xh-ink-surface')).toBe(false)
     expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toBe('none')
     expect(content.fontSize).toBe('14px')
     expect(content.paddingTop).toBe('8px')
@@ -115,6 +117,17 @@ describe('tooltip 反白实底', () => {
     ].filter(([width]) => width !== '0px')
     expect(visibleArrowEdges.length).toBe(2)
     expect(visibleArrowEdges.every(([, color]) => color === content.borderTopColor)).toBe(true)
+  })
+
+  it('写了 tone 换语气实底：字取 on 色，边是 on 色 20% 拼色，面内成为墨色域', async () => {
+    await mountTooltip({ tone: 'danger' })
+    const content = getComputedStyle(part('content'))
+    const surface = getComputedStyle(part('content'), '::before')
+
+    expect(part('content').hasAttribute('data-xh-ink-surface')).toBe(true)
+    expect(surface.backgroundColor).not.toBe(resolvedColor('--xh-material-frosted-bg'))
+    expect(content.borderTopColor).not.toBe(resolvedColor('--xh-material-frosted-border'))
+    expect(content.borderTopColor).not.toBe(content.color)
   })
 
   it('小号档只收纵向内距：纵 4 横 12，字号仍是 14px', async () => {
