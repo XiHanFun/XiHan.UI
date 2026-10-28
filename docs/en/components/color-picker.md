@@ -274,6 +274,7 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `control` | `data-required` | '' (present only while the condition holds) |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
@@ -367,10 +368,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-color-picker-action-bg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `background`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover`<br>`--xh-bg-subtle` |
 | `--xh-color-picker-action-border` | `eye-dropper-trigger` | `border` | `default` | `--xh-border-control` |
 | `--xh-color-picker-action-border-active` | `eye-dropper-trigger` | `border-color` | `state=picking` | `--xh-bg-brand` |
-| `--xh-color-picker-action-fg` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `default` | `--xh-fg-muted` |
+| `--xh-color-picker-action-fg` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `default` | `--xh-fg-field-clear`<br>`--xh-fg-muted` |
 | `--xh-color-picker-action-fg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` |
 | `--xh-color-picker-action-font-size` | `clear-trigger`<br>`eye-dropper-trigger` | `font-size` | `default` | `--xh-text-secondary-size` |
-| `--xh-color-picker-action-radius` | `clear-trigger`<br>`eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` |
+| `--xh-color-picker-action-radius` | `clear-trigger`<br>`eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-circle`<br>`--xh-shape-control` |
 | `--xh-color-picker-action-size` | `clear-trigger`<br>`eye-dropper-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` |
 | `--xh-color-picker-alpha-slider-gap` | `alpha-slider` | `gap` | `default` | `--xh-stack-gap-md` |
 | `--xh-color-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` |

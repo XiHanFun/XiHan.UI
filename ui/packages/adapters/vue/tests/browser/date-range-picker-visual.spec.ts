@@ -189,17 +189,18 @@ describe('日期范围选择器的家族观感', () => {
     expect(focused.outlineStyle === 'none' || Number.parseFloat(focused.outlineWidth) === 0).toBe(true)
   })
 
-  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角，按盒的白底承载阶梯悬停 / 按下只换面', async () => {
+  it('日历钮与清空钮是盒内 field-inset 正方钮：清空钮圆形，按盒的白底承载阶梯悬停 / 按下只换面', async () => {
     await mountPicker({ defaultValue: ['2026-09-07', '2026-09-11'] })
     const clear = part('clear-trigger')
     clear.style.transition = 'none'
     expect(clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
     expect(clear.getAttribute('data-xh-action-has-value')).toBe('')
     expect(part('trigger').getAttribute('data-xh-action-profile')).toBe('field-inset')
-    // 有值时清空钮顶上来，日历钮让位
+    // 有值且指针落在盒上时清空钮顶上来，日历钮让位
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const rest = getComputedStyle(clear)
-    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-inset', clear))
+    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-circle', clear))
     expect(rest.width).toBe(rest.height)
     expect(alpha(rest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')

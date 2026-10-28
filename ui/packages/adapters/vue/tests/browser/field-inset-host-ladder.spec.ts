@@ -50,10 +50,16 @@ function clear(): HTMLElement {
   return host!.querySelector<HTMLElement>(`[data-scope='text-field'][data-part='clear-trigger']`)!
 }
 
+/** 清空钮要指针先落在字段盒上才显出（设计真源 §8.3），再挪到钮上 */
+async function hoverClear(): Promise<void> {
+  await userEvent.hover(host!.querySelector<HTMLElement>(`[data-scope='text-field'][data-part='control']`)!)
+  await userEvent.hover(clear())
+}
+
 describe('字段内动作钮的承载面阶梯', () => {
   it('描边档字段没聚焦：盒是白底，悬停取 --xh-bg-subtle、按下取 --xh-bg-subtle-hover', async () => {
     await mount()
-    await userEvent.hover(clear())
+    await hoverClear()
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
     await pressPointer(clear())
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)'))
@@ -61,7 +67,7 @@ describe('字段内动作钮的承载面阶梯', () => {
 
   it('淡底档字段没聚焦：盒铺淡底，悬停取 --xh-bg-subtle-hover、按下取 --xh-bg-subtle-active', async () => {
     await mount({ variant: 'subtle' })
-    await userEvent.hover(clear())
+    await hoverClear()
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-hover)'))
     await pressPointer(clear())
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle-active)'))
@@ -70,13 +76,13 @@ describe('字段内动作钮的承载面阶梯', () => {
   it('淡底档字段聚焦后：盒是白色承载面，悬停回到 --xh-bg-subtle', async () => {
     await mount({ variant: 'subtle' })
     host!.querySelector<HTMLInputElement>('input')!.focus()
-    await userEvent.hover(clear())
+    await hoverClear()
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
   })
 
   it('ghost 形态的字段静息透明：悬停仍按白底阶梯取 --xh-bg-subtle', async () => {
     await mount({ variant: 'ghost' })
-    await userEvent.hover(clear())
+    await hoverClear()
     await expect.poll(() => getComputedStyle(clear()).backgroundColor).toBe(resolve('var(--xh-bg-subtle)'))
   })
 })

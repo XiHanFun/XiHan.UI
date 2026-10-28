@@ -436,6 +436,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -544,10 +545,10 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | cascader 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | cascader 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-muted` | cascader 的 item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |
@@ -656,6 +657,10 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover` · `hover: none`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

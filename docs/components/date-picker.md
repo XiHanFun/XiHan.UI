@@ -106,7 +106,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
 - 填齐了但越界即整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 切换粒度会清空旧选择，输入段、网格和周期边界随后一起切换，不做隐式转换。
-- 空值时显示日历入口；有值且渲染了清空按钮时，由清空按钮原位接替日历图标。
+- 空值时显示日历入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替日历图标，触屏上有值即接替；焦点正在日历钮上时它不让位。
 - 聚焦边界、段位强调与日期格按压都使用短过渡；减弱动效仍由全局动效轴收敛。
 
 ### 组合
@@ -424,6 +424,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
@@ -504,10 +505,10 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `--xh-date-picker-action-bg` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-date-picker-action-bg-active` | `clear-trigger`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | date-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
 | `--xh-date-picker-action-bg-hover` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open`<br>`xh-ink-surface` | `--xh-_action-variant-bg-hover` | date-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-date-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-muted` | date-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-date-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-field-clear`<br>`--xh-fg-muted` | date-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-date-picker-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open` | `--xh-fg-default` | date-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-date-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | date-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
-| `--xh-date-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | date-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-circle`<br>`--xh-shape-inset` | date-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | date-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-picker-calendar-gap` | `calendar` | `gap` | `default` | `--xh-space-0` | date-picker 的 calendar 部件 gap 覆盖槽。 |
 | `--xh-date-picker-column-divider` | `calendar`<br>`preset-group`<br>`time-column` | `background`<br>`border-block-end`<br>`border-block-start`<br>`border-inline-end` | `@media (min-width: 768px)`<br>`default`<br>`has(+ [data-part='time-column'])` | `--xh-material-solid-border` | date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-block-start、border-inline-end 覆盖槽。 |
@@ -616,7 +617,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 
 皮肤按视口分档：`min-width: 768px`。
 
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `hover: none` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

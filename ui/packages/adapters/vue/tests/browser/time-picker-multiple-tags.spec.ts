@@ -3,6 +3,7 @@
 // 显隐、折行与真实点击只有真实浏览器量得出来。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhTimePickerClearTrigger,
@@ -129,6 +130,7 @@ describe('time-picker 多选成标签', () => {
 
   it('有值时展开钮不给清空钮让位；在它上面退格摘掉最后一个', async () => {
     const { changes } = await mount({ defaultValue: ['08:00', '09:30'] })
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).not.toBe('none')
     expect(getComputedStyle(part('clear-trigger')).display).not.toBe('none')
     part('trigger').focus()

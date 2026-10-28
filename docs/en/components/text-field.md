@@ -173,7 +173,6 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `root` | `data-xh-action-owner` | '' |
 | `label` | `data-disabled` | '' (present only while the condition holds) |
 | `control` | `data-at-max` | '' (present only while the condition holds) |
 | `control` | `data-disabled` | '' (present only while the condition holds) |
@@ -181,6 +180,7 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `control` | `data-invalid` | '' (present only while the condition holds) |
 | `control` | `data-readonly` | '' (present only while the condition holds) |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `prefix` | `data-disabled` | '' (present only while the condition holds) |
@@ -213,10 +213,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-text-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` |
 | `--xh-text-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` |
 | `--xh-text-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` |
-| `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` |
+| `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` |
 | `--xh-text-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` |
 | `--xh-text-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_text-field-action-font-size` |
-| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` |
+| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` |
 | `--xh-text-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` |
 | `--xh-text-field-affix-fg` | `prefix`<br>`suffix` | `color` | `xh-field-affix` | `--xh-fg-muted` |
 | `--xh-text-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled`<br>`xh-field-affix` | `--xh-fg-disabled` |

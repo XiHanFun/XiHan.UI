@@ -433,6 +433,19 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    [data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value] {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    :where([data-xh-action-owner]:hover, [data-xh-action-owner]:focus-within) [data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value],
+    [data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value]:focus-visible {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   @media (pointer: coarse) {

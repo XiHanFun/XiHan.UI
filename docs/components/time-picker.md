@@ -124,7 +124,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 - 每列 64px 宽、七格整行高，格是 24px 高的通栏条；列底留白让末尾几格（23 时、55–59 分）也能滚到列顶，几列的选中落在同一行。快捷选项是淡底小钮，选中时在末端画对号。
 - 输入框走 Field Chrome 描边式；浮层为 floating 实体面（border-default + floating 海拔）；时分秒与快捷列各自接自绘条。
 - 浮层走弹层那一套进出场：按实际弹出方向短移、淡入放大，退场缩小淡出；减弱动效和增强对比度沿用主题设置。
-- 空值时显示时钟入口；有值且渲染了清空按钮时，由清空按钮原位接替时钟图标。
+- 空值时显示时钟入口；有值且渲染了清空按钮时，指针落在盒上（或焦点在盒内）由清空按钮原位接替时钟图标，触屏上有值即接替；焦点正在时钟钮上时它不让位。
 - 聚焦边界与当前段位使用短过渡，不以瞬时跳色表达焦点。
 
 ### 组合
@@ -441,6 +441,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
@@ -520,10 +521,10 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `--xh-time-picker-action-bg` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-time-picker-action-bg-active` | `clear-trigger`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
 | `--xh-time-picker-action-bg-hover` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open`<br>`xh-ink-surface` | `--xh-_action-variant-bg-hover` | time-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-time-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-muted` | time-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-time-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-field-clear`<br>`--xh-fg-muted` | time-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-time-picker-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open` | `--xh-fg-default` | time-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-time-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | time-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-circle`<br>`--xh-shape-inset` | time-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-solid-border` | time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-time-picker-column-gap` | `column`<br>`item` | `gap`<br>`inset-block` | `default` | `--xh-space-2` | time-picker 的 column、item 部件 gap、inset-block 覆盖槽。 |
@@ -630,6 +631,10 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover` · `hover: none`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

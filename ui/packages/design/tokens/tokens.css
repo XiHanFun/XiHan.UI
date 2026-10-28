@@ -915,6 +915,7 @@
     --xh-fg-muted: var(--xh-color-neutral-600);
     --xh-fg-subtle: var(--xh-color-neutral-550);
     --xh-fg-disabled: var(--xh-color-neutral-400);
+    --xh-fg-field-clear: color-mix(in oklab, var(--xh-fg-muted) 50%, transparent);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-on-media-chrome: var(--xh-color-neutral-0);
@@ -1137,6 +1138,7 @@
     --xh-fg-muted: var(--xh-color-neutral-400);
     --xh-fg-subtle: var(--xh-color-neutral-450);
     --xh-fg-disabled: var(--xh-color-neutral-600);
+    --xh-fg-field-clear: color-mix(in oklab, var(--xh-fg-muted) 50%, transparent);
     --xh-fg-on-brand: var(--xh-color-neutral-950);
     --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-on-media-chrome: var(--xh-color-neutral-0);
@@ -1365,6 +1367,7 @@
       --xh-fg-muted: var(--xh-color-neutral-400);
       --xh-fg-subtle: var(--xh-color-neutral-450);
       --xh-fg-disabled: var(--xh-color-neutral-600);
+      --xh-fg-field-clear: color-mix(in oklab, var(--xh-fg-muted) 50%, transparent);
       --xh-fg-on-brand: var(--xh-color-neutral-950);
       --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
       --xh-fg-on-media-chrome: var(--xh-color-neutral-0);
@@ -1694,6 +1697,7 @@
       --xh-material-liquid-rim-far: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-rim-far)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
       --xh-material-liquid-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-liquid-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
       --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
+      --xh-fg-field-clear: color-mix(in oklab, var(--xh-fg-muted) 50%, transparent);
       --xh-fg-segment-selected: var(--xh-fg-brand-strong);
       --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);

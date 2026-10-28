@@ -128,6 +128,11 @@
       "$type": "color",
       "$value": "{color.neutral.400}"
     },
+    "field-clear": {
+      "$description": "字段里清空钮的静息字形：次级前景兑 50% 的透明，按需露面时不抢输入值的视线；指到钮上换满色（设计真源 §8.3）。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {fg.muted} 50%, transparent)"
+    },
     "on-brand": {
       "$type": "color",
       "$value": "{color.neutral.0}"

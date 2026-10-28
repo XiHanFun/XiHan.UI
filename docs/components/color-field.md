@@ -233,7 +233,6 @@
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `root` | `data-xh-action-owner` | '' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-editing` | ''（条件成立时才出现） |
@@ -241,6 +240,7 @@
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `swatch` | `data-disabled` | ''（条件成立时才出现） |
@@ -271,10 +271,10 @@
 | `--xh-color-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | color-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-color-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-color-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-color-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_color-field-action-font-size` | color-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-color-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | color-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | color-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | color-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-field 的 control 部件 background-color 覆盖槽。 |

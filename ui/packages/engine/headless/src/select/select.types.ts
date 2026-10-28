@@ -350,7 +350,7 @@ export interface SelectApi<T extends PropTypes = PropTypes, V = string> {
   deselect: (value: V) => void
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
-  /** 触发器与清空按钮的收纳容器：两者在其中并排，有值时清空按钮替代展开指示符。 */
+  /** 触发器与清空按钮的收纳容器：两者在其中并排，有值且指针落在盒上（触屏上有值即）时清空按钮替代展开指示符。 */
   getControlProps: () => T['element']
   getTriggerProps: () => T['button']
   getValueTextProps: () => T['element']

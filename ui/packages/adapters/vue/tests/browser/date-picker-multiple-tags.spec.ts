@@ -3,6 +3,7 @@
 // 没有选中时标签行承载整条占位。显隐、截断与生成内容只有真实浏览器量得出来。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhDatePickerClearTrigger,
@@ -93,6 +94,7 @@ describe('date-picker 多选成标签', () => {
 
   it('有值时清空钮与日历钮都在：多选的日历钮是键盘入口，不给清空钮让位', async () => {
     await mount({ defaultValue: ['2026-07-01'] })
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('clear-trigger')).display).not.toBe('none')
     expect(getComputedStyle(part('trigger')).display).not.toBe('none')
   })

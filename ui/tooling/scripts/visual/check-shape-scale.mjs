@@ -225,6 +225,21 @@ const IDENTITY = {
   'radio-group:thumb': 'inset',
   // sheet：模态与强反馈面，比浮层再圆一档（Drawer 只取朝向页面的两个角，逻辑角长属性不在本表管辖）
   'dialog:content': 'sheet',
+  // 字段里的清空钮（设计真源 §8.3）：盒里一颗正方的单图标钮，取圆形；其余 clear-trigger（FileUpload、SignaturePad 的清空）仍按后缀走 control
+  'cascader:clear-trigger': 'circle',
+  'color-field:clear-trigger': 'circle',
+  'color-picker:clear-trigger': 'circle',
+  'combobox:clear-trigger': 'circle',
+  'date-field:clear-trigger': 'circle',
+  'date-picker:clear-trigger': 'circle',
+  'date-range-picker:clear-trigger': 'circle',
+  'select:clear-trigger': 'circle',
+  'tags-input:clear-trigger': 'circle',
+  'text-field:clear-trigger': 'circle',
+  'time-field:clear-trigger': 'circle',
+  'time-picker:clear-trigger': 'circle',
+  'time-range-picker:clear-trigger': 'circle',
+  'tree-select:clear-trigger': 'circle',
 }
 /** 所有 *close-trigger / *clear-trigger 都是 control 档：按部件名后缀登记，不逐组件列。 */
 const IDENTITY_SUFFIX = { 'close-trigger': 'control', 'clear-trigger': 'control' }

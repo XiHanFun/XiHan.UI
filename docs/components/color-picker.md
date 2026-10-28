@@ -392,6 +392,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `control` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-layout` | 'multi-tag' \| undefined |
 | `control` | `data-xh-field-size` | props.size |
@@ -486,10 +487,10 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-action-bg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `background`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover`<br>`--xh-bg-subtle` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 background、background-color 覆盖槽。 |
 | `--xh-color-picker-action-border` | `eye-dropper-trigger` | `border` | `default` | `--xh-border-control` | color-picker 的 eye-dropper-trigger 部件 border 覆盖槽。 |
 | `--xh-color-picker-action-border-active` | `eye-dropper-trigger` | `border-color` | `state=picking` | `--xh-bg-brand` | color-picker 的 eye-dropper-trigger 部件 border-color 覆盖槽。 |
-| `--xh-color-picker-action-fg` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `default` | `--xh-fg-muted` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。 |
+| `--xh-color-picker-action-fg` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `default` | `--xh-fg-field-clear`<br>`--xh-fg-muted` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。 |
 | `--xh-color-picker-action-fg-hover` | `clear-trigger`<br>`eye-dropper-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 color 覆盖槽。 |
 | `--xh-color-picker-action-font-size` | `clear-trigger`<br>`eye-dropper-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 font-size 覆盖槽。 |
-| `--xh-color-picker-action-radius` | `clear-trigger`<br>`eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-control`<br>`--xh-shape-inset` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-action-radius` | `clear-trigger`<br>`eye-dropper-trigger` | `border-radius` | `default` | `--xh-shape-circle`<br>`--xh-shape-control` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-action-size` | `clear-trigger`<br>`eye-dropper-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | color-picker 的 clear-trigger、eye-dropper-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-picker-alpha-slider-gap` | `alpha-slider` | `gap` | `default` | `--xh-stack-gap-md` | color-picker 的 alpha-slider 部件 gap 覆盖槽。 |
 | `--xh-color-picker-confirm-trigger-bg` | `confirm-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | color-picker 的 confirm-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
