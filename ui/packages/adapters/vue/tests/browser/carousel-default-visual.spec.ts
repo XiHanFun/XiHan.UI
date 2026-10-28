@@ -71,7 +71,7 @@ describe('carousel 默认视觉', () => {
   it.each([
     ['sm', 24, 12],
     ['md', 24, 16],
-    ['lg', 28, 20],
+    ['lg', 28, 18],
   ] as const)('%s 档：翻页与播放钮 %ipx 圆钮、字形 %ipx（sm 不低于 24px 的最小目标，只收字形）', (size, box, glyph) => {
     const carousel = mount('horizontal', false, size)
     for (const trigger of [carousel.prev, carousel.next, carousel.autoplay]) {

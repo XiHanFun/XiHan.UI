@@ -1595,7 +1595,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §6.5 控件内图标 | `glyph.size-md/lg` 改 18 / 20px；Rating 的星盒不小于 `--xh-control-target-min`；Notification 卡片的类型字形改按标题行框取尺；皮肤注释、组件文档与测试里写 20 / 24px 的说法 |
 | §5.2、§8.3 Alert | 根面描边改取语气淡边 `--xh-_tone-border`，banner 只留 block-end 一道 |
 | §9.9 Tooltip 停留 | `openDelay` / `closeDelay` 缺省改 150 / 100ms；WC 属性说明、延时演示与停留时长页同步 |
 | §8.4 Tooltip 的面 | 皮肤改取 frosted 材质的底、字、边，写了 tone 才换语气实底；连接层只在写了 tone 时打 `data-xh-ink-surface`；`check-surface-edge` 的反白名单清空，`axis-scope` 登记 tooltip 消费 tone |

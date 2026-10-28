@@ -61,8 +61,8 @@ describe('rating 字段标签、星形尺度与按压', () => {
   })
 
   it.each([
-    ['sm', 20, 24],
-    ['', 24, 28],
+    ['sm', 18, 24],
+    ['', 20, 24],
     ['lg', 32, 36],
   ] as const)('星按档取字形尺 %s：星 %ipx，盒比星大一圈取 %ipx 正方', (size, star, box) => {
     const { item } = mount('', size ? `data-size="${size}"` : '')
@@ -128,7 +128,7 @@ describe('rating 字段标签、星形尺度与按压', () => {
     expect(getComputedStyle(item).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     await userEvent.unhover(item)
     const after = getComputedStyle(item, '::after')
-    expect(after.width).toBe('24px')
+    expect(after.width).toBe('20px')
     expect(after.minWidth).toBe('0px')
   })
 })

@@ -167,13 +167,13 @@ describe.each(['comfortable', 'compact'] as const)('菜单栏自绘状态字形�
     expect(chevron.height, observed).toBeLessThanOrEqual(more.getBoundingClientRect().height)
   })
 
-  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const cut = item('cut')
-    expect(Number.parseFloat(getComputedStyle(cut).getPropertyValue('--xh-icon-size'))).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(cut).getPropertyValue('--xh-icon-size'))).toBe(18)
     const svg = cut.querySelector<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')!
     const rect = svg.getBoundingClientRect()
-    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
-    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
+    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
+    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
   })
 })

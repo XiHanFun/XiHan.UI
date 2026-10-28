@@ -61,7 +61,7 @@ describe('float-button 的尺寸表', () => {
   it.each([
     ['sm', 28, '16px'],
     ['md', 40, '16px'],
-    ['lg', 44, '20px'],
+    ['lg', 44, '18px'],
   ] as const)('%s 档：触发器与原生动作项都是 %ipx，兜底字形 %s', async (size, px, glyph) => {
     const { trigger, item } = await mount({ size })
     expect([trigger.getBoundingClientRect().width, trigger.getBoundingClientRect().height]).toEqual([px, px])

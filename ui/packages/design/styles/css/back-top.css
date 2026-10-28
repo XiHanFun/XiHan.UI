@@ -18,7 +18,7 @@
   /* 定位壳：钉在视口的尾下角，用逻辑属性，RTL 下自动换到另一侧。
      不声明 display —— 收起态由连接层写 hidden，UA 的 [hidden]{display:none} 得压得住 */
   [data-scope='back-top'][data-part='root'] {
-    /* 钮的尺：md 取独立浮钮的直径（40px），sm / lg 取方格档；字形比控件内图标低一档（sm / md 16px、lg 20px） */
+    /* 钮的尺：md 取独立浮钮的直径（40px），sm / lg 取方格档；字形比控件内图标低一档（sm / md 16px、lg 18px） */
     --xh-_back-top-size: var(--xh-control-float-md);
     --xh-_back-top-glyph-size: var(--xh-glyph-size-sm);
 

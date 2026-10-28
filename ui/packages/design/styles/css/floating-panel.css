@@ -56,7 +56,7 @@
     --xh-action-radius: var(--xh-floating-panel-trigger-radius, var(--xh-shape-control));
     --xh-action-visual-size: var(--xh-floating-panel-trigger-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-inline: var(--xh-floating-panel-trigger-px, var(--xh-_action-profile-padding-inline));
-    /* 作者塞进按钮的图标随档取字形尺（md = 20px） */
+    /* 作者塞进按钮的图标随档取字形尺（md = 18px） */
     --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-_action-profile-glyph-size));
   }
 

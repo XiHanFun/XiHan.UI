@@ -116,7 +116,7 @@ describe('wc 同层有图标就整层留图标列', () => {
 
   it('listbox：带行首格的一条、不带的几条（含分组里的）正文左缘对齐', async () => {
     document.body.innerHTML = `<xh-listbox style="inline-size: 240px"><div data-xh-part="root" aria-label="水果"><div data-xh-part="content">
-      <div data-xh-part="item" value="iconed"><span data-xh-part="item-prefix"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 12h16" stroke="currentColor"/></svg></span><span data-xh-part="item-text">带图标</span></div>
+      <div data-xh-part="item" value="iconed"><span data-xh-part="item-prefix"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 12h16" stroke="currentColor"/></svg></span><span data-xh-part="item-text">带图标</span></div>
       <div data-xh-part="item" value="plain"><span data-xh-part="item-text">不带</span></div>
       <div data-xh-part="group" value="more"><div data-xh-part="item" value="grouped"><span data-xh-part="item-text">分组里的</span></div></div>
     </div></div></xh-listbox>`

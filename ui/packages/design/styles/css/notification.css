@@ -488,10 +488,11 @@
     content: none;
   }
 
-  /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行高，
-     字形在盒里居中，标题字号改了也不会错位。卡片的类型字形 24px，与 16px 标题的一行（24px）同高 */
+  /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行框，
+     字形在盒里居中，标题字号改了也不会错位。卡片的类型字形不随控件内图标档，与 16px 标题的一行（24px）同高 */
   [data-scope='notification'][data-part='item-indicator'] {
-    --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-lg));
+    --xh-_notification-title-line: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-leading-normal));
+    --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-_notification-title-line));
     /* 加载环随语气色（加载环配方缺省取品牌色），与语气字形同一支 */
     --xh-_loading-ring-fg: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
 
@@ -501,12 +502,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    block-size: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-leading-normal));
-    inline-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-lg));
+    block-size: var(--xh-_notification-title-line);
+    inline-size: var(--xh-notification-indicator-size, var(--xh-_notification-title-line));
     color: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
   }
 
-  /* 轻提示：字形取 md 档 20px；方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
+  /* 轻提示：字形取 md 档 18px；方盒自带一圈内衬，与间距合起来让出字形到正文的那段距离 */
   [data-scope='notification'][data-part='item'][data-preset='toast'] [data-part='item-indicator']:where([data-scope='notification']) {
     --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-glyph-size-md));
 

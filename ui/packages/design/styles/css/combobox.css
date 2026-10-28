@@ -451,7 +451,7 @@
      盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
      兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（勾选标记不是勾选格，不取 × 0.75，与 Select /
      Listbox / Menu 族同口径）；不读 root / positioner 按档下发的 --xh-icon-size——那支只管作者放进条目里的
-     图标，按图标档取的 20px 比 16 / 14 的指示符档大一圈 */
+     图标，按图标档取的 18px 比 16 / 14 的指示符档大一圈 */
   [data-scope='combobox'][data-part='item-indicator'] {
     --xh-icon-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
 

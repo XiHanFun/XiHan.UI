@@ -55318,7 +55318,7 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-glyph-size-lg",
+        "--xh-_notification-title-line",
         "--xh-glyph-size-md"
       ],
       "visibility": "public",
@@ -55738,8 +55738,10 @@
         "item-title"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "font-size",
+        "inline-size",
         "inset-block-start"
       ],
       "state": [
@@ -55752,7 +55754,7 @@
         "--xh-text-heading-3-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-close-trigger、item-indicator、item-title 部件 block-size、font-size、inset-block-start 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-indicator、item-title 部件 --xh-icon-size、block-size、font-size、inline-size、inset-block-start 覆盖槽。"
     },
     {
       "name": "--xh-notification-title-font-weight",

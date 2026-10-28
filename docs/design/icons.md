@@ -22,7 +22,7 @@
   }"
 />
 
-- 控件内图标随 `size` 档取 16 / 20 / 24px：Action Control、Field Chrome、Collection Item 三份配方按档下发 `--xh-icon-size`，皮肤缺省值只能是 `var(--xh-<组件>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
+- 控件内图标随 `size` 档取 16 / 18 / 20px：Action Control、Field Chrome、Collection Item 三份配方按档下发 `--xh-icon-size`，皮肤缺省值只能是 `var(--xh-<组件>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
 - 描边三档 `--xh-glyph-stroke-light / regular / bold` = 1.5 / 2 / 2.5px；行内图标以 `--xh-glyph-baseline-shift`（-0.125em）压回文字基线。
 - 图标颜色一律 `currentColor`：随语气、悬停、禁用与前景一起变，不单独上色。
 

@@ -25,7 +25,7 @@
   [data-scope='float-button'][data-part='root'] {
     --xh-_float-button-offset: var(--xh-space-6);
     /* 触发器与展开列表里原生动作项的身量与字形尺，同一张表：md 取独立浮钮的直径（40px），
-       sm / lg 取方格档；字形比控件内图标低一档（sm / md 16px、lg 20px）。
+       sm / lg 取方格档；字形比控件内图标低一档（sm / md 16px、lg 18px）。
        原生动作项不是 Headless 部件、配方打不到它，触发器也读这两支私有槽，换档只改这里 */
     --xh-_float-button-size: var(--xh-control-float-md);
     --xh-_float-button-glyph-size: var(--xh-glyph-size-sm);

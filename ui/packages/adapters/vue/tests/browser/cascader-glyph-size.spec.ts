@@ -1,6 +1,6 @@
 // 级联选择器列里自绘的状态字形——行尾选中标记盒里的勾与半选杠、分支条目行尾的展开 chevron——是指示符，
 // 不是控件内图标：它们与所在的盒同属 --xh-control-indicator-* 一族，条目上由家族按档下发的
-// --xh-icon-size（桥自 --xh-cascader-icon-size，md 20px）只管作者放进条目里的图标。
+// --xh-icon-size（桥自 --xh-cascader-icon-size，md 18px）只管作者放进条目里的图标。
 // 标记盒早已按指示符档取尺（comfortable 16 / compact 14），但盒里的兜底勾与半选杠此前读的是行上的
 // --xh-icon-size：20 的勾落在 16 / 14 的盒里比盒还大；分支箭头缺省也读它，比同一行的标记盒大一圈。
 // 两档密度一起量：字形与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺），作者图标两档都恒 20。
@@ -228,14 +228,14 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     expect(rect.height, `标记位图标 ${rect.width}×${rect.height}`).toBe(indicator)
   })
 
-  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const row = item('hangzhou')
-    expect(Number.parseFloat(getComputedStyle(row).getPropertyValue('--xh-icon-size'))).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(row).getPropertyValue('--xh-icon-size'))).toBe(18)
     const svg = row.querySelector<HTMLElement>(':scope > [data-scope=\'icon\'][data-part=\'root\']')!
     const rect = svg.getBoundingClientRect()
-    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
-    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(20)
+    expect(rect.width, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
+    expect(rect.height, `条目图标 ${rect.width}×${rect.height}`).toBe(18)
   })
 
   it('搜索候选行尾的勾与列里的标记盒同一把尺', async () => {

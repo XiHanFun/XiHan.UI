@@ -193,10 +193,10 @@ describe.each(['comfortable', 'compact'] as const)('表格自绘状态字形按�
     expect(chevron.height, observed).toBe(indicator)
   })
 
-  it('作者塞进列头与单元格的图标仍按 --xh-icon-size（md 20px）取尺，不随指示符档变', async () => {
+  it('作者塞进列头与单元格的图标仍按 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {
     await mount(density)
     const icon = Number.parseFloat(getComputedStyle(part('root')).getPropertyValue('--xh-icon-size'))
-    expect(icon).toBe(20)
+    expect(icon).toBe(18)
     const icons = [...host!.querySelectorAll<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')]
     expect(icons.length).toBe(3)
     for (const svg of icons) {

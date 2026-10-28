@@ -1,6 +1,6 @@
 // 步骤条自绘的状态字形——走过的步里皮肤画的兜底对号——是指示符，不是控件内图标：它与序号圆点同属
 // --xh-control-indicator-* 一族，root 上的 --xh-icon-size（桥自 --xh-steps-icon-size，按尺寸档取字形尺，
-// md 20px）只管作者放进标题 / 说明里的图标。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档
+// md 18px）只管作者放进标题 / 说明里的图标。两档密度一起量：对号与作者塞进圆点里的 XhIcon 走指示符档
 // 16 / 14，作者放进标题里的图标两档都是 md 档的字形尺；圆点自己走 marker-size 尺，随密度换档。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -127,13 +127,13 @@ describe.each(['comfortable', 'compact'] as const)('步骤条自绘状态字形�
     expect(rect.height, `圆点图标 ${rect.width}×${rect.height}`).toBe(indicator)
   })
 
-  it('作者放进标题里的图标按 root 的 --xh-icon-size（md 档 20px）取尺，不随指示符档变', async () => {
+  it('作者放进标题里的图标按 root 的 --xh-icon-size（md 档 18px）取尺，不随指示符档变', async () => {
     await mount(density)
-    expect(Number.parseFloat(getComputedStyle(part('root')).getPropertyValue('--xh-icon-size'))).toBe(20)
+    expect(Number.parseFloat(getComputedStyle(part('root')).getPropertyValue('--xh-icon-size'))).toBe(18)
     const title = part('title', 2)
     const svg = title.querySelector<HTMLElement>('[data-scope=\'icon\'][data-part=\'root\']')!
     const rect = svg.getBoundingClientRect()
-    expect(rect.width, `标题图标 ${rect.width}×${rect.height}`).toBe(20)
-    expect(rect.height, `标题图标 ${rect.width}×${rect.height}`).toBe(20)
+    expect(rect.width, `标题图标 ${rect.width}×${rect.height}`).toBe(18)
+    expect(rect.height, `标题图标 ${rect.width}×${rect.height}`).toBe(18)
   })
 })

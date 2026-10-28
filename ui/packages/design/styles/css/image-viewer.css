@@ -261,7 +261,7 @@
   }
 
   /* 翻页与关闭钮的尺：看片台上的媒体控制钮与同档控件等高（control-h，md 32px），字形比控件内
-     图标低一档（sm / md 16px、lg 20px），不压画面。三颗钮与组件同档 */
+     图标低一档（sm / md 16px、lg 18px），不压画面。三颗钮与组件同档 */
   [data-scope='image-viewer']:is([data-part='prev-trigger'], [data-part='next-trigger'], [data-part='close-trigger']) {
     --xh-_image-viewer-nav-size: var(--xh-control-h-md);
     --xh-_image-viewer-nav-glyph: var(--xh-glyph-size-sm);

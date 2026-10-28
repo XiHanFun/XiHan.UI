@@ -74,19 +74,19 @@ describe('颜色色块的面', () => {
     expect(getComputedStyle(el).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('三档边长跟着字形档走：16 / 20 / 24px，圆角恒是内嵌档', async () => {
+  it('三档边长跟着字形档走：16 / 18 / 20px，圆角恒是内嵌档', async () => {
     const sm = await mountSwatch({ value: '#3b82f6', size: 'sm' })
     expect(sm.getBoundingClientRect().width).toBe(16)
     app?.unmount()
     host?.remove()
     const md = await mountSwatch({ value: '#3b82f6' })
-    expect(md.getBoundingClientRect().width).toBe(20)
+    expect(md.getBoundingClientRect().width).toBe(18)
     expect(getComputedStyle(md).borderTopLeftRadius).toBe(`${tokenLength('--xh-shape-inset')}px`)
     app?.unmount()
     host?.remove()
     const lg = await mountSwatch({ value: '#3b82f6', size: 'lg' })
-    expect(lg.getBoundingClientRect().width).toBe(24)
-    expect(lg.getBoundingClientRect().height).toBe(24)
+    expect(lg.getBoundingClientRect().width).toBe(20)
+    expect(lg.getBoundingClientRect().height).toBe(20)
   })
 
   it('解析不出的串只剩棋盘格，描边换成无效色', async () => {

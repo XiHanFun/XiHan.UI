@@ -261,7 +261,7 @@
 
   /* 子菜单箭头留在主行末端；description 即使写在它前面，也由 order 独占下一行。
      箭头是指示符：与标记位的盒同走 --xh-control-indicator-size，不读 --xh-icon-size——
-     按图标档取的 20px 会比 16px 的标记位盒大一圈 */
+     按图标档取的 18px 会比 16px 的标记位盒大一圈 */
   [data-scope='context-menu'][data-part='item'][aria-haspopup='menu']::after {
     content: '';
     flex: none;
@@ -331,7 +331,7 @@
 
   /* 对号（只在勾选与单选条目上）排在主行行尾，不为普通条目占列，见下文。盒是指示符：按指示符档
      取尺，与 Menu / Cascader 的标记位同走 --xh-control-indicator-size，不读家族按档下发的 --xh-icon-size——
-     按图标档取的 20px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
+     按图标档取的 18px 会比同一行 16px 的指示符档大一圈。盒在自己身上把 --xh-icon-size 改接到盒的尺，
      皮肤画的兜底勾与作者塞进标记位的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75）；
      条目上那支只管作者直接放进条目里的图标 */
   [data-scope='context-menu'][data-part='item-indicator'] {

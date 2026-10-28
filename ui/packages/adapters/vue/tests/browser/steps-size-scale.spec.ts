@@ -1,5 +1,5 @@
 // 步骤条的尺寸档：序号圆点取状态圆那把尺 marker-size 的 sm / md / lg（比同档控件矮一档），随密度换档；
-// 作者放进标题里的图标是控件内图标，按档取 glyph-size-sm / md / lg（16 / 20 / 24），不再三档都钉在 16。
+// 作者放进标题里的图标是控件内图标，按档取 glyph-size-sm / md / lg（16 / 18 / 20），不再三档都钉在 16。
 // 两档密度、三个尺寸档一起量：圆点直径等于同档 marker-size，标题图标等于同档字形令牌。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

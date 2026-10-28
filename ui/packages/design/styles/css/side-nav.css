@@ -395,7 +395,7 @@
      盒里的 chevron 是指示符：盒按指示符档定尺（comfortable 16 / compact 14，与 Tree / TreeSelect
      的 branch-indicator 同款定尺盒），--xh-icon-size 在自己身上改接到盒的尺，兜底字形与作者塞进盒里的
      XhIcon 读同一把尺、与盒同边长；不读家族按档下发到行的 --xh-icon-size——那支只管作者放进行里的
-     图标，按图标档取的 20px 比指示符档大一圈。盒自己定尺而不随字形撑开：转 90° 时才不抖 */
+     图标，按图标档取的 18px 比指示符档大一圈。盒自己定尺而不随字形撑开：转 90° 时才不抖 */
   [data-scope='side-nav'][data-part='branch-indicator'] {
     --xh-icon-size: var(--xh-side-nav-branch-indicator-size, var(--xh-control-indicator-size));
 
