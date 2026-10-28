@@ -19,7 +19,7 @@ import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 /** Tooltip 的缺省开延时（openDelay 的文档默认值）：名称提示不另给，悬停就等这么久。 */
-const TOOLTIP_OPEN_DELAY = 700
+const TOOLTIP_OPEN_DELAY = 150
 
 let app: App | null = null
 let host: HTMLElement | null = null

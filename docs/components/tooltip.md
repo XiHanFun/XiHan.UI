@@ -32,7 +32,7 @@ placement 是请求值，空间不足时由定位引擎避让；箭头跟随最�
 
 ### 延时
 
-openDelay 默认 700ms 用于防误触，closeDelay 默认 300ms 留出指针移动的余地；聚焦不经这两段等待
+openDelay 默认 150ms 用于防误触，closeDelay 默认 100ms 留出指针移动的余地；聚焦不经这两段等待
 
 <XhDemo src="tooltip/03-delay" />
 
@@ -157,8 +157,8 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 | `placement` | `Placement` |  | 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
-| `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
-| `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
+| `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 150。 |
+| `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 100。 |
 | `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `followCursor` | `boolean` |  | 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。 |

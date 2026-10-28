@@ -71,9 +71,9 @@ export interface TooltipSchema extends MachineSchema {
     dir?: Direction
     /** 浮层与锚点的间距（px）。 */
     offset?: number
-    /** 悬停进入到展开的等待毫秒，默认 700。 */
+    /** 悬停进入到展开的等待毫秒，默认 150。 */
     openDelay?: number
-    /** 悬停移出到收起的等待毫秒，默认 300。 */
+    /** 悬停移出到收起的等待毫秒，默认 100。 */
     closeDelay?: number
     /**
      * 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、

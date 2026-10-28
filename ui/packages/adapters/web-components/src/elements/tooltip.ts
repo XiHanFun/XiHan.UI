@@ -46,8 +46,8 @@ const NUMBER_CONVERTER = {
  * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
- * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
- * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
+ * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 150
+ * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 100
  * @attr {number} skip-delay-duration - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
  * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
  * @attr {boolean} follow-cursor - 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger
