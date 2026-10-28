@@ -59,7 +59,7 @@ font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklab(0.208 -0.00124747 -0.00586889 / 0.6)
+background-color: oklab(0.208 -0.00124747 -0.00586889 / 0.4)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease

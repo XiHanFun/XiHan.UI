@@ -1595,7 +1595,6 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §8.4 模态遮罩 | 浅色 `bg.overlay` 改 neutral-900 兑 40%，深色仍是纯黑 60% |
 | §6.8 Progress | `track.thickness-sm/md/lg` 改 4 / 8 / 12px |
 | §6.5 控件内图标 | `glyph.size-md/lg` 改 18 / 20px；Rating 的星盒不小于 `--xh-control-target-min`；Notification 卡片的类型字形改按标题行框取尺；皮肤注释、组件文档与测试里写 20 / 24px 的说法 |
 | §5.2、§8.3 Alert | 根面描边改取语气淡边 `--xh-_tone-border`，banner 只留 block-end 一道 |
