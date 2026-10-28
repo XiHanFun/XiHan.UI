@@ -89,9 +89,9 @@
       "$value": "color-mix(in oklab, {bg.brand} 8%, {bg.surface})"
     },
     "overlay": {
-      "$description": "模态遮罩：正文深灰兑 60%，压暗页面而不发黑。",
+      "$description": "模态遮罩：正文深灰兑 40%，压暗页面而不发黑，背后仍认得出是哪一页（naive 同档）；深色主题另取纯黑 60%。",
       "$type": "color",
-      "$value": "color-mix(in oklab, {color.neutral.900} 60%, transparent)"
+      "$value": "color-mix(in oklab, {color.neutral.900} 40%, transparent)"
     },
     "media-chrome": {
       "$description": "压在图片与视频上的控件面（看片层的翻页钮、关闭钮与计数）：近黑兑 55% 的深纱。亮暗两档同值——它跟的是底下的画面不是页面主题，白面压在亮图上分不出来。",
