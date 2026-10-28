@@ -1595,6 +1595,5 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 | --- | --- |
 | §8.5 liquid | Toolbar 悬浮档与悬浮栏里相邻分段结液态组（Toolbar 还没有悬浮形态，等它落地再接） |
 | §9.11 弹簧 | `--xh-motion-ease-spring` |
-| §6.4 字体 | 令牌加 `font-family.sans`；`@xihan-ui/styles` 加可选入口 `global.css`（不进 index.css），主题指南写接法 |
 | §5.2 Button 变体 | core 加 `ButtonVariant`；Action Control 配方加 dashed / link 两档形态矩阵与 link 的下划线规则；按钮演示补两档 |
 | 第一组细节的像素基线 | 上面各条改了外观的截图在容器里重跑 `pnpm visual:baseline --update`（本机 Docker 引擎不可用，还没跑） |

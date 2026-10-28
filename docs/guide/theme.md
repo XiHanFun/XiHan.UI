@@ -99,7 +99,15 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 
-必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 18 / 20）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+
+组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
+
+```ts
+import '@xihan-ui/styles/global.css'
+```
+
+这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。
 
 ## 八轴视觉环境运行时
 

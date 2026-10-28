@@ -193,7 +193,7 @@ brand  neutral  success  warning  danger  info
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 40 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 148 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边或图表提示框会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
-| `@xihan-ui/styles` 的 CSS 子路径 | 172 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 155 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./not-defined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css`，以及改名前的旧路径 `./undefined.css`（内容同 `./not-defined.css`，6.0.0 移除）；另有组件令牌的 `./component-tokens`、`./components.tokens.json` 与按需注入插件 `./vite` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 173 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 155 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./not-defined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css`，以及改名前的旧路径 `./undefined.css`（内容同 `./not-defined.css`，6.0.0 移除）；另有组件令牌的 `./component-tokens`、`./components.tokens.json` 与按需注入插件 `./vite` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -206,7 +206,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 811 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 812 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -398,7 +398,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 | `@xihan-ui/web-components` | 148 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 143 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 811 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 812 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./json` 子入口的全部导出（JSON 值类型、普通对象判断、合法性检查、深拷贝、按值比较、深冻结、按路径读写、路径前缀、路径的文字形式与解析、JSON Pointer 片段、变化路径），`./url` 子入口的全部导出（图片地址的安全判定），`./template` 子入口的全部导出（文本模板），以及 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
 | `@xihan-ui/position` | `createPositionEngine`、`createDeferredPositionEngine`、`loadPositionEngine` 与引擎的选项；其余 9 个导出是内部算子 |
@@ -431,11 +431,11 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，20902 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，20903 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 245 条子入口、11209 个导出名、143 个 `data-scope` 与 1424 条部件配对、
-143 个组件的 2335 个 prop 名、322 种 `data-*`、33 个 `data-state` 取值、811 个令牌、
+覆盖：包名与 246 条子入口、11209 个导出名、143 个 `data-scope` 与 1424 条部件配对、
+143 个组件的 2335 个 prop 名、322 种 `data-*`、33 个 `data-state` 取值、812 个令牌、
 5 个 `@layer` 名、4801 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改

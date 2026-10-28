@@ -273,6 +273,11 @@
     }
   },
   "font-family": {
+    "sans": {
+      "$description": "缺省无衬线栈：组件不定字体、照常继承宿主（设计真源 §6.4），只有引入可选入口 @xihan-ui/styles/global.css 时才由它落到页面根上。系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文。",
+      "$type": "fontFamily",
+      "$value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans SC\", sans-serif"
+    },
     "mono": {
       "$type": "fontFamily",
       "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"

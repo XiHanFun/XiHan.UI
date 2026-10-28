@@ -44,6 +44,7 @@
     "./swatch.css": "./dist/family/swatch.css",
     "./tag-list.css": "./dist/family/tag-list.css",
     "./components.tokens.json": "./components.tokens.json",
+    "./global.css": "./dist/global.css",
     "./vite": {
       "types": "./vite.d.ts",
       "import": "./vite.js"

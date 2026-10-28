@@ -142,6 +142,11 @@ for (const dir of SUBPATH_DIRS) {
   console.log(`已生成 dist/${dir}/（${names.length} 份）`)
 }
 
+// 可选的全局入口（@xihan-ui/styles/global.css）：不进 index.css，只压缩一份放进 dist/。
+// 它只选 :root、不碰库节点，不挂载类
+fs.writeFileSync(path.join(pkgRoot, 'dist', 'global.css'), MINIFIED_HEAD + minifyCss(fs.readFileSync(path.join(pkgRoot, 'global.css'), 'utf8')))
+console.log('已生成 dist/global.css')
+
 // 改过名的子路径：旧路径照新文件出一份副本，开头带弃用说明（见 build/deprecated-subpaths.mjs）
 for (const [oldName, { target }] of Object.entries(DEPRECATED_SUBPATHS)) {
   const current = fs.readFileSync(path.join(pkgRoot, 'dist', 'css', target), 'utf8').slice(MINIFIED_HEAD.length)

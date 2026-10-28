@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 可选的全局入口（@xihan-ui/styles/global.css）：把库的缺省无衬线栈落到页面根上。
+ *
+ * 组件自己不定字体、照常继承宿主（设计真源 §6.4），不引入这份文件时一切跟宿主走；index.css 不含它。
+ * 引入后 :root 取 --xh-font-family-sans，Portal 渲到 body 里的浮层沿继承一并拿到。
+ * 规则放在最低的 xihan.reset 层、选择器包进 :where()，宿主自己写的字体（有层无层都算）照样压得住。
+ * 先写一遍层序声明：这份文件排在 index.css 之前引入时，层的先后仍与 css/layers.css 一致。
+ */
+@layer xihan.reset, xihan.tokens, xihan.motion, xihan.components, xihan.overrides;
+
+@layer xihan.reset {
+  :where(:root) {
+    font-family: var(--xh-font-family-sans);
+  }
+}
