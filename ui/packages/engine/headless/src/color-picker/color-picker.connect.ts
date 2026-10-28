@@ -229,6 +229,8 @@ export function connectColorPicker<T extends PropTypes>(
     /** 触发按钮的收纳容器，也是描边、底色与聚焦环所在的那一层：接字段外壳家族，与同族字段同一套静息 / 悬停 / 聚焦面。 */
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // 字段盒是清空钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时清空钮才显出
+      'data-xh-action-owner': '',
       ...stateAttrs(),
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',

@@ -77,8 +77,6 @@ export function connectTextField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // Action Control 的显示策略只读取命名空间宿主，不反查 text-field anatomy。
-      'data-xh-action-owner': '',
       // variant/tone/size 落在 root；control 再带一份 data-variant 给 Field Chrome 家族选择器
       'data-variant': variant,
       'data-tone': prop('tone'),
@@ -93,6 +91,8 @@ export function connectTextField<T extends PropTypes>(
     // 视觉盒：描边、底色与聚焦环画在这个节点上，输入框与清空按钮排在它里面
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // 字段盒是清空钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时清空钮才显出
+      'data-xh-action-owner': '',
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
       'data-variant': variant,

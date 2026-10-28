@@ -442,6 +442,8 @@ export function connectDateRangePicker<T extends PropTypes>(
     // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // 字段盒是清空钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时清空钮才显出
+      'data-xh-action-owner': '',
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
       'data-variant': variant,

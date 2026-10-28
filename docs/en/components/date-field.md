@@ -196,6 +196,7 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `control` | `data-invalid` | '' (present only while the condition holds) |
 | `control` | `data-readonly` | '' (present only while the condition holds) |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | '' (present only while the condition holds) |
@@ -227,10 +228,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-date-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` |
 | `--xh-date-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` |
 | `--xh-date-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` |
-| `--xh-date-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` |
+| `--xh-date-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` |
 | `--xh-date-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` |
 | `--xh-date-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` |
-| `--xh-date-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` |
+| `--xh-date-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` |
 | `--xh-date-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` |
 | `--xh-date-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` |
 | `--xh-date-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` |

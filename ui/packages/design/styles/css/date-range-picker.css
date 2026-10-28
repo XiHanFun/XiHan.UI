@@ -282,7 +282,6 @@
   [data-scope='date-range-picker'][data-part='clear-trigger'] {
     --xh-action-visual-size: var(--xh-date-range-picker-action-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-date-range-picker-action-size, var(--xh-_action-profile-visual-size));
-    --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-date-range-picker-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-date-range-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -301,6 +300,16 @@
     border-width: 0;
   }
 
+  /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+  [data-scope='date-range-picker'][data-part='trigger'] {
+    --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='date-range-picker'][data-part='clear-trigger'] {
+    --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-circle));
+    --xh-action-fg-rest: var(--xh-date-range-picker-action-fg, var(--xh-fg-field-clear));
+  }
+
   /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   [data-scope='date-range-picker'][data-part='trigger'][hidden],
   [data-scope='date-range-picker'][data-part='clear-trigger'][hidden] {
@@ -314,11 +323,30 @@
   }
 
   /* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个 */
-  [data-scope='date-range-picker'][data-part='control']:has(
-      > [data-scope='date-range-picker'][data-part='clear-trigger']:not([hidden])
-    )
-    > [data-scope='date-range-picker'][data-part='trigger'] {
-    display: none;
+  @media (hover: none), (pointer: coarse) {
+    [data-scope='date-range-picker'][data-part='control']:has(
+        > [data-scope='date-range-picker'][data-part='clear-trigger']:not([hidden])
+      )
+      > [data-scope='date-range-picker'][data-part='trigger'] {
+      display: none;
+    }
+  }
+
+  /* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+     展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+     焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+  @media (hover: hover) and (pointer: fine) {
+    [data-scope='date-range-picker'][data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where([data-scope='date-range-picker']):focus)):has(
+        > [data-scope='date-range-picker'][data-part='clear-trigger']:not([hidden])
+      )
+      > [data-scope='date-range-picker'][data-part='trigger'] {
+      display: none;
+    }
+
+    [data-scope='date-range-picker'][data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where([data-scope='date-range-picker']),
+    [data-scope='date-range-picker'][data-part='control']:has([data-part='trigger']:where([data-scope='date-range-picker']):focus) [data-part='clear-trigger']:where([data-scope='date-range-picker']) {
+      display: none;
+    }
   }
 
   /* 浮层：含两张日历网格的锚定面板，走 floating 材质——实体底 + --xh-border-default 描边 +

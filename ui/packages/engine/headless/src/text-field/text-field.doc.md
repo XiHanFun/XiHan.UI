@@ -25,7 +25,7 @@
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
 - 默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、pressed / focus / forced-colors 均由家族配方提供，适配器不另行计算尺寸或可见性。
-- 开启 `clearable` 后，清空按钮在空值时收起，只在有值且可编辑时出现；字段聚焦边界平滑过渡。
+- 开启 `clearable` 后，清空按钮在空值时收起；有值且可编辑时，指针落在字段盒上或焦点在盒内才显出（触屏上常显），圆形钮、静息字形半透明；字段聚焦边界平滑过渡。
 - `showCount` 显示字数部件，数字取 `count` 与 `maxLength`，达到上限时换色。
 - 字数与 `maxLength` 都按字素计：组合 emoji、国旗与带变音符的字母各算一个字。上限不投影成按 UTF-16 码元计的原生 `maxlength`；一次编辑超出时截掉的是这次新插入的文本里放不下的那一截，光标落在保留下来的文本之后；输入法组合期间不截，落定时再按上限收住。
 - 放在 FormFieldGroup 内时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 从最近的 Field 或 Form 继承；实例显式写 `false` 时以实例为准。Field 的标签、说明和错误描述链保持挂到 input。

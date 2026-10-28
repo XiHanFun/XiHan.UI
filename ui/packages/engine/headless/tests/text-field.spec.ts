@@ -162,7 +162,9 @@ describe('connectTextField 结构与标注', () => {
     expect(root['data-readonly']).toBeUndefined()
     expect(root['data-invalid']).toBeUndefined()
     expect(root['data-at-max']).toBeUndefined()
-    expect(root['data-xh-action-owner']).toBe('')
+    // 清空钮显隐的宿主是字段盒（control），不是 root：指针落在标题上不该让清空钮露面
+    expect(root['data-xh-action-owner']).toBeUndefined()
+    expect((makeService().api().getControlProps() as Dict)['data-xh-action-owner']).toBe('')
   })
 
   it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {

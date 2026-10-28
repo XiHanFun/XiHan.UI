@@ -629,6 +629,7 @@ export const tokens = {
   "--xh-fg-muted": "var(--xh-color-neutral-600)",
   "--xh-fg-subtle": "var(--xh-color-neutral-550)",
   "--xh-fg-disabled": "var(--xh-color-neutral-400)",
+  "--xh-fg-field-clear": "color-mix(in oklab, var(--xh-fg-muted) 50%, transparent)",
   "--xh-fg-on-brand": "var(--xh-color-neutral-0)",
   "--xh-fg-on-brand-subtle": "color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default))",
   "--xh-fg-on-media-chrome": "var(--xh-color-neutral-0)",

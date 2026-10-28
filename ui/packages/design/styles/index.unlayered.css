@@ -709,6 +709,19 @@
     opacity: 1;
     pointer-events: auto;
   }
+
+  [data-scope][data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value] {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :where([data-xh-action-owner]:hover, [data-xh-action-owner]:focus-within) [data-scope][data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value],
+  [data-scope][data-xh-action-control][data-xh-action-display='has-value'][data-xh-action-has-value]:focus-visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 @media (pointer: coarse) {
@@ -21995,8 +22008,22 @@
 /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
    判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
    作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-.xh-scope-cascader[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-cascader) {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-cascader[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-cascader) {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开箭头这时才让位；平时清空钮不占位，箭头留在原处，两颗共用同一格、盒宽不跳 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-cascader[data-part='control']:is(:hover, :focus-within):has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-cascader) {
+    display: none;
+  }
+
+  .xh-scope-cascader[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-cascader) {
+    display: none;
+  }
 }
 
 .xh-scope-cascader[data-part='indicator'] {
@@ -22038,12 +22065,13 @@
 .xh-scope-cascader[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-cascader-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-cascader-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-cascader-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-cascader-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-cascader-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-cascader-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-cascader-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-cascader-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-cascader-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -24808,12 +24836,13 @@
 .xh-scope-color-field[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-color-field-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-color-field-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -25061,12 +25090,13 @@
 .xh-scope-color-picker[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-color-picker-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-color-picker-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-color-picker-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-color-picker-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-color-picker-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-color-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-color-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-color-picker-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-color-picker-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-color-picker-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -26328,7 +26358,6 @@
 .xh-scope-combobox[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-combobox-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-combobox-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -26347,6 +26376,16 @@
   border-width: 0;
 }
 
+/* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+.xh-scope-combobox[data-part='trigger'] {
+  --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
+}
+
+.xh-scope-combobox[data-part='clear-trigger'] {
+  --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-circle));
+  --xh-action-fg-rest: var(--xh-combobox-action-fg, var(--xh-fg-field-clear));
+}
+
 /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 .xh-scope-combobox[data-part='trigger'][hidden],
 .xh-scope-combobox[data-part='clear-trigger'][hidden] {
@@ -26356,8 +26395,24 @@
 /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
    判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
    输入框仍是展开的入口（打字、方向键、openOnClick） */
-.xh-scope-combobox[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where(.xh-scope-combobox) {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-combobox[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where(.xh-scope-combobox) {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+   焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-combobox[data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where(.xh-scope-combobox):focus)):has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where(.xh-scope-combobox) {
+    display: none;
+  }
+
+  .xh-scope-combobox[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-combobox),
+  .xh-scope-combobox[data-part='control']:has([data-part='trigger']:where(.xh-scope-combobox):focus) [data-part='clear-trigger']:where(.xh-scope-combobox) {
+    display: none;
+  }
 }
 
 /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
@@ -27858,12 +27913,13 @@
 .xh-scope-date-field[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-date-field-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-date-field-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-date-field-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-date-field-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-date-field-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-date-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-date-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-date-field-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-date-field-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-date-field-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -28220,7 +28276,6 @@
 .xh-scope-date-picker[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-date-picker-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-date-picker-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-date-picker-action-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-date-picker-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-date-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -28239,6 +28294,16 @@
   border-width: 0;
 }
 
+/* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+.xh-scope-date-picker[data-part='trigger'] {
+  --xh-action-radius: var(--xh-date-picker-action-radius, var(--xh-shape-inset));
+}
+
+.xh-scope-date-picker[data-part='clear-trigger'] {
+  --xh-action-radius: var(--xh-date-picker-action-radius, var(--xh-shape-circle));
+  --xh-action-fg-rest: var(--xh-date-picker-action-fg, var(--xh-fg-field-clear));
+}
+
 /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 .xh-scope-date-picker[data-part='trigger'][hidden],
 .xh-scope-date-picker[data-part='clear-trigger'][hidden] {
@@ -28253,11 +28318,30 @@
 
 /* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个。
    多选不让位：段位收起后日历钮是唯一的键盘入口（退格摘标签也在它身上），藏了键盘就进不来 */
-.xh-scope-date-picker[data-part='control']:has(
-    > .xh-scope-date-picker[data-part='clear-trigger']:not([hidden])
-  ):not(:has(> .xh-scope-date-picker[data-part='tag-list']:not([hidden])))
-  > .xh-scope-date-picker[data-part='trigger'] {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-date-picker[data-part='control']:has(
+      > .xh-scope-date-picker[data-part='clear-trigger']:not([hidden])
+    ):not(:has(> .xh-scope-date-picker[data-part='tag-list']:not([hidden])))
+    > .xh-scope-date-picker[data-part='trigger'] {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+   焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-date-picker[data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where(.xh-scope-date-picker):focus)):has(
+      > .xh-scope-date-picker[data-part='clear-trigger']:not([hidden])
+    ):not(:has(> .xh-scope-date-picker[data-part='tag-list']:not([hidden])))
+    > .xh-scope-date-picker[data-part='trigger'] {
+    display: none;
+  }
+
+  .xh-scope-date-picker[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-date-picker),
+  .xh-scope-date-picker[data-part='control']:has([data-part='trigger']:where(.xh-scope-date-picker):focus) [data-part='clear-trigger']:where(.xh-scope-date-picker) {
+    display: none;
+  }
 }
 
 /* 浮层：含日历网格与时间列的锚定面板，走 floating 材质——实体底 + --xh-border-default 描边 +
@@ -29143,7 +29227,6 @@
 .xh-scope-date-range-picker[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-date-range-picker-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-date-range-picker-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-date-range-picker-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-date-range-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -29162,6 +29245,16 @@
   border-width: 0;
 }
 
+/* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+.xh-scope-date-range-picker[data-part='trigger'] {
+  --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-inset));
+}
+
+.xh-scope-date-range-picker[data-part='clear-trigger'] {
+  --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-circle));
+  --xh-action-fg-rest: var(--xh-date-range-picker-action-fg, var(--xh-fg-field-clear));
+}
+
 /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 .xh-scope-date-range-picker[data-part='trigger'][hidden],
 .xh-scope-date-range-picker[data-part='clear-trigger'][hidden] {
@@ -29175,11 +29268,30 @@
 }
 
 /* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个 */
-.xh-scope-date-range-picker[data-part='control']:has(
-    > .xh-scope-date-range-picker[data-part='clear-trigger']:not([hidden])
-  )
-  > .xh-scope-date-range-picker[data-part='trigger'] {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-date-range-picker[data-part='control']:has(
+      > .xh-scope-date-range-picker[data-part='clear-trigger']:not([hidden])
+    )
+    > .xh-scope-date-range-picker[data-part='trigger'] {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+   焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-date-range-picker[data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where(.xh-scope-date-range-picker):focus)):has(
+      > .xh-scope-date-range-picker[data-part='clear-trigger']:not([hidden])
+    )
+    > .xh-scope-date-range-picker[data-part='trigger'] {
+    display: none;
+  }
+
+  .xh-scope-date-range-picker[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-date-range-picker),
+  .xh-scope-date-range-picker[data-part='control']:has([data-part='trigger']:where(.xh-scope-date-range-picker):focus) [data-part='clear-trigger']:where(.xh-scope-date-range-picker) {
+    display: none;
+  }
 }
 
 /* 浮层：含两张日历网格的锚定面板，走 floating 材质——实体底 + --xh-border-default 描边 +
@@ -42381,12 +42493,13 @@
 .xh-scope-select[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-select-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-select-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-select-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-select-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-select-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-select-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-select-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-select-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -42448,8 +42561,22 @@
 /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
    判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
    作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-.xh-scope-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-select) {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-select) {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开箭头这时才让位；平时清空钮不占位，箭头留在原处，两颗共用同一格、盒宽不跳 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-select[data-part='control']:is(:hover, :focus-within):has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-select) {
+    display: none;
+  }
+
+  .xh-scope-select[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-select) {
+    display: none;
+  }
 }
 
 /* 展开箭头与清空钮同一把尺：两者互斥显示，换来换去不该让盒里的宽度跳一下 */
@@ -48369,12 +48496,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-tags-input[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-tags-input-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-tags-input-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-tags-input-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-tags-input-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-tags-input-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-tags-input-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-tags-input-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-tags-input-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-tags-input-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-tags-input-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -48579,12 +48707,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-text-field[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-text-field-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-text-field-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-text-field-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-text-field-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-text-field-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-text-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-text-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-text-field-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-text-field-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-text-field-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -48851,12 +48980,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-time-field[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-time-field-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-time-field-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-time-field-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-time-field-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-time-field-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-time-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-time-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-time-field-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-time-field-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-time-field-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;
@@ -49236,7 +49366,6 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-time-picker[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-time-picker-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-time-picker-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-time-picker-action-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-time-picker-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-time-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -49255,6 +49384,16 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   border-width: 0;
 }
 
+/* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+.xh-scope-time-picker[data-part='trigger'] {
+  --xh-action-radius: var(--xh-time-picker-action-radius, var(--xh-shape-inset));
+}
+
+.xh-scope-time-picker[data-part='clear-trigger'] {
+  --xh-action-radius: var(--xh-time-picker-action-radius, var(--xh-shape-circle));
+  --xh-action-fg-rest: var(--xh-time-picker-action-fg, var(--xh-fg-field-clear));
+}
+
 /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 .xh-scope-time-picker[data-part='trigger'][hidden],
 .xh-scope-time-picker[data-part='clear-trigger'][hidden] {
@@ -49269,11 +49408,30 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个。
    多选不让位：段位收起后展开钮是唯一的键盘入口（退格摘标签也在它身上），藏了键盘就进不来 */
-.xh-scope-time-picker[data-part='control']:has(
-    > .xh-scope-time-picker[data-part='clear-trigger']:not([hidden])
-  ):not(:has(> .xh-scope-time-picker[data-part='tag-list']:not([hidden])))
-  > .xh-scope-time-picker[data-part='trigger'] {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-time-picker[data-part='control']:has(
+      > .xh-scope-time-picker[data-part='clear-trigger']:not([hidden])
+    ):not(:has(> .xh-scope-time-picker[data-part='tag-list']:not([hidden])))
+    > .xh-scope-time-picker[data-part='trigger'] {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+   焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-time-picker[data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where(.xh-scope-time-picker):focus)):has(
+      > .xh-scope-time-picker[data-part='clear-trigger']:not([hidden])
+    ):not(:has(> .xh-scope-time-picker[data-part='tag-list']:not([hidden])))
+    > .xh-scope-time-picker[data-part='trigger'] {
+    display: none;
+  }
+
+  .xh-scope-time-picker[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-time-picker),
+  .xh-scope-time-picker[data-part='control']:has([data-part='trigger']:where(.xh-scope-time-picker):focus) [data-part='clear-trigger']:where(.xh-scope-time-picker) {
+    display: none;
+  }
 }
 
 /* 几列并排：整体高度由列自己撑，滚动发生在列里而不是整个面板上——
@@ -50077,7 +50235,6 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-time-range-picker[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-time-range-picker-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-time-range-picker-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-time-range-picker-action-radius, var(--xh-shape-inset));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-time-range-picker-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-time-range-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -50096,6 +50253,16 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   border-width: 0;
 }
 
+/* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+.xh-scope-time-range-picker[data-part='trigger'] {
+  --xh-action-radius: var(--xh-time-range-picker-action-radius, var(--xh-shape-inset));
+}
+
+.xh-scope-time-range-picker[data-part='clear-trigger'] {
+  --xh-action-radius: var(--xh-time-range-picker-action-radius, var(--xh-shape-circle));
+  --xh-action-fg-rest: var(--xh-time-range-picker-action-fg, var(--xh-fg-field-clear));
+}
+
 /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 .xh-scope-time-range-picker[data-part='trigger'][hidden],
 .xh-scope-time-range-picker[data-part='clear-trigger'][hidden] {
@@ -50109,11 +50276,30 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 }
 
 /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个 */
-.xh-scope-time-range-picker[data-part='control']:has(
-    > .xh-scope-time-range-picker[data-part='clear-trigger']:not([hidden])
-  )
-  > .xh-scope-time-range-picker[data-part='trigger'] {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-time-range-picker[data-part='control']:has(
+      > .xh-scope-time-range-picker[data-part='clear-trigger']:not([hidden])
+    )
+    > .xh-scope-time-range-picker[data-part='trigger'] {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+   焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-time-range-picker[data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where(.xh-scope-time-range-picker):focus)):has(
+      > .xh-scope-time-range-picker[data-part='clear-trigger']:not([hidden])
+    )
+    > .xh-scope-time-range-picker[data-part='trigger'] {
+    display: none;
+  }
+
+  .xh-scope-time-range-picker[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-time-range-picker),
+  .xh-scope-time-range-picker[data-part='control']:has([data-part='trigger']:where(.xh-scope-time-range-picker):focus) [data-part='clear-trigger']:where(.xh-scope-time-range-picker) {
+    display: none;
+  }
 }
 
 /* 几列并排：整体高度由列自己撑，滚动发生在列里而不是整个面板上——
@@ -54117,8 +54303,22 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 /* 有值时清空钮顶上来，箭头让位：两个图标并排堆着，用户分不清点哪个。
    判据查的是盒里此刻真有一颗没收起的清空钮，不是「有没有值」——
    作者没摆清空钮时箭头照常留着，不然让了位没人接，指示符整个消失 */
-.xh-scope-tree-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-tree-select) {
-  display: none;
+@media (hover: none), (pointer: coarse) {
+  .xh-scope-tree-select[data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-tree-select) {
+    display: none;
+  }
+}
+
+/* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+   展开箭头这时才让位；平时清空钮不占位，箭头留在原处，两颗共用同一格、盒宽不跳 */
+@media (hover: hover) and (pointer: fine) {
+  .xh-scope-tree-select[data-part='control']:is(:hover, :focus-within):has([data-part='clear-trigger']:not([hidden])) [data-part='indicator']:where(.xh-scope-tree-select) {
+    display: none;
+  }
+
+  .xh-scope-tree-select[data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where(.xh-scope-tree-select) {
+    display: none;
+  }
 }
 
 .xh-scope-tree-select[data-part='indicator'] {
@@ -54148,12 +54348,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 .xh-scope-tree-select[data-part='clear-trigger'] {
   --xh-action-visual-size: var(--xh-tree-select-action-size, var(--xh-_action-profile-visual-size));
   --xh-action-min-inline-size: var(--xh-tree-select-action-size, var(--xh-_action-profile-visual-size));
-  --xh-action-radius: var(--xh-tree-select-action-radius, var(--xh-shape-inset));
+  --xh-action-radius: var(--xh-tree-select-action-radius, var(--xh-shape-circle));
   /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
   --xh-action-bg-rest: var(--xh-tree-select-action-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-tree-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
   --xh-action-bg-pressed: var(--xh-tree-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
-  --xh-action-fg-rest: var(--xh-tree-select-action-fg, var(--xh-fg-muted));
+  /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+  --xh-action-fg-rest: var(--xh-tree-select-action-fg, var(--xh-fg-field-clear));
   --xh-action-fg-hover: var(--xh-tree-select-action-fg-hover, var(--xh-fg-default));
   --xh-action-border-rest: transparent;
   --xh-action-highlight-rest: transparent;

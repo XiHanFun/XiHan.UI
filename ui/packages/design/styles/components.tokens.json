@@ -9344,7 +9344,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "cascader 的 clear-trigger 部件 color 覆盖槽。"
@@ -9402,7 +9402,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "cascader 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -15866,7 +15866,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 color 覆盖槽。"
@@ -15924,7 +15924,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -16687,6 +16687,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -16749,8 +16750,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control",
-        "--xh-shape-inset"
+        "--xh-shape-circle",
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "color-picker 的 clear-trigger、eye-dropper-trigger 部件 border-radius 覆盖槽。"
@@ -19347,6 +19348,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -19408,6 +19410,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-inset"
       ],
       "visibility": "public",
@@ -22914,7 +22917,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "date-field 的 clear-trigger 部件 color 覆盖槽。"
@@ -22972,7 +22975,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "date-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -23750,6 +23753,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -23812,6 +23816,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-inset"
       ],
       "visibility": "public",
@@ -25755,6 +25760,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -25817,6 +25823,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-inset"
       ],
       "visibility": "public",
@@ -67113,7 +67120,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "select 的 clear-trigger 部件 color 覆盖槽。"
@@ -67171,7 +67178,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "select 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -78520,7 +78527,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "tags-input 的 clear-trigger 部件 color 覆盖槽。"
@@ -78578,7 +78585,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "tags-input 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -79642,7 +79649,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "text-field 的 clear-trigger 部件 color 覆盖槽。"
@@ -79700,7 +79707,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "text-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -80564,7 +80571,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "time-field 的 clear-trigger 部件 color 覆盖槽。"
@@ -80622,7 +80629,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "time-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -81423,6 +81430,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -81485,6 +81493,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-inset"
       ],
       "visibility": "public",
@@ -83484,6 +83493,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-fg-field-clear",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -83546,6 +83556,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-shape-circle",
         "--xh-shape-inset"
       ],
       "visibility": "public",
@@ -92970,7 +92981,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-field-clear"
       ],
       "visibility": "public",
       "description": "tree-select 的 clear-trigger 部件 color 覆盖槽。"
@@ -93028,7 +93039,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "tree-select 的 clear-trigger 部件 border-radius 覆盖槽。"

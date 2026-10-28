@@ -435,6 +435,16 @@ export function compileActionControlRecipe(source) {
     fine,
     '    ',
   )
+  /* 字段里的清空钮（设计真源 §8.3）：有值还不够，指针落在宿主盒上、或盒里有焦点时才显出；
+     触屏没有悬停，有值即常显（落在这条媒体查询之外）。仍用 visibility 收起，盒里给它留的那一格不跳 */
+  rule('[data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]', '      visibility: hidden;\n      opacity: 0;\n      pointer-events: none;', 'fine', fine, '    ')
+  rule(
+    ':where([data-xh-action-owner]:hover, [data-xh-action-owner]:focus-within) [data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value],\n    [data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]:focus-visible',
+    '      visibility: visible;\n      opacity: 1;\n      pointer-events: auto;',
+    'fine',
+    fine,
+    '    ',
+  )
   chunks.push(`  @media (hover: hover) and (pointer: fine) {\n${fine.join('\n\n')}\n  }`)
 
   /* 非正方档只扩块轴命中区，正方档扩双轴。

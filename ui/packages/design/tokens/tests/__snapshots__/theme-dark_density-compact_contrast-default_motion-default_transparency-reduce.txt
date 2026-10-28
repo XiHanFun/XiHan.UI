@@ -222,6 +222,7 @@
 --xh-fg-danger-hover: color-mix(in oklab, oklch(0.7 0.185 25) 70%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-danger-400) 70%, var(--xh-color-neutral-0))
 --xh-fg-default: oklch(0.979 0.003 265)  ← var(--xh-color-neutral-50)
 --xh-fg-disabled: oklch(0.461 0.018 258)  ← var(--xh-color-neutral-600)
+--xh-fg-field-clear: color-mix(in oklab, oklch(0.7 0.016 258) 50%, transparent)  ← color-mix(in oklab, var(--xh-fg-muted) 50%, transparent)
 --xh-fg-info: oklch(0.685 0.156 237)  ← var(--xh-color-info-500)
 --xh-fg-muted: oklch(0.7 0.016 258)  ← var(--xh-color-neutral-400)
 --xh-fg-on-brand: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)

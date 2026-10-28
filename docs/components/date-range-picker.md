@@ -408,6 +408,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-complete` | ''（条件成立时才出现） |
@@ -487,10 +488,10 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 | `--xh-date-range-picker-action-bg` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-date-range-picker-action-bg-active` | `clear-trigger`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | date-range-picker 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
 | `--xh-date-range-picker-action-bg-hover` | `clear-trigger`<br>`trigger` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open`<br>`xh-ink-surface` | `--xh-_action-variant-bg-hover` | date-range-picker 的 clear-trigger、trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-date-range-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-muted` | date-range-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-date-range-picker-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-field-clear`<br>`--xh-fg-muted` | date-range-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=open` | `--xh-fg-default` | date-range-picker 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-date-range-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | date-range-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
-| `--xh-date-range-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | date-range-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-date-range-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-circle`<br>`--xh-shape-inset` | date-range-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | date-range-picker 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-date-range-picker-calendar-gap` | `calendar` | `gap` | `default` | `--xh-space-0` | date-range-picker 的 calendar 部件 gap 覆盖槽。 |
 | `--xh-date-range-picker-column-divider` | `column-group`<br>`preset-group`<br>`time-column` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-solid-border` | date-range-picker 的 column-group、preset-group、time-column 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
@@ -602,7 +603,7 @@ showTime 让起止都带上时刻，defaultTime 在只点日期时补 00:00:00 �
 
 皮肤按视口分档：`min-width: 768px`。
 
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `hover: none` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

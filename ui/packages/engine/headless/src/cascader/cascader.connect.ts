@@ -400,6 +400,8 @@ export function connectCascader<T extends PropTypes>(
      */
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // 字段盒是清空钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时清空钮才显出
+      'data-xh-action-owner': '',
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
       'data-variant': variant,

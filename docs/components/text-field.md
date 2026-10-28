@@ -139,7 +139,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
 - 默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、pressed / focus / forced-colors 均由家族配方提供，适配器不另行计算尺寸或可见性。
-- 开启 `clearable` 后，清空按钮在空值时收起，只在有值且可编辑时出现；字段聚焦边界平滑过渡。
+- 开启 `clearable` 后，清空按钮在空值时收起；有值且可编辑时，指针落在字段盒上或焦点在盒内才显出（触屏上常显），圆形钮、静息字形半透明；字段聚焦边界平滑过渡。
 - `showCount` 显示字数部件，数字取 `count` 与 `maxLength`，达到上限时换色。
 - 字数与 `maxLength` 都按字素计：组合 emoji、国旗与带变音符的字母各算一个字。上限不投影成按 UTF-16 码元计的原生 `maxlength`；一次编辑超出时截掉的是这次新插入的文本里放不下的那一截，光标落在保留下来的文本之后；输入法组合期间不截，落定时再按上限收住。
 - 放在 FormFieldGroup 内时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 从最近的 Field 或 Form 继承；实例显式写 `false` 时以实例为准。Field 的标签、说明和错误描述链保持挂到 input。
@@ -316,7 +316,6 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
-| `root` | `data-xh-action-owner` | '' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-at-max` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
@@ -324,6 +323,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `prefix` | `data-disabled` | ''（条件成立时才出现） |
@@ -357,10 +357,10 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | text-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-text-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | text-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-text-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | text-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-text-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-text-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_text-field-action-font-size` | text-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | text-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | text-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-text-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | text-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-text-field-affix-fg` | `prefix`<br>`suffix` | `color` | `xh-field-affix` | `--xh-fg-muted` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |
 | `--xh-text-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled`<br>`xh-field-affix` | `--xh-fg-disabled` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |

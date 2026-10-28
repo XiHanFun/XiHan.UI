@@ -351,6 +351,7 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `control` | `data-readonly` | '' (present only while the condition holds) |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | '' (present only while the condition holds) |
@@ -458,10 +459,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-cascader-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` |
 | `--xh-cascader-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` |
 | `--xh-cascader-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` |
-| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` |
+| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` |
 | `--xh-cascader-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` |
 | `--xh-cascader-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` |
-| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` |
+| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` |
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-muted` |
 | `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` |

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -6,15 +7,18 @@ const FAMILIES = ['date-picker', 'time-picker'] as const
 
 let host: HTMLElement | null = null
 
-/** 两颗钮都走 Action Control 的 field-inset 档：盒的 display 由家族按 data-xh-action-control 给，静态夹具照连接层的投影写 */
+/**
+ * 两颗钮都走 Action Control 的 field-inset 档：盒的 display 由家族按 data-xh-action-control 给，静态夹具照连接层的投影写；
+ * 字段盒是清空钮显隐的宿主（data-xh-action-owner），可悬停的精细指针下指针落在盒上清空钮才显出
+ */
 function mount(): void {
   host = document.createElement('div')
   host.innerHTML = FAMILIES.map(family => `
     <div data-family="${family}">
       <div data-scope="${family}" class="xh-scope-${family}" data-part="root">
-        <div data-scope="${family}" class="xh-scope-${family}" data-part="control">
+        <div data-scope="${family}" class="xh-scope-${family}" data-part="control" data-xh-action-owner="">
           <div data-scope="${family}" class="xh-scope-${family}" data-part="segment-group"></div>
-          <button data-scope="${family}" class="xh-scope-${family}" data-part="clear-trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="has-value" hidden></button>
+          <button data-scope="${family}" class="xh-scope-${family}" data-part="clear-trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="has-value" data-xh-action-has-value="" hidden></button>
           <button data-scope="${family}" class="xh-scope-${family}" data-part="trigger" data-xh-action-control="" data-xh-action-profile="field-inset" data-xh-action-variant="ghost" data-xh-action-display="always"></button>
         </div>
       </div>
@@ -36,7 +40,7 @@ afterEach(() => {
 })
 
 describe('日期与时间选择器的尾部动作互斥', () => {
-  it.each(FAMILIES)('%s：空值显示选择图标，有值时清空按钮原位接替，清空后恢复', (family) => {
+  it.each(FAMILIES)('%s：空值显示选择图标，有值且指针落在盒上时清空按钮原位接替，清空后恢复', async (family) => {
     mount()
     const control = part(family, 'control')
     const clear = part(family, 'clear-trigger')
@@ -47,7 +51,12 @@ describe('日期与时间选择器的尾部动作互斥', () => {
     expect(getComputedStyle(trigger).display).toBe('inline-flex')
 
     clear.removeAttribute('hidden')
+    // 指针还不在盒上：选择图标留着，清空钮不占位
+    expect(getComputedStyle(clear).display).toBe('none')
+    expect(getComputedStyle(trigger).display).toBe('inline-flex')
+    await userEvent.hover(control)
     expect(getComputedStyle(clear).display).toBe('inline-flex')
+    expect(getComputedStyle(clear).visibility).toBe('visible')
     expect(getComputedStyle(trigger).display).toBe('none')
     expect(control.getBoundingClientRect().width).toBe(width)
 

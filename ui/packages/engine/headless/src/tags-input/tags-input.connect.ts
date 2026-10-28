@@ -200,6 +200,8 @@ export function connectTagsInput<T extends PropTypes>(
     // （可换行、自动高、半档纵向内衬）由家族按 multi-tag 生成；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // 字段盒是清空钮显隐的宿主：可悬停的精细指针下，指针落在盒上或盒里有焦点时清空钮才显出
+      'data-xh-action-owner': '',
       ...surfaceAttrs(),
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',

@@ -302,10 +302,11 @@ describe('时间范围选择器的家族观感', () => {
     clear.style.transition = 'none'
     expect(clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
     expect(clear.getAttribute('data-xh-action-has-value')).toBe('')
-    // 有值时清空钮顶上来，展开钮让位
+    // 有值且指针落在盒上时清空钮顶上来，展开钮让位
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const clearRest = getComputedStyle(clear)
-    expect(clearRest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-inset', clear))
+    expect(clearRest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-circle', clear))
     expect(clearRest.width).toBe(clearRest.height)
     expect(alpha(clearRest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')

@@ -56,7 +56,7 @@ afterEach(() => {
 })
 
 describe('日期时间选择器输入行', () => {
-  it('显示完整日期时间，并由清空按钮原位接替日历图标', async () => {
+  it('显示完整日期时间；指针落在盒上时清空按钮原位接替日历图标', async () => {
     await mount()
     const segments = [...host!.querySelectorAll<HTMLElement>(`[data-scope='date-field'][data-part='segment']:not([hidden])`)]
     expect(segments.map(segment => segment.dataset.segment)).toEqual(['year', 'month', 'day', 'hour', 'minute'])
@@ -65,6 +65,10 @@ describe('日期时间选择器输入行', () => {
     const clear = part('clear-trigger')
     const trigger = part('trigger')
     expect(clear.hidden).toBe(false)
+    // 指针还不在盒上：日历图标留着，清空钮不占位
+    expect(getComputedStyle(clear).display).toBe('none')
+    expect(getComputedStyle(trigger).display).toBe('flex')
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(clear).display).toBe('flex')
     expect(getComputedStyle(trigger).display).toBe('none')
 

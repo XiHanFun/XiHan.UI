@@ -1,7 +1,9 @@
 // 组合框有值时清空钮顶替展开钮的位置：两颗钮互斥显示，盒的宽度不随「有没有值」跳动。
+// 可悬停的精细指针下，清空钮要指针落在盒上才显出，展开钮这时才让位；指针不在盒上时展开钮留着、清空钮不占位。
 // 宽度与 display 都是级联和布局算出来的，只有真实浏览器量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick, ref } from 'vue'
 import { XhComboboxRoot } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -62,7 +64,13 @@ describe('组合框清空钮与展开钮互斥', () => {
     value.value = ['berlin']
     await settle()
     expect(part('clear-trigger').hidden).toBe(false)
+    // 指针还不在盒上：展开钮留着，清空钮不占位
+    expect(getComputedStyle(part('trigger')).display).not.toBe('none')
+    expect(getComputedStyle(part('clear-trigger')).display).toBe('none')
+    expect(width('control')).toBe(empty)
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
+    expect(getComputedStyle(part('clear-trigger')).visibility).toBe('visible')
     expect(width('control')).toBe(empty)
 
     value.value = []
@@ -79,6 +87,7 @@ describe('组合框清空钮与展开钮互斥', () => {
 
     value.value = ['beijing']
     await settle()
+    await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     expect(width('control')).toBe(empty)
 

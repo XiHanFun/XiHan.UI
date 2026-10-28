@@ -64,22 +64,23 @@ describe('点字段标签聚焦控件', () => {
     expect(document.activeElement?.closest('[data-scope="radio-group"][data-part="item"]')).not.toBeNull()
   })
 
-  // 有值时清空钮顶替日历钮（或时钟钮），日历钮 display: none；字段接线的宿主看不见时，焦点交给控件里第一个可 tab 的节点
+  // 有值时清空钮要指针落在盒上才顶替日历钮（或时钟钮）；点标题时指针在标题上，日历钮照常在场。
+  // 焦点落进控件后日历钮也不让位：收起正有焦点的钮会把焦点丢到 body
   it.each([
     ['date-picker', '2026-10-18'],
     ['date-range-picker', ['2026-10-01', '2026-10-18']],
     ['time-picker', '05:03'],
     ['time-range-picker', ['09:00', '18:00']],
-  ] as const)('%s：有值时日历钮让位给清空钮，点标题焦点落在控件的第一段', async (scope, value) => {
+  ] as const)('%s：有值时点标题，焦点落进控件、只聚焦不展开，焦点不丢', async (scope, value) => {
     await mountMarkup(`<xh-${scope}></xh-${scope}>`)
     const element = document.querySelector<HTMLElement & { value?: unknown, updateComplete: Promise<boolean> }>(`xh-${scope}`)!
     element.value = value
     await settle()
-    expect(getComputedStyle(part(scope, 'trigger')).display).toBe('none')
+    expect(getComputedStyle(part(scope, 'trigger')).display).not.toBe('none')
     await userEvent.click(label())
     const active = document.activeElement as HTMLElement
     expect(element.contains(active)).toBe(true)
-    expect(active.getAttribute('role')).toBe('spinbutton')
+    expect(getComputedStyle(active).display).not.toBe('none')
     expect(part(scope, 'trigger').getAttribute('aria-expanded')).toBe('false')
   })
 

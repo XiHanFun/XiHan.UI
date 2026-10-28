@@ -422,7 +422,8 @@ function record(glyph: Glyph): void {
  * （data-xh-action-owner）上才露面；钮禁用了照样露面。不是这种钮返回 null。
  */
 function revealOwner(glyph: Glyph): HTMLElement | null {
-  const owner = glyph.host.closest('[data-xh-action-display="hover-focus"]')?.closest<HTMLElement>('[data-xh-action-owner]')
+  // 按需显示的钮：hover-focus 档，以及有值才在场、指针落在宿主盒上才显出的清空钮（has-value 档）
+  const owner = glyph.host.closest('[data-xh-action-display="hover-focus"], [data-xh-action-display="has-value"][data-xh-action-has-value]')?.closest<HTMLElement>('[data-xh-action-owner]')
   if (!owner)
     return null
   const rect = owner.getBoundingClientRect()

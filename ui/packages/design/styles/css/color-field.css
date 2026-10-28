@@ -127,12 +127,13 @@
   [data-scope='color-field'][data-part='clear-trigger'] {
     --xh-action-visual-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
-    --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-inset));
+    --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-circle));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-color-field-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
-    --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-muted));
+    /* 清空钮（设计真源 §8.3）：圆形钮，静息字形取次级前景兑 50%，指到钮上换满色 */
+    --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-field-clear));
     --xh-action-fg-hover: var(--xh-color-field-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
     --xh-action-highlight-rest: transparent;

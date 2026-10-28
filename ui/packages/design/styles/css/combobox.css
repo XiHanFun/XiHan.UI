@@ -217,7 +217,6 @@
   [data-scope='combobox'][data-part='clear-trigger'] {
     --xh-action-visual-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
-    --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
     /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
     --xh-action-bg-rest: var(--xh-combobox-action-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-combobox-action-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -236,6 +235,16 @@
     border-width: 0;
   }
 
+  /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
+  [data-scope='combobox'][data-part='trigger'] {
+    --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='combobox'][data-part='clear-trigger'] {
+    --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-circle));
+    --xh-action-fg-rest: var(--xh-combobox-action-fg, var(--xh-fg-field-clear));
+  }
+
   /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   [data-scope='combobox'][data-part='trigger'][hidden],
   [data-scope='combobox'][data-part='clear-trigger'][hidden] {
@@ -245,8 +254,24 @@
   /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
      判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
      输入框仍是展开的入口（打字、方向键、openOnClick） */
-  [data-scope='combobox'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where([data-scope='combobox']) {
-    display: none;
+  @media (hover: none), (pointer: coarse) {
+    [data-scope='combobox'][data-part='control']:has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where([data-scope='combobox']) {
+      display: none;
+    }
+  }
+
+  /* 可悬停的精细指针下，清空钮要指针落在盒上、或盒里有焦点才显出（家族 has-value 显示策略，设计真源 §8.3），
+     展开钮这时才让位；平时清空钮不占位，展开钮留在原处，两颗共用同一格、盒宽不跳。
+     焦点就在展开钮上时它不让位（收起正有焦点的钮会把焦点丢到 body），清空钮照旧不占位 */
+  @media (hover: hover) and (pointer: fine) {
+    [data-scope='combobox'][data-part='control']:is(:hover, :focus-within):not(:has([data-part='trigger']:where([data-scope='combobox']):focus)):has([data-part='clear-trigger']:not([hidden])) [data-part='trigger']:where([data-scope='combobox']) {
+      display: none;
+    }
+
+    [data-scope='combobox'][data-part='control']:not(:hover):not(:focus-within) [data-part='clear-trigger']:where([data-scope='combobox']),
+    [data-scope='combobox'][data-part='control']:has([data-part='trigger']:where([data-scope='combobox']):focus) [data-part='clear-trigger']:where([data-scope='combobox']) {
+      display: none;
+    }
   }
 
   /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：

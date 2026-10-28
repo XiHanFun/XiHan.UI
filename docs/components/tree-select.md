@@ -490,6 +490,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -673,10 +674,10 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `--xh-tree-select-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | tree-select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-tree-select-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tree-select 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tree-select-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tree-select 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-tree-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-select-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | tree-select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-select-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | tree-select 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-tree-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tree-select 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tree-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | tree-select 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tree-select-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | tree-select 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tree-select-branch-content-gap` | `branch-content` | `gap` | `default` | `--xh-list-option-gap` | tree-select 的 branch-content 部件 gap 覆盖槽。 |
 | `--xh-tree-select-branch-error-fg` | `branch-error` | `background-color` | `default` | `--xh-fg-danger` | tree-select 的 branch-error 部件 background-color 覆盖槽。 |
@@ -778,6 +779,10 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover` · `hover: none`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

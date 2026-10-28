@@ -4,7 +4,8 @@
 // 四类：
 // ① 内嵌清空钮（输入控件里与指示符并排的那颗）：tabindex=-1 不占 Tab 位但不对读屏隐藏、
 //    有 aria-label、pointerdown 不夺焦、点完发 VALUE.CLEAR 并把焦点送回宿主；没值就 hidden（不灰留位）；
-//    尺寸 --xh-<c>-action-size → --xh-control-action-size，圆角 --xh-<c>-action-radius → --xh-shape-control。
+//    尺寸 --xh-<c>-action-size → --xh-control-action-size，圆角 --xh-<c>-action-radius → --xh-shape-circle
+//    （设计真源 §8.3）；有值且指针落在字段盒上、或盒里有焦点才显出（has-value 显示策略）。
 // ② 独立动作钮（file-upload / signature-pad 的清空）：普通 Tab 位按钮，空时不收不灰、只打 data-empty；
 //    高 --xh-<c>-clear-h → --xh-control-h-sm；接了 Action Control text 档的由连接层投 data-xh-action-size=sm，
 //    皮肤把 --xh-<c>-clear-h 映到家族视觉盒，按压面由家族给。
@@ -171,9 +172,9 @@ for (const c of EMBEDDED) {
       const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-action-size,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
       if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
         problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-size 映到 field-inset 视觉盒`)
-      const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-action-radius,\\s*var\\(--xh-shape-inset\\)\\)`)
+      const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-action-radius,\\s*var\\(--xh-shape-circle\\)\\)`)
       if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
-        problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-radius 映到 field-inset 圆角`)
+        problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-radius 映到圆形 --xh-shape-circle`)
       if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
         problems.push(`${c}.css [clear-trigger] 缺 [hidden] { display: none }`)
       // 家族的按压面同时认指针 :active 与 Headless 投影的 data-pressed
