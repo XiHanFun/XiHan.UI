@@ -12,7 +12,7 @@
 @import '../family/motion.css';
 
 /* 图标栏的名称提示就是库内的 Tooltip（data-scope="tooltip" 的 positioner 与 content），
-   反白面、进退场与各环境档都由它的皮肤给；本皮肤 @import 它，单独引入仍成立 */
+   浮层面、进退场与各环境档都由它的皮肤给；本皮肤 @import 它，单独引入仍成立 */
 @import './tooltip.css';
 
 @layer xihan.components {

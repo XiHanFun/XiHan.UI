@@ -163,7 +163,7 @@ Produced by `connect`; valueless attributes are omitted while their condition do
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
-| `content` | `data-xh-ink-surface` | '' |
+| `content` | `data-xh-ink-surface` | '' (present only while the condition holds) |
 | `arrow` | `data-placement` | actual placement computed by the positioning engine |
 
 ### CSS variables

@@ -1,5 +1,5 @@
 // 图标栏的名称提示：落成图标栏后只剩图标的叶子悬停或聚焦时，在行尾一侧显示行的标签。
-// 它就是库内的 Tooltip：反白面、control 圆角、悬停等开延时、接替时原地换锚都随 Tooltip。
+// 它就是库内的 Tooltip：浮层面、control 圆角、悬停等开延时、接替时原地换锚都随 Tooltip。
 //
 // 判据是真实布局与计算样式：提示落在行的哪一侧、与行是否居中对齐、面的圆角与字色，jsdom 都算不出来。
 import type { App, Ref } from 'vue'
@@ -114,7 +114,7 @@ describe('side-nav 图标栏名称提示', () => {
     expect(tip.top + tip.height / 2).toBeCloseTo(row.top + row.height / 2, 0)
   })
 
-  it('反白身份与 Tooltip 同一副：control 圆角、on 色文字，对读屏隐藏', async () => {
+  it('面与 Tooltip 同一副：control 圆角、浮层面字色，对读屏隐藏', async () => {
     await mount()
     link(0).focus()
     await expect.poll(shown).toBe(true)
@@ -122,7 +122,7 @@ describe('side-nav 图标栏名称提示', () => {
     const el = content()
     const style = getComputedStyle(el)
     expect(style.borderTopLeftRadius).toBe(resolved(el, 'border-top-left-radius', '--xh-shape-control'))
-    expect(style.color).toBe(resolved(el, 'color', '--xh-bg-surface'))
+    expect(style.color).toBe(resolved(el, 'color', '--xh-material-frosted-fg'))
     expect(el.getAttribute('aria-hidden')).toBe('true')
     expect(el.hasAttribute('role')).toBe(false)
     expect(link(0).hasAttribute('aria-describedby')).toBe(false)

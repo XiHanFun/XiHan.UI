@@ -678,7 +678,7 @@ export function connectSideNav<T extends PropTypes>(
     // 定位层原样取 Tooltip 的：坐标、落定朝向、落位才露与锚点滚出视区时收起都由它给
     getTooltipPositionerProps: () => normalize.element(requireTooltip().getPositionerProps() as Record<string, unknown>),
 
-    // 提示本体原样取 Tooltip 的（反白面、进退场、接替时不播进场都随它），只改两处：
+    // 提示本体原样取 Tooltip 的（浮层面、进退场、接替时不播进场都随它），只改两处：
     // 不当 role=tooltip、整块对读屏隐藏——行上的文字已是可及名，提示只给看得见的人补上被裁掉的那段字
     getTooltipContentProps: () => normalize.element({
       ...requireTooltip().getContentProps() as Record<string, unknown>,

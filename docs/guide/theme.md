@@ -253,7 +253,7 @@ Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--x
 
 ### 紧凑配方（Tooltip）
 
-Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界：
+Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质（M2），再用三支 compact 配方组合；写了 `tone` 才换语气实底，那时边改取 on 色 20% 拼色承担 1px 可见边界（中性描边压在彩色底上看不见）：
 
 | 配方 | 常规值 |
 | --- | --- |

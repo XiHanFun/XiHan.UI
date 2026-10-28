@@ -104,7 +104,7 @@ describe('语气边界', () => {
     expect(background('indicator-wrapped')).toBe(background('indicator-direct'))
   })
 
-  it('浮层不带语气：没写 tone 的 Tooltip 从 danger 容器里打开，仍是缺省的反白底', async () => {
+  it('浮层不带语气：没写 tone 的 Tooltip 从 danger 容器里打开，仍是缺省的浮层面', async () => {
     const tooltip = (id: string, tone?: 'danger'): VNode => h(XhTooltipRoot, { open: true, tone }, () => [
       h(XhTooltipTrigger, null, () => '触发'),
       h(XhTooltipPositioner, null, () => [h(XhTooltipContent, { 'data-testid': id }, () => '提示')]),

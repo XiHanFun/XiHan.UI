@@ -44,11 +44,10 @@ const SOFT_CONSUMERS = new Set(['tag:root'])
 /**
  * 登记在册的反白 compact frosted 面：--xh-material-frosted-border 是深色 14% 的透明边，压在反白深底上
  * 看不见，浮层要的 1px 可见边界改由 on 色 20% 的 color-mix 承担。键 组件:部件，值是理由；
- * 登记了却没在描边位落 color-mix 的照样报过期。
+ * 登记了却没在描边位落 color-mix 的照样报过期。Tooltip 已不反白（设计真源 §8.4），缺省走浮层材质边，
+ * 写了 tone 的拼色边落在 [data-tone] 分支的私有槽上、不在根面描边位，名单因此为空。
  */
-const INVERTED_COMPACT = {
-  'tooltip:content': '反白 compact frosted，边取 on 色（--xh-_tooltip-on）20% 拼色',
-}
+const INVERTED_COMPACT = {}
 /** 不画东西的取值：占位边、无底、无影。 */
 const NOTHING = new Set(['transparent', 'none', '0', '0 0 0 transparent'])
 

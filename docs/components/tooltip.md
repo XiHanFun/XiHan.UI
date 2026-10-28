@@ -112,7 +112,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
   - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
-- 默认是反白的实底小面（compact 档 frosted），与承载操作的 Popover 分开：底取正文色、字取承载面色，浅色主题下是深底白字，深色主题下整块翻成浅底深字；六种语气同样是实心语气底配不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（中性描边压在反白底上看不见），不画顶部高光；圆角取 2px 控件档。
+- 默认与 Popover 同一副浮层面（compact 档 frosted）：底、字、边取 frosted 材质，两个主题都不反白，与 Popover 靠一行字的尺寸与控件圆角区分。写了 `tone` 换实心语气底配不透明文字，边界由 on 色 20% 的拼色描边承担（中性描边压在彩色底上看不见），这时面内成为墨色域。箭头和气泡同色同边，不画顶部高光；圆角取控件档。
 - 正文 14px；内距缺省纵 8 横 12，`sm` 只收纵向（纵 4 横 12），`lg` 纵 12 横 16，三档字号不变。
 - 进退场走弹层那一套（`xh-overlay-pop-in` / `xh-pop-out`）：从锚点一侧短移、淡入放大，退场缩小淡出；入场 `--xh-motion-duration-enter`（200ms），退场 `--xh-motion-duration-exit`（150ms），与其他锚定列表浮层同一节奏。
 
@@ -283,7 +283,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
-| `content` | `data-xh-ink-surface` | '' |
+| `content` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
