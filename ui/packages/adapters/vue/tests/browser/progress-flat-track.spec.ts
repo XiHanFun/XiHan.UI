@@ -1,4 +1,4 @@
-// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 3 / 4 / 8px、两端全圆，轨道取淡底 200 档（环形同），
+// 进度条的轨道与文字：线形轨道厚 sm / md / lg = 4 / 8 / 12px、两端全圆，轨道取淡底 200 档（环形同），
 // 已完成的那段按语气取实色；环心文字 12px 次级色。厚度与计算色只有真实 Chromium 量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -45,7 +45,7 @@ afterEach(() => {
 })
 
 describe('线形轨道', () => {
-  it.each([['sm', 3], [undefined, 4], ['lg', 8]] as const)('%s 档厚 %ipx，两端全圆', async (size, px) => {
+  it.each([['sm', 4], [undefined, 8], ['lg', 12]] as const)('%s 档厚 %ipx，两端全圆', async (size, px) => {
     await mount({ size })
     const track = one('track') as HTMLElement
     expect(track.getBoundingClientRect().height).toBe(px)
