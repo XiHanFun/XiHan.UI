@@ -190,10 +190,10 @@ border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
 border-left-width: 1px
-border-top-color: rgba(0, 0, 0, 0)
-border-right-color: rgba(0, 0, 0, 0)
-border-bottom-color: rgba(0, 0, 0, 0)
-border-left-color: rgba(0, 0, 0, 0)
+border-top-color: oklab(0.848 -0.0348569 -0.0536749)
+border-right-color: oklab(0.848 -0.0348569 -0.0536749)
+border-bottom-color: oklab(0.848 -0.0348569 -0.0536749)
+border-left-color: oklab(0.848 -0.0348569 -0.0536749)
 min-height: 0px
 font-size: 14px
 line-height: 21px

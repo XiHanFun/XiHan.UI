@@ -149,7 +149,7 @@ The public override slots, generated from what the standalone skin actually cons
 | --- | --- | --- | --- | --- |
 | `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` |
 | `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_tone-subtle` |
-| `--xh-alert-border` | `root` | `border` | `default` | `transparent` |
+| `--xh-alert-border` | `root` | `border` | `default` | `--xh-_tone-border` |
 | `--xh-alert-close-bg-active` | `close-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_tone-subtle-active` |
 | `--xh-alert-close-bg-hover` | `close-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_tone-subtle-hover` |
 | `--xh-alert-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` |
