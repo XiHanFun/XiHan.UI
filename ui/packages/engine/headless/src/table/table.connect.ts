@@ -1472,8 +1472,11 @@ export function connectTable<T extends PropTypes>(
       const spanCols = Math.max(cell.colSpan ?? 1, origin?.colSpan ?? 1)
       const colSpan = spanCols > 1 ? spanCols : undefined
       const rowSpan = origin && origin.rowSpan > 1 ? origin.rowSpan : undefined
-      const sizeStyle = origin && origin.colSpan > 1
-        ? spanColumnsStyle(columnIndex.get(cell.value)! - 1, origin.colSpan)
+      // 宽度跟报给读屏的跨列数走：作者写的 colSpan（详情行整行铺开）同样按跨过的列相加，
+      // 只按起点列算会把整行内容关进那一列的定宽里
+      const startIndex = columnIndex.get(cell.value)
+      const sizeStyle = colSpan && startIndex != null
+        ? spanColumnsStyle(startIndex - 1, colSpan)
         : columnSizeStyle(def, hasWidthOverride(cell.value), basisWidth(def))
       const spanStyle = rowSpan && origin ? rowSpanStyle(origin.rowIndex, rowSpan) : {}
       return normalize.element({
