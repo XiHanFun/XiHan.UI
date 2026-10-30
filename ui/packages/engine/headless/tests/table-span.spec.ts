@@ -157,6 +157,19 @@ describe('单元格合并', () => {
     expect(api.getCellProps({ value: 'q2', row: 'c' })).toMatchObject({ 'hidden': true, 'aria-hidden': true })
   })
 
+  it('作者写的 colSpan 也按跨过的列算宽度：起点列定宽时，详情行整行铺开不被关进那一列', () => {
+    const api = mount({
+      columns: [{ id: 'expand', width: 48, minWidth: 48, maxWidth: 48 }, ...COLUMNS],
+      rows: [{ id: 'a', expandable: true }],
+      defaultExpandedValue: ['a'],
+    }).api()
+    const detail = api.getCellProps({ value: 'expand', row: 'a', colSpan: 5 }) as Dict
+    expect(detail['aria-colspan']).toBe(5)
+    expect(detail.style as Dict).toMatchObject({ inlineSize: 'calc(48px + 96px + 96px + 64px + 64px)' })
+    expect((detail.style as Dict).maxInlineSize).toBeUndefined()
+    expect((api.getCellProps({ value: 'expand', row: 'a' }) as Dict).style).toMatchObject({ maxInlineSize: '48px' })
+  })
+
   it('跨度截在表体末尾，也截在展开的详情行前', () => {
     const tail = mount({ columns: COLUMNS, rows: ROWS, cellSpan: () => ({ rowSpan: 9 }) }).api()
     expect((tail.getCellProps({ value: 'dept', row: 'a' }) as Dict)['aria-rowspan']).toBe(4)
