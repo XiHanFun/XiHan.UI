@@ -1519,9 +1519,10 @@ export const selectSuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
       spec: { adr: 'press-channel' },
       fixture: withClearTrigger,
-      // 收起态按：清空钮不占 Tab 位，键盘到不了它，按压面只为触屏而设；展开态下 WC 会把浮层外的焦点补回高亮条目
+      // 收起态按：清空钮不占 Tab 位，键盘到不了它，按压面只为触屏而设；展开态下 WC 会把浮层外的焦点补回高亮条目。
+      // 程序化聚焦验键盘那一路时，焦点先进字段盒、钮显出才接得住
       props: { defaultValue: 'banana', name: 'fruit' },
-      steps: [heldPress('select', 'clear-trigger')],
+      steps: [heldPress('select', 'clear-trigger', { revealWithin: 'control' })],
     },
     {
       name: '禁用条目按住不进入按压面；只读时条目与清空钮都不进；无值时清空钮不进',

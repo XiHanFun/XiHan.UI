@@ -983,8 +983,8 @@ export const datePickerSuite: ConformanceSuite = {
         heldPress('date-picker', 'trigger'),
         { kind: 'setProps', props: { value: ANCHOR } },
         { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'hidden', value: null } } },
-        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
-        heldPress('date-picker', 'clear-trigger'),
+        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤先把焦点送进字段盒让钮显出，再送到钮上
+        heldPress('date-picker', 'clear-trigger', { revealWithin: 'control' }),
         {
           kind: 'settle',
           until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },

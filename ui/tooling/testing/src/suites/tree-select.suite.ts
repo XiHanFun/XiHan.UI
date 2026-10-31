@@ -1582,9 +1582,9 @@ export const treeSelectSuite: ConformanceSuite = {
     {
       name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下',
       spec: { adr: 'press-channel' },
-      // 收起态按：清空钮不占 Tab 位，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路
+      // 收起态按：清空钮不占 Tab 位，按压面主要为触屏而设；程序化聚焦仍能验到键盘那一路，焦点先进字段盒、钮显出才接得住
       props: props({ defaultValue: 'license' }),
-      steps: [heldPress('tree-select', 'clear-trigger')],
+      steps: [heldPress('tree-select', 'clear-trigger', { revealWithin: 'control' })],
     },
     {
       name: '禁用节点按住不进入按压面；只读 / 加载时三者都不进；无值时清空钮不进',

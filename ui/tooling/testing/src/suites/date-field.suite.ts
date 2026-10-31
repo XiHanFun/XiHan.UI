@@ -904,10 +904,10 @@ export const dateFieldSuite: ConformanceSuite = {
       name: 'Space / Enter 按住与触屏按下：清空钮投影 data-pressed，抬起、失焦或指针取消撤下；按住不清值',
       spec: { adr: 'press-channel' },
       covers: ['date-field.kbd.press'],
-      // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
+      // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤先把焦点送进字段盒让钮显出，再送到钮上
       props: { locale: 'zh-CN', defaultValue: '2026-07-28' },
       steps: [
-        heldPress('date-field', 'clear-trigger'),
+        heldPress('date-field', 'clear-trigger', { revealWithin: 'control' }),
         { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } }, expect: { parts: { 'root': { 'data-complete': '' }, 'clear-trigger': { hidden: null } }, events: [] } },
       ],
     },

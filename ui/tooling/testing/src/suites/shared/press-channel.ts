@@ -24,6 +24,22 @@ export interface PressTargetOptions {
    * 部件（role=radio / checkbox，Enter 不是激活键）只给 Space。失焦那一路按住的是列表里最后一个键。
    */
   keys?: readonly string[]
+  /**
+   * 按之前先把焦点送进同一 scope 的这个部件（字段盒 control）里 Tab 落到的第一个节点。
+   * 清空钮走 has-value 显示策略：可悬停的精细指针下，有值且字段盒悬停或盒里有焦点才显出，藏着时 focus() 落不上；
+   * 键盘用户也是先 Tab 进盒、钮才在场。不先进盒，过不过就取决于前面的用例把指针留在了哪。
+   */
+  revealWithin?: string
+}
+
+/** 部件里 Tab 落到的第一个节点：可聚焦、在 Tab 序里、没禁用、没藏起。 */
+function firstTabbable(container: HTMLElement): HTMLElement | null {
+  for (const node of container.querySelectorAll<HTMLElement>('*')) {
+    if (node.tabIndex < 0 || node.matches(':disabled') || node.closest('[hidden], [inert]'))
+      continue
+    return node
+  }
+  return null
 }
 
 function targetSelector(scope: string, part: string, options: PressTargetOptions): string {
@@ -55,7 +71,19 @@ export function heldPress(scope: string, part: string, options: PressTargetOptio
       const host = options.keyboardHost === undefined ? el : options.keyboardHost === null ? null : doc.querySelector<HTMLElement>(options.keyboardHost)
       if (host === undefined)
         throw new Error(`找不到键盘宿主 ${options.keyboardHost}`)
+      if (host && options.revealWithin !== undefined) {
+        const box = doc.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${options.revealWithin}"]`)
+        if (!box)
+          throw new Error(`找不到 ${scope}.${options.revealWithin} 部件`)
+        const entry = firstTabbable(box)
+        if (!entry)
+          throw new Error(`${scope}.${options.revealWithin} 里没有 Tab 能落到的节点，焦点进不了盒`)
+        entry.focus()
+      }
       host?.focus()
+      // 焦点没落上（藏着或不可聚焦）时，后面的按键与失焦验的就不是焦点在它身上的那一路
+      if (host && doc.activeElement !== host)
+        throw new Error(`焦点没落到 ${options.keyboardHost === undefined ? label : options.keyboardHost} 上，按住与失焦验不到它`)
       const expectPressed = async (pressed: boolean, phase: string): Promise<void> => {
         await flush()
         const actual = el.hasAttribute('data-pressed')

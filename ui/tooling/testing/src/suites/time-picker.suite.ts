@@ -1312,8 +1312,8 @@ export const timePickerSuite: ConformanceSuite = {
         heldPress('time-picker', 'trigger'),
         { kind: 'setProps', props: { value: '09:30' } },
         { kind: 'settle', until: { attr: { part: 'clear-trigger', name: 'hidden', value: null } } },
-        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤直接把焦点送过去
-        heldPress('time-picker', 'clear-trigger'),
+        // 清空钮不占 Tab 位，键盘这一路只在焦点落到它身上时有面；共享步骤先把焦点送进字段盒让钮显出，再送到钮上
+        heldPress('time-picker', 'clear-trigger', { revealWithin: 'control' }),
         {
           kind: 'settle',
           until: { attr: { part: 'clear-trigger', name: 'data-pressed', value: null } },
