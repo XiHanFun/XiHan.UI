@@ -76382,11 +76382,14 @@
         "z-index"
       ],
       "state": [
+        "drop",
         "drop=after",
         "drop=before",
         "drop=inside",
+        "focus-visible",
         "frozen",
-        "is([data-drop='before'], [data-drop='after'])"
+        "is([data-drop='before'], [data-drop='after'])",
+        "not([data-drop])"
       ],
       "defaultToken": [
         "1"

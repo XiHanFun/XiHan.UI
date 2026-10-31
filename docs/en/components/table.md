@@ -622,7 +622,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `0` |
 | `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` |
 | `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` |
-| `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` |
+| `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`focus-visible`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-drop])` | `1` |
 | `--xh-table-sticky-footer-layer` | `footer` | `z-index` | `fixed` | `--xh-layer-sticky` |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` |

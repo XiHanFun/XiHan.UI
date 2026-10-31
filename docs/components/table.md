@@ -888,7 +888,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `0` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
 | `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
 | `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
-| `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop=after`<br>`drop=before`<br>`drop=inside`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
+| `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`focus-visible`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-drop])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-footer-layer` | `footer` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 footer 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-inset` | `cell`<br>`column-header` | `inset-inline-end`<br>`inset-inline-start` | `frozen=end`<br>`frozen=start` | `0` | table 的 cell、column-header 部件 inset-inline-end、inset-inline-start 覆盖槽。 |

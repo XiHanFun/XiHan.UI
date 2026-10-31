@@ -242,7 +242,7 @@
     --xh-collection-cursor-selected-highlight: var(--xh-table-row-cursor, default);
     --xh-collection-cursor-selected-pressed: var(--xh-table-row-cursor, default);
     --xh-collection-cursor-disabled: var(--xh-table-row-cursor, default);
-    /* data-highlighted 跟的是连接层记的焦点行（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
+    /* data-highlighted 跟的是连接层记的焦点行（指针点选也会落焦）：只换面；键盘焦点环由 :focus-visible 下的 ::after 画 */
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
 
@@ -274,12 +274,36 @@
     background: transparent;
   }
 
-  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上；选中行的淡底不是实心面，环走默认色 */
-  [data-scope='table'][data-part='row']:focus-visible:not(:hover) {
-    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
-    --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+  /* 键盘焦点环不画在行自己身上：冻结列是带层号的吸附格子，压在行上，行的 outline 在冻结列那一截会被盖住
+     （操作列一段缺环）。改画在 ::after 上，层号与换父落点的描边同档、高过冻结列，盖满整行；行自己身上公共层那圈关掉，
+     家族的键盘高亮环保持透明，不画两圈。选中行的淡底不是实心面，环走默认色。
+     同一时刻只有一行落焦，position: relative 只给这一行，不让每一行都多担一份；拖动中的落点行让给落点那层 ::after */
+  [data-scope='table'][data-part='row']:focus-visible {
+    position: relative;
+    outline: none;
+  }
 
-    /* 换面即时，只留换位：Alt + 方向键搬的正是这一行，它照样从旧位置滑到新位置 */
+  [data-scope='table'][data-part='row']:focus-visible:not([data-drop])::after {
+    content: '';
+    position: absolute;
+    z-index: calc(var(--xh-table-sticky-column-layer, 1) + 1);
+    inset: 0;
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
+    /* 这一层盖满整行，不接指针，点击与悬停照旧落到行与格子上 */
+    pointer-events: none;
+  }
+
+  /* 高对比档里键盘焦点与别处一样取 Highlight */
+  @media (forced-colors: active) {
+    [data-scope='table'][data-part='row']:focus-visible:not([data-drop])::after {
+      outline-color: Highlight;
+    }
+  }
+
+  /* 键盘焦点出现时环立即到位，不压在背景过渡的中间帧上：换面即时，只留换位——
+     Alt + 方向键搬的正是这一行，它照样从旧位置滑到新位置 */
+  [data-scope='table'][data-part='row']:focus-visible:not(:hover) {
     transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
