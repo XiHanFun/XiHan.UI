@@ -1240,8 +1240,9 @@ export const datePickerSuite: ConformanceSuite = {
       name: '作者不写结构（快捷选项与时间）：浮层里先铺快捷选项列，日历之后是各时间列与底栏的确认钮',
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      // 确认钮的文字由作者经 translations 改写，生成的结构照改写后的那份填
-      props: { ...BASE_PROPS, presets: [...PRESETS], showTime: true, translations: { confirmTrigger: '确定' } },
+      // 确认钮的文字由作者经 translations 改写，生成的结构照改写后的那份填。
+      // 不铺标题时名字由 ariaLabel 给：日历钮是单图标钮，名字借标题或 ariaLabel，两样都不写就是无名按钮
+      props: { ...BASE_PROPS, presets: [...PRESETS], showTime: true, ariaLabel: '截止日期', translations: { confirmTrigger: '确定' } },
       initial: {
         counts: { 'label': 0, 'preset-group': 1, 'preset': PRESETS.length, 'calendar': 1, 'time-column': 2, 'time-item': 24 + 60, 'footer': 1, 'confirm-trigger': 1 },
         parts: {
