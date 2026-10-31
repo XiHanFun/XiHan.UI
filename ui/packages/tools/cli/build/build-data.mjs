@@ -142,6 +142,7 @@ function flattenSiteSyntax(text, pagePath) {
       return `${label ? `**${label}**：` : ''}${list.map(t => `\`${t.name}\` ${t.resolved}`).join('；')}`
     })
     .replace(/<XhThemeDesigner\s*\/>/g, `> 交互式主题设计器只在文档站可用：${site}/design/theme-designer`)
+    .replace(/<XhTokenBrowser\s*\/>/g, `> 交互式令牌浏览器只在文档站可用：${site}/design/token-browser`)
 }
 
 /** 页面标题：一级标题的纯文本。 */
