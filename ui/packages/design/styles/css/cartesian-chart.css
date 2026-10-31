@@ -269,8 +269,8 @@
     inline-size: var(--xh-cartesian-chart-zoom-handle-w, var(--xh-space-2));
     border-radius: var(--xh-cartesian-chart-zoom-handle-radius, var(--xh-shape-inset));
     background: var(--xh-cartesian-chart-zoom-handle-bg, var(--xh-bg-brand));
-    /* 竖条上没有字：补一支与品牌面配对的墨色，聚焦环取它 */
-    color: var(--xh-fg-on-brand);
+    /* 品牌色的竖条是实心面：环画在竖条盒内，内侧衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条） */
+    --xh-_ring-gap: var(--xh-ring-gap);
     cursor: ew-resize;
     translate: -50% 0;
     /* 压在缩略线之上 */

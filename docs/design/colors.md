@@ -134,7 +134,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-halo', '--xh-ring-invalid']"
+  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-gap', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
     '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（取色滑杆的拇指）',
@@ -142,9 +142,9 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-border-strong': '只作高对比档与登记过的强调边：字段悬停边、勾选方框与单选圈的静息边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
     '--xh-border-control-hover': '控件悬停边',
-    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦时它就是焦点环的内圈，外面再画光环',
-    '--xh-ring-focus': '公共键盘焦点环的内圈，画在元素外侧、压在承载面上，对页面底、画布、面与淡底都 ≥ 3:1',
-    '--xh-ring-halo': '焦点环的光环：内圈色 30%，只是观感；墨色域里随内圈换成墨色',
+    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦时描边换成它，内侧再补一道 inset 线，合起来就是盒内的焦点环',
+    '--xh-ring-focus': '公共键盘焦点环，2px 画在元素自己的盒内，外侧贴着承载面，对页面底、画布、面与淡底都 ≥ 3:1',
+    '--xh-ring-gap': '实心面上环内侧的 1px 底色间隔线：取承载面底色，环两侧都是底色，压在任何颜色的面上都读得出来',
   }"
 />
 

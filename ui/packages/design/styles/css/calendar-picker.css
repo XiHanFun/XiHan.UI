@@ -142,7 +142,6 @@
   /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
   [data-scope='calendar-picker'][data-part='grid']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-scope='calendar-picker'][data-part='grid-head'],
@@ -389,8 +388,9 @@
   }
 
   /* 实心强调面给单选 / 多选的选中格（格状当前）：悬停不换面，按下压到 active 档。
-     焦点环画在格子外沿、压在面板上，不随实心面换色 */
+     环画在格子盒内、内侧紧挨着实心面，衬一道底色间隔线（设计真源 §7.2 第 5 条） */
   [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
+    --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));

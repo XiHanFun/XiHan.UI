@@ -1,22 +1,23 @@
 #!/usr/bin/env node
-// 门禁：聚焦环两层在皮肤里不被改写，关环的地方光环一并关掉、并登记谁来画焦点。
+// 门禁：聚焦环在皮肤里不被改写，实心面的底色间隔线只取库里那一支，关环的地方登记谁来画焦点。
 //
-// 环画在元素外侧（设计真源 §7.2 第 5 条）：内圈 outline 偏移 --xh-ring-offset（0），贴着边框外沿；光环由公共层
-// focus.css 以零特指度的 box-shadow 从边框外沿铺开（内圈色 30%）。两层都压在承载面上，与元素自己的面无关，
-// 所以实心面上不换环色——库环 --xh-ring-focus 对页面与承载面成立，彩色面由墨色域把它换成墨色。
-// 首尾相接的行与格（集合行、表格单元格、时间列、树行）内圈往里收（--xh-ring-offset-inset）、不画光环。
+// 环画在元素自己的盒内（设计真源 §7.2 第 5 条）：outline 偏移 --xh-ring-offset（负一个环宽），外沿与边框外沿重合，
+// 不出盒、不被裁切容器裁掉。环外侧贴着承载面，库环 --xh-ring-focus 对承载面成立，所以不随面换色；面是实心的那几档
+// 在环内侧衬一道底色间隔线（--xh-_ring-gap 取 --xh-ring-gap，由公共层 focus.css 画成 inset 投影），环两侧都是底色。
+// 彩色面里的子元素由墨色域把库环换成墨色。
 //
 // 本份查四件：
 //   一、不灌环色。皮肤给 --xh-_ring-color / outline-color 赋值，或在键盘聚焦规则里写 outline 简写时，环色只能
 //       解到库环两支（--xh-ring-focus、--xh-ring-invalid）：可经组件覆盖槽（var(--xh-<组件>-…, …) 取兜底那一支）
 //       或本份皮肤的私有槽（逐处赋值都得是库环）转一道。currentColor、前景色、底色、transparent 这类写法判红。
 //       强制色、打印这类真实媒体条件块里的系统色不在此列。
-//   二、库环令牌链上的名字（--xh-ring-focus / -invalid / -halo 及它们在 tokens.css 里解到底经过的每个名字）
+//   二、库环令牌链上的名字（--xh-ring-focus / -invalid / -gap 及它们在 tokens.css 里解到底经过的每个名字）
 //       皮肤里一律不许赋值：在子树上改了它们，库环在那棵子树上就不再是库环。
-//   三、关环的键盘聚焦规则（outline: none / 0、outline-width: 0、outline-style: none）同一块里得写
-//       --xh-_ring-halo: transparent：光环由公共层画，只关内圈会留下一圈没有内圈的光环。
-//   四、关环要登记：每条关环规则按「组件 + 选择器」登在 focus-ring-surface-registry.json 的 ringless 里，写明环由
-//       谁画、或为什么不画；登了却扫不到判过期，没写理由也判红。
+//   三、间隔线只取库里那一支：皮肤给 --xh-_ring-gap 赋值只能写 var(--xh-ring-gap)。换成别的颜色，环内侧那道线
+//       就不再是承载面的底色，环在实心面上又读不出来了。
+//   四、关环要登记：每条关环规则（outline: none / 0、outline-width: 0、outline-style: none）按「组件 + 选择器」
+//       登在 focus-ring-surface-registry.json 的 ringless 里，写明环由谁画、或为什么不画；登了却扫不到判过期，
+//       没写理由也判红。
 //
 // 键盘聚焦规则：:focus-visible、[data-focus]、裸 :focus（它包含键盘落焦）；`:focus:not(:focus-visible)` 关的是指针那一路，
 // 不算。真实媒体条件只认 CONDITIONAL_MEDIA 那几种写法，写成别的样子的条件块按成立处理。
@@ -33,12 +34,13 @@ const TOKENS = 'packages/design/tokens/tokens.css'
 const REGISTRY = 'tooling/scripts/focus-ring-surface-registry.json'
 const FIELD_FAMILY = 'packages/design/styles/family/field-chrome.css'
 
-/** 库环：默认环、校验失败环与光环。环色只许解到前两支；三支连同解析链皮肤都不许赋值。 */
+/** 库环：默认环、校验失败环与实心面的底色间隔线。环色只许解到前两支；三支连同解析链皮肤都不许赋值。 */
 const LIBRARY_RINGS = ['--xh-ring-focus', '--xh-ring-invalid']
-const RING_TOKENS = [...LIBRARY_RINGS, '--xh-ring-halo']
+const RING_TOKENS = [...LIBRARY_RINGS, '--xh-ring-gap']
 
-/** 光环的开关：关环的规则在同一块里写它，值为 transparent。 */
-const HALO_SLOT = '--xh-_ring-halo'
+/** 间隔线的开关：实心面的规则写它，值只能是库里那一支。 */
+const GAP_SLOT = '--xh-_ring-gap'
+const GAP_VALUE = 'var(--xh-ring-gap)'
 
 /** 零长度：0 或带任意单位的 0。 */
 const ZERO = /^0[a-z%]*$/i
@@ -324,6 +326,7 @@ registry.ringless ??= {}
 const problems = []
 const ringless = []
 let ringAssignments = 0
+let gapAssignments = 0
 const files = (await readdir(SKINS)).filter(f => f.endsWith('.css')).sort()
 
 for (const file of files) {
@@ -333,13 +336,9 @@ for (const file of files) {
   const all = [...declarations(css)]
   /** 本份皮肤私有槽的每一处赋值：私有槽只在本份里连线，跨文件同名不连。 */
   const slots = new Map()
-  /** 同一块（选择器栈相同）里的声明，关环那一条要在同块里找光环开关。 */
-  const blocks = new Map()
   for (const d of all) {
     if (d.prop.startsWith('--xh-_'))
       (slots.get(d.prop) ?? slots.set(d.prop, []).get(d.prop)).push(d.value.trim())
-    const block = d.selectors.join('\u0000')
-    ;(blocks.get(block) ?? blocks.set(block, []).get(block)).push(d)
   }
 
   /** 环色取值是否只解到库环：组件覆盖槽取兜底那一支，本份私有槽逐处赋值都得是库环。 */
@@ -373,6 +372,12 @@ for (const file of files) {
     const at = `${file}:${lineAt(decl.index)}`
     if (RING_CHAIN.has(prop))
       problems.push(`${at} 皮肤里给 ${prop} 赋值（${value}）——库环令牌链上的名字只在 tokens.css 里声明，皮肤在子树上改它等于换掉库环`)
+    // 三、间隔线只取库里那一支（真实媒体条件块里也一样：系统色档 box-shadow 本来就被去掉）
+    if (prop === GAP_SLOT) {
+      gapAssignments++
+      if (value !== GAP_VALUE)
+        problems.push(`${at} ${GAP_SLOT}: ${value} 不是 ${GAP_VALUE}——环内侧的间隔线取承载面的底色，换了色环在实心面上又读不出来`)
+    }
     if (stack.conditional)
       continue
     const raw = decl.selectors.filter(s => !s.startsWith('@')).join(' ')
@@ -388,7 +393,7 @@ for (const file of files) {
         ringAssignments++
         const colors = ringColorsOf(prop, value)
         if (colors.some(color => !libraryOnly(color)))
-          problems.push(`${at} ${branchText.trim()} 的 ${prop}: ${value} 解不到库环——环画在元素外侧、压在承载面上，不随面换色；环色只写 var(--xh-ring-focus)（校验失败 var(--xh-ring-invalid)），可经覆盖槽或本份私有槽转一道`)
+          problems.push(`${at} ${branchText.trim()} 的 ${prop}: ${value} 解不到库环——环画在盒内、外侧贴着承载面，不随面换色，实心面改衬间隔线（${GAP_SLOT}）；环色只写 var(--xh-ring-focus)（校验失败 var(--xh-ring-invalid)），可经覆盖槽或本份私有槽转一道`)
       }
       if (!(keyboardFocus && ringOff))
         continue
@@ -399,10 +404,6 @@ for (const file of files) {
       }
       const key = `${scopeOf(branch.subject) ?? comp} ${render(branch)}`
       ringless.push({ at, key })
-      // 三、关环同时关光环
-      const block = blocks.get(decl.selectors.join('\u0000')) ?? []
-      if (!block.some(d => d.prop === HALO_SLOT && d.value.trim() === 'transparent'))
-        problems.push(`${at} ${branchText.trim()} 关了环却没关光环——同一块里补一条 ${HALO_SLOT}: transparent，不然公共层的光环还在画`)
     }
   }
 }
@@ -436,12 +437,12 @@ for (const key of Object.keys(registry.ringless)) {
 }
 
 if (problems.length) {
-  console.error('[check-focus-ring-surface] ✗ 聚焦环两层对不上：')
+  console.error('[check-focus-ring-surface] ✗ 聚焦环对不上：')
   for (const p of problems)
     console.error(`  ${p}`)
   process.exit(1)
 }
 console.log(
   `[check-focus-ring-surface] 通过：${files.length} 份皮肤 · ${ringAssignments} 条改环色的声明都解到库环，`
-  + `库环令牌链 ${RING_CHAIN.size} 个名字皮肤里没有赋值；${ringless.length} 条关环规则都同时关了光环、逐条登在 ringless 里`,
+  + `${gapAssignments} 条间隔线都取 ${GAP_VALUE}，库环令牌链 ${RING_CHAIN.size} 个名字皮肤里没有赋值；${ringless.length} 条关环规则逐条登在 ringless 里`,
 )

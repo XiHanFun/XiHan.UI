@@ -142,7 +142,6 @@
   /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
   [data-scope='calendar-range-picker'][data-part='grid']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 拖着挑区间时整张网格保持手型：指针滑过格子之间的空隙也不切回箭头 */
@@ -450,9 +449,10 @@
 
   /* 实心强调面只给单选 / 多选的选中格与区间的两端（格状当前）：悬停不换面，按下压到 active 档；
      区间中段的格子由格子上的轨道铺底，自己不换面——不然一整段都是实心圆，就分不出哪两格是端点。
-     焦点环画在格子外沿、压在面板上，不随实心面换色 */
+     环画在格子盒内、内侧紧挨着实心面，衬一道底色间隔线（设计真源 §7.2 第 5 条） */
   [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range]),
   [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-pressed: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-active));

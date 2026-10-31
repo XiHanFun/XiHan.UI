@@ -243,7 +243,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-editable-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` |
 | `--xh-editable-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` |
 | `--xh-editable-control-border-disabled` | `control` | `border-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-border-disabled` |
-| `--xh-editable-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` |
+| `--xh-editable-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` |
 | `--xh-editable-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` |
 | `--xh-editable-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` |
 | `--xh-editable-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` |

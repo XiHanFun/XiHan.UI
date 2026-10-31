@@ -223,7 +223,6 @@
   /* 摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报，落焦时不画环 */
   [data-scope='form'][data-part='error-summary']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，

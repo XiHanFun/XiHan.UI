@@ -325,7 +325,7 @@ export function compileActionControlRecipe(source) {
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
     `      color ${source.motion.duration} ${source.motion.easing},`,
-    // box-shadow 不进过渡：聚焦光环即时出现、即时撤下；家族各档的投影槽缺省都是 none，换面不靠投影
+    // box-shadow 不进过渡：实心面聚焦时的底色间隔线画在投影上，与环一起即时出现、即时撤下；家族各档的投影槽缺省都是 none，换面不靠投影
     `      opacity ${source.motion.duration} ${source.motion.easing},`,
     `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
   ].join('\n'))
@@ -354,6 +354,11 @@ export function compileActionControlRecipe(source) {
      相对颜色语法选墨只看分量、不看透明度，所以取它叠在缺省面上的不透明档 */
   rule('[data-xh-action-control][data-xh-ink-surface]', `    --xh-ink-surface: ${stateValue(source, 'rest', 'backgroundColor')};`)
   rule('[data-xh-action-control][data-xh-ink-surface][data-disabled]', '    --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-bg-subtle-opaque));')
+  /* 实心面上环内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）：环画在盒内，内侧紧挨着同色的实心面，
+     单靠一道环读不出来。线画在聚焦档的投影上（inset，从边框以内铺起，扣掉一道边框宽才落在环的正内侧；
+     皮肤把边框改成 0 时同时写 --xh-_ring-border: 0px）；
+     禁用档的面换成中性淡底，不衬 */
+  rule('[data-xh-action-control][data-xh-ink-surface]:not([data-disabled])', '    --xh-_ring-gap: var(--xh-ring-gap);')
 
   /* text 是尺寸基线；icon 共用其光学档，field/floating 只覆写真正不同的通道。 */
   for (const size of SIZES) {
@@ -418,8 +423,8 @@ export function compileActionControlRecipe(source) {
     rule(`${profileSelector(surfaceProfiles)}:not([data-disabled]):not([data-loading])${PRESSED}`, '    scale: none;')
   rule('[data-xh-action-control][data-disabled]', stateDeclarations(source, 'disabled'))
   rule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', stateDeclarations(source, 'loading'))
-  /* 键盘焦点还落在控件上时，悬停、按下与在途照常换面，光环不让位（设计真源 §7.2 第 5 条）：
-     排在这几档之后，同特指度靠源序压过它们的投影槽，投影换成聚焦档那一支（缺省就是光环） */
+  /* 键盘焦点还落在控件上时，悬停、按下与在途照常换面，实心面的底色间隔线不让位（设计真源 §7.2 第 5 条）：
+     排在这几档之后，同特指度靠源序压过它们的投影槽，投影换成聚焦档那一支（缺省就是间隔线） */
   rule('[data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading])', `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
   rule(`[data-xh-action-control]:focus-visible:not([data-disabled])${PRESSED}`, `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
   /* link 档的下划线排在家族按压块之后：悬停与按下在换一档字色之外加下划线，禁用与在途不画 */

@@ -67,7 +67,8 @@
     --xh-action-shadow-rest: var(--xh-checkbox-shadow, none);
     --xh-action-shadow-hover: var(--xh-checkbox-shadow, none);
     --xh-action-shadow-pressed: var(--xh-checkbox-shadow, none);
-    --xh-action-shadow-focus-visible: var(--xh-checkbox-shadow, none);
+    /* 聚焦档缺省接家族的底色间隔线：勾中的方框是实心面，环内侧要衬这道线（见勾中档） */
+    --xh-action-shadow-focus-visible: var(--xh-checkbox-shadow, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent));
     --xh-action-shadow-disabled: var(--xh-checkbox-shadow, none);
 
     /* 家族的 icon 档不写 padding-block；UA 给 button 的 1px 上下内距会把 16px 盒里的勾挤扁 */
@@ -76,7 +77,6 @@
 
   /* 半选与全选同样是「有值」，方框都得填上：
      只填全选的话，半选那条横杠是实心底上的前景色，压在同色画布上等于没画。
-     焦点环画在方框外沿、压在承载面上，不随实心面换色。
      勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态；按下换到语气的 active 档 */
   [data-scope='checkbox'][data-part='root'][data-state='checked'],
   [data-scope='checkbox'][data-part='root'][data-state='indeterminate'] {
@@ -84,6 +84,12 @@
     --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_checkbox-border: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
     --xh-_checkbox-border-hover: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+  }
+
+  /* 有值的方框是实心面：环画在方框盒内、内侧紧挨着同色的填充，衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条）；
+     禁用的方框退回中性底，不衬 */
+  [data-scope='checkbox'][data-part='root']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 高对比轴把未选中边界提到 strong；有值两态仍由实心语气底与配对勾形表达。 */

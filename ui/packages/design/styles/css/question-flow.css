@@ -364,17 +364,16 @@
     border-color: var(--xh-question-flow-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 照字段外壳标出焦点：换承载面底 + 品牌描边，描边就是焦点环的内圈，再画光环；
-     强制色档光环被去掉，系统色环由下面的强制色规则补 */
+  /* 照字段外壳标出焦点：换承载面底 + 品牌描边，描边内侧补一道 inset 线，合起来一个环宽、画在盒内；
+     强制色档 inset 线被去掉，系统色环由下面的强制色规则补 */
   [data-scope='question-flow'][data-part='note']:focus-within {
     border-color: var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
     background: var(--xh-question-flow-note-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
   }
 
   [data-scope='question-flow'][data-part='note']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-scope='question-flow'][data-part='note']:disabled {

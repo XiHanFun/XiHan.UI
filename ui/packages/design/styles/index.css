@@ -31,26 +31,33 @@
 /*
  * 聚焦环的公共层：全库共用一份。
  *
- * 环两层（设计真源 §7.2 第 5 条），两层都不随 data-tone、即时出现、不进过渡：
- *   内圈  outline：粗细取 --xh-ring-width（1px），颜色取 --xh-_ring-color（缺省 --xh-ring-focus），
- *         偏移取 --xh-ring-offset（0）——贴着元素的边框外沿画，压在承载面上，与元素自己的面无关，
- *         实心面上也不换环色。对比度由内圈承担（WCAG 1.4.11 的 3:1）；outline 不占布局，聚焦前后盒子一样大。
- *   光环  box-shadow：从边框外沿起铺，扩散量 = 内圈宽 + --xh-ring-halo-width（3px），颜色 --xh-ring-halo
- *         （内圈色 30%）。只是观感。强制色档系统去掉 box-shadow，只剩内圈。
+ * 环是一道实线（设计真源 §7.2 第 5 条），不随 data-tone、即时出现、不进过渡：
+ *   outline：粗细取 --xh-ring-width（2px），颜色取 --xh-_ring-color（缺省 --xh-ring-focus），
+ *   偏移取 --xh-ring-offset（负一个环宽）——环画在元素自己的盒内，外沿与边框外沿重合。
+ *   环不出盒：元素多大、放进什么裁切容器里，环都完整，应用侧不必给它留位；outline 不占布局，聚焦前后盒子一样大。
  *
- * 光环这条规则零特指度、排在全部家族配方与组件皮肤之前：部件自己写了 box-shadow（抬起影、浮层投影）时
- * 由它自己的规则胜出，光环让位，不会把浮层面板的投影冲掉；要在自己的投影之前叠光环的部件（Action Control
- * 等家族配方、带抬起影的拇指）在自己的聚焦规则里把光环接进去。
+ * 环外侧贴着承载面，--xh-ring-focus 对承载面成立 3:1。面是实心的那几档（实心按钮、选中的勾选框与开关轨道、
+ * 日历选中格……），环内侧紧挨着的是同色或任意色的面，单靠一道环读不出来：这些档在自己的规则里写
+ * --xh-_ring-gap: var(--xh-ring-gap)，本份在环内侧再衬一道 --xh-ring-gap-width（1px）的底色间隔线
+ * （inset box-shadow），环两侧都是底色。没写的档这道线是透明的，不改动元素的样子。
+ * inset 投影从内距盒（边框以内）铺起：带边框的部件把边框宽写进 --xh-_ring-border，线才落在环的正内侧。
  *
- * 关环的部件（outline: none，焦点由别处画）同时写 --xh-_ring-halo: transparent，光环随之透明。
- * 这支槽登记成不继承：只作用于写它的那个节点，关环的容器里自己会落焦的部件照常画光环。
+ * 间隔线这条规则零特指度、排在全部家族配方与组件皮肤之前：部件自己写了 box-shadow（抬起影、浮层投影）时
+ * 由它自己的规则胜出；实心又带投影的部件（Action Control 家族等）在自己的聚焦规则里把间隔线接在投影之前。
+ * 两支私有槽登记成不继承：只作用于写它的那个节点，实心面里的后代自己落焦时不会也画上间隔线。
  * --xh-_ring-color 同理只在拿着焦点的节点上读，:focus-visible 不匹配祖先，后代读不到。
+ * 强制色档系统去掉 box-shadow，只剩环。
  *
  * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里 [data-scope='x'][data-part='y']:focus-visible
  * 同级，组件皮肤排在本份之后，要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
  * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
  */
-@property --xh-_ring-halo {
+@property --xh-_ring-gap {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --xh-_ring-border {
   syntax: '*';
   inherits: false;
 }
@@ -62,7 +69,7 @@
   }
 
   :where([data-scope][data-part]:focus-visible) {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, 0px)) var(--xh-_ring-gap, transparent);
   }
 }
 
@@ -496,6 +503,10 @@
     --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-bg-subtle-opaque));
   }
 
+  [data-xh-action-control][data-xh-ink-surface]:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   [data-xh-action-control][data-xh-action-size='xs'] {
     --xh-_action-profile-visual-size: var(--xh-control-action-size);
     --xh-_action-profile-padding-inline: var(--xh-space-1);
@@ -664,7 +675,7 @@
     color: var(--xh-action-fg-focus-visible, var(--xh-_action-variant-fg-focus-visible));
     border-color: var(--xh-action-border-focus-visible, var(--xh-_action-variant-border-focus-visible));
     --xh-_action-current-highlight: var(--xh-action-highlight-focus-visible, transparent);
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
     opacity: var(--xh-action-opacity-focus-visible, 1);
     cursor: var(--xh-action-cursor-focus-visible, pointer);
     scale: var(--xh-action-scale-focus-visible, none);
@@ -722,11 +733,11 @@
   }
 
   [data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading]) {
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
   }
 
   [data-xh-action-control]:focus-visible:not([data-disabled]):is(:active, [data-pressed]) {
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
   }
 
   [data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,
@@ -983,7 +994,7 @@
   [data-xh-field-chrome]:focus-within:not([data-disabled]) {
     background-color: var(--xh-field-bg-focus, var(--xh-_field-variant-bg-focus));
     border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
-    box-shadow: var(--xh-field-shadow-focus, 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo));
+    box-shadow: var(--xh-field-shadow-focus, inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-field-border-focus, var(--xh-_field-variant-border-focus)));
     outline: none;
   }
 
@@ -1048,12 +1059,10 @@
 
   [data-xh-field-chrome] [data-xh-field-input]:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-xh-field-chrome] [data-xh-action-profile='field-inset']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-xh-field-input][data-disabled] {
@@ -1102,6 +1111,8 @@
 
     [data-xh-field-chrome]:focus-within:not([data-disabled]) {
       border-color: Highlight;
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
     }
 
     [data-xh-field-chrome][data-readonly] {
@@ -1180,7 +1191,7 @@
     padding-inline: var(--xh-collection-inline-padding, var(--xh-_collection-inline-padding));
     border-radius: var(--xh-collection-radius, var(--xh-shape-inset));
     outline: var(--xh-ring-width) solid var(--xh-_collection-outline);
-    outline-offset: var(--xh-ring-offset-inset);
+    outline-offset: var(--xh-ring-offset);
     background-color: var(--xh-_collection-bg);
     color: var(--xh-_collection-fg);
     font-size: var(--xh-collection-font-size, var(--xh-_collection-font-size));
@@ -3815,8 +3826,8 @@
     border-block-start-width: 0;
   }
 
-  /* 悬停或拿到焦点的那一段抬到最上层：焦点环画在元素外侧，
-     不抬层就会被后一段的底色与描边盖掉一半 */
+  /* 悬停或拿到焦点的那一段抬到最上层：环画在段自己的盒内，但段与段共一条边，
+     不抬层的话环贴着共边的那一截会被相邻段的描边盖住 */
   .xh-scope-button-group[data-part='root'] > *:hover,
   .xh-scope-button-group[data-part='root'] > *:focus-within {
     z-index: 1;
@@ -6623,7 +6634,6 @@
   /* 面板本体不接收焦点，只是键盘事件的收口点，画环反而像是选中了整块 */
   .xh-scope-floating-panel[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 跟手期间整块不许选中文字：手在标题栏上来回蹭时会顺带把正文刷成高亮 */
@@ -8401,16 +8411,18 @@
     transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap：首尾相接的格子把聚焦环的内圈收进自己的盒子里，
-     不画光环，压不到相邻的格子（设计真源 §7.2 第 5 条） */
-  .xh-scope-heatmap[data-part='cell']:focus-visible {
-    outline-offset: var(--xh-ring-offset-inset);
-    --xh-_ring-halo: transparent;
-  }
-
   /* 详情条正在说的那一格（指针停着或焦点落着）描一圈正文色的粗线：扫过一片格子时看得出条说的是哪一格 */
   .xh-scope-heatmap[data-part='cell'][data-highlighted] {
     box-shadow: inset 0 0 0 var(--xh-stroke-thick) var(--xh-heatmap-cell-border-highlighted, var(--xh-fg-default));
+  }
+
+  /* 格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap：环画在格子自己的盒内，压不到相邻的格子。
+     格子填的是数据色，环内侧衬一道底色间隔线，压在哪一档颜色上都读得出来（设计真源 §7.2 第 5 条）。
+     格子自己用 inset 投影描边、详情条那一档换成粗线，公共层零特指度的间隔线压不过它们：排在详情条之后接上，
+     描边与粗线都在环下面。格子的投影带着淡变（详情条换格时用），间隔线与环一起即时出现，这一档不淡变 */
+  .xh-scope-heatmap[data-part='cell']:focus-visible {
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap);
+    transition: none;
   }
 
   /* 首次出现：有颜色的格子从空格底色填到自己的档位色，按日期（矩阵按列）的先后扫过去。
@@ -8961,7 +8973,6 @@
     --xh-_image-cropper-handle-color: var(--xh-ring-focus);
 
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* —— 八个方位：落点 + 光标 —— */
@@ -9276,7 +9287,7 @@
     --xh-_input-group-px: var(--xh-control-px-md);
     --xh-_input-group-font-size: var(--xh-control-font-md);
     /* 组壳与字段外壳同形：静息字段底 + --xh-border-control；悬停底不变、描边升 --xh-border-strong；
-       聚焦换承载面 + --xh-border-control-focus（描边就是焦点环的内圈）+ 光环；静息无影 */
+       聚焦换承载面 + --xh-border-control-focus 描边 + 描边内侧补足一个环宽的 inset 线（画在描边那层上）；静息无影 */
     --xh-_input-group-bg: var(--xh-bg-field);
     --xh-_input-group-bg-hover: var(--xh-bg-field);
     --xh-_input-group-bg-focus: var(--xh-bg-surface);
@@ -9300,7 +9311,7 @@
 
     /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
     max-inline-size: 100%;
-    /* 聚焦光环画在 box-shadow 上，即时出现与撤下，不进过渡 */
+    /* 投影不进过渡：组壳自己不画投影，聚焦的 inset 线画在描边那层上，即时出现与撤下 */
     transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -9371,14 +9382,15 @@
   }
 
   /* 聚焦排在失效之后：校验失败的字段拿到焦点时让位给聚焦态。
-     焦点由换色的描边（焦点环的内圈）与光环标出，与字段外壳同一副样子 */
+     焦点由换色的描边加它内侧补足一个环宽的 inset 线标出，与字段外壳同一副样子。
+     线画在描边那层（::before 压在组里各段之上）上，各段自己的底盖不住它 */
   .xh-scope-input-group[data-part='root']:focus-within {
     --xh-_input-group-face: var(--xh-input-group-bg-focus, var(--xh-_input-group-bg-focus));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   .xh-scope-input-group[data-part='root']:focus-within::before {
     border-color: var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -9690,19 +9702,17 @@
   /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：环永远长在行上 */
   .xh-scope-json-viewer[data-part='tree']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 焦点落在 branch 上（它才是 treeitem），但环画在它自己那一行上：
      整棵子层套一圈描边会把展开的层级全框进去 */
   .xh-scope-json-viewer[data-part='branch']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-json-viewer[data-part='branch']:focus-visible > .xh-scope-json-viewer[data-part='branch-control'] {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset-inset);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 行：标量与分支共用同一套盒子，两种行在视觉上必须齐平 */
@@ -11827,7 +11837,6 @@
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   .xh-scope-mention[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-mention[data-part='content'][data-state='open'] {
@@ -12437,11 +12446,11 @@
 
   /* 盒里有两个 Tab 停靠点，盒子在 :focus-within 上换的聚焦描边两者完全一样，
      分不出焦点在框里还是在钮上，所以钮上再画一圈自己的环（家族只对不占 Tab 位的内嵌钮关环）。
-     环往内收，压在按钮自己的方框里，不与盒子外面那一圈叠在一起。
+     环画在按钮自己的方框里，与盒子那一圈（换色的描边加内侧的 inset 线）不叠在一起。
      指示焦点只能用环不能用底色：可用的几档底色压在盒底上都到不了 3:1，换了色也等于没画 */
   .xh-scope-password-input[data-part='control'] [data-part='visibility-trigger']:where(.xh-scope-password-input):focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-_password-input-ring);
-    outline-offset: var(--xh-ring-offset-inset);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 明暗两态各一枚字形：换的是这个槽，兜底盒的量法只写一遍 */
@@ -12763,7 +12772,6 @@
 
   .xh-scope-popconfirm[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -13094,6 +13102,13 @@
     flex: none;
     border-width: 0;
     font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 发送身份是实心面：环画在钮盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）。
+     这颗钮没有描边，家族的 inset 线按零边框宽铺 */
+  .xh-scope-prompt-input[data-part='submit-trigger'][data-xh-action-variant='solid']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+    --xh-_ring-border: 0px;
   }
 
   /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
@@ -13716,7 +13731,6 @@
     --xh-_resizable-indicator-color: var(--xh-ring-focus);
 
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-resizable[data-part='handle'][hidden] {
@@ -14438,10 +14452,16 @@
     background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
   }
 
-  /* 键盘焦点落在标签上：形态档自己写了投影（实心档的内高光、描边与无壳档的 none），光环排在它们之后接上
-     （设计真源 §7.2 第 5 条）；聚焦期间实心档的内高光让位给光环 */
+  /* 键盘焦点落在标签上：环画在标签盒内。实心档是彩色面，环内侧紧挨着同色的面，衬一道底色间隔线才读得出来
+     （设计真源 §7.2 第 5 条）。形态档自己写了投影（实心档的内高光、描边与无壳档的 none），公共层零特指度的
+     间隔线压不过它们，排在它们之后接上；inset 线从描边以内铺起，扣掉一道描边宽才落在环的正内侧。
+     聚焦期间实心档的内高光让位给间隔线 */
+  .xh-scope-tag[data-part='root'][data-variant='solid']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   .xh-scope-tag[data-part='root']:focus-visible:not([data-disabled]) {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent);
   }
 
   /* —— 禁用 —— */
@@ -17827,17 +17847,16 @@
     border-color: var(--xh-approval-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 照字段外壳标出焦点（设计真源 §8.3）：换承载面底 + 品牌描边，描边就是焦点环的内圈，再画光环；
-     强制色档光环被去掉，系统色环由下面的强制色规则补 */
+  /* 照字段外壳标出焦点（设计真源 §8.3）：换承载面底 + 品牌描边，描边内侧补一道 inset 线，合起来一个环宽、画在盒内；
+     强制色档 inset 线被去掉，系统色环由下面的强制色规则补 */
   .xh-scope-approval[data-part='note']:focus-within {
     border-color: var(--xh-approval-note-border-focus, var(--xh-border-control-focus));
     background: var(--xh-approval-note-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-approval-note-border-focus, var(--xh-border-control-focus));
   }
 
   .xh-scope-approval[data-part='note']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 要求写理由而空着就按了拒绝：换无效淡底 + 无效描边；焦点也已带到这里，聚焦时同样不画环 */
@@ -18706,15 +18725,6 @@
     --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-elevation-raised));
   }
 
-  .xh-scope-button[data-part='root'][data-xh-action-variant='solid']:focus-visible::before {
-    content: '';
-    position: absolute;
-    inset: calc(-1 * (var(--xh-ring-width) + var(--xh-stroke-thin)));
-    border: var(--xh-ring-width) solid var(--xh-ring-focus);
-    border-radius: inherit;
-    pointer-events: none;
-  }
-
   /* liquid 档的交互光：实心钮进入悬停时，一道光沿 1px 描边环扫过一次。环与焦点环同法，用透明描边画，
      遮罩只留描边那一圈。光只走描边、不进面——
      面内叠一层白光，品牌实心面上白字的对比就从 5.08:1 往下掉。光用面上前景色（currentColor），
@@ -18840,12 +18850,6 @@
   .xh-scope-button[data-part='suffix'][hidden],
   .xh-scope-button[data-part='indicator'][hidden] {
     display: none;
-  }
-
-  @media (forced-colors: active) {
-    .xh-scope-button[data-part='root'][data-xh-action-variant='solid']:focus-visible::before {
-      border-color: Highlight;
-    }
   }
 
   @media print {
@@ -18980,12 +18984,8 @@
       --xh-scrollbar-thumb-bg,
       var(--xh-fg-scrollbar-thumb)
     );
-    /* 滑块里没有字，这支墨色只给聚焦环用。 */
-    color: var(--xh-fg-default);
     cursor: default;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
@@ -19000,7 +19000,7 @@
     inset-block: var(--xh-scrollbar-gutter);
   }
 
-  /* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
+  /* 这两档的面往另一头走（浅色主题更深、深色主题更亮） */
   .xh-scope-scrollbar[data-part='thumb']:hover {
     background: var(
       --xh-scrollbar-thumb-bg-hover,
@@ -19019,7 +19019,12 @@
   .xh-scope-scrollbar[data-part='root']:focus-visible,
   .xh-scope-scrollbar[data-part='track']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
+  }
+
+  /* 滑块是一条实色的中性面，悬停档与品牌环同一明度：环画在滑块盒内，内侧衬一道底色间隔线才读得出来
+     （设计真源 §7.2 第 5 条）；禁用档不落焦，不衬 */
+  .xh-scope-scrollbar[data-part='thumb']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */
@@ -19193,7 +19198,6 @@
   /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
   .xh-scope-calendar-picker[data-part='grid']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-calendar-picker[data-part='grid-head'],
@@ -19440,8 +19444,9 @@
   }
 
   /* 实心强调面给单选 / 多选的选中格（格状当前）：悬停不换面，按下压到 active 档。
-     焦点环画在格子外沿、压在面板上，不随实心面换色 */
+     环画在格子盒内、内侧紧挨着实心面，衬一道底色间隔线（设计真源 §7.2 第 5 条） */
   .xh-scope-calendar-picker[data-part='cell-trigger'][data-selected] {
+    --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-pressed: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
@@ -19735,7 +19740,6 @@
   /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
   .xh-scope-calendar-range-picker[data-part='grid']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 拖着挑区间时整张网格保持手型：指针滑过格子之间的空隙也不切回箭头 */
@@ -20043,9 +20047,10 @@
 
   /* 实心强调面只给单选 / 多选的选中格与区间的两端（格状当前）：悬停不换面，按下压到 active 档；
      区间中段的格子由格子上的轨道铺底，自己不换面——不然一整段都是实心圆，就分不出哪两格是端点。
-     焦点环画在格子外沿、压在面板上，不随实心面换色 */
+     环画在格子盒内、内侧紧挨着实心面，衬一道底色间隔线（设计真源 §7.2 第 5 条） */
   .xh-scope-calendar-range-picker[data-part='cell-trigger'][data-selected]:not([data-in-range]),
   .xh-scope-calendar-range-picker[data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-hover: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
     --xh-action-bg-pressed: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-active));
@@ -20346,10 +20351,9 @@
     border-radius: var(--xh-card-radius, var(--xh-shape-surface));
   }
 
-  /* 焦点环画在整张卡片外沿：环是点击区的轮廓，读者看到的可交互范围与点得到的范围一致 */
+  /* 焦点环沿整张卡片的外沿画在卡片盒内：环是点击区的轮廓，读者看到的可交互范围与点得到的范围一致 */
   .xh-scope-card[data-part='root'][data-interactive] .xh-scope-card[data-part='trigger']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-card[data-part='root'][data-interactive] .xh-scope-card[data-part='trigger']:focus-visible::after {
@@ -20700,7 +20704,6 @@
   .xh-scope-carousel[data-part='list']:focus-visible,
   .xh-scope-carousel[data-part='indicator-group']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-carousel[data-part='indicator-group'] {
@@ -20785,6 +20788,12 @@
     display: none;
   }
 
+  /* 点是一小块实色（中性灰、悬停与按下的前景色、当前页的品牌色），环画在点自己的盒内、内侧紧挨着这块色，
+     衬一道底色间隔线才在每一档上都读得出来（设计真源 §7.2 第 5 条） */
+  .xh-scope-carousel[data-part='indicator'] {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   /* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到最小目标 --xh-control-target-min」
      中大的一头（6px 点四面各扩 9px）；粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足。
      相邻两点节距 14px，命中区沿轨道互相叠一截：后一颗画在上层，叠住的那段归它，每颗点自己的盒子仍只命中自己 */
@@ -20834,8 +20843,7 @@
     border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
   }
 
-  /* 没开自动播放：整颗品牌胶囊。带「没开自动播放」的祖先条件，与下面自动播放那一档互斥；
-     焦点环画在胶囊外沿，不随实心面换色 */
+  /* 没开自动播放：整颗品牌胶囊。带「没开自动播放」的祖先条件，与下面自动播放那一档互斥 */
   .xh-scope-carousel[data-part='root']:not([data-autoplay], [data-paused])
     .xh-scope-carousel[data-part='indicator'][data-current] {
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
@@ -21446,8 +21454,8 @@
     inline-size: var(--xh-cartesian-chart-zoom-handle-w, var(--xh-space-2));
     border-radius: var(--xh-cartesian-chart-zoom-handle-radius, var(--xh-shape-inset));
     background: var(--xh-cartesian-chart-zoom-handle-bg, var(--xh-bg-brand));
-    /* 竖条上没有字：补一支与品牌面配对的墨色，聚焦环取它 */
-    color: var(--xh-fg-on-brand);
+    /* 品牌色的竖条是实心面：环画在竖条盒内，内侧衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条） */
+    --xh-_ring-gap: var(--xh-ring-gap);
     cursor: ew-resize;
     translate: -50% 0;
     /* 压在缩略线之上 */
@@ -22347,7 +22355,6 @@
   /* 容器只是焦点域的兜底落点，落焦不画环：高亮永远长在条目上 */
   .xh-scope-cascader[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -22396,7 +22403,6 @@
 
   .xh-scope-cascader[data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-cascader[data-part='group'] {
@@ -22680,7 +22686,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   .xh-scope-cascader[data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-cascader[data-part='input'][hidden] {
@@ -23046,7 +23051,8 @@
     --xh-action-shadow-rest: var(--xh-checkbox-shadow, none);
     --xh-action-shadow-hover: var(--xh-checkbox-shadow, none);
     --xh-action-shadow-pressed: var(--xh-checkbox-shadow, none);
-    --xh-action-shadow-focus-visible: var(--xh-checkbox-shadow, none);
+    /* 聚焦档缺省接家族的底色间隔线：勾中的方框是实心面，环内侧要衬这道线（见勾中档） */
+    --xh-action-shadow-focus-visible: var(--xh-checkbox-shadow, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent));
     --xh-action-shadow-disabled: var(--xh-checkbox-shadow, none);
 
     /* 家族的 icon 档不写 padding-block；UA 给 button 的 1px 上下内距会把 16px 盒里的勾挤扁 */
@@ -23055,7 +23061,6 @@
 
   /* 半选与全选同样是「有值」，方框都得填上：
      只填全选的话，半选那条横杠是实心底上的前景色，压在同色画布上等于没画。
-     焦点环画在方框外沿、压在承载面上，不随实心面换色。
      勾中的方框描边与底同色，悬停不换描边——填色本身已经在表达状态；按下换到语气的 active 档 */
   .xh-scope-checkbox[data-part='root'][data-state='checked'],
   .xh-scope-checkbox[data-part='root'][data-state='indeterminate'] {
@@ -23063,6 +23068,12 @@
     --xh-_checkbox-bg-pressed: var(--xh-checkbox-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_checkbox-border: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
     --xh-_checkbox-border-hover: var(--xh-checkbox-border-checked, var(--xh-_checkbox-accent));
+  }
+
+  /* 有值的方框是实心面：环画在方框盒内、内侧紧挨着同色的填充，衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条）；
+     禁用的方框退回中性底，不衬 */
+  .xh-scope-checkbox[data-part='root']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 高对比轴把未选中边界提到 strong；有值两态仍由实心语气底与配对勾形表达。 */
@@ -24180,16 +24191,15 @@
     border-end-end-radius: 0;
   }
 
-  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），描边就是焦点环的内圈，再画光环；点进去选字也算聚焦 */
+  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），描边内侧补一道 inset 线，合起来一个环宽、画在盒内；点进去选字也算聚焦 */
   .xh-scope-clipboard[data-part='input']:focus-within {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-clipboard-input-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
   }
 
   .xh-scope-clipboard[data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
@@ -25463,7 +25473,6 @@
   /* 浮层本身只是个容器（tabindex=-1 是焦点域的兜底落点），落焦时不画环 */
   .xh-scope-color-picker[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 常驻形态：根不再取字段缺省宽，跟着取色面走 */
@@ -25536,9 +25545,8 @@
      刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，
      位移量是物理方向的，会把拇指推向错误的一侧；负的逻辑外边距自己就跟着换向。
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比变量宽两条边，回拉就对不上圆心。
-     与 Slider 的拇指同一副平面圆：不投影、不走 raised，拖动时不放大、画与聚焦同一副光环。
-     白环压在取色区左上的白里看不见，环内侧补一道 1px 不透明装饰边（inset，不外扩、不是投影）把它框出来；
-     聚焦与拖动时这道边与光环并在同一条 box-shadow 里。
+     与 Slider 的拇指同一副平面圆：不投影、不走 raised，拖动时不放大、聚焦与拖动画同一道环。
+     白环压在取色区左上的白里看不见，环内侧补一道 1px 不透明装饰边（inset，不外扩、不是投影）把它框出来。
      两条滑块的拇指归 color-slider 那份皮，与这一颗同一副长相。 */
   .xh-scope-color-picker[data-part='area-thumb'] {
     --xh-_color-picker-thumb-edge: inset 0 0 0 var(--xh-stroke-thin) var(--xh-color-picker-thumb-edge, var(--xh-border-default-opaque));
@@ -25560,10 +25568,13 @@
     margin-block-start: calc(var(--xh-color-picker-thumb-size, var(--xh-control-indicator-md)) / -2);
   }
 
-  /* 拇指自己写了 box-shadow，focus.css 的零特指度光环压不过它：聚焦与拖动时把光环并进来。
-     只有手真正拖着时带 data-dragging，光标与光环不会几处一起变 */
+  /* 聚焦与拖动画同一道环，画在白环内侧、仍在拇指自己的盒内：外有白环，内侧换上一道底色间隔线
+     （盖住那道装饰边），环压在取色区的任何颜色上都读得出来（设计真源 §7.2 第 5 条）。
+     只有手真正拖着时带 data-dragging，光标与环不会几处一起变 */
   .xh-scope-color-picker[data-part='area-thumb']:is(:focus-visible, [data-dragging]) {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo), var(--xh-_color-picker-thumb-edge);
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap);
   }
 
   .xh-scope-color-picker[data-part='area-thumb'][data-dragging] {
@@ -25634,15 +25645,14 @@
   }
 
   .xh-scope-color-picker[data-part='channel-input']:focus {
-    /* 焦点边一律 --xh-border-control-focus，不随语气；描边就是焦点环的内圈，再画光环 */
+    /* 焦点边一律 --xh-border-control-focus，不随语气；与字段外壳同一道盒内环：换色的描边加内侧补足一个环宽的 inset 线 */
     border-color: var(--xh-color-picker-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-color-picker-input-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-color-picker-input-border-focus, var(--xh-border-control-focus));
   }
 
   .xh-scope-color-picker[data-part='channel-input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 打到一半的串：框里留着草稿，但值没动——描边提示"这串还没被收下" */
@@ -25981,8 +25991,7 @@
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上。
      拇指填的是当前那一档的颜色（连接层写进私有槽），与 Slider 的拇指同一副平面圆：
-     --xh-border-default 描边把它从任何底色里框出来，不投影、不走 raised，悬停与拖动都不放大，拖动中画光环。
-     不写 box-shadow：键盘聚焦时 focus.css 的光环才落得下来。
+     --xh-border-default 描边把它从任何底色里框出来，不投影、不走 raised，悬停与拖动都不放大，聚焦与拖动画同一道环。
      box-sizing 必须显式写：描边要吃进直径里，否则下面按半个直径回拉的负外边距就对不上圆心。 */
   .xh-scope-color-slider[data-part='thumb'] {
     --xh-_color-slider-thumb-color: transparent;
@@ -26013,10 +26022,17 @@
     margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
-  /* 拖动中画与聚焦同一副光环，即时出现、即时撤下 */
+  /* 聚焦与拖动画同一道环，画在描边内侧、仍在拇指自己的盒内；圆点填的是任意颜色，环内侧再衬一道底色间隔线，
+     外有描边、内有间隔线，环压在什么颜色上都读得出来（设计真源 §7.2 第 5 条）。
+     inset 投影从描边以内铺起，环也收在描边以内，铺满环宽加线宽正好落在环的正内侧。即时出现、即时撤下 */
+  .xh-scope-color-slider[data-part='thumb']:is(:focus-visible, [data-dragging]) {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap);
+  }
+
   .xh-scope-color-slider[data-part='thumb'][data-dragging] {
     cursor: grabbing;
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo);
   }
 
   /* 校验失败时描边换成无效色：拇指的面要保住当前颜色，只能动描边 */
@@ -26260,10 +26276,17 @@
     --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-ring, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
-  /* 焦点环独占 outline：选中不再画外圈，由色块正中的徽标与色块自己的品牌描边表达 */
+  /* 焦点环独占 outline：选中不再画外圈，由色块正中的徽标与色块自己的品牌描边表达。
+     环画在格子盒内，压在铺满格子的色块上；色块是任意颜色，环内侧衬一道底色间隔线才压在哪一色上都读得出来
+     （设计真源 §7.2 第 5 条）。线画在色块上（格子自己的投影在色块下面，被它盖住）：inset 从色块描边以内铺起，
+     扣掉一道描边宽才落在环的正内侧 */
   .xh-scope-color-swatch-picker[data-part='item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  .xh-scope-color-swatch-picker[data-part='item']:focus-visible > [data-part='swatch']:where(.xh-scope-color-swatch-picker) {
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-ring-gap);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled，格子仍可聚焦，样式由 data-disabled 表达 */
@@ -26753,7 +26776,6 @@
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   .xh-scope-combobox[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -27173,7 +27195,6 @@
   /* 面板本身只承接程序化聚焦（开场那一刻还没轮到检索框），不画环 */
   .xh-scope-command[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -27210,7 +27231,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   .xh-scope-command[data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充态：浏览器给填过的框强加一套系统色（多数引擎是黄底黑字），
@@ -27258,7 +27278,6 @@
      可滚动容器在某些浏览器里会被自动塞进 Tab 序列，落焦时不画环 */
   .xh-scope-command[data-part='list']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* —— 分组 —— */
@@ -27624,7 +27643,6 @@
 
   .xh-scope-context-menu[data-part='content']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 首帧落位后从锚点一侧淡入短移，不缩放整张面。 */
@@ -28148,7 +28166,6 @@
     background: var(--xh-date-field-segment-bg-focus, var(--xh-_date-field-segment-bg));
     color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */
@@ -28494,7 +28511,6 @@
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
   .xh-scope-date-picker[data-part='segment-group']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 多选的标签行：段位让位，选中的日期在盒里排成标签，超过 maxTagCount 的折进 +N。
@@ -28647,7 +28663,6 @@
      程序化落焦时不该再画一圈环 */
   .xh-scope-date-picker[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -29483,7 +29498,6 @@
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
   .xh-scope-date-range-picker[data-part='segment-group']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control。正方视觉盒、inset 圆角、
@@ -29601,7 +29615,6 @@
      程序化落焦时不该再画一圈环 */
   .xh-scope-date-range-picker[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -30336,7 +30349,6 @@
 
   .xh-scope-dialog[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -30892,7 +30904,6 @@
   /* 面板是焦点陷阱的兜底落点（tabindex="-1"），落焦不画环：环长在里面的可聚焦控件上 */
   .xh-scope-drawer[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* —— 尺寸 —— */
@@ -31207,7 +31218,6 @@
     --xh-_drawer-resize-indicator: var(--xh-ring-focus);
 
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-drawer[data-part='resize-trigger'][data-side='left'],
@@ -31368,11 +31378,6 @@
 
   .xh-scope-editable[data-part='label'][data-disabled] {
     color: var(--xh-editable-label-fg-disabled, var(--xh-fg-muted));
-  }
-
-  /* 预览区落焦：自己写了 box-shadow: none，公共层零特指度的光环压不过它，这里接上（设计真源 §7.2 第 5 条） */
-  .xh-scope-editable[data-part='preview']:focus-visible {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
   }
 
   /* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
@@ -31827,7 +31832,6 @@
 
   .xh-scope-expression-input[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-expression-input[data-part='content'][data-state='open'] {
@@ -33073,7 +33077,6 @@
   /* 摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报，落焦时不画环 */
   .xh-scope-form[data-part='error-summary']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 从收起翻成显出的那一下给一小段入场：读屏靠 role=alert 播报，
@@ -34350,7 +34353,6 @@
   /* 卡片是可编程聚焦的容器（tabindex=-1），焦点环留给里面真正的可聚焦元素 */
   .xh-scope-hover-card[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -35473,7 +35475,6 @@
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   .xh-scope-listbox[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-listbox[data-part='group'] {
@@ -36024,7 +36025,6 @@
   /* 容器只是焦点域兜底落点，落焦不画环：高亮永远长在条目上 */
   .xh-scope-menu[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -36375,7 +36375,6 @@
   /* root 只是 roving tabindex 的兜底落点，焦点转投给 trigger 之后就不再停留，不画环 */
   .xh-scope-menubar[data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-menubar[data-part='root'][data-disabled] {
@@ -36542,7 +36541,6 @@
   /* 容器只是"没有条目锚点时"的 Tab 兜底落点，落焦不画环：高亮永远长在条目上 */
   .xh-scope-menubar[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 首开从锚点一侧淡入短移，不缩放整张菜单面。 */
@@ -39636,13 +39634,13 @@
   }
 
   /* 一行格子长得一模一样，光标那道竖线太细，看不出正在填哪一格：当前格与字段外壳的聚焦态同一副面——
-     换承载面 + 聚焦描边（焦点环的内圈）+ 光环，与字段外壳聚焦同一副样子。
+     换承载面 + 聚焦描边 + 描边内侧补足一个环宽的 inset 线，与字段外壳聚焦同一副样子。
      data-focus 由机器给（它知道谁是当前格），家族的 :focus-within 兜住机器状态还没回流的那一帧，
      两条同时写不冲突。焦点边一律家族的 --xh-border-control-focus，不随 tone */
   .xh-scope-pin-input[data-part='input'][data-focus] {
     border-color: var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
     background-color: var(--xh-_field-variant-bg-focus);
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-pin-input-box-border-focus, var(--xh-_field-variant-border-focus));
   }
 
   /* 填满只代表"格子都有字"，不代表"验证码对"，所以用品牌色而不是成功色收个尾。
@@ -39825,7 +39823,6 @@
 
   .xh-scope-popover[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -40824,17 +40821,16 @@
     border-color: var(--xh-question-flow-note-border-hover, var(--xh-border-strong));
   }
 
-  /* 照字段外壳标出焦点：换承载面底 + 品牌描边，描边就是焦点环的内圈，再画光环；
-     强制色档光环被去掉，系统色环由下面的强制色规则补 */
+  /* 照字段外壳标出焦点：换承载面底 + 品牌描边，描边内侧补一道 inset 线，合起来一个环宽、画在盒内；
+     强制色档 inset 线被去掉，系统色环由下面的强制色规则补 */
   .xh-scope-question-flow[data-part='note']:focus-within {
     border-color: var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
     background: var(--xh-question-flow-note-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-question-flow-note-border-focus, var(--xh-border-control-focus));
   }
 
   .xh-scope-question-flow[data-part='note']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-question-flow[data-part='note']:disabled {
@@ -41553,8 +41549,7 @@
      轨道就是 root：滑块绝对定位于它，段与段之间不留缝，所以 gap 归零。
      轨道与字段外壳同款：最浅一档淡底（--xh-bg-field）+ 1px 字段描边（--xh-border-control）+ control 圆角，
      内衬 2px，加上描边段离外沿 3px。
-     一行排不下就折行：每个选项都必须看得见、点得到；不改成横向滚动是因为段离轨道内沿只有一格衬距，
-     轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
+     一行排不下就折行：每个选项都必须看得见、点得到，横向滚动会把排不下的段藏到轨道外 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'] {
     /* 滑块（选中段的品牌淡底）静息 / 悬停 / 禁用三档与选中段的文字色；没写 data-tone 时就是这里的取值 */
     --xh-_radio-group-thumb-bg: var(--xh-bg-segment-selected);
@@ -41618,7 +41613,6 @@
   /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，在它身上画环只会闪一下就跳走 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-invalid] {
@@ -42023,7 +42017,6 @@
      落焦不画环：高亮永远长在星星上，容器再画一圈只是重影。 */
   .xh-scope-rating[data-part='control']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-rating[data-part='control'][data-readonly]:not([data-disabled]) {
@@ -42643,7 +42636,6 @@
   .xh-scope-scroll-area[data-part='content']:focus-visible,
   .xh-scope-scroll-area[data-part='scrollbar']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
@@ -42886,7 +42878,6 @@
   /* 环画在盒上，按钮自己不再画：两圈套着的环读起来像两个控件 */
   .xh-scope-select[data-part='trigger']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* trigger 是单体控件，用原生 disabled（条目那边一律 aria-disabled） */
@@ -43049,7 +43040,6 @@
 
   .xh-scope-select[data-part='list']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -43817,7 +43807,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   .xh-scope-side-nav[data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色，盖得过 background 与 color。
@@ -44382,7 +44371,7 @@
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
      拇指是平面的白底圆：2px 强调色描边就是它的边界，不投影、不走 raised，悬停与拖动都不放大；
-     拖动中画与聚焦同一副光环（见拖动那档）。不写 box-shadow：键盘聚焦时 focus.css 的光环才落得下来 */
+     聚焦与拖动画同一道环（见下面那档） */
   .xh-scope-slider[data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
@@ -44412,12 +44401,16 @@
     margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
-  /* 多拇指时只有手真正推着的那一个带 data-dragging，光环与光标因此不会全组一起变。
-     拖动中画与聚焦同一副光环：从描边外沿起铺内圈宽 + 光环宽，与焦点环同色同宽，
-     键盘聚焦着又被拖动时两者叠成同一圈；光环即时出现、即时撤下，与焦点环一样不淡变 */
+  /* 聚焦与拖动画同一道环，画在 2px 强调色描边的内侧：环与描边同色，压在描边上就看不出来，
+     收进描边里面一圈，白底圆缩小一圈、强调色加粗一倍，仍在拇指自己的盒内。
+     多拇指时只有手真正推着的那一个带 data-dragging，环与光标因此不会全组一起变；环即时出现、即时撤下 */
+  .xh-scope-slider[data-part='thumb']:is(:focus-visible, [data-dragging]) {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+  }
+
   .xh-scope-slider[data-part='thumb'][data-dragging] {
     cursor: grabbing;
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo);
   }
 
   .xh-scope-slider[data-part='thumb'][data-invalid] {
@@ -45002,7 +44995,6 @@
   /* 纯容器，焦点长在分隔条上，这里画环只会闪一下 */
   .xh-scope-splitter[data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
@@ -45048,7 +45040,6 @@
 
   .xh-scope-splitter[data-part='panel']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 折叠 / 展开（Enter、双击、命令式）时面板尺寸走过渡，与 Layout 侧栏折叠同一种节奏；
@@ -45836,10 +45827,9 @@
     --xh-action-shadow-rest: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-hover: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-pressed: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
-    --xh-action-shadow-focus-visible: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
+    /* 聚焦档在轨道内描边之前接上家族的底色间隔线：选中的轨道是实心面，环内侧要衬这道线（见选中档） */
+    --xh-action-shadow-focus-visible: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-_ring-gap, transparent), inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-disabled: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
-    /* 内收环压在实体轨道上，直接取轨道的配对前景：未选中与只读 checked 的中性轨道配 fg-default，
-       选中的语气轨道配它的 on 色 */
 
     /* 滑块贴 inline-start 起步，checked 才位移到另一端；家族的居中排布在轨道上不成立 */
     justify-content: start;
@@ -45853,6 +45843,12 @@
     --xh-_switch-track-bg: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
     --xh-_switch-track-bg-pressed: var(--xh-switch-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_switch-fg: var(--xh-switch-fg-checked, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
+  /* 选中的轨道是实心面：环画在轨道盒内、内侧紧挨着同色的轨道，衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条）。
+     只读与禁用的选中轨道退回中性底，不衬 */
+  .xh-scope-switch[data-part='root'][data-state='checked']:not([data-readonly], [data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。
@@ -46187,7 +46183,6 @@
   /* 纯容器：焦点落它身上不画环，高亮永远长在行上 */
   .xh-scope-table[data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* —— 密度 —— */
@@ -46292,7 +46287,6 @@
   /* 表体是行级 roving 的兜底 Tab 位：落焦不画环，环归行 */
   .xh-scope-table[data-part='body']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 表头是淡底承载面：里头的触发器按淡底阶梯走（hover 200 → pressed 300），阶梯由 host 槽向内下发；
@@ -46405,8 +46399,7 @@
      收在格子里面，不压到相邻的格子与行间线上；所在的行照旧按焦点行换面 */
   .xh-scope-table[data-part='cell'][tabindex]:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset-inset);
-    --xh-_ring-halo: transparent;
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 行间线画在后一行的上沿，区段里第一个可见行不画：行只负责行与行之间，外边界归 root 与区段容器。
@@ -46735,6 +46728,12 @@
     --xh-_table-trigger-border: var(--xh-table-trigger-border-checked, var(--xh-table-trigger-bg-checked, var(--xh-bg-brand)));
   }
 
+  /* 已勾选的方框是实心面：环画在方框盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；禁用档退回中性底，不衬 */
+  .xh-scope-table[data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate']):not([data-disabled]),
+  .xh-scope-table[data-part='column-visibility-trigger'][data-state='checked']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   /* 禁用：--xh-border-default 描边 + --xh-bg-subtle 底 + --xh-fg-disabled 勾，与独立 Checkbox 同一档；
      家族的禁用块按映射给 */
   .xh-scope-table[data-part='select-all-trigger'][data-disabled],
@@ -46748,7 +46747,6 @@
   /* 行选择把手不占 Tab 位（键盘那一路走 Space），只服务指针 */
   .xh-scope-table[data-part='row-select-trigger']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 展开箭头：收起时朝向行首、展开时转向下方，与逻辑书写方向一致 */
@@ -46786,7 +46784,6 @@
 
   .xh-scope-table[data-part='expand-trigger']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 排序钮是列头里独立的定尺图标钮：不包列名，列名留在列头上、它排在列名之后，auto 外边距把它
@@ -47713,24 +47710,6 @@
     box-shadow: none;
   }
 
-  /* 键盘焦点落在选中标签上：card 档的顶边条、segment 档的抬起影照旧画，焦点环的光环叠在它们之前
-     （设计真源 §7.2 第 5 条）；标签带里放了 indicator 部件时面在部件上，标签自己只画光环 */
-  .xh-scope-tabs[data-part='root'][data-variant='card']
-    .xh-scope-tabs[data-part='trigger'][data-state='active']:focus-visible {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)), var(--xh-tabs-trigger-shadow-active, var(--xh-_tabs-trigger-shadow-active));
-  }
-
-  .xh-scope-tabs[data-part='root'][data-variant='segment']
-    .xh-scope-tabs[data-part='trigger'][data-state='active']:focus-visible {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)), var(--xh-tabs-trigger-shadow-active, var(--xh-elevation-raised));
-  }
-
-  .xh-scope-tabs[data-part='root'][data-variant='segment']
-    .xh-scope-tabs[data-part='list']:has(.xh-scope-tabs[data-part='indicator']:not([hidden]))
-    .xh-scope-tabs[data-part='trigger'][data-state='active']:focus-visible {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
-  }
-
   /* 选中项被悬停：常态 :hover 那条带着禁用守卫，特指度高过上面那条选中档，
      不单列一条的话指针一压到选中项上，形态档的选中底就被轻档吃掉 */
   .xh-scope-tabs[data-part='root']:is([data-variant='card'], [data-variant='segment'])
@@ -48420,7 +48399,6 @@
   /* 焦点在组外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在标签上 */
   .xh-scope-tag-group[data-part='list']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 一枚标签就是 tag 的 root（data-scope="tag"）：形态、语气、尺寸、置灰、截断、摘除钮的样子全归 tag.css。
@@ -48848,8 +48826,8 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
   }
 
-  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边（焦点环的内圈）；
-     外层 control 同时按 :focus-within 换成聚焦面并画光环，两层一起说明焦点在框内，这一格不再叠一圈光环 */
+  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边；
+     外层 control 同时按 :focus-within 换成聚焦面并画盒内环，两层一起说明焦点在框内，这一格不再补 inset 线 */
   .xh-scope-tags-input[data-part='item-input']:focus-within {
     border-color: var(--xh-tags-input-item-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-tags-input-item-input-bg-focus, var(--xh-bg-surface));
@@ -48857,7 +48835,6 @@
 
   .xh-scope-tags-input[data-part='item-input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 校验失败时描边跟着外框换无效色，两层相邻不至于一红一蓝 */
@@ -49327,7 +49304,6 @@
     background: var(--xh-time-field-segment-bg-focus, var(--xh-_time-field-segment-bg));
     color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
@@ -49714,7 +49690,6 @@
     background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-segment-bg));
     color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-segment-fg));
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
@@ -49852,7 +49827,6 @@
   /* 面板本身不承载焦点（焦点在某一列的某一格上），落焦时不画环 */
   .xh-scope-time-picker[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -50106,13 +50080,11 @@
      那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
   .xh-scope-time-picker[data-part='column'][tabindex='0']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset-inset);
-    --xh-_ring-halo: transparent;
+    outline-offset: var(--xh-ring-offset);
   }
 
   .xh-scope-time-picker[data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
@@ -50587,7 +50559,6 @@
     background: var(--xh-time-range-picker-segment-bg-focus, var(--xh-_time-range-picker-segment-bg));
     color: var(--xh-time-range-picker-segment-fg-focus, var(--xh-_time-range-picker-segment-fg));
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
@@ -50730,7 +50701,6 @@
   /* 面板本身不承载焦点（焦点在某一列的某一格上），落焦时不画环 */
   .xh-scope-time-range-picker[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -50950,13 +50920,11 @@
      那一刻它认领着 Tab 位，环画在列内沿；有锚点时环长在格上，列不再画 */
   .xh-scope-time-range-picker[data-part='column'][tabindex='0']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset-inset);
-    --xh-_ring-halo: transparent;
+    outline-offset: var(--xh-ring-offset);
   }
 
   .xh-scope-time-range-picker[data-part='column']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
@@ -51457,7 +51425,6 @@
      在它身上画环只会闪一下就跳走，高亮要长在条目上 */
   .xh-scope-toggle-group[data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 段是 Action Control 的 text 档定尺按钮：盒型、三档几何、悬停 / 按下 / 焦点 / 禁用面与过渡都由家族给，
@@ -51582,12 +51549,19 @@
     z-index: 1;
   }
 
+  /* solid 形态的选中段是实心面：环画在段盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
+     聚焦期间顶边内高光让位给这道线。未选中的段是透空面，不衬 */
+  .xh-scope-toggle-group[data-part='root'][data-variant='solid']
+    .xh-scope-toggle-group[data-part='item'][data-state='on']:not([data-disabled]) {
+    --xh-action-shadow-focus-visible: var(--xh-toggle-group-item-shadow, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-ring-gap));
+  }
+
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），禁用面由家族按 data-disabled 给：
      底 / 字 / 边读上面映射的 -disabled 三支，不用 opacity 变淡（半透明会把压在下面那条边透出来，共边处当场变成两条线）；
      禁用且选中的段底色掺一半 muted 进 brand（映射在选中态那条里），既看得出选中，也看得出改不动；
      改不动的段收掉内高光：底已经掺了灰，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
 
-  /* 焦点环要浮在共边之上：outline 画在元素外侧，不抬层就会被后一段的底色与描边盖掉一半 */
+  /* 焦点环要浮在共边之上：环画在段自己的盒内，但段与段共一条边，不抬层的话环贴着共边的那一截会被后一段的描边盖住 */
   .xh-scope-toggle-group[data-part='item']:focus-visible {
     z-index: 2;
   }
@@ -52280,7 +52254,6 @@
      在它身上画环只会闪一下就跳走，高亮要长在条目上 */
   .xh-scope-toolbar[data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-toolbar[data-part='root'][data-disabled] {
@@ -53228,7 +53201,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   .xh-scope-transfer[data-part='search']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
@@ -53283,7 +53255,6 @@
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   .xh-scope-transfer[data-part='list']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
@@ -53474,6 +53445,13 @@
   .xh-scope-transfer[data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
+  }
+
+  /* 勾中的格子是实心面：落焦时环画在格子盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
+     公共层的 inset 线从描边以内铺起，扣掉这一道描边宽才落在环的正内侧 */
+  .xh-scope-transfer[data-part='item-checkbox'][data-state='checked']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+    --xh-_ring-border: var(--xh-stroke-thin);
   }
 
   /* 格子里的勾与全选格的三态标记（all 打勾、some 打横杠、none 留空）由勾选标记配方画：常驻、按状态淡变
@@ -53822,7 +53800,6 @@
   /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
   .xh-scope-tree[data-part='tree']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 分支只是"这一行 + 它的子层"的外壳，不自带内边距：
@@ -53842,12 +53819,11 @@
      整棵子树套一圈描边会把展开的层级全框进去 */
   .xh-scope-tree[data-part='branch']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-tree[data-part='branch']:focus-visible > .xh-scope-tree[data-part='branch-control'] {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset-inset);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。
@@ -54826,7 +54802,6 @@
   /* 容器只是焦点域的兜底落点，落焦不画环：高亮永远长在行上 */
   .xh-scope-tree-select[data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 挂载时就开着的那一段（data-instant）属于首帧，直接呈现 */
@@ -54886,7 +54861,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   .xh-scope-tree-select[data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   .xh-scope-tree-select[data-part='input'][hidden] {
@@ -54973,7 +54947,6 @@
 
   .xh-scope-tree-select[data-part='tree']:not([tabindex='0']):focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 分支是"这一行 + 它的子层"的外壳，不自带内边距：真正长成一行的是 branch-control，
@@ -54994,7 +54967,6 @@
      整棵子树套一圈描边会把展开的层级全框进去 */
   .xh-scope-tree-select[data-part='branch']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。网格、尺寸档、悬停 / 高亮 100、按下 200 与
@@ -55520,7 +55492,6 @@
   .xh-scope-virtualizer[data-part='content']:focus-visible,
   .xh-scope-virtualizer[data-part='item']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* root 上还有一个 data-scrolling 标记（手正在滚时在场）。这份皮肤刻意不用它：

@@ -186,7 +186,7 @@
      box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比 --xh-_thumb-size 宽两条边，
      下面按半个直径回拉的负外边距就对不上圆心。
      拇指是平面的白底圆：2px 强调色描边就是它的边界，不投影、不走 raised，悬停与拖动都不放大；
-     拖动中画与聚焦同一副光环（见拖动那档）。不写 box-shadow：键盘聚焦时 focus.css 的光环才落得下来 */
+     聚焦与拖动画同一道环（见下面那档） */
   [data-scope='slider'][data-part='thumb'] {
     position: absolute;
     box-sizing: border-box;
@@ -216,12 +216,16 @@
     margin-block-end: calc(var(--xh-_thumb-size) / -2);
   }
 
-  /* 多拇指时只有手真正推着的那一个带 data-dragging，光环与光标因此不会全组一起变。
-     拖动中画与聚焦同一副光环：从描边外沿起铺内圈宽 + 光环宽，与焦点环同色同宽，
-     键盘聚焦着又被拖动时两者叠成同一圈；光环即时出现、即时撤下，与焦点环一样不淡变 */
+  /* 聚焦与拖动画同一道环，画在 2px 强调色描边的内侧：环与描边同色，压在描边上就看不出来，
+     收进描边里面一圈，白底圆缩小一圈、强调色加粗一倍，仍在拇指自己的盒内。
+     多拇指时只有手真正推着的那一个带 data-dragging，环与光标因此不会全组一起变；环即时出现、即时撤下 */
+  [data-scope='slider'][data-part='thumb']:is(:focus-visible, [data-dragging]) {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+  }
+
   [data-scope='slider'][data-part='thumb'][data-dragging] {
     cursor: grabbing;
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo);
   }
 
   [data-scope='slider'][data-part='thumb'][data-invalid] {

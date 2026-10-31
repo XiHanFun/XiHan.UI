@@ -242,10 +242,10 @@
       "$type": "color",
       "$value": "{color.brand.600}"
     },
-    "halo": {
-      "$description": "焦点环的光环：内圈色 30%。只是观感，不承担对比度；墨色域里内圈换成墨色，光环随之是墨色 30%。强制色档 box-shadow 被系统去掉，只剩内圈。",
+    "gap": {
+      "$description": "实心面上环内侧的底色间隔线：取承载面的底色。{ring.focus} 对承载面成立 3:1，环两侧都贴着这支色，面是什么颜色都不影响环的可辨认。",
       "$type": "color",
-      "$value": "color-mix(in oklab, {ring.focus} 30%, transparent)"
+      "$value": "{bg.surface}"
     },
     "invalid": {
       "$type": "color",

@@ -34,10 +34,10 @@ function resolvedToken(name: string): string {
   return value
 }
 
-/** 与焦点环同一副的光环：从描边外沿起铺内圈宽 + 光环宽，颜色取 --xh-ring-halo。 */
-function haloShadow(): string {
+/** 拇指的环收在描边以内，环内侧那道底色间隔线：inset 从描边以内铺起，铺满环宽加线宽。 */
+function gapShadow(): string {
   const probe = document.createElement('span')
-  probe.style.boxShadow = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
+  probe.style.boxShadow = 'inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap)'
   document.body.append(probe)
   const value = getComputedStyle(probe).boxShadow
   probe.remove()
@@ -111,7 +111,7 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(trackRect.bottom - center).toBeCloseTo(trackRect.height * 0.965, -1)
   })
 
-  it('三档尺寸换的是拇指直径与颜色带厚度；拖动中拇指不放大、画与聚焦同一副光环', async () => {
+  it('三档尺寸换的是拇指直径与颜色带厚度；拖动中拇指不放大、画与聚焦同一道环', async () => {
     await mountSlider({ size: 'lg' })
     const thumb = part('thumb')
     expect(thumb.getBoundingClientRect().width).toBe(24)
@@ -127,9 +127,14 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(thumb.hasAttribute('data-dragging')).toBe(false)
     thumb.blur()
     expect(getComputedStyle(thumb).boxShadow).toBe('none')
-    // 拖动中：只画光环，直径不变
+    expect(getComputedStyle(thumb).outlineStyle).toBe('none')
+    // 拖动中：环收在描边以内、内侧衬间隔线，仍在拇指自己的盒内，直径不变
     thumb.setAttribute('data-dragging', '')
-    expect(getComputedStyle(thumb).boxShadow).toBe(haloShadow())
+    const dragging = getComputedStyle(thumb)
+    expect(dragging.outlineStyle).toBe('solid')
+    expect(dragging.outlineWidth).toBe('2px')
+    expect(Number.parseFloat(dragging.outlineOffset) + Number.parseFloat(dragging.outlineWidth)).toBe(-Number.parseFloat(dragging.borderTopWidth))
+    expect(dragging.boxShadow).toBe(gapShadow())
     expect(thumb.getBoundingClientRect().width).toBe(24)
     thumb.removeAttribute('data-dragging')
   })

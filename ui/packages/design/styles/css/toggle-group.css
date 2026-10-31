@@ -168,7 +168,6 @@
      在它身上画环只会闪一下就跳走，高亮要长在条目上 */
   [data-scope='toggle-group'][data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 段是 Action Control 的 text 档定尺按钮：盒型、三档几何、悬停 / 按下 / 焦点 / 禁用面与过渡都由家族给，
@@ -293,12 +292,19 @@
     z-index: 1;
   }
 
+  /* solid 形态的选中段是实心面：环画在段盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
+     聚焦期间顶边内高光让位给这道线。未选中的段是透空面，不衬 */
+  [data-scope='toggle-group'][data-part='root'][data-variant='solid']
+    [data-scope='toggle-group'][data-part='item'][data-state='on']:not([data-disabled]) {
+    --xh-action-shadow-focus-visible: var(--xh-toggle-group-item-shadow, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-ring-gap));
+  }
+
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），禁用面由家族按 data-disabled 给：
      底 / 字 / 边读上面映射的 -disabled 三支，不用 opacity 变淡（半透明会把压在下面那条边透出来，共边处当场变成两条线）；
      禁用且选中的段底色掺一半 muted 进 brand（映射在选中态那条里），既看得出选中，也看得出改不动；
      改不动的段收掉内高光：底已经掺了灰，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
 
-  /* 焦点环要浮在共边之上：outline 画在元素外侧，不抬层就会被后一段的底色与描边盖掉一半 */
+  /* 焦点环要浮在共边之上：环画在段自己的盒内，但段与段共一条边，不抬层的话环贴着共边的那一截会被后一段的描边盖住 */
   [data-scope='toggle-group'][data-part='item']:focus-visible {
     z-index: 2;
   }

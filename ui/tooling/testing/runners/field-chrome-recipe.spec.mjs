@@ -102,16 +102,17 @@ describe('field Chrome Family Recipe', () => {
     expect(block(css, '[data-xh-field-chrome][data-readonly]')).not.toContain('box-shadow')
   })
 
-  it('环色 none：常规档撤环、不预留透明环，聚焦描边就是内圈并画光环；强制色档光环被去掉，只把描边换成 Highlight', async () => {
+  it('环色 none：常规档撤环、不预留透明环，环是换色的描边加内侧 inset 线、合起来一个环宽；强制色档 inset 线被去掉，补一道同宽的 Highlight 环', async () => {
     const css = await withRing('none', 'none')
     // 外壳自己就是原生控件时，公共层的聚焦环同样不画到它身上
     expect(block(css, FOCUS)).toContain('outline: none;')
-    expect(block(css, FOCUS)).toContain('box-shadow: var(--xh-field-shadow-focus, 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo));')
+    expect(block(css, FOCUS)).toContain('box-shadow: var(--xh-field-shadow-focus, inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-field-border-focus, var(--xh-_field-variant-border-focus)));')
     expect(block(css, '[data-xh-field-chrome]')).not.toContain('outline')
     expect(css).not.toContain(INVALID_FOCUS)
     const forced = forcedBlock(css, FOCUS)
     expect(forced).toContain('border-color: Highlight;')
-    expect(forced).not.toContain('outline')
+    expect(forced).toContain('outline: var(--xh-ring-width) solid Highlight;')
+    expect(forced).toContain('outline-offset: var(--xh-ring-offset);')
   })
 
   it('环色取 ring 令牌：常规档预留透明环、聚焦画环、失效换环色，强制色档只把环色换成 Highlight', async () => {

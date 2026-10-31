@@ -93,7 +93,7 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     expect(thumb.getBoundingClientRect().height).toBe(tokenLength(`--xh-track-thumb-size-${tier}`))
   })
 
-  it('拖动中的拇指不放大、不投影，画与聚焦同一副光环；悬停也不放大', async () => {
+  it('拖动中的拇指不放大、不投影，画与聚焦同一道环、收在描边以内；悬停也不放大', async () => {
     const { thumb } = mount()
     await userEvent.hover(thumb)
     expect(getComputedStyle(thumb).scale).toBe('none')
@@ -101,11 +101,10 @@ describe('slider 字段标签、轨道、拇指与禁用面', () => {
     const style = getComputedStyle(thumb)
     expect(style.scale).toBe('none')
     expect(thumb.getBoundingClientRect().width).toBe(12)
-    const probe = document.createElement('span')
-    probe.style.boxShadow = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
-    thumb.parentElement!.append(probe)
-    expect(style.boxShadow).toBe(getComputedStyle(probe).boxShadow)
-    probe.remove()
+    expect(style.boxShadow).toBe('none')
+    expect(style.outlineStyle).toBe('solid')
+    expect(style.outlineColor).toBe(style.borderTopColor)
+    expect(Number.parseFloat(style.outlineOffset) + Number.parseFloat(style.outlineWidth)).toBe(-Number.parseFloat(style.borderTopWidth))
   })
 
   it('刻度点 8px 圆：白底 + 2px 描边，没过的取轨道色、走过的取品牌色', () => {

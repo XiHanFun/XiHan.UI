@@ -855,15 +855,15 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(1 0 0)
-border-right-color: oklch(1 0 0)
-border-bottom-color: oklch(1 0 0)
-border-left-color: oklch(1 0 0)
+border-top-color: oklch(0.208 0.006 258)
+border-right-color: oklch(0.208 0.006 258)
+border-bottom-color: oklch(0.208 0.006 258)
+border-left-color: oklch(0.208 0.006 258)
 min-height: 0px
 font-size: 14px
 line-height: normal
 font-weight: 400
-color: oklch(1 0 0)
+color: oklch(0.208 0.006 258)
 background-color: oklch(0.557 0.216 277)
 transition-property: all
 transition-duration: 0s
@@ -873,7 +873,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(1 0 0)
+outline-color: oklch(0.208 0.006 258)
 
 [zoom-preview]
 padding-top: 0px

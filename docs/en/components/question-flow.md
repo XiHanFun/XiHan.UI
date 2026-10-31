@@ -355,7 +355,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-question-flow-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` |
 | `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` |
 | `--xh-question-flow-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` |
-| `--xh-question-flow-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` |
+| `--xh-question-flow-note-border-focus` | `note` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` |
 | `--xh-question-flow-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` |
 | `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` |
 | `--xh-question-flow-note-font-size` | `note` | `font-size` | `default` | `--xh-_question-flow-font-size` |

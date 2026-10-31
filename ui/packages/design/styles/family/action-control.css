@@ -213,6 +213,10 @@
     --xh-ink-surface: var(--xh-action-bg-disabled, var(--xh-bg-subtle-opaque));
   }
 
+  [data-xh-action-control][data-xh-ink-surface]:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   [data-xh-action-control][data-xh-action-size='xs'] {
     --xh-_action-profile-visual-size: var(--xh-control-action-size);
     --xh-_action-profile-padding-inline: var(--xh-space-1);
@@ -381,7 +385,7 @@
     color: var(--xh-action-fg-focus-visible, var(--xh-_action-variant-fg-focus-visible));
     border-color: var(--xh-action-border-focus-visible, var(--xh-_action-variant-border-focus-visible));
     --xh-_action-current-highlight: var(--xh-action-highlight-focus-visible, transparent);
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
     opacity: var(--xh-action-opacity-focus-visible, 1);
     cursor: var(--xh-action-cursor-focus-visible, pointer);
     scale: var(--xh-action-scale-focus-visible, none);
@@ -439,11 +443,11 @@
   }
 
   [data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading]) {
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
   }
 
   [data-xh-action-control]:focus-visible:not([data-disabled]):is(:active, [data-pressed]) {
-    box-shadow: var(--xh-action-shadow-focus-visible, 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo)));
+    box-shadow: var(--xh-action-shadow-focus-visible, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, var(--xh-stroke-thin))) var(--xh-_ring-gap, transparent));
   }
 
   [data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,

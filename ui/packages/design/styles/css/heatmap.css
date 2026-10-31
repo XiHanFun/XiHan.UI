@@ -273,16 +273,18 @@
     transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap：首尾相接的格子把聚焦环的内圈收进自己的盒子里，
-     不画光环，压不到相邻的格子（设计真源 §7.2 第 5 条） */
-  [data-scope='heatmap'][data-part='cell']:focus-visible {
-    outline-offset: var(--xh-ring-offset-inset);
-    --xh-_ring-halo: transparent;
-  }
-
   /* 详情条正在说的那一格（指针停着或焦点落着）描一圈正文色的粗线：扫过一片格子时看得出条说的是哪一格 */
   [data-scope='heatmap'][data-part='cell'][data-highlighted] {
     box-shadow: inset 0 0 0 var(--xh-stroke-thick) var(--xh-heatmap-cell-border-highlighted, var(--xh-fg-default));
+  }
+
+  /* 格子按天铺满一年、彼此只隔一道 --xh-_heatmap-gap：环画在格子自己的盒内，压不到相邻的格子。
+     格子填的是数据色，环内侧衬一道底色间隔线，压在哪一档颜色上都读得出来（设计真源 §7.2 第 5 条）。
+     格子自己用 inset 投影描边、详情条那一档换成粗线，公共层零特指度的间隔线压不过它们：排在详情条之后接上，
+     描边与粗线都在环下面。格子的投影带着淡变（详情条换格时用），间隔线与环一起即时出现，这一档不淡变 */
+  [data-scope='heatmap'][data-part='cell']:focus-visible {
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap);
+    transition: none;
   }
 
   /* 首次出现：有颜色的格子从空格底色填到自己的档位色，按日期（矩阵按列）的先后扫过去。

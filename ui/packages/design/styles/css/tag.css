@@ -246,10 +246,16 @@
     background: var(--xh-tag-close-bg-active, var(--xh-bg-subtle-hover));
   }
 
-  /* 键盘焦点落在标签上：形态档自己写了投影（实心档的内高光、描边与无壳档的 none），光环排在它们之后接上
-     （设计真源 §7.2 第 5 条）；聚焦期间实心档的内高光让位给光环 */
+  /* 键盘焦点落在标签上：环画在标签盒内。实心档是彩色面，环内侧紧挨着同色的面，衬一道底色间隔线才读得出来
+     （设计真源 §7.2 第 5 条）。形态档自己写了投影（实心档的内高光、描边与无壳档的 none），公共层零特指度的
+     间隔线压不过它们，排在它们之后接上；inset 线从描边以内铺起，扣掉一道描边宽才落在环的正内侧。
+     聚焦期间实心档的内高光让位给间隔线 */
+  [data-scope='tag'][data-part='root'][data-variant='solid']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   [data-scope='tag'][data-part='root']:focus-visible:not([data-disabled]) {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent);
   }
 
   /* —— 禁用 —— */

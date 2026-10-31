@@ -217,7 +217,6 @@
   /* 面板是焦点陷阱的兜底落点（tabindex="-1"），落焦不画环：环长在里面的可聚焦控件上 */
   [data-scope='drawer'][data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* —— 尺寸 —— */
@@ -532,7 +531,6 @@
     --xh-_drawer-resize-indicator: var(--xh-ring-focus);
 
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-scope='drawer'][data-part='resize-trigger'][data-side='left'],

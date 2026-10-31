@@ -226,7 +226,7 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 ## 聚焦环
 
-键盘焦点的环两层，由公共皮肤 `focus.css` 统一绘制，组件不需要自行编写：
+键盘焦点的环由公共皮肤 `focus.css` 统一绘制，组件不需要自行编写：
 
 ```css
 [data-scope][data-part]:focus-visible {
@@ -235,32 +235,40 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 }
 
 :where([data-scope][data-part]:focus-visible) {
-  box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+  box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, 0px)) var(--xh-_ring-gap, transparent);
 }
 ```
 
-内圈 1px、偏移 0，贴着边框外沿画，压在元素所在的承载面上，与元素自己的面无关：实心面上也使用库环，不换环色。光环 3px、内圈色 30%，只是观感。两层都不随语气变化，即时出现、不进过渡。
+环 2px、偏移负一个环宽，画在元素自己的盒内，外沿与边框外沿重合：不出盒，放进任何裁切容器里都完整，应用侧不必给它留位。环不随语气变化，即时出现、不进过渡。
 
-光环这条规则零特指度：部件自己写了 `box-shadow`（浮层面板的投影、卡片的抬起影）时由部件自己胜出，光环让位。要在自己的投影之前叠光环的部件，在自己的聚焦规则里把光环接进去：
+环外侧贴着承载面，实心面上也使用库环，不换环色；面是实心或任意颜色的档在环内侧衬一道 1px 底色间隔线，环两侧都是底色。皮肤在实心档打开它，带边框的部件同时写上边框宽，线才落在环的正内侧：
+
+```css
+[data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:not([data-disabled]) {
+  --xh-_ring-gap: var(--xh-ring-gap);
+  --xh-_ring-border: var(--xh-stroke-thin);
+}
+```
+
+间隔线这条规则零特指度：部件自己写了 `box-shadow`（浮层面板的投影、卡片的抬起影）时由部件自己胜出。实心又带投影的部件在自己的聚焦规则里把间隔线接进去：
 
 ```css
 [data-scope='tag'][data-part='root']:focus-visible:not([data-disabled]) {
-  box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+  box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent);
 }
 ```
 
-焦点由别处绘制时，关环要连光环一起关，并在门禁的 `ringless` 中登记由谁绘制：
+Action Control 家族在打了 `data-xh-ink-surface` 的实心面上自动打开间隔线。`--xh-_ring-gap` 与 `--xh-_ring-border` 登记为不继承，只作用于写它的节点：实心面里的后代自己落焦时不衬线（它们由墨色域把环换成墨色）。
+
+焦点由别处绘制时关环，并在门禁的 `ringless` 中登记由谁绘制：
 
 ```css
 [data-scope='menu'][data-part='content']:focus-visible {
   outline: none;
-  --xh-_ring-halo: transparent;
 }
 ```
 
-`--xh-_ring-halo` 登记为不继承，只作用于写它的节点：关环的容器里，自己会获得焦点的部件照常绘制光环。首尾相接的行与格（表格单元格、时间列、树行）用 `--xh-ring-offset-inset` 把内圈收进元素里，同时关闭光环。
-
-改环色按求值判定：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 都判红。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块，块里的系统色不受这条约束。库环令牌与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值。
+改环色按求值判定：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 都判红。`--xh-_ring-gap` 只能赋 `var(--xh-ring-gap)`。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块，块里的系统色不受这条约束。库环令牌与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值。
 
 ## 切换品牌色
 
@@ -347,7 +355,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-token-refs` | 皮肤引用了令牌产物中不存在的令牌名。孤儿引用不报错也不降级，整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件中作为默认值。这是一条未命名的设计决策，应先建立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠加 `opacity`。两种手段同时使用会把对比度压到无法阅读 |
-| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；键盘聚焦规则关了环却没在同一块里关光环（`--xh-_ring-halo: transparent`）；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |

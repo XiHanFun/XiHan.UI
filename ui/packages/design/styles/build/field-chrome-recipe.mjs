@@ -151,16 +151,19 @@ export function assertFieldChromeRecipe(source) {
     assertFields(source.forcedColors[state], FORCED_FIELDS, `forcedColors.${state}`)
 }
 
-/** 聚焦档唯一允许的投影：焦点环的光环（内圈是换色后的描边），不是海拔。 */
-const FOCUS_HALO = '0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo)'
+/**
+ * 聚焦档唯一允许的投影：焦点环的后一半，不是海拔。环是换色后的描边加上它内侧这道 inset 线，
+ * 两者合起来正好一个环宽（--xh-ring-width），与别的部件盒内的环同宽、同在盒内。
+ */
+const FOCUS_RING = 'inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-field-border-focus, var(--xh-_field-variant-border-focus))'
 
-// 形态矩阵不变量：字段不是抬起面（只有聚焦档画光环）、聚焦与失效描边不随形态、disabled/readOnly 三档同面。
+// 形态矩阵不变量：字段不是抬起面（只有聚焦档画环的 inset 线）、聚焦与失效描边不随形态、disabled/readOnly 三档同面。
 function assertVariantMatrix(source) {
   const ELEVATION = /--xh-(?:elevation|shadow)-/
   for (const state of STATES) {
-    const want = state === 'focus' ? FOCUS_HALO : 'none'
+    const want = state === 'focus' ? FOCUS_RING : 'none'
     if (source.stateValues[state].shadow !== want)
-      throw new Error(`[field-chrome-recipe] stateValues.${state}.shadow 必须为 ${want}：字段不是抬起面，聚焦档只画焦点环的光环`)
+      throw new Error(`[field-chrome-recipe] stateValues.${state}.shadow 必须为 ${want}：字段不是抬起面，聚焦档只画焦点环的 inset 线`)
     for (const field of Object.keys(source.stateValues[state])) {
       if (ELEVATION.test(source.stateValues[state][field]))
         throw new Error(`[field-chrome-recipe] stateValues.${state}.${field} 不得消费海拔令牌`)
@@ -299,8 +302,8 @@ export function compileFieldChromeRecipe(source) {
     `    color: ${stateValue(source, 'rest', 'color')};`,
     `    box-shadow: ${stateValue(source, 'rest', 'shadow')};`,
     `    cursor: ${stateValue(source, 'rest', 'cursor')};`,
-    // 焦点环即时出现与撤下（键盘用户要焦点当场落位），不进过渡：聚焦光环画在 box-shadow 上，它也不进过渡；
-    // 底色与描边照常淡变（描边就是聚焦环的内圈，跟着换色淡变）
+    // 焦点环即时出现与撤下（键盘用户要焦点当场落位），不进过渡：环内侧那道 inset 线画在 box-shadow 上，它不进过渡；
+    // 底色与描边照常淡变（描边就是环的外侧一道，跟着换色淡变）
     '    transition:',
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing};`,
@@ -336,7 +339,7 @@ export function compileFieldChromeRecipe(source) {
     stateDeclarations(source, 'focus'),
     ...(ringed
       ? [`    outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, ${source.stateValues.focus.ringColor});`, '    outline-offset: var(--xh-ring-offset);']
-      // 不另画内圈：聚焦描边就是焦点环的内圈，光环由聚焦档的投影画（设计真源 §8.3）。外壳自己就是原生控件时
+      // 不另画 outline：环是换色后的描边加聚焦档投影里那道 inset 线（设计真源 §8.3），画在盒内。外壳自己就是原生控件时
       // （Field 的 control、分页跳页框、Mention 输入框）焦点落在外壳上，公共层 [data-scope][data-part]:focus-visible
       // 那圈 outline 会画到它身上。这条与它同为 (0,3,0)、排在它之后，在这里撤下，七种外壳聚焦时才是同一副样子
       : ['    outline: none;']),
@@ -386,9 +389,9 @@ export function compileFieldChromeRecipe(source) {
     '    line-height: var(--xh-leading-normal);',
     '    text-align: start;',
   ].join('\n'))
-  // 盒里的原生输入与 field-inset 钮落焦不画环：焦点由外壳的 :focus-within 标在外框上，光环一并关掉
-  rule('[data-xh-field-chrome] [data-xh-field-input]:focus-visible', '    outline: none;\n    --xh-_ring-halo: transparent;')
-  rule('[data-xh-field-chrome] [data-xh-action-profile=\'field-inset\']:focus-visible', '    outline: none;\n    --xh-_ring-halo: transparent;')
+  // 盒里的原生输入与 field-inset 钮落焦不画环：焦点由外壳的 :focus-within 标在外框上
+  rule('[data-xh-field-chrome] [data-xh-field-input]:focus-visible', '    outline: none;')
+  rule('[data-xh-field-chrome] [data-xh-action-profile=\'field-inset\']:focus-visible', '    outline: none;')
   rule('[data-xh-field-input][data-disabled]', '    color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));')
   rule('[data-xh-field-input]::placeholder', `    color: var(--xh-field-placeholder-fg, ${source.nativeInput.placeholderColor});`)
   rule('[data-xh-field-input][data-xh-field-layout=\'textarea\']', [
@@ -418,10 +421,10 @@ export function compileFieldChromeRecipe(source) {
   )
   forcedRule('[data-xh-field-chrome]', 'rest')
   forcedRule('[data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):not(:focus-within):hover', 'hover')
-  // 强制色档系统去掉 box-shadow，光环随之消失，只剩内圈：内圈就是换成 Highlight 的描边（设计真源 §7.2 第 5 条）
+  // 强制色档系统去掉 box-shadow，环内侧那道 inset 线随之消失：补一道系统色的 outline，与别的部件同宽、同在盒内（设计真源 §7.2 第 5 条）
   forcedRule('[data-xh-field-chrome]:focus-within:not([data-disabled])', 'focus', ringed
     ? [`      outline-color: ${source.forcedColors.focus.outlineColor};`]
-    : [])
+    : [`      outline: var(--xh-ring-width) solid ${source.forcedColors.focus.outlineColor};`, '      outline-offset: var(--xh-ring-offset);'])
   forcedRule('[data-xh-field-chrome][data-readonly]', 'readOnly')
   forcedRule('[data-xh-field-chrome][data-loading]', 'loading', ['      border-style: dashed;'])
   forcedRule('[data-xh-field-chrome][data-invalid]', 'invalid')

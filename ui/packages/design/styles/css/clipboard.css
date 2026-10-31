@@ -121,16 +121,15 @@
     border-end-end-radius: 0;
   }
 
-  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），描边就是焦点环的内圈，再画光环；点进去选字也算聚焦 */
+  /* 照只读字段外壳标出焦点：换承载面底 + 品牌描边（不随 tone），描边内侧补一道 inset 线，合起来一个环宽、画在盒内；点进去选字也算聚焦 */
   [data-scope='clipboard'][data-part='input']:focus-within {
     border-color: var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-clipboard-input-bg-focus, var(--xh-bg-surface));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-clipboard-input-border-focus, var(--xh-border-control-focus));
   }
 
   [data-scope='clipboard'][data-part='input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，

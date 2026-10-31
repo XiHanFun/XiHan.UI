@@ -146,7 +146,6 @@
   /* 面板本体不接收焦点，只是键盘事件的收口点，画环反而像是选中了整块 */
   [data-scope='floating-panel'][data-part='content']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 跟手期间整块不许选中文字：手在标题栏上来回蹭时会顺带把正文刷成高亮 */

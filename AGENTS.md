@@ -155,8 +155,8 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - Tooltip 不反白，与 Popover 同一副浮层面（写了 tone 才取语气实底），悬停 150ms 出、100ms 收；模态遮罩浅色 40%、深色 60%；控件内图标 16 / 18 / 20；字段清空钮圆形、有值且悬停或聚焦才出现（触屏常显）；Alert 带语气淡边；Progress 线形厚 4 / 8 / 12；字体继承宿主，`--xh-font-family-sans` 只经可选的 `@xihan-ui/styles/global.css` 落到 `:root`；Button 另有 `dashed` / `link` 两档。
 - 禁止 glass 材质及兼容别名；锚定浮层走 frosted 配方（缺省是实体底 + 描边 + md 档投影，透景只作主题档）；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。
 - 彩色面声明墨色域，中性描边与淡底取墨色比例；弹簧只用于手势松手与 liquid 档的切换、指示；断点按视口，低于断点用补集写法，不用容器查询。
-- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 `--xh-bg-field`（缺省白底）+ `--xh-border-control` + 无影，聚焦换品牌描边 + 光环。阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg。
-- 聚焦环两层：1px 品牌内圈（outline）+ 3px 品牌 30% 光环（box-shadow），不随 tone、即时出现；字段的内圈就是品牌描边，强制色档只剩内圈。
+- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 `--xh-bg-field`（缺省白底）+ `--xh-border-control` + 无影，聚焦换品牌描边 + 内侧 inset 线（合起来一个环宽）。阴影三档按面的类型取：raised sm、floating / frosted md、sheet lg。
+- 聚焦环是一道 2px 品牌实线，画在元素自己的盒内（偏移负一个环宽），不出盒、不被裁切容器裁掉，不随 tone、即时出现；实心与任意色的面在环内侧衬 1px 底色间隔线（`--xh-_ring-gap: var(--xh-ring-gap)`）；字段的环是品牌描边加内侧 inset 线，强制色档补一道同宽的 Highlight 环。图表数据标记的 focus-ring 部件是唯一登记的盒外例外。
 - 只有 Button 缺省品牌实心；Action Control 上 `tone="neutral"` 与不写等价；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
 - 图表按数据任务与坐标系划分组件，同一标记的不同外观是样式轴，不另建组件；数据色只经 `--xh-chart-*` 语义层，图表文字不用系列色；不提供双 y 轴。
 - 不写颜色、间距、圆角、阴影和动效散值；新增槽必须被真实消费并进入生成物。

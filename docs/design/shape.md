@@ -42,7 +42,7 @@
   }"
 />
 
-焦点环两层，都不随语气：1px 内圈 `--xh-ring-width`（= thin）+ `--xh-ring-offset`（0，贴着边框外沿画，不改布局盒），环色 `--xh-ring-focus`，实心面上也不换；外面一圈 3px 光环 `--xh-ring-halo`（内圈色 30%，`box-shadow`）。首尾相接的行与格内圈往里收（`--xh-ring-offset-inset`）、不画光环。字段外壳聚焦时换色的描边就是内圈，再画光环（见下文「字段外壳」）。
+焦点环不随语气：一道 2px 实线 `--xh-ring-width`（= thick）+ `--xh-ring-offset`（负一个环宽），画在元素自己的盒内，外沿与边框外沿重合，不出盒、不改布局盒；环色 `--xh-ring-focus`，实心面上也不换，改在环内侧衬一道 1px 底色间隔线 `--xh-ring-gap`。首尾相接的行与格同取这一档，压不到相邻的行。字段外壳聚焦时换色的描边加内侧 inset 线合起来就是环（见下文「字段外壳」）。
 
 ## 边界三选一
 
@@ -58,13 +58,13 @@
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能作 `border-block-start` 类分隔线与 `::after` 分隔伪元素。
 - raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 取阴影三档里的 sm；只有可交互时允许 hover 抬升（抬到 md）。
 
-## 字段外壳：白底、聚焦换品牌描边与光环
+## 字段外壳：白底、聚焦换品牌描边
 
 字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态：
 
 - 静息 `--xh-bg-field`（缺省与承载面同色，即白底）+ `--xh-border-control` + `--xh-shape-control` + 无影。主题要淡底字段只改 `--xh-bg-field` 这一支。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
 - hover 底不变，描边升 `--xh-border-strong`。
-- focus-within 底换 `--xh-bg-surface`（缺省档与静息同色）、描边换 `--xh-border-control-focus`：换色后的描边就是焦点环的内圈，外面再画 3px 光环 `--xh-ring-halo`，不另画 outline；强制色档光环被去掉，描边换 Highlight。
+- focus-within 底换 `--xh-bg-surface`（缺省档与静息同色）、描边换 `--xh-border-control-focus`，描边内侧再补一道 inset 线，合起来一个环宽，就是画在盒内的焦点环，不另画 outline；强制色档 inset 线被去掉，描边换 Highlight 并补一道同宽的 Highlight 环。
 - invalid 换 `--xh-border-invalid` 并铺 4% 失效色淡底，聚焦时让位给聚焦态。
 - readOnly 只填 `--xh-bg-subtle` 不动描边；disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，不靠 opacity。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。

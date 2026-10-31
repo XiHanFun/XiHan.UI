@@ -407,7 +407,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 | `--xh-approval-note-bg-invalid` | `note` | `background` | `invalid` | `--xh-bg-field-invalid` | approval 的 note 部件 background 覆盖槽。 |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` | approval 的 note 部件 border 覆盖槽。 |
 | `--xh-approval-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | approval 的 note 部件 border-color 覆盖槽。 |
-| `--xh-approval-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | approval 的 note 部件 border-color 覆盖槽。 |
+| `--xh-approval-note-border-focus` | `note` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` | approval 的 note 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-approval-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` | approval 的 note 部件 border-color 覆盖槽。 |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | approval 的 note 部件 color 覆盖槽。 |

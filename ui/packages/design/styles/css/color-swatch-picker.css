@@ -110,10 +110,17 @@
     --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-ring, var(--xh-_tone, var(--xh-fg-brand)));
   }
 
-  /* 焦点环独占 outline：选中不再画外圈，由色块正中的徽标与色块自己的品牌描边表达 */
+  /* 焦点环独占 outline：选中不再画外圈，由色块正中的徽标与色块自己的品牌描边表达。
+     环画在格子盒内，压在铺满格子的色块上；色块是任意颜色，环内侧衬一道底色间隔线才压在哪一色上都读得出来
+     （设计真源 §7.2 第 5 条）。线画在色块上（格子自己的投影在色块下面，被它盖住）：inset 从色块描边以内铺起，
+     扣掉一道描边宽才落在环的正内侧 */
   [data-scope='color-swatch-picker'][data-part='item']:focus-visible {
     outline: var(--xh-ring-width) solid var(--xh-ring-focus);
     outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='color-swatch-picker'][data-part='item']:focus-visible > [data-part='swatch']:where([data-scope='color-swatch-picker']) {
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-ring-gap);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled，格子仍可聚焦，样式由 data-disabled 表达 */

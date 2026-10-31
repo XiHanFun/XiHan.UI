@@ -103,7 +103,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `interactive` | `boolean` |  | 整卡可交互：标题里的 trigger（链接或按钮）把点击区铺满整张卡片，悬停抬起、按下换面， 焦点环画在卡片外沿。可及名只取 trigger 自己的文字，卡片里的其余内容不进链接名。 默认 false。 |
+| `interactive` | `boolean` |  | 整卡可交互：标题里的 trigger（链接或按钮）把点击区铺满整张卡片，悬停抬起、按下换面， 焦点环沿卡片外沿画在卡片盒内。可及名只取 trigger 自己的文字，卡片里的其余内容不进链接名。 默认 false。 |
 | `variant` | `ControlVariant` |  | 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 |
 
 ### 插槽

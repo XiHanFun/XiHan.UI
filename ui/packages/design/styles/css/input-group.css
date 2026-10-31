@@ -28,7 +28,7 @@
     --xh-_input-group-px: var(--xh-control-px-md);
     --xh-_input-group-font-size: var(--xh-control-font-md);
     /* 组壳与字段外壳同形：静息字段底 + --xh-border-control；悬停底不变、描边升 --xh-border-strong；
-       聚焦换承载面 + --xh-border-control-focus（描边就是焦点环的内圈）+ 光环；静息无影 */
+       聚焦换承载面 + --xh-border-control-focus 描边 + 描边内侧补足一个环宽的 inset 线（画在描边那层上）；静息无影 */
     --xh-_input-group-bg: var(--xh-bg-field);
     --xh-_input-group-bg-hover: var(--xh-bg-field);
     --xh-_input-group-bg-focus: var(--xh-bg-surface);
@@ -52,7 +52,7 @@
 
     /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
     max-inline-size: 100%;
-    /* 聚焦光环画在 box-shadow 上，即时出现与撤下，不进过渡 */
+    /* 投影不进过渡：组壳自己不画投影，聚焦的 inset 线画在描边那层上，即时出现与撤下 */
     transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -123,14 +123,15 @@
   }
 
   /* 聚焦排在失效之后：校验失败的字段拿到焦点时让位给聚焦态。
-     焦点由换色的描边（焦点环的内圈）与光环标出，与字段外壳同一副样子 */
+     焦点由换色的描边加它内侧补足一个环宽的 inset 线标出，与字段外壳同一副样子。
+     线画在描边那层（::before 压在组里各段之上）上，各段自己的底盖不住它 */
   [data-scope='input-group'][data-part='root']:focus-within {
     --xh-_input-group-face: var(--xh-input-group-bg-focus, var(--xh-_input-group-bg-focus));
-    box-shadow: 0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo);
   }
 
   [data-scope='input-group'][data-part='root']:focus-within::before {
     border-color: var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

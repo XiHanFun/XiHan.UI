@@ -38,7 +38,6 @@
   /* 纯容器，焦点长在分隔条上，这里画环只会闪一下 */
   [data-scope='splitter'][data-part='root']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
@@ -84,7 +83,6 @@
 
   [data-scope='splitter'][data-part='panel']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 折叠 / 展开（Enter、双击、命令式）时面板尺寸走过渡，与 Layout 侧栏折叠同一种节奏；

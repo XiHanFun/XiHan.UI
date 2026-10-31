@@ -301,7 +301,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-pagination-jumper-bg-disabled` | `jumper` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` |
 | `--xh-pagination-jumper-bg-hover` | `jumper` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` |
 | `--xh-pagination-jumper-border` | `jumper` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` |
-| `--xh-pagination-jumper-border-focus` | `jumper` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` |
+| `--xh-pagination-jumper-border-focus` | `jumper` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` |
 | `--xh-pagination-jumper-border-hover` | `jumper` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` |
 | `--xh-pagination-jumper-border-invalid` | `jumper` | `border-color` | `invalid`<br>`user-invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` |
 | `--xh-pagination-jumper-w` | `jumper` | `inline-size` | `default` | `--xh-space-8` |

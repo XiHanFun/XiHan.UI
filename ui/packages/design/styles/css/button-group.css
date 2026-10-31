@@ -216,8 +216,8 @@
     border-block-start-width: 0;
   }
 
-  /* 悬停或拿到焦点的那一段抬到最上层：焦点环画在元素外侧，
-     不抬层就会被后一段的底色与描边盖掉一半 */
+  /* 悬停或拿到焦点的那一段抬到最上层：环画在段自己的盒内，但段与段共一条边，
+     不抬层的话环贴着共边的那一截会被相邻段的描边盖住 */
   [data-scope='button-group'][data-part='root'] > *:hover,
   [data-scope='button-group'][data-part='root'] > *:focus-within {
     z-index: 1;

@@ -176,6 +176,13 @@
     font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
   }
 
+  /* 发送身份是实心面：环画在钮盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）。
+     这颗钮没有描边，家族的 inset 线按零边框宽铺 */
+  [data-scope='prompt-input'][data-part='submit-trigger'][data-xh-action-variant='solid']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+    --xh-_ring-border: 0px;
+  }
+
   /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
     display: none;

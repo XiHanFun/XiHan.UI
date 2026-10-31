@@ -564,26 +564,21 @@
     }
   },
   "ring": {
-    "$description": "聚焦环两层（设计真源 §7.2 第 5 条）：1px 品牌内圈（outline）+ 3px 品牌 30% 光环（box-shadow）。两层都不随语气，即时出现；对比度由内圈承担，光环只是观感。",
+    "$description": "聚焦环（设计真源 §7.2 第 5 条）：一道 2px 品牌实线，画在元素自己的盒内，外沿与边框外沿重合。环不出盒，元素多大、放进什么裁切容器里，环都完整，应用侧不必给它留位；实心面上环内侧再衬一道 1px 底色间隔线。不随语气，即时出现。",
     "width": {
-      "$description": "内圈的粗细。",
+      "$description": "环的粗细。",
       "$type": "dimension",
-      "$value": "{stroke.thin}"
+      "$value": "{stroke.thick}"
     },
     "offset": {
-      "$description": "内圈贴着元素的边框外沿画，不往里收：环压在承载面上，与元素自己的面无关，实心面上也不必换环色。outline 不占布局，聚焦前后盒子一样大。",
-      "$type": "dimension",
-      "$value": "0px"
-    },
-    "offset-inset": {
-      "$description": "首尾相接的行与格（集合行、表格单元格、时间列、树行）：内圈往里收一个环宽，不压到相邻的行、也不被滚动容器裁掉；这类部件不画光环。",
+      "$description": "往内收一个环宽：环的外沿与元素的边框外沿重合，聚焦前后占位与外轮廓都不变。首尾相接的行与格（集合行、表格单元格、时间列、树行）同取这一档，不压到相邻的行。",
       "$type": "dimension",
       "$value": "calc(-1 * {ring.width})"
     },
-    "halo-width": {
-      "$description": "光环露在内圈外面的那一截宽度。box-shadow 的扩散量写成内圈宽 + 这一截，光环从元素边框外沿起铺、被内圈盖住的那 1px 不算。",
+    "gap-width": {
+      "$description": "实心面上环内侧那道底色间隔线的宽度（颜色 {ring.gap}）。环外侧贴着承载面、内侧贴着这道线，两侧都是底色，压在任何颜色的面上都读得出来。",
       "$type": "dimension",
-      "$value": "{stroke.strong}"
+      "$value": "{stroke.thin}"
     }
   },
   "state": {

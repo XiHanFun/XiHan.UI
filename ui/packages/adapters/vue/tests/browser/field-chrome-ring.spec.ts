@@ -100,7 +100,7 @@ describe('原生控件即外壳的聚焦', () => {
     expect(getComputedStyle(control).outlineStyle).toBe('none')
   })
 
-  it.each(Object.keys(NATIVE_SHELLS) as Array<keyof typeof NATIVE_SHELLS>)('%s：强制色档光环被去掉，内圈就是换成 Highlight 的描边、不另画 outline', async (name) => {
+  it.each(Object.keys(NATIVE_SHELLS) as Array<keyof typeof NATIVE_SHELLS>)('%s：强制色档 inset 线被去掉，描边换成 Highlight，并补一道同宽的 Highlight 环画在盒内', async (name) => {
     await cdp().send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] })
     const shell = NATIVE_SHELLS[name]
     await mount(shell.render)
@@ -109,7 +109,10 @@ describe('原生控件即外壳的聚焦', () => {
     await userEvent.tab()
     expect(document.activeElement).toBe(control)
     const style = getComputedStyle(control)
-    expect(style.outlineStyle).toBe('none')
+    expect(style.outlineStyle).toBe('solid')
+    expect(style.outlineWidth).toBe('2px')
+    expect(style.outlineOffset).toBe('-2px')
+    expect(style.outlineColor).toBe(resolveColor('Highlight', control.parentElement!))
     expect(style.borderTopColor).toBe(resolveColor('Highlight', control.parentElement!))
   })
 })

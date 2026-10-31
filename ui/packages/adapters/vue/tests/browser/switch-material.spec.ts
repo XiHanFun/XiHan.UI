@@ -313,10 +313,16 @@ describe('switch 实体轨道与 raised 滑块', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        // 环画在轨道外侧（偏移 0）、压在页面画布上，选中的实心轨道也不换环色
+        // 环画在轨道盒内（偏移负一个环宽），外侧贴着页面画布；选中的实心轨道不换环色，环内侧衬底色间隔线
         const page = getComputedStyle(document.body).backgroundColor
-        expect(style.outlineOffset).toBe('0px')
+        expect(style.outlineWidth).toBe('2px')
+        expect(style.outlineOffset).toBe('-2px')
         expect(contrast(style.outlineColor, page), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        const firstShadow = style.boxShadow.split(/,(?![^(]*\))/)[0]!
+        if (id === 'on')
+          expect(contrast(style.outlineColor, firstShadow.match(/^(?:\w+\([^)]*\)|#\w+|\w+)/)![0]), `${theme}/${id} 间隔线`).toBeGreaterThanOrEqual(3)
+        else
+          expect(firstShadow, `${theme}/${id} 没选中的轨道不衬间隔线`).toMatch(/^rgba\(0, 0, 0, 0\) /)
       }
 
       app?.unmount()

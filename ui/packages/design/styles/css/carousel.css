@@ -231,7 +231,6 @@
   [data-scope='carousel'][data-part='list']:focus-visible,
   [data-scope='carousel'][data-part='indicator-group']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-scope='carousel'][data-part='indicator-group'] {
@@ -316,6 +315,12 @@
     display: none;
   }
 
+  /* 点是一小块实色（中性灰、悬停与按下的前景色、当前页的品牌色），环画在点自己的盒内、内侧紧挨着这块色，
+     衬一道底色间隔线才在每一档上都读得出来（设计真源 §7.2 第 5 条） */
+  [data-scope='carousel'][data-part='indicator'] {
+    --xh-_ring-gap: var(--xh-ring-gap);
+  }
+
   /* 细指针的命中区外扩到不低于 24×24：两向都取「外扩 8px」与「补足到最小目标 --xh-control-target-min」
      中大的一头（6px 点四面各扩 9px）；粗指针下这颗伪元素改画点，盒子自己承担命中。点调细了，垂直于轨道那一向照样补足。
      相邻两点节距 14px，命中区沿轨道互相叠一截：后一颗画在上层，叠住的那段归它，每颗点自己的盒子仍只命中自己 */
@@ -365,8 +370,7 @@
     border-radius: var(--xh-carousel-indicator-radius-current, var(--xh-shape-pill));
   }
 
-  /* 没开自动播放：整颗品牌胶囊。带「没开自动播放」的祖先条件，与下面自动播放那一档互斥；
-     焦点环画在胶囊外沿，不随实心面换色 */
+  /* 没开自动播放：整颗品牌胶囊。带「没开自动播放」的祖先条件，与下面自动播放那一档互斥 */
   [data-scope='carousel'][data-part='root']:not([data-autoplay], [data-paused])
     [data-scope='carousel'][data-part='indicator'][data-current] {
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));

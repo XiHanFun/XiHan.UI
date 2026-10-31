@@ -301,7 +301,8 @@ describe('checkbox 字段家族控制盒与三态', () => {
     expect(getComputedStyle(readonly).cursor).toBe('default')
     expect(getComputedStyle(label('readonly')).cursor).toBe('default')
     expect(getComputedStyle(readonly).opacity).toBe('1')
-    expect(getComputedStyle(readonly).boxShadow).toBe('none')
+    // 只读方框这时拿着焦点：家族聚焦档那道间隔线在没勾的方框上是透明的，不算投影
+    expect(getComputedStyle(readonly).boxShadow).toMatch(/^(?:none|rgba\(0, 0, 0, 0\) [^,]*inset)$/)
   })
 
   it.each(THEMES)('%s 高对比轴：未选中边界与三态仍保持实体分层', async (theme) => {
@@ -352,7 +353,7 @@ describe('checkbox 字段家族控制盒与三态', () => {
   it('键盘 focus 在明暗三态下都达到 3:1，聚焦不改变 16px 控制盒几何', async () => {
     for (const theme of THEMES) {
       document.documentElement.dataset.theme = theme
-      // 环画在方框外侧（偏移 0）、压在页面底上，页面底随主题走；勾上的实心方框不换环色
+      // 环画在方框盒内（偏移负一个环宽），外侧贴着页面底，页面底随主题走；勾上的实心方框不换环色，环内侧衬底色间隔线
       document.body.style.backgroundColor = 'var(--xh-bg-canvas)'
       await mount([
         h(XhCheckbox, { 'data-testid': 'off' }),
@@ -367,8 +368,14 @@ describe('checkbox 字段家族控制盒与三态', () => {
         element.focus()
         expect(element.matches(':focus-visible')).toBe(true)
         const style = getComputedStyle(element)
-        expect(style.outlineOffset).toBe('0px')
+        expect(style.outlineWidth).toBe('2px')
+        expect(style.outlineOffset).toBe('-2px')
         expect(contrast(style.outlineColor, getComputedStyle(document.body).backgroundColor), `${theme}/${id}`).toBeGreaterThanOrEqual(3)
+        if (id !== 'off') {
+          const gap = resolveColor(element, 'var(--xh-ring-gap)')
+          expect(style.boxShadow.startsWith(gap), `${theme}/${id} ${style.boxShadow}`).toBe(true)
+          expect(contrast(style.outlineColor, gap), `${theme}/${id} 间隔线`).toBeGreaterThanOrEqual(3)
+        }
         const after = element.getBoundingClientRect()
         expect(after.width).toBe(before.width)
         expect(after.height).toBe(before.height)

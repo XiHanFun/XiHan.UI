@@ -210,7 +210,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` |
 | `--xh-clipboard-input-bg-focus` | `input` | `background` | `focus-within` | `--xh-bg-surface` |
 | `--xh-clipboard-input-border` | `input` | `border` | `default` | `--xh-border-control` |
-| `--xh-clipboard-input-border-focus` | `input` | `border-color` | `focus-within` | `--xh-border-control-focus` |
+| `--xh-clipboard-input-border-focus` | `input` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` |
 | `--xh-clipboard-input-fg` | `input` | `color` | `default` | `--xh-fg-default` |
 | `--xh-clipboard-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` |
 | `--xh-clipboard-input-h` | `input` | `block-size` | `default` | `--xh-_clipboard-h` |

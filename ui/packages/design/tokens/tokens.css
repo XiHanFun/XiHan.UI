@@ -524,10 +524,9 @@
     --xh-shape-sheet: var(--xh-radius-lg);
     --xh-shape-circle: 50%;
     --xh-shape-pill: var(--xh-radius-full);
-    --xh-ring-width: var(--xh-stroke-thin);
-    --xh-ring-offset: 0px;
-    --xh-ring-offset-inset: calc(-1 * var(--xh-ring-width));
-    --xh-ring-halo-width: var(--xh-stroke-strong);
+    --xh-ring-width: var(--xh-stroke-thick);
+    --xh-ring-offset: calc(-1 * var(--xh-ring-width));
+    --xh-ring-gap-width: var(--xh-stroke-thin);
     --xh-state-disabled-opacity: 0.5;
     --xh-state-dragging-opacity: 0.6;
     --xh-elevation-raised: var(--xh-shadow-sm);
@@ -934,7 +933,7 @@
     --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
     --xh-border-control-focus: var(--xh-ring-focus);
     --xh-ring-focus: var(--xh-color-brand-600);
-    --xh-ring-halo: color-mix(in oklab, var(--xh-ring-focus) 30%, transparent);
+    --xh-ring-gap: var(--xh-bg-surface);
     --xh-ring-invalid: var(--xh-color-danger-500);
     --xh-gradient-brand-from: var(--xh-color-brand-500);
     --xh-gradient-brand-to: var(--xh-color-brand-700);
@@ -1157,7 +1156,7 @@
     --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
     --xh-border-control-focus: var(--xh-ring-focus);
     --xh-ring-focus: var(--xh-color-brand-400);
-    --xh-ring-halo: color-mix(in oklab, var(--xh-ring-focus) 30%, transparent);
+    --xh-ring-gap: var(--xh-bg-surface);
     --xh-ring-invalid: var(--xh-color-danger-400);
     --xh-gradient-brand-from: var(--xh-color-brand-400);
     --xh-gradient-brand-to: var(--xh-color-brand-300);
@@ -1386,7 +1385,7 @@
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
       --xh-border-control-focus: var(--xh-ring-focus);
       --xh-ring-focus: var(--xh-color-brand-400);
-      --xh-ring-halo: color-mix(in oklab, var(--xh-ring-focus) 30%, transparent);
+      --xh-ring-gap: var(--xh-bg-surface);
       --xh-ring-invalid: var(--xh-color-danger-400);
       --xh-gradient-brand-from: var(--xh-color-brand-400);
       --xh-gradient-brand-to: var(--xh-color-brand-300);
@@ -1704,7 +1703,6 @@
       --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
       --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
       --xh-border-control-focus: var(--xh-ring-focus);
-      --xh-ring-halo: color-mix(in oklab, var(--xh-ring-focus) 30%, transparent);
       --xh-chart-on-sequential-low: var(--xh-fg-default);
       --xh-chart-label: var(--xh-fg-muted);
       --xh-chart-crosshair: var(--xh-fg-subtle);

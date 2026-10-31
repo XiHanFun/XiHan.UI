@@ -69,10 +69,9 @@
     --xh-action-shadow-rest: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-hover: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-pressed: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
-    --xh-action-shadow-focus-visible: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
+    /* 聚焦档在轨道内描边之前接上家族的底色间隔线：选中的轨道是实心面，环内侧要衬这道线（见选中档） */
+    --xh-action-shadow-focus-visible: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-_ring-gap, transparent), inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
     --xh-action-shadow-disabled: inset 0 0 0 var(--xh-stroke-thin) var(--xh-_switch-track-border);
-    /* 内收环压在实体轨道上，直接取轨道的配对前景：未选中与只读 checked 的中性轨道配 fg-default，
-       选中的语气轨道配它的 on 色 */
 
     /* 滑块贴 inline-start 起步，checked 才位移到另一端；家族的居中排布在轨道上不成立 */
     justify-content: start;
@@ -86,6 +85,12 @@
     --xh-_switch-track-bg: var(--xh-switch-bg-checked, var(--xh-_switch-accent));
     --xh-_switch-track-bg-pressed: var(--xh-switch-bg-checked-pressed, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     --xh-_switch-fg: var(--xh-switch-fg-checked, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+  }
+
+  /* 选中的轨道是实心面：环画在轨道盒内、内侧紧挨着同色的轨道，衬一道底色间隔线才读得出来（设计真源 §7.2 第 5 条）。
+     只读与禁用的选中轨道退回中性底，不衬 */
+  [data-scope='switch'][data-part='root'][data-state='checked']:not([data-readonly], [data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 只读：值仍要读得清、也仍会随表单提交，所以不压对比度、也不借禁用那档灰。

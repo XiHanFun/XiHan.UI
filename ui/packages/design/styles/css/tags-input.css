@@ -227,8 +227,8 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tags-input-item-line-h));
   }
 
-  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边（焦点环的内圈）；
-     外层 control 同时按 :focus-within 换成聚焦面并画光环，两层一起说明焦点在框内，这一格不再叠一圈光环 */
+  /* 它是真正持有焦点的那个节点，照字段外壳标出焦点：换承载面底 + 品牌描边；
+     外层 control 同时按 :focus-within 换成聚焦面并画盒内环，两层一起说明焦点在框内，这一格不再补 inset 线 */
   [data-scope='tags-input'][data-part='item-input']:focus-within {
     border-color: var(--xh-tags-input-item-input-border-focus, var(--xh-border-control-focus));
     background: var(--xh-tags-input-item-input-bg-focus, var(--xh-bg-surface));
@@ -236,7 +236,6 @@
 
   [data-scope='tags-input'][data-part='item-input']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 校验失败时描边跟着外框换无效色，两层相邻不至于一红一蓝 */

@@ -1,4 +1,4 @@
-// 值气泡挂在拇指里：拖动时拇指不放大、画与聚焦同一副光环，气泡与文字按原尺寸画。
+// 值气泡挂在拇指里：拖动时拇指不放大、画与聚焦同一道环，气泡与文字按原尺寸画。
 // 静态夹具照抄连接层投影的属性，只量皮肤。
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
@@ -40,15 +40,15 @@ describe.each(['slider', 'color-slider'] as const)('%s 值气泡', (scope) => {
     ['horizontal', 'rtl'],
     ['vertical', 'ltr'],
     ['vertical', 'rtl'],
-  ] as const)('%s / %s：拖动中拇指不放大、画光环，气泡按原尺寸画', (orientation, dir) => {
+  ] as const)('%s / %s：拖动中拇指不放大、画环，气泡按原尺寸画', (orientation, dir) => {
     const { thumb, bubble } = mount(scope, orientation, dir)
     // 拇指不放大
     expect(thumb.getBoundingClientRect().width / thumb.offsetWidth).toBeCloseTo(1, 2)
-    // 光环与焦点环同一副：从描边外沿起铺内圈宽 + 光环宽，颜色取 --xh-ring-halo
-    const probe = document.createElement('span')
-    probe.style.boxShadow = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
-    host!.append(probe)
-    expect(getComputedStyle(thumb).boxShadow).toBe(getComputedStyle(probe).boxShadow)
+    // 环与焦点环同一道：收在描边以内，仍在拇指自己的盒内
+    const s = getComputedStyle(thumb)
+    expect(s.outlineStyle).toBe('solid')
+    expect(s.outlineWidth).toBe('2px')
+    expect(Number.parseFloat(s.outlineOffset) + Number.parseFloat(s.outlineWidth)).toBe(-Number.parseFloat(s.borderTopWidth))
     // 气泡与文字按原尺寸画
     const rect = bubble.getBoundingClientRect()
     expect(rect.width / bubble.offsetWidth).toBeCloseTo(1, 2)

@@ -199,7 +199,6 @@
   /* 聚焦不画环：插入符就是焦点指示。框没有外壳，全局那圈键盘焦点环只会压在通栏一行上 */
   [data-scope='transfer'][data-part='search']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 单体控件的禁用是原生 disabled，样式只能写 :disabled；集合条目才读 data-disabled */
@@ -254,7 +253,6 @@
   /* 焦点在列表外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在条目上 */
   [data-scope='transfer'][data-part='list']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
@@ -445,6 +443,13 @@
   [data-scope='transfer'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
     border-color: var(--xh-transfer-checkbox-border-checked, var(--xh-_transfer-accent));
     background: var(--xh-transfer-checkbox-bg-checked, var(--xh-_transfer-accent));
+  }
+
+  /* 勾中的格子是实心面：落焦时环画在格子盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
+     公共层的 inset 线从描边以内铺起，扣掉这一道描边宽才落在环的正内侧 */
+  [data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
+    --xh-_ring-border: var(--xh-stroke-thin);
   }
 
   /* 格子里的勾与全选格的三态标记（all 打勾、some 打横杠、none 留空）由勾选标记配方画：常驻、按状态淡变

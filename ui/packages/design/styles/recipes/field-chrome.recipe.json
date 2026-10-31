@@ -65,7 +65,7 @@
     },
     "focus": {
       "color": "var(--xh-fg-default)",
-      "shadow": "0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo)",
+      "shadow": "inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-field-border-focus, var(--xh-_field-variant-border-focus))",
       "cursor": "text",
       "ringColor": "none"
     },

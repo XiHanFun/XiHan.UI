@@ -297,8 +297,7 @@
      轨道就是 root：滑块绝对定位于它，段与段之间不留缝，所以 gap 归零。
      轨道与字段外壳同款：最浅一档淡底（--xh-bg-field）+ 1px 字段描边（--xh-border-control）+ control 圆角，
      内衬 2px，加上描边段离外沿 3px。
-     一行排不下就折行：每个选项都必须看得见、点得到；不改成横向滚动是因为段离轨道内沿只有一格衬距，
-     轨道一旦成为滚动容器，段的焦点环（画在段外侧 2px 处）会被裁掉 */
+     一行排不下就折行：每个选项都必须看得见、点得到，横向滚动会把排不下的段藏到轨道外 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'] {
     /* 滑块（选中段的品牌淡底）静息 / 悬停 / 禁用三档与选中段的文字色；没写 data-tone 时就是这里的取值 */
     --xh-_radio-group-thumb-bg: var(--xh-bg-segment-selected);
@@ -362,7 +361,6 @@
   /* root 会短暂拿到 tabindex=0，但它的 onFocus 立刻把焦点转投给段，在它身上画环只会闪一下就跳走 */
   [data-scope='radio-group'][data-part='root'][data-variant='segmented']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
   }
 
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-invalid] {

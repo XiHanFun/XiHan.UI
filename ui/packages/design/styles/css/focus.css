@@ -6,26 +6,33 @@
 /*
  * 聚焦环的公共层：全库共用一份。
  *
- * 环两层（设计真源 §7.2 第 5 条），两层都不随 data-tone、即时出现、不进过渡：
- *   内圈  outline：粗细取 --xh-ring-width（1px），颜色取 --xh-_ring-color（缺省 --xh-ring-focus），
- *         偏移取 --xh-ring-offset（0）——贴着元素的边框外沿画，压在承载面上，与元素自己的面无关，
- *         实心面上也不换环色。对比度由内圈承担（WCAG 1.4.11 的 3:1）；outline 不占布局，聚焦前后盒子一样大。
- *   光环  box-shadow：从边框外沿起铺，扩散量 = 内圈宽 + --xh-ring-halo-width（3px），颜色 --xh-ring-halo
- *         （内圈色 30%）。只是观感。强制色档系统去掉 box-shadow，只剩内圈。
+ * 环是一道实线（设计真源 §7.2 第 5 条），不随 data-tone、即时出现、不进过渡：
+ *   outline：粗细取 --xh-ring-width（2px），颜色取 --xh-_ring-color（缺省 --xh-ring-focus），
+ *   偏移取 --xh-ring-offset（负一个环宽）——环画在元素自己的盒内，外沿与边框外沿重合。
+ *   环不出盒：元素多大、放进什么裁切容器里，环都完整，应用侧不必给它留位；outline 不占布局，聚焦前后盒子一样大。
  *
- * 光环这条规则零特指度、排在全部家族配方与组件皮肤之前：部件自己写了 box-shadow（抬起影、浮层投影）时
- * 由它自己的规则胜出，光环让位，不会把浮层面板的投影冲掉；要在自己的投影之前叠光环的部件（Action Control
- * 等家族配方、带抬起影的拇指）在自己的聚焦规则里把光环接进去。
+ * 环外侧贴着承载面，--xh-ring-focus 对承载面成立 3:1。面是实心的那几档（实心按钮、选中的勾选框与开关轨道、
+ * 日历选中格……），环内侧紧挨着的是同色或任意色的面，单靠一道环读不出来：这些档在自己的规则里写
+ * --xh-_ring-gap: var(--xh-ring-gap)，本份在环内侧再衬一道 --xh-ring-gap-width（1px）的底色间隔线
+ * （inset box-shadow），环两侧都是底色。没写的档这道线是透明的，不改动元素的样子。
+ * inset 投影从内距盒（边框以内）铺起：带边框的部件把边框宽写进 --xh-_ring-border，线才落在环的正内侧。
  *
- * 关环的部件（outline: none，焦点由别处画）同时写 --xh-_ring-halo: transparent，光环随之透明。
- * 这支槽登记成不继承：只作用于写它的那个节点，关环的容器里自己会落焦的部件照常画光环。
+ * 间隔线这条规则零特指度、排在全部家族配方与组件皮肤之前：部件自己写了 box-shadow（抬起影、浮层投影）时
+ * 由它自己的规则胜出；实心又带投影的部件（Action Control 家族等）在自己的聚焦规则里把间隔线接在投影之前。
+ * 两支私有槽登记成不继承：只作用于写它的那个节点，实心面里的后代自己落焦时不会也画上间隔线。
  * --xh-_ring-color 同理只在拿着焦点的节点上读，:focus-visible 不匹配祖先，后代读不到。
+ * 强制色档系统去掉 box-shadow，只剩环。
  *
  * 选择器停在两个属性加一个伪类（0,3,0）：与组件皮肤里 [data-scope='x'][data-part='y']:focus-visible
  * 同级，组件皮肤排在本份之后，要另画的组件照写即可压过；同时压过 forced-colors.css 里 (0,2,0) 的状态环，
  * 高对比档里键盘焦点仍然压在选中、展开这类状态之上。
  */
-@property --xh-_ring-halo {
+@property --xh-_ring-gap {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --xh-_ring-border {
   syntax: '*';
   inherits: false;
 }
@@ -37,6 +44,6 @@
   }
 
   :where([data-scope][data-part]:focus-visible) {
-    box-shadow: 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-_ring-halo, var(--xh-ring-halo));
+    box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, 0px)) var(--xh-_ring-gap, transparent);
   }
 }

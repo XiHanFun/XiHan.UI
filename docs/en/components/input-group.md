@@ -82,7 +82,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-input-group-bg-read-only` | `root` | `background` | `has(:where([data-xh-field-chrome][data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-bg-subtle` |
 | `--xh-input-group-border` | `root` | `border` | `default` | `--xh-_input-group-border` |
 | `--xh-input-group-border-disabled` | `root` | `border-color` | `disabled`<br>`has([data-xh-field-chrome][data-disabled])`<br>`xh-field-chrome` | `--xh-border-default` |
-| `--xh-input-group-border-focus` | `root` | `border-color` | `focus-within` | `--xh-_input-group-border-focus` |
+| `--xh-input-group-border-focus` | `root` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-_input-group-border-focus` |
 | `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not(:focus-within)`<br>`not(:has([data-xh-field-chrome]:is([data-disabled], [data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_input-group-border-hover` |
 | `--xh-input-group-border-invalid` | `root` | `border-color` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-border-invalid` |
 | `--xh-input-group-item-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` |

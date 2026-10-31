@@ -83,10 +83,10 @@ function expectIconButton(name: string, size: number): void {
   expect(mark.maskImage).not.toBe('none')
 }
 
-/** 字段外壳聚焦时的光环：描边就是内圈，光环从描边外沿铺开。 */
-function fieldHalo(): string {
+/** 字段外壳聚焦时的环：描边换色，内侧补一道 inset 线，合起来一个环宽。 */
+function fieldRing(): string {
   const probe = document.createElement('span')
-  probe.style.boxShadow = '0 0 0 var(--xh-ring-halo-width) var(--xh-ring-halo)'
+  probe.style.boxShadow = 'inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-border-control-focus)'
   document.body.append(probe)
   const value = getComputedStyle(probe).boxShadow
   probe.remove()
@@ -99,8 +99,8 @@ function expectUnifiedControl(...partNames: string[]): void {
   const controlRect = control.getBoundingClientRect()
   const controlStyle = getComputedStyle(control)
   expect(controlStyle.borderTopWidth).not.toBe('0px')
-  // 盒里有焦点时画焦点环的光环（描边就是内圈），此外静息无影
-  expect(controlStyle.boxShadow).toBe(control.matches(':focus-within') ? fieldHalo() : 'none')
+  // 盒里有焦点时描边内侧补一道 inset 线，与换色的描边合起来就是焦点环，此外静息无影
+  expect(controlStyle.boxShadow).toBe(control.matches(':focus-within') ? fieldRing() : 'none')
   expect(controlStyle.overflow).toBe('visible')
   expect(controlStyle.gap).toBe('0px')
 

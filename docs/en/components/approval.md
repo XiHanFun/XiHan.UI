@@ -318,7 +318,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-approval-note-bg-invalid` | `note` | `background` | `invalid` | `--xh-bg-field-invalid` |
 | `--xh-approval-note-border` | `note` | `border` | `default` | `--xh-border-control` |
 | `--xh-approval-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` |
-| `--xh-approval-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` |
+| `--xh-approval-note-border-focus` | `note` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` |
 | `--xh-approval-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` |
 | `--xh-approval-note-border-invalid` | `note` | `border-color` | `invalid` | `--xh-border-invalid` |
 | `--xh-approval-note-fg` | `note` | `color` | `default` | `--xh-fg-default` |

@@ -79,7 +79,7 @@ describe('color-picker 常驻形态（Chromium）', () => {
     expect(Math.round(root.getBoundingClientRect().width)).toBe(Math.round(content.getBoundingClientRect().width))
   })
 
-  it('取色区拇指是平面圆环：不投影、不放大，环内侧一道装饰边；键盘聚焦与拖动时并上与焦点环同一副光环', async () => {
+  it('取色区拇指是平面圆环：不投影、不放大，环内侧一道装饰边；键盘聚焦与拖动时环收在白环以内、内侧衬间隔线', async () => {
     const { thumb } = await mount()
     const shadowOf = (value: string): string => {
       const probe = document.createElement('span')
@@ -90,17 +90,25 @@ describe('color-picker 常驻形态（Chromium）', () => {
       return resolved
     }
     const edge = 'inset 0 0 0 var(--xh-stroke-thin) var(--xh-border-default-opaque)'
-    const halo = '0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-halo-width)) var(--xh-ring-halo)'
+    const gap = 'inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width)) var(--xh-ring-gap)'
+    /** 环收在 2px 白环以内：外沿离盒子外沿一道白环宽，仍在拇指自己的盒内。 */
+    const ringInsideBorder = (): void => {
+      const s = getComputedStyle(thumb)
+      expect(s.outlineStyle).toBe('solid')
+      expect(s.outlineWidth).toBe('2px')
+      expect(Number.parseFloat(s.outlineOffset) + Number.parseFloat(s.outlineWidth)).toBe(-Number.parseFloat(s.borderTopWidth))
+      expect(s.boxShadow).toBe(shadowOf(gap))
+    }
     expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(edge))
     const width = thumb.getBoundingClientRect().width
     thumb.setAttribute('data-dragging', '')
-    expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(`${halo}, ${edge}`))
+    ringInsideBorder()
     expect(thumb.getBoundingClientRect().width).toBe(width)
     thumb.removeAttribute('data-dragging')
     await userEvent.tab()
     expect(document.activeElement).toBe(thumb)
     expect(thumb.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(thumb).boxShadow).toBe(shadowOf(`${halo}, ${edge}`))
+    ringInsideBorder()
   })
 
   it('键盘改色后焦点离开取色面，最近使用色的格子出现', async () => {

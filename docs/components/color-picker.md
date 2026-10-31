@@ -515,7 +515,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-picker 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | color-picker 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-picker-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | color-picker 的 control 部件 border 覆盖槽。 |
-| `--xh-color-picker-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | color-picker 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | color-picker 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-color-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | color-picker 的 control 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | color-picker 的 control 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-picker 的 control 部件 color 覆盖槽。 |
@@ -535,7 +535,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-input-bg-focus` | `channel-input` | `background` | `focus` | `--xh-bg-surface` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-bg-readonly` | `channel-input` | `background` | `readonly` | `--xh-bg-subtle` | color-picker 的 channel-input 部件 background 覆盖槽。 |
 | `--xh-color-picker-input-border` | `channel-input` | `border` | `default` | `--xh-border-control` | color-picker 的 channel-input 部件 border 覆盖槽。 |
-| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color` | `focus` | `--xh-border-control-focus` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
+| `--xh-color-picker-input-border-focus` | `channel-input` | `border-color`<br>`box-shadow` | `focus` | `--xh-border-control-focus` | color-picker 的 channel-input 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-color-picker-input-border-hover` | `channel-input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-border-strong` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-input-border-invalid` | `channel-input` | `border-color` | `invalid` | `--xh-border-invalid` | color-picker 的 channel-input 部件 border-color 覆盖槽。 |
 | `--xh-color-picker-input-font-size` | `channel-input` | `font-size` | `default` | `--xh-text-caption-size` | color-picker 的 channel-input 部件 font-size 覆盖槽。 |
@@ -567,7 +567,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `--xh-color-picker-tag-dot-size` | `root`<br>`tag-list` | `block-size`<br>`inline-size` | `value` | `--xh-control-indicator-sm` | color-picker 的 root、tag-list 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-color-picker-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | color-picker 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` | color-picker 的 area-thumb 部件 border 覆盖槽。 |
-| `--xh-color-picker-thumb-edge` | `area-thumb` | `box-shadow` | `default`<br>`dragging`<br>`is(:focus-visible, [data-dragging])` | `--xh-border-default-opaque` | color-picker 的 area-thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-color-picker-thumb-edge` | `area-thumb` | `box-shadow` | `default` | `--xh-border-default-opaque` | color-picker 的 area-thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-thumb-size` | `area-thumb` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `default` | `--xh-control-indicator-md` | color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-color-picker-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | color-picker 的 trigger 部件 color 覆盖槽。 |

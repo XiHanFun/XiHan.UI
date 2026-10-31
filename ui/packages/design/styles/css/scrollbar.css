@@ -120,12 +120,8 @@
       --xh-scrollbar-thumb-bg,
       var(--xh-fg-scrollbar-thumb)
     );
-    /* 滑块里没有字，这支墨色只给聚焦环用。 */
-    color: var(--xh-fg-default);
     cursor: default;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
@@ -140,7 +136,7 @@
     inset-block: var(--xh-scrollbar-gutter);
   }
 
-  /* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
+  /* 这两档的面往另一头走（浅色主题更深、深色主题更亮） */
   [data-scope='scrollbar'][data-part='thumb']:hover {
     background: var(
       --xh-scrollbar-thumb-bg-hover,
@@ -159,7 +155,12 @@
   [data-scope='scrollbar'][data-part='root']:focus-visible,
   [data-scope='scrollbar'][data-part='track']:focus-visible {
     outline: none;
-    --xh-_ring-halo: transparent;
+  }
+
+  /* 滑块是一条实色的中性面，悬停档与品牌环同一明度：环画在滑块盒内，内侧衬一道底色间隔线才读得出来
+     （设计真源 §7.2 第 5 条）；禁用档不落焦，不衬 */
+  [data-scope='scrollbar'][data-part='thumb']:not([data-disabled]) {
+    --xh-_ring-gap: var(--xh-ring-gap);
   }
 
   /* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */

@@ -2340,7 +2340,8 @@
         "note"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "focus-within"
@@ -2349,7 +2350,7 @@
         "--xh-border-control-focus"
       ],
       "visibility": "public",
-      "description": "approval 的 note 部件 border-color 覆盖槽。"
+      "description": "approval 的 note 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-approval-note-border-hover",
@@ -9885,7 +9886,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -9897,7 +9899,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "cascader 的 control 部件 border-color 覆盖槽。"
+      "description": "cascader 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-cascader-control-border-hover",
@@ -11833,6 +11835,7 @@
         "pressed"
       ],
       "defaultToken": [
+        "--xh-ring-width",
         "none"
       ],
       "visibility": "public",
@@ -14373,7 +14376,8 @@
         "input"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "focus-within"
@@ -14382,7 +14386,7 @@
         "--xh-border-control-focus"
       ],
       "visibility": "public",
-      "description": "clipboard 的 input 部件 border-color 覆盖槽。"
+      "description": "clipboard 的 input 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-clipboard-input-fg",
@@ -16059,7 +16063,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -16071,7 +16076,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "color-field 的 control 部件 border-color 覆盖槽。"
+      "description": "color-field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-field-control-border-hover",
@@ -17260,7 +17265,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -17272,7 +17278,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "color-picker 的 control 部件 border-color 覆盖槽。"
+      "description": "color-picker 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-control-border-hover",
@@ -17653,7 +17659,8 @@
         "channel-input"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "focus"
@@ -17662,7 +17669,7 @@
         "--xh-border-control-focus"
       ],
       "visibility": "public",
-      "description": "color-picker 的 channel-input 部件 border-color 覆盖槽。"
+      "description": "color-picker 的 channel-input 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-input-border-hover",
@@ -18254,9 +18261,7 @@
         "box-shadow"
       ],
       "state": [
-        "default",
-        "dragging",
-        "is(:focus-visible, [data-dragging])"
+        "default"
       ],
       "defaultToken": [
         "--xh-border-default-opaque"
@@ -19805,7 +19810,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -19817,7 +19823,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 border-color 覆盖槽。"
+      "description": "combobox 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-border-hover",
@@ -23110,7 +23116,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -23122,7 +23129,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "date-field 的 control 部件 border-color 覆盖槽。"
+      "description": "date-field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-date-field-control-border-hover",
@@ -24332,7 +24339,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -24344,7 +24352,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "date-picker 的 control 部件 border-color 覆盖槽。"
+      "description": "date-picker 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-control-border-hover",
@@ -26412,7 +26420,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -26424,7 +26433,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "date-range-picker 的 control 部件 border-color 覆盖槽。"
+      "description": "date-range-picker 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-date-range-picker-control-border-hover",
@@ -31715,7 +31724,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -31727,7 +31737,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "editable 的 control 部件 border-color 覆盖槽。"
+      "description": "editable 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-editable-control-border-hover",
@@ -33192,7 +33202,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -33204,7 +33215,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "expression-input 的 control 部件 border-color 覆盖槽。"
+      "description": "expression-input 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-expression-input-control-border-hover",
@@ -34230,7 +34241,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -34242,7 +34254,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "field 的 control 部件 border-color 覆盖槽。"
+      "description": "field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-field-control-border-hover",
@@ -45761,7 +45773,8 @@
         "root"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "focus-within"
@@ -45770,7 +45783,7 @@
         "--xh-_input-group-border-focus"
       ],
       "visibility": "public",
-      "description": "input-group 的 root 部件 border-color 覆盖槽。"
+      "description": "input-group 的 root 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-input-group-border-hover",
@@ -50829,7 +50842,8 @@
         "input"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -50841,7 +50855,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 border-color 覆盖槽。"
+      "description": "mention 的 input 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-border-hover",
@@ -56011,7 +56025,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -56023,7 +56038,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 border-color 覆盖槽。"
+      "description": "number-field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-border-hover",
@@ -57945,7 +57960,8 @@
         "jumper"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -57957,7 +57973,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "pagination 的 jumper 部件 border-color 覆盖槽。"
+      "description": "pagination 的 jumper 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-pagination-jumper-border-hover",
@@ -58243,7 +58259,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -58255,7 +58272,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 border-color 覆盖槽。"
+      "description": "password-input 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-border-hover",
@@ -59431,7 +59448,8 @@
         "input"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -59444,7 +59462,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 border-color 覆盖槽。"
+      "description": "pin-input 的 input 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-border-hover",
@@ -61563,7 +61581,8 @@
         "root"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -61575,7 +61594,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 border-color 覆盖槽。"
+      "description": "prompt-input 的 root 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-border-hover",
@@ -63027,7 +63046,8 @@
         "note"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "focus-within"
@@ -63036,7 +63056,7 @@
         "--xh-border-control-focus"
       ],
       "visibility": "public",
-      "description": "question-flow 的 note 部件 border-color 覆盖槽。"
+      "description": "question-flow 的 note 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-note-border-hover",
@@ -67537,7 +67557,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -67549,7 +67570,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "select 的 control 部件 border-color 覆盖槽。"
+      "description": "select 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-select-control-border-hover",
@@ -77782,7 +77803,6 @@
         "box-shadow"
       ],
       "state": [
-        "focus-visible",
         "is([data-variant='card'], [data-variant='segment'])",
         "state=active",
         "variant=card",
@@ -78740,7 +78760,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -78752,7 +78773,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "tags-input 的 control 部件 border-color 覆盖槽。"
+      "description": "tags-input 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-tags-input-control-border-hover",
@@ -79920,7 +79941,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -79932,7 +79954,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "text-field 的 control 部件 border-color 覆盖槽。"
+      "description": "text-field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-text-field-control-border-hover",
@@ -80764,7 +80786,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -80776,7 +80799,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 border-color 覆盖槽。"
+      "description": "time-field 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-border-hover",
@@ -82097,7 +82120,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -82109,7 +82133,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "time-picker 的 control 部件 border-color 覆盖槽。"
+      "description": "time-picker 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-control-border-hover",
@@ -84066,7 +84090,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -84078,7 +84103,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 control 部件 border-color 覆盖槽。"
+      "description": "time-range-picker 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-control-border-hover",
@@ -87293,7 +87318,8 @@
       "name": "--xh-toggle-group-item-shadow",
       "component": "toggle-group",
       "part": [
-        "item"
+        "item",
+        "root"
       ],
       "property": [
         "box-shadow"
@@ -87308,13 +87334,15 @@
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
-        "state=on"
+        "state=on",
+        "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_toggle-group-item-highlight-on"
+        "--xh-_toggle-group-item-highlight-on",
+        "--xh-ring-width"
       ],
       "visibility": "public",
-      "description": "toggle-group 的 item 部件 box-shadow 覆盖槽。"
+      "description": "toggle-group 的 item、root 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-toggle-group-outline-color",
@@ -93570,7 +93598,8 @@
         "control"
       ],
       "property": [
-        "border-color"
+        "border-color",
+        "box-shadow"
       ],
       "state": [
         "disabled",
@@ -93582,7 +93611,7 @@
         "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "tree-select 的 control 部件 border-color 覆盖槽。"
+      "description": "tree-select 的 control 部件 border-color、box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-control-border-hover",
