@@ -30664,6 +30664,14 @@
   pointer-events: auto;
 }
 
+/* 不分三段时面板自己滚：直接子节点按各自的尺寸排开，超出面板的部分整块滚，不参与纵向压缩。
+   弹性项缺省可收缩，自动最小高度又取内容与声明尺寸中小的那一头：定高、overflow 非 visible 的框
+   （包着图或画布的那种）自动最小高度为 0，内容一超出面板，差额全从它身上扣，被压成一条缝。
+   分三段时由正文段吃掉剩下的高度、自己滚，不走这条 */
+.xh-scope-drawer[data-part='content']:not(:has(.xh-scope-drawer[data-part='body'])) > * {
+  flex-shrink: 0;
+}
+
 .xh-scope-drawer[data-part='content']:dir(rtl) {
   --xh-_drawer-shift-inline: calc(-1 * var(--xh-motion-travel));
 }

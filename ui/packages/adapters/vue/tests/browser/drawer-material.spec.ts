@@ -59,6 +59,43 @@ function mountSections(): void {
   app.mount(host)
 }
 
+/**
+ * 不分三段、内容超出面板：一个定高 380px、overflow: hidden 的框（里面的图比框大），后面接一段 1200px 的正文。
+ * 框是 overflow 非 visible 的弹性项，自动最小高度为 0，面板若参与纵向压缩，超出的那部分就从它身上扣。
+ */
+function mountOverflowingSingleLayer(side: 'left' | 'right' | 'top' | 'bottom'): void {
+  const host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhDrawerRoot, { open: true, side }, () => [
+      h(XhDrawerTrigger, null, () => '打开'),
+      h(XhDrawerContent, null, () => [
+        h(XhDrawerTitle, null, () => '流程实例'),
+        h('div', { 'data-testid': 'graph', 'style': 'block-size: 380px; overflow: hidden' }, h('div', { style: 'block-size: 1000px' })),
+        h('div', { 'data-testid': 'rest' }, h('div', { style: 'block-size: 1200px' })),
+      ]),
+    ]),
+  })
+  app.mount(host)
+}
+
+/** 分三段、正文超出面板：正文吃掉剩下的高度自己滚，头尾不动。 */
+function mountOverflowingSections(): void {
+  const host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhDrawerRoot, { open: true }, () => [
+      h(XhDrawerTrigger, null, () => '打开'),
+      h(XhDrawerContent, null, () => [
+        h(XhDrawerHeader, null, () => h(XhDrawerTitle, null, () => '设置')),
+        h(XhDrawerBody, null, () => h('div', { style: 'block-size: 2000px' })),
+        h(XhDrawerFooter, null, () => h(XhButton, null, () => '保存')),
+      ]),
+    ]),
+  })
+  app.mount(host)
+}
+
 /** 在定位层里放一个探针，按面板所在的主题解出某个令牌。 */
 function resolved(prop: 'color' | 'font-size' | 'font-weight' | 'box-shadow' | 'border-top-left-radius', token: string): string {
   const probe = document.createElement('span')
@@ -223,6 +260,34 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     await settle()
     box = paddingBox(part('content'))
     expect(box.right - part('close-trigger').getBoundingClientRect().right).toBeCloseTo(44 + 16, 0)
+  })
+
+  it.each(['right', 'bottom'] as const)('%s：不分三段时面板是唯一的滚动层，定高、overflow: hidden 的子节点保持声明的高度，超出的内容整块滚', async (side) => {
+    mountOverflowingSingleLayer(side)
+    await settle()
+
+    const content = part('content')
+    const graph = document.querySelector<HTMLElement>('[data-testid="graph"]')!
+    const rest = document.querySelector<HTMLElement>('[data-testid="rest"]')!
+    expect(graph.getBoundingClientRect().height).toBeCloseTo(380, 0)
+    expect(rest.getBoundingClientRect().height).toBeCloseTo(1200, 0)
+    expect(content.scrollHeight).toBeGreaterThan(content.clientHeight)
+
+    content.scrollTop = content.scrollHeight
+    expect(content.scrollTop).toBeGreaterThan(0)
+    expect(rest.getBoundingClientRect().bottom).toBeLessThanOrEqual(paddingBox(content).top + content.clientHeight + 1)
+  })
+
+  it('分三段时正文仍吃掉剩下的高度并自己滚，面板一层不滚、头部不被压', async () => {
+    mountOverflowingSections()
+    await settle()
+
+    const content = part('content')
+    const body = part('body')
+    expect(content.scrollHeight).toBe(content.clientHeight)
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight)
+    expect(part('header').getBoundingClientRect().height).toBeCloseTo(48, 0)
+    expect(part('footer').getBoundingClientRect().bottom).toBeCloseTo(paddingBox(content).top + content.clientHeight, 0)
   })
 
   it('紧凑密度下头部随控件档收到 44px', async () => {
