@@ -205,6 +205,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - 任务对应 Issue 或 PR 编号时归入 `issue/`、`pr/` 并以编号命名；其余按改动性质取 `feat/` 或 `fix/`，后缀沿用 worktree 目录名。
 - 进入 worktree 后先看 `git branch --show-current`。分支是工具生成的 `claude/<名>` 等形式时，在首次提交前就地改名：`git branch -m <分组>/<名>`；worktree 目录名不变。改名后上游若指向 `main` 等别的分支，执行 `git branch --unset-upstream`。分支已推送到远端时不改名，先向用户说明。
 - 自行创建时直接带分组：`git worktree add -b feat/<名> .claude/worktrees/<名> dev`。审阅他人 PR 时先 `git fetch origin pull/<编号>/head:pr/<编号>-review`，再 `git worktree add .claude/worktrees/pr-<编号> pr/<编号>-review`。
+- `preview` 与 `main` 是发布分支，日常改动不提交到这两个分支，worktree 也不以它们为基线。
 - 基线默认是本地 `dev`；用户指定 `release/*` 时以其为准。工具从 `main` 或 `origin/main` 切出且还没有提交时，用 `git merge --ff-only dev` 对齐；不能快进就停下说明，不 reset。
 - 一个 worktree 只承载一项任务、一条分支。并行任务会改到同一组件、同一共享配方、令牌或生成物（无层 CSS、CEM、公开面、组件文档）时，先说明冲突风险再动手。
 - 新 worktree 没有 `node_modules` 和 dist：先在 `ui/` 执行 `pnpm install --frozen-lockfile` 和 `pnpm build`，改文档时再安装 `docs/` 依赖。
@@ -222,6 +223,8 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 
 ## 发版
 
+- 发布分支：预览版（带 `-rc.N` 这类预发布后缀的版本）从 `preview` 分支发，由 `next` 快进（`git fetch . next:preview`，不是快进就停下查）；正式版从 `main` 发，由 `dev` 快进。这两个分支只接收发版，修复先进开发分支，再快进过来。
+- 预览版现在还发不出去：`release.yml` 的 guard 只放行 `main` 上的标签，`ci.yml` 也不跑 `preview`。这两处改好之后删掉这一条，并改下面与 `ui/.changeset/README.md` 里的说法。
 - 准备版本、打标签与发布按 `.agents/skills/version-release/SKILL.md`；推标签、发 npm 只在用户明确要求时做。
 - `.github/workflows/release.yml` 由 `main` 上的 `v*` 标签触发：guard 核对标签与包版本，构建后 `changeset publish` 发包，最后 `ui/scripts/release/promote-latest.mjs` 让各包的 npm `latest` 跟到这一版——等 npm 官方源取得到这一版、逐个包核，没指过来的用 `npm dist-tag add` 补上，全部对上这一步才过；预发布时只给 npm 上还没有正式版的包挂 `latest`。
 - 本地在 `ui/` 运行 `node scripts/release/promote-latest.mjs --dry-run` 只看一遍 npm 现状、不等不改。
