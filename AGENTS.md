@@ -224,9 +224,8 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 ## 发版
 
 - 发布分支：预览版（带 `-rc.N` 这类预发布后缀的版本）从 `preview` 分支发，由 `next` 快进（`git fetch . next:preview`，不是快进就停下查）；正式版从 `main` 发，由 `dev` 快进。这两个分支只接收发版，修复先进开发分支，再快进过来。
-- 预览版现在还发不出去：`release.yml` 的 guard 只放行 `main` 上的标签，`ci.yml` 也不跑 `preview`。这两处改好之后删掉这一条，并改下面与 `ui/.changeset/README.md` 里的说法。
 - 准备版本、打标签与发布按 `.agents/skills/version-release/SKILL.md`；推标签、发 npm 只在用户明确要求时做。
-- `.github/workflows/release.yml` 由 `main` 上的 `v*` 标签触发：guard 核对标签与包版本，构建后 `changeset publish` 发包，最后 `ui/scripts/release/promote-latest.mjs` 让各包的 npm `latest` 跟到这一版——等 npm 官方源取得到这一版、逐个包核，没指过来的用 `npm dist-tag add` 补上，全部对上这一步才过；预发布时只给 npm 上还没有正式版的包挂 `latest`。
+- `.github/workflows/release.yml` 由发布分支上的 `v*` 标签触发：guard 核对标签在对应发布分支的历史里（带预发布后缀的看 `preview`，不带的看 `main`）、标签与包版本一致，构建后 `changeset publish` 发包，最后 `ui/scripts/release/promote-latest.mjs` 让各包的 npm `latest` 跟到这一版——等 npm 官方源取得到这一版、逐个包核，没指过来的用 `npm dist-tag add` 补上，全部对上这一步才过；预发布时只给 npm 上还没有正式版的包挂 `latest`。
 - 本地在 `ui/` 运行 `node scripts/release/promote-latest.mjs --dry-run` 只看一遍 npm 现状、不等不改。
 
 ## 禁止事项

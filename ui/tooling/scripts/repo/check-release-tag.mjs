@@ -71,7 +71,7 @@ const mismatched = packages.filter(p => p.version !== version)
 if (mismatched.length) {
   problems.push(
     `标签 ${tag} 要发的是 ${version}，而这些包的 package.json 不是这个号：${mismatched.map(p => `${p.name}@${p.version}`).join('、')}`
-    + '——先跑 `pnpm run version` 把版本提到位并合进 main，再在那个提交上打标签。',
+    + '——先跑 `pnpm run version` 把版本提到位并快进到发布分支，再在那个提交上打标签。',
   )
 }
 

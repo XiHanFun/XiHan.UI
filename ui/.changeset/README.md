@@ -40,17 +40,17 @@ pnpm changeset
 # 2) 应用版本：锁步同版，生成 CHANGELOG，更新内部依赖范围
 pnpm run version            # = changeset version
 
-# 3) 提交版本改动并推到 main
+# 3) 提交版本改动，快进到发布分支并推送（预览版 preview，正式版 main）
 git add -A && git commit -m "release: @xihan-ui/* 1.0.0-alpha.1"
 ```
 
-推到 `main` 之后，在仓库根打自己的 tag 触发发布：
+推到发布分支之后，在仓库根打自己的 tag 触发发布：
 
 ```bash
 git tag v1.0.0-alpha.1 && git push origin v1.0.0-alpha.1
 ```
 
-`v*` tag 推上去后工作流先把关两条——标签指向的提交在 `main` 历史里、标签号等于包的 `version`（且与 pre 模式对得上）——
+`v*` tag 推上去后工作流先把关两条——标签指向的提交在发布分支的历史里（带预发布后缀的看 `preview`，不带的看 `main`）、标签号等于包的 `version`（且与 pre 模式对得上）——
 缺一拒发；过了再构建、把 npm 上还没有的版本发出去（publint / attw 等检查归 `ci.yml`，发布链不重跑）。
 也可以在 Actions 页手动 `Run workflow`（`workflow_dispatch`）重跑某个版本标签：选中那个 tag 运行，选分支会被拦下。
 GitHub Release 之后自己在 Releases 页新建。

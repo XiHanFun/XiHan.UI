@@ -2,15 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev, preview, main]
   pull_request:
-    branches: [dev, main]
+    branches: [dev, preview, main]
 
 # 同一分支连着推时只留最新的一次：dev 几分钟一推，旧提交那一轮跑完也不再有人看。
-# main 不取消——进 main 的每个提交都要跑出完整结论，发版时以它为据。
+# main 与 preview 不取消——进来的每个提交都要跑出完整结论，发版时以它为据。
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/preview' }}
 
 defaults:
   run:
