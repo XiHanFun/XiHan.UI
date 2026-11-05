@@ -74,10 +74,12 @@ function splitTop(text, isSep) {
   let start = 0
   for (let i = 0; i < text.length; i++) {
     const ch = text[i]
-    if (ch === '(' || ch === '[')
+    if (ch === '(' || ch === '[') {
       depth++
-    else if (ch === ')' || ch === ']')
+    }
+    else if (ch === ')' || ch === ']') {
       depth--
+    }
     else if (depth === 0 && isSep(ch)) {
       out.push(text.slice(start, i))
       start = i + 1

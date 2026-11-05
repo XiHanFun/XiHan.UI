@@ -4,8 +4,8 @@ import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { StructureChild, TableColumnDef, TableRecord } from '@xihan-ui/headless'
 import { onDiagnostic } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
-import { unwrapDelegated } from '../src/dom/structure'
 import { defineXhElements } from '../src/define'
+import { unwrapDelegated } from '../src/dom/structure'
 
 defineXhElements()
 

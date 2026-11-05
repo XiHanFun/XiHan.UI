@@ -172,7 +172,7 @@ function easeToken(item) {
 /** 一项过渡的时长是字面 0：瞬时切换，后面跟着的时长令牌是 delay，不是动画时长。 */
 function instant(item) {
   const bare = item.replace(/var\([^()]*(?:\([^()]*\)[^()]*)*\)/g, ' ')
-  const first = bare.match(/(?<![\w.-])(\d*\.?\d+)m?s(?![\w-])/)
+  const first = bare.match(/(?<![\w.-])(\d+(?:\.\d+)?|\.\d+)m?s(?![\w-])/)
   return first != null && Number(first[1]) === 0
 }
 
