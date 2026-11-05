@@ -1,194 +1,127 @@
 <div align="center">
-<img src="./assets/banner_cn.png" alt="XiHan.UI" />
-<h1>XiHan.UI</h1>
 
-<p><b>快速、轻量、高效、用心的框架无关 Headless UI 组件库</b></p>
+<img src="./assets/banner_cn.png" alt="XiHan.UI，快速、轻量、高效、用心的框架无关 Headless UI 组件库" />
 
-<p>以 Headless Core 为核心，提供 Vue、React 与 Web Components 多框架适配，构建可组合、可访问、可主题化的现代 UI 基础设施</p>
-
-<p><a href="./README.md">English</a> | <b>简体中文</b></p>
+<h3>一份无头内核，同时适配 Vue、React 与 Web Components</h3>
 
 <p>
+  <a href="https://github.com/XiHanFun/XiHan.UI/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/XiHanFun/XiHan.UI/ci.yml?branch=dev&style=flat-square&label=CI" /></a>
+  <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white&color=cb3837" /></a>
+  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
   <a href="https://github.com/XiHanFun/XiHan.UI/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat-square&logo=github&label=Stars&color=1f6feb" /></a>
   <a href="https://gitee.com/XiHanFun/XiHan.UI"><img alt="Gitee Stars" src="https://gitee.com/XiHanFun/XiHan.UI/badge/star.svg" /></a>
   <a href="https://gitcode.com/XiHanFun/XiHan.UI"><img alt="GitCode Stars" src="https://gitcode.com/XiHanFun/XiHan.UI/star/badge.svg" /></a>
 </p>
 
 <p>
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
-  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
+  <a href="https://ui.docs.xihanfun.com"><b>文档</b></a> ·
+  <a href="#快速开始"><b>快速开始</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/overview"><b>组件</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/design/theme-designer"><b>主题设计器</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/changelog"><b>更新日志</b></a>
 </p>
 
-<p>
-  <a href="https://ui.docs.xihanfun.com"><img alt="Docs" src="https://img.shields.io/badge/Docs-ui.docs.xihanfun.com-2496ED?style=flat-square&logo=readthedocs&logoColor=white" /></a>
-  <a href="https://zread.ai/XiHanFun/XiHan.UI" target="_blank"><img src="https://img.shields.io/badge/Ask_Zread-_.svg?style=flat&color=00b0aa&labelColor=000000&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuOTYxNTYgMS42MDAxSDIuMjQxNTZDMS44ODgxIDEuNjAwMSAxLjYwMTU2IDEuODg2NjQgMS42MDE1NiAyLjI0MDFWNC45NjAxQzEuNjAxNTYgNS4zMTM1NiAxLjg4ODEgNS42MDAxIDIuMjQxNTYgNS42MDAxSDQuOTYxNTZDNS4zMTUwMiA1LjYwMDEgNS42MDE1NiA1LjMxMzU2IDUuNjAxNTYgNC45NjAxVjIuMjQwMUM1LjYwMTU2IDEuODg2NjQgNS4zMTUwMiAxLjYwMDEgNC45NjE1NiAxLjYwMDFaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00Ljk2MTU2IDEwLjM5OTlIMi4yNDE1NkMxLjg4ODEgMTAuMzk5OSAxLjYwMTU2IDEwLjY4NjQgMS42MDE1NiAxMS4wMzk5VjEzLjc1OTlDMS42MDE1NiAxNC4xMTM0IDEuODg4MSAxNC4zOTk5IDIuMjQxNTYgMTQuMzk5OUg0Ljk2MTU2QzUuMzE1MDIgMTQuMzk5OSA1LjYwMTU2IDE0LjExMzQgNS42MDE1NiAxMy43NTk5VjExLjAzOTlDNS42MDE1NiAxMC42ODY0IDUuMzE1MDIgMTAuMzk5OSA0Ljk2MTU2IDEwLjM5OTlaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik0xMy43NTg0IDEuNjAwMUgxMS4wMzg0QzEwLjY4NSAxLjYwMDEgMTAuMzk4NCAxLjg4NjY0IDEwLjM5ODQgMi4yNDAxVjQuOTYwMUMxMC4zOTg0IDUuMzEzNTYgMTAuNjg1IDUuNjAwMSAxMS4wMzg0IDUuNjAwMUgxMy43NTg0QzE0LjExMTkgNS42MDAxIDE0LjM5ODQgNS4zMTM1NiAxNC4zOTg0IDQuOTYwMVYyLjI0MDFDMTQuMzk4NCAxLjg4NjY0IDE0LjExMTkgMS42MDAxIDEzLjc1ODQgMS42MDAxWiIgZmlsbD0iI2ZmZiIvPgo8cGF0aCBkPSJNNCAxMkwxMiA0TDQgMTJaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00IDEyTDEyIDQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K&logoColor=ffffff" alt="zread"/></a>
-  <a href="https://deepwiki.com/XiHanFun/XiHan.UI"><img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
-  <a href="https://qm.qq.com/q/qYp1Urv3z2"><img alt="QQ Group" src="https://img.shields.io/badge/QQ_Group-462371834-EB1923?style=flat-square&logo=tencentqq&logoColor=white" /></a>
-</p>
+<p><a href="./README.md">English</a> | <b>简体中文</b></p>
 
 </div>
 
-## 简介
-
-XiHan.UI 以框架无关的 Headless Core 为核心：一个组件的状态、交互与无障碍逻辑沉在无头内核里，各框架只写一层薄适配器。Vue、React 与 Web Components 对同一份 `connect()` 产出运行共享一致性套件，逐步推进用例并比对归一化后的 DOM。属于曦寒懿（XiHanFun）开源生态的前端基座。
+XiHan.UI 是框架无关的 Headless UI 组件库，状态、交互与无障碍逻辑集中于无头内核，各框架仅保留薄适配层，属曦寒懿（XiHanFun）开源生态的前端基座。
 
 ## 特性
 
-- **框架无关** - 状态与无障碍逻辑住在无头内核，Vue、React 与 Web Components 共享同一份组件合同
-- **覆盖全面** - 通用、布局、导航、数据录入、数据展示、图表、反馈、浮层、AI 对话各类组件
-- **零第三方依赖** - 除宿主框架外，运行时不引入任何第三方包；日期运算、浮层定位、指针会话、代码着色、流式 Markdown 均为自研
-- **构建期样式** - 令牌从 DTCG 源产出 CSS 变量，皮肤按 `@layer` 分层，运行时不做 CSS-in-JS
-- **主题可切** - 明暗、品牌、密度、对比度、书写方向五个维度独立切换
-- **无障碍** - 键盘交互依 W3C APG 落地，无障碍扫描跑在真实 Chromium 上
-- **TypeScript** - 全量类型定义，编辑器内可查
+| 特性 | 说明 |
+| --- | --- |
+| [框架无关](https://ui.docs.xihanfun.com/guide/connect) | Vue、React 与 Web Components 共享同一份组件合同与一致性套件 |
+| [覆盖全面](https://ui.docs.xihanfun.com/overview) | 通用、布局、导航、数据录入与展示、图表、反馈、浮层、AI 对话 |
+| 零第三方依赖 | 除宿主框架外，运行时不引入第三方包 |
+| [构建期样式](https://ui.docs.xihanfun.com/guide/styling) | DTCG 令牌产出 CSS 变量，皮肤按 `@layer` 分层，无 CSS-in-JS |
+| [主题](https://ui.docs.xihanfun.com/guide/theme) | 明暗、品牌、密度、对比度与书写方向独立切换 |
+| [无障碍](https://ui.docs.xihanfun.com/guide/a11y) | 键盘交互遵循 W3C APG，扫描运行于真实 Chromium |
+| [国际化](https://ui.docs.xihanfun.com/guide/i18n) | 内建十种语言包 |
+| [AI 集成](https://ui.docs.xihanfun.com/guide/ai) | `@xihan-ui/cli` 以 MCP 提供组件 API、文档与令牌的离线知识库 |
 
-## 安装
-
-公开包全部发布在 npm，版本以上方的 npm 徽章为准。
+## 快速开始
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 ```
 
-## 使用
-
-三个适配器共用同一份令牌与皮肤，在入口处各引一次：
-
-```ts
-import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
-import '@xihan-ui/tokens/tokens.css'
-import '@xihan-ui/styles'
-
-createVisualEnvironmentController({
-  root: document.documentElement,
-  initial: { mode: 'system', motion: 'system', transparency: 'system' },
-})
-```
-
-Vue：
-
 ```vue
 <script setup lang="ts">
-import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
 </script>
 
 <template>
-  <XhDialogRoot v-slot="{ setOpen }">
+  <XhDialogRoot>
     <XhDialogTrigger>打开对话框</XhDialogTrigger>
     <XhDialogContent>
       <XhDialogTitle>确认操作</XhDialogTitle>
-      <button @click="setOpen(false)">关闭</button>
+      <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
     </XhDialogContent>
   </XhDialogRoot>
 </template>
 ```
 
-React 19：
+| 适配器 | 包 | 写法 |
+| --- | --- | --- |
+| [Vue](https://ui.docs.xihanfun.com/adapters/vue) | `@xihan-ui/vue` | `<XhDialogRoot>` |
+| [React](https://ui.docs.xihanfun.com/adapters/react) | `@xihan-ui/react` | `<XhDialogRoot>` |
+| [Web Components](https://ui.docs.xihanfun.com/adapters/web-components) | `@xihan-ui/web-components` | `<xh-dialog>` |
 
-```bash
-pnpm add @xihan-ui/react @xihan-ui/tokens @xihan-ui/styles
-```
+主题运行时与其余适配器的写法见[快速上手](https://ui.docs.xihanfun.com/quickstart)。样式底线为 Chrome 111、Firefox 113 与 Safari 16.2。
 
-```tsx
-import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/react'
+## 包结构
 
-export function Example() {
-  return (
-    <XhDialogRoot>
-      <XhDialogTrigger>打开对话框</XhDialogTrigger>
-      <XhDialogContent>
-        <XhDialogTitle>确认操作</XhDialogTitle>
-        <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
-      </XhDialogContent>
-    </XhDialogRoot>
-  )
-}
-```
+| 层 | 包（`@xihan-ui/`） |
+| --- | --- |
+| 适配器 | `vue`、`react`、`web-components` |
+| 内核 | `core`、`headless`、`motion`、`pointer`、`position`、`viz` |
+| 外观 | `tokens`、`styles`、`icons` |
+| 功能 | `code-highlight`、`markdown`、`chat-stream`、`animations`、`backgrounds`、`sound`、`expression`、`xlsx` |
+| 设计器 | `designer-kit`、`designer-shell` |
+| 工具 | `cli` |
 
-Web Components：作者写带 `data-xh-part` 的 Light-DOM 子节点，元素应用 `connect()` 产出，并按各组件合同补充内部部件。
+各包说明、目录结构与开发命令见[工程说明](./ui/README_cn.md)。
 
-```ts
-import { defineXhElements } from '@xihan-ui/web-components/define'
+## 质量保障
 
-defineXhElements()
-```
+- **一致性**：三个适配器对同一份 `connect()` 运行共享套件，比对归一化后的 DOM。
+- **无障碍**：键盘交互依 W3C APG 落地，`axe-core` 扫描运行于真实 Chromium。
+- **门禁**：lint、类型检查、依赖边界、结构检查、测试、构建与体积，本地与 CI 同一套命令。
 
-```html
-<xh-dialog>
-  <button data-xh-part="trigger">打开对话框</button>
-  <div data-xh-part="backdrop"></div>
-  <div data-xh-part="positioner">
-    <div data-xh-part="content">
-      <h2 data-xh-part="title">确认操作</h2>
-      <button data-xh-part="close-trigger">关闭</button>
-    </div>
-  </div>
-</xh-dialog>
-```
+## 生态
+
+| 项目 | 说明 |
+| --- | --- |
+| [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) | 快速、轻量、高效、用心的 .NET 开发框架：微内核、能力图谱、管道执行 |
+| [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) | 基于 XiHan.Framework 和 XiHan.UI 的超高颜值通用中后台内核 |
 
 ## 文档
 
-<https://ui.docs.xihanfun.com> —— 组件页由 headless 产物与类型生成，含 connect API、键盘表与状态图。
-
-## 兼容环境
-
-样式底线是 Chrome 111、Firefox 113、Safari 16.2（`oklch`、`@layer`、`:where` 等特性的门槛）；低于此线是无样式而非降级。本地开发需 Node.js 24+ 与 pnpm 11+。
-
-## 本地开发
-
-包一览、目录布局与开发命令见 [ui/README_cn.md](./ui/README_cn.md)。
-
-要在本地看组件跑起来，先 `cd ui && pnpm build`，再起文档站；站内提供使用真实组件的 Vue、React 与 Web Components 示例：
-
-```bash
-cd docs
-pnpm install
-pnpm dev
-```
-
-改动需通过 CI 全套门禁，CI 与本地同一套命令：`pnpm lint`、`pnpm typecheck`、`pnpm boundaries`、`pnpm gate`（结构检查）、`pnpm test`、`pnpm build`、`pnpm size` 等。
-
-## 覆盖范围
-
-库里有的：全部组件的内核与适配器、视觉组件的默认皮肤、设计令牌与主题运行时、十种语言的内建语言包（简体中文、繁體中文、English、日本語、한국어、Français、Deutsch、Español、Português (Brasil)、Русский，各适配器的 `locale` 子入口，见[国际化](./docs/guide/i18n.md)）、跨适配器一致性套件、真实 Chromium 里的无障碍扫描与浮层定位契约、文档站。
-
-库里没有的：企业业务组件。文档站另有[主题设计器](https://ui.docs.xihanfun.com/design/theme-designer)与[令牌浏览器](https://ui.docs.xihanfun.com/design/token-browser)。十种以外的语言以任一份内建语言包为样板自写一份 `XhLocale`。
-
-## 相关项目
-
-- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - .NET 微内核开发框架
-- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - 基于 XiHan.Framework 和 XiHan.UI 的超高颜值通用中后台内核
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request。提交遵循 conventional commits 规范，改动需通过上述门禁。环境准备、提交与 changeset 的约定见[贡献指南](./CONTRIBUTING_cn.md)。
-
-## 诚挚致谢
-
-排名不分先后。
-
-| 项目 | 致谢 |
+| 去处 | 内容 |
 | --- | --- |
-| [Zag.js](https://github.com/chakra-ui/zag) | 作为组件状态图与 ARIA 接线的规格参考 |
-| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | 作为无障碍交互模式的规范依据 |
-| [CommonMark](https://spec.commonmark.org/) | 作为 Markdown 语义与一致率判据的规范来源 |
-| [axe-core](https://github.com/dequelabs/axe-core) | 作为无障碍自动化扫描的引擎 |
-| 其他第三方依赖 | 作为项目功能丰富与拓展的基石 |
+| [文档站](https://ui.docs.xihanfun.com) | 组件页含 connect API、键盘表与状态图 |
+| [设计规范](https://ui.docs.xihanfun.com/design/) | 颜色、形状、动效与排版 |
+| [令牌浏览器](https://ui.docs.xihanfun.com/design/token-browser) | 设计令牌查询 |
+| [更新日志](https://ui.docs.xihanfun.com/changelog) | 版本变更与升级须知 |
 
-## 支持&赞助
+AI 问答：[Zread](https://zread.ai/XiHanFun/XiHan.UI) · [DeepWiki](https://deepwiki.com/XiHanFun/XiHan.UI)
 
-如果此项目对你的开发有助益，也欢迎请作者一杯咖啡。
+## 参与
 
-官方赞助页 https://docs.xihanfun.com/cosmos/sponsor
+欢迎提交 [Issue](https://github.com/XiHanFun/XiHan.UI/issues) 与 Pull Request，规范见[贡献指南](./CONTRIBUTING_cn.md)。交流：QQ 群 [462371834](https://qm.qq.com/q/qYp1Urv3z2)。支持项目：[赞助页](https://docs.xihanfun.com/cosmos/sponsor)。
 
-## 版权&授权
+## 致谢
 
-Copyright (c) 2021-Present XiHanFun and contributors.
+| 项目 | 借鉴 |
+| --- | --- |
+| [Zag.js](https://github.com/chakra-ui/zag) | 组件状态图与 ARIA 接线的规格参考 |
+| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | 无障碍交互模式的规范依据 |
+| [CommonMark](https://spec.commonmark.org/) | Markdown 语义与一致率判据的规范来源 |
+| [axe-core](https://github.com/dequelabs/axe-core) | 无障碍自动化扫描引擎 |
 
-本项目采用 MIT 授权，详见 [License](./LICENSE)
+## 许可证
 
-XiHan.UI Logo、XiHan.UI名称、界面视觉设计与原创视觉表达归作者所有，第三方依赖和第三方服务分别遵循其各自授权与服务条款。
-
-项目仅供学习参考，作者不承担任何软件的使用风险。
+[MIT](./LICENSE) © 2021-Present XiHanFun and contributors。XiHan.UI 的 Logo、名称、界面视觉设计与原创视觉表达归作者所有。

@@ -1,196 +1,127 @@
 <div align="center">
-<img src="./assets/banner.png" alt="XiHan.UI" />
-<h1>XiHan.UI</h1>
 
-<p><b>A fast, lightweight, efficient and thoughtfully built framework-agnostic headless UI component library</b></p>
+<img src="./assets/banner.png" alt="XiHan.UI, a fast, lightweight, efficient and thoughtfully built framework-agnostic headless UI component library" />
 
-<p>A headless core with Vue, React and Web Components adapters — composable, accessible and themeable UI infrastructure</p>
-
-<p><b>English</b> | <a href="./README_cn.md">简体中文</a></p>
+<h3>One headless core, adapted to Vue, React and Web Components</h3>
 
 <p>
+  <a href="https://github.com/XiHanFun/XiHan.UI/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/XiHanFun/XiHan.UI/ci.yml?branch=dev&style=flat-square&label=CI" /></a>
+  <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white&color=cb3837" /></a>
+  <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
   <a href="https://github.com/XiHanFun/XiHan.UI/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/XiHanFun/XiHan.UI?style=flat-square&logo=github&label=Stars&color=1f6feb" /></a>
   <a href="https://gitee.com/XiHanFun/XiHan.UI"><img alt="Gitee Stars" src="https://gitee.com/XiHanFun/XiHan.UI/badge/star.svg" /></a>
   <a href="https://gitcode.com/XiHanFun/XiHan.UI"><img alt="GitCode Stars" src="https://gitcode.com/XiHanFun/XiHan.UI/star/badge.svg" /></a>
 </p>
 
 <p>
-  <img alt="Vue" src="https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
-  <a href="https://www.npmjs.com/package/@xihan-ui/vue"><img alt="npm" src="https://img.shields.io/npm/v/@xihan-ui/vue?style=flat-square&logo=npm&logoColor=white" /></a>
-  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/XiHanFun/XiHan.UI?style=flat-square&color=green" /></a>
+  <a href="https://ui.docs.xihanfun.com/en"><b>Docs</b></a> ·
+  <a href="#getting-started"><b>Getting Started</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/overview"><b>Components</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/design/theme-designer"><b>Theme Designer</b></a> ·
+  <a href="https://ui.docs.xihanfun.com/changelog"><b>Changelog</b></a>
 </p>
 
-<p>
-  <a href="https://ui.docs.xihanfun.com"><img alt="Docs" src="https://img.shields.io/badge/Docs-ui.docs.xihanfun.com-2496ED?style=flat-square&logo=readthedocs&logoColor=white" /></a>
-  <a href="https://zread.ai/XiHanFun/XiHan.UI" target="_blank"><img src="https://img.shields.io/badge/Ask_Zread-_.svg?style=flat&color=00b0aa&labelColor=000000&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuOTYxNTYgMS42MDAxSDIuMjQxNTZDMS44ODgxIDEuNjAwMSAxLjYwMTU2IDEuODg2NjQgMS42MDE1NiAyLjI0MDFWNC45NjAxQzEuNjAxNTYgNS4zMTM1NiAxLjg4ODEgNS42MDAxIDIuMjQxNTYgNS42MDAxSDQuOTYxNTZDNS4zMTUwMiA1LjYwMDEgNS42MDE1NiA1LjMxMzU2IDUuNjAxNTYgNC45NjAxVjIuMjQwMUM1LjYwMTU2IDEuODg2NjQgNS4zMTUwMiAxLjYwMDEgNC45NjE1NiAxLjYwMDFaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00Ljk2MTU2IDEwLjM5OTlIMi4yNDE1NkMxLjg4ODEgMTAuMzk5OSAxLjYwMTU2IDEwLjY4NjQgMS42MDE1NiAxMS4wMzk5VjEzLjc1OTlDMS42MDE1NiAxNC4xMTM0IDEuODg4MSAxNC4zOTk5IDIuMjQxNTYgMTQuMzk5OUg0Ljk2MTU2QzUuMzE1MDIgMTQuMzk5OSA1LjYwMTU2IDE0LjExMzQgNS42MDE1NiAxMy43NTk5VjExLjAzOTlDNS42MDE1NiAxMC42ODY0IDUuMzE1MDIgMTAuMzk5OSA0Ljk2MTU2IDEwLjM5OTlaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik0xMy43NTg0IDEuNjAwMUgxMS4wMzg0QzEwLjY4NSAxLjYwMDEgMTAuMzk4NCAxLjg4NjY0IDEwLjM5ODQgMi4yNDAxVjQuOTYwMUMxMC4zOTg0IDUuMzEzNTYgMTAuNjg1IDUuNjAwMSAxMS4wMzg0IDUuNjAwMUgxMy43NTg0QzE0LjExMTkgNS42MDAxIDE0LjM5ODQgNS4zMTM1NiAxNC4zOTg0IDQuOTYwMVYyLjI0MDFDMTQuMzk4NCAxLjg4NjY0IDE0LjExMTkgMS42MDAxIDEzLjc1ODQgMS42MDAxWiIgZmlsbD0iI2ZmZiIvPgo8cGF0aCBkPSJNNCAxMkwxMiA0TDQgMTJaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00IDEyTDEyIDQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K&logoColor=ffffff" alt="zread"/></a>
-  <a href="https://deepwiki.com/XiHanFun/XiHan.UI"><img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
-  <a href="https://qm.qq.com/q/qYp1Urv3z2"><img alt="QQ Group" src="https://img.shields.io/badge/QQ_Group-462371834-EB1923?style=flat-square&logo=tencentqq&logoColor=white" /></a>
-</p>
+<p><b>English</b> | <a href="./README_cn.md">简体中文</a></p>
 
 </div>
 
-## Introduction
-
-XiHan.UI is built around a framework-agnostic headless core: a component's state, interaction and accessibility logic live in that core, and every framework only gets a thin adapter. Vue, React and Web Components run the shared conformance suite against the same `connect()` output, advancing the case step by step and comparing normalized DOM. XiHan.UI is the frontend foundation of the XiHanFun open-source ecosystem.
+XiHan.UI is a framework-agnostic headless UI component library. State, interaction and accessibility logic live in a headless core, with only a thin adapter per framework. It is the frontend foundation of the XiHanFun open-source ecosystem.
 
 ## Features
 
-- **Framework-agnostic** - state and accessibility live in the headless core; Vue, React and Web Components share the same component contracts
-- **Broad coverage** - general, layout, navigation, data entry, data display, charts, feedback, overlay and AI chat components
-- **No third-party runtime dependencies** - apart from the host framework, nothing third-party ships at runtime; date arithmetic, floating positioning, pointer sessions, code highlighting and streaming markdown are all first-party
-- **Build-time styling** - tokens are generated from DTCG sources into CSS variables and skins are layered with `@layer`; no CSS-in-JS at runtime
-- **Themeable** - color mode, brand, density, contrast and writing direction switch independently
-- **Accessible** - keyboard interaction follows the W3C APG; accessibility is scanned in real Chromium
-- **TypeScript** - fully typed, discoverable in the editor
+| Feature | Description |
+| --- | --- |
+| [Framework-agnostic](https://ui.docs.xihanfun.com/guide/connect) | Vue, React and Web Components share one component contract and conformance suite |
+| [Comprehensive](https://ui.docs.xihanfun.com/overview) | General, layout, navigation, data entry and display, charts, feedback, overlays and AI chat |
+| No third-party dependencies | Nothing beyond the host framework at runtime |
+| [Build-time styling](https://ui.docs.xihanfun.com/guide/styling) | DTCG tokens produce CSS variables, skins are layered with `@layer`, no CSS-in-JS |
+| [Theming](https://ui.docs.xihanfun.com/en/guide/theme) | Independent switches for mode, brand, density, contrast and writing direction |
+| [Accessibility](https://ui.docs.xihanfun.com/en/guide/a11y) | Keyboard interaction follows the W3C APG, scanned in real Chromium |
+| [Localization](https://ui.docs.xihanfun.com/guide/i18n) | Ten built-in language packs |
+| [AI integration](https://ui.docs.xihanfun.com/guide/ai) | `@xihan-ui/cli` serves component APIs, docs and tokens as an offline knowledge base over MCP |
 
-## Install
-
-All public packages are published to npm; the current version is on the npm badge above.
+## Getting Started
 
 ```bash
 pnpm add @xihan-ui/vue @xihan-ui/tokens @xihan-ui/styles
 ```
 
-## Usage
-
-All three adapters share the same tokens and skins — import them once at the entry point:
-
-```ts
-import { createVisualEnvironmentController } from '@xihan-ui/tokens/runtime'
-import '@xihan-ui/tokens/tokens.css'
-import '@xihan-ui/styles'
-
-createVisualEnvironmentController({
-  root: document.documentElement,
-  initial: { mode: 'system', motion: 'system', transparency: 'system' },
-})
-```
-
-Vue:
-
 ```vue
 <script setup lang="ts">
-import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
+import '@xihan-ui/tokens/tokens.css'
+import '@xihan-ui/styles'
+import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/vue'
 </script>
 
 <template>
-  <XhDialogRoot v-slot="{ setOpen }">
+  <XhDialogRoot>
     <XhDialogTrigger>Open dialog</XhDialogTrigger>
     <XhDialogContent>
       <XhDialogTitle>Confirm</XhDialogTitle>
-      <button @click="setOpen(false)">Close</button>
+      <XhDialogCloseTrigger>Close</XhDialogCloseTrigger>
     </XhDialogContent>
   </XhDialogRoot>
 </template>
 ```
 
-React 19:
+| Adapter | Package | Usage |
+| --- | --- | --- |
+| [Vue](https://ui.docs.xihanfun.com/adapters/vue) | `@xihan-ui/vue` | `<XhDialogRoot>` |
+| [React](https://ui.docs.xihanfun.com/adapters/react) | `@xihan-ui/react` | `<XhDialogRoot>` |
+| [Web Components](https://ui.docs.xihanfun.com/adapters/web-components) | `@xihan-ui/web-components` | `<xh-dialog>` |
 
-```bash
-pnpm add @xihan-ui/react @xihan-ui/tokens @xihan-ui/styles
-```
+The theme runtime and the other adapters are covered in the [quickstart](https://ui.docs.xihanfun.com/en/quickstart). The styling baseline is Chrome 111, Firefox 113 and Safari 16.2.
 
-```tsx
-import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from '@xihan-ui/react'
+## Packages
 
-export function Example() {
-  return (
-    <XhDialogRoot>
-      <XhDialogTrigger>打开对话框</XhDialogTrigger>
-      <XhDialogContent>
-        <XhDialogTitle>确认操作</XhDialogTitle>
-        <XhDialogCloseTrigger>关闭</XhDialogCloseTrigger>
-      </XhDialogContent>
-    </XhDialogRoot>
-  )
-}
-```
+| Layer | Packages (`@xihan-ui/`) |
+| --- | --- |
+| Adapters | `vue`, `react`, `web-components` |
+| Core | `core`, `headless`, `motion`, `pointer`, `position`, `viz` |
+| Appearance | `tokens`, `styles`, `icons` |
+| Features | `code-highlight`, `markdown`, `chat-stream`, `animations`, `backgrounds`, `sound`, `expression`, `xlsx` |
+| Designers | `designer-kit`, `designer-shell` |
+| Tooling | `cli` |
 
-Web Components: write Light-DOM children carrying `data-xh-part`; the element applies the `connect()` output and adds the internal parts defined by each component's contract.
+Package details, layout and development commands are in the [engineering notes](./ui/README.md).
 
-```ts
-import { defineXhElements } from '@xihan-ui/web-components/define'
+## Quality
 
-defineXhElements()
-```
+- **Consistency**: the three adapters run a shared suite against one `connect()` and compare normalized DOM.
+- **Accessibility**: keyboard interaction follows the W3C APG, with `axe-core` scans in real Chromium.
+- **Gates**: lint, type checks, dependency boundaries, structural checks, tests, builds and size, with the same commands locally and in CI.
 
-```html
-<xh-dialog>
-  <button data-xh-part="trigger">Open dialog</button>
-  <div data-xh-part="backdrop"></div>
-  <div data-xh-part="positioner">
-    <div data-xh-part="content">
-      <h2 data-xh-part="title">Confirm</h2>
-      <button data-xh-part="close-trigger">Close</button>
-    </div>
-  </div>
-</xh-dialog>
-```
+## Ecosystem
+
+| Project | Description |
+| --- | --- |
+| [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) | A fast, lightweight, efficient, thoughtful .NET framework: microkernel, capability graph, pipeline execution |
+| [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) | A beautifully crafted general-purpose admin kernel built on XiHan.Framework and XiHan.UI |
 
 ## Documentation
 
-<https://ui.docs.xihanfun.com> — component pages are generated from the headless output and the type definitions, and include the connect API, keyboard tables and state charts.
+| Destination | Contents |
+| --- | --- |
+| [Documentation site](https://ui.docs.xihanfun.com/en) | Component pages with the connect API, keyboard tables and state charts |
+| [Design guidelines](https://ui.docs.xihanfun.com/design/) | Color, shape, motion and typography |
+| [Token browser](https://ui.docs.xihanfun.com/design/token-browser) | Design token lookup |
+| [Changelog](https://ui.docs.xihanfun.com/changelog) | Release notes and upgrade advisories |
 
-English readers start at <https://ui.docs.xihanfun.com/en/>: the introduction, installation, quick start, theming and accessibility guides, plus the API reference of every component (props, events, slots, parts, data attributes and CSS variables). Usage guidance and live examples are in the Chinese pages for now.
-
-## Browser Support
-
-The styling floor is Chrome 111, Firefox 113 and Safari 16.2 (the bar for `oklch`, `@layer` and `:where`); below that line you get no styling rather than a degraded one. Local development requires Node.js 24+ and pnpm 11+.
-
-## Development
-
-The package catalog, directory layout and development commands live in [ui/README.md](./ui/README.md).
-
-To see the components running locally, first `cd ui && pnpm build`, then start the documentation site, which includes Vue, React and Web Components examples using real components:
-
-```bash
-cd docs
-pnpm install
-pnpm dev
-```
-
-Changes must pass the full CI gate, and CI runs the same commands you do locally: `pnpm lint`, `pnpm typecheck`, `pnpm boundaries`, `pnpm gate` (the structural checks), `pnpm test`, `pnpm build`, `pnpm size` and more.
-
-## Scope
-
-In the box: every component with its core and adapters, default skins for the visual components, design tokens and the theme runtime, bundled language packs for ten languages (Simplified Chinese, Traditional Chinese, English, Japanese, Korean, French, German, Spanish, Brazilian Portuguese and Russian, from each adapter's `locale` subpath; see [i18n](./docs/guide/i18n.md)), the cross-adapter conformance suite, the accessibility sweep and floating-position contract in real Chromium, and the documentation site.
-
-Not in the box: enterprise business components. The documentation site also has a [theme designer](https://ui.docs.xihanfun.com/design/theme-designer) and a [token browser](https://ui.docs.xihanfun.com/design/token-browser). For a language outside the ten, write your own `XhLocale` using any bundled pack as the template.
-
-## Related Projects
-
-- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - microkernel development framework for .NET
-- [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - general-purpose admin kernel built on XiHan.Framework and XiHan.UI
+Ask an AI: [Zread](https://zread.ai/XiHanFun/XiHan.UI) · [DeepWiki](https://deepwiki.com/XiHanFun/XiHan.UI)
 
 ## Contributing
 
-Issues and pull requests are welcome. Commits follow conventional commits, and changes must pass the gates listed above. See the [contributing guide](./CONTRIBUTING.md) for setup, commit and changeset conventions.
+[Issues](https://github.com/XiHanFun/XiHan.UI/issues) and pull requests are welcome; see the [contributing guide](./CONTRIBUTING.md). Community: QQ group [462371834](https://qm.qq.com/q/qYp1Urv3z2). Support the project: [sponsorship page](https://docs.xihanfun.com/cosmos/sponsor).
 
 ## Acknowledgements
 
-In no particular order.
-
-| Project | Thanks for |
+| Project | Influence |
 | --- | --- |
-| [Zag.js](https://github.com/chakra-ui/zag) | Reference specs for component state charts and ARIA wiring |
-| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | The normative basis for accessible interaction patterns |
-| [CommonMark](https://spec.commonmark.org/) | The source of markdown semantics and the conformance benchmark |
-| [axe-core](https://github.com/dequelabs/axe-core) | The engine behind automated accessibility scanning |
-| Other third-party dependencies | Being the foundation this project is built upon |
-
-## Support & Sponsorship
-
-If this project helps your work, feel free to buy the author a coffee.
-
-Official sponsorship page: https://docs.xihanfun.com/cosmos/sponsor
+| [Zag.js](https://github.com/chakra-ui/zag) | Specification reference for component state charts and ARIA wiring |
+| [W3C APG](https://www.w3.org/WAI/ARIA/apg/) | Normative basis for accessible interaction patterns |
+| [CommonMark](https://spec.commonmark.org/) | Source of Markdown semantics and conformance criteria |
+| [axe-core](https://github.com/dequelabs/axe-core) | Engine for automated accessibility scans |
 
 ## License
 
-Copyright (c) 2021-Present XiHanFun and contributors.
-
-Released under the MIT License — see [License](./LICENSE).
-
-The XiHan.UI logo, name, interface visual design and original visual expression belong to the author; third-party dependencies and services are governed by their own licenses and terms.
-
-This project is provided for study and reference; the author assumes no liability for any use of the software.
+[MIT](./LICENSE) © 2021-Present XiHanFun and contributors. The XiHan.UI logo, name, interface design and original visual expression belong to the author.
