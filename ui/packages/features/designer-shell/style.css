@@ -1008,6 +1008,11 @@
     padding-block-end: var(--xh-space-3);
   }
 
+  /* 可折叠分组的正文是控件，不是阅读文字，不取手风琴正文那档弱字色 */
+  :is(xh-designer-palette, xh-designer-properties) xh-accordion[data-part='accordion'] {
+    --xh-accordion-content-fg: var(--xh-fg-default);
+  }
+
   xh-designer-palette [data-part='group'] {
     display: flex;
     flex-direction: column;

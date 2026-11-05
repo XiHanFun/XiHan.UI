@@ -359,7 +359,7 @@ export class XhDesignerPropertiesElement extends XhReactiveElement {
       const label = createAuthoredElement(doc, 'span', { 'data-scope': SCOPE, 'data-part': 'group-label' }, [title!])
       const element = createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': group }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
-          createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [label, createAuthoredElement(doc, 'span', { 'data-xh-part': 'indicator' })]),
+          createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [createAuthoredElement(doc, 'span', { 'data-xh-part': 'indicator' }), label]),
         ]),
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [rows]),
       ])

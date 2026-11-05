@@ -262,8 +262,8 @@ export class XhDesignerPaletteElement extends XhReactiveElement {
         return createAuthoredElement(doc, 'div', { 'data-xh-part': 'item', 'value': group.id }, [
           createAuthoredElement(doc, 'div', { 'data-xh-part': 'header' }, [
             createAuthoredElement(doc, 'button', { 'data-xh-part': 'trigger', 'type': 'button' }, [
-              createAuthoredElement(doc, 'span', { 'data-part': 'group-label' }, [group.label]),
               createAuthoredElement(doc, 'span', { 'data-xh-part': 'indicator' }),
+              createAuthoredElement(doc, 'span', { 'data-part': 'group-label' }, [group.label]),
             ]),
           ]),
           createAuthoredElement(doc, 'div', { 'data-xh-part': 'content' }, [list]),
