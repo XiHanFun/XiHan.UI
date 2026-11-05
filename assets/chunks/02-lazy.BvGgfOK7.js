@@ -1,0 +1,3 @@
+import{Lt as e,Zt as t,at as n,ft as r,lt as i,ut as a,wt as o}from"./framework.eUj94whv.js";import{Pp as s,Vh as c,v as l}from"./theme.BH6BvlgN.js";var u=r({__name:`02-lazy`,setup(r){async function u(){return await new Promise(e=>setTimeout(e,600)),`订单号,金额
+A-1001,128.00
+A-1002,96.50`}return(r,d)=>(o(),n(t(s),{data:u,"file-name":`orders.csv`,"mime-type":`text/csv`},{default:e(()=>[a(t(c),{icon:t(l)},null,8,[`icon`]),d[0]||=i(` 导出订单 `,-1)]),_:1}))}});export{u as default};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.Co4PkLSp.js";import{t}from"./button.pQ1uiQIx.js";import{t as n}from"./button-group.Cto6-ppB.js";var r=e(),i=[`sm`,`md`,`lg`],a=[`日`,`周`,`月`];function o(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`16px`},children:i.map(e=>(0,r.jsx)(n,{size:e,children:a.map(e=>(0,r.jsx)(t,{children:e},e))},e))})}export{o as default};

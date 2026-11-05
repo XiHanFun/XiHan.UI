@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.G2__Ceh3.js";import{t}from"./button.BdDtsEDY.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

@@ -1,0 +1,1 @@
+import{NO as e,PO as t}from"./theme.BH6BvlgN.js";async function n(){let n=[{label:`amount`,kind:`variable`,detail:`数字`,description:`报销金额`},{label:`level`,kind:`variable`,detail:`文本`,description:`会员等级`}],r=document.getElementById(`expression-input-multiline`);r.autoSize={minRows:3,maxRows:6},r.completions=n,r.check=e(t(),{identifiers:n.map(e=>e.label)})}export{n as default};

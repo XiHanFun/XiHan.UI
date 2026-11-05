@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.G2__Ceh3.js";import{o as t}from"./radio-group.CPyLYPFV.js";var n=e(),r=[{value:`sm`,label:`小`},{value:`md`,label:`中`},{value:`lg`,label:`大`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`md`,label:`尺寸`,orientation:`horizontal`})}export{i as default};

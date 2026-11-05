@@ -1,1 +1,0 @@
-import{X as e}from"./theme.Bx_JdvbK.js";import{n as t}from"./normalize-props.G2__Ceh3.js";import{t as n}from"./icon.oBVCiMKS.js";var r=t(),i=[`brand`,`success`,`warning`,`danger`,`info`];function a(){return(0,r.jsx)(r.Fragment,{children:i.map(t=>(0,r.jsx)(n,{icon:e,tone:t,size:`lg`},t))})}export{a as default};

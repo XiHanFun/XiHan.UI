@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.G2__Ceh3.js";import{t}from"./button.BdDtsEDY.js";var n=e();function r(){return(0,n.jsx)(t,{fullWidth:!0,children:`继续`})}export{r as default};

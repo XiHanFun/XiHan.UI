@@ -1,3 +1,0 @@
-import{NO as e,PO as t}from"./theme.Bx_JdvbK.js";import{n}from"./normalize-props.G2__Ceh3.js";import{t as r}from"./react.CbNV8_UV.js";import{g as i}from"./expression-input.CeR1ihI8.js";var a=r(),o=n(),s=[{label:`amount`,kind:`variable`,detail:`数字`,description:`报销金额`},{label:`level`,kind:`variable`,detail:`文本`,description:`会员等级`}],c=e(t(),{identifiers:s.map(e=>e.label)});function l(){let[e,t]=(0,a.useState)(`IF(level == "gold",
-  amount * 0.9,
-  amont)`);return(0,o.jsx)(i,{value:e,onValueChange:e=>t(e.value),label:`折后金额`,multiline:!0,autoSize:{minRows:3,maxRows:6},completions:s,check:c})}export{l as default};

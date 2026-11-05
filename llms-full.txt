@@ -11,6 +11,28 @@
 
 本文件记录 XiHan.UI 各版本的变更。每条标注 **新增 / 修复 / 优化 / 调整 / 移除** 类别。只收录使用者可感知的变更，仓库自身的配置、CI、测试与门禁不列入。组件以 npm 包形式发布，升级前请留意「调整」类中的破坏性变更。
 
+## v5.2.0 (2026-11-06)
+
+本版统一了全库的设计细节：圆角改由一颗种子派生，聚焦环画在元素盒内，缺省品牌色换了色相，阴影收成三档，动效时长收成两档，Tooltip 改用与 Popover 相同的浮层面。功能上，表单控件放进字段组即可读写值，选择类组件的值可以是任意类型，表格有了数据驱动模式，对话框、抽屉、分页和树不写结构也能用，浮层机制改为第一次打开时才加载。本版有一批外观缺省值与令牌的破坏性调整，按次版本发布，升级前请看升级须知。
+
+::: warning 升级须知
+- **外观缺省**：缺省品牌色由 OKLCH 色相 258 换为偏紫的 277，要保留原来的颜色写 `data-brand="indigo"`；字段静息改为白底；Card 等 raised 面带 sm 投影；浅色主题的模态遮罩降到 40%；Tooltip 不再反白，缺省停留改为 150 / 100ms；Alert 加语气淡边；手风琴缺省 `variant` 改为 `ghost`，指示器排在标题前
+- **令牌**：圆角改由 `--xh-radius-seed`（8px）派生，`--xh-radius-sm / md / lg` 由 2 / 4 / 8px 变为 6 / 8 / 10px，删除 `--xh-radius-xl`；`--xh-glyph-size-md / lg` 改为 18 / 20px；Progress 轨道改为 4 / 8 / 12px；`--xh-duration-fast` 改为 150ms，`--xh-motion-duration-nudge` 改为 200ms，`@xihan-ui/motion` 的 `durations.fast`、`motionDurations.nudge` 同步
+- **语气**：不再跨组件继承，放在带语气的容器里的组件取自己的缺省语气，需要染色的在子组件上显式写 `tone`；Portal 视觉桥不再带 `data-tone`；动作控件上 `tone="neutral"` 与不写等价
+- **动效**：锚定列表与菜单改用与面板相同的 `xh-overlay-pop-in` / `xh-pop-out`，删除关键帧 `xh-overlay-slide-in` / `xh-overlay-slide-out`；勾选标记改为描线，覆盖过标记 `scale` 的主题改写 `clip-path`
+- **删除**：液态粘连（`trackLiquidGoo`、`LiquidGoo` 类型、弹簧预设 `merge`、`--xh-motion-spring-merge-*` 令牌）；Slider、ColorSlider、ColorPicker 拇指的投影与缩放覆盖槽共 10 个；FloatButton 状态机的 `merging`、`startMerge`、`endMerge` 改名 `exiting`、`startExit`、`endExit`
+- **快照**：圆角、图标尺寸、焦点环与动效时长都有变化，视觉快照和按时长等待的测试需要更新
+:::
+
+- **新增** 表单：录入控件放进字段组即按字段名读写值表（已登记 37 个控件）；值类型由 `defaultValues` 推断，字段名写错编译即报错；`schema` 接收 Standard Schema
+- **新增** 选择类组件（Select、Combobox、Listbox、RadioGroup、CheckboxGroup、ToggleGroup）的值可以是任意类型，对象值用 `valueKey` 指定键；Combobox 内置 `filter`
+- **新增** 表格数据驱动模式：给 `columns` 与 `data` 即可排序、筛选、分页，行类型由 `data` 推断；Table 与 Select 的标准结构支持 `virtual` 虚拟化
+- **新增** 标准结构：Dialog 与 Drawer（`title`、`description`、确认与取消按钮）、Pagination、Tree（含懒分支 `loadChildren`）不写子内容即可使用
+- **新增** 接入方式：Nuxt 模块 `@xihan-ui/vue/nuxt`、按需解析器 `@xihan-ui/vue/resolver` 与全量插件 `@xihan-ui/vue/plugin`、按用到的组件注入皮肤的 `@xihan-ui/styles/vite`；React 产物带 `'use client'`；`data-theme="system"` 纯 CSS 跟随系统明暗；可选的字体入口 `@xihan-ui/styles/global.css`
+- **新增** Button 的 `dashed` 与 `link` 形态；菜单 `translations.trigger`；CLI 新增 `xihan-ui migrate`，跨大版本升级时改写源码
+- **优化** 浮层机制第一次打开时才加载，只用 `XhSelectRoot` 时首屏由 53.5 kB 降到 33.1 kB（gzip）；发布的样式改为压缩产物，`index.css` 由 2.7 MB 降到 1.6 MB；`undefined.css` 改名 `not-defined.css`，旧路径在 5.x 保留
+- **修复** 宿主带 `[hidden]{display:none!important}` 时浮层与面级披露的退场动画、字段项距；CSS `zoom` 下浮层偏离锚点；悬停浮层半路收起；手风琴与折叠区域的开合动画；表格详情行跨列宽度与冻结列上的焦点环等十余处
+
 ## v5.1.0 (2026-10-22)
 
 设计器外框加关闭钮；设计器零件与组件库在设计器里少做无用功，拖动、缩放、点选与改属性更跟手。
