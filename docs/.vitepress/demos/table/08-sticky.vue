@@ -57,10 +57,10 @@ const rows = members.map(m => ({ id: m.id }));
       <XhTableFooter>
         <XhTableRow>
           <XhTableCell value="name">共 {{ members.length }} 人</XhTableCell>
-          <XhTableCell value="dept"></XhTableCell>
-          <XhTableCell value="city"></XhTableCell>
-          <XhTableCell value="ext"></XhTableCell>
-          <XhTableCell value="mail"></XhTableCell>
+          <XhTableCell value="dept" />
+          <XhTableCell value="city" />
+          <XhTableCell value="ext" />
+          <XhTableCell value="mail" />
         </XhTableRow>
       </XhTableFooter>
     </XhTableRoot>

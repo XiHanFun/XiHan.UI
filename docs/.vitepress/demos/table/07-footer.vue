@@ -59,7 +59,7 @@ const averagePrice = computed(() => Math.round(totalAmount.value / totalCount.va
         </XhTableRow>
         <XhTableRow :level="2">
           <XhTableCell value="item">均价</XhTableCell>
-          <XhTableCell value="count"></XhTableCell>
+          <XhTableCell value="count" />
           <XhTableCell value="amount">¥ {{ averagePrice }}</XhTableCell>
         </XhTableRow>
       </XhTableFooter>

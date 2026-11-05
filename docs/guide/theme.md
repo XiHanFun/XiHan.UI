@@ -104,7 +104,7 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
 
 ```ts
-import '@xihan-ui/styles/global.css'
+import "@xihan-ui/styles/global.css";
 ```
 
 这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。

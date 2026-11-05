@@ -105,7 +105,7 @@ The required asterisk and error messages are common-layer rules: the asterisk `-
 Components do not set a font; `font-family` is inherited from the host as usual. The library's default sans-serif stack lives in `--xh-font-family-sans` (system UI fonts first, then PingFang, Hiragino Sans GB, Microsoft YaHei and Noto Sans SC for Chinese) and only reaches the page root when you import the optional entry:
 
 ```ts
-import '@xihan-ui/styles/global.css'
+import "@xihan-ui/styles/global.css";
 ```
 
 This entry is not part of the main `@xihan-ui/styles` entry. The rule sits in the lowest `xihan.reset` layer with its selector wrapped in `:where()`, so any font the host sets still wins. Code and tabular figures use `--xh-font-family-mono`.
