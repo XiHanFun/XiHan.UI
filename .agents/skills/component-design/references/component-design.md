@@ -635,7 +635,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 - `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改为数字下方一颗 4px `--xh-fg-brand` 圆点、数字保持正文色（强制色下退出强制换色取 `CanvasText`，打印改由描边画满）。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
-- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列、日期与时间面板的时间列）与 Command 结果列表的行是通栏：面板只留块向内衬（`--xh-space-1`），侧边内衬 0，行不取圆角，悬停淡底铺满整行；Transfer 列表同样通栏，上下也不留内衬，选中行的品牌淡底铺满整行；Listbox、Tree 仍按 inset 内缩。
+- 集合行都按 inset 内缩：锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列、日期与时间面板的时间列）、Command 结果列表与 Listbox、Tree 的面板留 `--xh-space-1` 内衬，行取 inset 4px，悬停淡底与选中面随行内缩；Transfer 列表同样侧边内衬 `--xh-space-1`、行取 inset，上下不留内衬。
 - 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
 
 ### 7.4 集合行的语气
@@ -694,7 +694,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 浮层集合 | 锚定浮层里的 Menu 族、Select / Combobox / Cascader / Mention 选项、Command | 一行文字的行定高 `--xh-list-option-h-*`（32 / 36 / 40，紧凑 28 / 32 / 36），比同档字段高一级；皮肤经家族桥接槽 `--xh-collection-row-h` 显式接入（overlay 语境本身不带定高，页内列表、树与时间格同属这一语境），内距仍取 `--xh-list-option-py-*`，说明行再撑高一行 |
 | 页内候选 | Listbox、Tree | `--xh-list-option-py-*` 内距加一行文字撑开，说明行再撑高一行 |
 | 面板快捷项 | DatePicker、DateRangePicker、TimePicker、TimeRangePicker 的快捷项 | 24 高的淡底小钮（`--xh-control-action-size`），字取说明档，不随尺寸档变高；日期面板在窄档横排成一条，其余竖排成一列；相邻两颗只隔 `--xh-space-1`，一列选项不比旁边的日历网格松 |
-| 时间列 | TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格 | 24 高的通栏条（`--xh-control-action-size`），列内间距 `--xh-space-2` 撑出 32 的行距，不随尺寸档变高；列底留白让末尾几格也能滚到列顶 |
+| 时间列 | TimePicker、TimeRangePicker 与 DatePicker / DateRangePicker 的时间格 | 24 高的条（`--xh-control-action-size`），随列的侧边内衬 `--xh-space-1` 内缩、取 inset，列内间距 `--xh-space-2` 撑出 32 的行距，不随尺寸档变高；列底留白让末尾几格也能滚到列顶 |
 | 页面级导航 | SideNav | 最小行高取 `--xh-control-h-*`，与折叠窄栏的方形图标位、同档控件等高 |
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
 
@@ -1333,11 +1333,13 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 组件总览（`docs/components/index.md`）同时摆出全部组件，每张卡片只放一张内联 SVG 示意图：源文件是 `docs/.vitepress/catalog/<组件>.vue`，跨分类引用的卡片用清单里 `preview` 指定的文件名。示意图只画识别该组件所需的特征，不挂真实组件、不引 `@xihan-ui/*` 运行时。门禁 `check-catalog-preview` 逐条核对本节。
 
+卡片（`docs/.vitepress/theme/XhComponentCard.vue`）从上到下是标题、示意图：标题在预览面上方，组件名取 `--xh-text-heading-3-size`（16px）+ `--xh-font-weight-bold`，中文名与状态标在同一行、取次级字色；预览面是描边面，底取淡彩、无影。
+
 **文件与根**
 
 - 文件只有一个 `<template>`，里面只有一个 `<svg>` 根；不写 `<script>`、`<style>`。
 - 根属性固定为 `viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"`，不写 `width` / `height` / `style` / `class`。卡片标题已给可及名，示意图对读屏隐藏。
-- 画布只有 240 × 160 一档。卡片把 SVG 铺满内容区、按比例缩放，宽屏下与画布 1:1。
+- 画布只有 240 × 160 一档。卡片把 SVG 铺满内容区、按比例缩放，宽屏下与画布 1:1：示意图与真实组件同比例，32 高的控件就是 md 档，圆角直接取真实组件的像素值，不另做换算。
 - 元素只用 `g`、`path`、`rect`、`circle`、`defs`、`linearGradient`、`stop`。不写 `<text>`、`<foreignObject>`、`<image>`、`<use>`、`<style>`、`<animate*>` / `<set>`，不写 `transform`、事件与 Vue 绑定。
 - 渐变的 `id` 以文件名开头（`<组件>-<用途>`）：全部示意图内联在同一页，撞名时后一张会取到前一张的渐变。
 - 一张图的元素不超过 40 个；同色、同线宽、相邻绘制的文字条与字形合并成一条 `path`。
@@ -1349,22 +1351,27 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 | 构件 | 尺寸 | 形状 |
 | --- | --- | --- |
-| 控件：按钮、字段、触发器 | 高 32 | 圆角 2 |
-| 通栏列表的行（锚定浮层里的 Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列，日期与时间面板的时间格，Command、Transfer） | 高 24；悬停面与选中面铺满面板内沿，多列面板铺到列分隔线；列分隔线取 `border-default` | 不取圆角 |
-| 页内列表的行（Listbox、Tree）、面板里的紧凑按钮 | 高 24；行的悬停面左右各内缩 4 | 圆角 2 |
-| 复选框、色块 | 16 × 16、24 × 24 | 圆角 2 |
-| 分页的页码、翻页钮与省略位 | 32 × 32 | 圆角 4（描边方块） |
+| 控件：按钮、字段、触发器 | 高 32 | control 8 |
+| 面板里的紧凑按钮、快捷项与导航行（Menubar、NavigationMenu 的触发器，SideNav 的行） | 高 20–24 | control 8 |
+| 面板里的行（锚定浮层里的 Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列，日期与时间面板的时间格，Listbox、Command、Transfer） | 高 24；面板内衬 4，悬停面与选中面左右比面板内沿各收 4，多列面板收到列分隔线前；列分隔线取 `border-default` | inset 4 |
+| 页内树的行（Tree） | 高 24；悬停面左右各内缩 4 | inset 4 |
+| 复选框、色块 | 16 × 16、24 × 24（ColorSwatch 40 × 40） | inset 4 |
+| 分页的页码、翻页钮与省略位 | 32 × 32 | surface 8（描边方块） |
 | 单选圈、头像、浮动钮、节点 | — | `<circle>` |
 | 开关 | 32 × 16，拇指半径 6 | 胶囊 |
 | 轨道：滑块、进度、滚动条 | 线宽 2 / 4 / 6 的圆头线（Slider 2，Progress 4） | 胶囊 |
-| 标签与状态方签（Tag、ToolCall 状态、Approval / QuestionFlow 结果） | 高 16–20 | 圆角 2 |
+| 标签与状态方签（Tag、TagGroup、ToolCall 状态） | 高 24 | control 8 |
+| 嵌在字段里的小块（TagsInput 的标签、Mention 的提及、日期与时间字段的当前段） | 高 16–20 | inset 4 |
 | 徽标（Badge） | 高 16–20 | 胶囊 |
-| 内容面：Card、列表与表格容器 | — | 圆角 4 |
-| 浮层：Popover、Menu、Dialog、Notification | — | 圆角 4 |
-| 贴边面板：Drawer | 贴着画布一侧铺满 | 朝内一侧圆角 4，贴边一侧随画布外框 |
+| 内容面：Card、列表与表格容器 | — | surface 8 |
+| 锚定浮层：Popover、Menu 与候选面板 | — | overlay 8 |
+| 模态与强反馈面：Dialog、Notification 卡片 | — | sheet 10 |
+| 贴边面板：Drawer | 贴着画布一侧铺满 | 朝内一侧 sheet 10，贴边一侧随画布外框取 8 |
 | 字形 | 16 × 16 格 | 线宽 2 |
 
-- `rect` 的 `rx` 只取 2 / 4，或等于短边一半（胶囊）；圆用 `<circle>`。数据标记按 §6.3 取 inset（2，夹到短边一半）。用 `path` 画的圆角（只圆一侧的段、铺满画布的遮罩、贴着面内沿的底）随所贴的面取同一组值。
+- 圆角与 §6.3 的真实组件同值，按外沿算（`rx` 加半个线宽，与 CSS 的 `border-radius` 同一个量）：实心盒写 `rx="4 / 8 / 10"`，1 线宽描边压半格的盒写 `rx="3.5 / 7.5 / 9.5"`；胶囊是外沿等于短边一半；圆用 `<circle>`。门禁从 `--xh-radius-seed` 读这三档，种子变了这里跟着判红。
+- sheet 只给 Dialog、Drawer、Notification。短边不小于 28 的盒是控件或面，不取 inset（ColorSwatch 的色块与矩形树图的格登记在门禁里）；16 以下的小方块只取 inset。数据标记按 §6.3 取 inset（4，夹到短边一半）。
+- 用 `path` 画的圆角（只圆一侧的段、铺满画布的遮罩、贴着面内沿的底）随所贴的面取同一组值：外沿 4 / 8 / 10，沿描边中线各收 0.5，贴描边内沿各收 1。图片占位里的山从圆角末端起笔，不从外框的直角起。
 - 线宽只有五档：1 描边、分隔、网格与坐标轴；2 字形、焦点边、指示条、折线；4 / 6 / 8 文字条与轨道。虚线只画不存在实体边的范围（拖放区、视口外的虚拟行），取 `stroke-dasharray="4 4"`。
 
 **文字条**
@@ -1387,9 +1394,34 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 **颜色**
 
-- `fill`、`stroke`、`stop-color` 只写 `var(--xh-*)` 语义令牌、同文件渐变 `url(#…)` 或 `none`；不写十六进制、`rgb()`、具名色与 `currentColor`。亮暗主题、高对比与墨色都随令牌走。
-- 可用的令牌族：`--xh-bg-*`、`--xh-fg-*`、`--xh-border-*`、`--xh-chart-*` 的颜色、`--xh-syntax-*`、`--xh-gradient-brand-*`；语气色写在 `<g data-tone="…">` 里取 `--xh-tone-*`；基础色板 `--xh-color-*` 只给画颜色本身的组件（ColorField、ColorPicker、ColorSlider、ColorSwatch、ColorSwatchPicker）。
+颜色分两层：示意图文件只按下表的角色写语义令牌，不决定色相；卡片在预览面上把这些令牌重写成分类色相的一条曲线（淡彩域），全部示意图因此是同一套配色，亮暗两档跟着色槽与 `--xh-bg-canvas` 走。
+
+- `fill`、`stroke`、`stop-color` 只写 `var(--xh-*)` 语义令牌、同文件渐变 `url(#…)` 或 `none`；不写十六进制、`rgb()`、具名色与 `currentColor`。
+- 可用的令牌族：`--xh-bg-*`、`--xh-fg-*`、`--xh-border-*`、`--xh-chart-*` 的颜色、`--xh-syntax-*`、`--xh-gradient-brand-*`；语气色写在 `<g data-tone="…">` 里取 `--xh-tone-solid / -fg / -on / -subtle / -border`；基础色板 `--xh-color-*` 只给画颜色本身的组件（ColorField、ColorPicker、ColorSlider、ColorSwatch、ColorSwatchPicker），只取 300 档与中性的 0 / 500，深档的色块在淡彩页面上会跳出来。
 - 透明度只取令牌：`fill-opacity` 取 `--xh-chart-area-alpha` / `--xh-chart-link-alpha`；渐变的 `stop-opacity` 只取 0 / 1。
+- 淡彩域写在 `XhComponentCard.vue`，取值只有 `var()` 与 `color-mix(in oklab, 令牌 N%, 令牌 / transparent)`。示意图用到的中性、品牌与图表家具令牌都要在域里重写，新用一支就加一条，否则那张图会漏出原色；只有 `--xh-fg-on-brand`（实心面上的字条）与 `--xh-bg-mark`（Highlight 的标记色）不重写。分类色、色样与品牌渐变本来就各有颜色，不进域。
+- 要更高对比（`prefers-contrast: more`）的用户不进域，示意图退回原本的语义令牌；强制色档照旧按令牌名换成系统色线稿。
+
+色相按分类取分类色槽，一个分类一个色相，取值由 §7.6 的色板门禁保证两档主题都浅。图表分类只有家具取色相，数据标记仍取数据色。
+
+| 分类 | 色槽 | | 分类 | 色槽 | | 分类 | 色槽 |
+| --- | ---: | --- | --- | ---: | --- | --- | ---: |
+| 通用 | 1 | | 数据录入 | 5 | | 反馈 | 2 |
+| 布局 | 8 | | 数据展示 | 6 | | 浮层 | 3 |
+| 导航 | 7 | | 图表 | 1 | | AI 对话 | 4 |
+
+| 角色 | 淡彩域取值（色相占比） |
+| --- | --- |
+| 卡片底 `--xh-bg-page` | 10%，兑 `--xh-bg-canvas` |
+| 内容面、浮层面 | 2%，兑原来的承载面 |
+| 淡底 `--xh-bg-subtle` / `-hover` / `-active` | 14% / 24% / 36%，兑透明；`-opaque` 两支（图片占位）同比例兑 canvas |
+| 文字条 `--xh-fg-default` / `-muted` / `-subtle` / `-disabled` | 84% / 62% / 46% / 32%，兑 canvas |
+| 描边 `--xh-border-strong` / `-control` / `-default` / `-subtle` | 与文字条同一条曲线，84% / 62% / 46% / 32% |
+| 实心与选中标记 `--xh-bg-brand`、`--xh-fg-brand*`、聚焦描边 | 色相本身 |
+| 选中面 `--xh-bg-brand-subtle` | 28%，兑承载面 |
+| 遮罩 `--xh-bg-overlay` | 36%，兑透明 |
+| 语气实底与语气字、状态色、语法色 | 原色 60%，兑 canvas |
+| 有序色阶 1…4 | 色相本身，再接文字条曲线 84% / 62% / 46% |
 
 | 构件 | 取色 |
 | --- | --- |
@@ -1414,7 +1446,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 画组件缺省形态的识别特征：md 档、缺省 variant；语气即核心用途的组件（Alert、Badge、Progress、Notification）可以画非中性语气。
 - 浮层类画已打开的静态面板：触发器 + 面板，带箭头的浮层画箭头，模态画遮罩；不只画触发器。
-- 同族组件用同一套构件拼：字段类是控件盒 + 值条 + 尾部字形；下拉类是触发器 + 下方隔 4 的浮层面 + 24 高的通栏行；集合类是 24 高的行、悬停面与行尾对号；图表类画示意性的数据图形（网格、坐标轴、刻度条与数据色），不画真实数据。
+- 同族组件用同一套构件拼：字段类是控件盒 + 值条 + 尾部字形；下拉类是触发器 + 下方隔 4 的浮层面 + 24 高的内缩行；集合类是 24 高的行、悬停面与行尾对号；图表类画示意性的数据图形（网格、坐标轴、刻度条与数据色），不画真实数据。
 - 各张图的信息量相近：主体占画布的一半到七成，不画说明性的注释与引线。
 - 不画动效：转圈、骨架、跑马灯与流式光标都画静止的一帧，没有循环、进场与悬停反馈。
 

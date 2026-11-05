@@ -2,17 +2,17 @@
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="color-slider-hue" x2="1">
-        <stop stop-color="var(--xh-color-red-500)" />
-        <stop offset="0.17" stop-color="var(--xh-color-yellow-500)" />
-        <stop offset="0.33" stop-color="var(--xh-color-green-500)" />
-        <stop offset="0.5" stop-color="var(--xh-color-cyan-500)" />
-        <stop offset="0.67" stop-color="var(--xh-color-blue-500)" />
-        <stop offset="0.83" stop-color="var(--xh-color-purple-500)" />
-        <stop offset="1" stop-color="var(--xh-color-red-500)" />
+        <stop stop-color="var(--xh-color-red-300)" />
+        <stop offset="0.17" stop-color="var(--xh-color-yellow-300)" />
+        <stop offset="0.33" stop-color="var(--xh-color-green-300)" />
+        <stop offset="0.5" stop-color="var(--xh-color-cyan-300)" />
+        <stop offset="0.67" stop-color="var(--xh-color-blue-300)" />
+        <stop offset="0.83" stop-color="var(--xh-color-purple-300)" />
+        <stop offset="1" stop-color="var(--xh-color-red-300)" />
       </linearGradient>
       <linearGradient id="color-slider-alpha" x2="1">
-        <stop stop-color="var(--xh-color-blue-500)" stop-opacity="0" />
-        <stop offset="1" stop-color="var(--xh-color-blue-500)" />
+        <stop stop-color="var(--xh-color-blue-300)" stop-opacity="0" />
+        <stop offset="1" stop-color="var(--xh-color-blue-300)" />
       </linearGradient>
     </defs>
     <path d="M42 44h36" stroke="var(--xh-fg-default)" stroke-width="4" />

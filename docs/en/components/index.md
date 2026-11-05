@@ -4,7 +4,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## General
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="general">
 
 <XhComponentCard src="button" name="Button" label="" href="/en/components/button" />
 <XhComponentCard src="button-group" name="ButtonGroup" label="" href="/en/components/button-group" />
@@ -24,7 +24,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Layout
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="layout">
 
 <XhComponentCard src="flex" name="Flex" label="" href="/en/components/flex" />
 <XhComponentCard src="grid" name="Grid" label="" href="/en/components/grid" />
@@ -40,7 +40,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Navigation
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="navigation">
 
 <XhComponentCard src="affix" name="Affix" label="" href="/en/components/affix" />
 <XhComponentCard src="anchor" name="Anchor" label="" href="/en/components/anchor" />
@@ -62,7 +62,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Data entry
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="form">
 
 <XhComponentCard src="calendar-picker" name="CalendarPicker" label="" href="/en/components/calendar-picker" />
 <XhComponentCard src="calendar-range-picker" name="CalendarRangePicker" label="" href="/en/components/calendar-range-picker" />
@@ -112,7 +112,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Data display
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="data-display">
 
 <XhComponentCard src="accordion" name="Accordion" label="" href="/en/components/accordion" />
 <XhComponentCard src="avatar" name="Avatar" label="" href="/en/components/avatar" />
@@ -147,7 +147,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Charts
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="chart">
 
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="" href="/en/components/cartesian-chart" status="new" />
 <XhComponentCard src="funnel-chart" name="FunnelChart" label="" href="/en/components/funnel-chart" status="new" />
@@ -164,7 +164,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Feedback
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="feedback">
 
 <XhComponentCard src="alert" name="Alert" label="" href="/en/components/alert" />
 <XhComponentCard src="badge" name="Badge" label="" href="/en/components/badge" />
@@ -178,7 +178,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## Overlays
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="overlay">
 
 <XhComponentCard src="command" name="Command" label="" href="/en/components/command" />
 <XhComponentCard src="dialog" name="Dialog" label="" href="/en/components/dialog" />
@@ -193,7 +193,7 @@ Browse the components XiHan.UI provides. Each page lists the API; usage guides a
 
 ## AI chat
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="ai">
 
 <XhComponentCard src="approval" name="Approval" label="" href="/en/components/approval" status="alpha" />
 <XhComponentCard src="citation" name="Citation" label="" href="/en/components/citation" status="alpha" />

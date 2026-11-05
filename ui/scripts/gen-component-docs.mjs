@@ -1608,7 +1608,7 @@ function renderIndex() {
   L.push('浏览 XiHan.UI 提供的组件。', '')
   for (const c of manifest.categories) {
     L.push(`## ${c.label}`, '')
-    L.push('<div class="xh-component-grid">', '')
+    L.push(`<div class="xh-component-grid" data-category="${c.id}">`, '')
     for (const entry of c.components) {
       const renderless = entry.renderless ? ' renderless' : ''
       const status = componentStatus(entry)
@@ -1842,7 +1842,7 @@ function renderIndexEn() {
   L.push('Browse the components XiHan.UI provides. Each page lists the API; usage guides and live examples are on the Chinese pages.', '')
   for (const c of manifest.categories) {
     L.push(`## ${c.labelEn}`, '')
-    L.push('<div class="xh-component-grid">', '')
+    L.push(`<div class="xh-component-grid" data-category="${c.id}">`, '')
     for (const entry of c.components) {
       const renderless = entry.renderless ? ' renderless' : ''
       const status = componentStatus(entry)

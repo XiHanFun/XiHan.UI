@@ -1,14 +1,14 @@
 <template>
   <svg viewBox="0 0 240 160" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="16.5" y="12.5" width="207" height="31" rx="2" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
+    <rect x="16.5" y="12.5" width="207" height="31" rx="7.5" fill="var(--xh-bg-field)" stroke="var(--xh-border-control)" />
     <path d="M31 28h46" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M90 28h12m-5-5l5 5-5 5" stroke="var(--xh-fg-subtle)" stroke-width="2" />
     <path d="M115 28h46" stroke="var(--xh-fg-default)" stroke-width="6" />
     <path d="M198 24h12v10h-12zm0 4h12m-9-6v3m6-3v3" stroke="var(--xh-fg-muted)" stroke-width="2" />
-    <rect x="16.5" y="48.5" width="207" height="99" rx="4" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
-    <rect x="24" y="54" width="52" height="20" rx="2" fill="var(--xh-bg-subtle)" />
-    <rect x="24" y="78" width="52" height="20" rx="2" fill="var(--xh-bg-subtle)" />
-    <rect x="24" y="102" width="52" height="20" rx="2" fill="var(--xh-bg-subtle)" />
+    <rect x="16.5" y="48.5" width="207" height="99" rx="7.5" fill="var(--xh-bg-surface-raised)" stroke="var(--xh-border-default)" />
+    <rect x="24" y="54" width="52" height="20" rx="8" fill="var(--xh-bg-subtle)" />
+    <rect x="24" y="78" width="52" height="20" rx="8" fill="var(--xh-bg-subtle)" />
+    <rect x="24" y="102" width="52" height="20" rx="8" fill="var(--xh-bg-subtle)" />
     <path d="M31 64h30M31 88h38M31 112h26" stroke="var(--xh-fg-muted)" stroke-width="6" />
     <path d="M84.5 49v98" stroke="var(--xh-border-subtle)" />
     <path d="M131 62h42" stroke="var(--xh-fg-default)" stroke-width="6" />

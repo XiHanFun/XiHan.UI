@@ -4,7 +4,7 @@
 
 ## 通用
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="general">
 
 <XhComponentCard src="button" name="Button" label="按钮" href="/components/button" />
 <XhComponentCard src="button-group" name="ButtonGroup" label="按钮组" href="/components/button-group" />
@@ -24,7 +24,7 @@
 
 ## 布局
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="layout">
 
 <XhComponentCard src="flex" name="Flex" label="弹性布局" href="/components/flex" />
 <XhComponentCard src="grid" name="Grid" label="栅格" href="/components/grid" />
@@ -40,7 +40,7 @@
 
 ## 导航
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="navigation">
 
 <XhComponentCard src="affix" name="Affix" label="固钉" href="/components/affix" />
 <XhComponentCard src="anchor" name="Anchor" label="锚点" href="/components/anchor" />
@@ -62,7 +62,7 @@
 
 ## 数据录入
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="form">
 
 <XhComponentCard src="calendar-picker" name="CalendarPicker" label="日历选择器" href="/components/calendar-picker" />
 <XhComponentCard src="calendar-range-picker" name="CalendarRangePicker" label="日历范围选择器" href="/components/calendar-range-picker" />
@@ -112,7 +112,7 @@
 
 ## 数据展示
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="data-display">
 
 <XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" />
 <XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" />
@@ -147,7 +147,7 @@
 
 ## 图表
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="chart">
 
 <XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" status="new" />
 <XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" status="new" />
@@ -164,7 +164,7 @@
 
 ## 反馈
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="feedback">
 
 <XhComponentCard src="alert" name="Alert" label="警告提示" href="/components/alert" />
 <XhComponentCard src="badge" name="Badge" label="徽标" href="/components/badge" />
@@ -178,7 +178,7 @@
 
 ## 浮层
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="overlay">
 
 <XhComponentCard src="command" name="Command" label="命令面板" href="/components/command" />
 <XhComponentCard src="dialog" name="Dialog" label="对话框" href="/components/dialog" />
@@ -193,7 +193,7 @@
 
 ## AI 对话
 
-<div class="xh-component-grid">
+<div class="xh-component-grid" data-category="ai">
 
 <XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" status="alpha" />
 <XhComponentCard src="citation" name="Citation" label="引用来源" href="/components/citation" status="alpha" />

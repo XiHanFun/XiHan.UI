@@ -77,7 +77,7 @@ async function inlineDemos(body) {
 /** 组件总览的预览卡在纯 Markdown 中改为普通链接。 */
 function flattenComponentCards(body) {
   return body.replace(
-    /<div class="xh-component-grid">([\s\S]*?)<\/div>/g,
+    /<div class="xh-component-grid"[^>]*>([\s\S]*?)<\/div>/g,
     (_, cards) => cards.trim().replace(
       /<XhComponentCard\s+src="[^"]+"\s+name="([^"]+)"\s+label="([^"]+)"\s+href="([^"]+)"(?:\s+renderless)?\s*\/>/g,
       "- [$1 $2]($3)",

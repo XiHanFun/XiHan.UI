@@ -13,16 +13,23 @@
 //   事件与 Vue 绑定。
 // - fill / stroke / stop-color 只写 none、同文件渐变 url(#…) 或 var(--xh-…) 语义令牌，令牌必须在
 //   令牌产物或语气轴里声明过；--xh-tone-* 只在 <g data-tone> 里取；基础色板 --xh-color-* 只给
-//   COLOR_SAMPLES 里画颜色本身的组件。
+//   COLOR_SAMPLES 里画颜色本身的组件，而且只取浅档（COLOR_SAMPLE_TOKEN）。
+// - 淡彩域：示意图不写色相，卡片（XhComponentCard.vue）把语义令牌重写成分类色相的曲线。示意图用到的
+//   中性、品牌与图表家具令牌都要在域里重写（DOMAIN_EXEMPT 除外），域里不留没人用的令牌，取值只有
+//   var() 与 color-mix()；每个分类都要有色相，色相只取分类色槽。
 // - 透明度只取令牌：fill-opacity 取图表的面积 / 流带透明度，stop-opacity 只取 0 / 1。
-// - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect 的 rx 只取 2（控件与内层）/ 4（表面与
-//   浮层）或短边一半（胶囊）；
-//   rect / circle 的坐标与尺寸取 0.5 的倍数。
+// - 线宽只有 1 / 2 / 4 / 6 / 8 五档，虚线只取 "4 4"；rect / circle 的坐标与尺寸取 0.5 的倍数。
+// - 圆角与真实组件同值：画布宽屏下 1:1，控件 32 高就是 md 档。圆角按外沿算（rx 加半个线宽），只取
+//   inset / control·surface·overlay / sheet 三档，从 --xh-radius-seed 派生；等于外沿短边一半的是胶囊。
+//   sheet 只给 SHEET_PREVIEWS；短边不小于 SURFACE_MIN 的盒不取 inset（INSET_FACES 登记的数据标记与色块
+//   除外）；不大于 CHECK_MARKER_MAX 的小方块只取 inset。带填充的 path 画的圆角同一套，描边中线与内沿各
+//   收半格、一格。
 // - 字段外壳（描控件边、短边不小于 FIELD_SHELL_MIN 的实线盒）按描边铺底：静息铺 --xh-bg-field，
 //   校验失败铺 --xh-bg-field-invalid，聚焦铺 --xh-bg-surface；刻意不铺的登记在 UNFILLED_CONTROL_BOX。
 // - 勾选方框与单选圈（不填底的 16px 小盒）描边取 CHECK_MARKER_STROKE。
-// - 通栏列表（FLUSH_ROW_LISTS：锚定浮层里的列表与时间列、Command、Transfer）：面板里 24 高的悬停 / 选中行
-//   不取圆角，左右贴面板内沿；多列面板（MULTI_COLUMN_LISTS）的行铺到列分隔线为止，只核左沿。
+// - 内缩列表（INSET_ROW_LISTS：锚定浮层里的列表与时间列、Listbox、Command、Transfer）：面板里 24 高的
+//   悬停 / 选中行取 inset 圆角，左右比面板内沿各收 4（真实面板的内衬）；多列面板（MULTI_COLUMN_LISTS）
+//   的行收到列分隔线前，只核左沿。
 // - 渐变 id 以文件名开头（总览页上全部示意图同处一个 document，整页不重名由 check-demo-ids 核）；
 //   每张图元素不超过 MAX_ELEMENTS 个。
 // - 方向固定的示意图（图表分类的全部卡片与 FIXED_DIRECTION 登记的组件）根上写
@@ -38,16 +45,42 @@ const CATALOG = '../docs/.vitepress/catalog'
 const MANIFEST = 'scripts/component-docs.manifest.json'
 const TOKENS_CSS = 'packages/design/tokens/tokens.css'
 const TONE_CSS = 'packages/design/styles/css/tone.css'
+const CARD = '../docs/.vitepress/theme/XhComponentCard.vue'
 
 const VIEW_BOX = '0 0 240 160'
 const MAX_ELEMENTS = 40
 const STROKE_WIDTHS = new Set(['1', '2', '4', '6', '8'])
 const DASH = '4 4'
-const RADII = new Set([2, 4])
 const TONES = new Set(['brand', 'neutral', 'info', 'success', 'warning', 'danger'])
 
 /** 画颜色本身的组件：示意里的样色取基础色板。 */
 const COLOR_SAMPLES = new Set(['color-field', 'color-picker', 'color-slider', 'color-swatch', 'color-swatch-picker'])
+
+/** 色样只取浅档与中性的白、灰：示意图整页是淡彩，500 档的色块会跳出来。 */
+const COLOR_SAMPLE_TOKEN = /^--xh-color-(?:neutral-(?:0|500)|(?!neutral)[a-z]+-300)$/
+
+/** 圆角取 sheet 档的示意图：模态与强反馈面。 */
+const SHEET_PREVIEWS = new Set(['dialog', 'drawer', 'notification'])
+/** 短边不小于这个数的是控件与面，不取 inset。 */
+const SURFACE_MIN = 28
+/** 大块也取 inset 的：数据标记与色块，连同理由。 */
+const INSET_FACES = {
+  'color-swatch': '色块 item 取 inset',
+  'hierarchy-chart': '矩形树图的格取 inset',
+}
+
+/** 淡彩域里不重写的令牌，连同理由。 */
+const DOMAIN_EXEMPT = {
+  '--xh-fg-on-brand': '实心面上的字条：亮色白、暗色墨，在浅彩实心面上照样成立',
+  '--xh-bg-mark': 'Highlight 的标记色就是它自己',
+}
+/** 不进淡彩域的令牌族：数据色、色样与品牌渐变本来就各有颜色。 */
+const DOMAIN_FREE = /^--xh-(?:chart-categorical-|color-|gradient-brand-)/
+/** 语气轴里由淡彩域改写的几支；其余（淡底、淡边）是语气轴自己兑出来的，本来就淡。 */
+const TONE_REMAPPED = new Set(['--xh-tone-solid', '--xh-tone-fg', '--xh-tone-on'])
+const TONE_DILUTED = new Set(['--xh-tone-subtle', '--xh-tone-border'])
+/** 不写分类定色规则的分类：取缺省色相（分类色槽 1）。 */
+const DEFAULT_HUE_CATEGORIES = new Set(['general', 'chart'])
 
 /** 图表分类之外、内容方向固定的组件（RTL 下不镜像），连同理由。 */
 const FIXED_DIRECTION = {
@@ -77,14 +110,16 @@ const UNFILLED_CONTROL_BOX = {
 const CHECK_MARKER_STROKE = 'var(--xh-border-strong)'
 const CHECK_MARKER_MAX = 16
 
-/** 行是通栏的列表：锚定浮层里的列表、Command 结果列表与 Transfer 列表；其中多列面板的行铺到列分隔线为止。 */
-const FLUSH_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'expression-input', 'cascader', 'time-picker', 'time-range-picker', 'command', 'transfer'])
+/** 行按面板内衬内缩的列表：锚定浮层里的列表、Listbox、Command 结果列表与 Transfer 列表；其中多列面板的行收到列分隔线前。 */
+const INSET_ROW_LISTS = new Set(['menu', 'context-menu', 'menubar', 'select', 'combobox', 'tree-select', 'mention', 'expression-input', 'cascader', 'time-picker', 'time-range-picker', 'listbox', 'command', 'transfer'])
 /** 承载列表的面板底：浮层面与页内面。 */
 const LIST_PANEL_FILLS = new Set(['var(--xh-bg-surface-raised)', 'var(--xh-bg-surface)'])
 /** 列表行的面：悬停淡底，或页内持久集合的选中面。 */
 const LIST_ROW_FILL = /^var\(--xh-bg-(?:subtle(?:-hover)?|brand-subtle)\)$/
 const MULTI_COLUMN_LISTS = new Set(['cascader', 'time-picker', 'time-range-picker'])
 const LIST_ROW_H = 24
+/** 真实面板的内衬（Menu、Select 的 content 与 Listbox 同为 --xh-space-1）。 */
+const LIST_PANEL_PAD = 4
 
 /** 每种元素允许的属性。 */
 const ATTRS = {
@@ -113,9 +148,45 @@ const problems = []
 
 // ── 事实：令牌、清单 ─────────────────────────────────────────────────────────
 
+const tokensCss = await readFile(TOKENS_CSS, 'utf8')
 const declared = new Set()
-for (const m of (await readFile(TOKENS_CSS, 'utf8')).matchAll(/(--xh-[\w-]+)\s*:/g))
+for (const m of tokensCss.matchAll(/(--xh-[\w-]+)\s*:/g))
   declared.add(m[1])
+
+// 圆角三档从令牌读：种子乘各档系数，角色只引档
+const seed = Number(tokensCss.match(/--xh-radius-seed:\s*([\d.]+)px/)?.[1])
+function radiusOf(role) {
+  const step = tokensCss.match(new RegExp(`--xh-shape-${role}:\\s*var\\((--xh-radius-[\\w-]+)\\)`))?.[1]
+  const value = step && tokensCss.match(new RegExp(`${step}:\\s*([^;]+);`))?.[1]
+  const factor = value?.match(/\*\s*([\d.]+)\)/)?.[1]
+  return value === 'var(--xh-radius-seed)' ? seed : seed * Number(factor)
+}
+const RADIUS = { inset: radiusOf('inset'), control: radiusOf('control'), sheet: radiusOf('sheet') }
+if (!Object.values(RADIUS).every(Number.isFinite))
+  problems.push(`${TOKENS_CSS}:1  读不出圆角档（inset / control / sheet）：令牌结构变了，同步这里的 radiusOf`)
+const RADII = new Set(Object.values(RADIUS))
+/** 带填充的 path 画的圆角：外沿、描边中线（收半格）、描边内沿（收一格）。 */
+const PATH_RADII = new Set([...RADII].flatMap(r => [r, r - 0.5, r - 1]))
+
+// 淡彩域：卡片里 @media not all and (prefers-contrast: more) 这一段
+const cardSource = await readFile(CARD, 'utf8')
+const domainFrom = cardSource.indexOf('@media not all and (prefers-contrast: more)')
+const domainBody = domainFrom < 0 ? '' : cardSource.slice(domainFrom, cardSource.indexOf('.xh-component-card__preview > svg {', domainFrom))
+if (!domainBody)
+  problems.push(`${CARD}:1  没有淡彩域：示意图的语义令牌要在 @media not all and (prefers-contrast: more) 里重写成分类色相的曲线`)
+const domainTokens = new Set()
+for (const m of domainBody.matchAll(/^\s*(--xh-[\w-]+):\s*([^;\s][^;]*);/gm)) {
+  domainTokens.add(m[1])
+  if (!/^(?:var\(--xh-[\w-]+\)|color-mix\(in oklab, var\(--xh-[\w-]+\) \d+%, (?:var\(--xh-[\w-]+\)|transparent)\))$/.test(m[2].trim()))
+    problems.push(`${CARD}:1  ${m[1]}: ${m[2].trim()} —— 淡彩域的取值只有 var() 与 color-mix(in oklab, 令牌 N%, 令牌 / transparent)，不写散色`)
+}
+const hueRules = new Map()
+for (const m of cardSource.matchAll(/\.xh-component-grid(?:\[data-category="([\w-]+)"\])?\s*\{\s*--xh-doc-catalog-hue:\s*var\((--xh-[\w-]+)\);/g)) {
+  hueRules.set(m[1] ?? '', m[2])
+  if (!/^--xh-chart-categorical-[1-8]$/.test(m[2]))
+    problems.push(`${CARD}:1  ${m[1] ?? '缺省'} 的色相取 ${m[2]} —— 色相只取分类色槽 --xh-chart-categorical-1…8：明度带与彩度带由色板门禁保证，两档主题都浅`)
+}
+const usedTokens = new Set()
 const toneTokens = new Set()
 for (const m of (await readFile(TONE_CSS, 'utf8')).matchAll(/(--xh-tone-[\w-]+)\s*:/g))
   toneTokens.add(m[1])
@@ -137,6 +208,14 @@ for (const category of manifest.categories) {
   }
 }
 const fixedDirection = new Set([...chartIds, ...Object.keys(FIXED_DIRECTION)])
+for (const category of manifest.categories) {
+  if (!hueRules.has(category.id) && !DEFAULT_HUE_CATEGORIES.has(category.id))
+    problems.push(`${CARD}:1  分类 ${category.id} 没有色相：加一条 .xh-component-grid[data-category="${category.id}"]，或登记到 DEFAULT_HUE_CATEGORIES`)
+}
+for (const id of hueRules.keys()) {
+  if (id && !manifest.categories.some(category => category.id === id))
+    problems.push(`${CARD}:1  .xh-component-grid[data-category="${id}"] 对不上清单里的分类——分类改名或删了就一起改`)
+}
 
 // ── 解析 ─────────────────────────────────────────────────────────────────────
 
@@ -273,6 +352,10 @@ for (const file of files) {
           report(line, `${attr}: ${token} —— 语气轴没有这支令牌（${TONE_CSS}）`)
         else if (!toneAncestor && !attrs.has('data-tone'))
           report(line, `${attr}: ${token} —— --xh-tone-* 只在 <g data-tone="…"> 里取`)
+        else if (!TONE_REMAPPED.has(token) && !TONE_DILUTED.has(token))
+          report(line, `${attr}: ${token} —— 这支语气令牌没有进淡彩域：示意图只取 ${[...TONE_REMAPPED, ...TONE_DILUTED].join(' / ')}，要用别的先在卡片的 [data-tone] 里重写`)
+        else if (TONE_REMAPPED.has(token))
+          usedTokens.add(token)
         continue
       }
       if (!declared.has(token)) {
@@ -283,6 +366,8 @@ for (const file of files) {
         usesPalette.push(line)
         if (!COLOR_SAMPLES.has(id))
           report(line, `${attr}: ${token} —— 基础色板只给画颜色本身的组件（COLOR_SAMPLES），其余取语义角色`)
+        else if (!COLOR_SAMPLE_TOKEN.test(token))
+          report(line, `${attr}: ${token} —— 色样只取 300 档与中性的 0 / 500：示意图整页是淡彩，深档的色块会跳出来`)
         continue
       }
       const colorFamily = /^--xh-(?:bg|fg|border)-/.test(token)
@@ -291,6 +376,9 @@ for (const file of files) {
         || /^--xh-gradient-brand-(?:from|to)$/.test(token)
       if (!colorFamily)
         report(line, `${attr}: ${token} —— 颜色只取 --xh-bg / fg / border / chart / syntax / gradient-brand 语义令牌与语气轴`)
+      usedTokens.add(token)
+      if (colorFamily && !DOMAIN_FREE.test(token) && !Object.hasOwn(DOMAIN_EXEMPT, token) && !domainTokens.has(token))
+        report(line, `${attr}: ${token} —— 淡彩域没有重写这支令牌，这里会漏出原色：在 ${CARD} 的淡彩域里加上它，或换一支已有的角色`)
     }
 
     if (attrs.has('fill-opacity') && !OPACITY_TOKENS.has(attrs.get('fill-opacity').match(/^var\((--xh-[\w-]+)\)$/)?.[1]))
@@ -312,9 +400,38 @@ for (const file of files) {
     }
     if (name === 'rect' && attrs.has('rx')) {
       const rx = num(attrs.get('rx'))
-      const short = Math.min(num(attrs.get('width')), num(attrs.get('height')))
-      if (!RADII.has(rx) && rx * 2 !== short)
-        report(line, `<rect rx="${attrs.get('rx')}"> —— 圆角只取 ${[...RADII].join(' / ')}，或等于短边一半（胶囊）`)
+      const w = num(attrs.get('width'))
+      const h = num(attrs.get('height'))
+      const short = Math.min(w, h)
+      // 圆角按外沿算：描边压在盒的中线上，外沿比中线多半个线宽，与 CSS 的 border-radius 同一个量
+      const half = attrs.has('stroke') && attrs.get('stroke') !== 'none' ? num(attrs.get('stroke-width') ?? 1) / 2 : 0
+      const outer = rx + half
+      const pill = outer * 2 === short + half * 2
+      if (!pill && !RADII.has(outer)) {
+        report(line, `<rect rx="${attrs.get('rx')}"> —— 外沿圆角 ${outer}：只取 inset ${RADIUS.inset} / control·surface·overlay ${RADIUS.control} / sheet ${RADIUS.sheet}，或等于外沿短边一半（胶囊）；描边压半格的盒写 rx 时减半个线宽`)
+      }
+      else if (outer === RADIUS.sheet && !pill && !SHEET_PREVIEWS.has(id)) {
+        report(line, `<rect rx="${attrs.get('rx')}"> —— sheet 档只给 ${[...SHEET_PREVIEWS].join(' / ')}：其余面取 ${RADIUS.control}`)
+      }
+      else if (outer === RADIUS.inset && !pill && short >= SURFACE_MIN && !Object.hasOwn(INSET_FACES, id)) {
+        report(line, `<rect rx="${attrs.get('rx')}" width="${w}" height="${h}"> —— 这么大的盒是控件或面，取 ${RADIUS.control}；inset 只给嵌在里面的小块（真实是数据标记或色块就登记 INSET_FACES）`)
+      }
+      else if (w === h && w <= CHECK_MARKER_MAX && outer !== RADIUS.inset) {
+        report(line, `<rect rx="${attrs.get('rx')}" width="${w}" height="${h}"> —— 勾选方框与图例色块取 inset ${RADIUS.inset}`)
+      }
+    }
+    if (name === 'path' && attrs.has('fill') && attrs.get('fill') !== 'none') {
+      for (const arc of attrs.get('d').matchAll(/a([\d.]+) ([\d.]+) 0 0 [01] ?(-?[\d.]+)(?:[ ,]|(?=-))(-?[\d.]+)/g)) {
+        const [r, ry, dx, dy] = arc.slice(1).map(Number)
+        if (r === ry && Math.abs(dx) === r && Math.abs(dy) === r && !PATH_RADII.has(r))
+          report(line, `<path> 的圆角 a${r} ${r} —— 路径画的圆角随所贴的面：${[...PATH_RADII].sort((a, b) => a - b).join(' / ')}（外沿、描边中线、描边内沿）`)
+      }
+      // 紧贴圆角的直边这么长，贴的就是控件或面，不是嵌在里面的小块
+      for (const run of attrs.get('d').matchAll(/[hv](-?[\d.]+)a([\d.]+) \2 0 0 [01]/g)) {
+        const [edge, r] = run.slice(1).map(Number)
+        if (Math.abs(edge) >= SURFACE_MIN && r <= RADIUS.inset && !Object.hasOwn(INSET_FACES, id))
+          report(line, `<path> 的圆角 a${r} ${r} 贴着 ${Math.abs(edge)} 长的直边 —— 这是控件或面，圆角取 ${RADIUS.control}（描边中线 ${RADIUS.control - 0.5}、内沿 ${RADIUS.control - 1}）`)
+      }
     }
 
     const fill = attrs.get('fill')
@@ -367,8 +484,9 @@ for (const file of files) {
   if (Object.hasOwn(UNFILLED_CONTROL_BOX, id) && unfilledControlBoxes === 0)
     report(1, `UNFILLED_CONTROL_BOX 登记了 ${id}，但示意图里没有不铺底的字段盒——名单过期了，删掉这条`)
 
-  if (FLUSH_ROW_LISTS.has(id)) {
-    // 列表面板：铺浮层面或页内面、描装饰边的 rect；1 线宽描边落在半格，面板内沿比外框各收半格
+  if (INSET_ROW_LISTS.has(id)) {
+    // 列表面板：铺浮层面或页内面、描装饰边的 rect；1 线宽描边落在半格，面板内沿比外框各收半格，
+    // 行再比内沿收一个内衬
     const panels = rects.filter(r => LIST_PANEL_FILLS.has(r.attrs.get('fill')) && r.attrs.has('stroke'))
     let rows = 0
     for (const row of rects) {
@@ -379,16 +497,16 @@ for (const file of files) {
         continue
       rows += 1
       tally.rows += 1
-      const inner = { start: panel.x + 0.5, end: panel.x + panel.w - 0.5 }
-      if (row.attrs.has('rx'))
-        report(row.line, `<rect rx="${row.attrs.get('rx')}"> —— 通栏列表的行不取圆角`)
+      const inner = { start: panel.x + 0.5 + LIST_PANEL_PAD, end: panel.x + panel.w - 0.5 - LIST_PANEL_PAD }
+      if (num(row.attrs.get('rx')) !== RADIUS.inset)
+        report(row.line, `<rect rx="${row.attrs.get('rx') ?? '缺省'}"> —— 面板里的行取 inset 圆角 rx="${RADIUS.inset}"，与真实的集合行一致`)
       if (row.x !== inner.start)
-        report(row.line, `<rect x="${row.x}"> —— 通栏列表的行左沿贴面板内沿 x="${inner.start}"`)
+        report(row.line, `<rect x="${row.x}"> —— 行左沿比面板内沿收一个内衬 x="${inner.start}"`)
       if (!MULTI_COLUMN_LISTS.has(id) && row.x + row.w !== inner.end)
-        report(row.line, `<rect width="${row.w}"> —— 通栏列表的行右沿贴面板内沿（x + width = ${inner.end}，现在 ${row.x + row.w}）`)
+        report(row.line, `<rect width="${row.w}"> —— 行右沿比面板内沿收一个内衬（x + width = ${inner.end}，现在 ${row.x + row.w}）`)
     }
     if (rows === 0)
-      report(1, `FLUSH_ROW_LISTS 登记了 ${id}，但示意图的列表面板里没有 ${LIST_ROW_H} 高的悬停或选中行——画一条，或把名单里这条删掉`)
+      report(1, `INSET_ROW_LISTS 登记了 ${id}，但示意图的列表面板里没有 ${LIST_ROW_H} 高的悬停或选中行——画一条，或把名单里这条删掉`)
   }
 
   if (fixedDirection.has(id) && !hasDirection)
@@ -418,15 +536,26 @@ for (const id of COLOR_SAMPLES) {
   if (!files.includes(`${id}.vue`))
     problems.push(`COLOR_SAMPLES 登记了 ${id}，但 ${CATALOG}/${id}.vue 不存在——名单过期了，删掉这条`)
 }
-for (const [list, ids] of [['UNFILLED_CONTROL_BOX', Object.keys(UNFILLED_CONTROL_BOX)], ['FLUSH_ROW_LISTS', FLUSH_ROW_LISTS], ['MULTI_COLUMN_LISTS', MULTI_COLUMN_LISTS]]) {
+for (const [list, ids] of [['UNFILLED_CONTROL_BOX', Object.keys(UNFILLED_CONTROL_BOX)], ['INSET_ROW_LISTS', INSET_ROW_LISTS], ['MULTI_COLUMN_LISTS', MULTI_COLUMN_LISTS], ['SHEET_PREVIEWS', SHEET_PREVIEWS], ['INSET_FACES', Object.keys(INSET_FACES)]]) {
   for (const id of ids) {
     if (!files.includes(`${id}.vue`))
       problems.push(`${list} 登记了 ${id}，但 ${CATALOG}/${id}.vue 不存在——名单过期了，删掉这条`)
   }
 }
 for (const id of MULTI_COLUMN_LISTS) {
-  if (!FLUSH_ROW_LISTS.has(id))
-    problems.push(`MULTI_COLUMN_LISTS 登记了 ${id}，但它不在 FLUSH_ROW_LISTS 里——多列只放宽通栏行的右沿，先登记成通栏列表`)
+  if (!INSET_ROW_LISTS.has(id))
+    problems.push(`MULTI_COLUMN_LISTS 登记了 ${id}，但它不在 INSET_ROW_LISTS 里——多列只放宽行的右沿，先登记成内缩列表`)
+}
+// 域里不留没人用的令牌：名单只增不减，就核不出哪支是真要的。域内自己引用的也算用到
+for (const token of domainTokens) {
+  if (token.startsWith('--xh-doc-catalog-'))
+    continue
+  if (!usedTokens.has(token) && !domainBody.includes(`var(${token})`))
+    problems.push(`${CARD}:1  淡彩域重写了 ${token}，但没有一张示意图用它——删掉这条`)
+}
+for (const token of Object.keys(DOMAIN_EXEMPT)) {
+  if (!usedTokens.has(token))
+    problems.push(`DOMAIN_EXEMPT 登记了 ${token}，但没有一张示意图用它——名单过期了，删掉这条`)
 }
 
 if (problems.length) {
@@ -439,5 +568,6 @@ if (problems.length) {
 console.log(
   `[check-catalog-preview] 通过：${files.length} 张总览示意图都是 ${VIEW_BOX} 画布上的纯 SVG，颜色只取语义令牌，`
   + `合计 ${elements} 个元素（最多的 ${widest.id} ${widest.count} 个）；方向固定 ${fixedDirection.size} 张；`
-  + `字段外壳 ${tally.shells} 个按描边铺底，勾选标记 ${tally.markers} 个描重一档，通栏列表行 ${tally.rows} 条`,
+  + `字段外壳 ${tally.shells} 个按描边铺底，勾选标记 ${tally.markers} 个描重一档，内缩列表行 ${tally.rows} 条；`
+  + `圆角与真实组件同值（${[...RADII].join(' / ')}），淡彩域重写 ${domainTokens.size} 支令牌`,
 )
