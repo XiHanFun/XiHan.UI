@@ -13,7 +13,7 @@ import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } fr
 import { bindFormModel, formModelOf } from '@xihan-ui/headless'
 import { computed, toValue } from 'vue'
 import { version as VUE_VERSION } from '../../package.json'
-import { useOptionalFormField } from '../components/form/context'
+import { useOptionalFormField } from '../components/form/field-context'
 import { attachFormReset } from './attach-form-reset'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createVueRuntime } from './create-vue-runtime'

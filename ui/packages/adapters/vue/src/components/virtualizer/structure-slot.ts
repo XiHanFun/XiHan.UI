@@ -36,7 +36,14 @@ export function useStructureVirtual(): StructureVirtualSlot | undefined {
 }
 
 /** 虚拟化部件单独成块：开了 virtual 才加载。 */
-const load = (): Promise<typeof import('./structure-virtual')> => import('./structure-virtual')
+/** 按需块的形状：只写用到的三个部件。不写成 typeof import(...)：那是一条静态的类型边，会和那一块回引本文件绕成环。 */
+interface StructureVirtualModule {
+  StructureVirtualViewport: Component
+  StructureVirtualContent: Component
+  StructureVirtualItem: Component
+}
+
+const load = (): Promise<StructureVirtualModule> => import('./structure-virtual')
 
 /** 标准结构里委派给 virtualizer 的三个部件，并进宿主的部件表。 */
 export const STRUCTURE_VIRTUAL_PARTS: Readonly<Record<string, Component>> = {

@@ -65,23 +65,26 @@ module.exports = {
       severity: 'error',
       comment: '禁止循环依赖',
       from: {},
-      to: { circular: true },
+      // 只经 import() 闭合的环不算：按需块回引它的加载方是刻意的（core 的浮层按需块、虚拟列表的按需部件），
+      // 动态导入要等首次使用才求值，构不成模块初始化顺序上的环
+      to: { circular: true, viaOnly: { dependencyTypesNot: ['dynamic-import'] } },
     },
     {
       name: 'no-unresolvable',
       severity: 'error',
       comment: '解析不出来的 import。最常见的成因正是"伸手够了邻层却没在 package.json 里声明依赖"',
       from: { path: '^packages/' },
-      // Vite 的 ?raw / ?url 查询后缀：enhanced-resolve 带着后缀去查 exports 映射查不到，
+      // Vite 的 ?raw / ?url / ?inline 查询后缀：enhanced-resolve 带着后缀去查 exports 映射查不到，
       // 但被引的包照样要在 package.json 里声明，不声明 Vite 同样解析失败
-      to: { couldNotResolve: true, pathNot: '\\?(?:raw|url)$' },
+      to: { couldNotResolve: true, pathNot: '\\?(?:raw|url|inline)$' },
     },
     {
       name: 'styles-no-js-deps',
       severity: 'error',
       comment: 'packages/design/styles 是纯 CSS，不得依赖任何 JS 包',
       from: { path: '^packages/design/styles/' },
-      to: { path: '^packages/' },
+      // 自己包里的构建脚本互相引用不算，管的是够到别的包
+      to: { path: '^packages/', pathNot: '^packages/design/styles/' },
     },
     {
       name: 'no-external-in-packages',

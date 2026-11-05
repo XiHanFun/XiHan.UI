@@ -12,7 +12,7 @@ import { checkLockstepVersion, printMetadataBannerOnce, registerRuntimeHost } fr
 import { bindFormModel, formModelOf } from '@xihan-ui/headless'
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { version as REACT_ADAPTER_VERSION } from '../../package.json'
-import { useOptionalFormField } from '../components/form/context'
+import { useOptionalFormField } from '../components/form/field-context'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createReactRuntime, machineVersion } from './create-react-runtime'
 

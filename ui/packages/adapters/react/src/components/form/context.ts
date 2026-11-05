@@ -5,7 +5,6 @@
 
 // 提供 context 相关实现。
 
-import type { FormFieldModel, FormPath } from '@xihan-ui/headless'
 import type { FormContext } from './use-form'
 import { createContext, useContext } from 'react'
 
@@ -25,17 +24,7 @@ export function useOptionalFormContext(): FormContext | undefined {
   return useContext(Ctx)
 }
 
-/** 字段容器把字段名交给后代：Field 据此从表单上下文自取校验态。 */
-export interface FormFieldHandle {
-  name: FormPath
-  /** 这个字段的值端口：组里没给值的录入控件经它按字段名读写表单的值。 */
-  model: FormFieldModel
-}
-
-const FieldCtx = createContext<FormFieldHandle | undefined>(undefined)
-
-export const FormFieldProvider = FieldCtx
-
-export function useOptionalFormField(): FormFieldHandle | undefined {
-  return useContext(FieldCtx)
-}
+// 字段组上下文住在 field-context：runtime/use-machine 要读它，而本文件经 FormContext 的类型连着 use-form，
+// 从这里引会绕成 use-machine → context → use-form → use-machine 的环
+export type { FormFieldHandle } from './field-context'
+export { FormFieldProvider, useOptionalFormField } from './field-context'

@@ -37,7 +37,12 @@ export function useStructureVirtual(): StructureVirtualSlot | null {
   return useContext(StructureVirtualContext)
 }
 
-type StructureVirtualModule = typeof import('./structure-virtual')
+/** 按需块的形状：只写用到的三个部件。不写成 typeof import(...)：那是一条静态的类型边，会和那一块回引本文件绕成环。 */
+interface StructureVirtualModule {
+  StructureVirtualViewport: PartComponent
+  StructureVirtualContent: PartComponent
+  StructureVirtualItem: PartComponent
+}
 
 /**
  * 虚拟化部件单独成块：开了 virtual 才加载。

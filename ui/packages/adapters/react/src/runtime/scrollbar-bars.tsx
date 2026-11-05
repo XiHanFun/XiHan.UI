@@ -11,7 +11,7 @@
 import type { Orientation, Scope, Service } from '@xihan-ui/core'
 import type { ScrollbarAnchor, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
-import type { ScrollbarsOptions, ScrollbarsProps } from './use-scrollbars'
+import type { ScrollbarsOptions, ScrollbarsProps } from './scrollbars-types'
 import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { reactNormalize } from './normalize-props'
