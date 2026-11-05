@@ -160,7 +160,7 @@ Not in the box: enterprise business components. The documentation site also has 
 
 ## Related Projects
 
-- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - modular development framework for .NET
+- [XiHan.Framework](https://github.com/XiHanFun/XiHan.Framework) - microkernel development framework for .NET
 - [XiHan.BasicApp](https://github.com/XiHanFun/XiHan.BasicApp) - general-purpose admin kernel built on XiHan.Framework and XiHan.UI
 
 ## Contributing
