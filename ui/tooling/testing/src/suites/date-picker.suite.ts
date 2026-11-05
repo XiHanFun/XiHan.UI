@@ -313,7 +313,8 @@ export const datePickerSuite: ConformanceSuite = {
             seg.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
             await ctx.flush()
             const content = ctx.doc.querySelector('[data-scope="date-picker"][data-part="content"]')
-            if (!content?.hasAttribute('hidden'))
+            // 逻辑上收起看 data-state：hidden 跟退场闸门走，退场播完才落
+            if (content?.getAttribute('data-state') !== 'closed')
               throw new Error('段上按 Enter 没能把浮层收起')
           },
         },

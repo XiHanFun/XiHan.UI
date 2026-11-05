@@ -212,10 +212,13 @@ describe('列表框零候选与状态占位', () => {
     open.value = false
     await nextTick()
     await nextTick()
-    expect(panel.hidden).toBe(true)
+    // 父面板逻辑上已收起，退场窗口里 hidden 不打、节点还在
+    expect(panel.dataset.state).toBe('closed')
+    expect(panel.hidden).toBe(false)
     expect(getComputedStyle(panel).display).not.toBe('none')
     expect(list.offsetHeight).toBe(listHeight)
     expect(groups.map(group => group.offsetHeight)).toEqual(groupHeights)
     await expect.poll(() => getComputedStyle(panel).display).toBe('none')
+    expect(panel.hidden).toBe(true)
   })
 })

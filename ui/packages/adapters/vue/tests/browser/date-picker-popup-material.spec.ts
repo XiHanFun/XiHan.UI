@@ -247,7 +247,8 @@ describe('日期选择浮层', () => {
     await userEvent.keyboard('{Escape}')
     await nextTick()
     expect(content.dataset.state).toBe('closed')
-    expect(content.hidden).toBe(true)
+    // 退场窗口里 hidden 不打，播完才落
+    expect(content.hidden).toBe(false)
     expect(content.offsetWidth).toBe(before.width)
     expect(content.offsetHeight).toBe(before.height)
     expect(calendars.map(calendar => [calendar.offsetLeft, calendar.offsetTop])).toEqual(offsets)
@@ -256,6 +257,7 @@ describe('日期选择浮层', () => {
     expect(exitAnimations.length).toBeGreaterThan(0)
     exitAnimations.forEach(animation => animation.finish())
     await expect.poll(() => content.getBoundingClientRect().height).toBe(0)
+    expect(content.hidden).toBe(true)
     await expect.poll(() => document.activeElement === part('trigger')).toBe(true)
   })
 })

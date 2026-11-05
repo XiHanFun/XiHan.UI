@@ -662,7 +662,8 @@ export const timeRangePickerSuite: ConformanceSuite = {
           run: async (ctx) => {
             await pressOnSegment(ctx, 1, 0, ['Enter'])
             const content = ctx.doc.querySelector(`${SCOPE}[data-part="content"]`)
-            if (!content?.hasAttribute('hidden'))
+            // 逻辑上收起看 data-state：hidden 跟退场闸门走，退场播完才落
+            if (content?.getAttribute('data-state') !== 'closed')
               throw new Error('段上按 Enter 没能把浮层收起')
           },
         },

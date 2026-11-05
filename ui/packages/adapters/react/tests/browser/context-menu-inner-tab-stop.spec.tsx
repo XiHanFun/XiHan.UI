@@ -87,7 +87,7 @@ describe('context-menu 触发区里已有 Tab 位', () => {
     expect(document.activeElement).toBe(first)
     await userEvent.keyboard('{Escape}')
     await settle()
-    expect(el('[data-scope="context-menu"][data-part="content"]').hidden).toBe(true)
+    expect(el('[data-scope="context-menu"][data-part="content"]').dataset.state).toBe('closed')
     expect(document.activeElement).toBe(el('[data-test-canvas]'))
   })
 

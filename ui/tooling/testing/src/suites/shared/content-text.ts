@@ -12,6 +12,9 @@ export function expectPartText(scope: string, part: string, index: number, expec
     for (let attempt = 0; attempt < 20; attempt++) {
       await flush()
       const el = doc.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="${part}"]`)[index]
+      // 收起落定才卸内容：真实浏览器里退场要播完（jsdom 没有动画，这一步什么都不做）
+      for (const animation of el?.getAnimations?.() ?? [])
+        animation.finish()
       got = el?.textContent ?? null
       if (got === expected)
         return
