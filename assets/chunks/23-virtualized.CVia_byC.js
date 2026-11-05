@@ -1,0 +1,11 @@
+var e=`<!-- 长选项虚拟化 | 一万条选项只写 virtual：浮层里只铺滚到的那一屏，键盘仍跨完整 collection；虚拟化那一块按需加载，没开的不为它付体积 -->
+<xh-select id="select-virtualized" virtual label="长列表" placeholder="请选择">
+  <div data-xh-part="root"></div>
+</xh-select>
+
+<script type="module">
+  // 只写 root：标题、触发器与浮层都照 collection 铺，浮层里只铺滚到的那一屏
+  const select = document.getElementById("select-virtualized");
+  select.collection = Array.from({ length: 10000 }, (_, index) => ({ value: \`option-\${index + 1}\`, label: \`选项 \${index + 1}\` }));
+<\/script>
+`;export{e as default};

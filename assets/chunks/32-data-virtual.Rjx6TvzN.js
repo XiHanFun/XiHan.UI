@@ -1,0 +1,1 @@
+async function e(){let e=[`平台研发`,`前端体验`,`基础架构`,`质量保障`],t=document.getElementById(`table-data-virtual`);t.columns=[{id:`no`,label:`编号`,width:`6rem`,sortable:!0},{id:`name`,label:`姓名`,width:`8rem`},{id:`dept`,label:`部门`,filterOptions:e.map(e=>({value:e}))}],t.data=Array.from({length:1e4},(t,n)=>({id:`u${n+1}`,no:n+1,name:`员工 ${n+1}`,dept:e[n%e.length]}))}export{e as default};

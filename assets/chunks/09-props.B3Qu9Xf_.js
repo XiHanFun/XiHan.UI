@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`drawer-props`),t=document.getElementById(`drawer-props-count`),n=0;e.addEventListener(`confirm`,()=>{n+=1,t.textContent=String(n)})}export{e as default};

@@ -18,28 +18,11 @@
 
 ```vue
 <script setup lang="ts">
-import {
-  XhPaginationEllipsisTrigger,
-  XhPaginationItem,
-  XhPaginationNextTrigger,
-  XhPaginationPrevTrigger,
-  XhPaginationRoot,
-} from "@xihan-ui/vue";
+import { XhPaginationRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhPaginationRoot
-    v-slot="{ pages }"
-    :count="196"
-    :page-size="10"
-  >
-    <XhPaginationPrevTrigger />
-    <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-      <XhPaginationEllipsisTrigger v-if="p === 'ellipsis'" />
-      <XhPaginationItem v-else :value="p">{{ p }}</XhPaginationItem>
-    </template>
-    <XhPaginationNextTrigger />
-  </XhPaginationRoot>
+  <XhPaginationRoot :count="196" :page-size="10" />
 </template>
 ```
 
@@ -49,45 +32,8 @@ import {
   count="196"
   page-size="10"
 >
-  <nav data-xh-part="root">
-    <button data-xh-part="prev-trigger"></button>
-    <button data-xh-part="item" value="1">1</button>
-    <button data-xh-part="item" value="2">2</button>
-    <button data-xh-part="item" value="3">3</button>
-    <button data-xh-part="item" value="4">4</button>
-    <button data-xh-part="item" value="5">5</button>
-    <button data-xh-part="ellipsis-trigger" side="end"></button>
-    <button data-xh-part="item" value="20">20</button>
-    <button data-xh-part="next-trigger"></button>
-  </nav>
+  <nav data-xh-part="root"></nav>
 </xh-pagination>
-
-<script type="module">
-  const host = document.getElementById("pagination-basic");
-  const root = host.querySelector('[data-xh-part="root"]');
-  const next = root.querySelector('[data-xh-part="next-trigger"]');
-
-  function render() {
-    for (const node of root.querySelectorAll(
-      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
-    ))
-      node.remove();
-    for (const item of host.pageItems) {
-      const el = document.createElement("button");
-      if (item.type === "ellipsis") {
-        el.dataset.xhPart = "ellipsis-trigger";
-        el.setAttribute("side", item.side);
-      } else {
-        el.dataset.xhPart = "item";
-        el.setAttribute("value", String(item.value));
-        el.textContent = String(item.value);
-      }
-      root.insertBefore(el, next);
-    }
-  }
-
-  host.addEventListener("page-change", render);
-</script>
 ```
 
 ## 组件结构
@@ -730,6 +676,7 @@ import {
 
 ### 组合
 
+- 不写结构时照标准结构铺：上一页、按当前页折叠后的页码序列（被折叠的一段是省略位）、下一页，翻页后按页码复用节点。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数；翻页钮与省略位不放内容，字形由皮肤画。下面这些按需部件不在标准结构里，要用时整棵手写。
 - `summary` 显示当前结果范围。
 - `jumper` 用于输入页码并按 Enter 跳转。
 - `page-size-select` 提供每页数量选择。
@@ -1026,12 +973,12 @@ import {
 | `--xh-pagination-item-min-size` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `min-inline-size` | `default` | `--xh-_pagination-item-size` | pagination 的 ellipsis-trigger、first-trigger、item、last-trigger、next-trigger、prev-trigger 部件 min-inline-size 覆盖槽。 |
 | `--xh-pagination-item-px` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `padding-inline` | `default`<br>`xh-field-chrome` | `--xh-_pagination-item-px`<br>`--xh-_pagination-jumper-px` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-pagination-item-radius` | `ellipsis-trigger`<br>`first-trigger`<br>`item`<br>`jumper`<br>`last-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default`<br>`xh-field-chrome` | `--xh-shape-control`<br>`--xh-shape-surface` | pagination 的 ellipsis-trigger、first-trigger、item、jumper、last-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | pagination 的 item 部件 box-shadow 覆盖槽。 |
+| `--xh-pagination-item-shadow` | `item` | `box-shadow` | `current`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | pagination 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-pagination-jumper-bg` | `jumper` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | pagination 的 jumper 部件 background-color 覆盖槽。 |
 | `--xh-pagination-jumper-bg-disabled` | `jumper` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | pagination 的 jumper 部件 background-color 覆盖槽。 |
 | `--xh-pagination-jumper-bg-hover` | `jumper` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pagination 的 jumper 部件 background-color 覆盖槽。 |
 | `--xh-pagination-jumper-border` | `jumper` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | pagination 的 jumper 部件 border 覆盖槽。 |
-| `--xh-pagination-jumper-border-focus` | `jumper` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pagination 的 jumper 部件 border-color 覆盖槽。 |
+| `--xh-pagination-jumper-border-focus` | `jumper` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pagination 的 jumper 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-pagination-jumper-border-hover` | `jumper` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pagination 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-pagination-jumper-border-invalid` | `jumper` | `border-color` | `invalid`<br>`user-invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | pagination 的 jumper 部件 border-color 覆盖槽。 |
 | `--xh-pagination-jumper-w` | `jumper` | `inline-size` | `default` | `--xh-space-8` | pagination 的 jumper 部件 inline-size 覆盖槽。 |
@@ -1042,9 +989,9 @@ import {
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

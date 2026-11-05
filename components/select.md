@@ -2766,91 +2766,101 @@ const key = (node: SelectNodeMeta): keyof typeof dot => node.value as keyof type
 
 ### 长选项虚拟化
 
-完整 collection 负责选择语义，Virtualizer 负责浮层中的窗口
+一万条选项只写 virtual：浮层里只铺滚到的那一屏，键盘仍跨完整 collection；虚拟化那一块按需加载，没开的不为它付体积
 
 ```vue
 <script setup lang="ts">
-import {
-  XhSelectContent,
-  XhSelectControl,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectList,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-  XhVirtualizerContent,
-  XhVirtualizerItem,
-  XhVirtualizerRoot,
-  XhVirtualizerViewport,
-} from "@xihan-ui/vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 
-const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${index + 1}`, label: `选项 ${index + 1}` }));
+const options = Array.from({ length: 10000 }, (_, index) => ({ value: `option-${index + 1}`, label: `选项 ${index + 1}` }));
 </script>
 
 <template>
-  <XhVirtualizerRoot v-slot="{ virtualItems, collectionVirtualizer }" :count="options.length" :estimate-size="36" :viewport-tab-index="-1">
-    <XhSelectRoot :collection="options" :virtualizer="collectionVirtualizer" placeholder="请选择">
-      <XhSelectLabel>长列表</XhSelectLabel>
-      <XhSelectControl><XhSelectTrigger><XhSelectValueText /><XhSelectIndicator /></XhSelectTrigger></XhSelectControl>
-      <XhSelectPositioner>
-        <XhSelectContent>
-          <XhVirtualizerViewport style="block-size: 240px">
-            <XhSelectList style="overflow: visible; max-block-size: none">
-              <XhVirtualizerContent>
-                <XhVirtualizerItem v-for="virtualItem in virtualItems" :key="virtualItem.key" :value="virtualItem.index" style="block-size: 36px">
-                  <XhSelectItem :value="options[virtualItem.index].value">
-                    <XhSelectItemText>{{ options[virtualItem.index].label }}</XhSelectItemText>
-                    <XhSelectItemIndicator />
-                  </XhSelectItem>
-                </XhVirtualizerItem>
-              </XhVirtualizerContent>
-            </XhSelectList>
-          </XhVirtualizerViewport>
-        </XhSelectContent>
-      </XhSelectPositioner>
-    </XhSelectRoot>
-  </XhVirtualizerRoot>
+  <XhSelectRoot :collection="options" virtual label="长列表" placeholder="请选择" />
 </template>
 ```
 
 ```html
-<xh-select id="select-virtualized" placeholder="请选择">
-  <div data-xh-part="root">
-    <span data-xh-part="label">长列表</span>
-    <div data-xh-part="control"><button data-xh-part="trigger"><span data-xh-part="value-text"></span><span data-xh-part="indicator"></span></button></div>
-    <div data-xh-part="positioner"><div data-xh-part="content">
-      <div data-xh-part="list" style="overflow: visible; max-block-size: none">
-        <xh-virtualizer id="select-virtualizer" count="1000" estimate-size="36" viewport-tab-index="-1">
-          <div data-xh-part="root"><div data-xh-part="viewport" style="block-size: 240px"><div data-xh-part="content"></div></div></div>
-        </xh-virtualizer>
-      </div>
-    </div></div>
-  </div>
+<xh-select id="select-virtualized" virtual label="长列表" placeholder="请选择">
+  <div data-xh-part="root"></div>
 </xh-select>
 
 <script type="module">
+  // 只写 root：标题、触发器与浮层都照 collection 铺，浮层里只铺滚到的那一屏
   const select = document.getElementById("select-virtualized");
-  const virtualizer = document.getElementById("select-virtualizer");
-  const content = virtualizer.querySelector('[data-xh-part="content"]');
-  const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${index + 1}`, label: `选项 ${index + 1}` }));
-  select.collection = options;
-  function render(virtualItems) {
-    content.replaceChildren(...virtualItems.map((virtualItem) => {
-      const shell = document.createElement("div"); shell.dataset.xhPart = "item"; shell.setAttribute("value", virtualItem.index); shell.style.blockSize = "36px";
-      const option = document.createElement("div"); option.dataset.xhPart = "item"; option.dataset.xhPartOwner = "select"; option.setAttribute("value", options[virtualItem.index].value);
-      const text = document.createElement("span"); text.dataset.xhPart = "item-text"; text.textContent = options[virtualItem.index].label;
-      const indicator = document.createElement("span"); indicator.dataset.xhPart = "item-indicator";
-      option.append(text, indicator); shell.append(option); return shell;
-    }));
-    virtualizer.requestUpdate(); select.virtualizer = virtualizer.collectionVirtualizer; select.requestUpdate();
-  }
-  render(virtualizer.virtualItems);
-  virtualizer.addEventListener("range-change", event => render(event.detail.virtualItems));
+  select.collection = Array.from({ length: 10000 }, (_, index) => ({ value: `option-${index + 1}`, label: `选项 ${index + 1}` }));
+</script>
+```
+
+### 对象值
+
+选项直接用接口取回来的对象：value 与值变化交出的都是对象本身，给 valueKey 按 id 认，同一个人换成内容相同的新对象也选得中
+
+```vue
+<script setup lang="ts">
+import { XhSelectRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+interface Member {
+  id: number;
+  name: string;
+  team: string;
+}
+
+const members: Member[] = [
+  { id: 1, name: "赵一", team: "平台研发" },
+  { id: 2, name: "钱二", team: "前端体验" },
+  { id: 3, name: "孙三", team: "基础架构" },
+  { id: 4, name: "李四", team: "质量保障" },
+];
+
+const options = members.map(member => ({ value: member, label: member.name, description: member.team }));
+
+// 初值是另一份内容相同的对象（比如从地址栏还原的），按 id 认得出来
+const picked = ref<Member[]>([{ id: 2, name: "钱二", team: "前端体验" }]);
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; width: 100%; max-width: 320px">
+    <XhSelectRoot v-model:value="picked" multiple value-key="id" :collection="options" label="负责人" placeholder="请选择" />
+    <span data-demo-output>{{ picked.map(member => `${member.name}（${member.team}）`).join("、") || "未选" }}</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px; width: 100%; max-width: 320px">
+  <xh-select id="select-object-value" multiple value-key="id" label="负责人" placeholder="请选择">
+    <div data-xh-part="root"></div>
+  </xh-select>
+  <span id="select-object-value-output" data-demo-output></span>
+</div>
+
+<script type="module">
+  const members = [
+    { id: 1, name: "赵一", team: "平台研发" },
+    { id: 2, name: "钱二", team: "前端体验" },
+    { id: 3, name: "孙三", team: "基础架构" },
+    { id: 4, name: "李四", team: "质量保障" },
+  ];
+
+  const select = document.getElementById("select-object-value");
+  const output = document.getElementById("select-object-value-output");
+  const render = (picked) => {
+    output.textContent = picked.map(member => `${member.name}（${member.team}）`).join("、") || "未选";
+  };
+
+  // 对象值只能经 property 交：collection 与 value 都是对象本身
+  select.collection = members.map(member => ({ value: member, label: member.name, description: member.team }));
+  // 初值是另一份内容相同的对象（比如从地址栏还原的），按 value-key 写的 id 认得出来
+  select.value = [{ id: 2, name: "钱二", team: "前端体验" }];
+  render(select.value);
+
+  // value-change 交出的是对象本身；受控时写回 value
+  select.addEventListener("value-change", (event) => {
+    select.value = event.detail.value;
+    render(event.detail.value);
+  });
 </script>
 ```
 
@@ -2884,12 +2894,14 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 - 关闭时立即退出交互，资源在退场动画结束后释放。
 - 占位态：首次加载时在途占位在文案前转一枚加载环；已有选项时后台刷新保留上一帧、只报 `aria-busy`，选项照常可选、不淡化（淡到禁用透明度会把文字压到 4.5:1 以下），在途占位让位；空态与加载文字取次要文字、上下内距一档。
 - `lazyMount` 让列表内容第一次展开时才挂载、之后常驻：页面上 Select 很多（表格每行一个、长表单）时，收起态每个实例背着的整份条目是挂载开销的大头。打开前的选中文字与收起态连打按 `collection` 计算，所以要配 `collection` 用；没给时打开前选中文字退回值本身、连打不生效。Web Components 里把条目写进 list 里的一个 `<template>`，第一次展开才克隆。
+- 值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 按 `value` 或 `collection` 推断值的类型，两处对不上、`valueKey` 写错字段编译即报错。数字转成字符串当键，对象值给 `valueKey`（字段名或取值函数），同一个选项每次都是新对象（接口刚取回来）也认得出来，不给按对象身份认；键也是条目的 `data-value`与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查；Web Components 经 property 交值，写 `querySelector<XhSelectElement<number>>("xh-select")` 收窄。
 
 ### 组合
 
 - 与[表单字段](./field)组合。
 - 不参与表单时使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
-- 长选项列表把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`。
+- 长选项列表不写结构时只写 `virtual`：浮层里只铺滚到的那一屏条目，方向键、Home / End 与按字跳转仍跨完整 collection，自绘滚动条跟着视口走；条目按 `estimateSize`（缺省 36）起算、渲出后按实测校正，带副文本的两行条目也对得齐。虚拟化那一块按需加载，没开的选择器不为 Virtualizer 的内核付体积；挂载后立刻展开、或 `lazyMount` 下第一次展开时它还在路上，到了之后焦点照样补进列表。
+- 手写结构时照旧把完整 collection 与 [Virtualizer](./virtualizer) 的 `collectionVirtualizer` 同时交给根，浮层内只渲染 `virtualItems`；`virtual` 只管标准结构。
 
 ### 最佳实践
 
@@ -2920,11 +2932,12 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | --- | --- | --- | --- |
 | `labelled` | `boolean` |  | 作者渲染了 label 部件时置真，由适配器统计而不是判断标题文字是否有值。 为假时可聚焦部件不把 label 的 id 写进 aria-labelledby：指向未渲染的 id 是无效引用，作者写在控件上的 aria-label 也会被它压住。 |
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
-| `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `collection` | `SelectNode<V>[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `valueKey` | `SelectionValueKey<V>` |  | 对象值怎样取键：字段名或取值函数。同一个选项每次都是新对象（接口刚取回来）时给它； 不给时按对象身份认。值不是对象时用不着。键也是条目的 data-value 与随表单提交的值。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 完整 collection 与 Virtualizer 的焦点桥；count 必须与 collection.length 一致。 |
 | `lazyMount` | `boolean` |  | 列表内容第一次展开时才挂载，默认 false（随组件一起挂载、收起时只隐藏）。挂过之后一直留着，来回开合不重建。 页面上 Select 很多（表格每行一个、长表单）时打开它：收起态每个实例都背着一整份条目，挂载开销大半在这里。 打开前的选中文字与收起态连打按 collection 计算；没给 collection 时，打开前选中文字退回值本身、连打不生效。 |
-| `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
-| `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
+| `value` | `V \| V[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
+| `defaultValue` | `V \| V[] \| null` |  | 非受控初始选中值。与 value 同样接受裸值与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
@@ -2945,7 +2958,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
-| `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueChange` | `(details: SelectValueChangeDetails<V>) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onClear` | `() => void` |  | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onRetry` | `() => void` |  | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space。 |
@@ -2956,8 +2969,8 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 是 |  |
-| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为 value。 |
+| `value` | `V` | 是 |  |
+| `label` | `string` |  | 展示文本，也是连打检索的取字来源；默认回退为值（不是字符串的值退回它的键）。 |
 | `disabled` | `boolean` |  | 条目禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 |
 | `tone` | `Tone` |  | 该条选项自身的性质：危险选项写 danger、需要留意的写 warning。不写即与其余条目同档。 只换字色与悬停 / 按下的面，不表达选中与校验；选中的标记与禁用都压过它。 彩字不是唯一通道，要紧的差别仍要配图标或文案。整个选择器的 tone 不下发给条目。 |
 | `description` | `string` |  | 副文本，写入 item-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
@@ -2968,7 +2981,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `retry` | `` | 整表取数失败后请求重试：点了 retry-trigger，或浮层里没有高亮条目时按了 Enter / Space |
@@ -2979,12 +2992,12 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhSelectRoot` | `default` | `SelectRootSlotProps` |  |
+| `XhSelectRoot` | `default` | `SelectRootSlotProps<V>` |  |
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `empty` | — | 自动渲染树中空态占位的内容 |
-| `XhSelectRoot` | `item` | `SelectNodeMeta` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
-| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta` | 只接管行首那一格，其余槽照旧由数据铺 |
-| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
+| `XhSelectRoot` | `item` | `SelectNodeMeta<V>` | 只填条目的文字槽，副文本与首尾两格照旧各归各的 |
+| `XhSelectRoot` | `item-prefix` | `SelectNodeMeta<V>` | 只接管行首那一格，其余槽照旧由数据铺 |
+| `XhSelectRoot` | `item-suffix` | `SelectNodeMeta<V>` | 只接管行尾那一格（计数、徽标、次级图标），其余槽照旧由数据铺 |
 
 ### React 适配器 props
 
@@ -2993,17 +3006,19 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhSelectGroup` | `value` | `string` | 是 |  |
-| `XhSelectItem` | `value` | `string` | 是 |  |
+| `XhSelectItem` | `value` | `unknown` | 是 | 条目代表的值，与根上的值同类型：字符串、数字或对象。 |
 | `XhSelectItem` | `disabled` | `boolean` |  | 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 |
 | `XhSelectPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
+| `XhSelectRoot` | `virtual` | `boolean` |  | 标准结构下开虚拟化：浮层里只铺滚到的那一屏条目，长列表一个开关即可。虚拟化那一块异步加载，没开的不为它付体积； 手写 children 时不使用它，照旧自己套 Virtualizer 再把 collectionVirtualizer 交给 virtualizer。 |
+| `XhSelectRoot` | `estimateSize` | `number` |  | 虚拟化时每条的预估高度（px），缺省 36；条目渲出后按实测校正。 |
 | `XhSelectRoot` | `label` | `ReactNode` |  | 标题文字。提供后不必再写 label 部件。 |
 | `XhSelectRoot` | `empty` | `ReactNode` |  | 自动渲染树中的空态内容，没给时取 translations.empty。 |
 | `XhSelectRoot` | `clearable` | `boolean` |  | 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 |
-| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
-| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
-| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
-| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps>` |  |  |
-| `XhSelectTag` | `value` | `string` | 是 | 它代表哪个选中值。 |
+| `XhSelectRoot` | `renderItem` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 每个条目的自定义内容；未提供时使用 collection 中的 label。 |
+| `XhSelectRoot` | `renderItemPrefix` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `renderItemSuffix` | `(node: SelectNodeMeta<V>) => ReactNode` |  | 只接管条目行尾那一格；其余槽仍由数据铺。 |
+| `XhSelectRoot` | `children` | `SlotChildren<SelectRootSlotProps<V>>` |  |  |
+| `XhSelectTag` | `value` | `unknown` | 是 | 它代表哪个选中值，与根上的值同类型（标签插槽里的 tag.value 原样交回来）。 |
 
 ### 状态
 
@@ -3044,8 +3059,9 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly SelectNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
-| `value` | `string[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
+| `collection` | `readonly SelectNodeMeta<V>[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `V[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
+| `valueKeys` | `string[]` | 选中值的键，与 value 逐项对应：字符串值即它本身，别的值是编出来的键。条目的 data-value 与随表单提交的都是它。 |
 | `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 中查询不到条目时该项回退为值本身。 |
 | `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
@@ -3054,26 +3070,26 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `translations` | `SelectTranslations` | 解析后的读屏文案；error 与 retry-trigger 没写内容时显示其中的 loadError 与 retry。 |
 | `readOnly` | `boolean` | 只读态。 |
 | `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
-| `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
+| `tags` | `SelectTagMeta<V>[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
-| `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
+| `highlightedValue` | `V \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setValue` | `(next: string \| string[]) => void` |  |
+| `setValue` | `(next: V \| V[]) => void` |  |
 | `clear` | `() => void` | 清空全部选中。 |
-| `deselect` | `(value: string) => void` | 移除一个选中值。 |
+| `deselect` | `(value: V) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
-| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在其中并排，有值时清空按钮替代展开指示符。 |
+| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在其中并排，有值且指针落在盒上（触屏上有值即）时清空按钮替代展开指示符。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；无法清空时整体隐藏；点击清空全部选中、不展开浮层，焦点送回 trigger。 |
 | `getTagListProps` | `() => T['element']` | 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 |
-| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 |
+| `getTagProps` | `(props: SelectTagProps<V>) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 |
 | `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
 | `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
-| `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
+| `getItemDeleteTriggerProps` | `(props: SelectTagProps<V>) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
 | `isContentMounted` | `() => boolean` | content 里的列表内容此刻该不该挂载。未开 lazyMount 时恒为真；开了的话第一次展开起为真。 content 节点本身始终在场，只有它的内容按此挂载。 |
@@ -3085,12 +3101,12 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `getRetryTriggerProps` | `() => T['button']` | 整表取数失败后的重试按钮：不占 Tab 位，键盘从浮层里按 Enter / Space 重试；点击派发 onRetry。 |
 | `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
 | `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
-| `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemPrefixProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemTextProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemDescriptionProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemSuffixProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
+| `getItemProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemPrefixProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemTextProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemDescriptionProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemSuffixProps` | `(props: SelectItemProps<V>) => T['element']` |  |
+| `getItemIndicatorProps` | `(props: SelectItemProps<V>) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。 |
 
 ## 无障碍
@@ -3179,6 +3195,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -3260,10 +3277,10 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | select 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-select-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | select 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-select-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | select 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | select 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-select-action-size` | `clear-trigger`<br>`indicator` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | select 的 clear-trigger、indicator 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-select-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | select 的 content 部件 background 覆盖槽。 |
@@ -3273,7 +3290,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-menu-max-h` | select 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-select-content-max-w` | `content` | `max-inline-size` | `default` | `none` | select 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-select-content-min-w` | `content` | `inline-size` | `default` | `--xh-overlay-menu-min-w` | select 的 content 部件 inline-size 覆盖槽。 |
-| `--xh-select-content-px` | `content` | `padding-inline` | `default` | `0` | select 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-select-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | select 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-select-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | select 的 content 部件 box-shadow 覆盖槽。 |
@@ -3282,7 +3299,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | select 的 control 部件 border 覆盖槽。 |
-| `--xh-select-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | select 的 control 部件 border-color 覆盖槽。 |
+| `--xh-select-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | select 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | select 的 control 部件 color 覆盖槽。 |
@@ -3331,7 +3348,7 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-select-item-py` | `item` | `padding-block` | `default` | `--xh-_select-item-py` | select 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-select-item-radius` | `item` | `border-radius` | `default` | `0` | select 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-select-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | select 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-select-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
 | `--xh-select-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | select 的 label 部件 color 覆盖槽。 |
 | `--xh-select-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | select 的 label 部件 font-size 覆盖槽。 |
@@ -3352,13 +3369,17 @@ const options = Array.from({ length: 1000 }, (_, index) => ({ value: `option-${i
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover` · `hover: none`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

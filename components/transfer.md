@@ -3040,10 +3040,10 @@ const value = ref<string[]>([]);
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
 | `--xh-transfer-item-px` | `item` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-item-py` | `item` | `padding-block` | `default` | `--xh-_transfer-item-py` | transfer 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `0` | transfer 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 list 部件 gap 覆盖槽。 |
 | `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-sm` | transfer 的 list 部件 block-size 覆盖槽。 |
-| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | transfer 的 list 部件 padding-inline 覆盖槽。 |
+| `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-0` | transfer 的 list 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | transfer 的 loading 部件 color 覆盖槽。 |
 | `--xh-transfer-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 loading 部件 font-size 覆盖槽。 |
@@ -3091,9 +3091,9 @@ const value = ref<string[]>([]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `background-color` · `border-color` · `mask-size` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

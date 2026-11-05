@@ -24,7 +24,7 @@ resolveEasing(t => t * t)(0.5); // 0.25
 
 十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut` `emphasized`（表现性进场，语义令牌 `--xh-motion-ease-emphasis`，`@xihan-ui/animations` 的预设使用），以及 CSS 关键字 `linear`。
 
-三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
+三档时长（毫秒）：`durations.fast` 150、`durations.normal` 200、`durations.slow` 320：换色取 fast、几何取 normal，slow 只给整幅位移。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（150ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
 字符串先查命名缓动，查不到再按 CSS 缓动函数的语法解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，取值与浏览器一致，所以 `readMotion` 读到样式里改写成任何合法缓动都能换成函数。CSS 关键字 `ease-out` 与命名缓动 `easeOut` 是两条曲线。认不出的写法抛 `TypeError`，消息里列出可用写法：写法可能来自 DOM 特性或后端配置，拼错的名字若悄悄按匀速播放，比报错更难察觉。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
 
@@ -339,7 +339,6 @@ createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，缓慢趋近
 | `bouncy` | 400 / 18 | 20.4% | 约 581ms | 明显回弹，只供作者使用，核心组件不用 |
 | `toggle` | 420 / 26 | 7.5% | — | liquid 档的切换滑块 |
 | `lead` / `trail` | 520 / 34、210 / 24 | 2.9%、0.9% | 约 313ms、485ms | liquid 档双沿指示器的前沿与后沿 |
-| `merge` | 320 / 24 | 5.8% | — | liquid 档的融合与分离 |
 
 核心组件在 standard 档只用超调不超过 3% 的预设。
 

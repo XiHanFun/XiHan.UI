@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 803 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 810 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -9,17 +9,17 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-color-brand-50` | color | `oklch(0.971 0.014 258)` | — |
-| `--xh-color-brand-100` | color | `oklch(0.936 0.032 258)` | — |
-| `--xh-color-brand-200` | color | `oklch(0.885 0.062 258)` | — |
-| `--xh-color-brand-300` | color | `oklch(0.809 0.105 258)` | — |
-| `--xh-color-brand-400` | color | `oklch(0.702 0.165 258)` | — |
-| `--xh-color-brand-500` | color | `oklch(0.623 0.214 258)` | — |
-| `--xh-color-brand-600` | color | `oklch(0.546 0.216 258)` | — |
-| `--xh-color-brand-700` | color | `oklch(0.488 0.196 258)` | — |
-| `--xh-color-brand-800` | color | `oklch(0.424 0.164 258)` | — |
-| `--xh-color-brand-900` | color | `oklch(0.379 0.132 258)` | — |
-| `--xh-color-brand-950` | color | `oklch(0.282 0.089 258)` | — |
+| `--xh-color-brand-50` | color | `oklch(0.972 0.014 277)` | — |
+| `--xh-color-brand-100` | color | `oklch(0.937 0.032 277)` | — |
+| `--xh-color-brand-200` | color | `oklch(0.888 0.062 277)` | — |
+| `--xh-color-brand-300` | color | `oklch(0.813 0.103 277)` | — |
+| `--xh-color-brand-400` | color | `oklch(0.709 0.162 277)` | — |
+| `--xh-color-brand-500` | color | `oklch(0.632 0.209 277)` | — |
+| `--xh-color-brand-600` | color | `oklch(0.557 0.216 277)` | — |
+| `--xh-color-brand-700` | color | `oklch(0.498 0.196 277)` | — |
+| `--xh-color-brand-800` | color | `oklch(0.432 0.164 277)` | — |
+| `--xh-color-brand-900` | color | `oklch(0.385 0.132 277)` | — |
+| `--xh-color-brand-950` | color | `oklch(0.286 0.089 277)` | — |
 | `--xh-color-neutral-0` | color | `oklch(1 0 0)` | — |
 | `--xh-color-neutral-50` | color | `oklch(0.979 0.003 265)` | — |
 | `--xh-color-neutral-100` | color | `oklch(0.964 0.004 265)` | — |
@@ -206,16 +206,19 @@
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
 | `--xh-radius-none` | dimension | `0px` | — |
-| `--xh-radius-sm` | dimension | `2px` | — |
-| `--xh-radius-md` | dimension | `4px` | — |
-| `--xh-radius-lg` | dimension | `8px` | — |
-| `--xh-radius-xl` | dimension | `16px` | — |
+| `--xh-radius-seed` | dimension | `8px` | — |
+| `--xh-radius-2xs` | dimension | `calc(var(--xh-radius-seed) * 0.25)` | — |
+| `--xh-radius-xs` | dimension | `calc(var(--xh-radius-seed) * 0.5)` | — |
+| `--xh-radius-sm` | dimension | `calc(var(--xh-radius-seed) * 0.75)` | — |
+| `--xh-radius-md` | dimension | `var(--xh-radius-seed)` | — |
+| `--xh-radius-lg` | dimension | `calc(var(--xh-radius-seed) * 1.25)` | — |
 | `--xh-radius-full` | dimension | `9999px` | — |
 
 ## font
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
+| `--xh-font-family-sans` | fontFamily | `system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif` | — |
 | `--xh-font-family-mono` | fontFamily | `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` | — |
 | `--xh-font-size-xs` | dimension | `0.75rem` | — |
 | `--xh-font-size-sm` | dimension | `0.8125rem` | — |
@@ -303,7 +306,7 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-duration-fast` | duration | `120ms` | — |
+| `--xh-duration-fast` | duration | `150ms` | — |
 | `--xh-duration-normal` | duration | `200ms` | — |
 | `--xh-duration-slow` | duration | `320ms` | — |
 
@@ -374,8 +377,8 @@
 | `--xh-glyph-size-text` | dimension | `1em` | — |
 | `--xh-glyph-size-xs` | dimension | `12px` | — |
 | `--xh-glyph-size-sm` | dimension | `16px` | — |
-| `--xh-glyph-size-md` | dimension | `20px` | — |
-| `--xh-glyph-size-lg` | dimension | `24px` | — |
+| `--xh-glyph-size-md` | dimension | `18px` | — |
+| `--xh-glyph-size-lg` | dimension | `20px` | — |
 | `--xh-glyph-size-xl` | dimension | `32px` | — |
 | `--xh-glyph-size-2xl` | dimension | `40px` | — |
 | `--xh-glyph-size-3xl` | dimension | `56px` | — |
@@ -403,6 +406,7 @@
 | `--xh-glyph-mark-sort` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 20V4'/%3E%3Cpath d='M4 8L8 4L12 8'/%3E%3Cpath d='M16 4V20'/%3E%3Cpath d='M12 16L16 20L20 16'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-sort-asc` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V4'/%3E%3Cpath d='M6 10L12 4L18 10'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-sort-desc` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4V20'/%3E%3Cpath d='M6 14L12 20L18 14'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-filter` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-info` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11V16.5'/%3E%3Cpath d='M12 7.5h.01'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-warning` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4L21 20H3Z'/%3E%3Cpath d='M12 10V14'/%3E%3Cpath d='M12 17.5h.01'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-star` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z'/%3E%3C/svg%3E")` | — |
@@ -478,10 +482,11 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-shape-inset` | dimension | `var(--xh-radius-sm)` | — |
-| `--xh-shape-control` | dimension | `var(--xh-radius-sm)` | — |
+| `--xh-shape-inset` | dimension | `var(--xh-radius-xs)` | — |
+| `--xh-shape-control` | dimension | `var(--xh-radius-md)` | — |
 | `--xh-shape-surface` | dimension | `var(--xh-radius-md)` | — |
 | `--xh-shape-overlay` | dimension | `var(--xh-shape-surface)` | — |
+| `--xh-shape-sheet` | dimension | `var(--xh-radius-lg)` | — |
 | `--xh-shape-circle` | dimension | `50%` | — |
 | `--xh-shape-pill` | dimension | `var(--xh-radius-full)` | — |
 
@@ -491,7 +496,9 @@
 | --- | --- | --- | --- |
 | `--xh-ring-width` | dimension | `var(--xh-stroke-thick)` | — |
 | `--xh-ring-offset` | dimension | `calc(-1 * var(--xh-ring-width))` | — |
+| `--xh-ring-gap-width` | dimension | `var(--xh-stroke-thin)` | — |
 | `--xh-ring-focus` | color | `var(--xh-color-brand-600)` | dark |
+| `--xh-ring-gap` | color | `var(--xh-bg-surface)` | dark |
 | `--xh-ring-invalid` | color | `var(--xh-color-danger-500)` | dark |
 
 ## state
@@ -505,10 +512,10 @@
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
 | --- | --- | --- | --- |
-| `--xh-elevation-raised` | shadow | `none` | dark / print |
-| `--xh-elevation-lifted` | shadow | `0 4px 10px oklch(0 0 0 / 0.1)` | dark / print |
-| `--xh-elevation-floating` | shadow | `0 4px 10px oklch(0 0 0 / 0.1)` | dark / print |
-| `--xh-elevation-sheet` | shadow | `0 4px 12px oklch(0 0 0 / 0.15)` | dark / print |
+| `--xh-elevation-raised` | shadow | `var(--xh-shadow-sm)` | dark / print |
+| `--xh-elevation-lifted` | shadow | `var(--xh-shadow-md)` | dark / print |
+| `--xh-elevation-floating` | shadow | `var(--xh-shadow-md)` | dark / print |
+| `--xh-elevation-sheet` | shadow | `var(--xh-shadow-lg)` | dark / print |
 
 ## motion
 
@@ -519,9 +526,9 @@
 | `--xh-motion-duration-micro` | duration | `var(--xh-duration-fast)` | — |
 | `--xh-motion-duration-move` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-duration-expand` | duration | `var(--xh-duration-normal)` | reduce |
-| `--xh-motion-duration-collapse` | duration | `var(--xh-duration-fast)` | reduce |
+| `--xh-motion-duration-collapse` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-duration-slide` | duration | `var(--xh-duration-slow)` | reduce |
-| `--xh-motion-duration-nudge` | duration | `var(--xh-duration-fast)` | reduce |
+| `--xh-motion-duration-nudge` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-duration-press` | duration | `var(--xh-duration-fast)` | reduce |
 | `--xh-motion-duration-release` | duration | `var(--xh-duration-normal)` | reduce |
 | `--xh-motion-duration-attention` | duration | `calc(var(--xh-duration-slow) * 2)` | reduce |
@@ -536,6 +543,7 @@
 | `--xh-motion-ease-exit` | cubicBezier | `var(--xh-ease-in)` | — |
 | `--xh-motion-ease-slide` | cubicBezier | `var(--xh-ease-out-fluid)` | — |
 | `--xh-motion-ease-sweep` | cubicBezier | `var(--xh-ease-in-out)` | — |
+| `--xh-motion-ease-disclosure` | cubicBezier | `var(--xh-ease-in-out)` | — |
 | `--xh-motion-ease-press` | cubicBezier | `var(--xh-ease-standard)` | — |
 | `--xh-motion-ease-release` | cubicBezier | `var(--xh-ease-out-strong)` | — |
 | `--xh-motion-ease-breathe` | cubicBezier | `var(--xh-ease-sine-in-out)` | — |
@@ -575,8 +583,6 @@
 | `--xh-motion-spring-lead-damping` | number | `34` | — |
 | `--xh-motion-spring-trail-stiffness` | number | `210` | — |
 | `--xh-motion-spring-trail-damping` | number | `24` | — |
-| `--xh-motion-spring-merge-stiffness` | number | `320` | — |
-| `--xh-motion-spring-merge-damping` | number | `24` | — |
 
 ## layer
 
@@ -626,9 +632,9 @@
 | --- | --- | --- | --- |
 | `--xh-track-thickness` | dimension | `6px` | — |
 | `--xh-track-thumb-size` | dimension | `18px` | — |
-| `--xh-track-thickness-sm` | dimension | `var(--xh-stroke-strong)` | — |
-| `--xh-track-thickness-md` | dimension | `var(--xh-space-1)` | — |
-| `--xh-track-thickness-lg` | dimension | `var(--xh-space-2)` | — |
+| `--xh-track-thickness-sm` | dimension | `var(--xh-space-1)` | — |
+| `--xh-track-thickness-md` | dimension | `var(--xh-space-2)` | — |
+| `--xh-track-thickness-lg` | dimension | `var(--xh-space-3)` | — |
 | `--xh-track-band-thickness-sm` | dimension | `var(--xh-space-2)` | — |
 | `--xh-track-band-thickness-md` | dimension | `var(--xh-space-3)` | — |
 | `--xh-track-band-thickness-lg` | dimension | `var(--xh-space-4)` | — |
@@ -925,7 +931,7 @@
 | `--xh-material-elevated-backdrop` |  | `none` | — |
 | `--xh-material-elevated-border` |  | `var(--xh-border-default)` | — |
 | `--xh-material-elevated-highlight` |  | `oklch(0 0 0 / 0)` | — |
-| `--xh-material-elevated-shadow` |  | `0 4px 12px oklch(0 0 0 / 0.15)` | — |
+| `--xh-material-elevated-shadow` |  | `var(--xh-shadow-lg)` | — |
 | `--xh-material-elevated-separator` |  | `var(--xh-border-subtle)` | — |
 | `--xh-material-elevated-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-elevated-fg-muted` |  | `var(--xh-color-neutral-700)` | — |
@@ -941,12 +947,12 @@
 | `--xh-material-soft-focus-surface` |  | `var(--xh-material-soft-bg)` | — |
 | `--xh-material-frosted-compact-alpha` |  | `var(--xh-alpha-opaque)` | — |
 | `--xh-material-frosted-compact-backdrop` |  | `none` | — |
-| `--xh-material-frosted-compact-shadow` |  | `0 4px 10px oklch(0 0 0 / 0.1)` | — |
+| `--xh-material-frosted-compact-shadow` |  | `var(--xh-shadow-md)` | — |
 | `--xh-material-frosted-bg` |  | `var(--xh-bg-surface)` | — |
 | `--xh-material-frosted-backdrop` |  | `none` | — |
 | `--xh-material-frosted-border` |  | `var(--xh-border-default)` | — |
 | `--xh-material-frosted-highlight` |  | `oklch(0 0 0 / 0)` | — |
-| `--xh-material-frosted-shadow` |  | `0 4px 10px oklch(0 0 0 / 0.1)` | — |
+| `--xh-material-frosted-shadow` |  | `var(--xh-shadow-md)` | — |
 | `--xh-material-frosted-separator` |  | `var(--xh-border-subtle)` | — |
 | `--xh-material-frosted-fg` |  | `var(--xh-fg-default)` | — |
 | `--xh-material-frosted-fg-muted` |  | `var(--xh-fg-muted)` | — |
@@ -977,7 +983,7 @@
 | `--xh-bg-subtle` | color | `color-mix(in oklab, var(--xh-ink) 4.7%, transparent)` | dark |
 | `--xh-bg-subtle-hover` | color | `color-mix(in oklab, var(--xh-ink) 10.2%, transparent)` | dark |
 | `--xh-bg-subtle-active` | color | `color-mix(in oklab, var(--xh-ink) 16.9%, transparent)` | dark |
-| `--xh-bg-field` | color | `color-mix(in oklab, var(--xh-bg-subtle) 55%, transparent)` | dark |
+| `--xh-bg-field` | color | `var(--xh-bg-surface)` | dark |
 | `--xh-bg-field-invalid` | color | `color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)` | dark |
 | `--xh-bg-mark` | color | `var(--xh-color-yellow-200)` | dark |
 | `--xh-bg-muted` | color | `color-mix(in oklab, var(--xh-ink) 4.7%, transparent)` | dark |
@@ -990,7 +996,7 @@
 | `--xh-bg-segment-selected` | color | `var(--xh-bg-brand-subtle)` | dark |
 | `--xh-bg-segment-selected-hover` | color | `color-mix(in oklab, var(--xh-bg-brand) 18%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-segment-selected-disabled` | color | `color-mix(in oklab, var(--xh-bg-brand) 8%, var(--xh-bg-surface))` | dark |
-| `--xh-bg-overlay` | color | `color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent)` | dark |
+| `--xh-bg-overlay` | color | `color-mix(in oklab, var(--xh-color-neutral-900) 40%, transparent)` | dark |
 | `--xh-bg-media-chrome` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)` | dark |
 | `--xh-bg-media-chrome-hover` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 70%, transparent)` | dark |
 | `--xh-bg-media-chrome-active` | color | `color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent)` | dark |
@@ -1008,6 +1014,7 @@
 | `--xh-fg-muted` | color | `var(--xh-color-neutral-600)` | dark |
 | `--xh-fg-subtle` | color | `var(--xh-color-neutral-550)` | dark |
 | `--xh-fg-disabled` | color | `var(--xh-color-neutral-400)` | dark |
+| `--xh-fg-field-clear` | color | `color-mix(in oklab, var(--xh-fg-muted) 50%, transparent)` | dark |
 | `--xh-fg-on-brand` | color | `var(--xh-color-neutral-0)` | dark |
 | `--xh-fg-on-brand-subtle` | color | `color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default))` | dark |
 | `--xh-fg-on-media-chrome` | color | `var(--xh-color-neutral-0)` | dark |

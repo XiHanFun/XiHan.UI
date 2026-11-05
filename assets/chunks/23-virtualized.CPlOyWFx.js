@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`select-virtualized`);e.collection=Array.from({length:1e4},(e,t)=>({value:`option-${t+1}`,label:`选项 ${t+1}`}))}export{e as default};

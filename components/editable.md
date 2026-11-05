@@ -596,7 +596,7 @@ import {
 | `--xh-editable-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | editable 的 control 部件 background-color 覆盖槽。 |
 | `--xh-editable-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | editable 的 control 部件 border 覆盖槽。 |
 | `--xh-editable-control-border-disabled` | `control` | `border-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-border-disabled` | editable 的 control 部件 border-color 覆盖槽。 |
-| `--xh-editable-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | editable 的 control 部件 border-color 覆盖槽。 |
+| `--xh-editable-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | editable 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-editable-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | editable 的 control 部件 border-color 覆盖槽。 |
 | `--xh-editable-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | editable 的 control 部件 border-color 覆盖槽。 |
 | `--xh-editable-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | editable 的 control 部件 color 覆盖槽。 |

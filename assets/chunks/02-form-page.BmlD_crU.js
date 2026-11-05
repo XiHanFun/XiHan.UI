@@ -1,0 +1,331 @@
+var e=`<!-- 表单页 | 一张值表驱动多种控件：文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框放进字段组即按 name 读写这张表，不必逐个接线；校验、错误态与错误摘要统一经表单 -->
+<style>
+  #form-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-4);
+    inline-size: 100%;
+    max-inline-size: 560px;
+  }
+
+  #form-page [data-form="body"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-space-4);
+  }
+
+  /* 两栏并排，窄屏落回一栏 */
+  #form-page [data-form="row"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--xh-space-4);
+    align-items: end;
+  }
+
+  #form-page [data-form="check"] {
+    display: flex;
+    align-items: center;
+    gap: var(--xh-space-2);
+    font-size: var(--xh-font-size-md);
+  }
+
+  #form-page [data-form="actions"] {
+    display: flex;
+    gap: var(--xh-space-2);
+  }
+
+  #form-page [data-form="error"] {
+    margin: 0;
+    color: var(--xh-fg-danger);
+    font-size: var(--xh-font-size-sm);
+  }
+</style>
+
+<div id="form-page">
+  <xh-page-header>
+    <div data-xh-part="root">
+      <div data-xh-part="title">新建工单</div>
+      <div data-xh-part="description">提交后进入值班队列，重复问题会被合并</div>
+    </div>
+  </xh-page-header>
+
+  <xh-alert tone="info">
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div data-xh-part="title">先看一眼已知问题</div>
+        <div data-xh-part="description">近三天同类工单 12 条，其中 9 条已定位到同一处配置。</div>
+      </div>
+    </div>
+  </xh-alert>
+
+  <xh-form id="form-page-form">
+    <form data-xh-part="root" data-form="body">
+      <!-- 摘要只在提交失败后显形，条目一次全写上 -->
+      <div data-xh-part="error-summary">
+        <span id="form-page-count">共 0 处需要修改</span>
+        <a data-xh-part="error-summary-item" name="title"></a>
+        <a data-xh-part="error-summary-item" name="detail"></a>
+        <a data-xh-part="error-summary-item" name="agree"></a>
+      </div>
+
+      <div data-xh-part="field-group" name="title">
+        <xh-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">标题</label>
+            <xh-text-field placeholder="一句话说清现象">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" />
+                </div>
+              </div>
+            </xh-text-field>
+            <p data-xh-part="error-text"></p>
+          </div>
+        </xh-field>
+      </div>
+
+      <div data-xh-part="field-group" name="detail">
+        <xh-field>
+          <div data-xh-part="root">
+            <label data-xh-part="label">详细描述</label>
+            <xh-text-field placeholder="复现步骤、期望结果、实际结果">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <textarea data-xh-part="input" rows="3"></textarea>
+                </div>
+              </div>
+            </xh-text-field>
+            <p data-xh-part="description">写清复现步骤，值班的人不必再来回问</p>
+            <p data-xh-part="error-text"></p>
+          </div>
+        </xh-field>
+      </div>
+
+      <div data-form="row">
+        <div data-xh-part="field-group" name="priority">
+          <xh-select placeholder="请选择">
+            <div data-xh-part="root">
+              <span data-xh-part="label">优先级</span>
+              <div data-xh-part="control">
+                <button data-xh-part="trigger">
+                  <span data-xh-part="value-text"></span>
+                  <span data-xh-part="indicator"></span>
+                </button>
+              </div>
+              <div data-xh-part="positioner">
+                <div data-xh-part="content">
+                  <div data-xh-part="list">
+                    <div data-xh-part="item" value="p0">
+                      <span data-xh-part="item-text">P0 · 阻断</span>
+                      <span data-xh-part="item-indicator"></span>
+                    </div>
+                    <div data-xh-part="item" value="p1">
+                      <span data-xh-part="item-text">P1 · 严重</span>
+                      <span data-xh-part="item-indicator"></span>
+                    </div>
+                    <div data-xh-part="item" value="p2">
+                      <span data-xh-part="item-text">P2 · 一般</span>
+                      <span data-xh-part="item-indicator"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </xh-select>
+        </div>
+
+        <div data-xh-part="field-group" name="amount">
+          <xh-number-field min="1" max="99">
+            <div data-xh-part="root">
+              <label data-xh-part="label">受影响实例</label>
+              <div data-xh-part="control">
+                <button data-xh-part="decrement-trigger"></button>
+                <input data-xh-part="input" />
+                <button data-xh-part="increment-trigger"></button>
+              </div>
+            </div>
+          </xh-number-field>
+        </div>
+      </div>
+
+      <div data-xh-part="field-group" name="kind">
+        <xh-radio-group orientation="horizontal">
+          <div data-xh-part="root">
+            <span data-xh-part="label">工单类型</span>
+            <div data-xh-part="item" value="bug">
+              <input data-xh-part="hidden-input" />
+              <span data-xh-part="indicator"></span>
+              <span data-xh-part="item-text">缺陷</span>
+            </div>
+            <div data-xh-part="item" value="feature">
+              <input data-xh-part="hidden-input" />
+              <span data-xh-part="indicator"></span>
+              <span data-xh-part="item-text">需求</span>
+            </div>
+            <div data-xh-part="item" value="ask">
+              <input data-xh-part="hidden-input" />
+              <span data-xh-part="indicator"></span>
+              <span data-xh-part="item-text">咨询</span>
+            </div>
+          </div>
+        </xh-radio-group>
+      </div>
+
+      <div data-xh-part="field-group" name="labels">
+        <xh-tags-input id="form-page-labels" placeholder="回车落一个">
+          <div data-xh-part="root">
+            <label data-xh-part="label">关联模块</label>
+            <div data-xh-part="control">
+              <input data-xh-part="input" />
+            </div>
+          </div>
+        </xh-tags-input>
+      </div>
+
+      <div data-xh-part="field-group" name="impact">
+        <xh-slider min="0" max="100" step="5" large-step="20">
+          <div data-xh-part="root">
+            <label data-xh-part="label">
+              影响面估计：<span id="form-page-impact-value">40</span>%
+            </label>
+            <div data-xh-part="control">
+              <div data-xh-part="track">
+                <div data-xh-part="range"></div>
+              </div>
+              <div data-xh-part="thumb">
+                <input data-xh-part="hidden-input" />
+              </div>
+            </div>
+          </div>
+        </xh-slider>
+      </div>
+
+      <div data-xh-part="field-group" name="notify">
+        <label data-form="check">
+          <xh-switch>
+            <button data-xh-part="root">
+              <span data-xh-part="thumb"></span>
+            </button>
+          </xh-switch>
+          有进展就通知我
+        </label>
+      </div>
+
+      <div data-xh-part="field-group" name="agree">
+        <label data-form="check">
+          <xh-checkbox>
+            <button data-xh-part="root">
+              <span data-xh-part="indicator"></span>
+            </button>
+          </xh-checkbox>
+          这条工单可以对内公开
+        </label>
+        <p data-form="error" data-error="agree" hidden></p>
+      </div>
+
+      <div data-form="actions">
+        <button data-xh-part="submit-trigger">提交工单</button>
+        <button data-xh-part="reset-trigger">重置</button>
+      </div>
+    </form>
+  </xh-form>
+</div>
+
+<p id="form-page-submitted" data-demo-output>已提交：（尚未提交）</p>
+
+<script type="module">
+  const host = document.getElementById("form-page-form");
+  const count = document.getElementById("form-page-count");
+  const submitted = document.getElementById("form-page-submitted");
+  const impactReadout = document.getElementById("form-page-impact-value");
+  const tagControl = document.querySelector('#form-page-labels [data-xh-part="control"]');
+  const tagInput = tagControl.querySelector('[data-xh-part="input"]');
+
+  const defaults = {
+    title: "",
+    detail: "",
+    priority: ["p2"],
+    kind: "bug",
+    amount: "1",
+    labels: [],
+    impact: [40],
+    notify: true,
+    agree: false,
+  };
+
+  // 整表跑一遍：required 拦空值，长度与「必须勾上」各由一条规则收
+  host.rules = {
+    title: { required: true, message: "标题不能为空" },
+    detail: { required: true, min: 8, message: "把现象说满 8 个字，值班的人才接得住" },
+    agree: {
+      required: true,
+      validator: (value) => (value === true ? undefined : "要先确认这条工单可以对内公开"),
+    },
+  };
+  // 字段组里的控件按 name 读写这张值表：不必逐个监听改动再写回，重置也由表单带着控件一起还原
+  host.defaultValues = defaults;
+
+  // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
+  function createTag(value) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", value);
+    const preview = document.createElement("div");
+    preview.dataset.xhPart = "item-preview";
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = value;
+    const remove = document.createElement("button");
+    remove.dataset.xhPart = "item-delete-trigger";
+    preview.append(text, remove);
+    item.append(preview);
+    return item;
+  }
+
+  // 按当前值增删标签节点，已经在的那份原地留着
+  function renderTags(next) {
+    const alive = new Map();
+    for (const el of tagControl.querySelectorAll('[data-xh-part="item"]')) {
+      alive.set(el.getAttribute("value"), el);
+    }
+    for (const [value, el] of alive) {
+      if (!next.includes(value)) el.remove();
+    }
+    for (const value of next) {
+      if (!alive.has(value)) tagControl.insertBefore(createTag(value), tagInput);
+    }
+  }
+
+  // 标签节点与影响面读数由作者自己铺：照值表刷
+  function paintValues(values) {
+    impactReadout.textContent = (values.impact ?? [0])[0];
+    renderTags(values.labels ?? []);
+  }
+
+  // 错误文案由作者自己写进字段、控件旁那一行与摘要条目；错误态由表单交给控件
+  function paintErrors(errors) {
+    for (const name of ["title", "detail"]) {
+      host.querySelector(\`[data-xh-part="field-group"][name="\${name}"] [data-xh-part="error-text"]\`)
+        .textContent = errors[name] ?? "";
+    }
+    for (const line of host.querySelectorAll("[data-error]")) {
+      const message = errors[line.dataset.error] ?? "";
+      line.textContent = message;
+      line.hidden = message === "";
+    }
+    for (const item of host.querySelectorAll('[data-xh-part="error-summary-item"]'))
+      item.textContent = errors[item.getAttribute("value")] ?? "";
+    count.textContent = \`共 \${Object.keys(errors).length} 处需要修改\`;
+  }
+
+  host.addEventListener("values-change", (event) => paintValues(event.detail.values));
+  host.addEventListener("errors-change", (event) => paintErrors(event.detail.errors));
+  host.addEventListener("submit", (event) => {
+    // 整张值表一行放不下，输出栏截断，悬停看全文
+    submitted.title = JSON.stringify(event.detail.values);
+    submitted.textContent = \`已提交：\${submitted.title}\`;
+  });
+
+  paintValues(defaults);
+<\/script>
+`;export{e as default};

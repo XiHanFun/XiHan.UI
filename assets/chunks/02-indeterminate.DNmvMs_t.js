@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.G2__Ceh3.js";import{t}from"./react.CbNV8_UV.js";import{t as n}from"./checkbox.i4bNwmv-.js";var r=t(),i=e();function a(){let[e,t]=(0,r.useState)(`indeterminate`);return(0,i.jsx)(n,{checked:e,onCheckedChange:e=>t(e.checked),children:`选择全部`})}export{a as default};

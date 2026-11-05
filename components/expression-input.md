@@ -707,7 +707,7 @@ const formula = ref("amount > 5000 || dyas > 7");
 | `--xh-expression-input-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | expression-input 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-expression-input-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | expression-input 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-expression-input-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | expression-input 的 content 部件 min-inline-size 覆盖槽。 |
-| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `0` | expression-input 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-expression-input-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | expression-input 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-expression-input-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | expression-input 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-expression-input-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | expression-input 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-expression-input-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | expression-input 的 content 部件 box-shadow 覆盖槽。 |
@@ -716,7 +716,7 @@ const formula = ref("amount > 5000 || dyas > 7");
 | `--xh-expression-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | expression-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-expression-input-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | expression-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-expression-input-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | expression-input 的 control 部件 border 覆盖槽。 |
-| `--xh-expression-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | expression-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-expression-input-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | expression-input 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-expression-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | expression-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-expression-input-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | expression-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-expression-input-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | expression-input 的 control 部件 color 覆盖槽。 |
@@ -753,7 +753,7 @@ const formula = ref("amount > 5000 || dyas > 7");
 | `--xh-expression-input-item-prefix-w` | `item-prefix` | `min-inline-size` | `default` | `--xh-space-8` | expression-input 的 item-prefix 部件 min-inline-size 覆盖槽。 |
 | `--xh-expression-input-item-px` | `item` | `padding-inline` | `default` | `--xh-_expression-input-px` | expression-input 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-expression-input-item-py` | `item` | `padding-block` | `default` | `--xh-_expression-input-item-py` | expression-input 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `0` | expression-input 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-expression-input-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | expression-input 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-expression-input-item-suffix-fg` | `item-suffix` | `color` | `default` | `--xh-material-frosted-fg-muted` | expression-input 的 item-suffix 部件 color 覆盖槽。 |
 | `--xh-expression-input-item-suffix-font-size` | `item-suffix` | `font-size` | `default` | `--xh-_expression-input-caption-size` | expression-input 的 item-suffix 部件 font-size 覆盖槽。 |
 | `--xh-expression-input-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | expression-input 的 label 部件 color 覆盖槽。 |
@@ -767,9 +767,9 @@ const formula = ref("amount > 5000 || dyas > 7");
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

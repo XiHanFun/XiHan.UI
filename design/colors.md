@@ -10,7 +10,7 @@
 
 ## 基础色板
 
-十二个色相，每个色相 11 档（50 – 950）。每档的明度与彩度取品牌曲线的基线，彩度再按该档明度与色相收进 sRGB 色域。色相 258 那一族（indigo）与品牌色逐值相同——品牌就是色板里的一员。
+十二个色相，每个色相 11 档（50 – 950）。每档的明度与彩度取品牌曲线的基线，彩度再按该档明度与色相收进 sRGB 色域。色相 258 那一族（indigo）就是这条基线本身，也是原来的缺省品牌，现在作为 `data-brand="indigo"` 预设保留；缺省品牌换成了色相 277 的靛蓝（见[品牌色](#品牌色)）。
 
 <XhTokenSwatches prefix="--xh-color-red-" label="red · 25" />
 <XhTokenSwatches prefix="--xh-color-orange-" label="orange · 50" />
@@ -21,7 +21,7 @@
 <XhTokenSwatches prefix="--xh-color-teal-" label="teal · 180" />
 <XhTokenSwatches prefix="--xh-color-cyan-" label="cyan · 215" />
 <XhTokenSwatches prefix="--xh-color-blue-" label="blue · 237" />
-<XhTokenSwatches prefix="--xh-color-indigo-" label="indigo · 258（= brand）" />
+<XhTokenSwatches prefix="--xh-color-indigo-" label="indigo · 258（基线）" />
 <XhTokenSwatches prefix="--xh-color-purple-" label="purple · 302" />
 <XhTokenSwatches prefix="--xh-color-pink-" label="pink · 345" />
 
@@ -54,6 +54,8 @@
 ## 品牌色
 
 品牌色不是一枚颜色，是一条从种子派生出来的 11 档梯度。派生只取种子的色相与彩度，明度曲线原样保留——语义层与语气层建立在明度之上的对比度保证，对任何种子都成立。
+
+缺省品牌是 OKLCH 色相 277 的靛蓝。它和预设品牌同一个做法：每一档的明度按基线（色相 258 那一族）那一档的 WCAG 相对亮度反求，600 档实心底上的白字是 5.08:1。没有直接取 Tailwind 的 indigo-500，是因为它上面的白字只有 4.47:1，过不了正文的 4.5:1。
 
 <XhTokenSwatches prefix="--xh-color-brand-" />
 
@@ -102,7 +104,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-bg-subtle': '淡底；白底上的 hover',
     '--xh-bg-subtle-hover': '白底上的 pressed；淡底上的 hover',
     '--xh-bg-subtle-active': '淡底上的 pressed，只留给按下',
-    '--xh-bg-field': '字段外壳静息的底：淡底兑一半；聚焦换回 surface',
+    '--xh-bg-field': '字段外壳静息的底：缺省与承载面同色（白底），边界由字段描边承担；主题要淡底字段只改这一支',
     '--xh-bg-muted': '禁用实心钮退到的中性面',
     '--xh-bg-subtle-opaque': '淡底的不透明档：要盖住下层内容的面（吸顶表头、浮动钮、层叠头像）',
     '--xh-bg-subtle-hover-opaque': '淡底 hover 档的不透明档',
@@ -134,7 +136,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-invalid']"
+  :names="['--xh-border-default', '--xh-border-default-opaque', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-border-control-hover', '--xh-border-control-focus', '--xh-border-invalid', '--xh-ring-focus', '--xh-ring-gap', '--xh-ring-invalid']"
   :notes="{
     '--xh-border-default': '一切根面外边与 raised 面描边',
     '--xh-border-default-opaque': '装饰边的不透明档：压在任意内容上、必须自带浅框的部件（取色滑杆的拇指）',
@@ -142,14 +144,15 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-border-strong': '只作高对比档与登记过的强调边：字段悬停边、勾选方框与单选圈的静息边',
     '--xh-border-control': '控件边界，缺省档与 border-default 同色；高对比档才加深到 3:1',
     '--xh-border-control-hover': '控件悬停边',
-    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦只换这条边与底色，不画环',
-    '--xh-ring-focus': '公共键盘焦点环，对画布、面与淡底都 ≥ 3:1',
+    '--xh-border-control-focus': '聚焦边，与焦点环同色、不随语气；字段聚焦时描边换成它，内侧再补一道 inset 线，合起来就是盒内的焦点环',
+    '--xh-ring-focus': '公共键盘焦点环，2px 画在元素自己的盒内，外侧贴着承载面，对页面底、画布、面与淡底都 ≥ 3:1',
+    '--xh-ring-gap': '实心面上环内侧的 1px 底色间隔线：取承载面底色，环两侧都是底色，压在任何颜色的面上都读得出来',
   }"
 />
 
 ## 语气轴
 
-`data-tone` 是六族语气的切换轴：brand、neutral、danger、warning、success、info。写在任何节点上，节点内即可取到整族 `--xh-tone-*`：实心底、实心底上的前景、淡底、淡底文字、描边、控件边界。组件按语气换色只经这条轴，不自行挑原语。取用方式与全表见 [皮肤与样式分层 · 在自定义节点上使用语气](/guide/styling#在自定义节点上使用语气)。
+`data-tone` 是六族语气的切换轴：brand、neutral、danger、warning、success、info。写在任何节点上，节点内即可取到整族 `--xh-tone-*`：实心底、实心底上的前景、淡底、淡底文字、描边、控件边界。组件按语气换色只经这条轴，不自行挑原语。按钮一类的动作控件上，neutral 与不写等价：描边、淡底、幽灵形态就是缺省的中性面，不另铺 neutral 淡底、不换深色描边；实心形态仍是中性那一族的实心底。Tag、Alert、Badge 这类语气面的 neutral 照常取 neutral 淡底。取用方式与全表见 [皮肤与样式分层 · 在自定义节点上使用语气](/guide/styling#在自定义节点上使用语气)。
 
 ## 彩色面与墨色域
 
@@ -276,7 +279,7 @@ const surfaces = ["var(--xh-color-orange-500)", "var(--xh-color-teal-300)", "var
 - 浮层经 Portal 渲染到文档末尾，不在域内：弹出的菜单、选择面板保持自己的材质。
 - 声明了域的区块，底色取原语（如 `--xh-color-indigo-800`）或在区块外取值。`--xh-bg-brand`、`--xh-fg-default` 这类令牌在域内被改写为墨色，区块用它们画自己的底，底色会随域翻转。
 
-库自己渲染的彩色面自动成为域，不需要声明：实心按钮与实心标签、Tooltip 反白面里的内容按那块面的底色取墨色（与作者的 `auto` 同一套规则，面自身的底色不变），ImageViewer 的看片层整层是白墨域。把快捷键、分隔线或小徽标放进这些面时，它们的描边与淡底不会是一块不透明的灰。
+库自己渲染的彩色面自动成为域，不需要声明：实心按钮与实心标签、写了 `tone` 的 Tooltip 里的内容按那块面的底色取墨色（与作者的 `auto` 同一套规则，面自身的底色不变），ImageViewer 的看片层整层是白墨域。把快捷键、分隔线或小徽标放进这些面时，它们的描边与淡底不会是一块不透明的灰。
 
 ## 对比度判据
 

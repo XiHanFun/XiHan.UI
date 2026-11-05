@@ -73,14 +73,12 @@ export function Example() {
 ## 4. Web Components
 
 - 先调用 `defineXhElements()`；主入口 import 不自动注册。只用到几个元素时按需注册：`defineXhElement('xh-table', XhTableElement)`，标签与类由 `XhElementTagMap` 约束，与全量注册走同一张注册表。
-- 自定义元素使用 Light DOM，不自动生成作者结构。例外有两类：
-  - core 在 liquid 档生成的装饰节点：液态组的色块层与装滤镜的 `<svg>`（例如 FloatButton 的 root 里），`aria-hidden`、不接指针、不是部件，三端由同一段 core 代码插入与撤回，适配器不感知；
-  - 组件在 headless 里提供了标准结构函数（`<组件>Structure(api)`，产出与 anatomy 对应的 `StructureNode` 树，和 anatomy 放在同一目录）时，作者只写 `root` 的情况下元素经 `dom/structure.ts` 的 `placeStructure` 照它生成部件节点（带 `data-xh-gen`、按 key 复用），Vue / React 的缺省树经各自 `runtime/structure` 的 `renderStructure` 照同一份渲。三端出自同一个函数，一致性套件用 `defaultStructure: true` 的夹具逐帧对拍。目前是 heatmap。
+- 自定义元素使用 Light DOM，不自动生成作者结构。唯一例外：组件在 headless 里提供了标准结构函数（`<组件>Structure(api)`，产出与 anatomy 对应的 `StructureNode` 树，和 anatomy 放在同一目录）时，作者只写 `root` 的情况下元素经 `dom/structure.ts` 的 `placeStructure` 照它生成部件节点（带 `data-xh-gen`、按 key 复用），Vue / React 的缺省树经各自 `runtime/structure` 的 `renderStructure` 照同一份渲。三端出自同一个函数，一致性套件用 `defaultStructure: true` 的夹具逐帧对拍。目前是 heatmap。
 - 作者用 `data-xh-part` 声明节点角色。
 - 元素升级后写入 `data-scope`、`data-part`、ARIA 和事件。
 - `data-xh-part` 是输入声明，`data-part` 是接线结果，不能混用。
 - 嵌套的 `xh-*` 宿主自己带 `data-xh-part` 即担任外层的那个部件（等价 asChild）：外层基类把接线转交给它，由它按 `mergeAsChildProps` 合进自己的根节点（`asChildTarget()`）；外层 `getPart` 取到的是那个根节点。能担任部件的组件覆盖 `asChildTarget()` 并在铺根节点时包一层 `withAsChild()`，目前是 `xh-button`。
-- 浮层 required parts 在升级前由 `undefined.css` 收起，避免裸内容闪现。
+- 浮层 required parts 在升级前由 `not-defined.css` 收起，避免裸内容闪现。
 
 ```html
 <script type="module">

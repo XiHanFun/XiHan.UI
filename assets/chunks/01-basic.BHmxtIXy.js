@@ -1,0 +1,37 @@
+var e=`<!-- 基础用法 | collection 是层级元信息的唯一事实源；不写结构时组件照它铺出标题与整棵树，缩进由子层容器自行撑开 -->
+<xh-tree id="tree-basic" label="项目文件">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px"></div>
+</xh-tree>
+
+<script type="module">
+  // 只写 root：标题与整棵树由元素照这份树数据生成，层级、显示文本与节点禁用也都查它
+  const tree = document.getElementById("tree-basic");
+  tree.collection = [
+    {
+      value: "src",
+      label: "src",
+      children: [
+        {
+          value: "components",
+          label: "components",
+          children: [
+            { value: "button", label: "Button.vue" },
+            { value: "dialog", label: "Dialog.vue" },
+          ],
+        },
+        { value: "main", label: "main.ts" },
+      ],
+    },
+    {
+      value: "docs",
+      label: "docs",
+      children: [
+        { value: "guide", label: "guide.md" },
+        { value: "api", label: "api.md" },
+      ],
+    },
+    { value: "readme", label: "README.md" },
+  ];
+  tree.defaultExpandedValue = ["src"];
+<\/script>
+`;export{e as default};

@@ -128,7 +128,7 @@ createVisualEnvironmentController({
 createApp(App).mount("#app");
 ```
 
-组件按需从主入口取，不需要注册插件：
+组件按需从主入口取，不需要注册插件（也可以自动引入或全量注册，见 [Vue 适配器 · 注册方式](./adapters/vue#注册方式)）：
 
 ```vue
 <script setup lang="ts">
@@ -140,8 +140,21 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 
 ::: tip 中文项目的配置
 组件的内建文案（关闭按钮的读屏名称、分页的翻页说明等）默认为英文；日期时间类组件另接受 `locale`，未提供时跟随浏览器语言，读取失败时使用 `en-US`。
-要将两者固定为中文，在根组件中 `provideXhConfig({ locale: 'zh-CN', translations: { … } })` 全局配置一次即可，不需要逐实例传 `:translations`。文档站的示例是孤立片段，因此逐个传入；真实应用不应如此。见[国际化](./guide/i18n)。
+要将两者固定为中文，在根组件中把内建的 `zhCN` 语言包交给全局配置一次：`provideXhConfig(zhCN)`（`zhCN` 从 `@xihan-ui/vue/locale` 导入），文案与 `locale` 一起切换，不需要逐实例传 `:translations`；个别说法再经 `translations` 覆盖。文档站的示例是孤立片段，因此逐个传入；真实应用不应如此。见[国际化](./guide/i18n)。
 :::
+
+### Nuxt 项目
+
+装上同样的 `@xihan-ui/vue` 与 `@xihan-ui/styles`，在 `nuxt.config.ts` 里加一个模块，上面的皮肤引入、视觉环境控制器与组件 import 都不必写：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+});
+```
+
+模块还在服务端把视觉环境渲染到 `<html>` 上，并在首帧前读回读者存过的偏好。选项与 `$xhVisual` 的用法见 [Vue 适配器 · Nuxt](./adapters/vue#nuxt)。
 
 ## 接入原生 / 非 Vue 项目
 
@@ -181,11 +194,16 @@ createVisualEnvironmentController({
 import "@xihan-ui/styles";
 ```
 
-按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。每份单皮肤文件头自带它所属家族的 `@import '../family/*.css'`，单独引入时家族在场。
+按组件引入。layers.css 与 tokens.css 各自带完整层序声明，先引入任一即可；组件皮肤不能排在它们之前。每份单皮肤文件头自带它所属家族的 `@import '../family/*.css'`，单独引入时家族在场。reset 与四份公共层（聚焦环、字段标签、说明文字、指针反馈）不随皮肤引入，要自己引：漏了 `focus.css`，键盘聚焦时只剩浏览器缺省的那圈。用 Vite 的项目可以交给下文的插件自动完成。
 
 ```ts
 import "@xihan-ui/styles/layers.css";
 import "@xihan-ui/tokens/tokens.css";
+import "@xihan-ui/styles/reset.css";
+import "@xihan-ui/styles/focus.css";
+import "@xihan-ui/styles/label.css";
+import "@xihan-ui/styles/description.css";
+import "@xihan-ui/styles/pointer.css";
 import "@xihan-ui/styles/button.css";
 import "@xihan-ui/styles/dialog.css";
 ```
@@ -198,13 +216,33 @@ import "@xihan-ui/tokens/tokens.css";
 
 第三种同样保持层序：tokens.css 自带完整的层序声明，自行编写的皮肤直接写进 `@layer xihan.overrides` 即可。组件不依赖默认皮肤，只向 DOM 写入 `data-scope` / `data-part` / `data-state` 等属性，样式完全由使用者决定。参见[皮肤与样式分层](./guide/styling)。
 
-::: warning 第二种需要注意两点
+::: warning 第二种需要注意三点
 1. 漏引默认是静默的。少引一份皮肤时，该组件的 `data-scope` / `data-part` 照常存在、其他皮肤也已加载，只有它渲染为没有内边距、没有底色的裸元素。开发模式下开启下文的探测器可以发现。
-2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按 `index.css` 里 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序。
+2. 顺序按 `index.css` 里各皮肤段的相对顺序。同一个 `@layer xihan.components` 内，等特异性的规则由源序决定。自行排序（按字母、按目录读取序）当前可能看不出差别，将来增加跨组件规则后会与全量引入的渲染不同。需要按需引入时，按仓库里 [`ui/packages/design/styles/index.css`](https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/index.css) 中 `/* styles/xxx.css */` 段标记的顺序过滤，不自行排序（发布的样式已压缩，不带注释与段标记）。
 3. 混用多份单皮肤时，每份都各带一份家族 `@import`。打包器对同一 URL 的 `@import` 去重（Vite 默认的 postcss 路径会去重）时没有代价；不去重的内联器（例如 `@tailwindcss/vite` 自带的那条）会把家族复制多份，产物随之翻倍，而且后出现的副本会排在前面的皮肤之后。家族的关键覆盖点已按特指度而非源序设计，但多份副本仍是纯浪费——引入的皮肤超过几份时改用主入口。
 
-全量是全部皮肤加令牌，压缩后约 130 kB gzip。没有明确的体积压力时使用第一种。
+发布的样式文件都已去掉注释、压掉空白（`index.css` 约 1.6 MB）；带注释的源文件只在仓库里，不随包发布。全量是全部皮肤加令牌，压缩后约 180 kB gzip（约 120 kB brotli，v5.1.0 实测）；`pnpm size` 里 `styles/index.css` 一项把它限制在 197 kB gzip 以内，超出时 CI 不通过。没有明确的体积压力时使用第一种。
 :::
+
+### 按用到的组件自动注入
+
+用 Vite 的项目，按组件引入的排序与漏引都可以交给 `@xihan-ui/styles/vite`。插件扫描源码里写到的组件（`XhButton`、`XhSelectRoot` 这类导出名与 `<xh-button>` 这类标签都认），注入层序、令牌、reset、公共层、家族配方与这些组件的皮肤；组件内部借来的组件（分页里的每页条数下拉、日期选择器里的日历）一并补上。先后取自全量入口，注入的就是 `index.css` 的子集，渲染与全量引入一致。
+
+```ts
+// vite.config.ts
+import { XiHanUIStyles } from "@xihan-ui/styles/vite";
+
+export default defineConfig({
+  plugins: [vue(), XiHanUIStyles()],
+});
+```
+
+```ts
+// 应用入口：代替 import "@xihan-ui/styles"
+import "virtual:xihan-ui/styles";
+```
+
+扫描的是磁盘上的文件，默认 `index.html` 与 `src/`，`scan` 改扫描范围。组件写在扫描范围之外（由别的包渲染）时用 `include: ["dialog"]` 补上，`exclude` 去掉不要的。开发态默认挂漏引探测：页面上出现了没注入皮肤的组件，控制台报一条并给出补法，`skinCheck: false` 关掉。注入的是有层的一份，宿主带无层 reset 时改用全量的 `index.unlayered.css`。TypeScript 开了 `noUncheckedSideEffectImports` 时，给 `virtual:xihan-ui/styles` 补一条 `declare module`。
 
 ### 开发模式下查漏引
 
@@ -231,7 +269,7 @@ if (import.meta.env.DEV) {
 
 ```ts
 import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
-// { "--xh-color-brand-500": "oklch(0.623 0.214 258)", ... }
+// { "--xh-color-brand-500": "oklch(0.632 0.209 277)", ... }
 ```
 
 ## 宿主有无层 reset 时改用无层版
@@ -279,8 +317,8 @@ import "@xihan-ui/styles/index.unlayered.css";
 
 ## 服务端渲染
 
-- 视觉环境运行时在 `document` / `window` 缺席时自动进入 SSR 分支：不读媒体查询、不写 DOM，使用八轴基线。要避免首屏闪烁，在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。
-- 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 中的 `undefined.css` 处理这段窗口：用 `:not(:defined)` 选中作者编写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起，避免内容以裸文本出现在页面流中被读屏和搜索引擎视为正文。
+- 视觉环境运行时在 `document` / `window` 缺席时自动进入 SSR 分支：不读媒体查询、不写 DOM，使用八轴基线。要避免首屏闪烁，在服务端把 `data-theme` / `data-brand` / `data-density` / `data-contrast` / `data-motion` / `data-transparency` / `dir` 七个属性直接渲染到 `<html>` 上。Nuxt 项目由 [Nuxt 模块](./adapters/vue#nuxt)代劳。
+- 自定义元素在 JS 到达之前不会升级。`@xihan-ui/styles` 中的 `not-defined.css`（原名 `undefined.css`，旧路径 6.0.0 移除）处理这段窗口：用 `:not(:defined)` 选中作者编写的 `data-xh-part`，先把浮层族的 `content` / `positioner` / `backdrop` / `viewport` 收起，避免内容以裸文本出现在页面流中被读屏和搜索引擎视为正文。
 
 ## 下一步
 

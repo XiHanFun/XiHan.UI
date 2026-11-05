@@ -71,54 +71,41 @@ export const accordionKeyboard: KeyboardTable = {
 
 ## 焦点可见
 
-焦点环由一份公共皮肤绘制，全库共用：粗细 `--xh-ring-width`、颜色 `--xh-_ring-color`（默认 `--xh-ring-focus`）、偏移 `--xh-ring-offset`。偏移是负的一个环宽：环向元素内收，外沿与元素边框外沿重合，聚焦前后占位一致，不会挤开周围内容。
+焦点环是一道实线，由一份公共皮肤绘制、全库共用：`outline`，粗细 `--xh-ring-width`（2px）、颜色 `--xh-_ring-color`（默认 `--xh-ring-focus`）、偏移 `--xh-ring-offset`（负一个环宽）。环画在元素自己的盒内，外沿与边框外沿重合；outline 不占布局，聚焦前后占位与外轮廓都一致。
 
-WCAG 2.2 的非文本对比（SC 1.4.11）要求焦点指示器对相邻颜色至少 3:1。环内收之后，相邻的是两块颜色：
+环不出盒：元素多大、放进什么裁切容器里（滚动区、`overflow: hidden` 的卡片、首尾相接的行与格），环都完整，也压不到相邻元素，应用侧不必为它留位。环不随语气、即时出现、不进过渡。
 
-- 内侧：元素自己的面。这是判定基准。
-- 外侧：元素所在的背景。它随使用者放置组件的位置而变化，库无法决定，因此只测量不判定。
+WCAG 2.2 的非文本对比（SC 1.4.11）要求焦点指示器对相邻颜色至少 3:1。环外侧贴着元素所在的承载面：库环 `--xh-ring-focus` 对页面底、画布、承载面与淡底承载阶梯每一档都不低于 3:1。环内侧贴着元素自己的面，面是实心或任意颜色时（实心按钮与标签、勾中的方框、选中的开关轨道、日历选中格、色块、取色拇指、热力图格），环与面可能同色，这些档在环内侧衬一道 1px 的底色间隔线（`--xh-ring-gap`，取承载面底色，与库环之间同样不低于 3:1）。环两侧都是底色，压在什么颜色的面上都读得出来。彩色区块里的子元素由[墨色域](/design/colors#彩色面与墨色域)把环换成墨色。强制色档系统去掉 box-shadow，间隔线随之消失，只剩环。
 
-### 实心面上环取 `currentColor`
+### 环色不随面
 
-面为实心的档位（实心按钮、选中的开关轨道、选中的日历格、拖拽中的滑块等），环色与面同族，对比度最低可到 1.00:1。这些档位在各自皮肤的 `:focus-visible` 规则中把环色槽设为 `currentColor`，环改取该面配对的前景色。该前景色本就要在这块面上保证文字可读（与实心底 4.5:1），作为环色自然超过 3:1。
+皮肤不改环色。给 `--xh-_ring-color` 或 `outline-color` 赋值、或在键盘聚焦规则中写 `outline` 简写时，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 一律判红。实心面要读得出环，改衬间隔线：皮肤在实心档写 `--xh-_ring-gap: var(--xh-ring-gap)`，值只能是这一支。库环令牌（含 `--xh-ring-gap`）与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值：在子树上修改它们，库环在该子树上就不再是库环。
 
-改环色按求值判定，不按字面量判定：给 `--xh-_ring-color` 或 `outline-color` 赋值、或在键盘聚焦规则中写 `outline` 简写，值沿皮肤中的槽展开、再沿令牌链解到颜色，在任一主题 × 语气下与库的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等即视为改环色；解不出的值（`currentColor`、使用者传入的色值、没有兜底的使用者令牌）同样视为改环色。因此写成 `var(--xh-fg-on-brand)` 等与面配对的前景色令牌（开关选中的轨道即如此，它是 `<button>`、皮肤没有给它 `color`）与写 `currentColor` 受同样约束；写回 `var(--xh-ring-focus)` 不算改环色；直接写 `outline-color`、把属性名写成大写、把规则包进 `@supports` 或 `@media screen` / `@container` 等静态无法判断何时不成立的条件块、写在裸 `:focus` 中、用 `[data-variant]` / `[data-state]` 等属性存在式选择器覆盖多档，都在判定范围内。库环两支令牌与它们解析链上经过的名称（如 `--xh-color-brand-500`）在皮肤内一律不允许赋值：在子树上修改它们，库环在该子树上就不再是库环。
+### 描边与环同色的小控件
 
-::: warning 这不是环随语气变化
-四条口径需要一起理解：
-
-- 环不随语气：`data-tone` 切换的是颜色族，环不随之切换。语气色本体作为环色达不到 3:1（warning 对白底 2.70:1、success 3.04:1）。没有实心面的档位一律使用 `--xh-ring-focus`。
-- 实心面上取 `currentColor`：取的是该面配对的前景色，不是语气色。同一块 danger 实心底上，环是这块底上的文字色，不是 danger 本体。
-- 达标的淡色档不为统一而改环色：淡底、透空的面使用默认环即可（3.40:1 起），改为 `currentColor` 反而把品牌色环换成近黑近白，与同族组件分叉。`currentColor` 只在实心档使用，选择器的粒度与面的粒度对齐。
-- 失效档豁免对比度，但环不允许消失：WCAG 1.4.11 对失效控件不要求 3:1，库内照此不追求该数值；但 `color: transparent` 或置灰文字与置灰面同色会让 `currentColor` 环整体不可见，这不是对比不足，而是没有焦点提示。这类档位要么退回默认环，要么另给一支配对前景色。
-
-判据是环压着的面，不是组件的语气。皮肤的写法见[皮肤与样式分层](./styling)。
-:::
+Slider、ColorSlider 的拇指与 ColorPicker 取色区的拇指，边界本身就是一道 2px 描边，环画在描边上会与它重合。这几处把环收进描边以内（`calc(var(--xh-ring-offset) - var(--xh-stroke-thick))`），仍在拇指自己的盒内；拖动中画同一道环。
 
 ### 浮层壳是否接焦点
 
-浮层的面板多数只是焦点陷阱的兜底落点（`tabindex=-1`），环位于内部的控件上，皮肤关闭面板自身的环，并在 `ringless` 分区中登记环由谁绘制。tour 的气泡是例外：Enter / Space 落在它上面会推进下一步，它是可操作目标（WCAG 2.4.7），必须有可见焦点；程序化聚焦后使用默认内收环，面是 `--xh-bg-surface`，默认环达标。浏览器判据 `focus-ring-inset-grpring` 保证这一条。
+浮层的面板多数只是焦点陷阱的兜底落点（`tabindex=-1`），环位于内部的控件上，皮肤关闭面板自身的环，并在 `ringless` 分区中登记环由谁绘制；面板自己的投影照旧。tour 的气泡是例外：Enter / Space 落在它上面会推进下一步，它是可操作目标（WCAG 2.4.7），必须有可见焦点；程序化聚焦后使用默认环。浏览器判据 `focus-ring-geometry` 保证这一条。
 
-### 字段外壳不画环
+### 字段外壳
 
-输入框壳、InputGroup 组壳这类字段外壳聚焦时不画焦点环：外壳描边换成 `--xh-border-control-focus`（与 `--xh-ring-focus` 同色，对画布、面与淡底都 ≥ 3:1），底色同时从字段淡底 `--xh-bg-field` 换成承载面 `--xh-bg-surface`，焦点由描边换色与底色差两条通道标出；强制色档另补一圈 `Highlight` 环。面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）没有外壳，聚焦时插入符就是焦点指示。这几处在焦点环门禁的 `ringless` 分区登记。
+输入框壳、InputGroup 组壳这类字段外壳聚焦时，描边换成 `--xh-border-control-focus`（与 `--xh-ring-focus` 同色），描边内侧再补一道 inset 线，合起来一个环宽，就是画在盒内的焦点环，不另画 outline。校验失败的字段聚焦时聚焦态胜出。盒里的输入框与 field-inset 钮关掉自己的环，焦点由外壳的 `:focus-within` 标出。强制色档 inset 线被去掉，描边换成 `Highlight`，并补一道同宽的 `Highlight` 环。面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav 的搜索框）没有外壳，聚焦时插入符就是焦点指示。这几处在焦点环门禁的 `ringless` 分区登记。
+
+### 图表的数据标记
+
+图表里可聚焦的柱、点、扇区由 focus-ring 部件沿标记外侧描一圈，隔一道表面间隙：散点只有几像素，环画不进标记里。这是盒内规则唯一登记的例外，环仍落在图表自己的绘图区内。
 
 ### 相关判据
 
 | 判据 | 检查内容 |
 | --- | --- |
 | `check-focus-ring` | 环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
-| `check-focus-ring-surface` | 静态解出每个可聚焦档的面与环色，面对环不到 3:1 却未改环色的判红；改环色的规则（`--xh-_ring-color` / `outline-color` / 聚焦规则中的 `outline` 简写，求值后落在库环之外）覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记、绘制实心面却不接焦点也未登记的，同样判红；聚焦规则把环色写成透明直接判红，没有登记表。`@supports` 块内的规则按条件成立处理；`@media` 只认打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件为条件块，其他写法（`screen` / `all` / 逗号并列 / `not`）与任何 `@container` 一律按成立处理；规则写了但档位未写取值的属性，存在式一律视为覆盖，写了取值的按是否有兄弟档认领判定 |
+| `check-focus-ring-surface` | 改环色的声明解不到库环（`currentColor`、前景色、底色、透明）判红；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值判红；皮肤给库环令牌链上的名称赋值判红；键盘聚焦规则关了环（`outline: none` / `outline-width: 0` / `outline-style: none`）却没在 `ringless` 中写明环由谁画、或登记了却已扫不到，同样判红。`@media` 只认打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件为条件块，其他写法与任何 `@container` 一律按成立处理 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
-| `focus-ring-inset-grpring` | 浏览器态：环内收后聚焦前后占位不变、全库只有一种偏移；改环色的每条规则（同样按求值判定；`@media` 按当前页面的媒体环境判断，`@container` 照常处理）逐条落焦测量 3:1；tour 气泡落焦有环 |
-| `focus-ring-face-contrast` | 浏览器态：从皮肤推出档位，在真实 Chromium 中逐档测量环与面的实测对比 |
-| `focus-ring-disabled-ink` | 浏览器态：失效档使用默认环、不取被置灰的前景色；未失效的实心档仍取面自己的前景色 |
-
-`focus-ring-face-contrast` 只测量库绘制的面：皮肤未绘制面、计算出的底色等于同标签裸元素 UA 底色的部件（菜单的触发器只绘制展开档，基础档露出的是原生 `button` 的 `buttonface`）不进入档位表，环内侧的颜色不属于库。明确不达标且更换环色无法解决的档位登记在 `KNOWN` 中，两侧反查：无法挂出该档、该档不再绘制环、或它已经达到 3:1，三种情况都判定登记过期。
-
-两条判据的分母互相对账。静态算出的每个实心档，浏览器态都要能挂出、测量结果也是实心的、环是否撤销两侧一致；浏览器态测出的每个实心档，静态要么算出同一块面（同键或覆盖它的档，比值一致），要么在登记表的 `declared` 中说明为何算不出。两边的键先归一为同一形态再比较（`:is()` 展开、只写了 root 的祖先去掉），叠出同一份面的组合只测量一次、沿别名找到已测量的档。对不上的逐条登记在 `focus-ring-face-contrast.reconcile.json` 中写明理由，登记的必须仍然对不上，对不上的必须已登记。
-
-静态与浏览器态各有盲区，因此都保留。静态判据运行快，交互后才出现的状态（`[data-dragging]`、`[data-state='picking']`）同样能计算，但看不到面绘制在祖先上、改了环色却被另一条规则替换 `color`、同一档后面又有规则把环色写回默认等级联叠加；浏览器态测量的是实测值，覆盖更全，但 `:hover` / `:active` 叠加聚焦无法测量（真实指针移动会使浏览器退出键盘模态，`:focus-visible` 立即消失），`::before` 铺的底、真实媒体条件中的面、连接层内联进 `style` 的面（颜色选择器的色板格、裁剪器的图）也不在范围内。
+| `focus-ring-geometry` | 浏览器态：环的外沿落在边框外沿上、落焦前后占位不变；字段外壳描边换色并补 inset 线、合起来一个环宽、不画 outline；随库样式表里的偏移只有 `--xh-ring-offset` 与拇指收进描边以内的那一档；库环对每一档承载面、间隔线与库环之间都不低于 3:1；实心面落焦时衬着间隔线；tour 气泡落焦有环；强制色档环不消失、字段补同宽的系统色环 |
+| `focus-ring-shared` | 浏览器态：默认档、没写过聚焦规则的部件、实心动作控件（衬间隔线，悬停与按下时不让位）、实心面里的后代（不衬）、关环档与字段外壳逐一落焦核对 |
 
 ## 浏览器中的自动扫描
 
@@ -1213,7 +1200,7 @@ registerEffect(myEffect);
 
 # 行为原语
 
-`@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。在这里实现一次，组件只负责调用。
+`@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、上下文菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。在这里实现一次，组件只负责调用。
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 中（它们是结构原语，比行为更底层）。
 
@@ -1223,9 +1210,35 @@ registerEffect(myEffect);
 
 `createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
 
+## 浮层第一次打开时才加载
+
+消隐层、焦点域、滚动锁、背景失活、Portal 视觉桥与多选标签动效只在浮层打开时才用得上。库内的浮层组件不从主入口同步引入它们，而是第一次要用时经 `loadOverlayKit()` 取一块按需块；定位引擎（`@xihan-ui/position` 的 `createDeferredPositionEngine`，见[浮层定位](./position#延迟引擎)）与浮层里的自绘滚动条同样按需。使用者的打包器（Vite、Rollup、webpack）会把这几块切成单独的文件，首屏不下载：只用一个选择器时首屏从 53 kB 降到 33 kB（gzip，见[体积棘轮](./testing#体积棘轮)）。
+
+- 何时取：浮层挂载后，文档上第一次有交互（指针移进来、按下、按键、聚焦、触摸）就在后台取。键盘打开前焦点先到，指针点开前先移进来，真打开时多半已经到了。挂载时就开着的浮层立刻取。
+- 没到时打开：展开态当场生效，状态、ARIA、`data-state` 与事件照常；资源到了再接上。靠定位的浮层落位前本就藏着；对话框、抽屉、图片查看器、命令面板这类不靠落位藏面板的，内容等按需块到了才露出来。等的这段时间按 Escape、点外面不收起，焦点留在原处；等的时候已经关掉就不再接，不抢焦点。
+- 第一次打开也要同步：应用启动时调一次适配器导出的 `preloadOverlay()`（`@xihan-ui/vue`、`@xihan-ui/react`、`@xihan-ui/web-components` 都有），之后与静态引入完全一样。
+- 加载失败不缓存，下一次打开重新取。
+
+自己写浮层时：`whenOverlayKit(kit => …)` 在按需块到了时回调（已经到了当场调），返回的函数撤掉还在排的那一次；`overlayKit()` 已到返回它，没到返回 `null`；`prefetchOverlayKit(document)` 登记交互预取，底下用的是 `onFirstInteraction(document, run)`。给 Portal 壳接来源用 `connectPortalVisualBridge({ source, shell })`：逻辑来源当场登记，搬进壳的控件马上就能沿逻辑祖先链找到所在位置的配置与语言包；视觉桥等按需块到了再建，返回的函数一并撤掉。主入口照旧导出 `createDismissLayer`、`createFocusScope` 等，直接引入就是同步的，下文的示例都这样写。
+
+```ts
+import { prefetchOverlayKit, whenOverlayKit } from "@xihan-ui/core";
+
+prefetchOverlayKit(document);
+
+let dismiss = null;
+const cancel = whenOverlayKit((kit) => {
+  dismiss = kit.createDismissLayer({ config, layer, onDismiss: close });
+});
+
+// 收起或卸载时：还没到就撤掉排队，到了就释放
+cancel();
+dismiss?.dispose();
+```
+
 ## Portal 的视觉环境
 
-Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；语气经 `data-tone` 属性一并带过去，浮层内按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点取到的是来源那一族。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
+Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度、材质和方向分别读取最近的显式声明。语气 `data-tone` 不带：语气是组件自己的属性，不是来源所处的环境。浮层要用语气的组件（Select、Menu、Tooltip 等）把自己的 `tone` 写到定位层或内容部件上，没写的用组件自己的缺省语气，不接触发器外层容器的语气（见[语气不跨组件继承](./styling#语气不跨组件继承)）；浮层里按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点，要在自己身上写 `data-tone`。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
 
 自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
@@ -1243,7 +1256,7 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone` 与材质轴 `data-material`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`data-material` 与 `dir`；语气 `data-tone` 不在其列。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 ### 逻辑父子
 
@@ -1553,7 +1566,7 @@ export interface PresenceHandle {
 }
 ```
 
-关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 120ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
+关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 150ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
 
 Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，浮层登记与滚动锁保留到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 
@@ -2221,6 +2234,29 @@ checkbox 与 switch 的根是 `<button>`，HTML 的内容模型禁止 button 含
 
 不在任何表单内、无 DOM 的服务端、作者未写影子输入，三种情形都不需要特别处理：归属判定不命中、服务端不挂载副作用、锚点是组件根节点而不是影子输入。
 
+## 放进表单字段组
+
+库内的录入控件放进 `XhFormFieldGroup`（Web Components 是 `data-xh-part="field-group"`）后，按字段组的 `name` 读写 `XhFormRoot` 的值表，不必再接 `v-model`、`value` / `onValueChange` 或监听 `value-change` 后回写：
+
+```vue
+<XhFormRoot :default-values="{ title: '', notify: true }">
+  <XhFormFieldGroup name="title">
+    <XhTextFieldRoot placeholder="一句话说清现象" />
+  </XhFormFieldGroup>
+  <XhFormFieldGroup name="notify">
+    <XhSwitch />
+  </XhFormFieldGroup>
+</XhFormRoot>
+```
+
+- 值落在哪个 prop 由控件决定：多数是 `value`，开关与复选框是 `checked`，文件上传是 `files`。登记表在 headless 的 `formModelOf`。
+- 控件自己给了值（`null` 也算）就一概不接，表单的值不读也不写，作用域插槽里的 `value` / `setValue` 手动接法照旧可用。
+- 字段在 `defaultValues` 里有值时控件是受控的：表单重置、`setFieldValue` 改了这个字段，控件跟着变。初值与重置这时都归表单，控件自己写的 `defaultValue` / `defaultChecked` 不生效，原生表单的 `reset` 也不会让控件报出自己的初值去覆盖表单刚还原的值。字段还没有值时控件照旧非受控（自己的初值照用），第一次改动写进表单后转为受控。
+- 一个字段组里有几个控件就都接同一个字段，例如滑块旁配一个数字框显示同一个值。组件内部借来跑的子控件（颜色选择器里的滑块、日期选择器里的日期输入、分页里的每页条数下拉）不接，`XhFieldBoundary` 与浮层的 Portal 后面的实例也不接。
+- 禁用、只读、必填与错误态本来就由表单下传，不必再写 `:invalid="invalid"`；错误文案仍从作用域插槽的 `error` 取。
+
+新增的表单组件没登记值通道、或组件内部借来跑子控件时没写 `formField: false`，都会被门禁拦截（`check-form-model`）。
+
 ## 控件在薄封装内
 
 `XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合并到它唯一的子节点上。子节点是组件时，合并到的是组件的根，而薄封装的根往往是 `div`。
@@ -2504,6 +2540,7 @@ import { ArrowDownIcon } from "@xihan-ui/icons";
 | `--xh-glyph-mark-close` | `x` | 清空钮、关闭钮、标签与文件条目的删除钮 |
 | `--xh-glyph-mark-chevron-down` · `-up` · `-left` · `-right` | `chevron-*` | 展开箭头、树与侧栏的分支把手、轮播与穿梭框的翻页、回到顶部 |
 | `--xh-glyph-mark-sort` · `-sort-asc` · `-sort-desc` | `arrow-up-down` / `arrow-up` / `arrow-down` | table 的排序方向 |
+| `--xh-glyph-mark-filter` | `filter` | table 数据驱动模式下列头里的筛选钮 |
 | `--xh-glyph-mark-info` · `-warning` | `info` / `triangle-alert` | 命令式 dialog 的类型徽记，以及 notification 的状态字形 |
 | `--xh-glyph-mark-zoom-in` · `-zoom-out` · `-rotate-left` · `-rotate-right` · `-flip-horizontal` · `-flip-vertical` | 同名图标 | image-viewer 的工具条 |
 | `--xh-glyph-mark-required` | `'*'` | field · fieldset 的必填星号（这是文字，不是图标） |
@@ -2984,7 +3021,7 @@ resolveEasing(t => t * t)(0.5); // 0.25
 
 十条命名缓动：与令牌原语同值的 `standard` `easeIn` `easeOut` `outStrong` `outFluid` `easeInOut` `outBack` `sineInOut` `emphasized`（表现性进场，语义令牌 `--xh-motion-ease-emphasis`，`@xihan-ui/animations` 的预设使用），以及 CSS 关键字 `linear`。
 
-三档时长（毫秒）：`durations.fast` 120、`durations.normal` 200、`durations.slow` 320。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（120ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
+三档时长（毫秒）：`durations.fast` 150、`durations.normal` 200、`durations.slow` 320：换色取 fast、几何取 normal，slow 只给整幅位移。`animate()` 默认取 `durations.normal`，`@xihan-ui/animations` 的配方默认取 `motionDurations.slide`（320ms）。语义层在此之上定义统一点击触感：按下走 `--xh-motion-duration-press`（150ms）与 `--xh-motion-ease-press`，释放走 `--xh-motion-duration-release`（200ms）与 `--xh-motion-ease-release`，见[设计令牌与主题](/guide/theme#点击触感)。
 
 字符串先查命名缓动，查不到再按 CSS 缓动函数的语法解释：`linear`、`ease` / `ease-in` / `ease-out` / `ease-in-out`、`step-start` / `step-end`、`cubic-bezier()`、`steps()`、`linear()`，取值与浏览器一致，所以 `readMotion` 读到样式里改写成任何合法缓动都能换成函数。CSS 关键字 `ease-out` 与命名缓动 `easeOut` 是两条曲线。认不出的写法抛 `TypeError`，消息里列出可用写法：写法可能来自 DOM 特性或后端配置，拼错的名字若悄悄按匀速播放，比报错更难察觉。`cubicBezier` 用牛顿迭代反解参数，导数过小时退回二分。
 
@@ -3299,7 +3336,6 @@ createSpring({ duration: 0.4, bounce: -0.5 }); // 过阻尼，缓慢趋近
 | `bouncy` | 400 / 18 | 20.4% | 约 581ms | 明显回弹，只供作者使用，核心组件不用 |
 | `toggle` | 420 / 26 | 7.5% | — | liquid 档的切换滑块 |
 | `lead` / `trail` | 520 / 34、210 / 24 | 2.9%、0.9% | 约 313ms、485ms | liquid 档双沿指示器的前沿与后沿 |
-| `merge` | 320 / 24 | 5.8% | — | liquid 档的融合与分离 |
 
 核心组件在 standard 档只用超调不超过 3% 的预设。
 
@@ -3642,6 +3678,12 @@ stop(); // 停止跟随
 
 日常使用不涉及这一层：浮层组件内部已经接入，只需传 `placement` / `offset` 等 props。
 
+## 延迟引擎
+
+`createDeferredPositionEngine()` 实现同一个端口，引擎本体第一次 `attach` 时才 `import()`。库内的浮层组件都用它：浮层关着时用不上定位，引擎不进首屏，使用者的打包器把它切成按需块。加载过一次之后每次 `attach` 都是同步的，与 `createPositionEngine()` 没有区别。
+
+第一次挂还会等 core 的浮层按需块：Portal 视觉桥在那一块里，壳上的密度、方向、主题就位之后再量，浮层不会先在错的位置露一帧。在浏览器里创建时顺带登记交互预取（见[浮层第一次打开时才加载](./behavior#浮层第一次打开时才加载)）；要提前取用 `loadPositionEngine()`。
+
 ## 选项
 
 | 选项 | 默认 | 说明 |
@@ -3673,7 +3715,7 @@ stop(); // 停止跟随
 
 ## 虚拟锚点
 
-右键菜单、文本选区这类没有实体元素的锚点，给一个能返回矩形的对象即可：
+上下文菜单、文本选区这类没有实体元素的锚点，给一个能返回矩形的对象即可：
 
 ```ts
 const virtual = {
@@ -3715,8 +3757,9 @@ engine.attach(virtual, floatingEl, { placement: "bottom-start" }, apply);
 - 视口尺寸变化
 - 锚点或浮层自身尺寸变化
 - 祖先链上的 `transform` / 缩放容器
+- `html`、`body` 或任一祖先上的 CSS `zoom`（整页缩放）：浮层照样贴着锚点，间距随 `zoom` 一起缩放
 
-静置时不空转，`stop()` 之后不再有任何回调。这两条与十二种 placement 的贴边对齐、翻面与避让（各配一条关闭后应当溢出的对照）、缩放容器、裁剪后的 `hidden` 一起，构成在浏览器中运行的定位契约判据。
+静置时不空转，`stop()` 之后不再有任何回调。这两条与十二种 placement 的贴边对齐、翻面与避让（各配一条关闭后应当溢出的对照）、缩放容器、CSS `zoom`、裁剪后的 `hidden` 一起，构成在浏览器中运行的定位契约判据。
 
 ## 相关
 
@@ -4692,79 +4735,59 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 对比度已按 WCAG 逐族验证：实心底与 `--xh-tone-on`、淡底三态与 `--xh-tone-fg` 都是 4.5:1，两条非文字档是 3:1。自定义配色时，文字与底色按上表成对取用，不把 `--xh-tone-fg` 放在 `--xh-tone-solid` 上。
 
-## 聚焦环与实心面
+## 语气不跨组件继承
 
-键盘焦点的环由公共皮肤 `focus.css` 统一绘制，组件不需要自行写 `outline`：
+库内有 `tone` 的组件，自己写了就用自己的，没写就用组件自己的缺省语气，不接外层容器的：没写 `tone` 的 Button 放进 `tone="danger"` 的 Alert，或放进一个写了 `data-tone="danger"` 的自定义节点，仍是缺省的品牌色；没写 `tone` 的 Tooltip 从这样的容器里打开，仍是缺省的反白底。
+
+组把语气交给子组件，是组件显式下发的：ButtonGroup 写到没写 `tone` 的段上，TagGroup、TagsInput 与选择器写到值标签上，Menu 写到子菜单上；子组件自己写了 `tone` 的，以子组件为准。CheckboxGroup、RadioGroup、ToggleGroup、Tabs 这类组的条目是组自己的部件，跟着组的语气走，条目外面再包一层布局组件（Flex、Grid、ScrollArea 等没有 `tone` 的组件）也不影响。
+
+上一节的 `--xh-tone-*` 只给自定义节点用，照旧按继承取：自定义节点取到的是最近一个写了 `data-tone` 的祖先那一族。
+
+## 聚焦环
+
+键盘焦点的环由公共皮肤 `focus.css` 统一绘制，组件不需要自行编写：
 
 ```css
 [data-scope][data-part]:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-_ring-color, var(--xh-ring-focus));
   outline-offset: var(--xh-ring-offset);
 }
+
+:where([data-scope][data-part]:focus-visible) {
+  box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-_ring-border, 0px)) var(--xh-_ring-gap, transparent);
+}
 ```
 
-偏移是负的一个环宽：环向元素内收，外沿与元素边框外沿重合，聚焦前后占位一致。因此环内侧紧邻的是元素自己的面。面为实心的档位上，环色与面同族，对比度最低可到 1.00:1。这些档位把环色槽设为 `currentColor`，环改取该面配对的前景色：
+环 2px、偏移负一个环宽，画在元素自己的盒内，外沿与边框外沿重合：不出盒，放进任何裁切容器里都完整，应用侧不必给它留位。环不随语气变化，即时出现、不进过渡。
+
+环外侧贴着承载面，实心面上也使用库环，不换环色；面是实心或任意颜色的档在环内侧衬一道 1px 底色间隔线，环两侧都是底色。皮肤在实心档打开它，带边框的部件同时写上边框宽，线才落在环的正内侧：
 
 ```css
-[data-scope='tag'][data-part='root'][data-variant='solid'] {
-  background: var(--xh-tag-bg, var(--xh-bg-brand));
-  color: var(--xh-tag-fg, var(--xh-fg-on-brand));
-}
-
-[data-scope='tag'][data-part='root'][data-variant='solid']:focus-visible {
-  --xh-_ring-color: currentColor;
+[data-scope='transfer'][data-part='item-checkbox'][data-state='checked']:not([data-disabled]) {
+  --xh-_ring-gap: var(--xh-ring-gap);
+  --xh-_ring-border: var(--xh-stroke-thin);
 }
 ```
 
-环不随语气变化。`currentColor` 取的是该面配对的前景色（实心底上是 `--xh-tone-on`），不是语气色本体：语气色本体作为环色时，warning 对白底只有 2.70:1、success 3.04:1，达不到 3:1。没有实心面的档位一律使用 `--xh-ring-focus`。判据是环压着的面，不是组件的语气。
-
-达标的面不为统一而改环色。淡底、透空等非实心档一律使用默认环；一条改环色的规则覆盖到非实心档（同一部件的另一形态、失效档、只读档）时门禁判红，应把选择器收窄到实心档，而不是登记豁免。
-
-改环色按求值判定，不按写法判定。门禁检查三条声明的求值结果：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写。沿皮肤中的槽展开、再沿令牌链解到颜色，在任一主题 × 语气下与库的两支环（`--xh-ring-focus`、`--xh-ring-invalid`）都不相等即视为改环色；解不出的值（`currentColor`、使用者传入的色值、没有兜底的使用者令牌）同样视为改环色。以下写法与写 `currentColor` 受同一套判据约束：
+间隔线这条规则零特指度：部件自己写了 `box-shadow`（浮层面板的投影、卡片的抬起影）时由部件自己胜出。实心又带投影的部件在自己的聚焦规则里把间隔线接进去：
 
 ```css
-/* 与面配对的前景色令牌：开关选中的轨道是 <button>、皮肤没有给它 color，只能这样写 */
-[data-scope='switch'][data-part='root'][data-state='checked']:focus-visible {
-  --xh-_ring-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
-}
-
-/* 不经槽、直接写长属性：同样视为改环色 */
-[data-scope='x'][data-part='y']:focus-visible {
-  outline-color: var(--xh-fg-default);
-}
-
-/* 包进 @supports：块内条件按成立处理 */
-@supports (color: red) {
-  [data-scope='x'][data-part='y']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-}
-
-/* 包进 @media screen / @container：静态无法判断何时不成立，按成立处理 */
-@media screen {
-  [data-scope='x'][data-part='y']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-}
-
-/* 写在裸 :focus 里的 outline 简写：:focus 包含键盘聚焦；未写颜色时等于 currentColor */
-[data-scope='x'][data-part='y']:focus {
-  outline: var(--xh-ring-width) solid var(--xh-fg-default);
-}
-
-/* 没有兜底的使用者令牌：值由使用者决定，无法解出 */
-[data-scope='x'][data-part='y']:focus-visible {
-  --xh-_ring-color: var(--xh-tag-fg);
+[data-scope='tag'][data-part='root']:focus-visible:not([data-disabled]) {
+  box-shadow: inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-_ring-gap, transparent);
 }
 ```
 
-显式写回 `var(--xh-ring-focus)`、校验失败时换 `var(--xh-ring-invalid)` 不算改环色。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块。用 `[data-variant]` / `[data-state]` 等属性存在式选择器一次覆盖多个形态时，每个形态各算一档，覆盖到的非实心档逐档判红：规则写了但档位未写取值的属性，存在式一律视为覆盖；写了取值的（`[data-state='on']`）按是否有兄弟档认领判定。库的两支环令牌与它们解析链上经过的名称（如 `--xh-color-brand-500`）在皮肤内一律不允许赋值。浏览器测试 `focus-ring-inset-grpring` 按同一定义从样式表读出改环色的规则，逐条测量落焦对比度是否达到 3:1；静态放行的别名色（例如在实心底上写同族的 `var(--xh-color-brand-600)`）在那里测量为 1:1。
+Action Control 家族在打了 `data-xh-ink-surface` 的实心面上自动打开间隔线。`--xh-_ring-gap` 与 `--xh-_ring-border` 登记为不继承，只作用于写它的节点：实心面里的后代自己落焦时不衬线（它们由墨色域把环换成墨色）。
 
-自行编写皮肤时，改环色前核对三件事：
+焦点由别处绘制时关环，并在门禁的 `ringless` 中登记由谁绘制：
 
-1. 面画在哪个节点上。画在祖先上时（透空的关闭按钮位于标签的实心底上），规则写成后代选择器，槽仍然设在获得焦点的节点上。
-2. 部件是否有 `color`。圆点、滑块等没有文字的部件先补一支与面配对的前景色；否则 `currentColor` 会取到继承的正文色或原生控件的 UA 前景色。只有一档需要更换时把该色直接写进槽，不经过 `currentColor`。
-3. 面被替换的档位要退出。失效档把面换成置灰底、前景换成置灰色甚至透明（`color: transparent` 会让整条环一起透明），中性轻档把实心底换成灰底。收窄选择器退回默认值，或把槽显式写回 `var(--xh-ring-focus)`。
+```css
+[data-scope='menu'][data-part='content']:focus-visible {
+  outline: none;
+}
+```
+
+改环色按求值判定：`--xh-_ring-color`、`outline-color`、键盘聚焦规则中的 `outline` 简写，值只能解到库环两支（`--xh-ring-focus`、`--xh-ring-invalid`），可以经组件覆盖槽或本份皮肤的私有槽转一道；`currentColor`、前景色与底色令牌、`transparent` 都判红。`--xh-_ring-gap` 只能赋 `var(--xh-ring-gap)`。`@media` 只有打印、高对比、减弱动效、粗指针、断点这几种真实媒体条件才算条件块，块里的系统色不受这条约束。库环令牌与它们解析链上经过的名称（如 `--xh-color-brand-600`）在皮肤内一律不允许赋值。
 
 ## 切换品牌色
 
@@ -4822,7 +4845,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 关闭时 DOM 不会立即消失：[进出场原语](./behavior#进出场)会等待动画结束（或超时）后才允许卸载，因此 `[data-state='closed']` 的动画可以完整播放。
 
-跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：浮层进出场 `xh-overlay-slide-in / out`、`xh-overlay-pop-in`、`xh-pop-in / out`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-notification-stack-in`、`xh-skeleton-pulse` 一类）仍写在各自皮肤里。
+跨皮肤共用的关键帧只定义一次，住在 `family/motion.css`，子入口是 `@xihan-ui/styles/motion.css`：弹层进出场 `xh-overlay-pop-in` / `xh-pop-out`，页内浮现的小件与标签行加入 `xh-pop-in`，面板 `xh-sheet-in / out`，整幅滑入 `xh-slide-in / out`，淡变与页内显现 `xh-fade-in / out`、`xh-rise-in`、`xh-drop-in`，列表条目 `xh-item-in`，披露 `xh-disclosure-expand / collapse`，循环 `xh-spin`、`xh-shimmer`，倒计时 `xh-countdown`。引用它们的皮肤各自 `@import` 这份文件，所以单独引入某一份皮肤时关键帧仍会到场，全量入口按物理文件去重。同一段动画全库只有一个名字；只属于一个组件的关键帧（`xh-notification-stack-in`、`xh-skeleton-pulse` 一类）仍写在各自皮肤里。
 
 要替换某段动画，在 `xihan.overrides` 层重定义同名关键帧即可，不必逐皮肤覆盖。共享关键帧的重定义会作用到所有引用它的组件；只想换一个组件时，改写该组件部件上的 `animation-name`，指向自己定义的关键帧。
 
@@ -4830,7 +4853,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 
 自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层的内容会以裸文本出现在页面流中，被搜索引擎与读屏视为正文。SSR / SSG 直出时这段窗口尤其长。
 
-`undefined.css` 处理这种情况，按作者写的 `data-xh-part` 选中（升级前唯一存在的标记）：
+`not-defined.css` 处理这种情况，按作者写的 `data-xh-part` 选中（升级前唯一存在的标记）。文件名取自它选中的 `:not(:defined)`；原名 `undefined.css`，旧路径 `@xihan-ui/styles/undefined.css` 在 5.x 里仍可引入、内容相同，6.0.0 移除：
 
 ```css
 @layer xihan.components {
@@ -4851,7 +4874,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-token-refs` | 皮肤引用了令牌产物中不存在的令牌名。孤儿引用不报错也不降级，整条声明在计算值阶段静默失效 |
 | `check-shared-slots` | 同一个字面量在两个以上组件中作为默认值。这是一条未命名的设计决策，应先建立语义令牌 |
 | `check-disabled-contrast` | 禁用态的前景色令牌上又叠加 `opacity`。两种手段同时使用会把对比度压到无法阅读 |
-| `check-focus-ring-surface` | 可聚焦部件的面对环的对比度不到 3:1，该档位却没有规则更换环色（`--xh-_ring-color` / `outline-color` / 聚焦规则中的 `outline` 简写求值后仍是库环）。反之改环色的规则覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明直接判红，失效档只豁免对比度，环不允许消失。`@supports` 块内的规则按条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤中给库环令牌链上的名称赋值直接判红 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |
@@ -5019,7 +5042,7 @@ Web Components 有两处与另两端不同：`<xh-config>` 不收 `disabled`，�
 
 基线比对的是逐像素的位图。字体、字形栅格化与子像素平滑在 Windows 与 Linux 上不同，同一份 CSS 在两边渲染出的位图不同：在开发机上生成的基线，CI 上无法匹配。
 
-字体是最大的不确定性：全库皮肤写的是 `font-family: inherit`，没有 sans 字体令牌，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
+字体是最大的不确定性：全库皮肤不定字体（`font-family: inherit`），sans 字体令牌只经可选的 `global.css` 落到根上、截图用例不引它，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
 
 反过来，环境中多安装字体不影响基线：字体族按名字确定，默认 `sans-serif` 落到 Noto Sans 或其他字体，画面不变。核对字体时核对的是这个名字（`fc-match 'DejaVu Sans'`），不是默认 `sans-serif`。
 
@@ -5114,13 +5137,13 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `overlay` | 浮层坐标系、可用空间、定位层、遮罩、箭头、落点与自绘滚动条 |
 | `motion` | 关键帧、时长与缓动、幅度、减弱动效、动效覆盖面 |
 | `a11y` | 聚焦环、焦点复位与上报、ARIA 写法、按键重复与键盘套件 |
-| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点 |
+| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点、类型断言的棘轮 |
 | `docs` | 示例的多框架对齐、令牌与动效、文档数字与导入、组件总览 |
 | `repo` | changeset、提交 scope、发版标签、PR 模板、类型检查覆盖面、文件头、脚本接线 |
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 135 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 138 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -5144,9 +5167,10 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-skin-parts` | 皮肤选择器中的 `[data-part]` 不在所属 scope 的解剖中：部件退役后遗留的规则永远无法选中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器计算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都约束这一节，未写的沿用左侧最近一节，`:is()` / `:where()` 中一致的 scope 带回外层，`:not()` / `:has()` 中各自计算），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器无法读取的（转义、匹配符不是全等）同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量）；查询用了 `max-width` / `max-height` 上界写法：它在断点值上与 `min-width` 同时成立，窄档专属规则写补集 `not all and (min-width: …)` |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
-| `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
+| `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
@@ -5154,7 +5178,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 
-另有分层依赖检查与十二项单独的门禁：
+另有分层依赖检查与十三项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引入第三方
@@ -5169,6 +5193,7 @@ pnpm gate:demo-types # 文档站 React 示例逐份类型检查（读 icons 的 
 pnpm gate:publish # 逐包运行 publint 与 attw，校验 exports 条件与类型解析
 pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不得保留站点标签
 pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合子集），并用临时夹具证七条家族门禁会红
+pnpm gate:nuxt    # 本仓的包打出来装进 examples/nuxt，类型检查、构建并起服务检查首屏（在临时目录里装 Nuxt，先 build）
 ```
 
 `gate:llms` 读取文档站的构建产物，运行前先在 `docs/` 下运行一次 `pnpm build`。
@@ -5183,7 +5208,8 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-72 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+79 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+量的是首屏同步加载的那一份：`pnpm size` 经 `ui/tooling/size-limit.config.mjs` 把动态 `import()` 的目标留在包外——使用者的打包器都会把它们切成按需块，首屏不下载（选择器开了 `virtual` 才加载虚拟化内核；浮层的消解层、焦点域、滚动锁、Portal 视觉桥、定位引擎与自绘滚动条第一次打开时才加载）。按需块自己另记一条，连同它的依赖一起称，同样受预算管。
 
 
 ## 相关
@@ -5210,10 +5236,10 @@ primitive  ──►  semantic  ──►  组件私有槽
 **primitive**：与场景无关的原始值，在任何作用域都不变，只声明一次。
 
 ```css
---xh-color-brand-500: oklch(0.623 0.214 258);
+--xh-color-brand-500: oklch(0.632 0.209 277);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 4px;
+--xh-radius-seed: 8px;
 ```
 
 颜色使用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上亮度一致，深色反转与对比度调整不需要逐色手工修正。
@@ -5228,8 +5254,8 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-fg-muted: var(--xh-color-neutral-600);
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
---xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
+--xh-shape-control: var(--xh-radius-md);
+--xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -5260,12 +5286,12 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
+| 按下 | `--xh-motion-duration-press`（150ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
 | 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
 
 缺省只换面不缩放；要按下回弹，在根上把 `--xh-motion-scale-press` 写回 0.97，时间线不用改。
 
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
+Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 150ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
 ## 组件内滚动
 
@@ -5297,7 +5323,15 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 
-必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 18 / 20）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+
+组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
+
+```ts
+import "@xihan-ui/styles/global.css";
+```
+
+这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。
 
 ## 八轴视觉环境运行时
 
@@ -5358,7 +5392,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 
 | DOM 轴 | 说明 |
 | --- | --- |
-| `data-theme` | 明暗两值各有整套语义取值 |
+| `data-theme` | 明暗两值各有整套语义取值；`system` 是不跑 JS 的跟随系统档，见下文 |
 | `data-brand` | 切换品牌色：预设品牌直接可用，自定义品牌先 `registerBrand` |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
@@ -5366,6 +5400,16 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
+
+### 不跑 JS 跟随系统明暗
+
+控制器的 `mode: "system"` 要等脚本跑起来才解出明暗。页面只想跟随系统、不想为此引脚本，或者要在脚本到达之前就对，直接在 HTML 里写 `data-theme="system"`：
+
+```html
+<html data-theme="system">
+```
+
+浅色系统下它与 `light` 同一套取值；系统切到深色，令牌的深色取值、`color-scheme` 与皮肤里只在深色下成立的几条规则（语气、按钮实底等）由 `prefers-color-scheme` 一并切过去，不经任何脚本，系统随时切换随时跟上。`system` 只是写在 DOM 上的一档，控制器照旧只投影 `light` / `dark`：之后若在同一个根上建控制器，它会把属性改成解出的具体值。
 
 ## 预设品牌
 
@@ -5375,7 +5419,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 visual.setPreference({ brand: brandId("green") });
 ```
 
-各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
+各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生；`indigo` 是原来的缺省品牌（色相 258），缺省换成色相 277 的靛蓝后留作预设。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
 
 `data-brand` 要与 `data-theme` 落在同一个元素上才换得动品牌：语义令牌在主题边界上声明，只在子元素上换品牌原语，语义令牌仍是外层解好的值。可视环境控制器的根总是同时写这两个属性；手写时在同一个元素上一并写 `data-theme`。
 
@@ -5409,13 +5453,13 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，铺 `--xh-bg-field`（缺省白底） | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，一层 `0 4px 10px` 柔和投影，无顶光 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，一层 `0 4px 12px` 投影 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给一层影 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，一层 `0 4px 10px` 柔和投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 取 sm 档 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，md 档投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -5427,7 +5471,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，缺省 none）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，sm 档）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
 环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
@@ -5441,13 +5485,13 @@ Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--x
 
 ### 紧凑配方（Tooltip）
 
-Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界：
+Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质（M2），再用三支 compact 配方组合；写了 `tone` 才换语气实底，那时边改取 on 色 20% 拼色承担 1px 可见边界（中性描边压在彩色底上看不见）：
 
 | 配方 | 常规值 |
 | --- | --- |
 | `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
 | `--xh-material-frosted-compact-backdrop` | none，无模糊 |
-| `--xh-material-frosted-compact-shadow` | 一层 `0 4px 10px` 投影（浅色 10% 黑、深色 36% 黑） |
+| `--xh-material-frosted-compact-shadow` | md 档投影（浅色引 `--xh-shadow-md`，深色是同样三层的深色投影） |
 
 高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 
@@ -5503,7 +5547,7 @@ import tokens from "@xihan-ui/tokens/tokens.json" with { type: "json" };
 
 # 版本与兼容性政策
 
-本页回答一个问题：升级到下一个 `1.x` 小版本时，已依赖的公开面是否会变化。
+本页回答一个问题：在同一个主版本内升级小版本或补丁版本（版本号第一位不变）时，已依赖的公开面是否会变化。
 
 XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 结构都是 [皮肤与样式分层](./styling) 与 [解剖与部件契约](./anatomy) 公开说明的用法：
 
@@ -5553,15 +5597,15 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 一、JS / TS 导出面
 
-23 个包中 23 个出 JS 或类型入口，共 66 个带类型的入口。
+23 个包中 23 个出 JS 或类型入口，共 70 个带类型的入口。
 
 ### 受约束
 
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | 包名 | 23 | 把代码从一个包移到另一个包 = major |
-| `exports` 子路径 | 66 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
-| Vue 组件导出 `Xh*` | 1252（143 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| `exports` 子路径 | 70 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）会被 Node 与打包器拒绝，这些路径不是 API |
+| Vue 组件导出 `Xh*` | 1260（143 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
 | Vue 组合式函数 `use<家族>` | 113 | `useSelect`、`useCombobox`。不使用库内部件、自行编写标记时的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
 | 无头内核 `connect*` | 143 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
@@ -5607,14 +5651,14 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
 | `data-scope` 取值（组件身份） | 143 | **受约束**（新增第 144 个组件是 minor） |
-| `data-part` 取值（部件名） | 397 个不同名字 / 1416 条「组件 × 部件」配对 | **受约束** |
+| `data-part` 取值（部件名） | 397 个不同名字 / 1424 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 397 个 | **受约束** |
 | `meta.requiredParts`（必备部件） | 313 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改动一处即四处同时破坏。
 
 ::: warning `data-xh-part`、`data-xh-scroll`、墨色域、液态下层与图表纹理、配色方案的声明是 `data-xh-` 前缀里仅有的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt`、`data-xh-modal-underlay` 等 70 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 与 `data-xh-chart-palette` 写在作者自己的祖先上，分别让其中的图表改用纹理区分系列、换一套配色方案（见[直角坐标图](../components/cartesian-chart)与[色彩 · 配色方案](/design/colors#配色方案)），取值与语义同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt`、`data-xh-modal-underlay` 等 63 个）是库自用标记，排除在承诺之外。例外都由作者书写：`data-xh-part` 是 Web Components 适配器唯一的作者输入 API；`data-xh-scroll` 只承诺「作者容器取得 reset 层的原生细条」（见[皮肤与样式分层](./styling#组件内滚动)），不进任何组件契约，删除或改名同样按公开面破坏处理；`data-xh-ink` 与 `data-xh-ink-margin` 写在作者自己的彩色区块上，声明底色极性与余量（见[色彩 · 彩色面与墨色域](/design/colors#彩色面与墨色域)），取值与语义按公开面承诺；`data-xh-backdrop` 与 `data-xh-backdrop-busy` 写在作者自己的图片、视频、画布区域上，声明液态面下层的明暗与杂乱（见[设计令牌与主题 · 液态材质](./theme#液态材质)），同样按公开面承诺；`data-xh-chart-patterns` 与 `data-xh-chart-palette` 写在作者自己的祖先上，分别让其中的图表改用纹理区分系列、换一套配色方案（见[直角坐标图](../components/cartesian-chart)与[色彩 · 配色方案](/design/colors#配色方案)），取值与语义同样按公开面承诺。作者书写 `data-xh-part="trigger"` 是声明，元素接线后在同一节点写入 `data-scope` + `data-part` 是事实。皮肤匹配后者，后者不应手写。
 :::
 
 ### requiredParts 的方向是反的
@@ -5628,7 +5672,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 319 个不同的 `data-*` 属性名、2107 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 320 个不同的 `data-*` 属性名、2129 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -5640,7 +5684,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 267 个属性名 / 1191 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
+样式钩子。自带皮肤消费了 265 个属性名 / 1182 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -5692,24 +5736,24 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层均为 major。`xihan.overrides` 刻意留空，专供使用方覆盖，不会作为未使用的层被清理 |
 | 全局令牌 · 原语层 | 115 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤中不应直接使用它们，但接入品牌轴必须写 `--xh-color-brand-*`，因此它们是公开的 |
 | 全局令牌 · 语义层 | 302 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 4800（覆盖 143 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
+| 组件覆盖槽 | 4801（覆盖 143 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，在 `:root` 中设置即可修改该组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
-| 关键帧名 | 42 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
+| 关键帧名 | 40 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 148 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边或图表提示框会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
-| `@xihan-ui/styles` 的 CSS 子路径 | 170 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 155 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 173 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 155 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./not-defined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css`，以及改名前的旧路径 `./undefined.css`（内容同 `./not-defined.css`，6.0.0 移除）；另有组件令牌的 `./component-tokens`、`./components.tokens.json` 与按需注入插件 `./vite` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
 
 | 类别 | 数量 | 排除原因 |
 | --- | --- | --- |
-| 其余 `--xh-_` 私有槽 | 908 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
+| 其余 `--xh-_` 私有槽 | 916 | 皮肤内部的回退中转（`--xh-_bg`、`--xh-_bg-hover`、`--xh-_mention-py` 等），变体只改槽位、不重写规则依赖它。不应在外部设置它们。core 写入内联 `style` 的层级、动效与液态材质取值（`--xh-_layer`、`--xh-_stagger-index`、`--xh-_enter-from-opacity` 等）同属此档：层级的公开入口是 `--xh-<组件>-layer` 覆盖槽，私有值只作回落；后两类缺失时只少一段过渡或材质效果，组件功能不受影响 |
 | 令牌的取值 | — | `--xh-color-brand-500` 这个名字受约束，其对应的 `oklch()` 值不受约束。调色板随视觉迭代变化，这正是令牌存在的意义 |
 | `index.css` 的内部结构 | — | 它是生成的扁平文件：家族配方只内联一次、排在皮肤之前，皮肤段的顺序即源序。段标记注释（`/* styles/xxx.css */`）只作阅读定位，不是承诺 |
 | `index.unlayered.css` 的内部结构 | — | 它是同一源序的扁平镜像，不带 `@layer`。使用该入口时没有 `xihan.overrides` 覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 803 个全局令牌里，不按前缀推断。
+`--xh-field-py` 形似 `field` 组件的覆盖槽，实际是全局语义令牌，`field.css` 本身并不使用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 810 个全局令牌里，不按前缀推断。
 :::
 
 ---
@@ -5720,12 +5764,12 @@ brand  neutral  success  warning  danger  info
 | --- | --- | --- |
 | 自定义元素标签 `xh-*` | 148（`defineXhElements()` 注册 147 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1673 条声明 / 501 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 501 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 122 个名字 / 291 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（277 处中 275 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
-| 事件 `detail` 形状 | 234 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 334 条（涉及 115 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
+| observed attribute | 1699 条声明 / 508 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 508 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 123 个名字 / 302 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（288 处中 286 处） | **受约束**。取消冒泡会使祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，避免被祖先 `<form>` 视为自身的提交 |
+| 事件 `detail` 形状 | 242 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `attribute: false` 的 JS 字段 | 340 条（涉及 119 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 等只能通过 JS 赋值，HTML 中无法表达：不是每个 property 都有对应 attribute |
 | 命令式方法 | 184（分布在 63 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
@@ -5817,7 +5861,7 @@ brand  neutral  success  warning  danger  info
 
 本库不设废弃期，也不保留兼容层。改名直接改，删除直接删：不为旧写法保留别名、不把旧名放入兜底链、不在源码中标注 `@deprecated` 延长存续。在一个 major 中读到的名字就是当时唯一存在的名字。
 
-移除动作集中在 major，一律出现在更新日志顶部、单列一节，逐条写明旧名与替换写法，这是唯一的迁移材料。
+移除动作集中在 major，一律出现在更新日志顶部、单列一节，逐条写明旧名与替换写法，这是唯一的迁移材料。其中能机改的改名同时写进 `@xihan-ui/cli` 的迁移规则：`npx -y @xihan-ui/cli migrate <从版本> <到版本>` 改写使用方的源码，改不了的报出位置，见 [CLI · 迁移](/ai/cli#迁移)。
 
 四种介质需要单独说明：`data-*`、CSS 自定义属性、`@layer` 名、元素 attribute 没有 IDE 提示，改名之后对应选择器只会静默失配，不报错也不降级。它们唯一的告知渠道是更新日志，因此每次移除都在 changeset 中逐条列出旧名与替换写法，使用方可据此在自己的代码库中全文搜索。
 
@@ -5896,15 +5940,15 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 1252 个组件、113 个组合式函数 |
+| `@xihan-ui/vue` | 1260 个组件、113 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
 | `@xihan-ui/web-components` | 148 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
 | `@xihan-ui/styles` | 143 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 803 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/tokens` | 810 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约；另有 `./json` 子入口的全部导出（JSON 值类型、普通对象判断、合法性检查、深拷贝、按值比较、深冻结、按路径读写、路径前缀、路径的文字形式与解析、JSON Pointer 片段、变化路径），`./url` 子入口的全部导出（图片地址的安全判定），`./template` 子入口的全部导出（文本模板），以及 `./date` 子入口的全部导出（`PlainDate` / `PlainTime` / `PlainDateTime` / `ZonedDateTime`、时区换算、周规则、边界函数与格式化器） |
-| `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
+| `@xihan-ui/position` | `createPositionEngine`、`createDeferredPositionEngine`、`loadPositionEngine` 与引擎的选项；其余 9 个导出是内部算子 |
 | `@xihan-ui/motion` | 缓动名、时长常量、`animate`、补间与弹簧算子。三值与令牌层同源（`check-motion-source` 比对），`core` / `headless` 与各适配器均建立在它之上，改名会先破坏库自身 |
 | `@xihan-ui/pointer` | `createPointerSession` / `createMultiPointerSession` 与四层几何纯函数。`headless` 与各适配器的拖拽、缩放、划动全部经由它，同上 |
 
@@ -5934,12 +5978,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 ### 已由门禁保证
 
 六种介质的改名即 major 已有门禁保证。`pnpm gate:surface` 运行的 `check-public-surface`
-以入库基线（`ui/tooling/public-surface.json`，20734 个名字）比对当前状态：
+以入库基线（`ui/tooling/public-surface.json`，20899 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 240 条子入口、11079 个导出名、143 个 `data-scope` 与 1416 条部件配对、
-143 个组件的 2315 个 prop 名、321 种 `data-*`、33 个 `data-state` 取值、803 个令牌、
-5 个 `@layer` 名、4800 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
+覆盖：包名与 246 条子入口、11207 个导出名、143 个 `data-scope` 与 1424 条部件配对、
+143 个组件的 2335 个 prop 名、322 种 `data-*`、33 个 `data-state` 取值、810 个令牌、
+5 个 `@layer` 名、4801 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 
 prop 名一维是后补的：在它加入之前，修改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -6177,6 +6221,49 @@ Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改�
 - scope 的基名取自 `useId`，同一棵树两端一致，不会 hydration 不匹配；
 - 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
 
+### React Server Components
+
+用到客户端能力的模块（组件、hook、全局配置的 Provider、命令式服务）在产物里带 `'use client'`，Next.js App Router 的服务端组件可以直接从 `@xihan-ui/react` 导入组件并渲染，props 可序列化即可：
+
+```tsx
+// app/page.tsx（服务端组件）
+import { XhButton } from "@xihan-ui/react";
+
+export default function Page() {
+  return <XhButton type="submit">提交</XhButton>;
+}
+```
+
+从服务端组件传给组件的 props 必须可序列化，事件回调、`ref` 与函数式 children 只能写在客户端组件里。语言包同样含函数式文案（如 `deleteItem: label => …`），所以全局配置的 Provider 放进自己的客户端组件，再由布局引用：
+
+```tsx
+// app/providers.tsx
+"use client";
+import { XhConfigProvider } from "@xihan-ui/react";
+import { zhCN } from "@xihan-ui/react/locale";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <XhConfigProvider config={zhCN}>{children}</XhConfigProvider>;
+}
+```
+
+```tsx
+// app/layout.tsx（服务端组件）
+import { Providers } from "./providers";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="zh-CN">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+语言包（`@xihan-ui/react/locale`）与 `mergeXhConfig` 不带指令，服务端代码里也能读取和调用。哪些模块带指令由构建时的同一份判定决定，`pnpm gate:publish` 逐个产物核对，漏标与多标都会失败。
+
 ## 与另外两个适配器的关系
 
 三个适配器运行同一个状态机、同一份 `connect`，输出的 DOM 属性完全一致：跨适配器一致性测试逐帧比对归一化快照，无法消除的差异即判失败。React 侧另有一道服务端渲染一致性判据。
@@ -6215,7 +6302,48 @@ import {
 
 只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部导出组件按组件分组列在[组件参考](../components/)。
 
-没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
+默认按名称 import，`sideEffects: false` 让打包器移除未使用的部分；也可以交给 unplugin-vue-components 按需自动引入，或用插件全量注册，见[注册方式](#注册方式)。
+
+## 注册方式
+
+四种写法，产物里的组件从少到多：
+
+| 写法 | 产物里的组件 | 模板里的类型 |
+| --- | --- | --- |
+| 按名称 import | 只有用到的 | 来自 import |
+| `@xihan-ui/vue/resolver` 配 unplugin-vue-components | 只有用到的 | unplugin-vue-components 生成的 `components.d.ts` |
+| Nuxt 项目装 [`@xihan-ui/vue/nuxt`](#nuxt) | 只有用到的 | Nuxt 生成的组件声明 |
+| `@xihan-ui/vue/plugin` 全量注册 | 全部组件 | 引入插件模块即生效 |
+
+### 自动引入
+
+```ts
+// vite.config.ts
+import vue from "@vitejs/plugin-vue";
+import { XiHanUIResolver } from "@xihan-ui/vue/resolver";
+import Components from "unplugin-vue-components/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [vue(), Components({ resolvers: [XiHanUIResolver()], dts: true })],
+});
+```
+
+解析器只认 `Xh` 前缀，`<XhButton>` 与 `<xh-button>` 都解析到 `@xihan-ui/vue` 的同名导出；名字拼错时打包器会报主入口没有这个导出，不会静默忽略。皮肤不随组件引入：入口处引一次 `@xihan-ui/styles`，或者交给 `@xihan-ui/styles/vite` 按用到的组件注入，见[按用到的组件自动注入](../installation#按用到的组件自动注入)。
+
+### 全量注册
+
+```ts
+// main.ts
+import { XiHanUI } from "@xihan-ui/vue/plugin";
+import { createApp } from "vue";
+import App from "./App.vue";
+import "@xihan-ui/styles";
+
+createApp(App).use(XiHanUI).mount("#app");
+```
+
+插件引用全部组件，产物不再摇树，适合原型、内部后台这类不在意首包体积的场景。引入插件模块的同时就给 `GlobalComponents` 补上了全部组件的类型，Volar 与 vue-tsc 在模板里直接校验 props，不需要另配 `types`。
 
 ## 配置与视觉环境
 
@@ -6426,7 +6554,54 @@ import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sou
 
 - `createVueRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
 - id 由 `createVueIdGenerator()` 生成，同一棵树两端一致，不会 hydration 不匹配；
-- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
+- 视觉环境属性建议在服务端就渲染到 `<html>` 上，见[安装与接入 · 服务端渲染](../installation#服务端渲染)；Nuxt 项目交给 [Nuxt 模块](#nuxt)。
+
+## Nuxt
+
+`@xihan-ui/vue/nuxt` 是 Nuxt 模块。装上 `@xihan-ui/vue` 与 `@xihan-ui/styles` 后只写一行：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+});
+```
+
+模块接好三件事，各有一个开关：
+
+| 做什么 | 选项 | 缺省 |
+| --- | --- | --- |
+| 组件自动注册：模板里直接写 `<XhButton>` / `<xh-button>`，按用到的组件从主入口导入，照常摇树 | `components` | `true` |
+| 注入令牌与皮肤，排在应用自己的样式之前 | `styles`：`"layered"`；宿主有无层 reset 时用 `"unlayered"`；`false` 自己引 | `"layered"` |
+| SSR 首帧主题：服务端把八轴视觉环境渲染到 `<html>` 上，head 里一段内联脚本在首帧前读回读者存过的偏好，客户端随后接管成视觉环境控制器 | `visualEnvironment`：`{ storageKey, initial }`；`false` 由应用自己管 | `{}` |
+
+选项写在 `xihanUI` 下，或写在模块元组的第二项（后者优先）：
+
+```ts
+export default defineNuxtConfig({
+  modules: ["@xihan-ui/vue/nuxt"],
+  xihanUI: {
+    visualEnvironment: {
+      storageKey: "my-app-visual",
+      initial: { density: "compact" },
+    },
+  },
+});
+```
+
+控制器经 `useNuxtApp().$xhVisual` 交给应用，切明暗、密度等调 `setPreference`。写了 `storageKey` 时偏好存进 localStorage，下次打开的首帧就是那一套，不会先闪一下浅色。`initial` 里写了的轴压过读者存的值，要留给读者自己选的轴不要写进 `initial`；写错的值在构建时就报。
+
+```vue
+<script setup lang="ts">
+const { $xhVisual } = useNuxtApp();
+
+function toggleDark() {
+  $xhVisual.setPreference({ mode: $xhVisual.getState().mode === "dark" ? "light" : "dark" });
+}
+</script>
+```
+
+服务端没有媒体查询与存储：那一端的 `$xhVisual` 按 `initial` 解出，`system` 轴取基线。按明暗分支渲染的内容放到 `onMounted` 之后，免得水合对不上。完整示例在仓库的 [`examples/nuxt`](https://github.com/XiHanFun/XiHan.UI/tree/dev/examples/nuxt)，CI 每轮都对着本仓刚构建的包装一遍，类型检查、构建并检查首屏。
 
 ## 与 Web Components 适配器的关系
 
@@ -6525,7 +6700,7 @@ Shadow DOM 会封闭结构：无法更换标签、无法插入自定义节点、
 
 ### 不写结构：按标准结构生成
 
-有标准结构的元素（目前是热力图、选择器、切换按钮组、组合框、文本框、数字输入框、开关、标签输入框、日期输入框、手风琴、标签页、树选择、菜单、单选组、复选组、密码框、滑块、评分、颜色输入框、分隔线、卡片、复选框、分格输入、字段组、签名板、字段、取色器、穿梭框、级联选择、列表框、右键菜单、标签组、菜单栏、提及、颜色色块选择器、命令面板、导航菜单、面包屑与文件上传，逐批扩到表单控件与容器）可以不写结构，元素按组件的标准结构自己生成部件树。标准结构与 Vue / React 不写插槽时的缺省树出自同一个结构函数，三端的 DOM 一致。
+有标准结构的元素（目前是热力图、选择器、切换按钮组、组合框、文本框、数字输入框、开关、标签输入框、日期输入框、手风琴、标签页、树选择、菜单、单选组、复选组、密码框、滑块、评分、颜色输入框、分隔线、卡片、复选框、分格输入、字段组、签名板、字段、取色器、穿梭框、级联选择、列表框、上下文菜单、标签组、菜单栏、提及、颜色色块选择器、命令面板、导航菜单、面包屑、文件上传、对话框与抽屉，逐批扩到表单控件与容器）可以不写结构，元素按组件的标准结构自己生成部件树。标准结构与 Vue / React 不写插槽时的缺省树出自同一个结构函数，三端的 DOM 一致。
 
 ```html
 <xh-heatmap start-date="2024-01-01" end-date="2024-03-31"></xh-heatmap>
@@ -6617,7 +6792,7 @@ document.querySelector("xh-dialog")
 
 ## 升级前
 
-自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `undefined.css` 用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
+自定义元素在 JS 到达之前不会升级，这段时间 `data-scope` / `data-part` 尚未写入，浮层内容会以裸文本出现在页面流中。`@xihan-ui/styles` 的 `not-defined.css`（原名 `undefined.css`）用 `:not(:defined)` 配合作者编写的 `data-xh-part` 先收起浮层子树，见[皮肤与样式分层](../guide/styling#升级前的形态)。
 
 ## 编写自己的元素
 
@@ -7533,7 +7708,7 @@ const simulation: DesignerExtensionBase<FlowContext> = {
 | `controls` | 新的编辑方式，键是属性描述里的 `control.kind`，不能与内建的重名；`checkProperties` 的 `controls` 用合并后的这张表 |
 | `rules` | `(document, context) => SchemaIssue[]`；问题码必须以「id 末段.」开头，否则执行器抛 `TypeError` |
 | `editors` | 属性编辑器表的一层（三张表都可以缺），按扩展顺序压在设计器内建的之上 |
-| `commands` | 工具栏、菜单栏、右键菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, visible?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`menubar:<菜单 id>`（菜单栏上的这张菜单，内置 `file`、`edit`、`view`、`help`）、`menu:<主体>`（这种主体的右键菜单）或 `selection:<主体>`（选中这种主体时浮在选中框上的选中工具条），`shortLabel` 是按钮上看得见的短文字（工具栏只显示图标时没有图标的按钮上写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`；`alternateShortcuts` 是另外几组也能触发它的快捷键（如重做在 `Mod+Shift+Z` 之外再认 `["Ctrl", "Y"]`），与 `shortcut` 一样查重、一样命中，提示里只显示 `shortcut`；会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示；`visible` 返回 `false` 时这条命令此刻不存在：工具栏、菜单栏、右键菜单与菜单命令里都不列它，快捷键不触发，执行也不跑（与 `enabled` 不同，`enabled` 是列着但不可点），如只在开发者模式下才有的调试入口 |
+| `commands` | 工具栏、菜单栏、上下文菜单与快捷键共用的命令：`{ id, label, shortLabel?, icon?, placement?, shortcut?, enabled?, visible?, checked?, tone?, run?, panel?, menu?, select? }`，见下文「弹层命令与菜单命令」；`placement` 取 `toolbar`、`menubar:<菜单 id>`（菜单栏上的这张菜单，内置 `file`、`edit`、`view`、`help`）、`menu:<主体>`（这种主体的上下文菜单）或 `selection:<主体>`（选中这种主体时浮在选中框上的选中工具条），`shortLabel` 是按钮上看得见的短文字（工具栏只显示图标时没有图标的按钮上写它），不给用 `label`，名字仍取 `label`，所以短文字要出现在 `label` 里（不分大小写），开发期不在时经诊断通道报一条告警；`icon` 是图标记录（如 `@xihan-ui/icons` 的图标），按钮与菜单项上显示；`shortcut` 的写法同 `xh-kbd` 的 `keys`；`alternateShortcuts` 是另外几组也能触发它的快捷键（如重做在 `Mod+Shift+Z` 之外再认 `["Ctrl", "Y"]`），与 `shortcut` 一样查重、一样命中，提示里只显示 `shortcut`；会删掉内容的命令 `tone` 写 `danger`，按钮与菜单项按这族色显示；`visible` 返回 `false` 时这条命令此刻不存在：工具栏、菜单栏、上下文菜单与菜单命令里都不列它，快捷键不触发，执行也不跑（与 `enabled` 不同，`enabled` 是列着但不可点），如只在开发者模式下才有的调试入口 |
 | `importers` / `exporters` | 粘贴、拖放、打开文件时的导入，以及导出成文件；形状由各款定。导入器可写 `fileTypes`（MIME 类型如 `application/json`、`image/*`，或扩展名如 `.json`），打开文件时拼进选择框的 `accept`，见 `importerAccept` |
 | `fieldSources` | 字段来源：导入字段对话框里的一页（如从接口请求取样例），见下文「字段来源」 |
 | `setup` | 装上时调用，返回卸下时的清理 |
@@ -8367,7 +8542,7 @@ frame.addEventListener("layout-change", event => save(DESIGNER_SETTING_KEYS.layo
 - 各段有内容才显示这一条，内容拿走就收起。菜单栏常开，设置里没有关掉它的开关；宿主没有菜单栏时不登记 `menubar` 区，里面的内容收进停放处不显示，再登记时放回。
 - 行首一段按内容宽；行尾一段按内容宽、贴右，放不下时先收窄，里面的作者内容自己截断（如写 `text-overflow: ellipsis`）；行尾一段的文字取弱一档的颜色。
 - 正中一段按整条菜单栏的宽度居中，不随两边内容的宽窄偏。行首、行尾两段的内容各挡住一边，外框取离中线近的那一边，定出以中线对称的空当：内容放得下照原宽；放不下截到空当的宽，里面的作者内容（这一段的直接子元素）截断加省略号；空当窄过几个字宽就整段藏起，变宽了再出来。窄屏菜单栏收成「菜单」钮时照同一个规矩，不压那颗钮。文字取正常字色、小一号。
-- 键盘：设计器里有焦点时按 F10（不带修饰键），焦点交给菜单栏里第一个看得见、能用 Tab 走到的元素（宽屏是菜单栏，窄屏是那颗「菜单」钮）；再按 F10，或在菜单栏里按 Esc（菜单收着时），回到按 F10 之前持有焦点的地方。用 Tab 走进菜单栏的，Esc 不带回去。Shift+F10 仍是右键菜单，Alt+F10 仍是选中工具条。外框在自己身上接这个键，各款不用另接；里面的元件已经接走（`preventDefault`）的 F10 与 Esc 外框不管。
+- 键盘：设计器里有焦点时按 F10（不带修饰键），焦点交给菜单栏里第一个看得见、能用 Tab 走到的元素（宽屏是菜单栏，窄屏是那颗「菜单」钮）；再按 F10，或在菜单栏里按 Esc（菜单收着时），回到按 F10 之前持有焦点的地方。用 Tab 走进菜单栏的，Esc 不带回去。Shift+F10 仍是上下文菜单，Alt+F10 仍是选中工具条。外框在自己身上接这个键，各款不用另接；里面的元件已经接走（`preventDefault`）的 F10 与 Esc 外框不管。
 - 外框由设计器自己建在设计器元素里，宿主够不着它的段：设计器用 `forwardFrameSlots(设计器元素, 外框, ["menubar-center", "menubar-end", "status-end"])` 把宿主写在设计器元素上、`slot` 在名单里的子元素搬进外框，后来加的跟着搬，宿主就能往菜单栏正中放模板标题、往状态栏右端放保存状态。名单里只写要转交的段，别的子元素不动；转过去的内容在同一段里排在设计器自己放的内容前面（状态栏右端的缩放比例这类各款自己的状态项留在最右）。返回停止转交的函数，已经搬过去的不搬回来。
 - `closable` 开着时，菜单栏最右端（行尾一段后面）多一颗关闭钮：只有叉号字形，可及名取外框文案的 `close`（「关闭」），按下派发 `close`。它不是命令，不进任何菜单，也不进工具栏定制；窄屏菜单栏收成「菜单」钮时照样在右上角；正中一段量空当时把它算作行尾一侧的边。只有它时菜单栏也显示。设计器各出一个同名属性 `closable` 交给外框，在外框的 `close` 上停止冒泡、从设计器元素自己派发 `close`。
 - 菜单栏本身怎么从命令表铺，见下文「扩展的面板与命令」的「菜单栏」。
@@ -8533,7 +8708,7 @@ dialog.show();
 | 条目 | 键 | 编辑方式 | 缺省 | 何时出现 |
 | --- | --- | --- | --- | --- |
 | 主题 | `general.theme` | 分段：跟随页面、跟随系统、亮色、暗色 | `follow` | 总有 |
-| 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 8 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
+| 主题色 | `general.brand` | 色板：「跟随页面」钮、UI 的 9 个预设品牌（`@xihan-ui/tokens` 的 `BRAND_PRESETS`，格子画 `BRAND_PRESET_COLORS`，名字随语言）、自定义颜色 | 不写即跟随页面 | 总有 |
 | 状态栏 | `general.statusBar` | 开关 | `true` | 总有 |
 | 自动保存 | `general.autoSave` | 开关：有未保存的修改时停手约一秒，在这台浏览器里存一份草稿 | `false` | 总有 |
 | 开发者模式 | `general.developer` | 开关：关闭后将隐藏 JSON / Blob 调试查看入口 | `false` | 总有 |
@@ -8608,7 +8783,7 @@ end(() => ({ pages: dom.length }));
 
 工具栏只走设置，各款不另设属性：`toolbarDisplayOf(settings)` 取显示方式（没写或不认识的值是 `icon`），交给命令工具栏的 `setDisplay`；`toolbarVisibleOf(settings)` 只有写了 `false` 才是不显示，各款这时从外框的 `regions` 里去掉工具栏的区，命令照样能经快捷键与菜单执行。菜单栏常开，没有显示菜单栏的设置；设置命令在「文件」菜单里，还有快捷键 Mod+,。
 
-按钮表只管顶部工具栏：菜单栏、右键菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
+按钮表只管顶部工具栏：菜单栏、上下文菜单与选中工具条都不进用户定制，只由宿主的 `commandLayout` 改。
 
 - **列什么**：对话框的 `toolbar` 是 `{ defaults, commands }`：`defaults` 是缺省排列（各款 `arrangeCommands("toolbar", …)` 排出的分组，已含宿主 `commandLayout` 与扩展追加的那一组），`commands` 是其中每条命令的短文字、图标与快捷键。各款每轮更新时用 `toolbarSettingsSource(defaults, 命令表, 上下文)` 现算，交给对话框；文字取 `commandShortLabel`（撤销这类文字随下一步变的命令写固定的短名），按此刻的语言取，所以每编辑一步算出来的数据不变、表不重铺。
 - **样子**：一组一块，组头是三态勾选框（全选、部分、全不选）与拖动把手，下面每条命令一行：勾选框（图标与名字）、快捷键、拖动把手。组与组之间、组里的命令都能拖，命令能从一组拖进另一组；键盘在把手上用空格拿起、方向键挪、空格放下（竖排的命令列表用左右键挪到相邻的组）。表下一颗「恢复默认」删掉这个键。组这一层是一个 `<xh-sortable>`，组里的命令各是一个同 `group` 的 `<xh-sortable>`。
@@ -8876,7 +9051,7 @@ if (autoTour && !tourDoneOf(settings))
 
 ## 扩展的面板与命令
 
-设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮、菜单栏与右键菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框，物料来源接进物料面板。
+设计器扩展的骨架、合并查重与装卸在 `@xihan-ui/designer-kit`（见那一页的「设计器扩展」）。这里放跟界面有关的几样：面板登记到外框的区，命令铺成工具栏按钮、菜单栏与上下文菜单条目，粘贴与拖放的数据列成导入来源，设置分区放进设置对话框，物料来源接进物料面板。
 
 ### 面板
 
@@ -8898,7 +9073,7 @@ panels.dispose();
 
 ### 命令
 
-工具栏与右键菜单的排列用 `commandLayout`：位置 → 若干组命令 id，内置命令与扩展命令混排。
+工具栏与上下文菜单的排列用 `commandLayout`：位置 → 若干组命令 id，内置命令与扩展命令混排。
 
 ```ts
 import { arrangeCommands, createCommandToolbar, renderCommandMenu, runCommand } from "@xihan-ui/designer-shell";
@@ -8913,13 +9088,13 @@ menu.addEventListener("item-select", event => runCommand(commands, event.detail.
 
 | 函数 | 说明 |
 | --- | --- |
-| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、`menu:<主体>` 的右键菜单、`selection:<主体>` 的选中工具条都用它；菜单栏的 `menubar:<菜单 id>` 用下文的 `arrangeMenubar`）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
+| `arrangeCommands(placement, commands, defaults, layout?)` | 排出某个位置的分组（工具栏、`menu:<主体>` 的上下文菜单、`selection:<主体>` 的选中工具条都用它；菜单栏的 `menubar:<菜单 id>` 用下文的 `arrangeMenubar`）：`layout` 写了这个位置就只用它；否则用 `defaults`（各款内置的缺省排列），再把 `placement` 含这个位置、又不在缺省排列里的命令按登记顺序追加成一组。排列里写了没登记的命令 id 时抛 `TypeError` |
 | `createCommandToolbar(document, { display?, orientation?, platform?, overflow? })` | 一条 `<xh-toolbar>`，外面包一个委托模式的 `<xh-tooltip>`（`element` 是这层外壳，布局上不占盒子；`toolbar` 是里面那条工具栏）。`update(groups, commands, context, label)` 分组变了才重铺按钮，文字、图标、`aria-label`、`aria-keyshortcuts`（快捷键按 `platform` 写成规范写法，如 `Control+Shift+Z`；命令有第二快捷键时依次接在后面，提示只显示第一条）、可用、`aria-pressed`（开关式命令）与 `data-tone`（命令的语气）每次刷新；点击按钮执行命令，放不下的收进行尾的「更多」菜单，图标与语气随按钮带进菜单项。`display` 是 `icon`（缺省）、`text` 或 `both`，没有图标的命令在 `icon` 档照样显示文字，写的是短文字（`shortLabel`，没给就是 `label`），名字仍是全名；`setDisplay(display)` 换显示方式不重铺按钮，「更多」里的条目按新的宽度重新收放。悬停或键盘聚焦到按钮时提示显示命令的文字与快捷键；文字看得见时只给带快捷键的按钮提示。`orientation` 缺省 `horizontal`；`vertical` 时按钮上下排，提示、弹层与菜单在按钮的行首一侧弹出（从左往右写时在左边），放不下的按高度收进「更多」。`overflow` 缺省 `menu`；写 `external` 时放不下的钮由调用方列在别处，自己的「更多」钮不占位、看不见（只留作弹层与菜单的锚点），收起的条目变了时外壳派发冒泡的 `overflow-change`；`overflowed()` 是此刻收起的命令 `{ id, label, disabled }`，`activate(id)` 照点按钮那样执行一条。弹层命令与菜单命令见下文 |
-| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进右键菜单时抛 `TypeError` |
+| `renderCommandMenu(content, groups, commands, context, { platform? })` | 把分组铺成 `<xh-context-menu>` content 里的条目，组间一条分隔线；不可用的写 `aria-disabled`，命令的语气写 `data-tone`，带图标的在文字前铺 `item-icon`，带快捷键的在行尾写提示（只写主快捷键）并写进 `aria-keyshortcuts`（第二快捷键接在后面）。没有 `run` 的弹层命令与菜单命令只能放在工具栏上，排进上下文菜单时抛 `TypeError` |
 | `runCommand(commands, id, context)` | 命令存在、有 `run` 且此刻可用才执行，返回是否执行了 |
 | `commandLabel(command, context)` / `commandShortLabel(command, context)` / `commandEnabled(command, context)` | 命令的文字；短文字（没给 `shortLabel` 时同 `label`；短文字要出现在 `label` 里，开发期工具栏发现不在时报一条 `core.warn` 告警，一条命令只报一次）；此刻能否执行 |
 | `designerHistoryCommands({ history, disabled?, translations, historyTranslations, confirm, announce?, icons? })` | 撤销、重做与清空历史，四款共用：`history` 返回设计器的历史栈（designer-kit 的 `History` 直接合用），返回 `undefined`、在事务中（如拖动）或 `disabled` 返回 true 时三条都不可用。`undo`（Mod+Z）与 `redo`（Mod+Shift+Z，另认 Ctrl+Y）缺省放在工具栏上，全名带上下一步的说明，如「撤销：添加卡片」，按钮上看得见的短文字仍是「撤销」；`clear-history` 是危险语气，不上工具栏，由历史面板或 `commandLayout` 放置，没有步骤时不可用，执行时先经 `confirm(context, { title, content, okText, tone })` 弹确认框（交给各款的 `DialogService.confirm`），确定后才清空。三条做完都经 `announce(context, message)` 礼貌级地读一句。文案取 `translations`（`xh-designer-commands` 那一桶的 `undo`、`redo`、`undoWith`、`redoWith`、`clearHistory`）与 `historyTranslations`（`xh-designer-history` 那一桶）。id 与各款原有的 `undo`、`redo` 相同，替换后宿主的 `commandLayout` 不用动 |
-| `designerShellCommands({ translations, save?, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, settings?, icons? })` | designer-shell 内置的命令。给了 `save` 有 `save`（保存，`Mod+S`），通常派发各款的 `save` 事件，各款原来在画布上自己接的 Ctrl / ⌘ + S 改走这条命令。给了 `frame`（返回设计器的外框）有五条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用；`pan-tool`（拖动，`H`）是开关式，按下状态跟着外框的 `canvasTool`，执行时在 `select` 与 `pan` 之间切换。给了 `openSettings(context, section?)` 有三条：`settings`（打开设置对话框，`Mod+,`）、`shortcuts`（翻到快捷键页）与 `about`（翻到关于页）。给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制；同时给了 `settings` 时只在开发者模式开着时存在，关着时菜单栏、工具栏、右键菜单都不列它，快捷键也不响应），给了 `startTour` 有 `start-tour`（开始新手引导）。给了 `settings: { read, change, policy? }` 有两条开关式命令 `show-toolbar`、`show-status-bar`：勾选读 `toolbar.visible`、`general.statusBar`，执行时把那一条取反经 `change(context, key, value)` 写回；`policy` 里藏起或锁定了那一条（或它所在的分区）时不可用；另有一条菜单命令 `appearance`（外观），点开就是这两条。菜单栏常开，没有它的开关。落点：`save`、`settings` 在「文件」菜单，`edit-json` 在「编辑」菜单，`panels`、`pan-tool` 与 `appearance` 在「视图」菜单（`panels`、`pan-tool` 同时上工具栏），两条显示开关只在「外观」子菜单里，`start-tour`、`help`、`shortcuts`、`about` 在「帮助」菜单；`import-fields` 不排位置，各款放进面板头或菜单。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入。各款把它们并进自己的内置扩展；宿主不要哪一条，用 `commandLayout` 排掉 |
+| `designerShellCommands({ translations, save?, frame?, openSettings?, helpUrl?, openFieldImport?, fieldImportDisabled?, openJsonEditor?, startTour?, settings?, icons? })` | designer-shell 内置的命令。给了 `save` 有 `save`（保存，`Mod+S`），通常派发各款的 `save` 事件，各款原来在画布上自己接的 Ctrl / ⌘ + S 改走这条命令。给了 `frame`（返回设计器的外框）有五条：`panels` 点开一张菜单，逐块面板一项（外框的 `panelEntries()`，勾选的显示，锁定的不可点，选中经 `togglePanel` 开关），分隔线后列出另外三条；`panels-toggle-all`（显示或隐藏所有面板，`Mod+\`）、`panels-restore`（还原面板显隐，`Mod+Shift+\`）与 `layout-reset`（恢复默认布局）只在菜单与快捷键上，全部面板都锁定时不可用；`pan-tool`（拖动，`H`）是开关式，按下状态跟着外框的 `canvasTool`，执行时在 `select` 与 `pan` 之间切换。给了 `openSettings(context, section?)` 有三条：`settings`（打开设置对话框，`Mod+,`）、`shortcuts`（翻到快捷键页）与 `about`（翻到关于页）。给了 `helpUrl` 有 `help`（在新窗口打开各款文档站的帮助页，返回 `undefined` 时不可用），给了 `openFieldImport` 有 `import-fields`（打开导入字段对话框，`fieldImportDisabled` 返回 true 时不可用），给了 `openJsonEditor` 有 `edit-json`（打开 JSON 编辑框，`Mod+Shift+J`；只读时也能打开，编辑框里只能看与复制；同时给了 `settings` 时只在开发者模式开着时存在，关着时菜单栏、工具栏、上下文菜单都不列它，快捷键也不响应），给了 `startTour` 有 `start-tour`（开始新手引导）。给了 `settings: { read, change, policy? }` 有两条开关式命令 `show-toolbar`、`show-status-bar`：勾选读 `toolbar.visible`、`general.statusBar`，执行时把那一条取反经 `change(context, key, value)` 写回；`policy` 里藏起或锁定了那一条（或它所在的分区）时不可用；另有一条菜单命令 `appearance`（外观），点开就是这两条。菜单栏常开，没有它的开关。落点：`save`、`settings` 在「文件」菜单，`edit-json` 在「编辑」菜单，`panels`、`pan-tool` 与 `appearance` 在「视图」菜单（`panels`、`pan-tool` 同时上工具栏），两条显示开关只在「外观」子菜单里，`start-tour`、`help`、`shortcuts`、`about` 在「帮助」菜单；`import-fields` 不排位置，各款放进面板头或菜单。文案取 `xh-designer-commands` 那一桶，图标由各款从 `@xihan-ui/icons` 传入。各款把它们并进自己的内置扩展；宿主不要哪一条，用 `commandLayout` 排掉 |
 | `designerPanelCommands({ panels, frame })` | 每块面板一条开关命令 `panel:<面板 id>`（`designerPanelCommandId(id)`）：文字取面板标题，`checked` 是它此刻看得见，执行即 `togglePanel`；不上工具栏、不带快捷键，给 `commandLayout`、引导与扩展用。外框里没有这块面板或宿主锁定了它时不可用。`panels` 列设计器登记的面板与画布浮动件，含扩展登记的 |
 
 两个铺法用到的 `<xh-toolbar>`、`<xh-context-menu>`、`<xh-tooltip>`、`<xh-icon>`，以及弹层命令与菜单命令用到的 `<xh-popover>`、`<xh-menu>` 按需注册。快捷键的命中用 designer-kit 的 `commandForShortcut`。

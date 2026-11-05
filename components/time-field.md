@@ -986,6 +986,7 @@ function snap(next: string) {
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `segment-group` | `data-disabled` | ''（条件成立时才出现） |
@@ -1014,17 +1015,17 @@ function snap(next: string) {
 | `--xh-time-field-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | time-field 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-time-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-time-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | time-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-time-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-time-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-time-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-time-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | time-field 的 control 部件 border 覆盖槽。 |
-| `--xh-time-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | time-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-time-field-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | time-field 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-time-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | time-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-time-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | time-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-time-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | time-field 的 control 部件 color 覆盖槽。 |

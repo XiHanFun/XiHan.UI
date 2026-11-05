@@ -38,7 +38,7 @@
 - [Anchor 锚点](/components/anchor)
 - [BackTop 回到顶部](/components/back-top)
 - [Breadcrumb 面包屑](/components/breadcrumb)
-- [ContextMenu 右键菜单](/components/context-menu)
+- [ContextMenu 上下文菜单](/components/context-menu)
 - [Menu 菜单](/components/menu)
 - [Menubar 菜单栏](/components/menubar)
 - [NavigationMenu 导航菜单](/components/navigation-menu)
@@ -92,7 +92,7 @@
 - [TextField 文本字段](/components/text-field)
 - [TimeField 时间字段](/components/time-field)
 - [TimePicker 时间选择器](/components/time-picker)
-<XhComponentCard src="time-range-picker" name="TimeRangePicker" label="时间范围选择器" href="/components/time-range-picker" status="new" />
+- [TimeRangePicker 时间范围选择器](/components/time-range-picker)（new）
 - [Transfer 穿梭框](/components/transfer)
 - [TreeSelect 树选择](/components/tree-select)
 
@@ -108,7 +108,7 @@
 - [ColorSwatch 颜色色块](/components/color-swatch)
 - [Descriptions 描述列表](/components/descriptions)
 - [EmptyState 空状态](/components/empty-state)
-<XhComponentCard src="grid-list" name="GridList" label="网格列表" href="/components/grid-list" status="new" />
+- [GridList 网格列表](/components/grid-list)（new）
 - [Highlight 文本高亮](/components/highlight)
 - [Image 图片](/components/image)
 - [ImageViewer 图片预览](/components/image-viewer)
@@ -129,15 +129,15 @@
 
 ## 图表
 
-<XhComponentCard src="cartesian-chart" name="CartesianChart" label="直角坐标图" href="/components/cartesian-chart" status="new" />
-<XhComponentCard src="funnel-chart" name="FunnelChart" label="漏斗图" href="/components/funnel-chart" status="new" />
-<XhComponentCard src="graph-chart" name="GraphChart" label="关系图" href="/components/graph-chart" status="new" />
+- [CartesianChart 直角坐标图](/components/cartesian-chart)（new）
+- [FunnelChart 漏斗图](/components/funnel-chart)（new）
+- [GraphChart 关系图](/components/graph-chart)（new）
 - [Heatmap 热力图](/components/heatmap)
-<XhComponentCard src="hierarchy-chart" name="HierarchyChart" label="层级图" href="/components/hierarchy-chart" status="new" />
-<XhComponentCard src="pie-chart" name="PieChart" label="饼图" href="/components/pie-chart" status="new" />
-<XhComponentCard src="radar-chart" name="RadarChart" label="雷达图" href="/components/radar-chart" status="new" />
-<XhComponentCard src="sankey-chart" name="SankeyChart" label="桑基图" href="/components/sankey-chart" status="new" />
-<XhComponentCard src="sparkline" name="Sparkline" label="迷你图" href="/components/sparkline" status="new" />
+- [HierarchyChart 层级图](/components/hierarchy-chart)（new）
+- [PieChart 饼图](/components/pie-chart)（new）
+- [RadarChart 雷达图](/components/radar-chart)（new）
+- [SankeyChart 桑基图](/components/sankey-chart)（new）
+- [Sparkline 迷你图](/components/sparkline)（new）
 - [Progress 仪表盘与子弹图](/components/progress#仪表盘)
 
 ## 反馈
@@ -163,14 +163,14 @@
 
 ## AI 对话
 
-<XhComponentCard src="approval" name="Approval" label="审批" href="/components/approval" status="alpha" />
-<XhComponentCard src="citation" name="Citation" label="引用来源" href="/components/citation" status="alpha" />
+- [Approval 审批](/components/approval)（alpha）
+- [Citation 引用来源](/components/citation)（alpha）
 - [CodeView 代码视图](/components/code-view)
 - [DiffView 差异视图](/components/diff-view)
 - [Log 日志](/components/log)
-<XhComponentCard src="markdown-stream" name="MarkdownStream" label="流式正文" href="/components/markdown-stream" status="alpha" />
-<XhComponentCard src="message-feed" name="MessageFeed" label="消息流" href="/components/message-feed" status="alpha" />
-<XhComponentCard src="prompt-input" name="PromptInput" label="提示输入框" href="/components/prompt-input" status="alpha" />
-<XhComponentCard src="question-flow" name="QuestionFlow" label="澄清问卷" href="/components/question-flow" status="alpha" />
-<XhComponentCard src="reasoning" name="Reasoning" label="思考过程" href="/components/reasoning" status="alpha" />
-<XhComponentCard src="tool-call" name="ToolCall" label="工具调用" href="/components/tool-call" status="alpha" />
+- [MarkdownStream 流式正文](/components/markdown-stream)（alpha）
+- [MessageFeed 消息流](/components/message-feed)（alpha）
+- [PromptInput 提示输入框](/components/prompt-input)（alpha）
+- [QuestionFlow 澄清问卷](/components/question-flow)（alpha）
+- [Reasoning 思考过程](/components/reasoning)（alpha）
+- [ToolCall 工具调用](/components/tool-call)（alpha）

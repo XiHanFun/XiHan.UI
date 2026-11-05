@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`dialog-props`),t=document.getElementById(`dialog-props-state`);e.confirmAction=()=>new Promise(e=>{setTimeout(()=>{t.textContent=`已归档`,e()},1200)})}export{e as default};

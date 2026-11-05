@@ -1,18 +1,18 @@
 ---
 version: alpha
 name: XiHan.UI
-description: 'XiHan.UI 5.1.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
+description: 'XiHan.UI 5.2.0 缺省主题（浅色 · 舒适密度 · 基础对比度）的设计语言：中性克制、描边分界、4px 网格、令牌驱动。'
 colors:
-  primary: 'oklch(0.546 0.216 258)'
-  primary-hover: 'oklch(0.488 0.196 258)'
-  primary-active: 'oklch(0.424 0.164 258)'
+  primary: 'oklch(0.557 0.216 277)'
+  primary-hover: 'oklch(0.498 0.196 277)'
+  primary-active: 'oklch(0.432 0.164 277)'
   on-primary: 'oklch(1 0 0)'
-  primary-subtle: 'color-mix(in oklab, oklch(0.546 0.216 258) 12%, oklch(1 0 0))'
-  on-primary-subtle: 'color-mix(in oklab, oklch(0.546 0.216 258) 60%, oklch(0.208 0.006 258))'
+  primary-subtle: 'color-mix(in oklab, oklch(0.557 0.216 277) 12%, oklch(1 0 0))'
+  on-primary-subtle: 'color-mix(in oklab, oklch(0.557 0.216 277) 60%, oklch(0.208 0.006 258))'
   page: 'oklch(0.964 0.004 265)'
   surface: 'oklch(1 0 0)'
   surface-raised: 'oklch(1 0 0)'
-  field: 'color-mix(in oklab, color-mix(in oklab, oklch(0 0 0) 4.7%, transparent) 55%, transparent)'
+  field: 'oklch(1 0 0)'
   subtle: 'color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)'
   subtle-hover: 'color-mix(in oklab, oklch(0 0 0) 10.2%, transparent)'
   subtle-active: 'color-mix(in oklab, oklch(0 0 0) 16.9%, transparent)'
@@ -24,12 +24,12 @@ colors:
   outline-subtle: 'color-mix(in oklab, oklch(0 0 0) 4.7%, transparent)'
   outline-strong: 'color-mix(in oklab, oklch(0 0 0) 16.9%, transparent)'
   outline-control-hover: 'color-mix(in oklab, oklch(0 0 0) 37.9%, transparent)'
-  focus-ring: 'oklch(0.546 0.216 258)'
+  focus-ring: 'oklch(0.557 0.216 277)'
   success: 'oklch(0.51 0.15 149)'
   warning: 'oklch(0.55 0.14 70)'
   info: 'oklch(0.53 0.15 237)'
   danger: 'oklch(0.5 0.2 25)'
-  scrim: 'color-mix(in oklab, oklch(0.208 0.006 258) 60%, transparent)'
+  scrim: 'color-mix(in oklab, oklch(0.208 0.006 258) 40%, transparent)'
 typography:
   display:
     fontFamily: '-apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif'
@@ -76,14 +76,16 @@ typography:
     lineHeight: '1.5rem'
 rounded:
   none: '0px'
-  sm: '2px'
-  md: '4px'
-  lg: '8px'
-  xl: '16px'
+  xs: '4px'
+  sm: '6px'
+  md: '8px'
+  lg: '10px'
   full: '9999px'
-  control: '2px'
-  surface: '4px'
-  overlay: '4px'
+  inset: '4px'
+  control: '8px'
+  surface: '8px'
+  overlay: '8px'
+  sheet: '10px'
 spacing:
   unit: '4px'
   xs: '4px'
@@ -147,7 +149,7 @@ components:
   dialog:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.on-surface}'
-    rounded: '{rounded.overlay}'
+    rounded: '{rounded.sheet}'
   tooltip:
     backgroundColor: '{colors.on-surface}'
     textColor: '{colors.surface}'
@@ -199,30 +201,30 @@ XiHan.UI 是框架无关的设计系统运行时：组件行为住在 Headless �
 阴影只表达「离页面多远」，不表达边界——边界归描边。只有四个海拔角色：
 
 - raised：贴在页面上略抬起的面（Card、开关拇指），缺省无影，边界全靠描边。
-- lifted：正被指针拖动的东西，`0 4px 10px oklch(0 0 0 / 0.1)`。
-- floating：含网格或多列的锚定面板（日期面板、多列级联），`0 4px 10px oklch(0 0 0 / 0.1)`。
-- sheet：模态与强反馈面（Dialog、Drawer、Command、Notification），`0 4px 12px oklch(0 0 0 / 0.15)`。
+- lifted：正被指针拖动的东西，`0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)`。
+- floating：含网格或多列的锚定面板（日期面板、多列级联），`0 1px 2px -0.5px oklch(0.145 0.005 258 / 0.06), 0 4px 8px -2px oklch(0.145 0.005 258 / 0.08), 0 10px 20px -6px oklch(0.145 0.005 258 / 0.07)`。
+- sheet：模态与强反馈面（Dialog、Drawer、Command、Notification），`0 1px 3px -0.5px oklch(0.145 0.005 258 / 0.08), 0 8px 16px -4px oklch(0.145 0.005 258 / 0.1), 0 20px 40px -12px oklch(0.145 0.005 258 / 0.12)`。
 
-锚定瞬态浮层（菜单、气泡）是实体白底 + 1px 描边 + 一层柔和投影，不采样背后内容；没有玻璃拟态材质。
+锚定瞬态浮层（菜单、气泡）是实体白底 + 1px 描边 + md 档投影，不采样背后内容；没有玻璃拟态材质。阴影只有三档，按面的类型取：贴在页面上的抬起面 sm、锚定浮层 md、模态与强反馈面 lg。
 
 ## Shapes
 
-圆角只有一条语义阶梯：控件本体（Button、Input、Select、Tag 方签、Alert 提示条）2px，成面的静态容器（Card、Panel、列表容器）4px，脱离文档流的浮层（Popover、Menu、Dialog）4px。
+圆角只有一颗种子 `--xh-radius-seed`（8px），各档按比例派生，组件只引语义角色：嵌在控件、面与浮层里的小块（勾选方框、集合行、轨道里的段与滑块、字段里的标签）4px，控件本体（Button、Input、Select、Tag 方签、Alert 提示条）8px，成面的静态容器（Card、Panel、列表容器）8px，脱离文档流的弹层（Popover、Menu、候选面板）8px，模态与强反馈面（Dialog、Drawer、Notification 卡片）10px。
 
 - pill 只给两类身份：状态 chip（Badge）与一维对象（轨道、进度条、指示条、滚动条滑块）；普通按钮、字段、卡片与浮层不用 pill。
 - 宽高相等的圆（头像、单选圈、拇指、圆形图标钮）取 circle，不用 pill 冒充。
-- 内层圆角不超过外层圆角减去内边距；相连控件（输入组、按钮组）消除相接侧圆角；锚定浮层里的列表行是通栏行，不取圆角。
+- 内层圆角不超过外层圆角减去内边距：浮层留 4px 内距，里面的列表行取 inset；相连控件（输入组、按钮组）消除相接侧圆角。
 - 描边只有 1px / 2px / 3px 三档：一切描边与分隔线用细档，焦点环与选中指示条用粗档。
 
 ## Components
 
 组件先归族再画样式，同族同类部件逐条同值：
 
-- **Action Control**（Button、Toggle、图标按钮、分页按钮、各类 trigger）：只有 Button 缺省品牌实心，其余缺省中性；按下 120ms 换到 active 底、释放 200ms 回到 rest，缺省只换面不缩放。
+- **Action Control**（Button、Toggle、图标按钮、分页按钮、各类 trigger）：只有 Button 缺省品牌实心，其余缺省中性；按下 150ms 换到 active 底、释放 200ms 回到 rest，缺省只换面不缩放。
 - **Field Chrome**（Input、Select trigger、日期与时间字段、Combobox）：静息是淡底 `--xh-bg-field` + 控件描边、无影；聚焦换承载面底 + 品牌描边，不画聚焦环；校验失败换 danger 描边与淡底。
 - **Collection Item**（菜单项、列表项、树节点、表格行）：悬停在白底上取 hover 100 档、按下 200 档；选中按语境只有一种标记——浮层集合是行尾对号，页内集合是品牌淡底，导航是指示条或品牌字色。
 - **Surface**（Card、Alert、Panel）：边界三选一——描边（缺省）、淡底、无壳；Card 的抬起影是加成，描边必须在。
-- **Overlay**（Popover、Menu、Tooltip、Dialog、Drawer）：浮层圆角 overlay，模态取 sheet 海拔并带遮罩；有进场就有退场。
+- **Overlay**（Popover、Menu、Tooltip、Dialog、Drawer）：弹层圆角 overlay，模态取 sheet 圆角与海拔并带遮罩；有进场就有退场。
 - **Feedback**（Notification、Progress、Skeleton）：状态语气配图标与文案，进行中给可感知的进度。
 
 公共视觉轴只有 `size`（sm / md / lg）、`variant`（outline / subtle / ghost，可按下的面多一档 solid）与 `tone`（brand / neutral / danger / warning / success / info），没有私有的 bordered、primary 之类开关。
@@ -230,7 +232,7 @@ XiHan.UI 是框架无关的设计系统运行时：组件行为住在 Headless �
 ## Do's and Don'ts
 
 - Do：颜色、间距、圆角、阴影与动效只取 `--xh-*` 令牌；缺令牌时先加语义令牌，不写散值。
-- Don't：写 5px、6px、10px 这类独立圆角或 5 / 7 / 9 / 13px 这类散值间距。
+- Don't：写 5px、6px 这类字面圆角或 5 / 7 / 9 / 13px 这类散值间距。
 - Do：用描边划分边界，阴影只表达抬升。
 - Don't：用阴影或大面积色块代替描边做分区，也不要做玻璃拟态的半透明面。
 - Do：主要动作用 Button 缺省的品牌实心，次要动作用中性的 outline / subtle / ghost 形态。

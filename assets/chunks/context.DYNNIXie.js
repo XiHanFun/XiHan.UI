@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";var t=e(),n=(0,t.createContext)(void 0),r=n;function i(){return(0,t.useContext)(n)}function a(){let e=(0,t.useContext)(n);if(!e)throw Error(`XhField 的部件要放在 XhFieldRoot 里`);return e}export{a as n,i as r,r as t};

@@ -939,7 +939,7 @@ const icons = {
 - `accordion` 限制同一层级只展开一个分支。
 - 入口可逐条声明语气，不向下传导；当前项的品牌淡底压过它。
 - 折叠后保留图标入口，子级在浮层中展示。
-- 放一个 `tooltip` 部件，折叠成图标栏后只剩图标的入口（顶层叶子；`collapsedPopout` 关掉时也含顶层分支）悬停或聚焦时在行尾一侧显示名称。它就是库内的 [文字提示](./tooltip)：悬停延时、接替窗口、提示组与反白外观都与 Tooltip 一致，放在 `XhTooltipProvider` 里同样归那一组；弹出分支的面板自己就是去处，不再叠一层提示。
+- 放一个 `tooltip` 部件，折叠成图标栏后只剩图标的入口（顶层叶子；`collapsedPopout` 关掉时也含顶层分支）悬停或聚焦时在行尾一侧显示名称。它就是库内的 [文字提示](./tooltip)：悬停延时、接替窗口、提示组与外观都与 Tooltip 一致，放在 `XhTooltipProvider` 里同样归那一组；弹出分支的面板自己就是去处，不再叠一层提示。
 - 方向键上下移动，左右键展开或收起分支。
 - 放一个 `input` 即可按标签过滤导航树：命中入口的祖先保留并展开，没命中的整行、整枝收起，分组的成员一个都没命中就整组收起；`filter` 可换成自定义匹配。
 - 命中的入口整枝留下：分支本身命中时，它的子项照常在里面，不因命中而自动展开。
@@ -1171,7 +1171,7 @@ const icons = {
 | `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整体隐藏。 |
 | `tooltipText` | `string` | 名称提示的文字：对着的那一行在 collection 里的标签（缺省退回 value）；还没对着任何一行时为空串。 |
 | `getTooltipPositionerProps` | `() => T['element']` | 名称提示的定位层：即库内 tooltip 的 positioner（data-scope="tooltip"），坐标、落点与层号由内嵌的提示机给， 作者把它搬到浮层落点。只在 connect 拿到内嵌提示机时可用，否则直接报错。 |
-| `getTooltipContentProps` | `() => T['element']` | 名称提示本体：即库内 tooltip 的 content，反白面、进退场与接替窗口都随 Tooltip； 对读屏隐藏（行文字已是可及名，不再念第二遍）。只在 connect 拿到内嵌提示机时可用，否则直接报错。 |
+| `getTooltipContentProps` | `() => T['element']` | 名称提示本体：即库内 tooltip 的 content，浮层面、进退场与接替窗口都随 Tooltip； 对读屏隐藏（行文字已是可及名，不再念第二遍）。只在 connect 拿到内嵌提示机时可用，否则直接报错。 |
 
 ## 无障碍
 
@@ -1342,9 +1342,9 @@ const icons = {
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

@@ -6,10 +6,10 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 211 页正文，示例已按适配器内联为代码块
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 362 页正文，示例已按适配器内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 144 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 36 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 803 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 810 支设计令牌的名字、类型与缺省取值
 - [design.md](https://ui.docs.xihanfun.com/design.md): 缺省主题的设计语言（design.md 格式）：颜色、排版、间距、圆角与组件样式令牌，以及视觉规则
 - [ai/SKILL.md](https://ui.docs.xihanfun.com/ai/SKILL.md): 给 AI 编程工具的 XiHan.UI 使用规范，可放进项目的技能目录
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/adapters/react.md
@@ -28,7 +28,7 @@
 ## AI 辅助开发
 
 - [For Agents](https://ui.docs.xihanfun.com/ai/agents): 给 Claude Code、Cursor、Codex、GitHub Copilot 这类 AI 编程工具的入口：一段可以直接粘贴的提示词，加上 XiHan.UI 为 AI 准备的全部资料从哪里取。
-- [CLI](https://ui.docs.xihanfun.com/ai/cli): `@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，也是 MCP 服务端 的载体。
+- [CLI](https://ui.docs.xihanfun.com/ai/cli): `@xihan-ui/cli` 是 XiHan.UI 的命令行工具：在终端里查组件 API、文档、示例源码、设计令牌与更新日志，跨大版本升级时改写源码，也是 MCP 服务端 的载体。
 - [design.md](https://ui.docs.xihanfun.com/ai/design-md): `design.md` 是给 AI 设计与编码工具读的设计语言文件，描述 XiHan.UI 缺省主题（浅色 · 舒适密度 · 基础对比度）的颜色、排版、间距、圆角、组件样式令牌与视觉规则，帮助工具生成符合 XiHan.UI 视觉体系的界面。
 - [LLMs.txt](https://ui.docs.xihanfun.com/ai/llms): 文档站在构建时产出一组给大语言模型读的机读资产，内容与站点正文同源。
 - [MCP Server](https://ui.docs.xihanfun.com/ai/mcp): 本页介绍如何通过 Model Context Protocol（MCP）在 AI 编程工具中使用 XiHan.UI。
@@ -47,6 +47,7 @@
 - [阴影与材质](https://ui.docs.xihanfun.com/design/shadow): 阴影在这里只表达"离页面多远"，不表达边界——边界归描边。
 - [形状与边界](https://ui.docs.xihanfun.com/design/shape): 圆角与边线是最容易长出第二套规则的地方——一个组件 6px、另一个 5px，看着都"差不多"。
 - [主题设计器](https://ui.docs.xihanfun.com/design/theme-designer): 从一套预设出发，或者自己挑品牌色，再定明暗、密度、对比度与圆角，下方整面真实组件随之实时变化；满意后复制最下面的 CSS 与接入代码放进项目。
+- [令牌浏览器](https://ui.docs.xihanfun.com/design/token-browser): 全部全局令牌与组件覆盖槽列在一张表里：按名字、取值或说明搜，按类别挑；上方切明暗、密度与对比度，「当前取值」与色块随之实算。
 - [字体](https://ui.docs.xihanfun.com/design/typography): 组件不指定正文字族：皮肤里写的是 `font-family: inherit`，控件与面板跟着宿主页面的字走，库只定等宽字族、字号阶梯、字重、行高与排版角色。
 
 ## 核心概念
@@ -56,7 +57,7 @@
 - [解剖与部件契约](https://ui.docs.xihanfun.com/guide/anatomy): 解剖（anatomy）是 XiHan.UI 的基础约定：把一个组件拆成若干具名部件（part），每个部件在 DOM 上由 `data-scope` + `data-part` 两个属性唯一标识。
 - [动画层](https://ui.docs.xihanfun.com/guide/animations): `@xihan-ui/animations` 提供现成的动效：11 个进场预设、6 个注意预设，外加错开起播与文字拆分。
 - [背景层](https://ui.docs.xihanfun.com/guide/backgrounds): `@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。
-- [行为原语](https://ui.docs.xihanfun.com/guide/behavior): `@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。
+- [行为原语](https://ui.docs.xihanfun.com/guide/behavior): `@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、上下文菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。
 - [connect 与属性产出](https://ui.docs.xihanfun.com/guide/connect): `connect` 是无头内核的出口：输入是服务与归一化器，输出是一组 props-getter。
 - [日期与时间](https://ui.docs.xihanfun.com/guide/date): `@xihan-ui/core/date` 提供不带时区与带 IANA 时区的日期时间值、公历运算、时区换算、按地区划分的周与格式化。
 - [诊断通道](https://ui.docs.xihanfun.com/guide/diagnostics): 组件在运行期发现契约问题时不直接 `console.warn`，而是向诊断通道投递一条结构化记录。
@@ -72,7 +73,7 @@
 - [皮肤与样式分层](https://ui.docs.xihanfun.com/guide/styling): `@xihan-ui/styles` 是纯 CSS 包：不依赖任何 JS 包，也不被任何 JS 包依赖。
 - [测试与质量门禁](https://ui.docs.xihanfun.com/guide/testing): 框架无关的组件库最常见的问题是各适配器逐渐偏离。
 - [设计令牌与主题](https://ui.docs.xihanfun.com/guide/theme): `@xihan-ui/tokens` 提供两部分能力：设计令牌（一份 CSS 自定义属性产物）与主题运行时（将用户偏好解析为根元素上的属性）。
-- [版本与兼容性政策](https://ui.docs.xihanfun.com/guide/versioning): 本页回答一个问题：升级到下一个 `1.x` 小版本时，已依赖的公开面是否会变化。
+- [版本与兼容性政策](https://ui.docs.xihanfun.com/guide/versioning): 本页回答一个问题：在同一个主版本内升级小版本或补丁版本（版本号第一位不变）时，已依赖的公开面是否会变化。
 
 ## 适配器
 
@@ -136,7 +137,7 @@
 - [ColorSwatch 颜色色块](https://ui.docs.xihanfun.com/components/color-swatch): 把一个颜色绘制为一小块用于展示：主题色一览、图例中的一格、当前选中的颜色。
 - [Combobox 组合框](https://ui.docs.xihanfun.com/components/combobox): 将输入框与候选列表结合，用于搜索并选择选项。
 - [Command 命令面板](https://ui.docs.xihanfun.com/components/command): 覆盖在页面上的检索面板：输入筛选命令，方向键选择，回车执行。
-- [ContextMenu 右键菜单](https://ui.docs.xihanfun.com/components/context-menu): 通过右键或长按在指针位置打开命令菜单。
+- [ContextMenu 上下文菜单](https://ui.docs.xihanfun.com/components/context-menu): 通过右键或长按在指针位置打开命令菜单。
 - [DateField 日期字段](https://ui.docs.xihanfun.com/components/date-field): 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 - [DatePicker 日期选择器](https://ui.docs.xihanfun.com/components/date-picker): 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 - [DateRangePicker 日期范围选择器](https://ui.docs.xihanfun.com/components/date-range-picker): 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
@@ -248,3 +249,156 @@
 - [Typography 排印](https://ui.docs.xihanfun.com/components/typography): 用于组织标题、正文和富文本内容。
 - [Virtualizer 虚拟滚动](https://ui.docs.xihanfun.com/components/virtualizer): 只渲染窗口内的条目，列表再长也只绘制可见的几十条。
 - [Watermark 水印](https://ui.docs.xihanfun.com/components/watermark): 在内容区域上重复显示文字或图片水印。
+
+## English
+
+- [Accordion](https://ui.docs.xihanfun.com/en/components/accordion): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Affix](https://ui.docs.xihanfun.com/en/components/affix): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Alert](https://ui.docs.xihanfun.com/en/components/alert): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Anchor](https://ui.docs.xihanfun.com/en/components/anchor): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Approval](https://ui.docs.xihanfun.com/en/components/approval): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [AvatarGroup](https://ui.docs.xihanfun.com/en/components/avatar-group): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Avatar](https://ui.docs.xihanfun.com/en/components/avatar): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [BackTop](https://ui.docs.xihanfun.com/en/components/back-top): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Badge](https://ui.docs.xihanfun.com/en/components/badge): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [BarCode](https://ui.docs.xihanfun.com/en/components/bar-code): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Breadcrumb](https://ui.docs.xihanfun.com/en/components/breadcrumb): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ButtonGroup](https://ui.docs.xihanfun.com/en/components/button-group): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Button](https://ui.docs.xihanfun.com/en/components/button): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [CalendarPicker](https://ui.docs.xihanfun.com/en/components/calendar-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [CalendarRangePicker](https://ui.docs.xihanfun.com/en/components/calendar-range-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Card](https://ui.docs.xihanfun.com/en/components/card): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Carousel](https://ui.docs.xihanfun.com/en/components/carousel): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [CartesianChart](https://ui.docs.xihanfun.com/en/components/cartesian-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Cascader](https://ui.docs.xihanfun.com/en/components/cascader): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [CheckboxGroup](https://ui.docs.xihanfun.com/en/components/checkbox-group): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Checkbox](https://ui.docs.xihanfun.com/en/components/checkbox): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Citation](https://ui.docs.xihanfun.com/en/components/citation): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Clipboard](https://ui.docs.xihanfun.com/en/components/clipboard): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [CodeView](https://ui.docs.xihanfun.com/en/components/code-view): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Collapsible](https://ui.docs.xihanfun.com/en/components/collapsible): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ColorField](https://ui.docs.xihanfun.com/en/components/color-field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ColorPicker](https://ui.docs.xihanfun.com/en/components/color-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ColorSlider](https://ui.docs.xihanfun.com/en/components/color-slider): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ColorSwatchPicker](https://ui.docs.xihanfun.com/en/components/color-swatch-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ColorSwatch](https://ui.docs.xihanfun.com/en/components/color-swatch): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Combobox](https://ui.docs.xihanfun.com/en/components/combobox): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Command](https://ui.docs.xihanfun.com/en/components/command): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ContextMenu](https://ui.docs.xihanfun.com/en/components/context-menu): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [DateField](https://ui.docs.xihanfun.com/en/components/date-field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [DatePicker](https://ui.docs.xihanfun.com/en/components/date-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [DateRangePicker](https://ui.docs.xihanfun.com/en/components/date-range-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Descriptions](https://ui.docs.xihanfun.com/en/components/descriptions): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Dialog](https://ui.docs.xihanfun.com/en/components/dialog): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [DiffView](https://ui.docs.xihanfun.com/en/components/diff-view): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [DownloadTrigger](https://ui.docs.xihanfun.com/en/components/download-trigger): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Drawer](https://ui.docs.xihanfun.com/en/components/drawer): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Editable](https://ui.docs.xihanfun.com/en/components/editable): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [EmptyState](https://ui.docs.xihanfun.com/en/components/empty-state): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ExpressionInput](https://ui.docs.xihanfun.com/en/components/expression-input): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FieldArray](https://ui.docs.xihanfun.com/en/components/field-array): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Field](https://ui.docs.xihanfun.com/en/components/field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Fieldset](https://ui.docs.xihanfun.com/en/components/fieldset): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FileUpload](https://ui.docs.xihanfun.com/en/components/file-upload): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FilterBuilder](https://ui.docs.xihanfun.com/en/components/filter-builder): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Flex](https://ui.docs.xihanfun.com/en/components/flex): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FloatButton](https://ui.docs.xihanfun.com/en/components/float-button): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FloatingPanel](https://ui.docs.xihanfun.com/en/components/floating-panel): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Form](https://ui.docs.xihanfun.com/en/components/form): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FormatInput](https://ui.docs.xihanfun.com/en/components/format-input): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [FunnelChart](https://ui.docs.xihanfun.com/en/components/funnel-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [GraphChart](https://ui.docs.xihanfun.com/en/components/graph-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [GridList](https://ui.docs.xihanfun.com/en/components/grid-list): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Grid](https://ui.docs.xihanfun.com/en/components/grid): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Heatmap](https://ui.docs.xihanfun.com/en/components/heatmap): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [HierarchyChart](https://ui.docs.xihanfun.com/en/components/hierarchy-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Highlight](https://ui.docs.xihanfun.com/en/components/highlight): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [HoverCard](https://ui.docs.xihanfun.com/en/components/hover-card): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Icon](https://ui.docs.xihanfun.com/en/components/icon): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ImageCropper](https://ui.docs.xihanfun.com/en/components/image-cropper): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ImageViewer](https://ui.docs.xihanfun.com/en/components/image-viewer): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Image](https://ui.docs.xihanfun.com/en/components/image): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Components](https://ui.docs.xihanfun.com/en/components/): Browse the components XiHan.UI provides. Each page lists the API; usage guides and live examples are on the Chinese pages.
+- [InfiniteScroll](https://ui.docs.xihanfun.com/en/components/infinite-scroll): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [InputGroup](https://ui.docs.xihanfun.com/en/components/input-group): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [JsonViewer](https://ui.docs.xihanfun.com/en/components/json-viewer): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Kbd](https://ui.docs.xihanfun.com/en/components/kbd): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Layout](https://ui.docs.xihanfun.com/en/components/layout): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [List](https://ui.docs.xihanfun.com/en/components/list): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Listbox](https://ui.docs.xihanfun.com/en/components/listbox): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [LoadingBar](https://ui.docs.xihanfun.com/en/components/loading-bar): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Log](https://ui.docs.xihanfun.com/en/components/log): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [MarkdownStream](https://ui.docs.xihanfun.com/en/components/markdown-stream): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Marquee](https://ui.docs.xihanfun.com/en/components/marquee): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Masonry](https://ui.docs.xihanfun.com/en/components/masonry): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [MatrixCode](https://ui.docs.xihanfun.com/en/components/matrix-code): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Mention](https://ui.docs.xihanfun.com/en/components/mention): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Menu](https://ui.docs.xihanfun.com/en/components/menu): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Menubar](https://ui.docs.xihanfun.com/en/components/menubar): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [MessageFeed](https://ui.docs.xihanfun.com/en/components/message-feed): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [NavigationMenu](https://ui.docs.xihanfun.com/en/components/navigation-menu): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Notification](https://ui.docs.xihanfun.com/en/components/notification): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [NumberAnimation](https://ui.docs.xihanfun.com/en/components/number-animation): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [NumberField](https://ui.docs.xihanfun.com/en/components/number-field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [PageHeader](https://ui.docs.xihanfun.com/en/components/page-header): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Pagination](https://ui.docs.xihanfun.com/en/components/pagination): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [PasswordInput](https://ui.docs.xihanfun.com/en/components/password-input): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [PieChart](https://ui.docs.xihanfun.com/en/components/pie-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [PinInput](https://ui.docs.xihanfun.com/en/components/pin-input): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Popconfirm](https://ui.docs.xihanfun.com/en/components/popconfirm): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Popover](https://ui.docs.xihanfun.com/en/components/popover): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Progress](https://ui.docs.xihanfun.com/en/components/progress): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [PromptInput](https://ui.docs.xihanfun.com/en/components/prompt-input): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [QuestionFlow](https://ui.docs.xihanfun.com/en/components/question-flow): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [RadarChart](https://ui.docs.xihanfun.com/en/components/radar-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [RadioGroup](https://ui.docs.xihanfun.com/en/components/radio-group): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Rating](https://ui.docs.xihanfun.com/en/components/rating): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Reasoning](https://ui.docs.xihanfun.com/en/components/reasoning): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Resizable](https://ui.docs.xihanfun.com/en/components/resizable): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [SankeyChart](https://ui.docs.xihanfun.com/en/components/sankey-chart): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ScrollArea](https://ui.docs.xihanfun.com/en/components/scroll-area): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Scrollbar](https://ui.docs.xihanfun.com/en/components/scrollbar): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Select](https://ui.docs.xihanfun.com/en/components/select): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Separator](https://ui.docs.xihanfun.com/en/components/separator): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [SideNav](https://ui.docs.xihanfun.com/en/components/side-nav): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [SignaturePad](https://ui.docs.xihanfun.com/en/components/signature-pad): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Skeleton](https://ui.docs.xihanfun.com/en/components/skeleton): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Slider](https://ui.docs.xihanfun.com/en/components/slider): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Sortable](https://ui.docs.xihanfun.com/en/components/sortable): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Sparkline](https://ui.docs.xihanfun.com/en/components/sparkline): Charts component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Spinner](https://ui.docs.xihanfun.com/en/components/spinner): Feedback component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Splitter](https://ui.docs.xihanfun.com/en/components/splitter): Layout component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Statistic](https://ui.docs.xihanfun.com/en/components/statistic): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Steps](https://ui.docs.xihanfun.com/en/components/steps): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Switch](https://ui.docs.xihanfun.com/en/components/switch): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Table](https://ui.docs.xihanfun.com/en/components/table): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Tabs](https://ui.docs.xihanfun.com/en/components/tabs): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TagGroup](https://ui.docs.xihanfun.com/en/components/tag-group): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Tag](https://ui.docs.xihanfun.com/en/components/tag): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TagsInput](https://ui.docs.xihanfun.com/en/components/tags-input): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TextField](https://ui.docs.xihanfun.com/en/components/text-field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TimeField](https://ui.docs.xihanfun.com/en/components/time-field): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TimePicker](https://ui.docs.xihanfun.com/en/components/time-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TimeRangePicker](https://ui.docs.xihanfun.com/en/components/time-range-picker): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Timeline](https://ui.docs.xihanfun.com/en/components/timeline): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Timer](https://ui.docs.xihanfun.com/en/components/timer): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Timestamp](https://ui.docs.xihanfun.com/en/components/timestamp): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ToggleGroup](https://ui.docs.xihanfun.com/en/components/toggle-group): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Toggle](https://ui.docs.xihanfun.com/en/components/toggle): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [ToolCall](https://ui.docs.xihanfun.com/en/components/tool-call): AI chat component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Toolbar](https://ui.docs.xihanfun.com/en/components/toolbar): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Tooltip](https://ui.docs.xihanfun.com/en/components/tooltip): Overlays component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Tour](https://ui.docs.xihanfun.com/en/components/tour): Navigation component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Transfer](https://ui.docs.xihanfun.com/en/components/transfer): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [TreeSelect](https://ui.docs.xihanfun.com/en/components/tree-select): Data entry component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Tree](https://ui.docs.xihanfun.com/en/components/tree): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Truncate](https://ui.docs.xihanfun.com/en/components/truncate): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Typography](https://ui.docs.xihanfun.com/en/components/typography): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Virtualizer](https://ui.docs.xihanfun.com/en/components/virtualizer): Data display component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Watermark](https://ui.docs.xihanfun.com/en/components/watermark): General component. This page is the API reference, generated from the source code. Usage guidance and live examples are on the Chinese page.
+- [Accessibility and keyboard](https://ui.docs.xihanfun.com/en/guide/a11y): In XiHan.UI accessibility is a criterion: every component has a machine-readable keyboard specification, and it doubles as the test denominator.
+- [Design tokens and theming](https://ui.docs.xihanfun.com/en/guide/theme): `@xihan-ui/tokens` provides two things: design tokens (one artifact of CSS custom properties) and the theme runtime (which resolves user preferences into attrib…
+- [XiHan.UI](https://ui.docs.xihanfun.com/en/): A fast, lightweight, framework-agnostic component library
+- [Installation](https://ui.docs.xihanfun.com/en/installation): All public XiHan.UI packages are published to npm. They form one version group and always share the same version number; npm is the source of truth for the curr…
+- [XiHan.UI](https://ui.docs.xihanfun.com/en/introduction): XiHan.UI is a framework-agnostic component library: state machines and accessibility logic live in a headless core, and each front-end framework gets only a thi…
+- [Quick start](https://ui.docs.xihanfun.com/en/quickstart): Three ways to write the same dialog. All three run the same state machine and the same `connect`; they only differ in who writes the attributes onto the DOM.

@@ -131,30 +131,21 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>问题本身</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="title">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="title">
+          <XhFieldRoot required>
             <XhFieldLabel>标题</XhFieldLabel>
             <XhFieldControl>
-              <input
-                :value="value"
-                placeholder="一句话说清现象"
-                @input="setValue(($event.target as HTMLInputElement).value)"
-              >
+              <XhTextFieldRoot placeholder="一句话说清现象" />
             </XhFieldControl>
             <XhFieldErrorText>{{ error }}</XhFieldErrorText>
           </XhFieldRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="detail">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="detail">
+          <XhFieldRoot required>
             <XhFieldLabel>详细描述</XhFieldLabel>
             <XhFieldControl>
-              <XhTextFieldRoot
-                :value="String(value ?? '')"
-                :invalid="invalid"
-                placeholder="复现步骤、期望结果、实际结果"
-                @update:value="setValue($event)"
-              >
+              <XhTextFieldRoot placeholder="复现步骤、期望结果、实际结果">
                 <XhTextFieldControl>
                   <XhTextFieldInput as="textarea" rows="3" />
                 </XhTextFieldControl>
@@ -166,23 +157,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         </XhFormFieldGroup>
 
         <div class="form-page__row">
-          <XhFormFieldGroup v-slot="{ value, setValue }" name="priority">
-            <XhSelectRoot
-              :collection="priorities"
-              :value="(value as string[])"
-              label="优先级"
-              placeholder="请选择"
-              @update:value="setValue($event)"
-            />
+          <XhFormFieldGroup name="priority">
+            <XhSelectRoot :collection="priorities" label="优先级" placeholder="请选择" />
           </XhFormFieldGroup>
 
-          <XhFormFieldGroup v-slot="{ value, setValue }" name="amount">
-            <XhNumberFieldRoot
-              :value="String(value ?? '')"
-              :min="1"
-              :max="99"
-              @update:value="setValue($event)"
-            >
+          <XhFormFieldGroup name="amount">
+            <XhNumberFieldRoot :min="1" :max="99">
               <XhNumberFieldLabel>受影响实例</XhNumberFieldLabel>
               <XhNumberFieldControl>
                 <XhNumberFieldDecrementTrigger />
@@ -193,22 +173,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhFormFieldGroup>
         </div>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="kind">
-          <XhRadioGroupRoot
-            :collection="kinds"
-            :value="(value as string)"
-            label="工单类型"
-            @update:value="setValue($event)"
-          />
+        <XhFormFieldGroup name="kind">
+          <XhRadioGroupRoot :collection="kinds" label="工单类型" />
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="labels">
-          <XhTagsInputRoot
-            v-slot="{ value: tags }"
-            :value="(value as string[])"
-            placeholder="回车落一个"
-            @update:value="setValue($event)"
-          >
+        <XhFormFieldGroup name="labels">
+          <XhTagsInputRoot v-slot="{ value: tags }" placeholder="回车落一个">
             <XhTagsInputLabel>关联模块</XhTagsInputLabel>
             <XhTagsInputControl>
               <XhTagsInputItem v-for="tag in tags" :key="tag" :value="tag">
@@ -222,16 +192,8 @@ function onSubmit(details: { values: Record<string, unknown> }) {
           </XhTagsInputRoot>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="impact">
-          <XhSliderRoot
-            v-slot="{ value: impact }"
-            :value="(value as number[])"
-            :min="0"
-            :max="100"
-            :step="5"
-            :large-step="20"
-            @update:value="setValue($event)"
-          >
+        <XhFormFieldGroup name="impact">
+          <XhSliderRoot v-slot="{ value: impact }" :min="0" :max="100" :step="5" :large-step="20">
             <XhSliderLabel>影响面估计：{{ impact[0] }}%</XhSliderLabel>
             <XhSliderControl>
               <XhSliderTrack>
@@ -246,21 +208,17 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       <XhFieldsetRoot class="form-page__group">
         <XhFieldsetLegend>提交之前</XhFieldsetLegend>
 
-        <XhFormFieldGroup v-slot="{ value, setValue }" name="notify">
+        <XhFormFieldGroup name="notify">
           <label class="form-page__check">
-            <XhSwitch :checked="value === true" @update:checked="setValue($event)" />
+            <XhSwitch />
             有进展就通知我
           </label>
         </XhFormFieldGroup>
 
-        <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="agree">
-          <XhFieldRoot :invalid="invalid" required>
+        <XhFormFieldGroup v-slot="{ error }" name="agree">
+          <XhFieldRoot required>
             <label class="form-page__check">
-              <XhCheckbox
-                :checked="value === true"
-                :invalid="invalid"
-                @update:checked="setValue($event)"
-              />
+              <XhCheckbox />
               这条工单可以对内公开
             </label>
             <XhFieldErrorText>{{ error }}</XhFieldErrorText>
@@ -395,7 +353,13 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">标题</label>
-            <input data-xh-part="control" placeholder="一句话说清现象" />
+            <xh-text-field placeholder="一句话说清现象">
+              <div data-xh-part="root">
+                <div data-xh-part="control">
+                  <input data-xh-part="input" />
+                </div>
+              </div>
+            </xh-text-field>
             <p data-xh-part="error-text"></p>
           </div>
         </xh-field>
@@ -405,7 +369,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         <xh-field>
           <div data-xh-part="root">
             <label data-xh-part="label">详细描述</label>
-            <xh-text-field id="form-page-detail" placeholder="复现步骤、期望结果、实际结果">
+            <xh-text-field placeholder="复现步骤、期望结果、实际结果">
               <div data-xh-part="root">
                 <div data-xh-part="control">
                   <textarea data-xh-part="input" rows="3"></textarea>
@@ -420,7 +384,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
       <div data-form="row">
         <div data-xh-part="field-group" name="priority">
-          <xh-select id="form-page-priority" placeholder="请选择">
+          <xh-select placeholder="请选择">
             <div data-xh-part="root">
               <span data-xh-part="label">优先级</span>
               <div data-xh-part="control">
@@ -452,7 +416,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
         </div>
 
         <div data-xh-part="field-group" name="amount">
-          <xh-number-field id="form-page-amount" min="1" max="99">
+          <xh-number-field min="1" max="99">
             <div data-xh-part="root">
               <label data-xh-part="label">受影响实例</label>
               <div data-xh-part="control">
@@ -466,7 +430,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </div>
 
       <div data-xh-part="field-group" name="kind">
-        <xh-radio-group id="form-page-kind" orientation="horizontal">
+        <xh-radio-group orientation="horizontal">
           <div data-xh-part="root">
             <span data-xh-part="label">工单类型</span>
             <div data-xh-part="item" value="bug">
@@ -500,7 +464,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       </div>
 
       <div data-xh-part="field-group" name="impact">
-        <xh-slider id="form-page-impact" min="0" max="100" step="5" large-step="20">
+        <xh-slider min="0" max="100" step="5" large-step="20">
           <div data-xh-part="root">
             <label data-xh-part="label">
               影响面估计：<span id="form-page-impact-value">40</span>%
@@ -519,7 +483,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
       <div data-xh-part="field-group" name="notify">
         <label data-form="check">
-          <xh-switch id="form-page-notify">
+          <xh-switch>
             <button data-xh-part="root">
               <span data-xh-part="thumb"></span>
             </button>
@@ -530,7 +494,7 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
       <div data-xh-part="field-group" name="agree">
         <label data-form="check">
-          <xh-checkbox id="form-page-agree">
+          <xh-checkbox>
             <button data-xh-part="root">
               <span data-xh-part="indicator"></span>
             </button>
@@ -555,6 +519,8 @@ function onSubmit(details: { values: Record<string, unknown> }) {
   const count = document.getElementById("form-page-count");
   const submitted = document.getElementById("form-page-submitted");
   const impactReadout = document.getElementById("form-page-impact-value");
+  const tagControl = document.querySelector('#form-page-labels [data-xh-part="control"]');
+  const tagInput = tagControl.querySelector('[data-xh-part="input"]');
 
   const defaults = {
     title: "",
@@ -568,8 +534,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     agree: false,
   };
 
-  let values = { ...defaults };
-
   // 整表跑一遍：required 拦空值，长度与「必须勾上」各由一条规则收
   host.rules = {
     title: { required: true, message: "标题不能为空" },
@@ -579,31 +543,8 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       validator: (value) => (value === true ? undefined : "要先确认这条工单可以对内公开"),
     },
   };
+  // 字段组里的控件按 name 读写这张值表：不必逐个监听改动再写回，重置也由表单带着控件一起还原
   host.defaultValues = defaults;
-  host.values = values;
-
-  const title = host.querySelector('[data-xh-part="field-group"][name="title"] [data-xh-part="control"]');
-  const detail = document.getElementById("form-page-detail");
-  const priority = document.getElementById("form-page-priority");
-  const amount = document.getElementById("form-page-amount");
-  const kind = document.getElementById("form-page-kind");
-  const labels = document.getElementById("form-page-labels");
-  const tagControl = labels.querySelector('[data-xh-part="control"]');
-  const tagInput = tagControl.querySelector('[data-xh-part="input"]');
-  const impact = document.getElementById("form-page-impact");
-  const notify = document.getElementById("form-page-notify");
-  const agree = document.getElementById("form-page-agree");
-
-  // 九个控件各自把改动写回同一张值表
-  title.addEventListener("input", () => host.setFieldValue("title", title.value));
-  detail.addEventListener("value-change", (e) => host.setFieldValue("detail", e.detail.value));
-  priority.addEventListener("value-change", (e) => host.setFieldValue("priority", e.detail.value));
-  amount.addEventListener("value-change", (e) => host.setFieldValue("amount", e.detail.value));
-  kind.addEventListener("value-change", (e) => host.setFieldValue("kind", e.detail.value));
-  labels.addEventListener("value-change", (e) => host.setFieldValue("labels", e.detail.value));
-  impact.addEventListener("value-change", (e) => host.setFieldValue("impact", e.detail.value));
-  notify.addEventListener("checked-change", (e) => host.setFieldValue("notify", e.detail.checked));
-  agree.addEventListener("checked-change", (e) => host.setFieldValue("agree", e.detail.checked));
 
   // 一个标签一个节点：外壳带 value 标识身份，里面是文本与删除按钮
   function createTag(value) {
@@ -636,23 +577,13 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     }
   }
 
-  // 值表是唯一事实源：变了就刷回每个控件
-  function syncControls() {
-    const next = String(values.title ?? "");
-    if (title.value !== next) title.value = next;
-    detail.value = String(values.detail ?? "");
-    amount.value = String(values.amount ?? "");
-    kind.value = String(values.kind ?? "");
-    priority.value = values.priority ?? [];
-    labels.value = values.labels ?? [];
-    impact.value = values.impact ?? [0];
-    notify.checked = values.notify === true;
-    agree.checked = values.agree === true;
-    impactReadout.textContent = impact.value[0];
-    renderTags(labels.value);
+  // 标签节点与影响面读数由作者自己铺：照值表刷
+  function paintValues(values) {
+    impactReadout.textContent = (values.impact ?? [0])[0];
+    renderTags(values.labels ?? []);
   }
 
-  // 错误文案由作者自己写进字段、控件旁那一行与摘要条目
+  // 错误文案由作者自己写进字段、控件旁那一行与摘要条目；错误态由表单交给控件
   function paintErrors(errors) {
     for (const name of ["title", "detail"]) {
       host.querySelector(`[data-xh-part="field-group"][name="${name}"] [data-xh-part="error-text"]`)
@@ -663,18 +594,12 @@ function onSubmit(details: { values: Record<string, unknown> }) {
       line.textContent = message;
       line.hidden = message === "";
     }
-    agree.invalid = errors.agree !== undefined;
     for (const item of host.querySelectorAll('[data-xh-part="error-summary-item"]'))
       item.textContent = errors[item.getAttribute("value")] ?? "";
     count.textContent = `共 ${Object.keys(errors).length} 处需要修改`;
   }
 
-  // 值给了即受控，写值只发通知，改动由宿主自己写回
-  host.addEventListener("values-change", (event) => {
-    values = event.detail.values;
-    host.values = values;
-    syncControls();
-  });
+  host.addEventListener("values-change", (event) => paintValues(event.detail.values));
   host.addEventListener("errors-change", (event) => paintErrors(event.detail.errors));
   host.addEventListener("submit", (event) => {
     // 整张值表一行放不下，输出栏截断，悬停看全文
@@ -682,13 +607,13 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     submitted.textContent = `已提交：${submitted.title}`;
   });
 
-  syncControls();
+  paintValues(defaults);
 </script>
 ```
 
 ## 这一屏定了什么
 
-- **值只有一份。** 每个控件外面套一层 `XhFormFieldGroup`，拿到的是这张表里属于自己的那一格与写回它的动作；控件自己不再另存一份值，也就不存在两边不同步。
+- **值只有一份。** 每个控件外面套一层 `XhFormFieldGroup`，控件就按它的 `name` 读写这张表里属于自己的那一格：初值取 `defaultValues`，改动写回表单，重置时跟着还原；控件上不写 `v-model`、不接 `value` 与改动回调，也就不存在两边不同步。错误态同样由表单下传，作用域插槽只用来取错误文案。
 - **校验在表这一层，不在控件里。** `validate` 拿到整张值表跑一遍，返回「字段名 → 错误文案」；跨字段的规则天然写得下，控件一个字都不必改。
 - **错误摘要是一处，不是九处。** 提交没过时摘要显形并把焦点送到第一个出错的字段，条目一次全写上，谁露面由当下的错误表决定——[无障碍](../guide/a11y)那一册讲的就是这条通路。
 - **控件形态不一，控件外壳一致。** 文本框、下拉、数字输入、标签输入四种控件的高度、内边距、字段淡底、描边与聚焦描边取的是同一组控件令牌，摆在一起才对得齐。
@@ -696,6 +621,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
 
 ## 换成你的项目
 
-- 复合控件参与原生提交与重置要给 `name`，规则见[表单参与与重置](../guide/forms)。
+- 控件放进字段组就接上了值，规则与例外（控件自己给了值、组件内部的子控件）见[表单参与与重置](../guide/forms#放进表单字段组)；复合控件参与原生提交与重置要给 `name`，规则也在那一页。
 - 异步校验直接在 `validate` 里返回 Promise，提交时表单会等它回来再放行或拦下。
 - 分组用[字段组](../components/fieldset)：`legend` 是这一组的名字，说明文案会自动接进 `aria-describedby`。

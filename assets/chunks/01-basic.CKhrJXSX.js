@@ -1,0 +1,1 @@
+async function e(){let e=document.getElementById(`combobox-basic`);e.collection=[{value:`beijing`,label:`Beijing 北京`},{value:`berlin`,label:`Berlin 柏林`},{value:`bern`,label:`Bern 伯尔尼`},{value:`busan`,label:`Busan 釜山（禁用）`,disabled:!0},{value:`london`,label:`London 伦敦`}]}export{e as default};

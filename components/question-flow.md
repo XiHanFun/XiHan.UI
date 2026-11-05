@@ -1406,7 +1406,7 @@ const sent = ref("");
 | `--xh-question-flow-note-bg-focus` | `note` | `background` | `focus-within` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
 | `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` | question-flow 的 note 部件 border 覆盖槽。 |
 | `--xh-question-flow-note-border-disabled` | `note` | `border-color` | `disabled` | `--xh-border-default` | question-flow 的 note 部件 border-color 覆盖槽。 |
-| `--xh-question-flow-note-border-focus` | `note` | `border-color` | `focus-within` | `--xh-border-control-focus` | question-flow 的 note 部件 border-color 覆盖槽。 |
+| `--xh-question-flow-note-border-focus` | `note` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` | question-flow 的 note 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-question-flow-note-border-hover` | `note` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, :focus, [data-invalid])` | `--xh-border-strong` | question-flow 的 note 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | question-flow 的 note 部件 color 覆盖槽。 |
 | `--xh-question-flow-note-font-size` | `note` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 note 部件 font-size 覆盖槽。 |
@@ -1454,9 +1454,9 @@ const sent = ref("");
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（无锚定弹出） · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `block-size` · `border-color` · `color` · `mask-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-item-in` · `xh-pop-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `block-size` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

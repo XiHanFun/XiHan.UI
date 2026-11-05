@@ -10,7 +10,7 @@
 | --- | --- | --- | --- | --- |
 | 按压 | 确认按下 | `scale` + 换面 | `press` / `press`，`release` / `release` | 只换面 |
 | 状态 | hover、选中、焦点、校验的换色 | 颜色、描边色、阴影、`opacity` | `micro` / `enter` | 保留淡变 |
-| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale` | `nudge` / `continuous`；短边不超过 32px 的缩放可用 `settle` | 瞬时 |
+| 切换 | 开关滑块、单选圆点、勾选标记 | `translate`、`scale`；勾选标记另动 `clip-path`（描线）与 `mask-size`（全选 / 半选换形） | `nudge` / `continuous`（勾选标记的缓动取 `enter`，取消时倒擦走 `exit` / `exit`）；短边不超过 32px 的缩放可用 `settle` | 瞬时；勾选标记只剩淡变 |
 | 指示 | 选中指示器在项之间移动 | `translate`；尺寸为登记例外 | `move` / `continuous` | 瞬时 |
 | 披露 | 内容展开收起 | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
 | 出现 | 挂载与卸载 | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
@@ -26,7 +26,8 @@
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`。
 
 - 带位移、缩放、旋转或尺寸变化的动画不用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变。例外是进出场（出现、列表加入与移除、整幅滑出）：其中的位移与缩放只取幅度令牌，减弱动效下归零，剩下的只有淡变，所以照常取 `enter` / `exit`。
-- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`；原地的小幅几何变化（滑块、勾选标记、展开箭头、拇指缩放）与跟手的让位、查看器缩放平移取 `nudge`。
+- `move` 与 `nudge` 的分界：跨位置的换位与尺寸变化（指示器滑移、进度增长、堆叠重排、视口长高）取 `move`；原地的小幅几何变化（开关滑块、勾选标记、展开箭头）与跟手的让位、查看器缩放平移取 `nudge`。
+- 勾选标记只有一份实现（`family/check-mark.css`，Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用），标记常驻、不按状态生成或撤掉：勾上从左往右描出，先露短边再露长边，同时淡入；取消倒擦回去并淡出；全选与半选之间，勾与横杠两层遮罩以中心为原点交叉缩放。进出未选态时形状切换延后一个 `micro`，半选淡出途中不会闪出一枚勾。勾的字形不随书写方向镜像，RTL 下同样从左往右描；减弱动效下不描线、不换形，只剩淡变。
 - 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动）归 `move`，不归导航：导航只管以视口尺度移动的整幅位移。通知从边缘推入是出现，取 `enter` / `exit`。
 - 焦点环即时出现、即时撤下，不淡入：键盘用户要焦点当场落位；字段的描边与底色换色照常淡变。
 - 日历翻月与视图切换瞬时，不做方向动画：横移途中读格会读错，方向由标题的年月交代。
@@ -37,15 +38,15 @@
 
 | 令牌 | 取值 | 减弱动效 | 角色 |
 | --- | ---: | ---: | --- |
-| `--xh-motion-duration-micro` | 120ms | 120ms | 状态 |
-| `--xh-motion-duration-enter` | 200ms | 120ms | 出现、列表加入 |
-| `--xh-motion-duration-exit` | 120ms | 120ms | 出现、列表移除、导航出 |
+| `--xh-motion-duration-micro` | 150ms | 150ms | 状态 |
+| `--xh-motion-duration-enter` | 200ms | 150ms | 出现、列表加入 |
+| `--xh-motion-duration-exit` | 150ms | 150ms | 出现、列表移除、导航出 |
 | `--xh-motion-duration-move` | 200ms | 1ms | 指示、列表重排、数值 |
 | `--xh-motion-duration-expand` | 200ms | 1ms | 披露展开 |
-| `--xh-motion-duration-collapse` | 120ms | 1ms | 披露收起 |
+| `--xh-motion-duration-collapse` | 200ms | 1ms | 披露收起 |
 | `--xh-motion-duration-slide` | 320ms | 1ms | 导航进 |
-| `--xh-motion-duration-nudge` | 120ms | 1ms | 切换、跟手让位 |
-| `--xh-motion-duration-press` / `-release` | 120 / 200ms | 1ms | 按压 |
+| `--xh-motion-duration-nudge` | 200ms | 1ms | 切换、跟手让位 |
+| `--xh-motion-duration-press` / `-release` | 150 / 200ms | 1ms | 按压 |
 | `--xh-motion-duration-attention` | 640ms | 1ms（预设不播） | 注意 |
 | `--xh-motion-duration-reveal` | 960ms | 1ms | 数据首次出现 |
 | `--xh-motion-duration-morph` | 400ms | 1ms | 数据更新 |
@@ -72,8 +73,9 @@
 | `--xh-motion-ease-continuous` | `standard` | 在屏内被推到新位置：指示器、重排、数值 |
 | `--xh-motion-ease-loop` | `linear` | 匀速的无限循环 |
 | `--xh-motion-ease-enter` | `out` | 淡入与换色 |
-| `--xh-motion-ease-enter-strong` | `out-strong` | 带位移的入场、展开、原地形变 |
-| `--xh-motion-ease-exit` | `in` | 退场、收起 |
+| `--xh-motion-ease-enter-strong` | `out-strong` | 带位移的入场、原地形变 |
+| `--xh-motion-ease-exit` | `in` | 退场 |
+| `--xh-motion-ease-disclosure` | `in-out` | 面级内容的展开与收起，正文与指示器同用 |
 | `--xh-motion-ease-slide` | `out-fluid` | 整幅位移：抽屉推入、轮播换页 |
 | `--xh-motion-ease-sweep` | `in-out` | 往返型循环的折返 |
 | `--xh-motion-ease-press` / `-release` | `standard` / `out-strong` | 按压时间线 |
@@ -106,7 +108,7 @@
 
 ## 编排
 
-- **进出不对称**：进场比退场长一档（`enter` 200ms、`exit` 120ms），进场减速、退场加速；退场是让路。
+- **进出不对称**：进场比退场长一档（`enter` 200ms、`exit` 150ms），进场减速、退场加速；退场是让路。
 - **方向**：从哪来回哪去——锚定浮层从锚点一侧滑出，抽屉从所在边推入，通知从视口边缘进出；RTL 下横向位移随书写方向翻转。
 - **错开**：只对同一批到达的条目按到达顺序计数，步长 `--xh-motion-stagger-step`，最多 5 步，后面的与第 5 步同时出现；不按 DOM 位置（`nth-child`）计数。每次都是同一批一起露面的（浮动按钮列表、级联列、问答选项）位次就是到达顺序。
 - **分层**：遮罩与面板同时开始、同时退场，在最长的那个结束后卸载；面板内列表的错开从面板进场开始计时。
@@ -121,8 +123,8 @@
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
-| 按下 | 120ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 120ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
+| 按下 | 150ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
+| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 150ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。
@@ -134,19 +136,21 @@
 
 ## 披露
 
-- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；指示器随内容同档转向，减弱动效下两者都瞬时完成。
+- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容的行高 `minmax(0, 0fr) → minmax(0, 1fr)`，内缩与 `opacity` 同帧动：展开 `--xh-motion-duration-expand`、收起 `--xh-motion-duration-collapse`，两支等长、同一条 `--xh-motion-ease-disclosure`（缓起缓停），单开切换时一收一展的总高度一路单调；指示器随内容同时长、同曲线转向，减弱动效下两者都瞬时完成。
+- 内容区的 `hidden` 跟退场走，退场播完才落：宿主有 `[hidden]{display:none!important}`（Tailwind preflight）时退场照样播完。
+- 开合不换字重、不铺底、不画占高度的线，层次只靠字色。
 - 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画。
 
 ## 浮层进出场
 
-按锚定关系与面的类型分组，关键帧集中在 `family/motion.css`，皮肤不得重定义：
+带退场的部件，`hidden` 与内联 `display: none` 都跟退场闸门走，退场播完才落：connect 给的 `hidden` 跟着开合走，由适配器按闸门覆盖。宿主的 `[hidden]{display:none!important}`（Tailwind preflight、VitePress 默认主题都有这条）压得过皮肤声明的 `display`，`hidden` 跟着开合走退场就一帧都播不出来。退场窗口内靠 `inert` 或 Layer 状态挡住交互。
+
+按面的类型分组，关键帧集中在 `family/motion.css`，皮肤不得重定义。弹层只有一套进出场，锚定关系只决定有没有位移：贴着锚点的面从锚点一侧短移，不贴锚点的面原地淡入放大：
 
 | 关系 | 关键帧 | 组件 |
 | --- | --- | --- |
-| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、Tooltip |
-| 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
-| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层、BackTop、Log / MessageFeed 回底按钮 |
+| 弹层（锚定与无锚定同一套） | `xh-overlay-pop-in` / `xh-pop-out`：淡入 + 从 `--xh-motion-scale-enter` 放大 + 从锚点一侧移 `--xh-motion-distance-sm`，无锚定时位移为 0 | 锚定：Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、ColorPicker、SideNav 弹出分支、Pagination 页码面板、Tooltip、Popover、HoverCard、Popconfirm、Tour、Command；无锚定：NavigationMenu、FloatingPanel、FloatButton 列表、BackTop、Log / MessageFeed 回底按钮 |
 | 面板（sheet） | `xh-sheet-in / out` | Dialog、Notification |
 | 整幅滑入 | `xh-slide-in / out` | Drawer、Layout 抽屉式侧栏：入场 `slide` + `ease-slide`，退场 `exit` + `ease-exit` |
 
@@ -195,7 +199,7 @@ transition 列表写长名：`background-color`、`border-color`、`outline-colo
 
 ## 减弱动效
 
-`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（几何类时长为 1ms，位移与整幅位移归零，缩放归 1，错开步长归 0），换色与出现的淡变保留为 120ms（`micro` / `enter` / `exit`）。按下仍然换底，浮层仍然淡入淡出、退场照样等 120ms 的淡出播完再卸载，只是不再滑动与缩放；抽屉与覆盖式侧栏改为淡入淡出；循环动画停止并显示静态替代；`@xihan-ui/animations` 的预设不播。
+`data-motion="reduce"`（偏好 `system` 时跟 `prefers-reduced-motion`）去掉位移、保留淡变：位移、缩放、旋转与尺寸变化瞬时完成（几何类时长为 1ms，位移与整幅位移归零，缩放归 1，错开步长归 0），换色与出现的淡变保留为 150ms（`micro` / `enter` / `exit`）。按下仍然换底，浮层仍然淡入淡出、退场照样等 150ms 的淡出播完再卸载，只是不再滑动与缩放；抽屉与覆盖式侧栏改为淡入淡出；循环动画停止并显示静态替代；`@xihan-ui/animations` 的预设不播。
 
 `data-motion="default"` 恢复完整动效：系统要求减弱、而产品设置或某个局部容器选择完整动效时，该子树的令牌回到基线取值。两者可以嵌套，最近的一层生效。JS 侧经 `resolveMotionPreference(el)` 按元素读同一个答案——Presence、贴底滚动、平滑滚动、数字动画、轮播起播、背景层全部走这一条通道；产品自己的「减弱动效」设置用 `setMotionOverride` 一处设置、处处生效。
 

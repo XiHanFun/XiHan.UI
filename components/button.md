@@ -54,6 +54,8 @@ import { XhButton } from "@xihan-ui/vue";
   <XhButton variant="subtle">次要</XhButton>
   <XhButton variant="outline">线框</XhButton>
   <XhButton variant="ghost">幽灵</XhButton>
+  <XhButton variant="dashed">虚线</XhButton>
+  <XhButton variant="link">链接</XhButton>
 </template>
 ```
 
@@ -69,6 +71,12 @@ import { XhButton } from "@xihan-ui/vue";
 </xh-button>
 <xh-button variant="ghost">
   <button data-xh-part="root">幽灵</button>
+</xh-button>
+<xh-button variant="dashed">
+  <button data-xh-part="root">虚线</button>
+</xh-button>
+<xh-button variant="link">
+  <button data-xh-part="root">链接</button>
 </xh-button>
 ```
 
@@ -396,7 +404,7 @@ import { XhButton } from "@xihan-ui/vue";
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
 | `disabled` | `boolean` |  |  |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 |
+| `variant` | `ButtonVariant` |  | 变体：solid / subtle / outline / ghost / dashed / link，默认 solid——只有 Button 缺省品牌实心，其余触发器缺省中性。 dashed 与 outline 同一套面、描边改虚线；link 是不铺面的文字钮，悬停与按下加下划线。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  |  |
 | `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |
@@ -469,8 +477,6 @@ import { XhButton } from "@xihan-ui/vue";
 
 `@xihan-ui/styles/button.css` 按 `[data-scope="button"][data-part="root"]` 部件选择器书写，发布产物以挂载类 `.xh-scope-button` 代替其中的 data-scope（特异性相同），位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`，部件选择器照常可用。
 
-`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
-
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -505,11 +511,11 @@ import { XhButton } from "@xihan-ui/vue";
 | `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-loading`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | button 的 root 部件 color 覆盖槽。 |
-| `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
+| `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |
+| `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | button 的 root 部件 gap 覆盖槽。 |
 | `--xh-button-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-action-variant=solid` | `--xh-motion-duration-glint` | button 的 root 部件 animation 覆盖槽。 |
-| `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_button-group-h` | button 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | button 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-button-px` | `root` | `padding-inline` | `default` | `--xh-_button-group-px` | button 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |

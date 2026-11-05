@@ -2,7 +2,7 @@
 
 # 行为原语
 
-`@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、右键菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。在这里实现一次，组件只负责调用。
+`@xihan-ui/core` 中的行为原语收纳跨组件复用的交互机制：对话框、抽屉、气泡、菜单、上下文菜单、悬浮卡片等的差别在触发方式和视觉，但点击外部关闭、焦点陷入、背景禁止滚动是同一套机制。在这里实现一次，组件只负责调用。
 
 配套的层栈与背景失活也在 `@xihan-ui/core` 中（它们是结构原语，比行为更底层）。
 
@@ -12,9 +12,35 @@
 
 `createScope(null, ...)` 本身保持惰性，便于在 CSR 中先建立机器再挂载组件节点；这份 Scope 始终表示 ambient Document，不会在之后改绑节点。真正读取 root/document 时若宿主没有有效全局 Document，会抛出稳定错误。传入离线 Document 的节点时 `getDoc()` 仍返回该 Document，但 `getWin()` 明确失败，不会借用主页面 Window 伪造一组混合 realm。
 
+## 浮层第一次打开时才加载
+
+消隐层、焦点域、滚动锁、背景失活、Portal 视觉桥与多选标签动效只在浮层打开时才用得上。库内的浮层组件不从主入口同步引入它们，而是第一次要用时经 `loadOverlayKit()` 取一块按需块；定位引擎（`@xihan-ui/position` 的 `createDeferredPositionEngine`，见[浮层定位](./position#延迟引擎)）与浮层里的自绘滚动条同样按需。使用者的打包器（Vite、Rollup、webpack）会把这几块切成单独的文件，首屏不下载：只用一个选择器时首屏从 53 kB 降到 33 kB（gzip，见[体积棘轮](./testing#体积棘轮)）。
+
+- 何时取：浮层挂载后，文档上第一次有交互（指针移进来、按下、按键、聚焦、触摸）就在后台取。键盘打开前焦点先到，指针点开前先移进来，真打开时多半已经到了。挂载时就开着的浮层立刻取。
+- 没到时打开：展开态当场生效，状态、ARIA、`data-state` 与事件照常；资源到了再接上。靠定位的浮层落位前本就藏着；对话框、抽屉、图片查看器、命令面板这类不靠落位藏面板的，内容等按需块到了才露出来。等的这段时间按 Escape、点外面不收起，焦点留在原处；等的时候已经关掉就不再接，不抢焦点。
+- 第一次打开也要同步：应用启动时调一次适配器导出的 `preloadOverlay()`（`@xihan-ui/vue`、`@xihan-ui/react`、`@xihan-ui/web-components` 都有），之后与静态引入完全一样。
+- 加载失败不缓存，下一次打开重新取。
+
+自己写浮层时：`whenOverlayKit(kit => …)` 在按需块到了时回调（已经到了当场调），返回的函数撤掉还在排的那一次；`overlayKit()` 已到返回它，没到返回 `null`；`prefetchOverlayKit(document)` 登记交互预取，底下用的是 `onFirstInteraction(document, run)`。给 Portal 壳接来源用 `connectPortalVisualBridge({ source, shell })`：逻辑来源当场登记，搬进壳的控件马上就能沿逻辑祖先链找到所在位置的配置与语言包；视觉桥等按需块到了再建，返回的函数一并撤掉。主入口照旧导出 `createDismissLayer`、`createFocusScope` 等，直接引入就是同步的，下文的示例都这样写。
+
+```ts
+import { prefetchOverlayKit, whenOverlayKit } from "@xihan-ui/core";
+
+prefetchOverlayKit(document);
+
+let dismiss = null;
+const cancel = whenOverlayKit((kit) => {
+  dismiss = kit.createDismissLayer({ config, layer, onDismiss: close });
+});
+
+// 收起或卸载时：还没到就撤掉排队，到了就释放
+cancel();
+dismiss?.dispose();
+```
+
 ## Portal 的视觉环境
 
-Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度和方向分别读取最近的显式声明；语气经 `data-tone` 属性一并带过去，浮层内按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点取到的是来源那一族。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
+Vue 浮层与 React `XhPortal` 为每个实例建立独立的 `display: contents` 容器，把逻辑来源的视觉环境带到浮层落点。主题、品牌、密度、对比度、动效、透明度、材质和方向分别读取最近的显式声明。语气 `data-tone` 不带：语气是组件自己的属性，不是来源所处的环境。浮层要用语气的组件（Select、Menu、Tooltip 等）把自己的 `tone` 写到定位层或内容部件上，没写的用组件自己的缺省语气，不接触发器外层容器的语气（见[语气不跨组件继承](./styling#语气不跨组件继承)）；浮层里按[在自定义节点上使用语气](./styling#在自定义节点上使用语气)读 `--xh-tone-*` 的节点，要在自己身上写 `data-tone`。来源祖先链上局部覆盖的 CSS 自定义属性也会投影到实例壳。局部深色或局部令牌覆盖的弹层因此仍保持来源外观，同一落点下的其他实例不受影响。来源没有声明的轴与变量继续继承落点容器。
 
 自定义属性只带属于视觉环境的那部分。作者自己的属性（不以 `--xh-` 开头）照投；`--xh-` 命名空间只投文档根上有声明的名字，即令牌与按[覆盖样式的三种粒度](./styling#覆盖样式的三种粒度)写在 `:root` 上的组件槽覆盖。皮肤写在组件或家族元素上的公开槽（`--xh-<组件>-*`、`--xh-collection-*` 等）、私有槽 `--xh-_*` 与挂在 `[data-tone]` 上的 `--xh-tone-*` 是组件内部级联，不跨 Portal：斑马行改写的行底不会顺着行内的触发器进到菜单项，列表项里的下拉、卡片里的提示同理。判定按每次同步时的文档根计算样式做，不维护名单。
 
@@ -32,7 +58,7 @@ const bridge = createPortalVisualBridge({ source, shell });
 bridge.dispose();
 ```
 
-桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`dir`，以及语气 `data-tone` 与材质轴 `data-material`。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
+桥接的属性为 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency`、`data-material` 与 `dir`；语气 `data-tone` 不在其列。三端物理 Portal 都从逻辑来源的 composed 祖先逐项取最近显式声明，并把它们与上述自定义属性投影到实例壳；来源变化、跨 realm 与退场回收均由 Core 桥接生命周期处理。
 
 ### 逻辑父子
 
@@ -342,7 +368,7 @@ export interface PresenceHandle {
 }
 ```
 
-关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 120ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
+关闭时先同步触发 `onBeforeExit`，动画探测器在此申领租约；所有租约归还之前 `rendered` 保持 `true`，DOM 不移除。退场中途又被打开则取消旧租约，不卸载。租约不设猜测时限：CSS 观察器等待浏览器实际创建的有限动画对象完成或取消，同名的多个动画也分别计入；没有实际动画对象时不等待，无限装饰动画不阻塞退出。减弱动效下退场关键帧去掉位移、只剩 150ms 淡出，租约照样等它播完。自定义动画租约由创建方明确完成或取消。
 
 Dialog 与共用其机器的 Drawer 在逻辑关闭时立即给内容设置 `inert` 和 `aria-hidden`，浮层登记与滚动锁保留到内容及遮罩完成退场，然后通知 `onExitComplete`（Vue/Web Components 为 `exit-complete`）。退场中重开保留原资源，旧完成不影响新状态；必要时通过原焦点域的 `reactivate()` 恢复域内焦点，不重复派发挂载自动聚焦通知。卸载立即释放资源，不等 CSS。
 

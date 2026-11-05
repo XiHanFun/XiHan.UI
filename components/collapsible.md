@@ -30,9 +30,9 @@ import {
   <div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
     <XhCollapsibleRoot>
       <XhCollapsibleTrigger>
-        展开详情
         <!-- 指示符空着就由皮肤画一枚箭头，展开时转向 -->
         <XhCollapsibleIndicator />
+        <span>展开详情</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>
         收起时内容只加 hidden，节点不卸载，里面的输入框与滚动位置都留着。
@@ -41,8 +41,8 @@ import {
 
     <XhCollapsibleRoot default-open>
       <XhCollapsibleTrigger>
-        一上来就开着
         <XhCollapsibleIndicator />
+        <span>一上来就开着</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>defaultOpen 只影响初始状态。</XhCollapsibleContent>
     </XhCollapsibleRoot>
@@ -55,9 +55,9 @@ import {
   <xh-collapsible>
     <div data-xh-part="root">
       <button data-xh-part="trigger">
-        展开详情
         <!-- 指示符空着就由皮肤画一枚箭头，展开时转向 -->
         <span data-xh-part="indicator"></span>
+        <span>展开详情</span>
       </button>
       <div data-xh-part="content">
         收起时节点不卸载，里面的输入框与滚动位置都留着。
@@ -68,8 +68,8 @@ import {
   <xh-collapsible default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">
-        一上来就开着
         <span data-xh-part="indicator"></span>
+        <span>一上来就开着</span>
       </button>
       <div data-xh-part="content">defaultOpen 只影响初始状态。</div>
     </div>
@@ -530,8 +530,8 @@ import {
   <div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
     <XhCollapsibleRoot lazy-mount>
       <XhCollapsibleTrigger>
-        第一次展开才挂载
         <XhCollapsibleIndicator />
+        <span>第一次展开才挂载</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>
         <XhTextFieldRoot placeholder="输入后收起再展开，内容还在">
@@ -545,8 +545,8 @@ import {
 
     <XhCollapsibleRoot lazy-mount unmount-on-exit>
       <XhCollapsibleTrigger>
-        只在展开期间存在
         <XhCollapsibleIndicator />
+        <span>只在展开期间存在</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>
         <XhTextFieldRoot placeholder="输入后收起再展开，内容已清空">
@@ -567,8 +567,8 @@ import {
   <xh-collapsible lazy-mount>
     <div data-xh-part="root">
       <button data-xh-part="trigger">
-        第一次展开才挂载
         <span data-xh-part="indicator"></span>
+        <span>第一次展开才挂载</span>
       </button>
       <div data-xh-part="content">
         <template>
@@ -588,8 +588,8 @@ import {
   <xh-collapsible lazy-mount unmount-on-exit>
     <div data-xh-part="root">
       <button data-xh-part="trigger">
-        只在展开期间存在
         <span data-xh-part="indicator"></span>
+        <span>只在展开期间存在</span>
       </button>
       <div data-xh-part="content">
         <template>
@@ -778,7 +778,7 @@ import {
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | collapsible 的 content 部件 color 覆盖槽。 |
+| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | collapsible 的 content 部件 color 覆盖槽。 |
 | `--xh-collapsible-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | collapsible 的 content 部件 font-size 覆盖槽。 |
 | `--xh-collapsible-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pb` | collapsible 的 content 部件 padding-block-end 覆盖槽。 |
 | `--xh-collapsible-content-pt` | `content` | `padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pt` | collapsible 的 content 部件 padding-block-start 覆盖槽。 |
@@ -792,13 +792,13 @@ import {
 | `--xh-collapsible-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_collapsible-open-fg` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | collapsible 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-font-weight-medium` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default`<br>`state=open` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-collapsible-trigger-font-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_collapsible-indicator-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-collapsible-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` | collapsible 的 trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-collapsible-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_collapsible-trigger-px` | collapsible 的 trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-collapsible-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_collapsible-trigger-py` | collapsible 的 trigger 部件 padding-block 覆盖槽。 |
-| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_collapsible-trigger-radius` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -813,4 +813,4 @@ import {
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

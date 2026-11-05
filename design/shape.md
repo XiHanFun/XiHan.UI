@@ -2,18 +2,21 @@
 
 # 形状与边界
 
-圆角与边线是最容易长出第二套规则的地方——一个组件 6px、另一个 5px，看着都"差不多"。这里的规则是：圆角只有一条语义阶梯，边界只由描边承担，两者都由门禁逐条扫。
+圆角与边线是最容易长出第二套规则的地方——一个组件 6px、另一个 5px，看着都"差不多"。这里的规则是：圆角只有一颗种子、一条语义阶梯，边界只由描边承担，两者都由门禁逐条扫。
 
 ## 圆角阶梯
 
+圆角只有一颗种子 `--xh-radius-seed`（缺省 8px），各档都是它的正系数倍：`--xh-radius-2xs / xs / sm / md / lg` 依次是 0.25 / 0.5 / 0.75 / 1 / 1.25 倍（缺省 2 / 4 / 6 / 8 / 10px）。组件不引这一层，只引下面的形状角色；换风格只改种子，各档按比例一起变，嵌套圆角的比例不漂。
+
 <XhTokenTable
   kind="radius"
-  :names="['--xh-shape-inset', '--xh-shape-control', '--xh-shape-surface', '--xh-shape-overlay', '--xh-shape-circle', '--xh-shape-pill']"
+  :names="['--xh-shape-inset', '--xh-shape-control', '--xh-shape-surface', '--xh-shape-overlay', '--xh-shape-sheet', '--xh-shape-circle', '--xh-shape-pill']"
   :notes="{
-    '--xh-shape-inset': '2px · 嵌在控件里的内层：勾选方框、页内列表的候选行（Listbox、Tree）、字段内的清空钮、表格行选择框、色块',
-    '--xh-shape-control': '2px · 控件本体：Button、Input、Select trigger、Toggle、kbd、tooltip、Tabs / Steps trigger、单选组 segmented 形态的轨道；方签 Tag、状态方签（ToolCall 状态、Approval / QuestionFlow 结果）与 Alert 提示条',
-    '--xh-shape-surface': '4px · 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、选择卡片、分页的描边方块',
-    '--xh-shape-overlay': '4px · 脱离文档流的浮层：Popover、Menu、Dialog、Notification 卡片预设、Drawer 朝向页面的两个角；引用 surface，只改承载面圆角时浮层跟着走；Notification 轻提示预设取 control',
+    '--xh-shape-inset': '4px（xs）· 嵌在控件、面与浮层里的小块：勾选方框、集合行（浮层里的选项与菜单项、Listbox / Tree 的行）、轨道里的段与滑块（Tabs segment、单选组 segmented 形态）、字段里的已选标签、字段内的清空钮、表格行选择框、色块',
+    '--xh-shape-control': '8px（md）· 控件本体：Button、Input、Select trigger、Toggle、kbd、tooltip、Tabs / Steps trigger、单选组 segmented 形态的轨道；方签 Tag、状态方签（ToolCall 状态、Approval / QuestionFlow 结果）与 Alert 提示条',
+    '--xh-shape-surface': '8px（md）· 成面的静态容器：Card、Panel、列表容器、Tabs segment 的轨道、选择卡片、分页的描边方块',
+    '--xh-shape-overlay': '8px（md）· 脱离文档流的弹层：Popover、Menu、Select / Combobox 等候选面板与无锚弹层；引用 surface，只改承载面圆角时浮层跟着走',
+    '--xh-shape-sheet': '10px（lg）· 模态与强反馈面：Dialog、Notification 卡片预设、Drawer 朝向页面的两个角；比浮层再圆一档。Notification 轻提示预设取 control',
     '--xh-shape-circle': '50% · 宽高相等的圆：头像、单选圈、开关与滑杆的拇指、步骤圆点、加载环、悬浮单图标动作',
     '--xh-shape-pill': '9999px · 只两类身份：状态 chip（Badge；Tag 与结果标记是方签，取 control）与一维对象（轨道、进度条、指示条、手柄、滚动条滑块）',
   }"
@@ -21,12 +24,12 @@
 
 强制规则：
 
-- 普通 control 2px、surface 4px、overlay 4px；组件不写 6px、10px 这类独立圆角。
+- 缺省 inset 4px、control / surface / overlay 8px、sheet 10px，都由种子派生；组件不写字面圆角，也不直接引 `--xh-radius-*`。
 - pill 只给明确的胶囊身份；普通按钮、字段、卡片与浮层不用 pill。Tag 与结果标记是方签，取 control。
 - 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
-- 内层圆角不超过外层圆角减去内边距（surface 4px 的轨道留 2px 内距，里面的滑块取 2px）；相连控件（InputGroup、ButtonGroup）消除相接侧圆角。
-- 锚定浮层里的列表行（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列）与 Command、Transfer 的列表行是通栏行，不取圆角，悬停与选中的面铺满整行；Listbox、Tree 的行仍按 inset 内缩。
-- 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边。贴边面板（Drawer）贴住视口的两个角不取圆角，朝向页面的两个角取 overlay，与别的浮层同一把尺。
+- 内层圆角不超过外层圆角减去内边距：surface 8px 的轨道留 2px 内距，里面的段与滑块取 inset 4px；浮层 8px 留 4px 内距，里面的选项行取 inset 4px；字段 8px、有标签时起始留 4px，里面的标签取 inset 4px。相连控件（InputGroup、ButtonGroup）消除相接侧圆角。
+- 锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列、时间列）与 Command、Transfer 的列表两侧各留 4px 内距，列表行取 inset，悬停与选中的面是行内一块圆角面；Listbox、Tree 的行同样取 inset。
+- 贴边铺满的通栏（Alert `banner`）不取圆角：它的边就是页面或容器的边。贴边面板（Drawer）贴住视口的两个角不取圆角，朝向页面的两个角取 sheet，与 Dialog 同一把尺。
 - 亮色、暗色与紧凑密度不改变形状身份。
 - PromptInput 是登记过的例外：对话输入条允许 `--xh-shape-surface`。
 
@@ -36,12 +39,12 @@
   :names="['--xh-stroke-thin', '--xh-stroke-thick', '--xh-stroke-strong']"
   :notes="{
     '--xh-stroke-thin': '一切描边与分隔线',
-    '--xh-stroke-thick': '焦点环、选中指示条、滑杆拇指描边',
+    '--xh-stroke-thick': '选中指示条、滑杆拇指描边',
     '--xh-stroke-strong': '只给刻意登记的粗把手（图片裁切框、可调尺寸的拖柄）',
   }"
 />
 
-焦点环一律 `--xh-ring-width`（= thick，2px）+ `--xh-ring-offset`（画在盒内一圈，不改布局盒），环色 `--xh-ring-focus` 不随语气；实心面上的环取 `currentColor`。字段外壳聚焦不画环，焦点由描边换色与底色差标出（见下文「字段外壳」）。
+焦点环不随语气：一道 2px 实线 `--xh-ring-width`（= thick）+ `--xh-ring-offset`（负一个环宽），画在元素自己的盒内，外沿与边框外沿重合，不出盒、不改布局盒；环色 `--xh-ring-focus`，实心面上也不换，改在环内侧衬一道 1px 底色间隔线 `--xh-ring-gap`。首尾相接的行与格同取这一档，压不到相邻的行。字段外壳聚焦时换色的描边加内侧 inset 线合起来就是环（见下文「字段外壳」）。
 
 ## 边界三选一
 
@@ -49,27 +52,27 @@
 
 | 形态 | variant | 描边 | 底 | 影 |
 | --- | --- | --- | --- | --- |
-| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，缺省 none） |
+| 描边 | `outline`（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段与控件盒用 `--xh-border-control`（缺省档与 default 同色） | `--xh-bg-surface`；字段外壳与 SignaturePad 画布铺 `--xh-bg-field`，FileUpload 拖放区铺 `--xh-bg-subtle`，勾选方框与单选圈 `transparent`，露出宿主的面 | none（Card 加 `--xh-elevation-raised`，sm 档） |
 | 淡底 | `subtle` | `--xh-stroke-thin solid transparent`（占位边，尺寸不跳） | `--xh-bg-subtle`（有语气时 `--xh-tone-subtle`） | none |
 | 无壳 | `ghost` | 不写 | 不写 | 不写；只允许分隔线 |
 
 - 有框 / 无框只走 `variant` 这一条轴：`outline | subtle | ghost`，可按下的表面多一档 `solid`。不存在 `bordered`、`borderless`、`plain | surface` 这类私有轴。
 - `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能作 `border-block-start` 类分隔线与 `::after` 分隔伪元素。
-- raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 缺省 none，主题要抬起感时再给它一层影；只有可交互时允许 hover 抬升。
+- raised 面（Card、Tabs segment 的滑块）必带 `--xh-border-default` 描边，影只是加成：`--xh-elevation-raised` 取阴影三档里的 sm；只有可交互时允许 hover 抬升（抬到 md）。
 
-## 字段外壳：淡底、聚焦换白底
+## 字段外壳：白底、聚焦换品牌描边
 
-字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态，但铺一层淡底：
+字段外壳（输入框壳、InputGroup 组壳、ColorPicker 控件、SignaturePad 画布）静息是描边形态：
 
-- 静息 `--xh-bg-field`（淡底兑一半）+ `--xh-border-control` + `--xh-shape-control` + 无影。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
+- 静息 `--xh-bg-field`（缺省与承载面同色，即白底）+ `--xh-border-control` + `--xh-shape-control` + 无影。主题要淡底字段只改 `--xh-bg-field` 这一支。描边缺省档与浮层面板、卡片的 `--xh-border-default` 同色，页面里只有一种边线重量；`prefers-contrast: more` 才换到 3:1 的档。
 - hover 底不变，描边升 `--xh-border-strong`。
-- focus-within 换成承载面 `--xh-bg-surface` + `--xh-border-control-focus`，不画聚焦环：焦点由描边换色与底色差标出，强制色档补一圈 Highlight 环。
+- focus-within 底换 `--xh-bg-surface`（缺省档与静息同色）、描边换 `--xh-border-control-focus`，描边内侧再补一道 inset 线，合起来一个环宽，就是画在盒内的焦点环，不另画 outline；强制色档 inset 线被去掉，描边换 Highlight 并补一道同宽的 Highlight 环。
 - invalid 换 `--xh-border-invalid` 并铺 4% 失效色淡底，聚焦时让位给聚焦态。
 - readOnly 只填 `--xh-bg-subtle` 不动描边；disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，不靠 opacity。
 - 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
 - 登记过的例外：面板内嵌搜索（Command、Cascader、TreeSelect、Transfer、SideNav）不画字段外壳，只画一道 `border-block-end` 下划线，聚焦不画环、下划线也不换色；SignaturePad 不投影字段配方而自绘外壳，值必须与字段规则一致。
 
-需要白底的宿主写对应组件的底色槽，如 `--xh-text-field-control-bg: var(--xh-bg-surface)`。
+需要淡底的宿主写对应组件的底色槽，如 `--xh-text-field-control-bg: var(--xh-bg-subtle)`；盒里的清空钮、可见性钮等按盒铺的底取承载阶梯，淡底档没聚焦时走淡底阶梯。
 
 ## 其余控件盒
 

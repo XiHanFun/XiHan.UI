@@ -709,7 +709,7 @@ function onConfirm() {
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板） · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-popconfirm-loading-duration`。
 

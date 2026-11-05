@@ -14,23 +14,11 @@
 
 ## 用法
 
-collection 是层级元信息的唯一事实源，标记只负责外观；缩进由子层容器自行撑开
+collection 是层级元信息的唯一事实源；不写结构时组件照它铺出标题与整棵树，缩进由子层容器自行撑开
 
 ```vue
 <script setup lang="ts">
-import {
-  XhTreeBranch,
-  XhTreeBranchContent,
-  XhTreeBranchControl,
-  XhTreeBranchText,
-  XhTreeBranchTrigger,
-  XhTreeItem,
-  XhTreeItemIndicator,
-  XhTreeItemText,
-  XhTreeLabel,
-  XhTreeRoot,
-  XhTreeTree,
-} from "@xihan-ui/vue";
+import { XhTreeRoot } from "@xihan-ui/vue";
 
 const collection = [
   {
@@ -64,132 +52,19 @@ const collection = [
   <XhTreeRoot
     :collection="collection"
     :default-expanded-value="['src']"
+    label="项目文件"
     style="inline-size: 100%; max-inline-size: 320px"
-  >
-    <XhTreeLabel>项目文件</XhTreeLabel>
-    <XhTreeTree>
-      <XhTreeBranch value="src">
-        <XhTreeBranchControl>
-          <XhTreeBranchTrigger />
-          <XhTreeBranchText>src</XhTreeBranchText>
-          <XhTreeItemIndicator />
-        </XhTreeBranchControl>
-        <XhTreeBranchContent>
-          <XhTreeBranch value="components">
-            <XhTreeBranchControl>
-              <XhTreeBranchTrigger />
-              <XhTreeBranchText>components</XhTreeBranchText>
-              <XhTreeItemIndicator />
-            </XhTreeBranchControl>
-            <XhTreeBranchContent>
-              <XhTreeItem value="button">
-                <XhTreeItemText>Button.vue</XhTreeItemText>
-                <XhTreeItemIndicator />
-              </XhTreeItem>
-              <XhTreeItem value="dialog">
-                <XhTreeItemText>Dialog.vue</XhTreeItemText>
-                <XhTreeItemIndicator />
-              </XhTreeItem>
-            </XhTreeBranchContent>
-          </XhTreeBranch>
-          <XhTreeItem value="main">
-            <XhTreeItemText>main.ts</XhTreeItemText>
-            <XhTreeItemIndicator />
-          </XhTreeItem>
-        </XhTreeBranchContent>
-      </XhTreeBranch>
-
-      <XhTreeBranch value="docs">
-        <XhTreeBranchControl>
-          <XhTreeBranchTrigger />
-          <XhTreeBranchText>docs</XhTreeBranchText>
-          <XhTreeItemIndicator />
-        </XhTreeBranchControl>
-        <XhTreeBranchContent>
-          <XhTreeItem value="guide">
-            <XhTreeItemText>guide.md</XhTreeItemText>
-            <XhTreeItemIndicator />
-          </XhTreeItem>
-          <XhTreeItem value="api">
-            <XhTreeItemText>api.md</XhTreeItemText>
-            <XhTreeItemIndicator />
-          </XhTreeItem>
-        </XhTreeBranchContent>
-      </XhTreeBranch>
-
-      <XhTreeItem value="readme">
-        <XhTreeItemText>README.md</XhTreeItemText>
-        <XhTreeItemIndicator />
-      </XhTreeItem>
-    </XhTreeTree>
-  </XhTreeRoot>
+  />
 </template>
 ```
 
 ```html
-<xh-tree id="tree-basic">
-  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px">
-    <span data-xh-part="label">项目文件</span>
-    <div data-xh-part="tree">
-      <div data-xh-part="branch" value="src">
-        <div data-xh-part="branch-control">
-          <span data-xh-part="branch-trigger"></span>
-          <span data-xh-part="branch-text">src</span>
-          <span data-xh-part="item-indicator"></span>
-        </div>
-        <div data-xh-part="branch-content">
-          <div data-xh-part="branch" value="components">
-            <div data-xh-part="branch-control">
-              <span data-xh-part="branch-trigger"></span>
-              <span data-xh-part="branch-text">components</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="branch-content">
-              <div data-xh-part="item" value="button">
-                <span data-xh-part="item-text">Button.vue</span>
-                <span data-xh-part="item-indicator"></span>
-              </div>
-              <div data-xh-part="item" value="dialog">
-                <span data-xh-part="item-text">Dialog.vue</span>
-                <span data-xh-part="item-indicator"></span>
-              </div>
-            </div>
-          </div>
-          <div data-xh-part="item" value="main">
-            <span data-xh-part="item-text">main.ts</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="branch" value="docs">
-        <div data-xh-part="branch-control">
-          <span data-xh-part="branch-trigger"></span>
-          <span data-xh-part="branch-text">docs</span>
-          <span data-xh-part="item-indicator"></span>
-        </div>
-        <div data-xh-part="branch-content">
-          <div data-xh-part="item" value="guide">
-            <span data-xh-part="item-text">guide.md</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="api">
-            <span data-xh-part="item-text">api.md</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="item" value="readme">
-        <span data-xh-part="item-text">README.md</span>
-        <span data-xh-part="item-indicator"></span>
-      </div>
-    </div>
-  </div>
+<xh-tree id="tree-basic" label="项目文件">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px"></div>
 </xh-tree>
 
 <script type="module">
-  // 层级、显示文本与节点禁用都查这份树数据，标记只管长相
+  // 只写 root：标题与整棵树由元素照这份树数据生成，层级、显示文本与节点禁用也都查它
   const tree = document.getElementById("tree-basic");
   tree.collection = [
     {
@@ -217,13 +92,7 @@ const collection = [
     },
     { value: "readme", label: "README.md" },
   ];
-
-  // 展开集合是数组，只走属性；这里由宿主持有，组件发的事件宿主写回才算数
-  tree.expandedValue = ["src"];
-  tree.addEventListener(
-    "expanded-value-change",
-    (event) => (tree.expandedValue = event.detail.value),
-  );
+  tree.defaultExpandedValue = ["src"];
 </script>
 ```
 
@@ -231,7 +100,7 @@ const collection = [
 
 加粗的是必需部件。
 
-`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-description` · `branch-content` · `node-drag-trigger` · `empty` · `loading` · `live-region`
+`data-scope="tree"`：`root` · `label` · **`tree`** · `item` · `item-indicator` · `item-text` · `item-description` · `item-suffix` · `branch` · `branch-control` · `branch-trigger` · `branch-indicator` · `branch-text` · `branch-description` · `branch-content` · `branch-loading` · `branch-error` · `branch-retry-trigger` · `branch-empty` · `node-drag-trigger` · `empty` · `loading` · `live-region`
 
 ## 示例
 
@@ -1075,38 +944,25 @@ watch(keyword, () => {
 
 ### 异步加载子节点
 
-展开时才请求数据：请求在途的分支写进 loadingValue，展开箭头换成转圈并报告 aria-busy；取回后写回 collection 并移出，收起再展开不重复请求
+节点写 hasChildren，首次展开时组件调 loadChildren 取子项：在途转圈并报告 aria-busy，取回后由组件暂存，收起再展开不重复请求；运维中心第一次会失败，点重试或在该行按 Enter 再取
 
 ```vue
 <script setup lang="ts">
-import {
-  XhTreeBranch,
-  XhTreeBranchContent,
-  XhTreeBranchControl,
-  XhTreeBranchText,
-  XhTreeBranchTrigger,
-  XhTreeItem,
-  XhTreeItemIndicator,
-  XhTreeItemText,
-  XhTreeLabel,
-  XhTreeRoot,
-  XhTreeTree,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
+import { XhTreeRoot } from "@xihan-ui/vue";
 
 interface Node {
   value: string;
-  label: string;
-  children?: Node[];
+  label?: string;
+  hasChildren?: boolean;
 }
 
-// 空数组也是分支：还没取回子项的部门照样报告 aria-expanded；没有 children 的是叶子，不用取
-const collection = ref<Node[]>([
-  { value: "rd", label: "研发中心", children: [] },
-  { value: "ops", label: "运维中心", children: [] },
-  { value: "biz", label: "业务中心", children: [] },
+// hasChildren 标出还没取回子项的部门；没写的是叶子，不用取
+const collection: Node[] = [
+  { value: "rd", label: "研发中心", hasChildren: true },
+  { value: "ops", label: "运维中心", hasChildren: true },
+  { value: "biz", label: "业务中心", hasChildren: true },
   { value: "board", label: "董事办" },
-]);
+];
 
 const staff: Record<string, string[]> = {
   rd: ["赵一", "钱二"],
@@ -1114,112 +970,52 @@ const staff: Record<string, string[]> = {
   biz: ["李四", "周五", "吴六"],
 };
 
-const expanded = ref<string[]>([]);
-const loading = ref<string[]>([]);
-const loaded = new Set<string>();
+const failedOnce = new Set<string>();
 
-// 这里用定时器代替一次请求
-function fetchChildren(value: string): void {
-  if (loaded.has(value))
-    return;
-  loaded.add(value);
-  loading.value = [...loading.value, value];
-  window.setTimeout(() => {
-    const branch = collection.value.find(node => node.value === value);
-    if (branch)
-      branch.children = staff[value].map((name, index) => ({ value: `${value}-${index}`, label: name }));
-    loading.value = loading.value.filter(item => item !== value);
-  }, 800);
-}
-
-function onExpandedValueChange(details: { value: string[] }): void {
-  expanded.value = details.value;
-  for (const value of details.value) fetchChildren(value);
+// 这里用定时器代替一次请求；收起分支或卸载时 signal 中止它
+function loadChildren({ node, signal }: { node: Node; signal: AbortSignal }): Promise<Node[]> {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      if (node.value === "ops" && !failedOnce.has(node.value)) {
+        failedOnce.add(node.value);
+        reject(new Error("网络错误"));
+        return;
+      }
+      resolve((staff[node.value] ?? []).map((name, index) => ({ value: `${node.value}-${index}`, label: name })));
+    }, 800);
+    signal.addEventListener("abort", () => {
+      window.clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
 }
 </script>
 
 <template>
   <XhTreeRoot
     :collection="collection"
-    :expanded-value="expanded"
-    :loading-value="loading"
+    :load-children="loadChildren"
+    label="组织架构"
     style="inline-size: 100%; max-inline-size: 320px"
-    @expanded-value-change="onExpandedValueChange"
-  >
-    <XhTreeLabel>组织架构</XhTreeLabel>
-    <XhTreeTree>
-      <template v-for="node in collection" :key="node.value">
-        <XhTreeBranch v-if="node.children" :value="node.value">
-          <XhTreeBranchControl>
-            <XhTreeBranchTrigger />
-            <XhTreeBranchText>{{ node.label }}</XhTreeBranchText>
-            <XhTreeItemIndicator />
-          </XhTreeBranchControl>
-          <XhTreeBranchContent>
-            <XhTreeItem v-for="child in node.children" :key="child.value" :value="child.value">
-              <XhTreeItemText>{{ child.label }}</XhTreeItemText>
-              <XhTreeItemIndicator />
-            </XhTreeItem>
-          </XhTreeBranchContent>
-        </XhTreeBranch>
-        <XhTreeItem v-else :value="node.value">
-          <XhTreeItemText>{{ node.label }}</XhTreeItemText>
-          <XhTreeItemIndicator />
-        </XhTreeItem>
-      </template>
-    </XhTreeTree>
-  </XhTreeRoot>
+  />
 </template>
 ```
 
 ```html
-<xh-tree id="tree-async">
-  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px">
-    <span data-xh-part="label">组织架构</span>
-    <div data-xh-part="tree">
-      <div data-xh-part="branch" value="rd">
-        <div data-xh-part="branch-control">
-          <span data-xh-part="branch-trigger"></span>
-          <span data-xh-part="branch-text">研发中心</span>
-          <span data-xh-part="item-indicator"></span>
-        </div>
-        <div data-xh-part="branch-content"></div>
-      </div>
-      <div data-xh-part="branch" value="ops">
-        <div data-xh-part="branch-control">
-          <span data-xh-part="branch-trigger"></span>
-          <span data-xh-part="branch-text">运维中心</span>
-          <span data-xh-part="item-indicator"></span>
-        </div>
-        <div data-xh-part="branch-content"></div>
-      </div>
-      <div data-xh-part="branch" value="biz">
-        <div data-xh-part="branch-control">
-          <span data-xh-part="branch-trigger"></span>
-          <span data-xh-part="branch-text">业务中心</span>
-          <span data-xh-part="item-indicator"></span>
-        </div>
-        <div data-xh-part="branch-content"></div>
-      </div>
-      <div data-xh-part="item" value="board">
-        <span data-xh-part="item-text">董事办</span>
-        <span data-xh-part="item-indicator"></span>
-      </div>
-    </div>
-  </div>
+<xh-tree id="tree-async" label="组织架构">
+  <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px"></div>
 </xh-tree>
 
 <script type="module">
   const tree = document.getElementById("tree-async");
 
-  // 空数组也是分支：还没取回子项的部门照样报告 aria-expanded；没有 children 的是叶子，不用取
-  const collection = [
-    { value: "rd", label: "研发中心", children: [] },
-    { value: "ops", label: "运维中心", children: [] },
-    { value: "biz", label: "业务中心", children: [] },
+  // hasChildren 标出还没取回子项的部门；没写的是叶子，不用取
+  tree.collection = [
+    { value: "rd", label: "研发中心", hasChildren: true },
+    { value: "ops", label: "运维中心", hasChildren: true },
+    { value: "biz", label: "业务中心", hasChildren: true },
     { value: "board", label: "董事办" },
   ];
-  tree.collection = collection;
 
   const staff = {
     rd: ["赵一", "钱二"],
@@ -1227,53 +1023,22 @@ function onExpandedValueChange(details: { value: string[] }): void {
     biz: ["李四", "周五", "吴六"],
   };
 
-  // 这一支的子层标记照当下的树数据重铺
-  function renderChildren(node) {
-    const content = tree.querySelector(
-      `[data-xh-part="branch"][value="${node.value}"] > [data-xh-part="branch-content"]`,
-    );
-    content.replaceChildren(
-      ...node.children.map((child) => {
-        const item = document.createElement("div");
-        item.dataset.xhPart = "item";
-        item.setAttribute("value", child.value);
-        const text = document.createElement("span");
-        text.dataset.xhPart = "item-text";
-        text.textContent = child.label;
-        const mark = document.createElement("span");
-        mark.dataset.xhPart = "item-indicator";
-        item.append(text, mark);
-        return item;
-      }),
-    );
-  }
+  const failedOnce = new Set();
 
-  const loaded = new Set();
-  let loading = [];
-
-  // 这里用定时器代替一次请求
-  function fetchChildren(value) {
-    if (loaded.has(value)) return;
-    loaded.add(value);
-    loading = [...loading, value];
-    tree.loadingValue = loading;
-    setTimeout(() => {
-      const branch = collection.find((node) => node.value === value);
-      branch.children = staff[value].map((name, index) => ({
-        value: `${value}-${index}`,
-        label: name,
-      }));
-      renderChildren(branch);
-      tree.collection = [...collection];
-      loading = loading.filter((item) => item !== value);
-      tree.loadingValue = loading;
+  // 这里用定时器代替一次请求；收起分支或卸载时 signal 中止它
+  tree.loadChildren = ({ node, signal }) => new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      if (node.value === "ops" && !failedOnce.has(node.value)) {
+        failedOnce.add(node.value);
+        reject(new Error("网络错误"));
+        return;
+      }
+      resolve((staff[node.value] ?? []).map((name, index) => ({ value: `${node.value}-${index}`, label: name })));
     }, 800);
-  }
-
-  tree.expandedValue = [];
-  tree.addEventListener("expanded-value-change", (event) => {
-    tree.expandedValue = event.detail.value;
-    for (const value of event.detail.value) fetchChildren(value);
+    signal.addEventListener("abort", () => {
+      window.clearTimeout(timer);
+      reject(signal.reason);
+    });
   });
 </script>
 ```
@@ -3500,12 +3265,14 @@ const selected = ref<string[]>([]);
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首那一格归展开箭头与拖拽把手。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
-- 节点级加载态：`loadingValue` 里的分支报告 `aria-busy`，展开箭头换成转圈（减弱动效下停住）。取数归作者：在 `onExpandedValueChange` 里发起请求，回来后写回 `collection` 并把它移出 `loadingValue`。
+- 懒分支：节点写 `hasChildren: true` 且不给 `children`，首次展开时调 `loadChildren({ node, signal })` 取它的直接子项，取回的子项由组件暂存、不写回 `collection`；在途时分支报告 `aria-busy`、展开箭头换成转圈（减弱动效下停住）。收起会中止在途的一轮，收起再展开不重复请求。失败与「取回空数组」是两个终态：失败露出说明与重试钮，再次展开不自动重试，点重试钮或在分支上按 Enter / Space 才重发；空数组露出空结果。在途、失败说明、重试钮与空结果四个部件由组件在分支里自己补，手写结构时也一样。取数与树选择、级联选择同一套规则，事件是 `branch-load-start` / `branch-load` / `branch-load-error`。
+- 取数由作者自己编排时，把在途的分支写进 `loadingValue`：同样报告 `aria-busy` 并换成转圈，回来后写回 `collection` 并移出。
 - `lines` 打开连接线：父节点展开箭头的中线向下引一道竖线，每个子节点从竖线横出一段接到行首（分支接到展开箭头，叶子穿过占位那一格接到正文前），最后一个子节点的竖线止于它那一行的中线；展开着的分支，竖线沿它的整棵子树接到下一个兄弟。颜色取内部分隔线（`--xh-tree-line-color`），只是外观，不改结构与键盘。顶层节点没有父节点可连，不画线；线画在嵌套的子层里，虚拟化平铺渲染的行不画。
 - 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
 
 ### 组合
 
+- 不写结构时照标准结构铺：标题（给了 `label` 时）与整棵树，分支是一行控制行（展开箭头、文字、副文本、对号）加一层子层，叶子是文字、副文本与对号；收起的分支照样铺出子层，节点按值复用。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 root）时生成的节点出自同一个结构函数。行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位不在标准结构里，要用时整棵手写。
 - 前缀放[图标](./icon)，行尾放[菜单](./menu)；放入[分栏](./splitter)的一侧。
 - 大树把 `visibleNodes` 的长度交给 [Virtualizer](./virtualizer)，并把其 `collectionVirtualizer` 回传给根；展开收起后同步更新 `count`。
 
@@ -3527,7 +3294,7 @@ const selected = ref<string[]>([]);
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tree>` |
-| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchDescription` `XhTreeBranchIndicator` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
+| Vue 组件 | `XhTreeBranch` `XhTreeBranchContent` `XhTreeBranchControl` `XhTreeBranchDescription` `XhTreeBranchEmpty` `XhTreeBranchError` `XhTreeBranchIndicator` `XhTreeBranchLoading` `XhTreeBranchRetryTrigger` `XhTreeBranchText` `XhTreeBranchTrigger` `XhTreeEmpty` `XhTreeItem` `XhTreeItemDescription` `XhTreeItemIndicator` `XhTreeItemSuffix` `XhTreeItemText` `XhTreeLabel` `XhTreeLiveRegion` `XhTreeLoading` `XhTreeNodeDragTrigger` `XhTreeRoot` `XhTreeTree` |
 | 组合式函数 | `useTree` |
 | 状态机 | `treeMachine` |
 | 皮肤 | `@xihan-ui/styles/tree.css` |
@@ -3552,7 +3319,8 @@ const selected = ref<string[]>([]);
 | `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
 | `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
 | `loading` | `boolean` |  | 节点加载中：树报告 aria-busy、隐藏空态占位；还没有节点时显示在途占位，已有节点时行保留上一帧淡下。 |
-| `loadingValue` | `string[]` |  | 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈； 取数本身归作者：常见写法是在 onExpandedValueChange 里发起请求、回来后写回 collection 并移出这里。 |
+| `loadingValue` | `string[]` |  | 正在取子节点的分支（节点 value）。在其中的分支报告 aria-busy，展开箭头换成转圈。 取数由作者自己编排时用它；交给 loadChildren 的懒分支由库自己标出在途，不必写在这里。 |
+| `loadChildren` | `BranchLoadChildren<TreeNode>` |  | 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch 或 branch-retry-trigger 显式重试；收起分支会中止在途的那一轮。旧请求的兑现或拒绝不会覆盖更新的一轮， 也不会写回已移除的分支。取回的子项暂存在组件里，不写回 collection。 |
 | `lines` | `boolean` |  | 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线，默认 false。只是外观，不改结构与键盘。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
@@ -3563,6 +3331,9 @@ const selected = ref<string[]>([]);
 | `onNodeMove` | `(move: TreeMove) => void` |  |  |
 | `onExpandedValueChange` | `(details: TreeExpandedValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
+| `onBranchLoadStart` | `(details: TreeBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 |
+| `onBranchLoad` | `(details: TreeBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换为错误。 |
+| `onBranchLoadError` | `(details: TreeBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loadChildren 给出的原始 error。 |
 
 ### TreeNode
 
@@ -3577,6 +3348,7 @@ const selected = ref<string[]>([]);
 | `tone` | `Tone` |  | 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进， 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
 | `description` | `string` |  | 副文本：叶子写入 item-description、分支写入 branch-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
 | `children` | `TreeNode[]` |  | 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。 |
+| `hasChildren` | `boolean` |  | 懒分支：写 true 且不给 children 时，这一枝在首次展开时由 loadChildren 取子项。 已提供 children 时它没有额外作用。取回的子项由 headless 暂存，不需要宿主重写整棵 collection。 |
 | `childrenOrientation` | `Orientation` |  | 该层子节点的排布方式，由作者在数据上标注。提供后以它为准，`vertical` 也优先于树级的 `leafOrientation`；未提供时才回退为 `leafOrientation` 加子节点全是叶子的结构判据。 标注在哪一层，横向排布就只落在哪一层：菜单授权中标注在按钮的父菜单上，其他目录不受影响， 也不随子节点增减漂移。只影响排布，不改变键盘。 |
 
 ### 事件
@@ -3588,6 +3360,9 @@ const selected = ref<string[]>([]);
 | `expanded-value-change` | `TreeExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `node-move` | `TreeNodeMoveDetails` | 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正） |
+| `branch-load-start` | `TreeBranchLoadStartDetails` | 分支请求开始；detail 为 `{ value, node, reason }` |
+| `branch-load` | `TreeBranchLoadDetails` | 分支请求成功；detail 为 `{ value, node, children }` |
+| `branch-load-error` | `TreeBranchLoadErrorDetails` | 分支请求失败；detail 为 `{ value, node, error }` |
 
 ### 插槽
 
@@ -3596,6 +3371,7 @@ const selected = ref<string[]>([]);
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTreeRoot` | `default` | `TreeRootSlotProps` |  |
+| `XhTreeRoot` | `label` | — | 标准结构里标题的内容；手写结构时不用它。 |
 
 ### React 适配器 props
 
@@ -3605,6 +3381,7 @@ const selected = ref<string[]>([]);
 | --- | --- | --- | --- | --- |
 | `XhTreeBranch` | `value` | `string` | 是 |  |
 | `XhTreeItem` | `value` | `string` | 是 |  |
+| `XhTreeRoot` | `label` | `ReactNode` |  | 标题：不写 children 时铺进标准结构的 label；手写结构时用 XhTreeLabel。 |
 | `XhTreeRoot` | `children` | `SlotChildren<TreeRootSlotProps>` |  |  |
 
 ### 状态
@@ -3620,12 +3397,16 @@ const selected = ref<string[]>([]);
 | `branch-text` | 'open' \| 'closed' |
 | `branch-description` | 'open' \| 'closed' |
 | `branch-content` | 'open' \| 'closed' |
+| `branch-loading` | 'open' \| 'closed' |
+| `branch-error` | 'open' \| 'closed' |
+| `branch-retry-trigger` | 'open' \| 'closed' |
+| `branch-empty` | 'open' \| 'closed' |
 
 以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
-**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR` · `NODE_DRAG.START` · `NODE_DRAG.MOVE` · `NODE_DRAG.END` · `NODE_DRAG.CANCEL` · `NODE.MOVE_BY` · `PRESS.START` · `PRESS.END`
+**事件**：`EXPANDED.SET` · `BRANCH.EXPAND` · `BRANCH.COLLAPSE` · `BRANCH.TOGGLE` · `BRANCH.RETRY` · `SELECTION.SET` · `NODE.SELECT` · `NODE.FOCUS` · `TREE.BLUR` · `NODE_DRAG.START` · `NODE_DRAG.MOVE` · `NODE_DRAG.END` · `NODE_DRAG.CANCEL` · `NODE.MOVE_BY` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -3635,7 +3416,7 @@ const selected = ref<string[]>([]);
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `collection` | `readonly TreeNode[]` | 作者提供的原始树数据。 |
+| `collection` | `readonly TreeNode[]` | 有效树数据：作者的 collection，懒分支补上已取回的子项（还没取回的补空数组）。 |
 | `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面移动，不在原始树上移动。 |
 | `dropTarget` | `DropTarget \| null` | 当前的落点；松手即落在此处。不合法或未落在任何节点上时为 null。 |
 | `announcement` | `string` | 读屏播报文本。渲染进 live-region，不进入视觉版面。 |
@@ -3644,13 +3425,16 @@ const selected = ref<string[]>([]);
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
 | `selectionMode` | `TreeSelectionMode` | 生效的选择模式。 |
 | `disabled` | `boolean` |  |
+| `translations` | `TreeTranslations` | 生效的文案：内建英文与 translations 合并后的那一份。 |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
+| `branchLoadState` | `(value: string) => TreeBranchLoadSnapshot \| null` | 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
+| `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
 | `select` | `(value: string, options?: { extend?: boolean, additive?: boolean }) => void` | 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认）， additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
@@ -3671,6 +3455,10 @@ const selected = ref<string[]>([]);
 | `getBranchTextProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchDescriptionProps` | `(props: TreeNodeProps) => T['element']` | 分支行的第 2 行副文本，与叶子的 item-description 同一档。 |
 | `getBranchContentProps` | `(props: TreeNodeProps) => T['element']` |  |
+| `getBranchLoadingProps` | `(props: TreeNodeProps) => T['element']` | 懒分支取数在途：组件或元素在分支里自己补出，展开且在途时露面。 |
+| `getBranchErrorProps` | `(props: TreeNodeProps) => T['element']` | 懒分支取数失败的说明：展开且失败时露面。 |
+| `getBranchRetryTriggerProps` | `(props: TreeNodeProps) => T['button']` | 懒分支失败后的重试按钮：不占 Tab 位，键盘在分支上按确认键即重试。 |
+| `getBranchEmptyProps` | `(props: TreeNodeProps) => T['element']` | 懒分支取回了空数组：展开时露面。 |
 
 ## 无障碍
 
@@ -3688,6 +3476,7 @@ const selected = ref<string[]>([]);
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
 | `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Enter` / `Space` | focus on branch, 懒分支取数失败 | 重试该分支，焦点留在分支行；不改变选中值与展开集合 |
 | `Ctrl+Space` / `Cmd+Space` | focus on node, selectionMode 为 multiple 或 extended、节点未禁用 | 只切换焦点节点的选中态，其余选中不动，不改展开态 |
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
@@ -3727,6 +3516,10 @@ const selected = ref<string[]>([]);
 | `branch-trigger` | `aria-hidden` | 'true' |
 | `branch-indicator` | `aria-hidden` | 'true' |
 | `branch-content` | `role` | 'group' |
+| `branch-loading` | `role` | 'status' |
+| `branch-error` | `role` | 'alert' |
+| `branch-retry-trigger` | `aria-label` | translations.retry |
+| `branch-empty` | `role` | 'status' |
 | `node-drag-trigger` | `aria-hidden` | 'true' |
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
@@ -3789,8 +3582,11 @@ const selected = ref<string[]>([]);
 | `item-suffix` | `data-selected` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `branch` | `data-disabled` | ''（条件成立时才出现） |
+| `branch` | `data-empty` | ''（条件成立时才出现） |
+| `branch` | `data-error` | ''（条件成立时才出现） |
 | `branch` | `data-highlighted` | ''（条件成立时才出现） |
 | `branch` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch` | `data-load-state` | branchLoadState(value)?.status |
 | `branch` | `data-loading` | ''（条件成立时才出现） |
 | `branch` | `data-selected` | ''（条件成立时才出现） |
 | `branch` | `data-state` | 'open' \| 'closed' |
@@ -3837,6 +3633,40 @@ const selected = ref<string[]>([]);
 | `branch-content` | `data-orientation` | 'horizontal' \| 'vertical' |
 | `branch-content` | `data-selected` | ''（条件成立时才出现） |
 | `branch-content` | `data-state` | 'open' \| 'closed' |
+| `branch-loading` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-loading` | `data-empty` | ''（条件成立时才出现） |
+| `branch-loading` | `data-error` | ''（条件成立时才出现） |
+| `branch-loading` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-loading` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-loading` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-loading` | `data-loading` | ''（条件成立时才出现） |
+| `branch-loading` | `data-selected` | ''（条件成立时才出现） |
+| `branch-loading` | `data-state` | 'open' \| 'closed' |
+| `branch-loading` | `data-xh-loading-ring` | '' |
+| `branch-error` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-error` | `data-empty` | ''（条件成立时才出现） |
+| `branch-error` | `data-error` | ''（条件成立时才出现） |
+| `branch-error` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-error` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-error` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-error` | `data-selected` | ''（条件成立时才出现） |
+| `branch-error` | `data-state` | 'open' \| 'closed' |
+| `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-empty` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-error` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-retry-trigger` | `data-selected` | ''（条件成立时才出现） |
+| `branch-retry-trigger` | `data-state` | 'open' \| 'closed' |
+| `branch-empty` | `data-disabled` | ''（条件成立时才出现） |
+| `branch-empty` | `data-empty` | ''（条件成立时才出现） |
+| `branch-empty` | `data-error` | ''（条件成立时才出现） |
+| `branch-empty` | `data-highlighted` | ''（条件成立时才出现） |
+| `branch-empty` | `data-indeterminate` | ''（条件成立时才出现） |
+| `branch-empty` | `data-load-state` | branchLoadState(value)?.status |
+| `branch-empty` | `data-selected` | ''（条件成立时才出现） |
+| `branch-empty` | `data-state` | 'open' \| 'closed' |
 | `node-drag-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-xh-collection-slot` | 'prefix' |
@@ -3855,9 +3685,14 @@ const selected = ref<string[]>([]);
 | `--xh-tree-bg` | `root`<br>`tree` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tree 的 root、tree 部件 background 覆盖槽。 |
 | `--xh-tree-border` | `tree` | `border` | `default` | `--xh-border-default` | tree 的 tree 部件 border 覆盖槽。 |
 | `--xh-tree-branch-content-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block`<br>`row-gap` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block、row-gap 覆盖槽。 |
+| `--xh-tree-branch-error-fg` | `branch-error` | `background-color` | `default` | `--xh-fg-danger` | tree 的 branch-error 部件 background-color 覆盖槽。 |
 | `--xh-tree-branch-gap` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`gap`<br>`inset-block` | `default`<br>`first-child`<br>`lines`<br>`orientation=vertical`<br>`state=open` | `--xh-space-0` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、gap、inset-block 覆盖槽。 |
 | `--xh-tree-branch-indicator-fg` | `branch-indicator`<br>`branch-trigger` | `color` | `default` | `--xh-fg-muted` | tree 的 branch-indicator、branch-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-branch-loading-fg` | `branch`<br>`branch-control`<br>`branch-indicator`<br>`branch-trigger` | `color` | `loading` | `--xh-fg-brand` | tree 的 branch、branch-control、branch-indicator、branch-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-retry-fg` | `branch-retry-trigger` | `color` | `default` | `--xh-fg-brand` | tree 的 branch-retry-trigger 部件 color 覆盖槽。 |
+| `--xh-tree-branch-status-fg` | `branch-empty`<br>`branch-error`<br>`branch-loading` | `color` | `is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-fg-muted` | tree 的 branch-empty、branch-error、branch-loading 部件 color 覆盖槽。 |
+| `--xh-tree-branch-status-font-size` | `branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger` | `font-size` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-font-size` | tree 的 branch-empty、branch-error、branch-loading、branch-retry-trigger 部件 font-size 覆盖槽。 |
+| `--xh-tree-branch-status-py` | `branch-empty`<br>`branch-error`<br>`branch-loading` | `padding-block` | `is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])` | `--xh-_tree-row-py` | tree 的 branch-empty、branch-error、branch-loading 部件 padding-block 覆盖槽。 |
 | `--xh-tree-drag-fg` | `node-drag-trigger` | `color` | `default` | `--xh-fg-subtle` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-active` | `node-drag-trigger` | `color` | `disabled`<br>`dragging`<br>`hover`<br>`not([data-disabled])` | `--xh-fg-default` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
 | `--xh-tree-drag-fg-disabled` | `node-drag-trigger` | `color` | `disabled` | `--xh-fg-disabled` | tree 的 node-drag-trigger 部件 color 覆盖槽。 |
@@ -3876,7 +3711,7 @@ const selected = ref<string[]>([]);
 | `--xh-tree-fg` | `tree` | `color` | `default` | `--xh-fg-default` | tree 的 tree 部件 color 覆盖槽。 |
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-tree-indent` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indent` | tree 的 branch、branch-content、branch-control、item、tree 部件 inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
+| `--xh-tree-indent` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-empty`<br>`branch-error`<br>`branch-loading`<br>`branch-retry-trigger`<br>`item`<br>`tree` | `inline-size`<br>`inset-inline-start`<br>`margin-inline-start`<br>`padding-inline`<br>`padding-inline-start` | `default`<br>`is([data-part='branch-loading'], [data-part='branch-empty'], [data-part='branch-error'])`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indent` | tree 的 branch、branch-content、branch-control、branch-empty、branch-error、branch-loading、branch-retry-trigger、item、tree 部件 inline-size、inset-inline-start、margin-inline-start、padding-inline、padding-inline-start 覆盖槽。 |
 | `--xh-tree-indicator-size` | `branch`<br>`branch-content`<br>`branch-control`<br>`branch-description`<br>`branch-indicator`<br>`branch-trigger`<br>`item`<br>`item-indicator`<br>`tree` | `--xh-icon-size`<br>`inline-size`<br>`inset-inline-start`<br>`padding-inline-start` | `default`<br>`has(> [data-scope='tree'][data-part='branch-trigger']:first-child)`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-_tree-indicator` | tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-tree-item-check-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-tree-item-indicator-fg` | tree 的 branch-control、item 部件 color 覆盖槽。 |
 | `--xh-tree-item-indicator-fg` | `branch-control`<br>`item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-fg-brand` | tree 的 branch-control、item 部件 color 覆盖槽。 |
@@ -3913,7 +3748,7 @@ const selected = ref<string[]>([]);
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

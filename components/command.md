@@ -586,7 +586,7 @@ function onSelect(details: { label: string }) {
 ### 何时不用
 
 - 只是从一份清单中选一个值填入表单时，使用[组合框](./combobox)或[选择器](./select)。
-- 只是右键菜单或按钮菜单时，使用[右键菜单](./context-menu)或[菜单](./menu)。
+- 只是上下文菜单或按钮菜单时，使用[上下文菜单](./context-menu)或[菜单](./menu)。
 - 面板内需要放表单或分步骤时，使用[对话框](./dialog)。
 
 ### 特性
@@ -946,10 +946,10 @@ function onSelect(details: { label: string }) {
 | `--xh-command-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | command 的 item 部件 line-height 覆盖槽。 |
 | `--xh-command-item-px` | `item` | `padding-inline` | `default` | `--xh-_command-px` | command 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-command-item-py` | `item` | `padding-block` | `default` | `--xh-_command-item-py` | command 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `0` | command 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-command-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | command 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-command-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | command 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
-| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-0` | command 的 list 部件 padding-inline 覆盖槽。 |
+| `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | command 的 list 部件 padding-block 覆盖槽。 |
 | `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | command 的 loading 部件 color 覆盖槽。 |
 | `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 font-size 覆盖槽。 |
@@ -966,7 +966,7 @@ function onSelect(details: { label: string }) {
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定面板）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

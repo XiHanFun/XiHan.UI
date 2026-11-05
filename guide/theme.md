@@ -14,10 +14,10 @@ primitive  ──►  semantic  ──►  组件私有槽
 **primitive**：与场景无关的原始值，在任何作用域都不变，只声明一次。
 
 ```css
---xh-color-brand-500: oklch(0.623 0.214 258);
+--xh-color-brand-500: oklch(0.632 0.209 277);
 --xh-color-neutral-950: oklch(0.145 0.005 258);
 --xh-space-4: 16px;
---xh-radius-md: 4px;
+--xh-radius-seed: 8px;
 ```
 
 颜色使用 `oklch` 而不是 `hex` / `hsl`：同一明度的不同色相在感知上亮度一致，深色反转与对比度调整不需要逐色手工修正。
@@ -32,8 +32,8 @@ primitive  ──►  semantic  ──►  组件私有槽
 --xh-fg-muted: var(--xh-color-neutral-600);
 --xh-border-subtle: color-mix(in oklab, var(--xh-ink) 4.7%, transparent);
 --xh-control-h-md: 32px;
---xh-shape-control: var(--xh-radius-sm);
---xh-elevation-floating: 0 4px 10px oklch(0 0 0 / 0.1);
+--xh-shape-control: var(--xh-radius-md);
+--xh-elevation-floating: var(--xh-shadow-md);
 --xh-motion-duration-enter: var(--xh-duration-normal);
 --xh-layer-modal: var(--xh-z-modal);
 --xh-overlay-max-w: 20rem;
@@ -64,12 +64,12 @@ primitive  ──►  semantic  ──►  组件私有槽
 
 | 阶段 | 时长 | 缓动 | 结果 |
 | --- | ---: | --- | --- |
-| 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
+| 按下 | `--xh-motion-duration-press`（150ms） | `--xh-motion-ease-press` | 背景进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1，只换面） |
 | 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1；背景、描边、字色按 `--xh-motion-duration-micro` 回到 hover / rest |
 
 缺省只换面不缩放；要按下回弹，在根上把 `--xh-motion-scale-press` 写回 0.97，时间线不用改。
 
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 120ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
+Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏（按下 150ms 换到 active 面，松开按 micro 回到 hover / rest），但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
 ## 组件内滚动
 
@@ -101,7 +101,15 @@ Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Col
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（`--xh-text-display-size`）：20 / 24 / 28 | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
 
-必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 20 / 24）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前，取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不各画一套；字段标签与字段说明禁用不另变色，其余标签禁用取 `--xh-fg-subtle`，单行标签 `--xh-leading-none`。控件内图标随 size 档取 `--xh-glyph-size-sm / md / lg`（16 / 18 / 20）；`--xh-glyph-size-text`（随文 1em）只给 Tag、Kbd、Breadcrumb、Typography、Highlight 这类纯行内文字组件。
+
+组件不定字体，`font-family` 照常继承宿主。库的缺省无衬线栈收在 `--xh-font-family-sans`（系统界面字体打头，再给苹方、冬青黑、微软雅黑与思源黑体兜中文），只在引入可选入口时落到页面根上：
+
+```ts
+import "@xihan-ui/styles/global.css";
+```
+
+这份入口不在 `@xihan-ui/styles` 主入口里；规则放在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。代码与等宽数字取 `--xh-font-family-mono`。
 
 ## 八轴视觉环境运行时
 
@@ -162,7 +170,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 
 | DOM 轴 | 说明 |
 | --- | --- |
-| `data-theme` | 明暗两值各有整套语义取值 |
+| `data-theme` | 明暗两值各有整套语义取值；`system` 是不跑 JS 的跟随系统档，见下文 |
 | `data-brand` | 切换品牌色：预设品牌直接可用，自定义品牌先 `registerBrand` |
 | `data-density='compact'` | 收紧控件高度、内距与间隙，不缩字号和字形 |
 | `dir` | 由逻辑属性驱动 LTR / RTL 布局；只认物理方向的量（translate、渐变角度、clip-path 左右两侧）乘 `--xh-direction-sign` 换向——它按就近的 `dir` 继承（ltr 为 1、rtl 为 -1），局部写回 `ltr` 的子树跟着翻回；`transform-origin` 这类物理坐标取 `--xh-direction-start` / `--xh-direction-end`（行内起始缘 / 末尾缘的水平位置，ltr 为 0% / 100%，rtl 反过来） |
@@ -170,6 +178,16 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 | `data-motion` | `reduce` 触发局部 CSS 动效降级 |
 | `data-transparency` | `reduce` 把主题开出的透景材质切回实体配方 |
 | `data-material` | `liquid` 让浮在内容之上的导航层部件（浮动钮、媒体控制、吸顶顶栏）换成液态面；`standard` 保持原材质，最近的祖先生效 |
+
+### 不跑 JS 跟随系统明暗
+
+控制器的 `mode: "system"` 要等脚本跑起来才解出明暗。页面只想跟随系统、不想为此引脚本，或者要在脚本到达之前就对，直接在 HTML 里写 `data-theme="system"`：
+
+```html
+<html data-theme="system">
+```
+
+浅色系统下它与 `light` 同一套取值；系统切到深色，令牌的深色取值、`color-scheme` 与皮肤里只在深色下成立的几条规则（语气、按钮实底等）由 `prefers-color-scheme` 一并切过去，不经任何脚本，系统随时切换随时跟上。`system` 只是写在 DOM 上的一档，控制器照旧只投影 `light` / `dark`：之后若在同一个根上建控制器，它会把属性改成解出的具体值。
 
 ## 预设品牌
 
@@ -179,7 +197,7 @@ brand、density、dir、material 没有平台媒体查询，因此不接受伪�
 visual.setPreference({ brand: brandId("green") });
 ```
 
-各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
+各档取基础色板里同名的色相，每一级按缺省品牌那一级的相对亮度派生；`indigo` 是原来的缺省品牌（色相 258），缺省换成色相 277 的靛蓝后留作预设。品牌参与的对比度（实心底上的字、品牌字色、品牌淡底与上面的字、聚焦环）因此与缺省品牌同样达标，浅色、深色与两档高对比都由门禁逐档核对。`registerBrand` 注入的同名取值块不在层里，压过预设。
 
 `data-brand` 要与 `data-theme` 落在同一个元素上才换得动品牌：语义令牌在主题边界上声明，只在子元素上换品牌原语，语义令牌仍是外层解好的值。可视环境控制器的根总是同时写这两个属性；手写时在同一个元素上一并写 `data-theme`。
 
@@ -213,13 +231,13 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，另铺 `--xh-bg-field` 淡底 | 实体底色，无高光、无投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式，铺 `--xh-bg-field`（缺省白底） | 实体底色，无高光、无投影 |
 | M1 soft | `--xh-material-soft-*` | 柔和淡底的次级面；不用于 Card 与字段。Button 与 Tag 是平面面，不取它的顶光与投影 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，一层 `0 4px 10px` 柔和投影，无顶光 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，一层 `0 4px 12px` 投影 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 实体 surface 底，无背景模糊，1px border-default 描边，md 档投影，无顶光 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 实体 surface 底，无背景模糊，lg 档投影 |
 | M5 liquid | `--xh-material-liquid-*` | 只在 `data-material="liquid"` 下出现：浮在内容之上的导航层——浮动钮（FloatButton、BackTop、MessageFeed / Log 的回到底部）、媒体控制（Carousel 控制钮与分页条、ImageViewer 控制层）、吸顶的 Layout 顶栏 | 可读下限浅 0.48 / 深 0.61 不透明度，8px 模糊，140% 饱和度，墨色细线 + 1px 边缘光，Chromium 下边缘折射 |
-| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 缺省 none（平面），主题要抬起感时再给一层影 |
-| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，一层 `0 4px 10px` 柔和投影 |
+| raised（叠加档） | solid 描边 + solid 底 + `--xh-elevation-raised` | Card 与可抬起 / 可拖起部件（Tabs segment 的滑块、开关拇指等），逐部件登记；描边必须在，影只是加成，只有可交互时允许 hover 抬升 | 实体底色；`--xh-elevation-raised` 取 sm 档 |
+| floating（叠加档） | solid 底 + `--xh-border-default` + `--xh-elevation-floating` | 含网格或多列的锚定面板：NavigationMenu content、Date / Time / DateRange / TimeRange picker content | 实体底色，不透景，md 档投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
@@ -231,7 +249,7 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 M2 frosted 在库里只有一份实现：材质家族配方 `@xihan-ui/styles/material.css`。组件在部件上投影 `data-xh-material="frosted"`，锚定浮层的内容面由配方画描边、底、前景与投影，背景滤镜与 1px 顶光两条通道缺省为空、留给要透景的主题；浮动钮的面归 Action Control，由配方给交互阶梯（悬停 / 按下换不透明淡底一档、二档，键盘聚焦铺 `focus-surface`）。自定义的浮层面写同一个属性即可接入，用 `--xh-frosted-bg`、`--xh-frosted-border`、`--xh-frosted-fg`、`--xh-frosted-shadow`、`--xh-frosted-backdrop`、`--xh-frosted-highlight` 覆盖。
 
-Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，缺省 none）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
+Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--xh-elevation-raised`，sm 档）、`subtle`（`--xh-bg-subtle` + 透明占位边 + 无影）、`ghost`（不写边、底与影，只允许分隔线）。边界只由描边承担，阴影与淡底都不作为边界。
 
 环境轴在同一令牌名上原位降级：高对比档加强边界；减少透明度与打印强制实体底、关闭背景滤镜（主题开了透景也一样）；强制色改由 `Canvas` / `CanvasText` 表达。四档在浅色、深色两套主题下都按黑、白、中灰、页面与品牌背景验证正文至少 4.5:1、焦点环对隔离底至少 3:1。
 
@@ -245,13 +263,13 @@ Card 只有三档形态：`outline`（缺省，solid 描边 + surface 底 + `--x
 
 ### 紧凑配方（Tooltip）
 
-Tooltip 保留反白身份，用三支 compact 配方组合 M2 的前景；边不取 frosted 描边（装饰边压在反白深底上看不见），改取 on 色 20% 拼色承担 1px 可见边界：
+Tooltip 不反白，与 Popover 同一副浮层面：底、字、边取 frosted 材质（M2），再用三支 compact 配方组合；写了 `tone` 才换语气实底，那时边改取 on 色 20% 拼色承担 1px 可见边界（中性描边压在彩色底上看不见）：
 
 | 配方 | 常规值 |
 | --- | --- |
 | `--xh-material-frosted-compact-alpha` | 不透明（`--xh-alpha-opaque`） |
 | `--xh-material-frosted-compact-backdrop` | none，无模糊 |
-| `--xh-material-frosted-compact-shadow` | 一层 `0 4px 10px` 投影（浅色 10% 黑、深色 36% 黑） |
+| `--xh-material-frosted-compact-shadow` | md 档投影（浅色引 `--xh-shadow-md`，深色是同样三层的深色投影） |
 
 高对比、强制颜色和打印去掉投影；减少透明时保留小投影表达浮层位置。组件只经这三支配方消费光学参数，不直接选择 alpha 或 blur 原语。
 

@@ -134,7 +134,7 @@ Web Components 有两处与另两端不同：`<xh-config>` 不收 `disabled`，�
 
 基线比对的是逐像素的位图。字体、字形栅格化与子像素平滑在 Windows 与 Linux 上不同，同一份 CSS 在两边渲染出的位图不同：在开发机上生成的基线，CI 上无法匹配。
 
-字体是最大的不确定性：全库皮肤写的是 `font-family: inherit`，没有 sans 字体令牌，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
+字体是最大的不确定性：全库皮肤不定字体（`font-family: inherit`），sans 字体令牌只经可选的 `global.css` 落到根上、截图用例不引它，字体最终取文档根上的值。截图用例因此把根上的字体族按名字固定为 `DejaVu Sans`，不交给环境默认的 `sans-serif` 解析。因此基线的成立条件不止 Linux，还包括 `DejaVu Sans` 这个名字可以解析到，即安装了 `fonts-dejavu-core`：CI 的 `browser` job 中有一步专门安装它，删除该步骤基线会整体判红。
 
 反过来，环境中多安装字体不影响基线：字体族按名字确定，默认 `sans-serif` 落到 Noto Sans 或其他字体，画面不变。核对字体时核对的是这个名字（`fc-match 'DejaVu Sans'`），不是默认 `sans-serif`。
 
@@ -229,13 +229,13 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `overlay` | 浮层坐标系、可用空间、定位层、遮罩、箭头、落点与自绘滚动条 |
 | `motion` | 关键帧、时长与缓动、幅度、减弱动效、动效覆盖面 |
 | `a11y` | 聚焦环、焦点复位与上报、ARIA 写法、按键重复与键盘套件 |
-| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点 |
+| `adapter` | 部件接线、状态与部件词汇、插槽与翻译、全局配置、三端计算样式一致、组件落点、类型断言的棘轮 |
 | `docs` | 示例的多框架对齐、令牌与动效、文档数字与导入、组件总览 |
 | `repo` | changeset、提交 scope、发版标签、PR 模板、类型检查覆盖面、文件头、脚本接线 |
 
 改了哪一块先跑对应模块，提交前再跑一次全量。
 
-`pnpm gate` 运行 135 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
+`pnpm gate` 运行 138 项结构检查，它们检查的是判据无法覆盖的问题：静默失效、悬空承诺、未被命名的决策：
 
 | 门禁 | 拦截内容 |
 | --- | --- |
@@ -259,9 +259,10 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-skin-parts` | 皮肤选择器中的 `[data-part]` 不在所属 scope 的解剖中：部件退役后遗留的规则永远无法选中节点，`surface:update` 还会把它的覆盖槽收回公开面。scope 按选择器计算（逐分支、逐复合：写在 `[data-part]` 前后的 `[data-scope]` 都约束这一节，未写的沿用左侧最近一节，`:is()` / `:where()` 中一致的 scope 带回外层，`:not()` / `:has()` 中各自计算），解剖外的名字逐条登记，登记项过期同样判失败；`data-scope` / `data-part` 的属性选择器无法读取的（转义、匹配符不是全等）同样判失败 |
 | `check-breakpoints` | 皮肤 `@media` 中的断点字面量不在令牌清单中（自定义属性在媒体条件中不生效，只能写字面量）；查询用了 `max-width` / `max-height` 上界写法：它在断点值上与 `min-width` 同时成立，窄档专属规则写补集 `not all and (min-width: …)` |
 | `check-focus-ring` | 聚焦环的粗细、颜色、偏移写了字面量而不是令牌，主题与全局调整对它无效 |
-| `check-focus-ring-surface` | 可聚焦部件的面与环的对比度不足 3:1（按计算结果，不按形态推断），该档却未把 `--xh-_ring-color` 设为 `currentColor`：键盘焦点在该面上等于未绘制。`currentColor` 覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记环由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明的直接判红，没有登记表 |
+| `check-focus-ring-surface` | 改环色的声明（`--xh-_ring-color` / `outline-color` / 键盘聚焦规则中的 `outline` 简写）解不到库环两支（`currentColor`、前景色、底色、透明）；皮肤给库环令牌链上的名称赋值；`--xh-_ring-gap` 赋了 `var(--xh-ring-gap)` 以外的值；关环规则没在 `ringless` 中写明环由谁绘制，或登记了却已扫不到 |
 | `check-focus-outline-reset` | 皮肤在 `:focus:not(:focus-visible)` 下复位 `outline`（含 `outline-style` / `outline-width` / `outline-color`）。UA 只在 `:focus-visible` 绘制环，这条复位是死代码，而 `outline` 简写会把 `outline-color` 复位成 `currentColor`，描边色一旦进过渡，焦点离开时就闪出一圈近黑描边 |
 | `check-exports` | 已实现却未从包级入口导出，包外无法获取，而构建与类型检查照常通过 |
+| `check-type-assertions` | 三个适配器源码里 `as Record<string, unknown>` 与 `as never` 的处数比登记的多：连接层的 getter 本来就按 `Record<string, unknown>` 出类型，逐处断言掩盖不了什么，只会把真需要断言的几处淹掉。处数只降不升，降了跑 `pnpm assertions:update` 收紧登记 |
 | `check-package-roles` | 包所在的角色组与其 `package.json` 中的依赖声明不一致 |
 | `check-public-surface` | 公开面基线中有而当前没有的名字：被删除或改名 |
 | `check-visual-performance-budget` | 固定设备、默认/reduce 场景、真实浏览器入口与既有 JS/CSS 体积真源任一脱节 |
@@ -269,7 +270,7 @@ pnpm gate --keep-going       # 失败不停，跑完汇总失败的步骤；可�
 | `check-changeset-packages` | changeset 头部写了 `.changeset/config.json` ignore 表里的私有包（如 `@xihan-ui/testing`）或不在工作区的包：前者与发布包混写时 `changeset version` 直接报 Mixed changesets，只写它时整份被丢掉、正文进不了 CHANGELOG；后者报 not in the workspace。不依赖 git 基线，头部读不成「包名: 档位」也判红 |
 | `check-surface-edge` / `check-selection-marker` / `check-state-ladder` / `check-text-role` 与扩展后的 `check-elevation-role` / `check-shape-scale` / `check-press-feedback` / `check-family-parity` | 七条家族门禁：根面边界三选一、选中与当前态按语义分类、交互态按承载面阶梯、排版与图标按角色、raised 逐部件登记且必带描边、形状身份表、按压几何与换底、同族同值。尚未迁移的存量登在 `tooling/scripts/family-backlog.json`，每条必须真被放行过一次（登记了却没命中判过期），`check-family-backlog`（`gate:family` 里的 `family-backlog.spec.mjs`）把每段条目数钉在快照与 CEILING 上、键集合只许是快照的子集——表只减不增 |
 
-另有分层依赖检查与十二项单独的门禁：
+另有分层依赖检查与十三项单独的门禁：
 
 ```bash
 pnpm boundaries   # 分层依赖 + 禁循环 + styles 不依赖 JS + 库包不引入第三方
@@ -284,6 +285,7 @@ pnpm gate:demo-types # 文档站 React 示例逐份类型检查（读 icons 的 
 pnpm gate:publish # 逐包运行 publint 与 attw，校验 exports 条件与类型解析
 pnpm gate:llms    # 文档站的机读资产：页数、组件数、令牌数与库对账，示例不得保留站点标签
 pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合子集），并用临时夹具证七条家族门禁会红
+pnpm gate:nuxt    # 本仓的包打出来装进 examples/nuxt，类型检查、构建并起服务检查首屏（在临时目录里装 Nuxt，先 build）
 ```
 
 `gate:llms` 读取文档站的构建产物，运行前先在 `docs/` 下运行一次 `pnpm build`。
@@ -298,7 +300,8 @@ pnpm gate:family  # 逐家族豁免表只减不增（条目数快照 + 键集合
 pnpm size
 ```
 
-72 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+79 条产物各有上限（gzip 后），超出即失败。预算一律按实测留一成余量。逐条限额的真源是 `ui/.size-limit.json`，具体数字以该文件为准。
+量的是首屏同步加载的那一份：`pnpm size` 经 `ui/tooling/size-limit.config.mjs` 把动态 `import()` 的目标留在包外——使用者的打包器都会把它们切成按需块，首屏不下载（选择器开了 `virtual` 才加载虚拟化内核；浮层的消解层、焦点域、滚动锁、Portal 视觉桥、定位引擎与自绘滚动条第一次打开时才加载）。按需块自己另记一条，连同它的依赖一起称，同样受预算管。
 
 
 ## 相关

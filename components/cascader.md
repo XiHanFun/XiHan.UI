@@ -1563,6 +1563,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
 | `control` | `data-variant` | props.variant |
+| `control` | `data-xh-action-owner` | '' |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -1671,10 +1672,10 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-action-bg` | `clear-trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | cascader 的 clear-trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-cascader-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | cascader 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | cascader 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-muted` | cascader 的 item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |
@@ -1686,7 +1687,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-column-gap` | `column` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 column 部件 gap 覆盖槽。 |
 | `--xh-cascader-column-h` | `column`<br>`search-list` | `block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 column、search-list 部件 block-size 覆盖槽。 |
 | `--xh-cascader-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-cascade-min-w` | cascader 的 column 部件 min-inline-size 覆盖槽。 |
-| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `0` | cascader 的 column 部件 padding-inline 覆盖槽。 |
+| `--xh-cascader-column-px` | `column` | `padding-inline` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-column-py` | `column` | `padding-block` | `default` | `--xh-space-1` | cascader 的 column 部件 padding-block 覆盖槽。 |
 | `--xh-cascader-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | cascader 的 content 部件 background 覆盖槽。 |
 | `--xh-cascader-content-border` | `content` | `border` | `default` | `--xh-border-default` | cascader 的 content 部件 border 覆盖槽。 |
@@ -1700,7 +1701,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | cascader 的 control 部件 background-color 覆盖槽。 |
 | `--xh-cascader-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | cascader 的 control 部件 border 覆盖槽。 |
-| `--xh-cascader-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | cascader 的 control 部件 border-color 覆盖槽。 |
+| `--xh-cascader-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | cascader 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-cascader-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | cascader 的 control 部件 border-color 覆盖槽。 |
 | `--xh-cascader-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | cascader 的 control 部件 border-color 覆盖槽。 |
 | `--xh-cascader-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | cascader 的 control 部件 color 覆盖槽。 |
@@ -1752,7 +1753,7 @@ const filter: CascaderFilter = (candidate, query) =>
 | `--xh-cascader-item-max-w` | `item` | `max-inline-size` | `default` | `--xh-overlay-max-w` | cascader 的 item 部件 max-inline-size 覆盖槽。 |
 | `--xh-cascader-item-px` | `item`<br>`search-item` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_cascader-row-px` | cascader 的 item、search-item 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-py` | `item`<br>`search-item` | `padding-block` | `default` | `--xh-_cascader-row-py` | cascader 的 item、search-item 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `0` | cascader 的 item、search-item 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-item-radius` | `item`<br>`search-item` | `border-radius` | `default` | `--xh-shape-inset` | cascader 的 item、search-item 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | cascader 的 label 部件 color 覆盖槽。 |
 | `--xh-cascader-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-muted` | cascader 的 label 部件 color 覆盖槽。 |
 | `--xh-cascader-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | cascader 的 label 部件 font-size 覆盖槽。 |
@@ -1776,13 +1777,17 @@ const filter: CascaderFilter = (candidate, query) =>
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（锚定列表） · 出现（无锚定弹出）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-slide-in` · `xh-overlay-slide-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover` · `hover: none`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

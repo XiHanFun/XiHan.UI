@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/context-menu
 
-# ContextMenu 右键菜单
+# ContextMenu 上下文菜单
 
 通过右键或长按在指针位置打开命令菜单。
 
@@ -298,7 +298,7 @@ import {
 
 ### 视图设置
 
-右键菜单中的 checkbox 与 radio 切换后保持展开
+上下文菜单中的 checkbox 与 radio 切换后保持展开
 
 ```vue
 <script setup lang="ts">
@@ -376,7 +376,7 @@ const collection: ContextMenuNode[] = [
 - 说明与快捷键提示都可写进 `collection`；快捷键贴行尾，与说明同档同色。快捷键提示只是看的，读屏不念；要读屏念出快捷键，条目再写 `keyshortcuts`，落成条目的 `aria-keyshortcuts`。勾选与单选条目的勾是条目的最后一个部件，排在正文、说明与快捷键之后，与子菜单箭头同列，图标与普通条目左缘对齐；手写部件时写在哪都排到行尾。同一层有勾选条目时，普通条目的快捷键与它们同列。
 - `typeahead` 控制首字符检索，`longPressDelay` 设置长按时间。
 - 条目可组合图标、文字、说明和快捷键提示。同一层（跨分组与分隔线，子菜单另算）里只要有一条带图标，所有条目都空出图标那一格，正文左缘对齐；整层都没有图标就不留。
-- `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持右键菜单展开。
+- `CheckboxItem` 与 `RadioGroup / RadioItem` 可直接修改视图开关和互斥选项，默认切换后保持上下文菜单展开。
 - 选中任意层级的命令后发出根级 `item-select` 并关闭菜单链。
 - 触发区里的内容自带 Tab 位时（可聚焦的画布、列表），触发区不再另占一个：菜单键与 Shift+F10 在那个元素上照常展开，关闭后焦点回到打开前的持有者。判据只看 DOM：原生可聚焦或 `tabindex` ≥ 0 的元素，禁用的、`hidden` 或 `inert` 子树里的与菜单自己的浮层不算；内容里没有 Tab 位时触发区自己占一个。
 - `disabled` 让整张菜单失效：右键、长按、菜单键与 Shift+F10 都不再展开，浏览器自己的右键菜单照常出现；触发区退出 Tab 序列，展开途中转为禁用即收起。
@@ -387,7 +387,7 @@ const collection: ContextMenuNode[] = [
 
 ### 最佳实践
 
-- 右键菜单只作为快捷入口，不替代页面上的主要操作。
+- 上下文菜单只作为快捷入口，不替代页面上的主要操作。
 - 条目较多时按功能分组。
 - 仅为有意义的命令添加图标或快捷键提示。
 - 持久设置使用勾选或单选条目，对号由库画在行尾，不在普通条目里另画装饰性的勾。
@@ -421,7 +421,7 @@ const collection: ContextMenuNode[] = [
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 相对光标位置的首选放置位，默认 bottom-start。 |
-| `offset` | `number` |  | 浮层与光标的间距（px），默认 0：右键菜单需要贴近光标。 |
+| `offset` | `number` |  | 浮层与光标的间距（px），默认 0：上下文菜单需要贴近光标。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
@@ -498,7 +498,7 @@ const collection: ContextMenuNode[] = [
 | `XhContextMenuRoot` | `renderItemPrefix` | `(node: ContextMenuNodeMeta) => ReactNode` |  | 只接管条目行首那一格；其余槽仍由数据铺。 |
 | `XhContextMenuRoot` | `renderItemSuffix` | `(node: ContextMenuNodeMeta) => ReactNode` |  | 只接管条目行尾那一格（计数、徽标、次级图标）；其余槽仍由数据铺。 |
 | `XhContextMenuRoot` | `children` | `SlotChildren<ContextMenuRootSlotProps>` |  |  |
-| `XhContextMenuSub` | `value` | `string` | 是 | 它在父右键菜单中的条目身份。 |
+| `XhContextMenuSub` | `value` | `string` | 是 | 它在父上下文菜单中的条目身份。 |
 | `XhContextMenuSub` | `label` | `string` |  | 按数据铺设时触发条目的文字；缺省取父层 collection 里这一条的 label。 |
 | `XhContextMenuSub` | `icon` | `IconRecord` |  | 按数据铺设时触发条目的图标；缺省取父层 collection 里这一条的 icon。 |
 | `XhContextMenuSub` | `disabled` | `boolean` |  |  |
@@ -690,7 +690,7 @@ const collection: ContextMenuNode[] = [
 | `--xh-context-menu-content-bg` | `arrow`<br>`content` | `background` | `default`<br>`not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg`<br>`--xh-material-frosted-bg` | context-menu 的 arrow、content 部件 background 覆盖槽。 |
 | `--xh-context-menu-content-fg` | `content` | `color` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-fg` | context-menu 的 content 部件 color 覆盖槽。 |
 | `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 content 部件 gap 覆盖槽。 |
-| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `0` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | context-menu 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | context-menu 的 content 部件 box-shadow 覆盖槽。 |
@@ -717,7 +717,7 @@ const collection: ContextMenuNode[] = [
 | `--xh-context-menu-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | context-menu 的 item 部件 line-height 覆盖槽。 |
 | `--xh-context-menu-item-px` | `item` | `padding-inline` | `default` | `--xh-_context-menu-item-px` | context-menu 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-item-py` | `item` | `padding-block` | `default` | `--xh-_context-menu-item-py` | context-menu 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `0` | context-menu 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-inset` | context-menu 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | context-menu 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_context-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | context-menu 的 content 部件 max-inline-size 覆盖槽。 |
@@ -733,9 +733,9 @@ const collection: ContextMenuNode[] = [
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

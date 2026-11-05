@@ -1,0 +1,1 @@
+import{t as e}from"./react.CbNV8_UV.js";var t=e(),n=(0,t.createContext)(void 0),r=n;function i(){return(0,t.useContext)(n)}export{i as n,r as t};

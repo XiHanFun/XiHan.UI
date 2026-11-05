@@ -582,7 +582,7 @@ import {
 - `strength` 传入 0–4 五档即显示强度条；评分算法由调用方负责，组件只绘制档位。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字，盒里依次是输入框、大写锁定提示与明暗切换钮，给了 `strength` 再铺强度条。Web Components 里标题可以写在宿主的直接子节点 `slot="label"` 上接管。
 - 形态、语气、尺寸三轴与[文本字段](./text-field)同源，并排放置不会相差一档。
-- 一体式 `control` 投影 Field Chrome 家族，字段淡底 + 描边静息、无影，聚焦换承载面与 `--xh-border-control-focus`；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
+- 一体式 `control` 投影 Field Chrome 家族，字段底（缺省白底）+ 描边静息、无影，聚焦换 `--xh-border-control-focus` 描边、内侧补一道 inset 线，合起来就是盒内的焦点环；显隐动作走 Action Control 的 `field-inset` ghost 档：视觉盒按字段内钮尺寸表随档（sm 取 `--xh-control-action-size`、md 取 `--xh-control-h-sm`、lg 取 `--xh-control-h-md`），inset 圆角，按所在承载面取悬停 / 按下中性底，字形取次要前景；与输入之间不画分隔线。
 - 自动填充由家族用 canvas 实体底与默认前景重绘，避免浏览器注入的颜色把框切成异色段。
 
 ### 组合
@@ -818,7 +818,7 @@ import {
 | `--xh-password-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | password-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-password-input-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | password-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-password-input-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | password-input 的 control 部件 border 覆盖槽。 |
-| `--xh-password-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | password-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-password-input-control-border-focus` | `control` | `border-color`<br>`box-shadow` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | password-input 的 control 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-password-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not(:focus-within)`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | password-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-password-input-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | password-input 的 control 部件 border-color 覆盖槽。 |
 | `--xh-password-input-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | password-input 的 control 部件 color 覆盖槽。 |

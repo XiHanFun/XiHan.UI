@@ -270,7 +270,7 @@ const items = [
   {
     value: "ready",
     label: "已发布",
-    content: "标题右侧那个箭头就是 indicator，展开时自动翻转。",
+    content: "标题前面那个箭头就是 indicator，展开时自动转向。",
   },
   {
     value: "draft",
@@ -305,7 +305,7 @@ const items = [
           </button>
         </h3>
         <div data-xh-part="content">
-          标题右侧那个箭头就是 indicator，展开时自动翻转。
+          标题前面那个箭头就是 indicator，展开时自动转向。
         </div>
       </div>
       <!-- 禁用写在条目节点上，条目内的部件跟着它走 -->
@@ -725,8 +725,8 @@ import {
       <XhAccordionItem value="shipping">
         <XhAccordionHeader>
           <XhAccordionTrigger>
-            <span>配送</span>
             <XhAccordionIndicator />
+            <span>配送</span>
           </XhAccordionTrigger>
         </XhAccordionHeader>
         <XhAccordionContent>
@@ -735,8 +735,8 @@ import {
             <XhAccordionItem value="express">
               <XhAccordionHeader>
                 <XhAccordionTrigger>
-                  <span>快递</span>
                   <XhAccordionIndicator />
+                  <span>快递</span>
                 </XhAccordionTrigger>
               </XhAccordionHeader>
               <XhAccordionContent>次日达，节假日照常发货。</XhAccordionContent>
@@ -744,8 +744,8 @@ import {
             <XhAccordionItem value="pickup">
               <XhAccordionHeader>
                 <XhAccordionTrigger>
-                  <span>自提</span>
                   <XhAccordionIndicator />
+                  <span>自提</span>
                 </XhAccordionTrigger>
               </XhAccordionHeader>
               <XhAccordionContent>下单后到门店凭码取货。</XhAccordionContent>
@@ -757,8 +757,8 @@ import {
       <XhAccordionItem value="refund">
         <XhAccordionHeader>
           <XhAccordionTrigger>
-            <span>退换</span>
             <XhAccordionIndicator />
+            <span>退换</span>
           </XhAccordionTrigger>
         </XhAccordionHeader>
         <XhAccordionContent>签收七日内可退，运费到付。</XhAccordionContent>
@@ -775,8 +775,8 @@ import {
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
-            <span>配送</span>
             <span data-xh-part="indicator"></span>
+            <span>配送</span>
           </button>
         </h3>
         <div data-xh-part="content">
@@ -786,8 +786,8 @@ import {
               <div data-xh-part="item" value="express">
                 <h3 data-xh-part="header">
                   <button data-xh-part="trigger">
-                    <span>快递</span>
                     <span data-xh-part="indicator"></span>
+                    <span>快递</span>
                   </button>
                 </h3>
                 <div data-xh-part="content">次日达，节假日照常发货。</div>
@@ -795,8 +795,8 @@ import {
               <div data-xh-part="item" value="pickup">
                 <h3 data-xh-part="header">
                   <button data-xh-part="trigger">
-                    <span>自提</span>
                     <span data-xh-part="indicator"></span>
+                    <span>自提</span>
                   </button>
                 </h3>
                 <div data-xh-part="content">下单后到门店凭码取货。</div>
@@ -809,8 +809,8 @@ import {
       <div data-xh-part="item" value="refund">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
-            <span>退换</span>
             <span data-xh-part="indicator"></span>
+            <span>退换</span>
           </button>
         </h3>
         <div data-xh-part="content">签收七日内可退，运费到付。</div>
@@ -939,9 +939,9 @@ const groups = [
 </script>
 ```
 
-### 指示器在前
+### 指示器在后
 
-指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量
+缺省的箭头排在标题之前；指示器写在标题之后即落到行尾
 
 ```vue
 <script setup lang="ts">
@@ -955,9 +955,9 @@ import {
 } from "@xihan-ui/vue";
 
 const items = [
-  { value: "one", label: "第一章", body: "指示器在标题左边，展开时照样翻转。" },
+  { value: "one", label: "第一章", body: "指示器在行尾，展开时照样转向。" },
   { value: "two", label: "第二章", body: "部件的先后顺序就是它们在标题栏里的顺序。" },
-  { value: "three", label: "第三章", body: "标题吃掉余量，右侧留白。" },
+  { value: "three", label: "第三章", body: "余量落在标题与指示器之间。" },
 ];
 </script>
 
@@ -967,8 +967,8 @@ const items = [
       <XhAccordionItem v-for="item in items" :key="item.value" :value="item.value">
         <XhAccordionHeader>
           <XhAccordionTrigger>
+            <span>{{ item.label }}</span>
             <XhAccordionIndicator />
-            <span style="margin-inline-end: auto">{{ item.label }}</span>
           </XhAccordionTrigger>
         </XhAccordionHeader>
         <XhAccordionContent>{{ item.body }}</XhAccordionContent>
@@ -980,22 +980,22 @@ const items = [
 
 ```html
 <div style="width: 100%; max-width: 420px">
-  <xh-accordion id="accordion-indicator-start">
+  <xh-accordion id="accordion-indicator-end">
     <div data-xh-part="root">
       <div data-xh-part="item" value="one">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第一章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第一章</span>
           </button>
         </h3>
-        <div data-xh-part="content">指示器在标题左边，展开时照样翻转。</div>
+        <div data-xh-part="content">指示器在行尾，展开时照样转向。</div>
       </div>
       <div data-xh-part="item" value="two">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第二章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第二章</span>
           </button>
         </h3>
         <div data-xh-part="content">部件的先后顺序就是它们在标题栏里的顺序。</div>
@@ -1003,11 +1003,11 @@ const items = [
       <div data-xh-part="item" value="three">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第三章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第三章</span>
           </button>
         </h3>
-        <div data-xh-part="content">标题吃掉余量，右侧留白。</div>
+        <div data-xh-part="content">余量落在标题与指示器之间。</div>
       </div>
     </div>
   </xh-accordion>
@@ -1015,7 +1015,7 @@ const items = [
 
 <script type="module">
   // 展开集合是数组，只走 property：设初值、每次变更写回
-  const accordion = document.getElementById("accordion-indicator-start");
+  const accordion = document.getElementById("accordion-indicator-end");
   accordion.value = ["one"];
   accordion.addEventListener("value-change", (event) => {
     accordion.value = event.detail.value;
@@ -1463,7 +1463,7 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 - 支持嵌套；触发区大小由作者决定。
 - 条目内容缺省随组件一起挂载、收起只隐藏；`lazyMount` 让每个条目第一次展开才挂载内容，`unmountOnExit` 让条目在收起动画播完后卸载内容。content 节点本身始终在场。Web Components 里把面板内容写进一个 `<template>`，挂载时克隆、卸载时丢弃。
 - 条目正文缺省是以标题命名的地标（`role="region"`）。条目多且能同时展开，或页面上别处已有同名区块时，`contentRole` 设为 `group`：正文仍以标题命名，但不进地标导航。
-- 只给 `collection` 时照标准结构铺：每条一个条目，标题（`h3`）里的按钮装标题文字与指示符，正文取 `content`；Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数。正文可由 Vue 的 `content` 插槽、React 的 `renderContent` 或 Web Components 宿主直接子节点 `slot="content:<值>"` 接管。
+- 只给 `collection` 时照标准结构铺：每条一个条目，标题（`h3`）里的按钮装指示符与标题文字，正文取 `content`；Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数。正文可由 Vue 的 `content` 插槽、React 的 `renderContent` 或 Web Components 宿主直接子节点 `slot="content:<值>"` 接管。
 
 ### 组合
 
@@ -1502,7 +1502,7 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 | `collapsible` | `boolean` |  | 允许收起最后一个展开项，默认 false。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
 | `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 |
-| `variant` | `ControlVariant` |  | 形态：outline 为单一连续描边面（默认），subtle 为淡底，ghost 条目直接相邻不画容器。默认 outline。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 不画容器、条目间一条细分隔线（默认），outline 为单一连续描边面，subtle 为淡底。默认 ghost。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
@@ -1658,9 +1658,9 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-accordion-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | accordion 的 root 部件 border 覆盖槽。 |
-| `--xh-accordion-content-bg` | `content`<br>`root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-muted`<br>`transparent` | accordion 的 content、root 部件 background 覆盖槽。 |
-| `--xh-accordion-content-border` | `content` | `border-block-start` | `state=open` | `--xh-accordion-item-border` | accordion 的 content 部件 border-block-start 覆盖槽。 |
-| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | accordion 的 content 部件 color 覆盖槽。 |
+| `--xh-accordion-content-bg` | `content` | `background` | `default` | `transparent` | accordion 的 content 部件 background 覆盖槽。 |
+| `--xh-accordion-content-border` | `content` | `box-shadow` | `default` | `transparent` | accordion 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | accordion 的 content 部件 color 覆盖槽。 |
 | `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | accordion 的 content 部件 font-size 覆盖槽。 |
 | `--xh-accordion-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 content 部件 padding-block-end 覆盖槽。 |
 | `--xh-accordion-content-pt` | `content` | `padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pt` | accordion 的 content 部件 padding-block-start 覆盖槽。 |
@@ -1668,7 +1668,7 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 | `--xh-accordion-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | accordion 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | accordion 的 indicator 部件 color 覆盖槽。 |
 | `--xh-accordion-item-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
-| `--xh-accordion-item-border` | `content`<br>`item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`state=open`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-default` | accordion 的 content、item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-accordion-item-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | accordion 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=outline`<br>`variant=subtle` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-accordion-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` | accordion 的 trigger 部件 --xh-ink-surface、background-color 覆盖槽。 |
@@ -1677,13 +1677,13 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 | `--xh-accordion-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-accordion-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-font-weight-medium` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default`<br>`state=open` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-accordion-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-accordion-trigger-font-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_accordion-indicator-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-accordion-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` | accordion 的 trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_accordion-trigger-px` | accordion 的 trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_accordion-trigger-py` | accordion 的 trigger 部件 padding-block 覆盖槽。 |
-| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_accordion-trigger-radius` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -1698,4 +1698,4 @@ const items = Array.from({ length: 6 }, (_, i) => ({
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

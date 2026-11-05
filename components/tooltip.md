@@ -148,7 +148,7 @@ const placements = [
 
 ### 延时
 
-openDelay 默认 700ms 用于防误触，closeDelay 默认 300ms 留出指针移动的余地；聚焦不经这两段等待
+openDelay 默认 150ms 用于防误触，closeDelay 默认 100ms 留出指针移动的余地；聚焦不经这两段等待
 
 ```vue
 <script setup lang="ts">
@@ -163,9 +163,9 @@ import {
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 24px">
     <XhTooltipRoot>
-      <XhTooltipTrigger>默认（700 / 300）</XhTooltipTrigger>
+      <XhTooltipTrigger>默认（150 / 100）</XhTooltipTrigger>
       <XhTooltipPositioner>
-        <XhTooltipContent>停够 700ms 才出来</XhTooltipContent>
+        <XhTooltipContent>停够 150ms 才出来</XhTooltipContent>
       </XhTooltipPositioner>
     </XhTooltipRoot>
 
@@ -189,9 +189,9 @@ import {
 ```html
 <div style="display: flex; flex-wrap: wrap; gap: 24px">
   <xh-tooltip>
-    <button data-xh-part="trigger">默认（700 / 300）</button>
+    <button data-xh-part="trigger">默认（150 / 100）</button>
     <div data-xh-part="positioner">
-      <div data-xh-part="content">停够 700ms 才出来</div>
+      <div data-xh-part="content">停够 150ms 才出来</div>
     </div>
   </xh-tooltip>
 
@@ -789,9 +789,9 @@ const tools = [
   - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
 - 语气与尺寸两轴。
-- 默认是反白的实底小面（compact 档 frosted），与承载操作的 Popover 分开：底取正文色、字取承载面色，浅色主题下是深底白字，深色主题下整块翻成浅底深字；六种语气同样是实心语气底配不透明文字，箭头和气泡同色同边。边界由 on 色 20% 的拼色描边承担（中性描边压在反白底上看不见），不画顶部高光；圆角取 2px 控件档。
+- 默认与 Popover 同一副浮层面（compact 档 frosted）：底、字、边取 frosted 材质，两个主题都不反白，与 Popover 靠一行字的尺寸与控件圆角区分。写了 `tone` 换实心语气底配不透明文字，边界由 on 色 20% 的拼色描边承担（中性描边压在彩色底上看不见），这时面内成为墨色域。箭头和气泡同色同边，不画顶部高光；圆角取控件档。
 - 正文 14px；内距缺省纵 8 横 12，`sm` 只收纵向（纵 4 横 12），`lg` 纵 12 横 16，三档字号不变。
-- 进退场只做侧向短移与透明度，不缩放文字和箭头：入场 `--xh-motion-duration-enter`（200ms），退场 `--xh-motion-duration-exit`（120ms），与其他锚定列表浮层同一节奏。
+- 进退场走弹层那一套（`xh-overlay-pop-in` / `xh-pop-out`）：从锚点一侧短移、淡入放大，退场缩小淡出；入场 `--xh-motion-duration-enter`（200ms），退场 `--xh-motion-duration-exit`（150ms），与其他锚定列表浮层同一节奏。
 
 ### 组合
 
@@ -806,7 +806,7 @@ const tools = [
 ### 当前边界
 
 - 触发器滚动关闭仍是后续独立行为功能。
-- 共享浮层位移原语当前最小档是 4px；Tooltip 先与 Menu 使用同一 `xh-overlay-slide-in/out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
+- 共享浮层位移原语当前最小档是 4px；Tooltip 与其余弹层使用同一 `xh-overlay-pop-in` / `xh-pop-out` 定义。规格中的 2px 需要新增公共 motion distance 档后统一接入，不能局部改写现有语义令牌。
 
 ### 反模式
 
@@ -834,8 +834,8 @@ const tools = [
 | `placement` | `Placement` |  | 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
-| `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
-| `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
+| `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 150。 |
+| `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 100。 |
 | `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `followCursor` | `boolean` |  | 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。 |
@@ -960,7 +960,7 @@ const tools = [
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-tone` | props.tone |
-| `content` | `data-xh-ink-surface` | '' |
+| `content` | `data-xh-ink-surface` | ''（条件成立时才出现） |
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
@@ -988,9 +988,9 @@ const tools = [
 
 ### 动效
 
-动效角色：出现（锚定列表）（见[动效规范](../design/motion#角色)）。
+动效角色：出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

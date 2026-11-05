@@ -401,7 +401,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-clipboard-input-bg` | `input` | `background` | `default` | `--xh-bg-subtle` | clipboard 的 input 部件 background 覆盖槽。 |
 | `--xh-clipboard-input-bg-focus` | `input` | `background` | `focus-within` | `--xh-bg-surface` | clipboard 的 input 部件 background 覆盖槽。 |
 | `--xh-clipboard-input-border` | `input` | `border` | `default` | `--xh-border-control` | clipboard 的 input 部件 border 覆盖槽。 |
-| `--xh-clipboard-input-border-focus` | `input` | `border-color` | `focus-within` | `--xh-border-control-focus` | clipboard 的 input 部件 border-color 覆盖槽。 |
+| `--xh-clipboard-input-border-focus` | `input` | `border-color`<br>`box-shadow` | `focus-within` | `--xh-border-control-focus` | clipboard 的 input 部件 border-color、box-shadow 覆盖槽。 |
 | `--xh-clipboard-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | clipboard 的 input 部件 color 覆盖槽。 |
 | `--xh-clipboard-input-font-size` | `input` | `font-size` | `default` | `--xh-text-body-size` | clipboard 的 input 部件 font-size 覆盖槽。 |
 | `--xh-clipboard-input-h` | `input` | `block-size` | `default` | `--xh-_clipboard-h` | clipboard 的 input 部件 block-size 覆盖槽。 |
