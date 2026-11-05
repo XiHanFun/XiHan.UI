@@ -212,7 +212,7 @@
     flex-direction: column;
     gap: var(--xh-command-list-gap, var(--xh-list-option-gap));
     min-block-size: 0;
-    /* 行通栏：列表左右不留内衬，行面贴到面板两缘；上下各留 4px */
+    /* 列表四周各留 4px 内衬：行面随内衬收进面板两缘，取 inset 圆角 */
     padding-block: var(--xh-command-list-py, var(--xh-space-1));
     padding-inline: var(--xh-command-list-px, var(--xh-space-1));
     /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */

@@ -1,4 +1,4 @@
-// 时间列里的格子是浮层里的通栏行：24 高的通栏条（--xh-control-action-size），列内间距撑出行距，
+// 时间列里的格子是 24 高的条（--xh-control-action-size），随列的侧边内衬收进来，列内间距撑出行距，
 // 不随尺寸档变高；字号随档，与 Select 的候选行同字号。TimePicker 与 DatePicker 的时间列同一种行。
 // 判据是几何与计算样式，jsdom 不排版。
 import type { App, VNode } from 'vue'

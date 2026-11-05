@@ -27098,7 +27098,7 @@
   flex-direction: column;
   gap: var(--xh-command-list-gap, var(--xh-list-option-gap));
   min-block-size: 0;
-  /* 行通栏：列表左右不留内衬，行面贴到面板两缘；上下各留 4px */
+  /* 列表四周各留 4px 内衬：行面随内衬收进面板两缘，取 inset 圆角 */
   padding-block: var(--xh-command-list-py, var(--xh-space-1));
   padding-inline: var(--xh-command-list-px, var(--xh-space-1));
   /* 模态面板里的滚动面：到底后不把滚动链穿透给页面 */
@@ -28752,7 +28752,7 @@
   }
 }
 
-/* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
+/* 时间格：24 高的条，随列的侧边内衬收进来，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。格里只有数字、没有正文部件，保持自己的
    居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-date-picker-time-item-fg
    / -fg-selected / -font-weight-selected 使用者槽，缺省落家族配方的行字色 --xh-material-frosted-fg：
@@ -28765,7 +28765,7 @@
   --xh-collection-block-padding: 0;
   --xh-collection-inline-padding: var(--xh-_date-picker-time-item-rail);
   --xh-collection-font-size: var(--xh-date-picker-time-item-font-size, var(--xh-_date-picker-font-size));
-  /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
+  /* 与浮层里的集合行一致：格随列的侧边内衬收进来，取 inset 圆角 */
   --xh-collection-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -29726,7 +29726,7 @@
   }
 }
 
-/* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
+/* 时间格：24 高的条，随列的侧边内衬收进来，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。
    格里只有数字、没有正文部件，保持自己的居中排版与等宽标记轨，家族只给状态面 */
 .xh-scope-date-range-picker[data-part='time-item'] {
@@ -29737,7 +29737,7 @@
   --xh-collection-block-padding: 0;
   --xh-collection-inline-padding: var(--xh-_date-range-picker-time-item-rail);
   --xh-collection-font-size: var(--xh-date-range-picker-time-item-font-size, var(--xh-_date-range-picker-font-size));
-  /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
+  /* 与浮层里的集合行一致：格随列的侧边内衬收进来，取 inset 圆角 */
   --xh-collection-radius: var(--xh-date-range-picker-time-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-date-range-picker-time-item-fg, var(--xh-material-frosted-fg));
@@ -49828,7 +49828,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   outline: none;
 }
 
-/* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
+/* 时间格：24 高的条，随列的侧边内衬收进来，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。格里只有数字、没有正文部件，保持自己的
    居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-time-picker-item-fg
    / -fg-selected / -font-weight-selected 使用者槽，缺省落家族配方的行字色 --xh-material-frosted-fg：
@@ -49842,7 +49842,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
   --xh-collection-inline-padding: var(--xh-_time-picker-item-rail);
   --xh-collection-font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
-  /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
+  /* 与浮层里的集合行一致：格随列的侧边内衬收进来，取 inset 圆角 */
   --xh-collection-radius: var(--xh-time-picker-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-time-picker-item-fg, var(--xh-material-frosted-fg));
@@ -50664,7 +50664,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   outline: none;
 }
 
-/* 时间格：24 高的通栏条，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
+/* 时间格：24 高的条，随列的侧边内衬收进来，列内间距 8 撑出 32 的行距；悬停 / 高亮 100、按下 200 由 Collection Item 家族按
    overlay 语境给，选中透明底 + 中等字重 + 末端对号（对号集合的选中），不上品牌淡底、不变字色。格里只有数字、没有正文部件，保持自己的
    居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-time-range-picker-item-fg
    / -fg-selected / -font-weight-selected 使用者槽，缺省落家族配方的行字色 --xh-material-frosted-fg：
@@ -50678,7 +50678,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
   --xh-collection-inline-padding: var(--xh-_time-range-picker-item-rail);
   --xh-collection-font-size: var(--xh-time-range-picker-item-font-size, var(--xh-_time-range-picker-font-size));
-  /* 浮层里的列表是通栏行：格铺满列宽、不取圆角 */
+  /* 与浮层里的集合行一致：格随列的侧边内衬收进来，取 inset 圆角 */
   --xh-collection-radius: var(--xh-time-range-picker-item-radius, var(--xh-shape-inset));
   --xh-collection-fg-rest: var(--xh-time-range-picker-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-hover: var(--xh-time-range-picker-item-fg, var(--xh-material-frosted-fg));
@@ -52932,7 +52932,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   flex: 1 1 auto;
   flex-direction: column;
   gap: var(--xh-transfer-list-gap, var(--xh-list-option-gap));
-  /* 行通栏：列表不留内衬，行面直接贴到面板两缘 */
+  /* 列表只在两侧留 4px 内衬、上下不留：行面随内衬收进面板两缘，取 inset 圆角 */
   block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-sm));
   padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
   padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));

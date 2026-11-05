@@ -214,7 +214,7 @@
     flex: 1 1 auto;
     flex-direction: column;
     gap: var(--xh-transfer-list-gap, var(--xh-list-option-gap));
-    /* 行通栏：列表不留内衬，行面直接贴到面板两缘 */
+    /* 列表只在两侧留 4px 内衬、上下不留：行面随内衬收进面板两缘，取 inset 圆角 */
     block-size: var(--xh-transfer-list-h, var(--xh-viewport-h-sm));
     padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
