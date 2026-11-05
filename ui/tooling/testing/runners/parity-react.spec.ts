@@ -7,12 +7,22 @@
 //
 // 这里既没有 EXCLUDED 也没有 PENDING——两家都是「组件自己渲染部件、prop 被消费不落 DOM」
 // 的同一类模型，每个组件都该逐帧对得上，对不上就是缺陷。目录里的套件全数在对拍。
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { preloadOverlay as preloadReactOverlay } from '../../../packages/adapters/react/src/runtime/preload-overlay'
 import { createReactHarness } from '../../../packages/adapters/react/tests/harness'
+import { preloadOverlay as preloadVueOverlay } from '../../../packages/adapters/vue/src/runtime/preload-overlay'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
 import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, barCodeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarPickerSuite, calendarRangePickerSuite, cardSuite, carouselSuite, cartesianChartSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, citationSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorFieldSuite, colorPickerSuite, colorSliderSuite, colorSwatchPickerSuite, colorSwatchSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dateRangePickerSuite, descriptionsSuite, dialogSuite, diffViewSuite, downloadTriggerSuite, drawerSuite, editableSuite, emptyStateSuite, expressionInputSuite, fieldArraySuite, fieldsetSuite, fieldSuite, fileUploadSuite, filterBuilderSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formatInputSuite, formSuite, funnelChartSuite, graphChartSuite, gridListSuite, gridSuite, heatmapSuite, hierarchyChartSuite, highlightSuite, hoverCardSuite, iconSuite, imageCropperSuite, imageSuite, imageViewerSuite, infiniteScrollSuite, inputGroupSuite, jsonViewerSuite, kbdSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, matrixCodeSuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationItemSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pieChartSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, promptInputSuite, questionFlowSuite, radarChartSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, runParity, sankeyChartSuite, scrollAreaSuite, scrollbarSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, sparklineSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagGroupSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timeRangePickerSuite, timerSuite, timestampSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '../src'
 
 import { installLayoutViewport } from '../src/fixtures/layout-viewport'
+
+// 浮层按需块先取齐，与各适配器 tests/setup.ts 同一口径：这里比的是打开之后的同步行为。
+// 不取的话，进程里第一个打开浮层的用例落在冷启动上：按需块要等宏任务才到，Vue 的 tick 只刷微任务，
+// 快照停在落位之前；React 的 act 会让出宏任务，快照已经落位。同一段实现被拍成两帧，差的不是实现。
+// 第一次打开晚一拍的那条路径由各适配器的 overlay-cold-start 浏览器用例验证。
+beforeAll(async () => {
+  await Promise.all([preloadVueOverlay(), preloadReactOverlay()])
+})
 
 let restoreLayoutViewport: (() => void) | undefined
 beforeEach(({ task }) => {
