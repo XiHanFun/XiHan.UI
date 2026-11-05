@@ -6189,81 +6189,6 @@
   /* M2 顶光走配方的高光通道：实心、淡色与透空形态各有自身表面，不能把磨砂高光误铺上去 */
 }
 
-/* 液态组：液态档下触发器与展开的动作结成一组（状态机挂进 core），共用宿主最前面那层色块，
-   靠近时边缘像液体一样连起来。底色、墨色细线、亮边与投影都由色块层沿整组的外形画，块自己的面与细线
-   换成透明、亮边与投影撤掉，只留磨砂；悬停 / 按下改成往前景色兑的一层薄色叠在色块上。
-   只有缺省 outline 的液态面才结组，其余形态的面是实心的，色块层藏起来。强制色下色块层撤掉，块保留原样 */
-@media (forced-colors: none) {
-  :where([data-material='liquid']) .xh-scope-float-button[data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-    .xh-scope-float-button[data-part='trigger'][data-xh-liquid] {
-    --xh-action-bg-rest: var(--xh-float-button-bg, transparent);
-    --xh-action-bg-hover: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
-    --xh-action-bg-pressed: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
-    --xh-action-bg-disabled: var(--xh-float-button-bg, transparent);
-    --xh-action-border-rest: var(--xh-float-button-border, transparent);
-    --xh-action-border-hover: var(--xh-float-button-border-hover, transparent);
-    --xh-action-border-pressed: var(--xh-float-button-border-hover, transparent);
-    --xh-action-border-focus-visible: var(--xh-float-button-border, transparent);
-    --xh-action-border-disabled: var(--xh-float-button-border, transparent);
-    --xh-action-shadow-rest: none;
-    --xh-action-shadow-hover: none;
-    --xh-action-shadow-pressed: none;
-    --xh-action-shadow-focus-visible: none;
-    --xh-action-shadow-disabled: none;
-  }
-}
-
-.xh-scope-float-button[data-part='root']:not([data-variant='outline']) > [data-xh-liquid-goo-layer] {
-  display: none;
-}
-
-/* 整组的投影由色块层沿外形画，使用者的投影槽接到那里。色块层不是部件，只按 scope 选 */
-.xh-scope-float-button > [data-xh-liquid-goo-layer] {
-  --xh-_liquid-goo-shadow: var(--xh-float-button-shadow, var(--xh-material-liquid-shadow));
-}
-
-/* 色块层不设层号、靠排在最前压在各块之下：展开组也得是定位元素才盖得住它（触发器本就是） */
-.xh-scope-float-button[data-part='root'][data-xh-liquid-goo] .xh-scope-float-button[data-part='list'] {
-  position: relative;
-}
-
-/* 展开组里的原生动作项在组里同样是液态面：底色、细线、亮边与投影交给色块层，块上留前景与磨砂 */
-@media (forced-colors: none) {
-  :where([data-material='liquid']) .xh-scope-float-button[data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-    .xh-scope-float-button[data-part='list']
-    > button:not([data-scope]) {
-    border-color: var(--xh-float-button-border, transparent);
-    background-color: var(--xh-float-button-bg, transparent);
-    background-image: none;
-    color: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-    box-shadow: none;
-    -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-    backdrop-filter: var(--xh-material-liquid-backdrop);
-  }
-}
-
-@media (forced-colors: none) and (hover: hover) {
-  :where([data-material='liquid']) .xh-scope-float-button[data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-    .xh-scope-float-button[data-part='list']
-    > button:not([data-scope]):not(:disabled):hover {
-    border-color: var(--xh-float-button-border-hover, transparent);
-    background-color: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
-  }
-}
-
-@media (forced-colors: none) {
-  :where([data-material='liquid']) .xh-scope-float-button[data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-    .xh-scope-float-button[data-part='list']
-    > button:not([data-scope]):not(:disabled):active {
-    background-color: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
-  }
-}
-
-/* 从触发器里分离、融回的那几块由液态组的弹簧逐帧写姿态，CSS 的逐条冒出不再叠上去 */
-.xh-scope-float-button[data-part='list'] > [data-xh-liquid-goo-split] {
-  animation: none;
-}
-
 /* —— 展开的那一组 —— */
 .xh-scope-float-button[data-part='list'] {
   display: flex;
@@ -6368,8 +6293,7 @@
   --xh-_float-button-item-rank: 4;
 }
 
-/* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组。
-   液态档里从触发器拆出来的那几块由液态组融回，不挂这段 */
+/* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组 */
 .xh-scope-float-button[data-part='list'][data-state='closed'] {
   --xh-_float-button-item-exit: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   --xh-_float-button-item-exiting: 1;
@@ -6377,7 +6301,7 @@
 }
 
 /* 动作项只读槽：收起档压过进场档；延迟展开按正序名次、收起按倒序名次（收起标记为 1 时取后者） */
-.xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]) {
+.xh-scope-float-button[data-part='list'] > * {
   animation: var(--xh-_float-button-item-exit, var(--xh-_float-button-item-enter, none));
   animation-delay: calc(
     var(--xh-motion-stagger-step) *
@@ -6388,19 +6312,19 @@
   );
 }
 
-.xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(2) {
+.xh-scope-float-button[data-part='list'] > *:nth-last-child(2) {
   --xh-_float-button-item-rank-back: 1;
 }
 
-.xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(3) {
+.xh-scope-float-button[data-part='list'] > *:nth-last-child(3) {
   --xh-_float-button-item-rank-back: 2;
 }
 
-.xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(4) {
+.xh-scope-float-button[data-part='list'] > *:nth-last-child(4) {
   --xh-_float-button-item-rank-back: 3;
 }
 
-.xh-scope-float-button[data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(n + 5) {
+.xh-scope-float-button[data-part='list'] > *:nth-last-child(n + 5) {
   --xh-_float-button-item-rank-back: 4;
 }
 
@@ -15979,10 +15903,6 @@
  *   data-xh-liquid-clarity   clear：下层均匀且色调已知，换通透档
  *   --xh-_liquid-light-x / -y 光源方向的单位向量，决定 1px 亮边落在哪一侧
  *   --xh-_liquid-deform      按住时的形变（transform 串），松手弹回后撤掉
- *
- * 同一宿主里的几块可以结成液态组（core 的 trackLiquidGoo）：宿主带 data-xh-liquid-goo，最前面多一层
- * [data-xh-liquid-goo-layer] 色块层，沿整组的外形画底色、墨色细线、亮边与投影；组件皮肤在这一档把块自己的
- * 面、细线、亮边与投影撤掉，只留磨砂。
  */
 
 :where([data-material='liquid']) [data-xh-liquid] {
@@ -16007,57 +15927,6 @@
 /* 通透档：下层均匀且色调已知时由液态面写上，着色按主题取值，已随墨色域落到对应色调 */
 :where([data-material='liquid']) [data-xh-liquid][data-xh-liquid-clarity='clear'] {
   --xh-_liquid-bg: color-mix(in oklab, var(--xh-material-liquid-tint) calc(var(--xh-material-liquid-alpha-clear) * 100%), transparent);
-}
-
-/* 液态组的色块层：core 在宿主最前面生成（aria-hidden、不接指针），压在各块之下，每块一个色块，
-   跟着块的盒子、圆角与变换走。色块层套 core 放在它旁边的粘连滤镜（行内 filter），滤镜只取色块的轮廓，
-   把靠得够近的连成一片，再沿整体外形画液态面：投影、底色、墨色细线、朝光亮边与背光弱亮边，颜色都在下面
-   按段取液态令牌，投影由色块自己带着、滤镜只留外形之外的那部分。色调（墨色域）与通透档由 core 按源块的
-   读数同步到色块层与装滤镜的 <svg> 上。
-   色块层不设层号，靠排在宿主最前压在各块之下：宿主须是定位元素，组里的块须是定位元素（或装在定位容器里）。
-   层往外多铺一圈，给模糊与投影留出余地。组件可以在自己的宿主上改写投影槽，把使用者的投影槽接进来 */
-[data-xh-liquid-goo-layer] {
-  --xh-_liquid-goo-shadow: var(--xh-material-liquid-shadow);
-
-  position: absolute;
-  inset: calc(-1 * var(--xh-space-8));
-  pointer-events: none;
-}
-
-/* 色块提供轮廓与投影，底色由滤镜铺 */
-[data-xh-liquid-goo-layer] > span {
-  position: absolute;
-  box-sizing: border-box;
-  background-color: var(--xh-material-liquid-tint);
-  box-shadow: var(--xh-_liquid-goo-shadow);
-}
-
-[data-xh-liquid-goo-filter] [data-xh-goo-paint='fill'] {
-  flood-color: var(--xh-material-liquid-tint);
-  flood-opacity: var(--xh-material-liquid-alpha-floor);
-}
-
-[data-xh-liquid-goo-filter][data-xh-liquid-clarity='clear'] [data-xh-goo-paint='fill'] {
-  flood-opacity: var(--xh-material-liquid-alpha-clear);
-}
-
-[data-xh-liquid-goo-filter] [data-xh-goo-paint='edge'] {
-  flood-color: var(--xh-material-liquid-border);
-}
-
-[data-xh-liquid-goo-filter] [data-xh-goo-paint='near'] {
-  flood-color: var(--xh-material-liquid-highlight);
-}
-
-[data-xh-liquid-goo-filter] [data-xh-goo-paint='far'] {
-  flood-color: var(--xh-material-liquid-rim-far);
-}
-
-/* 强制色：系统配色下只留块自己的边，装饰色块撤掉 */
-@media (forced-colors: active) {
-  [data-xh-liquid-goo-layer] {
-    display: none;
-  }
 }
 
 /* 从右往左排版时光源缺省在右上方 */

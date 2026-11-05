@@ -16,7 +16,6 @@ const STYLES_DIR = 'packages/design/styles/css'
 const REGISTRY = {
   'back-top:trigger': '回到顶部，浮在页面内容之上',
   'float-button:trigger': '浮动钮，浮在页面内容之上',
-  'float-button:list': '浮动钮的展开组：给里面的动作供液态面的私有槽，动作与触发器结成液态组',
   'message-feed:scroll-to-end-trigger': '回到底部，浮在消息之上',
   'log:scroll-to-end-trigger': '回到底部，浮在日志之上',
   'carousel:prev-trigger': '翻页钮，浮在媒体之上',

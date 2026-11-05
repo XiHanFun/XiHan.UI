@@ -303,81 +303,6 @@
     /* M2 顶光走配方的高光通道：实心、淡色与透空形态各有自身表面，不能把磨砂高光误铺上去 */
   }
 
-  /* 液态组：液态档下触发器与展开的动作结成一组（状态机挂进 core），共用宿主最前面那层色块，
-     靠近时边缘像液体一样连起来。底色、墨色细线、亮边与投影都由色块层沿整组的外形画，块自己的面与细线
-     换成透明、亮边与投影撤掉，只留磨砂；悬停 / 按下改成往前景色兑的一层薄色叠在色块上。
-     只有缺省 outline 的液态面才结组，其余形态的面是实心的，色块层藏起来。强制色下色块层撤掉，块保留原样 */
-  @media (forced-colors: none) {
-    :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-      [data-scope='float-button'][data-part='trigger'][data-xh-liquid] {
-      --xh-action-bg-rest: var(--xh-float-button-bg, transparent);
-      --xh-action-bg-hover: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
-      --xh-action-bg-pressed: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
-      --xh-action-bg-disabled: var(--xh-float-button-bg, transparent);
-      --xh-action-border-rest: var(--xh-float-button-border, transparent);
-      --xh-action-border-hover: var(--xh-float-button-border-hover, transparent);
-      --xh-action-border-pressed: var(--xh-float-button-border-hover, transparent);
-      --xh-action-border-focus-visible: var(--xh-float-button-border, transparent);
-      --xh-action-border-disabled: var(--xh-float-button-border, transparent);
-      --xh-action-shadow-rest: none;
-      --xh-action-shadow-hover: none;
-      --xh-action-shadow-pressed: none;
-      --xh-action-shadow-focus-visible: none;
-      --xh-action-shadow-disabled: none;
-    }
-  }
-
-  [data-scope='float-button'][data-part='root']:not([data-variant='outline']) > [data-xh-liquid-goo-layer] {
-    display: none;
-  }
-
-  /* 整组的投影由色块层沿外形画，使用者的投影槽接到那里。色块层不是部件，只按 scope 选 */
-  [data-scope='float-button'] > [data-xh-liquid-goo-layer] {
-    --xh-_liquid-goo-shadow: var(--xh-float-button-shadow, var(--xh-material-liquid-shadow));
-  }
-
-  /* 色块层不设层号、靠排在最前压在各块之下：展开组也得是定位元素才盖得住它（触发器本就是） */
-  [data-scope='float-button'][data-part='root'][data-xh-liquid-goo] [data-scope='float-button'][data-part='list'] {
-    position: relative;
-  }
-
-  /* 展开组里的原生动作项在组里同样是液态面：底色、细线、亮边与投影交给色块层，块上留前景与磨砂 */
-  @media (forced-colors: none) {
-    :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-      [data-scope='float-button'][data-part='list']
-      > button:not([data-scope]) {
-      border-color: var(--xh-float-button-border, transparent);
-      background-color: var(--xh-float-button-bg, transparent);
-      background-image: none;
-      color: var(--xh-float-button-fg, var(--xh-material-liquid-fg));
-      box-shadow: none;
-      -webkit-backdrop-filter: var(--xh-material-liquid-backdrop);
-      backdrop-filter: var(--xh-material-liquid-backdrop);
-    }
-  }
-
-  @media (forced-colors: none) and (hover: hover) {
-    :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-      [data-scope='float-button'][data-part='list']
-      > button:not([data-scope]):not(:disabled):hover {
-      border-color: var(--xh-float-button-border-hover, transparent);
-      background-color: var(--xh-float-button-bg-hover, color-mix(in oklab, var(--xh-material-liquid-fg) 8%, transparent));
-    }
-  }
-
-  @media (forced-colors: none) {
-    :where([data-material='liquid']) [data-scope='float-button'][data-part='root'][data-variant='outline'][data-xh-liquid-goo]
-      [data-scope='float-button'][data-part='list']
-      > button:not([data-scope]):not(:disabled):active {
-      background-color: var(--xh-float-button-bg-active, color-mix(in oklab, var(--xh-material-liquid-fg) 14%, transparent));
-    }
-  }
-
-  /* 从触发器里分离、融回的那几块由液态组的弹簧逐帧写姿态，CSS 的逐条冒出不再叠上去 */
-  [data-scope='float-button'][data-part='list'] > [data-xh-liquid-goo-split] {
-    animation: none;
-  }
-
   /* —— 展开的那一组 —— */
   [data-scope='float-button'][data-part='list'] {
     display: flex;
@@ -482,8 +407,7 @@
     --xh-_float-button-item-rank: 4;
   }
 
-  /* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组。
-     液态档里从触发器拆出来的那几块由液态组融回，不挂这段 */
+  /* 收起：逆着冒出的次序逐条缩回，离触发器最远的先走、最近的最后收，连接层等它们播完才藏起展开组 */
   [data-scope='float-button'][data-part='list'][data-state='closed'] {
     --xh-_float-button-item-exit: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
     --xh-_float-button-item-exiting: 1;
@@ -491,7 +415,7 @@
   }
 
   /* 动作项只读槽：收起档压过进场档；延迟展开按正序名次、收起按倒序名次（收起标记为 1 时取后者） */
-  [data-scope='float-button'][data-part='list'] > :not([data-xh-liquid-goo-split]) {
+  [data-scope='float-button'][data-part='list'] > * {
     animation: var(--xh-_float-button-item-exit, var(--xh-_float-button-item-enter, none));
     animation-delay: calc(
       var(--xh-motion-stagger-step) *
@@ -502,19 +426,19 @@
     );
   }
 
-  [data-scope='float-button'][data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(2) {
+  [data-scope='float-button'][data-part='list'] > *:nth-last-child(2) {
     --xh-_float-button-item-rank-back: 1;
   }
 
-  [data-scope='float-button'][data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(3) {
+  [data-scope='float-button'][data-part='list'] > *:nth-last-child(3) {
     --xh-_float-button-item-rank-back: 2;
   }
 
-  [data-scope='float-button'][data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(4) {
+  [data-scope='float-button'][data-part='list'] > *:nth-last-child(4) {
     --xh-_float-button-item-rank-back: 3;
   }
 
-  [data-scope='float-button'][data-part='list'] > :not([data-xh-liquid-goo-split]):nth-last-child(n + 5) {
+  [data-scope='float-button'][data-part='list'] > *:nth-last-child(n + 5) {
     --xh-_float-button-item-rank-back: 4;
   }
 

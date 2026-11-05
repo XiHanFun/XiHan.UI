@@ -13,6 +13,7 @@ afterEach(() => {
   app?.unmount()
   app = null
   document.body.innerHTML = ''
+  document.documentElement.removeAttribute('data-material')
   window.scrollTo(0, 0)
 })
 
@@ -88,7 +89,9 @@ describe('back-top 按钮', () => {
 })
 
 describe('float-button 展开列表', () => {
-  it('收起时列表先留着，条目逆着冒出的次序逐条缩回，播完才藏起', async () => {
+  // liquid 档只换触发器的面，展开组的进出场与 standard 档同一套
+  it.each(['standard', 'liquid'])('%s 档：展开时条目逐条冒出；收起时列表先留着，条目逆着冒出的次序逐条缩回，播完才藏起', async (material) => {
+    document.documentElement.setAttribute('data-material', material)
     const host = document.createElement('div')
     document.body.append(host)
     app = createApp({
@@ -105,6 +108,7 @@ describe('float-button 展开列表', () => {
 
     trigger.click()
     await until(() => list.hidden === false)
+    expect(items.map(el => running(el)[0])).toEqual(['xh-overlay-pop-in', 'xh-overlay-pop-in', 'xh-overlay-pop-in'])
     await new Promise(resolve => setTimeout(resolve, 400))
 
     trigger.click()

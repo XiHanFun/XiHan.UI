@@ -6,7 +6,6 @@
 // 定义 float button 类型契约。
 
 import type { ActionVariant, Cleanup, Direction, Layer, MachineSchema, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
-import type { LiquidGoo } from '@xihan-ui/core/visual-environment'
 import type { SpringValue } from '@xihan-ui/motion'
 import type { CollapsibleOpenChangeDetails } from '../collapsible'
 
@@ -111,12 +110,6 @@ export interface FloatButtonAppearance {
 
 export type FloatButtonProps = FloatButtonDisclosureProps & FloatButtonPositionProps & FloatButtonNotifiers & FloatButtonAppearance
 
-/** 液态档的色块组，以及展开时从触发器里分离、收起时融回的那几块（展开组里的动作）。 */
-export interface FloatButtonLiquidGroup {
-  goo: LiquidGoo
-  items: () => readonly HTMLElement[]
-}
-
 /** 视口里的一点（物理像素）。 */
 export interface FloatButtonPoint {
   x: number
@@ -150,12 +143,11 @@ export interface FloatButtonSettle {
   y: SpringValue
 }
 
-/** 适配器只桥接所属 Document 的运行时、逻辑层登记与根节点；液态组由状态机自己挂上。 */
+/** 适配器只桥接所属 Document 的运行时、逻辑层登记与根节点。 */
 export interface FloatButtonRefs {
   config: RuntimeConfig | null
   registerLayer: ((input: Omit<Layer, 'id'>) => { layer: Layer, dispose: Cleanup }) | null
   getRootEl: () => HTMLElement | null
-  liquidGroup: FloatButtonLiquidGroup | null
   drag: FloatButtonDrag | null
   settle: FloatButtonSettle | null
 }
@@ -181,8 +173,8 @@ export interface FloatButtonSchema extends MachineSchema {
     openedAtMount: boolean
     /** 触发器正被按住：Space / Enter 或触屏手指按下到松开之间，投影 data-pressed。指针按住由 :active 表出。 */
     pressed: boolean
-    /** 液态档收起后动作正融回触发器：展开组留在原处、不可交互，融回落定才藏起来。 */
-    merging: boolean
+    /** 收起后动作正逐条退场：展开组留在原处、不可交互，退场播完才藏起来。 */
+    exiting: boolean
   }
   computed: Record<string, never>
   refs: FloatButtonRefs
@@ -217,15 +209,15 @@ export interface FloatButtonSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-    | 'startMerge'
-    | 'endMerge'
+    | 'startExit'
+    | 'endExit'
     | 'clearOpenedAtMount'
     | 'armDrag'
     | 'moveDrag'
     | 'endDrag'
     | 'clearSwallowClick'
     | 'setViewportHeight'
-  effect: 'trackLayer' | 'trackLiquid' | 'trackLiquidGroup' | 'trackListExit' | 'trackViewport'
+  effect: 'trackLayer' | 'trackLiquid' | 'trackListExit' | 'trackViewport'
 }
 
 export interface FloatButtonApi<T extends PropTypes = PropTypes> {

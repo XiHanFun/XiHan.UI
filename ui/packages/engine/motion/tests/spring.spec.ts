@@ -119,9 +119,8 @@ describe('过冲', () => {
   })
 
   it('liquid 档的预设超调都在 8% 以内', () => {
-    for (const name of ['toggle', 'lead', 'trail', 'merge'] as const)
+    for (const name of ['toggle', 'lead', 'trail'] as const)
       expect(createSpring(name).overshoot, name).toBeLessThanOrEqual(0.08)
-    expect(createSpring('merge').overshoot).toBeCloseTo(0.058, 2)
   })
 
   it('临界阻尼且无初速度时全程单调不过冲', () => {

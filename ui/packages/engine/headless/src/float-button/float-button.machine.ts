@@ -8,7 +8,6 @@
 import type { ContextFacade, RefsFacade } from '@xihan-ui/core'
 import type { FloatButtonPoint, FloatButtonPosition, FloatButtonSchema } from './float-button.types'
 import { setup } from '@xihan-ui/core'
-import { trackLiquidGoo } from '@xihan-ui/core/visual-environment'
 import { createSpringValue } from '@xihan-ui/motion'
 import { createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
@@ -62,7 +61,7 @@ export const floatButtonMachine = createMachine({
     // 首帧标记：挂载时开着、还没收起过
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     pressed: cell<boolean>(() => ({ defaultValue: false })),
-    merging: cell<boolean>(() => ({ defaultValue: false })),
+    exiting: cell<boolean>(() => ({ defaultValue: false })),
     position: cell<FloatButtonPosition | null>(() => ({
       value: prop('position'),
       defaultValue: prop('defaultPosition') ?? null,
@@ -82,12 +81,11 @@ export const floatButtonMachine = createMachine({
     config: null,
     registerLayer: null,
     getRootEl: () => null,
-    liquidGroup: null,
     drag: null,
     settle: null,
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
-  effects: ['trackLayer', 'trackLiquid', 'trackLiquidGroup', 'trackListExit', 'trackViewport'],
+  effects: ['trackLayer', 'trackLiquid', 'trackListExit', 'trackViewport'],
   watch: ({ track, prop, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     track([() => prop('disabled')], () => action(['syncDisabled', 'releaseWhenInert']))
@@ -110,14 +108,14 @@ export const floatButtonMachine = createMachine({
         'OPEN': [
           { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['endMerge', 'invokeOnOpen'] },
+          { target: 'open', actions: ['endExit', 'invokeOnOpen'] },
         ],
         'TOGGLE': [
           { guard: 'isDisabled' },
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['endMerge', 'invokeOnOpen'] },
+          { target: 'open', actions: ['endExit', 'invokeOnOpen'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open', actions: ['endMerge'] },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['endExit'] },
         'CONTROLLED.CLOSE': {},
         'DISABLE': {},
       },
@@ -126,18 +124,18 @@ export const floatButtonMachine = createMachine({
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
+          { target: 'closed', actions: ['startExit', 'invokeOnClose'] },
         ],
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
+          { target: 'closed', actions: ['startExit', 'invokeOnClose'] },
         ],
         'DISABLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['startMerge', 'invokeOnClose'] },
+          { target: 'closed', actions: ['startExit', 'invokeOnClose'] },
         ],
         'CONTROLLED.OPEN': {},
-        'CONTROLLED.CLOSE': { target: 'closed', actions: ['startMerge'] },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['startExit'] },
       },
     },
   },
@@ -293,9 +291,9 @@ export const floatButtonMachine = createMachine({
         if (prop('disabled'))
           context.set('pressed', false)
       },
-      // 收起先把展开组留着：液态组在场且会播放时等动作融回触发器，否则等条目各自的退场动画播完，才藏
-      startMerge: ({ context }) => context.set('merging', true),
-      endMerge: ({ context }) => context.set('merging', false),
+      // 收起先把展开组留着：等条目各自的退场动画播完，才藏
+      startExit: ({ context }) => context.set('exiting', true),
+      endExit: ({ context }) => context.set('exiting', false),
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       syncOpen: ({ prop, send }) => {
@@ -318,7 +316,7 @@ export const floatButtonMachine = createMachine({
       /**
        * 视口高度：停在一点时据此定展开组朝上还是朝下长；贴边位置与角落由样式层按包含块排，用不着它。
        * 读 clientHeight 会强制一次同步布局，所以只在停在一点时量（挂载、换到一点、视口变化）：
-       * 挂载时白量一次，触发器就有了变化前样式，随后才写上的液态读数（墨色域、通透档、液态组）会播一段换面过渡。
+       * 挂载时白量一次，触发器就有了变化前样式，随后才写上的液态读数（墨色域、通透档）会播一段换面过渡。
        * 卸载时一并结清还没结束的拖动与落定
        */
       trackViewport: ({ refs, send, flush, track, context }) => {
@@ -347,54 +345,8 @@ export const floatButtonMachine = createMachine({
       },
       /** 触发器是浮在内容之上的导航层部件：材质轴为 liquid 时按下层换色调、亮边随指针 */
       trackLiquid: ({ scope, flush }) => trackLiquidPart(scope, flush, 'float-button', 'trigger'),
-      /**
-       * 液态档下触发器与展开组里的动作结成液态组：共用一层色块，靠近时边缘连起来；
-       * 展开时动作从触发器里分离出来，收起时融回触发器，融回落定才撤掉 merging、藏起展开组
-       */
-      trackLiquidGroup: ({ refs, scope, flush, track, state, context }) => {
-        let disposed = false
-        flush(() => {
-          if (disposed)
-            return
-          const root = refs.get('getRootEl')()
-          const trigger = scope.getById<HTMLElement>(scope.partId('float-button', 'trigger'))
-          const list = scope.getById<HTMLElement>(scope.partId('float-button', 'list'))
-          if (!root || !trigger || !list)
-            return
-          // 展开组的直接子元素就是一条条动作；文本节点与注释不算
-          const items = (): HTMLElement[] => [...list.children] as HTMLElement[]
-          refs.set('liquidGroup', {
-            goo: trackLiquidGoo(root, { source: trigger, members: () => [trigger, ...items()], domains: () => [list] }),
-            items,
-          })
-        })
-        track([() => state.get()], () => {
-          const open = state.get() === 'open'
-          flush(() => {
-            const group = refs.get('liquidGroup')
-            if (disposed || !group)
-              return
-            const animated = group.goo.animated
-            void group.goo.split(group.items(), open).then(() => {
-              // 融回落定，或被撤出打断：展开组这才藏起来。分离的结局与展开组显隐无关，
-              // 融回途中又展开的由 endMerge 收掉。不播放时（standard 档、减弱动效）收尾归 trackListExit：
-              // 条目各自的退场动画播完才藏
-              if (animated && !open && !disposed && state.get() !== 'open')
-                context.set('merging', false)
-            })
-          })
-        })
-        return () => {
-          disposed = true
-          refs.get('liquidGroup')?.goo.dispose()
-          refs.set('liquidGroup', null)
-        }
-      },
-      /**
-       * 标准档的收起：条目逆着冒出的次序逐条缩回，等它们播完才撤掉 merging、藏起展开组。
-       * 液态组会播放时归 trackLiquidGroup 管——拆出来的那几块不挂 CSS 动画，这里一等就会提前收掉。
-       */
-      trackListExit: ({ refs, scope, state, context, track, flush }) => {
+      /** 收起：条目逆着冒出的次序逐条缩回，等它们播完才撤掉 exiting、藏起展开组。 */
+      trackListExit: ({ scope, state, context, track, flush }) => {
         let stop: (() => void) | undefined
         track([() => state.get()], () => {
           stop?.()
@@ -402,11 +354,11 @@ export const floatButtonMachine = createMachine({
           if (state.get() === 'open')
             return
           flush(() => {
-            if (state.get() === 'open' || !context.get('merging') || refs.get('liquidGroup')?.goo.animated)
+            if (state.get() === 'open' || !context.get('exiting'))
               return
             stop = waitForSubtreeAnimations(scope.getById(scope.partId('float-button', 'list')), () => {
               if (state.get() !== 'open')
-                context.set('merging', false)
+                context.set('exiting', false)
             })
           })
         })
