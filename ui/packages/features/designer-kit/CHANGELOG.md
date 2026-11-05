@@ -1,5 +1,19 @@
 # @xihan-ui/designer-kit
 
+## 5.2.0
+
+### Patch Changes
+
+- Updated dependencies [a7f81af]
+- Updated dependencies [dc1ce08]
+- Updated dependencies [f922b2f]
+- Updated dependencies [fb9d04b]
+- Updated dependencies [4331267]
+  - @xihan-ui/core@5.2.0
+  - @xihan-ui/pointer@5.2.0
+  - @xihan-ui/viz@5.2.0
+  - @xihan-ui/expression@5.2.0
+
 ## 5.1.0
 
 ### Patch Changes

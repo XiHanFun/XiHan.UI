@@ -1,5 +1,39 @@
 # @xihan-ui/core
 
+## 5.2.0
+
+### Minor Changes
+
+- a7f81af: **新增** Button 多两档形态：`variant="dashed"` 与 outline 同一套底、字与阶梯，描边改虚线，用于「添加一项」一类入口；`variant="link"` 是不铺面、不画边的文字钮，字取 `--xh-fg-brand`（写了 `tone` 取语气前景），悬停与按下换 `--xh-fg-brand-strong` 并加下划线（`text-underline-offset` 取 `--xh-space-1`），禁用取 `--xh-fg-disabled`、不画下划线，盒的高度与内衬照按钮档、与同排按钮对齐。新增类型 `ButtonVariant = ActionVariant | 'dashed' | 'link'`，Button 的 `variant` 改取它；ButtonGroup、Toggle 等其余按钮形触发器仍取 `ActionVariant`。两档的面由 Action Control 配方给（形态矩阵由四档扩到六档）。
+- f922b2f: **变更** 浮层第一次打开时才加载浮层机制：消隐层、焦点域、滚动锁、背景失活、Portal 视觉桥、多选标签动效、定位引擎与浮层里的自绘滚动条不再进首屏，使用者的打包器把它们切成按需块。只用 `XhSelectRoot` 时首屏从 53.5 kB 降到 33.1 kB（gzip），`XhMenuRoot` 51.5 → 33.4 kB，`XhDialogRoot` 40.0 → 27.4 kB，React 的 `XhSelectRoot` 56.1 → 35.5 kB。
+
+  - 何时取：浮层挂载后，文档上第一次有交互（指针移进来、按下、按键、聚焦、触摸）就在后台取；挂载时就开着的立刻取。加载过一次之后整页同步，与静态引入一样。
+  - 没到时打开：展开态、ARIA、`data-state` 与事件当场生效，资源到了再接上。靠定位的浮层落位前本就藏着；对话框、抽屉、图片查看器、命令面板的内容等按需块到了才露出来。等的这段时间 Escape 与点外面不收起，等的时候已经关掉就不再接、不抢焦点。加载失败不缓存，下一次打开重新取。
+  - 第一次打开也要同步：启动时调一次适配器新导出的 `preloadOverlay()`（Vue / React / Web Components 都有）。
+
+  Core 新增 `loadOverlayKit`、`overlayKit`、`requireOverlayKit`、`whenOverlayKit`、`prefetchOverlayKit`、`onFirstInteraction` 与 `OverlayKit` 类型，以及 `connectPortalVisualBridge`（Portal 壳的逻辑来源当场登记，搬进壳的控件照旧找得到所在位置的配置与语言包，视觉桥等按需块到了再建）；`createPortalLease` 与 Vue / React 的 Portal 都改用它；`createDismissLayer`、`createFocusScope` 等原有导出不变，直接引入照旧同步。Position 新增 `createDeferredPositionEngine`（同一个 `PositionEnginePort`，引擎本体第一次 `attach` 时才加载，并等浮层按需块到了再量）与 `loadPositionEngine`，各适配器的浮层都改用它。Headless 的浮层外壳新增 `createOverlayKitGate`，`trackPresenceResources` 内置这道闸门。
+
+  体积预算同步收紧：`XhSelectRoot` 56 → 36 kB、`XhMenuRoot` 54 → 37 kB、`XhDialogRoot` 42 → 30 kB；新增四条按需块预算（core 浮层按需块、定位引擎本体、Vue / React 浮层自绘滚动条），`position` 主入口因多了延迟引擎 3.1 → 4 kB。
+
+- fb9d04b: **移除** 液态粘连。`data-material="liquid"` 下 FloatButton 的展开动作不再从触发器里分离、收起时不再融回，触发器与动作之间不再以液颈相连；展开与收起回到与 standard 档相同的逐条冒出、逆序缩回。触发器仍是液态面（按下层换色调、亮边随指针、按住时随手指形变），展开组里的动作保持磨砂面，展开组不再投影 `data-xh-liquid`。
+
+  随之撤掉的公开面：`@xihan-ui/core/visual-environment` 的 `trackLiquidGoo` 与类型 `LiquidGoo`、`LiquidGooOptions`；`@xihan-ui/motion` 的弹簧预设 `merge`（`SpringPresetName` 不再含它）；令牌 `--xh-motion-spring-merge-stiffness` 与 `--xh-motion-spring-merge-damping`；皮肤里的色块层与滤镜规则（`[data-xh-liquid-goo]`、`[data-xh-liquid-goo-layer]`、`[data-xh-liquid-goo-filter]`、`[data-xh-liquid-goo-split]`）与私有槽 `--xh-_liquid-goo-shadow`。FloatButton 状态机的上下文 `merging` 改名 `exiting`、动作 `startMerge` / `endMerge` 改名 `startExit` / `endExit`，refs 不再有 `liquidGroup`。
+
+  `--xh-float-button-shadow` 不再接到整组投影上，只作用于触发器与原生动作项自己的面。
+
+- 4331267: **调整** 语气不再跨组件继承：有 `tone` 的组件没写 `tone` 时用组件自己的缺省语气，不接外层容器的。此前语气槽靠继承流到部件，这条继承同样越过组件边界：没写 `tone` 的 Button、Checkbox、Switch 放进 `tone="danger"` 的 Alert、Tabs，或一个写了 `data-tone="danger"` 的自定义节点里，都会被染成 danger。现在 `tone.css` 在这些组件的根（Menu、Tooltip 是内容部件）与浮层壳上把整族语气私有槽清回未声明，读槽处落回各自的缺省；组件自己的部件照旧跟根走，Flex、Grid、ScrollArea 这类没有 `tone` 的组件夹在组与条目之间也不挡继承。组给子组件的语气仍由组件显式下发：ButtonGroup 的段、TagGroup / TagsInput / 选择器的值标签、Menu 的子菜单，子组件自己写了的以子组件为准。依赖过外层继承的写法，在子组件上显式写 `tone`。边界名单逐个组件写（产物里各自落进组件的挂载类桶，不进通配桶），`tone.css` 去注释后由 4147 字节涨到 8716 字节。
+
+  **调整** Portal 视觉桥不再把 `data-tone` 带到浮层壳上，`createPortalVisualBridge` 只桥接八个视觉轴（主题、品牌、密度、对比度、动效、透明度、材质、方向）与局部覆盖的自定义属性。没写 `tone` 的 Tooltip、Popover 等从带语气的容器里打开时不再被染色；Select、Menu、Tooltip 等写了 `tone` 的组件本来就把语气写在定位层或内容部件上，不受影响。浮层里按「在自定义节点上使用语气」读 `--xh-tone-*` 的节点，要在自己身上写 `data-tone`。
+
+  **修复** Tabs 的「更多」下拉显式取标签页的 `tone`，不再靠视觉桥从标签页根上带过去。
+
+### Patch Changes
+
+- dc1ce08: **修复** 悬停展开的浮层：指针按正常速度从触发器移向浮层时不再半路收起。离开触发器后，浏览器紧接着派出的那次指针移动正好落在安全三角的顶点上，原先只把水平边上的点算在内，这一点被判成走岔，浮层当即收起；`pointInPolygon` 现在把任一条边与顶点上的点都算在内。受影响的是开了 `openOnHover` 的 Menu、各菜单的子菜单（Menu、ContextMenu、Menubar）与 SideNav 收起时的悬停浮层。
+- Updated dependencies [9369cf2]
+- Updated dependencies [fb9d04b]
+  - @xihan-ui/motion@5.2.0
+
 ## 5.1.0
 
 ### Minor Changes

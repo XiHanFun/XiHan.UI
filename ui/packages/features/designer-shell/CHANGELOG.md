@@ -1,5 +1,59 @@
 # @xihan-ui/designer-shell
 
+## 5.2.0
+
+### Minor Changes
+
+- 7da1f62: **调整** 缺省品牌色从 OKLCH 色相 258 的蓝换成色相 277 的靛蓝：`--xh-color-brand-50 … 950` 每一档都换了值，主按钮、选中、焦点环、品牌字色与图表的主题单色方案随之变色。各档明度按原缺省品牌那一档的 WCAG 相对亮度反求（与 `data-brand` 预设同一做法），对比度与原来逐档相当，600 档实心底上的白字是 5.08:1。要保留原来的蓝，在主题根上写 `data-brand="indigo"`。
+
+  **新增** 预设品牌 `indigo`（色相 258，即原缺省品牌）：`BRAND_PRESETS` 与 `BRAND_PRESET_COLORS` 多了这一项，设计器设置里的主题色色板随之多一格「靛蓝」，十种语言都已提供名字（`brandIndigo`）。
+
+### Patch Changes
+
+- b24f82f: **调整** 物料面板与属性面板的可折叠分组，箭头改排在分组标题前面，与手风琴的缺省结构一致；分组正文保持正文字色，不跟手风琴正文变弱。
+- Updated dependencies [a7f81af]
+- Updated dependencies [ffda198]
+- Updated dependencies [abae9d8]
+- Updated dependencies [7da1f62]
+- Updated dependencies [9d7301a]
+- Updated dependencies [a0ba0f9]
+- Updated dependencies [0f5d1c5]
+- Updated dependencies [01ff981]
+- Updated dependencies [04c4601]
+- Updated dependencies [be1953c]
+- Updated dependencies [b6161d7]
+- Updated dependencies [1295823]
+- Updated dependencies [868dc0b]
+- Updated dependencies [dc1ce08]
+- Updated dependencies [9369cf2]
+- Updated dependencies [0edd9fe]
+- Updated dependencies [537ddc1]
+- Updated dependencies [f922b2f]
+- Updated dependencies [dba65a7]
+- Updated dependencies [be56c29]
+- Updated dependencies [50fab1b]
+- Updated dependencies [fb9d04b]
+- Updated dependencies [24211b9]
+- Updated dependencies [1be2a3a]
+- Updated dependencies [471b4e1]
+- Updated dependencies [fc9a8dd]
+- Updated dependencies [2d6d338]
+- Updated dependencies [65d0dcf]
+- Updated dependencies [fe951b7]
+- Updated dependencies [392b78c]
+- Updated dependencies [075548b]
+- Updated dependencies [baef55a]
+- Updated dependencies [4331267]
+- Updated dependencies [f0e15af]
+- Updated dependencies [eb18177]
+- Updated dependencies [4b55c01]
+  - @xihan-ui/core@5.2.0
+  - @xihan-ui/web-components@5.2.0
+  - @xihan-ui/tokens@5.2.0
+  - @xihan-ui/pointer@5.2.0
+  - @xihan-ui/viz@5.2.0
+  - @xihan-ui/designer-kit@5.2.0
+
 ## 5.1.0
 
 ### Minor Changes

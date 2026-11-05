@@ -1,5 +1,127 @@
 # @xihan-ui/react
 
+## 5.2.0
+
+### Minor Changes
+
+- ffda198: **新增** 组合框的内置过滤 `filter`：给了 `collection` 再写 `filter="contains"`（显示文本包含检索词）或 `filter="startsWith"`（以检索词开头），本地候选就按用户打的字筛，不必再自己接 `inputValue` 写过滤；两种口径都不分大小写，也可以给函数 `(node, query) => boolean` 自己判（Web Components 经 `filter` property 给函数，特性只认两种口径）。检索词是用户打的那段字：选中后输入框回显的选中项文字、`inputBehavior="autocomplete"` 补出的那段都不拿去筛，再展开看到全部候选；选中、提交自定义值、清空、失焦与表单重置时检索词作废。没写 `filter` 时行为不变，候选仍由调用方按 `onInputValueChange` 换，远程搜索照旧这么写。
+
+  `api.collection` 给了 `filter` 时是筛过的那份，标准结构、条数、空态、高亮与 Virtualizer 的 `count` 都以它为准；已选项的标签文字仍从全集取。headless 另导出 `filterComboboxNodes` 与 `ComboboxFilter`、`ComboboxFilterMode` 类型。
+
+  组合框的标准结构只在给了 `name` 或必填时才铺表单影子：两样都没有时影子既不提交也拦不住空表单，Web Components 只写 `root` 时也就不再留下一个没接线的空节点。
+
+- 9d7301a: **新增** 对话框与抽屉的 props 写法：不写子内容时按标准结构（`dialogStructure` / `drawerStructure`，两者同一份面板结构）铺出触发器、页头（标题与说明）、正文、页脚与关闭钮，一个组件加三个 prop 就是一个确认对话框：
+
+  - Vue：`trigger-text`、`title`、`description`，正文与整段页脚走 `body` / `footer` 插槽，`trigger` / `title` / `description` 插槽压过同名文字；
+  - React：`trigger`、`title`、`description`、`body`、`footer` 五个 ReactNode 属性；`XhDrawerRoot` 的 `title` 因此不再作为原生 title 属性写到根上；
+  - Web Components：`trigger-text`、`title-text`、`description` 三个属性，`slot="body"` / `slot="footer"` 等宿主直接子节点搬进对应部件。
+
+  页脚按 `actions` 铺取消与确定两颗钮（`alert` 只有确定，`none` 不铺），`confirmText` / `cancelText` 改字，缺省取语言包；抽屉的语言包补上 `ok` / `cancel`。
+
+  两个组件的 anatomy 各新增 `confirm-trigger` 与 `cancel-trigger` 两个部件（Vue / React 的 `XhDialogConfirmTrigger`、`XhDialogCancelTrigger`、`XhDrawerConfirmTrigger`、`XhDrawerCancelTrigger`），与气泡确认同一套确认门：确定发 `confirm`，`onConfirm` 返回 thenable 时等它兑现才收起、确定钮转圈，期间 Escape 与点外面关不掉，拒绝留在原地并发 `confirm-error`（Web Components 交给 `confirmAction` 属性）；取消发 `cancel-press` 并收起；关闭钮随时收得起，挂起中的确认随之作废。connect 新增第三个参数接这两颗钮的意图与 pending / actionError 两个状态通道，API 新增 `pending`、`actionError`、`confirm`、`cancel`。确认门从气泡确认里抽成共享模块，气泡确认的行为不变。组合写法照旧。
+
+- b6161d7: **新增** 录入控件放进表单字段组即按字段名读写值表：`XhFormFieldGroup`（Web Components 为 `data-xh-part="field-group"`）里的控件自己没给值时，初值取表单的 `defaultValues`，改动写回表单，表单重置或 `setFieldValue` 改了这个字段控件跟着变，不必再写 `v-model`、`value` / `onValueChange` 或监听 `value-change` 后回写，也不必再写 `:invalid="invalid"` 与值的类型断言。值落在哪个 prop 由控件决定（多数是 `value`，开关与复选框是 `checked`，文件上传是 `files`），37 个录入控件已登记。控件自己给了值（`null` 也算）就一概不接，作用域插槽里的 `value` / `setValue` 手动接法照旧可用；组件内部借来跑的子控件与字段边界、浮层 Portal 后面的实例不接。
+
+  headless 新增 `formModelOf`、`formFieldModel`、`bindFormModel` 与 `FormModel`、`FormFieldModel` 类型；Vue / React 的 `useMachine` 与 Web Components 的 `MachineController` 新增 `formField` 选项，组件内部借来跑子机器时传 `false`。
+
+  **修复** Vue 的 `XhSwitch` 没写 `default-checked` 时不再被归一成 `false`，与复选框、React 与 Web Components 一致：受控的开关放在原生表单里重置时，不再把宿主没说过的 `false` 当成初值报出去。
+
+- 1295823: **新增** 表单的值类型泛型：根组件按 `defaultValues`（或 `values`）推断整表的值类型，`rules` 与 `validate` 交回的键只能写它的字段，字段名拼错编译即报错；`onSubmit`、`onValuesChange` 拿到的 `values` 与插槽（React 是函数式 children）里 `setFieldValue(name, value)` 的值都按字段收窄，数组路径逐段检查。字段组推断不到根上的值类型，新增 `defineFormFields<值类型>()`（Vue、React）：拿到的就是字段组与错误摘要条目本身，只在类型上收窄，`name` 只能写字段，插槽里的 `value` 与 `setValue` 是那个字段的类型。Web Components 写 `querySelector<XhFormElement<值类型>>('xh-form')`。`FormSchema<TValues>`、`FormApi<T, TValues>`、`FormRules<TValues>` 与各回调载荷带上值类型参数，缺省仍是宽松的 `FormValues`。规则另写成常量时标成 `FormRules<值类型>`，另写的 `validate` 参数标成值类型、返回 `FormErrorPatchOf<值类型>`，React 里把插槽载荷另存成变量时标成 `FormRootSlotProps<值类型>`：标成不带参数的宽松类型再配上有具体类型的 `defaultValues` 会被判为字段名不符。headless 新增 `FormFieldName`、`FormFieldPath`、`FormPathValue`、`FormErrorPatchOf` 类型。Vue 在模板里由 Volar 推断，`h()` 推断不了泛型，那里按宽松的值表检查。
+
+  **新增** 表单的 `schema`：收 Standard Schema，zod、valibot、arktype 的 schema 直接交进去，组件只依赖接口、不引入任何校验库。交给它的是嵌套对象（数组路径的字段按段写回原位），它报的问题按 `path` 落到字段上，同一字段只留第一条，没有路径的记在空字段名下；同一字段几边都报错时 `rules` 优先、`validate` 其次、`schema` 最后。异步 schema 照常走 `validating`。headless 新增 `FormStandardSchema`、`FormStandardResult`、`FormStandardIssue` 类型。
+
+- f922b2f: **变更** 浮层第一次打开时才加载浮层机制：消隐层、焦点域、滚动锁、背景失活、Portal 视觉桥、多选标签动效、定位引擎与浮层里的自绘滚动条不再进首屏，使用者的打包器把它们切成按需块。只用 `XhSelectRoot` 时首屏从 53.5 kB 降到 33.1 kB（gzip），`XhMenuRoot` 51.5 → 33.4 kB，`XhDialogRoot` 40.0 → 27.4 kB，React 的 `XhSelectRoot` 56.1 → 35.5 kB。
+
+  - 何时取：浮层挂载后，文档上第一次有交互（指针移进来、按下、按键、聚焦、触摸）就在后台取；挂载时就开着的立刻取。加载过一次之后整页同步，与静态引入一样。
+  - 没到时打开：展开态、ARIA、`data-state` 与事件当场生效，资源到了再接上。靠定位的浮层落位前本就藏着；对话框、抽屉、图片查看器、命令面板的内容等按需块到了才露出来。等的这段时间 Escape 与点外面不收起，等的时候已经关掉就不再接、不抢焦点。加载失败不缓存，下一次打开重新取。
+  - 第一次打开也要同步：启动时调一次适配器新导出的 `preloadOverlay()`（Vue / React / Web Components 都有）。
+
+  Core 新增 `loadOverlayKit`、`overlayKit`、`requireOverlayKit`、`whenOverlayKit`、`prefetchOverlayKit`、`onFirstInteraction` 与 `OverlayKit` 类型，以及 `connectPortalVisualBridge`（Portal 壳的逻辑来源当场登记，搬进壳的控件照旧找得到所在位置的配置与语言包，视觉桥等按需块到了再建）；`createPortalLease` 与 Vue / React 的 Portal 都改用它；`createDismissLayer`、`createFocusScope` 等原有导出不变，直接引入照旧同步。Position 新增 `createDeferredPositionEngine`（同一个 `PositionEnginePort`，引擎本体第一次 `attach` 时才加载，并等浮层按需块到了再量）与 `loadPositionEngine`，各适配器的浮层都改用它。Headless 的浮层外壳新增 `createOverlayKitGate`，`trackPresenceResources` 内置这道闸门。
+
+  体积预算同步收紧：`XhSelectRoot` 56 → 36 kB、`XhMenuRoot` 54 → 37 kB、`XhDialogRoot` 42 → 30 kB；新增四条按需块预算（core 浮层按需块、定位引擎本体、Vue / React 浮层自绘滚动条），`position` 主入口因多了延迟引擎 3.1 → 4 kB。
+
+- dba65a7: **新增** 分页的标准结构 `paginationStructure`：Vue / React 不写默认插槽、Web Components 不写部件（或只写 root）时，按它铺出上一页、按当前页折叠后的页码序列（被折叠的一段是省略位）与下一页，翻页后按页码复用节点，`<XhPaginationRoot :count="196" :page-size="10" />` 一行即可用。Web Components 不必再监听 `page-change` 手动重排页码按钮。首末页钮、跳页框、每页条数与省略位的展开面板不在标准结构里，要用时照旧整棵手写。
+- 16b6433: **新增** 产物里用到客户端能力的模块（组件、hook、全局配置的 Provider、命令式服务）带上 `'use client'`，Next.js App Router 的服务端组件可以直接导入组件渲染，不必再包一层自己的客户端组件。语言包与 `mergeXhConfig` 不带指令，服务端代码里照常可用；`mergeXhConfig` 移到独立的纯函数模块，从包入口导入的写法不变。
+- 24211b9: **新增** 选择器标准结构的虚拟化开关 `virtual`：不写结构（Vue 不写默认插槽、React 不给 children、Web Components 只写 `root`）时加上 `virtual`，浮层里只铺滚到的那一屏条目，一万条选项也只渲十几个节点；方向键、Home / End 与按字跳转仍跨完整 `collection`。条目按 `estimateSize`（缺省 36，Web Components 为 `estimate-size`）起算，渲出后按实测校正，带副文本的两行条目也对得齐。虚拟化那一块按需加载：没开 `virtual` 的选择器不为 Virtualizer 的内核付体积（Vite 构建实测首包与不支持虚拟化时持平，开了才多拉约 7 kB 的异步块）；它还在路上时就展开了，到了之后焦点照样补进列表。手写结构时照旧自己套 Virtualizer，`virtual` 只管标准结构。
+
+  headless 新增 `virtualListStructure`、`VIRTUAL_STRUCTURE_DELEGATE` 与 `StructureVirtualItem`、`VirtualStructurePart` 类型：集合组件的标准结构据此把列表包进 Virtualizer 的视口与内容层，三个委派部件的作者名为 `virtual-viewport` / `virtual-content` / `virtual-item`。选择器状态机接到晚到的 `virtualizer` 而浮层已经开着时，按完整 `collection` 补挑锚点、由桥交出焦点，不该有锚点时把焦点交给列表本体；手写结构里 Virtualizer 晚一拍挂上同样适用。
+
+  **修复** 选择器接了虚拟化桥时（含手写结构），自绘滚动条跟着 Virtualizer 的视口走，不再挂在不滚的列表上，与 TreeSelect、Transfer 一致。
+
+- 1be2a3a: **新增** 复选组的值可以是任意类型，与选择器同一套：`value`、`defaultValue`、`itemValues` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 的 `XhCheckboxGroupRoot` 按 `value` 或 `collection` 推断值的类型，对象值给 `valueKey`。隐藏的原生 checkbox 提交的是键；Web Components 写 `querySelector<XhCheckboxGroupElement<V>>('xh-checkbox-group')`。
+- 471b4e1: **新增** 组合框的值可以是任意类型，与选择器同一套：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽、`renderItem` 与自定义 `filter` 拿到的是原值；Vue 与 React 的 `XhComboboxRoot` 按 `value` 或 `collection` 推断值的类型，对象值给 `valueKey`。表单影子提交的是键；Web Components 写 `querySelector<XhComboboxElement<V>>('xh-combobox')`。
+- fc9a8dd: **新增** 列表框的值可以是任意类型，与选择器同一套：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`、插槽与 `renderItem` 拿到的是原值；Vue 与 React 的 `XhListboxRoot` 按 `value` 或 `collection` 推断值的类型，对象值给 `valueKey`；Web Components 写 `querySelector<XhListboxElement<V>>('xh-listbox')`。
+- 2d6d338: **新增** 单选组的值可以是任意类型，与选择器同一套：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，选中值是一个值或 `null`，`onValueChange`、`v-model` 与 `renderItem` 拿到的是原值；Vue 与 React 的 `XhRadioGroupRoot` 按 `value` 或 `collection` 推断值的类型，对象值给 `valueKey`。隐藏的原生 radio 提交的是键；Web Components 写 `querySelector<XhRadioGroupElement<V>>('xh-radio-group')`。
+- 65d0dcf: **新增** 选择器的值可以是任意类型：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model`（Vue 的 `update:value`）、默认插槽、条目插槽与 `renderItem` 拿到的是原值，形状照旧（单选也是数组）。Vue 与 React 的 `XhSelectRoot` 按 `value` 或 `collection` 推断值的类型，`v-model:value` 绑数字或对象的数组不必写断言，两处类型对不上即报错；对象值给 `valueKey`（字段名或取值函数）按它认，同一个选项每次都是新对象也选得中，不给按对象身份认。数字转成字符串当键，键也是条目的 `data-value` 与随表单提交的值。Vue 的 `h()` 推断不了泛型，那里按宽松的类型检查，原来写的回调照收；Web Components 经 property 交值，`querySelector<XhSelectElement<V>>('xh-select')` 收窄，标记里另有 `value-key` 属性。
+
+  headless 新增选择类共用的值边界：机器与 DOM 照旧只认字符串键，值在 props 进机器前编成键、`onValueChange` 与 api 交出去时解回原值，值全是字符串时不多付开销。`SelectSchema`、`SelectApi` 等带上值类型参数，缺省仍是 string；api 新增 `valueKeys`，条目与标签的元信息新增 `key`；新增 `SelectionValueKey` 类型与 `valueKeyOf`。
+
+- fe951b7: **新增** 开关组的值可以是任意类型，与选择器同一套：`value`、`defaultValue` 与 `collection` 里交进来数字、对象都行，`onValueChange`、`v-model` 与 `renderItem` 拿到的是原值。Vue 与 React 的 `XhToggleGroupRoot` 按 `value` 或 `collection` 推断值的类型、按 `multiple` 推断形状：写了 `multiple` 时值是数组，没写时是一个值或 `null`，单选却绑数组即报错；对象值给 `valueKey`。headless 新增 `ToggleGroupSelection` 与 `ToggleGroupModel` 两个按 `multiple` 收窄的类型；Web Components 写 `querySelector<XhToggleGroupElement<V>>('xh-toggle-group')`。
+- 075548b: **新增** 表格的数据驱动模式：给 `columns` 与 `data`，不写结构（Vue 不写默认插槽、React 不给 children、Web Components 只写 `root`）就是一张会排序、会筛选、会分页的表，三端出自同一个结构函数 `tableStructure`。列 id 即字段名，行 id 缺省取 `id`（`rowKey` 可换）；排序按字段值比（数字与日期按大小，字符串按数值序，空值恒排最后），列的 `compare` 可接管；列给了 `filterOptions` 时列头铺一颗筛选钮，点开是一张勾选型菜单，勾选值存在 `filterValue` 里（可受控，事件 `filter-value-change`），列的 `filter` 可换掉缺省的比法，筛选一变回到第 1 页；`pagination` 打开切页，按 `page` / `pageSize`（缺省 10）切出当前页，表后铺一组分页，翻页发 `page-change`。格子文字取列的 `format` 或字段值，要放标签这类内容时用 `cell` 插槽（React 是 `renderCell`，Web Components 写 `slot="cell:<行 id>:<列 id>"`），空态用 `empty` 插槽（React 是 `renderEmpty`）。没写宽度的数据列以 8rem、序号列以 4rem 为伸缩基准，列头多了排序钮与筛选钮也与格子对得齐。筛选菜单与分页开了才加载，手写结构的表格不为它们付体积。
+
+  **新增** 表格标准结构的虚拟化开关 `virtual`（与 `estimateSize`，Web Components 为 `estimate-size`）：表体只铺滚到的那一屏行，滚的是表格根节点，吸顶表头、冻结列与行在同一个滚动面里；行号、`aria-rowcount` 与方向键仍按完整行序。Virtualizer 那一块开了才加载。
+
+  headless 新增 `TableRecord`、`TableFilterOption`、`TableFilterValue` 等类型，`TableApi` 加上 `records`、`recordCount`、`recordOf`、`cellText`、`filterValue` / `setFilter`、`page` / `pageSize` / `pageCount` / `setPage` 与 `translations`；数据管线 `computeTableDataView` 与 `tableRowDefs` 可单独使用。表格文案新增 `filter`、`empty`、`loading` 三条，十种内建语言包都已补齐；列头在这一列正在筛时报 `data-filtered`。
+
+  **修复** Web Components 的 `<xh-table>` 自己挂的播报区打上生成标记，不再被当成作者写的部件。
+
+- baef55a: **新增** 表格的行类型泛型：根组件按 `data` 的元素类型推断行类型，数据列的 id、`field` 与 `rowKey` 只能写它的字段，写错编译即报错；`format` 的 `value` 是那个字段的类型，`compare`、`filter`、`format` 与 `cell` 插槽（React 是 `renderCell`）拿到的记录都是那一行的类型，插槽参数新增 `field`，按它判出字段后 `value` 跟着收窄。`TableColumnDef<TRow>` 与 `TableSchema<TRow>` 带上行类型参数，缺省仍是宽松的 `TableRecord`，没给 `data` 的手写结构表格不受影响。列定义另写成常量时标成 `TableColumnDef<行类型>[]`：标成不带参数的 `TableColumnDef[]` 再配上有具体类型的 `data` 会被判为字段名不符。Vue 在模板里由 Volar 推断，`h()` 推断不了泛型，那里按宽松的记录检查；Web Components 写 `querySelector<XhTableElement<行类型>>('xh-table')`。
+
+  **新增** 列定义的 `field`：数据驱动模式下列读记录里的哪个字段，缺省即列 id。列 id 想另起名字时写 `field: '字段名'`；写 `field: null` 是不读字段的列（操作列、由几个字段拼出来的列），文字靠 `format` 或 `cell` 插槽，排序与筛选靠 `compare` 与 `filter`。headless 新增 `TableColumnBase`、`TableField`、`TableFieldValue`、`TableRecordOf` 类型与 `tableColumnField`、`tableColumnValue` 两个取值函数。
+
+- eb18177: **新增** 树的标准结构 `treeStructure`：Vue / React 不写默认插槽、Web Components 不写部件（或只写 root）时，按 `collection` 铺出标题（新 `label` 属性 / Vue `label` 插槽）与整棵树，分支、叶子、说明文字与对号都照数据生成，`<XhTreeRoot :collection="files" label="项目文件" />` 一行即可用。行尾附加内容、拖动把手、整树空态与占位不在标准结构里，要用时照旧整棵手写。
+
+  **新增** 树的懒分支：节点写 `hasChildren: true` 且不带 `children` 即为懒分支，首次展开时调 `loadChildren({ node, signal })` 取子项；取回的子项由组件暂存，收起再展开不重复请求，收起或卸载时经 `signal` 中止在途请求。新增事件 `branch-load-start` / `branch-load` / `branch-load-error`（React 为 `onBranchLoadStart` / `onBranchLoad` / `onBranchLoadError`），新增部件 `branch-loading` / `branch-error` / `branch-retry-trigger` / `branch-empty`，懒分支在子层的位置自动铺出这四行（手写结构也一样，不必另写；Vue / React 另导出 `XhTreeBranchLoading` 等四个同名组件），在途时分支行报告 `aria-busy`，失败时点重试钮或在该行按 Enter / Space 再取。`branch` 部件新增 `data-load-state`、`data-error`、`data-empty` 三个状态属性，翻译新增 `tree.loading` / `branchError` / `retry` / `branchEmpty`，十个语言包已补齐。
+
+  TreeSelect 与 Cascader 的懒分支取数改为与树共用同一份内核（`shared/lazy-branch`），行为不变。`tree.css` 为四个反馈部件新增样式，体积约增 12%。
+
+### Patch Changes
+
+- a0ba0f9: **修复** 手风琴、折叠区域、Reasoning、ToolCall 的开合动画。行高现在真的从 0 长到全开：`0fr` 的下限是 `auto`，正文是文本节点时行轨道被内容撑住，之前整段动画只有内缩在动、文字第一帧就全部露出。内容区的 `hidden` 改跟退场走、播完才落：宿主有 `[hidden]{display:none!important}`（Tailwind 4 的 preflight 就是这条）时，收起之前一帧都播不出来。React 手风琴第一次开合不再因为 `data-instant` 晚一拍撤而跳过动画。开合现在带淡变，正文与箭头同时长、同曲线，新增令牌 `--xh-motion-ease-disclosure`（缓起缓停，展开与收起同用）。`--xh-motion-duration-collapse` 由 150ms 改为 200ms，与展开等长：单开切换时一收一展的总高度一路单调，下方内容不再先过冲再弹回；Alert 关闭后的收拢、引用预览与代码折叠用的是同一支，随之变为 200ms。
+- 537ddc1: **修复** 宿主带 `[hidden]{display:none!important}`（Tailwind 4 的 preflight、VitePress 默认主题都有这条）时，浮层的退场动画一帧都播不出来：`hidden` 跟着开合走，关闭那一刻节点就没有盒子了，定位、遮罩与 Layer 也跟着提前释放。内容区的 `hidden` 改跟退场闸门走、播完才落。涉及 Popover、Popconfirm、HoverCard、Tooltip、Select、Combobox、Cascader、TreeSelect、Mention、Menu、ContextMenu、Menubar、NavigationMenu、DatePicker、DateRangePicker、TimePicker、TimeRangePicker、ColorPicker、Command、FloatingPanel、ImageViewer、Pagination、Tour 与 SideNav 图标栏提示；Web Components 的 Dialog、Drawer 同步修复。
+- Updated dependencies [a0ba0f9]
+- Updated dependencies [a7f81af]
+- Updated dependencies [ffda198]
+- Updated dependencies [45148e3]
+- Updated dependencies [9d7301a]
+- Updated dependencies [a0ba0f9]
+- Updated dependencies [ae81d1b]
+- Updated dependencies [01ff981]
+- Updated dependencies [b6161d7]
+- Updated dependencies [1295823]
+- Updated dependencies [dc1ce08]
+- Updated dependencies [2093c45]
+- Updated dependencies [9369cf2]
+- Updated dependencies [f922b2f]
+- Updated dependencies [dba65a7]
+- Updated dependencies [fb130f6]
+- Updated dependencies [50fab1b]
+- Updated dependencies [fb9d04b]
+- Updated dependencies [24211b9]
+- Updated dependencies [1be2a3a]
+- Updated dependencies [471b4e1]
+- Updated dependencies [fc9a8dd]
+- Updated dependencies [2d6d338]
+- Updated dependencies [65d0dcf]
+- Updated dependencies [fe951b7]
+- Updated dependencies [5cc2f9c]
+- Updated dependencies [075548b]
+- Updated dependencies [fef2e1c]
+- Updated dependencies [baef55a]
+- Updated dependencies [735ee7e]
+- Updated dependencies [4331267]
+- Updated dependencies [f0e15af]
+- Updated dependencies [14d9745]
+- Updated dependencies [eb18177]
+- Updated dependencies [4b55c01]
+  - @xihan-ui/headless@5.2.0
+  - @xihan-ui/core@5.2.0
+  - @xihan-ui/motion@5.2.0
+  - @xihan-ui/position@5.2.0
+  - @xihan-ui/pointer@5.2.0
+  - @xihan-ui/viz@5.2.0
+  - @xihan-ui/expression@5.2.0
+
 ## 5.1.0
 
 ### Patch Changes

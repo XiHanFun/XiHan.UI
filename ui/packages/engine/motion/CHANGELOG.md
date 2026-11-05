@@ -1,5 +1,16 @@
 # @xihan-ui/motion
 
+## 5.2.0
+
+### Minor Changes
+
+- 9369cf2: **调整** 时长收成两档基调：换色 150ms、几何 200ms。`--xh-duration-fast` 由 120ms 改为 150ms，跟着它的 `--xh-motion-duration-micro` / `-exit` / `-collapse` / `-press` 一起变成 150ms，减弱动效下保留的淡变（`micro` / `enter` / `exit`）同样变成 150ms；`--xh-motion-duration-nudge`（开关滑块、勾选标记、展开箭头这类原地的小幅几何变化）改引 `--xh-duration-normal`，由 120ms 变成 200ms，与 `move` 同档。`@xihan-ui/motion` 的 `durations.fast` 随之改为 150，`motionDurations.nudge` 改为 200，`reducedMotionDurations` 的淡变档改为 150。要回到原来的节奏，在主题根上把这几支令牌写回原值。
+- fb9d04b: **移除** 液态粘连。`data-material="liquid"` 下 FloatButton 的展开动作不再从触发器里分离、收起时不再融回，触发器与动作之间不再以液颈相连；展开与收起回到与 standard 档相同的逐条冒出、逆序缩回。触发器仍是液态面（按下层换色调、亮边随指针、按住时随手指形变），展开组里的动作保持磨砂面，展开组不再投影 `data-xh-liquid`。
+
+  随之撤掉的公开面：`@xihan-ui/core/visual-environment` 的 `trackLiquidGoo` 与类型 `LiquidGoo`、`LiquidGooOptions`；`@xihan-ui/motion` 的弹簧预设 `merge`（`SpringPresetName` 不再含它）；令牌 `--xh-motion-spring-merge-stiffness` 与 `--xh-motion-spring-merge-damping`；皮肤里的色块层与滤镜规则（`[data-xh-liquid-goo]`、`[data-xh-liquid-goo-layer]`、`[data-xh-liquid-goo-filter]`、`[data-xh-liquid-goo-split]`）与私有槽 `--xh-_liquid-goo-shadow`。FloatButton 状态机的上下文 `merging` 改名 `exiting`、动作 `startMerge` / `endMerge` 改名 `startExit` / `endExit`，refs 不再有 `liquidGroup`。
+
+  `--xh-float-button-shadow` 不再接到整组投影上，只作用于触发器与原生动作项自己的面。
+
 ## 5.1.0
 
 ## 5.0.0

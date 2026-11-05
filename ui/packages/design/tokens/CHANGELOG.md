@@ -1,5 +1,49 @@
 # @xihan-ui/tokens
 
+## 5.2.0
+
+### Minor Changes
+
+- abae9d8: **调整** 控件内图标小一档：`--xh-glyph-size-md` / `-lg` 由 20 / 24px 改为 18 / 20px（`-sm` 仍是 16px），14px 字的 md 控件配 18px 图标。Action Control、Field Chrome、Collection Item 三份配方按档下发的 `--xh-icon-size`、字段与菜单里作者放的图标、Spinner 的三档直径（16 / 18 / 20px）、ColorSwatch 的三档边长、Statistic 涨跌箭头、浮动钮 lg 档的字形一起变小。Rating 的星随档取 18 / 20 / 32px，盒不小于细指针最小目标 `--xh-control-target-min`（24 / 24 / 36px）。Notification 卡片左列的类型字形不再取 `--xh-glyph-size-lg`，改与标题一行的行框同高（仍是 24px）。要回到原来的尺寸，在主题里把两支令牌写回 20px / 24px。
+- 7da1f62: **调整** 缺省品牌色从 OKLCH 色相 258 的蓝换成色相 277 的靛蓝：`--xh-color-brand-50 … 950` 每一档都换了值，主按钮、选中、焦点环、品牌字色与图表的主题单色方案随之变色。各档明度按原缺省品牌那一档的 WCAG 相对亮度反求（与 `data-brand` 预设同一做法），对比度与原来逐档相当，600 档实心底上的白字是 5.08:1。要保留原来的蓝，在主题根上写 `data-brand="indigo"`。
+
+  **新增** 预设品牌 `indigo`（色相 258，即原缺省品牌）：`BRAND_PRESETS` 与 `BRAND_PRESET_COLORS` 多了这一项，设计器设置里的主题色色板随之多一格「靛蓝」，十种语言都已提供名字（`brandIndigo`）。
+
+- a0ba0f9: **修复** 手风琴、折叠区域、Reasoning、ToolCall 的开合动画。行高现在真的从 0 长到全开：`0fr` 的下限是 `auto`，正文是文本节点时行轨道被内容撑住，之前整段动画只有内缩在动、文字第一帧就全部露出。内容区的 `hidden` 改跟退场走、播完才落：宿主有 `[hidden]{display:none!important}`（Tailwind 4 的 preflight 就是这条）时，收起之前一帧都播不出来。React 手风琴第一次开合不再因为 `data-instant` 晚一拍撤而跳过动画。开合现在带淡变，正文与箭头同时长、同曲线，新增令牌 `--xh-motion-ease-disclosure`（缓起缓停，展开与收起同用）。`--xh-motion-duration-collapse` 由 150ms 改为 200ms，与展开等长：单开切换时一收一展的总高度一路单调，下方内容不再先过冲再弹回；Alert 关闭后的收拢、引用预览与代码折叠用的是同一支，随之变为 200ms。
+- 0f5d1c5: **调整** 阴影收成三档，按面的类型取：`--xh-elevation-raised`（Card、Tabs segment 滑块、开关拇指等）由 none 改为引 `--xh-shadow-sm`；`--xh-elevation-floating` 与 `--xh-elevation-lifted` 引 `--xh-shadow-md`；`--xh-elevation-sheet` 引 `--xh-shadow-lg`。浮层材质 `--xh-material-frosted-shadow`（含 compact 档）浅色取 md、深色取同样三层的深色投影，模态材质 `--xh-material-elevated-shadow` 浅色取 lg、深色取同样三层的深色投影；原先的单层 `0 4px 10px` / `0 4px 12px` 不再使用。深色档的 `--xh-elevation-lifted` 与 floating 同值。要回到原来的平面卡片，把 `--xh-elevation-raised` 写回 none。
+- 01ff981: **调整** 字段里的清空钮改成按需露面、圆形：TextField、ColorField、ColorPicker、DateField、TimeField、TagsInput、Select、Combobox、Cascader、TreeSelect、DatePicker、DateRangePicker、TimePicker、TimeRangePicker 的 `clear-trigger` 在可悬停的精细指针下，有值且指针落在字段盒上、或盒里有焦点时才显出，触屏上有值即常显（Action Control 的 `has-value` 显示策略，字段盒的 control 部件投影 `data-xh-action-owner`；TextField、ColorField 的这个属性从 root 挪到 control）。钮取圆形 `--xh-shape-circle`，静息字形取新增的 `--xh-fg-field-clear`（次级前景兑 50% 的透明），指到钮上换满色。下拉一类的展开箭头 / 日历钮 / 时钟钮只在清空钮显出来时让位，指针离开字段盒即回来，两颗共用同一格、盒宽不跳；焦点正在展开钮上时它不让位。各组件的 `--xh-<组件>-action-radius` 与 `--xh-<组件>-action-fg` 覆盖槽照旧作用于清空钮。
+- 04c4601: **调整** 聚焦环一律画在元素自己的盒内：一道 2px 品牌实线（`--xh-ring-width`，`--xh-ring-offset` 为负一个环宽），外沿与边框外沿重合，不出盒、不被裁切容器裁掉，应用侧不必给它留位；不随语气，即时出现。实心面上的环不再换成面的前景色（`currentColor`），环色一律是 `--xh-ring-focus`，改在环内侧衬一道 1px 底色间隔线：新增 `--xh-ring-gap`（取承载面底色）与 `--xh-ring-gap-width`（1px）。实心按钮与实心标签、勾中的方框、选中的开关轨道、日历选中格、轮播点、色块、热力图格、滚动条拇指、缩放把手衬这道线；Action Control 家族在打了 `data-xh-ink-surface` 的实心面上自动打开，`--xh-action-shadow-focus-visible` 的缺省值随之换成这道线。实心按钮聚焦时盒外那一圈伪元素环撤掉。强制色档系统去掉间隔线，只剩环。
+
+  **调整** 字段外壳静息改为白底：`--xh-bg-field` 由「淡底兑一半」改为引 `--xh-bg-surface`。聚焦时描边换成 `--xh-border-control-focus`，描边内侧再补一道 inset 线（`--xh-field-shadow-focus` 的缺省值），合起来一个环宽，与别的部件盒内的环同宽；校验失败的字段聚焦时聚焦态胜出；强制色档补一道同宽的 Highlight 环。盒里的 field-inset 钮按盒铺的底取阶梯：描边档缺省白底、走白底阶梯 100 → 200，只有淡底档没聚焦时走淡底阶梯；字段里的已选标签只在淡底档的盒里换白底。主题要回到淡底字段，改写 `--xh-bg-field`，并把字段盒上的 `--xh-action-host-bg-hover / -pressed` 改回淡底阶梯。Action Control 与字段外壳的过渡清单去掉 `box-shadow`，焦点环即时出现、即时撤下。
+
+- be1953c: **新增** 缺省无衬线字体栈令牌 `--xh-font-family-sans`（`system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif`），与可选的全局入口 `@xihan-ui/styles/global.css`：引入后把这支令牌落到 `:root` 的 `font-family` 上，Portal 渲到 body 里的浮层沿继承一并拿到。规则在最低的 `xihan.reset` 层、选择器包在 `:where()` 里，宿主自己写的字体照样压得住。组件本身仍不定字体、继承宿主，不引入这份入口时渲染不变；主入口 `@xihan-ui/styles` 不含它。
+- 868dc0b: **新增** 兜底字形令牌 `--xh-glyph-mark-filter`（取自图标包的 `filter`）：表格数据驱动模式下列头里的筛选钮画的就是它，与其余 `--xh-glyph-mark-*` 一样可在 `:root` 或任一容器上换成别的 SVG。
+- 9369cf2: **调整** 时长收成两档基调：换色 150ms、几何 200ms。`--xh-duration-fast` 由 120ms 改为 150ms，跟着它的 `--xh-motion-duration-micro` / `-exit` / `-collapse` / `-press` 一起变成 150ms，减弱动效下保留的淡变（`micro` / `enter` / `exit`）同样变成 150ms；`--xh-motion-duration-nudge`（开关滑块、勾选标记、展开箭头这类原地的小幅几何变化）改引 `--xh-duration-normal`，由 120ms 变成 200ms，与 `move` 同档。`@xihan-ui/motion` 的 `durations.fast` 随之改为 150，`motionDurations.nudge` 改为 200，`reducedMotionDurations` 的淡变档改为 150。要回到原来的节奏，在主题根上把这几支令牌写回原值。
+- 0edd9fe: **调整** 浅色主题的模态遮罩 `--xh-bg-overlay` 由正文深灰（neutral-900）兑 60% 改为兑 40%：Dialog、Drawer 等模态压暗页面但背后仍认得出是哪一页。深色主题仍是纯黑 60%（深底上 40% 压不出层次）。要回到原来的浓度，在主题里把 `--xh-bg-overlay` 写回 `color-mix(in oklab, var(--xh-color-neutral-900) 60%, transparent)`。
+- be56c29: **调整** Progress 线形轨道加厚：`--xh-track-thickness-sm` / `-md` / `-lg` 由 3 / 4 / 8px 改为 4 / 8 / 12px（引 `--xh-space-1` / `-2` / `-3`），缺省中档从 4px 的细线变成 8px 的条，卡片里一眼读得出是进度。带分段色带（子弹图）的轨道 `--xh-track-band-thickness-*` 不变，仍各比同档线形厚一档。要回到原来的细轨，在主题里写回三支令牌，或用 `--xh-progress-thickness` 逐个覆盖。
+- 50fab1b: **调整** 圆角改由一颗种子派生：新增 `--xh-radius-seed`（缺省 8px），`--xh-radius-2xs / xs / sm / md / lg` 依次是它的 0.25 / 0.5 / 0.75 / 1 / 1.25 倍（2 / 4 / 6 / 8 / 10px），删除 `--xh-radius-xl`；`--xh-radius-sm / md / lg` 的取值由 2 / 4 / 8px 变为 6 / 8 / 10px。形状角色随之变成 inset 4px、control / surface / overlay 8px，并新增 `--xh-shape-sheet`（10px）。换风格只改种子：在根上写 `--xh-radius-seed` 即可，各档按比例一起变。
+
+  **调整** 嵌在别的面里的小块按「内层圆角不大于外层减内衬」改取 inset：锚定浮层与候选面板里的选项与菜单项（Menu、ContextMenu、Menubar、Select、Combobox、Cascader、Mention、TreeSelect、ExpressionInput、Command、日期与时间面板的时间列）以及 Transfer 的列表行不再是铺满整行的通栏行，列表两侧各留 4px 内距（`--xh-*-content-px` 等覆盖槽的缺省值由 0 变为 `--xh-space-1`），行取 inset 圆角；Collection Item 配方的缺省圆角由 control 改为 inset；Tabs segment 的标签与滑块、RadioGroup segmented 的段、字段里的已选标签与 TagsInput 的条目改取 inset。Dialog、Drawer 朝向页面的两个角与 Notification 卡片改取 sheet。
+
+  **调整** 锚定浮层的箭头端距 `OVERLAY_ARROW_PADDING` 由 4 改为 8，与 8px 的浮层圆角对齐（`@xihan-ui/headless`）。
+
+- fb9d04b: **移除** 液态粘连。`data-material="liquid"` 下 FloatButton 的展开动作不再从触发器里分离、收起时不再融回，触发器与动作之间不再以液颈相连；展开与收起回到与 standard 档相同的逐条冒出、逆序缩回。触发器仍是液态面（按下层换色调、亮边随指针、按住时随手指形变），展开组里的动作保持磨砂面，展开组不再投影 `data-xh-liquid`。
+
+  随之撤掉的公开面：`@xihan-ui/core/visual-environment` 的 `trackLiquidGoo` 与类型 `LiquidGoo`、`LiquidGooOptions`；`@xihan-ui/motion` 的弹簧预设 `merge`（`SpringPresetName` 不再含它）；令牌 `--xh-motion-spring-merge-stiffness` 与 `--xh-motion-spring-merge-damping`；皮肤里的色块层与滤镜规则（`[data-xh-liquid-goo]`、`[data-xh-liquid-goo-layer]`、`[data-xh-liquid-goo-filter]`、`[data-xh-liquid-goo-split]`）与私有槽 `--xh-_liquid-goo-shadow`。FloatButton 状态机的上下文 `merging` 改名 `exiting`、动作 `startMerge` / `endMerge` 改名 `startExit` / `endExit`，refs 不再有 `liquidGroup`。
+
+  `--xh-float-button-shadow` 不再接到整组投影上，只作用于触发器与原生动作项自己的面。
+
+- 392b78c: **新增** `data-theme="system"`：不跑任何 JS 跟随系统明暗的纯 CSS 路径。HTML 里写 `<html data-theme="system">`，浅色系统下与 `light` 同一套取值；系统切到深色时，`tokens.css` 里紧随深色块的 `@media (prefers-color-scheme: dark)` 块取深色块的全部取值，`color-scheme` 一并翻成 `dark`。皮肤里只在深色下成立的规则（语气、按钮实底、热力图灰阶、分段单选、审批等待指示）由样式包构建时照抄一份系统档副本，全量入口、无层入口与按需子路径都带上。视觉环境控制器照旧只投影 `light` / `dark`。
+
+### Patch Changes
+
+- Updated dependencies [a7f81af]
+- Updated dependencies [dc1ce08]
+- Updated dependencies [f922b2f]
+- Updated dependencies [fb9d04b]
+- Updated dependencies [4331267]
+  - @xihan-ui/core@5.2.0
+
 ## 5.1.0
 
 ### Patch Changes

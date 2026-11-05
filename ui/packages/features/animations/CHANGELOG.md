@@ -1,5 +1,18 @@
 # @xihan-ui/animations
 
+## 5.2.0
+
+### Patch Changes
+
+- Updated dependencies [a7f81af]
+- Updated dependencies [dc1ce08]
+- Updated dependencies [9369cf2]
+- Updated dependencies [f922b2f]
+- Updated dependencies [fb9d04b]
+- Updated dependencies [4331267]
+  - @xihan-ui/core@5.2.0
+  - @xihan-ui/motion@5.2.0
+
 ## 5.1.0
 
 ### Patch Changes
