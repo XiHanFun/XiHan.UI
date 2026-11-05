@@ -192,13 +192,14 @@ const adaptersSidebar: DefaultTheme.SidebarItem[] = [
   },
 ];
 
-// 组件标识本身就是规范英文名（kebab-case），转成词首大写即可，
+// 组件标识本身就是规范英文名（kebab-case），转成 PascalCase 即可，与代码导出名、
+// 页面标题和组件总览卡片（文档生成器的 pascal）同一个拼法，不拆成几个单词；
 // 不必在 manifest 里另存一份，也就不会与中文名各自漂移。
 function enName(id: string): string {
   return id
     .split("-")
     .map(word => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
+    .join("");
 }
 
 const runtimeSidebar: DefaultTheme.SidebarItem[] = [
