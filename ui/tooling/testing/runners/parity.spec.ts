@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import type { ConformanceSuite } from '../src'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { preloadOverlay as preloadVueOverlay } from '../../../packages/adapters/vue/src/runtime/preload-overlay'
 import { createVueHarness } from '../../../packages/adapters/vue/tests/harness'
+import { preloadOverlay as preloadWcOverlay } from '../../../packages/adapters/web-components/src/runtime/preload-overlay'
 import { createWcHarness } from '../../../packages/adapters/web-components/tests/harness'
 import {
   affixSuite,
@@ -123,6 +125,13 @@ import {
   virtualizerSuite,
   watermarkSuite,
 } from '../src'
+
+// 浮层按需块先取齐，与各适配器 tests/setup.ts 同一口径：这里比的是打开之后的同步行为。
+// 不取的话，进程里第一个打开浮层的用例落在冷启动上，按需块要等宏任务才到，两端各在不同的一拍拍下快照。
+// 第一次打开晚一拍的那条路径由各适配器的 overlay-cold-start 浏览器用例验证。
+beforeAll(async () => {
+  await Promise.all([preloadVueOverlay(), preloadWcOverlay()])
+})
 
 beforeEach(() => {
   document.documentElement.style.setProperty('--xh-breakpoint-md', '768px')
