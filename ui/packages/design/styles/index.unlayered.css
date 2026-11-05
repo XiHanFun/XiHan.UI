@@ -6378,6 +6378,14 @@
   .xh-scope-float-button[data-part='trigger'][data-disabled]:empty::before {
     background-color: GrayText;
   }
+
+  /* 展开与否由触发器表达：它是 aria-expanded 的那颗，公共层的强档状态环照常落在它身上。
+     定位壳与展开组也带着 data-state，但只是排布的盒子，环落上去就是绕着整组、整排动作各描一道方框。
+     公共层的状态环停在两个属性、又排在全部皮肤之后，这里多带一个 data-state 才压得过它 */
+  .xh-scope-float-button[data-part='root'][data-state='open'],
+  .xh-scope-float-button[data-part='list'][data-state='open'] {
+    outline: none;
+  }
 }
 
 /* styles/floating-panel.css */
