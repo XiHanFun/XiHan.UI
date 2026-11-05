@@ -5,6 +5,7 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 import { XhDownloadTrigger } from '../../src'
+import { tokenLength } from './design-token'
 import { coarsePointer, finePointer, pseudoBox } from './pseudo-box'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -39,8 +40,10 @@ describe('粗指针下的下载钮兜底字形', () => {
     const root = await mount()
     const fine = root.getBoundingClientRect()
     const fineGlyph = pseudoBox(root, '::after')
-    expect(fineGlyph.width).toBe(20)
-    expect(fineGlyph.height).toBe(20)
+    // 兜底字形取 md 档图标尺寸，读令牌，不写死像素
+    const glyphSize = tokenLength('--xh-glyph-size-md')
+    expect(fineGlyph.width).toBe(glyphSize)
+    expect(fineGlyph.height).toBe(glyphSize)
 
     await coarsePointer()
     const coarse = root.getBoundingClientRect()
@@ -48,8 +51,8 @@ describe('粗指针下的下载钮兜底字形', () => {
     const box = pseudoBox(root, '::after')
     const observed = `::after position=${glyph.position} min-block-size=${glyph.minBlockSize} translate=${glyph.translate} box=${JSON.stringify(box)} root fine=${fine.width}×${fine.height} coarse=${coarse.width}×${coarse.height}`
     expect(glyph.position, observed).toBe('static')
-    expect(box.width, observed).toBe(20)
-    expect(box.height, observed).toBe(20)
+    expect(box.width, observed).toBe(glyphSize)
+    expect(box.height, observed).toBe(glyphSize)
     expect(coarse.width, observed).toBe(fine.width)
     expect(coarse.height, observed).toBe(fine.height)
 
