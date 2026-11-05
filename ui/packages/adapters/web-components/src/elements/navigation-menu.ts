@@ -14,7 +14,7 @@ import { connectNavigationMenu, navigationMenuAnatomy, navigationMenuMachine, na
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
@@ -277,7 +277,7 @@ export class XhNavigationMenuElement extends XhElement {
     for (const el of this.getParts('content')) {
       const value = el.getAttribute('value') ?? ''
       const props = api.getContentProps({ value })
-      this.spreader.spread(el, props)
+      this.spreader.spread(el, withoutHidden(props))
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
       const open = api.isOpen(value)
@@ -299,7 +299,7 @@ export class XhNavigationMenuElement extends XhElement {
       }
       entry.gate.track(el)
       entry.gate.update(open)
-      this.setPartHidden(el, !entry.gate.visible)
+      this.setPartHidden(el, !entry.gate.visible, { attribute: true })
     }
 
     // 面板里的子级：开关与方向标记的身份取节点自报的 value，开关的禁用经 authorDisabled 归一到 aria-disabled

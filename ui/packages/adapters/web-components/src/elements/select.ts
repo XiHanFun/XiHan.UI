@@ -17,7 +17,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { unwrapDelegated } from '../dom/structure'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -573,7 +573,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     }
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('list', api.getListProps())
     put('footer', api.getFooterProps())
     put('empty', api.getEmptyProps())
@@ -646,7 +646,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     const exit = this.ensureExit(api.open)
     exit.track(content)
     exit.update(api.open)
-    this.setPartHidden(content, !exit.visible)
+    this.setPartHidden(content, !exit.visible, { attribute: true })
     this.bars.wire()
     this.portal.sync(exit.visible)
     // 虚拟化的视口、内容层与条目外壳排在最后接：外壳里的条目要先接上本元素的属性与集合条目的样式，
@@ -672,7 +672,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

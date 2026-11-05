@@ -25,7 +25,7 @@ import { connectFloatingPanel, floatingPanelAnatomy, floatingPanelMachine, float
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值的唯一事实源留在机器与 connect。
@@ -241,7 +241,7 @@ export class XhFloatingPanelElement extends XhElement {
     }
     put('root', api.getRootProps())
     put('trigger', api.getTriggerProps())
-    put('positioner', api.getPositionerProps())
+    put('positioner', withoutHidden(api.getPositionerProps()))
     put('content', api.getContentProps())
     put('header', api.getHeaderProps())
     put('title', api.getTitleProps())
@@ -268,7 +268,7 @@ export class XhFloatingPanelElement extends XhElement {
     })
     this.exit.track(positioner)
     this.exit.update(api.open)
-    this.setPartHidden(positioner, !this.exit.visible)
+    this.setPartHidden(positioner, !this.exit.visible, { attribute: true })
     this.setPartHidden(this.getPart('body'), api.windowState === 'minimized')
   }
 
@@ -278,7 +278,7 @@ export class XhFloatingPanelElement extends XhElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() === 'closed')
-      this.setPartHidden(this.getPart('positioner'), true)
+      this.setPartHidden(this.getPart('positioner'), true, { attribute: true })
     this.config = null // 重连时 ensureConfig 重建
   }
 }

@@ -51,7 +51,7 @@ import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -673,7 +673,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('saturation-area', api.getSaturationAreaProps())
     put('area-thumb', api.getAreaThumbProps())
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps())
@@ -716,7 +716,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     this.bars.wire()
     this.portal.sync(this.exit.visible)
@@ -729,7 +729,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }

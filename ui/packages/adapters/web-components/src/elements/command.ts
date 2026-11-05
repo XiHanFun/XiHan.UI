@@ -26,7 +26,7 @@ import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { ScrollbarsController } from '../runtime/scrollbars-controller'
@@ -375,7 +375,7 @@ export class XhCommandElement extends XhPortalHostElement {
     put('trigger', api.getTriggerProps())
     put('backdrop', api.getBackdropProps())
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('input', api.getInputProps())
     put('list', api.getListProps())
     put('empty', api.getEmptyProps())
@@ -430,7 +430,7 @@ export class XhCommandElement extends XhPortalHostElement {
     this.setPartHidden(this.getPart('backdrop'), !visible || !modal)
     this.setPartHidden(this.getPart('positioner'), !visible)
     // positioner 不是必需部件，content 自己也要收起
-    this.setPartHidden(this.getPart('content'), !visible)
+    this.setPartHidden(this.getPart('content'), !visible, { attribute: true })
 
     this.bars.wire()
   }
@@ -443,7 +443,7 @@ export class XhCommandElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     this.config = null // 重连时 ensureConfig 重建
   }
 }

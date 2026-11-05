@@ -133,7 +133,8 @@ export function XhImageViewerContent({ children, container, ...rest }: XhImageVi
       />
       <div {...api.getPositionerProps()}>
         <div
-          {...mergeReactProps(api.getContentProps(), rest)}
+          // 节点在场就是闸门开着（含退场窗口）：hidden 不跟开合走，否则宿主的 [hidden]{display:none!important} 让退场一帧都播不出来
+          {...mergeReactProps(api.getContentProps(), rest, { hidden: undefined })}
           ref={(el: HTMLDivElement | null) => { ctx.contentRef.current = el }}
         >
           {children}

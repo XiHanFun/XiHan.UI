@@ -27,7 +27,7 @@ import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -328,7 +328,7 @@ export class XhMentionElement extends XhPortalHostElement {
 
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
 
     // 候选逐个打：身份取作者写的 value，禁用取作者在条目上的声明。
     // wire 跑在事件之前，按键时 data-scope/data-part/data-value 已在 DOM 上供方向键现查。
@@ -359,7 +359,7 @@ export class XhMentionElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     // 每次接线完上报一次候选集合，让机器重算候选条数与悬空高亮
     if (this.ctrl.service.getStatus() === 'Started')
@@ -376,7 +376,7 @@ export class XhMentionElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

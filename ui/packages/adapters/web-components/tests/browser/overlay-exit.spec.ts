@@ -8,6 +8,7 @@ import { defineXhElements } from '../../src/define'
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 defineXhElements()
 

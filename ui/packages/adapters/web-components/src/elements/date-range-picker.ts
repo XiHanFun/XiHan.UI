@@ -47,7 +47,7 @@ import { END_INDEX_CONVERTER } from '../dom/end-index'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -702,7 +702,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     put('trigger', api.getTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     putAll('calendar', api.getCalendarProps())
     put('preset-group', api.getPresetGroupProps())
 
@@ -834,7 +834,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     this.bars.wire()
     this.presetBars.wire()
@@ -849,7 +849,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.rootCtrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

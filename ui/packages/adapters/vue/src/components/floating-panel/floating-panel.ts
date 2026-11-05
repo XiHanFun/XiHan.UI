@@ -133,9 +133,10 @@ export const XhFloatingPanelPositioner = defineComponent({
           ...mergeProps(
             ctx.api.value.getPositionerProps(),
             attrs,
+            // hidden 与内联 display 都等退场播完才落：宿主的 [hidden]{display:none!important} 压得过皮肤。
             // 收起跟着退场闸门走：皮肤刻意没给 positioner 补 [hidden]{display:none}（补了
             // 退场就一帧都播不出来），所以真正的收起落成内联 display
-            ctx.visible.value ? {} : { style: { display: 'none' } },
+            ctx.visible.value ? { hidden: undefined } : { hidden: true, style: { display: 'none' } },
           ),
           ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
         },

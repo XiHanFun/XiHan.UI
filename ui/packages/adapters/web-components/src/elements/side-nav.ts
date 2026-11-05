@@ -13,7 +13,7 @@ import { connectSideNav, findSideNavRowEl, sideNavAnatomy, sideNavMachine, sideN
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 import { findTooltipGroup } from './tooltip'
@@ -474,7 +474,7 @@ export class XhSideNavElement extends XhPortalHostElement {
     // 退场动画播完之前先别收：必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到退场那支动画
     if (hint && hintPositioner && hintContent) {
       this.spreader.spread(hintPositioner, api.getTooltipPositionerProps())
-      this.spreader.spread(hintContent, api.getTooltipContentProps())
+      this.spreader.spread(hintContent, withoutHidden(api.getTooltipContentProps()))
       if (hintContent.textContent !== api.tooltipText)
         hintContent.textContent = api.tooltipText
       this.ensureConfig()
@@ -482,7 +482,7 @@ export class XhSideNavElement extends XhPortalHostElement {
       const open = hint.state.matches('visible')
       this.hintExit.track(hintContent)
       this.hintExit.update(open)
-      this.setPartHidden(hintContent, !this.hintExit.visible)
+      this.setPartHidden(hintContent, !this.hintExit.visible, { attribute: true })
       this.hintPortal.sync(this.hintExit.visible)
     }
   }

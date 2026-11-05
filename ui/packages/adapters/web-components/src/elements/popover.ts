@@ -15,7 +15,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -223,7 +223,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('title', api.getTitleProps())
     put('description', api.getDescriptionProps())
     put('close-trigger', api.getCloseTriggerProps())
@@ -243,7 +243,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     exit.track(content)
     exit.update(api.open)
     if (content)
-      this.setPartHidden(content, !exit.visible)
+      this.setPartHidden(content, !exit.visible, { attribute: true })
 
     this.bars.wire()
     this.portal.sync(exit.visible)
@@ -258,7 +258,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     this.config = null // 重连时 ensureConfig 重建
   }
 }

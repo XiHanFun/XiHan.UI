@@ -16,6 +16,7 @@ import {
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 type Candidate = 'command' | 'tooltip'
 const globals = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }

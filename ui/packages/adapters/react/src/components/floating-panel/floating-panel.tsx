@@ -161,7 +161,7 @@ export function XhFloatingPanelPositioner({ children, container, ...rest }: XhFl
           rest,
           // 收起跟着退场闸门走：皮肤刻意没给 positioner 补 [hidden]{display:none}（补了
           // 退场就一帧都播不出来），所以真正的收起落成内联 display
-          ctx.visible ? {} : { style: { display: 'none' } },
+          ctx.visible ? { hidden: undefined } : { hidden: true, style: { display: 'none' } },
           { ref: (el: HTMLDivElement | null) => { ctx.positionerRef.current = el } },
         )}
       >

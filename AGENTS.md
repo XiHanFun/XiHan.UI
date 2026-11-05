@@ -152,6 +152,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 - 组件的缺省、下限与上限尺寸按设计真源 §6.8 取档，只经语义尺寸令牌：控件高 sm/md/lg 28/32/36（compact 24/28/32），md 缺省；字段缺省宽 16rem、压缩底线 12rem、上限 100%，放进 Field 即铺满；Tooltip / Popover 上限 20rem（size 16/20/24），菜单 10–20rem，候选面板与字段盒等宽，Dialog 上限 24/32/48rem，Drawer 16/20/28rem；滚动面限高只取 viewport-h-sm/md/lg（12/16/24rem）与 viewport-max-h，浮层取 overlay-max-h / overlay-menu-max-h；浮层上限再与可用区取 min。表里没有的尺寸先加语义令牌。
 - 定尺离散 Action Control 使用统一按压反馈：150ms 换到 active 底，缩放取 `--xh-motion-scale-press`（缺省 1，只换面），释放 200ms 回到 rest；行级与 disclosure trigger 只换面，不允许零反馈。登记例外：Rating 的星悬停（只在能悬停的设备上）与键盘聚焦放大到 `--xh-motion-scale-emphasis` 强调落点、按下保持放大，减弱动效下归 1。
 - 面级披露（Accordion、Collapsible、Reasoning、ToolCall）的正文行高、内缩、淡变与指示器转向同一段动画、同一条 `--xh-motion-ease-disclosure`；内容区的 `hidden` 跟退场闸门走，开合不换字重、不铺底、不画占高度的线。
+- 带退场部件的 `hidden` 跟退场闸门走，播完才落：适配器覆盖 connect 给的 `hidden`，否则宿主的 `[hidden]{display:none!important}` 让退场一帧都播不出来。
 - 动效按设计真源 §9 的角色取令牌，时长两档：换色 150ms、几何 200ms。几何动画不用 `micro` / `enter` / `exit` 时长，有进场即有退场，初始内容不播进场；弹层只有一套进出场（§9.5）；勾选标记描线生长、全选与半选交叉缩放（§9.13）；减弱动效去位移、留淡变；JS 动效只经 `@xihan-ui/motion`，不写固定毫秒。
 - Tooltip 不反白，与 Popover 同一副浮层面（写了 tone 才取语气实底），悬停 150ms 出、100ms 收；模态遮罩浅色 40%、深色 60%；控件内图标 16 / 18 / 20；字段清空钮圆形、有值且悬停或聚焦才出现（触屏常显）；Alert 带语气淡边；Progress 线形厚 4 / 8 / 12；字体继承宿主，`--xh-font-family-sans` 只经可选的 `@xihan-ui/styles/global.css` 落到 `:root`；Button 另有 `dashed` / `link` 两档。
 - 禁止 glass 材质及兼容别名；锚定浮层走 frosted 配方（缺省是实体底 + 描边 + md 档投影，透景只作主题档）；导航层在 `data-material="liquid"` 下可用 liquid（设计真源 §8.5），内容层、浮层与模态不用。

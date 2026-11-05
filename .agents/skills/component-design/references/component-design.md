@@ -1001,6 +1001,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 遮罩与全屏面 `xh-fade-in / out`。皮肤内不得重定义共享关键帧。
 
+带退场的部件，`hidden` 与内联 `display: none` 都跟退场闸门走，退场播完才落：connect 给的 `hidden` 跟着开合走，由适配器按闸门覆盖。宿主的 `[hidden]{display:none!important}`（Tailwind preflight、VitePress 默认主题都有这条）压得过皮肤声明的 `display`，`hidden` 跟着开合走退场就一帧都播不出来。退场窗口内靠 `inert` 或 Layer 状态挡住交互。
+
 弹层只有一套进出场，锚定关系只决定有没有位移：面板贴着一个锚点就从锚点一侧短移，不贴锚点就原地淡入放大。SideNav 折叠态的弹出分支贴着分支行，Pagination 摊开的页码面板贴着省略位，两者都按锚定取位移；Pagination 的页大小选择是 Select，归 Select。浮层不再引 `xh-overlay-slide-*` 与 `xh-pop-in`；`xh-pop-in` 只留给页内浮现的小件与标签行的列表加入（§9.6）。
 
 - Notification 从视口边缘推入属出现，不属整幅滑入：卡片小、距离短，时长取 `enter` / `exit`；`slide` 时长只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。

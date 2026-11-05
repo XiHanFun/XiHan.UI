@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 defineXhElements()
 

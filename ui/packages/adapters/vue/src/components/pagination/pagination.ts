@@ -263,6 +263,7 @@ export const XhPaginationPageSizeSelect = defineComponent({
             h('div', {
               ...select.getContentProps(),
               // 收起跟着退场闸门走，与省略位那层同一套写法
+              hidden: !ctx.pageSizeVisible.value || undefined,
               style: ctx.pageSizeVisible.value ? undefined : { display: 'none' },
               ref: (el: unknown) => { ctx.pageSizeContentRef.value = el as HTMLElement },
             }, [
@@ -321,6 +322,7 @@ export const XhPaginationContent = defineComponent({
         ...ctx.api.value.getContentProps(),
         // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}
         // （补了退场就一帧都播不出来），真正的收起落成内联 display
+        hidden: !ctx.visible.value || undefined,
         style: ctx.visible.value ? undefined : { display: 'none' },
         ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
       }, slots.default?.({ pages: folded?.type === 'ellipsis' ? folded.pages : [] }))

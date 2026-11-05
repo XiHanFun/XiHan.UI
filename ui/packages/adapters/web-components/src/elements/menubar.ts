@@ -16,7 +16,7 @@ import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { setMenuSubmenuOwner } from '../runtime/menu-submenu-owner'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
@@ -446,7 +446,7 @@ export class XhMenubarElement extends XhPortalHostElement {
     for (const el of contents) {
       const value = el.getAttribute('value') ?? ''
       const props = api.getContentProps({ value })
-      this.spreader.spread(el, props)
+      this.spreader.spread(el, withoutHidden(props))
       // 退场动画播完之前先别收。一个菜单一份闸门：它们各开各的、动画各跑各的，
       // 一份闸门管不过来。必须排在 spread 之后——data-state 得先落进 DOM，探测器才读得到
       const open = props.hidden !== true
@@ -469,7 +469,7 @@ export class XhMenubarElement extends XhPortalHostElement {
       const { gate } = entry
       gate.track(el)
       gate.update(open)
-      this.setPartHidden(el, !gate.visible)
+      this.setPartHidden(el, !gate.visible, { attribute: true })
     }
     // 任一张菜单仍可见（含退场中）就持有租约；全部收起才精确归位
     this.portal.sync([...this.exits.values()].some(entry => entry.gate.visible))

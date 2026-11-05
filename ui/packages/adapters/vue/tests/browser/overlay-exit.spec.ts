@@ -35,6 +35,7 @@ import {
 // 皮肤要一起加载：这里查的就是皮肤给出的 animationName 与 display
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 let app: App | null = null
 let host: HTMLElement | null = null

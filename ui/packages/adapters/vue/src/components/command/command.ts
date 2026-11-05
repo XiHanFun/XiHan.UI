@@ -192,6 +192,8 @@ export const XhCommandContent = defineComponent({
         h('div', api.getPositionerProps(), [
           h('div', {
             ...mergeProps(api.getContentProps(), attrs),
+            // 节点在场就是闸门开着（含退场窗口）：hidden 不跟开合走，否则宿主的 [hidden]{display:none!important} 让退场一帧都播不出来
+            hidden: undefined,
             ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
           }, [...(slots.default?.() ?? []), ...bars.render()]),
         ]),

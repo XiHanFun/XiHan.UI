@@ -30,7 +30,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { createRepeatedHiddenInputs } from '../dom/repeated-hidden-inputs'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -495,7 +495,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     // 多选时一个选中值一份同名输入，单选仍是一份
     this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
       ? api.value.map(value => api.getHiddenInputProps({ value }))
@@ -537,7 +537,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     this.presetBars.wire()
     this.columnBars.wire()
@@ -551,7 +551,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

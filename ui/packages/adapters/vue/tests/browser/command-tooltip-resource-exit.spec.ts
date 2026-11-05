@@ -14,6 +14,7 @@ import {
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 type Candidate = 'command' | 'tooltip'
 let app: App | null = null

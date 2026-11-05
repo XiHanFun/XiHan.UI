@@ -223,6 +223,7 @@ export const XhExpressionInputContent = defineComponent({
     const ctx = useExpressionInputContext()
     return () => h('div', {
       ...ctx.api.value.getContentProps(),
+      hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
     }, slots.default?.())

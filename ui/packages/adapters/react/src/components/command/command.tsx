@@ -148,7 +148,8 @@ export function XhCommandContent({ children, container, ...rest }: XhCommandCont
           {...mergeReactProps(
             api.getContentProps(),
             rest,
-            { ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
+            // 节点在场就是闸门开着（含退场窗口）：hidden 不跟开合走，否则宿主的 [hidden]{display:none!important} 让退场一帧都播不出来
+            { hidden: undefined, ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el } },
           )}
         >
           {children}

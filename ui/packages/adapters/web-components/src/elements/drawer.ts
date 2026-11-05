@@ -16,7 +16,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -339,7 +339,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     put('trigger', api.getTriggerProps())
     put('backdrop', api.getBackdropProps())
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('header', api.getHeaderProps())
     put('title', api.getTitleProps())
     put('description', api.getDescriptionProps())
@@ -368,7 +368,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     if (this.backdropNode)
       this.setPartHidden(this.backdropNode, !visible || !modal)
     // positioner 不是必需部件，content 自己也要收起
-    this.setPartHidden(this.contentNode, !visible)
+    this.setPartHidden(this.contentNode, !visible, { attribute: true })
 
     // 写在 content 里 <template> 中的内容按 headless 的判定克隆或撤走；新挂上的部件由部件观察器补一轮 wire 接上属性
     this.lazyContent.sync(this.contentNode, api.isContentMounted(visible))
@@ -383,7 +383,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     this.exit = null
     this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.contentNode, true)
+      this.setPartHidden(this.contentNode, true, { attribute: true })
     this.config = null // 重连时 ensureConfig 重建
   }
 }

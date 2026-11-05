@@ -412,6 +412,7 @@ export function XhSideNavTooltip({ container }: XhSideNavTooltipProps): ReactNod
             { ref: bind.ref },
             {
               // 收起跟着退场闸门走：皮肤给 content 声明了 display，真正的收起落成内联 display
+              hidden: !overlay.rendered || undefined,
               style: overlay.rendered ? undefined : { display: 'none' },
               ref: (el: HTMLDivElement | null) => { contentRef.current = el },
             },

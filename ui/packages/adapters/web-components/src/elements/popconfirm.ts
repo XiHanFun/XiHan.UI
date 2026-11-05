@@ -15,7 +15,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -263,7 +263,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     // positioner 的 style 是对象（position/insetInlineStart/insetBlockStart），
     // spreader 见对象 style 会逐条写内联样式，直接 spread 即可。
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('title', api.getTitleProps())
     put('description', api.getDescriptionProps())
     put('confirm-trigger', api.getConfirmTriggerProps())
@@ -278,7 +278,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     const exit = this.ensureExit(api.open)
     exit.track(content)
     exit.update(api.open)
-    this.setPartHidden(content, !exit.visible)
+    this.setPartHidden(content, !exit.visible, { attribute: true })
     this.bars.wire()
     this.portal.sync(exit.visible)
   }
@@ -294,7 +294,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由展开态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }

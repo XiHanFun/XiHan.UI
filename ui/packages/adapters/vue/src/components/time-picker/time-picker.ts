@@ -339,8 +339,9 @@ export const XhTimePickerContent = defineComponent({
     const ctx = useTimePickerContext()
     return () => h('div', {
       ...ctx.api.value.getContentProps(),
-      // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-      // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+      // 收起跟着退场闸门走：hidden 与内联 display 都等退场播完才落。宿主的
+      // [hidden]{display:none!important}（Tailwind preflight、VitePress 默认主题）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
+      hidden: !ctx.visible.value || undefined,
       style: ctx.visible.value ? undefined : { display: 'none' },
       ref: (el: unknown) => { ctx.contentRef.value = el as HTMLElement },
     }, slots.default?.())

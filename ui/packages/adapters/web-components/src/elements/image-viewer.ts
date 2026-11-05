@@ -13,7 +13,7 @@ import { connectImageViewer, imageViewerAnatomy, imageViewerCounterText, imageVi
 import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
 
@@ -226,7 +226,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
     put('trigger', api.getTriggerProps())
     put('backdrop', api.getBackdropProps())
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('viewport', api.getViewportProps())
     put('image', api.getImageProps())
     put('toolbar', api.getToolbarProps())
@@ -270,7 +270,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
       this.setPartHidden(positioner, !visible)
     if (this.backdropNode)
       this.setPartHidden(this.backdropNode, !visible)
-    this.setPartHidden(this.contentNode, !visible)
+    this.setPartHidden(this.contentNode, !visible, { attribute: true })
   }
 
   override disconnectedCallback(): void {
@@ -281,7 +281,7 @@ export class XhImageViewerElement extends XhPortalHostElement {
     this.exit = null
     this.portal.dispose()
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.contentNode, true)
+      this.setPartHidden(this.contentNode, true, { attribute: true })
     this.config = null // 重连时 ensureConfig 重建
   }
 }

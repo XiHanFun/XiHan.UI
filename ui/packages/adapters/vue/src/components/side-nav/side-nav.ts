@@ -368,6 +368,7 @@ export const XhSideNavTooltip = defineComponent({
         h('div', {
           ...api.value.getTooltipContentProps(),
           // 收起跟着退场闸门走：皮肤给 content 声明了 display，真正的收起落成内联 display
+          hidden: !visible.value || undefined,
           style: visible.value ? undefined : { display: 'none' },
           ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
         }, api.value.tooltipText),

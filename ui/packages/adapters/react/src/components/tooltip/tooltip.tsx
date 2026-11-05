@@ -156,6 +156,7 @@ export function XhTooltipContent({ children, ...rest }: XhTooltipContentProps): 
         {
           // 收起跟着退场闸门走：皮肤给 content 声明了 display 来盖掉 UA 的 [hidden]{display:none}
           // （盒子得先在，退场才播得出来），所以真正的收起落成内联 display
+          hidden: !ctx.rendered || undefined,
           style: ctx.rendered ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
         },

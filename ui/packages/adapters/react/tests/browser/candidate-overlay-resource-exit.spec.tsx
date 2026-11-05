@@ -38,6 +38,7 @@ import {
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 type Candidate = 'cascader' | 'combobox' | 'date-picker' | 'time-picker' | 'tree-select'
 

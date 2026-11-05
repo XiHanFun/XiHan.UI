@@ -125,10 +125,7 @@ export class XhCollapsibleElement extends XhElement {
     })
     this.exit.track(content)
     this.exit.update(api.open)
-    if (content) {
-      content.hidden = !this.exit.visible
-      this.setPartHidden(content, !this.exit.visible)
-    }
+    this.setPartHidden(content, !this.exit.visible, { attribute: true })
     this.lazyContent.sync(content, api.isContentMounted(this.exit.visible))
   }
 }

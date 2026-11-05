@@ -217,6 +217,7 @@ export function XhNavigationMenuContent({ value, children, ...rest }: XhNavigati
         {
           // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
           // 播不出来），所以真正的收起落成内联 display
+          hidden: !visible || undefined,
           style: visible ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { contentRef.current = el },
         },

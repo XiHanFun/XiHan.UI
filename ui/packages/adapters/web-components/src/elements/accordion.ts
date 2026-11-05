@@ -181,8 +181,7 @@ export class XhAccordionElement extends XhElement {
       }
       exit.track(el)
       exit.update(open)
-      el.hidden = !exit.visible
-      this.setPartHidden(el, !exit.visible)
+      this.setPartHidden(el, !exit.visible, { attribute: true })
       let lazy = this.lazyContents.get(el)
       if (!lazy) {
         // 标准结构生成的面板：照数据铺的正文由结构按挂载判定填空，slot 搬进来的作者节点不暂存（暂存了就认不出插槽），

@@ -14,7 +14,7 @@ import { connectPagination, paginationAnatomy, paginationMachine, paginationMeta
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -450,7 +450,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     put('page-size-select', api.getPageSizeSelectProps())
     this.wirePageSizeSelect(api.pageSizeSelect)
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
 
     // Light DOM 的 content 常驻，可见性由宿主自管：皮肤给 content 设了 display，
     // 会盖过 UA 的 [hidden]{display:none}；换别家样式同理，只有内联 style 压得住。
@@ -462,7 +462,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     const exit = this.ensureExit(api.openEllipsis != null)
     exit.track(content)
     exit.update(api.openEllipsis != null)
-    this.setPartHidden(content, !exit.visible)
+    this.setPartHidden(content, !exit.visible, { attribute: true })
 
     this.bars.wire()
     this.ellipsisPortal.sync(exit.visible)
@@ -543,7 +543,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     nodes.valueText.textContent = select.displayText
     this.spreader.spread(nodes.indicator, select.getIndicatorProps())
     this.spreader.spread(nodes.positioner, select.getPositionerProps())
-    this.spreader.spread(nodes.content, select.getContentProps())
+    this.spreader.spread(nodes.content, withoutHidden(select.getContentProps()))
     this.spreader.spread(nodes.list, select.getListProps())
 
     const alive = new Set<string>()
@@ -580,6 +580,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     // 直接写而不走 setPartHidden：那条路是为作者写的角色节点留的，要护住作者自己的内联
     // display；这颗是元素建的，没有作者的那一份，也没有「标签已在、类未到」那段升级前空窗
     nodes.content.style.display = exit.visible ? '' : 'none'
+    nodes.content.hidden = !exit.visible
     this.pageSizePortal.sync(exit.visible)
   }
 
@@ -593,7 +594,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null
-    this.setPartHidden(this.getPart('content'), true)
+    this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由可见态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }

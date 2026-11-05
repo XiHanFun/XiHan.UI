@@ -15,7 +15,7 @@ import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
 import { renderedTitleDescription } from '../dom/title-description'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -211,7 +211,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
     put('trigger', api.getTriggerProps())
     // positioner 的 style 是坐标对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('title', api.getTitleProps())
     put('description', api.getDescriptionProps())
     put('arrow', api.getArrowProps())
@@ -231,7 +231,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
     })
     this.exit.track(content)
     this.exit.update(api.open)
-    this.setPartHidden(content, !this.exit.visible)
+    this.setPartHidden(content, !this.exit.visible, { attribute: true })
 
     this.bars.wire()
     this.portal.sync(this.exit.visible)
@@ -244,7 +244,7 @@ export class XhHoverCardElement extends XhPortalHostElement {
     // 退场没播完就离场：立刻结清并收起，否则作者的节点会带着已被撤掉的 data-state 留在页面上
     this.exit?.dispose()
     this.exit = null
-    this.setPartHidden(this.getPart('content'), true)
+    this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层由可见态的效应自己入栈出栈，断开时机器停机会一并撤掉，这里无需再管
     this.config = null // 重连时 ensureConfig 重建
   }

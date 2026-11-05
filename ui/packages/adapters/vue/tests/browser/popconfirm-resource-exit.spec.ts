@@ -10,6 +10,7 @@ import {
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
+import './hidden-important-host'
 
 let app: App | null = null
 let host: HTMLElement | null = null

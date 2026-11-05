@@ -142,6 +142,8 @@
 
 ## 浮层进出场
 
+带退场的部件，`hidden` 与内联 `display: none` 都跟退场闸门走，退场播完才落：connect 给的 `hidden` 跟着开合走，由适配器按闸门覆盖。宿主的 `[hidden]{display:none!important}`（Tailwind preflight、VitePress 默认主题都有这条）压得过皮肤声明的 `display`，`hidden` 跟着开合走退场就一帧都播不出来。退场窗口内靠 `inert` 或 Layer 状态挡住交互。
+
 按面的类型分组，关键帧集中在 `family/motion.css`，皮肤不得重定义。弹层只有一套进出场，锚定关系只决定有没有位移：贴着锚点的面从锚点一侧短移，不贴锚点的面原地淡入放大：
 
 | 关系 | 关键帧 | 组件 |

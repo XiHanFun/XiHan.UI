@@ -29,7 +29,7 @@ import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { TIME_STEP_CONVERTER } from '../dom/time-step'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -423,7 +423,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     put('clear-trigger', api.getClearTriggerProps())
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('preset-group', api.getPresetGroupProps())
     // 表单出口起止各一份：写了 index 按 index，没写按文档序
     this.getParts('hidden-input').forEach((el, position) => {
@@ -479,7 +479,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     this.bars.wire()
     this.presetBars.wire()
@@ -494,7 +494,7 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     // 层随机器停机一并撤掉，此处不再管
     this.config = null // 重连时 ensureConfig 重建
   }

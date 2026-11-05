@@ -278,12 +278,15 @@ export abstract class XhElement extends XhReactiveElement {
    * 仅靠 hidden 属性无法收起。展开时恢复作者原本的内联值而不是清为 ''：后者会把作者写在该节点上的
    * `style="display:grid"` 一并清除，且无法恢复。
    */
-  protected setPartHidden(el: HTMLElement | null, hidden: boolean): void {
+  protected setPartHidden(el: HTMLElement | null, hidden: boolean, options?: { attribute?: boolean }): void {
     if (!el)
       return
     if (!this.authorDisplay.has(el))
       this.authorDisplay.set(el, el.style.display)
     el.style.display = hidden ? 'none' : (this.authorDisplay.get(el) ?? '')
+    // 带退场的部件：connect 给的 hidden 跟着开合走，接线时经 withoutHidden 摘掉，等闸门定案才由这里写
+    if (options?.attribute)
+      el.hidden = hidden
   }
 
   protected refreshParts(): void {

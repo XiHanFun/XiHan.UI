@@ -37,7 +37,7 @@ import {
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { OverlayScrollbarsController } from '../runtime/overlay-scrollbars-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -402,7 +402,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     put('input', inputProps)
 
     put('positioner', api.getPositionerProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
 
     // 生成的节点按身份属性找回自己那份数据：条目是 value（条目 key），分段与问题行是 index
     const itemOf = (el: HTMLElement): ExpressionInputItem | undefined => api.items.find(item => item.key === el.getAttribute('value'))
@@ -439,7 +439,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     })
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
-    this.setPartHidden(this.getPart('content'), !this.exit.visible)
+    this.setPartHidden(this.getPart('content'), !this.exit.visible, { attribute: true })
 
     this.bars.wire()
     this.portal.sync(this.exit.visible)
@@ -451,7 +451,7 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (this.ctrl.service.state.get() !== 'open')
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     this.config = null
   }
 }

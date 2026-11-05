@@ -165,6 +165,7 @@ export const XhNavigationMenuContent = defineComponent({
         ...ctx.api.value.getContentProps({ value: props.value }),
         // 收起跟着闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场就一帧都
         // 播不出来），所以真正的收起落成内联 display
+        hidden: !visible.value || undefined,
         style: visible.value ? undefined : { display: 'none' },
         ref: (el: unknown) => { contentRef.value = el as HTMLElement | null },
       },

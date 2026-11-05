@@ -282,6 +282,7 @@ export function XhExpressionInputContent({ children, ...rest }: XhExpressionInpu
         ctx.api.getContentProps(),
         rest,
         {
+          hidden: !ctx.rendered || undefined,
           style: ctx.rendered ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
         },

@@ -16,7 +16,7 @@ import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createGeneratedElement, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { XhReactiveElement } from '../reactive'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
@@ -233,7 +233,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     // [data-part=positioner] 只设 position/inset/z-index/pointer-events，两处都没有 display 声明，
     // UA 的 [hidden]{display:none} 压得住（collapsible/dialog 那两处 author 层给了 display，
     // 才必须用内联样式盖过）。
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('arrow', api.getArrowProps())
     const shell = this.getPart('content')
     if (shell)
@@ -254,7 +254,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     this.exit.track(content)
     this.exit.update(api.open)
     if (content)
-      this.setPartHidden(content, !this.exit.visible)
+      this.setPartHidden(content, !this.exit.visible, { attribute: true })
     this.portal.sync(this.exit.visible)
   }
 
@@ -276,7 +276,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     this.exit?.dispose()
     this.exit = null
     if (!this.ctrl.service.state.matches('visible'))
-      this.setPartHidden(this.getPart('content'), true)
+      this.setPartHidden(this.getPart('content'), true, { attribute: true })
     this.config = null // adopt / 重连必须按宿主此刻所属 Document 重建 registry 与 Portal 落点
   }
 }

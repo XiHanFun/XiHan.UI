@@ -329,6 +329,7 @@ export function XhPaginationPageSizeSelect({ container, ...rest }: XhPaginationP
               select.getContentProps(),
               {
                 // 收起跟着退场闸门走，与省略位那层同一套写法
+                hidden: !ctx.pageSizeVisible || undefined,
                 style: ctx.pageSizeVisible ? undefined : { display: 'none' },
                 ref: (el: HTMLDivElement | null) => { ctx.pageSizeContentRef.current = el },
               },
@@ -392,6 +393,7 @@ export function XhPaginationContent({ children, ...rest }: XhPaginationContentPr
         {
           // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
           // 就一帧都播不出来），真正的收起落成内联 display
+          hidden: !ctx.visible || undefined,
           style: ctx.visible ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { ctx.contentRef.current = el },
         },
