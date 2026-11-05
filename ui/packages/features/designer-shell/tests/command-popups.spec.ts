@@ -186,7 +186,7 @@ describe('菜单命令', () => {
     expect([log, t.menu().checkboxValue]).toEqual([['snap'], []])
   })
 
-  it('菜单命令的项写了没登记的命令 id 时抛错；没有 run 的弹层与菜单命令放进右键菜单时抛错', () => {
+  it('菜单命令的项写了没登记的命令 id 时抛错；没有 run 的弹层与菜单命令放进上下文菜单时抛错', () => {
     const t = mount({ page: 0, log: [] })
     const broken = new Map(t.commands).set('page-menu', { ...t.commands.get('page-menu')!, menu: () => ['nope'] })
     t.bar.update([['page-menu']], broken, { page: 0, log: [] }, '页面')

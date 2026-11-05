@@ -320,7 +320,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
       // 浮层壳一并记上：条目列表之外还浮着自绘滚动条，按住它拖动不该把菜单消解掉
       branches: () => [this.getPart('trigger'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
-      // 右键菜单不带遮罩，没有"点它就该关本层"的表面
+      // 上下文菜单不带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
     })
   }

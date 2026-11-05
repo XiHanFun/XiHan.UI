@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 右键菜单的标准结构：触发区，定位层里的 content 按 collection 铺出条目、分组与分隔线；带 children 的条目是一个嵌套的子菜单。
+// 上下文菜单的标准结构：触发区，定位层里的 content 按 collection 铺出条目、分组与分隔线；带 children 的条目是一个嵌套的子菜单。
 // Vue / React 不写默认插槽时的缺省树、Web Components 不写部件（或只写 root）时元素生成的节点，都照这一份渲。
 
 import type { StructureChild, StructureNode, StructureSlotted } from '../shared/structure'
@@ -49,7 +49,7 @@ export interface ContextMenuStructureOptions {
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
 /**
- * 右键菜单在 root 里的标准结构：触发区在前，内容归作者（trigger 插槽）；定位层在后，里面是 content 与按数据铺的节点。
+ * 上下文菜单在 root 里的标准结构：触发区在前，内容归作者（trigger 插槽）；定位层在后，里面是 content 与按数据铺的节点。
  * 条目的 item 插槽只接管条目文字，标记位、说明与快捷键照数据铺。
  */
 export function contextMenuStructure(model: Pick<ContextMenuApi, 'collection'>, options: ContextMenuStructureOptions = {}): StructureChild<ContextMenuStructureNode['part']>[] {

@@ -117,7 +117,7 @@ for (const comp of components) {
     errors.push(`${comp}：Web Components 元素的 takeover 要直接引用结构文件的 ${takeover?.[1] ?? '<名>_STRUCTURE_TAKEOVER'}`)
   const vue = await read(join(VUE, comp, `${comp}.ts`))
   const react = await read(join(REACT, comp, `${comp}.tsx`))
-  // 结构文件借用别的组件的结构函数时（如右键菜单铺条目用 menuNodesStructure），那份结构里组合的组件也算生成
+  // 结构文件借用别的组件的结构函数时（如上下文菜单铺条目用 menuNodesStructure），那份结构里组合的组件也算生成
   const borrowed = await Promise.all([...code.matchAll(/from '\.\.\/([a-z0-9-]+)\/\1\.structure'/g)].map(m => read(join(HEADLESS, m[1], `${m[1]}.structure.ts`))))
   const sources = [code, ...borrowed.filter(Boolean).map(src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''))]
   const used = new Set(sources.flatMap(src => [

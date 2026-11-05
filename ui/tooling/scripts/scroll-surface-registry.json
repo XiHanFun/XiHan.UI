@@ -74,7 +74,7 @@
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "右键菜单浮层面"
+      "why": "上下文菜单浮层面"
     },
     "menubar:content": {
       "mode": "drawn",

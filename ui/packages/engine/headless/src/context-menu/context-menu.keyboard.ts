@@ -7,7 +7,7 @@
 
 import type { KeyboardTable } from '../spec/types'
 
-// APG 无右键菜单模式：展开后的键盘行为对齐 menu，差别只在入口。
+// APG 无上下文菜单模式：展开后的键盘行为对齐 menu，差别只在入口。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboardinteraction'
 
 export const contextMenuKeyboard: KeyboardTable = {

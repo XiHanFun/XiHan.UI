@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// 右键菜单钉在坐标上：受控 open 打开时锚点仍是 (0,0)，坐标要经 openAt 交进去。
+// 上下文菜单钉在坐标上：受控 open 打开时锚点仍是 (0,0)，坐标要经 openAt 交进去。
 // collection 代铺那条路没有默认插槽，所以命令由根 expose 出来。
 import type { ContextMenuNode } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -45,7 +45,7 @@ function positioner(): HTMLElement {
   return document.querySelector('[data-scope=\'context-menu\'][data-part=\'positioner\']') as HTMLElement
 }
 
-describe('右键菜单的锚点坐标', () => {
+describe('上下文菜单的锚点坐标', () => {
   it('根把 openAt / setOpen 暴露出来，collection 那条路也够得到', async () => {
     const { rootRef } = mountMenu()
     await nextTick()

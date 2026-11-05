@@ -830,7 +830,7 @@ describe('虚拟锚点定位', () => {
     await flushed()
     expect(h.engine.calls).toHaveLength(1)
     expect(h.engine.calls[0]!.rect).toEqual({ x: 120, y: 80, width: 0, height: 0 })
-    // 引擎缺省间距是 8px（那是给"贴着一个触发按钮"准备的），右键菜单必须显式压成 0。
+    // 引擎缺省间距是 8px（那是给"贴着一个触发按钮"准备的），上下文菜单必须显式压成 0。
     // strategy 必须与 connect 产出的内联 position 同为 fixed：一处走岔就整族偏掉一个 scrollY。
     expect(h.engine.calls[0]!.options).toMatchObject({ placement: 'bottom-start', offset: 0, strategy: 'fixed' })
     // 箭头的量也交了出去：引擎量不到箭头，不交就算不出落点

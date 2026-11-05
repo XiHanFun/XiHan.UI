@@ -7,7 +7,7 @@
 // UA 只在 :focus-visible 画环，这条复位本就是死代码。宿主页面同款复位那条路见 collection-item-host-focus-reset。
 // 过渡的中间帧只有真实 Chromium 能看见，jsdom 不算数。
 //
-// 菜单用真实指针点开（右键菜单用右键）：之后由脚本搬到条目上的焦点不带 :focus-visible，
+// 菜单用真实指针点开（上下文菜单用右键）：之后由脚本搬到条目上的焦点不带 :focus-visible，
 // 与真实使用一致；键盘打开后再悬停会带环，那是另一条路。
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

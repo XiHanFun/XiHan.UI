@@ -21,7 +21,7 @@ import { BUILTIN_CONTROL_KINDS, mergePropertyEditorTables } from './properties'
 export type SchemaRule<Doc = unknown, RuleCtx = unknown> = (document: Doc, context: RuleCtx) => readonly SchemaIssue[]
 
 /**
- * 命令出现的位置：工具栏；菜单栏上的某张菜单（菜单 id，如 file、edit、view、help，或各款与扩展登记的）；某种主体的右键菜单
+ * 命令出现的位置：工具栏；菜单栏上的某张菜单（菜单 id，如 file、edit、view、help，或各款与扩展登记的）；某种主体的上下文菜单
  * （主体由各款定，如 node、edge、element、card、blank）；或选中某种主体时浮在选中框上的选中工具条
  * （主体同样由各款定，如 element、text、node、multiple）。
  */
@@ -67,7 +67,7 @@ export interface DesignerCommandMenuItem {
 export type DesignerCommandMenuEntry = DesignerCommandMenuItem | string
 
 /**
- * 一条命令：工具栏按钮、右键菜单项与快捷键共用。
+ * 一条命令：工具栏按钮、上下文菜单项与快捷键共用。
  * 给了 panel 是弹层命令，给了 menu 是菜单命令，在工具栏上点它分别打开锚在按钮上的弹层与菜单，两者只能给一个；
  * 两者都没给的普通命令必须有 run。登记时（mergeExtensions）不合这两条就抛 TypeError。
  */
@@ -95,7 +95,7 @@ export interface DesignerCommand<Ctx = unknown> {
   /** 不给即总是可用。 */
   readonly enabled?: (context: Ctx) => boolean
   /**
-   * 不给即总是存在；返回 false 时这条命令此刻不存在：工具栏、菜单栏、右键菜单与菜单命令里都不列它，
+   * 不给即总是存在；返回 false 时这条命令此刻不存在：工具栏、菜单栏、上下文菜单与菜单命令里都不列它，
    * 快捷键不触发，执行也不跑（如只在开发者模式下才有的调试入口）。
    */
   readonly visible?: (context: Ctx) => boolean
@@ -221,7 +221,7 @@ export interface DesignerExtensionCore<Doc = unknown, RuleCtx = unknown> {
 export interface DesignerExtensionBase<Ctx = unknown, Editor = PropertyEditor, Doc = unknown, RuleCtx = unknown> extends DesignerExtensionCore<Doc, RuleCtx> {
   /** 属性编辑器，按扩展顺序压在设计器内建的之上。 */
   readonly editors?: PropertyEditorLayer<Editor>
-  /** 命令：工具栏按钮、右键菜单项与快捷键共用；命令 id 与快捷键不能与内置或别的扩展的重名。 */
+  /** 命令：工具栏按钮、上下文菜单项与快捷键共用；命令 id 与快捷键不能与内置或别的扩展的重名。 */
   readonly commands?: readonly DesignerCommand<Ctx>[]
   /** 导入器：粘贴、拖放与打开文件共用，按扩展顺序问 accepts，第一个接下的导入。 */
   readonly importers?: readonly DesignerImporter<Ctx>[]

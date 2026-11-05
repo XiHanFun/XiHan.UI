@@ -118,7 +118,7 @@ describe('menubar 条目的 children', () => {
 })
 
 describe('context-menu 的 children', () => {
-  it('右键菜单的节点带 children 时铺成子菜单，子层跑的是 menu 机器，叶子选中汇到右键菜单上', async () => {
+  it('上下文菜单的节点带 children 时铺成子菜单，子层跑的是 menu 机器，叶子选中汇到上下文菜单上', async () => {
     const select = vi.fn()
     const nodes: ContextMenuNode[] = [
       { value: 'copy', label: '复制' },

@@ -91,7 +91,7 @@ export interface PositionOptions {
   boundary?: Anchor
 }
 
-/** 虚拟锚点（右键菜单 / 文本选区）：只需能给出矩形。 */
+/** 虚拟锚点（上下文菜单 / 文本选区）：只需能给出矩形。 */
 export interface VirtualAnchor {
   getBoundingClientRect: () => PositionRect
 }

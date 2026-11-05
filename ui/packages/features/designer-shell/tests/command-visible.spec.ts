@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-// 此刻不存在的命令（visible 返回 false）：工具栏、菜单栏、右键菜单、菜单命令里写成 id 的项、设置的工具栏按钮表与快捷键表都不列它，
+// 此刻不存在的命令（visible 返回 false）：工具栏、菜单栏、上下文菜单、菜单命令里写成 id 的项、设置的工具栏按钮表与快捷键表都不列它，
 // runCommand 不执行；内置的编辑 JSON 只在开发者模式开着时出现。
 import type { DesignerCommand } from '@xihan-ui/designer-kit'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -54,7 +54,7 @@ describe('visible 返回 false 的命令此刻不存在', () => {
     expect(ran).toEqual(['inspect'])
   })
 
-  it('菜单栏、右键菜单与菜单命令里写成 id 的项都不列它', () => {
+  it('菜单栏、上下文菜单与菜单命令里写成 id 的项都不列它', () => {
     const menubar = createCommandMenubar<Ctx>(document, { platform: 'other' })
     const menus = designerMenubarMenus<Ctx>({ translations: () => DESIGNER_COMMANDS_EN_US })
     menubar.update(arrangeMenubar(menus, commands, { edit: [['undo', 'inspect']] }), commands, off, { menubar: 'Menu bar', menu: 'Menu' })

@@ -4,7 +4,7 @@ import { CHOICE_ORDER_ITEMS, choicePartOrder, LEADING_EXPECTED, LEADING_ITEMS, S
 import { nestedChoiceItem, nestedChoiceState } from './shared/nested-choice'
 import { heldPress, heldPressIgnored } from './shared/press-channel'
 
-// 右键菜单没有独立的 APG 模式：浮层展开后的行为逐条对齐 menu，差别只在入口与锚点。
+// 上下文菜单没有独立的 APG 模式：浮层展开后的行为逐条对齐 menu，差别只在入口与锚点。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/menu/'
 
 const TRIGGER_SELECTOR = '[data-scope="context-menu"][data-part="trigger"]'
@@ -587,7 +587,7 @@ export const contextMenuSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'RadioItem 改写组值，默认保持右键菜单展开',
+      name: 'RadioItem 改写组值，默认保持上下文菜单展开',
       spec: { apg: `${APG}#wai-aria-roles-states-and-properties` },
       props: {
         defaultRadioValue: { edit: 'paste' },

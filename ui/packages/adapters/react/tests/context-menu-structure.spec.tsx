@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 //
-// 右键菜单不写 children 时照标准结构铺：renderItem 只接管条目文字，带 children 的条目铺成嵌套的子菜单。
+// 上下文菜单不写 children 时照标准结构铺：renderItem 只接管条目文字，带 children 的条目铺成嵌套的子菜单。
 import type { ContextMenuNode } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import { act } from 'react'
@@ -50,7 +50,7 @@ describe('context-menu 的标准结构', () => {
     expect(open.querySelector('[data-part="item-text"]')!.innerHTML).toBe('<b>打开…</b>')
   })
 
-  it('带 children 的条目铺成子菜单：触发条目是右键菜单里的一条，文字取 label', async () => {
+  it('带 children 的条目铺成子菜单：触发条目是上下文菜单里的一条，文字取 label', async () => {
     await mount(<XhContextMenuRoot collection={COLLECTION} />)
 
     const trigger = document.querySelector<HTMLElement>('[data-scope="context-menu"][data-part="item"][data-value="share"]')!

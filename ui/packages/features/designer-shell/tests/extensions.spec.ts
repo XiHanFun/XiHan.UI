@@ -192,7 +192,7 @@ describe('命令', () => {
     expect(() => arrangeCommands('toolbar', commands, [['undo']], { toolbar: [['redo']] })).toThrow('不是登记过的命令')
   })
 
-  it('选中工具条按主体排：selection:<主体> 与右键菜单同一种排法，宿主的 commandLayout 也能改', () => {
+  it('选中工具条按主体排：selection:<主体> 与上下文菜单同一种排法，宿主的 commandLayout 也能改', () => {
     const selection = new Map<string, DesignerCommand<Ctx>>([
       ['copy', cmd('copy')],
       ['duplicate', cmd('duplicate')],

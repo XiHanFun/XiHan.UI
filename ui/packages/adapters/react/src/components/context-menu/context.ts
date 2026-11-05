@@ -44,7 +44,7 @@ export function useContextMenuGroupContext(): ContextMenuGroupProps {
   return group
 }
 
-/** 子菜单触发条目要同时访问父右键菜单与本子菜单，这里保存父层句柄与它在父层中的身份。 */
+/** 子菜单触发条目要同时访问父上下文菜单与本子菜单，这里保存父层句柄与它在父层中的身份。 */
 export interface ContextMenuSubHandle {
   parent: ContextMenuContext
   value: string

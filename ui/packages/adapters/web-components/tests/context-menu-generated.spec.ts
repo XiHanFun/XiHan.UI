@@ -76,7 +76,7 @@ describe('xh-context-menu 生成结构', () => {
     expect(records.filter(record => record.code.startsWith('wc.'))).toEqual([])
   })
 
-  it('带 children 的条目生成嵌套的子菜单：触发条目是右键菜单里的一条，写着 value、文字取 label', async () => {
+  it('带 children 的条目生成嵌套的子菜单：触发条目是上下文菜单里的一条，写着 value、文字取 label', async () => {
     const el = mount({ collection: COLLECTION })
     await settle(el)
 

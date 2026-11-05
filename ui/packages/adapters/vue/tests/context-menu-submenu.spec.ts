@@ -112,10 +112,10 @@ describe('context-menu 子菜单', () => {
   })
 })
 
-// 右键菜单的子层里再嵌一层：那一层要往上找选中汇总的链，而链原本只在 XhMenuRoot 里
-// provide 过，右键菜单这一支不接上就当场抛「MenuSub 必须用在 XhMenuRoot 内」
+// 上下文菜单的子层里再嵌一层：那一层要往上找选中汇总的链，而链原本只在 XhMenuRoot 里
+// provide 过，上下文菜单这一支不接上就当场抛「MenuSub 必须用在 XhMenuRoot 内」
 describe('三级嵌套', () => {
-  it('右键菜单 → 子菜单 → 再一层，挂得起来', () => {
+  it('上下文菜单 → 子菜单 → 再一层，挂得起来', () => {
     const host = document.createElement('div')
     document.body.appendChild(host)
     const app = createApp({

@@ -54,7 +54,7 @@ async function mountContextMenu(): Promise<void> {
               h(
                 XhContextMenuItemText,
                 { 'data-testid': 'item-text' },
-                () => '一段需要在主行剩余空间里截断的很长右键菜单命令文字',
+                () => '一段需要在主行剩余空间里截断的很长上下文菜单命令文字',
               ),
               h('kbd', { 'data-testid': 'shortcut' }, 'Ctrl+X'),
               h(XhContextMenuItemDescription, { 'data-testid': 'description' }, () => '说明文字独占第二行'),
@@ -122,7 +122,7 @@ function highlightOf(el: Element): string {
   return /linear-gradient\((?:to [a-z ]+,\s*)?([a-z]+\([^)]*\)|[a-z]+)/.exec(image)?.[1] ?? 'rgba(0, 0, 0, 0)'
 }
 
-describe('右键菜单 M2 表面', () => {
+describe('上下文菜单 M2 表面', () => {
   it('content、arrow 与 separator 和 Menu 采用同一材质值', async () => {
     await mountContextMenu()
     // 比较正常候选导航态；容器自己接收键盘焦点时有独立实体保护面。
@@ -156,7 +156,7 @@ describe('右键菜单 M2 表面', () => {
   })
 })
 
-describe('右键菜单 flex 行与反馈', () => {
+describe('上下文菜单 flex 行与反馈', () => {
   it('作者图标、正文与快捷键保持原顺序同排，只有 description 独占第二行', async () => {
     await mountContextMenu()
     const item = byTestId('item-text').parentElement!
@@ -210,7 +210,7 @@ describe('右键菜单 flex 行与反馈', () => {
   })
 })
 
-describe('右键菜单四向短位移', () => {
+describe('上下文菜单四向短位移', () => {
   it('共享弹层动画淡入放大，placement 每次只激活一个物理方向', async () => {
     await mountContextMenu()
     const positioner = part('positioner')

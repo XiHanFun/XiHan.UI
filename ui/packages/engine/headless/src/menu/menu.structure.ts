@@ -41,12 +41,12 @@ type MenuStructureNode = StructureNode<(typeof MENU_STRUCTURE_PARTS)[number]>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
-/** 按数据铺条目要读的元信息：菜单、右键菜单与菜单栏的条目是同一份字段。 */
+/** 按数据铺条目要读的元信息：菜单、上下文菜单与菜单栏的条目是同一份字段。 */
 export type MenuNodesStructureMeta = MenuNodeMeta
 
 /** 按数据铺条目时的选项。 */
 export interface MenuNodesStructureOptions {
-  /** item 插槽接管哪一格：item 是整条（缺省，菜单的写法），item-text 只接管条目文字（右键菜单与菜单栏的写法）。 */
+  /** item 插槽接管哪一格：item 是整条（缺省，菜单的写法），item-text 只接管条目文字（上下文菜单与菜单栏的写法）。 */
   readonly itemSlot?: 'item' | 'item-text'
 }
 

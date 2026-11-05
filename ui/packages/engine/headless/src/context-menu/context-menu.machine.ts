@@ -24,7 +24,7 @@ const OWN_OVERLAY_SELECTOR = `${parts.positioner.selector}, ${parts.content.sele
 
 /** 未指定 placement 时的落位；定位引擎与 connect 共用这一个缺省。 */
 export const CONTEXT_MENU_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
-/** 与共享的 OVERLAY_OFFSET 不同：右键菜单的锚点就是指针位置本身，面板贴着光标长出来，不留间距。 */
+/** 与共享的 OVERLAY_OFFSET 不同：上下文菜单的锚点就是指针位置本身，面板贴着光标长出来，不留间距。 */
 export const CONTEXT_MENU_DEFAULT_OFFSET = 0
 /** 触摸端长按多久算触发。 */
 export const CONTEXT_MENU_LONG_PRESS_DELAY = 700

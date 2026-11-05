@@ -190,7 +190,7 @@ export interface ContextMenuSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 相对光标位置的首选放置位，默认 bottom-start。 */
     placement?: Placement
-    /** 浮层与光标的间距（px），默认 0：右键菜单需要贴近光标。 */
+    /** 浮层与光标的间距（px），默认 0：上下文菜单需要贴近光标。 */
     offset?: number
     /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean

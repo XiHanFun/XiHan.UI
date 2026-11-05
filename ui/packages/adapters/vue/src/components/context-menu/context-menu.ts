@@ -37,7 +37,7 @@ import { useContextMenu } from './use-context-menu'
 
 type ContextMenuProps = ContextMenuSchema['props']
 
-/** 默认插槽的载荷：右键菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
+/** 默认插槽的载荷：上下文菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
 export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt' | 'checkboxValue' | 'radioValue' | 'setCheckboxValue' | 'setRadioValue'>
 
 /** 子菜单默认插槽的载荷：该层子菜单自己的展开态与开合命令。 */
@@ -295,7 +295,7 @@ export const XhContextMenuCheckboxItem = /* @__PURE__ */ createContextMenuItemCo
 export const XhContextMenuRadioItem = /* @__PURE__ */ createContextMenuItemComponent('XhContextMenuRadioItem', 'radio')
 
 /**
- * 右键菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
+ * 上下文菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
  * XhContextMenuSubTrigger 渲染为父层条目与子层触发器的双重身份。
  * 子层内部使用 XhMenu 系部件（再往深嵌套即 menu 嵌套 menu）。本身不渲染节点。
  */
@@ -304,7 +304,7 @@ export const XhContextMenuSub = defineComponent({
   // 本身不渲染节点，作为组合节点收到的 submenu 等标记无处可落
   inheritAttrs: false,
   props: {
-    /** 它在父右键菜单中的条目身份。 */
+    /** 它在父上下文菜单中的条目身份。 */
     value: { type: String, required: true },
     /** 按数据铺设时触发条目的文字；缺省取父层 collection 里这一条的 label。 */
     label: { type: String },

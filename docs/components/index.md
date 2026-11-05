@@ -46,7 +46,7 @@
 <XhComponentCard src="anchor" name="Anchor" label="锚点" href="/components/anchor" />
 <XhComponentCard src="back-top" name="BackTop" label="回到顶部" href="/components/back-top" />
 <XhComponentCard src="breadcrumb" name="Breadcrumb" label="面包屑" href="/components/breadcrumb" />
-<XhComponentCard src="context-menu" name="ContextMenu" label="右键菜单" href="/components/context-menu" />
+<XhComponentCard src="context-menu" name="ContextMenu" label="上下文菜单" href="/components/context-menu" />
 <XhComponentCard src="menu" name="Menu" label="菜单" href="/components/menu" />
 <XhComponentCard src="menubar" name="Menubar" label="菜单栏" href="/components/menubar" />
 <XhComponentCard src="navigation-menu" name="NavigationMenu" label="导航菜单" href="/components/navigation-menu" />

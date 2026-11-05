@@ -298,7 +298,7 @@ export function connectContextMenu<T extends PropTypes>(
         // 禁用时浏览器自己的右键菜单照常出现
         if (menuDisabled)
           return
-        // 浏览器自带的右键菜单必须让位，否则两张菜单叠在一起。
+        // 浏览器自带的上下文菜单必须让位，否则两张菜单叠在一起。
         // 指针打开不预落锚点：菜单弹出那一刻不能有条目看着像被选中
         event.preventDefault()
         send({ type: 'CONTEXT.MENU', x: event.clientX, y: event.clientY, focus: 'none' })

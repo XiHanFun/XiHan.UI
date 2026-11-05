@@ -238,7 +238,7 @@ const translations = {
   'color-swatch-picker': { group: '色板', swatch: value => `颜色 ${value}` },
   'combobox': { ...tagged, trigger: '显示建议', clearTrigger: '清空', loading: '加载中' },
   'command': { title: '命令面板', input: '搜索命令', list: '命令' },
-  'context-menu': { content: '右键菜单' },
+  'context-menu': { content: '上下文菜单' },
   'date-field': {
     ...segments,
     year: '年',
