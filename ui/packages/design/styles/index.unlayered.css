@@ -19703,6 +19703,8 @@
   --xh-_calendar-range-picker-range-r: calc(
     var(--xh-_calendar-range-picker-row-half) - var(--xh-calendar-range-picker-range-inset, var(--xh-space-0_5))
   );
+  /* 区间两端帽的半径：与端点面同心。日视图的端点是圆，帽取满半圆（圆心由下面的起算位置对齐）；周期格另算 */
+  --xh-_calendar-range-picker-range-cap: var(--xh-shape-pill);
 
   position: relative;
   display: flex;
@@ -19713,8 +19715,18 @@
   padding-inline: var(--xh-calendar-range-picker-cell-px, var(--xh-space-0));
 }
 
-/* 周期格左右各留 4：钮在格里缩进一截，相邻两格的钮不贴在一起，区间轨道仍铺满整格 */
+/* 周期格左右各留 4：钮在格里缩进一截，相邻两格的钮不贴在一起，区间轨道仍铺满整格。
+   端点是控件圆角的胶囊，轨道比它左右各宽这截内衬、上下各高「格内衬减轨道收边」那一截（缺省都是 4）：
+   帽的横、竖半径取胶囊圆角各加上这一截，与胶囊同心，轨道外沿到胶囊外沿处处等距，不从端头鼓出半圆 */
 .xh-scope-calendar-range-picker[data-part='cell']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) {
+  --xh-_calendar-range-picker-range-cap:
+    calc(var(--xh-calendar-range-picker-period-radius, var(--xh-shape-control)) + var(--xh-calendar-range-picker-period-px, var(--xh-space-1)))
+    calc(
+      var(--xh-calendar-range-picker-period-radius, var(--xh-shape-control))
+      + var(--xh-calendar-range-picker-cell-py, var(--xh-space-1_5))
+      - var(--xh-calendar-range-picker-range-inset, var(--xh-space-0_5))
+    );
+
   padding-inline: var(--xh-calendar-range-picker-period-px, var(--xh-space-1));
 }
 
@@ -19752,15 +19764,16 @@
   background-color: var(--xh-calendar-range-picker-range-preview-bg, var(--xh-bg-subtle));
 }
 
-/* 轨道两端收成半圆帽：端点那一格的实心圆坐在帽里。跨周折行处不收圆，一行的首尾是直边 */
+/* 轨道两端收成帽，端点那一格的实心面坐在帽里、与帽同心（日视图是半圆帽套圆，周期格是圆角帽套胶囊）。
+   跨周折行处不收圆，一行的首尾是直边 */
 .xh-scope-calendar-range-picker[data-part='cell'][data-in-range][data-range-start]::before {
-  border-start-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
-  border-end-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-_calendar-range-picker-range-cap));
+  border-end-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-_calendar-range-picker-range-cap));
 }
 
 .xh-scope-calendar-range-picker[data-part='cell'][data-in-range][data-range-end]::before {
-  border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-_calendar-range-picker-range-cap));
+  border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-_calendar-range-picker-range-cap));
 }
 
 /* 日视图的端点是格子正中的圆：帽从「格中线减半高」起算，圆心落在格子中线上，与端点圆同心。

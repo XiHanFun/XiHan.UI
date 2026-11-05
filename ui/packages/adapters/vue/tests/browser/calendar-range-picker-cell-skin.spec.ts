@@ -1,7 +1,7 @@
 // 范围日历格与翻页钮的皮肤（与 calendar-picker 同构，另加区间轨道与中段的品牌淡底阶梯）：
 // 日期格是 24 见方的圆，今天是数字下方一颗 4px 品牌圆点；格子坐在白底上，悬停 100 档、按下 200 档只换面；
 // 区间端点实心品牌，按下压到 active 档；区间轨道 32 高（行距 36 上下各收 2），两端收成半圆帽、跨周折行处是直边；
-// 格子随容器铺宽时帽仍与端点的实心圆同心；
+// 格子随容器铺宽时帽仍与端点的实心圆同心；周、月、季、年的端点是控件圆角的胶囊，帽与胶囊同心、外沿处处等距；
 // 强制色下落定的区间中段在轨道上下沿画实线；快速选年的网格是页内结构容器，滚动链保持 auto。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -75,6 +75,33 @@ async function mountCalendar(width = 320): Promise<void> {
   app.mount(host)
   await nextTick()
   await nextTick()
+}
+
+type Period = 'week' | 'month' | 'quarter' | 'year'
+
+/** 周期档：grid 底下直接是行，格子落在行里；值是两端两格的周期首日，面板停在起点那一页。 */
+async function mountPeriodCalendar(granularity: Period, value: [string, string], density?: 'compact'): Promise<void> {
+  host = document.createElement('div')
+  host.style.inlineSize = '320px'
+  if (density)
+    host.dataset.density = density
+  document.body.append(host)
+  app = createApp({
+    setup: () => () => h(XhCalendarRangePickerRoot, { locale: 'zh-CN', timeZone: 'UTC', granularity, defaultValue: value, defaultFocusedValue: value[0] }, {
+      default: ({ rows }: { rows: { key: string, start: string, label: string }[][] }) => h(XhCalendarRangePickerGrid, null, () =>
+        rows.map(row => h(XhCalendarRangePickerWeekRow, { key: row[0]!.key }, () => row.map(period =>
+          h(XhCalendarRangePickerCell, { key: period.key, value: period.start }, () => h(XhCalendarRangePickerCellTrigger, null, () => period.label)))))),
+    }),
+  })
+  app.mount(host)
+  await nextTick()
+  await nextTick()
+}
+
+/** 圆角的两个半径（横、竖）：两值相同时计算值只写一个。 */
+function radii(value: string): [number, number] {
+  const [x, y = x] = value.split(' ').map(Number.parseFloat)
+  return [x!, y!]
 }
 
 function part(name: string, extra = ''): HTMLElement {
@@ -179,6 +206,45 @@ describe('calendarRangePicker 格子与翻页钮的皮肤', () => {
       const observed = `${edge} cell ${JSON.stringify(rect)} track ${track.left}/${track.right}/${track.top}/${track.bottom} dot ${JSON.stringify(dot)}`
       expect(Math.abs(capX - (dot.left + dot.width / 2)), observed).toBeLessThanOrEqual(0.5)
       expect(Math.abs(rect.top + top + radius - (dot.top + dot.height / 2)), observed).toBeLessThanOrEqual(0.5)
+    }
+  })
+
+  const periodRanges: [Period, [string, string]][] = [
+    ['week', ['2026-09-07', '2026-09-21']],
+    ['month', ['2026-01-01', '2026-08-01']],
+    ['quarter', ['2026-01-01', '2026-07-01']],
+    ['year', ['2020-01-01', '2029-01-01']],
+  ]
+
+  it.each(periodRanges.flatMap(([granularity, value]) => [
+    { granularity, value, density: undefined, label: '宽松' },
+    { granularity, value, density: 'compact' as const, label: '紧凑' },
+  ]))('$granularity（$label）：两端的帽与端点胶囊同心，轨道外沿到胶囊外沿处处等距', async ({ granularity, value, density }) => {
+    await mountPeriodCalendar(granularity, [...value], density)
+    for (const edge of ['start', 'end'] as const) {
+      const cell = part('cell', `[data-range-${edge}]`)
+      const pill = part('cell-trigger', `[data-range-${edge}]`)
+      const rect = cell.getBoundingClientRect()
+      const face = pill.getBoundingClientRect()
+      const track = getComputedStyle(cell, '::before')
+      // 帽这一端：轨道外沿比胶囊外沿横向多出 dx、纵向多出 dy
+      const dx = edge === 'start'
+        ? face.left - (rect.left + Number.parseFloat(track.left))
+        : rect.right - Number.parseFloat(track.right) - face.right
+      const dy = face.top - (rect.top + Number.parseFloat(track.top))
+      expect(dx).toBeGreaterThan(0)
+      expect(dy).toBeGreaterThan(0)
+      // 同心：帽的横、竖半径各是胶囊圆角加上这一截，两条轮廓的弧在同一个圆心上
+      const faceRadius = Number.parseFloat(getComputedStyle(pill).borderTopLeftRadius)
+      const caps = edge === 'start'
+        ? [track.borderStartStartRadius, track.borderEndStartRadius]
+        : [track.borderStartEndRadius, track.borderEndEndRadius]
+      const observed = `${granularity} ${edge} dx=${dx} dy=${dy} face r=${faceRadius} caps ${caps.join(' / ')}`
+      for (const cap of caps) {
+        const [rx, ry] = radii(cap)
+        expect(Math.abs(rx - (faceRadius + dx)), observed).toBeLessThanOrEqual(0.5)
+        expect(Math.abs(ry - (faceRadius + dy)), observed).toBeLessThanOrEqual(0.5)
+      }
     }
   })
 

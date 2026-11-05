@@ -6254,6 +6254,10 @@
         "cell"
       ],
       "property": [
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-start-end-radius",
+        "border-start-start-radius",
         "inset-block",
         "inset-inline-end",
         "inset-inline-start",
@@ -6263,18 +6267,23 @@
         "default",
         "disabled",
         "in-range",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "not([data-in-range])",
         "not([data-outside-month])",
         "outside-month",
         "range-end",
         "range-start",
-        "view=day"
+        "view=day",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
       ],
       "defaultToken": [
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 inset-block、inset-inline-end、inset-inline-start、padding-block 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius、inset-block、inset-inline-end、inset-inline-start、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-cell-radius",
@@ -6884,10 +6893,17 @@
         "cell"
       ],
       "property": [
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-start-end-radius",
+        "border-start-start-radius",
         "padding-inline"
       ],
       "state": [
+        "in-range",
         "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "range-end",
+        "range-start",
         "view=month",
         "view=quarter",
         "view=week",
@@ -6897,25 +6913,38 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 padding-inline 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-period-radius",
       "component": "calendar-range-picker",
       "part": [
+        "cell",
         "cell-trigger"
       ],
       "property": [
-        "border-radius"
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-radius",
+        "border-start-end-radius",
+        "border-start-start-radius"
       ],
       "state": [
-        "default"
+        "default",
+        "in-range",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "range-end",
+        "range-start",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
       ],
       "defaultToken": [
         "--xh-shape-control"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
+      "description": "calendar-range-picker 的 cell、cell-trigger 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-bg",
@@ -6955,7 +6984,7 @@
         "range-start"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-_calendar-range-picker-range-cap"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -7022,23 +7051,32 @@
         "cell"
       ],
       "property": [
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-start-end-radius",
+        "border-start-start-radius",
         "inset-block",
         "inset-inline-end",
         "inset-inline-start"
       ],
       "state": [
         "in-range",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "not([data-outside-month])",
         "outside-month",
         "range-end",
         "range-start",
-        "view=day"
+        "view=day",
+        "view=month",
+        "view=quarter",
+        "view=week",
+        "view=year"
       ],
       "defaultToken": [
         "--xh-space-0_5"
       ],
       "visibility": "public",
-      "description": "calendar-range-picker 的 cell 部件 inset-block、inset-inline-end、inset-inline-start 覆盖槽。"
+      "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius、inset-block、inset-inline-end、inset-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-calendar-range-picker-range-preview-bg",

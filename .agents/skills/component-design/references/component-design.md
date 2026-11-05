@@ -316,7 +316,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | overlay | 8px（md） | Popover、Menu、Select / Combobox 等候选面板、Tooltip 以外的锚定浮层与无锚弹层（Tooltip 通常只有一行字、高度接近控件，取 control）。令牌层引用 surface：使用者只改承载面圆角时浮层跟着走，面与浮层不各圆各的 |
 | sheet | 10px（lg） | 模态与强反馈面：Dialog、Notification 卡片预设、Drawer 朝向页面的两个角（贴边的两个角不取圆角；Notification 轻提示预设是一行短消息，取 control）。比浮层再圆一档，读得出「这是一张独立的面」 |
 | circle | 50% | 宽高相等的圆形对象：avatar、加了底框的 icon、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle、Citation 来源列表的序号；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页与关闭，走 Action Control `floating` profile）；字段里的清空钮（§8.3）；图表的数据点与端点、关系图节点；日历日视图的 24px 日期格、日期面板的翻页钮与「今天」圆点（月 / 季 / 年格不是一维对象，仍取 control） |
-| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger）、日期区间轨道的两端帽 |
+| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge（Tag、ToolCall status、Approval result、QuestionFlow result 是方签，取 control）；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、顶部加载条进度段露出的前端（行首贴边方头）、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、位置指示点的当前拉长态、图例的折线色标、图表缩放手柄、不贴边的 liquid 一维栏（§8.5）、随文的引用编号（Citation trigger）、日视图日期区间轨道的两端帽（周期格的帽随端点胶囊取圆角，见 §6.8 日历行） |
 
 强制规则：
 
@@ -546,7 +546,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | FileUpload | 列表限高 `viewport-h-md`；拖放区最小高 `--xh-dropzone-min-h`（10rem）；文件行是无描边的淡底行，行内与行间距 12px，失败行底回承载面、只把文件名标红；预览是 `glyph-size-sm` 的品牌色无底图标位（空着画文件字形）；删除叉取 `control-indicator-sm`；文件名最小宽 12rem；进度条宽 2 × `control-h-md` |
 | JsonViewer、DiffView | 限高 `viewport-max-h` |
 | Log | 视口 16 行 |
-| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；粗指针下行距与列宽下限都加到 44，命中区铺满整格、到 44×44 且互不重叠（视口窄到七列放不下 44 时，列宽下限取视口宽扣掉两侧 `space-4` 页边、网格内衬与周数列后的七分之一，日历不撑出视口；按视口不按容器，宽视口里塞进窄于七个 44 的容器仍会溢出），钮仍是 `control-action-size` 的圆，嵌进 DatePicker / DateRangePicker 的网格同一套、并排的时间列随之加高；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；禁用横条与区间轨道以格子中线为轴、比细指针行距上下各收 2（粗指针下不跟着变粗），日视图区间两端的帽从格中线减轨道半高起算、与端点圆同心；年网格限高 `viewport-h-sm` |
+| CalendarPicker、CalendarRangePicker | 标题栏内衬 8 / 16、内容 `control-action-size` 高，下沿 1px 分隔线；网格内衬 12 / 16；日期格 `control-action-size` 见方的圆，格上下内距 6 撑出 36 的行距；列宽下限与星期行高 `control-h-md`；粗指针下行距与列宽下限都加到 44，命中区铺满整格、到 44×44 且互不重叠（视口窄到七列放不下 44 时，列宽下限取视口宽扣掉两侧 `space-4` 页边、网格内衬与周数列后的七分之一，日历不撑出视口；按视口不按容器，宽视口里塞进窄于七个 44 的容器仍会溢出），钮仍是 `control-action-size` 的圆，嵌进 DatePicker / DateRangePicker 的网格同一套、并排的时间列随之加高；周期格铺满格宽、`control-action-size` 高，周期视图的网格与日视图同宽；禁用横条与区间轨道以格子中线为轴、比细指针行距上下各收 2（粗指针下不跟着变粗），日视图区间两端的帽从格中线减轨道半高起算、与端点圆同心；周期格区间两端的帽与端点胶囊同心：横、竖半径取胶囊圆角各加上轨道比胶囊多出的那截（左右是周期格内衬、上下是格内衬减轨道收边，缺省 8 + 4 = 12），轨道外沿到胶囊外沿处处等距，不取半圆；年网格限高 `viewport-h-sm` |
 | Image | 宽 100%，高随比例；兜底最小高 `control-h-lg` |
 | Typography | 行宽上限 68ch |
 | EmptyState | 说明行宽上限 32rem |
