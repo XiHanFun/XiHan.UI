@@ -26,6 +26,15 @@ export interface OverlayExit {
   dispose: () => void
 }
 
+/**
+ * 摘掉 connect 给内容区的 hidden：它跟着开合走，带退场的内容区要等闸门定案才落，
+ * 否则宿主的 [hidden]{display:none!important} 会让退场一帧都播不出来。
+ */
+export function withoutHidden<T extends object>(props: T): Omit<T, 'hidden'> {
+  const { hidden: _hidden, ...rest } = props as T & { hidden?: unknown }
+  return rest
+}
+
 export interface OverlayExitOptions {
   open: boolean
   /** 退场结束时回调，宿主据此排一次更新，把收起真正落到 display 上。 */

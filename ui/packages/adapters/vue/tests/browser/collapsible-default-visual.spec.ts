@@ -41,22 +41,34 @@ function mount(state: 'closed' | 'open' = 'open') {
 }
 
 describe('collapsible 默认视觉', () => {
-  it('标题栏与正文沿同一边缘排布：标题栏 41px 高，正文上下 8px、正文色 14px，指示器取弱一档的前景', () => {
+  it('标题栏与正文沿同一边缘排布：标题栏 45px 高，正文贴着标题、弱一档字色 14px，指示器取更弱一档的前景，字重不随开合变', () => {
     const collapsible = mount()
     const trigger = getComputedStyle(collapsible.trigger)
     const content = getComputedStyle(collapsible.content)
     const indicator = getComputedStyle(collapsible.indicator)
 
-    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(10)
+    expect(Number.parseFloat(trigger.paddingBlockStart)).toBe(12)
     expect(Number.parseFloat(trigger.paddingInlineStart)).toBe(12)
-    expect(collapsible.trigger.getBoundingClientRect().height).toBeCloseTo(41, 0)
-    expect(trigger.fontWeight).toBe('500')
-    expect(Number.parseFloat(content.paddingBlockStart)).toBe(8)
-    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(8)
+    expect(collapsible.trigger.getBoundingClientRect().height).toBeCloseTo(45, 0)
+    expect(trigger.fontWeight).toBe('400')
+    expect(Number.parseFloat(content.paddingBlockStart)).toBe(4)
+    expect(Number.parseFloat(content.paddingBlockEnd)).toBe(16)
     expect(content.paddingInlineStart).toBe(trigger.paddingInlineStart)
-    expect(content.color).toBe(tokenColor('--xh-fg-default'))
+    expect(content.color).toBe(tokenColor('--xh-fg-muted'))
     expect(content.fontSize).toBe('14px')
     expect(indicator.color).toBe(tokenColor('--xh-fg-subtle'))
+  })
+
+  it('收起转向行尾，展开回正，rtl 反着转；转向与正文同曲线', async () => {
+    const closed = mount('closed').indicator
+    expect(getComputedStyle(closed).rotate).toBe('-90deg')
+    expect(getComputedStyle(closed).transitionTimingFunction).toBe('cubic-bezier(0.4, 0, 0.2, 1)')
+    host?.setAttribute('dir', 'rtl')
+    // 夹具没带 data-instant，换方向这一下走过渡，等它落定再读
+    await expect.poll(() => getComputedStyle(closed).rotate).toBe('90deg')
+    host?.remove()
+    const opened = mount('open').indicator
+    expect(getComputedStyle(opened).rotate).toBe('0deg')
   })
 
   it('标题栏悬停换面到画布承载的 hover 档（100），展开态与收起态同档，按下只换面不缩放', async () => {

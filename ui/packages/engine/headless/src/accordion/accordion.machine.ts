@@ -22,6 +22,7 @@ export const accordionMachine = createMachine({
     // 按压通道：正被按住的 trigger，与展开集合互相独立（按住途中 Enter 在 keydown 即翻面，按压面不能随之丢）
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     moved: cell<string[]>(() => ({ defaultValue: [] })),
+    initial: cell<string[]>(() => ({ defaultValue: [...(prop('value') ?? prop('defaultValue') ?? [])] })),
     // 首帧即展开的条目也算展开过：lazyMount 下它们的内容照常首屏就在
     opened: cell<string[]>(() => ({ defaultValue: [...(prop('value') ?? prop('defaultValue') ?? [])] })),
   }),

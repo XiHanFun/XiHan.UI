@@ -194,9 +194,9 @@ The public override slots, generated from what the standalone skin actually cons
 | Variable | Part | CSS property | State | Default from |
 | --- | --- | --- | --- | --- |
 | `--xh-accordion-border` | `root` | `border` | `variant=outline` | `--xh-border-default` |
-| `--xh-accordion-content-bg` | `content`<br>`root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-muted`<br>`transparent` |
-| `--xh-accordion-content-border` | `content` | `border-block-start` | `state=open` | `--xh-accordion-item-border` |
-| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-default` |
+| `--xh-accordion-content-bg` | `content` | `background` | `default` | `transparent` |
+| `--xh-accordion-content-border` | `content` | `box-shadow` | `default` | `transparent` |
+| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` |
 | `--xh-accordion-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pb` |
 | `--xh-accordion-content-pt` | `content` | `padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pt` |
@@ -204,7 +204,7 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-accordion-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-glyph-size-md`<br>`--xh-glyph-size-sm` |
 | `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` |
 | `--xh-accordion-item-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` |
-| `--xh-accordion-item-border` | `content`<br>`item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`state=open`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-default` |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-subtle` |
 | `--xh-accordion-item-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` |
 | `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=outline`<br>`variant=subtle` | `none` |
 | `--xh-accordion-trigger-bg` | `trigger` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest` |
@@ -213,10 +213,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-accordion-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` |
 | `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_accordion-open-fg` |
 | `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` |
-| `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` |
-| `--xh-accordion-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-font-weight-medium` |
-| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` |
+| `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default`<br>`state=open` | `--xh-text-label-weight` |
+| `--xh-accordion-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-accordion-trigger-font-weight` |
+| `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_accordion-indicator-gap` |
 | `--xh-accordion-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` |
 | `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_accordion-trigger-px` |
 | `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_accordion-trigger-py` |
-| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` |
+| `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_accordion-trigger-radius` |

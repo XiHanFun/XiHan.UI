@@ -13,7 +13,7 @@ import { connectToolCall, isToolCallRunning, toolCallAnatomy, toolCallMachine, t
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 给出
@@ -139,13 +139,13 @@ export class XhToolCallElement extends XhElement {
     put('status', api.getStatusProps())
     put('duration', api.getDurationProps())
     put('approval', api.getApprovalProps())
-    put('content', api.getContentProps())
+    put('content', withoutHidden(api.getContentProps()))
     put('input', api.getInputProps())
     put('output', api.getOutputProps())
     put('error', api.getErrorProps())
 
-    // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-    // 就一帧都播不出来），真正的收起在动画结束后落成内联 display
+    // 收起跟着退场闸门走：hidden 与内联 display 都等退场播完才落。宿主的
+    // [hidden]{display:none!important}（Tailwind preflight）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
     const content = this.getPart('content')
     this.ensureConfig()
     this.exit ??= createOverlayExit({
@@ -154,7 +154,9 @@ export class XhToolCallElement extends XhElement {
     })
     this.exit.track(content)
     this.exit.update(api.open)
-    if (content)
+    if (content) {
+      content.hidden = !this.exit.visible
       this.setPartHidden(content, !this.exit.visible)
+    }
   }
 }

@@ -154,7 +154,7 @@ The public override slots, generated from what the standalone skin actually cons
 
 | Variable | Part | CSS property | State | Default from |
 | --- | --- | --- | --- | --- |
-| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-default` |
+| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` |
 | `--xh-collapsible-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` |
 | `--xh-collapsible-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pb` |
 | `--xh-collapsible-content-pt` | `content` | `padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pt` |
@@ -168,10 +168,10 @@ The public override slots, generated from what the standalone skin actually cons
 | `--xh-collapsible-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` |
 | `--xh-collapsible-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_collapsible-open-fg` |
 | `--xh-collapsible-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` |
-| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` |
-| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-font-weight-medium` |
-| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` |
+| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default`<br>`state=open` | `--xh-text-label-weight` |
+| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-collapsible-trigger-font-weight` |
+| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_collapsible-indicator-gap` |
 | `--xh-collapsible-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` |
 | `--xh-collapsible-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_collapsible-trigger-px` |
 | `--xh-collapsible-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_collapsible-trigger-py` |
-| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` |
+| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_collapsible-trigger-radius` |

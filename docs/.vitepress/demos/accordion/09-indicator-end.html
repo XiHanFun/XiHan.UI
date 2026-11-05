@@ -1,21 +1,21 @@
-<!-- 指示器在前 | 指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量 -->
+<!-- 指示器在后 | 缺省的箭头排在标题之前；指示器写在标题之后即落到行尾 -->
 <div style="width: 100%; max-width: 420px">
-  <xh-accordion id="accordion-indicator-start">
+  <xh-accordion id="accordion-indicator-end">
     <div data-xh-part="root">
       <div data-xh-part="item" value="one">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第一章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第一章</span>
           </button>
         </h3>
-        <div data-xh-part="content">指示器在标题左边，展开时照样翻转。</div>
+        <div data-xh-part="content">指示器在行尾，展开时照样转向。</div>
       </div>
       <div data-xh-part="item" value="two">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第二章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第二章</span>
           </button>
         </h3>
         <div data-xh-part="content">部件的先后顺序就是它们在标题栏里的顺序。</div>
@@ -23,11 +23,11 @@
       <div data-xh-part="item" value="three">
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
+            <span>第三章</span>
             <span data-xh-part="indicator"></span>
-            <span style="margin-inline-end: auto">第三章</span>
           </button>
         </h3>
-        <div data-xh-part="content">标题吃掉余量，右侧留白。</div>
+        <div data-xh-part="content">余量落在标题与指示器之间。</div>
       </div>
     </div>
   </xh-accordion>
@@ -35,7 +35,7 @@
 
 <script type="module">
   // 展开集合是数组，只走 property：设初值、每次变更写回
-  const accordion = document.getElementById("accordion-indicator-start");
+  const accordion = document.getElementById("accordion-indicator-end");
   accordion.value = ["one"];
   accordion.addEventListener("value-change", (event) => {
     accordion.value = event.detail.value;

@@ -24,22 +24,19 @@
       "name": "--xh-accordion-content-bg",
       "component": "accordion",
       "part": [
-        "content",
-        "root"
+        "content"
       ],
       "property": [
         "background"
       ],
       "state": [
-        "default",
-        "variant=subtle"
+        "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted",
         "transparent"
       ],
       "visibility": "public",
-      "description": "accordion 的 content、root 部件 background 覆盖槽。"
+      "description": "accordion 的 content 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-accordion-content-border",
@@ -48,16 +45,16 @@
         "content"
       ],
       "property": [
-        "border-block-start"
+        "box-shadow"
       ],
       "state": [
-        "state=open"
+        "default"
       ],
       "defaultToken": [
-        "--xh-accordion-item-border"
+        "transparent"
       ],
       "visibility": "public",
-      "description": "accordion 的 content 部件 border-block-start 覆盖槽。"
+      "description": "accordion 的 content 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-accordion-content-fg",
@@ -72,7 +69,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "accordion 的 content 部件 color 覆盖槽。"
@@ -215,7 +212,6 @@
       "name": "--xh-accordion-item-border",
       "component": "accordion",
       "part": [
-        "content",
         "item",
         "item-separator",
         "root"
@@ -230,15 +226,14 @@
         "is([data-variant='outline'], [data-variant='subtle'])",
         "not(:last-child)",
         "orientation=horizontal",
-        "state=open",
         "variant=outline",
         "variant=subtle"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "accordion 的 content、item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。"
+      "description": "accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-accordion-item-radius",
@@ -418,7 +413,8 @@
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-text-label-weight"
@@ -439,7 +435,7 @@
         "state=open"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-accordion-trigger-font-weight"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 font-weight 覆盖槽。"
@@ -457,7 +453,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-gap"
+        "--xh-_accordion-indicator-gap"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 gap 覆盖槽。"
@@ -531,7 +527,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-radius"
+        "--xh-_accordion-trigger-radius"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 border-radius 覆盖槽。"
@@ -15397,7 +15393,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "collapsible 的 content 部件 color 覆盖槽。"
@@ -15674,7 +15670,8 @@
         "font-weight"
       ],
       "state": [
-        "default"
+        "default",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-text-label-weight"
@@ -15695,7 +15692,7 @@
         "state=open"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-collapsible-trigger-font-weight"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 font-weight 覆盖槽。"
@@ -15713,7 +15710,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-gap"
+        "--xh-_collapsible-indicator-gap"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 gap 覆盖槽。"
@@ -15787,7 +15784,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-radius"
+        "--xh-_collapsible-trigger-radius"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 border-radius 覆盖槽。"

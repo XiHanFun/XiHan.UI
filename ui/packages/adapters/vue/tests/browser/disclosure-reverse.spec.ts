@@ -19,8 +19,7 @@ afterEach(() => {
   host = null
   document.documentElement.style.removeProperty('--xh-motion-duration-expand')
   document.documentElement.style.removeProperty('--xh-motion-duration-collapse')
-  document.documentElement.style.removeProperty('--xh-motion-ease-enter-strong')
-  document.documentElement.style.removeProperty('--xh-motion-ease-exit')
+  document.documentElement.style.removeProperty('--xh-motion-ease-disclosure')
 })
 
 function frame(): Promise<void> {
@@ -39,8 +38,7 @@ async function reverseMidway(content: () => HTMLElement, toggle: (open: boolean)
   // 放慢到看得清中途：展开与收起各走 600ms、匀速，中途开到几成与时间成正比
   document.documentElement.style.setProperty('--xh-motion-duration-expand', '600ms')
   document.documentElement.style.setProperty('--xh-motion-duration-collapse', '600ms')
-  document.documentElement.style.setProperty('--xh-motion-ease-enter-strong', 'linear')
-  document.documentElement.style.setProperty('--xh-motion-ease-exit', 'linear')
+  document.documentElement.style.setProperty('--xh-motion-ease-disclosure', 'linear')
 
   // 先完整开合一轮，量出全开的高度
   await toggle(true)

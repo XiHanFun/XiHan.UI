@@ -44,7 +44,7 @@ export interface AccordionStructureOptions {
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
-/** 一个条目：标题（h3）里的按钮装标题文字与指示符，后面是正文面板；带 slot 的正文的 data 是这一条的元信息。 */
+/** 一个条目：标题（h3）里的按钮装指示符与标题文字，后面是正文面板；带 slot 的正文的 data 是这一条的元信息。 */
 function itemStructure(node: AccordionNodeMeta, slotted: StructureSlotted, mounted: boolean): AccordionNode {
   const content: AccordionNode = slotted('content', node.value)
     ? { key: 'content', tag: 'div', part: 'content', slot: { name: 'content', key: node.value }, data: node }
@@ -64,8 +64,8 @@ function itemStructure(node: AccordionNodeMeta, slotted: StructureSlotted, mount
           tag: 'button',
           part: 'trigger',
           children: [
-            { key: 'label', literal: node.label },
             { key: 'indicator', tag: 'span', part: 'indicator' },
+            { key: 'label', literal: node.label },
           ],
         }],
       },

@@ -72,7 +72,7 @@
       "relation": "value"
     },
     "xh-disclosure-collapse": {
-      "content": "from{grid-template-rows:1fr;padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0)}to{grid-template-rows:0fr;padding-block-start:0;padding-block-end:0}",
+      "content": "from{grid-template-rows:minmax(0,1fr);padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0);opacity:1}to{grid-template-rows:minmax(0,0fr);padding-block-start:0;padding-block-end:0;opacity:0}",
       "definedIn": [
         "family/motion.css"
       ],
@@ -85,7 +85,7 @@
       "relation": "disclosure"
     },
     "xh-disclosure-expand": {
-      "content": "from{grid-template-rows:0fr;padding-block-start:0;padding-block-end:0}to{grid-template-rows:1fr;padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0)}",
+      "content": "from{grid-template-rows:minmax(0,0fr);padding-block-start:0;padding-block-end:0;opacity:0}to{grid-template-rows:minmax(0,1fr);padding-block-start:var(--xh-_disclosure-pt,0);padding-block-end:var(--xh-_disclosure-pb,0);opacity:1}",
       "definedIn": [
         "family/motion.css"
       ],

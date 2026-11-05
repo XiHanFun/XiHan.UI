@@ -538,7 +538,7 @@
     --xh-motion-duration-micro: var(--xh-duration-fast);
     --xh-motion-duration-move: var(--xh-duration-normal);
     --xh-motion-duration-expand: var(--xh-duration-normal);
-    --xh-motion-duration-collapse: var(--xh-duration-fast);
+    --xh-motion-duration-collapse: var(--xh-duration-normal);
     --xh-motion-duration-slide: var(--xh-duration-slow);
     --xh-motion-duration-nudge: var(--xh-duration-normal);
     --xh-motion-duration-press: var(--xh-duration-fast);
@@ -555,6 +555,7 @@
     --xh-motion-ease-exit: var(--xh-ease-in);
     --xh-motion-ease-slide: var(--xh-ease-out-fluid);
     --xh-motion-ease-sweep: var(--xh-ease-in-out);
+    --xh-motion-ease-disclosure: var(--xh-ease-in-out);
     --xh-motion-ease-press: var(--xh-ease-standard);
     --xh-motion-ease-release: var(--xh-ease-out-strong);
     --xh-motion-ease-breathe: var(--xh-ease-sine-in-out);
@@ -1995,7 +1996,7 @@
     --xh-motion-duration-enter: var(--xh-duration-normal);
     --xh-motion-duration-move: var(--xh-duration-normal);
     --xh-motion-duration-expand: var(--xh-duration-normal);
-    --xh-motion-duration-collapse: var(--xh-duration-fast);
+    --xh-motion-duration-collapse: var(--xh-duration-normal);
     --xh-motion-duration-slide: var(--xh-duration-slow);
     --xh-motion-duration-nudge: var(--xh-duration-normal);
     --xh-motion-duration-press: var(--xh-duration-fast);

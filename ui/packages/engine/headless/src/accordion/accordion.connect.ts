@@ -52,9 +52,13 @@ export function connectAccordion<T extends PropTypes>(
   })
 
   const isOpen = (target: string): boolean => value.includes(target)
-  // 挂载后没开合过的条目：首帧就在的展开 / 收起直接呈现
+  // 挂载后没开合过的条目：首帧就在的展开 / 收起直接呈现。moved 由 watch 记，React 里它排在提交之后，
+  // 翻面的这一次提交还没记上；只认 moved 的话第一次开合仍带 data-instant，动画与退场都被跳过，
+  // 所以此刻开合已经和首帧不同的也算动过
   const moved = context.get('moved')
-  const instant = (item: AccordionItemProps): '' | undefined => dataAttr(!moved.includes(item.value))
+  const initial = context.get('initial')
+  const instant = (item: AccordionItemProps): '' | undefined =>
+    dataAttr(!moved.includes(item.value) && initial.includes(item.value) === isOpen(item.value))
   const stateAttr = (item: AccordionItemProps): 'open' | 'closed' => (isOpen(item.value) ? 'open' : 'closed')
   const triggerId = (target: string): string => scope.partId(accordionAnatomy.name, `trigger:${target}`)
   const contentId = (target: string): string => scope.partId(accordionAnatomy.name, `content:${target}`)
@@ -82,7 +86,7 @@ export function connectAccordion<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
-      'data-variant': prop('variant') ?? 'outline',
+      'data-variant': prop('variant') ?? 'ghost',
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(groupDisabled),

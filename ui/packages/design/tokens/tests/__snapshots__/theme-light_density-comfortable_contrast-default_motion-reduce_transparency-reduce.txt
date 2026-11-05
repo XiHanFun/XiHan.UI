@@ -346,6 +346,7 @@
 --xh-motion-duration-slide: 1ms
 --xh-motion-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1)  ← var(--xh-ease-sine-in-out)
 --xh-motion-ease-continuous: cubic-bezier(0.2, 0, 0, 1)  ← var(--xh-ease-standard)
+--xh-motion-ease-disclosure: cubic-bezier(0.4, 0, 0.2, 1)  ← var(--xh-ease-in-out)
 --xh-motion-ease-emphasis: cubic-bezier(0.3, 0, 0, 1)  ← var(--xh-ease-emphasized)
 --xh-motion-ease-enter: cubic-bezier(0, 0, 0.2, 1)  ← var(--xh-ease-out)
 --xh-motion-ease-enter-strong: cubic-bezier(0.23, 1, 0.32, 1)  ← var(--xh-ease-out-strong)
@@ -426,12 +427,11 @@
 --xh-overlay-time-column-w: 4rem
 --xh-overlay-toast-w: 28.75rem
 --xh-ring-focus: oklch(0.557 0.216 277)  ← var(--xh-color-brand-600)
---xh-ring-halo: color-mix(in oklab, oklch(0.557 0.216 277) 30%, transparent)  ← color-mix(in oklab, var(--xh-ring-focus) 30%, transparent)
---xh-ring-halo-width: 3px  ← var(--xh-stroke-strong)
+--xh-ring-gap: oklch(1 0 0)  ← var(--xh-bg-surface)
+--xh-ring-gap-width: 1px  ← var(--xh-stroke-thin)
 --xh-ring-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
---xh-ring-offset: 0px
---xh-ring-offset-inset: calc(-1 * 1px)  ← calc(-1 * var(--xh-ring-width))
---xh-ring-width: 1px  ← var(--xh-stroke-thin)
+--xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))
+--xh-ring-width: 2px  ← var(--xh-stroke-thick)
 --xh-scrollbar-gutter: 1px
 --xh-scrollbar-thickness-lg: 8px
 --xh-scrollbar-thickness-md: 6px

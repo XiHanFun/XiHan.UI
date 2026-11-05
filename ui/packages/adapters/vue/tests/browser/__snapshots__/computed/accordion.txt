@@ -1,9 +1,9 @@
 # accordion
 
 [content]
-padding-top: 8px
+padding-top: 4px
 padding-right: 12px
-padding-bottom: 8px
+padding-bottom: 16px
 padding-left: 12px
 row-gap: normal
 column-gap: normal
@@ -15,16 +15,16 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.208 0.006 258)
-border-right-color: oklch(0.208 0.006 258)
-border-bottom-color: oklch(0.208 0.006 258)
-border-left-color: oklch(0.208 0.006 258)
+border-top-color: oklch(0.461 0.018 258)
+border-right-color: oklch(0.461 0.018 258)
+border-bottom-color: oklch(0.461 0.018 258)
+border-left-color: oklch(0.461 0.018 258)
 min-height: 0px
 font-size: 14px
 line-height: 21px
 font-weight: 400
-color: oklch(0.208 0.006 258)
-background-color: oklab(0 0 0 / 0.047)
+color: oklch(0.461 0.018 258)
+background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -33,7 +33,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.208 0.006 258)
+outline-color: oklch(0.461 0.018 258)
 
 [header]
 padding-top: 0px
@@ -112,24 +112,24 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
-border-top-width: 1px
-border-right-width: 1px
-border-bottom-width: 1px
-border-left-width: 1px
-border-top-color: oklab(0 0 0 / 0.102)
-border-right-color: oklab(0 0 0 / 0.102)
-border-bottom-color: oklab(0 0 0 / 0.102)
-border-left-color: oklab(0 0 0 / 0.102)
+border-top-left-radius: 0px
+border-top-right-radius: 0px
+border-bottom-right-radius: 0px
+border-bottom-left-radius: 0px
+border-top-width: 0px
+border-right-width: 0px
+border-bottom-width: 0px
+border-left-width: 0px
+border-top-color: rgb(0, 0, 0)
+border-right-color: rgb(0, 0, 0)
+border-bottom-color: rgb(0, 0, 0)
+border-left-color: rgb(0, 0, 0)
 min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
-background-color: oklch(1 0 0)
+background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
@@ -141,12 +141,12 @@ outline-offset: 0px
 outline-color: rgb(0, 0, 0)
 
 [trigger]
-padding-top: 10px
+padding-top: 12px
 padding-right: 12px
-padding-bottom: 10px
+padding-bottom: 12px
 padding-left: 12px
-row-gap: 8px
-column-gap: 8px
+row-gap: 6px
+column-gap: 6px
 border-top-left-radius: 8px
 border-top-right-radius: 8px
 border-bottom-right-radius: 8px

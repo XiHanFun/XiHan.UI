@@ -115,8 +115,11 @@ describe('内容撑破行', () => {
 
       // 收起靠行高归零，块轴多出来的那一截不能露在外面，也不能变成一条竖滚动
       expect(style.overflowY).toBe('hidden')
-      expect(content.scrollHeight).toBe(content.clientHeight)
       expect(style.animationName).toBe('xh-disclosure-expand')
+      // 展开动画第一帧的行高是 0，等它落定再量静止时的盒子
+      for (const animation of content.getAnimations())
+        animation.finish()
+      expect(content.scrollHeight).toBe(content.clientHeight)
     })
   })
 

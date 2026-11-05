@@ -58,7 +58,7 @@ export interface AccordionSchema extends MachineSchema {
     loop?: boolean
     /** 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 */
     disabled?: boolean
-    /** 形态：outline 为单一连续描边面（默认），subtle 为淡底，ghost 条目直接相邻不画容器。默认 outline。 */
+    /** 形态：ghost 不画容器、条目间一条细分隔线（默认），outline 为单一连续描边面，subtle 为淡底。默认 ghost。 */
     variant?: ControlVariant
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
@@ -98,6 +98,8 @@ export interface AccordionSchema extends MachineSchema {
      * 不播展开、收起动画；第一次开合起才按动效走。
      */
     moved: string[]
+    /** 挂载时的展开集合，之后不变：翻面的那一次提交里 moved 还没记上，靠它认出这一条已经和首帧不同。 */
+    initial: string[]
     /** 挂载之后展开过的条目（含首帧即展开）。lazyMount 下条目内容从第一次展开起才挂载。 */
     opened: string[]
   }

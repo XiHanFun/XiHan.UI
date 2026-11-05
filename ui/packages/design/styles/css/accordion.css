@@ -21,13 +21,15 @@
     --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸档只换这几个私有槽，标题栏与正文从 root 继承它们。
-       标题栏比家族 disclosure-trigger 档收一截：md 上下 10px + 一行正文行高 21px = 41px 高，横向 12px；
-       正文与标题栏同一条起点，上下各留 8px */
-    --xh-_accordion-trigger-py: var(--xh-space-2_5);
+       标题栏比家族 disclosure-trigger 档收一截：md 上下 12px + 一行正文行高 21px = 45px 高，横向 12px；
+       箭头与标题隔 6px；正文与标题栏同一条起点，上面贴着标题（4px，连标题栏下内缩共 16px），下面留 16px 到分隔线 */
+    --xh-_accordion-indicator-gap: var(--xh-space-1_5);
+    --xh-_accordion-trigger-radius: var(--xh-shape-control);
+    --xh-_accordion-trigger-py: var(--xh-space-3);
     --xh-_accordion-trigger-px: var(--xh-space-3);
     --xh-_accordion-content-px: var(--xh-space-3);
-    --xh-_accordion-content-pt: var(--xh-space-2);
-    --xh-_accordion-content-pb: var(--xh-space-2);
+    --xh-_accordion-content-pt: var(--xh-space-1);
+    --xh-_accordion-content-pb: var(--xh-space-4);
 
     /* 语气落在展开着的标题上，指示器写在标题里、跟着继承这个色，不另立规则。
        没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
@@ -47,19 +49,21 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='accordion'][data-part='root'][data-size='sm'] {
-    --xh-_accordion-trigger-py: var(--xh-space-1_5);
+    --xh-_accordion-indicator-gap: var(--xh-space-1);
+    --xh-_accordion-trigger-py: var(--xh-space-2);
     --xh-_accordion-trigger-px: var(--xh-space-2_5);
     --xh-_accordion-content-px: var(--xh-space-2_5);
-    --xh-_accordion-content-pt: var(--xh-space-1_5);
-    --xh-_accordion-content-pb: var(--xh-space-1_5);
+    --xh-_accordion-content-pt: var(--xh-space-0_5);
+    --xh-_accordion-content-pb: var(--xh-space-3);
   }
 
   [data-scope='accordion'][data-part='root'][data-size='lg'] {
-    --xh-_accordion-trigger-py: var(--xh-space-3);
+    --xh-_accordion-indicator-gap: var(--xh-space-2);
+    --xh-_accordion-trigger-py: var(--xh-space-4);
     --xh-_accordion-trigger-px: var(--xh-space-4);
     --xh-_accordion-content-px: var(--xh-space-4);
-    --xh-_accordion-content-pt: var(--xh-space-3);
-    --xh-_accordion-content-pb: var(--xh-space-3);
+    --xh-_accordion-content-pt: var(--xh-space-1_5);
+    --xh-_accordion-content-pb: var(--xh-space-5);
   }
 
   [data-scope='accordion'][data-part='item'] {
@@ -73,14 +77,14 @@
   [data-scope='accordion'][data-part='root']
     > [data-scope='accordion'][data-part='item']
     + [data-scope='accordion'][data-part='item'] {
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
   }
 
   [data-scope='accordion'][data-part='root'][data-orientation='horizontal']
     > [data-scope='accordion'][data-part='item']
     + [data-scope='accordion'][data-part='item'] {
     border-block-start: 0;
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-default));
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-accordion-item-border, var(--xh-border-subtle));
   }
 
   /* 作者显式渲染的分隔线。渲染了它，上面那条 item + item 的相邻规则就不再命中，
@@ -90,7 +94,7 @@
     block-size: var(--xh-stroke-thin);
     border: 0;
     margin: 0;
-    background: var(--xh-accordion-item-border, var(--xh-border-default));
+    background: var(--xh-accordion-item-border, var(--xh-border-subtle));
   }
 
   [data-scope='accordion'][data-part='item-separator'][hidden] {
@@ -104,7 +108,12 @@
   }
 
   /* —— 形态 —— */
-  /* ghost 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
+  /* ghost 档（缺省）不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
+  /* 整份有了一块面，标题栏通栏贴面，悬停面不再带圆角 */
+  [data-scope='accordion'][data-part='root']:is([data-variant='outline'], [data-variant='subtle']) {
+    --xh-_accordion-trigger-radius: 0;
+  }
+
   /* 整份有了一块面，条与条之间就不再靠那条相邻边分开 */
   [data-scope='accordion'][data-part='root']:is([data-variant='outline'], [data-variant='subtle'])
     > [data-scope='accordion'][data-part='item']
@@ -143,7 +152,7 @@
     inset-inline: 0;
     inset-block-end: 0;
     block-size: var(--xh-stroke-thin);
-    background: var(--xh-accordion-item-border, var(--xh-border-default));
+    background: var(--xh-accordion-item-border, var(--xh-border-subtle));
     pointer-events: none;
   }
 
@@ -157,11 +166,11 @@
      这里只把使用者槽映射到桥接槽：字色三态同值（家族的 hover / pressed 字色规则比皮肤更特定，不映射会被换回
      缺省字色），字形按标题栏自己的档位取 --xh-_action-profile-glyph-size；边归零贴住条目，几何与迁移前一致 */
   [data-scope='accordion'][data-part='trigger'] {
-    --xh-action-gap: var(--xh-accordion-trigger-gap, var(--xh-_action-profile-gap));
+    --xh-action-gap: var(--xh-accordion-trigger-gap, var(--xh-_accordion-indicator-gap));
     --xh-action-visual-size: var(--xh-accordion-trigger-h, var(--xh-_action-profile-visual-size));
     --xh-action-padding-block: var(--xh-accordion-trigger-py, var(--xh-_accordion-trigger-py));
     --xh-action-padding-inline: var(--xh-accordion-trigger-px, var(--xh-_accordion-trigger-px));
-    --xh-action-radius: var(--xh-accordion-trigger-radius, var(--xh-_action-profile-radius));
+    --xh-action-radius: var(--xh-accordion-trigger-radius, var(--xh-_accordion-trigger-radius));
     --xh-action-bg-rest: var(--xh-accordion-trigger-bg, var(--xh-_action-variant-bg-rest));
     --xh-action-bg-hover: var(--xh-accordion-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
     --xh-action-fg-rest: var(--xh-accordion-trigger-fg, var(--xh-_action-variant-fg-rest));
@@ -176,13 +185,14 @@
   }
 
   /* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
-     展开那一档的语气高亮就跟着被抹平，再也分不开。悬停 / 按下的面与收起态同档（open 与家族 hover 同档中性） */
+     展开那一档的语气高亮就跟着被抹平，再也分不开。悬停 / 按下的面与收起态同档（open 与家族 hover 同档中性）。
+     字重不随开合变：一换字重标题宽度就跳，点下去的那一帧整行字都抖一下 */
   [data-scope='accordion'][data-part='trigger'][data-state='open'] {
     --xh-action-fg-rest: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
     --xh-action-fg-hover: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
     --xh-action-fg-pressed: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
 
-    font-weight: var(--xh-accordion-trigger-font-weight-open, var(--xh-font-weight-medium));
+    font-weight: var(--xh-accordion-trigger-font-weight-open, var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight)));
   }
 
   /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作；前景换成禁用色，不靠 opacity 压暗
@@ -196,14 +206,25 @@
     align-items: center;
     justify-content: center;
     flex: none;
+    /* 占一行标题行高、贴起始缘：标题折行时箭头对着第一行，不漂到几行的正中 */
+    align-self: flex-start;
+    block-size: calc(1em * var(--xh-leading-normal));
     color: var(--xh-accordion-indicator-fg, var(--xh-fg-subtle));
     line-height: var(--xh-leading-none);
+    /* 字形朝下，收起时转向行尾，展开时回正朝下；作者放进部件的图形跟着一起转 */
+    rotate: -90deg;
   }
 
-  /* 指示器与正文同档转向：收起时取 collapse 档，展开时（下面的打开态）取 expand 档。
+  /* 指示器写在最前面就排在标题之前，紧跟其后的标题吃掉余量
+     （家族档是 space-between，不吃就被推到行尾）；写在标题之后的照旧靠行尾 */
+  [data-scope='accordion'][data-part='indicator']:first-child + * {
+    margin-inline-end: auto;
+  }
+
+  /* 指示器与正文同时长、同曲线转向：收起时取 collapse 档，展开时（下面的打开态）取 expand 档。
      首帧就在的朝向直接呈现（data-instant），第一次开合起才转 */
   [data-scope='accordion'][data-part='indicator']:not([data-instant]) {
-    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -219,11 +240,16 @@
   }
 
   [data-scope='accordion'][data-part='indicator'][data-state='open'] {
-    rotate: 180deg;
+    rotate: 0deg;
   }
 
   [data-scope='accordion'][data-part='indicator'][data-state='open']:not([data-instant]) {
-    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
+  }
+
+  /* rtl 下行尾在左侧，收起时反着转 */
+  [dir='rtl'] [data-scope='accordion'][data-part='indicator']:not([data-state='open']) {
+    rotate: 90deg;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
@@ -239,30 +265,22 @@
     padding-block-start: var(--xh-accordion-content-pt, var(--xh-_accordion-content-pt));
     padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
     padding-inline: var(--xh-accordion-content-px, var(--xh-_accordion-content-px));
-    /* 正文是标题栏下面一块淡底，与白底标题栏分出层次；淡底容器（subtle）本身已是这层底，正文不再叠一层 */
-    background: var(--xh-accordion-content-bg, var(--xh-bg-muted));
-    color: var(--xh-accordion-content-fg, var(--xh-fg-default));
+    /* 正文与标题同一块面，只靠字色分层次，不另铺底、不画线：底与线都会跟着开合一下子出现 */
+    background: var(--xh-accordion-content-bg, transparent);
+    /* 写了 --xh-accordion-content-border 才有这条线；画成内阴影不占高度，开合途中不跳 1px */
+    box-shadow: inset 0 var(--xh-stroke-thin) 0 0 var(--xh-accordion-content-border, transparent);
+    color: var(--xh-accordion-content-fg, var(--xh-fg-muted));
     font-size: var(--xh-accordion-content-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
   }
 
-  [data-scope='accordion'][data-part='root'][data-variant='subtle'] [data-scope='accordion'][data-part='content'] {
-    background: var(--xh-accordion-content-bg, transparent);
-  }
-
-  /* 展开着的标题栏与正文之间一条分隔线，与条与条之间的线同色 */
-  [data-scope='accordion'][data-part='content'][data-state='open'] {
-    border-block-start: var(--xh-stroke-thin) solid
-      var(--xh-accordion-content-border, var(--xh-accordion-item-border, var(--xh-border-default)));
-  }
-
   /* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant） */
   [data-scope='accordion'][data-part='content'][data-state='open']:not([data-instant]) {
-    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   [data-scope='accordion'][data-part='content'][data-state='closed']:not([data-instant]) {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure) forwards;
   }
 
   @media (forced-colors: active) {

@@ -16,8 +16,8 @@ export default function Demo(): ReactNode {
         <XhAccordionItem value="shipping">
           <XhAccordionHeader>
             <XhAccordionTrigger>
-              <span>配送</span>
               <XhAccordionIndicator />
+              <span>配送</span>
             </XhAccordionTrigger>
           </XhAccordionHeader>
           <XhAccordionContent>
@@ -26,8 +26,8 @@ export default function Demo(): ReactNode {
               <XhAccordionItem value="express">
                 <XhAccordionHeader>
                   <XhAccordionTrigger>
-                    <span>快递</span>
                     <XhAccordionIndicator />
+                    <span>快递</span>
                   </XhAccordionTrigger>
                 </XhAccordionHeader>
                 <XhAccordionContent>次日达，节假日照常发货。</XhAccordionContent>
@@ -35,8 +35,8 @@ export default function Demo(): ReactNode {
               <XhAccordionItem value="pickup">
                 <XhAccordionHeader>
                   <XhAccordionTrigger>
-                    <span>自提</span>
                     <XhAccordionIndicator />
+                    <span>自提</span>
                   </XhAccordionTrigger>
                 </XhAccordionHeader>
                 <XhAccordionContent>下单后到门店凭码取货。</XhAccordionContent>
@@ -48,8 +48,8 @@ export default function Demo(): ReactNode {
         <XhAccordionItem value="refund">
           <XhAccordionHeader>
             <XhAccordionTrigger>
-              <span>退换</span>
               <XhAccordionIndicator />
+              <span>退换</span>
             </XhAccordionTrigger>
           </XhAccordionHeader>
           <XhAccordionContent>签收七日内可退，运费到付。</XhAccordionContent>

@@ -236,7 +236,7 @@ lazyMount 让内容第一次展开时才挂载，之后收起只隐藏；再加 
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | collapsible 的 content 部件 color 覆盖槽。 |
+| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | collapsible 的 content 部件 color 覆盖槽。 |
 | `--xh-collapsible-content-font-size` | `content` | `font-size` | `default` | `--xh-text-body-size` | collapsible 的 content 部件 font-size 覆盖槽。 |
 | `--xh-collapsible-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pb` | collapsible 的 content 部件 padding-block-end 覆盖槽。 |
 | `--xh-collapsible-content-pt` | `content` | `padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_collapsible-content-pt` | collapsible 的 content 部件 padding-block-start 覆盖槽。 |
@@ -250,13 +250,13 @@ lazyMount 让内容第一次展开时才挂载，之后收起只隐藏；再加 
 | `--xh-collapsible-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg-open` | `trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=open` | `--xh-_collapsible-open-fg` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_action-profile-font-size` | collapsible 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-font-weight-medium` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
-| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_action-profile-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
+| `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default`<br>`state=open` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-collapsible-trigger-font-weight-open` | `trigger` | `font-weight` | `state=open` | `--xh-collapsible-trigger-font-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
+| `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_collapsible-indicator-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-collapsible-trigger-h` | `trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_action-profile-visual-size` | collapsible 的 trigger 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-collapsible-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_collapsible-trigger-px` | collapsible 的 trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-collapsible-trigger-py` | `trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-_collapsible-trigger-py` | collapsible 的 trigger 部件 padding-block 覆盖槽。 |
-| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_collapsible-trigger-radius` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -271,4 +271,4 @@ lazyMount 让内容第一次展开时才挂载，之后收起只隐藏；再加 
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

@@ -16864,6 +16864,7 @@
     "--xh-motion-duration-slide",
     "--xh-motion-ease-breathe",
     "--xh-motion-ease-continuous",
+    "--xh-motion-ease-disclosure",
     "--xh-motion-ease-emphasis",
     "--xh-motion-ease-enter",
     "--xh-motion-ease-enter-strong",

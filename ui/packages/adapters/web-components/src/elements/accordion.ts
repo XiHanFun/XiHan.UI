@@ -16,7 +16,7 @@ import { GEN_ATTR } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { STRUCTURE_MARK } from '../dom/structure'
 import { XhElement } from '../element-base'
-import { createOverlayExit } from '../overlay-exit'
+import { createOverlayExit, withoutHidden } from '../overlay-exit'
 import { LazyContent } from '../runtime/lazy-content'
 import { MachineController } from '../runtime/machine-controller'
 
@@ -165,11 +165,11 @@ export class XhAccordionElement extends XhElement {
       this.spreader.spread(el, api.getItemSeparatorProps())
     putAll('header', item => api.getHeaderProps(item))
     putAll('trigger', item => api.getTriggerProps(item))
-    // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-    // 就一帧都播不出来），真正的收起在动画结束后落成内联 display
+    // 收起跟着退场闸门走：hidden 与内联 display 都等退场播完才落。宿主的
+    // [hidden]{display:none!important}（Tailwind preflight）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
     for (const el of this.getParts('content')) {
       const item = this.itemProps(el)
-      this.spreader.spread(el, api.getContentProps(item))
+      this.spreader.spread(el, withoutHidden(api.getContentProps(item)))
       const open = api.isOpen(item.value)
       let exit = this.exits.get(item.value)
       if (!exit) {
@@ -181,6 +181,7 @@ export class XhAccordionElement extends XhElement {
       }
       exit.track(el)
       exit.update(open)
+      el.hidden = !exit.visible
       this.setPartHidden(el, !exit.visible)
       let lazy = this.lazyContents.get(el)
       if (!lazy) {

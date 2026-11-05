@@ -105,36 +105,42 @@
     }
   }
 
-  /* ── Surface 级 disclosure：行高 0fr → 1fr，内缩同帧动 ──
+  /* ── Surface 级 disclosure：行高 0fr → 1fr，内缩与淡变同帧动 ──
      Accordion、Collapsible、Reasoning、ToolCall 的 content。
+     行轨道写 minmax(0, …)：裸 0fr 的下限是 auto，正文是文本节点时匿名网格项写不了 min-height，
+     轨道被它的内容高度撑住，整段动画只剩内缩在动。
      内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净。
      两端内缩由各皮肤在 content 上写进 --xh-_disclosure-pt / --xh-_disclosure-pb，
      没写的那一端按 0 动（与该端本来就没有内缩的皮肤一致） */
   @keyframes xh-disclosure-expand {
     from {
-      grid-template-rows: 0fr;
+      grid-template-rows: minmax(0, 0fr);
       padding-block-start: 0;
       padding-block-end: 0;
+      opacity: 0;
     }
 
     to {
-      grid-template-rows: 1fr;
+      grid-template-rows: minmax(0, 1fr);
       padding-block-start: var(--xh-_disclosure-pt, 0);
       padding-block-end: var(--xh-_disclosure-pb, 0);
+      opacity: 1;
     }
   }
 
   @keyframes xh-disclosure-collapse {
     from {
-      grid-template-rows: 1fr;
+      grid-template-rows: minmax(0, 1fr);
       padding-block-start: var(--xh-_disclosure-pt, 0);
       padding-block-end: var(--xh-_disclosure-pb, 0);
+      opacity: 1;
     }
 
     to {
-      grid-template-rows: 0fr;
+      grid-template-rows: minmax(0, 0fr);
       padding-block-start: 0;
       padding-block-end: 0;
+      opacity: 0;
     }
   }
 

@@ -195,7 +195,7 @@ Vue、React、Web Components 只负责：
 
 缺省形态的两类刻意例外：
 
-- 缺省 `ghost`：Descriptions、List、PageHeader、Toolbar、Tree。它们是排版骨架，通常嵌在 Card、Panel 或页面分区里，自带一圈描边会与宿主面叠成两道边；需要独立成面时由作者显式写 `outline` / `subtle`。Headless 仍须显式给出 `ghost` 缺省，不允许「不传」成为第四种形态。
+- 缺省 `ghost`：Accordion、Descriptions、List、PageHeader、Toolbar、Tree。它们是排版骨架，通常嵌在 Card、Panel 或页面分区里，自带一圈描边会与宿主面叠成两道边；需要独立成面时由作者显式写 `outline` / `subtle`。Headless 仍须显式给出 `ghost` 缺省，不允许「不传」成为第四种形态。
 - 结构形态轴：Tabs 的 `line | card | segment`（缺省 `line`）、RadioGroup / CheckboxGroup 的 `list | card`（缺省 `list`：一列「标记 + 文案」的行；`card`：一组可点的选择卡片，见 §4.1），RadioGroup 另有 `segmented`（一条字段外壳同款的轨道里首尾相接的段，选中段由滑动的 `thumb` 标出；缺省横排，`block` 撑满行宽；原 Segmented 组件并入于此，见 §4.1、§7.3）、Steps 的 `number | dot`（缺省 `number`：盛内容的序号圆点；`dot`：不盛内容的小圆点，步数多或横向空间紧时用）。它们换的是条目的结构，不是有框 / 无框，不走 ControlVariant。
 - 不设 `variant` 轴：Alert（语义由 `tone` 承担，面固定为语气淡底面：语气淡边 `--xh-_tone-border`（语气 40% 混承载面）+ 语气 12% 淡底，标题与正文取正文色，彩色只落在边、底与图标上）、CodeView / DiffView / Log（代码类面固定为描边面，行号槽与高亮依赖这层底）、Collapsible（只有触发条与内容，没有自己的壳）、Citation（随文引用，形态固定）。新增此类组件同样登记在这里，不用私有轴补形态。
 - 预设轴 `preset`：只给 Notification（`card | toast`，缺省 `card`）。它打包一组缺省值：落位、上限、间距、停留、页面转入后台时是否暂停与是否叠摞仍可逐项覆盖，卡片排版与关闭钮档位随预设走（卡片是标题加正文的两列网格、叉 sm 钉在右上角；轻提示是一行、叉 xs 排在行尾）。它不是视觉轴，不表达语气或状态，缺省值由 Headless 定。新增此类组件同样登记在这里。
@@ -914,7 +914,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 状态 | hover、选中、焦点、校验的换色；liquid 档的交互光（§9.12） | 颜色、描边色、阴影、`opacity`；交互光只动描边上的渐变位置；焦点环即时 | `micro` / `enter`；交互光 `glint` / `enter` | 保留淡变；交互光不播 |
 | 切换 | 开关滑块、单选圆点、勾选标记（§9.13） | `translate`、`scale`；勾选标记另可动 `clip-path`（描线）与 `mask-size`（全选 / 半选换形） | `nudge` / `continuous`（勾选标记的缓动取 `enter`）；短边 ≤ 32px 部件的缩放可用 `settle`；liquid 档的滑块用弹簧 `spring-toggle` | 瞬时 |
 | 指示 | 选中指示器在项之间移动（§9.8） | `translate`；尺寸为登记例外 | `move` / `continuous`；liquid 档用双沿弹簧 `spring-lead` / `spring-trail` | 瞬时 |
-| 披露 | 内容展开收起（§9.4） | `grid-template-rows` | `expand` / `enter-strong`；`collapse` / `exit` | 瞬时 |
+| 披露 | 内容展开收起（§9.4） | `grid-template-rows`、内缩、`opacity`；指示器 `rotate` | `expand` / `disclosure`；`collapse` / `disclosure` | 瞬时 |
 | 出现 | 挂载与卸载（§9.5） | `opacity`、小幅 `translate` / `scale` | `enter` / `enter` 或 `enter-strong`；`exit` / `exit` | 淡变 |
 | 列表 | 加入、移除、重排、错开（§9.6） | 同出现；重排用 `translate` | 同出现；重排 `move` / `continuous` | 淡变，无错开 |
 | 导航 | 整幅位移：抽屉、覆盖式侧栏、走马灯翻页、平滑滚动 | `translate`、滚动位置 | 进 `slide` / `slide`；出 `exit` / `exit` | 抽屉类淡变，其余瞬时 |
@@ -927,7 +927,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 表中时长省略前缀 `--xh-motion-duration-`，缓动省略前缀 `--xh-motion-ease-`；弹簧名是 `@xihan-ui/motion` 的预设，由令牌生成。
 
-- 时长只有两档基调：换色 150ms（`micro`、`press`、`exit`、`collapse` 都引 `--xh-duration-fast`），几何 200ms（`nudge`、`move`、`enter`、`release`、`expand` 都引 `--xh-duration-normal`）；`slide`（320ms）与循环、数据、氛围、注意类另计。同值的几支仍按角色分开写，主题可以只调其中一支。
+- 时长只有两档基调：换色 150ms（`micro`、`press`、`exit` 都引 `--xh-duration-fast`），几何 200ms（`nudge`、`move`、`enter`、`release`、`expand`、`collapse` 都引 `--xh-duration-normal`）；`slide`（320ms）与循环、数据、氛围、注意类另计。同值的几支仍按角色分开写，主题可以只调其中一支。
 
 - 带位移、缩放、旋转或尺寸变化的动画不得使用 `micro`、`enter`、`exit` 三支时长：这三支在减弱动效下保留为淡变（§14.4）。
 - 屏内换位与尺寸变化（占位式侧栏折叠、分栏折叠、标签带滚动、指示器滑移）归指示 / 列表的 `move`，不归导航；导航只管整幅位移。
@@ -978,9 +978,13 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 ### 9.4 Disclosure
 
-- Surface 级 disclosure（Accordion、Collapsible、Reasoning、ToolCall）内容统一 `grid-template-rows: 0fr → 1fr`；展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；两支时长在减弱动效下瞬时完成。
+- Surface 级 disclosure（Accordion、Collapsible、Reasoning、ToolCall）内容统一行高 `minmax(0, 0fr) → minmax(0, 1fr)`，内缩与 `opacity` 同帧动；展开 `--xh-motion-duration-expand`、收起 `--xh-motion-duration-collapse`，两支等长、同一条 `--xh-motion-ease-disclosure`（缓起缓停：下方内容的起终点都在可视区内，开头不猛冲、收尾不硬停）；等长同曲线才能让单开切换时一收一展的总高度一路单调，长度或曲线不一样，下方内容会先过冲再弹回。两支时长在减弱动效下瞬时完成。
+- 行轨道的下限必须写 0：裸 `0fr` 的下限是 `auto`，正文是文本节点时匿名网格项写不了 `min-height`，轨道被内容高度撑住，整段动画只剩内缩在动。
+- 内容区的 `hidden` 与内联 `display: none` 都跟退场闸门走，退场播完才落。宿主的 `[hidden]{display:none!important}`（Tailwind preflight）压得过皮肤，`hidden` 跟着开合走退场就一帧都播不出来。退场窗口内靠 `inert` 挡住焦点。
+- 展开与收起不换字重、不铺底、不画占高度的线：字重一换标题宽度就跳，底与线会跟着 `data-state` 一下子出现；层次只靠字色（标题 `fg-default`、正文 `fg-muted`）。
+- Accordion 与 Collapsible 的指示器缺省排在标题之前，收起时朝行尾（`rotate: -90deg`，rtl 下 `90deg`）、展开回正朝下；作者把它写在标题之后即落到行尾。
 - 密集 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器。
-- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse`；内容瞬时时用 `--xh-motion-duration-nudge`。
+- 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse` 与同一条 `disclosure` 曲线；内容瞬时时用 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画（§9.6 首帧规则）。
 - 中途反向从此刻接着走：展开到一半点收起（或反过来），新一段按自己的曲线从当前开合程度继续，不先跳到全开再收、也不先塌成 0 再展。关键帧不能打断，由 Headless 在翻转那一刻（绘制之前）把新一段拨到对应的时间点。
 - 关键帧集中在 `family/motion.css`，皮肤只引用。

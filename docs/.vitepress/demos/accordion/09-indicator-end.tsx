@@ -1,4 +1,4 @@
-// 指示器在前 | 指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量
+// 指示器在后 | 缺省的箭头排在标题之前；指示器写在标题之后即落到行尾
 import type { ReactNode } from "react";
 import {
   XhAccordionContent,
@@ -10,9 +10,9 @@ import {
 } from "@xihan-ui/react";
 
 const items = [
-  { value: "one", label: "第一章", body: "指示器在标题左边，展开时照样翻转。" },
+  { value: "one", label: "第一章", body: "指示器在行尾，展开时照样转向。" },
   { value: "two", label: "第二章", body: "部件的先后顺序就是它们在标题栏里的顺序。" },
-  { value: "three", label: "第三章", body: "标题吃掉余量，右侧留白。" },
+  { value: "three", label: "第三章", body: "余量落在标题与指示器之间。" },
 ];
 
 export default function Demo(): ReactNode {
@@ -23,8 +23,8 @@ export default function Demo(): ReactNode {
           <XhAccordionItem key={item.value} value={item.value}>
             <XhAccordionHeader>
               <XhAccordionTrigger>
+                <span>{item.label}</span>
                 <XhAccordionIndicator />
-                <span style={{ marginInlineEnd: "auto" }}>{item.label}</span>
               </XhAccordionTrigger>
             </XhAccordionHeader>
             <XhAccordionContent>{item.body}</XhAccordionContent>

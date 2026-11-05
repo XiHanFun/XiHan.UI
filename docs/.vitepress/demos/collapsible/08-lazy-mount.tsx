@@ -16,8 +16,8 @@ export default function Demo(): ReactNode {
     <div style={{ width: "100%", maxWidth: "420px", display: "grid", gap: "12px" }}>
       <XhCollapsibleRoot lazyMount>
         <XhCollapsibleTrigger>
-          第一次展开才挂载
           <XhCollapsibleIndicator />
+          <span>第一次展开才挂载</span>
         </XhCollapsibleTrigger>
         <XhCollapsibleContent>
           <XhTextFieldRoot placeholder="输入后收起再展开，内容还在">
@@ -31,8 +31,8 @@ export default function Demo(): ReactNode {
 
       <XhCollapsibleRoot lazyMount unmountOnExit>
         <XhCollapsibleTrigger>
-          只在展开期间存在
           <XhCollapsibleIndicator />
+          <span>只在展开期间存在</span>
         </XhCollapsibleTrigger>
         <XhCollapsibleContent>
           <XhTextFieldRoot placeholder="输入后收起再展开，内容已清空">

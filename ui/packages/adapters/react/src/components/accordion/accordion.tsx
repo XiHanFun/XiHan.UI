@@ -154,8 +154,9 @@ export function XhAccordionContent({ children, ...rest }: XhAccordionContentProp
         ctx.api.getContentProps(item),
         rest,
         {
-          // 收起跟着退场闸门走：皮肤刻意没给 content 补 [hidden]{display:none}（补了退场
-          // 就一帧都播不出来），所以真正的收起落成内联 display——节点始终留在原地
+          // 收起跟着退场闸门走：hidden 与内联 display 都等退场播完才落。宿主的
+          // [hidden]{display:none!important}（Tailwind preflight）压得过皮肤，hidden 跟着开合走退场就一帧都播不出来
+          hidden: !visible || undefined,
           style: visible ? undefined : { display: 'none' },
           ref: (el: HTMLDivElement | null) => { contentRef.current = el },
         },

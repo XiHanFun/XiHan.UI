@@ -6,7 +6,7 @@ const items = [
   {
     value: "ready",
     label: "已发布",
-    content: "标题右侧那个箭头就是 indicator，展开时自动翻转。",
+    content: "标题前面那个箭头就是 indicator，展开时自动转向。",
   },
   {
     value: "draft",

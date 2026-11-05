@@ -124,6 +124,10 @@ const ROLE_OVERRIDE = {
   'image-viewer:rotate': '看片的旋转与平移、缩放同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
   'image-viewer:scale': '看片的缩放与平移、旋转同属一次视图变换，随平移走 nudge + continuous，不是部件原地形变',
   'progress:rotate': '仪表盘指针转到当前值是数值变化，与圆弧填充同属数值角色，随圆弧走 move + continuous，不是部件原地形变',
+  'accordion:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
+  'collapsible:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
+  'reasoning:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
+  'tool-call:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

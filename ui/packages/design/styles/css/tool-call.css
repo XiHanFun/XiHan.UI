@@ -120,7 +120,7 @@
   /* 与详情开合同时长：箭头先转完、内容后到位会像是两件事。收起取 collapse 档，展开（下面的打开态）取 expand 档。
      首帧就在的朝向直接呈现（data-instant），第一次开合起才转 */
   [data-scope='tool-call'][data-part='indicator']:not([data-instant]) {
-    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -146,7 +146,7 @@
   }
 
   [data-scope='tool-call'][data-part='indicator'][data-state='open']:not([data-instant]) {
-    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   [dir='rtl'] [data-scope='tool-call'][data-part='indicator'] {
@@ -323,12 +323,12 @@
 
   /* 展开与收起只在开合时播：首帧就在的展开 / 收起直接呈现（data-instant） */
   [data-scope='tool-call'][data-part='content'][data-state='open']:not([data-instant]) {
-    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   /* 退场走 exit 档曲线 */
   [data-scope='tool-call'][data-part='content'][data-state='closed']:not([data-instant]) {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],

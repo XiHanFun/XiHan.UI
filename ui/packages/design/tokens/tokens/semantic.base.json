@@ -641,9 +641,9 @@
       "$value": "{duration.normal}"
     },
     "duration-collapse": {
-      "$description": "内容收起：比展开短一档，收起是让路。",
+      "$description": "内容收起：与展开等长，单开切换时一收一展的总高度才一路单调，下方内容不过冲回弹。",
       "$type": "duration",
-      "$value": "{duration.fast}"
+      "$value": "{duration.normal}"
     },
     "duration-slide": {
       "$description": "尺度大的位移与容器级尺寸变化：抽屉推入推出、轮播换页、面板长高。只此一支，不按场景再分名。",
@@ -720,6 +720,11 @@
     },
     "ease-sweep": {
       "$description": "往返型无限循环：进度条的不定态、骨架呼吸、加载条的游标。单向循环仍走 ease-loop——匀速是转圈的硬要求，而往返在折返点需要两端减速，linear 在那里是瞬时反向、读成硬弹。",
+      "$type": "cubicBezier",
+      "$value": "{ease.in-out}"
+    },
+    "ease-disclosure": {
+      "$description": "面级内容的展开与收起：行高、内缩、淡变与指示器转向同用这一条。下方内容的起终点都在可视区内，两端都要软：开头不猛冲，收尾不硬停。",
       "$type": "cubicBezier",
       "$value": "{ease.in-out}"
     },

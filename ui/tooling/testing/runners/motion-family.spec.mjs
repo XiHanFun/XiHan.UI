@@ -116,11 +116,12 @@ describe('family/motion.css 共享关键帧', () => {
     const expand = found.get('xh-disclosure-expand').body
     const collapse = found.get('xh-disclosure-collapse').body
 
-    expect(expand).toMatch(/from\s*\{[^}]*grid-template-rows:\s*0fr/)
-    expect(expand).toMatch(/to\s*\{[^}]*grid-template-rows:\s*1fr/)
+    // 行轨道下限写 0：裸 0fr 的下限是 auto，正文是文本节点时轨道收不下去
+    expect(expand).toMatch(/from\s*\{[^}]*grid-template-rows:\s*minmax\(0, 0fr\)/)
+    expect(expand).toMatch(/to\s*\{[^}]*grid-template-rows:\s*minmax\(0, 1fr\)/)
     expect(expand).toContain('padding-block-start: var(--xh-_disclosure-pt, 0)')
     expect(expand).toContain('padding-block-end: var(--xh-_disclosure-pb, 0)')
-    expect(collapse).toMatch(/from\s*\{[^}]*grid-template-rows:\s*1fr/)
-    expect(collapse).toMatch(/to\s*\{[^}]*grid-template-rows:\s*0fr/)
+    expect(collapse).toMatch(/from\s*\{[^}]*grid-template-rows:\s*minmax\(0, 1fr\)/)
+    expect(collapse).toMatch(/to\s*\{[^}]*grid-template-rows:\s*minmax\(0, 0fr\)/)
   })
 })

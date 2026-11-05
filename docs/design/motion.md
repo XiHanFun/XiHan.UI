@@ -41,7 +41,7 @@
 | `--xh-motion-duration-exit` | 150ms | 150ms | 出现、列表移除、导航出 |
 | `--xh-motion-duration-move` | 200ms | 1ms | 指示、列表重排、数值 |
 | `--xh-motion-duration-expand` | 200ms | 1ms | 披露展开 |
-| `--xh-motion-duration-collapse` | 150ms | 1ms | 披露收起 |
+| `--xh-motion-duration-collapse` | 200ms | 1ms | 披露收起 |
 | `--xh-motion-duration-slide` | 320ms | 1ms | 导航进 |
 | `--xh-motion-duration-nudge` | 200ms | 1ms | 切换、跟手让位 |
 | `--xh-motion-duration-press` / `-release` | 150 / 200ms | 1ms | 按压 |
@@ -71,8 +71,9 @@
 | `--xh-motion-ease-continuous` | `standard` | 在屏内被推到新位置：指示器、重排、数值 |
 | `--xh-motion-ease-loop` | `linear` | 匀速的无限循环 |
 | `--xh-motion-ease-enter` | `out` | 淡入与换色 |
-| `--xh-motion-ease-enter-strong` | `out-strong` | 带位移的入场、展开、原地形变 |
-| `--xh-motion-ease-exit` | `in` | 退场、收起 |
+| `--xh-motion-ease-enter-strong` | `out-strong` | 带位移的入场、原地形变 |
+| `--xh-motion-ease-exit` | `in` | 退场 |
+| `--xh-motion-ease-disclosure` | `in-out` | 面级内容的展开与收起，正文与指示器同用 |
 | `--xh-motion-ease-slide` | `out-fluid` | 整幅位移：抽屉推入、轮播换页 |
 | `--xh-motion-ease-sweep` | `in-out` | 往返型循环的折返 |
 | `--xh-motion-ease-press` / `-release` | `standard` / `out-strong` | 按压时间线 |
@@ -133,7 +134,9 @@
 
 ## 披露
 
-- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容走 `grid-template-rows: 0fr → 1fr`：展开 `--xh-motion-duration-expand` + `--xh-motion-ease-enter-strong`，收起 `--xh-motion-duration-collapse` + `--xh-motion-ease-exit`；指示器随内容同档转向，减弱动效下两者都瞬时完成。
+- Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容的行高 `minmax(0, 0fr) → minmax(0, 1fr)`，内缩与 `opacity` 同帧动：展开 `--xh-motion-duration-expand`、收起 `--xh-motion-duration-collapse`，两支等长、同一条 `--xh-motion-ease-disclosure`（缓起缓停），单开切换时一收一展的总高度一路单调；指示器随内容同时长、同曲线转向，减弱动效下两者都瞬时完成。
+- 内容区的 `hidden` 跟退场走，退场播完才落：宿主有 `[hidden]{display:none!important}`（Tailwind preflight）时退场照样播完。
+- 开合不换字重、不铺底、不画占高度的线，层次只靠字色。
 - 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画。
 

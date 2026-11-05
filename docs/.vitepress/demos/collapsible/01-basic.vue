@@ -12,9 +12,9 @@ import {
   <div style="width: 100%; max-width: 420px; display: grid; gap: 12px">
     <XhCollapsibleRoot>
       <XhCollapsibleTrigger>
-        展开详情
         <!-- 指示符空着就由皮肤画一枚箭头，展开时转向 -->
         <XhCollapsibleIndicator />
+        <span>展开详情</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>
         收起时内容只加 hidden，节点不卸载，里面的输入框与滚动位置都留着。
@@ -23,8 +23,8 @@ import {
 
     <XhCollapsibleRoot default-open>
       <XhCollapsibleTrigger>
-        一上来就开着
         <XhCollapsibleIndicator />
+        <span>一上来就开着</span>
       </XhCollapsibleTrigger>
       <XhCollapsibleContent>defaultOpen 只影响初始状态。</XhCollapsibleContent>
     </XhCollapsibleRoot>
