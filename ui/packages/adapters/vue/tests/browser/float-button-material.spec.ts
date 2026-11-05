@@ -95,6 +95,7 @@ afterEach(async () => {
   keyboardModality = false
   delete document.documentElement.dataset.theme
   delete document.documentElement.dataset.contrast
+  document.documentElement.removeAttribute('data-material')
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
@@ -217,5 +218,33 @@ describe('float-button 的 M2 磨砂皮肤', () => {
     const focused = getComputedStyle(element)
     expect(focused.outlineStyle).toBe('solid')
     expect(focused.outlineColor).not.toBe(focused.backgroundColor)
+  })
+
+  it.each(['standard', 'liquid'] as const)('forced-colors（%s）：展开后定位壳与展开组不画状态环，触发器留着展开态的环', async (material) => {
+    if (material === 'liquid')
+      document.documentElement.setAttribute('data-material', 'liquid')
+    await cdp().send('Emulation.setEmulatedMedia', {
+      media: '',
+      features: [{ name: 'forced-colors', value: 'active' }],
+    })
+    expect(matchMedia('(forced-colors: active)').matches).toBe(true)
+    await mount()
+    await userEvent.click(trigger())
+    await finishMotion()
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    await finishMotion()
+
+    const root = document.querySelector<HTMLElement>('[data-scope=\'float-button\'][data-part=\'root\']')!
+    const list = document.querySelector<HTMLElement>('[data-scope=\'float-button\'][data-part=\'list\']')!
+    expect(root.getAttribute('data-state')).toBe('open')
+    expect(list.getAttribute('data-state')).toBe('open')
+    // 定位壳与展开组只是排布的盒子：画上环就是绕着整组、整排动作各描一道方框
+    expect(getComputedStyle(root).outlineStyle).toBe('none')
+    expect(getComputedStyle(list).outlineStyle).toBe('none')
+    // 触发器是 aria-expanded 的按钮，展开态照常落强档状态环；指针点开不算键盘焦点，环不来自聚焦
+    const element = trigger()
+    expect(element.getAttribute('aria-expanded')).toBe('true')
+    expect(element.matches(':focus-visible')).toBe(false)
+    expect(getComputedStyle(element).outlineStyle).toBe('solid')
   })
 })
