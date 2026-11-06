@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.Co4PkLSp.js";import{o as t}from"./pie-chart.B14ZK5G9.js";var n=e(),r=[{quarter:`一季度`,users:120},{quarter:`二季度`,users:210},{quarter:`三季度`,users:340},{quarter:`四季度`,users:460}];function i(){return(0,n.jsx)(t,{data:r,nameField:`quarter`,valueField:`users`,rose:!0,sort:`none`,caption:`各季度新增用户（千人）`})}export{i as default};

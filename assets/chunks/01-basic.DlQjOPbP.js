@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.Co4PkLSp.js";import{o as t}from"./radio-group.MqJPw3sm.js";var n=e(),r=[{value:`free`,label:`免费版`},{value:`standard`,label:`标准版`},{value:`pro`,label:`专业版`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`standard`,label:`套餐`,name:`plan`})}export{i as default};

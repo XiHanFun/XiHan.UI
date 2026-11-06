@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.Co4PkLSp.js";import{t}from"./button.pQ1uiQIx.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

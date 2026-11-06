@@ -1,1 +1,0 @@
-import{CO as e,bO as t,xO as n,yO as r}from"./theme.BH6BvlgN.js";import{r as i}from"./context.DYNNIXie.js";var a={};function o(e){return e}function s(){let e=i();return e?n(r(e.api)):a}function c(){let e=i();return e?t(r(e.api)):a}function l(){let t=i();if(!t)return o;let n=r(t.api).labelId;return t=>e(t,n)}export{l as n,s as r,c as t};

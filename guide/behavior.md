@@ -142,11 +142,12 @@ export interface Layer {
   readonly isModal: () => boolean;
   readonly surfaces: () => Element[]; // 点了就该关本层的表面，如遮罩
   readonly visuals?: () => Element[]; // 特殊结构显式声明真正消费 z-index 的宿主
+  readonly opensOnHover?: boolean; // 悬停就出现、不经按下打开：挡下层外交互时只护着它开在其内容里的层；缺省内联层为 true
 }
 
 export interface LayerRegistry {
   readonly ownerDocument: Document;
-  // register / list / top / elementsAbove / subscribe ...
+  // register / list / top / elementsAbove / nestedAbove / subscribe ...
   visualOf: (layer: Layer) => {
     visualIndex: number;
     visualLane: number;
@@ -167,6 +168,8 @@ export interface LayerRegistry {
 
 层可以从栈中间释放。浮层逻辑收起之后还要播退场，层留在栈里直到退场播完；这期间打开的新层（比如点在下拉外面的那一下正好打开了抽屉）压在它上面，它播完退场就从新层下面释放，这是正常的先后。真正乱序的是父层先走：开在它内容里的层还压在上面时就释放它，注册表报 `core.layer.dispose-not-top`，明细里的 `nested` 列出还压着的那几层。谁开在谁里面按登记那一刻的 DOM 记下，释放时节点已经卸掉也照样判得出。
 
+库内的浮层在退场播完要释放时，会等开在它里面的层先走。一次层外按下可以把提示和它所在的弹出层一并收起（见[消隐层](#消隐层)），两层各播各的退场，谁先播完不一定；弹出层播完退场时，先用 `nestedAbove(layer)` 问开在它里面的层走了没有，还压着就留在栈里等，层栈每变一次复查一次，都走了才释放层、消隐层、焦点域与滚动锁，Dialog / Drawer 的 `onExitComplete` 也在这之后发出。等的这一小段里它已经关闭、内容已经失活，只占栈位，这时重开沿用原资源，与退场中重开一样。只等开在它里面的层：与它无关的层压在上面时照常从中间释放。组件卸载不等，资源立即释放。自建浮层按同一做法：退场结束后 `registry.nestedAbove?.(layer)` 非空就订阅 `subscribe`，在通知之后的微任务里复查（通知期间不能改栈）。
+
 视觉层级不再由各组件各自拿静态 `z-index` 猜。注册表按当前 Document 的逻辑栈派生
 `visualIndex`，再让 `kind` 与实时 `isModal()` 占用该序号内的 `visualLane`；后登记层的序号
 权重大于 lane，所以嵌套 popover 一定高于所属 modal，后来打开的 modal 也能压住更早的
@@ -181,6 +184,8 @@ popover。公共绑定把 `visualLayer` 写入私有 `--xh-_layer`，皮肤仍�
 订阅回调可以读取当前快照、订阅或退订，但不能同步嵌套调用 `register()`，也不能释放仍在注册表里的 Layer。嵌套状态变更会明确抛错，避免外层通知观察到一半又被另一轮变更改写；已经成功终结的 cleanup 仍可重复调用并保持无操作。
 
 注册表还给出 `elementsAbove(layer)`：栈中位于该层之上的各层的全部节点（`node` + `branches` + `surfaces`）。背景失活要用它把上层排除在自己的管辖之外。
+
+`nestedAbove(layer)` 给出栈中位于该层之上、开在它内容里的层，按登记时记下的嵌套判，与乱序诊断同一份记录；返回冻结数组，层未登记或已释放时为空。这个方法在类型上是可选的：注册表是页面级共享的，页面上先装的那份 `@xihan-ui/core` 早于它时，取到的实例没有这个方法，调用方按没有这样的层处理。
 
 单个 Headless 浮层 layer effect 会把“登记 layer → 建消解层 → 建焦点域 → 加滚动锁/背景失活”放在同一初始化事务里。同步步骤与宿主 `flush` 后才执行的背景失活都经过事务守卫；任一步抛错都会把已经取得的资源按逆序全部释放，最后移除 layer。effect 成功后交给机器的也是同一份幂等逆序 cleanup。单项清理失败原样抛出，多项失败则聚合报告，且两者都会继续清完其余项，避免错误层永久占着栈顶。
 
@@ -235,9 +240,11 @@ DismissableLayer 的监听 Document、`CustomEvent`、微任务与动画帧均�
 
 同一 Document 的 DismissableLayer 与 EscapeFallback 共用一套 Hub；每一份显式 LayerRegistry 按对象身份形成独立 lane，不同应用或子树的自定义层栈互不干扰。同一 lane 的同一 Layer 只能有一个消解参与者，重复创建会明确失败。首个租约同步事务化安装四个监听：keydown capture、pointerdown capture、focusin capture、keydown bubble；最后一个租约释放时按 keydown bubble、focus、pointer、keydown capture 的严格逆序完整卸载。DismissableLayer 参与者仍延后一枚所属 Window 的微任务武装，以避开打开浮层的同一次 pointerdown；EscapeFallback 注册后同步生效。派发处理期间最后一个租约离场时，Hub 把卸载延到当前处理阶段的 `finally`，回调里同步建立的新租约会复用原 Hub，不会出现两套 Document 监听。
 
-pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任何业务回调前冻结所有 lane 的 LayerRegistry snapshot。每条 lane 从事件开始时的真实栈顶向下生成纯计划：命中层内部即停；命中 surface 时计划关闭该层后停止；没有 DismissableLayer 参与者、参与者尚未武装或节点尚未在场时都是屏障。计划阶段每次读取 node、branches 或 surfaces 后都会复核原 snapshot；getter 改变层栈时整条 lane 当场作废，不再读取更低层 getter。执行每个候选前都会确认当前栈严格等于原计划对应的前缀、候选确为真实栈顶、参与者 token 与动态节点仍相同；DOM 表决、选项表决与 interact 表决之后逐阶段复核。票被否决、回调改变 snapshot/node、动态 branch 把原目标纳入层内，都会停止该 lane；动态 surface 命中会关闭其所属层，随后停止，不继续触碰更低层。
+pointer 与 focus 先为本次事件冻结一份 composed path，并在执行任何业务回调前冻结所有 lane 的 LayerRegistry snapshot。每条 lane 从事件开始时的真实栈顶向下生成纯计划：命中层内部即停；命中 surface 时计划关闭该层后停止；没有 DismissableLayer 参与者、参与者尚未武装或节点尚未在场时都是屏障（悬停就出现的层例外，见下文）。计划阶段每次读取 node、branches 或 surfaces 后都会复核原 snapshot；getter 改变层栈时整条 lane 当场作废，不再读取更低层 getter。执行每个候选前都会确认当前栈严格等于原计划去掉已退栈各层之后剩下的那几层、候选之上只留着悬停就出现的层、参与者 token 与动态节点仍相同；DOM 表决、选项表决与 interact 表决之后逐阶段复核。票被否决、回调改变 snapshot/node、动态 branch 把原目标纳入层内，都会停止该 lane；动态 surface 命中会关闭其所属层，随后停止，不继续触碰更低层。
 
-`onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成下一段计划前缀时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
+`onDismiss` 完整返回后，只有候选 Layer 确实退栈、当前栈严格变成原计划去掉已退栈各层之后剩下的那几层时，pointer/focus 才继续处理下一层。受控组件只发关闭意图却未退栈、关闭开关让 `onDismiss` 原地返回、额外移除旧层或登记新层都会形成屏障。正常逐层退栈产生的新冻结 snapshot 会成为下一候选的 stage token；成功变更后再恢复相同内容仍不能冒充原 snapshot，失败登记由 LayerRegistry 补偿回原对象则保持有效。Escape 每条 lane 只处理事件开始时的原始栈顶，一次按键不会沿栈连续关闭。
+
+上面的屏障按栈序挡住下面每一层：经按下、聚焦打开的层，打开它的那次交互没有收掉下面的层，说明它开在里面，栈序即嵌套。悬停就出现的层不在此列：内联层（`kind: 'inline'`，提示与导航面板）都是这样，别的层悬停就出现时在登记时写 `opensOnHover: true`，库内是悬停卡片、引用的悬停预览、悬停展开的菜单（`openOnHover`，子菜单缺省如此）、悬停展开的浮动按钮（`expandTrigger="hover"`）和侧边导航图标栏的浮出面板；点击展开的菜单与浮动按钮不写，照旧按栈序。这样的层压在别的层上面不代表开在那一层里，所以它留在栈里时不按栈序挡住下面每一层。交互落在它里面，或者它还判不了这次交互（没有参与者、尚未武装、节点不在场）时，它只护着它开在其内容里的层：那一层的根节点装着它的根节点或某个分支，按事件那一刻的 DOM 判；被护住的层不消解，被护住的层若经按下、聚焦打开，照旧挡住自己下面每一层，若也是悬停就出现的，把保护再往上传。交互落在它外面时它谁也不护：它否决了层外票、收到关闭意图却没退栈（多半正在播退场），下面的层连同它开在其内容里的那一层照常求值、照常消解，执行时它留在候选之上也不算栈变了。下拉开着时指针移到带提示的按钮上，提示压在下拉上面：按这颗按钮、按空白处、提示正在播退场，下拉都照常收起。对话框、弹出层里一颗按钮的提示被按中时，外面那层不收；按在层外时，提示可见也好、正在播退场也好，提示和它所在的那一层在这一下一并收起，那一层等提示的层先释放（见[层栈](#层栈)）。悬停卡片、悬停展开的菜单与浮动按钮、图标栏的浮出面板同理：下拉开着时它们压在上面，按它们的触发器、按在它们里面、按空白处，下拉都照常收起；它们开在弹出层、对话框里时，按在它们里面外面那层不收。悬停展开的菜单还会把焦点拿进自己的内容里，下面与它无关的下拉在它出现后随即因失焦收起，不用等按下。Escape 不分层的种类，仍只交给真实栈顶，提示在场时先收提示。
 
 `createEscapeFallback()` 给同一 lane 的空层栈提供 Escape 后备出口，适合覆盖侧栏这类不登记为 Layer 的界面。keydown capture 会在任何 Layer getter、表决或业务回调前冻结全部 lane 的 registry snapshot 与 fallback token snapshot；当时只要 lane 存在任意 Layer，该 lane 的本次按键就已消费，即使 Layer 没有消解参与者、尚未武装、否决关闭或同步退栈，bubble 也不会接着调用 fallback。空栈 lane 从最新 token 反向查找第一个 `isEnabled()` 为真的出口，最新出口已启用后不会再读取更早 getter。
 

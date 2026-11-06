@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.DLUcRpLL.js";import{t}from"./context.DYNNIXie.js";import{t as n}from"./field-context.CONVnS97.js";var r=e();function i({children:e}){return(0,r.jsx)(t,{value:void 0,children:(0,r.jsx)(n,{value:void 0,children:e})})}export{i as t};

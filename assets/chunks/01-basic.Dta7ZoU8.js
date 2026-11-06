@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.DLUcRpLL.js";import{t}from"./kbd.Bxobq4rS.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:[(0,n.jsx)(t,{keys:[`Escape`]}),(0,n.jsx)(t,{keys:[`Mod`,`K`]})]})}export{r as default};
