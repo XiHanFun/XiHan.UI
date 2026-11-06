@@ -119,7 +119,7 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(lastStyle.borderTopRightRadius)).toBeGreaterThan(0)
   })
 
-  it('分段悬停与选中只改变当前操作面：组内淡底承载 hover 200，选中为品牌淡底 + 淡底前景', async () => {
+  it('分段悬停与选中只改变当前操作面：组内淡底承载 hover 200，选中为实心主色 + 面上反白', async () => {
     const idle = mount()
     const idleStyle = getComputedStyle(idle.items[1]!)
     const idleBackground = idleStyle.backgroundColor
@@ -131,8 +131,8 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(getComputedStyle(idle.items[1]!).borderRadius)).toBe(0)
 
     const pressed = mount({ pressed: true })
-    expect(getComputedStyle(pressed.items[1]!).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
-    expect(getComputedStyle(pressed.items[1]!).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
+    expect(getComputedStyle(pressed.items[1]!).backgroundColor).toBe(tokenColor('--xh-bg-brand'))
+    expect(getComputedStyle(pressed.items[1]!).color).toBe(tokenColor('--xh-fg-on-brand'))
 
     const large = mount({ size: 'lg' })
     expect(Number.parseFloat(getComputedStyle(large.items[1]!).blockSize)).toBeGreaterThan(idleHeight)

@@ -78267,6 +78267,9 @@
               "name": "--xh-toolbar-item-bg-pressed-active"
             },
             {
+              "name": "--xh-toolbar-item-bg-pressed-disabled"
+            },
+            {
               "name": "--xh-toolbar-item-bg-pressed-hover"
             },
             {

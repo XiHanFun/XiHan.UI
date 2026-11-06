@@ -86391,7 +86391,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-_tone-subtle"
+        "--xh-_tone"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -86417,7 +86417,7 @@
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone-subtle-active"
+        "--xh-_tone-active"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -86466,7 +86466,7 @@
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone-subtle-hover"
+        "--xh-_tone-hover"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 background-color 覆盖槽。"
@@ -86540,12 +86540,10 @@
         "not([data-variant='solid'])",
         "pressed",
         "state=on",
-        "variant=outline",
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone-border-control",
-        "transparent"
+        "--xh-_tone"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 border、border-color 覆盖槽。"
@@ -86560,6 +86558,7 @@
         "color"
       ],
       "state": [
+        "@media print",
         "default",
         "disabled",
         "focus-visible",
@@ -86568,13 +86567,15 @@
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
-        "pressed"
+        "pressed",
+        "state=on"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
         "--xh-_action-variant-fg-hover",
         "--xh-_action-variant-fg-pressed",
-        "--xh-_action-variant-fg-rest"
+        "--xh-_action-variant-fg-rest",
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 color 覆盖槽。"
@@ -86620,7 +86621,7 @@
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone-fg"
+        "--xh-_tone-on"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 color 覆盖槽。"
@@ -86789,10 +86790,8 @@
       ],
       "state": [
         "disabled",
-        "focus-visible",
         "hover",
         "is(:active, [data-pressed])",
-        "is(:hover, [data-loading])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
@@ -86800,7 +86799,7 @@
         "state=on"
       ],
       "defaultToken": [
-        "none"
+        "--xh-_highlight-tone"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 box-shadow 覆盖槽。"
@@ -88480,6 +88479,7 @@
       ],
       "state": [
         "disabled",
+        "not([aria-pressed='true'])",
         "xh-ink-surface"
       ],
       "defaultToken": [
@@ -88519,17 +88519,27 @@
       ],
       "property": [
         "--xh-ink-surface",
-        "background-color"
+        "background-color",
+        "border",
+        "border-color"
       ],
       "state": [
         "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle"
+        "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
+      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-bg-pressed-active",
@@ -88549,10 +88559,30 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle-active"
+        "--xh-bg-brand-active"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-item-bg-pressed-disabled",
+      "component": "toolbar",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "--xh-ink-surface",
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-ink-surface"
+      ],
+      "defaultToken": [
+        "--xh-toolbar-item-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-item-bg-pressed-hover",
@@ -88571,7 +88601,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-brand-subtle-hover"
+        "--xh-bg-brand-hover"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 background-color 覆盖槽。"
@@ -88586,6 +88616,7 @@
         "color"
       ],
       "state": [
+        "@media print",
         "default",
         "disabled",
         "hover",
@@ -88598,7 +88629,8 @@
       "defaultToken": [
         "--xh-_action-variant-fg-hover",
         "--xh-_action-variant-fg-pressed",
-        "--xh-_action-variant-fg-rest"
+        "--xh-_action-variant-fg-rest",
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 color 覆盖槽。"
@@ -88615,6 +88647,7 @@
       "state": [
         "default",
         "disabled",
+        "focus-visible",
         "hover",
         "is(:active, [data-pressed])",
         "loading",
@@ -88623,7 +88656,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand-subtle"
+        "--xh-fg-on-brand"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 color 覆盖槽。"

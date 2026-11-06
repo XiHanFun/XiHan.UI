@@ -137,8 +137,7 @@ Vue、React、Web Components 只负责：
 | Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
 | RadioGroup segmented 形态的滑块 thumb | 选中面 | 平面的实心主色 `--xh-bg-segment-selected`（与 `--xh-bg-brand` 同值，字反白），无边无影；见 §7.3。滑块另立 `thumb` 部件，不占行首单选圆圈的 `indicator` |
 | RadioGroup segmented 形态的段 | 行级（只换面） | 不投影 Action Control 配方（与 Tabs segment 同）：面与字写在段上，轨道底与字段外壳同为白底，按白底承载阶梯 100 → 200，段与滑块取 inset 形状（§6.3 嵌套圆角）；选中段由滑块标出、字取 `--xh-fg-segment-selected` + medium、不叠按下面；段间 1px `--xh-border-default` 分隔线（长为段高一半减 2px），与选中段、悬停段相邻的收起；分隔线画在后一段的起始缘上，折行后下一行首段的起始缘同样会画出一道——样式层拿不到段落在第几行，这一道不收，轨道应尽量一行排下（段数与文字长度受控，排不下改竖排或 Select）；不画行首圆圈，组标题视觉隐藏只作可及名 |
-| Toggle、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
-| ToggleGroup item | Action Control（无滑块开关，成组） | 选中 = 实心品牌 + 反白，与格状当前同一组令牌；见 §7.3 |
+| Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 按下 / 选中 = 实心品牌 + 反白，与格状当前同一组令牌；见 §7.3 |
 | Toolbar 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与条目同档 | 不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs 「更多」钮（overflow-trigger） | Action Control `icon` profile、ghost、与两端翻页钮同档 | root 的孩子、排在 list 之后（不进 tablist），自占一个 Tab 位、不是方向键走位的一站；盒取标签同高的正方形（竖排横贯列宽），不写内容时画横排三点；菜单开着时与悬停同档的中性面；见 §6.6 |
 | Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger / 面板 link | Collection Item（导航当前） | 当前 = 指示条 / 字色；SideNav link 投影 `data-xh-collection-context='page'`，其余投影 `'nav'`（Tabs 只在 line 档投影，另投 `data-current`；NavigationMenu trigger 展开时投影 `data-in-path`）；见 §7.3 |
@@ -630,8 +629,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 开关型（有滑块） | Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起滑块（`indicator` 部件）：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
 | 分段选中 | RadioGroup segmented 形态 | 字段外壳同款轨道（`--xh-bg-field` + `--xh-border-control`，control 形状）内的实心主色滑块（`thumb` 部件；作者不放滑块时选中段只靠反白字 + medium 标出）：`--xh-bg-segment-selected`（与 `--xh-bg-brand` 同值，实心按钮同一块面），无边无影；字 `--xh-fg-segment-selected`（与 `--xh-fg-on-brand` 同值）+ medium | 选中 + hover = `--xh-bg-segment-selected-hover`（与 `--xh-bg-brand-hover` 同值）；禁用选中 = `-disabled`（主色往承载面兑一半）+ `--xh-fg-segment-selected-disabled`（仍是反白）；不叠按下面；键盘焦点落在选中段上时环内侧衬底色间隔线。写了语气：滑块取语气的实心面、字取面上前景，悬停走语气层的明暗一档，禁用选中把面兑淡一半、字照旧 | ButtonText 边 |
 | 分页当前页 | Pagination item | 品牌描边（`--xh-bg-brand`）+ `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，不加粗（字重一变页码就变宽） | hover 20% → pressed 28%，边不变 | Highlight / HighlightText |
-| 开关型（无滑块） | Toggle、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` | hover 20% → pressed 28%；`solid` 变体才允许品牌实心 | Highlight / HighlightText |
-| 开关型（无滑块，成组） | ToggleGroup item | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`（与格状当前同一组令牌；`subtle` 变体才退回品牌淡底） | hover `--xh-bg-brand-hover` → pressed `--xh-bg-brand-active` | Highlight / HighlightText |
+| 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`（与格状当前同一组令牌；形态只决定未按下 / 未选中的壳，ToggleGroup 的 `subtle` 变体才退回品牌淡底；Toolbar 没有语气轴，恒取品牌） | hover `--xh-bg-brand-hover` → pressed `--xh-bg-brand-active`；键盘焦点环内侧衬底色间隔线 | Highlight / HighlightText |
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担。Menubar / NavigationMenu trigger 投影 `data-in-path`，`nav` 语境 open-path = `--xh-bg-subtle` | — | — |
 | 图例显隐（开是常态） | 图表图例项（`aria-pressed`） | 显示：实心色标 + `--xh-fg-default` 文字；隐藏：空心色标（只留描边）+ `--xh-fg-subtle` 文字 + 删除线；不用品牌淡底，否则整排图例都成了品牌底 | hover 100 → pressed 200（白底承载面阶梯） | 色标 CanvasText；隐藏态保留空心与删除线 |
 

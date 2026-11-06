@@ -11,8 +11,7 @@
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
 // 有滑块开关（Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
 //   RadioGroup segmented 的 thumb 另算分段选中：--xh-bg-segment-selected（实心主色），无影；
-// 无滑块开关（Toggle / Toolbar aria-pressed）= --xh-bg-brand-subtle + --xh-fg-on-brand-subtle；
-//   成组的 ToggleGroup item 是一组互斥 / 并列的取值，选中段与格状当前同为实心 --xh-bg-brand + --xh-fg-on-brand；
+// 无滑块开关（Toggle / ToggleGroup item / Toolbar aria-pressed 项）= 实心 --xh-bg-brand + --xh-fg-on-brand，与格状当前同一组令牌；
 // 展开路径 / 打开中不是选中：与所在家族 hover 同档的中性面，不用品牌色、不加粗。
 //
 // 三条判据：
@@ -85,10 +84,10 @@ const SEMANTIC = {
   // 分段选中滑块：RadioGroup segmented 形态的 thumb 是选中段的实心主色面（--xh-bg-segment-selected），平面一块无影；
   // 与 Tabs segment 的白色抬起滑块分开登记
   'radio-group:thumb': [{ kind: 'segment' }],
-  // 无滑块开关：单独一枚是品牌淡底；成组的 ToggleGroup item 选中段是实心主色（与格状当前同一组令牌）
-  'toggle:root': [{ kind: 'flat', state: '[data-state=\'on\']' }],
+  // 无滑块开关：Toggle、ToggleGroup item 与 Toolbar 按下项的按下 / 选中都是实心主色（与格状当前同一组令牌）
+  'toggle:root': [{ kind: 'grid', state: '[data-state=\'on\']' }],
   'toggle-group:item': [{ kind: 'grid', state: '[data-state=\'on\']' }],
-  'toolbar:item': [{ kind: 'flat', state: '[aria-pressed=\'true\']' }],
+  'toolbar:item': [{ kind: 'grid', state: '[aria-pressed=\'true\']' }],
   // 展开路径 / 打开中：与家族 hover 同档的中性面
   'menu:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],
   'menu:item': [{ kind: 'open', state: '[data-in-path]' }, { kind: 'overlay', state: '[data-state=\'checked\']' }],

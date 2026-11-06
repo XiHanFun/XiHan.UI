@@ -51095,26 +51095,14 @@
 
   /* 未按下的四档形态由家族形态矩阵按 data-xh-action-variant 给出（缺省 subtle 由连接层显式投影；solid 未按下时
      投 ghost，只在按下时才是品牌实心）；公开槽桥接到矩阵之前：使用者槽 → 形态矩阵 → 家族缺省。
-     按下（on）是无滑块开关的选中面：品牌淡底 12 → 悬停 20 → 按压 28，前景 fg-on-brand-subtle，
-     私有槽在下面的 data-state='on' 块里接到桥接槽上。 */
+     按下（on）是无滑块开关的选中面：实心主色 + 面上反白（与实心按钮、切换按钮组的选中段同一块面），
+     悬停 / 按压走主色的深一档、再深一档；写了语气取语气的实心面。私有槽在下面的 data-state='on' 块里接到桥接槽上。 */
   .xh-scope-toggle[data-part='root'] {
-    --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
-    --xh-_toggle-bg-on-hover: var(
-      --xh-toggle-bg-on-hover,
-      var(
-        --xh-_tone-subtle-hover,
-        var(--xh-bg-brand-subtle-hover)
-      )
-    );
-    --xh-_toggle-bg-on-active: var(
-      --xh-toggle-bg-on-active,
-      var(
-        --xh-_tone-subtle-active,
-        var(--xh-bg-brand-subtle-active)
-      )
-    );
-    --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
-    --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
+    --xh-_toggle-bg-on: var(--xh-toggle-bg-on, var(--xh-_tone, var(--xh-bg-brand)));
+    --xh-_toggle-bg-on-hover: var(--xh-toggle-bg-on-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
+    --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+    --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
+    --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone, var(--xh-bg-brand)));
     /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。
        掺的是淡底的不透明档：墨色淡底半透明，掺进去整块面会跟着变半透明 */
     --xh-_toggle-bg-on-disabled: var(
@@ -51154,14 +51142,10 @@
     pointer-events: none;
   }
 
-  /* outline 按下后描边仍是可操作区那一档：淡底面上没有描边就与 subtle 的按下态分不开 */
-  .xh-scope-toggle[data-part='root'][data-variant='outline'] {
-    --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone-border-control, var(--xh-border-control)));
-  }
-
-  /* 按下（on）：solid 之外的三档一律品牌淡底；solid 的按下面由矩阵 solid 列给出（连接层此时投影
-     data-xh-action-variant='solid'），这里不接管。 */
+  /* 按下（on）：solid 之外的三档一律实心主色（描边同色，outline 的描边也并进面里）；solid 的按下面由矩阵 solid 列给出
+     （连接层此时投影 data-xh-action-variant='solid'），这里不接管。焦点环内侧的底色间隔线与 solid 档同一套 */
   .xh-scope-toggle[data-part='root']:not([data-variant='solid'])[data-state='on'] {
+    --xh-_ring-gap: var(--xh-ring-gap);
     --xh-action-bg-rest: var(--xh-_toggle-bg-on);
     --xh-action-bg-hover: var(--xh-_toggle-bg-on-hover);
     --xh-action-bg-pressed: var(--xh-_toggle-bg-on-active);
@@ -51179,16 +51163,19 @@
     --xh-action-border-disabled: var(--xh-_toggle-border-on);
   }
 
-  /* 使用者的 --xh-toggle-shadow 只落在按下面上：矩阵各态无影，淡底与阴影互斥 */
+  /* 按下面的影位：四档的按下面都是实心面，缺省画实心面的顶边内高光（与切换按钮组的选中段、表单提交钮同一条式子，
+     走 box-shadow 的影槽；家族的 --xh-action-highlight-* 是渐变用的颜色槽，装不下这条式子），使用者的 --xh-toggle-shadow
+     写了就换成它。聚焦那一档不写兜底：使用者没给阴影时这支槽无效，家族按缺省画焦点环内侧的底色间隔线（读上面写的
+     --xh-_ring-gap），实心面上单靠一道环读不出来，高光此时让位；禁用的面掺了灰，不留高光 */
   .xh-scope-toggle[data-part='root'][data-state='on'] {
-    --xh-action-shadow-rest: var(--xh-toggle-shadow, none);
-    --xh-action-shadow-hover: var(--xh-toggle-shadow, none);
-    --xh-action-shadow-pressed: var(--xh-toggle-shadow, none);
-    --xh-action-shadow-focus-visible: var(--xh-toggle-shadow, none);
+    --xh-action-shadow-rest: var(--xh-toggle-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-hover: var(--xh-toggle-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-pressed: var(--xh-toggle-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-focus-visible: var(--xh-toggle-shadow);
     --xh-action-shadow-disabled: none;
   }
 
-  /* solid 按下后是实心面：顶边内高光与全库实心档共用一条式子。
+  /* solid 按下后是矩阵给的实心面（顶边内高光由上面的影位那条统一给）。
      禁用同样掺一半中性面保留选中信息（与上面三档同一条规则）：矩阵 solid 列的 disabled 是中性
      bg-subtle + fg-disabled，直接吃它就与未按下的禁用面分不开；底取实心面本身（矩阵在暗色下
      换过的品牌实心也一并跟着）掺 --xh-bg-subtle，前景留实心面的配对前景。 */
@@ -51198,10 +51185,6 @@
       color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle-opaque))
     );
     --xh-action-fg-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_action-variant-fg-rest));
-    --xh-action-highlight-rest: var(--xh-_highlight-tone);
-    --xh-action-highlight-hover: var(--xh-_highlight-tone);
-    --xh-action-highlight-pressed: var(--xh-_highlight-tone);
-    --xh-action-highlight-focus-visible: var(--xh-_highlight-tone);
   }
 
   .xh-scope-toggle[data-part='root'][data-full-width] {
@@ -51213,8 +51196,10 @@
   }
 
   @media print {
+    /* 实心面印不出来：按下态改画一圈实边、字加粗，字换回常规字色（反白字落在纸上就是空白） */
     .xh-scope-toggle[data-part='root'][data-state='on'] {
       border-color: currentColor;
+      color: var(--xh-toggle-fg, var(--xh-fg-default));
       font-weight: var(--xh-font-weight-semibold);
     }
   }
@@ -52273,15 +52258,34 @@
     inline-size: auto;
   }
 
-  /* 无滑块开关的按下态：品牌淡底 + 淡底前景，hover / 按下沿 12% → 20% → 28% 三档走；
-     三态都经桥接槽交给家族画，禁用面仍由家族按 data-disabled 给 */
+  /* 无滑块开关的按下态：实心主色 + 面上反白（与 Toggle、切换按钮组的选中段同一块面），hover / 按下走主色的深一档、再深一档，
+     描边同色；实心面带顶边内高光（走 box-shadow 的影槽，工具条没有语气轴，恒取品牌那一档）。四态都经桥接槽交给家族画；
+     禁用且按下的面掺一半中性面，既看得出按下也看得出改不动，字留反白、不留高光（与 Toggle 同一条规则）；
+     键盘焦点环内侧衬一道底色间隔线（家族缺省，影槽的聚焦档不写），实心面上单靠一道环读不出来 */
   .xh-scope-toolbar[data-part='item'][aria-pressed='true'] {
-    --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
-    --xh-action-bg-hover: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
-    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed-active, var(--xh-bg-brand-subtle-active));
-    --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
-    --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
-    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
+    --xh-_ring-gap: var(--xh-ring-gap);
+    --xh-action-shadow-rest: var(--xh-_highlight-brand);
+    --xh-action-shadow-hover: var(--xh-_highlight-brand);
+    --xh-action-shadow-pressed: var(--xh-_highlight-brand);
+    --xh-action-shadow-disabled: none;
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-bg-hover: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-hover));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed-active, var(--xh-bg-brand-active));
+    --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-bg-disabled: var(
+      --xh-toolbar-item-bg-pressed-disabled,
+      color-mix(in oklab, var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand)) 50%, var(--xh-bg-subtle-opaque))
+    );
+    --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
+    --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
+    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
+    --xh-action-fg-focus-visible: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
+    --xh-action-fg-disabled: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
+    --xh-action-border-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-border-hover: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-border-pressed: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-border-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
+    --xh-action-border-disabled: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
   }
 
   .xh-scope-toolbar[data-part='item'][hidden] {
@@ -52296,16 +52300,17 @@
     --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
     --xh-action-radius: 0;
     --xh-action-scale-pressed: none;
-    --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
     /* 组末端补回的控件圆角：尾部几段收进「更多」菜单后，由留下的最后一段接过去 */
     --xh-_toolbar-segment-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
 
     position: relative;
   }
 
-  /* 组内未选中的段才铺中性面：选中段的品牌淡底由上面 aria-pressed 那条给，这条比它更特定，不守卫会把它盖掉 */
+  /* 组内未选中的段才铺中性面：选中段的实心主色由上面 aria-pressed 那条给，这条比它更特定，不守卫会把它盖掉；
+     禁用面同理（组里的禁用面是中性淡底，按下且禁用的掺色面在 aria-pressed 那条里） */
   .xh-scope-toolbar[data-part='group'] > .xh-scope-toolbar[data-part='item']:not([aria-pressed='true']) {
     --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
+    --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
   }
 
   .xh-scope-toolbar[data-part='group'][data-orientation='horizontal']
@@ -52442,6 +52447,15 @@
   /* 全部放得下时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   .xh-scope-toolbar[data-part='overflow-trigger'][hidden] {
     display: none;
+  }
+
+  @media print {
+    /* 实心面印不出来：按下项改画一圈实边、字加粗，字换回常规字色（反白字落在纸上就是空白） */
+    .xh-scope-toolbar[data-part='item'][aria-pressed='true'] {
+      border-color: currentColor;
+      color: var(--xh-toolbar-item-fg, var(--xh-fg-default));
+      font-weight: var(--xh-font-weight-semibold);
+    }
   }
 
   @media (forced-colors: active) {
