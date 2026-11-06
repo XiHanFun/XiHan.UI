@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CxarPHX9.js";import{t}from"./json-viewer.COqSryhB.js";var n=e(),r={id:1},i={name:`root`,left:r,right:r};i.parent=i;function a(){return(0,n.jsx)(t,{value:i,defaultExpandedDepth:2,style:{inlineSize:`100%`,maxInlineSize:`420px`}})}export{a as default};

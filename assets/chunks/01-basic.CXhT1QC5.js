@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.DLUcRpLL.js";import{d as t}from"./pagination.DWUF0kJH.js";var n=e();function r(){return(0,n.jsx)(t,{count:196,pageSize:10})}export{r as default};
