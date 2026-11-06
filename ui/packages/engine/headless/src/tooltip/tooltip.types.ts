@@ -57,7 +57,10 @@ export interface TooltipRefs {
   reanchor: (() => void) | null
   /** 委托模式下指针此刻停在哪个锚点上；在锚点之外为 null。 */
   hovered: Element | null
-  /** 委托模式下指针按下的那个锚点：随按下而来的聚焦不打开提示。 */
+  /**
+   * 指针按下的那个元素（委托模式下是锚点，否则是 trigger）：随按下而来的聚焦不打开提示。
+   * 指针移开或动了键盘即清掉，之后的聚焦照常打开。
+   */
   pressed: Element | null
 }
 

@@ -244,6 +244,40 @@ export const tooltipSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '随按下而来的聚焦不再打开；指针移出之后的聚焦照常打开',
+      spec: { apg: APG },
+      props: { skipDelayDuration: 0 },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'apply-step 的 click 不派发 pointerdown，按下路径只能直接派发',
+          run: dispatchOnTrigger('pointerdown'),
+        },
+        {
+          kind: 'focus',
+          part: 'trigger',
+          expect: {
+            parts: { content: { 'data-state': 'closed', 'hidden': '' } },
+            events: [],
+          },
+        },
+        { kind: 'blur' },
+        {
+          kind: 'raw',
+          why: 'apply-step 无 hover 步骤类型，指针进出只能直接派发',
+          run: dispatchOnTrigger('pointerleave'),
+        },
+        {
+          kind: 'focus',
+          part: 'trigger',
+          expect: {
+            parts: { content: { 'data-state': 'open', 'hidden': null } },
+            events: [{ type: 'open-change', detail: { open: true } }],
+          },
+        },
+      ],
+    },
+    {
       // 焦点停在 trigger 上时，鼠标路过再移开不收走描述，收起由 BLUR 负责
       name: '聚焦打开后，指针移出不收起（收起归 BLUR 管）',
       spec: { apg: APG },

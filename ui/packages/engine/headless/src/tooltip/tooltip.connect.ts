@@ -126,13 +126,26 @@ export function connectTooltip<T extends PropTypes>(
           'onPointermove': followCursor
             ? (event: PointerEvent) => send({ type: 'POINTER.MOVE', point: { x: event.clientX, y: event.clientY }, pointerType: event.pointerType })
             : undefined,
-          'onPointerleave': () => send({ type: 'POINTER.LEAVE' }),
-          // 按下即让位给真正的操作
-          'onPointerdown': () => send({ type: 'POINTER.DOWN' }),
-          'onFocus': () => send({ type: 'FOCUS' }),
+          // 指针移开，这一次按下到此为止
+          'onPointerleave': () => {
+            refs.set('pressed', null)
+            send({ type: 'POINTER.LEAVE' })
+          },
+          // 按下即让位给真正的操作；随按下而来的聚焦不再把提示打开
+          'onPointerdown': (event: PointerEvent) => {
+            refs.set('pressed', event.currentTarget as Element)
+            send({ type: 'POINTER.DOWN' })
+          },
+          'onFocus': () => {
+            if (refs.get('pressed'))
+              return
+            send({ type: 'FOCUS' })
+          },
           'onBlur': () => send({ type: 'BLUR' }),
-          // 浮层可见时 Escape 归消解层按层栈仲裁；这里只管等待展开期那一段
           'onKeydown': (event: KeyboardEvent) => {
+            // 动了键盘，之后的聚焦都算键盘聚焦
+            refs.set('pressed', null)
+            // 浮层可见时 Escape 归消解层按层栈仲裁；这里只管等待展开期那一段
             if (event.key === 'Escape' && pending)
               send({ type: 'ESCAPE' })
           },

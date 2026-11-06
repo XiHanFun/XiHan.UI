@@ -175,6 +175,53 @@ describe('tooltipMachine 焦点', () => {
   })
 })
 
+describe('connectTooltip 按下之后的聚焦', () => {
+  type Handler = (event?: unknown) => void
+  const on = (t: ReturnType<typeof makeTooltip>, name: string, event?: unknown): void => (t.trigger()[name] as Handler)(event)
+  // 按下时记的是绑着监听器的那个 trigger
+  const press = { currentTarget: {} }
+
+  it('按下即收，随按下而来的聚焦不再把提示打开', () => {
+    const t = makeTooltip()
+    t.send('OPEN')
+    on(t, 'onPointerdown', press)
+    expect(t.state()).toBe('closed')
+
+    on(t, 'onFocus')
+    expect(t.state()).toBe('closed')
+    expect(t.changes).toEqual([{ open: true }, { open: false }])
+    t.stop()
+  })
+
+  it('指针移开之后这一次按下到此为止：之后的聚焦照常打开', () => {
+    const t = makeTooltip()
+    on(t, 'onPointerdown', press)
+    on(t, 'onFocus')
+    expect(t.state()).toBe('closed')
+
+    on(t, 'onPointerleave')
+    on(t, 'onFocus')
+    expect(t.api().open).toBe(true)
+    t.stop()
+  })
+
+  it('动了键盘之后的聚焦都算键盘聚焦，照常打开', () => {
+    const t = makeTooltip()
+    on(t, 'onPointerdown', press)
+    on(t, 'onKeydown', { key: 'Tab' })
+    on(t, 'onFocus')
+    expect(t.api().open).toBe(true)
+    t.stop()
+  })
+
+  it('没按过的聚焦照常打开', () => {
+    const t = makeTooltip()
+    on(t, 'onFocus')
+    expect(t.api().open).toBe(true)
+    t.stop()
+  })
+})
+
 describe('tooltipMachine 受控', () => {
   it('open 给定时只发意图不自改，宿主写回后才转移；setOpen 同值不发', () => {
     const t = makeTooltip({ open: false })
