@@ -159,4 +159,22 @@ describe('side-nav 图标栏名称提示', () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     expect(shown()).toBe(false)
   })
+
+  it('点一行：提示收起，点击带来的聚焦不再把它打开；指针移开再回来照常露面', async () => {
+    await mount()
+    await userEvent.hover(link(1))
+    await expect.poll(shown, { timeout: 2000 }).toBe(true)
+
+    await userEvent.click(link(1))
+
+    await expect.poll(shown).toBe(false)
+    // 点击把焦点带到了这一行上；聚焦不等开延时，会重新打开的话这段时间里早就开了
+    expect(document.activeElement).toBe(link(1))
+    await new Promise(resolve => setTimeout(resolve, 300))
+    expect(shown()).toBe(false)
+
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+    await userEvent.hover(link(1))
+    await expect.poll(shown, { timeout: 2000 }).toBe(true)
+  })
 })

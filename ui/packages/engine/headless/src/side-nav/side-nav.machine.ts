@@ -103,6 +103,7 @@ export const sideNavMachine = createMachine({
     syncPopoutPresence: () => {},
     popoutHoverCancel: null,
     collapseRound: 0,
+    hintPressed: null,
   }),
   initialState: () => 'idle',
   // 多分支弹出层的资源会跨逻辑关闭保留，由根级会话管理器按 Presence 身份结清。

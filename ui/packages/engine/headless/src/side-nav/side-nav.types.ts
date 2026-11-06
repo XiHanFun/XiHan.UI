@@ -33,6 +33,8 @@ export interface SideNavRefs {
   popoutHoverCancel: (() => void) | null
   /** 折叠开关每翻一次起一轮等宽度过渡；只有最新那一轮的落定作数。 */
   collapseRound: number
+  /** 名称提示：指针按下的那一行。随按下而来的聚焦不打开提示；指针移开或动了键盘即清掉。 */
+  hintPressed: string | null
 }
 
 /** 读屏文案，默认英文。 */

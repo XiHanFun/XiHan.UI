@@ -149,10 +149,19 @@ export function connectSideNav<T extends PropTypes>(
         target()
         tooltip.send({ type: 'POINTER.ENTER' })
       },
-      leave: () => tooltip.send({ type: 'POINTER.LEAVE' }),
-      // 按下即让位给真正的操作
-      down: () => tooltip.send({ type: 'POINTER.DOWN' }),
+      // 指针移开，这一次按下到此为止
+      leave: () => {
+        service.refs.set('hintPressed', null)
+        tooltip.send({ type: 'POINTER.LEAVE' })
+      },
+      // 按下即让位给真正的操作；随按下而来的聚焦不再把提示打开
+      down: () => {
+        service.refs.set('hintPressed', v)
+        tooltip.send({ type: 'POINTER.DOWN' })
+      },
       focus: () => {
+        if (service.refs.get('hintPressed') === v)
+          return
         const shown = tooltip.state.matches('visible')
         target()
         tooltip.send({ type: 'FOCUS' })
@@ -162,8 +171,10 @@ export function connectSideNav<T extends PropTypes>(
           send({ type: 'TOOLTIP.OPEN_CHANGE', open: true })
       },
       blur: () => tooltip.send({ type: 'BLUR' }),
-      // 提示露面之后 Escape 归消解层按层栈仲裁；这里只管还在等延时的那一段
       keydown: (event) => {
+        // 动了键盘，之后的聚焦都算键盘聚焦
+        service.refs.set('hintPressed', null)
+        // 提示露面之后 Escape 归消解层按层栈仲裁；这里只管还在等延时的那一段
         if (event.key === 'Escape' && tooltip.state.matches('opening'))
           tooltip.send({ type: 'ESCAPE' })
       },

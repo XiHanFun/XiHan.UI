@@ -121,6 +121,37 @@ describe('side-nav 图标栏名称提示', () => {
     expect(nav.open()).toBe(false)
   })
 
+  it('随按下而来的聚焦不再把提示打开；指针移开再聚焦、或动了键盘之后聚焦照常打开', () => {
+    const nav = mount()
+    nav.link('home').onPointerenter!()
+    vi.advanceTimersByTime(OPEN_DELAY)
+    expect(nav.open()).toBe(true)
+
+    nav.link('home').onPointerDown!({ pointerType: 'mouse', button: 0 })
+    nav.link('home').onFocus!()
+    expect(nav.open()).toBe(false)
+
+    // 按下的是 home：别的行聚焦不受影响
+    nav.link('logs').onFocus!()
+    expect(nav.open()).toBe(true)
+    nav.link('logs').onBlur!()
+    expect(nav.open()).toBe(false)
+
+    // 指针移开，这一次按下到此为止
+    nav.link('home').onPointerleave!()
+    nav.link('home').onFocus!()
+    expect(nav.open()).toBe(true)
+    nav.link('home').onBlur!()
+
+    // 动了键盘之后的聚焦都算键盘聚焦
+    nav.link('home').onPointerDown!({ pointerType: 'mouse', button: 0 })
+    const row = document.createElement('a')
+    row.addEventListener('keydown', nav.link('home').onKeydown! as EventListener)
+    row.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }))
+    nav.link('home').onFocus!()
+    expect(nav.open()).toBe(true)
+  })
+
   it('还在等开延时时按 Escape：撤销等待，不显示', () => {
     const nav = mount()
     nav.link('home').onPointerenter!()
