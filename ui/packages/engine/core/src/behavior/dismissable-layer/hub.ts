@@ -9,6 +9,7 @@ import type { Cleanup, Disposable, Layer, LayerRegistry } from '../../kernel'
 import type { DismissPathHit, DismissRouteEntry, DismissRouteReadiness } from './route'
 import type { DismissLayerOptions, DismissReason, EscapeFallbackOptions } from './types'
 import {
+  contains,
   DATA_INERT_EXEMPT,
   EV_ESCAPE_KEY_DOWN,
   EV_FOCUS_OUTSIDE,
@@ -19,8 +20,9 @@ import {
 import { createPageSharedSlot } from '../../kernel/structure/page-shared-registry'
 import {
   dismissPathIncludes,
+  isDismissRouteBlocked,
   isDismissRouteTerminal,
-  matchesDismissPrefix,
+  matchesDismissRemainder,
   planOutsideDismissRoute,
 } from './route'
 
@@ -108,6 +110,25 @@ interface CandidateStage {
   readonly candidate: PlannedCandidate
   readonly snapshot: readonly Layer[]
   readonly node: HTMLElement | null
+}
+
+/** onDismiss 之后的层栈：候选确实退栈了，或者原样留着（受控、退场还没播完）。 */
+interface DismissTransition {
+  readonly snapshot: readonly Layer[]
+  readonly popped: boolean
+}
+
+/** 层外票的结果：还在层外的命中位置，或者被否决（这时还没复核阶段）；null 即这一阶段已经作废或目标落进了层内。 */
+type OutsideVote = Exclude<DismissPathHit, 'inside'> | 'vetoed' | null
+
+/**
+ * 内联层（提示、导航面板）悬停就出现，不经按下打开：它压在别的层上面不代表开在那一层里。
+ * 所以它留在栈里时（交互落在它里面、它还判不了、否决了层外票、收到关闭意图却没退栈）
+ * 不按栈序挡住下面每一层，只护着它开在其内容里的层：那一层的根节点装着它的根节点或某个分支。
+ * 其余的层经按下、聚焦打开，打开它的那次交互没有收掉下面的层，栈序即嵌套，照旧挡住下面每一层。
+ */
+function shieldsParentsOnly(layer: Layer): boolean {
+  return layer.kind === 'inline'
 }
 
 /** 每个 Document 一个派发枢纽，存在 Document 上：页面上装了几份 core 也共用这一个。 */
@@ -685,68 +706,87 @@ class DismissHub {
     inertExempt: boolean,
   ): LanePlan {
     const entries: DismissRouteEntry<PlannedCandidate>[] = []
-    if (capture.lane.registry.list() !== capture.snapshot)
-      return Object.freeze({ ...capture, candidates: Object.freeze([]) })
+    const abandoned = (): LanePlan => Object.freeze({ ...capture, candidates: Object.freeze([]) })
+    const moved = (): boolean => capture.lane.registry.list() !== capture.snapshot
+    // 挡下这次交互的内联层留在原处的节点（根节点与分支）：更低的层把其中一个装在自己的内容里，就由它护着
+    const guarded: Element[] = []
+    if (moved())
+      return abandoned()
     if (!inertExempt) {
       for (let index = capture.snapshot.length - 1; index >= 0; index--) {
-        if (capture.lane.registry.list() !== capture.snapshot)
-          return Object.freeze({ ...capture, candidates: Object.freeze([]) })
+        if (moved())
+          return abandoned()
         const layer = capture.snapshot[index]!
+        const parentsOnly = shieldsParentsOnly(layer)
         const participant = capture.lane.participants.get(layer)
+        // undefined 即这一层的 getter 还没读过
+        let node: HTMLElement | null | undefined
+        let branches: Element[] | undefined
+        let entry: DismissRouteEntry<PlannedCandidate>
         if (!participant) {
-          entries.push({ readiness: 'missing-participant' })
-          break
-        }
-        const readiness = participantReadiness(participant, kind)
-        if (readiness !== 'ready') {
-          entries.push({ readiness })
-          break
-        }
-        const node = participant.resolveNode()
-        if (capture.lane.registry.list() !== capture.snapshot
-          || !participantTokenIsCurrent(participant, kind)) {
-          return Object.freeze({ ...capture, candidates: Object.freeze([]) })
-        }
-        if (node === null) {
-          entries.push({ readiness: 'missing-node' })
-          break
-        }
-        let hit: DismissPathHit = 'outside'
-        if (path.includes(node)) {
-          hit = 'inside'
+          entry = { readiness: 'missing-participant', parentsOnly }
         }
         else {
-          const branches = layer.branches()
-          if (capture.lane.registry.list() !== capture.snapshot
-            || !participantTokenIsCurrent(participant, kind)) {
-            return Object.freeze({ ...capture, candidates: Object.freeze([]) })
-          }
-          const insideBranch = dismissPathIncludes(path, branches)
-          if (capture.lane.registry.list() !== capture.snapshot
-            || !participantTokenIsCurrent(participant, kind)) {
-            return Object.freeze({ ...capture, candidates: Object.freeze([]) })
-          }
-          if (insideBranch) {
-            hit = 'inside'
+          const readiness = participantReadiness(participant, kind)
+          if (readiness !== 'ready') {
+            entry = { readiness, parentsOnly }
           }
           else {
-            const surfaces = layer.surfaces()
-            if (capture.lane.registry.list() !== capture.snapshot
-              || !participantTokenIsCurrent(participant, kind)) {
-              return Object.freeze({ ...capture, candidates: Object.freeze([]) })
+            node = participant.resolveNode()
+            if (moved() || !participantTokenIsCurrent(participant, kind))
+              return abandoned()
+            const content = node
+            if (content === null) {
+              entry = { readiness: 'missing-node', parentsOnly }
             }
-            hit = dismissPathIncludes(path, surfaces) ? 'surface' : 'outside'
-            if (capture.lane.registry.list() !== capture.snapshot
-              || !participantTokenIsCurrent(participant, kind)) {
-              return Object.freeze({ ...capture, candidates: Object.freeze([]) })
+            else if (guarded.some(origin => origin !== content && contains(content, origin))) {
+              entry = { readiness: 'shielded', parentsOnly }
+            }
+            else {
+              let hit: DismissPathHit = 'outside'
+              if (path.includes(content)) {
+                hit = 'inside'
+              }
+              else {
+                branches = layer.branches()
+                if (moved() || !participantTokenIsCurrent(participant, kind))
+                  return abandoned()
+                const insideBranch = dismissPathIncludes(path, branches)
+                if (moved() || !participantTokenIsCurrent(participant, kind))
+                  return abandoned()
+                if (insideBranch) {
+                  hit = 'inside'
+                }
+                else {
+                  const surfaces = layer.surfaces()
+                  if (moved() || !participantTokenIsCurrent(participant, kind))
+                    return abandoned()
+                  hit = dismissPathIncludes(path, surfaces) ? 'surface' : 'outside'
+                  if (moved() || !participantTokenIsCurrent(participant, kind))
+                    return abandoned()
+                }
+              }
+              entry = { candidate: { participant, layer, index, node: content }, hit, readiness: 'ready', parentsOnly }
             }
           }
         }
-        const candidate: PlannedCandidate = { participant, layer, index, node }
-        const entry: DismissRouteEntry<PlannedCandidate> = { candidate, hit, readiness: 'ready' }
         entries.push(entry)
         if (isDismissRouteTerminal(entry))
           break
+        if (isDismissRouteBlocked(entry)) {
+          // 走到这里的只有内联层：它挡下了这次交互，自己不成为屏障，只把留在原处的节点记下来
+          if (node === undefined) {
+            node = participant ? participant.resolveNode() : layer.node()
+            if (moved())
+              return abandoned()
+          }
+          branches ??= layer.branches()
+          if (moved() || (entry.readiness === 'ready' && !participantTokenIsCurrent(entry.candidate.participant, kind)))
+            return abandoned()
+          if (node)
+            guarded.push(node)
+          guarded.push(...branches)
+        }
       }
     }
     const plan = planOutsideDismissRoute(entries, inertExempt)
@@ -778,13 +818,13 @@ class DismissHub {
     plan: LanePlan,
     candidate: PlannedCandidate,
     expectedSnapshot: readonly Layer[],
+    popped: ReadonlySet<Layer>,
     kind: 'escape' | OutsideKind,
   ): CandidateStage | null {
     const current = plan.lane.registry.list()
     assertFrozenSnapshot(current)
     if (current !== expectedSnapshot
-      || !matchesDismissPrefix(current, plan.snapshot, candidate.index + 1)
-      || current[current.length - 1] !== candidate.layer
+      || !matchesDismissRemainder(current, plan.snapshot, popped)
       || !this.candidateIdentityIsCurrent(candidate, current, kind)) {
       return null
     }
@@ -803,7 +843,29 @@ class DismissHub {
     const { participant, layer } = candidate
     return participantTokenIsCurrent(participant, kind)
       && participant.lane.registry.list() === snapshot
-      && participant.lane.registry.top() === layer
+      && this.candidateHoldsTop(participant.lane.registry, layer, snapshot, kind)
+  }
+
+  /**
+   * Escape 只认真实栈顶。层外交互的候选之上只容许留着内联层：没被这次交互碰到的、
+   * 否决了层外票的、收到关闭意图却还没退栈的；其余的层留在上面就不是原计划的栈。
+   */
+  private candidateHoldsTop(
+    registry: LayerRegistry,
+    layer: Layer,
+    snapshot: readonly Layer[],
+    kind: 'escape' | OutsideKind,
+  ): boolean {
+    if (kind === 'escape')
+      return registry.top() === layer
+    for (let index = snapshot.length - 1; index >= 0; index--) {
+      const above = snapshot[index]!
+      if (above === layer)
+        return true
+      if (!shieldsParentsOnly(above))
+        return false
+    }
+    return false
   }
 
   private stageIsCurrent(stage: CandidateStage, kind: 'escape' | OutsideKind): boolean {
@@ -831,7 +893,7 @@ class DismissHub {
     stage: CandidateStage,
     options: OutsideEventOptions,
     path: readonly EventTarget[],
-  ): DismissPathHit | null {
+  ): OutsideVote {
     const { participant } = stage.candidate
     let specific: CustomEvent<{ originalEvent: PointerEvent | FocusEvent }>
     if (options.kind === 'pointer') {
@@ -861,7 +923,9 @@ class DismissHub {
     })
     if (!this.dispatchVote(stage, options.kind, interact, participant.options.onInteractOutside))
       return null
-    if (specific.defaultPrevented || interact.defaultPrevented || !this.stageIsCurrent(stage, options.kind))
+    if (specific.defaultPrevented || interact.defaultPrevented)
+      return 'vetoed'
+    if (!this.stageIsCurrent(stage, options.kind))
       return null
     const hit = this.readStageHit(stage, options.kind, path)
     return hit !== null && hit !== 'inside' ? hit : null
@@ -914,8 +978,9 @@ class DismissHub {
   private observeDismissTransition(
     plan: LanePlan,
     stage: CandidateStage,
+    popped: ReadonlySet<Layer>,
     reason: DismissReason,
-  ): readonly Layer[] | null {
+  ): DismissTransition | null {
     const snapshots: Array<readonly Layer[]> = []
     let observing = false
     const unsubscribe = plan.lane.registry.subscribe((snapshot) => {
@@ -952,22 +1017,26 @@ class DismissHub {
     const committed = snapshots[0]
     const current = plan.lane.registry.list()
     assertFrozenSnapshot(current)
+    // 层栈原样：候选只收到了关闭意图，没有退栈
+    if (current === stage.snapshot)
+      return Object.freeze({ snapshot: current, popped: false })
     if (!committed
       || current !== committed
-      || !matchesDismissPrefix(committed, plan.snapshot, stage.candidate.index)) {
+      || !matchesDismissRemainder(committed, plan.snapshot, new Set(popped).add(stage.candidate.layer))) {
       return null
     }
-    return current
+    return Object.freeze({ snapshot: current, popped: true })
   }
 
   private dismissOutside(
     plan: LanePlan,
     stage: CandidateStage,
+    popped: ReadonlySet<Layer>,
     kind: OutsideKind,
-  ): readonly Layer[] | null {
+  ): DismissTransition | null {
     const participant = stage.candidate.participant
     if (kind === 'focus')
-      return this.observeDismissTransition(plan, stage, 'focus-outside')
+      return this.observeDismissTransition(plan, stage, popped, 'focus-outside')
 
     markJustDismissed(participant)
     try {
@@ -975,7 +1044,7 @@ class DismissHub {
         clearJustDismissed(participant)
         return null
       }
-      return this.observeDismissTransition(plan, stage, 'pointer-down-outside')
+      return this.observeDismissTransition(plan, stage, popped, 'pointer-down-outside')
     }
     catch (primaryError) {
       const cleanupErrors: unknown[] = []
@@ -996,22 +1065,49 @@ class DismissHub {
   private executeOutside(plan: LanePlan, options: OutsideEventOptions, path: readonly EventTarget[]): void {
     const { kind } = options
     let expectedSnapshot = plan.snapshot
+    const popped = new Set<Layer>()
+    // 留在栈里的内联层留在原处的节点（根节点与分支）：更低的候选把其中一个装在自己的内容里，就由它护着
+    const guarded: Element[] = []
     for (const candidate of plan.candidates) {
-      const stage = this.beginStage(plan, candidate, expectedSnapshot, kind)
+      const stage = this.beginStage(plan, candidate, expectedSnapshot, popped, kind)
       if (!stage)
         return
-      const stageHit = this.stageOutsideHit(stage, kind, path)
-      if (stageHit === null)
+      const content = stage.node
+      let stays = content !== null && guarded.some(origin => origin !== content && contains(content, origin))
+      if (!stays) {
+        const stageHit = this.stageOutsideHit(stage, kind, path)
+        if (stageHit === null)
+          return
+        const finalHit = this.voteOutside(stage, options, path)
+        if (finalHit === null)
+          return
+        if (finalHit === 'vetoed') {
+          stays = true
+        }
+        else {
+          const transition = this.dismissOutside(plan, stage, popped, kind)
+          if (!transition)
+            return
+          if (stageHit === 'surface' || finalHit === 'surface')
+            return
+          if (transition.popped) {
+            popped.add(candidate.layer)
+            expectedSnapshot = transition.snapshot
+            continue
+          }
+          stays = true
+        }
+      }
+      // 这一层留在栈里（被护住、否决了层外票，或收到关闭意图却没退栈）：
+      // 非内联层挡住它下面每一层；内联层只护着它开在其内容里的层，与它无关的更低的层照常消解
+      if (!shieldsParentsOnly(candidate.layer))
         return
-      const finalHit = this.voteOutside(stage, options, path)
-      if (finalHit === null)
+      const branches = candidate.layer.branches()
+      if (!this.stageIsCurrent(stage, kind))
         return
-      const nextSnapshot = this.dismissOutside(plan, stage, kind)
-      if (!nextSnapshot)
-        return
-      if (stageHit === 'surface' || finalHit === 'surface')
-        return
-      expectedSnapshot = nextSnapshot
+      if (content)
+        guarded.push(content)
+      guarded.push(...branches)
     }
   }
 
@@ -1019,7 +1115,7 @@ class DismissHub {
     const candidate = plan.candidates[0]
     if (!candidate)
       return
-    const stage = this.beginStage(plan, candidate, plan.snapshot, 'escape')
+    const stage = this.beginStage(plan, candidate, plan.snapshot, new Set(), 'escape')
     if (stage && this.voteEscape(stage, event)) {
       const onDismiss = candidate.participant.options.onDismiss
       onDismiss('escape-key')

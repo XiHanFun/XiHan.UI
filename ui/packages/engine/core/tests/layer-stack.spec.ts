@@ -96,3 +96,50 @@ describe('shouldDismiss（栈内仲裁）', () => {
     expect(shouldDismiss(e, registry, layerOuter)).toBe(false)
   })
 })
+
+describe('shouldDismiss（内联层）', () => {
+  /** 带 contains 的假节点：children 是装在它里面的节点。 */
+  function fakeNode(tag: string, children: object[] = []): object {
+    const node = { tag, contains: (target: object): boolean => target === node || children.includes(target) }
+    return node
+  }
+
+  function inlineLayer(node: object, branches: object[] = []): Layer {
+    return { ...fakeLayer(node, branches), kind: 'inline', isModal: () => false }
+  }
+
+  it('命中内联层：与它无关的更低的层照常消解，它自己不消解', () => {
+    const trigger = fakeNode('trigger')
+    const lower = fakeLayer(fakeNode('lower'))
+    const hint = inlineLayer(fakeNode('hint'), [trigger])
+    const registry = fakeRegistry([lower, hint])
+
+    const e = fakeEvent([trigger])
+    expect(shouldDismiss(e, registry, hint)).toBe(false)
+    expect(shouldDismiss(e, registry, lower)).toBe(true)
+  })
+
+  it('命中内联层：它开在其内容里的层受保护，再往下的层也不消解', () => {
+    const trigger = fakeNode('trigger')
+    const hintNode = fakeNode('hint')
+    const bottom = fakeLayer(fakeNode('bottom'))
+    const parent = fakeLayer(fakeNode('parent', [trigger]))
+    const hint = inlineLayer(hintNode, [trigger])
+    const registry = fakeRegistry([bottom, parent, hint])
+
+    // 内联层的根节点不在 parent 里，事件路径只经过它自己
+    const e = fakeEvent([hintNode])
+    expect(shouldDismiss(e, registry, parent)).toBe(false)
+    expect(shouldDismiss(e, registry, bottom)).toBe(false)
+  })
+
+  it('内联层在层外时与其余层一样消解', () => {
+    const lower = fakeLayer(fakeNode('lower'))
+    const hint = inlineLayer(fakeNode('hint'))
+    const registry = fakeRegistry([lower, hint])
+
+    const e = fakeEvent([{ x: 1 }])
+    expect(shouldDismiss(e, registry, hint)).toBe(true)
+    expect(shouldDismiss(e, registry, lower)).toBe(true)
+  })
+})

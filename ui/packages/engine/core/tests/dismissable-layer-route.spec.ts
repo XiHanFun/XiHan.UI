@@ -5,7 +5,8 @@ import type {
 } from '../src/behavior/dismissable-layer/route'
 import { describe, expect, it } from 'vitest'
 import {
-  matchesDismissPrefix,
+  isDismissRouteTerminal,
+  matchesDismissRemainder,
   planOutsideDismissRoute,
 } from '../src/behavior/dismissable-layer/route'
 
@@ -20,6 +21,11 @@ function barrier(
   readiness: Exclude<DismissRouteReadiness, 'ready'>,
 ): DismissRouteEntry<string> {
   return { readiness }
+}
+
+/** 只护祖先的层（内联层）对应的项。 */
+function parentsOnly(entry: DismissRouteEntry<string>): DismissRouteEntry<string> {
+  return { ...entry, parentsOnly: true }
 }
 
 describe('dismissableLayer 纯路由计划', () => {
@@ -51,6 +57,7 @@ describe('dismissableLayer 纯路由计划', () => {
     'missing-participant',
     'unarmed',
     'missing-node',
+    'shielded',
   ] as const)('%s 层成为屏障，不能越过它关闭更低层', (readiness) => {
     expect(planOutsideDismissRoute([
       entry('top'),
@@ -70,16 +77,68 @@ describe('dismissableLayer 纯路由计划', () => {
     expect(Object.isFrozen(plan.candidates)).toBe(true)
   })
 
-  it('连续退栈只接受原计划的严格前缀', () => {
+  it.each([
+    'missing-participant',
+    'unarmed',
+    'missing-node',
+    'shielded',
+  ] as const)('只护祖先的 %s 层不进候选也不成为屏障，更低的层照常求值', (readiness) => {
+    expect(planOutsideDismissRoute([
+      entry('top'),
+      parentsOnly(barrier(readiness)),
+      entry('bottom'),
+    ])).toEqual({ candidates: ['top', 'bottom'], barrier: null })
+  })
+
+  it('只护祖先的层被命中内部时不进候选也不成为屏障', () => {
+    expect(planOutsideDismissRoute([
+      parentsOnly(entry('hint', 'inside')),
+      entry('middle'),
+      entry('lower', 'inside'),
+      entry('bottom'),
+    ])).toEqual({ candidates: ['middle'], barrier: 'inside' })
+  })
+
+  it('只护祖先的层在层外照常进候选，命中 surface 时仍停在它这里', () => {
+    expect(planOutsideDismissRoute([
+      parentsOnly(entry('hint')),
+      entry('bottom'),
+    ])).toEqual({ candidates: ['hint', 'bottom'], barrier: null })
+    expect(planOutsideDismissRoute([
+      parentsOnly(entry('hint', 'surface')),
+      entry('bottom'),
+    ])).toEqual({ candidates: ['hint'], barrier: 'surface' })
+  })
+
+  it('一项之后是否还要解析更低的层', () => {
+    expect(isDismissRouteTerminal(entry('layer'))).toBe(false)
+    expect(isDismissRouteTerminal(entry('layer', 'inside'))).toBe(true)
+    expect(isDismissRouteTerminal(entry('layer', 'surface'))).toBe(true)
+    expect(isDismissRouteTerminal(barrier('unarmed'))).toBe(true)
+    expect(isDismissRouteTerminal(parentsOnly(entry('hint')))).toBe(false)
+    expect(isDismissRouteTerminal(parentsOnly(entry('hint', 'inside')))).toBe(false)
+    expect(isDismissRouteTerminal(parentsOnly(entry('hint', 'surface')))).toBe(true)
+    expect(isDismissRouteTerminal(parentsOnly(barrier('unarmed')))).toBe(false)
+  })
+
+  it('连续退栈只接受原计划去掉已退栈各层之后剩下的那几项', () => {
     const bottom = {}
     const middle = {}
     const top = {}
     const original = [bottom, middle, top]
 
-    expect(matchesDismissPrefix(original, original, 3)).toBe(true)
-    expect(matchesDismissPrefix([bottom, middle], original, 2)).toBe(true)
-    expect(matchesDismissPrefix([bottom], original, 1)).toBe(true)
-    expect(matchesDismissPrefix([bottom, top], original, 2)).toBe(false)
-    expect(matchesDismissPrefix([bottom, middle, {}], original, 3)).toBe(false)
+    expect(matchesDismissRemainder(original, original, new Set())).toBe(true)
+    expect(matchesDismissRemainder([bottom, middle], original, new Set([top]))).toBe(true)
+    expect(matchesDismissRemainder([bottom], original, new Set([top, middle]))).toBe(true)
+    expect(matchesDismissRemainder([], original, new Set(original))).toBe(true)
+    // 上面留着没退栈的层、从中间退栈：剩下的次序不变即匹配
+    expect(matchesDismissRemainder([bottom, top], original, new Set([middle]))).toBe(true)
+    expect(matchesDismissRemainder([top], original, new Set([bottom, middle]))).toBe(true)
+    // 多退了一层、少退了一层、换了次序、混进新层都不匹配
+    expect(matchesDismissRemainder([bottom], original, new Set([top]))).toBe(false)
+    expect(matchesDismissRemainder([bottom, middle, top], original, new Set([top]))).toBe(false)
+    expect(matchesDismissRemainder([middle, bottom], original, new Set([top]))).toBe(false)
+    expect(matchesDismissRemainder([bottom, middle, {}], original, new Set([top]))).toBe(false)
+    expect(matchesDismissRemainder([bottom, middle, top, {}], original, new Set())).toBe(false)
   })
 })

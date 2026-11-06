@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import type { DismissLayerOptions, DismissReason } from '../src/behavior/dismissable-layer'
-import type { Disposable, Layer, LayerRegistry, RuntimeConfig } from '../src/kernel'
+import type { Disposable, Layer, LayerKind, LayerRegistry, RuntimeConfig } from '../src/kernel'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createDismissLayer } from '../src/behavior/dismissable-layer'
 import {
@@ -31,6 +31,7 @@ interface ParticipantHarness {
 interface ParticipantOptions extends Omit<DismissLayerOptions, 'config' | 'layer' | 'onDismiss'> {
   autoPop?: boolean
   branches?: () => Element[]
+  kind?: LayerKind
   nodeGetter?: (node: HTMLElement) => HTMLElement | null
   surfaces?: () => Element[]
   onDismiss?: (reason: DismissReason, controls: { disposeDismiss: () => void, disposeLayer: () => void }) => void
@@ -49,13 +50,13 @@ function participant(
   label: string,
   options: ParticipantOptions = {},
 ): ParticipantHarness {
-  const { autoPop = true, branches, nodeGetter, onDismiss, surfaces, ...dismissOptions } = options
+  const { autoPop = true, branches, kind = 'popover', nodeGetter, onDismiss, surfaces, ...dismissOptions } = options
   const doc = registry.ownerDocument
   const node = doc.createElement('div')
   node.dataset.layer = label
   doc.body.append(node)
   const registration = registry.register({
-    kind: 'popover',
+    kind,
     node: () => nodeGetter ? nodeGetter(node) : node,
     branches: branches ?? (() => []),
     isModal: () => false,
@@ -943,5 +944,345 @@ describe('dismissableLayer Document Hub', () => {
 
     expect(top.reasons).toEqual(['pointer-down-outside'])
     expect(bottom.reasons).toEqual([])
+  })
+})
+
+describe('dismissableLayer 内联层', () => {
+  /** 只登记层、不建消解参与者。 */
+  function bareInline(registry: LayerRegistry, branches: () => Element[] = () => []): Layer {
+    const node = document.createElement('div')
+    document.body.append(node)
+    const registration = registry.register({
+      kind: 'inline',
+      node: () => node,
+      branches,
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    cleanups.push(() => node.remove(), registration.dispose)
+    return registration.layer
+  }
+
+  /** 放进某一层内容里的触发器：以它为分支的层即开在那一层里。 */
+  function triggerInside(parent: ParticipantHarness): HTMLButtonElement {
+    const trigger = document.createElement('button')
+    parent.node.append(trigger)
+    return trigger
+  }
+
+  it('按在内联层的分支上：它不动，下面无关的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const trigger = outside()
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline', branches: () => [trigger] })
+    await arm()
+
+    pointerDown(trigger)
+
+    expect(hint.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([hint.layer])
+  })
+
+  it('按在内联层的节点里：同样只收下面无关的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline' })
+    await arm()
+
+    pointerDown(hint.node)
+
+    expect(hint.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+  })
+
+  it('内联层否决层外票时不挡下面的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', {
+      kind: 'inline',
+      onInteractOutside: event => event.preventDefault(),
+    })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([hint.layer])
+  })
+
+  it('内联层收到关闭意图却没退栈时不挡下面的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual(['pointer-down-outside'])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([hint.layer])
+  })
+
+  it('层外 focus 同理：内联层没退栈也不挡下面的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false })
+    await arm()
+
+    focusIn(outside())
+
+    expect(hint.reasons).toEqual(['focus-outside'])
+    expect(lower.reasons).toEqual(['focus-outside'])
+  })
+
+  it('内联层正常退栈后接着处理更低的层，夹在中间没退栈的内联层留在原处', async () => {
+    const registry = createLayerRegistry(document)
+    const order: string[] = []
+    const bottom = participant(registry, 'bottom', { onDismiss: () => order.push('bottom') })
+    const kept = participant(registry, 'kept', { kind: 'inline', autoPop: false, onDismiss: () => order.push('kept') })
+    const middle = participant(registry, 'middle', { onDismiss: () => order.push('middle') })
+    participant(registry, 'top', { kind: 'inline', onDismiss: () => order.push('top') })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(order).toEqual(['top', 'middle', 'kept', 'bottom'])
+    expect(middle.reasons).toEqual(['pointer-down-outside'])
+    expect(bottom.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([kept.layer])
+  })
+
+  it('没有参与者的内联层不挡下面无关的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    bareInline(registry)
+    await arm()
+
+    pointerDown(outside())
+
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+  })
+
+  it('尚未武装的内联层不挡下面无关的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    await arm()
+    const hint = participant(registry, 'hint', { kind: 'inline' })
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+  })
+
+  it('节点不在场的内联层不挡下面无关的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline', nodeGetter: () => null })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+  })
+
+  it('按在内联层里：它开在其内容里的层受保护，再往下的层也不被触碰', async () => {
+    const registry = createLayerRegistry(document)
+    const readBottomNode = vi.fn((node: HTMLElement) => node)
+    const bottom = participant(registry, 'bottom', { nodeGetter: readBottomNode })
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', { kind: 'inline', branches: () => [trigger] })
+    await arm()
+    readBottomNode.mockClear()
+
+    // 内联层的根节点挂在 body 上，按在它里面的事件路径不经过 parent 的节点
+    pointerDown(hint.node)
+
+    expect(hint.reasons).toEqual([])
+    expect(parent.reasons).toEqual([])
+    expect(bottom.reasons).toEqual([])
+    expect(readBottomNode).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['没有参与者', 'bare'],
+    ['尚未武装', 'unarmed'],
+    ['节点不在场', 'no-node'],
+  ] as const)('内联层%s、判不了这次交互时，仍护着它开在其内容里的层', async (_label, mode) => {
+    const registry = createLayerRegistry(document)
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    await arm()
+    if (mode === 'bare')
+      bareInline(registry, () => [trigger])
+    else if (mode === 'no-node')
+      participant(registry, 'hint', { kind: 'inline', branches: () => [trigger], nodeGetter: () => null })
+    // 尚未武装：登记之后不等微任务，直接派发
+    if (mode === 'unarmed')
+      participant(registry, 'hint', { kind: 'inline', branches: () => [trigger] })
+    else
+      await arm()
+
+    pointerDown(outside())
+
+    expect(parent.reasons).toEqual([])
+  })
+
+  it('保护逐级向上传：被按中的内联层开在另一个内联层里，后者开在其内容里的层同样受保护', async () => {
+    const registry = createLayerRegistry(document)
+    const outer = participant(registry, 'outer')
+    const navTrigger = triggerInside(outer)
+    // 导航面板的根节点挂在 body 上，只有它的分支在 outer 里
+    const nav = participant(registry, 'nav', { kind: 'inline', branches: () => [navTrigger] })
+    const tipTrigger = triggerInside(nav)
+    const tip = participant(registry, 'tip', { kind: 'inline', branches: () => [tipTrigger] })
+    await arm()
+
+    pointerDown(tip.node)
+
+    expect(tip.reasons).toEqual([])
+    expect(nav.reasons).toEqual([])
+    expect(outer.reasons).toEqual([])
+  })
+
+  it('按在层外、内联层正常退栈：它开在其内容里的层接着收起', async () => {
+    const registry = createLayerRegistry(document)
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', { kind: 'inline', branches: () => [trigger] })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual(['pointer-down-outside'])
+    expect(parent.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([])
+  })
+
+  it('按在层外、内联层收到关闭意图却没退栈：它开在其内容里的层受保护，再往下的层也不被触碰', async () => {
+    const registry = createLayerRegistry(document)
+    const bottom = participant(registry, 'bottom')
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false, branches: () => [trigger] })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual(['pointer-down-outside'])
+    expect(parent.reasons).toEqual([])
+    expect(bottom.reasons).toEqual([])
+  })
+
+  it('按在层外、内联层否决层外票：它开在其内容里的层受保护', async () => {
+    const registry = createLayerRegistry(document)
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', {
+      kind: 'inline',
+      branches: () => [trigger],
+      onInteractOutside: event => event.preventDefault(),
+    })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual([])
+    expect(parent.reasons).toEqual([])
+  })
+
+  it('没退栈的内联层逐级护着祖先，同一栈里与它无关的内联层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const outer = participant(registry, 'outer')
+    const navTrigger = triggerInside(outer)
+    // 导航面板的根节点挂在 body 上，只有它的分支在 outer 里
+    const nav = participant(registry, 'nav', { kind: 'inline', branches: () => [navTrigger] })
+    const tipTrigger = triggerInside(nav)
+    const tip = participant(registry, 'tip', { kind: 'inline', autoPop: false, branches: () => [tipTrigger] })
+    const stray = participant(registry, 'stray', { kind: 'inline' })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(stray.reasons).toEqual(['pointer-down-outside'])
+    expect(tip.reasons).toEqual(['pointer-down-outside'])
+    expect(nav.reasons).toEqual([])
+    expect(outer.reasons).toEqual([])
+  })
+
+  it('内联层压在上面时，非内联层否决或没退栈照旧挡住更低的层', async () => {
+    const registry = createLayerRegistry(document)
+    const bottom = participant(registry, 'bottom')
+    const middle = participant(registry, 'middle', { autoPop: false })
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual(['pointer-down-outside'])
+    expect(middle.reasons).toEqual(['pointer-down-outside'])
+    expect(bottom.reasons).toEqual([])
+  })
+
+  it('内联层的回调里登记了新层：原计划作废，不再触碰更低的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    let disposeNew: (() => void) | null = null
+    participant(registry, 'hint', {
+      kind: 'inline',
+      autoPop: false,
+      onDismiss: () => {
+        const node = document.createElement('div')
+        document.body.append(node)
+        const registration = registry.register({
+          kind: 'popover',
+          node: () => node,
+          branches: () => [],
+          isModal: () => false,
+          surfaces: () => [],
+        })
+        disposeNew = () => {
+          registration.dispose()
+          node.remove()
+        }
+      },
+    })
+    cleanups.push(() => disposeNew?.())
+    await arm()
+
+    pointerDown(outside())
+
+    expect(lower.reasons).toEqual([])
+  })
+
+  it('escape 照旧只交给栈顶：内联层在上时先收它，下面的层等下一次按键', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline' })
+    await arm()
+
+    escape()
+    expect(hint.reasons).toEqual(['escape-key'])
+    expect(lower.reasons).toEqual([])
+
+    escape()
+    expect(lower.reasons).toEqual(['escape-key'])
+  })
+
+  it('escape 不越过没退栈的内联层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false })
+    await arm()
+
+    escape()
+    escape()
+
+    expect(hint.reasons).toEqual(['escape-key', 'escape-key'])
+    expect(lower.reasons).toEqual([])
   })
 })

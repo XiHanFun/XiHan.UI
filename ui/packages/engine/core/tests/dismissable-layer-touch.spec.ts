@@ -392,3 +392,34 @@ describe('dismissableLayer 触摸 click 提交', () => {
     expect(second.reasons).toEqual(['pointer-down-outside'])
   })
 })
+
+describe('dismissableLayer 触摸与内联层', () => {
+  it('触摸按在内联层的分支上：click 提交后只收下面无关的层', async () => {
+    const h = harness()
+    const hintNode = h.doc.createElement('div')
+    h.doc.body.append(hintNode)
+    const registration = h.registry.register({
+      kind: 'inline',
+      node: () => hintNode,
+      branches: () => [h.outside],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    const hintReasons: DismissReason[] = []
+    const hint = createDismissLayer({
+      config: h.config,
+      layer: registration.layer,
+      onDismiss: reason => hintReasons.push(reason),
+    })
+    cleanups.push(() => hintNode.remove(), registration.dispose, hint.dispose)
+    await arm()
+
+    pointer(h.outside, 'pointerdown', 'touch', 3)
+    expect(h.reasons).toEqual([])
+    pointer(h.outside, 'pointerup', 'touch', 3)
+    click(h.outside, 3, 'touch')
+
+    expect(hintReasons).toEqual([])
+    expect(h.reasons).toEqual(['pointer-down-outside'])
+  })
+})

@@ -6,7 +6,7 @@
 // 提供 layer stack 相关实现。
 
 import type { Layer, LayerRegistry } from '../../kernel'
-import { DATA_INERT_EXEMPT } from '../../kernel'
+import { contains, DATA_INERT_EXEMPT } from '../../kernel'
 import { dismissPathIncludes } from './route'
 
 export interface InsideResult {
@@ -48,11 +48,24 @@ function shouldDismissInSnapshot(
 ): boolean {
   if (isInInertExempt(e))
     return false
+  // 被命中的内联层留在原处的节点：更低的层把其中一个装在自己的内容里，就由它护着
+  const guarded: Element[] = []
   for (let i = layers.length - 1; i >= 0; i--) {
     const current = layers[i]!
-    const { inside, onSurface } = isInsideResolved(e, current, current === layer ? layerNode : current.node())
-    if (inside)
-      return false
+    const node = current === layer ? layerNode : current.node()
+    const shielded = node !== null && guarded.some(origin => origin !== node && contains(node, origin))
+    const { inside, onSurface } = shielded
+      ? { inside: true, onSurface: false }
+      : isInsideResolved(e, current, node)
+    if (inside) {
+      // 内联层悬停就出现，压在别的层上面不代表开在里面：它被命中只护着它开在其内容里的层
+      if (current === layer || current.kind !== 'inline')
+        return false
+      if (node)
+        guarded.push(node)
+      guarded.push(...current.branches())
+      continue
+    }
     if (current === layer)
       return true
     if (onSurface)
@@ -62,7 +75,8 @@ function shouldDismissInSnapshot(
 }
 
 /**
- * 从栈顶向下：连续未命中的层都应被消解，遇到第一个命中层即停止。
+ * 从栈顶向下：连续未命中的层都应被消解，遇到第一个命中层即停止；
+ * 命中的是内联层时只停在它开在其内容里的层上，与它无关的更低的层照常消解。
  * 落在 inert 豁免子树里的交互一律不消解任何层。
  * 返回给定层此刻是否应被这次外部交互消解。
  */
