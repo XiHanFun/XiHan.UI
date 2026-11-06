@@ -11,7 +11,7 @@ import { fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
-import { mergeReactProps } from '../../runtime/merge-props'
+import { mergeReactProps, withoutScopeClass } from '../../runtime/merge-props'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
 import { renderStructure } from '../../runtime/structure'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
@@ -22,8 +22,9 @@ import { useField, useFieldPartPresence } from './use-field'
 /**
  * 去掉角色标记，只保留接线属性（id、aria-* 与状态位）。
  *
- * 角色标记含解剖两位与家族标记（data-xh-*）：control 投影了 Field Chrome 的视觉盒标记，
- * 落到薄封装的根上会在封装自己的视觉盒外再画一层壳。
+ * 角色标记含解剖两位、家族标记（data-xh-*）与皮肤挂载类（xh-scope-*）：control 投影了 Field Chrome 的视觉盒标记，
+ * 落到薄封装的根上会在封装自己的视觉盒外再画一层壳；挂载类落到别的组件的根上（它自带 data-part="root"），
+ * 那个根会被字段根的皮肤选中，排布跟着变。
  */
 export function wiringOnly(controlProps: Record<string, unknown>): Record<string, unknown> {
   const rest: Record<string, unknown> = {}
@@ -31,7 +32,7 @@ export function wiringOnly(controlProps: Record<string, unknown>): Record<string
     if (!isRoleMarker(key))
       rest[key] = value
   }
-  return rest
+  return withoutScopeClass(rest)
 }
 
 export interface XhFieldRootProps extends ComponentPropsWithRef<'div'> {

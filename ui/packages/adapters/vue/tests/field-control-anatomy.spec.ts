@@ -4,7 +4,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, createSSRApp, createTextVNode, defineComponent, Fragment, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { useFieldControl, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from '../src'
+import { useFieldControl, XhButton, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from '../src'
 
 let cleanup: Array<() => void> = []
 
@@ -121,7 +121,28 @@ describe('控件藏在薄封装里', () => {
     expect(input.hasAttribute('data-xh-field-chrome')).toBe(false)
     expect(input.hasAttribute('data-xh-field-size')).toBe(false)
     expect(input.hasAttribute('data-variant')).toBe(false)
+    expect(input.classList.contains('xh-scope-field')).toBe(false)
     expect(input.getAttribute('aria-invalid')).toBe('false')
+  })
+
+  it('接线落到别的组件根上时不带字段的皮肤挂载类：那个根不会被字段根的皮肤选中', () => {
+    // 触发钮是库里的按钮：它的根自带 data-part="root"，再挂上 xh-scope-field 就会命中字段根的规则
+    const Trigger = defineComponent({
+      name: 'TestTrigger',
+      setup() {
+        const controlProps = useFieldControl()
+        return () => h('div', { class: 'wrapper' }, [h(XhButton, controlProps.value, () => '选择')])
+      },
+    })
+    const host = mountField(() => h(Trigger), { asChild: false })
+    const button = host.querySelector('button')!
+    const label = host.querySelector('label')!
+
+    expect(button.getAttribute('data-scope')).toBe('button')
+    expect(button.getAttribute('data-part')).toBe('root')
+    expect(button.classList.contains('xh-scope-button')).toBe(true)
+    expect(button.classList.contains('xh-scope-field')).toBe(false)
+    expect(label.getAttribute('for')).toBe(button.id)
   })
 })
 

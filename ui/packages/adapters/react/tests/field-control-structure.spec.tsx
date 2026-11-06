@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { useFieldControl, XhFieldControl, XhFieldRoot, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from '../src'
+import { useFieldControl, XhButton, XhFieldControl, XhFieldRoot, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from '../src'
 
 describe('字段控件的显式组合合同', () => {
   it.each(['empty', 'multiple', 'mixed'])('%s 结构必须报错，不能静默省略字段接线', (shape) => {
@@ -82,5 +82,22 @@ describe('字段控件的角色标记归属', () => {
     expect(input).not.toContain('data-part')
     expect(input).not.toContain('data-xh-')
     expect(input).not.toContain('data-variant')
+    expect(input).not.toContain('xh-scope-')
+  })
+
+  it('接线落到别的组件根上时不带字段的皮肤挂载类：那个根不会被字段根的皮肤选中', () => {
+    // 触发钮是库里的按钮：它的根自带 data-part="root"，再挂上 xh-scope-field 就会命中字段根的规则
+    function Trigger(): ReactNode {
+      const controlProps = useFieldControl()
+      return <div className="wrapper"><XhButton {...controlProps}>选择</XhButton></div>
+    }
+    const html = renderToStaticMarkup(
+      <XhFieldRoot><XhFieldControl asChild={false}><Trigger /></XhFieldControl></XhFieldRoot>,
+    )
+    const button = /<button[^>]*>/.exec(html)?.[0] ?? ''
+    expect(button).toContain('data-scope="button"')
+    expect(button).toContain('xh-scope-button')
+    expect(button).not.toContain('xh-scope-field')
+    expect(button).toMatch(/id="[^"]+"/)
   })
 })
