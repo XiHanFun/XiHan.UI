@@ -161,6 +161,8 @@ export class XhCitationElement extends XhPortalHostElement {
       branches: () => this.getParts('trigger'),
       isModal: () => false,
       surfaces: () => [],
+      // 只有 hover 档入栈：卡片悬停就出现，压在别的层上面不代表开在里面，只护着它开在其内容里的层
+      opensOnHover: true,
     })
   }
 

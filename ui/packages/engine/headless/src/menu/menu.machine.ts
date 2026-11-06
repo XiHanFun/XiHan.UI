@@ -28,6 +28,14 @@ export function menuFallbackPlacement(submenu: boolean | undefined, dir: string 
   return dir === 'rtl' ? 'left-start' : 'right-start'
 }
 
+/**
+ * 这张菜单悬停就展开：写了 openOnHover 按它，没写时子菜单开启、普通菜单关闭。
+ * 登记层时写进 opensOnHover：悬停就出现的菜单压在别的层上面不代表开在里面，只护着它开在其内容里的层。
+ */
+export function menuOpensOnHover(props: Pick<MenuSchema['props'], 'openOnHover' | 'submenu'>): boolean {
+  return props.openOnHover ?? !!props.submenu
+}
+
 export const menuMachine = createMachine({
   name: 'menu',
   context: ({ cell, prop }) => ({
@@ -243,7 +251,7 @@ export const menuMachine = createMachine({
       // 悬停触发：进锚点延时开、经安全三角离开才收。挂载后推迟一拍再接线，
       // 机器启动那一刻锚点元素还没就位
       trackHover: ({ refs, prop, send, flush }) => {
-        if (!(prop('openOnHover') ?? !!prop('submenu')))
+        if (!menuOpensOnHover({ openOnHover: prop('openOnHover'), submenu: prop('submenu') }))
           return undefined
         let cleanup: (() => void) | undefined
         let disposed = false

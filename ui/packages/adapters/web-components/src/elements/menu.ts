@@ -11,7 +11,7 @@ import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { MenuSubmenuChild, MenuSubmenuOwner, MenuSubmenuRegistration } from '../runtime/menu-submenu-owner'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta, menuStructure } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuAnatomy, menuMachine, menuMeta, menuOpensOnHover, menuStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
@@ -381,6 +381,8 @@ export class XhMenuElement extends XhPortalHostElement {
       isModal: () => false,
       // 菜单不带遮罩，没有"点它就该关本层"的表面
       surfaces: () => [],
+      // 悬停就展开的菜单（含子菜单）压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: menuOpensOnHover({ openOnHover: this.openOnHover, submenu: this.submenu }),
     })
   }
 

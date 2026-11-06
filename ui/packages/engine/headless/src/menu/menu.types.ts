@@ -18,7 +18,10 @@ export type MenuFocusIntent = 'first' | 'last' | 'none'
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，缺省时相关副作用短路。
 export interface MenuRefs {
   config: RuntimeConfig | null
-  /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈（常驻会永久占据栈顶，阻断下方每层的 Escape）。 */
+  /**
+   * 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈（常驻会永久占据栈顶，阻断下方每层的 Escape）。
+   * 层的 opensOnHover 取 menuOpensOnHover：悬停就展开的菜单只护着它开在其内容里的层。
+   */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   /** 本菜单视觉退场与行为资源共享的 Presence。每个子菜单实例各有自己的句柄。 */
   presence: PresenceHandle | null

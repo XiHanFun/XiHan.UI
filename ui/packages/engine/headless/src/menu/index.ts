@@ -8,7 +8,7 @@
 export { menuAnatomy, menuItemText } from './menu.anatomy'
 export { connectMenu } from './menu.connect'
 export { menuKeyboard } from './menu.keyboard'
-export { MENU_DEFAULT_PLACEMENT, menuMachine } from './menu.machine'
+export { MENU_DEFAULT_PLACEMENT, menuMachine, menuOpensOnHover } from './menu.machine'
 export { menuMeta } from './menu.meta'
 export { menuNodesStructure, menuStructure } from './menu.structure'
 export type { MenuNodesStructureMeta, MenuNodesStructureOptions } from './menu.structure'

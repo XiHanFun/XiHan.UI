@@ -51,6 +51,8 @@ export function useHoverCard(props: HoverCardSchema['props']): HoverCardContext 
     branches: () => [triggerRef.current, positionerRef.current].filter(Boolean) as Element[],
     // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
     isModal: () => false,
+    // 悬停就出现，压在别的层上面不代表开在里面：只护着它开在其内容里的层
+    opensOnHover: true,
   }), [])
 
   const overlay = useOverlay({

@@ -50,6 +50,12 @@ export interface Layer {
    * Escape 与视觉层级都先归本层。缺省不罩任何区域。
    */
   readonly covers?: () => Element | null
+  /**
+   * 本层悬停就出现，不经按下打开：它压在别的层上面不代表开在那一层里。挡下一次层外交互时只护着它开在其内容里的层
+   * （那一层的根节点装着本层的根节点或某个分支），与它无关的更低的层照常消解。
+   * 缺省按 kind 取：内联层为 true；其余的层经按下、聚焦打开，栈序即嵌套，护着下面每一层。
+   */
+  readonly opensOnHover?: boolean
 }
 
 export interface LayerRegistry {

@@ -9,7 +9,7 @@ import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { MenuApi, MenuSchema, MenuTreeNode } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectMenu, createMenuTreeNode, menuMachine } from '@xihan-ui/headless'
+import { connectMenu, createMenuTreeNode, menuMachine, menuOpensOnHover } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -84,6 +84,8 @@ function useMenuImpl(
       branches: () => [triggerRef.value, props.anchor, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       surfaces: () => [],
+      // 悬停就展开的菜单（含子菜单）压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: menuOpensOnHover(props),
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动

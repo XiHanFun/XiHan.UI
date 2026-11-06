@@ -68,6 +68,8 @@ export function useHoverCard(
       // 悬停卡片非模态：不陷焦点、不锁滚动、无遮罩
       isModal: () => false,
       surfaces: () => [],
+      // 悬停就出现，压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: true,
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动

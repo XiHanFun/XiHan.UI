@@ -7,7 +7,7 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { connectMenu, menuItemText, menuMachine } from '../src/menu'
+import { connectMenu, menuItemText, menuMachine, menuOpensOnHover } from '../src/menu'
 
 type Props = MenuSchema['props']
 type Dict = Record<string, unknown>
@@ -212,6 +212,15 @@ const RESULT: PositionResult = { x: 12, y: 34, placement: 'bottom-start', hidden
 afterEach(() => {
   for (const runtime of runtimes.splice(0)) runtime.stop()
   document.body.innerHTML = ''
+})
+
+describe('menuOpensOnHover：这张菜单是不是悬停就展开', () => {
+  it('写了 openOnHover 按它；没写时子菜单开启、普通菜单关闭', () => {
+    expect(menuOpensOnHover({})).toBe(false)
+    expect(menuOpensOnHover({ submenu: true })).toBe(true)
+    expect(menuOpensOnHover({ openOnHover: true })).toBe(true)
+    expect(menuOpensOnHover({ submenu: true, openOnHover: false })).toBe(false)
+  })
 })
 
 describe('触发按钮的名字', () => {

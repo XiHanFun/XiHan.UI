@@ -252,6 +252,48 @@ describe('float-button 开合', () => {
     outside.remove()
   })
 
+  it.each([
+    ['hover 展开不经按下，压在别的层上面不代表开在里面：按在根内，下面无关的层照常收起', 'hover', ['pointer-down-outside']],
+    ['click 展开经按下打开，照旧按栈序挡住下面的层：按在根内，下面的层不动', 'click', []],
+  ] as const)('%s', async (_label, expandTrigger, expected) => {
+    const rig = makeRig({}, { expandTrigger })
+    // 先开着的一层，与悬浮按钮没有嵌套关系
+    const lower = document.createElement('div')
+    document.body.append(lower)
+    const registration = rig.registry.register({
+      kind: 'popover',
+      node: () => lower,
+      branches: () => [],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+    const reasons: string[] = []
+    const dismiss = createDismissLayer({
+      config: createRuntimeConfig({ scope: rig.service.scope, layerRegistry: rig.registry }),
+      layer: registration.layer,
+      onDismiss: reason => reasons.push(reason),
+    })
+    stops.push(() => {
+      dismiss.dispose()
+      registration.dispose()
+      lower.remove()
+    })
+    const inside = document.createElement('button')
+    rig.rootEl.append(inside)
+
+    if (expandTrigger === 'hover')
+      (rig.root().onPointerEnter as () => void)()
+    else
+      (rig.trigger().onClick as () => void)()
+    await armDismissLayer()
+    expect(rig.registry.top()?.opensOnHover).toBe(expandTrigger === 'hover')
+
+    pointerDown(inside)
+
+    expect(rig.api().open).toBe(true)
+    expect(reasons).toEqual(expected)
+  })
+
   it('后开的 Drawer/Popover 层先消解；通知反馈节点不成为可消解父层', async () => {
     const rig = makeRig()
     ;(rig.trigger().onClick as () => void)()

@@ -33,6 +33,7 @@ interface ParticipantOptions extends Omit<DismissLayerOptions, 'config' | 'layer
   branches?: () => Element[]
   kind?: LayerKind
   nodeGetter?: (node: HTMLElement) => HTMLElement | null
+  opensOnHover?: boolean
   surfaces?: () => Element[]
   onDismiss?: (reason: DismissReason, controls: { disposeDismiss: () => void, disposeLayer: () => void }) => void
 }
@@ -50,7 +51,7 @@ function participant(
   label: string,
   options: ParticipantOptions = {},
 ): ParticipantHarness {
-  const { autoPop = true, branches, kind = 'popover', nodeGetter, onDismiss, surfaces, ...dismissOptions } = options
+  const { autoPop = true, branches, kind = 'popover', nodeGetter, onDismiss, opensOnHover, surfaces, ...dismissOptions } = options
   const doc = registry.ownerDocument
   const node = doc.createElement('div')
   node.dataset.layer = label
@@ -61,6 +62,7 @@ function participant(
     branches: branches ?? (() => []),
     isModal: () => false,
     surfaces: surfaces ?? (() => []),
+    ...(opensOnHover === undefined ? {} : { opensOnHover }),
   })
   let dismissDispose = (): void => {}
   const reasons: DismissReason[] = []
@@ -1316,5 +1318,162 @@ describe('dismissableLayer 内联层', () => {
 
     expect(hint.reasons).toEqual(['escape-key', 'escape-key'])
     expect(lower.reasons).toEqual([])
+  })
+})
+
+describe('dismissableLayer 悬停就出现的 popover 层', () => {
+  /** 放进某一层内容里的触发器：以它为分支的层即开在那一层里。 */
+  function triggerInside(parent: ParticipantHarness): HTMLButtonElement {
+    const trigger = document.createElement('button')
+    parent.node.append(trigger)
+    return trigger
+  }
+
+  it('按在它的分支上：它不动，下面无关的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const trigger = outside()
+    const lower = participant(registry, 'lower')
+    const card = participant(registry, 'card', { opensOnHover: true, branches: () => [trigger] })
+    await arm()
+
+    pointerDown(trigger)
+
+    expect(card.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([card.layer])
+  })
+
+  it('按在它的节点里：同样只收下面无关的层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const card = participant(registry, 'card', { opensOnHover: true })
+    await arm()
+
+    pointerDown(card.node)
+
+    expect(card.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+  })
+
+  it('焦点落进它里面：下面无关的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const card = participant(registry, 'card', { opensOnHover: true })
+    await arm()
+
+    focusIn(card.node)
+
+    expect(card.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['focus-outside'])
+  })
+
+  it('按在它里面：它开在其内容里的层受保护，再往下的层也不被触碰', async () => {
+    const registry = createLayerRegistry(document)
+    const bottom = participant(registry, 'bottom')
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const card = participant(registry, 'card', { opensOnHover: true, branches: () => [trigger] })
+    await arm()
+
+    // 卡片的根节点挂在 body 上，按在它里面的事件路径不经过 parent 的节点
+    pointerDown(card.node)
+
+    expect(card.reasons).toEqual([])
+    expect(parent.reasons).toEqual([])
+    expect(bottom.reasons).toEqual([])
+  })
+
+  it('保护逐级向上传：子菜单开在悬停展开的菜单里，菜单开在其内容里的层同样受保护，无关的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const stray = participant(registry, 'stray')
+    const outer = participant(registry, 'outer')
+    const menuTrigger = triggerInside(outer)
+    const menu = participant(registry, 'menu', { opensOnHover: true, branches: () => [menuTrigger] })
+    const subTrigger = triggerInside(menu)
+    const sub = participant(registry, 'sub', { opensOnHover: true, branches: () => [subTrigger] })
+    const loose = participant(registry, 'loose')
+    await arm()
+
+    pointerDown(sub.node)
+
+    expect(loose.reasons).toEqual(['pointer-down-outside'])
+    expect(sub.reasons).toEqual([])
+    expect(menu.reasons).toEqual([])
+    expect(outer.reasons).toEqual([])
+    // outer 经按下打开，它挡住下面每一层
+    expect(stray.reasons).toEqual([])
+  })
+
+  it('按在层外、它收到关闭意图却没退栈：下面的层连同它开在其内容里的那一层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const bottom = participant(registry, 'bottom')
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const card = participant(registry, 'card', { opensOnHover: true, autoPop: false, branches: () => [trigger] })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(card.reasons).toEqual(['pointer-down-outside'])
+    expect(parent.reasons).toEqual(['pointer-down-outside'])
+    expect(bottom.reasons).toEqual(['pointer-down-outside'])
+    // 卡片还在播退场，留在栈里；它所在的层与更低的层从它下面退栈
+    expect(registry.list()).toEqual([card.layer])
+  })
+
+  it('按在层外、它否决层外票：下面的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const card = participant(registry, 'card', {
+      opensOnHover: true,
+      onInteractOutside: event => event.preventDefault(),
+    })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(card.reasons).toEqual([])
+    expect(lower.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([card.layer])
+  })
+
+  it('没登记的 popover 层照旧按栈序挡住下面每一层：点击展开的菜单不走这条规则', async () => {
+    const registry = createLayerRegistry(document)
+    const trigger = outside()
+    const lower = participant(registry, 'lower')
+    const menu = participant(registry, 'menu', { autoPop: false, branches: () => [trigger] })
+    await arm()
+
+    pointerDown(trigger)
+    expect(lower.reasons).toEqual([])
+
+    pointerDown(outside())
+    expect(menu.reasons).toEqual(['pointer-down-outside'])
+    expect(lower.reasons).toEqual([])
+  })
+
+  it('内联层显式写 false：不再按 kind 取，按栈序挡住下面每一层', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const panel = participant(registry, 'panel', { kind: 'inline', opensOnHover: false })
+    await arm()
+
+    pointerDown(panel.node)
+
+    expect(lower.reasons).toEqual([])
+  })
+
+  it('escape 照旧只交给栈顶：它在上时先收它，下面的层等下一次按键', async () => {
+    const registry = createLayerRegistry(document)
+    const lower = participant(registry, 'lower')
+    const card = participant(registry, 'card', { opensOnHover: true })
+    await arm()
+
+    escape()
+    expect(card.reasons).toEqual(['escape-key'])
+    expect(lower.reasons).toEqual([])
+
+    escape()
+    expect(lower.reasons).toEqual(['escape-key'])
   })
 })

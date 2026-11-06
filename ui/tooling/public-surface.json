@@ -9478,6 +9478,7 @@
       "menuMachine",
       "menuMeta",
       "menuNodesStructure",
+      "menuOpensOnHover",
       "menuStructure",
       "menubarAnatomy",
       "menubarContentQuery",

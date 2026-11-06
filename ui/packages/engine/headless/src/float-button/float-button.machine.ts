@@ -381,6 +381,8 @@ export const floatButtonMachine = createMachine({
                   branches: () => [],
                   isModal: () => false,
                   surfaces: () => [],
+                  // 悬停展开的那一档不经按下就出现：压在别的层上面不代表开在里面，只护着它所在的层
+                  opensOnHover: prop('expandTrigger') === 'hover',
                 })
               : null,
             flush,

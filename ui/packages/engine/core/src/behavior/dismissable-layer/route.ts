@@ -6,12 +6,12 @@
 /** 一层相对本次冻结事件路径的位置。 */
 export type DismissPathHit = 'inside' | 'surface' | 'outside'
 
-/** 该层能否参加本次消解。shielded：上面有内联层开在本层的内容里，并且挡下了这次交互。 */
+/** 该层能否参加本次消解。shielded：上面有悬停就出现的层开在本层的内容里，并且挡下了这次交互。 */
 export type DismissRouteReadiness = 'ready' | 'missing-participant' | 'unarmed' | 'missing-node' | 'shielded'
 
 /**
  * 一层挡下这次交互时护着谁。缺省护着栈里它下面的每一层：经按下、聚焦打开的层，打开它的那次交互没有收掉
- * 下面的层，说明它开在里面，栈序即嵌套。内联层（提示、导航面板）悬停就出现，压在别的层上面不代表开在里面，
+ * 下面的层，说明它开在里面，栈序即嵌套。悬停就出现的层（提示、导航面板这类内联层，悬停卡片、悬停展开的菜单）压在别的层上面不代表开在里面，
  * 只护着它开在其内容里的层：parentsOnly 为 true 的项挡下交互时自己不成为屏障，更低的层照常求值。
  */
 interface DismissRouteScope {
@@ -66,7 +66,7 @@ export function isDismissRouteTerminal<T>(entry: DismissRouteEntry<T>): boolean 
  * 从栈顶向下生成一次 pointer/focus 的纯计划。
  *
  * outside 层进入候选并继续；surface 层进入候选后成为屏障；inside、无参与者、未武装、无节点与
- * 被上面的内联层护住的层都直接成为屏障，不得越过它触碰更低层。只护祖先的层（parentsOnly）
+ * 被上面悬停就出现的层护住的层都直接成为屏障，不得越过它触碰更低层。只护祖先的层（parentsOnly）
  * 挡下交互时自己不进候选、也不成为屏障，更低的层照常求值。
  */
 export function planOutsideDismissRoute<T>(

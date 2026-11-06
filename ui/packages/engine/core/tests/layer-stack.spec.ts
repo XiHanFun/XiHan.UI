@@ -97,13 +97,13 @@ describe('shouldDismiss（栈内仲裁）', () => {
   })
 })
 
-describe('shouldDismiss（内联层）', () => {
-  /** 带 contains 的假节点：children 是装在它里面的节点。 */
-  function fakeNode(tag: string, children: object[] = []): object {
-    const node = { tag, contains: (target: object): boolean => target === node || children.includes(target) }
-    return node
-  }
+/** 带 contains 的假节点：children 是装在它里面的节点。 */
+function fakeNode(tag: string, children: object[] = []): object {
+  const node = { tag, contains: (target: object): boolean => target === node || children.includes(target) }
+  return node
+}
 
+describe('shouldDismiss（内联层）', () => {
   function inlineLayer(node: object, branches: object[] = []): Layer {
     return { ...fakeLayer(node, branches), kind: 'inline', isModal: () => false }
   }
@@ -141,5 +141,55 @@ describe('shouldDismiss（内联层）', () => {
     const e = fakeEvent([{ x: 1 }])
     expect(shouldDismiss(e, registry, hint)).toBe(true)
     expect(shouldDismiss(e, registry, lower)).toBe(true)
+  })
+})
+
+describe('shouldDismiss（悬停就出现的 popover 层）', () => {
+  function popoverLayer(node: object, branches: object[] = [], opensOnHover?: boolean): Layer {
+    return { ...fakeLayer(node, branches), kind: 'popover', isModal: () => false, opensOnHover }
+  }
+
+  it('登记了 opensOnHover：命中它时与它无关的更低的层照常消解，它自己不消解', () => {
+    const trigger = fakeNode('trigger')
+    const lower = fakeLayer(fakeNode('lower'))
+    const card = popoverLayer(fakeNode('card'), [trigger], true)
+    const registry = fakeRegistry([lower, card])
+
+    const e = fakeEvent([trigger])
+    expect(shouldDismiss(e, registry, card)).toBe(false)
+    expect(shouldDismiss(e, registry, lower)).toBe(true)
+  })
+
+  it('登记了 opensOnHover：命中它时它开在其内容里的层受保护，再往下的层也不消解', () => {
+    const trigger = fakeNode('trigger')
+    const cardNode = fakeNode('card')
+    const bottom = fakeLayer(fakeNode('bottom'))
+    const parent = fakeLayer(fakeNode('parent', [trigger]))
+    const card = popoverLayer(cardNode, [trigger], true)
+    const registry = fakeRegistry([bottom, parent, card])
+
+    const e = fakeEvent([cardNode])
+    expect(shouldDismiss(e, registry, parent)).toBe(false)
+    expect(shouldDismiss(e, registry, bottom)).toBe(false)
+  })
+
+  it('没登记的 popover 层照旧按栈序挡住下面每一层', () => {
+    const trigger = fakeNode('trigger')
+    const lower = fakeLayer(fakeNode('lower'))
+    const menu = popoverLayer(fakeNode('menu'), [trigger])
+    const registry = fakeRegistry([lower, menu])
+
+    const e = fakeEvent([trigger])
+    expect(shouldDismiss(e, registry, menu)).toBe(false)
+    expect(shouldDismiss(e, registry, lower)).toBe(false)
+  })
+
+  it('内联层显式写 false：不再按 kind 取，按栈序挡住下面每一层', () => {
+    const trigger = fakeNode('trigger')
+    const lower = fakeLayer(fakeNode('lower'))
+    const panel: Layer = { ...popoverLayer(fakeNode('panel'), [trigger], false), kind: 'inline' }
+    const registry = fakeRegistry([lower, panel])
+
+    expect(shouldDismiss(fakeEvent([trigger]), registry, lower)).toBe(false)
   })
 })
