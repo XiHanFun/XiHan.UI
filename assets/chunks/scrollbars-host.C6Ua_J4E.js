@@ -1,0 +1,1 @@
+import{ft as e}from"./framework.eUj94whv.js";import{eg as t}from"./theme.Cyv0rDCL.js";var n=e({name:`XhOverlayScrollbars`,props:{options:{type:Object,required:!0}},setup(e,{expose:n}){let r=t(e.options);return n({measure:r.measure}),()=>r.render()}});export{n as XhOverlayScrollbars};

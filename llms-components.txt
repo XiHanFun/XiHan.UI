@@ -93542,7 +93542,7 @@ import {
 | `--xh-radio-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | radio-group 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-radio-group-segment-bg-hover` | `item`<br>`root` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
 | `--xh-radio-group-segment-bg-pressed` | `item`<br>`root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`pressed`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-bg-subtle-hover` | radio-group 的 item、root 部件 background-color 覆盖槽。 |
-| `--xh-radio-group-segment-fg` | `item`<br>`root` | `color` | `variant=segmented` | `--xh-fg-muted` | radio-group 的 item、root 部件 color 覆盖槽。 |
+| `--xh-radio-group-segment-fg` | `item`<br>`root` | `color` | `@media print`<br>`state=checked`<br>`variant=segmented` | `--xh-fg-default`<br>`--xh-fg-muted` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-fg-checked` | `item`<br>`root` | `color` | `state=checked`<br>`variant=segmented` | `--xh-_radio-group-segment-fg-checked` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-fg-checked-disabled` | `item`<br>`root` | `color` | `disabled`<br>`state=checked`<br>`variant=segmented` | `--xh-_radio-group-segment-fg-checked-disabled` | radio-group 的 item、root 部件 color 覆盖槽。 |
 | `--xh-radio-group-segment-fg-hover` | `item`<br>`root` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`not([data-state='checked'])`<br>`readonly`<br>`state=checked`<br>`variant=segmented` | `--xh-fg-default` | radio-group 的 item、root 部件 color 覆盖槽。 |
@@ -130670,7 +130670,7 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`invalid`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-toggle-group-item-shadow` | `item`<br>`root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-group-item-highlight-on`<br>`--xh-ring-width` | toggle-group 的 item、root 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-group-item-shadow` | `item`<br>`root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`is(:not([data-variant])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on`<br>`variant`<br>`variant=solid` | `--xh-_toggle-group-item-highlight-on`<br>`--xh-ring-width` | toggle-group 的 item、root 部件 box-shadow 覆盖槽。 |
 | `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | toggle-group 的 root 部件 border 覆盖槽。 |
 | `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` | toggle-group 的 root 部件 background 覆盖槽。 |
 | `--xh-toggle-group-separator-color-disabled` | `root` | `background` | `disabled`<br>`xh-toggle-group-separator` | `--xh-border-subtle` | toggle-group 的 root 部件 background 覆盖槽。 |
@@ -130934,7 +130934,7 @@ const pressed = ref(false);
 - 使用 `aria-pressed` 表达当前状态。
 - 支持受控和非受控状态。
 - 支持变体、颜色、尺寸、仅图标和全宽外观；缺省变体是中性淡底 `subtle`。
-- 按下态是品牌淡底配淡底前景，悬停与按压在同一淡底上加深；只有 `solid` 变体在按下时才是品牌实心，未按下时按 `ghost` 取面。
+- 按下态是实心主色配面上反白（与实心按钮、切换按钮组的选中段同一块面），悬停与按压走主色的深一档、再深一档；变体只决定未按下时的样子，`solid` 变体未按下时按 `ghost` 取面。
 - 禁用后保留当前按下状态。
 
 ### 组合
@@ -131078,16 +131078,16 @@ const pressed = ref(false);
 | `--xh-toggle-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | toggle 的 root 部件 background-color 覆盖槽。 |
 | `--xh-toggle-bg-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled` | toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toggle-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
-| `--xh-toggle-bg-on` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid`<br>`xh-ink-surface` | `--xh-_tone-subtle` | toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-toggle-bg-on-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_tone-subtle-active` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`focus-visible`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid`<br>`xh-ink-surface` | `--xh-_tone` | toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_tone-active` | toggle 的 root 部件 background-color 覆盖槽。 |
 | `--xh-toggle-bg-on-disabled` | `root` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest`<br>`--xh-_toggle-bg-on` | toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-toggle-bg-on-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid` | `--xh-_tone-subtle-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid` | `--xh-_tone-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
 | `--xh-toggle-border` | `root` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-focus-visible`<br>`--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_action-variant-border-rest` | toggle 的 root 部件 border、border-color 覆盖槽。 |
 | `--xh-toggle-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | toggle 的 root 部件 border-color 覆盖槽。 |
-| `--xh-toggle-border-on` | `root` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=outline`<br>`variant=solid` | `--xh-_tone-border-control`<br>`transparent` | toggle 的 root 部件 border、border-color 覆盖槽。 |
-| `--xh-toggle-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-border-on` | `root` | `border`<br>`border-color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_tone` | toggle 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-fg` | `root` | `color` | `@media print`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_action-variant-fg-focus-visible`<br>`--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
 | `--xh-toggle-fg-disabled` | `root` | `color` | `disabled` | `--xh-_action-variant-fg-disabled` | toggle 的 root 部件 color 覆盖槽。 |
-| `--xh-toggle-fg-on` | `root` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_tone-fg` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-fg-on` | `root` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`state=on`<br>`variant=solid` | `--xh-_tone-on` | toggle 的 root 部件 color 覆盖槽。 |
 | `--xh-toggle-fg-on-disabled` | `root` | `color` | `disabled`<br>`not([data-variant='solid'])`<br>`state=on`<br>`variant=solid` | `--xh-_action-variant-fg-rest`<br>`--xh-_toggle-fg-on` | toggle 的 root 部件 color 覆盖槽。 |
 | `--xh-toggle-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` | toggle 的 root 部件 font-size 覆盖槽。 |
 | `--xh-toggle-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | toggle 的 root 部件 font-weight 覆盖槽。 |
@@ -131096,7 +131096,7 @@ const pressed = ref(false);
 | `--xh-toggle-icon-size` | `*`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_action-profile-glyph-size` | toggle 的 *、root 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-toggle-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toggle 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:hover, [data-loading])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `none` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=on` | `--xh-_highlight-tone` | toggle 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -132471,7 +132471,7 @@ function toggle(value: string) {
 - 默认 `ghost` 形态只组织控件，不绘制工具条外框。
 - `outline` 形态提供带内距、描边与背景的附着式工具面；`subtle` 为淡底。
 - `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
-- 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
+- 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态，选中项是实心主色配面上反白（与 Toggle、切换按钮组的选中段同一块面），悬停与按压走主色的深一档、再深一档。
 - 条目只放图标时声明 `iconOnly`（Web Components 在条目上写 `data-icon-only`）：条目按方钮画，宽等于高，三种尺寸都一样。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
@@ -132654,13 +132654,14 @@ function toggle(value: string) {
 | `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-toolbar-item-bg` | `group`<br>`item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`not([aria-pressed='true'])`<br>`xh-ink-surface` | `--xh-_action-variant-bg-rest`<br>`--xh-bg-subtle` | toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toolbar-item-bg-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | toolbar 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled`<br>`--xh-bg-subtle` | toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`not([aria-pressed='true'])`<br>`xh-ink-surface` | `--xh-_action-variant-bg-disabled`<br>`--xh-bg-subtle` | toolbar 的 group、item 部件 --xh-ink-surface、background-color 覆盖槽。 |
 | `--xh-toolbar-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | toolbar 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed` | `item` | `--xh-ink-surface`<br>`background-color` | `default`<br>`xh-ink-surface` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-brand-subtle-active` | toolbar 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background-color 覆盖槽。 |
-| `--xh-toolbar-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | toolbar 的 item 部件 color 覆盖槽。 |
-| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand-subtle` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `item` | `--xh-ink-surface`<br>`background-color`<br>`border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`xh-ink-surface` | `--xh-bg-brand` | toolbar 的 item 部件 --xh-ink-surface、background-color、border、border-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-brand-active` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-disabled` | `item` | `--xh-ink-surface`<br>`background-color` | `disabled`<br>`xh-ink-surface` | `--xh-toolbar-item-bg-pressed` | toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-hover` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-fg` | `item` | `color` | `@media print`<br>`default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest`<br>`--xh-fg-default` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand` | toolbar 的 item 部件 color 覆盖槽。 |
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-_action-profile-gap` | toolbar 的 item 部件 gap 覆盖槽。 |

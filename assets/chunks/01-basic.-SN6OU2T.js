@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CZCyrIrh.js";import{t}from"./spinner.CwNSYJxI.js";var n=e();function r(){return(0,n.jsx)(t,{label:`加载中`})}export{r as default};

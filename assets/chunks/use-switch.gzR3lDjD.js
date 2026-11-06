@@ -1,1 +1,0 @@
-import{Gx as e,Wx as t}from"./theme.sZrh30Qa.js";import{t as n}from"./normalize-props.CxarPHX9.js";import{i as r}from"./use-machine.B-qS1tlI.js";function i(i){let a=r(t,()=>i);return{api:e(a,n),service:a}}export{i as t};

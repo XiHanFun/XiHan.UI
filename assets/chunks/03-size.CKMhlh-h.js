@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CZCyrIrh.js";import{t}from"./button.CGfxFxJb.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{size:`sm`,children:`小尺寸`}),(0,n.jsx)(t,{children:`中尺寸`}),(0,n.jsx)(t,{size:`lg`,children:`大尺寸`})]})}export{r as default};
