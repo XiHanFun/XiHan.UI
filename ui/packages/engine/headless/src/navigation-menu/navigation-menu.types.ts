@@ -8,6 +8,7 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { LiquidIndicator } from '../shared/indicator'
+import type { OverlayRelease } from '../shared/overlay-shell'
 
 /** 读屏文案，默认英文。 */
 export interface NavigationMenuTranslations {
@@ -104,7 +105,7 @@ export interface NavigationMenuRefs {
   /** 注册本层并返回撤销句柄，只在有面板展开期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
   /** 在场的层的撤销句柄，由 syncLayer 自行记录；没有层时为 null。 */
-  layerDispose: Cleanup | null
+  layerDispose: OverlayRelease | null
   /** 每个面板各自的视觉 presence；按 value 精确配对，切换项时不混用退场信号。 */
   presences: Map<string, PresenceHandle>
   /** 已明确卸载的面板；区别于适配器首帧尚未登记 Presence。 */
@@ -115,6 +116,8 @@ export interface NavigationMenuRefs {
   exitDispose: Cleanup | null
   /** 正在等浮层按需块（消解层在里面）的那一次排队；到了重走 syncLayer，收起或停机时撤销。 */
   layerKitWait: Cleanup | null
+  /** 面板的退场已经播完、正在等开在面板里的层先退栈的那一次订阅；重开或停机时撤销。 */
+  layerReleaseWait: Cleanup | null
 }
 
 export interface NavigationMenuSchema extends MachineSchema {
@@ -233,6 +236,7 @@ export interface NavigationMenuSchema extends MachineSchema {
     | 'setPresence'
     | 'syncLayer'
     | 'dropLayer'
+    | 'releaseLayer'
     | 'startPress'
     | 'endPress'
     | 'releasePanelPress'

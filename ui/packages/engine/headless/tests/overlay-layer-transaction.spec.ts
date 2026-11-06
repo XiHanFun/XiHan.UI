@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 // 浮层 effect 先登记 layer；后续任何同步初始化失败都必须把已取得资源逆序回滚。
-import type { RuntimeConfig } from '@xihan-ui/core'
-import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope } from '@xihan-ui/core'
+import type { DiagnosticRecord, Layer, LayerKind, LayerRegistry, RuntimeConfig } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
+import { createCounterIdGenerator, createLayerRegistry, createRuntimeConfig, createScope, DIAGNOSTIC_CODES, onDiagnostic } from '@xihan-ui/core'
 import { describe, expect, it, vi } from 'vitest'
-import { createModalLayerResources, setupLayerTransaction, trackOverlayLayer, trackPresenceResources } from '../src/shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, setupLayerTransaction, trackOverlayLayer, trackPresenceResources } from '../src/shared/overlay-shell'
 
 /** 背景是否被藏起：模态只给背景写 aria-hidden，不打 inert。 */
 const hidden = (el: Element): boolean => el.getAttribute('aria-hidden') === 'true'
@@ -59,6 +60,258 @@ describe('浮层资源初始化事务', () => {
     await Promise.resolve()
     expect(config.layerRegistry.list()).toHaveLength(0)
     expect(order).toEqual(['child', 'parent'])
+  })
+
+  describe('退场播完后等开在本层里的层先退栈', () => {
+    /** 一张跟着 Presence 走的浮层：setOpen 改逻辑展开态，completeExit 即退场播完。 */
+    function overlay(config: RuntimeConfig, kind: LayerKind, node: HTMLElement, branches: Element[] = []): {
+      layer: () => Layer
+      setOpen: (open: boolean) => void
+      completeExit: () => void
+      stop: () => void
+    } {
+      let open = true
+      let rendered = true
+      let sync = (): void => {}
+      let layer!: Layer
+      const exitFns = new Set<() => void>()
+      const presence = {
+        get rendered() {
+          return rendered
+        },
+        onExitComplete: (fn: () => void) => {
+          exitFns.add(fn)
+          return () => void exitFns.delete(fn)
+        },
+        update: (next: boolean) => {
+          if (next)
+            rendered = true
+        },
+      } as unknown as PresenceHandle
+      const stop = trackPresenceResources({
+        presence,
+        open: () => open,
+        track: (_deps, fn) => {
+          sync = fn
+        },
+        acquire: () => trackOverlayLayer({
+          config,
+          registerLayer: () => config.layerRegistry.register({
+            kind,
+            node: () => node,
+            branches: () => branches,
+            isModal: () => false,
+            surfaces: () => [],
+          }),
+          onDismiss: () => {},
+          onLayer: (current) => {
+            if (current)
+              layer = current
+          },
+        }),
+      })
+      return {
+        layer: () => layer,
+        setOpen: (next) => {
+          open = next
+          sync()
+        },
+        completeExit: () => {
+          rendered = false
+          for (const fn of [...exitFns]) fn()
+        },
+        stop,
+      }
+    }
+
+    /** 弹出层的内容里放一颗带提示的按钮：提示开在弹出层里，排在它上面。 */
+    function nested(registry: LayerRegistry = createLayerRegistry(document)) {
+      const config = createRuntimeConfig({ layerRegistry: registry })
+      const content = document.createElement('div')
+      const trigger = document.createElement('button')
+      const tip = document.createElement('div')
+      content.append(trigger)
+      document.body.append(content, tip)
+      const records: DiagnosticRecord[] = []
+      const stopDiagnostics = onDiagnostic((record) => {
+        if (record.code === DIAGNOSTIC_CODES.layerDisposeNotTop)
+          records.push(record)
+      })
+      const parent = overlay(config, 'popover', content)
+      const child = overlay(config, 'inline', tip, [trigger])
+      return {
+        config,
+        parent,
+        child,
+        records,
+        cleanup: () => {
+          child.stop()
+          parent.stop()
+          stopDiagnostics()
+          content.remove()
+          tip.remove()
+        },
+      }
+    }
+
+    it('父层先播完退场：留在栈里等里面那层释放，随后在微任务里释放，不报乱序', async () => {
+      const f = nested()
+      const { layerRegistry } = f.config
+      expect(layerRegistry.list()).toEqual([f.parent.layer(), f.child.layer()])
+
+      // 一次层外按下把两层一并收起
+      f.child.setOpen(false)
+      f.parent.setOpen(false)
+      f.parent.completeExit()
+      expect(layerRegistry.list()).toEqual([f.parent.layer(), f.child.layer()])
+
+      f.child.completeExit()
+      expect(layerRegistry.list()).toEqual([f.parent.layer()])
+      await Promise.resolve()
+      expect(layerRegistry.list()).toEqual([])
+      expect(f.records).toEqual([])
+      f.cleanup()
+    })
+
+    it('里面那层先播完退场：父层播完即释放，不多等', () => {
+      const f = nested()
+      f.child.setOpen(false)
+      f.parent.setOpen(false)
+
+      f.child.completeExit()
+      f.parent.completeExit()
+
+      expect(f.config.layerRegistry.list()).toEqual([])
+      expect(f.records).toEqual([])
+      f.cleanup()
+    })
+
+    it('压在上面的层不开在本层里：照常从中间释放，不等它', () => {
+      const config = createRuntimeConfig({ layerRegistry: createLayerRegistry(document) })
+      const listbox = document.createElement('div')
+      const drawer = document.createElement('div')
+      document.body.append(listbox, drawer)
+      const select = overlay(config, 'popover', listbox)
+      const sheet = overlay(config, 'modal', drawer)
+
+      select.setOpen(false)
+      select.completeExit()
+
+      expect(config.layerRegistry.list()).toEqual([sheet.layer()])
+      sheet.stop()
+      select.stop()
+      listbox.remove()
+      drawer.remove()
+    })
+
+    it('等的期间重开：沿用原层，里面那层释放后也不再释放它', async () => {
+      const f = nested()
+      const { layerRegistry } = f.config
+      const parentLayer = f.parent.layer()
+      f.child.setOpen(false)
+      f.parent.setOpen(false)
+      f.parent.completeExit()
+
+      f.parent.setOpen(true)
+      f.child.completeExit()
+      await Promise.resolve()
+
+      expect(layerRegistry.list()).toEqual([parentLayer])
+      expect(f.parent.layer()).toBe(parentLayer)
+      f.cleanup()
+      expect(layerRegistry.list()).toEqual([])
+    })
+
+    it('等的期间卸载：资源立即释放，不留到里面那层走', () => {
+      const f = nested()
+      const { layerRegistry } = f.config
+      f.child.setOpen(false)
+      f.parent.setOpen(false)
+      f.parent.completeExit()
+
+      f.parent.stop()
+
+      expect(layerRegistry.list()).toEqual([f.child.layer()])
+      f.cleanup()
+    })
+
+    it('共享的层栈注册表来自更早的 core、没有 nestedAbove：不等，照旧立即释放', () => {
+      const current = createLayerRegistry(document)
+      const legacy: LayerRegistry = Object.freeze({ ...current, nestedAbove: undefined })
+      const f = nested(legacy)
+      f.child.setOpen(false)
+      f.parent.setOpen(false)
+
+      f.parent.completeExit()
+
+      expect(legacy.list()).toEqual([f.child.layer()])
+      f.cleanup()
+    })
+
+    it('释放闸门：没有 nested 的释放函数随时可以释放', () => {
+      const gate = createLayerReleaseGate()
+      const retry = vi.fn()
+
+      expect(gate.ready(() => {}, retry)).toBe(true)
+      gate.cancel()
+      expect(retry).not.toHaveBeenCalled()
+    })
+
+    it('释放闸门：等待期间只订阅一次，放行或撤掉时退订', async () => {
+      const config = createRuntimeConfig({ layerRegistry: createLayerRegistry(document) })
+      const content = document.createElement('div')
+      const trigger = document.createElement('button')
+      content.append(trigger)
+      document.body.append(content)
+      const register = (node: HTMLElement | null, branches: Element[]) => () => config.layerRegistry.register({
+        kind: 'popover',
+        node: () => node,
+        branches: () => branches,
+        isModal: () => false,
+        surfaces: () => [],
+      })
+      // 注册表是冻结的，订阅次数经一层转发记下
+      let live = 0
+      const counted: LayerRegistry = Object.freeze({
+        ...config.layerRegistry,
+        subscribe: (fn: Parameters<LayerRegistry['subscribe']>[0]) => {
+          live += 1
+          const stop = config.layerRegistry.subscribe(fn)
+          return () => {
+            live -= 1
+            stop()
+          }
+        },
+      })
+      const visual = { registry: counted, flush: (task: () => void) => task() }
+      const parent = setupLayerTransaction(register(content, []), () => {}, visual)
+      const child = setupLayerTransaction(register(null, [trigger]), () => {}, visual)
+      // 两层各自的视觉层级绑定已经各订阅了一次
+      expect(live).toBe(2)
+      const gate = createLayerReleaseGate()
+      const retry = vi.fn()
+
+      expect(gate.ready(parent, retry)).toBe(false)
+      expect(gate.ready(parent, retry)).toBe(false)
+      expect(live).toBe(3)
+      expect(retry).not.toHaveBeenCalled()
+
+      // 层栈变了：通知期间不能改栈，retry 排在通知之后的微任务里
+      child()
+      expect(retry).not.toHaveBeenCalled()
+      await Promise.resolve()
+      expect(retry).toHaveBeenCalledTimes(1)
+      // 里面那层走了：放行并退订，只剩父层自己的视觉层级绑定
+      expect(gate.ready(parent, retry)).toBe(true)
+      expect(live).toBe(1)
+
+      // 之后层栈再变不再调 retry
+      parent()
+      await Promise.resolve()
+      expect(retry).toHaveBeenCalledTimes(1)
+      expect(live).toBe(0)
+      content.remove()
+    })
   })
 
   it('展开生命周期内切换模态策略：锁页与背景失活同步取得和释放', () => {

@@ -1163,7 +1163,7 @@ describe('dismissableLayer 内联层', () => {
     expect(registry.list()).toEqual([])
   })
 
-  it('按在层外、内联层收到关闭意图却没退栈：它开在其内容里的层受保护，再往下的层也不被触碰', async () => {
+  it('按在层外、内联层收到关闭意图却没退栈：它开在其内容里的层照常收起，再往下的层接着处理', async () => {
     const registry = createLayerRegistry(document)
     const bottom = participant(registry, 'bottom')
     const parent = participant(registry, 'parent')
@@ -1174,11 +1174,13 @@ describe('dismissableLayer 内联层', () => {
     pointerDown(outside())
 
     expect(hint.reasons).toEqual(['pointer-down-outside'])
-    expect(parent.reasons).toEqual([])
-    expect(bottom.reasons).toEqual([])
+    expect(parent.reasons).toEqual(['pointer-down-outside'])
+    expect(bottom.reasons).toEqual(['pointer-down-outside'])
+    // 内联层还在播退场，留在栈里；它所在的层与更低的层从它下面退栈
+    expect(registry.list()).toEqual([hint.layer])
   })
 
-  it('按在层外、内联层否决层外票：它开在其内容里的层受保护', async () => {
+  it('按在层外、内联层否决层外票：它开在其内容里的层照常收起', async () => {
     const registry = createLayerRegistry(document)
     const parent = participant(registry, 'parent')
     const trigger = triggerInside(parent)
@@ -1192,10 +1194,24 @@ describe('dismissableLayer 内联层', () => {
     pointerDown(outside())
 
     expect(hint.reasons).toEqual([])
-    expect(parent.reasons).toEqual([])
+    expect(parent.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([hint.layer])
   })
 
-  it('没退栈的内联层逐级护着祖先，同一栈里与它无关的内联层照常收起', async () => {
+  it('层外 focus 同理：内联层没退栈，它开在其内容里的层照常收起', async () => {
+    const registry = createLayerRegistry(document)
+    const parent = participant(registry, 'parent')
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false, branches: () => [trigger] })
+    await arm()
+
+    focusIn(outside())
+
+    expect(hint.reasons).toEqual(['focus-outside'])
+    expect(parent.reasons).toEqual(['focus-outside'])
+  })
+
+  it('内联层在层外时不护祖先：没退栈的内联层开在另一个内联层里，各级祖先逐级收起', async () => {
     const registry = createLayerRegistry(document)
     const outer = participant(registry, 'outer')
     const navTrigger = triggerInside(outer)
@@ -1210,8 +1226,24 @@ describe('dismissableLayer 内联层', () => {
 
     expect(stray.reasons).toEqual(['pointer-down-outside'])
     expect(tip.reasons).toEqual(['pointer-down-outside'])
-    expect(nav.reasons).toEqual([])
-    expect(outer.reasons).toEqual([])
+    expect(nav.reasons).toEqual(['pointer-down-outside'])
+    expect(outer.reasons).toEqual(['pointer-down-outside'])
+    expect(registry.list()).toEqual([tip.layer])
+  })
+
+  it('内联层开在非内联层里：那一层否决层外票时照旧挡住更低的层', async () => {
+    const registry = createLayerRegistry(document)
+    const bottom = participant(registry, 'bottom')
+    const parent = participant(registry, 'parent', { onInteractOutside: event => event.preventDefault() })
+    const trigger = triggerInside(parent)
+    const hint = participant(registry, 'hint', { kind: 'inline', autoPop: false, branches: () => [trigger] })
+    await arm()
+
+    pointerDown(outside())
+
+    expect(hint.reasons).toEqual(['pointer-down-outside'])
+    expect(parent.reasons).toEqual([])
+    expect(bottom.reasons).toEqual([])
   })
 
   it('内联层压在上面时，非内联层否决或没退栈照旧挡住更低的层', async () => {

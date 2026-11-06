@@ -6,11 +6,12 @@
 // 提供 tour 相关实现。
 
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
+import type { OverlayRelease } from '../shared/overlay-shell'
 import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
 import { canTakeFocus, requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -512,7 +513,7 @@ export const tourMachine = createMachine({
 
         let reactivateFocus: (() => void) | undefined
         let returnFocusNow: (() => void) | undefined
-        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer) => {
+        const acquire = (): OverlayRelease => setupLayerTransaction(registerLayer, (layer, defer) => {
           const kit = requireOverlayKit()
           const getContentEl = refs.get('getContentEl')
           const dismiss = kit.createDismissLayer({
@@ -572,13 +573,17 @@ export const tourMachine = createMachine({
 
         const presence = refs.get('presence')
         let disposed = false
-        let release: (() => void) | undefined
+        let release: OverlayRelease | undefined
         let lastOpen = false
         // 消解层与焦点域在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
         const gate = createOverlayKitGate(scope.getDoc())
+        // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
+        const releaseGate = createLayerReleaseGate()
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
+            return
+          if (!releaseGate.ready(release, finish))
             return
           const cleanup = release
           release = undefined
@@ -593,6 +598,7 @@ export const tourMachine = createMachine({
           const closing = !open && lastOpen
           lastOpen = open
           if (open) {
+            releaseGate.cancel()
             // 按需块没到：资源等它到了再建，视觉 Presence 照常跟着展开
             if (!release && !gate.ready(sync)) {
               presence?.update(true)
@@ -624,6 +630,7 @@ export const tourMachine = createMachine({
         catch (error) {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           release?.()
           throw error
@@ -631,6 +638,7 @@ export const tourMachine = createMachine({
         return () => {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           const cleanup = release
           release = undefined

@@ -86,6 +86,7 @@ export const navigationMenuMachine = createMachine({
     layerValue: null,
     exitDispose: null,
     layerKitWait: null,
+    layerReleaseWait: null,
   }),
   initialState: () => 'idle',
   // 挂载即量一次，让指示条首帧就在位；初始就展开着的那一项同时入栈，它的子级按当前页落定
@@ -290,7 +291,7 @@ export const navigationMenuMachine = createMachine({
         presences.delete(e.value)
         refs.get('detachedValues').add(e.value)
         if (refs.get('layerValue') === e.value)
-          action(['dropLayer'])
+          action([(context.get('value') ?? null) == null ? 'releaseLayer' : 'dropLayer'])
       },
 
       /**
@@ -312,6 +313,12 @@ export const navigationMenuMachine = createMachine({
             exitDispose()
           }
           context.set('exitPending', false)
+          // 还在等开在面板里的层退栈时重开：沿用原层，不再释放
+          const releaseWait = refs.get('layerReleaseWait')
+          if (releaseWait) {
+            refs.set('layerReleaseWait', null)
+            releaseWait()
+          }
           // 首帧尚未登记 Presence 时维持既有入层行为；只有适配器明确报告卸载才不保留空 Layer。
           if (refs.get('detachedValues').has(value)) {
             if (live || refs.get('layerValue') != null)
@@ -327,15 +334,15 @@ export const navigationMenuMachine = createMachine({
           if (layerValue == null) {
             context.set('exitPending', false)
             if (live)
-              action(['dropLayer'])
+              action(['releaseLayer'])
             return
           }
           if (refs.get('exitDispose'))
             return
           const presence = refs.get('presences').get(layerValue)
-          // 没有视觉闸门（SSR/纯逻辑宿主）或视觉早已卸载时，保留原来的同步释放。
+          // 没有视觉闸门（SSR/纯逻辑宿主）或视觉早已卸载时不等退场，当场释放。
           if (!presence || !presence.rendered) {
-            action(['dropLayer'])
+            action(['releaseLayer'])
             return
           }
           context.set('exitPending', true)
@@ -345,7 +352,7 @@ export const navigationMenuMachine = createMachine({
               return
             refs.set('exitDispose', null)
             if ((context.get('value') ?? null) == null && refs.get('layerValue') === layerValue)
-              action(['dropLayer'])
+              action(['releaseLayer'])
           }
           exitDispose = presence.onExitComplete(finish)
           refs.set('exitDispose', exitDispose)
@@ -400,10 +407,39 @@ export const navigationMenuMachine = createMachine({
         }, { registry: config.layerRegistry, flush })
         refs.set('layerDispose', cleanup)
       },
+      /**
+       * 面板收起、退场播完之后释放层。开在面板里的层（比如面板里一个链接的提示）还压在上面时视觉先收尾，
+       * 层留到它们退栈再释放：一次层外按下可以把提示和面板一并收起，面板的层先走即乱序。
+       * 等的期间重开沿用原层；机器停止走 dropLayer，不等。
+       */
+      releaseLayer: ({ refs, context, action }) => {
+        const nested = refs.get('layerDispose')?.nested
+        if (!nested?.pending()) {
+          action(['dropLayer'])
+          return
+        }
+        const exitDispose = refs.get('exitDispose')
+        refs.set('exitDispose', null)
+        exitDispose?.()
+        refs.set('layerValue', null)
+        context.set('exitPending', false)
+        if (refs.get('layerReleaseWait'))
+          return
+        let stop: Cleanup | null = null
+        stop = nested.subscribe(() => {
+          // 订阅撤掉之前已经排上的那一次不算
+          if (refs.get('layerReleaseWait') === stop && !nested.pending())
+            action(['dropLayer'])
+        })
+        refs.set('layerReleaseWait', stop)
+      },
       dropLayer: ({ refs, context }) => {
         const kitWait = refs.get('layerKitWait')
         refs.set('layerKitWait', null)
         kitWait?.()
+        const releaseWait = refs.get('layerReleaseWait')
+        refs.set('layerReleaseWait', null)
+        releaseWait?.()
         const exitDispose = refs.get('exitDispose')
         refs.set('exitDispose', null)
         exitDispose?.()

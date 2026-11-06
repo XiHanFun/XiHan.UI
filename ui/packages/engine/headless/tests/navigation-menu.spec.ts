@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { ExitLease, PresenceHandle } from '@xihan-ui/core/presence'
 import type { NavigationMenuSchema, NavigationMenuValueChangeDetails } from '../src/navigation-menu'
-import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
+import { createRuntimeConfig, createService, DIAGNOSTIC_CODES, normalizeProps, onDiagnostic } from '@xihan-ui/core'
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -160,6 +160,7 @@ function makeLayerMenu() {
   return {
     api: () => connectNavigationMenu(service, normalizeProps),
     config,
+    list,
     connectPresence: (value: string, presence: PresenceHandle) =>
       service.send({ type: 'PRESENCE.SET', value, presence, connected: true }),
     disconnectPresence: (value: string, presence: PresenceHandle) =>
@@ -498,6 +499,114 @@ describe('navigationMenu 收起', () => {
     offBeforeExit()
     presence.dispose()
     h.stop()
+  })
+
+  describe('面板里还压着开在它里面的层', () => {
+    /** 展开面板，再在面板里登记一层（面板里一颗带提示的按钮），随后收起面板、退场由租约押住。 */
+    function closingWithNested() {
+      const h = makeLayerMenu()
+      const presence = createPresence({ open: false, onRenderedChange: () => {} })
+      h.connectPresence('products', presence)
+      h.api().setValue('products')
+      presence.update(true)
+      const panel = h.config.layerRegistry.list()[0]!
+      const trigger = document.createElement('button')
+      h.list.append(trigger)
+      const tip = h.config.layerRegistry.register({
+        kind: 'inline',
+        node: () => null,
+        branches: () => [trigger],
+        isModal: () => false,
+        surfaces: () => [],
+      })
+      const disorder: unknown[] = []
+      const offDiagnostic = onDiagnostic((record) => {
+        if (record.code === DIAGNOSTIC_CODES.layerDisposeNotTop)
+          disorder.push(record.detail)
+      })
+      let lease: ExitLease | null = null
+      const offBeforeExit = presence.onBeforeExit(() => {
+        lease = presence.claimExit('navigation-menu animation')
+      })
+      h.api().setValue(null)
+      presence.update(false)
+      return {
+        h,
+        presence,
+        panel,
+        tip,
+        disorder,
+        finishExit: () => lease!.done(),
+        stop: () => {
+          offBeforeExit()
+          offDiagnostic()
+          presence.dispose()
+          h.stop()
+        },
+      }
+    }
+
+    it('面板的退场播完：视口这就收起，层留到里面那层退栈再释放，不报乱序', async () => {
+      const f = closingWithNested()
+      const { layerRegistry } = f.h.config
+      expect(layerRegistry.list()).toEqual([f.panel, f.tip.layer])
+      expect(f.h.exitPending()).toBe(true)
+
+      f.finishExit()
+      expect(f.h.exitPending()).toBe(false)
+      expect((f.h.api().getViewportProps() as Record<string, unknown>).hidden).toBe(true)
+      expect(layerRegistry.list()).toEqual([f.panel, f.tip.layer])
+
+      // 通知期间不能改栈：面板的层在通知之后的微任务里释放
+      f.tip.dispose()
+      expect(layerRegistry.list()).toEqual([f.panel])
+      await Promise.resolve()
+      expect(layerRegistry.list()).toEqual([])
+      expect(f.disorder).toEqual([])
+      f.stop()
+    })
+
+    it('等的期间重开：沿用原层，里面那层退栈后也不再释放它', async () => {
+      const f = closingWithNested()
+      const { layerRegistry } = f.h.config
+      f.finishExit()
+
+      f.h.api().setValue('products')
+      f.presence.update(true)
+      f.tip.dispose()
+      await Promise.resolve()
+
+      expect(layerRegistry.list()).toEqual([f.panel])
+      expect(f.disorder).toEqual([])
+      f.stop()
+      expect(layerRegistry.list()).toEqual([])
+    })
+
+    it('正在退场的面板卸载：不再等视觉回调，仍等里面那层退栈', async () => {
+      const f = closingWithNested()
+      const { layerRegistry } = f.h.config
+
+      f.h.disconnectPresence('products', f.presence)
+      expect(f.h.exitPending()).toBe(false)
+      expect(layerRegistry.list()).toEqual([f.panel, f.tip.layer])
+
+      f.tip.dispose()
+      await Promise.resolve()
+      expect(layerRegistry.list()).toEqual([])
+      expect(f.disorder).toEqual([])
+      f.stop()
+    })
+
+    it('等的期间机器停止：层立即释放，不留到里面那层走', () => {
+      const f = closingWithNested()
+      const { layerRegistry } = f.h.config
+      f.finishExit()
+
+      f.stop()
+
+      expect(layerRegistry.list()).toEqual([f.tip.layer])
+      f.tip.dispose()
+    })
   })
 
   it('首帧尚未登记 Presence 仍入层；明确卸载后不重建，重新连接后恢复', () => {

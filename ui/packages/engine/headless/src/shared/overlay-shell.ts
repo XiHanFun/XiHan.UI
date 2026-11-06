@@ -173,8 +173,73 @@ type DeferOverlayCleanup = (cleanup: Cleanup) => void
 type RunOverlaySetup = <T>(setup: () => T) => T
 
 export interface LayerTransactionVisualOptions {
+  /** 本层登记在哪份层栈里：视觉层级从它派生，释放时也向它问开在本层里的层走了没有。 */
   registry: LayerRegistry
   flush: (fn: () => void) => void
+}
+
+/** 开在本层里的层：它们还压在上面时本层先不释放，否则它们会比本层晚释放，层栈报 `core.layer.dispose-not-top`。 */
+export interface NestedLayerWatch {
+  /** 还有开在本层里的层压在上面；谁开在谁里面以层栈登记时记下的为准。 */
+  pending: () => boolean
+  /** 订阅层栈变化。通知期间不能改栈，retry 排到通知之后的微任务里。 */
+  subscribe: (retry: () => void) => Cleanup
+}
+
+function watchNestedLayers(registry: LayerRegistry, layer: Layer): NestedLayerWatch {
+  return {
+    pending: () => (registry.nestedAbove?.(layer).length ?? 0) > 0,
+    subscribe: (retry) => {
+      const win = registry.ownerDocument.defaultView ?? globalThis
+      return registry.subscribe(() => win.queueMicrotask(retry))
+    },
+  }
+}
+
+/**
+ * 行为资源的释放函数，可顺带交出两样：
+ * - returnFocus「立即归还焦点」：退场期间资源仍保留，关闭那一刻内容已经 inert，焦点要在那时就交回触发器，不能等资源释放；
+ * - nested：开在本层里的层走了没有，退场播完要释放时先问它（见 createLayerReleaseGate）。
+ */
+export type OverlayRelease = Cleanup & { returnFocus?: () => void, nested?: NestedLayerWatch }
+
+/** 退场播完后的释放闸门。 */
+export interface LayerReleaseGate {
+  /**
+   * 现在可以释放返回 true。开在本层里的层还压在上面返回 false，并订阅层栈，之后层栈每变一次调一次 retry；
+   * retry 多半就是调用方自己：重走一遍，以那一刻的状态为准。
+   */
+  ready: (release: OverlayRelease, retry: () => void) => boolean
+  /** 撤掉订阅：重开、卸载时调。 */
+  cancel: Cleanup
+}
+
+/**
+ * 建一道释放闸门：浮层退场播完、要释放层与行为资源时，等开在它里面的层先退栈。
+ *
+ * 一次层外按下可以把提示和它所在的弹出层一并收起，两层的退场各播各的，谁先播完不一定；父层先释放即乱序。
+ * 只等开在本层里的层，后来另开、与本层无关的层压在上面时照常从中间释放。等的期间本层已经关闭、内容已经失活，
+ * 留在栈里只占栈位；这时重开沿用原资源，与退场中重开一样。卸载不走这道闸门，资源立即释放。
+ */
+export function createLayerReleaseGate(): LayerReleaseGate {
+  let waiting: Cleanup | undefined
+  const cancel = (): void => {
+    const stop = waiting
+    waiting = undefined
+    stop?.()
+  }
+  return {
+    ready(release, retry) {
+      const nested = release.nested
+      if (!nested || !nested.pending()) {
+        cancel()
+        return true
+      }
+      waiting ??= nested.subscribe(retry)
+      return false
+    },
+    cancel,
+  }
 }
 
 export interface ModalLayerResourcesOptions {
@@ -374,12 +439,13 @@ export function createModalLayerResources(o: ModalLayerResourcesOptions): ModalL
 /**
  * 以 layer 登记为第一项资源执行同步初始化。setup 抛错时立即逆序回滚；成功时返回同一份
  * 幂等逆序 cleanup。这样 effect 尚未把 cleanup 交给机器前也不会留下半初始化层。
+ * 给了 visual 时 cleanup 带着 nested：退场播完要释放时，调用方据此等开在本层里的层先退栈。
  */
 export function setupLayerTransaction(
   registerLayer: () => { layer: Layer, dispose: Cleanup },
   setup: (layer: Layer, defer: DeferOverlayCleanup, run: RunOverlaySetup) => void,
   visual?: LayerTransactionVisualOptions,
-): Cleanup {
+): OverlayRelease {
   const registration = registerLayer()
   const cleanups: Cleanup[] = [registration.dispose]
   let accepting = true
@@ -444,7 +510,9 @@ export function setupLayerTransaction(
     }
     setup(registration.layer, defer, run)
     accepting = false
-    return dispose
+    return visual
+      ? Object.assign(dispose, { nested: watchNestedLayers(visual.registry, registration.layer) })
+      : dispose
   }
   catch (setupError) {
     accepting = false
@@ -453,12 +521,6 @@ export function setupLayerTransaction(
 }
 
 /** Presence 与行为资源共享生命周期时的输入。 */
-/**
- * 行为资源的释放函数，可顺带交出「立即归还焦点」：退场期间资源仍保留，
- * 关闭那一刻内容已经 inert，焦点要在那时就交回触发器，不能等资源释放。
- */
-export type OverlayRelease = Cleanup & { returnFocus?: () => void }
-
 export interface PresenceResourceOptions {
   /** 视觉 Presence；缺省（SSR/纯逻辑宿主）时逻辑关闭立即释放。 */
   presence: PresenceHandle | null | (() => PresenceHandle | null)
@@ -468,7 +530,8 @@ export interface PresenceResourceOptions {
   track: (deps: Dep[], fn: () => void) => void
   /**
    * 获取本轮 Layer、DismissableLayer 与可选 FocusScope 等行为资源。
-   * 返回的释放函数带 returnFocus 时，逻辑关闭那一刻即调用它归还焦点。
+   * 返回的释放函数带 returnFocus 时，逻辑关闭那一刻即调用它归还焦点；
+   * 带 nested 时（setupLayerTransaction、trackOverlayLayer 给的都带），退出完成后等开在本层里的层先退栈再释放。
    */
   acquire: () => OverlayRelease | undefined
   /** 退场尚未完成便重开时调用；用于恢复被失活的焦点域。 */
@@ -483,7 +546,7 @@ export interface PresenceResourceOptions {
  * 让浮层行为资源跟 Presence 的真实退场共享一份租约：
  * - 展开时至多 acquire 一次；
  * - 逻辑关闭但 Presence 仍 rendered 时继续持有；
- * - 退出完成后释放；
+ * - 退出完成后释放；开在本层里的层还压在上面时等它们先退栈（见 createLayerReleaseGate），卸载时不等；
  * - 中途重开复用原资源，并通知调用方恢复需重新激活的能力。
  *
  * acquire 用到的消解层、焦点域在浮层按需块里：展开时还没到就先不 acquire，到了按那一刻的展开态重走一遍。
@@ -497,6 +560,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
   let offExit: Cleanup | undefined
   let offReleaseReady: Cleanup | undefined
   const gate = typeof document === 'undefined' ? null : createOverlayKitGate()
+  const releaseGate = createLayerReleaseGate()
 
   const finish = (): void => {
     if (disposed || o.open() || !release)
@@ -505,6 +569,8 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       offReleaseReady ??= o.onReleaseReady?.(finish)
       return
     }
+    if (!releaseGate.ready(release, finish))
+      return
     const stopWaiting = offReleaseReady
     offReleaseReady = undefined
     stopWaiting?.()
@@ -533,6 +599,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
       const stopWaiting = offReleaseReady
       offReleaseReady = undefined
       stopWaiting?.()
+      releaseGate.cancel()
       currentPresence?.update(true)
       if (!release && gate && !gate.ready(sync))
         return
@@ -578,6 +645,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     gate?.dispose()
     offExit?.()
     offReleaseReady?.()
+    releaseGate.cancel()
     disposeRelease()
     throw error
   }
@@ -589,6 +657,7 @@ export function trackPresenceResources(o: PresenceResourceOptions): Cleanup {
     gate?.dispose()
     offExit?.()
     offReleaseReady?.()
+    releaseGate.cancel()
     disposeRelease()
   }
 }
@@ -651,9 +720,7 @@ export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | unde
       })
     }
   }, { registry: config.layerRegistry, flush: o.flush ?? (task => task()) })
-  if (!cleanup)
-    return undefined
-  return Object.assign(() => cleanup(), { returnFocus: () => focusScope?.returnFocus() })
+  return Object.assign(() => cleanup(), { returnFocus: () => focusScope?.returnFocus(), nested: cleanup.nested })
 }
 
 /** 消解层的标准映射：Escape 与层外交互都收起，只在关闭原因上分开。 */

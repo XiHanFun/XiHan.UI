@@ -5,11 +5,12 @@
 
 // 提供 dialog 相关实现。
 
+import type { OverlayRelease } from '../shared/overlay-shell'
 import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
 import { getTabbables, removeLinks, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
 
 const { createMachine } = setup<DialogSchema>()
@@ -225,7 +226,7 @@ export const dialogMachine = createMachine({
         let returnFocusNow: (() => void) | undefined
         let revealBackgroundNow: ((then?: () => void) => void) | undefined
         let resourcePolicy: string | undefined
-        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
+        const acquire = (): OverlayRelease => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const kit = requireOverlayKit()
           const role = prop('role') ?? 'dialog'
           resourcePolicy = role
@@ -332,13 +333,17 @@ export const dialogMachine = createMachine({
 
         const presence = refs.get('presence')
         let disposed = false
-        let release: (() => void) | undefined
+        let release: OverlayRelease | undefined
         let lastOpen = false
         // 消解层、焦点域与模态资源在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍
         const gate = createOverlayKitGate(scope.getDoc())
+        // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
+        const releaseGate = createLayerReleaseGate()
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
+            return
+          if (!releaseGate.ready(release, finish))
             return
           const cleanup = release
           release = undefined
@@ -355,6 +360,7 @@ export const dialogMachine = createMachine({
           const closing = !open && lastOpen
           lastOpen = open
           if (open) {
+            releaseGate.cancel()
             // 退场中角色改变后需重建初始焦点语义；modal 本身由共享资源控制器原位切换。
             if (reopening && resourcePolicy !== (prop('role') ?? 'dialog')) {
               const cleanup = release
@@ -399,6 +405,7 @@ export const dialogMachine = createMachine({
         catch (error) {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           release?.()
           throw error
@@ -406,6 +413,7 @@ export const dialogMachine = createMachine({
         return () => {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           const cleanup = release
           release = undefined

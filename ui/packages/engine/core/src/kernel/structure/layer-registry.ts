@@ -68,6 +68,11 @@ export interface LayerRegistry {
   layerOf: (node: Node) => { layer: Layer, via: 'node' | 'branch' | 'surface' } | undefined
   /** 栈中位于给定层之上的各层的全部节点（node + branches + surfaces）。 */
   elementsAbove: (layer: Layer) => Element[]
+  /**
+   * 栈中位于给定层之上、开在它内容里的层，按登记那一刻记下的嵌套判，返回冻结数组；这几层还在时释放给定层即乱序。
+   * 注册表是页面级共享的：页面上先装的那份 core 早于这个方法时，取到的实例没有它，调用方按没有这样的层处理。
+   */
+  nestedAbove?: (layer: Layer) => readonly Layer[]
   /** 订阅栈变化；回调参数是冻结快照。 */
   subscribe: (fn: (layers: readonly Layer[]) => void) => Cleanup
 }
@@ -200,6 +205,10 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     )
   }
 
+  /** 排在 index 之上、登记时记下开在 layer 里的层。 */
+  const nestedFrom = (index: number, layer: Layer): Layer[] =>
+    layers.slice(index + 1).filter(above => parentsOf.get(above)?.has(layer))
+
   const register: LayerRegistry['register'] = input => runChange(() => {
     const id = `layer-${++seq}`
     const layer: Layer = Object.freeze({ ...input, id })
@@ -221,7 +230,7 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
         const participants = [...subs]
         let diagnosticResult: CollectedError = { found: false }
         // 只在开在它里面的层还压在上面时报；后来另开、不开在它里面的层压在上面时，从中间释放照常进行
-        const nested = layers.slice(idx + 1).filter(above => parentsOf.get(above)?.has(layer))
+        const nested = nestedFrom(idx, layer)
         if (nested.length) {
           try {
             reportDiagnostic({
@@ -309,6 +318,11 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     return out
   }
 
+  const nestedAbove: NonNullable<LayerRegistry['nestedAbove']> = (layer) => {
+    const from = layers.indexOf(layer)
+    return Object.freeze(from === -1 ? [] : nestedFrom(from, layer))
+  }
+
   const publicRegistry: LayerRegistry = {
     ownerDocument: doc,
     register,
@@ -319,6 +333,7 @@ export function createLayerRegistry(doc: Document): LayerRegistry {
     sync,
     layerOf,
     elementsAbove,
+    nestedAbove,
     subscribe: (fn) => {
       subs.add(fn)
       return () => void subs.delete(fn)

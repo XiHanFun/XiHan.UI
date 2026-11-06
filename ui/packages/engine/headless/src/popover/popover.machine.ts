@@ -6,13 +6,14 @@
 // 提供 popover 相关实现。
 
 import type { PositionResult } from '@xihan-ui/core'
+import type { OverlayRelease } from '../shared/overlay-shell'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, requireOverlayKit, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createModalLayerResources, createOverlayKitGate, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
 import { popoverAnatomy } from './popover.anatomy'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
@@ -204,7 +205,7 @@ export const popoverMachine = createMachine({
         let reactivateFocus: (() => void) | undefined
         let returnFocusNow: (() => void) | undefined
         let revealBackgroundNow: ((then?: () => void) => void) | undefined
-        const acquire = (): (() => void) => setupLayerTransaction(registerLayer, (layer, defer, run) => {
+        const acquire = (): OverlayRelease => setupLayerTransaction(registerLayer, (layer, defer, run) => {
           const kit = requireOverlayKit()
           const dismiss = kit.createDismissLayer({
             config,
@@ -284,14 +285,18 @@ export const popoverMachine = createMachine({
 
         const presence = refs.get('presence')
         let disposed = false
-        let release: (() => void) | undefined
+        let release: OverlayRelease | undefined
         let lastOpen = false
         // 消解层、焦点域与模态资源在浮层按需块里：展开时还没到就等它，到了按那一刻的展开态重走一遍。
         // 预取挂在页面文档上：这里还没进层事务，不去解析 config 的 realm，解析失败要留给事务回滚
         const gate = createOverlayKitGate()
+        // 退场播完后等开在本层里的层（比如内容里一颗按钮的提示）先退栈再释放
+        const releaseGate = createLayerReleaseGate()
 
         const finish = (): void => {
           if (disposed || state.get() === 'open' || !release)
+            return
+          if (!releaseGate.ready(release, finish))
             return
           const cleanup = release
           release = undefined
@@ -307,6 +312,7 @@ export const popoverMachine = createMachine({
           lastOpen = open
           if (open) {
             // 先废弃旧退出租约，退场中重开沿用同一层登记与模态资源。
+            releaseGate.cancel()
             presence?.update(true)
             if (!release && !gate.ready(sync))
               return
@@ -340,6 +346,7 @@ export const popoverMachine = createMachine({
         catch (error) {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           release?.()
           throw error
@@ -347,6 +354,7 @@ export const popoverMachine = createMachine({
         return () => {
           disposed = true
           gate.dispose()
+          releaseGate.cancel()
           offExit?.()
           const cleanup = release
           release = undefined

@@ -1,10 +1,12 @@
 // 下拉开着时，后出现的提示压在它上面；两者没有嵌套关系，提示不该挡住下拉的层外按下。
 // 提示可见时按它的触发器、提示正在退场、提示可见时按在外面，这三种状态下按在下拉之外都要把下拉收起。
 // 嵌套关系照旧受保护：按在提示里不收它开在其内容里的浮层，Escape 仍先收提示。
+// 按在层外时提示谁也不护：它可见、正在播退场，它所在的浮层都在这一下收起；浮层等提示的层先释放，层栈不报乱序。
 // 悬停展开的导航面板与提示同属内联层，同样不挡下拉。
 // 真实指针的悬停、按下与退场期间的层栈只有浏览器里有。
+import type { DiagnosticRecord } from '@xihan-ui/core'
 import type { App } from 'vue'
-import { getLayerRegistry } from '@xihan-ui/core'
+import { DIAGNOSTIC_CODES, getLayerRegistry, onDiagnostic } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
@@ -35,8 +37,11 @@ const ITEMS = [
 
 let app: App | null = null
 let host: HTMLElement | null = null
+let stopDiagnostics: (() => void) | null = null
 
 afterEach(async () => {
+  stopDiagnostics?.()
+  stopDiagnostics = null
   app?.unmount()
   app = null
   host?.remove()
@@ -108,6 +113,16 @@ const selectOpen = (): string | null => selectTrigger().getAttribute('aria-expan
 const popoverOpen = (): string | null => test('popover-trigger').getAttribute('aria-expanded')
 const tipState = (): string | undefined => test('tip-content').dataset.state
 const layers = (): number => getLayerRegistry(document).list().length
+
+/** 收下层栈的乱序诊断：父层先于开在它里面的层释放时才有。 */
+function watchReleaseOrder(): DiagnosticRecord[] {
+  const records: DiagnosticRecord[] = []
+  stopDiagnostics = onDiagnostic((record) => {
+    if (record.code === DIAGNOSTIC_CODES.layerDisposeNotTop)
+      records.push(record)
+  })
+  return records
+}
 
 async function openSelect(): Promise<void> {
   await userEvent.click(selectTrigger())
@@ -225,6 +240,38 @@ describe('vue 下拉开着时悬停展开导航面板', () => {
     await expect.poll(selectOpen).toBe('false')
     expect(navOpen()).toBe('true')
   })
+
+  it('面板里一颗带提示的按钮、提示可见时按在层外：提示与面板一并收起，不报乱序', async () => {
+    const records = watchReleaseOrder()
+    host = document.createElement('div')
+    host.style.cssText = STACK
+    document.body.append(host)
+    app = createApp({
+      render: () => [
+        h('div', { style: 'inline-size:320px' }, h(XhNavigationMenuRoot, { delayDuration: 0 }, () => h(XhNavigationMenuList, null, () => h(XhNavigationMenuItem, null, () => [
+          h(XhNavigationMenuTrigger, { 'value': 'products', 'data-test': 'nav-trigger' }, () => '产品'),
+          // 收起等待拉长：指针移到空白处之后提示仍然可见
+          h(XhNavigationMenuContent, { value: 'products' }, () => tooltip({ closeDelay: 60_000 })),
+        ])))),
+        h('div', { 'data-test': 'blank', 'style': 'position:fixed;inset-block-end:40px;inset-inline-start:40px;inline-size:160px;block-size:60px' }),
+      ],
+    })
+    app.mount(host)
+    await settle()
+
+    const navOpen = (): string | null => test('nav-trigger').getAttribute('aria-expanded')
+    await userEvent.hover(test('nav-trigger'))
+    await expect.poll(navOpen).toBe('true')
+    // 提示开在导航面板里，两层都是悬停出现的内联层
+    await showTip(2)
+
+    await userEvent.click(test('blank'))
+
+    // 面板等提示的层先释放，不抢在它前面走
+    await expect.poll(navOpen).toBe('false')
+    await expect.poll(layers).toBe(0)
+    expect(records).toEqual([])
+  })
 })
 
 describe('vue 提示开在浮层的内容里', () => {
@@ -244,5 +291,51 @@ describe('vue 提示开在浮层的内容里', () => {
     await expect.poll(layers).toBe(1)
     await userEvent.keyboard('{Escape}')
     await expect.poll(layers).toBe(0)
+  })
+
+  it('提示随聚焦出现时按在层外：提示与浮层一并收起，层栈清空，不报乱序', async () => {
+    const records = watchReleaseOrder()
+    await mountNested()
+    await expect.poll(popoverOpen).toBe('true')
+    // 浮层缺省展开，初始焦点落在带提示的按钮上，提示随聚焦出现，压在浮层上面
+    await expect.poll(tipState).toBe('open')
+    await expect.poll(layers).toBe(2)
+
+    await userEvent.click(test('blank'))
+
+    // 这一下把两层都收起：各播各的退场，浮层等提示的层先释放
+    await expect.poll(popoverOpen).toBe('false')
+    await expect.poll(layers).toBe(0)
+    expect(document.querySelector<HTMLElement>('[data-test="tip-content"]')?.dataset.state).not.toBe('open')
+    expect(records).toEqual([])
+  })
+
+  it('提示收起后还在播退场、层留在栈里：按在层外，浮层这一下就收起，不报乱序', async () => {
+    const records = watchReleaseOrder()
+    holdTipExit()
+    await mountNested()
+    await expect.poll(popoverOpen).toBe('true')
+    await expect.poll(tipState).toBe('open')
+    await expect.poll(layers).toBe(2)
+
+    // Escape 只收栈顶的提示；退场拉长，它的层还压在浮层上面
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(tipState).toBe('closed')
+    expect(popoverOpen()).toBe('true')
+    expect(layers()).toBe(2)
+
+    await userEvent.click(test('blank'))
+
+    await expect.poll(popoverOpen).toBe('false')
+    // 浮层自己的退场播完了，提示的还没有：浮层留在栈里等它，不抢在它前面释放
+    await expect.poll(() => test('popover-content').getAnimations().length).toBe(0)
+    await settle()
+    expect(layers()).toBe(2)
+
+    // 放掉拉长的退场：提示的层先释放，浮层的层跟着释放
+    for (const animation of test('tip-content').getAnimations())
+      animation.finish()
+    await expect.poll(layers).toBe(0)
+    expect(records).toEqual([])
   })
 })

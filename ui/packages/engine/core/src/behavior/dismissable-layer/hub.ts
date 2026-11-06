@@ -123,8 +123,9 @@ type OutsideVote = Exclude<DismissPathHit, 'inside'> | 'vetoed' | null
 
 /**
  * 内联层（提示、导航面板）悬停就出现，不经按下打开：它压在别的层上面不代表开在那一层里。
- * 所以它留在栈里时（交互落在它里面、它还判不了、否决了层外票、收到关闭意图却没退栈）
- * 不按栈序挡住下面每一层，只护着它开在其内容里的层：那一层的根节点装着它的根节点或某个分支。
+ * 所以它留在栈里时不按栈序挡住下面每一层。交互落在它里面、或它还判不了这次交互时，只护着它开在其内容里的层：
+ * 那一层的根节点装着它的根节点或某个分支。交互落在它外面时谁也不护：它否决层外票、收到关闭意图却没退栈
+ * （多半是正在播退场），下面的层连同它开在其内容里的那一层照常消解，一次按下把提示和它所在的浮层一并收起。
  * 其余的层经按下、聚焦打开，打开它的那次交互没有收掉下面的层，栈序即嵌套，照旧挡住下面每一层。
  */
 function shieldsParentsOnly(layer: Layer): boolean {
@@ -848,7 +849,7 @@ class DismissHub {
 
   /**
    * Escape 只认真实栈顶。层外交互的候选之上只容许留着内联层：没被这次交互碰到的、
-   * 否决了层外票的、收到关闭意图却还没退栈的；其余的层留在上面就不是原计划的栈。
+   * 否决了层外票的、收到关闭意图却还没退栈的（其中也有开在候选内容里的）；其余的层留在上面就不是原计划的栈。
    */
   private candidateHoldsTop(
     registry: LayerRegistry,
@@ -1066,48 +1067,32 @@ class DismissHub {
     const { kind } = options
     let expectedSnapshot = plan.snapshot
     const popped = new Set<Layer>()
-    // 留在栈里的内联层留在原处的节点（根节点与分支）：更低的候选把其中一个装在自己的内容里，就由它护着
-    const guarded: Element[] = []
     for (const candidate of plan.candidates) {
       const stage = this.beginStage(plan, candidate, expectedSnapshot, popped, kind)
       if (!stage)
         return
-      const content = stage.node
-      let stays = content !== null && guarded.some(origin => origin !== content && contains(content, origin))
-      if (!stays) {
-        const stageHit = this.stageOutsideHit(stage, kind, path)
-        if (stageHit === null)
+      const stageHit = this.stageOutsideHit(stage, kind, path)
+      if (stageHit === null)
+        return
+      const finalHit = this.voteOutside(stage, options, path)
+      if (finalHit === null)
+        return
+      if (finalHit !== 'vetoed') {
+        const transition = this.dismissOutside(plan, stage, popped, kind)
+        if (!transition)
           return
-        const finalHit = this.voteOutside(stage, options, path)
-        if (finalHit === null)
+        if (stageHit === 'surface' || finalHit === 'surface')
           return
-        if (finalHit === 'vetoed') {
-          stays = true
-        }
-        else {
-          const transition = this.dismissOutside(plan, stage, popped, kind)
-          if (!transition)
-            return
-          if (stageHit === 'surface' || finalHit === 'surface')
-            return
-          if (transition.popped) {
-            popped.add(candidate.layer)
-            expectedSnapshot = transition.snapshot
-            continue
-          }
-          stays = true
+        if (transition.popped) {
+          popped.add(candidate.layer)
+          expectedSnapshot = transition.snapshot
+          continue
         }
       }
-      // 这一层留在栈里（被护住、否决了层外票，或收到关闭意图却没退栈）：
-      // 非内联层挡住它下面每一层；内联层只护着它开在其内容里的层，与它无关的更低的层照常消解
+      // 这一层留在栈里（否决了层外票，或收到关闭意图却没退栈）：非内联层挡住它下面每一层；
+      // 内联层在层外时谁也不护，更低的层连同它开在其内容里的那一层照常消解
       if (!shieldsParentsOnly(candidate.layer))
         return
-      const branches = candidate.layer.branches()
-      if (!this.stageIsCurrent(stage, kind))
-        return
-      if (content)
-        guarded.push(content)
-      guarded.push(...branches)
     }
   }
 

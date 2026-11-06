@@ -394,6 +394,8 @@ export const commandMachine = createMachine({
                 else
                   returnFocusNow?.()
               },
+              // 退场播完后等开在面板里的层（比如面板里一颗按钮的提示）先退栈再释放
+              nested: release.nested,
             })
           },
           onReopen: () => {

@@ -660,6 +660,82 @@ describe('layer registry 释放顺序', () => {
   })
 })
 
+describe('layer registry 开在某层里的层（nestedAbove）', () => {
+  it('列出压在上面、开在它里面的层；与它无关的层不算，释放后不再列', () => {
+    const registry = createLayerRegistry(document)
+    const { outer, inner } = nestedPair(registry)
+    // 后来另开、不开在对话框里的层
+    const stray = registry.register(layerInput())
+    cleanups.push(stray.dispose, outer.dispose)
+
+    expect(registry.nestedAbove!(outer.layer)).toEqual([inner.layer])
+    expect(Object.isFrozen(registry.nestedAbove!(outer.layer))).toBe(true)
+    expect(registry.nestedAbove!(inner.layer)).toEqual([])
+    expect(registry.nestedAbove!(stray.layer)).toEqual([])
+
+    inner.dispose()
+    expect(registry.nestedAbove!(outer.layer)).toEqual([])
+  })
+
+  it('按登记那一刻的 DOM 记：节点已经摘掉、引用也清空了，照样列得出', () => {
+    const registry = createLayerRegistry(document)
+    let content: HTMLElement | null = document.createElement('div')
+    let trigger: HTMLElement | null = document.createElement('button')
+    content.append(trigger)
+    document.body.append(content)
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    const inner = registry.register({ ...layerInput(), branches: () => (trigger ? [trigger] : []) })
+    cleanups.push(outer.dispose, inner.dispose)
+    content.remove()
+    content = null
+    trigger = null
+
+    expect(registry.nestedAbove!(outer.layer)).toEqual([inner.layer])
+  })
+
+  it('浮层先登记、对话框后登记并插到它下面：同样算开在对话框里', () => {
+    const registry = createLayerRegistry(document)
+    const content = document.createElement('div')
+    const trigger = document.createElement('button')
+    const popover = document.createElement('div')
+    content.append(trigger)
+    document.body.append(content, popover)
+    const inner = registry.register({ ...layerInput(), node: () => popover, branches: () => [trigger] })
+    const outer = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    cleanups.push(outer.dispose, inner.dispose)
+
+    expect(registry.nestedAbove!(outer.layer)).toEqual([inner.layer])
+  })
+
+  it('逐级嵌套：只列直接或间接登记在它里面、还压在上面的层', () => {
+    const registry = createLayerRegistry(document)
+    const content = document.createElement('div')
+    const menuTrigger = document.createElement('button')
+    const menu = document.createElement('div')
+    const tipTrigger = document.createElement('button')
+    content.append(menuTrigger)
+    menu.append(tipTrigger)
+    document.body.append(content, menu)
+    const dialog = registry.register({ ...layerInput(), kind: 'modal', isModal: () => true, node: () => content })
+    const popup = registry.register({ ...layerInput(), node: () => menu, branches: () => [menuTrigger] })
+    const tip = registry.register({ ...layerInput(), kind: 'inline', branches: () => [tipTrigger] })
+    cleanups.push(dialog.dispose, popup.dispose, tip.dispose)
+
+    // 提示的触发器在菜单里，菜单的触发器在对话框里：提示只记在菜单名下
+    expect(registry.nestedAbove!(popup.layer)).toEqual([tip.layer])
+    expect(registry.nestedAbove!(dialog.layer)).toEqual([popup.layer])
+  })
+
+  it('未登记或已释放的层返回空', () => {
+    const registry = createLayerRegistry(document)
+    const { outer, inner } = nestedPair(registry)
+    inner.dispose()
+    outer.dispose()
+
+    expect(registry.nestedAbove!(outer.layer)).toEqual([])
+  })
+})
+
 describe('layer registry 通知边界', () => {
   it('通知期间明确拒绝嵌套 register 与 dispose', () => {
     const registry = createLayerRegistry(document)
