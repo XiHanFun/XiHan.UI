@@ -1,5 +1,11 @@
 # @xihan-ui/styles
 
+## 5.3.0
+
+### Patch Changes
+
+- @xihan-ui/tokens@5.3.0
+
 ## 5.2.0
 
 ### Minor Changes

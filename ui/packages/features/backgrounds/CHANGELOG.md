@@ -1,5 +1,15 @@
 # @xihan-ui/backgrounds
 
+## 5.3.0
+
+### Patch Changes
+
+- Updated dependencies [409e204]
+- Updated dependencies [16b693f]
+- Updated dependencies [35c0b95]
+  - @xihan-ui/core@5.3.0
+  - @xihan-ui/motion@5.3.0
+
 ## 5.2.0
 
 ### Patch Changes

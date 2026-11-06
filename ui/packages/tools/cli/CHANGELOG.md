@@ -1,5 +1,7 @@
 # @xihan-ui/cli
 
+## 5.3.0
+
 ## 5.2.0
 
 ### Minor Changes
