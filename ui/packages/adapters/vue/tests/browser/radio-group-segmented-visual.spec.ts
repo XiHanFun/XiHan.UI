@@ -130,7 +130,7 @@ function resolveLength(token: string, scope: HTMLElement): string {
 }
 
 describe('radio-group segmented 形态的缺省视觉', () => {
-  it('轨道与字段同款：最浅一档淡底 + 1px 字段描边 + control 圆角 + 2px 内衬；滑块是选中段的品牌淡底，无边无影', () => {
+  it('轨道与字段同款：最浅一档淡底 + 1px 字段描边 + control 圆角 + 2px 内衬；滑块是选中段的实心主色面，无边无影', () => {
     const { root, thumb } = mount()
     const track = getComputedStyle(root)
     expect(track.backgroundColor).toBe(resolveColor('--xh-bg-field', root))
@@ -174,30 +174,30 @@ describe('radio-group segmented 形态的缺省视觉', () => {
     expect(label.getBoundingClientRect().width).toBeLessThanOrEqual(1)
   })
 
-  it('语气档的滑块取语气淡底，选中段的字取语气字色', () => {
+  it('语气档的滑块取语气的实心面，选中段的字取实心面上的前景', () => {
     const { root, thumb, checked } = mount({ tone: 'success' })
-    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle', root))
-    expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-_tone-fg', root))
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone', root))
+    expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-_tone-on', root))
   })
 
-  it('语气档的禁用选中段：滑块退到语气 8% 淡底、字退到语气字往承载面兑一半，不回落到品牌色', () => {
+  it('语气档的禁用选中段：滑块的面往承载面兑一半、字照旧，不回落到品牌色', () => {
     const { root, thumb, checked } = mount({ tone: 'success' })
     checked.setAttribute('data-disabled', '')
-    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveExpression('color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface))', root))
-    expect(getComputedStyle(checked).color).toBe(resolveExpression('color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface))', root))
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveExpression('color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface))', root))
+    expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-_tone-on', root))
     expect(getComputedStyle(thumb).backgroundColor).not.toBe(resolveColor('--xh-bg-segment-selected-disabled', root))
   })
 
-  it('深色下语气档的滑块与品牌档同口径：静息 20%、悬停 28%', async () => {
+  it('深色下语气档的滑块仍是实心面，悬停走语气层的明暗一档', async () => {
     document.documentElement.dataset.theme = 'dark'
     const { root, thumb, checked } = mount({ tone: 'success' })
-    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle-hover', root))
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone', root))
     await userEvent.hover(checked)
-    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-subtle-active', root))
+    expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-_tone-hover', root))
     await userEvent.unhover(checked)
   })
 
-  it('选中段品牌字 + medium，未选中段次级字色 + 常规字重', () => {
+  it('选中段反白字 + medium，未选中段次级字色 + 常规字重', () => {
     const { root, idle, checked } = mount()
     expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-fg-segment-selected', root))
     expect(getComputedStyle(checked).fontWeight).toBe(resolveWeight('--xh-font-weight-medium', root))
@@ -205,7 +205,7 @@ describe('radio-group segmented 形态的缺省视觉', () => {
     expect(getComputedStyle(idle).fontWeight).toBe(resolveWeight('--xh-text-label-weight', root))
   })
 
-  it('选中段悬停时滑块升一档；禁用的选中段滑块退到 8% 淡底、字退到浅品牌色', async () => {
+  it('选中段悬停时滑块换到主色深一档；禁用的选中段滑块的面兑淡一半、字照旧反白', async () => {
     const { root, thumb, checked } = mount()
     await userEvent.hover(checked)
     expect(getComputedStyle(thumb).backgroundColor).toBe(resolveColor('--xh-bg-segment-selected-hover', root))
@@ -215,7 +215,7 @@ describe('radio-group segmented 形态的缺省视觉', () => {
     expect(getComputedStyle(checked).color).toBe(resolveColor('--xh-fg-segment-selected-disabled', root))
   })
 
-  it('选中段的字压在静息与悬停两档选中面上，亮暗两档都到 4.5:1；深色档选中面 20%、悬停 28%', () => {
+  it('选中面就是实心主色（与实心按钮同一块面）、字是面上的反白，压在静息与悬停两档面上亮暗两档都到 4.5:1', () => {
     for (const theme of ['light', 'dark'] as const) {
       document.documentElement.dataset.theme = theme
       const { root, checked } = mount()
@@ -223,11 +223,9 @@ describe('radio-group segmented 形态的缺省视觉', () => {
       const text = getComputedStyle(checked).color
       for (const face of ['--xh-bg-segment-selected', '--xh-bg-segment-selected-hover'])
         expect(contrast(text, resolveColor(face, root), page), `${theme} ${face}`).toBeGreaterThanOrEqual(4.5)
-      if (theme === 'dark') {
-        expect(resolveColor('--xh-bg-segment-selected', root)).toBe(resolveColor('--xh-bg-brand-subtle-hover', root))
-        expect(resolveColor('--xh-bg-segment-selected-hover', root)).toBe(resolveColor('--xh-bg-brand-subtle-active', root))
-        expect(text).toBe(resolveColor('--xh-fg-brand-strong', root))
-      }
+      expect(resolveColor('--xh-bg-segment-selected', root)).toBe(resolveColor('--xh-bg-brand', root))
+      expect(resolveColor('--xh-bg-segment-selected-hover', root)).toBe(resolveColor('--xh-bg-brand-hover', root))
+      expect(text).toBe(resolveColor('--xh-fg-on-brand', root))
       host!.remove()
     }
   })

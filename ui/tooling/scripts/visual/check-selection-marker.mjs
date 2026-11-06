@@ -9,8 +9,10 @@
 // 导航当前页（Tabs line / Anchor / NavigationMenu）= 指示条 + --xh-fg-brand + medium，
 //   Breadcrumb 当前页是不可点位置，保留 --xh-fg-default + medium；两者都是 Collection Item 的 nav 语境；
 // 格状当前（Pagination item / Steps indicator / Calendar 选中格）= 实心 --xh-bg-brand + --xh-fg-on-brand，不加粗；
-// 有滑块开关（RadioGroup segmented 的 thumb / Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
-// 无滑块开关（Toggle / ToggleGroup item / Toolbar aria-pressed）= --xh-bg-brand-subtle + --xh-fg-on-brand-subtle；
+// 有滑块开关（Tabs segment 的 indicator）= --xh-bg-surface-raised + --xh-border-default + --xh-elevation-raised；
+//   RadioGroup segmented 的 thumb 另算分段选中：--xh-bg-segment-selected（实心主色），无影；
+// 无滑块开关（Toggle / Toolbar aria-pressed）= --xh-bg-brand-subtle + --xh-fg-on-brand-subtle；
+//   成组的 ToggleGroup item 是一组互斥 / 并列的取值，选中段与格状当前同为实心 --xh-bg-brand + --xh-fg-on-brand；
 // 展开路径 / 打开中不是选中：与所在家族 hover 同档的中性面，不用品牌色、不加粗。
 //
 // 三条判据：
@@ -80,12 +82,12 @@ const SEMANTIC = {
   'steps:indicator': [{ kind: 'grid', state: '[data-state=\'current\']' }],
   'calendar-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
   'calendar-range-picker:cell-trigger': [{ kind: 'grid', state: '[data-selected]' }],
-  // 分段选中滑块：RadioGroup segmented 形态的 thumb 是选中段的品牌淡底（--xh-bg-segment-selected），平面一块无影；
+  // 分段选中滑块：RadioGroup segmented 形态的 thumb 是选中段的实心主色面（--xh-bg-segment-selected），平面一块无影；
   // 与 Tabs segment 的白色抬起滑块分开登记
   'radio-group:thumb': [{ kind: 'segment' }],
-  // 无滑块开关：品牌淡底
+  // 无滑块开关：单独一枚是品牌淡底；成组的 ToggleGroup item 选中段是实心主色（与格状当前同一组令牌）
   'toggle:root': [{ kind: 'flat', state: '[data-state=\'on\']' }],
-  'toggle-group:item': [{ kind: 'flat', state: '[data-state=\'on\']' }],
+  'toggle-group:item': [{ kind: 'grid', state: '[data-state=\'on\']' }],
   'toolbar:item': [{ kind: 'flat', state: '[aria-pressed=\'true\']' }],
   // 展开路径 / 打开中：与家族 hover 同档的中性面
   'menu:trigger': [{ kind: 'open', state: '[data-state=\'open\']' }],
@@ -394,7 +396,7 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         if (bg !== '--xh-bg-segment-selected')
           report(`分段选中滑块的底是 ${bg ?? '（没写 background）'}，应为 --xh-bg-segment-selected`)
         if (shadow != null && shadow.startsWith('--xh-elevation-'))
-          report(`分段选中滑块落了 ${shadow}——它是平面的品牌淡底，不投影`)
+          report(`分段选中滑块落了 ${shadow}——它是平面的实心主色面，不投影`)
         break
       }
       case 'open': {

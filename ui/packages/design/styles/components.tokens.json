@@ -64946,9 +64946,12 @@
         "color"
       ],
       "state": [
+        "@media print",
+        "state=checked",
         "variant=segmented"
       ],
       "defaultToken": [
+        "--xh-fg-default",
         "--xh-fg-muted"
       ],
       "visibility": "public",
@@ -87327,11 +87330,13 @@
         "hover",
         "is(:active, [data-pressed])",
         "is(:hover, [data-loading])",
+        "is(:not([data-variant])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
         "pressed",
         "state=on",
+        "variant",
         "variant=solid"
       ],
       "defaultToken": [

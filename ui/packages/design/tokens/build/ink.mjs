@@ -59,10 +59,9 @@ export const OPAQUE = [...FILLS, '--xh-border-default'].map(name => [`${name}-op
 
 /**
  * 比例固定的墨色表达：[名字, 黑墨比例, 白墨比例]，白墨比例缺省时与黑墨同值。
- * 分段选中面在浅色 / 深色主题里取不同的品牌淡底档（12 / 18% 与 20 / 28%），两档取值不同，
- * auto 域的重求值不收它们（两档不同值的按极性处理）；不写在这里就只继承到外层主题求好的品牌淡底，
- * 深色彩色面上选中字已换成白墨、底却还是浅品牌色。黑墨 / 白墨两端照浅色 / 深色主题同口径取。
- * 禁用选中字在主题里是品牌色往承载面兑一半，域里品牌色已是墨色、承载面却是外层主题的，同样改成墨色按比例透明
+ * 分段选中面与实心品牌面同口径：静息取墨色本身（在 SOLID 里），悬停与实心品牌悬停同为 88%，
+ * 禁用在主题里是主色往承载面兑一半，域里主色已是墨色、承载面却是外层主题的，改成墨色 50% 透明。
+ * 不写在这里就只继承到外层主题求好的值：深色彩色面上选中字已换成域底色、面却还是外层的主色
  */
 const FIXED = [
   ['--xh-bg-brand-hover', 0.88],
@@ -70,10 +69,8 @@ const FIXED = [
   ['--xh-bg-brand-subtle', 0.12],
   ['--xh-bg-brand-subtle-hover', 0.2],
   ['--xh-bg-brand-subtle-active', 0.28],
-  ['--xh-bg-segment-selected', 0.12, 0.2],
-  ['--xh-bg-segment-selected-hover', 0.18, 0.28],
-  ['--xh-bg-segment-selected-disabled', 0.08],
-  ['--xh-fg-segment-selected-disabled', 0.5],
+  ['--xh-bg-segment-selected-hover', 0.88],
+  ['--xh-bg-segment-selected-disabled', 0.5],
 ]
 
 /** 直接取墨色本身的令牌。 */
@@ -85,7 +82,15 @@ const SOLID = [
   '--xh-fg-brand-strong',
   '--xh-fg-on-brand-subtle',
   '--xh-bg-brand',
+  '--xh-bg-segment-selected',
   '--xh-ring-focus',
+]
+
+/** 实心墨色面上的字：取域底色本身（作者填的 --xh-ink-surface，没填时取墨色的反色）。分段选中字与实心品牌面上的字同一支 */
+const ON_SURFACE = [
+  '--xh-fg-on-brand',
+  '--xh-fg-segment-selected',
+  '--xh-fg-segment-selected-disabled',
 ]
 
 /** 余量充足时弱化文字取墨色的比例：黑墨在相对亮度 0.5 的底上 67% 才到 4.5:1，72% 留出余量。 */
@@ -99,7 +104,7 @@ const AMPLE_LIGHT_INK = 0.05
 /** 墨色域改写的全部令牌：主题边界上凡是引用了它们的声明，在 auto 域里都要重新求值。 */
 export const INK_TOKENS = new Set([
   '--xh-ink',
-  '--xh-fg-on-brand',
+  ...ON_SURFACE,
   ...SOLID,
   ...FIXED.map(([name]) => name),
   ...EQUIVALENT,
@@ -216,7 +221,7 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
     const p = polarity[theme]
     const lines = [
       ...SOLID.map(name => `${inner}${name}: var(--xh-ink);`),
-      `${inner}--xh-fg-on-brand: var(--xh-ink-surface, ${p.opposite});`,
+      ...ON_SURFACE.map(name => `${inner}${name}: var(--xh-ink-surface, ${p.opposite});`),
       ...FIXED.map(([name, light, dark = light]) => `${inner}${name}: ${inkMix(theme === 'light' ? light : dark)};`),
       `${inner}--xh-fg-disabled: ${inkMix(alphas[theme]['--xh-fg-disabled'])};`,
     ]
@@ -242,7 +247,7 @@ ${indent}}`)
     ...SOLID.filter(name => name !== '--xh-fg-muted' && name !== '--xh-fg-subtle').map(name => `${inner}  ${name}: var(--xh-ink);`),
     `${inner}  --xh-fg-muted: ${mutedAuto};`,
     `${inner}  --xh-fg-subtle: ${mutedAuto};`,
-    `${inner}  --xh-fg-on-brand: ${surface};`,
+    ...ON_SURFACE.map(name => `${inner}  ${name}: ${surface};`),
     ...FIXED.map(([name, light, dark = light]) => `${inner}  ${name}: ${fromSurface(between(light, dark))};`),
     ...EQUIVALENT.map(name => `${inner}  ${name}: ${routed(name, fromSurface(between(alphas.light[name], alphas.dark[name])))};`),
   ]

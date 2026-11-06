@@ -295,10 +295,10 @@ describe('缺省落点', () => {
     expect(styleOf('button', 'root', 'border-top-left-radius', 1)).toBe('0px')
   })
 
-  it('开关组：首段是 control 圆角，选中段使用品牌浅底', async () => {
+  it('开关组：首段是 control 圆角，选中段使用实心主色', async () => {
     await mount(() => toggleGroup())
     expect(styleOf('toggle-group', 'item', 'border-top-left-radius', 0)).toBe(tokenAs('border-top-left-radius', '--xh-shape-control'))
-    expect(styleOf('toggle-group', 'item', 'background-color', 0)).toBe(tokenAs('background-color', '--xh-bg-brand-subtle'))
+    expect(styleOf('toggle-group', 'item', 'background-color', 0)).toBe(tokenAs('background-color', '--xh-bg-brand'))
   })
 
   it('导航菜单：面板内衬一档，外壳内衬两档', async () => {

@@ -63,7 +63,7 @@ function shapePx(element: HTMLElement, token: string): number {
 }
 
 describe('切换按钮组视觉', () => {
-  it('默认使用 control 圆角端点、淡色选中态和覆盖接缝的半高分隔线', () => {
+  it('默认使用 control 圆角端点、实心主色的选中态和覆盖接缝的半高分隔线', () => {
     mount()
     const root = host!.querySelector<HTMLElement>(`[data-scope='toggle-group'][data-part='root']`)!
     const items = [...root.querySelectorAll<HTMLElement>(`[data-part='item']`)]
@@ -117,15 +117,15 @@ describe('切换按钮组视觉', () => {
     expect(host!.querySelector('[data-xh-toggle-group-separator]')).toBeNull()
   })
 
-  it('段接 Action Control text 档：缺省淡底段 hover 200 / pressed 300 不缩放，选中段品牌淡底 + 淡底前景，悬停 20%', async () => {
+  it('段接 Action Control text 档：缺省淡底段 hover 200 / pressed 300 不缩放，选中段实心主色 + 反白，悬停 / 按下走主色的深一档、再深一档', async () => {
     mount()
     freezeMotion()
     const root = host!.querySelector<HTMLElement>(`[data-scope='toggle-group'][data-part='root']`)!
     const [on, idle] = [...root.querySelectorAll<HTMLElement>(`[data-part='item']`)] as [HTMLElement, HTMLElement]
     expect(on.dataset.xhActionControl).toBe('')
     expect(on.dataset.xhActionProfile).toBe('text')
-    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle', root))
-    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand-subtle', root))
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand', root))
+    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand', root))
     expect(getComputedStyle(idle).backgroundColor).toBe(resolveColor('--xh-bg-subtle', root))
 
     await userEvent.hover(idle)
@@ -137,10 +137,10 @@ describe('切换按钮组视觉', () => {
     await releasePointerAway()
 
     await userEvent.hover(on)
-    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-hover', root))
-    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand-subtle', root))
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-hover', root))
+    expect(getComputedStyle(on).color).toBe(resolveColor('--xh-fg-on-brand', root))
     await pressPointer(on)
-    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-subtle-active', root))
+    expect(getComputedStyle(on).backgroundColor).toBe(resolveColor('--xh-bg-brand-active', root))
     expect(getComputedStyle(on).scale).toBe('none')
   })
 

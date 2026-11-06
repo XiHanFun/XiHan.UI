@@ -41488,13 +41488,13 @@
   }
 
   /* —— segmented 形态 ——
-     一条轨道装着首尾相接的若干段，选中段由 thumb 部件标出：一块品牌淡底的滑块，换段时滑过去。
+     一条轨道装着首尾相接的若干段，选中段由 thumb 部件标出：一块实心主色的滑块（字反白），换段时滑过去。
      轨道就是 root：滑块绝对定位于它，段与段之间不留缝，所以 gap 归零。
      轨道与字段外壳同款：最浅一档淡底（--xh-bg-field）+ 1px 字段描边（--xh-border-control）+ control 圆角，
      内衬 2px，加上描边段离外沿 3px。
      一行排不下就折行：每个选项都必须看得见、点得到，横向滚动会把排不下的段藏到轨道外 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'] {
-    /* 滑块（选中段的品牌淡底）静息 / 悬停 / 禁用三档与选中段的文字色；没写 data-tone 时就是这里的取值 */
+    /* 滑块（选中段的实心主色面）静息 / 悬停 / 禁用三档与选中段的文字色（面上的反白）；没写 data-tone 时就是这里的取值 */
     --xh-_radio-group-thumb-bg: var(--xh-bg-segment-selected);
     --xh-_radio-group-thumb-bg-hover: var(--xh-bg-segment-selected-hover);
     --xh-_radio-group-thumb-bg-disabled: var(--xh-bg-segment-selected-disabled);
@@ -41567,27 +41567,14 @@
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
-     语气档的滑块换语气淡底（静息 / 悬停 / 禁用三档），选中段的字取语气字色；禁用的选中段与品牌档同口径——
-     滑块退到 8%、字往承载面兑一半，不回落到品牌色 */
+     语气档的滑块换语气的实心面（静息 / 悬停两档由语气层给，悬停的明暗方向随主题），选中段的字取实心面上的前景；
+     禁用的选中段与品牌档同口径——面往承载面兑一半，字照旧 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
-    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle, var(--xh-bg-segment-selected));
-    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected-hover));
-    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 8%, var(--xh-bg-surface));
-    --xh-_radio-group-segment-fg-checked: var(--xh-_tone-fg, var(--xh-fg-segment-selected));
-    --xh-_radio-group-segment-fg-checked-disabled: color-mix(in oklab, var(--xh-_tone-fg) 50%, var(--xh-bg-surface));
-  }
-
-  /* 深色档与品牌档同口径：选中面提到 20%、悬停 28%，深底上 12% 读不出是一块选中面。
-     语气淡底三档是语气层按固定比例兑的、不随主题换，这里按主题各取一档 */
-  :is([data-theme='dark'] *, [data-theme='dark']).xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
-    --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
-    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
-  }
-  @media (prefers-color-scheme: dark) {
-    :is([data-theme='system'] *, [data-theme='system']).xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
-      --xh-_radio-group-thumb-bg: var(--xh-_tone-subtle-hover, var(--xh-bg-segment-selected));
-      --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-subtle-active, var(--xh-bg-segment-selected-hover));
-    }
+    --xh-_radio-group-thumb-bg: var(--xh-_tone, var(--xh-bg-segment-selected));
+    --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-hover, var(--xh-bg-segment-selected-hover));
+    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface));
+    --xh-_radio-group-segment-fg-checked: var(--xh-_tone-on, var(--xh-fg-segment-selected));
+    --xh-_radio-group-segment-fg-checked-disabled: var(--xh-_tone-on, var(--xh-fg-segment-selected-disabled));
   }
 
   /* 段：轨道里铺开的一格，不投影 Action Control 家族（与 Tabs segment 档同），面与字写在段自己身上。
@@ -41633,9 +41620,12 @@
     display: none;
   }
 
-  /* 选中态读 data-state，不读 ARIA：品牌字 + medium。字也要跟着变——滑块是可选部件，作者不渲染它时"当前是哪一段"仍然要看得出来 */
+  /* 选中态读 data-state，不读 ARIA：实心面上的反白字 + medium。
+     选中段压在实心滑块上，键盘焦点环的内侧衬一道底色间隔线（见 focus.css），环才不至于贴着主色面读不出来 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item'][data-state='checked'] {
+    --xh-_ring-gap: var(--xh-ring-gap);
+
     color: var(--xh-radio-group-segment-fg-checked, var(--xh-_radio-group-segment-fg-checked));
     font-weight: var(--xh-radio-group-segment-font-weight-checked, var(--xh-font-weight-medium));
   }
@@ -41676,7 +41666,7 @@
   }
 
   /* 按下去要有回应：未选中段换到按下面（白底承载 200），几何不动。
-     选中段不叠按下面：它压着的品牌淡底滑块本身就是选中身份（有滑块开关无叠加态） */
+     选中段不叠按下面：它压着的实心滑块本身就是选中身份（有滑块开关无叠加态） */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item']:not([data-disabled]):not([data-readonly]):not([data-state='checked']):is(:active, [data-pressed]) {
     background-color: var(--xh-radio-group-segment-bg-pressed, var(--xh-bg-subtle-hover));
@@ -41698,7 +41688,7 @@
     cursor: not-allowed;
   }
 
-  /* 禁用且选中的那一段：字退到浅品牌色、滑块退到 8% 淡底，仍看得出选的是哪一段 */
+  /* 禁用且选中的那一段：滑块的面兑淡一半、字照旧反白，仍看得出选的是哪一段 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']
     > .xh-scope-radio-group[data-part='item'][data-disabled][data-state='checked'] {
     color: var(--xh-radio-group-segment-fg-checked-disabled, var(--xh-_radio-group-segment-fg-checked-disabled));
@@ -41722,7 +41712,7 @@
     inline-size: var(--xh-_radio-group-thumb-w);
     block-size: var(--xh-_radio-group-thumb-h);
     translate: calc(var(--xh-_radio-group-thumb-x) * var(--xh-direction-sign)) var(--xh-_radio-group-thumb-y);
-    /* 选中段的品牌淡底：平面一块，无边无影。描边位留着透明（作者给槽才画），
+    /* 选中段的实心主色面：平面一块，无边无影。描边位留着透明（作者给槽才画），
        尺寸由连接层按段的盒量出，描边吃进盒里（border-box），滑块与段仍是同一块矩形 */
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-thumb-border, transparent);
     border-radius: var(--xh-radio-group-thumb-radius, var(--xh-shape-inset));
@@ -41747,7 +41737,7 @@
     background: var(--xh-radio-group-thumb-bg-hover, var(--xh-_radio-group-thumb-bg-hover));
   }
 
-  /* 选中段禁用（含整组禁用）：滑块退到 8% 淡底，与退到浅品牌色的字一起读出「选着、但动不了」 */
+  /* 选中段禁用（含整组禁用）：滑块的面兑淡一半，与整组变浅的字一起读出「选着、但动不了」 */
   .xh-scope-radio-group[data-part='root'][data-variant='segmented']:has(
       > .xh-scope-radio-group[data-part='item'][data-state='checked'][data-disabled]
     )
@@ -41839,7 +41829,7 @@
       color: HighlightText;
     }
 
-    /* 选中段的品牌淡底在这一档里被换成 Canvas，与没选中的段一模一样：滑块描一圈系统前景边框出选中段 */
+    /* 选中段的实心面在这一档里被换成 Canvas，与没选中的段一模一样：滑块描一圈系统前景边框出选中段 */
     .xh-scope-radio-group[data-part='root'][data-variant='segmented'] > .xh-scope-radio-group[data-part='thumb'] {
       border-color: ButtonText;
     }
@@ -41853,10 +41843,12 @@
       border: var(--xh-stroke-thick) solid currentColor;
     }
 
-    /* segmented 的滑块那块淡底不画，「当前选的是哪一段」在纸上没了：选中段改画一圈实边、字加粗 */
+    /* segmented 的滑块那块实心面不画，「当前选的是哪一段」在纸上没了：选中段改画一圈实边、字加粗；
+       字也不能留反白（面没了，白字落在纸上就是空白），换回段的常规字色 */
     .xh-scope-radio-group[data-part='root'][data-variant='segmented']
       > .xh-scope-radio-group[data-part='item'][data-state='checked'] {
       border: var(--xh-stroke-thin) solid currentColor;
+      color: var(--xh-radio-group-segment-fg, var(--xh-fg-default));
       font-weight: var(--xh-font-weight-bold);
     }
   }
@@ -51254,25 +51246,20 @@
     /* 形态的落点：没写 data-variant 时这十支保持缺省档的取值，段的规则读的是
        「使用者令牌 → 这十支 → 语义令牌」三级，使用者令牌永远排在形态之前。
        未选中那五支管段的壳，选中那五支管当前值那一段。
-       缺省档（subtle）的段坐在自己的淡底面上，悬停 200 → 按下 300（淡底承载）；
-       选中段是无滑块开关：品牌淡底 + 淡底前景，悬停 20% → 按下 28% */
+       缺省档的段坐在自己的淡底面上，悬停 200 → 按下 300（淡底承载）；
+       选中段是无滑块开关：实心主色 + 面上反白，与 solid 档、实心按钮同一块面（悬停 / 按下走主色的深一档、再深一档），
+       语气档换语气的实心面；要淡底的选中段写 variant="subtle" */
     --xh-_toggle-group-item-bg: var(--xh-bg-subtle);
     --xh-_toggle-group-item-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_toggle-group-item-bg-active: var(--xh-bg-subtle-active);
     --xh-_toggle-group-item-fg: var(--xh-fg-muted);
     --xh-_toggle-group-item-border: transparent;
-    --xh-_toggle-group-item-bg-on: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-    --xh-_toggle-group-item-bg-on-hover: var(
-      --xh-_tone-subtle-hover,
-      var(--xh-bg-brand-subtle-hover)
-    );
-    --xh-_toggle-group-item-bg-on-active: var(
-      --xh-_tone-subtle-active,
-      var(--xh-bg-brand-subtle-active)
-    );
-    --xh-_toggle-group-item-fg-on: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
-    --xh-_toggle-group-item-border-on: transparent;
-    --xh-_toggle-group-item-highlight-on: none;
+    --xh-_toggle-group-item-bg-on: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_toggle-group-item-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
+    --xh-_toggle-group-item-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
+    --xh-_toggle-group-item-fg-on: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_toggle-group-item-border-on: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-_toggle-group-item-highlight-on: var(--xh-_highlight-tone);
 
     /* 连续分段不能换行；窄容器由作者改为竖排或全宽布局。 */
     display: inline-flex;
@@ -51283,7 +51270,7 @@
   /* —— 形态 ——
      四档与 toggle 一处对一处：未选中那些段长什么样在这里定，选中那一段用哪一档底也在这里定，
      切换仍由 data-state='on' 那一条统一完成。
-     缺省档（没写 data-variant）使用中性浅底，选中段使用品牌淡底 */
+     缺省档（没写 data-variant）使用中性浅底，选中段与 solid 档一样是实心主色 */
   .xh-scope-toggle-group[data-part='root'][data-variant='solid'] {
     --xh-_toggle-group-item-bg: transparent;
     --xh-_toggle-group-item-border: transparent;
@@ -51516,9 +51503,9 @@
     z-index: 1;
   }
 
-  /* solid 形态的选中段是实心面：环画在段盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
-     聚焦期间顶边内高光让位给这道线。未选中的段是透空面，不衬 */
-  .xh-scope-toggle-group[data-part='root'][data-variant='solid']
+  /* 缺省档与 solid 形态的选中段是实心面：环画在段盒内，内侧衬一道底色间隔线（设计真源 §7.2 第 5 条）；
+     聚焦期间顶边内高光让位给这道线。未选中的段是透空面或淡底面，不衬 */
+  .xh-scope-toggle-group[data-part='root']:is(:not([data-variant]), [data-variant='solid'])
     .xh-scope-toggle-group[data-part='item'][data-state='on']:not([data-disabled]) {
     --xh-action-shadow-focus-visible: var(--xh-toggle-group-item-shadow, inset 0 0 0 calc(var(--xh-ring-width) + var(--xh-ring-gap-width) - var(--xh-stroke-thin)) var(--xh-ring-gap));
   }
