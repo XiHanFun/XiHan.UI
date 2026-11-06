@@ -1,5 +1,17 @@
 # @xihan-ui/web-components
 
+## 5.4.0
+
+### Patch Changes
+
+- @xihan-ui/core@5.4.0
+- @xihan-ui/motion@5.4.0
+- @xihan-ui/headless@5.4.0
+- @xihan-ui/position@5.4.0
+- @xihan-ui/pointer@5.4.0
+- @xihan-ui/viz@5.4.0
+- @xihan-ui/expression@5.4.0
+
 ## 5.3.0
 
 ### Patch Changes
