@@ -58,6 +58,8 @@ export function useSideNav(
       branches: () => [popoutEl('trigger', value)].filter(Boolean) as Element[],
       isModal: () => false,
       surfaces: () => [],
+      // 图标栏里悬停一枝就弹出，压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: true,
     })
 
     // 定位引擎由适配器注入，机器只经端口驱动

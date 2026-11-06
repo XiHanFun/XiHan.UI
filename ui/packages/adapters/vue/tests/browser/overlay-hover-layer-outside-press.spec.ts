@@ -1,4 +1,4 @@
-// 下拉开着时，悬停就出现的层压在它上面：悬停卡片、引用的悬停预览、悬停展开的菜单与浮动按钮。
+// 下拉开着时，悬停就出现的层压在它上面：悬停卡片、引用的悬停预览、悬停展开的菜单与浮动按钮、图标栏的浮出菜单。
 // 它们与下拉没有嵌套关系，不该挡住下拉的层外按下：按它们的触发器、按在它们里面、按在空白处，下拉都要收起。
 // 悬停展开的菜单还会把焦点拿进自己的内容里：下拉在它出现后随即因失焦收起，不用等按下。
 // 嵌套关系照旧受保护：按在悬停卡片里不收它开在其内容里的弹出层与对话框。
@@ -36,6 +36,12 @@ import {
   XhPopoverRoot,
   XhPopoverTrigger,
   XhSelectRoot,
+  XhSideNavBranch,
+  XhSideNavBranchContent,
+  XhSideNavBranchTrigger,
+  XhSideNavLink,
+  XhSideNavList,
+  XhSideNavRoot,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -49,6 +55,9 @@ const ITEMS = [
 const SOURCES: CitationSource[] = [
   { type: 'source-url', sourceId: 'report', title: '报告', url: 'https://example.com/report' },
 ]
+
+/** 折叠成图标栏的侧边导航：顶层分支悬停即弹出子级面板。 */
+const NAV = [{ value: 'products', children: [{ value: 'product-a' }] }]
 
 /** 收起等待拉到 60 秒：指针移开之后悬停层仍然可见。 */
 const HOLD = 60_000
@@ -144,7 +153,19 @@ const hoverFloatButton: HoverSubject = {
   closesOnLeave: true,
 }
 
-const SUBJECTS = [hoverCard, citation, hoverMenu, hoverFloatButton]
+// 浮出面板的收起等待不可配：指针移开后还留着悬停意图的那一小段，之后播退场；两段里按空白处都该一并收起
+const sideNavPopout: HoverSubject = {
+  name: '图标栏的浮出菜单',
+  render: () => h(XhSideNavRoot, { collapsed: true, collection: NAV }, () => h(XhSideNavList, null, () => h(XhSideNavBranch, { value: 'products' }, () => [
+    h(XhSideNavBranchTrigger, null, () => '产品'),
+    h(XhSideNavBranchContent, null, () => h(XhSideNavLink, { value: 'product-a' }, () => '产品一')),
+  ]))),
+  trigger: () => document.querySelector<HTMLElement>('[data-scope="side-nav"][data-part="branch-trigger"][data-value="products"]')!,
+  content: () => part('side-nav', 'branch-content'),
+  open: () => expanded(document.querySelector<HTMLElement>('[data-scope="side-nav"][data-part="branch-trigger"][data-value="products"]')!),
+}
+
+const SUBJECTS = [hoverCard, citation, hoverMenu, hoverFloatButton, sideNavPopout]
 
 // 用例页面只有 414px 宽：筛选区竖着排，整页不出滚动条。页面能滚时，真实指针的点击在目标还没稳住的那几帧里
 // 会换着对齐方式把目标滚进视口，带进场动画的面板就一直稳不下来
@@ -256,16 +277,16 @@ describe('vue 下拉开着时悬停卡片压在上面', () => {
   })
 })
 
-describe('vue 悬停卡片开在别的层的内容里', () => {
-  /** 收干净再卸载：指针移开，逐层按 Escape 收起。 */
-  async function closeAll(): Promise<void> {
-    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
-    for (let left = layers(); left > 0; left--) {
-      await userEvent.keyboard('{Escape}')
-      await expect.poll(layers).toBe(left - 1)
-    }
+/** 收干净再卸载：指针移开，逐层按 Escape 收起。 */
+async function closeAll(): Promise<void> {
+  await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+  for (let left = layers(); left > 0; left--) {
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(layers).toBe(left - 1)
   }
+}
 
+describe('vue 悬停卡片开在别的层的内容里', () => {
   it('按在悬停卡片里：它所在的弹出层不收', async () => {
     host = document.createElement('div')
     host.style.cssText = 'padding:120px 40px'
@@ -310,6 +331,31 @@ describe('vue 悬停卡片开在别的层的内容里', () => {
 
     expect(dialogOpen()).toBe(true)
     expect(hoverCard.open()).toBe(true)
+    await closeAll()
+  })
+})
+
+describe('vue 图标栏开在对话框里', () => {
+  it('按在浮出面板里：对话框不收', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhDialogRoot, { defaultOpen: true }, () => h(XhDialogContent, { 'data-test': 'outer-content' }, () => [
+        h(XhDialogTitle, null, () => '导航'),
+        sideNavPopout.render(false),
+      ])),
+    })
+    app.mount(host)
+    await settle()
+    const dialogOpen = (): boolean => test('outer-content').dataset.state === 'open'
+    await expect.poll(dialogOpen).toBe(true)
+    await reveal(sideNavPopout)
+
+    // 面板搬到了浮层落点上，不在对话框的内容区里：按在它上面的事件路径不经过对话框
+    await userEvent.click(sideNavPopout.content())
+    await settle()
+
+    expect(dialogOpen()).toBe(true)
     await closeAll()
   })
 })

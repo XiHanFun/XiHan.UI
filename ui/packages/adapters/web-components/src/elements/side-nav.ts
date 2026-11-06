@@ -283,6 +283,8 @@ export class XhSideNavElement extends XhPortalHostElement {
       branches: () => [this.findPopoutPart(value, 'branch-trigger')].filter(Boolean) as Element[],
       isModal: () => false,
       surfaces: () => [],
+      // 图标栏里悬停一枝就弹出，压在别的层上面不代表开在里面：只护着它开在其内容里的层
+      opensOnHover: true,
     })
   }
 

@@ -1,10 +1,10 @@
-// 下拉开着时，悬停就出现的层压在它上面：悬停卡片、引用的悬停预览、悬停展开的菜单与浮动按钮（Web Components）。
+// 下拉开着时，悬停就出现的层压在它上面：悬停卡片、引用的悬停预览、悬停展开的菜单与浮动按钮、图标栏的浮出菜单（Web Components）。
 // 它们与下拉没有嵌套关系，不该挡住下拉的层外按下：按它们的触发器、按在它们里面、按在空白处，下拉都要收起。
 // 悬停展开的菜单还会把焦点拿进自己的内容里：下拉在它出现后随即因失焦收起，不用等按下。
 // 嵌套关系照旧受保护：按在悬停卡片里不收它开在其内容里的弹出层与对话框。
 // 点击展开的菜单与浮动按钮经按下打开，不走这条规则。
 // 真实指针的悬停、按下与层栈只有浏览器里有。
-import type { CitationSource, SelectNode } from '@xihan-ui/headless'
+import type { CitationSource, SelectNode, SideNavNode } from '@xihan-ui/headless'
 import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -23,6 +23,9 @@ const ITEMS: SelectNode[] = [
 const SOURCES: CitationSource[] = [
   { type: 'source-url', sourceId: 'report', title: '报告', url: 'https://example.com/report' },
 ]
+
+/** 折叠成图标栏的侧边导航：顶层分支悬停即弹出子级面板。 */
+const NAV: SideNavNode[] = [{ value: 'products', children: [{ value: 'product-a' }] }]
 
 /** 收起等待拉到 60 秒：指针移开之后悬停层仍然可见。 */
 const HOLD = 60_000
@@ -136,7 +139,24 @@ const hoverFloatButton: HoverSubject = {
   closesOnLeave: true,
 }
 
-const SUBJECTS = [hoverCard, citation, hoverMenu, hoverFloatButton]
+// 浮出面板的收起等待不可配：指针移开后还留着悬停意图的那一小段，之后播退场；两段里按空白处都该一并收起
+const sideNavPopout: HoverSubject = {
+  name: '图标栏的浮出菜单',
+  html: () => `
+    <xh-side-nav collapsed>
+      <nav data-xh-part="root"><ul data-xh-part="list">
+        <li data-xh-part="branch" value="products">
+          <button data-xh-part="branch-trigger">产品</button>
+          <div data-xh-part="positioner"><ul data-xh-part="branch-content"><li data-xh-part="item"><a data-xh-part="link" value="product-a">产品一</a></li></ul></div>
+        </li>
+      </ul></nav>
+    </xh-side-nav>`,
+  trigger: () => document.querySelector<HTMLElement>('[data-scope="side-nav"][data-part="branch-trigger"][data-value="products"]')!,
+  content: () => part('side-nav', 'branch-content'),
+  open: () => expanded(document.querySelector<HTMLElement>('[data-scope="side-nav"][data-part="branch-trigger"][data-value="products"]')!),
+}
+
+const SUBJECTS = [hoverCard, citation, hoverMenu, hoverFloatButton, sideNavPopout]
 
 async function mount(html: string, style: string): Promise<void> {
   box = document.createElement('div')
@@ -148,8 +168,11 @@ async function mount(html: string, style: string): Promise<void> {
   const cite = box.querySelector<Upgraded & { sources?: CitationSource[] }>('xh-citation')
   if (cite)
     cite.sources = SOURCES
+  const nav = box.querySelector<Upgraded & { collection?: SideNavNode[] }>('xh-side-nav')
+  if (nav)
+    nav.collection = NAV
   document.body.append(box)
-  const hosts = 'xh-select, xh-hover-card, xh-citation, xh-menu, xh-float-button, xh-popover, xh-dialog'
+  const hosts = 'xh-select, xh-hover-card, xh-citation, xh-menu, xh-float-button, xh-side-nav, xh-popover, xh-dialog'
   await Promise.all([...box.querySelectorAll<Upgraded>(hosts)].map(el => el.updateComplete))
   await settle()
 }
@@ -255,16 +278,16 @@ describe('wc 下拉开着时悬停卡片压在上面', () => {
   })
 })
 
-describe('wc 悬停卡片开在别的层的内容里', () => {
-  /** 收干净再移除：指针移开，逐层按 Escape 收起。 */
-  async function closeAll(): Promise<void> {
-    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
-    for (let left = layers(); left > 0; left--) {
-      await userEvent.keyboard('{Escape}')
-      await expect.poll(layers).toBe(left - 1)
-    }
+/** 收干净再移除：指针移开，逐层按 Escape 收起。 */
+async function closeAll(): Promise<void> {
+  await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+  for (let left = layers(); left > 0; left--) {
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(layers).toBe(left - 1)
   }
+}
 
+describe('wc 悬停卡片开在别的层的内容里', () => {
   it('按在悬停卡片里：它所在的弹出层不收', async () => {
     await mount(
       `<xh-popover default-open>
@@ -304,6 +327,30 @@ describe('wc 悬停卡片开在别的层的内容里', () => {
 
     expect(dialogOpen()).toBe(true)
     expect(hoverCard.open()).toBe(true)
+    await closeAll()
+  })
+})
+
+describe('wc 图标栏开在对话框里', () => {
+  it('按在浮出面板里：对话框不收', async () => {
+    await mount(
+      `<xh-dialog default-open>
+        <div data-xh-part="backdrop"></div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content" data-test="outer-content"><h2 data-xh-part="title">导航</h2>${sideNavPopout.html(false)}</div>
+        </div>
+      </xh-dialog>`,
+      '',
+    )
+    const dialogOpen = (): boolean => test('outer-content').dataset.state === 'open'
+    await expect.poll(dialogOpen).toBe(true)
+    await reveal(sideNavPopout)
+
+    // 面板搬到了浮层落点上，不在对话框的内容区里：按在它上面的事件路径不经过对话框
+    await userEvent.click(sideNavPopout.content())
+    await settle()
+
+    expect(dialogOpen()).toBe(true)
     await closeAll()
   })
 })
