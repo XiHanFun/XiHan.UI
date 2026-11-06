@@ -125,6 +125,7 @@ describe('警告提示的表面与信息层级', () => {
     // 本体已是语气 12% 淡底，叉的悬停面再升一档到 20%，才在底上看得出来
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle-hover', part('root')))
-    expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
+    // 前景色与底色各走各的过渡：底色到位时前景可能还在最后一帧，读到的是插值写法（oklab），等它落定再比
+    await expect.poll(() => getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
   })
 })
