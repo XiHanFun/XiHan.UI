@@ -10,7 +10,7 @@ import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { dataAttr, focusSafely, isComposingEvent, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/core'
 import { PIN_INPUT_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
-import { pinInputAnatomy } from './pin-input.anatomy'
+import { pinInputAnatomy, pinInputCellId } from './pin-input.anatomy'
 import { firstEmptyPinIndex, isPinComplete, padPinValue, pinLength, sanitizePin } from './pin-input.machine'
 
 const parts = pinInputAnatomy.build()
@@ -50,7 +50,7 @@ export function connectPinInput<T extends PropTypes>(
   const focusedIndex = context.get('focusedIndex') ?? -1
   const label = resolveTranslations(PIN_INPUT_EN_US, prop('translations'))
   const ids = scope.ids('pin-input', 'label')
-  const inputId = (index: number): string => scope.partId('pin-input', `input-${index}`)
+  const inputId = (index: number): string => pinInputCellId(scope, index)
 
   // 按顺序录入：焦点不许越过第一个空格。只读与禁用不设限，那两档值改不动，
   // 把焦点往回拽只会挡住读与复制

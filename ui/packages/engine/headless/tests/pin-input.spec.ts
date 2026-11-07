@@ -564,6 +564,56 @@ describe('connectPinInput 输入行为', () => {
   })
 })
 
+describe('connectPinInput 外部整份写值', () => {
+  /** 往此刻持有焦点的那一格里敲：不先 focus，免得落焦裁定替被测的这一步把焦点拨正。 */
+  function typeIntoFocused(text: string): void {
+    const box = document.activeElement as HTMLInputElement
+    box.value = text
+    box.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+
+  it('填满后整份清空：焦点从末格回到首格，接着敲从首格起', () => {
+    const m = open({ length: 4 })
+    typeInto(m.boxes[0]!, '1234')
+    expect(focusedIndex(m)).toBe(3)
+
+    m.api().clear()
+    expect(focusedIndex(m)).toBe(0)
+    expect(m.boxes[0]!.getAttribute('data-focus')).toBe('')
+    expect(m.boxes[3]!.getAttribute('data-focus')).toBeNull()
+
+    // 焦点留在末格的话，第一个字符会落进末格、之后才被拨回首格，整串错位成 5313
+    for (const char of '3531')
+      typeIntoFocused(char)
+    expect(m.api().valueAsString).toBe('3531')
+  })
+
+  it('整份改写成只填了一格：焦点收回到第二格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '3', '4'] })
+    m.boxes[3]!.focus()
+    m.api().setValue(['9', '', '', ''])
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('改写后焦点没越过第一个空格：留在原格', () => {
+    const m = open({ length: 4, defaultValue: ['1', '2', '3', '4'] })
+    m.boxes[1]!.focus()
+    m.api().setValue(['1', '2', '', ''])
+    expect(focusedIndex(m)).toBe(1)
+  })
+
+  it('焦点不在组里时整份清空，不把焦点抢进来', () => {
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    const m = open({ length: 4 })
+    typeInto(m.boxes[0]!, '1234')
+    outside.focus()
+    m.api().clear()
+    expect(document.activeElement).toBe(outside)
+    expect(m.api().focusedIndex).toBe(-1)
+  })
+})
+
 describe('connectPinInput 粘贴', () => {
   it('从当前格起按格铺开，超长截断', () => {
     // 落点是第二格：首格已填，顺序录入允许站在这里

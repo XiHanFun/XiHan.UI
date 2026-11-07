@@ -7,8 +7,9 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { PinInputSchema, PinInputType } from './pin-input.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray } from '../shared/array'
+import { pinInputCellId } from './pin-input.anatomy'
 
 const { createMachine } = setup<PinInputSchema>()
 
@@ -149,6 +150,11 @@ export const pinInputMachine = createMachine({
     focusedIndex: cell<number>(() => ({ defaultValue: -1 })),
   }),
   initialState: () => 'idle',
+  // 值一变就核对锚点：宿主改写受控值、setValue / clear、表单重置都不经过逐格编辑那一路，
+  // 没人替它们挪锚点与焦点
+  watch: ({ track, context, action }) => {
+    track([context.dep('value')], () => action(['reanchorToFirstEmpty']))
+  },
   // 表单重置从任何状态都要认，所以挂根级。不设禁用/只读守卫：原生表单的重置算法
   // 不看这两个标志，禁用的字段一样回落点；要拦是表单那侧 preventDefault 的事
   on: {
@@ -235,6 +241,29 @@ export const pinInputMachine = createMachine({
         context.set('focusedIndex', pinFocusTarget(value, e.index))
       },
       clearFocusedIndex: ({ context }) => context.set('focusedIndex', -1),
+      /**
+       * 值整份变了而焦点正停在组里时，把越过第一个空格的锚点连同焦点一起收回来。不收的话焦点留在
+       * 一格还轮不到的格子上，接着敲的第一个字符落进去、之后才被拨回首格，整串就错了位。
+       *
+       * 逐格编辑写值时已按刚写下的值裁过锚点，这里再裁一次仍是它（裁定是幂等的），不会动。
+       * 焦点不在组里时不碰：外面的写入不该把焦点抢进来。
+       */
+      reanchorToFirstEmpty: ({ context, prop, scope }) => {
+        const index = context.get('focusedIndex') ?? -1
+        if (index < 0 || prop('disabled') || prop('readOnly'))
+          return
+        const target = pinFocusTarget(padPinValue(context.get('value'), pinLength(prop('length'))), index)
+        if (target === index)
+          return
+        // 锚点只是记账：DOM 焦点已经不在这一格上（宿主挪走了、格子换掉了）就不去抢
+        const current = scope.getById(pinInputCellId(scope, index))
+        const next = scope.getById(pinInputCellId(scope, target))
+        if (!current || !next || scope.getActiveElement() !== current)
+          return
+        // 先挪锚点再搬焦点：旧格的失焦与新格的聚焦随搬动同步到达，锚点已在新格上，两边都不会再改它
+        context.set('focusedIndex', target)
+        focusSafely(next, { select: true })
+      },
     },
   },
 })

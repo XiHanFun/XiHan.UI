@@ -19,6 +19,7 @@ beforeEach(() => vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true))
 afterEach(() => {
   act(() => root?.unmount())
   root = null
+  writeHost = null
   host?.remove()
   host = null
   document.body.innerHTML = ''
@@ -27,11 +28,16 @@ afterEach(() => {
 
 const LENGTH = 4
 
+/** 受控宿主的 setState，留给用例从外面整份改写值。 */
+let writeHost: ((next: string[]) => void) | null = null
+
 interface Harness {
   onValueChange: ReturnType<typeof vi.fn>
   onValueComplete: ReturnType<typeof vi.fn>
   /** 宿主此刻持有的值：受控接法里就是回写的那份；非受控接法里是回调最后一次报的值。 */
   held: () => string[]
+  /** 宿主整份改写受控值（提交失败后清空这类），等它重渲完再返回。 */
+  write: (next: string[]) => Promise<void>
 }
 
 interface DemoProps {
@@ -47,6 +53,7 @@ interface DemoProps {
  */
 function Demo({ mode, props, onValueChange, onValueComplete }: DemoProps): ReactNode {
   const [code, setCode] = useState<string[]>([])
+  writeHost = setCode
   return (
     <>
       <textarea data-test="clipboard" />
@@ -78,7 +85,14 @@ async function mount(mode: 'controlled' | 'uncontrolled', props: Record<string, 
   await act(async () => {
     root!.render(<Demo mode={mode} props={props} onValueChange={onValueChange} onValueComplete={onValueComplete} />)
   })
-  return { onValueChange, onValueComplete, held: () => held }
+  return {
+    onValueChange,
+    onValueComplete,
+    held: () => held,
+    write: async (next) => {
+      await act(async () => writeHost!(next))
+    },
+  }
 }
 
 function boxes(): HTMLInputElement[] {
@@ -207,5 +221,22 @@ describe.each([
     expect(values()).toEqual(['', '', '', ''])
     expect(focusedBox()).toBe(0)
     expect(h.onValueChange).toHaveBeenCalledTimes(6)
+  })
+})
+
+describe('分格输入 受控：宿主整份改写值', () => {
+  it('填满后宿主清空（提交失败那一下）：焦点回首格，重敲一遍各归各格', async () => {
+    const h = await mount('controlled')
+    await click(boxes()[0]!)
+    await press('1234')
+    expect(focusedBox()).toBe(LENGTH - 1)
+
+    await h.write([])
+    expect(values()).toEqual(['', '', '', ''])
+    // 焦点留在末格的话，第一个字符会落进末格、之后才被拨回首格，整串错位成 5313
+    expect(focusedBox()).toBe(0)
+    await press('3531')
+    expect(values()).toEqual(['3', '5', '3', '1'])
+    expect(h.held()).toEqual(['3', '5', '3', '1'])
   })
 })

@@ -28,6 +28,8 @@ interface Harness {
   onValueComplete: ReturnType<typeof vi.fn>
   /** 宿主此刻持有的值：受控接法里就是回写的那份；非受控接法里是回调最后一次报的值。 */
   held: () => string[]
+  /** 宿主整份改写受控值（提交失败后清空这类），等它重渲完再返回。 */
+  write: (next: string[]) => Promise<void>
 }
 
 /**
@@ -59,7 +61,15 @@ function mount(mode: 'controlled' | 'uncontrolled', props: Record<string, unknow
     ],
   })
   app.mount(host)
-  return { onValueChange, onValueComplete, held: () => code.value }
+  return {
+    onValueChange,
+    onValueComplete,
+    held: () => code.value,
+    write: async (next) => {
+      code.value = next
+      await nextTick()
+    },
+  }
 }
 
 function boxes(): HTMLInputElement[] {
@@ -186,5 +196,24 @@ describe.each([
     expect(values()).toEqual(['', '', '', ''])
     expect(focusedBox()).toBe(0)
     expect(h.onValueChange).toHaveBeenCalledTimes(6)
+  })
+})
+
+describe('分格输入 受控：宿主整份改写值', () => {
+  it('填满后宿主清空（提交失败那一下）：焦点回首格，重敲一遍各归各格', async () => {
+    const h = mount('controlled')
+    await nextTick()
+    await userEvent.click(boxes()[0]!)
+    await nextTick()
+    await press('1234')
+    expect(focusedBox()).toBe(LENGTH - 1)
+
+    await h.write([])
+    expect(values()).toEqual(['', '', '', ''])
+    // 焦点留在末格的话，第一个字符会落进末格、之后才被拨回首格，整串错位成 5313
+    expect(focusedBox()).toBe(0)
+    await press('3531')
+    expect(values()).toEqual(['3', '5', '3', '1'])
+    expect(h.held()).toEqual(['3', '5', '3', '1'])
   })
 })

@@ -102,6 +102,9 @@ export interface PinInputSchema extends MachineSchema {
      * 值的写入顺带挪它：铺字后落到铺完的下一格（`blurOnComplete` 且填满时为 -1），清格后停在
      * 清掉的那一格。这一步只按刚写下的值裁，不回读 context——受控值要等宿主重渲才写回，
      * 回读到的仍是旧值。
+     *
+     * 值从外面整份改写（受控值、setValue / clear、表单重置）时，焦点若在组里且越过了第一个空格，
+     * 锚点连同焦点一起收回到第一个空格上；焦点不在组里时不动。
      */
     focusedIndex: number
   }
@@ -129,7 +132,7 @@ export interface PinInputSchema extends MachineSchema {
     | { type: 'FORM.RESET' }
   tag: never
   guard: 'canEdit'
-  action: 'setValue' | 'fillValue' | 'clearValueAt' | 'clearValue' | 'setFocusedIndex' | 'clearFocusedIndex' | 'resetToDefault'
+  action: 'setValue' | 'fillValue' | 'clearValueAt' | 'clearValue' | 'setFocusedIndex' | 'clearFocusedIndex' | 'reanchorToFirstEmpty' | 'resetToDefault'
   effect: never
 }
 
