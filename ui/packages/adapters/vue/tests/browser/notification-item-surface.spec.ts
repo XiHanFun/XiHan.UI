@@ -138,7 +138,8 @@ describe('通知卡片的表面与两颗钮', () => {
 
     await userEvent.hover(close)
     await expect.poll(() => getComputedStyle(close).backgroundColor).toBe(tokenColor('--xh-_tone-subtle', item))
-    expect(getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
+    // 前景色与底色各走各的过渡：底色到位时前景可能还在最后一帧，读到的是插值写法（oklab），等它落定再比
+    await expect.poll(() => getComputedStyle(close).color).toBe(tokenColor('--xh-fg-default'))
   })
 
   it('紧凑档：内衬与钮一起收小，叉仍落在标题首行的中线上', async () => {
