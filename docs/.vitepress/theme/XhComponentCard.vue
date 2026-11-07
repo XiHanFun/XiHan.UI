@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { useData, withBase } from "vitepress";
+import { withBase } from "vitepress";
 import { defineAsyncComponent, hydrateOnVisible } from "vue";
 
 const props = defineProps<{
@@ -15,8 +15,6 @@ const props = defineProps<{
 // 示意图是纯静态 SVG：预渲染时就写进页面，客户端滚到附近才取回并接管，首屏没有占位闪烁
 const previews = import.meta.glob<{ default: Component }>("../catalog/*.vue");
 const load = props.renderless ? undefined : previews[`../catalog/${props.src}.vue`];
-// 英文区（/en/）的卡片状态用英文
-const { lang } = useData();
 const preview = load
   ? defineAsyncComponent({ loader: load, hydrate: hydrateOnVisible({ rootMargin: "160px" }) })
   : undefined;
@@ -31,7 +29,7 @@ const preview = load
         v-if="status"
         class="xh-component-card__status"
         :class="`xh-component-card__status--${status}`"
-      >{{ status === "updated" && !lang.startsWith("en") ? "更新" : status }}</span>
+      >{{ status === "updated" ? "更新" : status }}</span>
     </a>
     <div class="xh-component-card__preview">
       <component :is="preview" v-if="preview" />

@@ -3,7 +3,6 @@
     {
       "id": "general",
       "label": "通用",
-      "labelEn": "General",
       "description": "最小粒度的原子件：触发一个动作、显示一个图标、排好一段文字。不组织数据，也不划分版面。",
       "components": [
         {
@@ -63,7 +62,6 @@
     {
       "id": "layout",
       "label": "布局",
-      "labelEn": "Layout",
       "description": "只分配空间、不承载内容语义的容器。",
       "components": [
         {
@@ -107,7 +105,6 @@
     {
       "id": "navigation",
       "label": "导航",
-      "labelEn": "Navigation",
       "description": "在页面与视图之间移动的组件。",
       "components": [
         {
@@ -175,7 +172,6 @@
     {
       "id": "form",
       "label": "数据录入",
-      "labelEn": "Data entry",
       "description": "承载表单值的组件，统一走受控/非受控两态与 name 表单集成。",
       "components": [
         {
@@ -356,7 +352,6 @@
     {
       "id": "data-display",
       "label": "数据展示",
-      "labelEn": "Data display",
       "description": "把已有的数据摆出来：集合、媒体、身份标记与度量。",
       "components": [
         {
@@ -477,7 +472,6 @@
     {
       "id": "chart",
       "label": "图表",
-      "labelEn": "Charts",
       "description": "把数据画成图：比较、趋势、占比、分布、层级与流向。",
       "components": [
         {
@@ -537,7 +531,6 @@
     {
       "id": "feedback",
       "label": "反馈",
-      "labelEn": "Feedback",
       "description": "报告系统状态：正在进行、已经完成、出了错。",
       "components": [
         {
@@ -573,7 +566,6 @@
     {
       "id": "overlay",
       "label": "浮层",
-      "labelEn": "Overlays",
       "description": "portal 到统一落点、由定位引擎摆位的一层，共用浮层容器与焦点归还契约。",
       "components": [
         {
@@ -613,7 +605,6 @@
     {
       "id": "ai",
       "label": "AI 对话",
-      "labelEn": "AI chat",
       "description": "AI 对话界面的组件。",
       "components": [
         {

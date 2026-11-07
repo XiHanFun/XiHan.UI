@@ -75,18 +75,17 @@ async function inlineDemos(body) {
 }
 
 /**
- * 组件总览的预览卡在纯 Markdown 中改为普通链接。属性按名取、不按位置：英文区的 label 是空串，
- * 带状态的卡片多一个 status，与卡片上的写法一致（中文区的 updated 读作「更新」）。
+ * 组件总览的预览卡在纯 Markdown 中改为普通链接。属性按名取、不按位置：
+ * 带状态的卡片多一个 status，与卡片上的写法一致（updated 读作「更新」）。
  */
 function flattenComponentCards(body) {
   return body.replace(
     /<div class="xh-component-grid"[^>]*>([\s\S]*?)<\/div>/g,
     (_, cards) => cards.trim().replace(/<XhComponentCard\b([^>]*)\/>/g, (_, attrs) => {
       const attr = Object.fromEntries([...attrs.matchAll(/([\w-]+)="([^"]*)"/g)].map(m => [m[1], m[2]]));
-      const english = attr.href.startsWith("/en/");
       const title = [attr.name, attr.label].filter(Boolean).join(" ");
-      const status = attr.status === "updated" && !english ? "更新" : attr.status;
-      return `- [${title}](${attr.href})${status ? (english ? ` (${status})` : `（${status}）`) : ""}`;
+      const status = attr.status === "updated" ? "更新" : attr.status;
+      return `- [${title}](${attr.href})${status ? `（${status}）` : ""}`;
     }),
   );
 }

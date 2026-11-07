@@ -35,8 +35,8 @@ XiHan.UI is a framework-agnostic headless UI component library. State, interacti
 | [Comprehensive](https://ui.docs.xihanfun.com/overview) | General, layout, navigation, data entry and display, charts, feedback, overlays and AI chat |
 | No third-party dependencies | Nothing beyond the host framework at runtime |
 | [Build-time styling](https://ui.docs.xihanfun.com/guide/styling) | DTCG tokens produce CSS variables, skins are layered with `@layer`, no CSS-in-JS |
-| [Theming](https://ui.docs.xihanfun.com/en/guide/theme) | Independent switches for mode, brand, density, contrast and writing direction |
-| [Accessibility](https://ui.docs.xihanfun.com/en/guide/a11y) | Keyboard interaction follows the W3C APG, scanned in real Chromium |
+| [Theming](https://ui.docs.xihanfun.com/guide/theme) | Independent switches for mode, brand, density, contrast and writing direction |
+| [Accessibility](https://ui.docs.xihanfun.com/guide/a11y) | Keyboard interaction follows the W3C APG, scanned in real Chromium |
 | [Localization](https://ui.docs.xihanfun.com/guide/i18n) | Ten built-in language packs |
 | [AI integration](https://ui.docs.xihanfun.com/guide/ai) | `@xihan-ui/cli` serves component APIs, docs and tokens as an offline knowledge base over MCP |
 
@@ -70,7 +70,7 @@ import { XhDialogCloseTrigger, XhDialogContent, XhDialogRoot, XhDialogTitle, XhD
 | [React](https://ui.docs.xihanfun.com/adapters/react) | `@xihan-ui/react` | `<XhDialogRoot>` |
 | [Web Components](https://ui.docs.xihanfun.com/adapters/web-components) | `@xihan-ui/web-components` | `<xh-dialog>` |
 
-The theme runtime and the other adapters are covered in the [quickstart](https://ui.docs.xihanfun.com/en/quickstart). The styling baseline is Chrome 111, Firefox 113 and Safari 16.2.
+The theme runtime and the other adapters are covered in the [quickstart](https://ui.docs.xihanfun.com/quickstart). The styling baseline is Chrome 111, Firefox 113 and Safari 16.2.
 
 ## Packages
 
