@@ -369,8 +369,8 @@ export default defineXiHanConfig({
   keywords,
   repo: "XiHan.UI",
   banner: {
-    id: "2026-10-designers-rc",
-    text: "生态产品多个设计器现已发布候选版本",
+    id: "2026-11-designers-release",
+    text: "生态产品多个设计器现已发布正式版",
     link: "https://docs.xihanfun.com/cosmos/ecosystem",
     linkText: "查看生态总览",
   },
