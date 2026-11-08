@@ -7,7 +7,7 @@
 
 import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
-import { focusItem, HOVER_INTENT_OPEN_DELAY, navigateItems, setTimeoutEffect, setup, trackHoverIntent } from '@xihan-ui/core'
+import { focusItem, HOVER_INTENT_OPEN_DELAY, isShadowRoot, navigateItems, setTimeoutEffect, setup, trackHoverIntent } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { createOverlayKitGate, trackOverlayLayer } from '../shared/overlay-shell'
@@ -51,6 +51,51 @@ function popoutRows(content: HTMLElement): HTMLElement[] {
   return [...content.querySelectorAll<HTMLElement>(
     '[data-scope="side-nav"][data-part="branch-trigger"], [data-scope="side-nav"][data-part="link"]',
   )]
+}
+
+/** 祖先上这几项在过渡，整栏的宽度就还在变：宽度交给容器时，收放靠的是容器自己的过渡 */
+const CONTAINER_SIZE_PROPERTIES = new Set([
+  'width',
+  'min-width',
+  'max-width',
+  'inline-size',
+  'min-inline-size',
+  'max-inline-size',
+  'flex-basis',
+  'flex-grow',
+  'flex-shrink',
+  'grid-template-columns',
+])
+
+function isTransition(animation: Animation): animation is CSSTransition {
+  return 'transitionProperty' in animation
+}
+
+/** 穿过 ShadowRoot 回到 host；Light DOM 直接取 parentElement */
+function composedParent(element: Element): Element | null {
+  if (element.parentElement)
+    return element.parentElement
+  const root = element.getRootNode()
+  return isShadowRoot(root) ? root.host : null
+}
+
+/**
+ * 换排布之前要等走完的过渡：根自己的全部过渡，加上祖先链上改盒宽的过渡
+ *
+ * 宽度由容器驱动时（`--xh-side-nav-w` 取 `100%`、外层侧栏自己过渡宽度），根上一条过渡都没有，
+ * 只看根会当场落成图标栏：侧栏还宽着，行文字就被裁掉；展开时文字也不等侧栏长开就淡入
+ */
+function collapseMoves(root: Element): Animation[] {
+  if (typeof root.getAnimations !== 'function')
+    return []
+  const moves = root.getAnimations().filter(isTransition)
+  for (let el = composedParent(root); el; el = composedParent(el)) {
+    for (const animation of el.getAnimations()) {
+      if (isTransition(animation) && CONTAINER_SIZE_PROPERTIES.has(animation.transitionProperty))
+        moves.push(animation)
+    }
+  }
+  return moves
 }
 
 // 选中、展开与焦点锚点都住在 context 的 cell 里，受控/非受控在 cell 收口。
@@ -334,7 +379,7 @@ export const sideNavMachine = createMachine({
         context.set('popoutReturnFocus', restore)
       },
       // 折叠开关翻回平铺（或弹出被关掉）时收掉开着的面板；
-      // 开关翻了而排布还是旧的：宿主把这一帧提交出去之后，等整栏宽度的过渡播完再换排布，没有过渡即刻换
+      // 开关翻了而排布还是旧的：宿主把这一帧提交出去之后，等整栏宽度的过渡播完再换排布（根自己的，或驱动宽度的容器的），没有过渡即刻换
       syncCollapsed: ({ prop, state, send, context, refs, scope, flush }) => {
         if (state.get() === 'popout' && !(prop('collapsed') && (prop('collapsedPopout') ?? true)))
           send({ type: 'POPOUT.CLOSE' })
@@ -346,9 +391,7 @@ export const sideNavMachine = createMachine({
         refs.set('collapseRound', round)
         flush(() => {
           const root = scope.getById(scope.partId('side-nav', 'root'))
-          const moves = root && typeof root.getAnimations === 'function'
-            ? root.getAnimations().filter(animation => 'transitionProperty' in animation)
-            : []
+          const moves = root ? collapseMoves(root) : []
           void Promise.allSettled(moves.map(animation => animation.finished)).then(() => {
             send({ type: 'COLLAPSE.SETTLED', round })
           })

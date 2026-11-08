@@ -139,6 +139,57 @@ describe('side-nav 折叠', () => {
   })
 })
 
+describe('side-nav 折叠：宽度交给容器', () => {
+  // 宽度槽取 100%，收放由外层容器自己的宽度过渡完成，根上没有过渡：落定要等容器走完
+  async function mount(): Promise<{ collapsed: Ref<boolean>, container: () => HTMLElement }> {
+    const collapsed = ref(false)
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h('div', {
+        'data-test': 'container',
+        'style': {
+          'inlineSize': collapsed.value ? '64px' : '240px',
+          'transition': 'inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous)',
+          '--xh-side-nav-w': '100%',
+          '--xh-side-nav-collapsed-w': '100%',
+        },
+      }, nav(collapsed)),
+    })
+    app.mount(host)
+    await frames(2)
+    return { collapsed, container: () => host!.querySelector<HTMLElement>('[data-test="container"]')! }
+  }
+
+  it('收起：容器还在收窄时文字只淡出、不当场裁掉，容器走完才裁', async () => {
+    const { collapsed, container } = await mount()
+    const text = part('link-text')
+    collapsed.value = true
+    await frames(1)
+    expect(transitions(part('root')).has('width'), '根上没有自己的宽度过渡').toBe(false)
+    expect(container().getAnimations().length, '容器在过渡宽度').toBeGreaterThan(0)
+    expect(text.getBoundingClientRect().width, '收窄途中文字没被当场裁成 1px').toBeGreaterThan(1)
+    expect(transitions(text).has('opacity'), '文字在淡出').toBe(true)
+    await finishAll()
+    expect(text.getBoundingClientRect().width, '落定之后裁掉').toBeLessThanOrEqual(1)
+  })
+
+  it('展开：容器长开之前文字不露出来，落定之后淡入', async () => {
+    const { collapsed } = await mount()
+    collapsed.value = true
+    await frames(1)
+    await finishAll()
+    collapsed.value = false
+    await frames(1)
+    const text = part('link-text')
+    expect(Number(getComputedStyle(text).opacity), '容器还在长，文字不先露出来').toBe(0)
+    await finishAll()
+    expect(transitions(text).has('opacity'), '落定之后淡入').toBe(true)
+    await finishAll()
+    expect(Number(getComputedStyle(text).opacity)).toBe(1)
+  })
+})
+
 describe('side-nav 折叠态的弹出分支', () => {
   it('锚定在分支行旁侧，走弹层那一套：从锚点一侧短移、淡入放大', async () => {
     host = document.createElement('div')

@@ -83,6 +83,7 @@
 ### 组合
 
 - 放入[布局](./layout)的侧栏区域。
+- 宽度也可以交给外层容器：`--xh-side-nav-w` 与 `--xh-side-nav-collapsed-w` 都设成 `100%`，收放由容器过渡自己的宽度。折叠与展开照样等容器的宽度走完才换排布：收起时文字先淡出、落定才裁掉，展开时容器长开之后文字才淡入。
 - 分组：`group` 放在 `list` 里当一条，里面先放 `group-label`，再放 `group-list`，组内的 `item` 与 `branch` 挂在 `group-list` 里。
 - Vue / React 的 `XhSideNavGroupList` 从所在的 `XhSideNavGroup` 取分组身份，不用再写 `value`；Web Components 的 `group-label` 与 `group-list` 都认所在的 `group`。
 
