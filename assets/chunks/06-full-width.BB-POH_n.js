@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.1Krrfyx7.js";import{t}from"./button.FcUSVgGS.js";import{t as n}from"./button-group.o2MQiVYl.js";var r=e();function i(){return(0,r.jsx)(`div`,{style:{inlineSize:`min(100%, 420px)`},children:(0,r.jsxs)(n,{fullWidth:!0,children:[(0,r.jsx)(t,{children:`上一页`}),(0,r.jsx)(t,{children:`下一页`})]})})}export{i as default};
