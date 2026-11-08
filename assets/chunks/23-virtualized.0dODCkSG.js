@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.BjDx9zP8.js";import{g as t}from"./select.CYH4OcS7.js";var n=e(),r=Array.from({length:1e4},(e,t)=>({value:`option-${t+1}`,label:`选项 ${t+1}`}));function i(){return(0,n.jsx)(t,{collection:r,virtual:!0,label:`长列表`,placeholder:`请选择`})}export{i as default};

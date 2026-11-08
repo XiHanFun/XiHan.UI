@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.CZCyrIrh.js";import{n as t,r as n,t as r}from"./avatar.C3lG_o3K.js";var i=e();function a(){return(0,i.jsxs)(i.Fragment,{children:[(0,i.jsxs)(n,{src:`/images/does-not-exist.svg`,alt:`取不到的图`,children:[(0,i.jsx)(t,{}),(0,i.jsx)(r,{children:`回退`})]}),(0,i.jsxs)(n,{children:[(0,i.jsx)(t,{}),(0,i.jsx)(r,{children:`无图`})]})]})}export{a as default};

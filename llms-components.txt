@@ -85444,7 +85444,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 ### 特性
 
 - `otp` 开启后接入平台的验证码自动填充。
-- 按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；回退修改已填的格子照常可用，填满之后任一格都可修改。`readOnly` 与 `disabled` 不设此限制。
+- 按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；回退修改已填的格子照常可用，填满之后任一格都可修改。值被外部整份改写（如提交失败后清空）时，焦点若在组内即回到第一个空格。`readOnly` 与 `disabled` 不设此限制。
 - 粘贴整串时按格拆开填入。
 - `mask` 遮蔽字符，`type` 与 `pattern` 限制可输入的字符类别。
 - `onValueComplete` 在填满时发出一次，用于自动提交。

@@ -1,1 +1,0 @@
-import{w as e}from"./theme.Cyv0rDCL.js";import{n as t}from"./normalize-props.CZCyrIrh.js";import{t as n}from"./icon.D6xGuKp9.js";import{t as r}from"./toggle.CuEB6jUU.js";var i=t();function a(){return(0,i.jsxs)(r,{children:[(0,i.jsx)(n,{icon:e}),`点赞`]})}export{a as default};

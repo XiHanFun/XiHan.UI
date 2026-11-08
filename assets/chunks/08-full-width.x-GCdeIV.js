@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.CZCyrIrh.js";import{t}from"./button.CGfxFxJb.js";var n=e();function r(){return(0,n.jsx)(t,{fullWidth:!0,children:`继续`})}export{r as default};
