@@ -1,5 +1,18 @@
 # @xihan-ui/react
 
+## 5.4.1
+
+### Patch Changes
+
+- Updated dependencies [718f869]
+  - @xihan-ui/headless@5.4.1
+  - @xihan-ui/core@5.4.1
+  - @xihan-ui/motion@5.4.1
+  - @xihan-ui/position@5.4.1
+  - @xihan-ui/pointer@5.4.1
+  - @xihan-ui/viz@5.4.1
+  - @xihan-ui/expression@5.4.1
+
 ## 5.4.0
 
 ### Patch Changes

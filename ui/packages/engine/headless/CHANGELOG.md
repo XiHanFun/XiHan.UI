@@ -1,5 +1,19 @@
 # @xihan-ui/headless
 
+## 5.4.1
+
+### Patch Changes
+
+- 718f869: **修复** 分格输入的值被外部整份改写时，焦点留在越过第一个空格的格子上：受控值被宿主改写（如提交失败后清空验证码）、`setValue` / `clear`、表单重置都不经过逐格编辑那一路，填满后停在末格的焦点原地不动，这一格此时已退出 Tab 序列、本不该落焦。接着敲的第一个字符落进末格、之后才被拨回首格，重输 `3531` 得到的是 `5313`。
+
+  现在值一变，焦点若在组内且越过了第一个空格，锚点连同焦点一起收回到第一个空格上；焦点不在组内时不动，外部写入不会把焦点抢进来。修在 Headless，Vue、React 与 Web Components 三端同步生效。
+
+  - @xihan-ui/core@5.4.1
+  - @xihan-ui/motion@5.4.1
+  - @xihan-ui/pointer@5.4.1
+  - @xihan-ui/viz@5.4.1
+  - @xihan-ui/expression@5.4.1
+
 ## 5.4.0
 
 ### Patch Changes

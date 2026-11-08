@@ -1,5 +1,16 @@
 # @xihan-ui/designer-shell
 
+## 5.4.1
+
+### Patch Changes
+
+- @xihan-ui/web-components@5.4.1
+- @xihan-ui/core@5.4.1
+- @xihan-ui/tokens@5.4.1
+- @xihan-ui/pointer@5.4.1
+- @xihan-ui/viz@5.4.1
+- @xihan-ui/designer-kit@5.4.1
+
 ## 5.4.0
 
 ### Patch Changes

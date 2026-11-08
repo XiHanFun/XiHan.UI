@@ -1,5 +1,12 @@
 # @xihan-ui/animations
 
+## 5.4.1
+
+### Patch Changes
+
+- @xihan-ui/core@5.4.1
+- @xihan-ui/motion@5.4.1
+
 ## 5.4.0
 
 ### Patch Changes
