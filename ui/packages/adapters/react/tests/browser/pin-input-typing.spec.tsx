@@ -14,6 +14,8 @@ import { XhPinInputInput, XhPinInputRoot } from '../../src'
 
 let root: Root | null = null
 let host: HTMLElement | null = null
+/** 受控宿主的 setState，留给用例从外面整份改写值。 */
+let writeHost: ((next: string[]) => void) | null = null
 
 beforeEach(() => vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true))
 afterEach(() => {
@@ -27,9 +29,6 @@ afterEach(() => {
 })
 
 const LENGTH = 4
-
-/** 受控宿主的 setState，留给用例从外面整份改写值。 */
-let writeHost: ((next: string[]) => void) | null = null
 
 interface Harness {
   onValueChange: ReturnType<typeof vi.fn>
