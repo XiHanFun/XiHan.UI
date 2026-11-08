@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.D7LghR2y.js";import{t}from"./sparkline.fY5DX4Me.js";var n=e(),r=[.4,.5,.3,.6,.9,1.4,1.2,1.8,2.3,2.1];function i(){return(0,n.jsx)(t,{data:r,tone:`danger`,"aria-label":`近 10 分钟错误率`})}export{i as default};

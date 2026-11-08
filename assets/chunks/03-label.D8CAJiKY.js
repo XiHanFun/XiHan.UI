@@ -1,0 +1,1 @@
+import{it as e}from"./theme.DPsROaXR.js";import{n as t}from"./normalize-props.D7LghR2y.js";import{t as n}from"./icon.BA42O9F3.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e,label:`关闭`})}export{i as default};

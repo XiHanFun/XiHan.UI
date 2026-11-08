@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.D7LghR2y.js";import{t}from"./button.BbWkUPws.js";var n=e();function r(){return(0,n.jsx)(t,{children:`按钮`})}export{r as default};

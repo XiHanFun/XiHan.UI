@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.D7LghR2y.js";import{t}from"./spinner.vohj3DPp.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{label:`加载中`}),(0,n.jsx)(t,{variant:`ring`,label:`加载中`}),(0,n.jsx)(t,{variant:`dots`,label:`加载中`})]})}export{r as default};

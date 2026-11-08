@@ -1,0 +1,1 @@
+import{_N as e,gN as t,yN as n}from"./theme.DPsROaXR.js";import{t as r}from"./react.CbNV8_UV.js";var i=r();function a(r,a){let o=e(r.machine);(0,i.useEffect)(()=>{if(!o)return;let e=n({getNode:()=>a.current,getFormId:()=>r.prop(`form`),onReset:()=>{r.getStatus()===`Started`&&r.send({type:t})}});return()=>{e?.dispose(),e=null}},[o,r,a])}export{a as t};

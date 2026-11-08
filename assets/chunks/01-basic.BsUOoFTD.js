@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.1Krrfyx7.js";import{c as t,n,o as r}from"./signature-pad.DEezEp9Z.js";var i=e();function a(){return(0,i.jsx)(t,{style:{maxInlineSize:`22rem`},children:(0,i.jsx)(n,{children:(0,i.jsx)(r,{})})})}export{a as default};

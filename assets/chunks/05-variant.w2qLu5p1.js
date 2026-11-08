@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.1Krrfyx7.js";import{a as t,i as n,n as r,s as i}from"./text-field.BDjPy2sU.js";var a=e(),o=[`outline`,`subtle`,`ghost`];function s(){return(0,a.jsx)(a.Fragment,{children:o.map(e=>(0,a.jsxs)(i,{variant:e,placeholder:`请输入内容`,children:[(0,a.jsx)(t,{children:e}),(0,a.jsx)(r,{children:(0,a.jsx)(n,{})})]},e))})}export{s as default};
