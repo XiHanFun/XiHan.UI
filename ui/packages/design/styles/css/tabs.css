@@ -261,11 +261,14 @@
     color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
     font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
     cursor: pointer;
-    /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
+    /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale。
+       card / segment 档选中时换描边，拖动时压暗，都与换面同一档 */
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，

@@ -67,6 +67,7 @@
     /* 增删一枚、其余标签换到新位置时，由列表动效先反向补偿、再沿 translate 这条滑过去 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);

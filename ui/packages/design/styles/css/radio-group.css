@@ -318,6 +318,10 @@
     border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-control));
     background: var(--xh-radio-group-track-bg, var(--xh-bg-field));
     font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
+    /* 校验失败与禁用时轨道换面淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。

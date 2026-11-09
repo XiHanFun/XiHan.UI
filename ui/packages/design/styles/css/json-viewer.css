@@ -351,6 +351,10 @@
     border-radius: var(--xh-json-viewer-mark-radius, var(--xh-shape-inset));
     background: var(--xh-json-viewer-mark-bg, var(--xh-bg-brand-subtle));
     color: var(--xh-json-viewer-mark-fg, var(--xh-fg-brand-strong));
+    /* 当前命中在淡底与实心之间换面时淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='json-viewer'][data-part='branch'][data-current] > [data-scope='json-viewer'][data-part='branch-control'] > [data-scope='json-viewer'][data-part='branch-text'] > [data-scope='json-viewer'][data-part='mark'],

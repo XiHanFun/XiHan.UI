@@ -51,6 +51,10 @@
     color: var(--xh-alert-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
+    /* 语气切换时底色与描边淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。贴边的三条边是页面或容器自己的边，不画，

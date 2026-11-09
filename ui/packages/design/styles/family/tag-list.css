@@ -38,8 +38,13 @@
   [data-xh-tag-list] > [data-scope='tag'][data-part='root'] {
     flex: 0 1 auto;
     min-inline-size: 0;
-    /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置 */
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置；
+       换面的淡变与标签自己的那三条同一档（这条特指度更高，不并进来就丢了） */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 新选中的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（列表动效接上之前行带 data-instant）。+N 那一枚不是到达的条目，不播 */

@@ -206,6 +206,8 @@
     font-size: var(--xh-checkbox-label-font-size, var(--xh-_checkbox-label-font-size));
     line-height: var(--xh-checkbox-label-leading, var(--xh-leading-normal));
     cursor: pointer;
+    /* 校验失败、禁用时标签换色淡变，与字段标签同一档 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='checkbox'][data-part='label'][data-size='sm'] {
@@ -228,6 +230,8 @@
     min-inline-size: 0;
     color: inherit;
     user-select: none;
+    /* 文字随标签同拍换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

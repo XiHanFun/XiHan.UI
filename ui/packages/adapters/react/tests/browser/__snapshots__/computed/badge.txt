@@ -25,9 +25,9 @@ line-height: 13px
 font-weight: 500
 color: color(srgb-linear 1 1 1)
 background-color: oklch(0.577 0.213 25)
-transition-property: all
-transition-duration: 0s
-transition-timing-function: ease
+transition-property: background-color, color
+transition-duration: 0.15s, 0.15s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

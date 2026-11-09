@@ -139,6 +139,8 @@
     border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
     cursor: grab;
+    /* 转为校验失败时描边淡变；位置跟手，不进过渡 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；

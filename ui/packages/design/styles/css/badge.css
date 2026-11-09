@@ -62,6 +62,10 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     pointer-events: none;
+    /* 语气切换（如状态点由成功转失败）时底色与字色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

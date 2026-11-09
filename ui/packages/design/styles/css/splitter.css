@@ -25,6 +25,8 @@
     align-items: stretch;
     overflow: hidden;
     border-radius: var(--xh-splitter-radius, var(--xh-shape-surface));
+    /* 整体禁用时压暗淡变 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='splitter'][data-part='root'][data-orientation='horizontal'] {

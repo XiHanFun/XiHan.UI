@@ -27,6 +27,8 @@
     position: relative;
     display: block;
     inline-size: var(--xh-image-cropper-w, 100%);
+    /* 整体禁用时压暗淡变 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 量坐标的那个盒子。里面装的是图片像素坐标，不是文字：裁切框与把手的落点一律写物理属性，

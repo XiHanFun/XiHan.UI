@@ -69,6 +69,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-normal);
+    /* 语气或涨跌方向变了，数值随之淡变换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 前后缀比数值小一档，颜色与字重同数值：它们是这个数的一部分（货币符号、单位），不是旁注 */
@@ -79,6 +81,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-tight);
+    /* 前后缀与数值同拍换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* —— 涨跌 —— */
@@ -93,6 +97,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-regular);
     line-height: var(--xh-leading-tight);
+    /* 涨跌方向变了，趋势随之淡变换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 方向逐档换字形，箭头由皮肤画，示例里不必手打 */

@@ -260,6 +260,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
@@ -339,6 +340,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* 拖动整列时压暗淡变，与行同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='table'][data-part='column-header'][hidden],
@@ -777,7 +780,9 @@
     background: transparent;
     color: var(--xh-table-filter-fg, var(--xh-fg-subtle));
     cursor: pointer;
-    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='table'][data-part='column-header'] [data-scope='menu'][data-part='trigger']:hover {

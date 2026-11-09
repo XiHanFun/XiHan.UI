@@ -109,6 +109,8 @@
     /* 两轴一起给：条目文字用省略号收口，正常不会横向溢出，
        但作者塞进宽内容时至少还够得着，而不是被裁掉 */
     overflow: auto;
+    /* 校验失败时描边淡变 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* display 会盖掉 hidden 属性的 UA 规则，作者手动收起时要显式让位 */

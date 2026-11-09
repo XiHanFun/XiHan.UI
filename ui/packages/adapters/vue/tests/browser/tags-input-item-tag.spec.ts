@@ -324,6 +324,9 @@ describe('光标走到标签上：当前项的淡底落在 tag 的 root 上', ()
     // 状态标记只落在本组件的 item 上，tag 的 root 不带
     expect(pills()[1]!.hasAttribute('data-highlighted')).toBe(false)
 
+    // 换成当前项的淡底是淡变：核的是终态
+    for (const animation of document.getAnimations())
+      animation.finish()
     const lit = getComputedStyle(pills()[1]!)
     expect(lit.backgroundColor).toBe(resolveColor('var(--xh-bg-brand-subtle)'))
     expect(lit.color).toBe(resolveColor('var(--xh-fg-on-brand-subtle)'))

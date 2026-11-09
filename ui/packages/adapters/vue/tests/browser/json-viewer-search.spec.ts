@@ -66,7 +66,8 @@ describe('json-viewer 搜索', () => {
     await nextTick()
     await nextTick()
     expect(row.getAttribute('data-current')).toBe('')
-    expect(getComputedStyle(part('mark')).backgroundColor).not.toBe(rest)
+    // 淡底换成实心是淡变，等它走到终态
+    await expect.poll(() => getComputedStyle(part('mark')).backgroundColor).not.toBe(rest)
     const rowRect = row.getBoundingClientRect()
     const rootRect = root.getBoundingClientRect()
     expect(rowRect.top).toBeGreaterThanOrEqual(rootRect.top - 1)

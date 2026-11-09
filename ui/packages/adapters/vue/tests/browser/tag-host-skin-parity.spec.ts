@@ -278,6 +278,9 @@ describe('tags-input 里的标签就是独立的 tag', () => {
   ])('控件写 %o：聚焦后每一枚与独立渲染的 tag %o 逐值一样（lg 档字号钉说明档，圆角取 inset）', async (props, tagProps) => {
     await mountTagsInput(props)
     host!.querySelector<HTMLInputElement>(`[data-scope='tags-input'][data-part='input']`)!.focus()
+    // 聚焦后标签换面是淡变：核的是终态
+    for (const animation of document.getAnimations())
+      animation.finish()
     const expected = await loneTag(tagProps)
     if (tagProps.size === 'lg')
       expected['font-size'] = await captionSize()

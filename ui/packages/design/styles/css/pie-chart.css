@@ -128,6 +128,8 @@
   /* 外侧标签是标注：标注字色，不取扇区色；引导线的画法在配方里 */
   [data-scope='pie-chart'][data-part='slice-label'] {
     fill: var(--xh-chart-label);
+    /* 随扇区一起变淡、淡回，与扇区同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内侧标签压在扇区色上：取与色槽配对的前景色 */

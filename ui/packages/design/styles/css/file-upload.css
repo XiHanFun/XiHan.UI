@@ -193,7 +193,11 @@
   /* 列表动效：新收下的文件进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或列表带 data-instant）。
      删掉的那一行由替身留在原处淡出，播完即移除；其余行先按旧位置反向补偿、再沿 translate 过渡滑到新位置 */
   [data-scope='file-upload'][data-part='item'] {
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 上传失败换底色与描边淡变 */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='file-upload'][data-part='item']:not([data-instant], [data-instant] > :where([data-scope='file-upload'])) {

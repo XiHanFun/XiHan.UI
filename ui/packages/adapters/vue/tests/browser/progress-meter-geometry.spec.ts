@@ -85,9 +85,10 @@ describe('仪表盘的数值动效', () => {
     const needle = getComputedStyle(one('needle'))
     const arc = getComputedStyle(one('range'))
     expect(needle.transitionProperty).toBe('rotate')
-    expect(arc.transitionProperty).toBe('stroke-dashoffset')
-    expect(needle.transitionDuration).toBe(arc.transitionDuration)
-    expect(needle.transitionTimingFunction).toBe(arc.transitionTimingFunction)
+    // 弧的走完长度与跨段换色同拍：两条与指针同一档时长与曲线
+    expect(arc.transitionProperty).toBe('stroke-dashoffset, stroke')
+    expect(arc.transitionDuration).toBe(`${needle.transitionDuration}, ${needle.transitionDuration}`)
+    expect(arc.transitionTimingFunction).toBe(`${needle.transitionTimingFunction}, ${needle.transitionTimingFunction}`)
   })
 })
 

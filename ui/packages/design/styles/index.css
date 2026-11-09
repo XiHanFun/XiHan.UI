@@ -3019,8 +3019,13 @@
   [data-xh-tag-list] > .xh-scope-tag[data-part='root'] {
     flex: 0 1 auto;
     min-inline-size: 0;
-    /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置 */
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 选中、取消选中一枚时，其余标签由列表动效先反向补偿、再沿这条滑到新位置；
+       换面的淡变与标签自己的那三条同一档（这条特指度更高，不并进来就丢了） */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 新选中的标签原地弹出，同一批按到达顺序错开；首帧就在的直接呈现（列表动效接上之前行带 data-instant）。+N 那一枚不是到达的条目，不播 */
@@ -8787,6 +8792,8 @@
     white-space: nowrap;
     direction: ltr;
     unicode-bidi: isolate;
+    /* 动态启用与禁用时字色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-kbd[data-part='root'][data-variant='light'] {
@@ -8847,6 +8854,8 @@
     position: relative;
     display: block;
     inline-size: var(--xh-image-cropper-w, 100%);
+    /* 整体禁用时压暗淡变 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 量坐标的那个盒子。里面装的是图片像素坐标，不是文字：裁切框与把手的落点一律写物理属性，
@@ -9945,6 +9954,10 @@
     border-radius: var(--xh-json-viewer-mark-radius, var(--xh-shape-inset));
     background: var(--xh-json-viewer-mark-bg, var(--xh-bg-brand-subtle));
     color: var(--xh-json-viewer-mark-fg, var(--xh-fg-brand-strong));
+    /* 当前命中在淡底与实心之间换面时淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-json-viewer[data-part='branch'][data-current] > .xh-scope-json-viewer[data-part='branch-control'] > .xh-scope-json-viewer[data-part='branch-text'] > .xh-scope-json-viewer[data-part='mark'],
@@ -14141,6 +14154,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-normal);
+    /* 语气或涨跌方向变了，数值随之淡变换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 前后缀比数值小一档，颜色与字重同数值：它们是这个数的一部分（货币符号、单位），不是旁注 */
@@ -14151,6 +14166,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-tight);
+    /* 前后缀与数值同拍换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* —— 涨跌 —— */
@@ -14165,6 +14182,8 @@
     font-variant-numeric: tabular-nums;
     font-weight: var(--xh-font-weight-regular);
     line-height: var(--xh-leading-tight);
+    /* 涨跌方向变了，趋势随之淡变换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 方向逐档换字形，箭头由皮肤画，示例里不必手打 */
@@ -14255,6 +14274,11 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tag-line-h));
     /* 随文排时与正文基线对齐 */
     vertical-align: middle;
+    /* 换面淡变：淡底字段盒聚焦前后的白底换面、键盘高亮、禁用与语气切换都不硬切 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 收起态连接层给的是 hidden 属性，而上面声明了 display——
@@ -16174,6 +16198,10 @@
     color: var(--xh-alert-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
+    /* 语气切换时底色与描边淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横幅：页面顶部的通栏，贴着页面或容器的边铺满整行。贴边的三条边是页面或容器自己的边，不画，
@@ -16738,6 +16766,8 @@
     line-height: var(--xh-leading-none);
     pointer-events: none;
     vertical-align: middle;
+    /* 等过 delay 露面时淡入，不当帧蹦出 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 竖排：转圈在上、配文在下居中，整块区域的等待用它 */
@@ -16749,6 +16779,7 @@
   /* 露面前的等待：整块藏起、位置照留，露面那一刻布局不跳；visibility 同时把它从读屏里摘掉 */
   .xh-scope-spinner[data-part='root'][data-state='hidden'] {
     visibility: hidden;
+    opacity: 0;
   }
 
   .xh-scope-spinner[data-part='root']::before {
@@ -17769,6 +17800,8 @@
     display: block;
     flex: 1 1 auto;
     color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
+    /* 勾选与禁用换字色时淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-approval[data-part='item'][data-state='checked'] [data-part='item-text']:where(.xh-scope-approval) {
@@ -18192,6 +18225,10 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     pointer-events: none;
+    /* 语气切换（如状态点由成功转失败）时底色与字色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -23190,6 +23227,8 @@
     font-size: var(--xh-checkbox-label-font-size, var(--xh-_checkbox-label-font-size));
     line-height: var(--xh-checkbox-label-leading, var(--xh-leading-normal));
     cursor: pointer;
+    /* 校验失败、禁用时标签换色淡变，与字段标签同一档 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-checkbox[data-part='label'][data-size='sm'] {
@@ -23212,6 +23251,8 @@
     min-inline-size: 0;
     color: inherit;
     user-select: none;
+    /* 文字随标签同拍换色 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -24184,6 +24225,10 @@
     /* 密钥、哈希这类内容一律等宽：截断与换行处对得齐，也更好逐字核对 */
     font-variant-numeric: tabular-nums;
     text-overflow: ellipsis;
+    /* 聚焦换面淡变；内侧的焦点环画在投影上，照旧即时 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-clipboard[data-part='control'] > .xh-scope-clipboard[data-part='input']:not(:last-child) {
@@ -25665,6 +25710,11 @@
     font-family: inherit;
     font-size: var(--xh-color-picker-input-font-size, var(--xh-text-caption-size));
     text-align: center;
+    /* 悬停、聚焦、校验失败、只读与禁用换面淡变；焦点环画在投影上，照旧即时 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-color-picker[data-part='channel-input']:hover:not(:disabled, :focus, [data-readonly], [data-invalid]) {
@@ -25716,6 +25766,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
@@ -26037,6 +26088,8 @@
     border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
     cursor: grab;
+    /* 转为校验失败时描边淡变；位置跟手，不进过渡 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
@@ -32397,7 +32450,11 @@
   /* 列表动效：新收下的文件进场，同一批按到达顺序错开；首帧就在的直接呈现（自己或列表带 data-instant）。
      删掉的那一行由替身留在原处淡出，播完即移除；其余行先按旧位置反向补偿、再沿 translate 过渡滑到新位置 */
   .xh-scope-file-upload[data-part='item'] {
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 上传失败换底色与描边淡变 */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-file-upload[data-part='item']:not([data-instant], [data-instant] > :where(.xh-scope-file-upload)) {
@@ -33536,6 +33593,8 @@
   .xh-scope-funnel-chart[data-part='conversion'] {
     fill: var(--xh-chart-label);
     font-variant-numeric: tabular-nums;
+    /* 随阶段一起变淡、淡回，与阶段本身同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 写在阶段里的标签压在色阶色上：深浅两端都要读得清，描一圈承载面色 */
@@ -33662,7 +33721,11 @@
   .xh-scope-graph-chart[data-part='arrow'] {
     --xh-_graph-link: var(--xh-graph-chart-link-color, var(--xh-fg-subtle));
 
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 指着节点时连线与箭头换成它的颜色、其余淡出：换色与淡出同一档 */
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      stroke var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      fill var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-graph-chart[data-part='link'] {
@@ -33792,6 +33855,10 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-grid-list-radius, var(--xh-shape-surface));
     background: var(--xh-grid-list-bg, transparent);
+    /* 校验失败、禁用时外框与底色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-grid-list[data-part='root'][data-variant='outline'] {
@@ -35542,6 +35609,8 @@
     /* 两轴一起给：条目文字用省略号收口，正常不会横向溢出，
        但作者塞进宽内容时至少还够得着，而不是被裁掉 */
     overflow: auto;
+    /* 校验失败时描边淡变 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* display 会盖掉 hidden 属性的 UA 规则，作者手动收起时要显式让位 */
@@ -38384,6 +38453,8 @@
     font-size: var(--xh-notification-title-font-size, var(--xh-text-body-size));
     font-weight: var(--xh-notification-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
+    /* 同一 id 就地改写换语气（处理中 → 已完成）时标题换色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 卡片的叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。
@@ -39485,6 +39556,8 @@
   /* 外侧标签是标注：标注字色，不取扇区色；引导线的画法在配方里 */
   .xh-scope-pie-chart[data-part='slice-label'] {
     fill: var(--xh-chart-label);
+    /* 随扇区一起变淡、淡回，与扇区同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内侧标签压在扇区色上：取与色槽配对的前景色 */
@@ -40143,7 +40216,10 @@
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     translate: calc((var(--xh-_progress-value, 0) - 1) * 100%) 0;
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 值跨过分段时换色与位移同拍 */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* translate 只认物理方向：RTL 下行首在右边，平移与不定进度的扫向一起翻转 */
@@ -40266,7 +40342,10 @@
     stroke-linecap: var(--xh-progress-linecap, round);
     /* 环形的走完多少由虚线偏移表达，线形那一套按比例的平移在这里归零：SVG 图元的百分比平移按整个 viewBox 算，会把整段弧挪出画面 */
     translate: none;
-    transition: stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 值跨过分段时弧色与走完的长度同拍 */
+    transition:
+      stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      stroke var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* —— 量的刻画：分段色带、目标刻度、量程刻度与指针 —— */
@@ -41676,6 +41755,10 @@
     border-radius: var(--xh-radio-group-track-radius, var(--xh-shape-control));
     background: var(--xh-radio-group-track-bg, var(--xh-bg-field));
     font-size: var(--xh-radio-group-item-font-size, var(--xh-_radio-group-font-size));
+    /* 校验失败与禁用时轨道换面淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排时外盒整体就是一档控件高：段被 align-items: stretch 撑满轨道内侧，与同行控件齐平。
@@ -42078,6 +42161,8 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-rating-item-gap, var(--xh-_rating-item-gap));
+    /* 整体禁用时压暗淡变 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 禁用：星带是纯图形，整体压暗只做一次、落在星带上（星星逐颗再叠 opacity 会越叠越黑）；
@@ -44430,6 +44515,8 @@
     border-radius: var(--xh-slider-track-radius, var(--xh-shape-pill));
     /* 底槽取淡底阶梯的 200 档（--xh-bg-subtle-hover） */
     background: var(--xh-slider-track-bg, var(--xh-bg-subtle-hover));
+    /* 禁用时换色淡变 */
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-slider[data-part='track'][data-orientation='horizontal'] {
@@ -44455,6 +44542,8 @@
     position: absolute;
     border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
     background: var(--xh-slider-range-bg, var(--xh-_tone, var(--xh-bg-brand)));
+    /* 校验失败、禁用时换色淡变；长度跟手，不进过渡 */
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 交叉轴铺满轨道。这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
@@ -44501,6 +44590,10 @@
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
     cursor: grab;
+    /* 校验失败、禁用时换色淡变；位置跟手，不进过渡 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
@@ -45102,6 +45195,8 @@
     align-items: stretch;
     overflow: hidden;
     border-radius: var(--xh-splitter-radius, var(--xh-shape-surface));
+    /* 整体禁用时压暗淡变 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-splitter[data-part='root'][data-orientation='horizontal'] {
@@ -46492,6 +46587,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
@@ -46570,6 +46666,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* 拖动整列时压暗淡变，与行同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-table[data-part='column-header'][hidden],
@@ -47008,7 +47106,9 @@
     background: transparent;
     color: var(--xh-table-filter-fg, var(--xh-fg-subtle));
     cursor: pointer;
-    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-table[data-part='column-header'] .xh-scope-menu[data-part='trigger']:hover {
@@ -47785,11 +47885,14 @@
     color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
     font-weight: var(--xh-tabs-trigger-font-weight, var(--xh-text-label-weight));
     cursor: pointer;
-    /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale */
+    /* 标签是铺开的一段（Tabs trigger 归行级），按下只换面不缩放：transition 里没有 scale。
+       card / segment 档选中时换描边，拖动时压暗，都与换面同一档 */
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，
@@ -48563,6 +48666,7 @@
     /* 增删一枚、其余标签换到新位置时，由列表动效先反向补偿、再沿 translate 这条滑过去 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
@@ -51914,6 +52018,8 @@
     border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
     background: var(--xh-tool-call-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-tool-call-shadow, none);
+    /* 出错时描边换色淡变，与审批面同一档 */
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 卡片出现时滑入；落在首帧就在的列表条目里（历史消息）时直接呈现，不跟着整屏一起入场 */
@@ -53319,6 +53425,10 @@
     border-radius: var(--xh-transfer-panel-radius, var(--xh-shape-surface));
     background: var(--xh-transfer-panel-bg, var(--xh-bg-surface));
     overflow: hidden;
+    /* 校验失败的描边、禁用的底色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 整体禁用只写在 root 与各角色节点上；面板自己也带 data-disabled，观感一处收口 */

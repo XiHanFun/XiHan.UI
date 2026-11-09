@@ -114,6 +114,10 @@
     /* 密钥、哈希这类内容一律等宽：截断与换行处对得齐，也更好逐字核对 */
     font-variant-numeric: tabular-nums;
     text-overflow: ellipsis;
+    /* 聚焦换面淡变；内侧的焦点环画在投影上，照旧即时 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:not(:last-child) {

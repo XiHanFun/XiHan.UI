@@ -607,6 +607,8 @@
     font-size: var(--xh-notification-title-font-size, var(--xh-text-body-size));
     font-weight: var(--xh-notification-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-notification-title-leading, var(--xh-leading-tight));
+    /* 同一 id 就地改写换语气（处理中 → 已完成）时标题换色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 卡片的叉钉在右上角，标题得给它让位；说明与操作在第二行往下，不受影响。

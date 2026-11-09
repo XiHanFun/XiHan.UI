@@ -507,6 +507,11 @@
     font-family: inherit;
     font-size: var(--xh-color-picker-input-font-size, var(--xh-text-caption-size));
     text-align: center;
+    /* 悬停、聚焦、校验失败、只读与禁用换面淡变；焦点环画在投影上，照旧即时 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='color-picker'][data-part='channel-input']:hover:not(:disabled, :focus, [data-readonly], [data-invalid]) {
@@ -558,6 +563,7 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 

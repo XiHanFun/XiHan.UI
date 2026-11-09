@@ -127,6 +127,10 @@
     border-radius: var(--xh-transfer-panel-radius, var(--xh-shape-surface));
     background: var(--xh-transfer-panel-bg, var(--xh-bg-surface));
     overflow: hidden;
+    /* 校验失败的描边、禁用的底色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 整体禁用只写在 root 与各角色节点上；面板自己也带 data-disabled，观感一处收口 */

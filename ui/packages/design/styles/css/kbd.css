@@ -34,6 +34,8 @@
     white-space: nowrap;
     direction: ltr;
     unicode-bidi: isolate;
+    /* 动态启用与禁用时字色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='kbd'][data-part='root'][data-variant='light'] {

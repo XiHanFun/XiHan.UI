@@ -50,6 +50,11 @@
     line-height: max(calc(var(--xh-leading-none) * 1em), var(--xh-_tag-line-h));
     /* 随文排时与正文基线对齐 */
     vertical-align: middle;
+    /* 换面淡变：淡底字段盒聚焦前后的白底换面、键盘高亮、禁用与语气切换都不硬切 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 收起态连接层给的是 hidden 属性，而上面声明了 display——

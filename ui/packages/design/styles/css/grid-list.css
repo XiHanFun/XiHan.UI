@@ -35,6 +35,10 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-grid-list-radius, var(--xh-shape-surface));
     background: var(--xh-grid-list-bg, transparent);
+    /* 校验失败、禁用时外框与底色淡变 */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='grid-list'][data-part='root'][data-variant='outline'] {

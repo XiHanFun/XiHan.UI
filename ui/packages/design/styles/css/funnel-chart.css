@@ -76,6 +76,8 @@
   [data-scope='funnel-chart'][data-part='conversion'] {
     fill: var(--xh-chart-label);
     font-variant-numeric: tabular-nums;
+    /* 随阶段一起变淡、淡回，与阶段本身同一档 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 写在阶段里的标签压在色阶色上：深浅两端都要读得清，描一圈承载面色 */

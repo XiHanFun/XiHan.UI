@@ -75,7 +75,10 @@
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
     background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
     translate: calc((var(--xh-_progress-value, 0) - 1) * 100%) 0;
-    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 值跨过分段时换色与位移同拍 */
+    transition:
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      background-color var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* translate 只认物理方向：RTL 下行首在右边，平移与不定进度的扫向一起翻转 */
@@ -198,7 +201,10 @@
     stroke-linecap: var(--xh-progress-linecap, round);
     /* 环形的走完多少由虚线偏移表达，线形那一套按比例的平移在这里归零：SVG 图元的百分比平移按整个 viewBox 算，会把整段弧挪出画面 */
     translate: none;
-    transition: stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+    /* 值跨过分段时弧色与走完的长度同拍 */
+    transition:
+      stroke-dashoffset var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      stroke var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* —— 量的刻画：分段色带、目标刻度、量程刻度与指针 —— */

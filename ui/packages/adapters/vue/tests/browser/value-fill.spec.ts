@@ -73,7 +73,8 @@ describe('进度条的填充', () => {
     value = 80
     app!._instance!.proxy!.$forceUpdate()
     await nextTick()
-    expect(getComputedStyle(range).transitionProperty).toBe('translate')
+    // 走的是平移（跨段换色与它同拍），宽度不进过渡
+    expect(getComputedStyle(range).transitionProperty).toBe('translate, background-color')
     settle(range)
     expect(range.getBoundingClientRect().width).toBe(width)
     expect(visible(part('progress', 'track'), range).ratio).toBeCloseTo(0.8, 2)

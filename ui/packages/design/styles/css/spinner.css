@@ -38,6 +38,8 @@
     line-height: var(--xh-leading-none);
     pointer-events: none;
     vertical-align: middle;
+    /* 等过 delay 露面时淡入，不当帧蹦出 */
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 竖排：转圈在上、配文在下居中，整块区域的等待用它 */
@@ -49,6 +51,7 @@
   /* 露面前的等待：整块藏起、位置照留，露面那一刻布局不跳；visibility 同时把它从读屏里摘掉 */
   [data-scope='spinner'][data-part='root'][data-state='hidden'] {
     visibility: hidden;
+    opacity: 0;
   }
 
   [data-scope='spinner'][data-part='root']::before {

@@ -25,9 +25,9 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklch(0.557 0.216 277)
-transition-property: translate
-transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.2, 0, 0, 1)
+transition-property: translate, background-color
+transition-duration: 0.2s, 0.2s
+transition-timing-function: cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

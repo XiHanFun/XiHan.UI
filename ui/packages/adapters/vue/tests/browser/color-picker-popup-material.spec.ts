@@ -118,7 +118,9 @@ describe('颜色选择器浮层：floating 实体面', () => {
     // 色相带归内嵌的 color-slider：轨道渐变由连接层内联给，挂载点把滑块 root 上的两个私有槽接上
     expect(getComputedStyle(part('track', 'color-slider')).backgroundImage).toContain('linear-gradient')
     expect(part('thumb', 'color-slider').getBoundingClientRect().width).toBeGreaterThan(0)
-    // 通道输入照字段外壳：字段淡底
+    // 通道输入照字段外壳：字段淡底（换主题时换面在淡变，核终态）
+    for (const animation of document.getAnimations())
+      animation.finish()
     expect(getComputedStyle(part('channel-input')).backgroundColor).toBe(tokenColor('--xh-bg-field'))
   })
 

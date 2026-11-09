@@ -257,6 +257,8 @@
     display: block;
     flex: 1 1 auto;
     color: var(--xh-approval-item-text-fg, var(--xh-fg-muted));
+    /* 勾选与禁用换字色时淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='approval'][data-part='item'][data-state='checked'] [data-part='item-text']:where([data-scope='approval']) {

@@ -102,7 +102,11 @@
   [data-scope='graph-chart'][data-part='arrow'] {
     --xh-_graph-link: var(--xh-graph-chart-link-color, var(--xh-fg-subtle));
 
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 指着节点时连线与箭头换成它的颜色、其余淡出：换色与淡出同一档 */
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      stroke var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      fill var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='graph-chart'][data-part='link'] {
