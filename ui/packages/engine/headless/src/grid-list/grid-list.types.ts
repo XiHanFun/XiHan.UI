@@ -82,6 +82,8 @@ export interface GridListSchema extends MachineSchema {
      * 往回扩才收得回来；任何非 Shift 的选中操作都会使它作废。
      */
     selectionBaseline: string[] | null
+    /** 列表动效接上了：之后新到的行播进场；接上之前的首帧，根带 data-instant 直接呈现。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: { typeahead: Typeahead }
@@ -100,10 +102,11 @@ export interface GridListSchema extends MachineSchema {
     | { type: 'GRID.BLUR' }
     | { type: 'PRESS.START', value: string, disabled?: boolean }
     | { type: 'PRESS.END', value: string }
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'canPress'
-  action: 'setValue' | 'selectRow' | 'toggleRow' | 'extendRow' | 'invokeAction' | 'setFocusedValue' | 'clearFocus' | 'startPress' | 'endPress' | 'releaseWhenInert'
-  effect: never
+  action: 'setValue' | 'selectRow' | 'toggleRow' | 'extendRow' | 'invokeAction' | 'setFocusedValue' | 'clearFocus' | 'startPress' | 'endPress' | 'releaseWhenInert' | 'markListTracked'
+  effect: 'trackListMotion'
 }
 
 export interface GridListApi<T extends PropTypes = PropTypes> {

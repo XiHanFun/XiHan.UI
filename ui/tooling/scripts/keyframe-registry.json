@@ -195,6 +195,7 @@
         "field-array",
         "file-upload",
         "form",
+        "grid-list",
         "image",
         "image-viewer",
         "navigation-menu",
@@ -240,6 +241,7 @@
         "diff-view",
         "field-array",
         "file-upload",
+        "grid-list",
         "message-feed",
         "question-flow",
         "tool-call"

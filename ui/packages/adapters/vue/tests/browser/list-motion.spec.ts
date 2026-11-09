@@ -1,4 +1,4 @@
-// 标签输入与动态字段组的列表动效：首帧的条目直接呈现，新到的一批按到达顺序错开进场，
+// 标签输入、动态字段组与网格列表的列表动效：首帧的条目直接呈现，新到的一批按到达顺序错开进场，
 // 删掉的条目由替身在原处播完退场再移除，其余条目从旧位置滑到新位置。
 // 动画是否在播、替身落在哪、条目此刻的位移只有真实浏览器量得出：jsdom 不排版、不跑 CSS 动画。
 import type { App, Ref } from 'vue'
@@ -9,6 +9,9 @@ import {
   XhFieldArrayItemDeleteTrigger,
   XhFieldArrayMoveDownTrigger,
   XhFieldArrayRoot,
+  XhGridListRoot,
+  XhGridListRow,
+  XhGridListRowText,
   XhTagsInputControl,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -242,5 +245,55 @@ describe('动态字段组的列表动效', () => {
     expect(offsetY(first!)).toBeLessThan(0)
     expect(offsetY(second!)).toBeGreaterThan(0)
     expect(root.querySelector(`${ROW}[data-state='closed']`)).toBeNull()
+  })
+})
+
+const GRID_ROW = `[data-scope='grid-list'][data-part='row']`
+
+async function mountGrid(values: Ref<string[]>): Promise<HTMLElement> {
+  host = document.createElement('div')
+  host.style.cssText = 'inline-size: 320px'
+  document.body.append(host)
+  app = createApp({
+    setup: () => () => h(XhGridListRoot, { 'aria-label': '列表' }, () => values.value.map(v => h(XhGridListRow, { key: v, value: v }, () => h(XhGridListRowText, null, () => v)))),
+  })
+  app.mount(host)
+  await nextTick()
+  await nextTick()
+  await frame()
+  return host.querySelector<HTMLElement>(`[data-scope='grid-list'][data-part='root']`)!
+}
+
+function liveGridRows(root: HTMLElement): HTMLElement[] {
+  return [...root.querySelectorAll<HTMLElement>(`${GRID_ROW}:not([data-state='closed'])`)]
+}
+
+describe('网格列表的列表动效', () => {
+  it('首帧的行直接呈现；新增的行进场', async () => {
+    const rows = ref(['甲', '乙'])
+    const root = await mountGrid(rows)
+    for (const el of liveGridRows(root))
+      expect(running(el)).toEqual([])
+    rows.value = [...rows.value, '丙']
+    await nextTick()
+    await until(() => liveGridRows(root).length === 3)
+    expect(running(liveGridRows(root)[2]!)).toEqual(['xh-item-in'])
+  })
+
+  it('删掉的行由替身在原处淡出、播完即移除，后面的行从旧位置滑过去', async () => {
+    const rows = ref(['甲', '乙', '丙'])
+    const root = await mountGrid(rows)
+    const [, middle, last] = liveGridRows(root)
+    const top = middle!.getBoundingClientRect().top
+    const lastTop = last!.getBoundingClientRect().top
+    rows.value = ['甲', '丙']
+    await nextTick()
+    await until(() => root.querySelector(`${GRID_ROW}[data-state='closed']`) !== null)
+    const ghost = root.querySelector<HTMLElement>(`${GRID_ROW}[data-state='closed']`)!
+    expect(Math.abs(ghost.getBoundingClientRect().top - top)).toBeLessThan(1)
+    expect(running(ghost)).toEqual(['xh-fade-out'])
+    expect(offsetY(last!)).toBeGreaterThan(0)
+    expect(Math.abs(last!.getBoundingClientRect().top - lastTop)).toBeLessThan(2)
+    await until(() => !ghost.isConnected)
   })
 })

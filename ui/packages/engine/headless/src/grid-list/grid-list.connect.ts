@@ -32,7 +32,7 @@ export function connectGridList<T extends PropTypes>(
   const editable = !disabled && !readOnly && !loading
   const selectable = selectionMode !== 'none'
   const counted = prop('collection') != null
-  const ids = scope.ids('grid-list', 'label')
+  const ids = scope.ids('grid-list', 'label', 'root')
   const anchor = focusedValue ?? value[0] ?? null
 
   const collection: GridListNodeMeta[] = (prop('collection') ?? []).map(node => ({
@@ -106,6 +106,8 @@ export function connectGridList<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 列表动效按 id 找到根：盯住它里面行的到达、离场与换位
+      'id': ids.root,
       'role': 'grid',
       'aria-label': translations.root,
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
@@ -114,6 +116,8 @@ export function connectGridList<T extends PropTypes>(
       'aria-readonly': readOnly ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
+      // 列表动效接上之前的首帧：已有的行直接呈现，不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
       'tabindex': !counted || collection.length > 0 ? (focusedValue == null ? 0 : -1) : undefined,
       'data-variant': prop('variant') ?? 'outline',
       'data-tone': prop('tone'),

@@ -165,7 +165,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.EXTEND` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.EXTEND` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -257,6 +257,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -350,9 +351,9 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -165,9 +165,9 @@ line-height: 21px
 font-weight: 400
 color: oklch(0.208 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: background-color, color, opacity
-transition-duration: 0.15s, 0.15s, 0.15s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
+transition-property: background-color, color, opacity, translate
+transition-duration: 0.15s, 0.15s, 0.15s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

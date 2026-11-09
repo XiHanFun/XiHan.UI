@@ -25,6 +25,8 @@
     --xh-_grid-list-state-font-size: var(--xh-control-font-md);
     --xh-_grid-list-state-px: var(--xh-control-px-md);
 
+    /* 删掉的行的替身按原来的排布位绝对定位，参照系是根 */
+    position: relative;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -93,11 +95,24 @@
     --xh-collection-fg-selected-highlight: var(--xh-grid-list-row-fg-selected, var(--xh-fg-on-brand-subtle));
     --xh-collection-fg-selected-pressed: var(--xh-grid-list-row-fg-selected, var(--xh-fg-on-brand-subtle));
 
-    /* 家族只过渡换面的两支；重新取数时整列淡下同样走 micro，opacity 补进同一份列表 */
+    /* 家族只过渡换面的两支；重新取数时整列淡下同样走 micro，opacity 补进同一份列表；
+       translate 是增删、换批之后留下来的行从旧位置滑到新位置（列表动效先反向补偿再撤掉） */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新到的行进场，同一批按到达顺序错开；首帧就在的直接呈现（行或根带 data-instant） */
+  [data-scope='grid-list'][data-part='root']:not([data-instant]) [data-scope='grid-list'][data-part='row']:not([data-instant], [data-state='closed']) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 删掉的行：替身留在原处淡出，播完即移除 */
+  [data-scope='grid-list'][data-part='row'][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* Headless 会预先保留下一次 roving focus 的 highlighted 行（指针点过的行也记着）；容器尚未真正获得

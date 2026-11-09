@@ -6,9 +6,10 @@
 // 提供 grid list 相关实现。
 
 import type { GridListSchema } from './grid-list.types'
-import { applySelection, createTypeahead, setup } from '@xihan-ui/core'
+import { applySelection, createTypeahead, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray, toArray } from '../shared/array'
 import { normalizeGridSelection, toggleGridSelection } from '../shared/grid-collection'
+import { GRID_LIST_ROW_SELECTOR } from './grid-list.anatomy'
 
 const { createMachine } = setup<GridListSchema>()
 
@@ -25,9 +26,11 @@ export const gridListMachine = createMachine({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     anchorValue: cell<string | null>(() => ({ defaultValue: null })),
     selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   refs: () => ({ typeahead: createTypeahead() }),
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   watch: ({ track, prop, action }) => {
     track([() => prop('disabled'), () => prop('readOnly'), () => prop('loading')], () => action(['releaseWhenInert']))
   },
@@ -43,10 +46,34 @@ export const gridListMachine = createMachine({
         'GRID.BLUR': { actions: ['clearFocus'] },
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
+        'LIST.TRACKED': { actions: ['markListTracked'] },
       },
     },
   },
   implementations: {
+    effects: {
+      /**
+       * 行的到达、离场与换位：新到的行进场，删掉的行由替身留在原处淡出，留下来的行从旧位置滑到新位置。
+       * 根节点等宿主提交后再取（React 的祖先 ref 晚于子组件附着），接上之后撤掉根上的 data-instant
+       */
+      trackListMotion: ({ scope, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const root = scope.getById(scope.partId('grid-list', 'root'))
+            if (disposed || !root)
+              return
+            stop = trackListMotion(root, { item: GRID_LIST_ROW_SELECTOR })
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+    },
     guards: {
       canPress: ({ prop, event }) => {
         const current = event.current()
@@ -54,6 +81,7 @@ export const gridListMachine = createMachine({
       },
     },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       setValue: ({ context, prop, event }) => {
         const current = event.current()
         if (current.type !== 'VALUE.SET')

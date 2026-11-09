@@ -24,6 +24,8 @@ export const gridListAnatomy = createAnatomy('grid-list', [
 
 const parts = gridListAnatomy.build()
 export const gridListRowQuery: ItemQuery = { scope: gridListAnatomy.name, part: 'row' }
+/** 列表动效认的条目：行。 */
+export const GRID_LIST_ROW_SELECTOR = parts.row.selector
 
 export function gridListRowText(row: HTMLElement): string {
   return (row.querySelector<HTMLElement>(parts['row-text'].selector)?.textContent ?? row.textContent ?? '').trim()
