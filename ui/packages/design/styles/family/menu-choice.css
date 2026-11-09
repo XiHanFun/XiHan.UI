@@ -6,15 +6,20 @@
 /* Menu / ContextMenu / Menubar 的 checkbox 与 radio 共用标记语言。 */
 
 @layer xihan.components {
+  /* 过渡取变化后那一档的清单：未勾选这一档带 visibility，取消勾选、单选换走时一端是 visible，
+     整段都可见、旧标记淡完才藏；勾选那一档不带，标记当场可见、淡入照走 opacity */
   [data-xh-menu-choice-indicator] {
     visibility: hidden;
     opacity: 0;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-menu-choice-indicator][data-state='checked'] {
     visibility: visible;
     opacity: 1;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-menu-choice-indicator='checkbox']:empty::before {

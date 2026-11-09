@@ -37,7 +37,10 @@
     -webkit-mask: none;
     mask: none;
     opacity: 0;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 就地改写换语气（处理中 → 已完成）时弧色随之淡变，不在淡出途中已经是新颜色 */
+    transition:
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 不在等时停在当前角度，淡出途中不先跳回零度 */
     animation: xh-spin var(--xh-_loading-ring-duration, var(--xh-motion-loop-spin)) var(--xh-motion-ease-loop) infinite paused;
   }

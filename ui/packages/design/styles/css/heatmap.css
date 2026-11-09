@@ -182,10 +182,14 @@
     --xh-_chart-empty-gap: var(--xh-heatmap-empty-gap, var(--xh-space-2));
   }
 
-  /* 重取数据：网格与月份行保留上一帧、整体淡下去，对照条照常；与其余图表的绘图区同一个透明度 */
+  /* 重取数据：网格与月份行保留上一帧、整体淡下去，对照条照常；与其余图表的绘图区同一个透明度。
+     过渡写在不带 data-loading 的那条上：取数结束同样淡回来，不当场跳回满不透明 */
+  [data-scope='heatmap'][data-part='root'] > :is([data-part='grid'], [data-part='row']):where([data-scope='heatmap']) {
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   [data-scope='heatmap'][data-part='root'][data-loading] > :is([data-part='grid'], [data-part='row']):where([data-scope='heatmap']) {
     opacity: var(--xh-chart-pending-alpha);
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='heatmap'][data-part='row'] {

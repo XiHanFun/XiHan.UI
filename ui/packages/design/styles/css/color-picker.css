@@ -677,6 +677,11 @@
     display: none;
   }
 
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='color-picker'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
      （作者手写的是一个普通 input，升级完成前它是可见的文本框）。
      刻意不写 display：写了反而会盖掉 UA 对 type=hidden 的收起，把它显出来 */

@@ -170,7 +170,8 @@ describe('menu 条目接入 Collection Item', () => {
     await userEvent.click(wrap)
     await nextTick()
     expect(wrap.getAttribute('aria-checked')).toBe('false')
-    expect(getComputedStyle(wrapIndicator).visibility).toBe('hidden')
+    // 取消勾选：旧标记淡完才藏
+    await expect.poll(() => getComputedStyle(wrapIndicator).visibility).toBe('hidden')
     expect(document.querySelector('[data-scope="menu"][data-part="content"]')?.hasAttribute('hidden')).toBe(false)
 
     await userEvent.click(comfortable)

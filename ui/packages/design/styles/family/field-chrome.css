@@ -37,7 +37,8 @@
     cursor: var(--xh-field-cursor-rest, text);
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-field-chrome][data-variant='outline'] {

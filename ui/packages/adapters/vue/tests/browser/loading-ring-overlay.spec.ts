@@ -45,7 +45,7 @@ describe('加载环压在动作钮上', () => {
     expect(getComputedStyle(button, '::before').transitionDelay).toBe(micro(button))
     await expect.poll(() => getComputedStyle(button, '::before').opacity).toBe('1')
     button.removeAttribute('data-loading')
-    expect(getComputedStyle(button, '::before').transitionDelay).toBe('0s')
+    expect(getComputedStyle(button, '::before').transitionDelay).toBe('0s, 0s')
     await expect.poll(() => getComputedStyle(button, '::before').opacity).toBe('0')
   })
 })

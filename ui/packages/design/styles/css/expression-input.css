@@ -350,6 +350,11 @@
     display: none;
   }
 
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='expression-input'][data-part='empty']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   [data-scope='expression-input'][data-part='empty']:empty {
     display: none;
   }

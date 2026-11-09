@@ -7,6 +7,8 @@
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
 @import '../family/swatch.css';
+/* 清空钮露面的淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   [data-scope='color-field'] {
@@ -149,6 +151,11 @@
 
   [data-scope='color-field'][data-part='clear-trigger'][hidden] {
     display: none;
+  }
+
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='color-field'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='color-field'][data-part='clear-trigger']:empty::before {

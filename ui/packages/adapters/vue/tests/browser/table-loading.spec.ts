@@ -74,7 +74,9 @@ describe('table 加载态', () => {
     expect(loading.hasAttribute('data-loading')).toBe(true)
 
     const style = getComputedStyle(loading)
-    expect(style.animationName).toBe('none')
+    // 露面只淡入一次，不整块呼吸
+    expect(style.animationName).toBe('xh-fade-in')
+    expect(style.animationIterationCount).toBe('1')
     expect(style.flexDirection).toBe('row')
 
     const ring = getComputedStyle(loading, '::before')

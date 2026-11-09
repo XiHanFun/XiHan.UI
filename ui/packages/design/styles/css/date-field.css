@@ -6,6 +6,8 @@
 /* DateField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
+/* 清空钮露面的淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -257,6 +259,11 @@
   /* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
   [data-scope='date-field'][data-part='clear-trigger'][hidden] {
     display: none;
+  }
+
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='date-field'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */

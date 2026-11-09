@@ -251,6 +251,11 @@
     display: none;
   }
 
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='combobox'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 有值时清空钮顶上来，展开钮让位：两颗并排堆着用户分不清点哪个，换来换去还会让盒的宽度跳一下。
      判据是盒里此刻有一颗没收起的清空钮——没写清空钮的结构里展开钮照常留着；
      输入框仍是展开的入口（打字、方向键、openOnClick） */
@@ -524,6 +529,11 @@
     display: none;
   }
 
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='combobox'][data-part='empty']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   /* 在途占位与空态占同一个表面、两者不同屏；同样只承载状态文字。 */
   [data-scope='combobox'][data-part='loading'] {
     position: relative;
@@ -543,6 +553,11 @@
 
   [data-scope='combobox'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='combobox'][data-part='loading']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），

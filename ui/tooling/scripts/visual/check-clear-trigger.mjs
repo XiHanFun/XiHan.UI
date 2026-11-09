@@ -180,7 +180,8 @@ for (const c of EMBEDDED) {
       // 家族的按压面同时认指针 :active 与 Headless 投影的 data-pressed
       if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
         problems.push('family/action-control.css 缺 field-inset 共用的 :is(:active, [data-pressed]) 按压反馈')
-      if (!/transition:[\s\S]{0,400}\bscale\b/.test(family))
+      // 同一条 transition 声明里（到分号为止）要有 scale，清单多长都照认
+      if (!/transition:[^;]*\bscale\b/.test(family))
         problems.push('family/action-control.css 的共用 transition 没有 scale')
       if (!/['"]data-xh-action-display['"]\s*:\s*['"]has-value['"]/.test(g ?? '') || !/['"]data-xh-action-has-value['"]\s*:/.test(g ?? ''))
         problems.push(`${c}.connect.ts 的 field-inset clear 没投影 has-value 显示策略`)

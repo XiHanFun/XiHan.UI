@@ -475,6 +475,8 @@ async function inspect(label: string, hovered: Set<string>): Promise<string[]> {
     if (!owner || !glyph.host.isConnected)
       continue
     await hoverPointer(owner)
+    // 核的是悬停后的终态：露面的淡入、换面的过渡先走完
+    finishAnimations()
     if (!drawn(glyph)) {
       problems.push(`${glyph.key}（${label} · 悬停宿主）宿主悬停后仍没露面`)
       continue
@@ -489,6 +491,7 @@ async function inspect(label: string, hovered: Set<string>): Promise<string[]> {
     if (!host || hovered.has(glyph.key) || !glyph.host.isConnected)
       continue
     await hoverPointer(host)
+    finishAnimations()
     if (!drawn(glyph))
       continue
     hovered.add(glyph.key)

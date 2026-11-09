@@ -132,6 +132,8 @@
     color: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
     font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
     text-align: center;
+    /* 从 hidden 露面时淡入（节点重新得到盒时起播）：最后一条命中被筛掉时不当帧弹出 */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 三层列表同一副排法：顶层、分组里的与分支的子层都是 ul，行与行之间同一个 gap，不带 UA 的缩进与外边距 */

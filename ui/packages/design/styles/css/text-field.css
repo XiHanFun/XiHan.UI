@@ -6,6 +6,8 @@
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
+/* 清空钮露面的淡入关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   [data-scope='text-field'] {
@@ -152,6 +154,11 @@
 
   [data-scope='text-field'][data-part='clear-trigger'][hidden] {
     display: none;
+  }
+
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='text-field'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='text-field'][data-part='clear-trigger']:empty::before {

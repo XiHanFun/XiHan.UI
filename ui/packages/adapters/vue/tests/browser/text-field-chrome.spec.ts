@@ -40,7 +40,7 @@ function field(props: Record<string, unknown> = {}, textarea = false): VNode {
 function expectColorFadesOnly(style: CSSStyleDeclaration): void {
   const properties = style.transitionProperty.split(', ')
   // 焦点环（描边内侧那道 inset 线画在 box-shadow 上）即时出现、不淡入，不在过渡清单里
-  expect(properties).toEqual(['background-color', 'border-color'])
+  expect(properties).toEqual(['background-color', 'border-color', 'color'])
   expect(style.transitionDuration.split(', ')).toEqual(properties.map(() => '0.15s'))
 }
 
@@ -183,6 +183,9 @@ describe('field Chrome 状态与字段内动作', () => {
       features: [{ name: 'forced-colors', value: 'active' }],
     })
     expect(matchMedia('(forced-colors: active)').matches).toBe(true)
+    // 切档那一刻换色还在过渡里：核的是强制色下的终态
+    for (const animation of document.getAnimations())
+      animation.finish()
     expect(getComputedStyle(invalid!).borderTopStyle).toBe('solid')
     expect(getComputedStyle(disabled!).borderTopStyle).toBe('solid')
     expect(getComputedStyle(invalid!).borderTopColor).not.toBe(getComputedStyle(disabled!).borderTopColor)

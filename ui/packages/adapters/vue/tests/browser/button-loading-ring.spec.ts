@@ -83,7 +83,7 @@ describe('button 在途', () => {
     loading.value = false
     await nextTick()
     expect(getComputedStyle(label).transitionDelay).toBe('0s')
-    expect(getComputedStyle(indicator, '::before').transitionDelay).toBe('0s')
+    expect(getComputedStyle(indicator, '::before').transitionDelay).toBe('0s, 0s')
     await expect.poll(() => getComputedStyle(label).opacity).toBe('1')
     await expect.poll(() => getComputedStyle(indicator, '::before').opacity).toBe('0')
   })

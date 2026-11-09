@@ -219,7 +219,8 @@ describe('取数与写入在途的转圈', () => {
     await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
     busy(false)
-    expect(beforeOf(trigger, 'transition-delay')).toBe('0s')
+    // 淡变与换色两条过渡都不等
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0s, 0s')
     await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
     await expect.poll(() => beforeOf(trigger, 'opacity')).toBe('0')
   })
@@ -254,7 +255,8 @@ describe('取数与写入在途的转圈', () => {
     await expect.poll(() => styleOf(trigger, 'color')).toBe('rgba(0, 0, 0, 0)')
     expect(trigger.getBoundingClientRect().width).toBeCloseTo(width, 4)
     pending(false)
-    expect(beforeOf(trigger, 'transition-delay')).toBe('0s')
+    // 淡变与换色两条过渡都不等
+    expect(beforeOf(trigger, 'transition-delay')).toBe('0s, 0s')
     await expect.poll(() => styleOf(trigger, 'color')).toBe(foreground)
   })
 
@@ -474,7 +476,7 @@ describe('轻提示预设的语气字形', () => {
       const root = part('notification', 'item')
       expect(beforeOf(root, 'animation-name')).toBe('none')
       expect(beforeOf(root, 'border-top-style')).toBe('dotted')
-      expect(beforeOf(root, 'transition-property')).toBe('opacity')
+      expect(beforeOf(root, 'transition-property')).toBe('opacity, border-color')
     }
     finally {
       delete document.documentElement.dataset.motion

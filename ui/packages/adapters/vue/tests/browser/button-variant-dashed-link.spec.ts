@@ -67,7 +67,8 @@ describe('button 的 dashed 与 link 两档', () => {
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.color).toBe(resolveColor('--xh-fg-brand'))
-    expect(style.textDecorationLine).toBe('none')
+    // 下划线静息就在、颜色透明，看不见；悬停换成字色时随过渡淡入
+    expect(style.textDecorationColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.height).toBe(getComputedStyle(byTestId('solid')).height)
     // link 不是彩色面，面内不成墨色域
     expect(link.hasAttribute('data-xh-ink-surface')).toBe(false)
@@ -83,11 +84,12 @@ describe('button 的 dashed 与 link 两档', () => {
     await userEvent.hover(link)
     const hovered = getComputedStyle(link)
     expect(hovered.textDecorationLine).toBe('underline')
+    expect(hovered.textDecorationColor).toBe(hovered.color)
     expect(hovered.color).toBe(resolveColor('--xh-fg-brand-strong'))
     const disabled = byTestId('disabled')
     disabled.style.pointerEvents = 'auto'
     await userEvent.hover(disabled, { force: true })
-    expect(getComputedStyle(disabled).textDecorationLine).toBe('none')
+    expect(getComputedStyle(disabled).textDecorationColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(disabled).color).toBe(resolveColor('--xh-fg-disabled'))
   })
 

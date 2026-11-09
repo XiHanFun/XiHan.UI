@@ -310,6 +310,11 @@
     display: none;
   }
 
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='tree-select'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   [data-scope='tree-select'][data-part='content'] {
     /* 材质由家族配方画（family/material.css 的 frosted 面：描边、底、1px 顶光、前景、投影与背景滤镜），
        这里只把使用者槽接进来 */
@@ -446,6 +451,11 @@
     display: none;
   }
 
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='tree-select'][data-part='empty']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='tree-select'][data-part='loading'] {
     display: flex;
@@ -463,6 +473,11 @@
 
   [data-scope='tree-select'][data-part='loading'][hidden] {
     display: none;
+  }
+
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='tree-select'][data-part='loading']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），

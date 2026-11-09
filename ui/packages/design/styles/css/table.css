@@ -1183,6 +1183,16 @@
     display: none;
   }
 
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='table'][data-part='loading']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
+  [data-scope='table'][data-part='empty']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
      这里只给它盒子：直径取表格尺寸档的图标档；转一圈的时长走公开槽 */
   [data-scope='table'][data-part='loading']::before {

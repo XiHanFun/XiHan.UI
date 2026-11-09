@@ -13,6 +13,8 @@ const SIZES = ['xs', 'sm', 'md', 'lg']
 const DISPLAYS = ['always', 'has-value', 'hover-focus']
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'loading']
 const VARIANTS = ['solid', 'subtle', 'outline', 'ghost', 'dashed', 'link']
+/** link 档静息就带下划线、颜色透明：悬停只换颜色，下划线随过渡淡入淡出 */
+const LINK_REST = '\n    text-decoration-line: underline;\n    text-decoration-color: transparent;\n    text-underline-offset: var(--xh-space-1);'
 const SIZE_FIELDS = ['visualSize', 'paddingInline', 'paddingBlock', 'gap', 'glyphSize', 'fontSize']
 /* 颜色三通道由形态矩阵给出；states 只留与形态无关的通道。 */
 const COLOR_FIELDS = ['backgroundColor', 'color', 'borderColor']
@@ -290,6 +292,22 @@ export function compileActionControlRecipe(source) {
     target.push(`${indent}${selector} {\n${body}\n${indent}}`)
   }
   const layoutOf = profile => source.profiles[profile].layout
+  /**
+   * 家族的过渡清单。box-shadow 不进：实心面聚焦时的底色间隔线画在投影上，与环一起即时出现、即时撤下；
+   * 家族各档的投影槽缺省都是 none，换面不靠投影。
+   * visibility 只放进「收起」那几档（hidden = true）：过渡取的是变化后那一档的清单，收起时一端是 visible，
+   * 整段都可见、淡完才藏；露出那一档不带它，当场可见、可聚焦，淡入照走 opacity
+   */
+  const transitionDeclaration = (hidden, indent = '    ') => [
+    `${indent}transition:`,
+    `${indent}  background-color ${source.motion.duration} ${source.motion.easing},`,
+    `${indent}  border-color ${source.motion.duration} ${source.motion.easing},`,
+    `${indent}  color ${source.motion.duration} ${source.motion.easing},`,
+    `${indent}  opacity ${source.motion.duration} ${source.motion.easing},`,
+    ...(hidden ? [`${indent}  visibility ${source.motion.duration} ${source.motion.easing},`] : []),
+    `${indent}  text-decoration-color ${source.motion.duration} ${source.motion.easing},`,
+    `${indent}  scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
+  ].join('\n')
 
   /* 无 data-xh-action-variant 时等价 defaultVariant：矩阵私有槽先在根规则落默认形态。 */
   rule('[data-xh-action-control]', [
@@ -321,13 +339,7 @@ export function compileActionControlRecipe(source) {
     `    cursor: ${stateValue(source, 'rest', 'cursor')};`,
     `    opacity: ${stateValue(source, 'rest', 'opacity')};`,
     '    user-select: none;',
-    '    transition:',
-    `      background-color ${source.motion.duration} ${source.motion.easing},`,
-    `      border-color ${source.motion.duration} ${source.motion.easing},`,
-    `      color ${source.motion.duration} ${source.motion.easing},`,
-    // box-shadow 不进过渡：实心面聚焦时的底色间隔线画在投影上，与环一起即时出现、即时撤下；家族各档的投影槽缺省都是 none，换面不靠投影
-    `      opacity ${source.motion.duration} ${source.motion.easing},`,
-    `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
+    transitionDeclaration(false),
   ].join('\n'))
 
   /* 内容放不下时（窄格子里的长文字钮）从起始边排起、只在末端被裁：居中会让溢出往两边同时冒，
@@ -341,7 +353,7 @@ export function compileActionControlRecipe(source) {
   /* Button 才开放的两档（设计真源 §5.2）：dashed 与 outline 同一套面，只把描边改成虚线；
      link 不铺面，悬停与按下在换一档字色之外加下划线，禁用与在途不画 */
   for (const variant of VARIANTS)
-    rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant) + (variant === 'dashed' ? '\n    border-style: dashed;' : ''))
+    rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant) + (variant === 'dashed' ? '\n    border-style: dashed;' : '') + (variant === 'link' ? LINK_REST : ''))
 
   /* 深色主题下无 tone 或 tone=brand 的实心面固定用深品牌面与浅字；focus-visible / loading 与 rest 同面。 */
   rule(
@@ -427,32 +439,33 @@ export function compileActionControlRecipe(source) {
      排在这几档之后，同特指度靠源序压过它们的投影槽，投影换成聚焦档那一支（缺省就是间隔线） */
   rule('[data-xh-action-control]:focus-visible:not([data-disabled]):is(:hover, [data-loading])', `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
   rule(`[data-xh-action-control]:focus-visible:not([data-disabled])${PRESSED}`, `    box-shadow: ${stateValue(source, 'focus-visible', 'shadow')};`)
-  /* link 档的下划线排在家族按压块之后：悬停与按下在换一档字色之外加下划线，禁用与在途不画 */
+  /* link 档的下划线排在家族按压块之后：悬停与按下在换一档字色之外显出下划线，禁用与在途不画。
+     下划线静息就在（LINK_REST）、颜色透明，这里换成字色：颜色进过渡，下划线与字色一起淡入淡出 */
   rule(
     `[data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,\n  [data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading])${PRESSED}`,
-    '    text-decoration-line: underline;\n    text-underline-offset: var(--xh-space-1);',
+    '    text-decoration-color: currentColor;',
   )
 
   rule('[data-xh-action-control][data-xh-action-display=\'always\']', '    visibility: visible;')
-  rule('[data-xh-action-control][data-xh-action-display=\'has-value\']:not([data-xh-action-has-value])', '    visibility: hidden;\n    pointer-events: none;')
+  rule('[data-xh-action-control][data-xh-action-display=\'has-value\']:not([data-xh-action-has-value])', `    visibility: hidden;\n    opacity: 0;\n    pointer-events: none;\n${transitionDeclaration(true)}`)
   rule('[data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]', '    visibility: visible;')
   rule('[data-xh-action-control][data-xh-action-display=\'hover-focus\']', '    visibility: visible;')
 
   const fine = []
-  rule('[data-xh-action-control][data-xh-action-display=\'hover-focus\']', '      visibility: hidden;\n      opacity: 0;\n      pointer-events: none;', 'fine', fine, '    ')
+  rule('[data-xh-action-control][data-xh-action-display=\'hover-focus\']', `      visibility: hidden;\n      opacity: 0;\n      pointer-events: none;\n${transitionDeclaration(true, '      ')}`, 'fine', fine, '    ')
   rule(
     ':where([data-xh-action-owner]:hover, [data-xh-action-owner]:focus-within) [data-xh-action-control][data-xh-action-display=\'hover-focus\'],\n    [data-xh-action-control][data-xh-action-display=\'hover-focus\']:focus-visible',
-    '      visibility: visible;\n      opacity: 1;\n      pointer-events: auto;',
+    `      visibility: visible;\n      opacity: 1;\n      pointer-events: auto;\n${transitionDeclaration(false, '      ')}`,
     'fine',
     fine,
     '    ',
   )
   /* 字段里的清空钮（设计真源 §8.3）：有值还不够，指针落在宿主盒上、或盒里有焦点时才显出；
      触屏没有悬停，有值即常显（落在这条媒体查询之外）。仍用 visibility 收起，盒里给它留的那一格不跳 */
-  rule('[data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]', '      visibility: hidden;\n      opacity: 0;\n      pointer-events: none;', 'fine', fine, '    ')
+  rule('[data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]', `      visibility: hidden;\n      opacity: 0;\n      pointer-events: none;\n${transitionDeclaration(true, '      ')}`, 'fine', fine, '    ')
   rule(
     ':where([data-xh-action-owner]:hover, [data-xh-action-owner]:focus-within) [data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value],\n    [data-xh-action-control][data-xh-action-display=\'has-value\'][data-xh-action-has-value]:focus-visible',
-    '      visibility: visible;\n      opacity: 1;\n      pointer-events: auto;',
+    `      visibility: visible;\n      opacity: 1;\n      pointer-events: auto;\n${transitionDeclaration(false, '      ')}`,
     'fine',
     fine,
     '    ',
@@ -506,6 +519,15 @@ export function compileActionControlRecipe(source) {
   forcedRule(`[data-xh-action-control]:not([data-disabled]):not([data-loading])${PRESSED}`, 'pressed')
   forcedRule('[data-xh-action-control][data-disabled]', 'disabled')
   forcedRule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', 'loading', ['      border-style: dashed;'])
+  /* 强制色把透明的下划线色也换成系统色，静息就会画出来：这一档照旧静息不画、悬停与按下才画 */
+  rule('[data-xh-action-control][data-xh-action-variant=\'link\']', '      text-decoration-line: none;', 'forced-colors', forced, '    ')
+  rule(
+    `[data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading]):hover,\n    [data-xh-action-control][data-xh-action-variant='link']:not([data-disabled]):not([data-loading])${PRESSED}`,
+    '      text-decoration-line: underline;',
+    'forced-colors',
+    forced,
+    '    ',
+  )
   chunks.push(`  @media (forced-colors: active) {\n${forced.join('\n\n')}\n  }`)
 
   return applyFileHeader(OUTPUT, `/* AUTO-GENERATED by build/action-control-recipe.mjs — do not edit. */\n@layer xihan.components {\n${chunks.join('\n\n')}\n}\n`)

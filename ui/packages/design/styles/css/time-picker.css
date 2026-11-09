@@ -350,6 +350,11 @@
     display: none;
   }
 
+  /* 有值才露面的清空钮：从 hidden 露出时淡入（节点重新得到盒时起播），不当帧蹦出来 */
+  [data-scope='time-picker'][data-part='clear-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 打开中与悬停同档：展开钮的静息底换到悬停那一支中性面，不用品牌色、不另画环；方向由浮层本身承担 */
   [data-scope='time-picker'][data-part='trigger'][data-state='open'] {
     --xh-action-bg-rest: var(--xh-time-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));

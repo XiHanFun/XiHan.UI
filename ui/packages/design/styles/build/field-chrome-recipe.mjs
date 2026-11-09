@@ -303,10 +303,11 @@ export function compileFieldChromeRecipe(source) {
     `    box-shadow: ${stateValue(source, 'rest', 'shadow')};`,
     `    cursor: ${stateValue(source, 'rest', 'cursor')};`,
     // 焦点环即时出现与撤下（键盘用户要焦点当场落位），不进过渡：环内侧那道 inset 线画在 box-shadow 上，它不进过渡；
-    // 底色与描边照常淡变（描边就是环的外侧一道，跟着换色淡变）
+    // 底色、描边与字色照常淡变（描边就是环的外侧一道，跟着换色淡变；禁用、在途换字色时与字段标签同拍）
     '    transition:',
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
-    `      border-color ${source.motion.duration} ${source.motion.easing};`,
+    `      border-color ${source.motion.duration} ${source.motion.easing},`,
+    `      color ${source.motion.duration} ${source.motion.easing};`,
   ].join('\n'))
 
   // 三档都输出（含 outline），显式 data-variant='outline' 与缺省基础规则同值。

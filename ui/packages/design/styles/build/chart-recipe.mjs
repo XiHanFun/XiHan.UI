@@ -226,13 +226,12 @@ export function compileChartRecipe(source) {
     'inline-size: 100%;',
     `block-size: ${slot('height')};`,
     'min-inline-size: 0;',
+    // 过渡写在基础规则上：重取数据结束、撤掉 data-loading 时同样淡回来，不当场跳回满不透明
+    'transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);',
   ])
 
   comment('重取数据：保留上一帧，整体淡下去，不闪骨架、不跳布局')
-  rule(`${part('root')}[data-loading] > ${part('viewport')}`, [
-    'opacity: var(--xh-chart-pending-alpha);',
-    'transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);',
-  ])
+  rule(`${part('root')}[data-loading] > ${part('viewport')}`, 'opacity: var(--xh-chart-pending-alpha);')
 
   comment('绘图区脱离文档流：svg 的 width 属性来自测得的视口宽，留在流里会反过来撑住视口，容器收窄时图不跟着缩。\n     斜排的刻度标签与外侧标签会伸出盒子，不裁；焦点环由 focus-ring 部件画在标记外，不靠 SVG 元素自己的 outline')
   rule(part('plot'), [
@@ -259,6 +258,8 @@ export function compileChartRecipe(source) {
     'fill: none;',
     'stroke: var(--xh-chart-axis);',
     'stroke-width: var(--xh-stroke-thin);',
+    // 随系列或扇区一起淡出、淡回，与标记同一档
+    'transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);',
   ])
   rule(`${part('leader-line')}[data-dimmed]`, 'opacity: var(--xh-chart-dim-alpha);')
   comment('首次出现：等描线的笔尖或扫开的边缘到了才淡入。连接层写入它占入场时长的比例，乘上入场时长就是延迟，\n     作者改时长、系统开减弱动效时跟着缩放')
@@ -282,6 +283,11 @@ export function compileChartRecipe(source) {
     `border: ${legend.swatchBorder} solid var(--xh-_chart-series);`,
     `border-radius: ${slot('legendSwatchRadius')};`,
     'background: var(--xh-_chart-series);',
+    // 显隐切换时实心与空心之间淡变，与图例项的字色同拍
+    'transition:',
+    '  background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),',
+    '  border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),',
+    '  opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);',
   ])
   rule(`${part('legend-swatch')}[data-mark='line']`, [
     `inline-size: ${legend.swatchSize};`,
@@ -379,6 +385,8 @@ export function compileChartRecipe(source) {
     'justify-content: center;',
     'color: var(--xh-fg-muted);',
     'font-size: var(--xh-text-secondary-size);',
+    // 从 hidden 露面时淡入（节点重新得到盒时起播）：图例隐藏全部系列、取数落空时不当帧弹出
+    'animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);',
   ])
   comment('取数中、还没有可画的数据：文字前一枚加载环。环由加载环配方画（连接层在空态部件上投影 data-xh-loading-ring 与\n     data-loading），与 Spinner 同一副画法，减弱动效与打印停成点线环；这里只给它占的那一格')
   rule(`${part('empty')}[data-state='loading']`, `gap: ${slot('emptyGap')};`)
