@@ -73,6 +73,11 @@
     animation: xh-breathe var(--xh-motion-loop-breathe) var(--xh-motion-ease-breathe) infinite;
   }
 
+  /* 判过了：圆点停下呼吸、原地淡出，播完连接层才写 hidden，与结果那一格的露面交接 */
+  [data-scope='approval'][data-part='pending-indicator']:not([data-state='pending']) {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* data-theme 写在自己身上还是写在祖先上都算 */
   :is([data-theme='dark'] *, [data-theme='dark'])[data-scope='approval'][data-part='pending-indicator'] {
     --xh-_approval-pending-fill: var(--xh-color-warning-600);

@@ -8,6 +8,7 @@
 import type { ApprovalPressedKey, ApprovalSchema } from './approval.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'
+import { trackPartPresence } from '../shared/part-presence'
 import { canApproveScopes } from './approval.types'
 
 const { createMachine, guards } = setup<ApprovalSchema>()
@@ -48,8 +49,10 @@ export const approvalMachine = createMachine({
     // 按压通道：正被按住的那一个（两颗判定钮各一把键、授权项按 value 记），与勾选、判定无关
     pressed: cell<ApprovalPressedKey | null>(() => ({ defaultValue: null })),
     reasonPrompted: cell<boolean>(() => ({ defaultValue: false })),
+    pendingRendered: cell<boolean>(() => ({ defaultValue: (prop('status') ?? prop('defaultStatus') ?? 'pending') === 'pending' })),
   }),
   initialState: ({ prop }) => prop('status') ?? prop('defaultStatus') ?? 'pending',
+  effects: ['trackPendingPresence'],
   watch: ({ track, prop, action }) => {
     track([() => prop('status')], () => action(['syncStatus']))
     // 换了一轮请求就重入待决：reenter 把计时效应拆掉重挂，新一轮按新时长起跑
@@ -58,6 +61,7 @@ export const approvalMachine = createMachine({
     track([() => prop('loading')], () => action(['releaseWhenInert']))
   },
   on: {
+    'PENDING.RENDERED': { actions: ['setPendingRendered'] },
     // 受控回写，只跳转不通知
     'CONTROLLED.PENDING': { target: 'pending' },
     'CONTROLLED.APPROVE': { target: 'approved' },
@@ -119,6 +123,11 @@ export const approvalMachine = createMachine({
       },
     },
     actions: {
+      setPendingRendered: ({ context, event }) => {
+        const e = event.current()
+        if (e.type === 'PENDING.RENDERED')
+          context.set('pendingRendered', e.rendered)
+      },
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
@@ -216,6 +225,15 @@ export const approvalMachine = createMachine({
       },
     },
     effects: {
+      /** 待决圆点的进退场：判过之后不当场写 hidden，等它淡出播完才藏起；又回到待决时即刻露面。 */
+      trackPendingPresence: ({ state, scope, send, track, flush }) => trackPartPresence({
+        scope,
+        id: scope.partId('approval', 'pending-indicator'),
+        open: () => state.matches('pending'),
+        track,
+        flush,
+        onRenderedChange: rendered => send({ type: 'PENDING.RENDERED', rendered }),
+      }),
       /** 时长非有限或非正数时一个计时器都不起，停在待决。 */
       trackTimeout: ({ prop, send }) => {
         const ms = prop('timeoutMs')

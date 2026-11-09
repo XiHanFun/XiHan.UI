@@ -86,7 +86,7 @@ describe('消息流：已发送、等首个片段', () => {
 })
 
 describe('审批：待决', () => {
-  it('待决时右上角的圆点呼吸，判过即收起', async () => {
+  it('待决时右上角的圆点呼吸，判过之后淡出再收起', async () => {
     app = createApp({
       render: () => h(XhApprovalRoot, null, () => [
         h(XhApprovalPendingIndicator),
@@ -112,6 +112,10 @@ describe('审批：待决', () => {
 
     root.querySelector<HTMLElement>('[data-part="deny-trigger"]')!.click()
     await nextTick()
-    expect(dot.hidden).toBe(true)
+    // 判过之后先原地淡出，播完才藏起
+    await expect.poll(() => getComputedStyle(dot).animationName).toBe('xh-fade-out')
+    for (const animation of dot.getAnimations())
+      animation.finish()
+    await expect.poll(() => dot.hidden).toBe(true)
   })
 })

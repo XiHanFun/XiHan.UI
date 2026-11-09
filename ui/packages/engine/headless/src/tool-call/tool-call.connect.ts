@@ -90,6 +90,8 @@ export function connectToolCall<T extends PropTypes>(
     // 展开与否是折叠件根上通用的那一条，阶段落在下面各部件的 data-state 上
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 审批面的高度补间按 id 找到根
+      'id': scope.partId('tool-call', 'root'),
       'data-state': stateAttr,
       'data-variant': props.variant ?? 'outline',
       'data-tone': props.tone,

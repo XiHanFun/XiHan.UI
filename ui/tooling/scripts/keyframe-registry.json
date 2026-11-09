@@ -186,6 +186,7 @@
       ],
       "consumers": [
         "alert",
+        "approval",
         "avatar",
         "breadcrumb",
         "cascader",

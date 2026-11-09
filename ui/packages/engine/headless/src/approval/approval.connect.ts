@@ -235,8 +235,10 @@ export function connectApproval<T extends PropTypes>(
      */
     getPendingIndicatorProps: () => normalize.element({
       ...parts['pending-indicator'].attrs,
+      // 机器按 id 找到它，等它的淡出播完再藏起
+      'id': scope.partId('approval', 'pending-indicator'),
       'aria-hidden': true,
-      'hidden': settled || undefined,
+      'hidden': (settled && !context.get('pendingRendered')) || undefined,
       'data-state': status,
     }),
 

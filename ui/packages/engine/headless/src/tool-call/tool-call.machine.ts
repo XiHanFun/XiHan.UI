@@ -8,6 +8,7 @@
 import type { ToolCallSchema } from './tool-call.types'
 import { isSSR, setIntervalEffect, setup } from '@xihan-ui/core'
 import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 
 const { createMachine, guards } = setup<ToolCallSchema>()
 
@@ -35,7 +36,7 @@ export const toolCallMachine = createMachine({
     now: cell<number | null>(() => ({ defaultValue: null })),
   }),
   refs: () => ({ entered: false, stopClock: null }),
-  effects: ['trackDisclosureHandoff'],
+  effects: ['trackDisclosureHandoff', 'trackApprovalDisclosure'],
   // 走表只在运行时：启动时已经在跑就起表，机器停下时拆掉
   entry: ['syncClock'],
   exit: ['stopClock'],
@@ -139,6 +140,17 @@ export const toolCallMachine = createMachine({
   },
   implementations: {
     effects: {
+      /**
+       * 审批面的露面与收起：进入待审批时按实测高度展开，批过（或拒绝）之后由替身缩回去、同帧淡出，
+       * 下面的结果区随之挪过去，不整块跳上来。没有 DOM 的宿主不接
+       */
+      trackApprovalDisclosure: ({ scope, flush }) => {
+        if (isSSR())
+          return undefined
+        return attachDisclosureMotion(scope, flush, scope.partId('tool-call', 'root'), () => ({
+          content: `[data-scope='tool-call'][data-part='approval']`,
+        })).stop
+      },
       /** 展开到一半点收起（或反过来）时，新一段关键帧从此刻的开合程度接着走。没有 DOM 的宿主不接。 */
       trackDisclosureHandoff: ({ scope, flush }) => {
         if (isSSR())

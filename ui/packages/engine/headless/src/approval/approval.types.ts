@@ -114,12 +114,15 @@ export interface ApprovalSchema extends MachineSchema {
     pressed: ApprovalPressedKey | null
     /** 用户在缺理由时按过拒绝：备注框据此标为无效，直到写上理由；换一轮请求时清掉。 */
     reasonPrompted: boolean
+    /** 待决圆点还留着（没有 hidden）：判过之后先淡出，播完才为假。 */
+    pendingRendered: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
   state: ApprovalStatus
   event:
     | { type: 'APPROVE' }
+    | { type: 'PENDING.RENDERED', rendered: boolean }
     | { type: 'DENY', source: ApprovalDecisionDetails['source'] }
     | { type: 'SCOPE.TOGGLE', value: string }
     | { type: 'SCOPE.SET', value: string[] }
@@ -145,6 +148,7 @@ export interface ApprovalSchema extends MachineSchema {
   tag: never
   guard: 'isStatusControlled' | 'canApprove' | 'isEditable' | 'canApproveControlled' | 'canPress'
   action:
+    | 'setPendingRendered'
     | 'invokeApprove'
     | 'invokeDeny'
     | 'invokeExpire'
@@ -162,7 +166,7 @@ export interface ApprovalSchema extends MachineSchema {
     | 'releaseWhenInert'
     | 'promptReason'
     | 'resetReasonPrompt'
-  effect: 'trackTimeout'
+  effect: 'trackTimeout' | 'trackPendingPresence'
 }
 
 export interface ApprovalApi<T extends PropTypes = PropTypes> {

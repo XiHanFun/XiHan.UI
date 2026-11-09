@@ -133,7 +133,7 @@ export interface ToolCallSchema extends MachineSchema {
     | 'markMoved'
     | 'syncClock'
     | 'stopClock'
-  effect: 'trackDisclosureHandoff'
+  effect: 'trackDisclosureHandoff' | 'trackApprovalDisclosure'
 }
 
 /** 视图属性，经 connect 的第二个参数传入：它们与状态机无关，也不应经全局文案的状态机名分类。 */

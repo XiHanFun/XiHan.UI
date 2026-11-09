@@ -202,7 +202,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 
 **状态**：`pending` · `approved` · `denied` · `expired`
 
-**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
+**事件**：`APPROVE` · `PENDING.RENDERED` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled` · `canPress`
 
@@ -445,7 +445,7 @@ requireReason 让用户拒绝时必须写明理由：备注空着就按拒绝或
 
 可覆盖的动效槽：`--xh-approval-loading-duration`。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-fade-out` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
