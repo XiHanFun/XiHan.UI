@@ -125,6 +125,9 @@
     flex: 1 1 auto;
     align-items: center;
     min-inline-size: 0;
+    /* 占位文字常驻在 ::before 上，定位上下文跟着常驻；分隔符是文本节点，随组的字色淡出淡回 */
+    position: relative;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-field'][data-part='segment-group'][hidden] {
@@ -134,7 +137,6 @@
   /* 整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给一句占位文字，焦点一进到段上就换回段位。
      段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
   [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown] {
-    position: relative;
     color: transparent;
   }
 
@@ -146,19 +148,32 @@
 
   [data-scope='date-field'][data-part='segment-group'] > * {
     opacity: var(--xh-_date-field-segment-opacity, 1);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown]::before {
+  /* 占位文字常驻在 ::before 上、按占位与否换字色（随状态生灭的伪元素淡不了；占位不用 opacity 表达，
+     对比度由令牌单独决定）；不在占位时连 visibility 一起收掉，读屏不念它，收起那一档带 visibility 过渡、淡完才藏 */
+  [data-scope='date-field'][data-part='segment-group']::before {
     content: attr(data-placeholder-text);
     position: absolute;
     inset-inline: 0;
     inset-block-start: 50%;
     overflow: hidden;
-    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+    color: transparent;
     white-space: nowrap;
     text-overflow: ellipsis;
     pointer-events: none;
     translate: 0 -50%;
+    visibility: hidden;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='date-field'][data-part='segment-group'][data-placeholder-shown]::before {
+    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+    visibility: visible;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-field'][data-part='segment-group'] > :not([data-scope]) {
@@ -184,7 +199,8 @@
     /* 反白随当前段换色：状态角色的 micro 淡变，与 TimeField 同一档；焦点环画在 control 上，不进过渡 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* granularity 用不上的段带 hidden 留在文档里（不卸载作者节点）。

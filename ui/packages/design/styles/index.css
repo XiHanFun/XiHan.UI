@@ -12534,8 +12534,8 @@
     color: var(--xh-password-input-caps-lock-fg-disabled, var(--xh-fg-disabled));
   }
 
-  /* 开着时才画字形：这一格的宽两态一样，画不画只换露不露出记号 */
-  .xh-scope-password-input[data-part='caps-lock-indicator'][data-state='visible']::before {
+  /* 字形常驻、按开合切透明度：这一格的宽两态一样，开合只换露不露出记号，淡入淡出 */
+  .xh-scope-password-input[data-part='caps-lock-indicator']::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -12545,6 +12545,12 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
     mask: var(--xh-glyph-mark-arrow-up) center / contain no-repeat;
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  .xh-scope-password-input[data-part='caps-lock-indicator'][data-state='visible']::before {
+    opacity: 1;
   }
 
   /* 作者自己给这个节点写 hidden 时照样收起；上面那条 display 会把 UA 规则盖掉，
@@ -12555,10 +12561,7 @@
 
   /* 没开大写锁定时只把这块收成零宽，不用 display / visibility 撤掉它：
      播报区一旦从渲染树里消失就不再是活区域，重新出现时读屏当作插入了个新节点，多数不念。
-     这一格的宽两态一样，关着时只是不画字形，盒本身照旧在场 */
-  .xh-scope-password-input[data-part='caps-lock-indicator'][data-state='hidden']::before {
-    content: none;
-  }
+     这一格的宽两态一样，关着时字形透明，盒本身照旧在场（见上面字形常驻那两条） */
 
   /* 强度条：一条底槽，填充按档位加长。档位由调用方打分后经 strength 传进来，
      0 与 1 判弱、2 判中、3 与 4 判强，三段各取一族语义色。
@@ -12638,7 +12641,7 @@
       background-color: ButtonText;
     }
 
-    .xh-scope-password-input[data-part='caps-lock-indicator'][data-state='visible']::before {
+    .xh-scope-password-input[data-part='caps-lock-indicator']::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }
@@ -17306,6 +17309,7 @@
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
    本皮肤只映射桥接槽。2px 指示线由本皮肤画：目录里放了 indicator 部件就由部件在轨道上滑动，
    没放则当前那一节的链接自画一条静态线 */
+/* 当前线淡入的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -17516,6 +17520,8 @@
     pointer-events: none;
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 竖排（缺省）：贴链接的行向起始缘（与 indicator 部件同一侧，rtl 随逻辑属性镜像） */
@@ -28206,6 +28212,9 @@
     flex: 1 1 auto;
     align-items: center;
     min-inline-size: 0;
+    /* 占位文字常驻在 ::before 上，定位上下文跟着常驻；分隔符是文本节点，随组的字色淡出淡回 */
+    position: relative;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-field[data-part='segment-group'][hidden] {
@@ -28215,7 +28224,6 @@
   /* 整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给一句占位文字，焦点一进到段上就换回段位。
      段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
   .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown] {
-    position: relative;
     color: transparent;
   }
 
@@ -28227,19 +28235,32 @@
 
   .xh-scope-date-field[data-part='segment-group'] > * {
     opacity: var(--xh-_date-field-segment-opacity, 1);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown]::before {
+  /* 占位文字常驻在 ::before 上、按占位与否换字色（随状态生灭的伪元素淡不了；占位不用 opacity 表达，
+     对比度由令牌单独决定）；不在占位时连 visibility 一起收掉，读屏不念它，收起那一档带 visibility 过渡、淡完才藏 */
+  .xh-scope-date-field[data-part='segment-group']::before {
     content: attr(data-placeholder-text);
     position: absolute;
     inset-inline: 0;
     inset-block-start: 50%;
     overflow: hidden;
-    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+    color: transparent;
     white-space: nowrap;
     text-overflow: ellipsis;
     pointer-events: none;
     translate: 0 -50%;
+    visibility: hidden;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  .xh-scope-date-field[data-part='segment-group'][data-placeholder-shown]::before {
+    color: var(--xh-date-field-placeholder-fg, var(--xh-fg-subtle));
+    visibility: visible;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-field[data-part='segment-group'] > :not([data-scope]) {
@@ -28265,7 +28286,8 @@
     /* 反白随当前段换色：状态角色的 micro 淡变，与 TimeField 同一档；焦点环画在 control 上，不进过渡 */
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* granularity 用不上的段带 hidden 留在文档里（不卸载作者节点）。
@@ -28599,6 +28621,9 @@
     font-family: inherit;
     font-size: var(--xh-date-picker-font-size, var(--xh-_date-picker-font-size));
     line-height: var(--xh-leading-none);
+    /* 占位文字常驻在 ::before 上，定位上下文跟着常驻；分隔符是文本节点，随组的字色淡出淡回 */
+    position: relative;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-picker[data-part='segment-group'][hidden] {
@@ -28612,7 +28637,6 @@
   /* 整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给一句占位文字，焦点一进到段上就换回段位。
      段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
   .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown] {
-    position: relative;
     color: transparent;
   }
 
@@ -28624,19 +28648,32 @@
 
   .xh-scope-date-picker[data-part='segment-group'] > * {
     opacity: var(--xh-_date-picker-segment-opacity, 1);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown]::before {
+  /* 占位文字常驻在 ::before 上、按占位与否换字色（随状态生灭的伪元素淡不了；占位不用 opacity 表达，
+     对比度由令牌单独决定）；不在占位时连 visibility 一起收掉，读屏不念它，收起那一档带 visibility 过渡、淡完才藏 */
+  .xh-scope-date-picker[data-part='segment-group']::before {
     content: attr(data-placeholder-text);
     position: absolute;
     inset-inline: 0;
     inset-block-start: 50%;
     overflow: hidden;
-    color: var(--xh-date-picker-placeholder-fg, var(--xh-fg-subtle));
+    color: transparent;
     white-space: nowrap;
     text-overflow: ellipsis;
     pointer-events: none;
     translate: 0 -50%;
+    visibility: hidden;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  .xh-scope-date-picker[data-part='segment-group'][data-placeholder-shown]::before {
+    color: var(--xh-date-picker-placeholder-fg, var(--xh-fg-subtle));
+    visibility: visible;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
@@ -29565,6 +29602,9 @@
     font-family: inherit;
     font-size: var(--xh-date-range-picker-font-size, var(--xh-_date-range-picker-font-size));
     line-height: var(--xh-leading-none);
+    /* 占位文字常驻在 ::before 上，定位上下文跟着常驻；分隔符是文本节点，随组的字色淡出淡回 */
+    position: relative;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-range-picker[data-part='segment-group'][hidden] {
@@ -29606,7 +29646,6 @@
   /* 整条占位：一段都没填、焦点也不在段上时，段位与分隔符让位给一句占位文字，焦点一进到段上就换回段位。
      段位只是淡出（仍可聚焦、仍在读屏树里），文字以生成内容压在同一行上、不吃指针，点下去落到底下的段位 */
   .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown] {
-    position: relative;
     color: transparent;
   }
 
@@ -29618,19 +29657,32 @@
 
   .xh-scope-date-range-picker[data-part='segment-group'] > * {
     opacity: var(--xh-_date-range-picker-segment-opacity, 1);
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown]::before {
+  /* 占位文字常驻在 ::before 上、按占位与否换字色（随状态生灭的伪元素淡不了；占位不用 opacity 表达，
+     对比度由令牌单独决定）；不在占位时连 visibility 一起收掉，读屏不念它，收起那一档带 visibility 过渡、淡完才藏 */
+  .xh-scope-date-range-picker[data-part='segment-group']::before {
     content: attr(data-placeholder-text);
     position: absolute;
     inset-inline: 0;
     inset-block-start: 50%;
     overflow: hidden;
-    color: var(--xh-date-range-picker-placeholder-fg, var(--xh-fg-subtle));
+    color: transparent;
     white-space: nowrap;
     text-overflow: ellipsis;
     pointer-events: none;
     translate: 0 -50%;
+    visibility: hidden;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      visibility var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  .xh-scope-date-range-picker[data-part='segment-group'][data-placeholder-shown]::before {
+    color: var(--xh-date-range-picker-placeholder-fg, var(--xh-fg-subtle));
+    visibility: visible;
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
@@ -37755,6 +37807,8 @@
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     pointer-events: none;
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排 list 里的直达链接：贴链接的块向末端（底边），与部件同一侧 */
@@ -48263,7 +48317,7 @@
      横向缺省也要像纵向示例那样有一条选中线，作者不必为了这条线多放一个部件。
      线画在选中标签的 ::after 上，以标签盒为定位参照（基础规则里已是 position: relative），
      厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
-     不做动画：它随 data-current 在标签间跳，滑动只有部件做得到。
+     不滑动：它随 data-current 在标签间换，换到的那一枚淡入；滑动只有部件做得到。
      标签带里一旦放了 indicator 部件，这条线就收起、位置交给部件滑动，不重复画两条：
      由标签带按 :has 探一次，把私有槽写成 none，线的 content 读它；标签自己不必再各带一段 :has。
      ::after 同时是换位落点线的载体：拖动中标签带着 data-drop 时让给落点线，松手即回来 */
@@ -48278,6 +48332,8 @@
     pointer-events: none;
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排：贴标签的块向末端（底边），横贯整枚标签 */

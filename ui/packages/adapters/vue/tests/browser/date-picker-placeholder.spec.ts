@@ -53,15 +53,29 @@ function segments(group: HTMLElement): HTMLElement[] {
   return [...group.querySelectorAll<HTMLElement>(`[data-part='segment']:not([hidden])`)]
 }
 
+/** 占位与段位互换是淡变：核的是终态 */
+function finishMotion(): void {
+  for (const animation of document.getAnimations())
+    animation.finish()
+}
+
 /** 占位文字真画出来了，段位与分隔符都淡出。 */
 function expectPlaceholder(group: HTMLElement, text: string): void {
-  expect(getComputedStyle(group, '::before').content).toBe(`"${text}"`)
+  finishMotion()
+  const placeholder = getComputedStyle(group, '::before')
+  expect(placeholder.content).toBe(`"${text}"`)
+  expect(placeholder.visibility).toBe('visible')
+  expect(placeholder.color).not.toBe('rgba(0, 0, 0, 0)')
   for (const child of group.children)
     expect(getComputedStyle(child).opacity).toBe('0')
 }
 
+/** 段位回来了，占位文字收起：字色透明且连 visibility 一起收掉，读屏不念它 */
 function expectSegments(group: HTMLElement): void {
-  expect(getComputedStyle(group, '::before').content).toBe('none')
+  finishMotion()
+  const placeholder = getComputedStyle(group, '::before')
+  expect(placeholder.visibility).toBe('hidden')
+  expect(placeholder.color).toBe('rgba(0, 0, 0, 0)')
   for (const segment of segments(group))
     expect(getComputedStyle(segment).opacity).toBe('1')
 }

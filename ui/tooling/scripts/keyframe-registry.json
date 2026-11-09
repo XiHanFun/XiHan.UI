@@ -126,6 +126,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "anchor",
         "avatar",
         "breadcrumb",
         "cartesian-chart",

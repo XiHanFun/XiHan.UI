@@ -44132,7 +44132,6 @@
         "state=completed",
         "state=paused",
         "state=running",
-        "state=visible",
         "variant=dot"
       ],
       "defaultToken": [

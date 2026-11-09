@@ -54,8 +54,9 @@ describe('大写锁定提示', () => {
   it('开着时画出字形，关着时不画', () => {
     const 开 = getComputedStyle(mount(提示语).indicator, '::before')
     expect(开.maskImage).toContain('data:image/svg')
+    // 字形常驻、关着时透明：开合之间淡入淡出，盒宽两态一样
     const 关 = getComputedStyle(mount('').indicator, '::before')
-    expect(关.content).toBe('none')
+    expect(关.opacity).toBe('0')
   })
 
   it('文字仍在盒里：活区域念的是内容，不是名字', () => {

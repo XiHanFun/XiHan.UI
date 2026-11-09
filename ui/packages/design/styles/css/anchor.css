@@ -9,6 +9,8 @@
    本皮肤只映射桥接槽。2px 指示线由本皮肤画：目录里放了 indicator 部件就由部件在轨道上滑动，
    没放则当前那一节的链接自画一条静态线 */
 @import '../family/collection-item.css';
+/* 当前线淡入的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -219,6 +221,8 @@
     pointer-events: none;
     border-radius: var(--xh-anchor-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-anchor-indicator-color, var(--xh-_anchor-accent));
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 竖排（缺省）：贴链接的行向起始缘（与 indicator 部件同一侧，rtl 随逻辑属性镜像） */

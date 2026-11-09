@@ -569,7 +569,7 @@
      横向缺省也要像纵向示例那样有一条选中线，作者不必为了这条线多放一个部件。
      线画在选中标签的 ::after 上，以标签盒为定位参照（基础规则里已是 position: relative），
      厚度 / 颜色 / 圆角与 indicator 部件读同一组槽与缺省——作者改一处，部件与静态线一起改。
-     不做动画：它随 data-current 在标签间跳，滑动只有部件做得到。
+     不滑动：它随 data-current 在标签间换，换到的那一枚淡入；滑动只有部件做得到。
      标签带里一旦放了 indicator 部件，这条线就收起、位置交给部件滑动，不重复画两条：
      由标签带按 :has 探一次，把私有槽写成 none，线的 content 读它；标签自己不必再各带一段 :has。
      ::after 同时是换位落点线的载体：拖动中标签带着 data-drop 时让给落点线，松手即回来 */
@@ -584,6 +584,8 @@
     pointer-events: none;
     border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排：贴标签的块向末端（底边），横贯整枚标签 */

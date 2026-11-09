@@ -349,6 +349,8 @@
     border-radius: var(--xh-navigation-menu-indicator-radius, var(--xh-shape-pill));
     background: var(--xh-navigation-menu-indicator-color, var(--xh-_navigation-menu-accent));
     pointer-events: none;
+    /* 当前项换了，线在新的那一枚上淡入，与字色的淡变同拍（不滑动，滑动归 indicator 部件） */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 横排 list 里的直达链接：贴链接的块向末端（底边），与部件同一侧 */
