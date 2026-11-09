@@ -15,7 +15,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
 import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
-import { useMachine } from '../../runtime/use-machine'
+import { useIsomorphicLayoutEffect, useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface TreeSelectContext extends OverlayWiring {
@@ -24,6 +24,11 @@ export interface TreeSelectContext extends OverlayWiring {
    * 首帧（含服务端直出）还没登记，不写这条引用。
    */
   registerLabel: () => () => void
+  /**
+   * 手写节点挂载时登记、卸载时注销，空态占位按登记数判空。
+   * 子部件的 layout effect 先于根组件跑，首帧登记时状态机还没启动：照记不误，启动后整份同步一次
+   */
+  registerNode: (value: string) => () => void
   /** 状态机实例，供部件上报 DOM 侧的事实（如节点卸载带走了焦点）。 */
   service: Service<TreeSelectSchema>
   api: TreeSelectApi
@@ -88,11 +93,31 @@ export function useTreeSelect(props: TreeSelectSchema['props']): TreeSelectConte
   })
   serviceRef.current = service
 
+  // 已挂载的手写节点（同一个值挂两处就记两次，与 NODE.MOUNT 逐次加一同一口径）
+  const mountedNodes = useRef<string[]>([])
+  const registerNode = useCallback((value: string) => {
+    mountedNodes.current.push(value)
+    if (service.getStatus() === 'Started')
+      service.send({ type: 'NODE.MOUNT', value })
+    return () => {
+      const at = mountedNodes.current.indexOf(value)
+      if (at >= 0)
+        mountedNodes.current.splice(at, 1)
+      if (service.getStatus() === 'Started')
+        service.send({ type: 'NODE.UNMOUNT', value })
+    }
+  }, [service])
+  // 排在 useMachine 的挂载之后：首帧子节点登记时机器还没启动，挂载事件发不出去，这里补一次整份同步
+  useIsomorphicLayoutEffect(() => {
+    service.send({ type: 'NODES.SYNC', values: [...mountedNodes.current] })
+  }, [service])
+
   // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生
   useFormReset(service, rootRef)
 
   return {
     registerLabel,
+    registerNode,
     ...overlay,
     service,
     api: connectTreeSelect(service, reactNormalize),

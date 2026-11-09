@@ -81,6 +81,26 @@ it('react collection 与手写节点共用 Headless 自动空态，节点增删�
   expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(false)
 })
 
+it('react 首帧就带着手写节点：子节点先于根提交，登记照样算数，自动空态收起', async () => {
+  host = document.createElement('div')
+  document.body.append(host)
+  root = createRoot(host)
+  await act(async () => root!.render(
+    <XhTreeSelectRoot defaultOpen>
+      <XhTreeSelectTrigger>选择</XhTreeSelectTrigger>
+      <XhTreeSelectPositioner>
+        <XhTreeSelectContent>
+          <XhTreeSelectTree>
+            <XhTreeSelectItem value="a">甲</XhTreeSelectItem>
+            <XhTreeSelectItem value="b">乙</XhTreeSelectItem>
+          </XhTreeSelectTree>
+        </XhTreeSelectContent>
+      </XhTreeSelectPositioner>
+    </XhTreeSelectRoot>,
+  ))
+  expect(document.querySelector<HTMLElement>('[data-xh-tree-select-auto-empty]')!.hidden).toBe(true)
+})
+
 it('react 作者 Empty/Loading 在同次提交抑制自动节点，不产生重复 status', async () => {
   host = document.createElement('div')
   document.body.append(host)

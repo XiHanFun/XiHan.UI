@@ -59,9 +59,10 @@ export type TreeSelectRootSlotProps = Pick<
   | 'deselect'
 >
 
-/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报焦点丢失。 */
+/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报焦点丢失；挂载与卸载经根上的登记表计数。 */
 function useNodeFocusReport(
   service: Service<TreeSelectSchema>,
+  registerNode: (value: string) => () => void,
   el: RefObject<HTMLElement | null>,
   value: string,
 ): void {
@@ -85,14 +86,7 @@ function useNodeFocusReport(
       service.send({ type: 'NODE.LOST' })
   }, [service, el])
 
-  useIsomorphicLayoutEffect(() => {
-    if (service.getStatus() === 'Started')
-      service.send({ type: 'NODE.MOUNT', value })
-    return () => {
-      if (service.getStatus() === 'Started')
-        service.send({ type: 'NODE.UNMOUNT', value })
-    }
-  }, [service, value])
+  useIsomorphicLayoutEffect(() => registerNode(value), [registerNode, value])
 }
 
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -543,7 +537,7 @@ export function XhTreeSelectItem({ value, children, ...rest }: XhTreeSelectItemP
   const el = useRef<HTMLElement | null>(null)
   // 节点的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(ctx.api.getItemProps(node), ['onFocus'])
-  useNodeFocusReport(ctx.service, el, value)
+  useNodeFocusReport(ctx.service, ctx.registerNode, el, value)
   return (
     <TreeSelectNodeProvider value={node}>
       <div
@@ -600,7 +594,7 @@ export function XhTreeSelectBranch({ value, children, ...rest }: XhTreeSelectBra
   const el = useRef<HTMLElement | null>(null)
   // 节点的聚焦上报不冒泡，改装成原生监听器
   const bind = useNativeEvents(ctx.api.getBranchProps(node), ['onFocus'])
-  useNodeFocusReport(ctx.service, el, value)
+  useNodeFocusReport(ctx.service, ctx.registerNode, el, value)
   return (
     <TreeSelectNodeProvider value={node}>
       <div
