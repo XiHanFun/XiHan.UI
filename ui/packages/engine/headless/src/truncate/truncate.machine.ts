@@ -7,7 +7,7 @@
 
 import type { Params } from '@xihan-ui/core'
 import type { TruncateMetrics, TruncateSchema } from './truncate.types'
-import { setup } from '@xihan-ui/core'
+import { setup, tweenBlockSize } from '@xihan-ui/core'
 
 const { createMachine } = setup<TruncateSchema>()
 
@@ -64,6 +64,9 @@ function runMeasure(p: MeasureParams): void {
  * connect 只读结果。受控（open 给定）时用户事件只发意图、不自改状态，
  * 由 watch 派发 CONTROLLED.* 回写。
  */
+/** 收回补间里整段保持的排法：与铺开态一致，播完才换回夹紧与省略。 */
+const COLLAPSE_HOLD: Keyframe = { display: 'block', whiteSpace: 'normal', textOverflow: 'clip' }
+
 export const truncateMachine = createMachine({
   name: 'truncate',
   context: ({ cell }) => ({
@@ -90,9 +93,9 @@ export const truncateMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['tweenOpen', 'invokeOnOpen'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['tweenOpen'] },
       },
     },
     open: {
@@ -100,9 +103,9 @@ export const truncateMachine = createMachine({
         // 收回去要重量：夹住的那一版才是判据，而它这会儿才刚刚回来
         'TOGGLE': [
           { guard: 'isOpenControlled', actions: ['invokeOnClose'] },
-          { target: 'closed', actions: ['invokeOnClose', 'measureSoon'] },
+          { target: 'closed', actions: ['tweenOpen', 'invokeOnClose', 'measureSoon'] },
         ],
-        'CONTROLLED.CLOSE': { target: 'closed', actions: ['measureSoon'] },
+        'CONTROLLED.CLOSE': { target: 'closed', actions: ['tweenOpen', 'measureSoon'] },
       },
     },
   },
@@ -115,6 +118,18 @@ export const truncateMachine = createMachine({
 
       /** 推迟一拍再量：状态刚改，这一帧的裁剪还没提交到 DOM。 */
       measureSoon: params => params.flush(() => runMeasure(params)),
+
+      /**
+       * 铺开与收回时盒子高度从旧排法补到新排法。状态改之前量下此刻的高度，提交之后起补；
+       * 收回时先按铺开的排法摆着（行数夹紧、单行省略推迟到补间播完），多出来的行随盒子收进去，不先被一刀裁掉
+       */
+      tweenOpen: ({ refs, flush, state }) => {
+        const el = refs.get('getRootEl')()
+        if (!el)
+          return
+        const start = tweenBlockSize(el)
+        flush(() => start(state.matches('open') ? undefined : COLLAPSE_HOLD))
+      },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
       invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),

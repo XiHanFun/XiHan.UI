@@ -372,7 +372,7 @@ export interface TreeSchema extends MachineSchema {
     | 'loadExpandedBranches'
     | 'retryBranch'
     | 'syncBranchLoads'
-  effect: 'trackPointer' | 'trackBranchLoads'
+  effect: 'trackPointer' | 'trackBranchLoads' | 'trackBranchDisclosure'
 }
 
 export interface TreeApi<T extends PropTypes = PropTypes> {

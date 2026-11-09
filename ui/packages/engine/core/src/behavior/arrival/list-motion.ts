@@ -86,6 +86,26 @@ function shift(el: HTMLElement, dx: number, dy: number, win: Window, channel: 't
   return true
 }
 
+/**
+ * 替身的公共标记，插进文档之前调用：摘掉整棵子树上的 id、表单名与 `data-xh-part`，标上 `inert`、`aria-hidden`
+ * 与 {@link GHOST_ATTR}。列表离场与密集展开的收起共用
+ */
+export function markGhost(el: HTMLElement): void {
+  for (const node of [el, ...el.querySelectorAll('*')]) {
+    for (const name of DETACHED_ATTRS)
+      node.removeAttribute(name)
+  }
+  el.removeAttribute(INSTANT_ATTR)
+  el.setAttribute('inert', '')
+  el.setAttribute('aria-hidden', 'true')
+  el.setAttribute(GHOST_ATTR, '')
+}
+
+/** 在别处放下的替身（密集展开收起时的子层替身）连同里面的一切都不算条目。 */
+function inGhost(el: Element): boolean {
+  return el.closest(`[${GHOST_ATTR}]`) !== null
+}
+
 function byDocumentOrder(a: Element, b: Element): number {
   return a.compareDocumentPosition(b) & 4 /* DOCUMENT_POSITION_FOLLOWING */ ? -1 : 1
 }
@@ -223,6 +243,12 @@ export interface TrackListMotionOptions extends TrackArrivalsOptions {
   channel?: 'translate' | 'transform'
   /** 一批变更里有条目换了位时回调（排布位已重量）：跟着条目走的东西（Tabs 的指示条）据此一起滑过去。 */
   onReflow?: () => void
+  /**
+   * 这一批变更播不播（缺省播）。每批变更现问一次，返回 false 时新到的条目标上首帧标记直接呈现，
+   * 不放离场替身、不补偿换位，只重量排布位。只在某类操作带来的增删上播的集合用它：树形表格只在展开、收起子行时播，
+   * 排序、换页与刷新换来的整批行直接呈现
+   */
+  enabled?: () => boolean
 }
 
 export function trackListMotion(container: Element, options: TrackListMotionOptions): () => void {
@@ -237,7 +263,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
   const ghosts = new Set<() => void>()
   let slots = new Map<HTMLElement, Slot>()
 
-  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(item)].filter(el => !departing.has(el))
+  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(item)].filter(el => !departing.has(el) && !inGhost(el))
 
   const Resize = win?.ResizeObserver
   const resizer = typeof Resize === 'function' ? new Resize(() => measure()) : null
@@ -282,15 +308,8 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
   function depart(source: HTMLElement, parent: Node, next: Node | null, slot: Slot): void {
     const el = standIn(source)
     departing.add(el)
-    for (const node of [el, ...el.querySelectorAll('*')]) {
-      for (const name of DETACHED_ATTRS)
-        node.removeAttribute(name)
-    }
-    el.removeAttribute(INSTANT_ATTR)
-    el.setAttribute('inert', '')
-    el.setAttribute('aria-hidden', 'true')
+    markGhost(el)
     el.setAttribute('data-state', DEPARTING_STATE)
-    el.setAttribute(GHOST_ATTR, '')
     el.style.setProperty('position', 'absolute')
     el.style.setProperty('left', `${slot.left}px`)
     el.style.setProperty('top', `${slot.top}px`)
@@ -328,7 +347,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
       if (node.nodeType !== 1)
         return
       const el = node as HTMLElement
-      if (departing.has(el))
+      if (departing.has(el) || inGhost(el))
         return
       if (el.matches(item))
         into.add(el)
@@ -341,7 +360,7 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
         // 回调时被删的节点已经离开文档：带祖先限定的条目选择器（某一摞里的卡片）在它身上匹配不上，
         // 先按上一轮量过排布位的已知条目认，没量过的再看选择器
         record.removedNodes.forEach((node) => {
-          if (node.nodeType !== 1 || departing.has(node as Element))
+          if (node.nodeType !== 1 || departing.has(node as Element) || (node as Element).hasAttribute(GHOST_ATTR))
             return
           const el = node as HTMLElement
           if (slots.has(el) || el.matches(item)) {
@@ -373,6 +392,12 @@ export function trackListMotion(container: Element, options: TrackListMotionOpti
     const arrived = [...new Set([...fresh, ...revealed])]
       .filter(el => el.isConnected && container.contains(el) && !el.closest('[hidden]'))
       .sort(byDocumentOrder)
+    // 这一批不播：新到的直接呈现，不放替身、不补偿换位
+    if (options.enabled?.() === false) {
+      fresh.forEach(el => el.setAttribute(INSTANT_ATTR, ''))
+      measure()
+      return
+    }
     arrive(arrived)
 
     // 换位：留下来的已知条目（位置另有测量负责的集合不补偿）
@@ -474,7 +499,7 @@ export function trackReorder(container: Element, options: TrackReorderOptions): 
     const outer = el.parentElement?.closest(options.item)
     return outer == null || !container.contains(outer)
   }
-  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(options.item)].filter(el => el.offsetParent !== null && outermost(el))
+  const items = (): HTMLElement[] => [...container.querySelectorAll<HTMLElement>(options.item)].filter(el => el.offsetParent !== null && outermost(el) && !inGhost(el))
   const keyOf = (el: HTMLElement): unknown => (identity ? identity(el) : el)
 
   const before = new Map<unknown, LayoutPoint>()
@@ -485,7 +510,7 @@ export function trackReorder(container: Element, options: TrackReorderOptions): 
   }
 
   const touchesItems = (nodes: NodeList): boolean => [...nodes].some(node =>
-    node.nodeType === 1 && ((node as Element).matches(options.item) || (node as Element).querySelector(options.item) != null))
+    node.nodeType === 1 && !(node as Element).hasAttribute(GHOST_ATTR) && ((node as Element).matches(options.item) || (node as Element).querySelector(options.item) != null))
 
   const observer = new Observer((records) => {
     if (!records.some(record => record.type === 'childList' && (touchesItems(record.addedNodes) || touchesItems(record.removedNodes))))

@@ -1099,6 +1099,8 @@ export function connectTable<T extends PropTypes>(
     getBodyProps: () => normalize.element({
       ...parts.body.attrs,
       'role': 'rowgroup',
+      // 子行的进退场接上之前的首帧，已有的行直接呈现、不播进场
+      'data-instant': dataAttr(!context.get('rowMotionTracked')),
       // 焦点在表体外时容器兜底进 Tab 序列，由 onFocus 转投给行。
       // 判据用 focusedRow 而非 anchor：anchor 可能指向已删掉或不在本页的行，那时无人认领 tabindex=0
       'tabindex': focusedRow == null ? 0 : -1,

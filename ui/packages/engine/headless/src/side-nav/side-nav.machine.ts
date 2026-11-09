@@ -9,6 +9,7 @@ import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavPressedPart, SideNavSchema } from './side-nav.types'
 import { focusItem, HOVER_INTENT_OPEN_DELAY, isShadowRoot, navigateItems, setTimeoutEffect, setup, trackHoverIntent } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { OVERLAY_OFFSET } from '../shared/overlay'
 import { createOverlayKitGate, trackOverlayLayer } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
@@ -152,7 +153,7 @@ export const sideNavMachine = createMachine({
   }),
   initialState: () => 'idle',
   // 多分支弹出层的资源会跨逻辑关闭保留，由根级会话管理器按 Presence 身份结清。
-  effects: ['trackPopoutSessions', 'releasePopoutHover'],
+  effects: ['trackPopoutSessions', 'releasePopoutHover', 'trackBranchDisclosure'],
   // 折叠开关在弹出期间翻回平铺时收掉面板，机器自己保证「弹出只存在于折叠态」
   watch: ({ track, prop, action }) => {
     track(
@@ -423,6 +424,19 @@ export const sideNavMachine = createMachine({
       releasePopoutHover: ({ refs }) => () => {
         refs.get('popoutHoverCancel')?.()
         refs.set('popoutHoverCancel', null)
+      },
+      /**
+       * 内联子层的展开与收起按实测高度补间，下面的行随之挪过去。弹出面板与它里面的子层不在此列。
+       * 检索词一变、排布一落定（整栏折叠换装）就先 hold：搜索换枝与换装一次翻一片，当场落定
+       */
+      trackBranchDisclosure: ({ scope, context, track, flush }) => {
+        const motion = attachDisclosureMotion(scope, flush, scope.partId('side-nav', 'root'), root => ({
+          content: `[data-scope='side-nav'][data-part='branch-content']:not([data-popout])`,
+          enabled: () => !root.matches('[data-collapsed], [data-animating]')
+            && !isSideNavSearching(context.get('inputValue'), context.get('railed')),
+        }))
+        track([() => context.get('inputValue'), () => context.get('railed')], () => motion.hold())
+        return motion.stop
       },
       trackPopoutSessions: ({ refs, context, state, send, flush }) => {
         interface Session {

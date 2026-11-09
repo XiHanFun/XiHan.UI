@@ -12,6 +12,7 @@ import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, Tre
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { hitAlongNested } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
@@ -182,7 +183,7 @@ export const treeMachine = createMachine({
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
-  effects: ['trackPointer', 'trackBranchLoads'],
+  effects: ['trackPointer', 'trackBranchLoads', 'trackBranchDisclosure'],
   refs: () => ({
     typeahead: createTypeahead(),
     gesture: null,
@@ -228,6 +229,14 @@ export const treeMachine = createMachine({
       },
     },
     effects: {
+      /** 子层的展开与收起按实测高度补间，下面的行随之挪过去。虚拟滚动的行会被回收复用，不补 */
+      trackBranchDisclosure: ({ scope, prop, flush }) => {
+        if (prop('virtualizer'))
+          return
+        return attachDisclosureMotion(scope, flush, scope.partId('tree', 'tree'), () => ({
+          content: `[data-scope='tree'][data-part='branch-content']`,
+        })).stop
+      },
       /**
        * 跟住按在节点上的那根手指。
        *

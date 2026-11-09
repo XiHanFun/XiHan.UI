@@ -20,6 +20,7 @@ import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { writeToClipboard } from '@xihan-ui/core/clipboard'
 import { uniqueArray as unique } from '../shared/array'
 import { resolveClipboardTimeout } from '../shared/clipboard-write'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 
 const { createMachine } = setup<JsonViewerSchema>()
 
@@ -527,6 +528,7 @@ export const jsonViewerMachine = createMachine({
     pressedTool: cell<JsonViewerSchema['context']['pressedTool']>(() => ({ defaultValue: null })),
   }),
   initialState: () => 'idle',
+  effects: ['trackBranchDisclosure'],
   // 首帧就带着搜索词时同样要把命中行展开出来
   entry: ['revealMatches'],
   watch: ({ track, prop, action }) => {
@@ -692,6 +694,10 @@ export const jsonViewerMachine = createMachine({
       },
     },
     effects: {
+      /** 子层的展开与收起按实测高度补间，下面的行随之挪过去 */
+      trackBranchDisclosure: ({ scope, flush }) => attachDisclosureMotion(scope, flush, scope.partId('json-viewer', 'root'), () => ({
+        content: `[data-scope='json-viewer'][data-part='branch-content']`,
+      })).stop,
       /** 异步写入。原文在发起那一刻定死，不在兑现时重算：途中换了数据，写进去的仍是点下去那一刻看到的。 */
       writeText: ({ prop, scope, send }) => {
         let disposed = false

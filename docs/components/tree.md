@@ -636,7 +636,7 @@ size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 披露 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
 共享关键帧 `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

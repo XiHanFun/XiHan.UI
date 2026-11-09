@@ -23,13 +23,13 @@ import type {
   TableSelectionMode,
   TableSortDescriptor,
 } from './table.types'
-import { applySelection, cascadeState, cascadeToggle, collapseChecked, focusItem, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
+import { applySelection, cascadeState, cascadeToggle, collapseChecked, focusItem, ITEM_VALUE_ATTR, setup, trackDisclosureMotion, trackListMotion, trackReorder } from '@xihan-ui/core'
 import { clampSize, createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { hitAlong, hitAlongNested, insertionIndex } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
-import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR, TABLE_CELL_SELECTOR, TABLE_ROW_SELECTOR } from './table.anatomy'
+import { TABLE_BODY_ROW_SELECTOR, TABLE_BODY_SELECTOR, TABLE_CELL_SELECTOR, TABLE_EXPANDED_ROW_SELECTOR, TABLE_MOTION_ROW_SELECTOR, TABLE_ROW_SELECTOR } from './table.anatomy'
 import { createCellWidgetLock } from './table.cell-widgets'
 import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.columns'
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
@@ -129,6 +129,7 @@ export const tableMachine = createMachine({
     })),
     // 焦点锚点不受控、不对外通知：它只服务行级 roving tabindex 与方向键起点
     focusedRow: cell<string | null>(() => ({ defaultValue: null })),
+    rowMotionTracked: cell<boolean>(() => ({ defaultValue: false })),
     focusedColumn: cell<string | null>(() => ({ defaultValue: null })),
     selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
     selectionBaseline: cell<string[] | null>(() => ({ defaultValue: null })),
@@ -160,6 +161,7 @@ export const tableMachine = createMachine({
   },
   refs: () => ({
     getRootEl: () => null,
+    armRowMotion: null,
     resize: null,
     columnDrag: null,
     rowDrag: null,
@@ -169,7 +171,7 @@ export const tableMachine = createMachine({
   }),
   initialState: () => 'idle',
   // 版面实测与拖动 / 改宽的过程无关，全程挂着；需不需要量由 props 现判
-  effects: ['measureLayout', 'trackScrollEdges', 'lockCellWidgets'],
+  effects: ['measureLayout', 'trackScrollEdges', 'lockCellWidgets', 'trackRowMotion', 'trackDetailDisclosure'],
   // 按压通道与拖动 / 改宽的过程无关，四个状态都认；加载中不进，部件自身的禁用随事件带入
   on: {
     'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
@@ -192,6 +194,7 @@ export const tableMachine = createMachine({
         'ROW.EXPAND': { actions: ['expandRow'] },
         'ROW.COLLAPSE': { actions: ['collapseRow'] },
         'ROW.EXPAND_TOGGLE': { actions: ['toggleExpandRow'] },
+        'ROW_MOTION.TRACKED': { actions: ['markRowMotionTracked'] },
         'ROW.FOCUS': { actions: ['setFocusedRow'] },
         'CELL.FOCUS': { actions: ['setFocusedCell'] },
         'TABLE.BLUR': { actions: ['clearFocusedRow'] },
@@ -245,6 +248,66 @@ export const tableMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 树形表格展开、收起子行：新到的子行进场、同一批按到达顺序错开，收起的子行由替身留在原处淡出，
+       * 下面的行从旧位置滑到新位置。只在展开、收起那一批播（动作里先 armRowMotion 开两帧的窗）；
+       * 排序、换页、刷新换来的整批行直接呈现。虚拟滚动的行由虚拟化逐帧定位、会被回收复用，不接
+       */
+      trackRowMotion: ({ refs, prop, scope, send, flush }) => {
+        if (prop('virtualizer'))
+          return
+        const win = scope.getWin()
+        let disposed = false
+        let armed = false
+        let frame = 0
+        let stop: (() => void) | undefined
+        refs.set('armRowMotion', () => {
+          armed = true
+          win.cancelAnimationFrame(frame)
+          // 两帧：受控的展开集合经宿主回写，React 的调度可能把提交排到下一帧之后
+          frame = win.requestAnimationFrame(() => {
+            frame = win.requestAnimationFrame(() => {
+              armed = false
+              frame = 0
+            })
+          })
+        })
+        flush(() => {
+          win.queueMicrotask(() => {
+            const body = refs.get('getRootEl')()?.querySelector<HTMLElement>(TABLE_BODY_SELECTOR) ?? null
+            if (disposed || !body)
+              return
+            stop = trackListMotion(body, { item: TABLE_MOTION_ROW_SELECTOR, enabled: () => armed })
+            send({ type: 'ROW_MOTION.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          win.cancelAnimationFrame(frame)
+          refs.set('armRowMotion', null)
+          stop?.()
+        }
+      },
+      /** 详情行的展开与收起按实测高度补间，下面的行随之挪过去。虚拟滚动的行会被回收复用，不补 */
+      trackDetailDisclosure: ({ refs, prop, scope, flush }) => {
+        if (prop('virtualizer'))
+          return
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const body = refs.get('getRootEl')()?.querySelector<HTMLElement>(TABLE_BODY_SELECTOR) ?? null
+            if (disposed || !body)
+              return
+            // 详情行随它的数据行一起来去（收起父行）时，交给行的进退场
+            stop = trackDisclosureMotion(body, { content: TABLE_EXPANDED_ROW_SELECTOR, alongside: TABLE_MOTION_ROW_SELECTOR }).stop
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
       /**
        * 挂载后实测版面：冻结列里没写数字宽度的列要量列头宽度才算得出吸附偏移，
        * 纵向合并格（cellSpan、多级表头里较浅的叶子列）要量行位才铺得到最后一行。
@@ -787,6 +850,7 @@ export const tableMachine = createMachine({
           checked = cascadeToggle(roots, checked, root.value, target).checked
         context.set('selection', collapseChecked(roots, checked, prop('checkedStrategy') ?? 'child'))
       },
+      markRowMotionTracked: ({ context }) => context.set('rowMotionTracked', true),
       setExpanded: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'EXPANDED.SET')
@@ -794,7 +858,7 @@ export const tableMachine = createMachine({
         // 只去重不筛可不可展开：数据晚到时先记下意愿，摊平那一步会拦住不可展开的行
         context.set('expandedValue', unique(e.value))
       },
-      expandRow: ({ context, prop, event }) => {
+      expandRow: ({ context, prop, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ROW.EXPAND')
           return
@@ -803,19 +867,22 @@ export const tableMachine = createMachine({
         const current = context.get('expandedValue')
         if (current.includes(e.value))
           return
+        refs.get('armRowMotion')?.()
         context.set('expandedValue', [...current, e.value])
       },
-      collapseRow: ({ context, event }) => {
+      collapseRow: ({ context, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ROW.COLLAPSE')
           return
+        refs.get('armRowMotion')?.()
         // 收起不查 rows，能摘就摘干净
         context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
       },
-      toggleExpandRow: ({ context, prop, event }) => {
+      toggleExpandRow: ({ context, prop, event, refs }) => {
         const e = event.current()
         if (e.type !== 'ROW.EXPAND_TOGGLE')
           return
+        refs.get('armRowMotion')?.()
         const current = context.get('expandedValue')
         if (current.includes(e.value)) {
           context.set('expandedValue', current.filter(v => v !== e.value))

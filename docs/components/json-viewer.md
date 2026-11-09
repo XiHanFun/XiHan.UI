@@ -531,7 +531,7 @@ tools 打开内建工具条：树档有展开全部 / 收起全部，原文档�
 
 ### 动效
 
-动效角色：状态 · 切换（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 披露（见[动效规范](../design/motion#角色)）。
 
 `background-color` · `color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 

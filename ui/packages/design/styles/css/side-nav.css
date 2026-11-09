@@ -410,13 +410,17 @@
     /* 收起时指向行尾、展开时转向下方，与逻辑书写方向一致：rtl 下行尾在左侧，收起的箭头转半圈；
        旋转角乘书写方向的符号（ltr 0deg、rtl 180deg），按就近的 dir 走 */
     rotate: calc(90deg - 90deg * var(--xh-direction-sign));
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（下面的打开态）取 expand 档 */
     transition:
-      rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='side-nav'][data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition:
+      rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。

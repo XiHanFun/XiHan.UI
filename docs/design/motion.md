@@ -137,7 +137,9 @@
 - Surface 级展开（Accordion、Collapsible、Reasoning、ToolCall）内容的行高 `minmax(0, 0fr) → minmax(0, 1fr)`，内缩与 `opacity` 同帧动：展开 `--xh-motion-duration-expand`、收起 `--xh-motion-duration-collapse`，两支等长、同一条 `--xh-motion-ease-disclosure`（缓起缓停），单开切换时一收一展的总高度一路单调；指示器随内容同时长、同曲线转向，减弱动效下两者都瞬时完成。
 - 内容区的 `hidden` 跟退场走，退场播完才落：宿主有 `[hidden]{display:none!important}`（Tailwind preflight）时退场照样播完。
 - 开合不换字重、不铺底、不画占高度的线，层次只靠字色。
-- 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层、Table 展开行、Truncate）不动高度，刻意瞬时；树族只旋转指示器 `--xh-motion-duration-nudge`。
+- 密集展开（Tree、TreeSelect、JsonViewer、SideNav 内联子层）子层里排着多行、套不上单行网格，由 `trackDisclosureMotion` 按实测高度补间：展开时块尺寸从 0 补到实测高度、同帧淡入，收起时在原处放一个替身从原高度缩到 0、同帧淡出，播完即移除；父级的行距随高度一起让出，展开第一帧与收起最后一帧都不跳。时长与曲线和 Surface 级展开同档（`expand` / `collapse`、`disclosure`），指示器随子层同时长、同曲线转向；收起中途再展开从替身此刻的高度接着长。搜索换枝、侧栏折叠换装与一次翻动超过三枝的批量展开当场落定；虚拟滚动的行会被回收复用，不补。替身不可交互、不进条目查询与键盘导航。
+- Table 详情行与上面几种同一套补间：详情行随它的数据行一起来去（收起父行）时交给行的进退场，不另补。
+- Truncate 铺开与收回由 `tweenBlockSize` 补块尺寸：状态改之前量下此刻的高度，宿主提交之后从它补到新排法的高度；收回时补间里仍按铺开的排法摆着，盒子收到夹紧的高度那一刻才换回行数夹紧与省略号，多出来的行随盒子收进去，不先被一刀裁掉。
 - 初始即展开的内容直接呈现，不播展开动画。
 
 ## 浮层进出场
@@ -158,7 +160,7 @@
 
 - 加入用 `xh-item-in`（淡入 + `distance-md` 上移），移除用 `xh-fade-out`；重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`move` + `continuous`。
 - 条目由作者渲染、删掉即卸载的集合（TagsInput、FieldArray）由列表动效原语 `trackListMotion` 接住离场：在原位置放一个退场态的替身，绝对定位在原排布位、不可交互，播完即移除；留下来的条目从旧位置滑到新位置。作者的列表写法不变。
-- 启用列表增删动效的集合：TagsInput、FieldArray，以及 Notification、MessageFeed、Command、Cascader；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
+- 启用列表增删动效的集合：TagsInput、FieldArray、GridList、FilterBuilder，以及 Notification、MessageFeed、Command、Cascader；树形表格只在展开、收起子行的那一批播，排序、换页与刷新换来的整批行直接呈现；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
 
 ## 数值与指示
 
@@ -174,6 +176,8 @@
 | 例外 | 理由 |
 | --- | --- |
 | 披露内容 `grid-template-rows` 与内缩 | 唯一可行的内容高度过渡 |
+| 密集展开子层的 `block-size`、上下内缩与起始外边距 | 子层里排着多行，单行网格的行高套不上；只在开合那一段由脚本补间，静止时不留任何内联样式 |
+| Truncate 铺开与收回的 `block-size` | 同一个盒子换一副排法，新高度只有排完才知道；只在换档那一段由脚本补间 |
 | 指示器的 `inline-size` / `block-size` | 绝对定位的独立小元素，不影响其他元素 |
 | Switch 滑块按下伸长、Carousel 当前指示点伸长 | 部件很小，影响范围只有自己 |
 | Layout 侧栏折叠 | 必须让出内容区宽度 |

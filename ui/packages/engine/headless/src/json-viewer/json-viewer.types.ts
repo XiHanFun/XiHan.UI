@@ -311,7 +311,7 @@ export interface JsonViewerSchema extends MachineSchema {
     | 'invokeCopyError'
     | 'startToolPress'
     | 'endToolPress'
-  effect: 'writeText' | 'trackCopiedTimeout'
+  effect: 'writeText' | 'trackCopiedTimeout' | 'trackBranchDisclosure'
 }
 
 export interface JsonViewerApi<T extends PropTypes = PropTypes> {

@@ -280,6 +280,8 @@ export function connectJsonViewer<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 子层的高度补间按 id 找到根：树与原文档两档互换，根一直在
+      'id': scope.partId('json-viewer', 'root'),
       'data-size': prop('size'),
       'data-view': view,
       'data-variant': variant,

@@ -647,6 +647,8 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     expandedValue: string[]
     /** 焦点位于表体时的瞬态锚点，焦点离开即清空。 */
     focusedRow: string | null
+    /** 子行的进退场接上了：接上之前的首帧，表体带 data-instant，已有的行直接呈现。 */
+    rowMotionTracked: boolean
     /** navigation 为 cell 时锚点所在的列；为 null 表示焦点在行上。随 focusedRow 一起清空。 */
     focusedColumn: string | null
     /**
@@ -698,6 +700,8 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
   refs: {
     /** root 节点，实测版面从它往下量。适配器在挂载时填入。 */
     getRootEl: () => HTMLElement | null
+    /** 开一个两帧的窗：窗里那一批行的增删播进退场。展开、收起动作在改展开集合之前调用；虚拟滚动时为 null。 */
+    armRowMotion: (() => void) | null
     /** 正在拖动的列：按下时的列宽与指针横坐标。 */
     resize: { columnId: string, startWidth: number, originX: number } | null
     /**
@@ -802,6 +806,7 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     | { type: 'ROW.EXPAND', value: string }
     | { type: 'ROW.COLLAPSE', value: string }
     | { type: 'ROW.EXPAND_TOGGLE', value: string }
+    | { type: 'ROW_MOTION.TRACKED' }
     /** 焦点落到行上。keepColumn 为真时保留锚点的列：换位提交后锚点跟着那一行走，格子上的焦点不回到行。 */
     | { type: 'ROW.FOCUS', value: string, keepColumn?: boolean }
     /** navigation 为 cell 时焦点落到格子或格内控件上。 */
@@ -854,7 +859,8 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout' | 'trackScrollEdges' | 'lockCellWidgets'
+    | 'markRowMotionTracked'
+  effect: 'trackResizePointer' | 'trackColumnDragPointer' | 'trackRowDragPointer' | 'measureLayout' | 'trackScrollEdges' | 'lockCellWidgets' | 'trackRowMotion' | 'trackDetailDisclosure'
 }
 
 export interface TableApi<T extends PropTypes = PropTypes> {

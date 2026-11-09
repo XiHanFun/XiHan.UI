@@ -12,6 +12,7 @@ import type { TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, Tree
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { closeReasonOf } from '../shared/close-reason'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,
@@ -293,7 +294,8 @@ export const treeSelectMachine = createMachine({
       // 收起即清掉检索词：下次展开还是整棵树
       exit: ['clearFocusedValue', 'clearTypeahead', 'releasePress', 'clearInput'],
       // 定位只服务逻辑展开；Layer、消解与焦点资源由顶层 effect 延后到真实退场释放。
-      effects: ['trackPosition'],
+      // 子层的高度补间也只在展开时接：收着时树不在版面里
+      effects: ['trackPosition', 'trackBranchDisclosure'],
       on: {
         'CLOSE': [
           { guard: 'isOpenControlled', actions: ['setReturnFocus', 'invokeOnClose'] },
@@ -615,6 +617,16 @@ export const treeSelectMachine = createMachine({
 
     },
     effects: {
+      /** 子层的展开与收起按实测高度补间。虚拟滚动的行会被回收复用，不补；检索词一变先 hold，搜索换枝当场落定 */
+      trackBranchDisclosure: ({ scope, prop, context, track, flush }) => {
+        if (prop('virtualizer'))
+          return
+        const motion = attachDisclosureMotion(scope, flush, scope.partId('tree-select', 'tree'), () => ({
+          content: `[data-scope='tree-select'][data-part='branch-content']`,
+        }))
+        track([() => context.get('inputValue')], () => motion.hold())
+        return motion.stop
+      },
       // 组件卸载时中止所有请求；分支/浮层收起由动作同步取消。
       trackBranchLoads: (params) => {
         params.flush(() => params.scope.getWin().queueMicrotask(() => {

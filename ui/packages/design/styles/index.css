@@ -9875,7 +9875,8 @@
   .xh-scope-json-viewer[data-part='branch-indicator'] {
     display: inline-block;
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   .xh-scope-json-viewer[data-part='branch-indicator'][hidden] {
@@ -9899,6 +9900,7 @@
      rtl 下 inline-start 在右侧，箭头因此要反着转 */
   .xh-scope-json-viewer[data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   [dir='rtl'] .xh-scope-json-viewer[data-part='branch-indicator'] {
@@ -44486,13 +44488,17 @@
     /* 收起时指向行尾、展开时转向下方，与逻辑书写方向一致：rtl 下行尾在左侧，收起的箭头转半圈；
        旋转角乘书写方向的符号（ltr 0deg、rtl 180deg），按就近的 dir 走 */
     rotate: calc(90deg - 90deg * var(--xh-direction-sign));
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（下面的打开态）取 expand 档 */
     transition:
-      rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong),
+      rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-side-nav[data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition:
+      rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
@@ -46762,6 +46768,18 @@
   /* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉 */
   .xh-scope-table[data-part='row'][hidden] {
     display: none;
+  }
+
+  /* 树形表格展开子行：新到的子行进场，同一批按到达顺序错开。只在展开、收起那一批播，
+     排序、换页与刷新换来的行带 data-instant 直接呈现（首帧表体也带着） */
+  .xh-scope-table[data-part='body']:not([data-instant]) > .xh-scope-table[data-part='row']:not([data-instant], [data-xh-ghost]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 收起的子行：替身留在原处淡出，播完即移除；下面的行从旧位置滑上去（行的 translate 过渡） */
+  .xh-scope-table[data-part='row'][data-xh-ghost] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 表头 / 脚注行透明，露出区段容器的淡底 */
@@ -54522,7 +54540,8 @@
     justify-content: center;
     inline-size: var(--xh-_tree-indicator-size);
     color: var(--xh-tree-branch-indicator-fg, var(--xh-fg-muted));
-    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   .xh-scope-tree[data-part='branch-trigger'][hidden],
@@ -54540,6 +54559,7 @@
   .xh-scope-tree[data-part='branch-trigger'][data-state='open'],
   .xh-scope-tree[data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   .xh-scope-tree[data-part='branch-trigger'][data-disabled],
@@ -55666,7 +55686,8 @@
     justify-content: center;
     inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   .xh-scope-tree-select[data-part='branch-trigger'][hidden],
@@ -55684,6 +55705,7 @@
   .xh-scope-tree-select[data-part='branch-trigger'][data-state='open'],
   .xh-scope-tree-select[data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   .xh-scope-tree-select[data-part='branch-trigger'][data-disabled],

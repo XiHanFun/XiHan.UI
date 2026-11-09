@@ -203,6 +203,7 @@
         "notification",
         "select",
         "skeleton",
+        "table",
         "tag",
         "tag-group",
         "tags-input",
@@ -246,6 +247,7 @@
         "grid-list",
         "message-feed",
         "question-flow",
+        "table",
         "tool-call"
       ],
       "relation": "list"

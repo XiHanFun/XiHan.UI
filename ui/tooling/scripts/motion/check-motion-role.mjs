@@ -128,6 +128,10 @@ const ROLE_OVERRIDE = {
   'collapsible:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
   'reasoning:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
   'tool-call:rotate': '展开箭头与正文是同一次开合，同时长同曲线走 disclosure；箭头先转完、正文后到位读起来是两件事',
+  'tree:rotate': '展开箭头与子层的高度补间是同一次开合，同时长同曲线走 disclosure',
+  'tree-select:rotate': '展开箭头与子层的高度补间是同一次开合，同时长同曲线走 disclosure',
+  'json-viewer:rotate': '展开箭头与子层的高度补间是同一次开合，同时长同曲线走 disclosure',
+  'side-nav:rotate': '内联子层的展开箭头与子层的高度补间是同一次开合，同时长同曲线走 disclosure',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

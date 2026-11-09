@@ -40,7 +40,8 @@ export function itemQuerySelector(q: ItemQuery): string {
 export function queryItems(container: HTMLElement | null, q: ItemQuery): HTMLElement[] {
   if (!container)
     return []
-  const items = [...container.querySelectorAll<HTMLElement>(itemQuerySelector(q))]
+  // 退场替身（列表离场、密集展开收起时留在原处的那一份）只是旧画面，不算条目
+  const items = [...container.querySelectorAll<HTMLElement>(itemQuerySelector(q))].filter(el => !el.closest('[data-xh-ghost]'))
   // 归属判据取容器自己的 part，条目与容器间可能隔着同 scope 的其它 part
   const part = container.getAttribute(DATA_PART)
   if (part == null)

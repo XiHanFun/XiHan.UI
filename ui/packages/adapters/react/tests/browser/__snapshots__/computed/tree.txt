@@ -132,7 +132,7 @@ color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: rotate
 transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -202,7 +202,7 @@ color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: rotate
 transition-duration: 0.2s
-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1)
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

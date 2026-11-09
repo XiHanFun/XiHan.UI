@@ -47,6 +47,12 @@ export const TABLE_BODY_SELECTOR = `:scope > ${parts.body.selector}`
 /** 表体里的行：数据行与展开的详情行，行换位之后逐行从旧位置滑到新位置（详情行里嵌的表随外层一起走）。 */
 export const TABLE_BODY_ROW_SELECTOR = `${parts.row.selector}, ${parts['expanded-row'].selector}`
 
+/** 展开、收起子行时进退场的行：本表的数据行，详情行里嵌的表各管各的。 */
+export const TABLE_MOTION_ROW_SELECTOR = `${parts.row.selector}:not(${parts['expanded-row'].selector} *)`
+
+/** 详情行：展开收起按实测高度补间。 */
+export const TABLE_EXPANDED_ROW_SELECTOR = parts['expanded-row'].selector
+
 /** 数据行与格子部件，换位之后按身份找回焦点落点用。 */
 export const TABLE_ROW_SELECTOR = parts.row.selector
 export const TABLE_CELL_SELECTOR = parts.cell.selector

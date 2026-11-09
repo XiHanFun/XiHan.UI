@@ -225,7 +225,7 @@ export interface SideNavSchema extends MachineSchema {
     | 'setInputValue'
     | 'setTooltipTarget'
     | 'setTooltipOpen'
-  effect: 'trackPopoutSessions' | 'releasePopoutHover' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
+  effect: 'trackPopoutSessions' | 'releasePopoutHover' | 'trackBranchDisclosure' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
 /** 分支与叶子共用的身份声明。 */

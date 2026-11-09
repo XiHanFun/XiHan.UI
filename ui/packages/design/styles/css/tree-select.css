@@ -702,7 +702,8 @@
     justify-content: center;
     inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
     color: var(--xh-tree-select-branch-indicator-fg, var(--xh-fg-subtle));
-    transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 与子层同时长、同曲线转向：收起取 collapse 档，展开（打开态）取 expand 档 */
+    transition: rotate var(--xh-motion-duration-collapse) var(--xh-motion-ease-disclosure);
   }
 
   [data-scope='tree-select'][data-part='branch-trigger'][hidden],
@@ -720,6 +721,7 @@
   [data-scope='tree-select'][data-part='branch-trigger'][data-state='open'],
   [data-scope='tree-select'][data-part='branch-indicator'][data-state='open'] {
     rotate: 90deg;
+    transition: rotate var(--xh-motion-duration-expand) var(--xh-motion-ease-disclosure);
   }
 
   [data-scope='tree-select'][data-part='branch-trigger'][data-disabled],

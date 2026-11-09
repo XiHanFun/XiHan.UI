@@ -382,7 +382,7 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'releasePress'
     | 'releaseWhenInert'
     | 'clearOpenedAtMount'
-  effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads' | 'trackTagListMotion'
+  effect: 'trackPosition' | 'trackLayer' | 'trackBranchLoads' | 'trackTagListMotion' | 'trackBranchDisclosure'
 }
 
 export interface TreeSelectApi<T extends PropTypes = PropTypes> {

@@ -82,7 +82,7 @@ export interface TruncateSchema extends MachineSchema {
     | { type: 'CONTROLLED.CLOSE' }
   tag: never
   guard: 'isOpenControlled'
-  action: 'measure' | 'measureSoon' | 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen'
+  action: 'measure' | 'measureSoon' | 'invokeOnOpen' | 'invokeOnClose' | 'syncOpen' | 'tweenOpen'
   effect: 'trackOverflow'
 }
 

@@ -269,6 +269,18 @@
     display: none;
   }
 
+  /* 树形表格展开子行：新到的子行进场，同一批按到达顺序错开。只在展开、收起那一批播，
+     排序、换页与刷新换来的行带 data-instant 直接呈现（首帧表体也带着） */
+  [data-scope='table'][data-part='body']:not([data-instant]) > [data-scope='table'][data-part='row']:not([data-instant], [data-xh-ghost]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 收起的子行：替身留在原处淡出，播完即移除；下面的行从旧位置滑上去（行的 translate 过渡） */
+  [data-scope='table'][data-part='row'][data-xh-ghost] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* 表头 / 脚注行透明，露出区段容器的淡底 */
   [data-scope='table'][data-part='header'] > [data-scope='table'][data-part='row'],
   [data-scope='table'][data-part='footer'] > [data-scope='table'][data-part='row'] {
