@@ -43954,7 +43954,7 @@
           "name": "XhMarkdownStreamElement",
           "cssParts": [
             {
-              "description": "外壳，承载 data-state / data-streaming，零块流式时承载 data-caret",
+              "description": "外壳，承载 data-state / data-streaming；流式时承载 data-caret（光标挂在这里），没有块时承载 data-empty",
               "name": "root"
             },
             {
@@ -43962,7 +43962,7 @@
               "name": "content"
             },
             {
-              "description": "一个顶层块，承载 data-kind / data-live / data-complete / data-caret",
+              "description": "一个顶层块，承载 data-kind / data-live / data-complete",
               "name": "block"
             },
             {
@@ -44048,6 +44048,24 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, string>()",
               "description": "每个块节点上一轮铺进去的内容。"
+            },
+            {
+              "kind": "field",
+              "name": "#caretRoot",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "default": "null",
+              "description": "接着流式光标的外壳与释放函数：外壳节点换了就重接。"
+            },
+            {
+              "kind": "field",
+              "name": "#releaseCaret",
+              "privacy": "private",
+              "type": {
+                "text": "(() => void) | undefined"
+              }
             },
             {
               "kind": "method",

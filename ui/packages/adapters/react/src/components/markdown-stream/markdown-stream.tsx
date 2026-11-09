@@ -9,7 +9,7 @@ import type { Size } from '@xihan-ui/core'
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { markdownBlockHtml, queryMarkdownInlines, sameMarkdownInlines } from '@xihan-ui/headless'
+import { markdownBlockHtml, queryMarkdownInlines, sameMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
 import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { withXhConfig } from '../../config/config'
@@ -60,9 +60,12 @@ export function XhMarkdownStreamRoot({
   const configured = withXhConfig('markdown-stream', { blocks, streaming, announce, caret, size, translations })
   const ctx = useMarkdownStream({ ...configured, blocks: configured.blocks ?? [] } as MarkdownStreamProps)
   const { api } = ctx
+  // 流式光标挂在外壳上，跟着正文贴到最后一个字后面
+  const root = useRef<HTMLDivElement | null>(null)
+  useIsomorphicLayoutEffect(() => (root.current ? trackMarkdownStreamCaret(root.current) : undefined), [])
   return (
     <MarkdownStreamProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps(), rest)}>
+      <div {...mergeReactProps(api.getRootProps(), { ref: root }, rest)}>
         {renderSlot(children, { blocks: api.blocks, streaming: api.streaming, announcement: api.announcement })}
       </div>
     </MarkdownStreamProvider>

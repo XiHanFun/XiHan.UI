@@ -6,7 +6,7 @@
 // 提供 markdown stream 相关实现。
 
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
-import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines } from '@xihan-ui/headless'
+import { connectMarkdownStream, markdownBlockHtml, markdownStreamAnatomy, markdownStreamMeta, queryMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -37,9 +37,9 @@ const BLOCK_SELECTOR = markdownStreamAnatomy.build().block.selector
  * @attr {boolean} streaming - 正文是否仍在增长，只写 data-streaming
  * @attr {boolean} caret - 是否绘制流式光标，缺席时绘制，写 caret="false" 关闭
  * @attr {string} size - 尺寸：sm / md / lg
- * @csspart root - 外壳，承载 data-state / data-streaming，零块流式时承载 data-caret
+ * @csspart root - 外壳，承载 data-state / data-streaming；流式时承载 data-caret（光标挂在这里），没有块时承载 data-empty
  * @csspart content - 正文包裹层，内容由本元素铺设
- * @csspart block - 一个顶层块，承载 data-kind / data-live / data-complete / data-caret
+ * @csspart block - 一个顶层块，承载 data-kind / data-live / data-complete
  * @csspart live-region - 视觉隐藏的原子播报区，一段回复完成时朗读一句
  */
 export class XhMarkdownStreamElement extends XhElement {
@@ -68,6 +68,9 @@ export class XhMarkdownStreamElement extends XhElement {
   readonly #nodes = new Map<string, HTMLElement>()
   /** 每个块节点上一轮铺进去的内容。 */
   readonly #painted = new WeakMap<HTMLElement, string>()
+  /** 接着流式光标的外壳与释放函数：外壳节点换了就重接。 */
+  #caretRoot: HTMLElement | null = null
+  #releaseCaret: (() => void) | undefined
 
   private viewProps(): MarkdownStreamProps {
     return {
@@ -91,6 +94,14 @@ export class XhMarkdownStreamElement extends XhElement {
     put('root', api.getRootProps())
     put('content', api.getContentProps())
 
+    // 流式光标挂在外壳上，跟着正文贴到最后一个字后面
+    const root = this.getPart('root')
+    if (root !== this.#caretRoot) {
+      this.#releaseCaret?.()
+      this.#caretRoot = root
+      this.#releaseCaret = root ? trackMarkdownStreamCaret(root) : undefined
+    }
+
     const live = this.getPart('live-region')
     if (live) {
       this.spreader.spread(live, api.getLiveRegionProps())
@@ -98,6 +109,13 @@ export class XhMarkdownStreamElement extends XhElement {
     }
 
     this.#paint(api)
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback()
+    this.#releaseCaret?.()
+    this.#releaseCaret = undefined
+    this.#caretRoot = null
   }
 
   /** 逐 key 比对铺块：key 相同复用节点、只更新内容，key 消失的移除，新 key 追加。 */

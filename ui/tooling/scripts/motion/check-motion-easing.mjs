@@ -50,6 +50,28 @@ const NO_CURVE = {
   'scrollbar:transition': 'visibility 走 0s 阶跃，linear 只是补齐这一项的曲线位',
 }
 
+/** 按顶层逗号拆成一项项动画或过渡：一条声明可以列几支动画，steps(1, end) 括号里的逗号不拆。 */
+function listItems(value) {
+  const items = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i]
+    if (ch === '(') {
+      depth++
+    }
+    else if (ch === ')') {
+      depth--
+    }
+    else if (ch === ',' && depth === 0) {
+      items.push(value.slice(start, i).trim())
+      start = i + 1
+    }
+  }
+  items.push(value.slice(start).trim())
+  return items
+}
+
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
@@ -87,9 +109,12 @@ for (const { dir, file } of files) {
     if (HANDWRITTEN.test(value))
       problems.push(`${at()}\n    —— 皮肤里不许手写 cubic-bezier()，曲线归令牌层：循环用 --xh-motion-ease-loop，屏内位移用 -continuous，进场用 -enter / -enter-strong，退场用 -exit`)
 
-    const literal = LITERAL.exec(value)
-    if (literal) {
-      const key = `${comp}:${keyframeName(value) ?? prop}`
+    // 逐项认账：一条声明里列了几支动画时，阶跃记在写着它的那一支上
+    for (const item of listItems(value)) {
+      const literal = LITERAL.exec(item)
+      if (!literal)
+        continue
+      const key = `${comp}:${keyframeName(item) ?? prop}`
       if (key in NO_CURVE)
         seen.add(key)
       else

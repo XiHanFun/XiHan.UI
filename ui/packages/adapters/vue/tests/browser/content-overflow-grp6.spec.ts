@@ -143,16 +143,19 @@ describe('内容撑破行', () => {
       expect(pageOverflow(doc)).toBe(0)
     })
 
-    it('接了横滚之后光标那一格不多出一条竖滚动', () => {
+    it('光标挂在外壳上：生长块不多出一条竖滚动，外壳不被光标顶宽', () => {
       const doc = mount(375, `
-        <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="root">
+        <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="root" data-caret id="root">
           <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="content">
-            <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="block" data-caret id="caret"><p style="margin:0">正在生成的一段话</p></div>
+            <div data-scope="markdown-stream" class="xh-scope-markdown-stream" data-part="block" data-live id="live"><p style="margin:0">正在生成的一段话</p></div>
           </div>
         </div>`)
-      const caret = pick(doc, '#caret')
+      const live = pick(doc, '#live')
+      const root = pick(doc, '#root')
 
-      expect(caret.scrollHeight).toBe(caret.clientHeight)
+      expect(live.scrollHeight).toBe(live.clientHeight)
+      expect(root.scrollWidth).toBe(root.clientWidth)
+      expect(pageOverflow(doc)).toBe(0)
     })
   })
 

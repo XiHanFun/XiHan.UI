@@ -70,6 +70,8 @@ const RUNTIME_PRIVATE_SLOTS = new Map([
   ['--xh-_sankey-gradient', 'packages/engine/headless/src/sankey-chart/sankey-chart.connect.ts'],
   // 关系图有权重的连线的线宽：连接层按权重写进连线的内联样式，皮肤拿它当描边宽
   ['--xh-_graph-link-width', 'packages/engine/headless/src/graph-chart/graph-chart.connect.ts'],
+  // 流式光标的落点、字号与定位方式：挂载后量正文最后一个字，写进外壳的内联样式，皮肤给外壳的 ::after 用
+  ...['position', 'x', 'y', 'font'].map(name => [`--xh-_markdown-stream-caret-${name}`, 'packages/engine/headless/src/markdown-stream/markdown-stream.caret.ts']),
 ])
 
 // 皮肤声明、由运行时从计算样式读出的私有槽：取值链在皮肤里，消费方是 JS，皮肤里不必有 var() 消费点

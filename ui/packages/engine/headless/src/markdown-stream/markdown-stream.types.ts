@@ -106,7 +106,7 @@ export function markdownBlockHtml(block: MarkdownBlock): string | undefined {
   return block.kind === 'markdown' ? block.html : undefined
 }
 
-/** 该块是否为正在生长的块。开启光标时 data-caret 发在它身上。 */
+/** 该块是否为正在生长的块，它身上发 data-live。 */
 export function isLiveMarkdownBlock(block: MarkdownBlock): boolean {
   return block.key === MARKDOWN_STREAM_LIVE_KEY
 }

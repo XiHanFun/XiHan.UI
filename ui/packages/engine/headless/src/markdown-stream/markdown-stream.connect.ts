@@ -37,8 +37,10 @@ export function connectMarkdownStream<T extends PropTypes>(
       // 相位走 phase 族的既有取值，不另造一个同义词
       'data-state': streaming ? 'streaming' : 'complete',
       'data-size': props.size,
-      // 一块都还没来的那一段，光标落在外壳上：请求发出去了这件事第一帧就看得见
-      'data-caret': dataAttr(caret && streaming && props.blocks.length === 0),
+      // 光标挂在外壳上，整段流式期间都在：块定稿、换到下一块都不换光标，收尾时才接得住退场
+      'data-caret': dataAttr(caret && streaming),
+      // 一块都还没来：光标是外壳里唯一的一行，闪着等第一个字
+      'data-empty': dataAttr(props.blocks.length === 0),
     }),
 
     // 正文就是正文，套 role 只会给读屏加噪
@@ -50,8 +52,6 @@ export function connectMarkdownStream<T extends PropTypes>(
       ...parts.block.attrs,
       'data-kind': block.kind,
       'data-live': dataAttr(isLiveMarkdownBlock(block)),
-      // 流式光标画在这一格末尾
-      'data-caret': dataAttr(caret && isLiveMarkdownBlock(block)),
       'data-complete': dataAttr(block.complete),
       'data-lang': block.lang,
     }),

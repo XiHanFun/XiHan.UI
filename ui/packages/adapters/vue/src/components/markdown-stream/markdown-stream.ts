@@ -8,8 +8,8 @@
 import type { Size } from '@xihan-ui/core'
 import type { MarkdownBlock, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
-import { markdownBlockHtml, queryMarkdownInlines, sameMarkdownInlines } from '@xihan-ui/headless'
-import { defineComponent, h, onMounted, onUpdated, ref, shallowRef, Teleport } from 'vue'
+import { markdownBlockHtml, queryMarkdownInlines, sameMarkdownInlines, trackMarkdownStreamCaret } from '@xihan-ui/headless'
+import { defineComponent, h, onBeforeUnmount, onMounted, onUpdated, ref, shallowRef, Teleport } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideMarkdownStream, useMarkdownStreamContext } from './context'
 import { useMarkdownStream } from './use-markdown-stream'
@@ -83,7 +83,15 @@ export const XhMarkdownStreamRoot = defineComponent({
     }
     const ctx = useMarkdownStream(forward)
     provideMarkdownStream(ctx)
-    return () => h('div', ctx.api.value.getRootProps(), slots.default?.({
+    // 流式光标挂在外壳上，跟着正文贴到最后一个字后面
+    const root = ref<HTMLElement | null>(null)
+    let releaseCaret: (() => void) | undefined
+    onMounted(() => {
+      if (root.value)
+        releaseCaret = trackMarkdownStreamCaret(root.value)
+    })
+    onBeforeUnmount(() => releaseCaret?.())
+    return () => h('div', { ...ctx.api.value.getRootProps(), ref: root }, slots.default?.({
       blocks: ctx.api.value.blocks,
       streaming: ctx.api.value.streaming,
       announcement: ctx.api.value.announcement,

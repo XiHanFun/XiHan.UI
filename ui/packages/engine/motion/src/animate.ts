@@ -26,6 +26,8 @@ export interface AnimateOptions {
   iterations?: number
   direction?: PlaybackDirection
   composite?: CompositeOperation
+  /** 播在元素的伪元素上（如 `'::after'`）。减弱动效与宿主缺失降级时伪元素没有行内样式可写，fill 留值不生效。 */
+  pseudoElement?: string
 }
 
 export interface AnimationHandle {
@@ -89,7 +91,7 @@ export function animate(
 
   if (reduced || typeof element.animate !== 'function') {
     const last = keyframes[keyframes.length - 1]
-    if (last !== undefined && (fill === 'forwards' || fill === 'both'))
+    if (last !== undefined && options.pseudoElement === undefined && (fill === 'forwards' || fill === 'both'))
       applyKeyframe(element, last)
     return settled(SETTLED)
   }
@@ -102,6 +104,7 @@ export function animate(
     direction: options.direction ?? 'normal',
     composite: options.composite ?? 'replace',
     fill,
+    ...(options.pseudoElement === undefined ? {} : { pseudoElement: options.pseudoElement }),
   })
 
   const finished = animation.finished

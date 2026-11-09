@@ -144,7 +144,7 @@
     "data-bold": "log 的这一段 ANSI 文字是粗体（SGR 1）。",
     "data-branch": "cascader 的这一项是分支，点开还有下一列。",
     "data-bright": "log 的这一段 ANSI 文字用的是 90–97 那一组高亮色；缺省皮肤与基础色同一档，留给作者分开着色的钩子。",
-    "data-caret": "markdown-stream 的流式光标画在这个节点末尾。",
+    "data-caret": "markdown-stream 的流式光标挂在这个外壳上：整段流式期间都在，贴着正文最后一个字。",
     "data-case-sensitive": "highlight 的关键词匹配区分大小写。",
     "data-circular": "json-viewer 的这个节点是循环引用，不再往下展开。",
     "data-clamped": "code-view 的行数超过上限被夹住，只显示前若干行。",

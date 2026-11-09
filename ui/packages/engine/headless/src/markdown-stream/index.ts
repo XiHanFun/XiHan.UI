@@ -6,6 +6,7 @@
 // 导出 markdown stream 模块的公共接口。
 
 export { markdownStreamAnatomy } from './markdown-stream.anatomy'
+export { trackMarkdownStreamCaret } from './markdown-stream.caret'
 export { connectMarkdownStream } from './markdown-stream.connect'
 export { queryMarkdownInlines, sameMarkdownInlines } from './markdown-stream.inlines'
 export { markdownStreamKeyboard } from './markdown-stream.keyboard'

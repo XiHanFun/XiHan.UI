@@ -162,7 +162,7 @@ export { clampLoadingBarValue, connectLoadingBar, createLoadingBarServiceControl
 export type { LoadingBarApi, LoadingBarPhase, LoadingBarSchema, LoadingBarServiceController, LoadingBarServiceControllerOptions, LoadingBarServiceControllerState, LoadingBarTranslations, LoadingBarValueChangeDetails } from './loading-bar'
 export { connectLog, logAnatomy, logKeyboard, logMachine, logMeta, parseAnsi, stripAnsi } from './log'
 export type { LogAnsiColor, LogAnsiSegment, LogApi, LogLevel, LogLineProps, LogProps, LogRefs, LogSchema, LogStickChangeDetails, LogTranslations } from './log'
-export { connectMarkdownStream, isLiveMarkdownBlock, MARKDOWN_INLINE_ATTR, MARKDOWN_STREAM_LIVE_KEY, markdownBlockHtml, markdownStreamAnatomy, markdownStreamKeyboard, markdownStreamMeta, queryMarkdownInlines, sameMarkdownInlines } from './markdown-stream'
+export { connectMarkdownStream, isLiveMarkdownBlock, MARKDOWN_INLINE_ATTR, MARKDOWN_STREAM_LIVE_KEY, markdownBlockHtml, markdownStreamAnatomy, markdownStreamKeyboard, markdownStreamMeta, queryMarkdownInlines, sameMarkdownInlines, trackMarkdownStreamCaret } from './markdown-stream'
 export type { MarkdownBlock, MarkdownInline, MarkdownInlineMount, MarkdownStreamApi, MarkdownStreamProps, MarkdownStreamTranslations } from './markdown-stream'
 export { connectMarquee, marqueeAnatomy, marqueeKeyboard, marqueeMachine, marqueeMeta } from './marquee'
 export type { MarqueeApi, MarqueeDirection, MarqueePausedChangeDetails, MarqueeProps, MarqueeSchema, MarqueeTranslations } from './marquee'
