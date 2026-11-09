@@ -78,6 +78,85 @@ function progressOf(animation: Animation | undefined): number {
   return typeof progress === 'number' ? progress : 1
 }
 
+/** 展开与收起取同一条 disclosure 曲线，从元素现读。 */
+function easingOf(el: Element): string {
+  return el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-disclosure').trim() || motionEasings.disclosure
+}
+
+/** 刚起播的那一段脚本动画：animate 之后取元素上最后一个既非 CSS 关键帧、也非 CSS 过渡的动画。 */
+function lastScripted(el: HTMLElement): Animation | undefined {
+  return el.getAnimations?.().filter(animation => !('animationName' in animation) && !('transitionProperty' in animation)).at(-1)
+}
+
+/**
+ * 量子层的盒。spare 是它在父级里比自身高度多占的那一截（父级的行距、外边距）：父级此刻的高度减去没有它时的高度、
+ * 再减去它自己；父级定了高（滚动容器）时量不出来，记 0
+ */
+function measure(el: HTMLElement, without: number): Box {
+  const style = el.ownerDocument.defaultView!.getComputedStyle(el)
+  const height = heightOf(el)
+  const spare = Math.max(0, (el.parentElement ? heightOf(el.parentElement) : 0) - without - height)
+  return {
+    height,
+    padStart: px(style.paddingBlockStart),
+    padEnd: px(style.paddingBlockEnd),
+    borderStart: px(style.borderBlockStartWidth),
+    borderEnd: px(style.borderBlockEndWidth),
+    marginStart: px(style.marginBlockStart),
+    spare,
+  }
+}
+
+/** 父级在没有这个子层时的高度：临时把它摘出排版量一次，再原样还回去。 */
+function parentWithout(el: HTMLElement): number {
+  const parent = el.parentElement
+  if (!parent)
+    return 0
+  const display = el.style.getPropertyValue('display')
+  const priority = el.style.getPropertyPriority('display')
+  el.style.setProperty('display', 'none', 'important')
+  const height = heightOf(parent)
+  if (display)
+    el.style.setProperty('display', display, priority)
+  else el.style.removeProperty('display')
+  return height
+}
+
+/**
+ * 一帧关键帧：块尺寸、上下内缩、上下边框（行间分隔线）与透明度按比例收放；起始外边距同时让出 spare 那一截，0 高时子层在父级里一点不占，
+ * 父级的行距不会在展开第一帧、收起最后一帧跳一下。overflow 与 box-sizing 两端相同、整段保持
+ */
+function frame(box: Box, ratio: number, height = box.height * ratio): Keyframe {
+  return {
+    blockSize: `${height}px`,
+    paddingBlockStart: `${box.padStart * ratio}px`,
+    paddingBlockEnd: `${box.padEnd * ratio}px`,
+    borderBlockStartWidth: `${box.borderStart * ratio}px`,
+    borderBlockEndWidth: `${box.borderEnd * ratio}px`,
+    marginBlockStart: `${box.marginStart - box.spare * (1 - ratio)}px`,
+    opacity: ratio,
+    overflow: 'clip',
+    boxSizing: 'border-box',
+  }
+}
+
+/**
+ * 一块刚露出来的内容按实测高度展开：块尺寸、内缩、边框与透明度从 from（缺省 0）补到原样，父级的行距随之让出，
+ * 下面的内容一路挪下去。给自己掌握开合时机的部件用（Alert 重新显示），宿主提交、节点有了盒之后调用。
+ * 返回这一段动画；量不到高度或减弱动效下返回 undefined
+ */
+export function expandIn(el: HTMLElement, from = 0): Animation | undefined {
+  const box = measure(el, parentWithout(el))
+  if (box.height <= 0)
+    return undefined
+  const ratio = Math.min(from / box.height, 1)
+  animate(el, [frame(box, ratio, from), frame(box, 1)], {
+    duration: readMotion(el).duration('expand'),
+    easing: easingOf(el),
+  })
+  return lastScripted(el)
+}
+
 /**
  * 盯住容器里子层的展开与收起，按实测高度补间。返回控制柄：hold 让接下来的批量变化当场落定，stop 停止。
  *
@@ -100,63 +179,6 @@ export function trackDisclosureMotion(container: HTMLElement, options: TrackDisc
   const opening = new Map<HTMLElement, Animation>()
   let held = false
 
-  const easing = (el: Element): string =>
-    win.getComputedStyle(el).getPropertyValue('--xh-motion-ease-disclosure').trim() || motionEasings.disclosure
-
-  /** 刚起播的那一段脚本动画：animate 之后取元素上最后一个既非 CSS 关键帧、也非 CSS 过渡的动画。 */
-  const lastScripted = (el: HTMLElement): Animation | undefined =>
-    el.getAnimations?.().filter(animation => !('animationName' in animation) && !('transitionProperty' in animation)).at(-1)
-
-  /**
-   * 量子层的盒。spare 是它在父级里比自身高度多占的那一截（父级的行距、外边距）：父级此刻的高度减去没有它时的高度、
-   * 再减去它自己；父级定了高（滚动容器）时量不出来，记 0
-   */
-  function measure(el: HTMLElement, without: number): Box {
-    const style = win!.getComputedStyle(el)
-    const height = heightOf(el)
-    const spare = Math.max(0, (el.parentElement ? heightOf(el.parentElement) : 0) - without - height)
-    return {
-      height,
-      padStart: px(style.paddingBlockStart),
-      padEnd: px(style.paddingBlockEnd),
-      borderStart: px(style.borderBlockStartWidth),
-      borderEnd: px(style.borderBlockEndWidth),
-      marginStart: px(style.marginBlockStart),
-      spare,
-    }
-  }
-
-  /** 父级在没有这个子层时的高度：临时把它摘出排版量一次，再原样还回去。 */
-  function parentWithout(el: HTMLElement): number {
-    const parent = el.parentElement
-    if (!parent)
-      return 0
-    const display = el.style.getPropertyValue('display')
-    const priority = el.style.getPropertyPriority('display')
-    el.style.setProperty('display', 'none', 'important')
-    const height = heightOf(parent)
-    if (display)
-      el.style.setProperty('display', display, priority)
-    else el.style.removeProperty('display')
-    return height
-  }
-
-  /**
-   * 一帧关键帧：块尺寸、上下内缩、上下边框（行间分隔线）与透明度按比例收放；起始外边距同时让出 spare 那一截，0 高时子层在父级里一点不占，
-   * 父级的行距不会在展开第一帧、收起最后一帧跳一下。overflow 与 box-sizing 两端相同、整段保持
-   */
-  const frame = (box: Box, ratio: number, height = box.height * ratio): Keyframe => ({
-    blockSize: `${height}px`,
-    paddingBlockStart: `${box.padStart * ratio}px`,
-    paddingBlockEnd: `${box.padEnd * ratio}px`,
-    borderBlockStartWidth: `${box.borderStart * ratio}px`,
-    borderBlockEndWidth: `${box.borderEnd * ratio}px`,
-    marginBlockStart: `${box.marginStart - box.spare * (1 - ratio)}px`,
-    opacity: ratio,
-    overflow: 'clip',
-    boxSizing: 'border-box',
-  })
-
   function expand(el: HTMLElement): void {
     const parent = el.parentNode
     const ghost = parent ? ghosts.get(parent) : undefined
@@ -165,19 +187,11 @@ export function trackDisclosureMotion(container: HTMLElement, options: TrackDisc
       from = heightOf(ghost.el)
       ghost.dispose()
     }
-    const box = measure(el, parentWithout(el))
-    if (box.height <= 0)
-      return
-    const ratio = Math.min(from / box.height, 1)
-    const handle = animate(el, [frame(box, ratio, from), frame(box, 1)], {
-      duration: readMotion(el).duration('expand'),
-      easing: easing(el),
-    })
-    const animation = lastScripted(el)
+    const animation = expandIn(el, from)
     if (!animation)
       return
     opening.set(el, animation)
-    void handle.finished.then(() => {
+    void animation.finished.catch(() => {}).then(() => {
       if (opening.get(el) === animation)
         opening.delete(el)
     })
@@ -215,7 +229,7 @@ export function trackDisclosureMotion(container: HTMLElement, options: TrackDisc
     const box = measure(el, without)
     const handle = animate(el, [frame(box, progress), frame(box, 0)], {
       duration: readMotion(el).duration('collapse'),
-      easing: easing(el),
+      easing: easingOf(el),
       fill: 'forwards',
     })
     const ghost: Ghost = {

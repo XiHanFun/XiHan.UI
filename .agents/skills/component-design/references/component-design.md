@@ -865,7 +865,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - 内容为短列表、菜单、tooltip、气泡 → frosted 四件套（实体弹出层）。
 - Tooltip 两个主题都不反白，与 Popover 同一副浮层面：走 compact 档 frosted（`--xh-material-frosted-compact-*` 的 backdrop / shadow / alpha + 光学层，缺省都是实体），底 `--xh-material-frosted-bg`、字 `--xh-material-frosted-fg`、边 `--xh-material-frosted-border`，箭头同底同边；与普通浮层靠一行字的尺寸与 control 圆角区分，不靠反色。写了 `tone` 才换语气实底 + 语气 on 色，边取 on 色 20% 拼色（彩色面上中性描边看不见），这时是彩色面，连接层才打 `data-xh-ink-surface`。正文 `--xh-text-body-size` 14px、control 圆角，内距纵 8 横 12，sm 只收纵向到 4，lg 纵 12 横 16，三档不换字号。
-- 刻意例外（须登记）：图表提示框（含 Heatmap 的详情条）走标准 frosted 四件套 + overlay 形状：内容是多行系列读数，不取 Tooltip 的 compact 档与 control 圆角，也不接语气实底——提示框里有系列色标，色槽色按图表所在表面校准，换成彩色实底会让色标失去校准；跟随指针时不做位置过渡；`aria-hidden`，朗读由数据标记承担（§13）。
+- 刻意例外（须登记）：图表提示框（含 Heatmap 的详情条）走标准 frosted 四件套 + overlay 形状：内容是多行系列读数，不取 Tooltip 的 compact 档与 control 圆角，也不接语气实底——提示框里有系列色标，色槽色按图表所在表面校准，换成彩色实底会让色标失去校准；跟随指针时不做位置过渡；出现淡入、隐去淡出，隐去时 Headless 留着上一回露面的内容与落点，淡出途中不先变空、不跳回绘图区原点；`aria-hidden`，朗读由数据标记承担（§13）。
 - 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
 - 模态遮罩取 `--xh-bg-overlay`：浅色 neutral-900 兑 40%（naive 同档，背后仍认得出是哪一页），深色纯黑 60%（深底上 40% 压不出层次）；磨砂只在作者写 `variant="blur"` 时加。
 - 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
@@ -984,7 +984,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - Accordion 与 Collapsible 的指示器缺省排在标题之前，收起时朝行尾（`rotate: -90deg`，rtl 下 `90deg`）、展开回正朝下；作者把它写在标题之后即落到行尾。
 - 密集 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层）子层里排着多行、套不上单行网格，由 `trackDisclosureMotion` 按实测高度补间：展开时块尺寸从 0 补到实测高度、同帧淡入，收起时在原处放一个替身从原高度缩到 0、同帧淡出，播完即移除；父级的行距随高度一起让出，展开第一帧与收起最后一帧都不跳。时长与曲线和 Surface 级展开同档（`expand` / `collapse`、`disclosure`），指示器随子层同时长、同曲线转向；收起中途再展开从替身此刻的高度接着长。搜索换枝、侧栏折叠换装与一次翻动超过三枝的批量展开当场落定；虚拟滚动的行会被回收复用，不补。替身不可交互、不进条目查询与键盘导航。
 - Table 详情行与上面几种同一套补间：详情行随它的数据行一起来去（收起父行）时交给行的进退场，不另补。
-- FloatingPanel 收拢时正文由替身缩回去、高度交给标题栏撑的面板跟着一路收短；还原时正文当场露出，内容面从标题栏的高度补到原来的高度。
+- FloatingPanel 收拢与还原时内容面的高度从旧的一档补到新的一档：收拢时正文当场藏起，原处的替身随内容面一路收短、同帧淡出；还原时正文当场露出，随内容面展开。
+- Alert 关掉之后再显示时按实测高度展开（`expandIn`：块尺寸、内缩、边框与透明度从 0 补到原样，父级的行距随之让出），与退场的「先淡出、再收占位」对称；挂载时就显示着的直接呈现。Skeleton 加载完之后再开始加载时淡入，挂载时就在加载的直接呈现。
 - Truncate 铺开与收回由 `tweenBlockSize` 补块尺寸：状态改之前量下此刻的高度，宿主提交之后从它补到新排法的高度；收回时补间里仍按铺开的排法摆着，盒子收到夹紧的高度那一刻才换回行数夹紧与省略号，多出来的行随盒子收进去，不先被一刀裁掉。
 - 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse` 与同一条 `disclosure` 曲线；内容瞬时时用 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画（§9.6 首帧规则）。
@@ -1045,7 +1046,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 滑动指示器（Tabs、RadioGroup segmented 形态的滑块、Anchor、NavigationMenu）共用一套测量：取当前项相对列表容器的 `offset*` 几何，投影为私有槽。只有换项才滑：首次落位、同一项的重量（容器与条目尺寸变化、换上正式字体）直接到位，连接层在这一落点投影 `data-instant`，皮肤在它身上撤掉几何过渡；连续缩放窗口时指示器不拖尾。不用 `getBoundingClientRect`，因为祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`；Tabs 的标签带滚动已占用 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。Tour 聚光框是 `position: fixed` 的视口坐标，按目标的屏幕矩形定位；换步时聚光框与气泡定位层同一段时长、同一条曲线一起滑（只在换步那一段投影 `data-animating`，两者的过渡播完即撤），页面滚动与视口缩放时两者跟手、不补过渡。
 - 优先动可合成属性：`translate`、`scale`、`rotate`、`opacity`；`clip-path` 只触发重绘，可以使用。
-- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；密集展开子层的 `block-size`、上下内缩与起始外边距（子层里排着多行，只在开合那一段由脚本补间，静止时不留内联样式）；Truncate 铺开与收回的 `block-size`（新高度只有排完才知道，只在换档那一段补）；FloatingPanel 还原时内容面的 `block-size`；NavigationMenu 共享外壳换张时的两向尺寸；Slider 拇指位置与区间长度（只在跳位、键盘与程序改值时过渡，跟手时撤掉）；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏与 SideNav 折叠（同一段 `move`，SideNav 放在侧栏里时随侧栏直接落位；行文字先淡出、宽度落定才裁成图标栏，分组标题留着高度）；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
+- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；密集展开子层的 `block-size`、上下内缩与起始外边距（子层里排着多行，只在开合那一段由脚本补间，静止时不留内联样式）；Truncate 铺开与收回的 `block-size`（新高度只有排完才知道，只在换档那一段补）；FloatingPanel 收拢与还原时内容面的 `block-size`；Alert 重新显示时根的 `block-size`、内缩、边框与起始外边距；NavigationMenu 共享外壳换张时的两向尺寸；Slider 拇指位置与区间长度（只在跳位、键盘与程序改值时过渡，跟手时撤掉）；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏与 SideNav 折叠（同一段 `move`，SideNav 放在侧栏里时随侧栏直接落位；行文字先淡出、宽度落定才裁成图标栏，分组标题留着高度）；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
 - `will-change` 只写在动画进行中的状态下：拖拽中（`data-dragging`）、机器驱动的补间进行中（`data-animating`），以及 Presence 管理的部件的收起态（`data-state='closed'`，只在退场那一段留在屏上）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
 - transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`；不写 `background`、`border`、`outline` 与 `transform` 简写。需要一次性组合多个变换、且顺序是独立属性表达不了的，才写 `transform`，并登记理由。
 - liquid 档的双沿指示器：起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉长时块向收到不低于 `--xh-motion-scale-squash`（0.86）。测量与绘制沿用上面的共享几何与登记例外；新的点击从当前位置与速度改向。standard 档保持曲线。

@@ -143,6 +143,9 @@ describe('xh-table 详情行与 xh-truncate', () => {
     seek(closing, 0)
     expect(Math.abs(box.getBoundingClientRect().height - full)).toBeLessThan(1)
     expect(getComputedStyle(box).display).toBe('block')
+    // 补间途中仍是收着的那一档：展开钮与 data-state 不因为排法还铺着就被撤掉
+    expect(box.getAttribute('data-state')).toBe('closed')
+    expect(host!.querySelector<HTMLElement>(`[data-scope='truncate'][data-part='trigger']`)!.hidden).toBe(false)
     closing.finish()
     expect(getComputedStyle(box).display).toBe(clampedDisplay)
   })

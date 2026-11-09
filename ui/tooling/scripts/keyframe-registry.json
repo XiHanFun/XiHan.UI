@@ -161,6 +161,7 @@
         "sankey-chart",
         "select",
         "side-nav",
+        "skeleton",
         "sparkline",
         "steps",
         "table",

@@ -2562,10 +2562,13 @@
   translate: calc(-100% - var(--xh-space-3)) var(--xh-space-2);
 }
 
-/* 露不露是从激活的数据算出来的派生显隐：首次出现淡入，跟着指针移动时不做位置过渡 */
+/* 露不露是从激活的数据算出来的派生显隐：出现淡入、隐去淡出（Headless 隐去时留着上一回的内容与落点），跟着指针移动时不做位置过渡。visibility 只写在隐去这一档：隐去时等淡出播完才不可见，出现时当帧可见 */
 [data-scope][data-xh-chart-part='tooltip'][data-state='hidden'] {
   visibility: hidden;
   opacity: 0;
+  transition:
+    opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+    visibility var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
 }
 
 [data-scope][data-xh-chart-part='tooltip'][data-state='visible'] {
@@ -16483,6 +16486,11 @@
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住加载结束后的收起态 */
 .xh-scope-skeleton[data-part='root'][hidden] {
   display: none;
+}
+
+/* 又开始加载（刷新、翻页）：骨架从 hidden 露面时淡入；挂载时就在加载的直接呈现（data-instant） */
+.xh-scope-skeleton[data-part='root'][data-state='loading']:not([data-instant], [hidden]) {
+  animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
 }
 
 /* 刚加载完：机器已把骨架原地抬出文档流、钉住原来的尺寸，真实内容补上它空出来的位置；

@@ -6,7 +6,7 @@
 // 提供 alert 相关实现。
 
 import type { AlertSchema } from './alert.types'
-import { setup } from '@xihan-ui/core'
+import { expandIn, setup } from '@xihan-ui/core'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<AlertSchema>()
@@ -39,9 +39,9 @@ export const alertMachine = createMachine({
         // 受控命中 → 只发意图；非受控 → 落 target 并一并通知
         'OPEN': [
           { guard: 'isOpenControlled', actions: ['invokeOnOpen'] },
-          { target: 'open', actions: ['invokeOnOpen'] },
+          { target: 'open', actions: ['invokeOnOpen', 'revealIn'] },
         ],
-        'CONTROLLED.OPEN': { target: 'open' },
+        'CONTROLLED.OPEN': { target: 'open', actions: ['revealIn'] },
       },
     },
     open: {
@@ -76,7 +76,23 @@ export const alertMachine = createMachine({
        */
       measureExit: ({ context, scope }) => {
         const node = scope.getById(scope.partId('alert', 'root'))
+        // 展开还没播完就关：撤掉那一段，量到的是它此刻真实占着的高度，退场从这里接着收
+        for (const animation of node?.getAnimations() ?? []) {
+          if (!('animationName' in animation) && !('transitionProperty' in animation))
+            animation.cancel()
+        }
         context.set('exitBlockSize', node ? node.getBoundingClientRect().height : null)
+      },
+      /**
+       * 关掉之后再显示：宿主提交、节点露面之后按实测高度展开，下面的内容一路挪下去，与退场的收占位对称；
+       * 挂载时就显示着的不走这里，直接呈现
+       */
+      revealIn: ({ scope, flush }) => {
+        flush(() => {
+          const node = scope.getById(scope.partId('alert', 'root'))
+          if (node && node.getClientRects().length > 0)
+            expandIn(node)
+        })
       },
       setRendered: ({ context, event }) => {
         const e = event.current()

@@ -7,6 +7,7 @@
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SkeletonApi, SkeletonItemProps, SkeletonSchema } from './skeleton.types'
+import { dataAttr } from '@xihan-ui/core'
 import { skeletonAnatomy } from './skeleton.anatomy'
 import { skeletonLoading } from './skeleton.machine'
 
@@ -44,6 +45,8 @@ export function connectSkeleton<T extends PropTypes>(
       'id': scope.partId('skeleton', 'root'),
       'aria-busy': loading ? 'true' : undefined,
       'data-state': loading ? 'loading' : 'loaded',
+      // 挂载时就在加载的那一段直接呈现；之后再开始加载时淡入
+      'data-instant': dataAttr(loading && context.get('loadingAtMount')),
       // 动效档挂在容器上，逐根骨架条靠后代选择器接到，不必各写一份
       'data-animation': prop('animation'),
       // 收起时留着节点，只加 hidden

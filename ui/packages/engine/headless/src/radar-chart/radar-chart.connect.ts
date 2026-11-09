@@ -13,7 +13,7 @@ import type { RadarChartApi, RadarChartSchema } from './radar-chart.schema'
 import type { RadarLegendItem, RadarMarkTag, RadarTooltipRow } from './radar-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip } from '../shared/chart'
+import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { radarChartAnatomy } from './radar-chart.anatomy'
 import {
@@ -152,6 +152,9 @@ export function connectRadarChart<T extends PropTypes>(
   // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
   const loading = prop('pending') === true && empty
 
+  // 提示框隐去时留着上一回露面的内容与落点，退场淡出途中不先变空、不跳回原点
+  const shownTooltip = retainChartTooltip(service, tooltip, tip)
+
   return {
     model,
     scene,
@@ -161,7 +164,7 @@ export function connectRadarChart<T extends PropTypes>(
     legendItems,
     patterns,
     active: details,
-    tooltip,
+    tooltip: shownTooltip.tooltip,
     summary: model.summary,
     table: model.table,
     emptyText: loading ? translations.loadingText : translations.emptyText,
@@ -403,11 +406,11 @@ export function connectRadarChart<T extends PropTypes>(
       'aria-hidden': true,
       'data-state': tooltip ? 'visible' : 'hidden',
       // 落在锚点的哪个角：绘图区不随 RTL 镜像，左右是物理方向
-      'data-placement': tip ? `${tip.block === 'above' ? 'top' : 'bottom'}-${tip.side === 'end' ? 'right' : 'left'}` : undefined,
+      'data-placement': shownTooltip.tip ? `${shownTooltip.tip.block === 'above' ? 'top' : 'bottom'}-${shownTooltip.tip.side === 'end' ? 'right' : 'left'}` : undefined,
       // 量过才给这个键：给 undefined 会把作者写在提示框上的整条内联样式删掉
-      ...(tip == null
+      ...(shownTooltip.tip == null
         ? {}
-        : { style: { '--xh-_chart-tip-x': `${tip.x}px`, '--xh-_chart-tip-y': `${tip.y}px` } }),
+        : { style: { '--xh-_chart-tip-x': `${shownTooltip.tip.x}px`, '--xh-_chart-tip-y': `${shownTooltip.tip.y}px` } }),
     }),
 
     getTooltipHeaderProps: () => normalize.element({

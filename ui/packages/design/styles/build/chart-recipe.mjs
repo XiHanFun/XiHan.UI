@@ -343,10 +343,13 @@ export function compileChartRecipe(source) {
   rule(`${part('tooltip')}[data-placement='top-left']`, `translate: ${left} ${up};`)
   rule(`${part('tooltip')}[data-placement='bottom-right']`, `translate: ${tooltip.offsetInline} ${tooltip.offsetBlock};`)
   rule(`${part('tooltip')}[data-placement='bottom-left']`, `translate: ${left} ${tooltip.offsetBlock};`)
-  comment('露不露是从激活的数据算出来的派生显隐：首次出现淡入，跟着指针移动时不做位置过渡')
+  comment('露不露是从激活的数据算出来的派生显隐：出现淡入、隐去淡出（Headless 隐去时留着上一回的内容与落点），跟着指针移动时不做位置过渡。visibility 只写在隐去这一档：隐去时等淡出播完才不可见，出现时当帧可见')
   rule(`${part('tooltip')}[data-state='hidden']`, [
     'visibility: hidden;',
     'opacity: 0;',
+    'transition:',
+    '  opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),',
+    '  visibility var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);',
   ])
   rule(`${part('tooltip')}[data-state='visible']`, 'transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);')
   rule(part('tooltip-header'), 'font-weight: var(--xh-font-weight-medium);')

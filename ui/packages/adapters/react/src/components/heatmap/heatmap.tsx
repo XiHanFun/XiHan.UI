@@ -515,7 +515,7 @@ function DefaultTree({ api, renderCell, renderTooltip, renderEmpty }: DefaultTre
     if (node.part === 'cell')
       return node.data == null ? null : renderCell?.(node.data as HeatmapCellSlotProps) ?? null
     if (node.part === 'tooltip')
-      return renderTooltip?.(api.activeCell)
+      return renderTooltip?.(api.tooltipCell)
     if (node.part === 'empty')
       return renderEmpty ? renderEmpty() : api.emptyText
     return undefined

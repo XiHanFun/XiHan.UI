@@ -367,7 +367,7 @@ function renderDefaultStructure(
     if (node.part === 'cell')
       return node.data == null ? [] : cellSlot?.(node.data as HeatmapCellSlotProps) ?? []
     if (node.part === 'tooltip')
-      return tooltipSlot?.(api.activeCell)
+      return tooltipSlot?.(api.tooltipCell)
     if (node.part === 'empty')
       return emptySlot?.() ?? api.emptyText
     return undefined

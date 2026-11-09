@@ -158,6 +158,7 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-animation` | props.animation |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'loading' \| 'loaded' |
 | `item` | `data-shape` | item.shape |
 
@@ -188,6 +189,6 @@ loading 期间容器报告 aria-busy；切换为 false 后骨架让出位置，�
 
 可覆盖的动效槽：`--xh-skeleton-duration` · `--xh-skeleton-pulse-duration`。
 
-关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。

@@ -303,6 +303,11 @@ export interface HeatmapApi<T extends PropTypes = PropTypes> {
   anchorDate: string | null
   /** 详情应显示的格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 */
   activeCell: HeatmapDatumDetails | null
+  /**
+   * 详情条里该写的那一格：显示时同 activeCell；隐去时留着上一回露面的那一格，淡出途中条里的字不先变空。
+   * 往详情条里填内容取这一份，判断「此刻有没有激活的格」取 activeCell
+   */
+  tooltipCell: HeatmapDatumDetails | null
   /** 激活的键：指针、键盘或受控的 activeKey 给出的那一格；没有时为 null。 */
   activeKey: string | null
   /** 网格里一条数据都没有。 */

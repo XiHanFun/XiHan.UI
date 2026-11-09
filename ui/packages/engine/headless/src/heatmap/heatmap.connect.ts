@@ -18,6 +18,7 @@ import type {
 import type { HeatmapApi, HeatmapSchema } from './heatmap.types'
 import { contains, dataAttr, DIAGNOSTIC_CODES, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems, readDirection, reportDiagnostic } from '@xihan-ui/core'
 import { HEATMAP_EN_US } from '../locale/en-US'
+import { retainChartTooltip } from '../shared/chart'
 import { resolveTranslations } from '../shared/translations'
 import { heatmapAnatomy, heatmapCellQuery } from './heatmap.anatomy'
 import {
@@ -290,6 +291,9 @@ export function connectHeatmap<T extends PropTypes>(
     }
   }
 
+  // 详情条隐去时留着上一回露面的那一格、落点与朝向：淡出途中条里的字不先变空、条不跳回原点
+  const shownTooltip = retainChartTooltip(service, activeCell, activeRef == null || tip == null ? null : { box: tip, placement: tipPlacement })
+
   return {
     variant,
     scaleMode: scale.mode,
@@ -302,6 +306,7 @@ export function connectHeatmap<T extends PropTypes>(
     anchorCell,
     anchorDate: matrixGrid ? null : (anchorCell?.date ?? null),
     activeCell,
+    tooltipCell: shownTooltip.tooltip,
     activeKey,
     empty,
     emptyText: loading ? translations.loadingText : translations.emptyText,
@@ -567,20 +572,21 @@ export function connectHeatmap<T extends PropTypes>(
       'aria-hidden': true,
       // 露不露是从「哪一格是活的」算出来的派生显隐，皮肤按这一位把它藏掉
       'data-state': activeRef == null ? 'hidden' : 'visible',
-      'data-placement': activeRef == null ? undefined : tipPlacement,
+      // 落位读留下来的那一份：隐去的淡出途中条不跳回原点
+      'data-placement': shownTooltip.tip?.placement,
       // 条往格子的哪一缘长：量测那一刻定的，取格子两侧空间大的那一边。
       // 不叫 data-inline：flex 与 space 用那个名字当「横排」开关，同名一布尔一枚举，
       // 使用者写 [data-inline] 这条全局规则会同时命中两种语义
-      'data-inline-anchor': activeRef == null || tip == null ? undefined : tip.inlineAnchor,
+      'data-inline-anchor': shownTooltip.tip?.box.inlineAnchor,
       // 量过才给这个键：给 undefined 会把作者写在条上的整条内联样式删掉
-      ...(tip == null
+      ...(shownTooltip.tip == null
         ? {}
         : {
             style: {
-              '--xh-_heatmap-tip-x': `${tip.inlineStart}px`,
-              '--xh-_heatmap-tip-y': `${tip.blockStart}px`,
-              '--xh-_heatmap-tip-w': `${tip.inlineSize}px`,
-              '--xh-_heatmap-tip-h': `${tip.blockSize}px`,
+              '--xh-_heatmap-tip-x': `${shownTooltip.tip.box.inlineStart}px`,
+              '--xh-_heatmap-tip-y': `${shownTooltip.tip.box.blockStart}px`,
+              '--xh-_heatmap-tip-w': `${shownTooltip.tip.box.inlineSize}px`,
+              '--xh-_heatmap-tip-h': `${shownTooltip.tip.box.blockSize}px`,
             },
           }),
     }),

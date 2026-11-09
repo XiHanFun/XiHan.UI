@@ -314,6 +314,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `anchorCell` | `HeatmapCellRef \| null` | 当前占据 Tab 位的格：锚点仍在网格中即为它，否则回退为文档序首格。 |
 | `anchorDate` | `string \| null` | 当前占据 Tab 位的日期；矩阵形态下恒为 null。 |
 | `activeCell` | `HeatmapDatumDetails \| null` | 详情应显示的格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 |
+| `tooltipCell` | `HeatmapDatumDetails \| null` | 详情条里该写的那一格：显示时同 activeCell；隐去时留着上一回露面的那一格，淡出途中条里的字不先变空。 往详情条里填内容取这一份，判断「此刻有没有激活的格」取 activeCell |
 | `activeKey` | `string \| null` | 激活的键：指针、键盘或受控的 activeKey 给出的那一格；没有时为 null。 |
 | `empty` | `boolean` | 网格里一条数据都没有。 |
 | `emptyText` | `string` | 空态的文字：取数中写加载文案，否则写空态文案。 |
@@ -433,8 +434,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
 | `cell` | `data-level` | String(place.level) |
 | `cell` | `data-polarity` | place.polarity |
-| `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
-| `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
+| `tooltip` | `data-inline-anchor` | shownTooltip.tip?.box.inlineAnchor |
+| `tooltip` | `data-placement` | shownTooltip.tip?.placement |
 | `tooltip` | `data-state` | 'hidden' \| 'visible' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `legend` | `data-xh-chart-part` | 'legend' |
@@ -497,7 +498,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

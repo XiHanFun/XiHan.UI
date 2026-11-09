@@ -31,19 +31,19 @@ function widthOf(el: HTMLElement): number {
 const tweens = new WeakMap<HTMLElement, { cancel: () => void }>()
 
 /**
- * 记下盒子此刻的块尺寸，返回开始补间的函数：宿主提交新排法之后调用。
+ * 记下盒子此刻的块尺寸，返回开始补间的函数：宿主提交新排法之后调用；它返回这一段播完（或被撤）的时刻，没补间时为 undefined。
  *
  * hold 是整段保持的离散样式：收回时新排法会当场把多出来的行裁掉（行数夹紧、单行省略），
  * 先把它推迟到补间播完——补间里仍按铺开的排法摆，盒子收到新高度那一刻才换回来
  */
-export function tweenBlockSize(el: HTMLElement): (hold?: Keyframe) => void {
+export function tweenBlockSize(el: HTMLElement): (hold?: Keyframe) => Promise<unknown> | undefined {
   const from = heightOf(el)
   return (hold = {}) => {
     tweens.get(el)?.cancel()
     tweens.delete(el)
     const to = heightOf(el)
     if (Math.abs(to - from) < 0.5)
-      return
+      return undefined
     const win = el.ownerDocument.defaultView
     const easing = win?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-disclosure').trim() || motionEasings.disclosure
     const frame = (height: number): Keyframe => ({ ...hold, blockSize: `${height}px`, overflow: 'clip', boxSizing: 'border-box' })
@@ -56,6 +56,7 @@ export function tweenBlockSize(el: HTMLElement): (hold?: Keyframe) => void {
       if (tweens.get(el) === handle)
         tweens.delete(el)
     })
+    return handle.finished
   }
 }
 

@@ -30,6 +30,8 @@ export interface SkeletonSchema extends MachineSchema {
      * 挂载时就已加载完的，初值即为假：首帧直接收起，不播淡出。
      */
     rendered: boolean
+    /** 挂载时就在加载：这一段直接呈现、不播进场；加载结束一次即撤，之后再开始加载时淡入。 */
+    loadingAtMount: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -39,7 +41,7 @@ export interface SkeletonSchema extends MachineSchema {
     | { type: 'ROOT.RENDERED', rendered: boolean }
   tag: never
   guard: never
-  action: 'setRendered'
+  action: 'setRendered' | 'clearLoadingAtMount'
   effect: 'trackRootPresence' | 'trackExitOverlay'
 }
 

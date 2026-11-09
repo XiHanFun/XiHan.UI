@@ -29,3 +29,20 @@ export function placeChartTooltip(anchor: { readonly x: number, readonly y: numb
     block: anchor.y > size.height / 2 ? 'above' : 'below',
   }
 }
+
+/** 每个图表实例上一回露面的提示框：内容与落点。 */
+const shownTooltips = new WeakMap<object, { tooltip: unknown, tip: unknown }>()
+
+/**
+ * 提示框隐去时留着上一回露面的内容与落点：退场淡出途中不先变空、不跳回绘图区原点。
+ * 露不露仍按当下有没有内容算，由调用方写进 data-state；owner 取图表的 service，每个实例各记各的
+ */
+export function retainChartTooltip<M, P>(owner: object, tooltip: M | null, tip: P | null): { tooltip: M | null, tip: P | null } {
+  if (tooltip != null) {
+    if (tip != null)
+      shownTooltips.set(owner, { tooltip, tip })
+    return { tooltip, tip }
+  }
+  const last = shownTooltips.get(owner) as { tooltip: M, tip: P } | undefined
+  return last ?? { tooltip: null, tip: null }
+}

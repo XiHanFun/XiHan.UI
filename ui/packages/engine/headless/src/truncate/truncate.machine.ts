@@ -40,6 +40,9 @@ function readText(el: HTMLElement): string {
 type MeasureParams = Pick<Params<TruncateSchema>, 'refs' | 'prop' | 'context' | 'state'>
 
 /** 量一次，结论有变才写回并通知。 */
+/** 收回补间里整段保持的排法：与铺开态一致，播完才换回夹紧与省略。 */
+const COLLAPSE_HOLD: Keyframe = { display: 'block', whiteSpace: 'normal', textOverflow: 'clip' }
+
 function runMeasure(p: MeasureParams): void {
   // 铺开态量不出东西：裁剪已经撤掉，两个尺寸恒相等。「会不会被裁」问的是夹住的那一版，
   // 所以这里原地留住上一次的结论，等收回去再量
@@ -48,6 +51,9 @@ function runMeasure(p: MeasureParams): void {
   const el = p.refs.get('getRootEl')()
   // 无布局环境量不到尺寸：结论留在初值
   if (!el)
+    return
+  // 收回的补间还在播：盒子仍按铺开的排法摆着，量出来是「没被裁」，展开钮会一闪而没。播完再量
+  if (el.getAnimations?.().some(animation => !('animationName' in animation) && !('transitionProperty' in animation) && animation.playState === 'running'))
     return
   p.context.set('text', readText(el))
   const next = isTruncateOverflowing(el, resolveTruncateLines(p.prop('lines')) > 1)
@@ -64,9 +70,6 @@ function runMeasure(p: MeasureParams): void {
  * connect 只读结果。受控（open 给定）时用户事件只发意图、不自改状态，
  * 由 watch 派发 CONTROLLED.* 回写。
  */
-/** 收回补间里整段保持的排法：与铺开态一致，播完才换回夹紧与省略。 */
-const COLLAPSE_HOLD: Keyframe = { display: 'block', whiteSpace: 'normal', textOverflow: 'clip' }
-
 export const truncateMachine = createMachine({
   name: 'truncate',
   context: ({ cell }) => ({
@@ -123,12 +126,15 @@ export const truncateMachine = createMachine({
        * 铺开与收回时盒子高度从旧排法补到新排法。状态改之前量下此刻的高度，提交之后起补；
        * 收回时先按铺开的排法摆着（行数夹紧、单行省略推迟到补间播完），多出来的行随盒子收进去，不先被一刀裁掉
        */
-      tweenOpen: ({ refs, flush, state }) => {
+      tweenOpen: ({ refs, flush, state, send }) => {
         const el = refs.get('getRootEl')()
         if (!el)
           return
         const start = tweenBlockSize(el)
-        flush(() => start(state.matches('open') ? undefined : COLLAPSE_HOLD))
+        flush(() => {
+          // 收回播完再量一次：补间途中的量测被跳过了
+          void start(state.matches('open') ? undefined : COLLAPSE_HOLD)?.then(() => send({ type: 'MEASURE' }))
+        })
       },
 
       invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),

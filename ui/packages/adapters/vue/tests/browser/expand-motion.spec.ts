@@ -209,6 +209,9 @@ describe('截断', () => {
     seek(animation, 0)
     expect(Math.abs(root.getBoundingClientRect().height - full)).toBeLessThan(1)
     expect(getComputedStyle(root).display).toBe('block')
+    // 补间途中仍是收着的那一档：展开钮与 data-state 不因为排法还铺着就被撤掉
+    expect(root.getAttribute('data-state')).toBe('closed')
+    expect(host!.querySelector<HTMLElement>(`[data-scope='truncate'][data-part='trigger']`)!.hidden).toBe(false)
     animation.finish()
     expect(root.getBoundingClientRect().height).toBeLessThan(full - 1)
     expect(getComputedStyle(root).display).toBe(clampedDisplay)

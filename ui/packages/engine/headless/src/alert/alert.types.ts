@@ -83,6 +83,7 @@ export interface AlertSchema extends MachineSchema {
     | 'endPress'
     | 'releaseWhenInert'
     | 'measureExit'
+    | 'revealIn'
     | 'setRendered'
   effect: 'trackRootPresence'
 }

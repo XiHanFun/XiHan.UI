@@ -53,9 +53,14 @@ export const skeletonMachine = createMachine({
   name: 'skeleton',
   context: ({ prop, cell }) => ({
     rendered: cell<boolean>(() => ({ defaultValue: skeletonLoading(prop('loading')) })),
+    // 挂载时就在加载：这一段直接呈现，不播进场；加载结束一次就撤，之后再开始加载的骨架淡入
+    loadingAtMount: cell<boolean>(() => ({ defaultValue: skeletonLoading(prop('loading')) })),
   }),
   initialState: () => 'idle',
   effects: ['trackRootPresence', 'trackExitOverlay'],
+  watch: ({ track, prop, action }) => {
+    track([() => skeletonLoading(prop('loading'))], () => action(['clearLoadingAtMount']))
+  },
   on: {
     'ROOT.RENDERED': { actions: ['setRendered'] },
   },
@@ -68,6 +73,10 @@ export const skeletonMachine = createMachine({
         const e = event.current()
         if (e.type === 'ROOT.RENDERED')
           context.set('rendered', e.rendered)
+      },
+      clearLoadingAtMount: ({ context, prop }) => {
+        if (!skeletonLoading(prop('loading')))
+          context.set('loadingAtMount', false)
       },
     },
     effects: {

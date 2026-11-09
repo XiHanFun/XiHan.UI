@@ -308,10 +308,13 @@
     translate: calc(-100% - var(--xh-space-3)) var(--xh-space-2);
   }
 
-  /* 露不露是从激活的数据算出来的派生显隐：首次出现淡入，跟着指针移动时不做位置过渡 */
+  /* 露不露是从激活的数据算出来的派生显隐：出现淡入、隐去淡出（Headless 隐去时留着上一回的内容与落点），跟着指针移动时不做位置过渡。visibility 只写在隐去这一档：隐去时等淡出播完才不可见，出现时当帧可见 */
   [data-xh-chart-part='tooltip'][data-state='hidden'] {
     visibility: hidden;
     opacity: 0;
+    transition:
+      opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+      visibility var(--xh-motion-duration-exit) var(--xh-motion-ease-exit);
   }
 
   [data-xh-chart-part='tooltip'][data-state='visible'] {
