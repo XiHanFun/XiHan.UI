@@ -839,6 +839,8 @@
     block-size: var(--xh-table-resize-line-length, 60%);
     border-radius: var(--xh-table-resize-radius, var(--xh-shape-pill));
     background: var(--xh-table-resize-fg, var(--xh-border-default));
+    /* 列宽把手悬停、拖动时接缝线换色淡变；长短跟着指针，不进过渡 */
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='table'][data-part='column-resize-trigger']:hover::after,

@@ -302,6 +302,8 @@
     font-size: var(--xh-tags-input-count-font-size, var(--xh-text-caption-size));
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
+    /* 计数到上限、禁用时换色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没开 showCount 时连接层给的是 hidden 属性；上面那条 align-self 不影响显隐，

@@ -90,6 +90,8 @@
     line-height: var(--xh-leading-relaxed);
     text-align: center;
     user-select: none;
+    /* 回退内容露面时淡入，不当帧蹦出 */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 图片载好：回退内容浮到图片之上原地淡出，与图片的淡入交叉；播完连接层才写 hidden */

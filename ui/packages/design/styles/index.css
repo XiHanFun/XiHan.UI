@@ -18156,6 +18156,8 @@
     inline-size: 100%;
     block-size: 100%;
     text-transform: uppercase;
+    /* 回退内容露面（加载失败，或等过 fallbackDelay）时淡入，不当帧蹦出 */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 图片载好：回退内容浮到图片之上原地淡出，与图片的淡入交叉；播完连接层才写 hidden */
@@ -22755,11 +22757,15 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-cascader[data-part='search-list'][hidden] {
     display: none;
+  }
+
+  /* 键入检索词换成搜索视图时列表淡入（从 hidden 露面，节点重新得到盒时起播），与列视图互换不硬切 */
+  .xh-scope-cascader[data-part='search-list']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 无候选时列表自身不占位，空态交给 empty 部件出面 */
@@ -32718,6 +32724,8 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    /* 上传失败时文件名转危险色淡变，与那一行的换面同拍 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 大小是次要信息：画淡、缩小，并用等宽数字——各位字宽不一时，
@@ -35022,6 +35030,8 @@
     line-height: var(--xh-leading-relaxed);
     text-align: center;
     user-select: none;
+    /* 回退内容露面时淡入，不当帧蹦出 */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 图片载好：回退内容浮到图片之上原地淡出，与图片的淡入交叉；播完连接层才写 hidden */
@@ -47289,6 +47299,8 @@
     block-size: var(--xh-table-resize-line-length, 60%);
     border-radius: var(--xh-table-resize-radius, var(--xh-shape-pill));
     background: var(--xh-table-resize-fg, var(--xh-border-default));
+    /* 列宽把手悬停、拖动时接缝线换色淡变；长短跟着指针，不进过渡 */
+    transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-table[data-part='column-resize-trigger']:hover::after,
@@ -49297,6 +49309,8 @@
     font-size: var(--xh-tags-input-count-font-size, var(--xh-text-caption-size));
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
+    /* 计数到上限、禁用时换色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没开 showCount 时连接层给的是 hidden 属性；上面那条 align-self 不影响显隐，
@@ -49513,6 +49527,8 @@
     font-size: var(--xh-text-field-count-font-size, var(--xh-_text-field-action-font-size));
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
+    /* 计数到上限、禁用时换色淡变 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-text-field[data-part='count'][hidden] {

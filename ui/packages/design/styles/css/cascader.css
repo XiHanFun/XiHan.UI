@@ -726,11 +726,15 @@
     overflow-y: auto;
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
-    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='cascader'][data-part='search-list'][hidden] {
     display: none;
+  }
+
+  /* 键入检索词换成搜索视图时列表淡入（从 hidden 露面，节点重新得到盒时起播），与列视图互换不硬切 */
+  [data-scope='cascader'][data-part='search-list']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 无候选时列表自身不占位，空态交给 empty 部件出面 */

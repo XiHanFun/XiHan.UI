@@ -359,6 +359,8 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    /* 上传失败时文件名转危险色淡变，与那一行的换面同拍 */
+    transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 大小是次要信息：画淡、缩小，并用等宽数字——各位字宽不一时，
