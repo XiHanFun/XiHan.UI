@@ -191,7 +191,8 @@ describe('tabs 横线档的当前页对比度', () => {
         await userEvent.tab()
         expect(document.activeElement, '键盘焦点落在当前页上').toBe(trigger)
         const label = `${environment.theme} / ${environment.contrast} / ${backdrop}`
-        const { violations } = await runAxe(stage!)
+        // 只扫标签列表：面板正文挂载时在淡入，不是这里要量的当前页
+        const { violations } = await runAxe(trigger.closest<HTMLElement>('[data-part="list"]')!)
         expect(violations.filter(v => v.id === 'color-contrast').map(v => v.nodes.map(n => n.failureSummary)), label).toEqual([])
         // 过渡缺省 150ms：量够十帧，从停住那一刻到落定
         for (let i = 0; i < 10; i++) {
@@ -208,7 +209,7 @@ describe('tabs 横线档的当前页对比度', () => {
       const trigger = await mountDemo(environment, '--xh-bg-page')
       await cdp().send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...centerOf(trigger) })
       await frame()
-      const { violations } = await runAxe(stage!)
+      const { violations } = await runAxe(trigger.closest<HTMLElement>('[data-part="list"]')!)
       expect(violations.filter(v => v.id === 'color-contrast').map(v => v.nodes.map(n => n.failureSummary)), `${environment.theme} / ${environment.contrast}`).toEqual([])
       stage!.remove()
     }

@@ -8,6 +8,8 @@
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
    本皮肤只映射桥接槽；当前页由连接层投影 data-xh-collection-terminal，走家族的 terminal 态 */
 @import '../family/collection-item.css';
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -74,6 +76,11 @@
 
   [data-scope='breadcrumb'][data-part='item'][hidden] {
     display: none;
+  }
+
+  /* 点开省略号后折叠的层级露面时淡入，路径不一下子变长 */
+  [data-scope='breadcrumb'][data-part='item']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 品牌字（写了语气随语气），

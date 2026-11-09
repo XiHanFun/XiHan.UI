@@ -201,6 +201,11 @@
     display: none;
   }
 
+  /* 选中对号露面时弹入，与标签的弹入同一档 */
+  [data-scope='tag-group'][data-part='item-indicator']:not([hidden]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   /* 实心标签的面本身就是那族色，品牌 / 语气字色压在上面读不出来：对号取面配对的那支前景色 */
   [data-scope='tag'][data-part='root'][data-variant='solid'] [data-scope='tag-group'][data-part='item-indicator'] {
     color: var(--xh-tag-group-item-indicator-fg, currentColor);

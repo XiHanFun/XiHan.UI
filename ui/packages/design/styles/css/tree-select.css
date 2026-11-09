@@ -265,6 +265,8 @@
     justify-content: center;
     color: var(--xh-tree-select-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='tree-select'][data-part='indicator'][hidden] {

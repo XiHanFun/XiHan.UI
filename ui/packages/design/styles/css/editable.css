@@ -6,6 +6,8 @@
 /* Editable 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -105,6 +107,11 @@
     display: none;
   }
 
+  /* 退出编辑态时预览淡入，不与输入框硬换 */
+  [data-scope='editable'][data-part='preview']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 认交互的预览区才给文字光标与悬停底色：
      activation-mode=none 或整块不可编辑时，它就只是一段文字，别装成能点 */
   [data-scope='editable'][data-part='preview']:not(
@@ -143,6 +150,11 @@
      UA 的 [hidden]{display:none} 仍然管用——这里补一条是防作者层另给 display */
   [data-scope='editable'][data-part='input'][hidden] {
     display: none;
+  }
+
+  /* 进入编辑态时输入框淡入，不与预览硬换 */
+  [data-scope='editable'][data-part='input']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
@@ -252,6 +264,21 @@
   [data-scope='editable'][data-part='submit-trigger'][hidden],
   [data-scope='editable'][data-part='cancel-trigger'][hidden] {
     display: none;
+  }
+
+  /* 取消钮露面时淡入 */
+  [data-scope='editable'][data-part='cancel-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 确认钮露面时淡入 */
+  [data-scope='editable'][data-part='submit-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 编辑钮回场时淡入 */
+  [data-scope='editable'][data-part='edit-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   @media (forced-colors: active) {

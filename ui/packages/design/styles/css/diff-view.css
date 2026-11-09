@@ -411,6 +411,11 @@
     display: none;
   }
 
+  /* 评论串露面时进场 */
+  [data-scope='diff-view'][data-part='comment-thread']:not([hidden]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   /* 尺寸档改字号、内衬与图标档 */
   [data-scope='diff-view'][data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-sm));

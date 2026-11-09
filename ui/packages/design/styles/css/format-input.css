@@ -5,6 +5,9 @@
 
 /* 定义 format input 样式。 */
 
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='format-input'] {
@@ -113,6 +116,11 @@
     color: var(--xh-format-input-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-format-input-error-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
+  }
+
+  /* 错误文案露面时淡入，与字段的错误文案同一档 */
+  [data-scope='format-input'][data-part='error-text']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

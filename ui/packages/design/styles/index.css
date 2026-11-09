@@ -4705,6 +4705,11 @@
     display: none;
   }
 
+  /* 评论串露面时进场 */
+  .xh-scope-diff-view[data-part='comment-thread']:not([hidden]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   /* 尺寸档改字号、内衬与图标档 */
   .xh-scope-diff-view[data-part='root'][data-size='sm'] {
     --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-sm));
@@ -18435,6 +18440,7 @@
 
 /* 链接归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按投影的家族角色给，
    本皮肤只映射桥接槽；当前页由连接层投影 data-xh-collection-terminal，走家族的 terminal 态 */
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -18501,6 +18507,11 @@
 
   .xh-scope-breadcrumb[data-part='item'][hidden] {
     display: none;
+  }
+
+  /* 点开省略号后折叠的层级露面时淡入，路径不一下子变长 */
+  .xh-scope-breadcrumb[data-part='item']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 品牌字（写了语气随语气），
@@ -22272,6 +22283,8 @@
     justify-content: center;
     color: var(--xh-cascader-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-cascader[data-part='indicator'][hidden] {
@@ -26736,6 +26749,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   .xh-scope-combobox[data-part='trigger'] {
     --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-combobox[data-part='clear-trigger'] {
@@ -28692,6 +28707,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   .xh-scope-date-picker[data-part='trigger'] {
     --xh-action-radius: var(--xh-date-picker-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-picker[data-part='clear-trigger'] {
@@ -29650,6 +29667,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   .xh-scope-date-range-picker[data-part='trigger'] {
     --xh-action-radius: var(--xh-date-range-picker-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-date-range-picker[data-part='clear-trigger'] {
@@ -31442,6 +31461,7 @@
 
 /* styles/editable.css */
 /* Editable 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -31541,6 +31561,11 @@
     display: none;
   }
 
+  /* 退出编辑态时预览淡入，不与输入框硬换 */
+  .xh-scope-editable[data-part='preview']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
   /* 认交互的预览区才给文字光标与悬停底色：
      activation-mode=none 或整块不可编辑时，它就只是一段文字，别装成能点 */
   .xh-scope-editable[data-part='preview']:not(
@@ -31579,6 +31604,11 @@
      UA 的 [hidden]{display:none} 仍然管用——这里补一条是防作者层另给 display */
   .xh-scope-editable[data-part='input'][hidden] {
     display: none;
+  }
+
+  /* 进入编辑态时输入框淡入，不与预览硬换 */
+  .xh-scope-editable[data-part='input']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
@@ -31688,6 +31718,21 @@
   .xh-scope-editable[data-part='submit-trigger'][hidden],
   .xh-scope-editable[data-part='cancel-trigger'][hidden] {
     display: none;
+  }
+
+  /* 取消钮露面时淡入 */
+  .xh-scope-editable[data-part='cancel-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 确认钮露面时淡入 */
+  .xh-scope-editable[data-part='submit-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 编辑钮回场时淡入 */
+  .xh-scope-editable[data-part='edit-trigger']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   @media (forced-colors: active) {
@@ -31884,6 +31929,11 @@
     color: var(--xh-expression-input-issue-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-expression-input-issue-font-size, var(--xh-text-caption-size));
     line-height: var(--xh-leading-normal);
+  }
+
+  /* 校验问题露面时进场，与表单的错误汇总同一档 */
+  .xh-scope-expression-input[data-part='issue']:not([hidden]) {
+    animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   .xh-scope-expression-input[data-part='issue'][data-severity='warning'] {
@@ -33402,6 +33452,8 @@
 /* styles/format-input.css */
 /* 定义 format input 样式。 */
 
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   .xh-scope-format-input {
@@ -33510,6 +33562,11 @@
     color: var(--xh-format-input-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-format-input-error-font-size, var(--xh-text-secondary-size));
     line-height: var(--xh-leading-normal);
+  }
+
+  /* 错误文案露面时淡入，与字段的错误文案同一档 */
+  .xh-scope-format-input[data-part='error-text']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -34139,6 +34196,11 @@
 
   .xh-scope-hierarchy-chart[data-part='path'][hidden] {
     display: none;
+  }
+
+  /* 下钻路径条露面时进场 */
+  .xh-scope-hierarchy-chart[data-part='path']:not([hidden]) {
+    animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 项的几何、字号与面全经家族桥接槽：静息 muted，悬停换面，当前的根由连接层投影 data-xh-collection-terminal，
@@ -37297,6 +37359,11 @@
 
   .xh-scope-message-feed[data-part='unread-count'][hidden] {
     display: none;
+  }
+
+  /* 未读数角标露面时弹入，与徽标计数同一档 */
+  .xh-scope-message-feed[data-part='unread-count']:not([hidden]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   @media print {
@@ -43119,6 +43186,8 @@
     block-size: var(--xh-select-action-size, var(--xh-control-action-size));
     color: var(--xh-select-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画箭头；作者往部件里塞了自己的图形，这条规则即不命中 */
@@ -45865,6 +45934,8 @@
   .xh-scope-steps[data-part='content'] {
     padding-block: var(--xh-steps-content-py, var(--xh-stack-gap-md));
     color: var(--xh-steps-content-fg, var(--xh-fg-default));
+    /* 换到这一步时面板淡入（从 hidden 回来时起播；只进不退，新旧两张不叠影） */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中。
@@ -47633,6 +47704,7 @@
 /* line 档的页签归 Collection Item 导航当前（nav 语境）：面、字色、字重、光标与按压时间线由家族配方按
    家族角色（data-xh-collection-item / -size / -context）给，本皮肤只映射桥接槽；card / segment 档不归族，面与字仍写在本皮肤。
    line 档的 2px 指示线由本皮肤画：标签带里放了 indicator 部件就由部件滑动，没放则选中标签自画一条静态线 */
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -47983,6 +48055,11 @@
   .xh-scope-tabs[data-part='content'] {
     padding-block: var(--xh-tabs-content-py, var(--xh-stack-gap-md));
     color: var(--xh-tabs-content-fg, var(--xh-fg-default));
+  }
+
+  /* 换到这一张时面板淡入（只进不退，新旧两张不叠影） */
+  .xh-scope-tabs[data-part='content']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* —— 标签拖拽换位 —— */
@@ -48798,6 +48875,11 @@
 
   .xh-scope-tag-group[data-part='item-indicator'][hidden] {
     display: none;
+  }
+
+  /* 选中对号露面时弹入，与标签的弹入同一档 */
+  .xh-scope-tag-group[data-part='item-indicator']:not([hidden]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 实心标签的面本身就是那族色，品牌 / 语气字色压在上面读不出来：对号取面配对的那支前景色 */
@@ -50022,6 +50104,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   .xh-scope-time-picker[data-part='trigger'] {
     --xh-action-radius: var(--xh-time-picker-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-time-picker[data-part='clear-trigger'] {
@@ -50896,6 +50980,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   .xh-scope-time-range-picker[data-part='trigger'] {
     --xh-action-radius: var(--xh-time-range-picker-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-time-range-picker[data-part='clear-trigger'] {
@@ -55038,6 +55124,8 @@
     justify-content: center;
     color: var(--xh-tree-select-indicator-fg, var(--xh-fg-muted));
     transition: rotate var(--xh-motion-duration-nudge) var(--xh-motion-ease-enter-strong);
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-tree-select[data-part='indicator'][hidden] {

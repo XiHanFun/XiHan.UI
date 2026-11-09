@@ -9,6 +9,8 @@
    家族角色（data-xh-collection-item / -size / -context）给，本皮肤只映射桥接槽；card / segment 档不归族，面与字仍写在本皮肤。
    line 档的 2px 指示线由本皮肤画：标签带里放了 indicator 部件就由部件滑动，没放则选中标签自画一条静态线 */
 @import '../family/collection-item.css';
+/* 露面进场的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -359,6 +361,11 @@
   [data-scope='tabs'][data-part='content'] {
     padding-block: var(--xh-tabs-content-py, var(--xh-stack-gap-md));
     color: var(--xh-tabs-content-fg, var(--xh-fg-default));
+  }
+
+  /* 换到这一张时面板淡入（只进不退，新旧两张不叠影） */
+  [data-scope='tabs'][data-part='content']:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* —— 标签拖拽换位 —— */

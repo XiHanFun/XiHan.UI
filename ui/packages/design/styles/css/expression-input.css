@@ -183,6 +183,11 @@
     line-height: var(--xh-leading-normal);
   }
 
+  /* 校验问题露面时进场，与表单的错误汇总同一档 */
+  [data-scope='expression-input'][data-part='issue']:not([hidden]) {
+    animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   [data-scope='expression-input'][data-part='issue'][data-severity='warning'] {
     color: var(--xh-expression-input-issue-warning-fg, var(--xh-fg-warning));
   }

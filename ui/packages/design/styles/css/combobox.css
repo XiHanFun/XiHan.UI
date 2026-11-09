@@ -238,6 +238,8 @@
   /* 形状两颗分开给：展开钮取 inset，清空钮（设计真源 §8.3）取圆形，静息字形取次级前景兑 50%，指到钮上换满色 */
   [data-scope='combobox'][data-part='trigger'] {
     --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
+    /* 给清空钮让位之后重新露面时淡入（节点重新得到盒时起播）：移开指针、清空值之后不当帧蹦回来 */
+    animation: xh-fade-in var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='combobox'][data-part='clear-trigger'] {

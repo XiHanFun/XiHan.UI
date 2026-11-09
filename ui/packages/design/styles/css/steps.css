@@ -544,6 +544,8 @@
   [data-scope='steps'][data-part='content'] {
     padding-block: var(--xh-steps-content-py, var(--xh-stack-gap-md));
     color: var(--xh-steps-content-fg, var(--xh-fg-default));
+    /* 换到这一步时面板淡入（从 hidden 回来时起播；只进不退，新旧两张不叠影） */
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这几条即不命中。

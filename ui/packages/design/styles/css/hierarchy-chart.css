@@ -79,6 +79,11 @@
     display: none;
   }
 
+  /* 下钻路径条露面时进场 */
+  [data-scope='hierarchy-chart'][data-part='path']:not([hidden]) {
+    animation: xh-rise-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   /* 项的几何、字号与面全经家族桥接槽：静息 muted，悬停换面，当前的根由连接层投影 data-xh-collection-terminal，
      走家族的 terminal 态（不响应悬停与按下）。本条 (0,2,0) 压过家族基础块 (0,1,0)，不能再写 color / background */
   [data-scope='hierarchy-chart'][data-part='path-item'] {

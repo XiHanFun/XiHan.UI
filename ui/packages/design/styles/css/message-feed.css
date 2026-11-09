@@ -273,6 +273,11 @@
     display: none;
   }
 
+  /* 未读数角标露面时弹入，与徽标计数同一档 */
+  [data-scope='message-feed'][data-part='unread-count']:not([hidden]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  }
+
   @media print {
     /* 打印：回到底部这颗钮只有在能滚的地方才成立，落到纸上是一颗按不动的按钮；
        等首个片段的呼吸点是一瞬间的状态，纸上没有「正在进行」。 */
