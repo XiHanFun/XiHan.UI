@@ -31,6 +31,8 @@ export interface AvatarSchema extends MachineSchema {
     onStatusChange?: (details: AvatarStatusChangeDetails) => void
   }
   context: {
+    /** 上一回载好的 src：换图时旧图的替身取它，新图载好前盖在原处。载入失败即清空。 */
+    shownSrc: string | null
     /** 回退内容的等待已过：载入中也可以露面了。一旦过了就一直算过，换 src 重载时回退内容不再先藏起来。 */
     fallbackDue: boolean
     /** 回退节点还留着（没有 hidden）：图片载好后回退内容先淡出、与图片的淡入交叉，播完才为假。 */
@@ -51,8 +53,8 @@ export interface AvatarSchema extends MachineSchema {
     | { type: 'FALLBACK.RENDERED', rendered: boolean }
   tag: never
   guard: 'hasSrc'
-  action: 'syncSrc' | 'invokeLoading' | 'invokeLoaded' | 'invokeError' | 'markFallbackDue' | 'setFallbackRendered'
-  effect: 'resolveSrc' | 'waitFallbackDelay' | 'trackFallbackPresence'
+  action: 'syncSrc' | 'invokeLoading' | 'invokeLoaded' | 'invokeError' | 'markFallbackDue' | 'setFallbackRendered' | 'beginSwap' | 'rememberSrc' | 'endSwap'
+  effect: 'resolveSrc' | 'waitFallbackDelay' | 'trackFallbackPresence' | 'releaseSwap'
 }
 
 export interface AvatarApi<T extends PropTypes = PropTypes> {

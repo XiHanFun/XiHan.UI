@@ -35,6 +35,8 @@ export function connectAvatar<T extends PropTypes>(
     }),
     getImageProps: () => normalize.img({
       ...parts.image.attrs,
+      // 换图时机器按 id 找到它，在它后面放旧图的替身
+      'id': scope.partId('avatar', 'image'),
       'src': prop('src'),
       'alt': prop('alt'),
       'data-state': status,

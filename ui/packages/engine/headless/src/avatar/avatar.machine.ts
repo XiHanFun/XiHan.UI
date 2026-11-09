@@ -7,6 +7,7 @@
 
 import type { AvatarSchema } from './avatar.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { beginImageSwap, endImageSwap } from '../shared/image-swap'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<AvatarSchema>()
@@ -27,18 +28,19 @@ export function avatarFallbackVisible(status: AvatarSchema['state'], fallbackDue
 export const avatarMachine = createMachine({
   name: 'avatar',
   context: ({ cell }) => ({
+    shownSrc: cell<string | null>(() => ({ defaultValue: null })),
     fallbackDue: cell<boolean>(() => ({ defaultValue: false })),
     fallbackRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 首帧停在 idle，来源决议推迟到宿主提交一帧之后
   initialState: () => 'idle',
-  effects: ['trackFallbackPresence'],
+  effects: ['trackFallbackPresence', 'releaseSwap'],
   watch: ({ track, prop, action }) => track([() => prop('src')], () => action(['syncSrc'])),
   // 换图在任意状态都重走一轮
   on: {
     'SRC.CHANGE': [
-      { guard: 'hasSrc', target: 'loading' },
-      { target: 'error' },
+      { guard: 'hasSrc', target: 'loading', actions: ['beginSwap'] },
+      { target: 'error', actions: ['beginSwap'] },
     ],
     'FALLBACK.DUE': { actions: ['markFallbackDue'] },
     'FALLBACK.RENDERED': { actions: ['setFallbackRendered'] },
@@ -62,11 +64,11 @@ export const avatarMachine = createMachine({
       },
     },
     loaded: {
-      entry: ['invokeLoaded'],
+      entry: ['invokeLoaded', 'rememberSrc', 'endSwap'],
     },
     // 加载失败与没有 src 共用此落点
     error: {
-      entry: ['invokeError'],
+      entry: ['invokeError', 'endSwap'],
     },
   },
   implementations: {
@@ -74,6 +76,21 @@ export const avatarMachine = createMachine({
       hasSrc: ({ prop }) => !!prop('src'),
     },
     actions: {
+      /**
+       * 换图开始：上一回载好过、又换了一张时，在图片节点后面放一张旧图的替身盖着，新图载好或失败时再淡出。
+       * 不靠 DOM 里此刻的 src：React 的宿主可能已经换上了新的
+       */
+      beginSwap: ({ context, prop, scope }) => {
+        const previous = context.get('shownSrc')
+        if (previous && previous !== prop('src'))
+          beginImageSwap(scope, scope.getById<HTMLImageElement>(scope.partId('avatar', 'image')), previous)
+      },
+      rememberSrc: ({ context, prop }) => context.set('shownSrc', prop('src') ?? null),
+      endSwap: ({ context, scope, state }) => {
+        if (state.matches('error'))
+          context.set('shownSrc', null)
+        endImageSwap(scope)
+      },
       invokeLoading: ({ prop }) => prop('onStatusChange')?.({ status: 'loading' }),
       invokeLoaded: ({ prop }) => prop('onStatusChange')?.({ status: 'loaded' }),
       invokeError: ({ prop }) => prop('onStatusChange')?.({ status: 'error' }),
@@ -86,6 +103,8 @@ export const avatarMachine = createMachine({
       },
     },
     effects: {
+      /** 卸载时撤掉还没播完的旧图替身。 */
+      releaseSwap: ({ scope }) => () => endImageSwap(scope, true),
       /** 载入中的回退内容等过 fallbackDelay 才露面；等过一次就一直算过。 */
       waitFallbackDelay: ({ context, prop, send }) => {
         if (context.get('fallbackDue'))

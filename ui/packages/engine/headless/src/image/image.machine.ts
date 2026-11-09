@@ -7,6 +7,7 @@
 
 import type { ImageSchema } from './image.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { beginImageSwap, endImageSwap } from '../shared/image-swap'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<ImageSchema>()
@@ -33,6 +34,7 @@ export function imageFallbackVisible(status: ImageSchema['state'], fallbackVisib
 export const imageMachine = createMachine({
   name: 'image',
   context: ({ prop, cell }) => ({
+    shownSrc: cell<string | null>(() => ({ defaultValue: null })),
     // 初值按 fallbackDelay 定
     fallbackVisible: cell<boolean>(() => ({
       defaultValue: resolveFallbackDelay(prop('fallbackDelay')) <= 0,
@@ -41,15 +43,15 @@ export const imageMachine = createMachine({
     fallbackRendered: cell<boolean>(() => ({ defaultValue: false })),
   }),
   // 占位层与回退内容撤下时先淡出、与图片的淡入交叉，播完才藏起
-  effects: ['trackPlaceholderPresence', 'trackFallbackPresence'],
+  effects: ['trackPlaceholderPresence', 'trackFallbackPresence', 'releaseSwap'],
   // 首帧一律停在 idle，来源决议推迟到宿主提交一帧之后（见 resolveSrc）
   initialState: () => 'idle',
   watch: ({ track, prop, action }) => track([() => prop('src')], () => action(['syncSrc'])),
   // 换图重走一轮；loading→loading 用 reenter 重跑 entry 并重挂计时器。
   on: {
     'SRC.CHANGE': [
-      { guard: 'hasSrc', target: 'loading', reenter: true },
-      { target: 'error' },
+      { guard: 'hasSrc', target: 'loading', reenter: true, actions: ['beginSwap'] },
+      { target: 'error', actions: ['beginSwap'] },
     ],
     'PART.RENDERED': { actions: ['setPartRendered'] },
   },
@@ -72,11 +74,11 @@ export const imageMachine = createMachine({
       },
     },
     loaded: {
-      entry: ['invokeLoaded'],
+      entry: ['invokeLoaded', 'rememberSrc', 'endSwap'],
     },
     // 加载失败与无 src 同落此态，回退内容不受延迟约束
     error: {
-      entry: ['invokeError'],
+      entry: ['invokeError', 'endSwap'],
     },
   },
   implementations: {
@@ -84,6 +86,21 @@ export const imageMachine = createMachine({
       hasSrc: ({ prop }) => !!prop('src'),
     },
     actions: {
+      /**
+       * 换图开始：上一回载好过、又换了一张时，在图片节点后面放一张旧图的替身盖着，新图载好或失败时再淡出。
+       * 不靠 DOM 里此刻的 src：React 的宿主可能已经换上了新的
+       */
+      beginSwap: ({ context, prop, scope }) => {
+        const previous = context.get('shownSrc')
+        if (previous && previous !== prop('src'))
+          beginImageSwap(scope, scope.getById<HTMLImageElement>(scope.partId('image', 'image')), previous)
+      },
+      rememberSrc: ({ context, prop }) => context.set('shownSrc', prop('src') ?? null),
+      endSwap: ({ context, scope, state }) => {
+        if (state.matches('error'))
+          context.set('shownSrc', null)
+        endImageSwap(scope)
+      },
       invokeLoading: ({ prop }) => prop('onStatusChange')?.({ status: 'loading' }),
       invokeLoaded: ({ prop }) => prop('onStatusChange')?.({ status: 'loaded' }),
       invokeError: ({ prop }) => prop('onStatusChange')?.({ status: 'error' }),
@@ -102,6 +119,8 @@ export const imageMachine = createMachine({
       },
     },
     effects: {
+      /** 卸载时撤掉还没播完的旧图替身。 */
+      releaseSwap: ({ scope }) => () => endImageSwap(scope, true),
       /** 占位层撤下（图片载好或失败）时先淡出，播完才写 hidden：模糊小图与图片交叉，不露一拍底色。 */
       trackPlaceholderPresence: ({ state, scope, send, track, flush }) => trackPartPresence({
         scope,

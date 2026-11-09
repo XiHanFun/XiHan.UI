@@ -70,6 +70,17 @@
     object-fit: cover;
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
+  /* 换图：新图载入期间，旧图的替身原样盖在原处，不重播进场；新图载好（或失败）那一刻淡出，与新图的淡入交叉 */
+  [data-scope='avatar'][data-part='image'][data-xh-ghost] {
+    position: absolute;
+    inset: 0;
+    animation: none;
+    pointer-events: none;
+  }
+
+  [data-scope='avatar'][data-part='image'][data-xh-ghost][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
 
   [data-scope='avatar'][data-part='fallback'] {
     display: flex;

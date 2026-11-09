@@ -158,7 +158,7 @@
 | 面板（sheet） | `xh-sheet-in / out` | Dialog、Notification |
 | 整幅滑入 | `xh-slide-in / out` | Drawer、Layout 抽屉式侧栏：入场 `slide` + `ease-slide`，退场 `exit` + `ease-exit` |
 
-遮罩与全屏面 `xh-fade-in / out`。图表提示框与热力图详情条是派生显隐：出现淡入、隐去淡出，隐去时 Headless 留着上一回露面的内容与落点（`retainChartTooltip`），淡出途中不先变空、不跳回绘图区原点。有进场就有退场：退场一律经 Presence 等浏览器实际起播的退场动画播完再卸载或藏起，不用固定计时器；常挂的部件（回到顶部、回到底部）收起时先播完退场再带上 `hidden`。
+遮罩与全屏面 `xh-fade-in / out`。图表提示框与热力图详情条是派生显隐：出现淡入、隐去淡出，隐去时 Headless 留着上一回露面的内容与落点（`retainChartTooltip`），淡出途中不先变空、不跳回绘图区原点。Avatar 与 Image 换图时，新图载入期间旧图的替身原样盖在原处，新图载好（或失败）那一刻替身淡出、播完即移除，与新图的淡入交叉，中间不露一拍底色或回退内容。有进场就有退场：退场一律经 Presence 等浏览器实际起播的退场动画播完再卸载或藏起，不用固定计时器；常挂的部件（回到顶部、回到底部）收起时先播完退场再带上 `hidden`。
 
 ## 列表
 

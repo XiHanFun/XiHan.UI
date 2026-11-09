@@ -27,6 +27,8 @@ export interface ImageSchema extends MachineSchema {
     onStatusChange?: (details: ImageStatusChangeDetails) => void
   }
   context: {
+    /** 上一回载好的 src：换图时旧图的替身取它，新图载好前盖在原处。载入失败即清空。 */
+    shownSrc: string | null
     /** 加载期间回退内容当前是否应显示。进入 loading 时按 fallbackDelay 重置，到期由计时器置真。 */
     fallbackVisible: boolean
     /** 占位层还留着（没有 hidden）：图片载好或失败后先淡出，播完才为假。 */
@@ -49,8 +51,8 @@ export interface ImageSchema extends MachineSchema {
     | { type: 'PART.RENDERED', part: 'placeholder' | 'fallback', rendered: boolean }
   tag: never
   guard: 'hasSrc'
-  action: 'syncSrc' | 'resetFallback' | 'showFallback' | 'invokeLoading' | 'invokeLoaded' | 'invokeError' | 'setPartRendered'
-  effect: 'resolveSrc' | 'trackFallbackDelay' | 'trackPlaceholderPresence' | 'trackFallbackPresence'
+  action: 'syncSrc' | 'resetFallback' | 'showFallback' | 'invokeLoading' | 'invokeLoaded' | 'invokeError' | 'setPartRendered' | 'beginSwap' | 'rememberSrc' | 'endSwap'
+  effect: 'resolveSrc' | 'trackFallbackDelay' | 'trackPlaceholderPresence' | 'trackFallbackPresence' | 'releaseSwap'
 }
 
 export interface ImageApi<T extends PropTypes = PropTypes> {

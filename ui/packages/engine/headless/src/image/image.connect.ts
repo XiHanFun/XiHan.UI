@@ -39,6 +39,8 @@ export function connectImage<T extends PropTypes>(
     // 无障碍语义交给原生 img
     getImageProps: () => normalize.img({
       ...parts.image.attrs,
+      // 换图时机器按 id 找到它，在它后面放旧图的替身
+      'id': scope.partId('image', 'image'),
       'src': prop('src'),
       'alt': prop('alt'),
       'data-state': status,
