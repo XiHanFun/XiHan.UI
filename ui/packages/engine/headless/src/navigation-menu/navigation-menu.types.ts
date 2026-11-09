@@ -7,7 +7,7 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { LiquidIndicator } from '../shared/indicator'
+import type { IndicatorPresence, LiquidIndicator } from '../shared/indicator'
 import type { OverlayRelease } from '../shared/overlay-shell'
 
 /** 读屏文案，默认英文。 */
@@ -101,6 +101,8 @@ export interface NavigationMenuRefs {
   getListEl: () => HTMLElement | null
   /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
   liquidIndicator?: LiquidIndicator | null
+  /** 指示条的出没：落点经它写进 context，从有到无时先淡出、播完才清。首次写落点时建好。 */
+  indicatorPresence?: IndicatorPresence<NavigationMenuIndicatorRect> | null
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在有面板展开期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null

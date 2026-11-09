@@ -9,10 +9,10 @@
 // 位置交给 transform、尺寸交给 inline-size / block-size，数值由这里量出、连接层投成私有槽。
 
 import type { Direction } from '@xihan-ui/core'
-import type { SpringValue } from '@xihan-ui/motion'
+import type { AnimationHandle, SpringValue } from '@xihan-ui/motion'
 import { readDirection } from '@xihan-ui/core'
 import { isLiquidMaterial } from '@xihan-ui/core/visual-environment'
-import { createSpringValue } from '@xihan-ui/motion'
+import { animate, createSpringValue, motionEasings, readMotion } from '@xihan-ui/motion'
 
 /** 指示器的盒子，逻辑方向：起始缘从行首 / 块首量起，单位 px。 */
 export interface IndicatorBox {
@@ -276,6 +276,93 @@ export function createLiquidIndicator(options: LiquidIndicatorOptions): LiquidIn
     dispose: () => {
       round++
       stopEdges()
+    },
+  }
+}
+
+export interface IndicatorPresenceOptions<B> {
+  /** 指示条节点，现取；拿不到时落点直接写，不播淡入淡出。 */
+  el: () => HTMLElement | null
+  /** 机器里此刻的落点。 */
+  read: () => B | null
+  /** 写落点（连接层按它有无写 hidden）。 */
+  write: (box: B | null) => void
+  flush: (fn: () => void) => void
+}
+
+export interface IndicatorPresence<B> {
+  /** 落到新落点；null 表示没有可指的项。 */
+  set: (box: B | null) => void
+  dispose: () => void
+}
+
+/** 取过渡曲线令牌的 CSS 串，读不到时退回 JS 侧的同名缓动。 */
+function easeOf(el: Element, name: 'enter' | 'exit'): string {
+  return el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue(`--xh-motion-ease-${name}`).trim() || motionEasings[name]
+}
+
+/**
+ * 指示条的出没：落点从有到无时不当场清掉，先在原处淡出（exit），播完才清，连接层这时才写 hidden；
+ * 之前落过位、又从无到有时原地淡入（enter），首次落位直接呈现。淡出途中又有了落点：撤掉淡出、从此刻的透明度淡回来
+ */
+export function createIndicatorPresence<B>(options: IndicatorPresenceOptions<B>): IndicatorPresence<B> {
+  let placed = false
+  let leaving: AnimationHandle | null = null
+  let fading: AnimationHandle | null = null
+
+  const appear = (el: HTMLElement, from: number): void => {
+    fading?.cancel()
+    fading = animate(el, [{ opacity: from }, { opacity: 1 }], { duration: readMotion(el).duration('enter'), easing: easeOf(el, 'enter') })
+  }
+
+  return {
+    set: (box) => {
+      const prev = options.read()
+      if (box == null) {
+        if (prev == null || leaving)
+          return
+        const el = options.el()
+        if (!el) {
+          options.write(null)
+          return
+        }
+        fading?.cancel()
+        fading = null
+        const handle = animate(el, [{ opacity: 1 }, { opacity: 0 }], { duration: readMotion(el).duration('exit'), easing: easeOf(el, 'exit'), fill: 'forwards' })
+        leaving = handle
+        void handle.finished.then(() => {
+          if (leaving !== handle)
+            return
+          leaving = null
+          options.write(null)
+          // 落定之后撤掉 forwards 留下的透明度：下一次露面从连接层与皮肤给的样子起
+          handle.cancel()
+        })
+        return
+      }
+      const reveal = placed && (prev == null || leaving != null)
+      let from = 0
+      if (leaving) {
+        const el = options.el()
+        from = el ? Number(el.ownerDocument.defaultView?.getComputedStyle(el).opacity ?? 0) || 0 : 0
+        leaving.cancel()
+        leaving = null
+      }
+      options.write(box)
+      placed = true
+      if (reveal) {
+        options.flush(() => {
+          const el = options.el()
+          if (el)
+            appear(el, from)
+        })
+      }
+    },
+    dispose: () => {
+      leaving?.cancel()
+      leaving = null
+      fading?.cancel()
+      fading = null
     },
   }
 }

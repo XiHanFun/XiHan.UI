@@ -5,11 +5,12 @@
 
 // 提供 navigation menu 相关实现。
 
-import type { Cleanup, Transition } from '@xihan-ui/core'
+import type { Cleanup, Params, Transition } from '@xihan-ui/core'
+import type { IndicatorPresence } from '../shared/indicator'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
 import { contains, focusItem, itemValue, overlayKit, prefetchOverlayKit, queryItems, requireOverlayKit, setTimeoutEffect, setup, tweenBoxSize, whenOverlayKit } from '@xihan-ui/core'
 import { openedAtMountCell } from '../shared/first-frame'
-import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { createIndicatorPresence, createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
 import { navigationMenuPartId, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 import { branchTriggerHoldingFocus, currentBranchIn } from './navigation-menu.dom'
@@ -17,6 +18,25 @@ import { branchTriggerHoldingFocus, currentBranchIn } from './navigation-menu.do
 const { createMachine } = setup<NavigationMenuSchema>()
 
 /** 悬停/聚焦到展开的默认等待毫秒。 */
+
+/**
+ * 指示条的出没：落点从有到无时先在原处淡出、播完才清（连接层这时才写 hidden）；之前落过位、又从无到有时原地淡入。
+ * 第一次写落点时建好放进 refs，之后的落点都经它写
+ */
+function indicatorPresenceOf({ refs, context, flush }: Params<NavigationMenuSchema>): IndicatorPresence<NavigationMenuIndicatorRect> {
+  let presence = refs.get('indicatorPresence')
+  if (!presence) {
+    presence = createIndicatorPresence<NavigationMenuIndicatorRect>({
+      el: () => refs.get('getListEl')()?.querySelector<HTMLElement>(`[data-scope='navigation-menu'][data-part='indicator']`) ?? null,
+      read: () => context.get('indicator'),
+      write: box => context.set('indicator', box),
+      flush,
+    })
+    refs.set('indicatorPresence', presence)
+  }
+  return presence
+}
+
 export const NAVIGATION_MENU_DELAY = 200
 
 /** 收起之后的默认静默毫秒：窗口内再碰任意 trigger 直接展开。 */
@@ -461,7 +481,8 @@ export const navigationMenuMachine = createMachine({
       },
 
       /** 量指示条；同步与推迟各量一遍，后者补上 WC 侧首帧才写入的身份标记。 */
-      measureIndicator: ({ refs, prop, context, flush }) => {
+      measureIndicator: (params) => {
+        const { refs, prop, context, flush } = params
         const run = (): void => {
           const list = refs.get('getListEl')()
           const value = context.get('value') ?? null
@@ -473,7 +494,7 @@ export const navigationMenuMachine = createMachine({
             }
             else {
               // 指示器的落位器建起之前（挂载即量的那一次）：首次落位，直接到位
-              context.set('indicator', box)
+              indicatorPresenceOf(params).set(box)
               context.set('indicatorInstant', true)
             }
           }
@@ -496,12 +517,13 @@ export const navigationMenuMachine = createMachine({
     },
     effects: {
       /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
-      trackLiquidIndicator: ({ refs, prop, context }) => {
+      trackLiquidIndicator: (params) => {
+        const { refs, prop, context } = params
         const liquid = createLiquidIndicator({
           axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
           host: () => refs.get('getListEl')(),
           onFrame: (box, stretch, instant) => {
-            context.set('indicator', box)
+            indicatorPresenceOf(params).set(box)
             context.set('indicatorStretch', stretch)
             context.set('indicatorInstant', instant)
           },
@@ -510,6 +532,8 @@ export const navigationMenuMachine = createMachine({
         refs.set('liquidIndicator', liquid)
         return () => {
           liquid.dispose()
+          refs.get('indicatorPresence')?.dispose()
+          refs.set('indicatorPresence', null)
           refs.set('liquidIndicator', null)
         }
       },

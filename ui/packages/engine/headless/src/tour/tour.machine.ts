@@ -9,6 +9,7 @@ import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { OverlayRelease } from '../shared/overlay-shell'
 import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
 import { canTakeFocus, requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
@@ -134,7 +135,7 @@ export const tourMachine = createMachine({
     // 步序变了要先把目标滚进视口，再换锚点、重量高亮框；挂在 watch 上，
     // 受控时步序是宿主写进来的，不经过走步动作。换步本身也排一轮落定：
     // 两步的几何恰好相同时不会再有几何更新来收尾，这一轮见不到起播的过渡就当帧落定
-    track([context.dep('value')], () => action(['startStepping', 'scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight', 'awaitStepSettle']))
+    track([context.dep('value')], () => action(['startStepping', 'fadeStepContent', 'scrollTargetIntoView', 'reanchorPosition', 'measureSpotlight', 'awaitStepSettle']))
     // 换步途中几何更新了：等这一轮起播的位置与尺寸过渡播完再撤换步标记
     track([context.dep('position'), context.dep('spotlight')], () => action(['awaitStepSettle']))
   },
@@ -248,6 +249,21 @@ export const tourMachine = createMachine({
       startStepping: ({ context, state }) => {
         if (state.get() === 'open' && (context.get('position') != null || context.get('spotlight') != null))
           context.set('stepping', true)
+      },
+      /**
+       * 展开着换步：气泡里的标题与说明原地淡入，跟着气泡一起滑到新位置，不一下子换掉；
+       * 刚展开那一次随气泡进场，不另播（startStepping 只在量到过几何时才挂上换步）
+       */
+      fadeStepContent: ({ context, scope, flush }) => {
+        if (!context.get('stepping'))
+          return
+        flush(() => {
+          const content = scope.getById(scope.partId('tour', 'content'))
+          for (const el of content?.querySelectorAll<HTMLElement>(`[data-scope='tour']:is([data-part='title'], [data-part='description'])`) ?? []) {
+            const easing = el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-enter').trim() || motionEasings.enter
+            void animate(el, [{ opacity: 0 }, { opacity: 1 }], { duration: readMotion(el).duration('enter'), easing })
+          }
+        })
       },
       /**
        * 换步途中几何更新了一回：宿主把这一帧提交出去之后，等两者身上起播的过渡都播完再报落定。

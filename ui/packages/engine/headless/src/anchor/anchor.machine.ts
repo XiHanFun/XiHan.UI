@@ -5,16 +5,36 @@
 
 // 提供 anchor 相关实现。
 
-import type { Scope } from '@xihan-ui/core'
+import type { Params, Scope } from '@xihan-ui/core'
+import type { IndicatorPresence } from '../shared/indicator'
 import type { AnchorIndicatorRect, AnchorSchema, AnchorTargetOffset } from './anchor.types'
 import { itemValue, queryItems, resolveScrollBehavior, setup } from '@xihan-ui/core'
 import { frameLoop } from '@xihan-ui/motion'
-import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
+import { createIndicatorPresence, createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { anchorItemQuery } from './anchor.anatomy'
 
 const { createMachine } = setup<AnchorSchema>()
 
 /** 判定线默认贴着滚动容器视口的顶边。 */
+
+/**
+ * 指示条的出没：落点从有到无时先在原处淡出、播完才清（连接层这时才写 hidden）；之前落过位、又从无到有时原地淡入。
+ * 第一次写落点时建好放进 refs，之后的落点都经它写
+ */
+function indicatorPresenceOf({ refs, context, flush }: Params<AnchorSchema>): IndicatorPresence<AnchorIndicatorRect> {
+  let presence = refs.get('indicatorPresence')
+  if (!presence) {
+    presence = createIndicatorPresence<AnchorIndicatorRect>({
+      el: () => refs.get('getListEl')()?.querySelector<HTMLElement>(`[data-scope='anchor'][data-part='indicator']`) ?? null,
+      read: () => context.get('indicator'),
+      write: box => context.set('indicator', box),
+      flush,
+    })
+    refs.set('indicatorPresence', presence)
+  }
+  return presence
+}
+
 export const ANCHOR_DEFAULT_OFFSET = 0
 
 /** 压线判定的容差（px）。布局尺寸带小数，平滑滚动停稳时目标顶边常落在 offset+0.34 这类位置，严格比较会判成还没到。 */
@@ -209,7 +229,8 @@ export const anchorMachine = createMachine({
        * 量指示条。必须量两遍：同步那遍照顾"链接早就在 DOM 里"的常规情形，推迟那遍照顾首帧
        * （WC 侧的身份标记要等首次 wire 才写上，这一刻一条链接都查不到）。cell 带 isEqual，量到同一结果不会多推更新。
        */
-      measureIndicator: ({ refs, prop, context, flush }) => {
+      measureIndicator: (params) => {
+        const { refs, prop, context, flush } = params
         const run = (): void => {
           const list = refs.get('getListEl')()
           const value = context.get('value')
@@ -221,7 +242,7 @@ export const anchorMachine = createMachine({
             }
             else {
               // 指示器的落位器建起之前（挂载即量的那一次）：首次落位，直接到位
-              context.set('indicator', box)
+              indicatorPresenceOf(params).set(box)
               context.set('indicatorInstant', true)
             }
           }
@@ -244,12 +265,13 @@ export const anchorMachine = createMachine({
     },
     effects: {
       /** 液态档的双沿指示器：建好放进 refs，先把眼下的落点交给它，之后的落位都经它走。 */
-      trackLiquidIndicator: ({ refs, prop, context }) => {
+      trackLiquidIndicator: (params) => {
+        const { refs, prop, context } = params
         const liquid = createLiquidIndicator({
           axis: () => (prop('orientation') === 'vertical' ? 'block' : 'inline'),
           host: () => refs.get('getListEl')(),
           onFrame: (box, stretch, instant) => {
-            context.set('indicator', box)
+            indicatorPresenceOf(params).set(box)
             context.set('indicatorStretch', stretch)
             context.set('indicatorInstant', instant)
           },
@@ -258,6 +280,8 @@ export const anchorMachine = createMachine({
         refs.set('liquidIndicator', liquid)
         return () => {
           liquid.dispose()
+          refs.get('indicatorPresence')?.dispose()
+          refs.set('indicatorPresence', null)
           refs.set('liquidIndicator', null)
         }
       },

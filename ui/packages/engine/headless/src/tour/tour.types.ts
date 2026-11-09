@@ -227,6 +227,7 @@ export interface TourSchema extends MachineSchema {
   tag: never
   guard: 'isOpenControlled' | 'isLastStep' | 'isLastStepOpenControlled' | 'canPress'
   action:
+    | 'fadeStepContent'
     | 'invokeOnOpen'
     | 'invokeOnClose'
     | 'invokeOnComplete'

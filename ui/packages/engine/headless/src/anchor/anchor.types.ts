@@ -6,7 +6,7 @@
 // 定义 anchor 类型契约。
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
-import type { LiquidIndicator } from '../shared/indicator'
+import type { IndicatorPresence, LiquidIndicator } from '../shared/indicator'
 
 /** 读屏文案，默认英文。 */
 export interface AnchorTranslations {
@@ -52,6 +52,8 @@ export interface AnchorRefs {
   getListEl: () => HTMLElement | null
   /** 液态档的双沿指示器：由效应建好放进来，量到的落点交给它。 */
   liquidIndicator?: LiquidIndicator | null
+  /** 指示条的出没：落点经它写进 context，从有到无时先淡出、播完才清。首次写落点时建好。 */
+  indicatorPresence?: IndicatorPresence<AnchorIndicatorRect> | null
 }
 
 export interface AnchorSchema extends MachineSchema {
