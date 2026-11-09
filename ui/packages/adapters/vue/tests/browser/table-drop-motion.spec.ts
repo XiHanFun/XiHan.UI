@@ -82,3 +82,33 @@ describe('table 行换位落下', () => {
     expect(getComputedStyle(row('b')).translate).toBe('none')
   })
 })
+
+describe('table 排序与筛选后的重排', () => {
+  it('点排序钮：留下来的行从旧位置滑到新位置，落定后不留位移', async () => {
+    host = document.createElement('div')
+    host.style.inlineSize = '320px'
+    // 同上：行的 translate 过渡取 move 令牌，拉长了才断得到中间帧
+    host.style.setProperty('--xh-motion-duration-move', '10s')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhTableRoot, {
+        'columns': [{ id: 'name', label: '名称', sortable: true }],
+        'data': [{ id: 'c', name: 'Charlie' }, { id: 'a', name: 'Alpha' }, { id: 'b', name: 'Bravo' }],
+        'aria-label': '排序',
+      }),
+    })
+    app.mount(host)
+    await nextTick()
+    const order = (): string[] => [...host!.querySelectorAll(`[data-part='body'] [data-part='row']`)].map(el => el.getAttribute('data-value') ?? '')
+    const before = order()
+    await userEvent.click(host.querySelector<HTMLElement>(`[data-scope='table'][data-part='sort-trigger']`)!)
+    await expect.poll(order).not.toEqual(before)
+    const moved = order().filter((value, index) => before.indexOf(value) !== index)
+    expect(moved.length).toBeGreaterThan(0)
+    expect(moved.some(value => translateY(row(value)) !== 0), '换了位的行带着反向补偿，从旧位置滑过来').toBe(true)
+    for (const animation of host.getAnimations({ subtree: true }))
+      animation.finish()
+    for (const value of order())
+      expect(translateY(row(value))).toBe(0)
+  })
+})

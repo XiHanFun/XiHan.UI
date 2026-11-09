@@ -670,13 +670,14 @@ export const tableMachine = createMachine({
 
         context.set('columnPreference', next)
       },
-      setSort: ({ context, event }) => {
+      setSort: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'SORT.SET')
           return
+        armSortReorder(refs, prop)
         context.set('sort', tableNormalizeSort(e.value))
       },
-      toggleSort: ({ context, prop, event }) => {
+      toggleSort: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'SORT.TOGGLE')
           return
@@ -684,13 +685,15 @@ export const tableMachine = createMachine({
         const column = tableLeafColumns(prop('columns') ?? []).find(item => item.id === e.value)
         if (!column?.sortable)
           return
+        armSortReorder(refs, prop)
         context.set('sort', tableToggleSort(context.get('sort'), e.value, { append: e.append }))
       },
       // 勾选为空的列不留条目；筛选结果的条数变了，停在原来那一页可能已经没有行，回到第 1 页
-      setFilter: ({ context, event }) => {
+      setFilter: ({ context, prop, refs, event }) => {
         const e = event.current()
         if (e.type !== 'FILTER.SET')
           return
+        armSortReorder(refs, prop)
         const next: TableFilterValue = { ...context.get('filterValue') }
         const values = unique(e.value)
         if (values.length > 0)
@@ -1075,6 +1078,16 @@ function armRowReorder(refs: RefsFacade<TableSchema>): void {
   refs.set('reorder', body
     ? trackReorder(body, { item: TABLE_BODY_ROW_SELECTOR, key: row => row.getAttribute(ITEM_VALUE_ATTR) ?? row.id })
     : null)
+}
+
+/**
+ * 排序、筛选改了行序：留下来的行从旧位置滑到新位置，与拖放换位同一套补偿（行的 translate 过渡）。
+ * 虚拟滚动的行由虚拟化逐帧定位，补偿会与它打架，不接
+ */
+function armSortReorder(refs: RefsFacade<TableSchema>, prop: (key: 'virtualizer') => unknown): void {
+  if (prop('virtualizer'))
+    return
+  armRowReorder(refs)
 }
 
 /**
