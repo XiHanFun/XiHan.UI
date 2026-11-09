@@ -130,9 +130,9 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklch(0.557 0.216 277)
-transition-property: background-color
-transition-duration: 0.15s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1)
+transition-property: background-color, inset-inline-start, inset-block-end, inline-size, block-size
+transition-duration: 0.15s, 0.2s, 0.2s, 0.2s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease
@@ -200,9 +200,9 @@ line-height: normal
 font-weight: 400
 color: rgb(0, 0, 0)
 background-color: oklch(1 0 0)
-transition-property: background-color, border-color
-transition-duration: 0.15s, 0.15s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1)
+transition-property: background-color, border-color, inset-inline-start, inset-block-end
+transition-duration: 0.15s, 0.15s, 0.2s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

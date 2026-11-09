@@ -273,6 +273,18 @@
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* 新加的标签与分隔线原地放大淡入，同一批按到达顺序错开；首帧就在的直接呈现（标签或标签带带 data-instant）。
+     标签带位移占着 translate，进场只动 scale 与 opacity */
+  [data-scope='tabs'][data-part='list']:not([data-instant]) :is([data-scope='tabs'][data-part='trigger'], [data-scope='tabs'][data-part='separator']):not([data-instant], [data-xh-ghost]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 关掉的标签：替身留在原处收小淡出，播完即移除；后面的标签从旧位置滑过来 */
+  [data-scope='tabs']:is([data-part='trigger'], [data-part='separator'])[data-xh-ghost] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
   /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，
      每一枚只占自己的字宽加内衬，标签带右侧留白；放不下的那截由标签带位移露出 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal']

@@ -152,7 +152,7 @@
 
 **状态**：`idle`
 
-**事件**：`PRESS.START` · `PRESS.END` · `EXPAND`
+**事件**：`PRESS.START` · `PRESS.END` · `EXPAND` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -218,6 +218,7 @@
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
@@ -260,8 +261,8 @@
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

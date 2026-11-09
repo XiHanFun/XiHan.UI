@@ -10,6 +10,7 @@ import type { CalendarGranularity, CalendarView } from './grid'
 import type { CalendarBaseAction, CalendarBaseContext, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs } from './types'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/core'
 import { getLocalTimeZone, PlainDate, startOfMonth, today } from '@xihan-ui/core/date'
+import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
 import { sameArray as sameValues, toArray as toValues } from '../array'
 import { calendarPageMonths, calendarPeriodOf, calendarPeriodStart, calendarWeekListedIn, parseCalendarDate, visibleCountOf } from './grid'
 
@@ -125,6 +126,32 @@ export function calendarBaseRefs(): CalendarBaseRefs {
   return {
     getGridEl: () => null,
     alive: false,
+  }
+}
+
+/**
+ * 翻页与换视图：新的一页网格原地淡入，不横移——日期格是查阅对象，横移途中读格会读错，方向由标题里的年月交代。
+ * 多面板（区间两个月并排）的每一面一起淡入
+ */
+export function trackPageFade<S extends CalendarBaseSchema>(): EffectFn<S> {
+  return ({ refs, context, track, flush }) => {
+    track([() => context.get('visibleStart'), () => context.get('activeView')], () => {
+      flush(() => {
+        const grid = refs.get('getGridEl')()
+        if (!grid)
+          return
+        const scope = grid.getAttribute('data-scope')
+        const root = grid.closest(`[data-scope='${scope}'][data-part='root']`)
+        const grids = root ? [...root.querySelectorAll<HTMLElement>(`[data-scope='${scope}'][data-part='grid']`)] : [grid]
+        for (const el of grids) {
+          const motion = readMotion(el)
+          void animate(el, [{ opacity: 0 }, { opacity: 1 }], {
+            duration: motion.duration('enter'),
+            easing: el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-enter').trim() || motionEasings.enter,
+          })
+        }
+      })
+    })
   }
 }
 

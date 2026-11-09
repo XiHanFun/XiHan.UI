@@ -104,6 +104,8 @@ export interface SliderSchema extends MachineSchema {
     value: number[]
     /** 正在被推动的滑块下标：拖动期间是被抓住的滑块，键盘操作时是聚焦的滑块。 */
     activeIndex: number
+    /** 按住之后指针挪动过：拇指改为跟手、不带过渡；按下那一下点到轨道上的跳位照常滑过去。松手即清。 */
+    following: boolean
     /** 这一次拖动在推什么；不在拖动时为 null。 */
     dragMode: SliderDragMode | null
     /** 整段拖动的起点快照；只推一个拇指时为 null。 */

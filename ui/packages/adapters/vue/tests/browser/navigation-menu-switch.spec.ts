@@ -1,6 +1,6 @@
-// 导航菜单在入口之间换张：与菜单栏同一条成规——首开有进场、末收有退场、换张瞬时。
-// 用共享外壳时面板回到静态流里，换张若还播进退场，新旧两张会在外壳里上下叠放、外壳先变高再塌回；
-// 外壳自己承担进退场。叠放与在播的动画只有真实浏览器量得出来。
+// 导航菜单在入口之间换张：首开有进场、末收有退场；换张时旧的一张当场撤下、新的一张原地淡入，
+// 新旧两张不在外壳里上下叠放；共享外壳留在原处，尺寸从旧的一张补到新的一张，不一下子跳过去。
+// 叠放、在播的动画与补间途中的尺寸只有真实浏览器量得出来。
 import type { App, Ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
@@ -77,14 +77,14 @@ function viewport(): HTMLElement {
 }
 
 describe.each([true, false])('navigation-menu 换张（共享外壳 %s）', (withViewport) => {
-  it('新旧两张不叠放：换张那一帧起只剩新的一张，两侧都不播进退场', async () => {
+  it('新旧两张不叠放：换张那一帧起只剩新的一张，旧的一张不播退场、新的一张原地淡入', async () => {
     const value = mount({ viewport: withViewport, initial: 'products' })
     await frames(2)
     value.value = 'docs'
     await frames(1)
     expect(shown().map(entryOf)).toEqual(['docs'])
     for (const el of contents())
-      expect(running(el), entryOf(el)).toEqual([])
+      expect(running(el), entryOf(el)).toEqual(entryOf(el) === 'docs' ? ['xh-fade-in'] : [])
   })
 })
 
@@ -99,17 +99,27 @@ describe('navigation-menu 共享外壳的进退场', () => {
     expect(running(docs)).toEqual(['xh-fade-in'])
   })
 
-  it('换张后外壳高度即刻跟上新的一张，不先变高再塌回', async () => {
+  it('换张后外壳从旧的一张的高度补到新的一张，一路单调、不先变高再塌回', async () => {
     const value = mount({ viewport: true, initial: 'docs' })
     await frames(2)
-    const before = viewport().offsetHeight
+    const before = viewport().getBoundingClientRect().height
     value.value = 'products'
     await frames(1)
+    const tween = viewport().getAnimations().find(a => !(a instanceof CSSAnimation) && !(a instanceof CSSTransition))!
+    expect(tween).toBeDefined()
+    tween.pause()
+    const duration = Number(tween.effect!.getComputedTiming().duration)
+    tween.currentTime = 0
+    expect(viewport().getBoundingClientRect().height).toBeCloseTo(before, 0)
+    tween.currentTime = duration / 2
+    const mid = viewport().getBoundingClientRect().height
+    expect(mid).toBeLessThan(before)
+    tween.finish()
     const products = contents().find(el => entryOf(el) === 'products')!
     const style = getComputedStyle(viewport())
     const chrome = Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom)
       + Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth)
-    expect(viewport().offsetHeight).toBeLessThan(before)
+    expect(mid).toBeGreaterThan(viewport().offsetHeight)
     expect(viewport().offsetHeight).toBeCloseTo(products.offsetHeight + chrome, 0)
   })
 

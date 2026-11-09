@@ -135,6 +135,7 @@ export const tabsMachine = createMachine({
     })),
     // 焦点锚点：不受控、不对外通知，只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
     draggingTab: cell<string | null>(() => ({ defaultValue: null })),
     dropTarget: cell<DropTarget | null>(() => ({ defaultValue: null })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
@@ -188,6 +189,7 @@ export const tabsMachine = createMachine({
       // 省略 target：只跑 actions，不换状态
       on: {
         'VALUE.SET': { actions: ['setValue'] },
+        'LIST.TRACKED': { actions: ['markListTracked'] },
         'TRIGGER.SELECT': { actions: ['setValue', 'setFocusedValue'] },
         'TRIGGER.FOCUS': { actions: ['setFocusedValue'] },
         // automatic 下方向键顺带切换选中，manual 下只搬焦点锚点
@@ -364,11 +366,12 @@ export const tabsMachine = createMachine({
       },
 
       /**
-       * 标签换位：宿主按新顺序重排标签（拖动放下、键盘挪位、增删）之后，挪了位置的标签与分隔线从原处滑到新位置，
-       * 与指示条同一段 move / continuous，减弱动效下直接到位。标签带整体位移占着它们的 translate、过渡清单归家族，
-       * 换位走 transform 上的一段动画；删掉的标签直接离开，不放离场替身。list 首轮渲染后才在，挂法同标签带。
+       * 标签的增删与换位：新加的标签与分隔线进场、同一批按到达顺序错开，关掉的由替身留在原处淡出，
+       * 宿主按新顺序重排（拖动放下、键盘挪位、增删）之后挪了位置的从原处滑到新位置，与指示条同一段 move / continuous，
+       * 减弱动效下直接到位。标签带整体位移占着它们的 translate、过渡清单归家族，换位走 transform 上的一段动画。
+       * list 首轮渲染后才在，挂法同标签带；接上之后撤掉标签带上的 data-instant
        */
-      trackReorder: ({ refs, scope, action }) => {
+      trackReorder: ({ refs, scope, action, send }) => {
         const win = scope.getWin()
         let observed: HTMLElement | null = null
         let stop: (() => void) | undefined
@@ -380,7 +383,6 @@ export const tabsMachine = createMachine({
           observed = list
           stop = trackListMotion(list, {
             item: TABS_REORDER_ITEMS,
-            depart: false,
             channel: 'transform',
             // 选中的标签若跟着挪了，指示条与它同一段 move 一起滑过去
             onReflow: () => {
@@ -388,6 +390,7 @@ export const tabsMachine = createMachine({
               action(['measureIndicator'])
             },
           })
+          send({ type: 'LIST.TRACKED' })
         }
         attach()
         const raf = win.requestAnimationFrame(attach)
@@ -441,6 +444,7 @@ export const tabsMachine = createMachine({
       },
     },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

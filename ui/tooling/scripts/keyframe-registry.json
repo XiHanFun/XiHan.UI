@@ -185,6 +185,7 @@
       "consumers": [
         "alert",
         "avatar",
+        "breadcrumb",
         "cascader",
         "color-picker",
         "combobox",
@@ -209,6 +210,7 @@
         "tags-input",
         "time-picker",
         "tour",
+        "transfer",
         "tree-select"
       ],
       "relation": "fade"
@@ -248,7 +250,8 @@
         "message-feed",
         "question-flow",
         "table",
-        "tool-call"
+        "tool-call",
+        "transfer"
       ],
       "relation": "list"
     },
@@ -360,6 +363,7 @@
         "prompt-input",
         "question-flow",
         "select",
+        "tabs",
         "tag-group",
         "tags-input",
         "time-picker",
@@ -398,6 +402,7 @@
         "popover",
         "select",
         "side-nav",
+        "tabs",
         "time-picker",
         "time-range-picker",
         "tooltip",

@@ -14,6 +14,7 @@ import {
   sortIso,
   syncGranularityBase,
   trackLiveness,
+  trackPageFade,
 } from '../shared/calendar'
 import { calendarPickerCellTriggerQuery } from './calendar-picker.anatomy'
 
@@ -51,7 +52,7 @@ export const calendarPickerMachine = createMachine({
   }),
   refs: () => calendarBaseRefs(),
   initialState: () => 'idle',
-  effects: ['trackLiveness'],
+  effects: ['trackLiveness', 'trackPageFade'],
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
   watch: ({ track, prop, context, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
@@ -88,6 +89,7 @@ export const calendarPickerMachine = createMachine({
     },
     effects: {
       trackLiveness: trackLiveness(),
+      trackPageFade: trackPageFade(),
     },
     actions: {
       ...calendarBaseActions({ cellTriggerQuery: calendarPickerCellTriggerQuery }),

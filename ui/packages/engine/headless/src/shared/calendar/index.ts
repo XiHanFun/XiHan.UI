@@ -55,6 +55,7 @@ export {
   sortIso,
   syncGranularityBase,
   trackLiveness,
+  trackPageFade,
 } from './machine-base'
 export type { CalendarBaseSchema } from './machine-base'
 export { calendarPanelStructure } from './structure'

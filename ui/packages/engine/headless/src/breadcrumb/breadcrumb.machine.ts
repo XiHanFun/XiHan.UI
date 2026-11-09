@@ -6,10 +6,13 @@
 // 提供 breadcrumb 相关实现。
 
 import type { BreadcrumbSchema } from './breadcrumb.types'
-import { setup } from '@xihan-ui/core'
+import { setup, trackListMotion } from '@xihan-ui/core'
 import { breadcrumbAnatomy } from './breadcrumb.anatomy'
 
 const { createMachine } = setup<BreadcrumbSchema>()
+
+/** 列表动效认的条目：层级、分隔符与省略位，都是 list 里的一条 li。 */
+const BREADCRUMB_LIST_ITEMS = `[data-scope='${breadcrumbAnatomy.name}']:is([data-part='item'], [data-part='separator'], [data-part='ellipsis'])`
 
 const LINK_SELECTOR = breadcrumbAnatomy.build().link.selector
 
@@ -22,14 +25,17 @@ export const breadcrumbMachine = createMachine({
   context: ({ cell }) => ({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     expanded: cell<boolean>(() => ({ defaultValue: false })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   states: {
     idle: {
       on: {
         'PRESS.START': { guard: 'canPress', actions: ['startPress'] },
         'PRESS.END': { actions: ['endPress'] },
         'EXPAND': { actions: ['expand'] },
+        'LIST.TRACKED': { actions: ['markListTracked'] },
       },
     },
   },
@@ -41,7 +47,31 @@ export const breadcrumbMachine = createMachine({
         return e.type === 'PRESS.START' && !e.current
       },
     },
+    effects: {
+      /**
+       * 层级的增删：换了一条路径时新到的层级与分隔符淡入、同一批按到达顺序错开，走掉的由替身留在原处淡出，
+       * 留下来的从旧位置滑到新位置；点开省略号露出来的层级同样淡入。列表等宿主提交后再取，接上之后撤掉它身上的 data-instant
+       */
+      trackListMotion: ({ scope, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const list = scope.getById(scope.partId('breadcrumb', 'list'))
+            if (disposed || !list)
+              return
+            stop = trackListMotion(list, { item: BREADCRUMB_LIST_ITEMS })
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+    },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

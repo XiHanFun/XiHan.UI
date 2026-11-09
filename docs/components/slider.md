@@ -307,6 +307,7 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-following` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -315,40 +316,47 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-dragging` | ''（条件成立时才出现） |
+| `label` | `data-following` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-orientation` | props.orientation |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
+| `control` | `data-following` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-orientation` | props.orientation |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
 | `track` | `data-dragging` | ''（条件成立时才出现） |
+| `track` | `data-following` | ''（条件成立时才出现） |
 | `track` | `data-invalid` | ''（条件成立时才出现） |
 | `track` | `data-orientation` | props.orientation |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
 | `range` | `data-disabled` | ''（条件成立时才出现） |
 | `range` | `data-draggable` | ''（条件成立时才出现） |
 | `range` | `data-dragging` | ''（条件成立时才出现） |
+| `range` | `data-following` | ''（条件成立时才出现） |
 | `range` | `data-invalid` | ''（条件成立时才出现） |
 | `range` | `data-orientation` | props.orientation |
 | `range` | `data-readonly` | ''（条件成立时才出现） |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `thumb` | `data-following` | ''（条件成立时才出现） |
 | `thumb` | `data-index` | String(thumb.index) |
 | `thumb` | `data-invalid` | ''（条件成立时才出现） |
 | `thumb` | `data-orientation` | props.orientation |
 | `thumb` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-dragging` | ''（条件成立时才出现） |
+| `value-text` | `data-following` | ''（条件成立时才出现） |
 | `value-text` | `data-index` | String(thumb.index) |
 | `value-text` | `data-invalid` | ''（条件成立时才出现） |
 | `value-text` | `data-orientation` | props.orientation |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `tick-group` | `data-disabled` | ''（条件成立时才出现） |
 | `tick-group` | `data-dragging` | ''（条件成立时才出现） |
+| `tick-group` | `data-following` | ''（条件成立时才出现） |
 | `tick-group` | `data-invalid` | ''（条件成立时才出现） |
 | `tick-group` | `data-orientation` | props.orientation |
 | `tick-group` | `data-readonly` | ''（条件成立时才出现） |
@@ -409,9 +417,9 @@ draggableRange 让两端拇指之间的轨道可以整段拖动，时间窗宽�
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `border-color` · `inline-size` · `inset-block-end` · `inset-inline-start` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

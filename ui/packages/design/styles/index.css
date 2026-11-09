@@ -18497,6 +18497,8 @@
     /* 层级多到一行放不下就换行：宁可折行，也不要把路径压扁或撑出横向滚动 */
     flex-wrap: wrap;
     gap: var(--xh-breadcrumb-gap, var(--xh-_breadcrumb-gap));
+    /* 走掉的层级的替身按列表定位，绝对定位在原来的排布位上 */
+    position: relative;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -18519,9 +18521,20 @@
     display: none;
   }
 
-  /* 点开省略号后折叠的层级露面时淡入，路径不一下子变长 */
-  .xh-scope-breadcrumb[data-part='item']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  /* 层级、分隔符与省略位：换路径时留下来的从旧位置滑到新位置 */
+  .xh-scope-breadcrumb:is([data-part='item'], [data-part='separator'], [data-part='ellipsis']) {
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新到的层级淡入（换了一条路径、点开省略号露出折叠的那几层），同一批按到达顺序错开；首帧就在的直接呈现 */
+  .xh-scope-breadcrumb[data-part='list']:not([data-instant]) :is(.xh-scope-breadcrumb[data-part='item'], .xh-scope-breadcrumb[data-part='separator'], .xh-scope-breadcrumb[data-part='ellipsis']):not([data-instant], [hidden], [data-xh-ghost]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 走掉的层级：替身留在原处淡出，播完即移除 */
+  .xh-scope-breadcrumb:is([data-part='item'], [data-part='separator'], [data-part='ellipsis'])[data-xh-ghost] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 品牌字（写了语气随语气），
@@ -37710,6 +37723,11 @@
     animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
+  /* 换张：新的一张原地淡入，不弹、不移；外壳（有的话）同时把尺寸补到这一张 */
+  .xh-scope-navigation-menu[data-part='content'][data-state='open'][data-switching] {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
   /* 面板里的链接归 Collection Item 导航当前（nav 语境）：悬停 / 键盘高亮（白底承载 100）与按下（200）面由家族
      按 :hover / :focus-visible / :active 给出，指向当前页面的那一条（data-current）取 strong 档品牌字色 +
      medium 字重，字色不随语气、不加下划线（下划线是"可点"的信号，它已经在这儿了）；这里只把公开槽
@@ -37959,7 +37977,7 @@
     display: none;
   }
 
-  /* 共享外壳是面板那一面：首开弹出、末收收回，换张时外壳留在原处、高度即刻换成新的一张。
+  /* 共享外壳是面板那一面：首开弹出、末收收回，换张时外壳留在原处、尺寸补到新的一张（tweenBoxSize，move 档）。
      挂载时就展开着的那一段（data-instant）属于首帧，直接呈现 */
   .xh-scope-navigation-menu[data-part='viewport'][data-state='open']:not([data-instant]) {
     animation: xh-overlay-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
@@ -44707,14 +44725,24 @@
   }
 
   /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
-     绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。
+     按下时点到轨道上的那一跳、键盘与程序改值，区间从旧位置补到新位置（move 档）；按住之后一挪动就跟手（data-following），
+     不带过渡：拖拽时这两个值每帧都在变，加了过渡区间就永远追在指针后面。
      语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
      轨道不跟着换族：区间与拇指换色即可读出语气，底槽保持中性才不会盖掉"已选/未选"的对比。 */
   .xh-scope-slider[data-part='range'] {
     position: absolute;
     border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
     background: var(--xh-slider-range-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    /* 校验失败、禁用时换色淡变；长度跟手，不进过渡 */
+    /* 校验失败、禁用时换色淡变；跳位补过去，跟手时撤掉（见下一条） */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-end var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  .xh-scope-slider[data-part='range'][data-following] {
     transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -44762,7 +44790,16 @@
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
     cursor: grab;
-    /* 校验失败、禁用时换色淡变；位置跟手，不进过渡 */
+    /* 校验失败、禁用时换色淡变；按下点到轨道上的那一跳、键盘与程序改值从旧位置滑过去（move 档），跟手时撤掉（见下一条） */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-end var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 按住之后挪动过：拇指落在指针下，不带位置过渡 */
+  .xh-scope-slider[data-part='thumb'][data-following] {
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -48082,6 +48119,18 @@
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 新加的标签与分隔线原地放大淡入，同一批按到达顺序错开；首帧就在的直接呈现（标签或标签带带 data-instant）。
+     标签带位移占着 translate，进场只动 scale 与 opacity */
+  .xh-scope-tabs[data-part='list']:not([data-instant]) :is(.xh-scope-tabs[data-part='trigger'], .xh-scope-tabs[data-part='separator']):not([data-instant], [data-xh-ghost]) {
+    animation: xh-pop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 关掉的标签：替身留在原处收小淡出，播完即移除；后面的标签从旧位置滑过来 */
+  .xh-scope-tabs:is([data-part='trigger'], [data-part='separator'])[data-xh-ghost] {
+    animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 横排标签的宽随文字走，不把标签带等分铺满一行：line 与 card 档是一排并列的页签，
@@ -53730,6 +53779,28 @@
     padding-block: var(--xh-transfer-list-py, var(--xh-space-0));
     padding-inline: var(--xh-transfer-list-px, var(--xh-space-1));
     overflow: auto;
+    /* 搬走条目的替身按列表定位，绝对定位在原来的排布位上 */
+    position: relative;
+  }
+
+  /* 搬运时两侧条目的进退场：搬过去的在目标一侧进场、同一批按到达顺序错开，原来那一侧由替身留在原处淡出，
+     留下来的从旧位置滑到新位置。只在搬运那一批播，检索与翻页换来的条目带 data-instant 直接呈现（首帧列表也带着）。
+     换面照家族的时间线，translate 是换位的落位 */
+  .xh-scope-transfer[data-part='item'] {
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  .xh-scope-transfer[data-part='list']:not([data-instant]) .xh-scope-transfer[data-part='item']:not([data-instant], [data-xh-ghost]) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  .xh-scope-transfer[data-part='item'][data-xh-ghost] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 刷新（已有条目、后台在取）只报 aria-busy，内容原样留着、不淡化：条目此刻仍可操作，

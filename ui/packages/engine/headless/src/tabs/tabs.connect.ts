@@ -267,6 +267,8 @@ export function connectTabs<T extends PropTypes>(
     getListProps: () => normalize.element({
       ...parts.list.attrs,
       'role': 'tablist',
+      // 增删动效接上之前的首帧，已有的标签直接呈现、不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
       'aria-orientation': orientation,
       // 放不下时标签整体沿主轴位移：位移量写成私有槽，标签带里的孩子读它做 translate（皮肤 tabs.css）。
       // translate 是物理方向：横排 LTR 往左挪、RTL 往右挪，竖排往上挪。

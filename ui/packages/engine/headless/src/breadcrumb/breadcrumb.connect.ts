@@ -57,6 +57,9 @@ export function connectBreadcrumb<T extends PropTypes>(
 
     getListProps: () => normalize.element({
       ...parts.list.attrs,
+      // 列表动效按 id 找到它；接上之前的首帧，已有的层级直接呈现、不播进场
+      'id': service.scope.partId('breadcrumb', 'list'),
+      'data-instant': dataAttr(!context.get('listTracked')),
     }),
 
     getItemProps: () => normalize.element({

@@ -984,6 +984,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - Accordion 与 Collapsible 的指示器缺省排在标题之前，收起时朝行尾（`rotate: -90deg`，rtl 下 `90deg`）、展开回正朝下；作者把它写在标题之后即落到行尾。
 - 密集 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层）子层里排着多行、套不上单行网格，由 `trackDisclosureMotion` 按实测高度补间：展开时块尺寸从 0 补到实测高度、同帧淡入，收起时在原处放一个替身从原高度缩到 0、同帧淡出，播完即移除；父级的行距随高度一起让出，展开第一帧与收起最后一帧都不跳。时长与曲线和 Surface 级展开同档（`expand` / `collapse`、`disclosure`），指示器随子层同时长、同曲线转向；收起中途再展开从替身此刻的高度接着长。搜索换枝、侧栏折叠换装与一次翻动超过三枝的批量展开当场落定；虚拟滚动的行会被回收复用，不补。替身不可交互、不进条目查询与键盘导航。
 - Table 详情行与上面几种同一套补间：详情行随它的数据行一起来去（收起父行）时交给行的进退场，不另补。
+- FloatingPanel 收拢时正文由替身缩回去、高度交给标题栏撑的面板跟着一路收短；还原时正文当场露出，内容面从标题栏的高度补到原来的高度。
 - Truncate 铺开与收回由 `tweenBlockSize` 补块尺寸：状态改之前量下此刻的高度，宿主提交之后从它补到新排法的高度；收回时补间里仍按铺开的排法摆着，盒子收到夹紧的高度那一刻才换回行数夹紧与省略号，多出来的行随盒子收进去，不先被一刀裁掉。
 - 指示器与内容同档：内容有动画时随内容用 `expand` / `collapse` 与同一条 `disclosure` 曲线；内容瞬时时用 `--xh-motion-duration-nudge`。
 - 初始即展开的内容直接呈现，不播展开动画（§9.6 首帧规则）。
@@ -1010,10 +1011,11 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
   - 逐条排开的卡片预设从所贴的那条边整张推进来、边推边淡入（`xh-slide-in` + `xh-slide-fade-in`，位移取卡片自身的整宽或整高 `--xh-motion-travel`）：贴行尾 / 行首的从行尾 / 行首进，居中的顶、底两个位从顶边、底边进，中线那一行只上浮 `--xh-motion-distance-lg`。退场只淡出（`xh-fade-out`）、不往回推，空位由列表换位以 `move` 收拢。逐条排开的轻提示走 `xh-sheet-in / out`。
   - 叠摞（轻提示预设的缺省）的进出场位移取 `--xh-motion-distance-lg`、不取整卡高（一句话整张推进来又快又远，读起来是一下猛冲），另带层深位移与收拢比例，关键帧由 Notification 皮肤自己定义。一条开始退场，其余几条当场补上它让出的层、与它的退场同时走；退场的那条保留原来的层级压在上面。最前那条沿叠放方向退一小段，后层的条目原地淡出，不从前面那张底下穿过去。
   - 还在台上就被移出队列的条目（超出上限被挤掉、`dismiss` / `dismissAll` 直接删）没有自己的退场，由列表动效的离场替身在原处播完再撤；队列照旧立即移出。每个位置最新的那一条不参与上限挤出。
-- 日历翻月、年月视图切换瞬时，不做方向动画：日期格是查阅对象，横移途中读格会读错；方向由标题里的年月文字交代。
+- 日历翻月、年月视图切换不做方向动画：日期格是查阅对象，横移途中读格会读错；方向由标题里的年月文字交代。新的一页网格原地淡入（`enter`），区间并排的两面一起淡入。
 
 - 首帧：挂载时已经打开的浮层（`defaultOpen`，或受控 `open` / `value` 的初值即打开）属于首帧内容，content 与带进场的遮罩、定位层、聚光框、展开组投影 `data-instant` 直接呈现；机器在进入收起态（按展开项开合的族：展开项第一次变化）时撤掉标记，之后每一次打开照常进场，第一次收起照常播退场。Mention、Pagination 弹层与 SideNav 弹出分支只由用户操作打开，没有挂载即开的那一次。
-- 换张：Menubar 与 NavigationMenu 在同一条里的两张之间换，两侧都投影 `data-instant`、瞬时换张（交叉的进退场读起来是闪烁）；只有首开进场、末收退场。NavigationMenu 用共享外壳（viewport）时外壳承担弹出与收回，外壳里的面板回到静态流、只随外壳淡入淡出，时长与外壳同档；换张时外壳留在原处，高度即刻换成新的一张。
+- 换张：Menubar 在同一条里的两张之间换，两侧都投影 `data-instant`、瞬时换张，与操作系统的菜单栏一致（交叉的进退场读起来是闪烁）；NavigationMenu 换张时旧的一张投影 `data-instant` 当场撤下、新的一张投影 `data-switching` 原地淡入。两者都只有首开进场、末收退场。NavigationMenu 用共享外壳（viewport）时外壳承担弹出与收回，外壳里的面板回到静态流、只随外壳淡入淡出，时长与外壳同档；换张时外壳留在原处，宿主提交之前量下它的尺寸、提交之后补到新的一张（`tweenBoxSize`，`move` / `continuous`）。
+- Slider 按下时点到轨道上的那一跳、键盘与程序改值，拇指与区间的位置与长度从旧值补到新值（`move` / `continuous`）；按住之后一挪动就跟手（`data-following`），不带过渡，否则区间会一直追在指针后面。
 - 进场必有退场：凡有进场关键帧的部件必须有对应退场；退场一律经 Presence 等待动画结束再卸载，不用固定计时器。
 - 分层：遮罩与面板同时开始、同时退场，在最长的那个结束后卸载；面板内列表的错开从面板进场开始计时。
 - 打断：退场中途重新打开时取消退场，从当前透明度继续进场，不先跳回不可见。
@@ -1025,7 +1027,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 条目由作者渲染、删掉即卸载的集合，离场由列表动效在原位置放一个退场态的替身：绝对定位在原排布位、`inert`、摘掉 id 与表单名，播完即移除。作者的列表写法不为退场改变。
 - 错开步长 `--xh-motion-stagger-step`，只对同一批到达的条目按到达顺序计数，最多 5 步；不按 DOM 位置（`nth-child`）计数。
 - 首帧规则：初始渲染时已存在的内容（默认展开的披露、默认打开的浮层、历史消息、初始列表）直接呈现，只有用户操作或新数据导致的出现才播进场。headless 以共享状态属性 `data-instant` 标记这类内容，皮肤的进场写在 `:not([data-instant])` 下。
-- 启用列表增删动效的集合：TagsInput、FieldArray、GridList、FilterBuilder，以及已有的 Notification、MessageFeed、Command、Cascader 等；树形表格只在展开、收起子行的那一批播，排序、换页与刷新换来的整批行直接呈现；Transfer（两侧同时变化）与 InfiniteScroll（批量追加）不启用。
+- 启用列表增删动效的集合：TagsInput、FieldArray、GridList、FilterBuilder，以及已有的 Notification、MessageFeed、Command、Cascader 等；树形表格只在展开、收起子行的那一批播，排序、换页与刷新换来的整批行直接呈现；Transfer 只在搬运那一批播：搬过去的在目标一侧进场，原来那一侧由替身淡出；Tabs 增删标签时新加的原地放大淡入、关掉的由替身收小淡出（标签带位移占着 translate，进退场只动 scale 与 opacity）；Breadcrumb 换路径时新到的层级与分隔符淡入、走掉的由替身淡出、留下来的滑到新位置。InfiniteScroll（批量追加作者节点）不启用；DiffView 点开折叠格露出来的行播入场，收起折回的是一整段上下文，与一次翻一大片的批量展开同一条规则，当场落定。
 - 检索过滤不算到达：Command 这类随输入即时换一批结果的集合，筛掉又露出来的条目直接呈现，不重播进场与错开（逐键重播会让列表一直在动、读不稳）；只有新插进列表的条目（宿主追加、异步取回的一批）才上浮错开。
 - 占位到内容的交叉只动占位：Skeleton 刚加载完时让出版面（原地抬出文档流、钉住原来的尺寸），盖在补上来的真实内容之上以 `exit` 淡出，播完才收起；挂载时就已加载完的直接收起，不播这一段。与 Image / Avatar 的占位层淡出同一个做法，内容在底下直接落位。
 - 换位的条目 translate 另有用途、过渡清单又归家族配方时（Tabs 的标签：标签带整体位移占着 translate），换位改走 transform 上的一段 Web 动画（core `glideBy`），时长与曲线同样读 `move` / `continuous`；Tabs 拖动放下、键盘挪位之后挪了位置的标签与分隔线这样滑到新位置，选中标签跟着挪时指示条同一段一起滑。Sortable 放下或取消之后，撤掉拖动位移的那几项按撤之前的屏幕位置同样滑回（`glideFrom`），指针拖动放下的那一项仍由弹簧带着松手速度收进。
@@ -1043,7 +1045,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 - 滑动指示器（Tabs、RadioGroup segmented 形态的滑块、Anchor、NavigationMenu）共用一套测量：取当前项相对列表容器的 `offset*` 几何，投影为私有槽。只有换项才滑：首次落位、同一项的重量（容器与条目尺寸变化、换上正式字体）直接到位，连接层在这一落点投影 `data-instant`，皮肤在它身上撤掉几何过渡；连续缩放窗口时指示器不拖尾。不用 `getBoundingClientRect`，因为祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`；Tabs 的标签带滚动已占用 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。Tour 聚光框是 `position: fixed` 的视口坐标，按目标的屏幕矩形定位；换步时聚光框与气泡定位层同一段时长、同一条曲线一起滑（只在换步那一段投影 `data-animating`，两者的过渡播完即撤），页面滚动与视口缩放时两者跟手、不补过渡。
 - 优先动可合成属性：`translate`、`scale`、`rotate`、`opacity`；`clip-path` 只触发重绘，可以使用。
-- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；密集展开子层的 `block-size`、上下内缩与起始外边距（子层里排着多行，只在开合那一段由脚本补间，静止时不留内联样式）；Truncate 铺开与收回的 `block-size`（新高度只有排完才知道，只在换档那一段补）；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏与 SideNav 折叠（同一段 `move`，SideNav 放在侧栏里时随侧栏直接落位；行文字先淡出、宽度落定才裁成图标栏，分组标题留着高度）；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
+- 布局属性动画只允许下列登记例外：披露内容的 `grid-template-rows` 与 padding；密集展开子层的 `block-size`、上下内缩与起始外边距（子层里排着多行，只在开合那一段由脚本补间，静止时不留内联样式）；Truncate 铺开与收回的 `block-size`（新高度只有排完才知道，只在换档那一段补）；FloatingPanel 还原时内容面的 `block-size`；NavigationMenu 共享外壳换张时的两向尺寸；Slider 拇指位置与区间长度（只在跳位、键盘与程序改值时过渡，跟手时撤掉）；指示器尺寸（绝对定位、`contain: layout` 的独立小元素）；Switch 滑块按下伸长；Carousel 当前指示点与 Tour 进度点伸长；Layout 侧栏与 SideNav 折叠（同一段 `move`，SideNav 放在侧栏里时随侧栏直接落位；行文字先淡出、宽度落定才裁成图标栏，分组标题留着高度）；Splitter 面板折叠与展开（拖拽与步进跟手，不带过渡）；QuestionFlow 视口与 Notification 叠摞的高度；Tour 换步时聚光框的位置与尺寸、气泡定位层的位置（`position: fixed` 的独立框，只在换步那一段挂）。新增例外须登记理由（门禁 `check-motion-layout`）。
 - `will-change` 只写在动画进行中的状态下：拖拽中（`data-dragging`）、机器驱动的补间进行中（`data-animating`），以及 Presence 管理的部件的收起态（`data-state='closed'`，只在退场那一段留在屏上）。开态常驻会使文字模糊；不可合成的属性不写 `will-change`。
 - transition 列表写长名：`background-color`、`border-color`、`outline-color`、`box-shadow`、`opacity`、`translate`、`scale`、`rotate`；不写 `background`、`border`、`outline` 与 `transform` 简写。需要一次性组合多个变换、且顺序是独立属性表达不了的，才写 `transform`，并登记理由。
 - liquid 档的双沿指示器：起始沿与结束沿各由一支弹簧驱动，去向那一侧用 `spring-lead`、另一侧用 `spring-trail`，移动中被拉长、停下时收回；拉长时块向收到不低于 `--xh-motion-scale-squash`（0.86）。测量与绘制沿用上面的共享几何与登记例外；新的点击从当前位置与速度改向。standard 档保持曲线。

@@ -79,6 +79,7 @@ export const sliderMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     activeIndex: cell<number>(() => ({ defaultValue: 0 })),
+    following: cell<boolean>(() => ({ defaultValue: false })),
     dragMode: cell<SliderSchema['context']['dragMode']>(() => ({ defaultValue: null })),
     rangeOrigin: cell<SliderSchema['context']['rangeOrigin']>(() => ({ defaultValue: null })),
   }),
@@ -194,6 +195,8 @@ export const sliderMachine = createMachine({
         const e = event.current()
         if (e.type !== 'DRAG.MOVE')
           return
+        // 一挪动就跟手：按下时点到轨道上的那一跳已经交给过渡，之后每一帧都直接落到指针下
+        context.set('following', true)
         const target = valueAtPoint(e.point, refs.get('getTrackEl')(), axis(prop))
         if (target == null)
           return
@@ -209,6 +212,7 @@ export const sliderMachine = createMachine({
       clearDrag: ({ context }) => {
         context.set('dragMode', null)
         context.set('rangeOrigin', null)
+        context.set('following', false)
       },
       invokeChangeEnd: ({ context, prop }) => {
         prop('onValueChangeEnd')?.({

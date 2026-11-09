@@ -222,7 +222,7 @@ export type CalendarBaseEvent
 export type CalendarBaseAction = 'setFocusedValue' | 'setActiveView' | 'pageVisibleStart' | 'focusVisibleCell'
 
 /** 两个日历组件都实现的 effect 名。 */
-export type CalendarBaseEffect = 'trackLiveness'
+export type CalendarBaseEffect = 'trackLiveness' | 'trackPageFade'
 
 /** 两个日历组件 api 上都有的那一面；选择模型相关的字段与方法各自追加。 */
 export interface CalendarBaseApi<T extends PropTypes = PropTypes> {

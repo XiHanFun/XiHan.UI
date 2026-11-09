@@ -259,8 +259,10 @@ export function connectNavigationMenu<T extends PropTypes>(
         'role': 'group',
         'aria-labelledby': triggerId(item.value),
         'data-state': stateAttr(isOpen),
-        // 换张时两侧都不播进退场，瞬时换张；挂载时就展开着的那一项直接呈现。首开与末收照常播
-        'data-instant': dataAttr(switching || (isOpen && openedAtMount)),
+        // 换张时旧的一张当场撤下、新的一张原地淡入（data-switching），交叉的进退场读起来是闪烁；
+        // 挂载时就展开着的那一项直接呈现。首开与末收照常播
+        'data-instant': dataAttr((switching && !isOpen) || (isOpen && openedAtMount)),
+        'data-switching': dataAttr(switching && isOpen),
         'data-orientation': orientation,
         'inert': !isOpen || undefined,
         'aria-hidden': !isOpen || undefined,

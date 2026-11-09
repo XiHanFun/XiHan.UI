@@ -7,7 +7,7 @@
 
 import type { ContextFacade, Params, PropFn } from '@xihan-ui/core'
 import type { TransferItem, TransferPressedKey, TransferSchema, TransferSide } from './transfer.types'
-import { applySelection, resetDeclaredValue, setup } from '@xihan-ui/core'
+import { applySelection, resetDeclaredValue, setup, trackListMotion } from '@xihan-ui/core'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import {
   transferCheckedValues,
@@ -125,8 +125,10 @@ export const transferMachine = createMachine({
     targetPage: cell<number>(() => ({ defaultValue: 1 })),
     // 按压通道：正被按住的那一个，按部件键记；与勾选、搬运无关
     pressed: cell<TransferPressedKey | null>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
+  effects: ['trackItemMotion'],
   // 按住途中转入禁用 / 只读 / 加载，或按住 Enter 搬完后按钮失去可搬的条目（原生 disabled 不再来 keyup）：
   // 按压面由机器自己收
   watch: ({ track, prop, context, action }) => {
@@ -150,6 +152,7 @@ export const transferMachine = createMachine({
         'ITEM.TOGGLE': { actions: ['toggleItem'] },
         'SIDE.TOGGLE_ALL': { actions: ['toggleAll'] },
         'ITEMS.MOVE': { actions: ['moveItems'] },
+        'LIST.TRACKED': { actions: ['markListTracked'] },
         'SEARCH.SET': { actions: ['setQuery'] },
         'PAGE.SET': { actions: ['setPage'] },
         'ITEM.FOCUS': { actions: ['setFocusedValue'] },
@@ -165,7 +168,50 @@ export const transferMachine = createMachine({
         return e.type === 'PRESS.START' && !inert(prop) && !e.disabled
       },
     },
+    effects: {
+      /**
+       * 两侧列表的增删：搬过去的条目在目标一侧进场、同一批按到达顺序错开，在原来那一侧由替身留在原处淡出，
+       * 留下来的从旧位置滑到新位置。只在搬运（选值变化，受控时宿主的回写也算）那一批播，检索与翻页换来的条目直接呈现；
+       * 虚拟滚动的一侧不接
+       */
+      trackItemMotion: ({ scope, prop, context, send, track, flush }) => {
+        const win = scope.getWin()
+        let disposed = false
+        let armed = false
+        let frame = 0
+        const stops: Array<() => void> = []
+        track([() => context.get('value')], () => {
+          armed = true
+          win.cancelAnimationFrame(frame)
+          // 两帧：受控的选值经宿主回写，React 的调度可能把提交排到下一帧之后
+          frame = win.requestAnimationFrame(() => {
+            frame = win.requestAnimationFrame(() => {
+              armed = false
+              frame = 0
+            })
+          })
+        })
+        flush(() => {
+          win.queueMicrotask(() => {
+            if (disposed)
+              return
+            for (const side of ['source', 'target'] as const) {
+              const list = prop('virtualizers')?.[side] ? null : scope.getById(scope.partId('transfer', `${side}-list`))
+              if (list)
+                stops.push(trackListMotion(list, { item: `[data-scope='transfer'][data-part='item']`, enabled: () => armed }))
+            }
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          win.cancelAnimationFrame(frame)
+          stops.forEach(stop => stop())
+        }
+      },
+    },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')

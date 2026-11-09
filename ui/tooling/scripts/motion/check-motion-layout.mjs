@@ -29,6 +29,9 @@ const TOUR_STEP = '漫游换步：聚光框与气泡定位层都是 position: fi
 const CITATION_PREVIEW = '引用预览的披露：预览本身就是 surface、里面并排几段作者内容，套不上单格 0fr → 1fr，按连接层量下的内容区高度长到、收回，内缩、描边与它前面那道间距随之同步'
 
 /** 允许做动画的布局属性，值写理由。 */
+/** 滑块的跳位过渡：六个键同一条理由。 */
+const SLIDER_JUMP = '滑块的位置与区间长度由连接层写成比例：只在按下时点到轨道上的那一跳、键盘与程序改值时补过去，按住之后一挪动就撤掉（data-following），跟手不带过渡'
+
 const LAYOUT_EXCEPTIONS = {
   'anchor:indicator:inline-size': INDICATOR,
   'anchor:indicator:block-size': INDICATOR,
@@ -45,6 +48,12 @@ const LAYOUT_EXCEPTIONS = {
   'layout:sider:inline-size': '侧栏折叠必须让出内容区宽度：内容区跟着侧栏重排正是这个动作要表达的',
   'side-nav:root:inline-size': '侧栏导航折叠成图标栏必须让出内容区宽度：与 Layout 侧栏同一段 move、同一条曲线，放在侧栏里时两者一起收放，侧栏直接落位时它也直接落位',
   'splitter:panel:flex-basis': '面板折叠 / 展开必须让出相邻面板的空间：相邻面板跟着重排正是这个动作要表达的（拖拽与步进不带过渡）',
+  'slider:range:inset-inline-start': SLIDER_JUMP,
+  'slider:range:inset-block-end': SLIDER_JUMP,
+  'slider:range:inline-size': SLIDER_JUMP,
+  'slider:range:block-size': SLIDER_JUMP,
+  'slider:thumb:inset-inline-start': SLIDER_JUMP,
+  'slider:thumb:inset-block-end': SLIDER_JUMP,
   'question-flow:viewport:block-size': '换题时视口随题目内容增减高度：下面的操作条要跟着挪到新位置',
   'notification:item:block-size': '叠放的一摞展开时各条长回自己的高度：叠放区跟着撑开',
   'floating-panel:positioner:left': FLOATING_PANEL_MAXIMIZE,

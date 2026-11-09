@@ -253,7 +253,7 @@ export interface FloatingPanelSchema extends MachineSchema {
     | 'clearOpenedAtMount'
     | 'raiseWindow'
     | 'setWindowDepth'
-  effect: 'trackPointer' | 'joinWindowStack'
+  effect: 'trackPointer' | 'joinWindowStack' | 'trackBodyDisclosure'
 }
 
 export interface FloatingPanelApi<T extends PropTypes = PropTypes> {

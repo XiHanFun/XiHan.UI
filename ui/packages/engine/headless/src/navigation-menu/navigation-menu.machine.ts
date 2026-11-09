@@ -7,7 +7,7 @@
 
 import type { Cleanup, Transition } from '@xihan-ui/core'
 import type { NavigationMenuIndicatorRect, NavigationMenuPressedPart, NavigationMenuSchema } from './navigation-menu.types'
-import { contains, focusItem, itemValue, overlayKit, prefetchOverlayKit, queryItems, requireOverlayKit, setTimeoutEffect, setup, whenOverlayKit } from '@xihan-ui/core'
+import { contains, focusItem, itemValue, overlayKit, prefetchOverlayKit, queryItems, requireOverlayKit, setTimeoutEffect, setup, tweenBoxSize, whenOverlayKit } from '@xihan-ui/core'
 import { openedAtMountCell } from '../shared/first-frame'
 import { createLiquidIndicator, measureIndicatorBox, sameIndicatorBox, trackIndicatorLayout } from '../shared/indicator'
 import { setupLayerTransaction } from '../shared/overlay-shell'
@@ -171,11 +171,21 @@ export const navigationMenuMachine = createMachine({
        * 展开项变了：两张之间换是换张，两侧面板都不播进退场（与菜单栏同一条成规）；从全收起展开是首开、
        * 收到全收起是末收，照常进退场。全部收起即撤首帧标记，之后的每一次展开都是用户操作带来的。
        */
-      syncSwitching: ({ context, refs }) => {
+      syncSwitching: ({ context, refs, scope, flush }) => {
         const next = context.get('value') ?? null
         const previous = refs.get('shownValue')
         refs.set('shownValue', next)
-        context.set('switching', previous != null && next != null && previous !== next)
+        const switching = previous != null && next != null && previous !== next
+        context.set('switching', switching)
+        // 共享外壳换张：宿主提交之前量下外壳此刻的尺寸，提交之后补到新的一张的尺寸，不一下子跳过去
+        if (switching) {
+          const viewport = scope.getById(navigationMenuPartId(scope, 'content', previous))
+            ?.closest<HTMLElement>(`[data-scope='navigation-menu'][data-part='viewport']`)
+          if (viewport) {
+            const start = tweenBoxSize(viewport)
+            flush(() => start())
+          }
+        }
         if (next == null)
           context.set('openedAtMount', false)
       },

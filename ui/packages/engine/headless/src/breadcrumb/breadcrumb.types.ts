@@ -75,6 +75,8 @@ export interface BreadcrumbSchema extends MachineSchema {
     pressedValue: string | null
     /** 省略位已被展开：路径不再折叠。只增不减，展开后不再收回。 */
     expanded: boolean
+    /** 层级的增删动效接上了：接上之前的首帧，列表带 data-instant，已有的层级直接呈现。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -90,10 +92,11 @@ export interface BreadcrumbSchema extends MachineSchema {
      * （省略位之前的链接数，即第一条展开出来的链接）；程序化展开不带，焦点不动。
      */
     | { type: 'EXPAND', list?: HTMLElement | null, focusIndex?: number }
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'canPress'
-  action: 'startPress' | 'endPress' | 'expand'
-  effect: never
+  action: 'startPress' | 'endPress' | 'expand' | 'markListTracked'
+  effect: 'trackListMotion'
 }
 
 export type BreadcrumbProps = BreadcrumbSchema['props']

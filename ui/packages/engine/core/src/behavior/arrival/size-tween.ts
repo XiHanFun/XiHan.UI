@@ -20,6 +20,13 @@ export function heightOf(el: HTMLElement): number {
   return Math.abs(rect - layout) < 1 ? rect : layout
 }
 
+/** 边框盒的行内尺寸，不取整；祖先带缩放时退回排布值。 */
+function widthOf(el: HTMLElement): number {
+  const rect = el.getBoundingClientRect().width
+  const layout = el.offsetWidth
+  return Math.abs(rect - layout) < 1 ? rect : layout
+}
+
 /** 在播的那一段：再换一次档时先撤掉它，量到的才是新排法的本来高度。 */
 const tweens = new WeakMap<HTMLElement, { cancel: () => void }>()
 
@@ -44,6 +51,35 @@ export function tweenBlockSize(el: HTMLElement): (hold?: Keyframe) => void {
       duration: readMotion(el).duration(to > from ? 'expand' : 'collapse'),
       easing,
     })
+    tweens.set(el, handle)
+    void handle.finished.then(() => {
+      if (tweens.get(el) === handle)
+        tweens.delete(el)
+    })
+  }
+}
+
+/**
+ * 外壳换装了一份内容、两向尺寸都跟着变（导航菜单的共享外壳换张）：记下此刻的行内与块尺寸，返回开始补间的函数，
+ * 宿主提交新内容之后调用。尺寸变化是屏内换位，取 move / continuous；overflow 整段裁着，新内容随外壳长开
+ */
+export function tweenBoxSize(el: HTMLElement): () => void {
+  const from = { inline: widthOf(el), block: heightOf(el) }
+  return () => {
+    tweens.get(el)?.cancel()
+    tweens.delete(el)
+    const to = { inline: widthOf(el), block: heightOf(el) }
+    if (Math.abs(to.inline - from.inline) < 0.5 && Math.abs(to.block - from.block) < 0.5)
+      return
+    const win = el.ownerDocument.defaultView
+    const easing = win?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-continuous').trim() || motionEasings.continuous
+    const frame = (size: { inline: number, block: number }): Keyframe => ({
+      inlineSize: `${size.inline}px`,
+      blockSize: `${size.block}px`,
+      overflow: 'clip',
+      boxSizing: 'border-box',
+    })
+    const handle = animate(el, [frame(from), frame(to)], { duration: readMotion(el).duration('move'), easing })
     tweens.set(el, handle)
     void handle.finished.then(() => {
       if (tweens.get(el) === handle)

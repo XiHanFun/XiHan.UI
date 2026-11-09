@@ -56,6 +56,8 @@
     /* 层级多到一行放不下就换行：宁可折行，也不要把路径压扁或撑出横向滚动 */
     flex-wrap: wrap;
     gap: var(--xh-breadcrumb-gap, var(--xh-_breadcrumb-gap));
+    /* 走掉的层级的替身按列表定位，绝对定位在原来的排布位上 */
+    position: relative;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -78,9 +80,20 @@
     display: none;
   }
 
-  /* 点开省略号后折叠的层级露面时淡入，路径不一下子变长 */
-  [data-scope='breadcrumb'][data-part='item']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  /* 层级、分隔符与省略位：换路径时留下来的从旧位置滑到新位置 */
+  [data-scope='breadcrumb']:is([data-part='item'], [data-part='separator'], [data-part='ellipsis']) {
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新到的层级淡入（换了一条路径、点开省略号露出折叠的那几层），同一批按到达顺序错开；首帧就在的直接呈现 */
+  [data-scope='breadcrumb'][data-part='list']:not([data-instant]) :is([data-scope='breadcrumb'][data-part='item'], [data-scope='breadcrumb'][data-part='separator'], [data-scope='breadcrumb'][data-part='ellipsis']):not([data-instant], [hidden], [data-xh-ghost]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 走掉的层级：替身留在原处淡出，播完即移除 */
+  [data-scope='breadcrumb']:is([data-part='item'], [data-part='separator'], [data-part='ellipsis'])[data-xh-ghost] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 链接的几何、字号与面全经家族桥接槽：静息 muted / regular，悬停走白底承载 hover 100 + 品牌字（写了语气随语气），

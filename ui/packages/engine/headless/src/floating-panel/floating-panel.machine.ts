@@ -6,8 +6,9 @@
 // 提供 floating panel 相关实现。
 
 import type { FloatingPanelPressedPart, FloatingPanelSchema, FloatingPanelWindowState } from './floating-panel.types'
-import { getWindowStack, setup } from '@xihan-ui/core'
+import { getWindowStack, setup, tweenBlockSize } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
 import {
@@ -120,8 +121,8 @@ export const floatingPanelMachine = createMachine({
     },
     open: {
       initial: 'idle',
-      // 展开期间在页面的窗口叠放序里：一展开就提到最上面，收起时退出
-      effects: ['joinWindowStack'],
+      // 展开期间在页面的窗口叠放序里：一展开就提到最上面，收起时退出；收拢时正文的退场也只在展开期间接
+      effects: ['joinWindowStack', 'trackBodyDisclosure'],
       on: {
         'WINDOW.RAISE': { actions: ['raiseWindow'] },
         'WINDOW.DEPTH': { actions: ['setWindowDepth'] },
@@ -194,7 +195,7 @@ export const floatingPanelMachine = createMachine({
       /**
        * 形态切进或切出最大化：定位层投影 data-animating，皮肤在这一档挂位置与尺寸的过渡；
        * 宿主把这一帧提交出去之后，等定位层上起播的那几支过渡播完再撤。没有可等的过渡即刻撤。
-       * 最小化与常规之间不补间：收拢的高度是 auto，补不过去。
+       * 收拢与还原之间的高度补间在 setWindowState 里起头：要在宿主提交之前量下此刻的高度
        */
       syncWindowAnimation: ({ context, refs, send, flush }) => {
         const next = context.get('windowState')
@@ -272,11 +273,23 @@ export const floatingPanelMachine = createMachine({
         context.set('position', next.position)
         context.set('dimensions', next.size)
       },
-      setWindowState: ({ context, event }) => {
+      /**
+       * 收拢与还原：内容面的高度从旧的一档补到新的一档，改形态之前量下此刻的高度、宿主提交之后起补。
+       * 收拢时正文当场藏起，原处的替身随内容面一路收短、同帧淡出（trackBodyDisclosure）；还原时正文当场露出，随内容面一路展开。
+       * 进出最大化另走定位层的几何过渡（syncWindowAnimation）
+       */
+      setWindowState: ({ context, event, refs, flush }) => {
         const e = event.current()
         if (e.type !== 'WINDOW_STATE.SET')
           return
+        const prev = context.get('windowState')
+        const content = refs.get('getContentEl')()
+        const start = content && prev !== e.windowState && prev !== 'maximized' && e.windowState !== 'maximized'
+          ? tweenBlockSize(content)
+          : null
         context.set('windowState', e.windowState)
+        if (start)
+          flush(() => start())
       },
 
       /**
@@ -345,6 +358,15 @@ export const floatingPanelMachine = createMachine({
       },
     },
     effects: {
+      /**
+       * 收拢时正文的退场：正文当场藏起，原处的替身同帧淡出；它是伸缩项，随内容面的高度补间（syncWindowAnimation）
+       * 一路收短，与内容面同时播完。只补收拢这一向；还原时正文直接露出，随内容面一路展开
+       */
+      trackBodyDisclosure: ({ scope, context, flush }) =>
+        attachDisclosureMotion(scope, flush, scope.partId('floating-panel', 'content'), () => ({
+          content: `[data-scope='floating-panel'][data-part='body']`,
+          enabled: () => context.get('windowState') === 'minimized',
+        })).stop,
       /**
        * 页面窗口叠放序：先订阅再提到最上面，叠放序每变一次就把自己从上往下数第几扇报回来；
        * 收起或卸载时先退订再移出，别的面板随之收紧。

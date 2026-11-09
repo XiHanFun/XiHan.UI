@@ -145,6 +145,8 @@ export interface TabsSchema extends MachineSchema {
     value: string | null
     /** 焦点位于组内时的瞬态锚点，焦点离开组即清空。 */
     focusedValue: string | null
+    /** 标签的增删动效接上了：接上之前的首帧，标签带带 data-instant，已有的标签直接呈现。 */
+    listTracked: boolean
     /** 正在拖动换位的标签；按住但尚未移动够激活距离时仍为 null。 */
     draggingTab: string | null
     /** 当前的落点；松手即落在此处。未落在任何标签上时为 null。 */
@@ -228,6 +230,7 @@ export interface TabsSchema extends MachineSchema {
   state: 'idle'
   event:
     | { type: 'VALUE.SET', value: string | null }
+    | { type: 'LIST.TRACKED' }
     | { type: 'TRIGGER.SELECT', value: string }
     | { type: 'TRIGGER.FOCUS', value: string }
     | { type: 'TRIGGER.NAVIGATE', value: string }
@@ -268,6 +271,7 @@ export interface TabsSchema extends MachineSchema {
   tag: never
   guard: 'isAutomatic' | 'canPress'
   action:
+    | 'markListTracked'
     | 'setValue'
     | 'setFocusedValue'
     | 'clearFocusedValue'

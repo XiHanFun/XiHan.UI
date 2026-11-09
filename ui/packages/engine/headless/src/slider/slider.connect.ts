@@ -83,6 +83,8 @@ export function connectSlider<T extends PropTypes>(
     'data-readonly': dataAttr(readOnly),
     'data-invalid': dataAttr(invalid),
     'data-dragging': dataAttr(dragging),
+    // 按住之后挪动过：拇指与区间跟手、不带过渡
+    'data-following': dataAttr(dragging && context.get('following')),
   })
 
   /** 一个拇指的值文本：有格式化函数就用它，没有就念数字本身。 */

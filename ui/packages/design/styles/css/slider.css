@@ -145,14 +145,24 @@
   }
 
   /* 主轴（起点 + 长度）来自内联样式，这里只给定位模式与配色。
-     绝不给 inset / size 加过渡：拖拽时这两个值每帧都在变，一加过渡区间就永远追在指针后面。
+     按下时点到轨道上的那一跳、键盘与程序改值，区间从旧位置补到新位置（move 档）；按住之后一挪动就跟手（data-following），
+     不带过渡：拖拽时这两个值每帧都在变，加了过渡区间就永远追在指针后面。
      语气槽由 root 上的 data-tone 声明、经继承发下来；没写 data-tone 时退回原来的品牌色。
      轨道不跟着换族：区间与拇指换色即可读出语气，底槽保持中性才不会盖掉"已选/未选"的对比。 */
   [data-scope='slider'][data-part='range'] {
     position: absolute;
     border-radius: var(--xh-slider-range-radius, var(--xh-shape-pill));
     background: var(--xh-slider-range-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    /* 校验失败、禁用时换色淡变；长度跟手，不进过渡 */
+    /* 校验失败、禁用时换色淡变；跳位补过去，跟手时撤掉（见下一条） */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-end var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inline-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  [data-scope='slider'][data-part='range'][data-following] {
     transition: background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
@@ -200,7 +210,16 @@
     border-radius: var(--xh-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-slider-thumb-bg, var(--xh-bg-surface));
     cursor: grab;
-    /* 校验失败、禁用时换色淡变；位置跟手，不进过渡 */
+    /* 校验失败、禁用时换色淡变；按下点到轨道上的那一跳、键盘与程序改值从旧位置滑过去（move 档），跟手时撤掉（见下一条） */
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      inset-inline-start var(--xh-motion-duration-move) var(--xh-motion-ease-continuous),
+      inset-block-end var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 按住之后挪动过：拇指落在指针下，不带位置过渡 */
+  [data-scope='slider'][data-part='thumb'][data-following] {
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);

@@ -181,6 +181,8 @@ export interface TransferSchema extends MachineSchema {
      * 条目时由机器自行松开。
      */
     pressed: TransferPressedKey | null
+    /** 两侧列表的增删动效接上了：接上之前的首帧，列表带 data-instant，已有的条目直接呈现。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -198,6 +200,7 @@ export interface TransferSchema extends MachineSchema {
     | { type: 'SIDE.TOGGLE_ALL', side: TransferSide }
     /** 把对面勾选的条目移到 to 侧。 */
     | { type: 'ITEMS.MOVE', to: TransferSide }
+    | { type: 'LIST.TRACKED' }
     | { type: 'SEARCH.SET', side: TransferSide, query: string }
     /** 翻到某一侧的第 page 页（从 1 起，夹回页数之内）。 */
     | { type: 'PAGE.SET', side: TransferSide, page: number }
@@ -228,7 +231,8 @@ export interface TransferSchema extends MachineSchema {
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
-  effect: never
+    | 'markListTracked'
+  effect: 'trackItemMotion'
 }
 
 export interface TransferApi<T extends PropTypes = PropTypes> {

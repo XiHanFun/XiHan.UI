@@ -18,6 +18,7 @@ import {
   sortIso,
   syncGranularityBase,
   trackLiveness,
+  trackPageFade,
 } from '../shared/calendar'
 import { calendarRangePickerAnatomy, calendarRangePickerCellTriggerQuery } from './calendar-range-picker.anatomy'
 
@@ -56,7 +57,7 @@ export const calendarRangePickerMachine = createMachine({
     press: null,
   }),
   initialState: () => 'idle',
-  effects: ['trackLiveness'],
+  effects: ['trackLiveness', 'trackPageFade'],
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
   watch: ({ track, prop, context, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
@@ -142,6 +143,7 @@ export const calendarRangePickerMachine = createMachine({
     },
     effects: {
       trackLiveness: trackLiveness(),
+      trackPageFade: trackPageFade(),
 
       /**
        * 起点落下后盯着整份文档：指针在边界之外松开，就把区间收在起点与悬停 / 聚焦日之间。

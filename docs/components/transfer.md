@@ -235,7 +235,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `LIST.TRACKED` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -379,6 +379,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `search` | `data-side` | panel.side |
 | `search` | `data-xh-field-input` | '' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
 | `list` | `data-side` | panel.side |
@@ -545,9 +546,9 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -357,6 +357,8 @@ export function connectTransfer<T extends PropTypes>(
     getListProps: panel => normalize.element({
       ...parts.list.attrs,
       'id': listId[panel.side],
+      // 增删动效接上之前的首帧，已有的条目直接呈现、不播进场
+      'data-instant': dataAttr(!context.get('listTracked')),
       'role': 'listbox',
       'aria-labelledby': titleId[panel.side],
       // 复选与否必须显式输出，oneWay 下 target 侧确实选不了
