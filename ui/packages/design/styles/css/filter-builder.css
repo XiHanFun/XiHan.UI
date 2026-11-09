@@ -7,6 +7,8 @@
 
 /* FilterBuilder 独立皮肤同时传递引入加删钮的动作控件配方；full bundle 递归去重。 */
 @import '../family/action-control.css';
+/* 列表进场与离场替身的关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -20,6 +22,8 @@
     flex-direction: column;
     gap: var(--xh-filter-builder-gap, var(--xh-space-2));
     min-inline-size: 0;
+    /* 删掉的条件与子组的替身按原来的排布位绝对定位，参照系是根 */
+    position: relative;
   }
 
   /* 标题与字段标签同一档：muted、label 字号与字重 */
@@ -36,6 +40,8 @@
     flex-direction: column;
     gap: var(--xh-filter-builder-group-gap, var(--xh-space-2));
     min-inline-size: 0;
+    /* 增删、挪动之后留下来的子组从旧位置滑到新位置（列表动效先反向补偿再撤掉） */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
   }
 
   /* 子组缩进一段，起始缘一条细线标出它管到哪一行 */
@@ -75,6 +81,19 @@
     align-items: center;
     gap: var(--xh-filter-builder-condition-gap, var(--xh-space-2));
     min-inline-size: 0;
+    /* 增删、挪动之后留下来的条件从旧位置滑到新位置（列表动效先反向补偿再撤掉） */
+    transition: translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+  }
+
+  /* 新加的条件与子组进场，同一批按到达顺序错开；首帧就在的直接呈现（条目或根带 data-instant） */
+  [data-scope='filter-builder'][data-part='root']:not([data-instant]) :is([data-scope='filter-builder'][data-part='group-items'] > [data-part='condition'], [data-scope='filter-builder'][data-part='group-items'] > [data-part='group']):where([data-scope='filter-builder']):not([data-instant], [data-state='closed']) {
+    animation: xh-item-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
+    animation-delay: calc(var(--xh-_stagger-index, 0) * var(--xh-motion-stagger-step));
+  }
+
+  /* 删掉的条件与子组：替身留在原处淡出，播完即移除 */
+  :is([data-scope='filter-builder'][data-part='group-items'] > [data-part='condition'], [data-scope='filter-builder'][data-part='group-items'] > [data-part='group']):where([data-scope='filter-builder'])[data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 字段与运算符的外包：定一个列宽，里面的下拉铺满这一格 */

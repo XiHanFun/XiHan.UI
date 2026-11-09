@@ -41,3 +41,8 @@ export const filterBuilderAnatomy = createAnatomy('filter-builder', [
   // 增删与挪动的播报
   'live-region',
 ])
+
+const parts = filterBuilderAnatomy.build()
+
+/** 列表动效认的条目：组里直接挂着的条件与子组（根组不算）。 */
+export const FILTER_BUILDER_ITEM_SELECTOR = `${parts['group-items'].selector} > ${parts.condition.selector}, ${parts['group-items'].selector} > ${parts.group.selector}`

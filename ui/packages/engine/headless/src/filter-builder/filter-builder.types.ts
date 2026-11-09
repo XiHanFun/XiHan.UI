@@ -102,6 +102,8 @@ export interface FilterBuilderSchema extends MachineSchema {
     announcement: string
     /** 改完结构后要把焦点交给谁：条件的节点身份，或某个组的「加条件」钮。 */
     focus: { readonly key: string, readonly target: 'condition' | 'add' } | null
+    /** 列表动效接上了：之后新加的条件与子组播进场；接上之前的首帧，根带 data-instant 直接呈现。 */
+    listTracked: boolean
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -119,10 +121,11 @@ export interface FilterBuilderSchema extends MachineSchema {
     | { type: 'SOURCE.SET', path: FilterPath, source: FilterOperandSource }
     | { type: 'IGNORE_CASE.SET', path: FilterPath, value: boolean }
     | { type: 'FOCUS.DONE' }
+    | { type: 'LIST.TRACKED' }
   tag: never
   guard: 'isEditable'
-  action: 'setLogic' | 'addCondition' | 'addGroup' | 'removeNode' | 'moveNode' | 'setField' | 'setOperator' | 'setOperand' | 'inputNumber' | 'setSource' | 'setIgnoreCase' | 'clearFocus'
-  effect: never
+  action: 'setLogic' | 'addCondition' | 'addGroup' | 'removeNode' | 'moveNode' | 'setField' | 'setOperator' | 'setOperand' | 'inputNumber' | 'setSource' | 'setIgnoreCase' | 'clearFocus' | 'markListTracked'
+  effect: 'trackListMotion'
 }
 
 export interface FilterBuilderApi<T extends PropTypes = PropTypes> {

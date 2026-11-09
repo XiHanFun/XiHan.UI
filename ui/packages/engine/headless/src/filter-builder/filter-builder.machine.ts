@@ -9,9 +9,10 @@ import type { Params as MachineParams, PropFn } from '@xihan-ui/core'
 import type { FilterCondition, FilterField, FilterGroup, FilterNode } from '@xihan-ui/viz'
 import type { FilterPath } from './filter-builder.model'
 import type { FilterBuilderSchema, FilterBuilderTranslations } from './filter-builder.types'
-import { focusFirst, getTabbables, setup } from '@xihan-ui/core'
+import { focusFirst, getTabbables, setup, trackListMotion } from '@xihan-ui/core'
 import { FILTER_BUILDER_EN_US } from '../locale/en-US'
 import { resolveTranslations } from '../shared/translations'
+import { FILTER_BUILDER_ITEM_SELECTOR } from './filter-builder.anatomy'
 import {
   canAddFilterGroup,
   changeFilterField,
@@ -124,8 +125,10 @@ export const filterBuilderMachine = createMachine({
     sources: cell<FilterBuilderSchema['context']['sources']>(() => ({ defaultValue: {} })),
     announcement: cell<string>(() => ({ defaultValue: '' })),
     focus: cell<FilterBuilderSchema['context']['focus']>(() => ({ defaultValue: null })),
+    listTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
   initialState: () => 'idle',
+  effects: ['trackListMotion'],
   on: {
     'LOGIC.SET': { guard: 'isEditable', actions: ['setLogic'] },
     'CONDITION.ADD': { guard: 'isEditable', actions: ['addCondition'] },
@@ -139,6 +142,7 @@ export const filterBuilderMachine = createMachine({
     'SOURCE.SET': { guard: 'isEditable', actions: ['setSource'] },
     'IGNORE_CASE.SET': { guard: 'isEditable', actions: ['setIgnoreCase'] },
     'FOCUS.DONE': { actions: ['clearFocus'] },
+    'LIST.TRACKED': { actions: ['markListTracked'] },
   },
   states: {
     idle: {},
@@ -147,7 +151,37 @@ export const filterBuilderMachine = createMachine({
     guards: {
       isEditable: ({ prop }) => !prop('disabled') && !prop('readOnly'),
     },
+    effects: {
+      /**
+       * 条件与子组的增删、上下挪动：新加的进场，删掉的由替身留在原处淡出，留下来的从旧位置滑到新位置。
+       * 根节点等宿主提交后再取（React 的祖先 ref 晚于子组件附着），接上之后撤掉根上的 data-instant
+       */
+      trackListMotion: ({ scope, send, flush }) => {
+        let disposed = false
+        let stop: (() => void) | undefined
+        flush(() => {
+          scope.getWin().queueMicrotask(() => {
+            const root = scope.getById(scope.partId('filter-builder', 'root'))
+            if (disposed || !root)
+              return
+            stop = trackListMotion(root, {
+              item: FILTER_BUILDER_ITEM_SELECTOR,
+              // 没写 id 的节点按位置认身份（filterNodeKey 的 at:），删中间一行时视图按位置复用节点，
+              // 真正卸下的是最后一个节点：给它放替身会在末尾淡出、像删错了行。只给带 id 的条件放替身；
+              // 子组不暴露身份，同样不放
+              exiting: el => !/:condition:id:/.test(el.id),
+            })
+            send({ type: 'LIST.TRACKED' })
+          })
+        })
+        return () => {
+          disposed = true
+          stop?.()
+        }
+      },
+    },
     actions: {
+      markListTracked: ({ context }) => context.set('listTracked', true),
       setLogic: (params) => {
         const event = params.event.current()
         if (event.type !== 'LOGIC.SET')

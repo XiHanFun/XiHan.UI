@@ -143,7 +143,7 @@ export function connectFilterBuilder<T extends PropTypes>(
       node.items.forEach(index)
   }
   index(tree)
-  const ids = scope.ids('filter-builder', 'label', 'live-region')
+  const ids = scope.ids('filter-builder', 'label', 'live-region', 'root')
   const shared = { disabled, readOnly, size }
   // 加条件、加条件组是带文案的离散动作钮：text 档、描边（虚线由皮肤给），随根的尺寸
   const addAction = {
@@ -340,6 +340,9 @@ export function connectFilterBuilder<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      // 列表动效按 id 找到根；接上之前的首帧，已有的条件与子组直接呈现、不播进场
+      'id': ids.root,
+      'data-instant': dataAttr(!context.get('listTracked')),
       'role': 'group',
       'aria-labelledby': prop('labelled') ? ids.label : undefined,
       'aria-label': prop('ariaLabel'),
