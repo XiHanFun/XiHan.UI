@@ -172,6 +172,7 @@ export function connectGraphChart<T extends PropTypes>(
   }
 
   /** 以 at 为锚点缩放：锚点下的内容不动。回到 1 倍时平移归零。 */
+  /** 缩放一档。at 给了是跟手的滚轮（以指针为中心、当场落定），没给是键盘（以绘图区中心、补间过去）。 */
   const zoomBy = (factor: number, at?: { x: number, y: number }): void => {
     if (!zoomable || !size)
       return
@@ -180,7 +181,7 @@ export function connectGraphChart<T extends PropTypes>(
       return
     const p = at ?? { x: size.width / 2, y: size.height / 2 }
     const next = k === ZOOM_MIN ? { k, x: 0, y: 0 } : { k, x: p.x - (p.x - view.x) * (k / view.k), y: p.y - (p.y - view.y) * (k / view.k) }
-    send({ type: 'VIEW.SET', view: next })
+    send(at ? { type: 'VIEW.SET', view: next } : { type: 'VIEW.ANIMATE', view: next })
   }
 
   const legendHandlers = (item: GraphLegendItem): Record<string, unknown> => {
@@ -401,7 +402,7 @@ export function connectGraphChart<T extends PropTypes>(
         if (zoomable && (event.key === '+' || event.key === '=' || event.key === '-' || event.key === '_' || event.key === '0')) {
           event.preventDefault()
           if (event.key === '0')
-            send({ type: 'VIEW.SET', view: { k: 1, x: 0, y: 0 } })
+            send({ type: 'VIEW.ANIMATE', view: { k: 1, x: 0, y: 0 } })
           else
             zoomBy(event.key === '-' || event.key === '_' ? 1 / ZOOM_STEP : ZOOM_STEP)
           return

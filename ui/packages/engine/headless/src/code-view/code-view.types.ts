@@ -112,6 +112,8 @@ export interface CodeViewSchema extends MachineSchema {
      * 抬起、失焦、指针取消，或按住途中折叠条因不再可折叠而收起时撤下；与折叠态互相独立。
      */
     pressed: boolean
+    /** 用户点开过的语法块，写块头的行号：块里的行从收起变回露出时播入场；挂载时就展开着的块不在其中。 */
+    unfolded: number[]
     /** 折叠着的语法块，写块头的行号，升序。 */
     folded: readonly number[]
     /**

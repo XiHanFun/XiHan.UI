@@ -24322,7 +24322,7 @@
 /* styles/code-view.css */
 /* 定义 code view 样式。 */
 
-/* 独立皮肤同时传递引入折叠条的动作控件配方；full bundle 递归去重。 */
+/* 独立皮肤同时传递引入折叠条的动作控件配方与共享关键帧；full bundle 递归去重。 */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 .xh-scope-code-view {
@@ -24432,6 +24432,12 @@
 
 .xh-scope-code-view[data-part='line'][hidden] {
   display: none;
+}
+
+/* 点开折叠块露出来的那几行播一次入场（与差异视图点开折叠格同一副）：行从收起变回露出、重新得到盒时起播；
+   收起是整段上下文，当场落定，不占一段退场窗口 */
+.xh-scope-code-view[data-part='line'][data-revealed]:not([hidden]) {
+  animation: xh-drop-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 /* 高亮行是强调不是选中：中性淡底 + 行首强调条，不用品牌淡底（品牌淡底只表达选中 / 当前） */

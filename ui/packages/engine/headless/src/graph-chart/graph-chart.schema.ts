@@ -73,6 +73,8 @@ export interface GraphChartSchema extends MachineSchema {
     settle: VoidFunction | null
     /** 这一次按下之后拖动过：松手后浏览器补派的 click 不算按下。 */
     dragMoved: boolean
+    /** 键盘缩放那一段补间：从哪个视图补到哪个视图、几时起播、时长与曲线，以及停掉逐帧循环的函数。 */
+    viewTween: { from: GraphView, to: GraphView, startedAt: number, duration: number, ease: (t: number) => number, stop: VoidFunction } | null
     /** 过渡的「不播」输入：拖动后的位置与画布视图没变时给同一个引用。 */
     extent: (positions: GraphChartSchema['context']['positions'], view: GraphView) => unknown
   }
@@ -83,10 +85,12 @@ export interface GraphChartSchema extends MachineSchema {
     | { type: 'DRAG.END' }
     | { type: 'SIM.FRAME' }
     | { type: 'VIEW.SET', view: GraphView }
+    | { type: 'VIEW.ANIMATE', view: GraphView }
+    | { type: 'VIEW.FRAME' }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'startDrag' | 'moveDrag' | 'endDrag' | 'advanceSimulation' | 'setView' | 'resetPositions'
-  effect: 'trackViewport' | 'stopSimulation'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'startDrag' | 'moveDrag' | 'endDrag' | 'advanceSimulation' | 'setView' | 'animateView' | 'stepView' | 'resetPositions'
+  effect: 'trackViewport' | 'stopSimulation' | 'stopViewTween'
 }
 
 export interface GraphOverlay {

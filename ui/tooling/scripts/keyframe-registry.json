@@ -114,6 +114,7 @@
         "family/motion.css"
       ],
       "consumers": [
+        "code-view",
         "diff-view",
         "expression-input",
         "form"

@@ -32,6 +32,7 @@ export const codeViewMachine = createMachine({
       onChange: folded => prop('onFoldedChange')?.({ folded: [...folded] }),
     })),
     foldFocus: cell<number | null>(() => ({ defaultValue: null })),
+    unfolded: cell<number[]>(() => ({ defaultValue: [] })),
   }),
   initialState: () => 'idle',
   watch: ({ track, prop, action }) => track([() => prop('code'), () => prop('clamp')], () => action(['releaseWhenUnfoldable'])),
@@ -61,9 +62,13 @@ export const codeViewMachine = createMachine({
         if (e.type !== 'FOLD.TOGGLE')
           return
         const current = context.get('folded')
-        const next = current.includes(e.line)
+        const opening = current.includes(e.line)
+        const next = opening
           ? current.filter(line => line !== e.line)
           : [...current, e.line].sort((a, b) => a - b)
+        // 点开过的块记下来：它的行之后每次从收起变回露出都播入场
+        if (opening && !context.get('unfolded').includes(e.line))
+          context.set('unfolded', [...context.get('unfolded'), e.line])
         context.set('folded', next)
       },
       setFoldFocus: ({ context, event }) => {

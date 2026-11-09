@@ -10,7 +10,7 @@ import type { GraphSimulationRef } from './graph-chart.model'
 import type { GraphChartSchema } from './graph-chart.schema'
 import type { GraphView } from './graph-chart.types'
 import { reportDiagnostic, setup } from '@xihan-ui/core'
-import { frameLoop, resolveMotionPreference } from '@xihan-ui/motion'
+import { frameLoop, frameNow, readMotion, resolveMotionPreference } from '@xihan-ui/motion'
 import {
   chartBaseActions,
   chartBaseContext,
@@ -86,6 +86,7 @@ export const graphChartMachine = createMachine({
     simulation: null,
     settle: null,
     dragMoved: false,
+    viewTween: null,
     extent: memoizeLast((positions: GraphChartSchema['context']['positions'], view: GraphView) => ({ positions, view })),
   }),
   computed: {
@@ -94,7 +95,7 @@ export const graphChartMachine = createMachine({
   initialState: () => 'idle',
   // 建机器就核一遍规格：watch 只在依赖变化时跑，挂载那一刻的不合法组合得在这里报
   entry: ['reportIssues'],
-  effects: ['trackViewport', 'stopSimulation'],
+  effects: ['trackViewport', 'stopSimulation', 'stopViewTween'],
   watch: ({ track, context, action, prop, computed }) => {
     // 激活的节点由这几处合成，任一变都要重算；合成结果没变时 notifyActive 自己会闭嘴
     track([
@@ -129,6 +130,8 @@ export const graphChartMachine = createMachine({
     'DRAG.END': { actions: ['endDrag'] },
     'SIM.FRAME': { actions: ['advanceSimulation'] },
     'VIEW.SET': { actions: ['setView'] },
+    'VIEW.ANIMATE': { actions: ['animateView'] },
+    'VIEW.FRAME': { actions: ['stepView'] },
   },
   states: {
     idle: {},
@@ -240,12 +243,51 @@ export const graphChartMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VIEW.SET')
           return
+        // 滚轮、拖动与程序改视图都是当场落定：键盘缩放还在补间就撤掉它
+        refs.get('viewTween')?.stop()
+        refs.set('viewTween', null)
         const drag = context.get('drag')
         if (drag && drag.id == null && (e.view.x !== drag.view.x || e.view.y !== drag.view.y))
           refs.set('dragMoved', true)
         context.set('view', e.view)
       },
 
+      /**
+       * 键盘缩放与回到原样：视图从此刻补到目标（move / continuous），不一步跳过去。缩放走几何插值、平移按缩放的线性插值走，
+       * 绕绘图区中心缩放时中心那一点全程不动。减弱动效下直接到位；滚轮与拖动跟手，不走这里
+       */
+      animateView: ({ context, refs, scope, send, event }) => {
+        const e = event.current()
+        if (e.type !== 'VIEW.ANIMATE')
+          return
+        refs.get('viewTween')?.stop()
+        refs.set('viewTween', null)
+        const win = scope.getWin()
+        const plot = scope.getById(scope.partId('graph-chart', 'plot'))
+        if (!plot || resolveMotionPreference(plot) === 'reduce') {
+          context.set('view', e.view)
+          return
+        }
+        const motion = readMotion(plot)
+        const stop = frameLoop(win, () => send({ type: 'VIEW.FRAME' }))
+        refs.set('viewTween', { from: context.get('view'), to: e.view, startedAt: frameNow(win), duration: motion.duration('move'), ease: motion.easing('continuous'), stop })
+      },
+      stepView: ({ context, refs, scope }) => {
+        const tween = refs.get('viewTween')
+        if (!tween)
+          return
+        const elapsed = frameNow(scope.getWin()) - tween.startedAt
+        const done = !(tween.duration > 0) || elapsed >= tween.duration
+        const p = done ? 1 : tween.ease(Math.max(0, elapsed / tween.duration))
+        const { from, to } = tween
+        const k = from.k === to.k ? from.k : from.k * (to.k / from.k) ** p
+        const q = from.k === to.k ? p : (k - from.k) / (to.k - from.k)
+        context.set('view', done ? to : { k, x: from.x + (to.x - from.x) * q, y: from.y + (to.y - from.y) * q })
+        if (done) {
+          tween.stop()
+          refs.set('viewTween', null)
+        }
+      },
       resetPositions: (params) => {
         const { context, refs, prop } = params
         stopSettle(params)
@@ -283,6 +325,10 @@ export const graphChartMachine = createMachine({
       trackViewport: trackChartViewport<GraphChartSchema>(),
       // 卸载时停掉还在冷却的逐帧循环
       stopSimulation: params => () => stopSettle(params),
+      stopViewTween: ({ refs }) => () => {
+        refs.get('viewTween')?.stop()
+        refs.set('viewTween', null)
+      },
     },
   },
 })

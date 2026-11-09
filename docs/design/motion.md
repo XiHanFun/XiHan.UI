@@ -31,6 +31,7 @@
 - 日历翻月与视图切换不做方向动画：横移途中读格会读错，方向由标题的年月交代；新的一页网格原地淡入（`enter`），区间并排的两面一起淡入。
 - Menubar 在同一条里的两张之间换，瞬时换张，与操作系统的菜单栏一致；NavigationMenu 换张时旧的一张当场撤下、新的一张原地淡入，共享外壳留在原处、尺寸补到新的一张（`move` / `continuous`）。两者都只有首开进场、末收退场。
 - Slider 按下时点到轨道上的那一跳、键盘与程序改值，拇指与区间从旧位置补到新位置（`move` / `continuous`）；按住之后一挪动就跟手，不带过渡。
+- GraphChart 按 `+` / `-` / `0` 缩放与回到原样时视图从此刻补到目标（`move` / `continuous`）：缩放走几何插值、平移按缩放线性走，绕绘图区中心缩放时中心那一点全程不动；滚轮与拖动跟手，当场落定。
 
 ## 令牌
 
@@ -164,7 +165,7 @@
 
 - 加入用 `xh-item-in`（淡入 + `distance-md` 上移），移除用 `xh-fade-out`；重排用 FLIP：读取旧位置、写入新布局、以 `translate` 反向补偿后过渡到 0，`move` + `continuous`。
 - 条目由作者渲染、删掉即卸载的集合（TagsInput、FieldArray）由列表动效原语 `trackListMotion` 接住离场：在原位置放一个退场态的替身，绝对定位在原排布位、不可交互，播完即移除；留下来的条目从旧位置滑到新位置。作者的列表写法不变。
-- 启用列表增删动效的集合：TagsInput、FieldArray、GridList、FilterBuilder，以及 Notification、MessageFeed、Command、Cascader；树形表格只在展开、收起子行的那一批播，排序、换页与刷新换来的整批行直接呈现；Transfer 只在搬运那一批播：搬过去的在目标一侧进场，原来那一侧由替身淡出；Tabs 增删标签时新加的原地放大淡入、关掉的由替身收小淡出（标签带位移占着 translate，进退场只动 scale 与 opacity）；Breadcrumb 换路径时新到的层级与分隔符淡入、走掉的由替身淡出、留下来的滑到新位置。InfiniteScroll（批量追加作者节点）不启用；DiffView 点开折叠格露出来的行播入场，收起折回的是一整段上下文，与一次翻一大片的批量展开同一条规则，当场落定。
+- 启用列表增删动效的集合：TagsInput、FieldArray、GridList、FilterBuilder，以及 Notification、MessageFeed、Command、Cascader；树形表格只在展开、收起子行的那一批播，排序、换页与刷新换来的整批行直接呈现；Transfer 只在搬运那一批播：搬过去的在目标一侧进场，原来那一侧由替身淡出；Tabs 增删标签时新加的原地放大淡入、关掉的由替身收小淡出（标签带位移占着 translate，进退场只动 scale 与 opacity）；Breadcrumb 换路径时新到的层级与分隔符淡入、走掉的由替身淡出、留下来的滑到新位置。InfiniteScroll（批量追加作者节点）不启用；DiffView 点开折叠格、CodeView 点开折叠块露出来的行播入场，收起折回的是一整段上下文，与一次翻一大片的批量展开同一条规则，当场落定。
 
 ## 数值与指示
 

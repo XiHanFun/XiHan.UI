@@ -91,6 +91,15 @@ export function connectCodeView<T extends PropTypes>(
     for (let index = region.start + 1; index <= region.end; index++)
       hiddenLines.add(index)
   }
+  // 点开过的块里的行：从收起变回露出时播入场（行重新得到盒即起播）；收起是整段上下文，当场落定
+  const unfoldedSet = new Set(context.get('unfolded'))
+  const revealedLines = new Set<number>()
+  for (const region of foldRegions) {
+    if (!unfoldedSet.has(lineNumberAt(region.start)))
+      continue
+    for (let index = region.start + 1; index <= region.end; index++)
+      revealedLines.add(index)
+  }
   // Tab 停靠点：记下的那颗钮仍是看得见的块头就留在它上面，否则落在第一颗看得见的钮上
   const foldFocus = context.get('foldFocus') ?? null
   const focusRegion = foldRegions.find(region => lineNumberAt(region.start) === foldFocus && !hiddenLines.has(region.start))
@@ -214,7 +223,8 @@ export function connectCodeView<T extends PropTypes>(
     getLineProps: line => normalize.element({
       ...parts.line.attrs,
       ...lineAttrs(line),
-      hidden: hiddenLines.has(line.index) || undefined,
+      'data-revealed': dataAttr(revealedLines.has(line.index)),
+      'hidden': hiddenLines.has(line.index) || undefined,
     }),
 
     // 行号由皮肤用 content: attr(data-line-number) 画：复制代码不带行号，读屏也不逐行念数字

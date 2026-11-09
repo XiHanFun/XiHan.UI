@@ -205,7 +205,7 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 
 **状态**：`idle`
 
-**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET`
+**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET` · `VIEW.ANIMATE` · `VIEW.FRAME`
 
 ### connect API
 
