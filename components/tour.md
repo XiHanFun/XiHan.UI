@@ -1025,7 +1025,7 @@ const translations = {
 
 关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `clip-path` · `inline-size` · `left` · `top` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
+皮肤之外还有一段：值由内核逐帧算出（`animate`），皮肤里看不到这段；退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

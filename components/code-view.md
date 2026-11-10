@@ -1242,6 +1242,7 @@ const folded = ref([11]);
 | `line` | `data-folded` | ''（条件成立时才出现） |
 | `line` | `data-highlighted` | ''（条件成立时才出现） |
 | `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line` | `data-revealed` | ''（条件成立时才出现） |
 | `line-number` | `data-folded` | ''（条件成立时才出现） |
 | `line-number` | `data-highlighted` | ''（条件成立时才出现） |
 | `line-number` | `data-line-number` | String(lineNumberAt(index)) |
@@ -1316,9 +1317,9 @@ const folded = ref([11]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `box-shadow` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `box-shadow` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

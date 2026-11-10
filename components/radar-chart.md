@@ -585,7 +585,7 @@ const indicators = [
 | `legendItems` | `readonly RadarLegendItem[]` |  |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
-| `tooltip` | `RadarTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `RadarTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：实体名一列，每个指标一列。 |
 | `emptyText` | `string` |  |
@@ -753,7 +753,7 @@ const indicators = [
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

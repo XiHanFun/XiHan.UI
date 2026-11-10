@@ -5809,7 +5809,7 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW_MOTION.TRACKED` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -6052,6 +6052,7 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 | `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `body` | `data-instant` | ''（条件成立时才出现） |
 | `footer` | `data-fixed` | ''（条件成立时才出现） |
 | `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
@@ -6270,11 +6271,11 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

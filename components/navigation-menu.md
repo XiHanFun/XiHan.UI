@@ -686,6 +686,7 @@ const entries = [
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-switching` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |

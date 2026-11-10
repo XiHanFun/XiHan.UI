@@ -442,7 +442,7 @@ const steps = [
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）。 |
 | `empty` | `boolean` | 没有可画的阶段。 |
 | `active` | `ChartDatumDetails \| null` | 激活的阶段；没有时为 null。 |
-| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：阶段名、数值、相对上一阶段、相对第一阶段四列。 |
 | `emptyText` | `string` |  |
@@ -567,7 +567,7 @@ const steps = [
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

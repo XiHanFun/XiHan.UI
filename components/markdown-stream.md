@@ -282,14 +282,14 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { XhMarkdownStreamContent, XhMarkdownStreamRoot } from "@xihan-ui/vue";
 
-// 生长中的那一块 key 恒为 live，光标画在它末尾
+// 生长中的那一块 key 恒为 live，光标贴在正文最后一个字后面
 const growing: readonly MarkdownBlock[] = [
   { key: "live", kind: "markdown", html: "<p>正在写的这一句。</p>", complete: false },
 ];
 
 const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }[] = [
   { label: "等第一个字：块列表还是空的", blocks: [], caret: true },
-  { label: "正在出字：光标停在生长块末尾", blocks: growing, caret: true },
+  { label: "正在出字：光标贴在最后一个字后面", blocks: growing, caret: true },
   { label: "caret 设成 false：一竖都不画", blocks: growing, caret: false },
 ];
 </script>
@@ -317,7 +317,7 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
     </xh-markdown-stream>
   </div>
   <div>
-    <p>正在出字：光标停在生长块末尾</p>
+    <p>正在出字：光标贴在最后一个字后面</p>
     <xh-markdown-stream id="markdown-stream-caret-growing" streaming>
       <div data-xh-part="root">
         <div data-xh-part="content"></div>
@@ -335,7 +335,7 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
 </div>
 
 <script type="module">
-  // 生长中的那一块 key 恒为 live，光标画在它末尾
+  // 生长中的那一块 key 恒为 live，光标贴在正文最后一个字后面
   const growing = [
     { key: "live", kind: "markdown", html: "<p>正在写的这一句。</p>", complete: false },
   ];
@@ -702,8 +702,9 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 - 组件不解析 Markdown，也不持有渲染器。块列表由宿主调用 `@xihan-ui/markdown` 的 `createStreamRenderer().render(全文)` 得到后传入；渲染器有状态，由持有方负责。
 - 块的 `key` 稳定：生长中的块 key 不变，定型的块 key 不再变化。框架据此复用同一份 DOM 只更新文本；每收到一个字就重建节点会丢失选区与滚动位置。
 - `html` 只对 markdown 块有效。代码块取 `source` 交给[代码视图](./code-view)，公式块取 `source` 交给宿主选择的公式引擎；不接管时的降级结果是把原文作为正文显示。
-- 流式光标是皮肤的 `::after`，不做成组件。它绘制在带 `data-caret` 的部件上：正文增长时是生长中的块，尚无任何块时是外壳，因此请求刚发出、尚无内容时页面上也有反馈。`caret` 设为 `false` 时两处都不发该属性。
-- 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。
+- 流式光标是外壳的 `::after`，不做成组件。整段流式期间外壳带 `data-caret`，光标始终是同一个：尚无任何块时它是外壳里唯一的一行，请求刚发出、尚无内容时页面上也有反馈；出字后它贴在正文最后一个字后面，块定稿、换到下一块时跟着走，不换节点。`caret` 设为 `false` 时不发该属性。
+- 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。流结束时光标在最后一个字后面原地淡出。
+- 光标的落点由 `trackMarkdownStreamCaret(root)` 量出：取最后一个排出来的字的矩形，写进外壳上的私有槽，不往已消毒的 html 里注入节点。三个适配器的外壳都已接好；自己拼外壳时在挂载后调用它、卸载时调用返回的释放函数。
 - 生长块不露原始符号：渲染器对还在生长的最后一块做行内容错，没写完的 `**粗`、`*斜`、`~~删`、`` `代码 `` 先按闭合显示，开符号后面还没有字时先不显示这个符号；写到一半的链接只显示文字，图片、行内引用与脚注写到一半时整段先不显示。块定型或流结束后按原文严格解析，没闭合的符号原样显示。
 - 渲染器认 GFM 的任务列表（`- [ ]` / `- [x]`，渲成只读勾选框，`li` 带 `data-task`）、脚注（`[^标签]` 角标按首次引用编号，`[^标签]:` 定义渲成带回链的脚注列表）与裸地址自动成链（`https://…`、`www.…`）。同一页上有几段正文带脚注时，给各自的渲染器传不同的 `idPrefix`。
 - 行内引用 `[@来源]`（一处多源写 `[@甲; @乙]`）与行内公式 `$…$` 在 html 里是占位节点（带 `data-md-inline`），块的 `inlines` 按出现先后给出挂点内容。`citation` / `math` 插槽（React 为 `renderCitation` / `renderMath`，Web Components 为 `inline-mount` 事件）把引用角标与公式引擎的产物渲进占位节点；不接管时占位节点显示降级内容（来源 id、TeX 原文）。金额里的美元符号（`$5 和 $10`）不成公式。
@@ -850,9 +851,9 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-caret` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'streaming' \| 'complete' |
-| `block` | `data-caret` | ''（条件成立时才出现） |
 | `block` | `data-complete` | ''（条件成立时才出现） |
 | `block` | `data-kind` | block.kind |
 | `block` | `data-lang` | block.lang |
@@ -865,14 +866,14 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-markdown-stream-caret-bg` | `block`<br>`root` | `background` | `caret` | `--xh-fg-default` | markdown-stream 的 block、root 部件 background 覆盖槽。 |
-| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret` | `--xh-motion-loop-caret` | markdown-stream 的 root 部件 animation 覆盖槽。 |
-| `--xh-markdown-stream-caret-enter-duration` | `block` | `animation` | `caret` | `--xh-motion-duration-enter` | markdown-stream 的 block 部件 animation 覆盖槽。 |
-| `--xh-markdown-stream-caret-gap` | `block`<br>`root` | `margin-inline-start` | `caret` | `0.1em` | markdown-stream 的 block、root 部件 margin-inline-start 覆盖槽。 |
-| `--xh-markdown-stream-caret-h` | `block`<br>`root` | `block-size` | `caret` | `1.05em` | markdown-stream 的 block、root 部件 block-size 覆盖槽。 |
-| `--xh-markdown-stream-caret-radius` | `block`<br>`root` | `border-radius` | `caret` | `--xh-shape-inset` | markdown-stream 的 block、root 部件 border-radius 覆盖槽。 |
-| `--xh-markdown-stream-caret-shift` | `block`<br>`root` | `translate` | `caret` | `-0.5px` | markdown-stream 的 block、root 部件 translate 覆盖槽。 |
-| `--xh-markdown-stream-caret-w` | `block`<br>`root` | `inline-size` | `caret` | `--xh-stroke-thick` | markdown-stream 的 block、root 部件 inline-size 覆盖槽。 |
+| `--xh-markdown-stream-caret-bg` | `root` | `background` | `default` | `--xh-fg-default` | markdown-stream 的 root 部件 background 覆盖槽。 |
+| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret`<br>`empty` | `--xh-motion-loop-caret` | markdown-stream 的 root 部件 animation 覆盖槽。 |
+| `--xh-markdown-stream-caret-enter-duration` | `root` | `animation` | `caret`<br>`empty` | `--xh-motion-duration-enter` | markdown-stream 的 root 部件 animation 覆盖槽。 |
+| `--xh-markdown-stream-caret-gap` | `root` | `inset-inline-start`<br>`margin-inline-start` | `default` | `0.1em` | markdown-stream 的 root 部件 inset-inline-start、margin-inline-start 覆盖槽。 |
+| `--xh-markdown-stream-caret-h` | `root` | `block-size` | `default` | `1.05em` | markdown-stream 的 root 部件 block-size 覆盖槽。 |
+| `--xh-markdown-stream-caret-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | markdown-stream 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-markdown-stream-caret-shift` | `root` | `translate` | `default` | `-0.5px` | markdown-stream 的 root 部件 translate 覆盖槽。 |
+| `--xh-markdown-stream-caret-w` | `root` | `inline-size`<br>`inset-inline-start` | `default` | `--xh-stroke-thick` | markdown-stream 的 root 部件 inline-size、inset-inline-start 覆盖槽。 |
 | `--xh-markdown-stream-fg` | `root` | `color` | `default` | `--xh-fg-default` | markdown-stream 的 root 部件 color 覆盖槽。 |
 | `--xh-markdown-stream-font-size` | `root` | `font-size` | `default` | `--xh-_markdown-stream-font-size` | markdown-stream 的 root 部件 font-size 覆盖槽。 |
 | `--xh-markdown-stream-gap` | `content` | `gap` | `default` | `--xh-_markdown-stream-gap` | markdown-stream 的 content 部件 gap 覆盖槽。 |

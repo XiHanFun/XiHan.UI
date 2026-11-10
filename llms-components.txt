@@ -2809,7 +2809,7 @@ import {
 
 动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-alert-collapse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-alert-collapse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -3671,9 +3671,9 @@ function isGroupActive(group: {
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
-`block-size` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `inline-size` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段。
 
@@ -4558,7 +4558,7 @@ function denyAll(): void {
 
 **状态**：`pending` · `approved` · `denied` · `expired`
 
-**事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
+**事件**：`APPROVE` · `PENDING.RENDERED` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET` · `PRESS.START` · `PRESS.END` · `REASON.PROMPT`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled` · `canPress`
 
@@ -4801,7 +4801,7 @@ function denyAll(): void {
 
 可覆盖的动效槽：`--xh-approval-loading-duration`。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-fade-out` · `xh-item-in` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -7457,9 +7457,9 @@ const inward = { "--xh-badge-offset-inline": "-4px", "--xh-badge-offset-block": 
 
 ### 动效
 
-动效角色：出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -8319,7 +8319,7 @@ const sizes = [
 
 **状态**：`idle`
 
-**事件**：`PRESS.START` · `PRESS.END` · `EXPAND`
+**事件**：`PRESS.START` · `PRESS.END` · `EXPAND` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -8385,6 +8385,7 @@ const sizes = [
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `link` | `data-current` | ''（条件成立时才出现） |
 | `link` | `data-pressed` | ''（条件成立时才出现） |
 | `link` | `data-xh-collection-context` | 'nav' |
@@ -8427,9 +8428,11 @@ const sizes = [
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-in` · `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ---
 
@@ -16910,7 +16913,7 @@ const scheme = ref<string | null>("monochrome");
 | `legendScale` | `CartesianLegendScale \| null` | 按值着色时图例里的色阶；没有按值着色的系列时为 null。 |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
-| `tooltip` | `CartesianTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `CartesianTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` | 摘要文字。 |
 | `table` | `TableModel` | 数据表模型：视觉隐藏的数据表用它，也可以喂给 Table 组件做可见的表格视图。 |
 | `emptyText` | `string` | 空态文字。 |
@@ -17167,7 +17170,7 @@ const scheme = ref<string | null>("monochrome");
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-draw` · `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-draw` · `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -18963,7 +18966,7 @@ const filter: CascaderFilter = (candidate, query) =>
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `color` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -20235,7 +20238,7 @@ import { XhCheckbox } from "@xihan-ui/vue";
 
 动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `clip-path` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`-webkit-mask-size` · `clip-path` · `color` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -21546,7 +21549,7 @@ const sizes = ["sm", "md", "lg"] as const;
 
 可覆盖的动效槽：`--xh-clipboard-loading-duration`。
 
-`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -22800,6 +22803,7 @@ const folded = ref([11]);
 | `line` | `data-folded` | ''（条件成立时才出现） |
 | `line` | `data-highlighted` | ''（条件成立时才出现） |
 | `line` | `data-line-number` | String(lineNumberAt(index)) |
+| `line` | `data-revealed` | ''（条件成立时才出现） |
 | `line-number` | `data-folded` | ''（条件成立时才出现） |
 | `line-number` | `data-highlighted` | ''（条件成立时才出现） |
 | `line-number` | `data-line-number` | String(lineNumberAt(index)) |
@@ -22874,9 +22878,9 @@ const folded = ref([11]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 披露（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `box-shadow` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `box-shadow` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -24281,9 +24285,11 @@ import {
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -25648,7 +25654,7 @@ const value = ref<string[]>(["#00a98e", "#3b82f6"]);
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -26332,7 +26338,7 @@ import {
 
 动效角色：状态（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`border-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -28766,7 +28772,7 @@ const filtered = computed(() => cities.filter(city => city.label.includes(query.
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -31404,9 +31410,9 @@ const value = ref<string | null>("2026-07-28T21:05");
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -34120,7 +34126,7 @@ import {
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `opacity` · `translate` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -36546,7 +36552,7 @@ const editing = computed(() => (activeIndex.value === 1 ? "终点" : "起点"));
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -39945,9 +39951,9 @@ const removed = files.reduce((sum, file) => sum + file.stats.removed, 0);
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-drop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -42221,9 +42227,11 @@ import {
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -43783,7 +43791,7 @@ const formula = ref("amount > 5000 || dyas > 7");
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` · `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -48692,7 +48700,7 @@ const fields: FilterField[] = [
 
 **状态**：`idle`
 
-**事件**：`LOGIC.SET` · `CONDITION.ADD` · `GROUP.ADD` · `NODE.REMOVE` · `NODE.MOVE` · `FIELD.SET` · `OPERATOR.SET` · `OPERAND.SET` · `NUMBER.INPUT` · `SOURCE.SET` · `IGNORE_CASE.SET` · `FOCUS.DONE`
+**事件**：`LOGIC.SET` · `CONDITION.ADD` · `GROUP.ADD` · `NODE.REMOVE` · `NODE.MOVE` · `FIELD.SET` · `OPERATOR.SET` · `OPERAND.SET` · `NUMBER.INPUT` · `SOURCE.SET` · `IGNORE_CASE.SET` · `FOCUS.DONE` · `LIST.TRACKED`
 
 **判据**：`isEditable`
 
@@ -48799,6 +48807,7 @@ const fields: FilterField[] = [
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
@@ -48862,9 +48871,11 @@ const fields: FilterField[] = [
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -52601,7 +52612,11 @@ import { XhFormatInputRoot } from "@xihan-ui/vue";
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：出现（见[动效规范](../design/motion#角色)）。
+
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ---
 
@@ -53049,7 +53064,7 @@ const steps = [
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）。 |
 | `empty` | `boolean` | 没有可画的阶段。 |
 | `active` | `ChartDatumDetails \| null` | 激活的阶段；没有时为 null。 |
-| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：阶段名、数值、相对上一阶段、相对第一阶段四列。 |
 | `emptyText` | `string` |  |
@@ -53174,7 +53189,7 @@ const steps = [
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -54290,7 +54305,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 
 **状态**：`idle`
 
-**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET`
+**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET` · `VIEW.ANIMATE` · `VIEW.FRAME`
 
 ### connect API
 
@@ -54305,7 +54320,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 | `empty` | `boolean` | 没有可画的节点。 |
 | `legendItems` | `readonly GraphLegendItem[]` |  |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `GraphTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `GraphTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：每条连线一行。 |
 | `emptyText` | `string` |  |
@@ -54458,7 +54473,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `fill` · `opacity` · `stroke` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 
@@ -54916,7 +54931,7 @@ const result = ref("等待操作");
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.EXTEND` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`VALUE.SET` · `ROW.SELECT` · `ROW.TOGGLE` · `ROW.EXTEND` · `ROW.ACTION` · `ROW.FOCUS` · `GRID.BLUR` · `PRESS.START` · `PRESS.END` · `LIST.TRACKED`
 
 **判据**：`canPress`
 
@@ -55008,6 +55023,7 @@ const result = ref("等待操作");
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -55101,9 +55117,9 @@ const result = ref("等待操作");
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -56947,6 +56963,7 @@ const picked = ref<HeatmapDatumDetails | null>(null);
 | `anchorCell` | `HeatmapCellRef \| null` | 当前占据 Tab 位的格：锚点仍在网格中即为它，否则回退为文档序首格。 |
 | `anchorDate` | `string \| null` | 当前占据 Tab 位的日期；矩阵形态下恒为 null。 |
 | `activeCell` | `HeatmapDatumDetails \| null` | 详情应显示的格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 |
+| `tooltipCell` | `HeatmapDatumDetails \| null` | 详情条里该写的那一格：显示时同 activeCell；隐去时留着上一回露面的那一格，淡出途中条里的字不先变空。 往详情条里填内容取这一份，判断「此刻有没有激活的格」取 activeCell |
 | `activeKey` | `string \| null` | 激活的键：指针、键盘或受控的 activeKey 给出的那一格；没有时为 null。 |
 | `empty` | `boolean` | 网格里一条数据都没有。 |
 | `emptyText` | `string` | 空态的文字：取数中写加载文案，否则写空态文案。 |
@@ -57066,8 +57083,8 @@ const picked = ref<HeatmapDatumDetails | null>(null);
 | `cell` | `data-highlighted` | ''（条件成立时才出现） |
 | `cell` | `data-level` | String(place.level) |
 | `cell` | `data-polarity` | place.polarity |
-| `tooltip` | `data-inline-anchor` | undefined \| tip.inlineAnchor |
-| `tooltip` | `data-placement` | undefined \| ((): 'block-start' \| 'block-end' =&gt; { if (activeRef =… |
+| `tooltip` | `data-inline-anchor` | shownTooltip.tip?.box.inlineAnchor |
+| `tooltip` | `data-placement` | shownTooltip.tip?.placement |
 | `tooltip` | `data-state` | 'hidden' \| 'visible' |
 | `tooltip` | `data-xh-chart-part` | 'tooltip' |
 | `legend` | `data-xh-chart-part` | 'legend' |
@@ -57130,7 +57147,7 @@ const picked = ref<HeatmapDatumDetails | null>(null);
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `box-shadow` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-heatmap-fill` 随皮肤自带，不引用别处文件里的名字；`background-color` · `border-color` · `box-shadow` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -57900,7 +57917,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `legendScales` | `readonly HierarchyLegendScale[]` | 按值着色时图例里的色阶，每个看得见的层一条；不按值着色时为空。 |
 | `rootKey` | `string \| null` | 当前的根的身份；null 是最顶层。 |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：全部节点，路径、数值与占上一层的比例。 |
 | `emptyText` | `string` |  |
@@ -58068,7 +58085,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -59564,7 +59581,7 @@ const sizes = ["sm", "md", "lg"] as const;
 | `--xh-icon-frame-shadow` | `root` | `box-shadow` | `frame=solid`<br>`tone` | `--xh-_highlight-brand`<br>`--xh-_highlight-tone` | icon 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-icon-frame-size` | `root` | `block-size`<br>`inline-size`<br>`padding` | `frame`<br>`size=lg`<br>`size=sm` | `--xh-_icon-frame-step`<br>`--xh-control-h-lg`<br>`--xh-control-h-sm` | icon 的 root 部件 block-size、inline-size、padding 覆盖槽。 |
 | `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
-| `--xh-icon-size` | `autoplay-trigger`<br>`branch-error`<br>`branch-indicator`<br>`branch-loading`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-header`<br>`comment-trigger`<br>`condition-delete-trigger`<br>`control`<br>`decrement-trigger`<br>`dismiss-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`first-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`group-delete-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`item-preview`<br>`last-trigger`<br>`line-content`<br>`line-fold-trigger`<br>`loading`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`overflow-trigger`<br>`path`<br>`path-item`<br>`prev-trigger`<br>`prev-year-trigger`<br>`reset-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`scroll-to-end-trigger`<br>`separator`<br>`sort-trigger`<br>`status`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`toolbar`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`viewport`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`column-gap`<br>`inline-size` | `@media (min-width: 640px)`<br>`default`<br>`direction`<br>`empty`<br>`error`<br>`folded`<br>`has(> [data-part='unread-count']:only-child)`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([data-part='status'])`<br>`not([data-variant='dot'])`<br>`preset=toast`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=completed`<br>`state=paused`<br>`state=running`<br>`state=visible`<br>`variant=dot` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-error`<br>`branch-indicator`<br>`branch-loading`<br>`branch-trigger`<br>`cancel-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-header`<br>`comment-trigger`<br>`condition-delete-trigger`<br>`control`<br>`decrement-trigger`<br>`dismiss-trigger`<br>`edit-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`first-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`group-delete-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`item-preview`<br>`last-trigger`<br>`line-content`<br>`line-fold-trigger`<br>`loading`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`overflow-trigger`<br>`path`<br>`path-item`<br>`prev-trigger`<br>`prev-year-trigger`<br>`reset-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`scroll-to-end-trigger`<br>`separator`<br>`sort-trigger`<br>`status`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`toolbar`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`viewport`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`column-gap`<br>`inline-size` | `@media (min-width: 640px)`<br>`default`<br>`direction`<br>`empty`<br>`error`<br>`folded`<br>`has(> [data-part='unread-count']:only-child)`<br>`is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])`<br>`mode=send`<br>`mode=stop`<br>`not([data-part='status'])`<br>`not([data-variant='dot'])`<br>`preset=toast`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=completed`<br>`state=paused`<br>`state=running`<br>`variant=dot` | `--xh-_color-swatch-picker-mark`<br>`--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。 |
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -60396,7 +60413,7 @@ function exportAvatar(toCanvas: (options?: { width?: number }) => HTMLCanvasElem
 
 动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -65322,9 +65339,9 @@ const payload = {
 
 ### 动效
 
-动效角色：状态 · 切换（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 披露（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -65619,7 +65636,11 @@ const count = ref(0);
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：状态（见[动效规范](../design/motion#角色)）。
+
+`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -67569,9 +67590,11 @@ const items = Array.from({ length: 1000 }, (_, index) => ({
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -69867,14 +69890,14 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { XhMarkdownStreamContent, XhMarkdownStreamRoot } from "@xihan-ui/vue";
 
-// 生长中的那一块 key 恒为 live，光标画在它末尾
+// 生长中的那一块 key 恒为 live，光标贴在正文最后一个字后面
 const growing: readonly MarkdownBlock[] = [
   { key: "live", kind: "markdown", html: "<p>正在写的这一句。</p>", complete: false },
 ];
 
 const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }[] = [
   { label: "等第一个字：块列表还是空的", blocks: [], caret: true },
-  { label: "正在出字：光标停在生长块末尾", blocks: growing, caret: true },
+  { label: "正在出字：光标贴在最后一个字后面", blocks: growing, caret: true },
   { label: "caret 设成 false：一竖都不画", blocks: growing, caret: false },
 ];
 </script>
@@ -69902,7 +69925,7 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
     </xh-markdown-stream>
   </div>
   <div>
-    <p>正在出字：光标停在生长块末尾</p>
+    <p>正在出字：光标贴在最后一个字后面</p>
     <xh-markdown-stream id="markdown-stream-caret-growing" streaming>
       <div data-xh-part="root">
         <div data-xh-part="content"></div>
@@ -69920,7 +69943,7 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
 </div>
 
 <script type="module">
-  // 生长中的那一块 key 恒为 live，光标画在它末尾
+  // 生长中的那一块 key 恒为 live，光标贴在正文最后一个字后面
   const growing = [
     { key: "live", kind: "markdown", html: "<p>正在写的这一句。</p>", complete: false },
   ];
@@ -70287,8 +70310,9 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 - 组件不解析 Markdown，也不持有渲染器。块列表由宿主调用 `@xihan-ui/markdown` 的 `createStreamRenderer().render(全文)` 得到后传入；渲染器有状态，由持有方负责。
 - 块的 `key` 稳定：生长中的块 key 不变，定型的块 key 不再变化。框架据此复用同一份 DOM 只更新文本；每收到一个字就重建节点会丢失选区与滚动位置。
 - `html` 只对 markdown 块有效。代码块取 `source` 交给[代码视图](./code-view)，公式块取 `source` 交给宿主选择的公式引擎；不接管时的降级结果是把原文作为正文显示。
-- 流式光标是皮肤的 `::after`，不做成组件。它绘制在带 `data-caret` 的部件上：正文增长时是生长中的块，尚无任何块时是外壳，因此请求刚发出、尚无内容时页面上也有反馈。`caret` 设为 `false` 时两处都不发该属性。
-- 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。
+- 流式光标是外壳的 `::after`，不做成组件。整段流式期间外壳带 `data-caret`，光标始终是同一个：尚无任何块时它是外壳里唯一的一行，请求刚发出、尚无内容时页面上也有反馈；出字后它贴在正文最后一个字后面，块定稿、换到下一块时跟着走，不换节点。`caret` 设为 `false` 时不发该属性。
+- 光标在等待第一个字时闪烁，出字后停为实心：正文本身在变化，继续闪烁只是噪声。流结束时光标在最后一个字后面原地淡出。
+- 光标的落点由 `trackMarkdownStreamCaret(root)` 量出：取最后一个排出来的字的矩形，写进外壳上的私有槽，不往已消毒的 html 里注入节点。三个适配器的外壳都已接好；自己拼外壳时在挂载后调用它、卸载时调用返回的释放函数。
 - 生长块不露原始符号：渲染器对还在生长的最后一块做行内容错，没写完的 `**粗`、`*斜`、`~~删`、`` `代码 `` 先按闭合显示，开符号后面还没有字时先不显示这个符号；写到一半的链接只显示文字，图片、行内引用与脚注写到一半时整段先不显示。块定型或流结束后按原文严格解析，没闭合的符号原样显示。
 - 渲染器认 GFM 的任务列表（`- [ ]` / `- [x]`，渲成只读勾选框，`li` 带 `data-task`）、脚注（`[^标签]` 角标按首次引用编号，`[^标签]:` 定义渲成带回链的脚注列表）与裸地址自动成链（`https://…`、`www.…`）。同一页上有几段正文带脚注时，给各自的渲染器传不同的 `idPrefix`。
 - 行内引用 `[@来源]`（一处多源写 `[@甲; @乙]`）与行内公式 `$…$` 在 html 里是占位节点（带 `data-md-inline`），块的 `inlines` 按出现先后给出挂点内容。`citation` / `math` 插槽（React 为 `renderCitation` / `renderMath`，Web Components 为 `inline-mount` 事件）把引用角标与公式引擎的产物渲进占位节点；不接管时占位节点显示降级内容（来源 id、TeX 原文）。金额里的美元符号（`$5 和 $10`）不成公式。
@@ -70435,9 +70459,9 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-caret` | ''（条件成立时才出现） |
+| `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'streaming' \| 'complete' |
-| `block` | `data-caret` | ''（条件成立时才出现） |
 | `block` | `data-complete` | ''（条件成立时才出现） |
 | `block` | `data-kind` | block.kind |
 | `block` | `data-lang` | block.lang |
@@ -70450,14 +70474,14 @@ const ordinal = (sourceId: string): number => sources.findIndex(source => source
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-markdown-stream-caret-bg` | `block`<br>`root` | `background` | `caret` | `--xh-fg-default` | markdown-stream 的 block、root 部件 background 覆盖槽。 |
-| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret` | `--xh-motion-loop-caret` | markdown-stream 的 root 部件 animation 覆盖槽。 |
-| `--xh-markdown-stream-caret-enter-duration` | `block` | `animation` | `caret` | `--xh-motion-duration-enter` | markdown-stream 的 block 部件 animation 覆盖槽。 |
-| `--xh-markdown-stream-caret-gap` | `block`<br>`root` | `margin-inline-start` | `caret` | `0.1em` | markdown-stream 的 block、root 部件 margin-inline-start 覆盖槽。 |
-| `--xh-markdown-stream-caret-h` | `block`<br>`root` | `block-size` | `caret` | `1.05em` | markdown-stream 的 block、root 部件 block-size 覆盖槽。 |
-| `--xh-markdown-stream-caret-radius` | `block`<br>`root` | `border-radius` | `caret` | `--xh-shape-inset` | markdown-stream 的 block、root 部件 border-radius 覆盖槽。 |
-| `--xh-markdown-stream-caret-shift` | `block`<br>`root` | `translate` | `caret` | `-0.5px` | markdown-stream 的 block、root 部件 translate 覆盖槽。 |
-| `--xh-markdown-stream-caret-w` | `block`<br>`root` | `inline-size` | `caret` | `--xh-stroke-thick` | markdown-stream 的 block、root 部件 inline-size 覆盖槽。 |
+| `--xh-markdown-stream-caret-bg` | `root` | `background` | `default` | `--xh-fg-default` | markdown-stream 的 root 部件 background 覆盖槽。 |
+| `--xh-markdown-stream-caret-duration` | `root` | `animation` | `caret`<br>`empty` | `--xh-motion-loop-caret` | markdown-stream 的 root 部件 animation 覆盖槽。 |
+| `--xh-markdown-stream-caret-enter-duration` | `root` | `animation` | `caret`<br>`empty` | `--xh-motion-duration-enter` | markdown-stream 的 root 部件 animation 覆盖槽。 |
+| `--xh-markdown-stream-caret-gap` | `root` | `inset-inline-start`<br>`margin-inline-start` | `default` | `0.1em` | markdown-stream 的 root 部件 inset-inline-start、margin-inline-start 覆盖槽。 |
+| `--xh-markdown-stream-caret-h` | `root` | `block-size` | `default` | `1.05em` | markdown-stream 的 root 部件 block-size 覆盖槽。 |
+| `--xh-markdown-stream-caret-radius` | `root` | `border-radius` | `default` | `--xh-shape-inset` | markdown-stream 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-markdown-stream-caret-shift` | `root` | `translate` | `default` | `-0.5px` | markdown-stream 的 root 部件 translate 覆盖槽。 |
+| `--xh-markdown-stream-caret-w` | `root` | `inline-size`<br>`inset-inline-start` | `default` | `--xh-stroke-thick` | markdown-stream 的 root 部件 inline-size、inset-inline-start 覆盖槽。 |
 | `--xh-markdown-stream-fg` | `root` | `color` | `default` | `--xh-fg-default` | markdown-stream 的 root 部件 color 覆盖槽。 |
 | `--xh-markdown-stream-font-size` | `root` | `font-size` | `default` | `--xh-_markdown-stream-font-size` | markdown-stream 的 root 部件 font-size 覆盖槽。 |
 | `--xh-markdown-stream-gap` | `content` | `gap` | `default` | `--xh-_markdown-stream-gap` | markdown-stream 的 content 部件 gap 覆盖槽。 |
@@ -73563,7 +73587,7 @@ const filtered = computed(() => {
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -77135,7 +77159,7 @@ const isLast = (index: number): boolean => index === snapshot.value.messages.len
 
 动效角色：按压 · 状态 · 出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-breathe` · `xh-breathe-halo` · `xh-item-in` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -77833,6 +77857,7 @@ const entries = [
 | `content` | `data-instant` | ''（条件成立时才出现） |
 | `content` | `data-orientation` | props.orientation |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `content` | `data-switching` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `branch-trigger` | `data-state` | 'open' \| 'closed' |
@@ -79678,7 +79703,7 @@ function onAction(details: { id: string }): void {
 
 可覆盖的动效槽：`--xh-notification-progress-duration`。
 
-关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` · `xh-slide-fade-in` · `xh-slide-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-notification-stack-in` · `xh-notification-stack-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-countdown` · `xh-fade-out` · `xh-sheet-in` · `xh-sheet-out` · `xh-slide-fade-in` · `xh-slide-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`block-size` · `color` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -83607,7 +83632,7 @@ import {
 
 动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -84564,7 +84589,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 | `legendItems` | `readonly PieLegendItem[]` |  |
 | `patterns` | `readonly ChartPattern[]` | 各扇区的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时扇区用它填充；「其他」没有纹理。 |
 | `active` | `ChartDatumDetails \| null` | 激活的扇区；没有时为 null。 |
-| `tooltip` | `PieTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `PieTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `center` | `{ readonly value: string, readonly label: string }` | 环形中心的缺省内容：可见扇区的合计与说明文字。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：扇区名、数值、占比三列。 |
@@ -84732,7 +84757,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -88861,7 +88886,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 可覆盖的动效槽：`--xh-progress-indeterminate-duration` · `--xh-progress-stripe-duration`。
 
-关键帧 `xh-progress-indeterminate` · `xh-progress-stripes` 随皮肤自带，不引用别处文件里的名字；`rotate` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-progress-indeterminate` · `xh-progress-stripes` 随皮肤自带，不引用别处文件里的名字；`background-color` · `rotate` · `stroke` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -92300,7 +92325,7 @@ const indicators = [
 | `legendItems` | `readonly RadarLegendItem[]` |  |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
-| `tooltip` | `RadarTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `RadarTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：实体名一列，每个指标一列。 |
 | `emptyText` | `string` |  |
@@ -92468,7 +92493,7 @@ const indicators = [
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -94458,7 +94483,7 @@ const sticky = ref(3);
 
 动效角色：按压 · 状态 · 切换（见[动效规范](../design/motion#角色)）。
 
-`clip-path` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`clip-path` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -96289,7 +96314,7 @@ const links = [
 | `legendItems` | `readonly SankeyLegendItem[]` |  |
 | `gradients` | `readonly SankeyGradient[]` | linkColor="gradient" 时每条流带一个渐变；其余时候为空。 |
 | `active` | `ChartDatumDetails \| null` | 激活的节点或流带；没有时为 null。 |
-| `tooltip` | `SankeyTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `SankeyTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：每条流带一行，源、目标与流量三列。 |
 | `emptyText` | `string` |  |
@@ -96447,7 +96472,7 @@ const links = [
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -101041,7 +101066,7 @@ const picked = ref<Member[]>([{ id: 2, name: "钱二", team: "前端体验" }]);
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -102276,6 +102301,7 @@ const icons = {
 ### 组合
 
 - 放入[布局](./layout)的侧栏区域。
+- 宽度也可以交给外层容器：`--xh-side-nav-w` 与 `--xh-side-nav-collapsed-w` 都设成 `100%`，收放由容器过渡自己的宽度。折叠与展开照样等容器的宽度走完才换排布：收起时文字先淡出、落定才裁掉，展开时容器长开之后文字才淡入。
 - 分组：`group` 放在 `list` 里当一条，里面先放 `group-label`，再放 `group-list`，组内的 `item` 与 `branch` 挂在 `group-list` 里。
 - Vue / React 的 `XhSideNavGroupList` 从所在的 `XhSideNavGroup` 取分组身份，不用再写 `value`；Web Components 的 `group-label` 与 `group-list` 都认所在的 `group`。
 
@@ -102668,9 +102694,9 @@ const icons = {
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -103891,6 +103917,7 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-animation` | props.animation |
+| `root` | `data-instant` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'loading' \| 'loaded' |
 | `item` | `data-shape` | item.shape |
 
@@ -103921,7 +103948,7 @@ const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 
 可覆盖的动效槽：`--xh-skeleton-duration` · `--xh-skeleton-pulse-duration`。
 
-关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-out` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-skeleton-pulse` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -105335,6 +105362,7 @@ import {
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
+| `root` | `data-following` | ''（条件成立时才出现） |
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-orientation` | props.orientation |
 | `root` | `data-readonly` | ''（条件成立时才出现） |
@@ -105343,40 +105371,47 @@ import {
 | `root` | `data-tone` | props.tone |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-dragging` | ''（条件成立时才出现） |
+| `label` | `data-following` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |
 | `label` | `data-orientation` | props.orientation |
 | `label` | `data-readonly` | ''（条件成立时才出现） |
 | `label` | `data-required` | ''（条件成立时才出现） |
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-dragging` | ''（条件成立时才出现） |
+| `control` | `data-following` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-orientation` | props.orientation |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `track` | `data-disabled` | ''（条件成立时才出现） |
 | `track` | `data-dragging` | ''（条件成立时才出现） |
+| `track` | `data-following` | ''（条件成立时才出现） |
 | `track` | `data-invalid` | ''（条件成立时才出现） |
 | `track` | `data-orientation` | props.orientation |
 | `track` | `data-readonly` | ''（条件成立时才出现） |
 | `range` | `data-disabled` | ''（条件成立时才出现） |
 | `range` | `data-draggable` | ''（条件成立时才出现） |
 | `range` | `data-dragging` | ''（条件成立时才出现） |
+| `range` | `data-following` | ''（条件成立时才出现） |
 | `range` | `data-invalid` | ''（条件成立时才出现） |
 | `range` | `data-orientation` | props.orientation |
 | `range` | `data-readonly` | ''（条件成立时才出现） |
 | `thumb` | `data-disabled` | ''（条件成立时才出现） |
 | `thumb` | `data-dragging` | ''（条件成立时才出现） |
+| `thumb` | `data-following` | ''（条件成立时才出现） |
 | `thumb` | `data-index` | String(thumb.index) |
 | `thumb` | `data-invalid` | ''（条件成立时才出现） |
 | `thumb` | `data-orientation` | props.orientation |
 | `thumb` | `data-readonly` | ''（条件成立时才出现） |
 | `value-text` | `data-disabled` | ''（条件成立时才出现） |
 | `value-text` | `data-dragging` | ''（条件成立时才出现） |
+| `value-text` | `data-following` | ''（条件成立时才出现） |
 | `value-text` | `data-index` | String(thumb.index) |
 | `value-text` | `data-invalid` | ''（条件成立时才出现） |
 | `value-text` | `data-orientation` | props.orientation |
 | `value-text` | `data-readonly` | ''（条件成立时才出现） |
 | `tick-group` | `data-disabled` | ''（条件成立时才出现） |
 | `tick-group` | `data-dragging` | ''（条件成立时才出现） |
+| `tick-group` | `data-following` | ''（条件成立时才出现） |
 | `tick-group` | `data-invalid` | ''（条件成立时才出现） |
 | `tick-group` | `data-orientation` | props.orientation |
 | `tick-group` | `data-readonly` | ''（条件成立时才出现） |
@@ -105437,9 +105472,9 @@ import {
 
 ### 动效
 
-动效角色：状态（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `block-size` · `border-color` · `inline-size` · `inset-block-end` · `inset-inline-start` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -107239,11 +107274,11 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 
 ### 动效
 
-动效角色：循环（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-spinner-duration`。
 
-关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
@@ -107722,7 +107757,7 @@ const inner = [
 
 动效角色：状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `flex-basis` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `flex-basis` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -108242,7 +108277,11 @@ const cards = [
 
 ### 动效
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+动效角色：状态（见[动效规范](../design/motion#角色)）。
+
+`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -115956,7 +115995,7 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 
 **状态**：`idle` · `resizing` · `columnDragging` · `rowDragging`
 
-**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`SORT.SET` · `SORT.TOGGLE` · `FILTER.SET` · `PAGE.SET` · `COLUMN_PREF.SET` · `COLUMN_RESIZE.START` · `COLUMN_RESIZE.MOVE` · `COLUMN_RESIZE.END` · `COLUMN_RESIZE.CANCEL` · `COLUMN_RESIZE.STEP` · `COLUMN_DRAG.START` · `COLUMN_DRAG.MOVE` · `COLUMN_DRAG.END` · `COLUMN_DRAG.CANCEL` · `COLUMN.MOVE_BY` · `ROW_DRAG.START` · `ROW_DRAG.MOVE` · `ROW_DRAG.END` · `ROW_DRAG.CANCEL` · `ROW.MOVE_BY` · `ROW.REORDER_BLOCKED` · `COLUMN_PREF.PATCH` · `SELECTION.SET` · `ROW.SELECT` · `SELECTION.ALL_TOGGLE` · `EXPANDED.SET` · `ROW.EXPAND` · `ROW.COLLAPSE` · `ROW.EXPAND_TOGGLE` · `ROW_MOTION.TRACKED` · `ROW.FOCUS` · `CELL.FOCUS` · `TABLE.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -116199,6 +116238,7 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 | `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
+| `body` | `data-instant` | ''（条件成立时才出现） |
 | `footer` | `data-fixed` | ''（条件成立时才出现） |
 | `row` | `data-disabled` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
@@ -116417,11 +116457,11 @@ const people: Person[] = Array.from({ length: 10000 }, (_, i) => ({
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -117238,7 +117278,7 @@ const branches = [
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END` · `SCROLL.PREV` · `SCROLL.NEXT` · `SCROLL.BY` · `SCROLL.FRAME` · `PAN.START` · `PAN.MOVE` · `PAN.END` · `PAN.CANCEL` · `OVERFLOW.SELECT`
+**事件**：`VALUE.SET` · `LIST.TRACKED` · `TRIGGER.SELECT` · `TRIGGER.FOCUS` · `TRIGGER.NAVIGATE` · `LIST.BLUR` · `TAB_DRAG.START` · `TAB_DRAG.MOVE` · `TAB_DRAG.END` · `TAB_DRAG.CANCEL` · `TAB.MOVE_BY` · `TAB.CLOSE` · `PRESS.START` · `PRESS.END` · `SCROLL.PREV` · `SCROLL.NEXT` · `SCROLL.BY` · `SCROLL.FRAME` · `PAN.START` · `PAN.MOVE` · `PAN.END` · `PAN.CANCEL` · `OVERFLOW.SELECT`
 
 **判据**：`isAutomatic` · `canPress`
 
@@ -117334,6 +117374,7 @@ const branches = [
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `trigger` | `data-closable` | ''（条件成立时才出现） |
 | `trigger` | `data-current` | ''（条件成立时才出现） |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -117438,9 +117479,9 @@ const branches = [
 
 ### 动效
 
-动效角色：按压 · 状态 · 指示与换位（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `block-size` · `box-shadow` · `color` · `inline-size` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-color` · `box-shadow` · `color` · `inline-size` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop` · `isTweenDone` · `tweenValueAt`），皮肤里看不到这段；退场由适配器的退场闸门把关，动画播完才真收起；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 
@@ -118156,7 +118197,7 @@ const avatar
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -118933,7 +118974,7 @@ const tags = [
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -121280,7 +121321,7 @@ const delimiters = [",", "，", ";", "\n"];
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-pop-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -122736,9 +122777,11 @@ const note = ref("");
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
@@ -123807,9 +123850,9 @@ function snap(next: string) {
 
 ### 动效
 
-动效角色：按压 · 状态（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -126253,7 +126296,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
 
 动效角色：按压 · 状态 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -127754,7 +127797,7 @@ const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -132023,7 +132066,7 @@ import {
 
 可覆盖的动效槽：`--xh-tool-call-shimmer-duration`。
 
-共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` · `xh-item-in` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` · `xh-item-in` · `xh-shimmer` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `color` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -134728,7 +134771,7 @@ const translations = {
 
 关键帧 `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `block-size` · `border-radius` · `clip-path` · `inline-size` · `left` · `top` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
+皮肤之外还有一段：值由内核逐帧算出（`animate`），皮肤里看不到这段；退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -137521,7 +137564,7 @@ const value = ref<string[]>([]);
 
 **状态**：`idle`
 
-**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
+**事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `LIST.TRACKED` · `SEARCH.SET` · `PAGE.SET` · `ITEM.FOCUS` · `LIST.BLUR` · `PRESS.START` · `PRESS.END`
 
 **判据**：`canPress`
 
@@ -137665,6 +137708,7 @@ const value = ref<string[]>([]);
 | `search` | `data-side` | panel.side |
 | `search` | `data-xh-field-input` | '' |
 | `list` | `data-disabled` | ''（条件成立时才出现） |
+| `list` | `data-instant` | ''（条件成立时才出现） |
 | `list` | `data-invalid` | ''（条件成立时才出现） |
 | `list` | `data-readonly` | ''（条件成立时才出现） |
 | `list` | `data-side` | panel.side |
@@ -137831,9 +137875,9 @@ const value = ref<string[]>([]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -141755,9 +141799,9 @@ function indent(level: number): Record<string, string> {
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 指示与换位 · 披露 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `mask-size` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `color` · `mask-size` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -145521,9 +145565,9 @@ const selected = ref<string[]>([]);
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 循环（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 披露 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `box-shadow` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

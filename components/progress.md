@@ -1160,7 +1160,7 @@ import { XhProgress } from "@xihan-ui/vue";
 
 可覆盖的动效槽：`--xh-progress-indeterminate-duration` · `--xh-progress-stripe-duration`。
 
-关键帧 `xh-progress-indeterminate` · `xh-progress-stripes` 随皮肤自带，不引用别处文件里的名字；`rotate` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-progress-indeterminate` · `xh-progress-stripes` 随皮肤自带，不引用别处文件里的名字；`background-color` · `rotate` · `stroke` · `stroke-dashoffset` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

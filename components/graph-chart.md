@@ -1101,7 +1101,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 
 **状态**：`idle`
 
-**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET`
+**事件**：`DRAG.START` · `DRAG.MOVE` · `DRAG.END` · `SIM.FRAME` · `VIEW.SET` · `VIEW.ANIMATE` · `VIEW.FRAME`
 
 ### connect API
 
@@ -1116,7 +1116,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 | `empty` | `boolean` | 没有可画的节点。 |
 | `legendItems` | `readonly GraphLegendItem[]` |  |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `GraphTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `GraphTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：每条连线一行。 |
 | `emptyText` | `string` |  |
@@ -1269,7 +1269,7 @@ const view = ref<GraphView>({ k: 1, x: 0, y: 0 });
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `fill` · `opacity` · `stroke` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：值由内核逐帧算出（`frameLoop`），皮肤里看不到这段；内核按组件所在的作用域判断减弱动效（最近的 `data-motion`、应用级覆盖、系统偏好），据此决定要不要动。
 

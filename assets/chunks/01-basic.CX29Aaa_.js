@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.D7LghR2y.js";import{i as t}from"./timer.C93cnnYG.js";var n=e();function r(){return(0,n.jsx)(t,{autoStart:!0})}export{r as default};

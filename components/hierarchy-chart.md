@@ -754,7 +754,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 | `legendScales` | `readonly HierarchyLegendScale[]` | 按值着色时图例里的色阶，每个看得见的层一条；不按值着色时为空。 |
 | `rootKey` | `string \| null` | 当前的根的身份；null 是最顶层。 |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：全部节点，路径、数值与占上一层的比例。 |
 | `emptyText` | `string` |  |
@@ -922,7 +922,7 @@ const translations = { levelLabel: (level: number) => (level === 1 ? "部门" : 
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

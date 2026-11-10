@@ -570,11 +570,11 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 
 ### 动效
 
-动效角色：循环（见[动效规范](../design/motion#角色)）。
+动效角色：状态 · 循环（见[动效规范](../design/motion#角色)）。
 
 可覆盖的动效槽：`--xh-spinner-duration`。
 
-关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

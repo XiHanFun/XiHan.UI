@@ -945,7 +945,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 | `legendItems` | `readonly PieLegendItem[]` |  |
 | `patterns` | `readonly ChartPattern[]` | 各扇区的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时扇区用它填充；「其他」没有纹理。 |
 | `active` | `ChartDatumDetails \| null` | 激活的扇区；没有时为 null。 |
-| `tooltip` | `PieTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `PieTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `center` | `{ readonly value: string, readonly label: string }` | 环形中心的缺省内容：可见扇区的合计与说明文字。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：扇区名、数值、占比三列。 |
@@ -1113,7 +1113,7 @@ const activeKey = computed<ChartKey | null>(() => (choice.value === "none" ? nul
 
 动效角色：状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background-color` · `border-color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

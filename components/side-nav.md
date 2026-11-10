@@ -950,6 +950,7 @@ const icons = {
 ### 组合
 
 - 放入[布局](./layout)的侧栏区域。
+- 宽度也可以交给外层容器：`--xh-side-nav-w` 与 `--xh-side-nav-collapsed-w` 都设成 `100%`，收放由容器过渡自己的宽度。折叠与展开照样等容器的宽度走完才换排布：收起时文字先淡出、落定才裁掉，展开时容器长开之后文字才淡入。
 - 分组：`group` 放在 `list` 里当一条，里面先放 `group-label`，再放 `group-list`，组内的 `item` 与 `branch` 挂在 `group-list` 里。
 - Vue / React 的 `XhSideNavGroupList` 从所在的 `XhSideNavGroup` 取分组身份，不用再写 `value`；Web Components 的 `group-label` 与 `group-list` 都认所在的 `group`。
 
@@ -1342,9 +1343,9 @@ const icons = {
 
 ### 动效
 
-动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 指示与换位 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
