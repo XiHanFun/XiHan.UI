@@ -1,5 +1,14 @@
 # @xihan-ui/designer-kit
 
+## 5.5.1
+
+### Patch Changes
+
+- @xihan-ui/core@5.5.1
+- @xihan-ui/pointer@5.5.1
+- @xihan-ui/viz@5.5.1
+- @xihan-ui/expression@5.5.1
+
 ## 5.5.0
 
 ### Patch Changes

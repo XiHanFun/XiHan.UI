@@ -1,5 +1,12 @@
 # @xihan-ui/styles
 
+## 5.5.1
+
+### Patch Changes
+
+- 0c9f867: **修复** 纯图标按钮只改 `--xh-button-h` 时被拉成横的：高按覆盖值缩了，最小宽仍按尺寸档撑回去（sm 档 20px 高的钮宽 28px）。现在最小宽跟着 `--xh-button-h` 走，仍是正方盒，与文档里这个槽同管块向与行内向一致。
+  - @xihan-ui/tokens@5.5.1
+
 ## 5.5.0
 
 ### Patch Changes

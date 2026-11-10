@@ -1,5 +1,11 @@
 # @xihan-ui/code-highlight
 
+## 5.5.1
+
+### Patch Changes
+
+- @xihan-ui/core@5.5.1
+
 ## 5.5.0
 
 ### Patch Changes
