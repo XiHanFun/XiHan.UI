@@ -1,13 +1,10 @@
 ---
-'@xihan-ui/motion': minor
 '@xihan-ui/headless': minor
 '@xihan-ui/styles': patch
 '@xihan-ui/vue': patch
 '@xihan-ui/react': patch
 '@xihan-ui/web-components': patch
 ---
-
-**新增** `animate` 的 `pseudoElement` 选项：关键帧播在元素的伪元素上（如 `'::after'`）。减弱动效与宿主缺失降级时伪元素没有行内样式可写，`fill` 留值不生效。
 
 **新增** `trackMarkdownStreamCaret(root)`：把流式光标贴到正文最后一个字后面，收尾时在原处淡出；返回释放函数。三个适配器的外壳都已接好，自己拼外壳时在挂载后调用。
 

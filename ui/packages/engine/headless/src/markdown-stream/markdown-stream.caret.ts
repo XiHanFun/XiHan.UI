@@ -9,9 +9,6 @@
 // 出字之后它绝对定位到正文最后一个字后面，落点从字的矩形量出、写进外壳上的私有槽；
 // 量字不往已消毒的 html 里注入节点，「原生 HTML 一律不透传」照样成立。
 
-import type { AnimationHandle } from '@xihan-ui/motion'
-import { readDirection } from '@xihan-ui/core'
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
 import { graphemes } from '../shared/grapheme'
 import { markdownStreamAnatomy } from './markdown-stream.anatomy'
 
@@ -82,9 +79,26 @@ function px(value: number): string {
   return `${Math.round(value * 100) / 100}px`
 }
 
-/** 取过渡曲线令牌的 CSS 串，读不到时退回 JS 侧的同名缓动。 */
-function easeOf(el: Element, name: 'exit'): string {
-  return el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue(`--xh-motion-ease-${name}`).trim() || motionEasings[name]
+/** 解析 `150ms` / `0.15s` 形式的时长令牌；读不到（皮肤没引入）记 0。 */
+function durationMs(raw: string): number {
+  const match = raw.trim().match(/^(\d+(?:\.\d+)?|\.\d+)(ms|s)$/)
+  return match ? Number(match[1]) * (match[2] === 's' ? 1000 : 1) : 0
+}
+
+/**
+ * 在外壳的 ::after 上播退场淡出：时长与曲线直接读外壳上的动效令牌，减弱动效时令牌已降到 1ms。
+ * 播的时候光标保持可见，播完回到皮肤里不在场的样子；读不到令牌或宿主没有 Web Animations 时不播
+ */
+function fadeOut(root: HTMLElement): Animation | null {
+  const style = root.ownerDocument.defaultView?.getComputedStyle(root)
+  const duration = durationMs(style?.getPropertyValue('--xh-motion-duration-exit') ?? '')
+  if (!(duration > 0) || typeof root.animate !== 'function')
+    return null
+  return root.animate([{ opacity: 1, visibility: 'visible' }, { opacity: 0, visibility: 'visible' }], {
+    duration,
+    easing: style?.getPropertyValue('--xh-motion-ease-exit').trim() || 'ease-in',
+    pseudoElement: '::after',
+  })
 }
 
 /**
@@ -121,7 +135,7 @@ function place(root: HTMLElement, written: Map<string, string>): void {
   const borderInlineEnd = root.offsetWidth - root.clientWidth - root.clientLeft
   const borderBlockEnd = root.offsetHeight - root.clientHeight - root.clientTop
   // 行内一轴从内衬盒的行首量到字尾；块向从内衬盒的下缘量到字的下缘，光标底边与字底对齐
-  const x = readDirection(root) === 'rtl'
+  const x = root.ownerDocument.defaultView?.getComputedStyle(root).direction === 'rtl'
     ? (box.right - clamp(rect.left)) / sx - borderInlineEnd
     : (clamp(rect.right) - box.left) / sx - root.clientLeft
   const y = (box.bottom - rect.bottom) / sy - borderBlockEnd
@@ -146,7 +160,7 @@ export function trackMarkdownStreamCaret(root: HTMLElement): () => void {
     return () => {}
   const written = new Map<string, string>()
   let showing = root.hasAttribute('data-caret')
-  let leaving: AnimationHandle | null = null
+  let leaving: Animation | null = null
 
   const sync = (): void => {
     const next = root.hasAttribute('data-caret')
@@ -154,11 +168,7 @@ export function trackMarkdownStreamCaret(root: HTMLElement): () => void {
       place(root, written)
     if (showing && !next) {
       leaving?.cancel()
-      leaving = animate(root, [{ opacity: 1, visibility: 'visible' }, { opacity: 0, visibility: 'visible' }], {
-        pseudoElement: '::after',
-        duration: readMotion(root).duration('exit'),
-        easing: easeOf(root, 'exit'),
-      })
+      leaving = fadeOut(root)
     }
     else if (next && !showing) {
       leaving?.cancel()
