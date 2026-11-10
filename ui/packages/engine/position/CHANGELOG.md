@@ -1,5 +1,15 @@
 # @xihan-ui/position
 
+## 5.5.0
+
+### Patch Changes
+
+- Updated dependencies [57ea77d]
+- Updated dependencies [6c4a1ef]
+- Updated dependencies [fed475a]
+- Updated dependencies [d25f9a5]
+  - @xihan-ui/core@5.5.0
+
 ## 5.4.1
 
 ### Patch Changes

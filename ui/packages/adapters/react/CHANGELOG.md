@@ -1,5 +1,62 @@
 # @xihan-ui/react
 
+## 5.5.0
+
+### Patch Changes
+
+- 6549e85: **新增** `trackMarkdownStreamCaret(root)`：把流式光标贴到正文最后一个字后面，收尾时在原处淡出；返回释放函数。三个适配器的外壳都已接好，自己拼外壳时在挂载后调用。
+
+  **修复** MarkdownStream 写完时光标硬切：光标从生长块挪到外壳上（外壳的 `::after`），整段流式期间是同一个。出字后它贴在正文最后一个字后面（落点从字的矩形量出，不往已消毒的 html 里注入节点），块定稿、换到下一块时跟着走、不重播进场；流结束时在最后一个字后面原地淡出（`exit` 档），播完才藏起。光标的字号跟着末字，标题后面的光标跟标题一样高。生长块不再为光标多占一行，收尾时正文不再往上跳一行。
+
+  外壳在流式期间带 `data-caret`（原先只在一块都没来时带），一块都没来时带 `data-empty`，闪烁改挂在 `[data-caret][data-empty]` 上；块上不再发 `data-caret`，要认生长块用 `data-live`。
+
+  markdown-stream.css 涨了约 650 字节，涨在外壳光标的定位、在场与不在场两态的规则上。
+
+- ead890e: **修复** Alert 在没有 Web Animations 的宿主（jsdom、旧引擎）里收起时状态机崩溃：量退场高度前撤掉在播展开段的那一步，先看宿主有没有 `getAnimations`。
+
+  **修复** GraphChart 键盘缩放补间时把每一帧都写进可绑定的 `view`：受控时一次按键派发一串 `view-change`，`data-zoomed` 也要等补间播完才对。现在逻辑视图一按键就落到目标、只派发一次，补间只走画面；受控时画面停在此刻，等宿主写回目标才补过去。没排版（隐藏着、无布局的宿主）时直接到位。
+
+  **修复** JsonViewer 的 Vue 与 React 适配器没建 scope：根与树的 id 由计数器派生，每挂一次换一个号，服务端与客户端对不上。现在和其它组件一样由适配器的 id 生成器派生。
+
+  **修复** FunnelChart 提示框收起淡出时色标先藏起：色标的色阶位跟着提示框的内容与落点一起留住，淡出途中样子不变，三端一致。
+
+- dea8c29: **修复** React 的树选择首帧就带着手写节点时，节点没算进去：子部件的 layout effect 先于根组件提交，节点登记的那一刻状态机还没启动，挂载事件被丢掉，节点数停在 0。浮层里节点与自动空态占位同时在场。
+
+  现在节点的挂载与卸载先记在根上的登记表里，状态机启动后整份同步一次，之后的增删照常逐次上报。
+
+- d25f9a5: **新增** `expandIn`：一块刚露出来的内容按实测高度展开，块尺寸、内缩、边框与透明度从 0 补到原样，父级的行距随之让出；给自己掌握开合时机的部件用。
+
+  **新增** Heatmap 的 `tooltipCell`：详情条里该写的那一格，显示时同 `activeCell`，隐去时留着上一回露面的那一格；Vue 与 React 的缺省结构往详情条插槽里传的改为它。
+
+  **修复** 图表提示框隐去时硬切：饼图、直角坐标图、漏斗图、关系图、层级图、雷达图、桑基图与热力图的提示框（详情条）隐去时淡出（`exit` 档），Headless 留着上一回露面的内容与落点，淡出途中不先变空、不跳回绘图区原点（API 的 `tooltip` 字段收起后因此留着上一回的内容，从没露过面时才是 null；露不露看 `getTooltipProps` 的 `data-state`）；`visibility` 只写在隐去那一档，出现时当帧可见。
+
+  **修复** 警示条关掉之后再显示时硬切：按实测高度展开，下面的内容一路挪下去，与退场的收占位对称；展开途中再关掉时从此刻的高度接着收。挂载时就显示着的直接呈现。
+
+  **修复** 骨架屏加载完之后再开始加载时硬切：骨架从 hidden 露面时淡入；挂载时就在加载的直接呈现（`data-instant`）。
+
+  **修复** Truncate 收回的补间途中展开钮一闪而没：补间里盒子仍按铺开的排法摆着，量出来是「没被裁」，连接层就把展开钮与 `data-state` 撤掉了。现在补间进行中不量，播完再量一次；`tweenBlockSize` 返回的开始函数改为交回这一段播完的时刻。
+
+- Updated dependencies [dc58f42]
+- Updated dependencies [57ea77d]
+- Updated dependencies [2759b26]
+- Updated dependencies [2d7f061]
+- Updated dependencies [057bd6c]
+- Updated dependencies [6c4a1ef]
+- Updated dependencies [3bc7ab7]
+- Updated dependencies [6549e85]
+- Updated dependencies [ead890e]
+- Updated dependencies [9615721]
+- Updated dependencies [fed475a]
+- Updated dependencies [d7818aa]
+- Updated dependencies [d25f9a5]
+  - @xihan-ui/headless@5.5.0
+  - @xihan-ui/core@5.5.0
+  - @xihan-ui/motion@5.5.0
+  - @xihan-ui/position@5.5.0
+  - @xihan-ui/pointer@5.5.0
+  - @xihan-ui/viz@5.5.0
+  - @xihan-ui/expression@5.5.0
+
 ## 5.4.1
 
 ### Patch Changes
