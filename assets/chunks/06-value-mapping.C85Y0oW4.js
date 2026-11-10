@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.DjzSYMO4.js";import{t}from"./checkbox.CbsFR_59.js";var n=e();function r(){return(0,n.jsx)(t,{invalid:!0,required:!0,children:`我同意服务条款`})}export{r as default};

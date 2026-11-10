@@ -1,0 +1,1 @@
+import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{af as i}from"./theme.BOz7UHnb.js";var a=n({__name:`23-virtualized`,setup(n){let a=Array.from({length:1e4},(e,t)=>({value:`option-${t+1}`,label:`选项 ${t+1}`}));return(n,o)=>(r(),t(e(i),{collection:e(a),virtual:``,label:`长列表`,placeholder:`请选择`},null,8,[`collection`]))}});export{a as default};

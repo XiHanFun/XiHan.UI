@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C2us6Gcp.js";import{t}from"./truncate.SSs2WU1g.js";var n=e();function r(){return(0,n.jsx)(`div`,{style:{inlineSize:`360px`,maxInlineSize:`100%`},children:(0,n.jsx)(t,{lines:2,children:`组件状态与无障碍逻辑由无头内核统一管理，Vue、React 与 Web Components 适配器共享同一份行为定义。`})})}export{r as default};

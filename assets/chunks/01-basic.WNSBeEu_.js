@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{Zv as i}from"./theme.C_jf7JZK.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(r(),t(e(i),{value:`XH-2026-0915`}))}});export{a as default};

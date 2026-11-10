@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C2us6Gcp.js";import{d as t}from"./pagination.Du1Q172h.js";var n=e();function r(){return(0,n.jsx)(t,{count:196,pageSize:10})}export{r as default};

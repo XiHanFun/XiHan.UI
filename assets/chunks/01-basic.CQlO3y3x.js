@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C2us6Gcp.js";import{t}from"./matrix-code.C4eHgyhA.js";var n=e();function r(){return(0,n.jsx)(t,{value:`https://ui.xihanfun.com`})}export{r as default};

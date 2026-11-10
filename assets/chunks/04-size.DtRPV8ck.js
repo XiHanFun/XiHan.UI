@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C2us6Gcp.js";import{n as t,r as n,t as r}from"./float-button.DfRop08O.js";var i=e(),a=[`sm`,`md`,`lg`];function o(){return a.map(e=>(0,i.jsxs)(t,{style:{position:`static`},size:e,children:[(0,i.jsx)(n,{}),(0,i.jsx)(r,{})]},e))}export{o as default};

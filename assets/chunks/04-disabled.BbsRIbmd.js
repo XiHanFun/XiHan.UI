@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.C2us6Gcp.js";import{n as t}from"./toggle-group.DC_5efds.js";var n=e(),r=[{value:`left`,label:`左对齐`},{value:`center`,label:`居中`,disabled:!0},{value:`right`,label:`右对齐`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:`center`})}export{i as default};
