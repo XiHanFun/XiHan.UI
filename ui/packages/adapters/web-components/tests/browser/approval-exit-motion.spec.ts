@@ -74,7 +74,7 @@ describe('xh-tool-call 与 xh-approval 的退场', () => {
   it('审批卡判过之后待决圆点原地淡出，播完才藏起', async () => {
     const card = await mount('xh-approval', { status: 'pending' }, `<div data-xh-part="root"><div data-xh-part="title">要写文件</div><span data-xh-part="pending-indicator"></span></div>`)
     const dot = host!.querySelector<HTMLElement>(`[data-scope='approval'][data-part='pending-indicator']`)!
-    const hiddenNow = (): boolean => dot.hidden || getComputedStyle(dot).display === 'none'
+    const hiddenNow = (): boolean => dot.hidden !== false || getComputedStyle(dot).display === 'none'
     expect(hiddenNow()).toBe(false)
     card.setAttribute('status', 'approved')
     await settle(card)

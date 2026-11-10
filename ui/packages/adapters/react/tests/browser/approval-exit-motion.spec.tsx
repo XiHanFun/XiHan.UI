@@ -63,7 +63,7 @@ function ToolCall(): ReactNode {
   const [phase, set] = useState<'awaiting-approval' | 'output-available'>('awaiting-approval')
   setPhase = set
   return (
-    <XhToolCallRoot phase={phase} name="写文件">
+    <XhToolCallRoot phase={phase}>
       <XhToolCallTrigger>写文件</XhToolCallTrigger>
       <XhToolCallApproval><p style={{ margin: 0, blockSize: '40px' }}>要写入 /tmp/a.txt</p></XhToolCallApproval>
       <XhToolCallContent>结果</XhToolCallContent>

@@ -1,6 +1,5 @@
 // 表格与截断的展开动效：树形表格展开子行时新行进场、收起时替身在原处淡出，下面的行从旧位置滑过去；
 // 详情行与截断的铺开、收回按实测高度补间。宿主带着 [hidden]{display:none!important}（Tailwind preflight 同款）。
-import type { TableVisibleRow } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import { act } from 'react'
@@ -89,7 +88,7 @@ const TREE_ROWS = [{ id: 'a' }, { id: 'a1', parentId: 'a' }, { id: 'a2', parentI
 function TreeTable({ expanded = [] }: { expanded?: string[] }): ReactNode {
   return (
     <XhTableRoot columns={[{ id: 'name', label: '名称' }]} rows={TREE_ROWS} defaultExpandedValue={expanded} aria-label="组织">
-      {({ visibleRows }: { visibleRows: TableVisibleRow[] }) => (
+      {({ visibleRows }) => (
         <XhTableBody>
           {visibleRows.filter(entry => entry.kind === 'data').map(entry => (
             <XhTableRow key={entry.id} value={entry.id}><XhTableCell value="name">{`${entry.id} 名称`}</XhTableCell></XhTableRow>
@@ -140,7 +139,7 @@ describe('react 表格详情行与截断', () => {
               <XhTableCell value="expand"><XhTableExpandTrigger /></XhTableCell>
               <XhTableCell value="order">{o.id}</XhTableCell>
             </XhTableRow>,
-            <XhTableExpandedRow key={`${o.id}-detail`} value={o.id}><XhTableCell value="expand" colSpan={2}>{o.detail}</XhTableCell></XhTableExpandedRow>,
+            <XhTableExpandedRow key={`${o.id}-detail`} value={o.id}><XhTableCell value="expand" colspan={2}>{o.detail}</XhTableCell></XhTableExpandedRow>,
           ])}
         </XhTableBody>
       </XhTableRoot>,

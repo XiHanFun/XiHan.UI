@@ -1,5 +1,6 @@
 // 条件编辑器的列表动效：首帧的条件与子组直接呈现，新加的进场，删掉的由替身在原处淡出、播完即移除，
 // 留下来的从旧位置滑到新位置。动画是否在播、替身落在哪、此刻的位移只有真实浏览器量得出来。
+import type { FilterCondition, FilterGroup } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
@@ -24,19 +25,26 @@ const FIELDS = [
 ] as const
 
 // 带 id 的条件身份稳定：删哪一行就是哪一行离场
-const VALUE = {
+// 条件上的 id 是作者给的身份，不在条件的类型里
+type IdentifiedCondition = FilterCondition & { id?: string }
+
+const VALUE: FilterGroup<IdentifiedCondition> = {
   logic: 'and',
   conditions: [
     { id: 'c1', field: 'region', operator: 'eq', value: 'East' },
     { id: 'c2', field: 'amount', operator: 'gt', value: 5 },
     { id: 'c3', field: 'region', operator: 'eq', value: 'West' },
   ],
-} as const
+}
 
 // 没写 id 的条件按位置认身份：删中间一行时视图按位置复用节点，卸下的是最后一个
-const VALUE_WITHOUT_ID = {
+const VALUE_WITHOUT_ID: FilterGroup = {
   logic: 'and',
-  conditions: VALUE.conditions.map(({ id: _id, ...condition }) => condition),
+  conditions: [
+    { field: 'region', operator: 'eq', value: 'East' },
+    { field: 'amount', operator: 'gt', value: 5 },
+    { field: 'region', operator: 'eq', value: 'West' },
+  ],
 }
 
 const CONDITION = `[data-scope='filter-builder'][data-part='condition']`
@@ -48,7 +56,7 @@ async function frames(): Promise<void> {
   }
 }
 
-async function mount(value: object = VALUE): Promise<HTMLElement> {
+async function mount(value: FilterGroup = VALUE): Promise<HTMLElement> {
   host = document.createElement('div')
   host.style.inlineSize = '720px'
   document.body.append(host)

@@ -88,9 +88,8 @@ describe('react 代码折叠与关系图键盘缩放', () => {
     expect(before).toBeGreaterThan(1)
     await inAct(() => host!.querySelector<HTMLElement>(`[data-scope='graph-chart'][data-part='plot']`)!.focus())
     await userEvent.keyboard('+')
-    await settle(3)
-    const ratio = spread() / before
-    expect(ratio).toBeGreaterThan(1)
-    expect(ratio).toBeLessThan(1.249)
+    // 补间按真实时钟走：等画面离开起点（慢机器上头几帧的位移可能小于布局精度），10 秒的时长保证这时还没到一整档
+    await expect.poll(() => spread() / before, { timeout: 5000 }).toBeGreaterThan(1.001)
+    expect(spread() / before).toBeLessThan(1.249)
   })
 })

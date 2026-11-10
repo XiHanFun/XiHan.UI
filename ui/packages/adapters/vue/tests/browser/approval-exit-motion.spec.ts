@@ -1,5 +1,6 @@
 // 审批类的退场：工具调用批过之后审批面由替身缩回去、下面的结果区随之挪过去；审批卡判过之后待决圆点原地淡出、播完才藏起。
 // 替身的去留、补间途中的高度与在播的动画只有真实浏览器量得出来。
+import type { ApprovalStatus, ToolCallPhase } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick, ref } from 'vue'
@@ -40,9 +41,9 @@ function tween(el: Element): Animation | undefined {
 describe('工具调用审批面', () => {
   it('批过之后审批面由替身从原高度缩回去、播完即移除', async () => {
     mountHost()
-    const phase = ref('awaiting-approval')
+    const phase = ref<ToolCallPhase>('awaiting-approval')
     app = createApp({
-      render: () => h(XhToolCallRoot, { phase: phase.value, name: '写文件' }, () => [
+      render: () => h(XhToolCallRoot, { phase: phase.value }, () => [
         h(XhToolCallTrigger, null, () => '写文件'),
         h(XhToolCallApproval, null, () => h('p', { style: 'margin:0; block-size: 40px' }, '要写入 /tmp/a.txt')),
         h(XhToolCallContent, null, () => '结果'),
@@ -69,7 +70,7 @@ describe('工具调用审批面', () => {
 describe('审批卡待决圆点', () => {
   it('判过之后圆点原地淡出，播完才藏起', async () => {
     mountHost()
-    const status = ref('pending')
+    const status = ref<ApprovalStatus>('pending')
     app = createApp({
       render: () => h(XhApprovalRoot, { status: status.value }, () => [
         h(XhApprovalTitle, null, () => '要写文件'),
