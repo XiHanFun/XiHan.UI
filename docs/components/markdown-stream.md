@@ -264,8 +264,6 @@ size 改变正文字号与块间距，三档共用同一份块列表
 
 关键帧 `xh-markdown-stream-caret` · `xh-markdown-stream-caret-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-皮肤之外还有一段：值由内核逐帧算出（`animate`），皮肤里看不到这段。
-
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
