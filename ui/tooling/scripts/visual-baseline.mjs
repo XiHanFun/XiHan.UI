@@ -150,6 +150,11 @@ if (!update) {
   args.push('-e', 'CI=true')
 }
 
+// 在 GitHub 的执行机上跑时，容器里改从官方源装依赖：仓库 .npmrc 指的国内镜像从那边又慢又常 502，
+// CI 的缓存卷每次都是新的、要整套下载，装不完就被任务超时取消。锁文件只记完整性，不记源地址，换源不影响解析
+if (process.env.GITHUB_ACTIONS === 'true')
+  args.push('-e', 'npm_config_registry=https://registry.npmjs.org/')
+
 // 宿主是 Linux 时，容器以 root 写出的文件宿主改不动，把 uid/gid 带进去交还所有权。
 if (process.getuid && process.getgid) {
   args.push('-e', `HOST_UID=${process.getuid()}`, '-e', `HOST_GID=${process.getgid()}`)
