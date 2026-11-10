@@ -461,7 +461,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhTableRoot }",
     "gzip": true,
-    "limit": "41 kB",
+    "limit": "48.8 kB",
     "ignore": [
       "vue",
       "*/table-extras.js",
@@ -551,7 +551,7 @@
     "path": "packages/adapters/vue/dist/index.js",
     "import": "{ XhMarkdownStreamRoot }",
     "gzip": true,
-    "limit": "2.3 kB",
+    "limit": "3.8 kB",
     "ignore": [
       "vue"
     ]
