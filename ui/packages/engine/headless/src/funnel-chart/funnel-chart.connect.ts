@@ -120,8 +120,8 @@ export function connectFunnelChart<T extends PropTypes>(
   const loading = prop('pending') === true && empty
   const stageT = (id: string): number | undefined => model.derived.visible.find(s => s.spec.id === id)?.t
 
-  // 提示框隐去时留着上一回露面的内容与落点，退场淡出途中不先变空、不跳回原点
-  const shownTooltip = retainChartTooltip(service, tooltip, tip)
+  // 提示框隐去时留着上一回露面的内容、落点与色标的色阶位，退场淡出途中不先变空、不跳回原点、色标不先藏起
+  const shownTooltip = retainChartTooltip(service, tooltip, tip == null ? null : { ...tip, t: activeStage?.t })
 
   return {
     model,
@@ -320,7 +320,8 @@ export function connectFunnelChart<T extends PropTypes>(
 
     // 数值那一行的色标画成阶段自己的颜色；转化率的两行不画色标
     getTooltipSwatchProps: (row: FunnelTooltipRow) => {
-      const stop = row.key === 'value' && activeStage ? sequentialStop(activeStage.t) : null
+      const t = shownTooltip.tip?.t
+      const stop = row.key === 'value' && t != null ? sequentialStop(t) : null
       return normalize.element({
         ...parts['tooltip-swatch'].attrs,
         'data-xh-chart-part': 'tooltip-swatch',

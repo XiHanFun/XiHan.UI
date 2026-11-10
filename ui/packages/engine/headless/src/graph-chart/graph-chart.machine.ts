@@ -291,7 +291,8 @@ export const graphChartMachine = createMachine({
         const shown = context.get('shownView') ?? context.get('view')
         stopViewTween({ refs })
         const plot = scope.getById(scope.partId('graph-chart', 'plot'))
-        if (!plot || resolveMotionPreference(plot) === 'reduce') {
+        // 没排版（隐藏着、无布局的宿主）画面看不见，减弱动效下不补：都直接到位
+        if (!plot || plot.getClientRects().length === 0 || resolveMotionPreference(plot) === 'reduce') {
           refs.set('viewTarget', null)
           if (context.get('shownView'))
             context.set('shownView', null)

@@ -22,6 +22,7 @@ import {
   graphDetails,
   graphFirstRef,
   graphHitTest,
+  graphLogicalViewOf,
   graphMarkKey,
   graphModelOf,
   graphNavTarget,
@@ -29,7 +30,6 @@ import {
   graphNodeRef,
   graphOverlay,
   graphTooltip,
-  graphLogicalViewOf,
   graphTranslations,
   graphViewOf,
 } from './graph-chart.logic'
