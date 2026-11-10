@@ -247,7 +247,7 @@
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | button 的 root 部件 gap 覆盖槽。 |
 | `--xh-button-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`disabled`<br>`hover`<br>`loading`<br>`material=liquid`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`where([data-material='liquid'])`<br>`xh-action-variant=solid` | `--xh-motion-duration-glint` | button 的 root 部件 animation 覆盖槽。 |
-| `--xh-button-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | button 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-button-h` | `root` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`icon-only`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | button 的 root 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-button-px` | `root` | `padding-inline` | `default` | `--xh-_button-group-px` | button 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-button-radius` | `root` | `border-radius` | `default` | `--xh-_button-radius` | button 的 root 部件 border-radius 覆盖槽。 |

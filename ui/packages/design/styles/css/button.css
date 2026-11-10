@@ -101,9 +101,11 @@
     }
   }
 
-  /* icon profile 已经给出正方视觉盒；Button 的公开 px 槽不能把它重新撑开。 */
+  /* icon profile 已经给出正方视觉盒；Button 的公开 px 槽不能把它重新撑开。
+     最小宽跟着 --xh-button-h 走：只改了高时最小宽仍按档位撑回去，正方盒会被拉成横的 */
   [data-scope='button'][data-part='root'][data-icon-only] {
     --xh-action-padding-inline: 0;
+    --xh-action-min-inline-size: var(--xh-button-h, var(--xh-_action-profile-visual-size));
   }
 
   [data-scope='button'][data-part='root'][data-full-width] {

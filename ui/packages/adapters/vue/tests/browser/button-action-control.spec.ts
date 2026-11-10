@@ -127,6 +127,14 @@ describe('action Control 四 profile', () => {
     }
   })
 
+  it('纯图标按钮只改 --xh-button-h：宽随高一起缩放，仍是正方盒', async () => {
+    mount(() => h(XhButton, { 'iconOnly': true, 'size': 'sm', 'aria-label': '关闭', 'style': '--xh-button-h: 20px' }, () => '×'))
+    await nextTick()
+    const rect = action().getBoundingClientRect()
+    expect(rect.height).toBe(20)
+    expect(rect.width, '最小宽不再按 sm 档撑回 28px').toBe(20)
+  })
+
   it.each(['comfortable', 'compact'] as const)('%s：row / disclosure-trigger 铺满容器宽度，高度不低于视觉尺寸', (density) => {
     mount(() => h('div'), density)
     const container = document.createElement('div')

@@ -4413,17 +4413,19 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
         "default",
+        "icon-only",
         "xh-action-profile=icon"
       ],
       "defaultToken": [
         "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "button 的 root 部件 block-size、inline-size 覆盖槽。"
+      "description": "button 的 root 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-button-icon-size",
