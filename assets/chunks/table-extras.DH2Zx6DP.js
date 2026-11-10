@@ -1,1 +1,0 @@
-import{Ih as e,nc as t}from"./theme.mGsXkGUl.js";export{e as XhMenuRoot,t as XhPaginationRoot};
