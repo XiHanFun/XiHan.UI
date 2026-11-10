@@ -86,7 +86,7 @@ export interface SankeyChartApi<T extends PropTypes = PropTypes> {
   gradients: readonly SankeyGradient[]
   /** 激活的节点或流带；没有时为 null。 */
   active: ChartDatumDetails | null
-  /** 提示框内容；收起时为 null。 */
+  /** 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 */
   tooltip: SankeyTooltipModel | null
   summary: string
   /** 数据表模型：每条流带一行，源、目标与流量三列。 */

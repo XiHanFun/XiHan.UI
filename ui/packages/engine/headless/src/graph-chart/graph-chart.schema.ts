@@ -61,6 +61,8 @@ export interface GraphChartSchema extends MachineSchema {
     /** 拖动之后的位置（布局坐标）；没拖过为 null，数据、布局或尺寸一变就作废。 */
     positions: Readonly<Record<string, { readonly x: number, readonly y: number }>> | null
     view: GraphView
+    /** 键盘缩放补间途中画面按的视图；不在补间时为 null，画面按 view。view 是逻辑视图，一按键就落到目标。 */
+    shownView: GraphView | null
     drag: GraphDrag | null
   }
   computed: ChartBaseComputed
@@ -75,6 +77,8 @@ export interface GraphChartSchema extends MachineSchema {
     dragMoved: boolean
     /** 键盘缩放那一段补间：从哪个视图补到哪个视图、几时起播、时长与曲线，以及停掉逐帧循环的函数。 */
     viewTween: { from: GraphView, to: GraphView, startedAt: number, duration: number, ease: (t: number) => number, stop: VoidFunction } | null
+    /** 键盘缩放要补到的目标：view 落到它时从画面此刻的视图补过去；受控时等宿主写回才落到。 */
+    viewTarget: GraphView | null
     /** 过渡的「不播」输入：拖动后的位置与画布视图没变时给同一个引用。 */
     extent: (positions: GraphChartSchema['context']['positions'], view: GraphView) => unknown
   }
@@ -89,7 +93,7 @@ export interface GraphChartSchema extends MachineSchema {
     | { type: 'VIEW.FRAME' }
   tag: never
   guard: never
-  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'startDrag' | 'moveDrag' | 'endDrag' | 'advanceSimulation' | 'setView' | 'animateView' | 'stepView' | 'resetPositions'
+  action: ChartBaseAction | 'notifyActive' | 'reportIssues' | 'startDrag' | 'moveDrag' | 'endDrag' | 'advanceSimulation' | 'setView' | 'animateView' | 'followView' | 'stepView' | 'resetPositions'
   effect: 'trackViewport' | 'stopSimulation' | 'stopViewTween'
 }
 
@@ -112,7 +116,7 @@ export interface GraphChartApi<T extends PropTypes = PropTypes> {
   legendItems: readonly GraphLegendItem[]
   /** 激活的节点；没有时为 null。 */
   active: ChartDatumDetails | null
-  /** 提示框内容；收起时为 null。 */
+  /** 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 */
   tooltip: GraphTooltipModel | null
   summary: string
   /** 数据表模型：每条连线一行。 */

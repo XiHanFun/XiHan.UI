@@ -88,7 +88,7 @@ export interface FunnelChartApi<T extends PropTypes = PropTypes> {
   empty: boolean
   /** 激活的阶段；没有时为 null。 */
   active: ChartDatumDetails | null
-  /** 提示框内容；收起时为 null。 */
+  /** 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 */
   tooltip: FunnelTooltipModel | null
   summary: string
   /** 数据表模型：阶段名、数值、相对上一阶段、相对第一阶段四列。 */

@@ -185,7 +185,7 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 | `legendItems` | `readonly SankeyLegendItem[]` |  |
 | `gradients` | `readonly SankeyGradient[]` | linkColor="gradient" 时每条流带一个渐变；其余时候为空。 |
 | `active` | `ChartDatumDetails \| null` | 激活的节点或流带；没有时为 null。 |
-| `tooltip` | `SankeyTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `SankeyTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：每条流带一行，源、目标与流量三列。 |
 | `emptyText` | `string` |  |

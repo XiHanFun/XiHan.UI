@@ -51,6 +51,26 @@ function writePositions({ context }: GraphParams, ref: GraphSimulationRef): void
   context.set('positions', out)
 }
 
+function stopViewTween({ refs }: Pick<GraphParams, 'refs'>): void {
+  refs.get('viewTween')?.stop()
+  refs.set('viewTween', null)
+}
+
+/** 画面从 from 补到 to（move / continuous）：逐帧把补到半路的视图写进 shownView，播完撤掉，画面回到逻辑视图。 */
+function startViewTween({ context, refs, scope, send }: GraphParams, from: GraphView, to: GraphView): void {
+  stopViewTween({ refs })
+  const plot = scope.getById(scope.partId('graph-chart', 'plot'))
+  if (!plot || sameView(from, to)) {
+    if (context.get('shownView'))
+      context.set('shownView', null)
+    return
+  }
+  const win = scope.getWin()
+  const motion = readMotion(plot)
+  const stop = frameLoop(win, () => send({ type: 'VIEW.FRAME' }))
+  refs.set('viewTween', { from, to, startedAt: frameNow(win), duration: motion.duration('move'), ease: motion.easing('continuous'), stop })
+}
+
 function stopSettle({ refs }: GraphParams): void {
   refs.get('settle')?.()
   refs.set('settle', null)
@@ -77,6 +97,7 @@ export const graphChartMachine = createMachine({
         isEqual: sameView,
         onChange: view => params.prop('onViewChange')?.({ view }),
       })),
+      shownView: cell<GraphView | null>(() => ({ defaultValue: null })),
       drag: cell<GraphChartSchema['context']['drag']>(() => ({ defaultValue: null })),
     }
   },
@@ -87,6 +108,7 @@ export const graphChartMachine = createMachine({
     settle: null,
     dragMoved: false,
     viewTween: null,
+    viewTarget: null,
     extent: memoizeLast((positions: GraphChartSchema['context']['positions'], view: GraphView) => ({ positions, view })),
   }),
   computed: {
@@ -122,6 +144,8 @@ export const graphChartMachine = createMachine({
     ], () => action(['resetPositions']))
     // 目标场景换了（数据、图例显隐、尺寸、度量）就安排过渡；animated 改了也要重新核一遍
     track([() => computed('scene'), () => prop('animated')], () => action(['syncTransition']))
+    // 逻辑视图变了：落到键盘缩放的目标就从画面此刻补过去，别的改动当场落定
+    track([context.dep('view')], () => action(['followView']))
   },
   on: {
     ...chartBaseTransitions<GraphChartSchema>(),
@@ -244,8 +268,10 @@ export const graphChartMachine = createMachine({
         if (e.type !== 'VIEW.SET')
           return
         // 滚轮、拖动与程序改视图都是当场落定：键盘缩放还在补间就撤掉它
-        refs.get('viewTween')?.stop()
-        refs.set('viewTween', null)
+        stopViewTween({ refs })
+        refs.set('viewTarget', null)
+        if (context.get('shownView'))
+          context.set('shownView', null)
         const drag = context.get('drag')
         if (drag && drag.id == null && (e.view.x !== drag.view.x || e.view.y !== drag.view.y))
           refs.set('dragMoved', true)
@@ -253,24 +279,49 @@ export const graphChartMachine = createMachine({
       },
 
       /**
-       * 键盘缩放与回到原样：视图从此刻补到目标（move / continuous），不一步跳过去。缩放走几何插值、平移按缩放的线性插值走，
-       * 绕绘图区中心缩放时中心那一点全程不动。减弱动效下直接到位；滚轮与拖动跟手，不走这里
+       * 键盘缩放与回到原样：逻辑视图当场落到目标（只派发一次 view-change），画面从此刻补过去（move / continuous），不一步跳过去。
+       * 缩放走几何插值、平移按缩放的线性插值走，绕绘图区中心缩放时中心那一点全程不动。受控时画面停在此刻，等宿主写回目标才补；
+       * 减弱动效下直接到位；滚轮与拖动跟手，不走这里
        */
-      animateView: ({ context, refs, scope, send, event }) => {
+      animateView: (params) => {
+        const { context, refs, scope, event } = params
         const e = event.current()
         if (e.type !== 'VIEW.ANIMATE')
           return
-        refs.get('viewTween')?.stop()
-        refs.set('viewTween', null)
-        const win = scope.getWin()
+        const shown = context.get('shownView') ?? context.get('view')
+        stopViewTween({ refs })
         const plot = scope.getById(scope.partId('graph-chart', 'plot'))
         if (!plot || resolveMotionPreference(plot) === 'reduce') {
+          refs.set('viewTarget', null)
+          if (context.get('shownView'))
+            context.set('shownView', null)
           context.set('view', e.view)
           return
         }
-        const motion = readMotion(plot)
-        const stop = frameLoop(win, () => send({ type: 'VIEW.FRAME' }))
-        refs.set('viewTween', { from: context.get('view'), to: e.view, startedAt: frameNow(win), duration: motion.duration('move'), ease: motion.easing('continuous'), stop })
+        // 逻辑视图已经是目标（补间途中又按了一次同一档）：view 不会再变，直接从画面此刻补过去
+        if (sameView(e.view, context.get('view'))) {
+          refs.set('viewTarget', null)
+          startViewTween(params, shown, e.view)
+          return
+        }
+        // 画面先停在此刻，view 落到目标时（followView）再从这里补过去：同一次提交里画面不会先跳到目标
+        refs.set('viewTarget', e.view)
+        context.set('shownView', shown)
+        context.set('view', e.view)
+      },
+      followView: (params) => {
+        const { context, refs } = params
+        const target = refs.get('viewTarget')
+        refs.set('viewTarget', null)
+        const from = context.get('shownView')
+        const view = context.get('view')
+        if (target && from && sameView(view, target)) {
+          startViewTween(params, from, view)
+          return
+        }
+        stopViewTween({ refs })
+        if (from)
+          context.set('shownView', null)
       },
       stepView: ({ context, refs, scope }) => {
         const tween = refs.get('viewTween')
@@ -278,15 +329,16 @@ export const graphChartMachine = createMachine({
           return
         const elapsed = frameNow(scope.getWin()) - tween.startedAt
         const done = !(tween.duration > 0) || elapsed >= tween.duration
-        const p = done ? 1 : tween.ease(Math.max(0, elapsed / tween.duration))
+        if (done) {
+          stopViewTween({ refs })
+          context.set('shownView', null)
+          return
+        }
+        const p = tween.ease(Math.max(0, elapsed / tween.duration))
         const { from, to } = tween
         const k = from.k === to.k ? from.k : from.k * (to.k / from.k) ** p
         const q = from.k === to.k ? p : (k - from.k) / (to.k - from.k)
-        context.set('view', done ? to : { k, x: from.x + (to.x - from.x) * q, y: from.y + (to.y - from.y) * q })
-        if (done) {
-          tween.stop()
-          refs.set('viewTween', null)
-        }
+        context.set('shownView', { k, x: from.x + (to.x - from.x) * q, y: from.y + (to.y - from.y) * q })
       },
       resetPositions: (params) => {
         const { context, refs, prop } = params
@@ -325,10 +377,7 @@ export const graphChartMachine = createMachine({
       trackViewport: trackChartViewport<GraphChartSchema>(),
       // 卸载时停掉还在冷却的逐帧循环
       stopSimulation: params => () => stopSettle(params),
-      stopViewTween: ({ refs }) => () => {
-        refs.get('viewTween')?.stop()
-        refs.set('viewTween', null)
-      },
+      stopViewTween: ({ refs }) => () => stopViewTween({ refs }),
     },
   },
 })

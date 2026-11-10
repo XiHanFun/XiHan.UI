@@ -197,7 +197,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | `legendItems` | `readonly RadarLegendItem[]` |  |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
-| `tooltip` | `RadarTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `RadarTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：实体名一列，每个指标一列。 |
 | `emptyText` | `string` |  |

@@ -189,7 +189,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | `measured` | `boolean` | 视口尚未测量（服务端与首帧）。 |
 | `empty` | `boolean` | 没有可画的阶段。 |
 | `active` | `ChartDatumDetails \| null` | 激活的阶段；没有时为 null。 |
-| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `FunnelTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：阶段名、数值、相对上一阶段、相对第一阶段四列。 |
 | `emptyText` | `string` |  |

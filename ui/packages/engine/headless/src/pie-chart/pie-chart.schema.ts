@@ -98,7 +98,7 @@ export interface PieChartApi<T extends PropTypes = PropTypes> {
   patterns: readonly ChartPattern[]
   /** 激活的扇区；没有时为 null。 */
   active: ChartDatumDetails | null
-  /** 提示框内容；收起时为 null。 */
+  /** 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 */
   tooltip: PieTooltipModel | null
   /** 环形中心的缺省内容：可见扇区的合计与说明文字。 */
   center: { readonly value: string, readonly label: string }

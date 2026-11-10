@@ -220,7 +220,7 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | `empty` | `boolean` | 没有可画的节点。 |
 | `legendItems` | `readonly GraphLegendItem[]` |  |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `GraphTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `GraphTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：每条连线一行。 |
 | `emptyText` | `string` |  |

@@ -29,6 +29,7 @@ import {
   graphNodeRef,
   graphOverlay,
   graphTooltip,
+  graphLogicalViewOf,
   graphTranslations,
   graphViewOf,
 } from './graph-chart.logic'
@@ -89,7 +90,9 @@ export function connectGraphChart<T extends PropTypes>(
   const invalid = model.issues.length > 0
   const empty = !invalid && model.derived.nodes.length === 0
   const layout = model.scene?.layout
-  const view: GraphView = graphViewOf(prop, context)
+  // 逻辑视图：事件、data-zoomed 与下一档缩放按它算；画面视图（键盘缩放补间途中是半路那个）给拖动当起点
+  const view: GraphView = graphLogicalViewOf(prop, context)
+  const shown: GraphView = graphViewOf(prop, context)
   const drag = context.get('drag')
   const zoomable = prop('zoom') === true
   const draggable = model.layout === 'force' && prop('draggableNodes') !== false
@@ -343,15 +346,15 @@ export function connectGraphChart<T extends PropTypes>(
         const target = event.currentTarget as Element
         if (node && draggable) {
           target.setPointerCapture?.(event.pointerId)
-          send({ type: 'DRAG.START', drag: { pointerId: event.pointerId, id: node.node.id, from: at, view }, at })
+          send({ type: 'DRAG.START', drag: { pointerId: event.pointerId, id: node.node.id, from: at, view: shown }, at })
           return
         }
         // 空白处按下：放大过才能平移
-        if (!node && zoomable && view.k > 1) {
+        if (!node && zoomable && shown.k > 1) {
           // 拦下按下：拖动时不选中页面文字
           event.preventDefault()
           target.setPointerCapture?.(event.pointerId)
-          send({ type: 'DRAG.START', drag: { pointerId: event.pointerId, id: null, from: at, view }, at })
+          send({ type: 'DRAG.START', drag: { pointerId: event.pointerId, id: null, from: at, view: shown }, at })
         }
       },
       'onPointerUp': endPointer,

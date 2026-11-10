@@ -941,13 +941,15 @@ describe('navigationMenu 受控 value', () => {
     expect(c.value()).toBeNull()
   })
 
-  it('换张瞬时：两张之间换，两侧 content 都带 data-instant；首开与末收不带', () => {
+  it('换张：旧的一张当场撤下（data-instant），新的一张原地淡入（data-switching）；首开与末收照常进退场', () => {
     const c = makeMenu()
-    const instant = (i: number): unknown => (c.api().getContentProps({ value: VALUES[i]! }) as Record<string, unknown>)['data-instant']
+    const content = (i: number): Record<string, unknown> => c.api().getContentProps({ value: VALUES[i]! }) as Record<string, unknown>
+    const instant = (i: number): unknown => content(i)['data-instant']
     c.api().setValue('products')
     expect(instant(0), '首开照常进场').toBeUndefined()
     c.api().setValue('docs')
-    expect([instant(0), instant(1)], '换张两侧都不播').toEqual(['', ''])
+    expect(instant(0), '旧的一张当场撤下').toBe('')
+    expect([instant(1), content(1)['data-switching']], '新的一张原地淡入').toEqual([undefined, ''])
     c.api().setValue(null)
     expect(instant(1), '末收照常退场').toBeUndefined()
     c.api().setValue('company')

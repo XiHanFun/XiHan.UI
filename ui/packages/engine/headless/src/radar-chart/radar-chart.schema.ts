@@ -96,7 +96,7 @@ export interface RadarChartApi<T extends PropTypes = PropTypes> {
   patterns: readonly ChartPattern[]
   /** 激活的数据；没有时为 null。 */
   active: ChartDatumDetails | null
-  /** 提示框内容；收起时为 null。 */
+  /** 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 */
   tooltip: RadarTooltipModel | null
   summary: string
   /** 数据表模型：实体名一列，每个指标一列。 */

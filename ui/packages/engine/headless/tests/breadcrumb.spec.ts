@@ -43,10 +43,10 @@ describe('connectBreadcrumb', () => {
     expect((api({ translations: { root: '面包屑' } }).getRootProps() as Props)['aria-label']).toBe('面包屑')
   })
 
-  it('list 与 item 只带身份标记：有序与层级由 ol/li 标签自己给，不再补 role', () => {
+  it('list 与 item 不补 role：有序与层级由 ol/li 标签自己给；list 另带列表动效找它用的 id 与首帧的 data-instant', () => {
     const list = api().getListProps() as Props
     const item = api().getItemProps() as Props
-    expect(list).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'list', 'class': 'xh-scope-breadcrumb' })
+    expect(list).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'list', 'class': 'xh-scope-breadcrumb', 'id': expect.stringMatching(/:list$/), 'data-instant': '' })
     expect(item).toEqual({ 'data-scope': 'breadcrumb', 'data-part': 'item', 'class': 'xh-scope-breadcrumb' })
   })
 

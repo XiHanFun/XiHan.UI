@@ -76,8 +76,10 @@ export const alertMachine = createMachine({
        */
       measureExit: ({ context, scope }) => {
         const node = scope.getById(scope.partId('alert', 'root'))
-        // 展开还没播完就关：撤掉那一段，量到的是它此刻真实占着的高度，退场从这里接着收
-        for (const animation of node?.getAnimations() ?? []) {
+        // 展开还没播完就关：撤掉那一段，量到的是它此刻真实占着的高度，退场从这里接着收。
+        // 宿主没有 Web Animations（jsdom、旧引擎）就没有在播的段可撤
+        const playing = typeof node?.getAnimations === 'function' ? node.getAnimations() : []
+        for (const animation of playing) {
           if (!('animationName' in animation) && !('transitionProperty' in animation))
             animation.cancel()
         }

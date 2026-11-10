@@ -8,10 +8,12 @@
 import type { Service } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
+import { createScope } from '@xihan-ui/core'
 import { connectJsonViewer, jsonViewerMachine } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
+import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface JsonViewerContext {
   api: ComputedRef<JsonViewerApi>
@@ -22,13 +24,14 @@ export interface JsonViewerContext {
 /** 工具条的三路通知：Vue 的 props 里不带回调，由组件把各自的 emit 接进来。 */
 export type JsonViewerToolEvents = Pick<JsonViewerSchema['props'], 'onViewChange' | 'onWrapChange' | 'onCopyError'>
 
-// 不建 scope：connect 不派生任何 id
+// 根与树的 id 由 scope 派生：子层的高度补间与按键导航按 id 找到它们，服务端与客户端得出同一个号
 export function useJsonViewer(
   props: JsonViewerSchema['props'],
   onExpandedValueChange?: JsonViewerSchema['props']['onExpandedValueChange'],
   events: JsonViewerToolEvents = {},
 ): JsonViewerContext {
-  const service = useMachine(jsonViewerMachine, () => ({ ...props, onExpandedValueChange, ...events }))
+  const scope = createScope(null, createVueIdGenerator())
+  const service = useMachine(jsonViewerMachine, () => ({ ...props, onExpandedValueChange, ...events }), scope)
   const api = computed(() => connectJsonViewer(service, vueNormalize))
   return { api, service }
 }

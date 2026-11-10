@@ -204,7 +204,7 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `legendScales` | `readonly HierarchyLegendScale[]` | 按值着色时图例里的色阶，每个看得见的层一条；不按值着色时为空。 |
 | `rootKey` | `string \| null` | 当前的根的身份；null 是最顶层。 |
 | `active` | `ChartDatumDetails \| null` | 激活的节点；没有时为 null。 |
-| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `HierarchyTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` |  |
 | `table` | `TableModel` | 数据表模型：全部节点，路径、数值与占上一层的比例。 |
 | `emptyText` | `string` |  |

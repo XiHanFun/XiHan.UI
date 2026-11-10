@@ -9,6 +9,7 @@ import type { Service } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerSchema } from '@xihan-ui/headless'
 import { connectJsonViewer, jsonViewerMachine } from '@xihan-ui/headless'
 import { reactNormalize } from '../../runtime/normalize-props'
+import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface JsonViewerContext {
@@ -17,8 +18,9 @@ export interface JsonViewerContext {
   service: Service<JsonViewerSchema>
 }
 
-// 不建 scope：connect 不派生任何 id
+// 根与树的 id 由 scope 派生：子层的高度补间与按键导航按 id 找到它们，服务端与客户端得出同一个号
 export function useJsonViewer(props: JsonViewerSchema['props']): JsonViewerContext {
-  const service = useMachine(jsonViewerMachine, () => props)
+  const scope = useReactScope()
+  const service = useMachine(jsonViewerMachine, () => props, { scope })
   return { api: connectJsonViewer(service, reactNormalize), service }
 }

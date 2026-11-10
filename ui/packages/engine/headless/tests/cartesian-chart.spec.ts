@@ -251,14 +251,16 @@ describe('悬停、提示框与记忆', () => {
     expect(seen.map(d => d && [d.seriesId, d.formatted.value, d.items?.length])).toEqual([['online', '120', 2], null])
   })
 
-  it('按 Escape 收起提示框，下一次悬停再打开', async () => {
+  it('按 Escape 收起提示框：data-state 转 hidden，内容留着供退场淡出', async () => {
     const rig = await makeRig(BARS)
     rig.service.send({ type: 'HOVER', hover: { ref: { seriesId: 'online', index: 0 }, x: 10, y: 10 }, key: '一月' })
     await settle()
+    expect((rig.api().getTooltipProps() as Dict)['data-state']).toBe('visible')
     const keydown = (rig.api().getPlotProps() as Dict).onKeyDown
     keydown({ key: 'Escape', preventDefault: vi.fn() })
     await settle()
-    expect(rig.api().tooltip).toBeNull()
+    expect((rig.api().getTooltipProps() as Dict)['data-state']).toBe('hidden')
+    expect(rig.api().tooltip?.header, '淡出途中不先变空').toBe('一月')
   })
 })
 

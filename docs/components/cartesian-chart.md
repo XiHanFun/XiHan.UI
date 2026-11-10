@@ -463,7 +463,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `legendScale` | `CartesianLegendScale \| null` | 按值着色时图例里的色阶；没有按值着色的系列时为 null。 |
 | `patterns` | `readonly ChartPattern[]` | 各系列的纹理：画在绘图区的 defs 里，强制色、打印与环境开启纹理时柱与面积用它填充。 |
 | `active` | `ChartDatumDetails \| null` | 激活的数据；没有时为 null。 |
-| `tooltip` | `CartesianTooltipModel \| null` | 提示框内容；收起时为 null。 |
+| `tooltip` | `CartesianTooltipModel \| null` | 提示框内容：从没露过面时为 null；收起后留着上一回的内容供退场淡出，露不露看 getTooltipProps 的 data-state。 |
 | `summary` | `string` | 摘要文字。 |
 | `table` | `TableModel` | 数据表模型：视觉隐藏的数据表用它，也可以喂给 Table 组件做可见的表格视图。 |
 | `emptyText` | `string` | 空态文字。 |

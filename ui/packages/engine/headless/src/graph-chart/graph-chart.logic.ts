@@ -45,9 +45,14 @@ export function graphTranslations(overrides: Partial<GraphChartTranslations> | u
 /** 不缩放、不平移。 */
 export const GRAPH_HOME_VIEW: GraphView = Object.freeze({ k: 1, x: 0, y: 0 })
 
-/** 画面按的视图：zoom 关着时恒是原样，受控递进来的视图也不生效。 */
-export function graphViewOf(prop: PropFn<GraphChartSchema>, context: GraphModelSource['context']): GraphView {
+/** 逻辑视图：zoom 关着时恒是原样，受控递进来的视图也不生效。键盘缩放一按就落到目标，事件、data-zoomed 与下一档缩放按它算。 */
+export function graphLogicalViewOf(prop: PropFn<GraphChartSchema>, context: GraphModelSource['context']): GraphView {
   return prop('zoom') === true ? context.get('view') ?? GRAPH_HOME_VIEW : GRAPH_HOME_VIEW
+}
+
+/** 画面按的视图：键盘缩放补间途中是补到半路的那个，其余时候同逻辑视图。 */
+export function graphViewOf(prop: PropFn<GraphChartSchema>, context: GraphModelSource['context']): GraphView {
+  return prop('zoom') === true ? context.get('shownView') ?? graphLogicalViewOf(prop, context) : GRAPH_HOME_VIEW
 }
 
 /** 取模型要读的那几处：机器的参数与连接层的服务都满足它。 */
