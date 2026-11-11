@@ -332,14 +332,20 @@ export function defineXhElement<K extends keyof XhElementTagMap>(tag: K, ctor: n
   registerHost()
 }
 
-/** 注册一个元素，再沿它的 static dependencies 递归注册；先注册自己，依赖成环时也会停。 */
-function defineWithDependencies(tag: string, ctor: CustomElementConstructor): void {
+/**
+ * 注册一个元素，再沿它的 static dependencies 递归注册；一次注册里走过的标签不再走，依赖成环时停。
+ * 不能只看标签上已注册的是不是这个类：同一版本的元素类被打包出两份时，后一份重复注册不报错也注册不上。
+ */
+function defineWithDependencies(tag: string, ctor: CustomElementConstructor, visited = new Set<string>()): void {
+  if (visited.has(tag))
+    return
+  visited.add(tag)
   if (typeof customElements !== 'undefined' && customElements.get(tag) === ctor)
     return
   defineElement(tag, ctor, VERSION)
   const dependencies = (ctor as { dependencies?: Readonly<Record<string, CustomElementConstructor>> }).dependencies
   for (const [dependencyTag, dependency] of Object.entries(dependencies ?? {}))
-    defineWithDependencies(dependencyTag, dependency)
+    defineWithDependencies(dependencyTag, dependency, visited)
 }
 
 // 注册全部 xh-* 元素，需显式调用，主入口 import 不注册。

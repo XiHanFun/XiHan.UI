@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import * as define from '../src/define'
-import { defineXhElement, defineXhElements, XhStatisticElement, XhTableElement } from '../src/define'
+import { defineXhElement, defineXhElements, XhIconElement, XhMenuElement, XhStatisticElement, XhTableElement } from '../src/define'
 
 /** 注册表挂在全局上：标签 → { 版本, 构造器 }。 */
 function registered(): Map<string, { version: string, ctor: CustomElementConstructor }> {
@@ -24,6 +24,16 @@ describe('define exports', () => {
     class Other extends HTMLElement {}
     customElements.define('xh-other-probe', Other)
     expect(() => defineXhElement('xh-other-probe' as 'xh-statistic', XhStatisticElement)).toThrow()
+  })
+
+  it('同一版本的元素类打包出两份时，后一份按需注册沿成环的依赖也会停，标签仍归先注册的那份', () => {
+    defineXhElements()
+    // 开发服务器预构建一部分包、另一部分按源码引用时会这样：子菜单让菜单依赖自己
+    class XhMenuCopyElement extends XhMenuElement {
+      static override dependencies = { 'xh-menu': XhMenuCopyElement, 'xh-icon': XhIconElement }
+    }
+    expect(() => defineXhElement('xh-menu', XhMenuCopyElement)).not.toThrow()
+    expect(customElements.get('xh-menu')).toBe(XhMenuElement)
   })
 
   it('标签与元素类对不上时类型不通过', () => {
