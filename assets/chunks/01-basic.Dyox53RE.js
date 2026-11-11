@@ -1,1 +1,0 @@
-import{Zt as e,at as t,ft as n,wt as r}from"./framework.eUj94whv.js";import{va as i}from"./theme.aNz4Qjpo.js";var a=n({__name:`01-basic`,setup(n){return(n,a)=>(r(),t(e(i),{label:`加载中`}))}});export{a as default};

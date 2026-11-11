@@ -1,0 +1,1 @@
+import{X as e}from"./theme.BqsNJs5y.js";import{n as t}from"./normalize-props.KulRsFzf.js";import{t as n}from"./icon.DR7b-oo9.js";var r=t(),i=[`brand`,`success`,`warning`,`danger`,`info`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,alignItems:`center`,gap:`12px`},children:i.map(t=>(0,r.jsx)(n,{icon:e,frame:`subtle`,tone:t},t))})}export{a as default};

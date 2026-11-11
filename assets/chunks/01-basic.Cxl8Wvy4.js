@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.CFhmtqzl.js";import{i as t}from"./timer.kEDOsyEN.js";var n=e();function r(){return(0,n.jsx)(t,{autoStart:!0})}export{r as default};
