@@ -13,7 +13,7 @@
   "dependencies": {
     "@xihan-ui/styles": "^5.2.0",
     "@xihan-ui/vue": "^5.2.0",
-    "nuxt": "4.6.2",
+    "nuxt": "4.6.3",
     "vue": "^3.5.44"
   },
   "devDependencies": {
