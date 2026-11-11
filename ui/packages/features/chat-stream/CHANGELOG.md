@@ -1,5 +1,11 @@
 # @xihan-ui/chat-stream
 
+## 5.5.2
+
+### Patch Changes
+
+- @xihan-ui/core@5.5.2
+
 ## 5.5.1
 
 ### Patch Changes
