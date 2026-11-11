@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C2us6Gcp.js";import{g as t}from"./select.D2lfq0PU.js";var n=e(),r=[{value:`apple`,label:`苹果`},{value:`banana`,label:`香蕉`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`apple`],disabled:!0,label:`水果`,placeholder:`请选择`})}export{i as default};

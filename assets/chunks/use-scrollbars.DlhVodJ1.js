@@ -1,1 +1,0 @@
-import{t as e}from"./react.CbNV8_UV.js";import{n as t}from"./react-id.KCJAYu2v.js";import{n,r,t as i}from"./scrollbar-bars.DvvFlT2b.js";var a=e();function o(e){let o=t(),s=(0,a.useRef)(e);s.current=e;let c=(0,a.useRef)(null);c.current??=i(o,()=>s.current);let l=c.current;return{render:()=>r(l),measure:()=>n(l)}}export{o as t};

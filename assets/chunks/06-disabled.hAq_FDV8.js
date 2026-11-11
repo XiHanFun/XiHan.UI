@@ -1,0 +1,1 @@
+import{v as e}from"./theme.aNz4Qjpo.js";import{n as t}from"./normalize-props.CFhmtqzl.js";import{t as n}from"./icon.xoB9yjrc.js";import{t as r}from"./download-trigger.CeumpWxX.js";var i=t();function a(){return(0,i.jsxs)(r,{disabled:!0,data:`XiHan.UI`,fileName:`xihan-ui.txt`,children:[(0,i.jsx)(n,{icon:e}),` `,`下载文件`]})}export{a as default};

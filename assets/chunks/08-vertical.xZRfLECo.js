@@ -1,0 +1,1 @@
+import{Lt as e,Zt as t,at as n,ft as r,ut as i,wt as a}from"./framework.eUj94whv.js";import{va as o,ya as s}from"./theme.aNz4Qjpo.js";var c=r({__name:`08-vertical`,setup(r){return(r,c)=>(a(),n(t(o),{orientation:`vertical`,label:`正在加载数据`},{default:e(()=>[i(t(s))]),_:1}))}});export{c as default};

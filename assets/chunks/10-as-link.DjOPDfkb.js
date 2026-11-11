@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.C2us6Gcp.js";import{t}from"./button.JtygYG62.js";var n=e();function r(){return(0,n.jsx)(t,{as:`a`,href:`/introduction`,children:`了解更多`})}export{r as default};
