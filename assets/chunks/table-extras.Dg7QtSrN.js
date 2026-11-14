@@ -1,1 +1,0 @@
-import{f as e}from"./menu.BXc5aicb.js";import{d as t}from"./pagination.54SuNatW.js";export{e as XhMenuRoot,t as XhPaginationRoot};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.1pfVda7s.js";import{t}from"./format-input.Kjxj7jQ1.js";var n=e();function r(){return(0,n.jsx)(t,{kinds:[`number`,`percent`],defaultValue:{kind:`percent`,decimals:1},"aria-label":`占比格式`})}export{r as default};

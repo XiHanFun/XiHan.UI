@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.1pfVda7s.js";import{t}from"./checkbox.Pi_0T_5M.js";var n=e();function r(){return(0,n.jsx)(t,{invalid:!0,required:!0,children:`我同意服务条款`})}export{r as default};

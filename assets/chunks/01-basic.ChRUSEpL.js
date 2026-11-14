@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.1pfVda7s.js";import{t}from"./switch.QaKwv00s.js";var n=e();function r(){return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t,{}),(0,n.jsx)(t,{defaultChecked:!0})]})}export{r as default};
