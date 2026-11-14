@@ -1,5 +1,20 @@
 # @xihan-ui/backgrounds
 
+## 5.6.0
+
+### Minor Changes
+
+- a8aa71e: **新增** `sand` 效果：点云换形态时像沙一样被风吹散、再从上风处飘来聚成，迎风一侧先动、每颗各走各的，飘散的一路渐渐淡出。空点云是合法的一端——第一份点云从无到有聚成，`setCloud(空点云)` 让现有粒子走完退场才消失。形状的大小与落点由 `zoom`、`originX`、`originY` 定，风向、吹出距离、先后错落与湍流都是参数。
+
+  **新增** 点云粒子的行进钩子 `particles.travel`：效果用一段 GLSL 接管粒子从上一份点云到下一份的路，逐粒输出位置、颜色进度与可见度；`presence` 告知两端各自在不在。不给时照旧整体线性插值。
+
+  **新增** 粒子外观 `particles.sprite`：`soft`（缺省，软圆点）与 `solid`（实心圆点，不带光晕）。
+
+### Patch Changes
+
+- @xihan-ui/core@5.6.0
+- @xihan-ui/motion@5.6.0
+
 ## 5.5.2
 
 ### Patch Changes

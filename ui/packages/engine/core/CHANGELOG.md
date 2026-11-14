@@ -1,5 +1,11 @@
 # @xihan-ui/core
 
+## 5.6.0
+
+### Patch Changes
+
+- @xihan-ui/motion@5.6.0
+
 ## 5.5.2
 
 ### Patch Changes

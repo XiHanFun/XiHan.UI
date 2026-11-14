@@ -1,5 +1,17 @@
 # @xihan-ui/react
 
+## 5.6.0
+
+### Patch Changes
+
+- @xihan-ui/core@5.6.0
+- @xihan-ui/motion@5.6.0
+- @xihan-ui/headless@5.6.0
+- @xihan-ui/position@5.6.0
+- @xihan-ui/pointer@5.6.0
+- @xihan-ui/viz@5.6.0
+- @xihan-ui/expression@5.6.0
+
 ## 5.5.2
 
 ### Patch Changes
