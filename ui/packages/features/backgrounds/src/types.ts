@@ -60,6 +60,9 @@ export interface EffectContext {
 
 export type ParticleBlend = 'add' | 'normal'
 
+/** 粒子画成什么样：soft 是中心亮、向外晕开的软圆点，solid 是边缘利落的实心圆点。 */
+export type ParticleSprite = 'soft' | 'solid'
+
 /**
  * 程序化粒子：位置在顶点着色器里由粒子序号派生的种子实时算出，不占顶点缓冲。
  * body 需实现 `void particle(int id, out vec2 pos, out float size, out vec4 color)`，
@@ -70,16 +73,36 @@ export interface ProceduralParticleSpec {
   readonly count: number | ((params: ParamValues) => number)
   readonly body: string
   readonly blend?: ParticleBlend
+  /** 缺省 soft。 */
+  readonly sprite?: ParticleSprite
 }
 
 /**
  * 数据驱动粒子：位置来自点云缓冲，两份点云之间可插值。
  * body 需实现 `vec3 displace(vec3 p, float seed, float t)`，返回扰动后的位置。
+ *
+ * 不给 travel 时，全部粒子按同一个进度在两份点云之间线性插值。
+ * 给了 travel，每颗粒子怎么从上一份点云走到下一份就由效果自己定：各走各的时刻与路线，
+ * 路上还能淡出淡入。travel 是一段 GLSL，接在 body 之后，需实现
+ *
+ * `vec3 travel(vec3 from, vec3 to, vec2 presence, float morph, float seed, float t, out float blend, out float alpha)`
+ *
+ * - presence.x、presence.y 为 1 表示上一份、下一份点云存在，为 0 即这一端是空的（从无到有、从有到无）；
+ *   空的那一端，from 与 to 给的是同一个位置
+ * - morph 是 0~1 的整体进度，seed 是这颗粒子的 0~1 随机数，t 是秒
+ * - 返回这颗粒子此刻的位置；blend 输出它的颜色在两份点云之间取到哪（0~1），alpha 输出它的可见度（0~1）
+ *
+ * 返回的位置之后照常过一遍 displace。
+ * 有 travel 的效果里空点云是合法的一端：对正显示着形状的画面 `setCloud(空点云)`，粒子走完退场才消失；
+ * 第一份点云不再从球壳飞来，而是按 travel 从无到有入场。
  */
 export interface CloudParticleSpec {
   readonly mode: 'cloud'
   readonly body: string
+  readonly travel?: string
   readonly blend?: ParticleBlend
+  /** 缺省 soft。 */
+  readonly sprite?: ParticleSprite
 }
 
 export type ParticleSpec = ProceduralParticleSpec | CloudParticleSpec

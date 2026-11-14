@@ -46,6 +46,7 @@ const surface = createBackgroundSurface(cardElement, {
 | `nebula` | 厚重的多层噪声云团，中间嵌着亮星 |
 | `flow-field` | 粒子被旋度噪声推着走，画出持续变形的丝状纹理 |
 | `particles` | 数据驱动点云——图片、文字、SVG、参数方程都走它 |
+| `sand` | 同样显示点云，换形态时像沙一样被风吹散、再从上风处飘来聚成；空点云即「吹散」 |
 
 按名字取用需要先注册；直接传效果对象则完全不经过注册表，没引到的效果会被打包器摇掉：
 
@@ -110,6 +111,25 @@ interface PointCloud {
 }
 ```
 
+## 粒子怎么从一份点云走到下一份
+
+`cloud` 模式的粒子缺省按同一个进度在两份点云之间线性插值，这是 `particles` 的做法。
+效果在 `particles.travel` 里给一段 GLSL，就接管这段路：每颗粒子自己的位置、颜色取到哪、可见度都由它输出。
+
+```glsl
+vec3 travel(vec3 from, vec3 to, vec2 presence, float morph, float seed, float t, out float blend, out float alpha)
+```
+
+`presence.x`、`presence.y` 为 1 表示上一份、下一份点云存在。带 `travel` 的效果里空点云是合法的一端：
+第一份点云不再从球壳飞来，而是由 `travel` 演从无到有；对着显示中的形状 `setCloud(空点云)`，粒子走完退场才消失。
+空的那一端 `from` 与 `to` 给的是同一个位置。
+
+行进中的粒子各在各的路上，引擎算不出它们此刻的位置，所以途中再换点云时一律从它们**正去往**的那份接手；
+退场途中换来的新形状则从无到有入场。要两段交叠，用两张画面轮流上场。
+
+`sand` 就是这样写的：迎风一侧的粒子先动，各自再错开一点；吹散时越吹越快并渐渐淡出，聚成时先快后慢地落定。
+它的粒子用 `sprite: 'solid'`（实心圆点）与 `blend: 'normal'`，看上去是沙而不是光。
+
 ## 性能与降级
 
 - `quality` 四档（`auto` / `high` / `balanced` / `eco`）决定像素比上限与程序化粒子数量。
@@ -136,4 +156,6 @@ interface PointCloud {
 | 着色器编译失败 | 走 `@xihan-ui/core` 的诊断通道报出来，不抛异常——一张背景画不出来不该把宿主组件带崩 |
 | 跨源图片污染画布 | `imageToCloud` 返回空点云；需要服务端带 CORS 头，或改传 `Blob` |
 | 对非 `cloud` 模式的效果调 `setCloud` | 忽略并发一条诊断 |
+| 给 `particles` 这类没有 `travel` 的效果传空点云 | 粒子立即清空 |
+| 给 `sand` 这类带 `travel` 的效果传空点云 | 现有粒子走完退场才消失；退场途中来了新形状，新形状从无到有入场 |
 | 字体还没加载完就调 `textToCloud` | 按回退字形取样；需要精确字形请先 `await document.fonts.ready` |

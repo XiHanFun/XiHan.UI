@@ -11,6 +11,7 @@ import { particlesEffect } from './cloud'
 import { auroraEffect, beamEffect, plasmaEffect } from './energy'
 import { fluidEffect, glassEffect, grainEffect, meshEffect } from './flow'
 import { registerEffects } from './registry'
+import { sandEffect } from './sand'
 import { flowFieldEffect, nebulaEffect, starfieldEffect } from './space'
 import { orbEffect, rippleEffect, waveEffect } from './wave'
 
@@ -29,6 +30,7 @@ export const builtinEffects: readonly BackgroundEffect[] = [
   nebulaEffect,
   flowFieldEffect,
   particlesEffect,
+  sandEffect,
 ]
 
 /** 把内置效果全部注册进注册表，之后就能按名字取用。 */
@@ -56,5 +58,6 @@ export {
   registerEffects,
   resolveEffect,
 } from './registry'
+export { sandEffect } from './sand'
 export { flowFieldEffect, nebulaEffect, starfieldEffect } from './space'
 export { orbEffect, rippleEffect, waveEffect } from './wave'

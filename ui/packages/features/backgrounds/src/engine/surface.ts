@@ -33,7 +33,7 @@ import {
   buildCloudVertex,
   buildFragment,
   buildProceduralVertex,
-  FRAG_POINT,
+  pointFragment,
   VERT_QUAD,
 } from './glsl'
 import { createProgram } from './program'
@@ -193,6 +193,13 @@ export function createBackgroundSurface(
   let toColors: Float32Array = new Float32Array(0)
   let morph = 1
   let morphRate = 0
+  /**
+   * 上一份、下一份点云在不在（各取 0 或 1）。只有带行进钩子的效果用得上：
+   * 空的那一端由它自己演从无到有、从有到无。
+   */
+  const presence: [number, number] = [1, 1]
+  /** 每点相对大小留一份：粒子退场时下一份点云是空的，大小得沿用现有的。 */
+  let cloudSizes: Float32Array = new Float32Array(0)
   /** 留着上一份点云：重建着色器程序会让 VAO 里的属性位置失效，必须照原样重传一次。 */
   let lastCloud: PointCloud | null = null
 
@@ -228,9 +235,9 @@ export function createBackgroundSurface(
     const spec = effect.particles
     if (spec !== undefined) {
       const vertex = spec.mode === 'cloud'
-        ? buildCloudVertex(shared, spec.body)
+        ? buildCloudVertex(shared, spec.body, spec.travel)
         : buildProceduralVertex(shared, spec.body)
-      particleProgram = createProgram(context, vertex, FRAG_POINT, `${effect.name}/points`)
+      particleProgram = createProgram(context, vertex, pointFragment(spec.sprite), `${effect.name}/points`)
       if (spec.mode === 'procedural') {
         const raw = typeof spec.count === 'function' ? spec.count(params) : spec.count
         proceduralCount = Math.max(0, Math.round(raw * profile.particles))
@@ -243,42 +250,86 @@ export function createBackgroundSurface(
     dirty = true
   }
 
+  /** 当前效果的点云粒子是不是自己管两份点云之间怎么走。 */
+  function cloudTravels(): boolean {
+    const spec = effect.particles
+    return spec !== undefined && spec.mode === 'cloud' && spec.travel !== undefined
+  }
+
   /** 点云缓冲重建。数量变了就整套重来，重建频率远低于每帧，不值得做增量。 */
   function uploadCloud(next: PointCloud, morphOptions?: MorphOptions): void {
     lastCloud = next
-    const count = next.count
-    if (count === 0) {
+    const travels = cloudTravels()
+    const arriving = next.count > 0
+    // 行进效果里正在退场的那份不算在场：新形状从无到有入场，不去接它的位置
+    const present = cloudCount > 0 && (!travels || presence[1] === 1)
+
+    // 没有东西要来；现有的粒子也不会自己退场（没有行进钩子，或本来就不在场）：直接清空
+    if (!arriving && !(travels && present)) {
       cloudCount = 0
       dirty = true
       return
     }
 
-    const previousPositions = cloudCount === 0
-      ? scatterShell(count, 1.7, Math.round(num(params, 'seed')) + 7)
-      : resample(lerpArrays(fromPositions, toPositions, smoothstep(morph)), cloudCount, count, 3)
-    const previousColors = cloudCount === 0
-      ? resample(next.colors, count, count, 3)
-      : resample(lerpArrays(fromColors, toColors, smoothstep(morph)), cloudCount, count, 3)
+    // 退场时下一份是空的，粒子数沿用现有的
+    const count = arriving ? next.count : cloudCount
+    const seed = Math.round(num(params, 'seed'))
+    const nextPositions = new Float32Array(count * 3)
+    const nextColors = new Float32Array(count * 3)
+    if (arriving) {
+      nextPositions.set(next.positions.subarray(0, count * 3))
+      nextColors.set(next.colors.subarray(0, count * 3))
+    }
 
-    fromPositions = previousPositions
-    toPositions = new Float32Array(count * 3)
-    toPositions.set(next.positions.subarray(0, count * 3))
-    fromColors = previousColors
-    toColors = new Float32Array(count * 3)
-    toColors.set(next.colors.subarray(0, count * 3))
+    if (travels) {
+      // 行进中的粒子各在各的路上，这里算不出它们此刻的位置：一律从它们正去往的那份形状接手
+      const heldPositions = present ? resample(toPositions, cloudCount, count, 3) : nextPositions
+      const heldColors = present ? resample(toColors, cloudCount, count, 3) : nextColors
+      // 空的一端借另一端的位置与颜色，travel 靠 u_presence 分辨哪端是空的
+      fromPositions = heldPositions
+      fromColors = heldColors
+      toPositions = arriving ? nextPositions : heldPositions
+      toColors = arriving ? nextColors : heldColors
+      presence[0] = present ? 1 : 0
+      presence[1] = arriving ? 1 : 0
+    }
+    else {
+      fromPositions = present
+        ? resample(lerpArrays(fromPositions, toPositions, smoothstep(morph)), cloudCount, count, 3)
+        : scatterShell(count, 1.7, seed + 7)
+      fromColors = present
+        ? resample(lerpArrays(fromColors, toColors, smoothstep(morph)), cloudCount, count, 3)
+        : resample(next.colors, count, count, 3)
+      toPositions = nextPositions
+      toColors = nextColors
+      presence[0] = 1
+      presence[1] = 1
+    }
 
-    const rng = createRng(Math.round(num(params, 'seed')) + 13)
+    if (arriving) {
+      cloudSizes = new Float32Array(count)
+      for (let i = 0; i < count; i++)
+        cloudSizes[i] = next.sizes?.[i] ?? 1
+    }
+    const rng = createRng(seed + 13)
     const meta = new Float32Array(count * 2)
     for (let i = 0; i < count; i++) {
-      meta[i * 2] = next.sizes?.[i] ?? 1
+      meta[i * 2] = cloudSizes[i] ?? 1
       meta[i * 2 + 1] = rng()
     }
 
-    const duration = morphOptions?.duration ?? (cloudCount === 0 ? 1.4 : 1.1)
+    const duration = morphOptions?.duration ?? (present ? 1.1 : 1.4)
     // 减弱动效下 tick 的时间步恒为 0，形变推不动：与 duration <= 0 一样直接落到新形状
     const instant = duration <= 0 || reduced
     morph = instant ? 1 : 0
     morphRate = instant ? 0 : 1 / duration
+    // 一步落定的退场没有过程可演：直接清空
+    if (instant && !arriving) {
+      cloudCount = 0
+      disposeCloudBuffers()
+      dirty = true
+      return
+    }
     cloudCount = count
 
     disposeCloudBuffers()
@@ -376,6 +427,8 @@ export function createBackgroundSurface(
     uploadUniforms(particleProgram, extra)
     if (spec.mode === 'cloud') {
       particleProgram.uniform('u_morph', morph)
+      if (spec.travel !== undefined)
+        particleProgram.uniform('u_presence', presence)
       context.bindVertexArray(vao)
       context.drawArrays(context.POINTS, 0, drawCount)
       context.bindVertexArray(null)
@@ -433,6 +486,9 @@ export function createBackgroundSurface(
     time += step
     if (morph < 1 && morphRate > 0)
       morph = Math.min(1, morph + step * morphRate)
+    // 行进效果的退场走完了：粒子都已淡出，不再画
+    if (morph >= 1 && cloudCount > 0 && presence[1] === 0 && cloudTravels())
+      cloudCount = 0
 
     draw()
     dirty = false

@@ -26,6 +26,8 @@ const ENGINE_UNIFORMS = new Set([
   'u_px',
   // 形变进度由 surface 驱动，不归效果管
   'u_morph',
+  // 两端点云在不在同样由 surface 给，带行进钩子的效果才有
+  'u_presence',
 ])
 
 /** 取出一个效果实际会编译的全部着色器源码。 */
@@ -37,7 +39,7 @@ function sourcesOf(effect: BackgroundEffect): string[] {
   const spec = effect.particles
   if (spec !== undefined) {
     out.push(spec.mode === 'cloud'
-      ? buildCloudVertex(shared, spec.body)
+      ? buildCloudVertex(shared, spec.body, spec.travel)
       : buildProceduralVertex(shared, spec.body))
   }
   return out

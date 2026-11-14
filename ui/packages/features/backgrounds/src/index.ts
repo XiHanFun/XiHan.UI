@@ -44,6 +44,7 @@ export {
   particlesEffect,
   plasmaEffect,
   rippleEffect,
+  sandEffect,
   starfieldEffect,
   waveEffect,
 } from './effects/index'
@@ -113,6 +114,7 @@ export type {
   ParamValues,
   ParticleBlend,
   ParticleSpec,
+  ParticleSprite,
   PointCloud,
   ProceduralParticleSpec,
   UniformMap,

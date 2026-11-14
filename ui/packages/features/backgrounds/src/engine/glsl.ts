@@ -6,6 +6,8 @@
 // 着色器公共片段。两个绘制通道共用同一份 uniform 声明与噪声工具，
 // 效果因此可以在流场里和粒子里引用同一个函数，粒子才能精确落在流场的特征位置上。
 
+import type { ParticleSprite } from '../types'
+
 /** 全屏三角形：顶点坐标由顶点序号直接算出，不需要顶点缓冲。 */
 export const VERT_QUAD: string = `#version 300 es
 precision highp float;
@@ -85,6 +87,23 @@ void main() {
   fragColor = vec4(v_color.rgb * a, a);
 }`
 
+/** 粒子通道的片元着色器：一个实心圆点，只在最外一圈收边抗锯齿，不带光晕。 */
+export const FRAG_POINT_SOLID: string = `#version 300 es
+precision highp float;
+in vec4 v_color;
+out vec4 fragColor;
+void main() {
+  float r = length(gl_PointCoord - 0.5) * 2.0;
+  float a = (1.0 - smoothstep(0.7, 1.0, r)) * v_color.a;
+  if (a < 0.002) discard;
+  fragColor = vec4(v_color.rgb * a, a);
+}`
+
+/** 按粒子外观取片元着色器。 */
+export function pointFragment(sprite: ParticleSprite | undefined): string {
+  return sprite === 'solid' ? FRAG_POINT_SOLID : FRAG_POINT
+}
+
 /** 拼流场通道的片元着色器。 */
 export function buildFragment(shared: string, body: string): string {
   return `#version 300 es\n${GLSL_COMMON}\n${shared}\nout vec4 fragColor;\n${body}`
@@ -110,8 +129,12 @@ void main() {
  * 拼数据驱动粒子的顶点着色器。
  * 两份点云同时在缓冲里，u_morph 在它们之间插值；随后按 yaw/pitch 旋转再做透视投影，
  * 所以同一套点云既能当平面图案用，也能当立体点阵转起来。
+ *
+ * 给了 travel，两份点云之间怎么走交给效果：每颗粒子自己的位置、颜色进度与可见度都由它输出，
+ * u_presence 告诉它两端各自在不在。
  */
-export function buildCloudVertex(shared: string, body: string): string {
+export function buildCloudVertex(shared: string, body: string, travel?: string): string {
+  const custom = travel !== undefined
   return `#version 300 es
 ${GLSL_COMMON}
 ${shared}
@@ -122,16 +145,21 @@ in vec3 a_colorTo;
 in vec2 a_meta;
 out vec4 v_color;
 uniform float u_morph;
-uniform float u_yaw;
+${custom ? 'uniform vec2 u_presence;\n' : ''}uniform float u_yaw;
 uniform float u_pitch;
 uniform float u_zoom;
 uniform float u_pointSize;
 uniform float u_depthFade;
 uniform float u_alpha;
 ${body}
+${travel ?? ''}
 void main() {
-  float m = smoothstep(0.0, 1.0, u_morph);
-  vec3 p = mix(a_from, a_to, m);
+  float visible = 1.0;
+${custom
+  ? `  float m = 0.0;
+  vec3 p = travel(a_from, a_to, u_presence, u_morph, a_meta.y, u_time, m, visible);`
+  : `  float m = smoothstep(0.0, 1.0, u_morph);
+  vec3 p = mix(a_from, a_to, m);`}
   p = displace(p, a_meta.y, u_time);
 
   float cy = cos(u_yaw), sy = sin(u_yaw);
@@ -147,6 +175,6 @@ void main() {
 
   vec3 col = mix(a_colorFrom, a_colorTo, m);
   float depth = mix(1.0 - u_depthFade, 1.0, clamp(r2.z * 0.5 + 0.5, 0.0, 1.0));
-  v_color = vec4(col, u_alpha * depth);
+  v_color = vec4(col, u_alpha * depth * visible);
 }`
 }
