@@ -11,6 +11,10 @@ import { createSoundPlayer } from '@xihan-ui/sound'
 
 const sound = createSoundPlayer()
 sound.play('success')
+
+// 来电铃声这类要一直响到有结果的声音：循环播放，stop 才停
+const ringing = sound.loop('ring')
+ringing.stop()
 ```
 
 命令式反馈服务可通过 `withNotificationSoundService` / `withDialogSoundService` 装饰。两者只依赖最小结构化服务端口，不依赖 Headless 或任何框架；共享播放器槽与自定义宿主的解锁接线分别使用 `createSharedSoundPlayerController`、`createSoundServiceController`。

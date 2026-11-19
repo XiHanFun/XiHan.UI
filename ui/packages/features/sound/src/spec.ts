@@ -10,6 +10,10 @@ import type { EnvelopePoint, FilterSpec, SoundLayer, SoundSpec } from './types'
 
 /** 包络时间上限（秒）。UI 音效超过它就不再是提示而是配乐。 */
 export const MAX_TIME = 4
+/** 循环周期下限（秒）：再短就连成持续的嗡声，零时长的配方也不至于把调度拖成死循环。 */
+export const MIN_PERIOD = 0.05
+/** 循环周期上限（秒）：一遍响完到下一遍之间隔得再久，听的人就不觉得它还在响了。 */
+export const MAX_PERIOD = 8
 /** 单份配方的发声层上限。 */
 export const MAX_LAYERS = 16
 /** 单条包络的控制点上限。 */
@@ -100,11 +104,14 @@ export function clampSpec(spec: SoundSpec): SoundSpec {
       layers.push(layer)
     }
   }
-  return {
+  const out: SoundSpec = {
     layers,
     space: clamp(spec?.space ?? 0, 0, 1, 0),
     gain: clamp(spec?.gain ?? 1, 0, 1, 1),
   }
+  if (spec?.period !== undefined)
+    out.period = clamp(spec.period, MIN_PERIOD, MAX_PERIOD, MIN_PERIOD)
+  return out
 }
 
 /** 配方总时长（秒）：各层启动偏移加上其增益包络最后一点。 */
@@ -115,4 +122,9 @@ export function specDuration(spec: SoundSpec): number {
     end = Math.max(end, (layer.delay ?? 0) + (last ? last.time : 0))
   }
   return end
+}
+
+/** 循环周期（秒）：配方写了 period 用它，否则首尾相接；不短于 MIN_PERIOD。 */
+export function specPeriod(spec: SoundSpec): number {
+  return Math.max(MIN_PERIOD, spec.period ?? specDuration(spec))
 }

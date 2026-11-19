@@ -33,6 +33,7 @@ function recorder(): Recorder {
       played.push(typeof sound === 'string' ? sound : '<spec>')
       volumes.push(options?.volume)
     },
+    loop: () => ({ stop: () => undefined }),
     unlock: () => {
       player.unlocks++
     },

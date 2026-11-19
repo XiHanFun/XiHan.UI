@@ -7,7 +7,8 @@
 //
 // 一段声音是一份可序列化的声明式配方（SoundSpec）：振荡器与噪声分层、
 // 包络驱动、可选滤波与混响。主题把语义名（success / error / click …）映射到
-// 配方，createSoundPlayer 负责播放：惰性建上下文、尊重自动播放策略、同名节流。
+// 配方，createSoundPlayer 负责播放：惰性建上下文、尊重自动播放策略、同名节流，
+// 来电铃声这类要一直响到有结果的声音走 loop。
 //
 // 本包不依赖任何框架，不引第三方，也不含任何音频资源文件。
 
@@ -22,7 +23,7 @@ export type { ResolvedSoundPressOptions, SoundPressOptions, SoundPressValue } fr
 export { createSharedSoundPlayerController, createSoundServiceController, withDialogSoundService, withNotificationSoundService } from './service'
 export type { DialogSoundKey, DialogSoundServiceOptions, DialogSoundServicePort, NotificationSoundKey, NotificationSoundServiceOptions, NotificationSoundServicePort, SharedSoundPlayerController, SoundChoice, SoundServiceController, SoundServiceControllerOptions, SoundUnlockAttacher } from './service'
 // 配方
-export { clampSpec, FREQ_MAX, FREQ_MIN, MAX_ENVELOPE_POINTS, MAX_LAYERS, MAX_TIME, specDuration } from './spec'
+export { clampSpec, FREQ_MAX, FREQ_MIN, MAX_ENVELOPE_POINTS, MAX_LAYERS, MAX_PERIOD, MAX_TIME, MIN_PERIOD, specDuration, specPeriod } from './spec'
 // 主题
 export { defaultSoundTheme } from './themes/default'
 export { defineSoundSpec, defineSoundTheme, flat, glide, strike } from './themes/define'
@@ -38,6 +39,7 @@ export type {
   OscillatorLayer,
   PlayOptions,
   SoundLayer,
+  SoundLoop,
   SoundPlayer,
   SoundPlayerOptions,
   SoundSpec,

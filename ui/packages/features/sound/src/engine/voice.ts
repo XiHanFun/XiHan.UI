@@ -12,9 +12,11 @@ import type { SoundContext } from './context'
 import { EPSILON } from '../spec'
 import { getNoiseBuffer } from './noise'
 
-/** 一次发声的句柄。stop 立即压掉声音并释放节点。 */
+/** 一次发声的句柄。stop 立即压掉声音并释放节点；还没到起点的，到点也不再出声。 */
 export interface Voice {
   stop: () => void
+  /** 这次发声在音频时钟上结束的时刻（秒）。 */
+  end: number
 }
 
 /** 收尾余量（秒）：最后一个包络点之后留给曲线走完的时间。 */
@@ -49,9 +51,16 @@ function scheduleEnvelope(param: AudioParam, points: EnvelopePoint[], base: numb
   }
 }
 
-export function playSpec(sound: SoundContext, spec: SoundSpec, volume: number): Voice {
+/**
+ * 发声一次
+ * @param sound 音频上下文与主链
+ * @param spec 钳制过的配方
+ * @param volume 本次的音量系数
+ * @param at 起点（音频时钟，秒），省略即立刻；早于此刻的按此刻算
+ */
+export function playSpec(sound: SoundContext, spec: SoundSpec, volume: number, at?: number): Voice {
   const { ctx, master, reverb } = sound
-  const start = ctx.currentTime + 0.003
+  const start = Math.max(ctx.currentTime + 0.003, at ?? 0)
   const nodes: AudioNode[] = []
   const sources: Array<{ source: OscillatorNode | AudioBufferSourceNode, end: number }> = []
 
@@ -141,6 +150,7 @@ export function playSpec(sound: SoundContext, spec: SoundSpec, volume: number): 
 
   let stopped = false
   return {
+    end: janitor ? janitorEnd : start,
     stop: () => {
       if (stopped)
         return

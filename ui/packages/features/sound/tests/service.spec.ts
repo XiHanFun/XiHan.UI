@@ -14,6 +14,7 @@ function recorder(): Recorder {
     play: (sound: string | SoundSpec, _options?: PlayOptions) => {
       player.played.push(typeof sound === 'string' ? sound : '<spec>')
     },
+    loop: () => ({ stop: () => undefined }),
     unlock: () => player.unlocks++,
     setEnabled: () => undefined,
     isEnabled: () => true,

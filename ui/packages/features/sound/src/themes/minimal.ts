@@ -4,7 +4,7 @@
  */
 
 // 极简主题：短促、干净、无混响。单层衰减都在 0.15 秒内，整段不超过 0.3 秒。
-// 适合信息密度高、提示频繁的界面——声音只标记事件发生，不渲染情绪。
+// 适合信息密度高、提示频繁的界面——声音只标记事件发生，不渲染情绪；来电与回铃靠循环周期连成一串。
 
 import { defineSoundTheme, flat, glide, strike, strikeTone } from './define'
 
@@ -84,5 +84,21 @@ export const minimalSoundTheme = defineSoundTheme({
       strikeTone('sine', 880, 0.2, 0.003, 0.08, 0.08),
       strikeTone('sine', 1046.5, 0.2, 0.003, 0.12, 0.16),
     ],
+  },
+  // 来电：三声同高的急促短点，每秒一组
+  'ring': {
+    layers: [
+      strikeTone('sine', 1318.51, 0.18, 0.003, 0.05),
+      strikeTone('sine', 1318.51, 0.18, 0.003, 0.05, 0.08),
+      strikeTone('sine', 1318.51, 0.18, 0.003, 0.05, 0.16),
+    ],
+    period: 1,
+  },
+  // 回铃：一声短点，两秒一次
+  'ringback': {
+    layers: [
+      strikeTone('sine', 880, 0.16, 0.003, 0.12),
+    ],
+    period: 2,
   },
 })

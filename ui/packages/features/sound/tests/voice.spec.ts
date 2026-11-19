@@ -199,3 +199,34 @@ describe('playSpec 的调度安全域', () => {
       expect(node.disconnected).toBe(true)
   })
 })
+
+describe('playSpec 的起点', () => {
+  const tone: SoundSpec = { layers: [{ kind: 'oscillator', wave: 'sine', frequency: [{ time: 0, value: 440 }], gain: [{ time: 0, value: 0.2 }, { time: 0.4, value: 0, curve: 'exp' }] }] }
+
+  it('给了起点就排在那一刻，句柄报出结束时刻', () => {
+    const { sound, ctx } = setup()
+    const { voice, diff } = playAndDiff(sound, ctx, tone, 1)
+    const later = playSpec(sound, clampSpec(tone), 1, 2)
+    const started = ctx.created.filter(isScheduled).map(node => node.started!)
+    expect(started[0]).toBeCloseTo(0.003)
+    expect(started.at(-1)).toBe(2)
+    expect(diff.filter(isScheduled)[0]!.stopped).toBeCloseTo(voice.end)
+    expect(later.end).toBeCloseTo(2 + 0.4 + 0.06)
+  })
+
+  it('早于此刻的起点按此刻算', () => {
+    const { sound, ctx } = setup()
+    ctx.currentTime = 5
+    playSpec(sound, clampSpec(tone), 1, 1)
+    const [source] = ctx.created.filter(isScheduled)
+    expect(source!.started).toBeCloseTo(5.003)
+  })
+
+  it('还没到起点就 stop：源的结束时刻早于起点，到点也不出声', () => {
+    const { sound, ctx } = setup()
+    const voice = playSpec(sound, clampSpec(tone), 1, 3)
+    voice.stop()
+    const [source] = ctx.created.filter(isScheduled)
+    expect(source!.stopped!).toBeLessThan(source!.started!)
+  })
+})

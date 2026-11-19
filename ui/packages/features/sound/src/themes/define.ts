@@ -56,3 +56,29 @@ export function strikeTone(
     layer.delay = delay
   return layer
 }
+
+/** 常见的定频持续声部：attack 秒起音到 peak，保持到 hold 秒，再用 release 秒指数收到无声。 */
+export function sustainTone(
+  wave: OscillatorLayer['wave'],
+  frequency: number,
+  peak: number,
+  attack: number,
+  hold: number,
+  release: number,
+  delay?: number,
+): OscillatorLayer {
+  const layer: OscillatorLayer = {
+    kind: 'oscillator',
+    wave,
+    frequency: flat(frequency),
+    gain: [
+      { time: 0, value: 0 },
+      { time: attack, value: peak },
+      { time: hold, value: peak },
+      { time: hold + release, value: 0, curve: 'exp' },
+    ],
+  }
+  if (delay !== undefined)
+    layer.delay = delay
+  return layer
+}

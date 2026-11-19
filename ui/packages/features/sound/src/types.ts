@@ -59,6 +59,8 @@ export interface SoundSpec {
   space?: number
   /** 整段声音的增益系数（0..1），省略为 1。 */
   gain?: number
+  /** 循环播放时相邻两遍起点的间隔（秒），省略即首尾相接；长出配方时长的部分是两遍之间的静音。 */
+  period?: number
 }
 
 /** 内置语义名。内置主题对每个名字都给出配方。 */
@@ -77,6 +79,8 @@ export const BUILTIN_SOUND_NAMES = [
   'send',
   'receive',
   'complete',
+  'ring',
+  'ringback',
 ] as const
 
 export type BuiltinSoundName = (typeof BUILTIN_SOUND_NAMES)[number]
@@ -100,9 +104,21 @@ export interface PlayOptions {
   volume?: number
 }
 
+/** 一段循环播放的句柄。 */
+export interface SoundLoop {
+  /** 停下：正在响的那一遍淡出，排好的后几遍不再出声；重复调用无副作用。 */
+  stop: () => void
+}
+
 export interface SoundPlayer {
   /** 播放主题里的语义名，或直接播放一份配方。 */
   play: (sound: string | SoundSpec, options?: PlayOptions) => void
+  /**
+   * 循环播放，直到调用返回句柄的 stop：来电铃声、回铃这类要一直响到事情有结果的声音。
+   * 每一遍按配方的 period 在音频时钟上提前排好，后台页签的计时器被放慢也不断档；
+   * 上下文挂起时等它恢复了从头响，关掉开关或 dispose 即停。
+   */
+  loop: (sound: string | SoundSpec, options?: PlayOptions) => SoundLoop
   /** 在用户手势里调用，提前解锁音频上下文，让之后的非手势播放（如通知）能出声。 */
   unlock: () => void
   setEnabled: (enabled: boolean) => void

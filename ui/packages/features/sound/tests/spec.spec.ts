@@ -5,7 +5,7 @@
 
 import type { OscillatorLayer, SoundSpec } from '../src/types'
 import { describe, expect, it } from 'vitest'
-import { clampSpec, FREQ_MAX, FREQ_MIN, MAX_ENVELOPE_POINTS, MAX_LAYERS, MAX_TIME, specDuration } from '../src/spec'
+import { clampSpec, FREQ_MAX, FREQ_MIN, MAX_ENVELOPE_POINTS, MAX_LAYERS, MAX_PERIOD, MAX_TIME, MIN_PERIOD, specDuration, specPeriod } from '../src/spec'
 
 function osc(overrides: Partial<OscillatorLayer> = {}): OscillatorLayer {
   return {
@@ -126,6 +126,32 @@ describe('clampSpec', () => {
     }
     const once = clampSpec(nasty)
     expect(clampSpec(once)).toEqual(once)
+  })
+})
+
+describe('clampSpec 的循环周期', () => {
+  it('写了才有：没写 period 的配方钳完也没有', () => {
+    expect('period' in clampSpec({ layers: [osc()] })).toBe(false)
+    expect(clampSpec({ layers: [osc()], period: 2.5 }).period).toBe(2.5)
+  })
+
+  it('越界钳进周期上下限，非数字回落下限', () => {
+    expect(clampSpec({ layers: [osc()], period: 0 }).period).toBe(MIN_PERIOD)
+    expect(clampSpec({ layers: [osc()], period: 1e6 }).period).toBe(MAX_PERIOD)
+    expect(clampSpec({ layers: [osc()], period: Number.NaN }).period).toBe(MIN_PERIOD)
+    expect(clampSpec({ layers: [osc()], period: 'x' as unknown as number }).period).toBe(MIN_PERIOD)
+  })
+})
+
+describe('specPeriod', () => {
+  it('写了 period 用它，没写就首尾相接', () => {
+    const layer = osc({ gain: [{ time: 0, value: 0 }, { time: 0.6, value: 0 }] })
+    expect(specPeriod({ layers: [layer], period: 2 })).toBe(2)
+    expect(specPeriod({ layers: [layer] })).toBeCloseTo(0.6)
+  })
+
+  it('零时长的配方也不短于下限：循环不会原地打转', () => {
+    expect(specPeriod({ layers: [] })).toBe(MIN_PERIOD)
   })
 })
 
