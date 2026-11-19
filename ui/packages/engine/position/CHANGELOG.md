@@ -1,5 +1,11 @@
 # @xihan-ui/position
 
+## 5.7.0
+
+### Patch Changes
+
+- @xihan-ui/core@5.7.0
+
 ## 5.6.0
 
 ### Patch Changes
