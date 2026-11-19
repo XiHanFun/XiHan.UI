@@ -236,7 +236,7 @@ flat(880); // 恒定值（音高 880Hz）
 glide(440, 880, 0.12); // 滑音：120ms 从 440 滑到 880
 ```
 
-层可以叠加：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加少量 highpass 白噪。配方可用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 5 kB。
+层可以叠加：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加少量 highpass 白噪。配方可用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 6 kB。
 
 ## 相关
 

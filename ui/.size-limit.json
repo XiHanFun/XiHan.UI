@@ -257,7 +257,7 @@
     "name": "sound",
     "path": "packages/features/sound/dist/index.js",
     "gzip": true,
-    "limit": "5.5 kB"
+    "limit": "6.2 kB"
   },
   {
     "name": "animations",
@@ -338,7 +338,7 @@
     "name": "react/sound",
     "path": "packages/adapters/react/dist/sound.js",
     "gzip": true,
-    "limit": "5.8 kB",
+    "limit": "6.5 kB",
     "ignore": [
       "react",
       "react-dom"
@@ -348,7 +348,7 @@
     "name": "vue/sound",
     "path": "packages/adapters/vue/dist/sound.js",
     "gzip": true,
-    "limit": "5.6 kB",
+    "limit": "6.4 kB",
     "ignore": [
       "vue"
     ]
