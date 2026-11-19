@@ -47,6 +47,19 @@ export const badgeSuite: ConformanceSuite = {
       },
     },
     {
+      name: '计数逐位写出：数字各位排进 value，超过上限的「+」排在它后面；不在换数时各位不动',
+      spec: { apg: APG },
+      props: { count: 120, max: 99 },
+      initial: {
+        order: ['root', 'indicator', 'value', 'glyph[0]', 'glyph[1]', 'suffix'],
+        counts: { value: 1, glyph: 2, suffix: 1 },
+        parts: {
+          glyph: [{ 'data-presence': null, 'data-roll': null }, { 'data-presence': null, 'data-roll': null }],
+          suffix: { 'data-presence': null, 'data-from': null, 'aria-hidden': null },
+        },
+      },
+    },
+    {
       name: '落点接线到两层：定位归皮肤，方位由 data-placement 说了算',
       spec: { apg: APG },
       props: { count: 1, placement: 'bottom-start' },

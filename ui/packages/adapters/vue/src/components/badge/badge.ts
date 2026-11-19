@@ -6,7 +6,7 @@
 // 提供 badge 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
+import type { BadgeApi, BadgePlacement, BadgeProps } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { createScope } from '@xihan-ui/core'
 import { badgeMachine, connectBadge } from '@xihan-ui/headless'
@@ -56,7 +56,15 @@ export const XhBadgeRoot = defineComponent({
   },
 })
 
-/** 角标本身，绝对定位在锚点的某个角上。未提供内容时使用计算得出的计数文本。 */
+/** 计数逐位排出：数字各位排进 value，「+」排在它后面；换数时变了的那几位由皮肤滚过去。 */
+function renderCount(api: BadgeApi): VNode[] {
+  if (!api.glyphs.length && !api.suffix)
+    return []
+  const value = h('span', api.getValueProps(), api.glyphs.map(glyph => h('span', { key: glyph.key, ...api.getGlyphProps(glyph) }, glyph.char)))
+  return api.suffix ? [value, h('span', { key: api.suffix.key, ...api.getSuffixProps(api.suffix) }, api.suffix.char)] : [value]
+}
+
+/** 角标本身，绝对定位在锚点的某个角上。未提供内容时逐位写出计算得出的计数。 */
 export const XhBadgeIndicator = defineComponent({
   name: 'XhBadgeIndicator',
   slots: Object as SlotsType<{ default?: (props: { text: string }) => VNode[] }>,
@@ -65,7 +73,7 @@ export const XhBadgeIndicator = defineComponent({
     return () => h(
       'span',
       ctx.api.value.getIndicatorProps(),
-      slots.default?.({ text: ctx.api.value.text }) ?? ctx.api.value.text,
+      slots.default?.({ text: ctx.api.value.text }) ?? renderCount(ctx.api.value),
     )
   },
 })

@@ -10,6 +10,60 @@
         "alert"
       ]
     },
+    "xh-badge-glyph-collapse": {
+      "content": "to{grid-template-columns:minmax(0,0fr)}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
+    "xh-badge-glyph-expand": {
+      "content": "from{grid-template-columns:minmax(0,0fr)}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
+    "xh-badge-roll-down": {
+      "content": "from{translate:0 -100%}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
+    "xh-badge-roll-down-out": {
+      "content": "to{translate:0 100%}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
+    "xh-badge-roll-up": {
+      "content": "from{translate:0 100%}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
+    "xh-badge-roll-up-out": {
+      "content": "to{translate:0 -100%}",
+      "definedIn": [
+        "badge.css"
+      ],
+      "consumers": [
+        "badge"
+      ]
+    },
     "xh-breathe": {
       "content": "0%,100%{opacity:0.5;scale:var(--xh-motion-scale-breathe)}42%{opacity:1;scale:1}",
       "definedIn": [

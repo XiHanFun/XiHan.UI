@@ -18203,6 +18203,80 @@
   animation: xh-pop-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
+/* —— 计数逐位 ——
+   数字各位排进 value，从高位到个位总是从左往右写；「+」是 value 后面的兄弟，随行向排，
+   rtl 下落在数字左边，与整串文字按双向规则排出来的样子一致 */
+.xh-scope-badge[data-part='value'] {
+  display: inline-flex;
+  direction: ltr;
+}
+
+/* 每一位是一格单列网格：多出一位、少掉一位时列宽在 0 与字宽之间补，旁边的位与角标宽度跟着走，不一下子跳 */
+.xh-scope-badge:is([data-part='glyph'], [data-part='suffix']) {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 换数滚动的那一段在块向裁住各位：滚进滚出的字不探出角标。只裁块向，行向照常 */
+.xh-scope-badge[data-part='indicator'][data-animating] {
+  overflow-y: clip;
+}
+
+/* 换数：连接层只给在动的位（数字的一位与「+」）写 data-roll。变了的位沿块向整格滚过去，
+   计数变大往上（新字从下面上来、旧字往上走），变小往下；数值角色 move / continuous。
+   减弱动效下连接层不滚，直接换字 */
+.xh-scope-badge[data-roll] {
+  animation: xh-badge-roll-up var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
+}
+
+.xh-scope-badge[data-roll='down'] {
+  animation-name: xh-badge-roll-down;
+}
+
+/* 换字：旧字写在伪元素上，排在新字的来路一侧，随整格一起滚走；读屏不念它 */
+.xh-scope-badge[data-from]::before {
+  content: attr(data-from) / '';
+  position: absolute;
+  inset-block-start: -100%;
+  inset-inline: 0;
+}
+
+.xh-scope-badge[data-from][data-roll='down']::before {
+  inset-block-start: 100%;
+}
+
+/* 从无到有、从有到无的那一位行向也裁住：列宽补到一半时，字不压到旁边那一位上 */
+.xh-scope-badge[data-presence] {
+  overflow-x: clip;
+}
+
+/* 多出来的一位（与出现的「+」）：列宽从 0 补到字宽，字从来路滚进来 */
+.xh-scope-badge[data-presence='enter'] {
+  animation-name: xh-badge-roll-up, xh-badge-glyph-expand;
+}
+
+.xh-scope-badge[data-presence='enter'][data-roll='down'] {
+  animation-name: xh-badge-roll-down, xh-badge-glyph-expand;
+}
+
+/* 少掉的一位（与收起的「+」）：字往去路滚走、列宽收回 0，停在收起处，播完由连接层摘掉 */
+.xh-scope-badge[data-presence='leave'] {
+  animation-name: xh-badge-roll-up-out, xh-badge-glyph-collapse;
+  animation-fill-mode: forwards;
+}
+
+.xh-scope-badge[data-presence='leave'][data-roll='down'] {
+  animation-name: xh-badge-roll-down-out, xh-badge-glyph-collapse;
+}
+
+/* 上面几条声明了 display，盖掉了 UA 的 [hidden]{display:none}，收起态在这里接回来 */
+.xh-scope-badge[data-part='value'][hidden],
+.xh-scope-badge[data-part='glyph'][hidden],
+.xh-scope-badge[data-part='suffix'][hidden] {
+  display: none;
+}
+
 /* —— 落点 —— */
 /* 用 inset 的逻辑属性写，rtl 下 end 自动落到左边；translate 让角标压住宿主的角。
    两个偏移槽微调角标离角多远：正值朝行内末端、块末端挪（rtl 下行内末端在左），
@@ -18277,6 +18351,43 @@
     border-color: currentColor;
     color: var(--xh-fg-default);
     box-shadow: none;
+  }
+}
+
+/* 换数：整格沿块向滚一格（另一端是整格的本来位置）；多出、少掉的一位列宽在 0 与字宽之间补 */
+@keyframes xh-badge-roll-up {
+  from {
+    translate: 0 100%;
+  }
+}
+
+@keyframes xh-badge-roll-down {
+  from {
+    translate: 0 -100%;
+  }
+}
+
+@keyframes xh-badge-roll-up-out {
+  to {
+    translate: 0 -100%;
+  }
+}
+
+@keyframes xh-badge-roll-down-out {
+  to {
+    translate: 0 100%;
+  }
+}
+
+@keyframes xh-badge-glyph-expand {
+  from {
+    grid-template-columns: minmax(0, 0fr);
+  }
+}
+
+@keyframes xh-badge-glyph-collapse {
+  to {
+    grid-template-columns: minmax(0, 0fr);
   }
 }
 

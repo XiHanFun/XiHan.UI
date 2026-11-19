@@ -6,9 +6,11 @@
 // 提供 badge 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { BadgePlacement, BadgeSchema } from '@xihan-ui/headless'
+import type { BadgeApi, BadgePlacement, BadgeSchema } from '@xihan-ui/headless'
+import type { KeyedChildren } from '../dom/generated-nodes'
 import { badgeAnatomy, badgeMachine, badgeMeta, connectBadge } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
+import { createGeneratedElement, hasAuthorContent, reconcile, setText } from '../dom/generated-nodes'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -31,6 +33,9 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {string} label - 读屏朗读该角标的方式，例如「3 条未读」
  * @csspart root - 锚点：被标记的对象放置在其中
  * @csspart indicator - 角标本身，绝对定位在 root 的某个角
+ * @csspart value - 计数的数字部分，各位排在里面；indicator 空着时由元素写入
+ * @csspart glyph - 数字的一位：换数时变了的那几位滚过去
+ * @csspart suffix - 超过上限时数字后面的「+」
  */
 export class XhBadgeElement extends XhElement {
   static override partContract = { anatomy: badgeAnatomy, meta: badgeMeta }
@@ -58,6 +63,9 @@ export class XhBadgeElement extends XhElement {
   /** 圆点呼吸：表达正在进行、给不出进度的状态。只在 dot 模式下生效。 */
   declare pulse?: boolean
   declare label?: string
+
+  /** 逐位写出的计数节点，按 key 复用。 */
+  readonly #keys: KeyedChildren = new WeakMap()
 
   private readonly ctrl = new MachineController<BadgeSchema>(
     this,
@@ -91,8 +99,29 @@ export class XhBadgeElement extends XhElement {
     if (!indicator)
       return
     this.spreader.spread(indicator, api.getIndicatorProps())
-    // 作者自己写了内容就不动它，空着才把算好的计数填进去
-    if (api.text && !indicator.textContent?.trim())
-      indicator.textContent = api.text
+    // 作者自己写了内容就不动它，空着才把算好的计数逐位写进去
+    if (!hasAuthorContent(indicator))
+      this.paintCount(indicator, api)
+  }
+
+  /** 计数逐位排出：数字各位排进 value，「+」排在它后面；换数时在动的位换一个节点，滚动从头播。 */
+  private paintCount(indicator: HTMLElement, api: BadgeApi): void {
+    const doc = indicator.ownerDocument
+    const paint = (reuse: Element | undefined, props: Record<string, unknown>, char?: string): Element => {
+      const node = (reuse as HTMLElement | undefined) ?? createGeneratedElement(doc, 'span')
+      this.spreader.spread(node, props)
+      if (char !== undefined)
+        setText(node, char)
+      return node
+    }
+    const { glyphs, suffix } = api
+    const top = glyphs.length || suffix ? ['value', ...(suffix ? [suffix.key] : [])] : []
+    reconcile(indicator, top, this.#keys, key => key, (key, reuse) => {
+      if (key !== 'value')
+        return paint(reuse, api.getSuffixProps(suffix!), suffix!.char)
+      const value = paint(reuse, api.getValueProps())
+      reconcile(value, glyphs, this.#keys, glyph => glyph.key, (glyph, node) => paint(node, api.getGlyphProps(glyph), glyph.char))
+      return value
+    })
   }
 }

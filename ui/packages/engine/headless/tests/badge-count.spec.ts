@@ -7,6 +7,7 @@ import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { badgeMachine, connectBadge } from '../src/badge'
+import { badgeGlyphs } from '../src/badge/badge.machine'
 
 type Dict = Record<string, unknown>
 
@@ -154,5 +155,125 @@ describe('出现与消失', () => {
 
   it('初始即清零：直接 hidden，不留退场', () => {
     expect(indicatorOf({ count: 0 }).hidden).toBe(true)
+  })
+})
+
+describe('逐位排出', () => {
+  it('不在换数时各位原地写，键只带位次；超过上限时「+」单独一位', () => {
+    expect(badgeGlyphs('12', null)).toEqual({ glyphs: [{ key: 'n1', char: '1' }, { key: 'n0', char: '2' }], suffix: null })
+    expect(badgeGlyphs('99+', null).suffix).toEqual({ key: 'suffix', char: '+' })
+  })
+
+  it('按个位对齐比较：变大多出的高位从无到有，个位换字', () => {
+    expect(badgeGlyphs('10', { from: '9', up: true, serial: 1 }).glyphs).toEqual([
+      { key: 'n1:1', char: '1', change: 'enter' },
+      { key: 'n0:1', char: '0', from: '9', change: 'swap' },
+    ])
+  })
+
+  it('变小少掉的高位从有到无，仍写原来的字等它滚走', () => {
+    expect(badgeGlyphs('9', { from: '10', up: false, serial: 2 }).glyphs).toEqual([
+      { key: 'n1:2', char: '1', change: 'leave' },
+      { key: 'n0:2', char: '9', from: '0', change: 'swap' },
+    ])
+  })
+
+  it('只有「+」进出时数字原地不动', () => {
+    const next = badgeGlyphs('99+', { from: '99', up: true, serial: 3 })
+    expect(next.glyphs.map(glyph => glyph.key)).toEqual(['n1', 'n0'])
+    expect(next.suffix).toEqual({ key: 'suffix:3', char: '+', change: 'enter' })
+    expect(badgeGlyphs('99', { from: '99+', up: false, serial: 4 }).suffix).toEqual({ key: 'suffix:4', char: '+', change: 'leave' })
+  })
+})
+
+describe('换数滚动', () => {
+  const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 0))
+
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  /** 按 connect 给的 id 挂一枚能播动画的角标；各位身上的滚动在 finish() 之前一直在播。 */
+  function stubRolling(badge: ReturnType<typeof makeBadge>): { node: HTMLElement, finish: () => void } {
+    const node = document.createElement('span')
+    node.id = String(badge.indicator().id)
+    document.body.append(node)
+    let finish!: () => void
+    const finished = new Promise<Animation>((resolve) => {
+      finish = () => resolve({} as Animation)
+    })
+    Object.defineProperty(node, 'getAnimations', { configurable: true, value: () => [] })
+    // 宿主按 connect 的输出把在动的位写进角标：这里只放一位，身上挂一段在播的滚动
+    const glyph = document.createElement('span')
+    glyph.dataset.roll = 'up'
+    Object.defineProperty(glyph, 'getAnimations', { configurable: true, value: () => [{ finished }] })
+    node.append(glyph)
+    return { node, finish }
+  }
+
+  it('宿主播不了动画（jsdom、SSR）时直接换字，不进滚动', () => {
+    const badge = makeBadge({ count: 3 })
+    badge.setProps({ count: 4 })
+    expect(badge.indicator()['data-animating']).toBeUndefined()
+    expect(badge.api().glyphs).toEqual([{ key: 'n0', char: '4' }])
+  })
+
+  it('一直露着时换数：变了的位按方向滚，播完各位回到不动的写法', async () => {
+    const badge = makeBadge({ count: 9 })
+    const rolling = stubRolling(badge)
+    badge.setProps({ count: 10 })
+    expect(badge.indicator()['data-animating']).toBe('')
+    const api = badge.api()
+    expect(api.glyphs.map(glyph => glyph.change)).toEqual(['enter', 'swap'])
+    expect(api.getGlyphProps(api.glyphs[1]!)).toMatchObject({ 'data-presence': undefined, 'data-roll': 'up', 'data-from': '9' })
+
+    await settle()
+    expect(badge.indicator()['data-animating']).toBe('')
+    rolling.finish()
+    await settle()
+    expect(badge.indicator()['data-animating']).toBeUndefined()
+    expect(badge.api().glyphs).toEqual([{ key: 'n1', char: '1' }, { key: 'n0', char: '0' }])
+  })
+
+  it('变小往下滚，少掉的那一位不再念', () => {
+    const badge = makeBadge({ count: 10 })
+    stubRolling(badge)
+    badge.setProps({ count: 9 })
+    const api = badge.api()
+    expect(api.getGlyphProps(api.glyphs[0]!)).toMatchObject({ 'data-presence': 'leave', 'data-roll': 'down', 'aria-hidden': true })
+  })
+
+  it('接连换数时每一轮换一批键；上一轮迟到的「播完」不作数', async () => {
+    const badge = makeBadge({ count: 3 })
+    const first = stubRolling(badge)
+    badge.setProps({ count: 4 })
+    expect(badge.api().glyphs[0]!.key).toBe('n0:1')
+    badge.setProps({ count: 5 })
+    expect(badge.api().glyphs[0]).toEqual({ key: 'n0:2', char: '5', from: '4', change: 'swap' })
+    first.finish()
+    await settle()
+    expect(badge.indicator()['data-animating']).toBeUndefined()
+  })
+
+  it('减弱动效下直接换字', () => {
+    document.documentElement.dataset.motion = 'reduce'
+    try {
+      const badge = makeBadge({ count: 3 })
+      stubRolling(badge)
+      badge.setProps({ count: 4 })
+      expect(badge.indicator()['data-animating']).toBeUndefined()
+    }
+    finally {
+      delete document.documentElement.dataset.motion
+    }
+  })
+
+  it('出现与清零不滚：交给角标自己的进退场', () => {
+    const badge = makeBadge({ count: 0 })
+    stubRolling(badge)
+    badge.setProps({ count: 2 })
+    expect(badge.indicator()['data-animating']).toBeUndefined()
+    badge.setProps({ count: 0 })
+    expect(badge.indicator()['data-animating']).toBeUndefined()
   })
 })

@@ -26,6 +26,7 @@ const DOT = '当前点伸长：部件只有几像素大，重排范围只有它�
 const DISCLOSURE = '披露内容的高度：grid-template-rows 0fr → 1fr 是唯一能过渡到内容真实高度的写法，内缩随之同步'
 const FLOATING_PANEL_MAXIMIZE = '浮动面板进出最大化：定位层是 position: fixed 的独立框、按内联的 left / top / width / height 摆放，补过去不推动其他元素；只在进出最大化那一段挂，拖动与改尺寸照旧跟手'
 const TOUR_STEP = '漫游换步：聚光框与气泡定位层都是 position: fixed 的独立框、按内联的坐标摆放，不在文档流里，补过去不推动其他元素；只在换步那一段挂（data-animating），两者同一段时长一起滑，页面滚动与视口缩放时照旧跟手'
+const BADGE_GLYPH = '角标换数时多出、少掉的一位：一格单列网格，列宽 0fr ↔ 1fr 是唯一能补到字形真实宽度的写法；角标绝对定位，重排只在它自己里面，旁边的位与角标宽度跟着走才不一下子跳'
 const CITATION_PREVIEW = '引用预览的披露：预览本身就是 surface、里面并排几段作者内容，套不上单格 0fr → 1fr，按连接层量下的内容区高度长到、收回，内缩、描边与它前面那道间距随之同步'
 
 /** 允许做动画的布局属性，值写理由。 */
@@ -83,6 +84,8 @@ const LAYOUT_EXCEPTIONS = {
   'xh-disclosure-collapse:grid-template-rows': DISCLOSURE,
   'xh-disclosure-collapse:padding-block-start': DISCLOSURE,
   'xh-disclosure-collapse:padding-block-end': DISCLOSURE,
+  'xh-badge-glyph-expand:grid-template-columns': BADGE_GLYPH,
+  'xh-badge-glyph-collapse:grid-template-columns': BADGE_GLYPH,
 }
 
 /** 按顶层逗号切项。 */

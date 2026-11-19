@@ -6,14 +6,14 @@
 // 提供 badge 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { BadgeApi, BadgeSchema } from './badge.types'
+import type { BadgeApi, BadgeGlyph, BadgeSchema } from './badge.types'
 import { dataAttr } from '@xihan-ui/core'
 import { badgeAnatomy } from './badge.anatomy'
-import { badgeText, badgeVisible } from './badge.machine'
+import { badgeGlyphs, badgeText, badgeVisible } from './badge.machine'
 
 const parts = badgeAnatomy.build()
 
-// 显不显示、写什么数字，都是由 props 直接算出来的；机器只管出现与消失的进退场。
+// 显不显示、写什么数字，都是由 props 直接算出来的；机器只管出现与消失的进退场，以及换数那一轮怎么滚。
 export function connectBadge<T extends PropTypes>(
   service: Service<BadgeSchema>,
   normalize: NormalizeProps<T>,
@@ -28,10 +28,22 @@ export function connectBadge<T extends PropTypes>(
   // 清零后先播完退场才藏起：这几帧里照清零前那一版写
   const exiting = !visible && context.get('rendered')
   const text = visible ? badgeText({ count: prop('count'), dot, max: prop('max') }) : context.get('shownText')
+  const roll = context.get('roll')
+  const { glyphs, suffix } = badgeGlyphs(text, roll)
+
+  // 在动的位：皮肤按方向选滚上去还是滚下来，换字的那一位另把旧字交给伪元素；滚走的那一位不再念
+  const glyphAttrs = (glyph: BadgeGlyph): Record<string, string | boolean | undefined> => ({
+    'data-presence': glyph.change === 'swap' ? undefined : glyph.change,
+    'data-roll': glyph.change && roll ? (roll.up ? 'up' : 'down') : undefined,
+    'data-from': glyph.from,
+    'aria-hidden': glyph.change === 'leave' || undefined,
+  })
 
   return {
     visible,
     text,
+    glyphs,
+    suffix,
     /**
      * 锚点。被标记的那个东西放进它里面——角标是挂在别的元素角上的一枚标记，
      * 不是一枚可以单独摆的药丸；行内的状态药丸请用 tag。
@@ -56,12 +68,28 @@ export function connectBadge<T extends PropTypes>(
       'data-dot': dataAttr(dot),
       // 呼吸只给圆点：数字角标的明暗起伏会压低数字的对比度
       'data-pulse': dataAttr(dot && prop('pulse')),
+      // 换数滚动的那一段：皮肤在块向裁住各位，滚出去的字不探出角标
+      'data-animating': dataAttr(roll != null),
       // 算出来是空的就整枚收起，作者不必自己判；退场播完才写
       'hidden': (!visible && !exiting) || undefined,
       // 光念数字听不出这是什么，宿主给了整句就用整句
       'aria-label': prop('label'),
       // 角标报的是宿主的状态而不是自己
       'role': prop('label') ? 'status' : undefined,
+    }),
+
+    getValueProps: () => normalize.element({
+      ...parts.value.attrs,
+    }),
+
+    getGlyphProps: glyph => normalize.element({
+      ...parts.glyph.attrs,
+      ...glyphAttrs(glyph),
+    }),
+
+    getSuffixProps: suffix => normalize.element({
+      ...parts.suffix.attrs,
+      ...glyphAttrs(suffix),
     }),
   }
 }

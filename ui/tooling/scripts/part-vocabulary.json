@@ -631,6 +631,7 @@
       "diff-view"
     ],
     "glyph": [
+      "badge",
       "icon"
     ],
     "gradient": [
@@ -1868,6 +1869,7 @@
       "question-flow"
     ],
     "suffix": [
+      "badge",
       "button",
       "number-field",
       "statistic",
@@ -2132,6 +2134,7 @@
       "message-feed"
     ],
     "value": [
+      "badge",
       "descriptions",
       "statistic"
     ],

@@ -43,6 +43,34 @@ export interface BadgeProps {
   label?: string
 }
 
+/**
+ * 计数里的一位（数字的一位，或超过上限时末尾的「+」）。计数逐位排出，换数时变了的那几位滚过去，
+ * 没变的原地不动。
+ */
+export interface BadgeGlyph {
+  /**
+   * 节点复用的键：数字按从个位起的位次，「+」是 suffix。这一轮在动的位另带轮次：
+   * 下一轮再换数时它换一个节点，滚动从头播
+   */
+  key: string
+  /** 这一位写的字。从有到无的那一位写它原来的字：滚走的同时收起宽度，播完才摘掉。 */
+  char: string
+  /** 滚走的旧字：前后两版都有这一位、字变了时才有。 */
+  from?: string
+  /** 这一轮怎么动：enter 从无到有（多出一位、出现「+」）、leave 从有到无、swap 换字；不动的位没有。 */
+  change?: 'enter' | 'leave' | 'swap'
+}
+
+/** 正在播的那一轮换数。 */
+export interface BadgeRoll {
+  /** 换数之前写的那一版计数文本。 */
+  from: string
+  /** 计数变大往上滚（新字从下面上来），变小往下滚。 */
+  up: boolean
+  /** 第几轮：在动的位按它换节点，接连换数时每一轮都从头播。 */
+  serial: number
+}
+
 export interface BadgeSchema extends MachineSchema {
   props: BadgeProps
   context: {
@@ -57,6 +85,10 @@ export interface BadgeSchema extends MachineSchema {
     moved: boolean
     /** 最后一次露面时的计数文本：退场那几帧照它写，不随计数清零一起变空。 */
     shownText: string
+    /** 最后一次露面时的计数：换数时与新计数比大小，定往哪个方向滚。 */
+    shownCount: number | undefined
+    /** 露面期间换了数、滚动还没播完的那一轮；播完清空，各位回到不动的写法。 */
+    roll: BadgeRoll | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
@@ -64,9 +96,11 @@ export interface BadgeSchema extends MachineSchema {
   event:
     /** indicator 留着与否（退场动画播完才报 false）。 */
     | { type: 'INDICATOR.RENDERED', rendered: boolean }
+    /** 第 serial 轮换数的滚动播完了。 */
+    | { type: 'ROLL.SETTLED', serial: number }
   tag: never
   guard: never
-  action: 'syncShown' | 'setRendered'
+  action: 'syncShown' | 'setRendered' | 'settleRoll'
   effect: 'trackIndicatorPresence'
 }
 
@@ -75,10 +109,20 @@ export interface BadgeApi<T extends PropTypes = PropTypes> {
   visible: boolean
   /** 计算后的显示文本：超过 max 时显示为「99+」；dot 模式与无 count 时为空串。 */
   text: string
+  /** 计数的数字部分，高位在前逐位排出；dot 模式与无 count 时为空。 */
+  glyphs: BadgeGlyph[]
+  /** 超过上限时数字后面的「+」；没超过、也没在滚走时为 null。 */
+  suffix: BadgeGlyph | null
   /** 锚点：被标记的对象（按钮、头像、标签页）放置在其中。 */
   getRootProps: () => T['element']
   /** 角标本身，绝对定位在 root 的某个角。 */
   getIndicatorProps: () => T['element']
+  /** 数字部分：各位排在里面，rtl 下仍从左往右，「+」随行向排在它后面。 */
+  getValueProps: () => T['element']
+  /** 数字的一位。 */
+  getGlyphProps: (glyph: BadgeGlyph) => T['element']
+  /** 超过上限时的「+」。 */
+  getSuffixProps: (suffix: BadgeGlyph) => T['element']
 }
 
 /** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */

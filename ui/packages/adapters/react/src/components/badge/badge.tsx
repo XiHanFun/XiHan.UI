@@ -6,7 +6,7 @@
 // 提供 badge 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { BadgePlacement, BadgeProps } from '@xihan-ui/headless'
+import type { BadgeApi, BadgePlacement, BadgeProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { badgeMachine, connectBadge } from '@xihan-ui/headless'
@@ -97,11 +97,25 @@ export interface XhBadgeIndicatorProps extends Omit<ComponentPropsWithRef<'span'
   children?: SlotChildren<BadgeIndicatorSlotProps>
 }
 
-/** 角标本身，绝对定位在锚点的某个角上。未提供内容时使用计算得出的计数文本。 */
+/** 计数逐位排出：数字各位排进 value，「+」排在它后面；换数时变了的那几位由皮肤滚过去。 */
+function renderCount(api: BadgeApi): ReactNode {
+  if (!api.glyphs.length && !api.suffix)
+    return null
+  return (
+    <>
+      <span {...api.getValueProps()}>
+        {api.glyphs.map(glyph => <span key={glyph.key} {...api.getGlyphProps(glyph)}>{glyph.char}</span>)}
+      </span>
+      {api.suffix && <span key={api.suffix.key} {...api.getSuffixProps(api.suffix)}>{api.suffix.char}</span>}
+    </>
+  )
+}
+
+/** 角标本身，绝对定位在锚点的某个角上。未提供内容时逐位写出计算得出的计数。 */
 export function XhBadgeIndicator({ children, ...rest }: XhBadgeIndicatorProps): ReactNode {
   const ctx = useBadgeContext()
   const text = ctx.api.text
-  const body = children == null ? text : renderSlot(children, { text })
+  const body = children == null ? renderCount(ctx.api) : renderSlot(children, { text })
   return (
     <span {...mergeReactProps(ctx.api.getIndicatorProps(), rest)}>
       {body}

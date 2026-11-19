@@ -7,4 +7,4 @@
 
 import { createAnatomy } from '@xihan-ui/core'
 
-export const badgeAnatomy = createAnatomy('badge', ['root', 'indicator'])
+export const badgeAnatomy = createAnatomy('badge', ['root', 'indicator', 'value', 'glyph', 'suffix'])

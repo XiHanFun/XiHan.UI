@@ -2583,6 +2583,18 @@
             {
               "description": "角标本身，绝对定位在 root 的某个角",
               "name": "indicator"
+            },
+            {
+              "description": "计数的数字部分，各位排在里面；indicator 空着时由元素写入",
+              "name": "value"
+            },
+            {
+              "description": "数字的一位：换数时变了的那几位滚过去",
+              "name": "glyph"
+            },
+            {
+              "description": "超过上限时数字后面的「+」",
+              "name": "suffix"
             }
           ],
           "members": [
@@ -2679,6 +2691,17 @@
             },
             {
               "kind": "field",
+              "name": "#keys",
+              "privacy": "private",
+              "type": {
+                "text": "KeyedChildren"
+              },
+              "readonly": true,
+              "default": "new WeakMap()",
+              "description": "逐位写出的计数节点，按 key 复用。"
+            },
+            {
+              "kind": "field",
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
@@ -2703,6 +2726,31 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "paintCount",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "indicator",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "api",
+                  "type": {
+                    "text": "BadgeApi"
+                  }
+                }
+              ],
+              "description": "计数逐位排出：数字各位排进 value，「+」排在它后面；换数时在动的位换一个节点，滚动从头播。"
             }
           ],
           "attributes": [
