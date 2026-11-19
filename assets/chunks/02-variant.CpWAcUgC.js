@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CL98513N.js";import{n as t,r as n}from"./tag.BP87szvX.js";var r=e(),i=[`solid`,`subtle`,`outline`];function a(){return(0,r.jsx)(`div`,{style:{display:`flex`,flexWrap:`wrap`,alignItems:`center`,gap:`8px`},children:i.map(e=>(0,r.jsx)(n,{variant:e,tone:`brand`,children:(0,r.jsx)(t,{children:e})},e))})}export{a as default};

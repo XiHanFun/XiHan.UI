@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CL98513N.js";import{t}from"./progress.C4ps1CI7.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{width:`100%`,display:`grid`,gap:`12px`},children:[(0,n.jsx)(t,{value:3,max:8}),(0,n.jsx)(t,{value:8,max:8})]})}export{r as default};

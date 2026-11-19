@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.CL98513N.js";import{t}from"./checkbox.CBd8NSBM.js";var n=e();function r(){return(0,n.jsx)(t,{invalid:!0,required:!0,children:`我同意服务条款`})}export{r as default};

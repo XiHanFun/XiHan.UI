@@ -194,7 +194,7 @@ onBeforeUnmount(() => player.dispose());
 
 ## 声音是配方，不是文件
 
-一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
+一段声音是一份可 JSON 序列化的声明式配方（`SoundSpec`）：若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出；要循环播放的再带一个循环周期 `period`。
 
 ```ts
 import type { SoundSpec } from "@xihan-ui/sound";
@@ -521,9 +521,11 @@ onBeforeUnmount(() => player.dispose());
 
 ## 语义名与主题
 
-主题把语义名映射到配方。内置 14 个语义名：
+主题把语义名映射到配方。内置 16 个语义名：
 
-`click` `tap` `toggle-on` `toggle-off` `open` `close` `success` `error` `warning` `info` `notification` `send` `receive` `complete`
+`click` `tap` `toggle-on` `toggle-off` `open` `close` `success` `error` `warning` `info` `notification` `send` `receive` `complete` `ring` `ringback`
+
+其中 `ring`（来电）与 `ringback`（回铃，等对方接听）是给[循环播放](#循环播放)用的长音，配方带循环周期；其余都是一次性的提示音。`receive`（收到消息）与 `notification`（站内通知）在每套主题里都刻意拉开：同一个界面里两者常常前后脚到，得一听就分得出来。
 
 内置三套主题，每套都覆盖全部语义名：
 
@@ -564,6 +566,115 @@ sound.setVolume(0.3);
 sound.setEnabled(false);
 sound.dispose();
 ```
+
+## 循环播放
+
+来电铃声、回铃这类声音要一直响到事情有结果（接听、挂断、超时），用 `loop`：返回一个句柄，调 `stop` 才停。
+
+```ts
+const ringing = sound.loop("ring");
+// 接听、拒接、对方取消或响铃到点时
+ringing.stop();
+```
+
+```vue
+<script setup lang="ts">
+import type { SoundLoop } from "@xihan-ui/sound";
+import { createSoundPlayer } from "@xihan-ui/sound";
+import { XhButton } from "@xihan-ui/vue";
+import { onBeforeUnmount, ref } from "vue";
+
+const names = ["ring", "ringback"] as const;
+
+const player = createSoundPlayer();
+const playing = ref<string | null>(null);
+let current: SoundLoop | null = null;
+
+function toggle(name: string): void {
+  current?.stop();
+  current = null;
+  if (playing.value === name) {
+    playing.value = null;
+    return;
+  }
+  current = player.loop(name);
+  playing.value = name;
+}
+
+onBeforeUnmount(() => player.dispose());
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhButton
+      v-for="name in names"
+      :key="name"
+      :variant="playing === name ? 'solid' : 'outline'"
+      :aria-pressed="playing === name"
+      @click="toggle(name)"
+    >
+      {{ playing === name ? `停下 ${name}` : name }}
+    </XhButton>
+  </div>
+</template>
+```
+
+```html
+<div id="sound-loop-names" style="display: flex; flex-wrap: wrap; gap: 8px"></div>
+
+<script type="module">
+  import { createSoundPlayer } from "@xihan-ui/sound";
+
+  const player = createSoundPlayer();
+  const buttons = new Map();
+  let playing = null;
+  let current = null;
+
+  function render() {
+    for (const [name, element] of buttons) {
+      const on = playing === name;
+      element.setAttribute("variant", on ? "solid" : "outline");
+      const root = element.querySelector("[data-xh-part='root']");
+      root.textContent = on ? `停下 ${name}` : name;
+      root.setAttribute("aria-pressed", String(on));
+    }
+  }
+
+  function toggle(name) {
+    current?.stop();
+    current = null;
+    playing = playing === name ? null : name;
+    if (playing)
+      current = player.loop(name);
+    render();
+  }
+
+  document.getElementById("sound-loop-names").append(
+    ...["ring", "ringback"].map((name) => {
+      const button = document.createElement("xh-button");
+      button.setAttribute("variant", "outline");
+      button.innerHTML = `<button data-xh-part="root" aria-pressed="false">${name}</button>`;
+      button.addEventListener("click", () => toggle(name));
+      buttons.set(name, button);
+      return button;
+    }),
+  );
+</script>
+```
+
+一遍接一遍的间隔取配方的 `period`（秒，相邻两遍起点的距离，长出配方时长的部分是静音）；没写 `period` 即首尾相接。
+
+```ts
+const ring: SoundSpec = {
+  layers: [/* 一遍约 2 秒的铃声 */],
+  period: 2.9, // 每 2.9 秒响一遍，中间歇 0.9 秒
+};
+```
+
+- 每一遍提前在音频时钟上排好，计时器只负责往后续排：后台页签的计时器被浏览器放慢到一秒一次也不断档，页面最小化时来电照样连着响；
+- `stop` 让正在响的那一遍淡出，排好还没响的几遍不再出声；
+- 上下文被挂起时不排，等恢复了从头响，不会把错过的几遍一口气补出来；
+- `setEnabled(false)` 与 `dispose()` 停下正在响的全部循环；循环不参与同名节流。
 
 音频上下文惰性创建：首次实际播放时才创建，从不发声的页面不为它付出任何代价。SSR 或没有 Web Audio 的环境中所有调用静默退化为空操作，不需要条件守卫。
 
@@ -736,7 +847,7 @@ flat(880); // 恒定值（音高 880Hz）
 glide(440, 880, 0.12); // 滑音：120ms 从 440 滑到 880
 ```
 
-层可以叠加：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加少量 highpass 白噪。配方可用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 5 kB。
+层可以叠加：琶音是几层错开 `delay` 的正弦，风声是一层扫频 lowpass 的噪声，按键是一层三角波加少量 highpass 白噪。配方可用的原料：振荡器四种波形、白噪与粉噪、双二阶滤波五型（`lowpass` `highpass` `bandpass` `notch` `peaking`）、共享混响总线，整包不到 6 kB。
 
 ## 相关
 

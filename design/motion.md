@@ -178,6 +178,7 @@
 - 进度类填充（Progress、LoadingBar、FileUpload 进度）不动 `inline-size`：填充铺满轨道、按比例 `translate`，由轨道裁掉，只走合成。倒计时条自己就是填充，用 `clip-path` 裁切收起；减弱动效下按秒分段。
 - 不定进度以固定宽度的一段做 `translate` 往复。
 - 数值补间（NumberAnimation）的时长由属性给出，减弱动效下直接落到终值。
+- 角标（Badge）露面期间换数：计数逐位排出，变了的那几位整格沿块向滚一格（变大往上、变小往下），没变的位不动；多出、少掉的一位（含「+」）列宽 `grid-template-columns` 在 0fr 与 1fr 之间补，角标宽度跟着伸缩，滚走的那一位播完才摘掉。`move` / `continuous`，减弱动效下直接换字。
 - 滑动指示器（Tabs、单选组 segmented 形态的滑块、Anchor、NavigationMenu）取当前项相对列表容器的 `offset*` 排布位：不用 `getBoundingClientRect`，祖先的进场缩放会让测量值失真。位置用 `translate`，尺寸用 `inline-size` / `block-size`。Tabs 的标签带滚动已经占了 `translate`，指示条的位置叠在 `transform` 上，两者互不覆盖。
 
 ## 布局动画例外与 will-change
@@ -195,6 +196,7 @@
 | Slider 拇指的 `inset-inline-start` / `inset-block-end` 与区间的长度 | 位置由连接层写成比例；只在跳位、键盘与程序改值时过渡，跟手时撤掉 |
 | 指示器的 `inline-size` / `block-size` | 绝对定位的独立小元素，不影响其他元素 |
 | Switch 滑块按下伸长、Carousel 当前指示点伸长 | 部件很小，影响范围只有自己 |
+| Badge 换数时多出、少掉的那一位的列宽 | 列宽 0fr ↔ 1fr 是补到字形真实宽度的唯一写法；角标绝对定位，重排只在它自己里面 |
 | Layout 侧栏折叠 | 必须让出内容区宽度 |
 | Splitter 面板折叠与展开 | 必须让出相邻面板的空间；拖拽与步进跟手，不带过渡 |
 | QuestionFlow 视口高度、Notification 叠摞高度 | 容器必须随内容增减高度 |
