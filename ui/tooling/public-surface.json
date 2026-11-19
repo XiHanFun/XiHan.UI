@@ -6563,8 +6563,10 @@
       "BackTopTranslations",
       "BackTopVisibilityChangeDetails",
       "BadgeApi",
+      "BadgeGlyph",
       "BadgePlacement",
       "BadgeProps",
+      "BadgeRoll",
       "BadgeSchema",
       "BadgeTranslations",
       "BarCodeApi",
@@ -11622,8 +11624,11 @@
       "trigger"
     ],
     "badge": [
+      "glyph",
       "indicator",
-      "root"
+      "root",
+      "suffix",
+      "value"
     ],
     "bar-code": [
       "root"
@@ -15997,6 +16002,7 @@
     "data-form-path",
     "data-format",
     "data-frame",
+    "data-from",
     "data-frozen",
     "data-frozen-actions",
     "data-frozen-edge",
@@ -16093,6 +16099,7 @@
     "data-popout",
     "data-position",
     "data-positioned",
+    "data-presence",
     "data-presentation",
     "data-preset",
     "data-pressed",
@@ -16112,6 +16119,7 @@
     "data-reveal-mode",
     "data-revealed",
     "data-role",
+    "data-roll",
     "data-rotate",
     "data-row",
     "data-row-gap",
@@ -21881,6 +21889,12 @@
   ],
   "keyframes": [
     "xh-alert-collapse",
+    "xh-badge-glyph-collapse",
+    "xh-badge-glyph-expand",
+    "xh-badge-roll-down",
+    "xh-badge-roll-down-out",
+    "xh-badge-roll-up",
+    "xh-badge-roll-up-out",
     "xh-breathe",
     "xh-breathe-halo",
     "xh-carousel-indicator-progress",
