@@ -7,6 +7,7 @@ import { useData } from "vitepress";
 import {
   computed,
   defineAsyncComponent,
+  onMounted,
   onScopeDispose,
   ref,
   watchEffect,
@@ -205,10 +206,16 @@ watchPostEffect(() => {
 });
 
 const { isDark } = useData();
+const mounted = ref(false);
+
+// 首次水合沿用预渲染的浅色，挂载后再同步浏览器主题，避免属性不一致留在 DOM 上。
+onMounted(() => {
+  mounted.value = true;
+});
 
 // 工具条选的档位打在舞台上而不是 html 上：令牌的各档选择器都是 :where([data-*])，
 // 落在任意容器上即对这棵子树生效，页面其余部分不受影响
-const stageBindings = computed(() => stageAttrs(isDark.value));
+const stageBindings = computed(() => stageAttrs(mounted.value && isDark.value));
 // 主题轴离开「跟随站点」时舞台自备底色，否则深浅两套颜色会撞在一起
 const themed = computed(() => stageTheme.value !== "site");
 
