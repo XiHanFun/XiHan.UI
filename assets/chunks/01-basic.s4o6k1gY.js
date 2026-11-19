@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.CL98513N.js";import{t}from"./spinner.DQs_wl-e.js";var n=e();function r(){return(0,n.jsx)(t,{label:`加载中`})}export{r as default};

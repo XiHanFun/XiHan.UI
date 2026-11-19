@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.CL98513N.js";import{o as t,r as n,t as r}from"./statistic.BVgu6ERN.js";var i=e();function a(){return(0,i.jsxs)(n,{children:[(0,i.jsx)(r,{children:`本月新增用户`}),(0,i.jsx)(t,{children:`12,480`})]})}export{a as default};
