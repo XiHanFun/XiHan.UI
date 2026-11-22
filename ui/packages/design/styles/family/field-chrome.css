@@ -234,6 +234,16 @@
     resize: none;
   }
 
+  [data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout='textarea']:not([data-xh-field-auto-size])) {
+    overflow: hidden;
+    resize: vertical;
+  }
+
+  [data-xh-field-chrome] [data-xh-field-input][data-xh-field-layout='textarea'] {
+    align-self: stretch;
+    resize: none;
+  }
+
   [data-xh-field-input]:autofill {
     box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, var(--xh-bg-canvas));
     -webkit-text-fill-color: var(--xh-field-autofill-fg, var(--xh-fg-default));

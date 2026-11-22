@@ -76,7 +76,9 @@ describe('field Chrome 尺寸与布局', () => {
     const md = tokenLength('--xh-control-h-md')
     expect(single!.getBoundingClientRect().height).toBe(md)
     expect(textarea!.getBoundingClientRect().height).toBeGreaterThanOrEqual(md)
-    expect(getComputedStyle(inputs[1]!).resize).toBe('vertical')
+    // 拖拽角归外壳，落在外框的角上；textarea 自己不出
+    expect(getComputedStyle(textarea!).resize).toBe('vertical')
+    expect(getComputedStyle(inputs[1]!).resize).toBe('none')
   })
 
   it('multi-tag 为家族级可换行高度，不要求消费组件复制布局', () => {

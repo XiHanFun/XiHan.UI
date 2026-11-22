@@ -403,6 +403,10 @@ export function compileFieldChromeRecipe(source) {
     '    resize: vertical;',
   ].join('\n'))
   rule('[data-xh-field-input][data-xh-field-layout=\'textarea\'][data-xh-field-auto-size]', '    overflow: hidden;\n    resize: none;')
+  // 多行宿主套在外壳里时拖拽角归外壳：原生拖拽角画在 textarea 自己的盒角，外壳的行内衬与排在盒尾的清除钮、后缀
+  // 会把它挤离外框的角。外壳纵向可拉、textarea 撑满外壳的高；自动高度的不出拖拽角。外壳自己就是 textarea 时不经这两条
+  rule('[data-xh-field-chrome]:has([data-xh-field-input][data-xh-field-layout=\'textarea\']:not([data-xh-field-auto-size]))', '    overflow: hidden;\n    resize: vertical;')
+  rule('[data-xh-field-chrome] [data-xh-field-input][data-xh-field-layout=\'textarea\']', '    align-self: stretch;\n    resize: none;')
   rule('[data-xh-field-input]:autofill', [
     `    box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, ${source.nativeInput.autofillBackground});`,
     `    -webkit-text-fill-color: var(--xh-field-autofill-fg, ${source.nativeInput.autofillForeground});`,
