@@ -52972,7 +52972,9 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 挖洞的高亮框。位置与尺寸由连接层量出来写进内联 style（position/inset/尺寸那几条轴归它），
    这里只管长相：一圈描边 + 一片铺满视口的投影当暗幕，中间那块因此是亮的——
-   这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
+   这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了
+   暗幕的扩散取 200vmax：圆角随扩散一起放大，圆形、胶囊目标的暗幕整个是以目标为心的圆，
+   要盖到视口里离它最远的角（至多 √2 倍 vmax），进场缩小的那一段也不漏 */
 .xh-scope-tour[data-part='spotlight'] {
   --xh-_tour-spotlight-shroud: transparent;
   --xh-_tour-spotlight-radius: var(--xh-shape-surface);
@@ -52985,7 +52987,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   );
   box-shadow:
     0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-_tour-spotlight-ring, var(--xh-ring-focus))),
-    0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
+    0 0 0 200vmax var(--xh-_tour-spotlight-shroud);
 }
 
 /* 换步那一段（data-animating）：聚光框与气泡同一段时长、同一条曲线一起滑到下一个目标，视线跟得上；

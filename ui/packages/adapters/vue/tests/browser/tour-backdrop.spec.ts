@@ -97,3 +97,47 @@ describe('tour 遮罩让位', () => {
     expect(getComputedStyle(spotlight).getPropertyValue('--xh-_tour-spotlight-shroud').trim()).toBe('transparent')
   })
 })
+
+/** 暗幕那层投影的扩散距离（px）：box-shadow 的最后一层是暗幕，扩散是它的最后一个长度 */
+function shroudSpread(spotlight: HTMLElement): number {
+  const layers = getComputedStyle(spotlight).boxShadow.split(/,(?![^(]*\))/)
+  const lengths = layers.at(-1)!.match(/-?[\d.]+px/g) ?? []
+  return Number.parseFloat(lengths.at(-1) ?? '0')
+}
+
+describe('tour 暗幕铺满视口', () => {
+  // 高亮框同步目标的圆角：圆形目标的圆角随扩散一起放大，暗幕整个变成以目标为圆心的圆，
+  // 半径不够时离目标最远的视口角会漏出一块没压暗的页面
+  it('圆形目标贴在视口一角：暗幕的圆盖得到对角最远的那个角', async () => {
+    host = document.createElement('div')
+    host.innerHTML = '<button id="tour-round-target" style="position: fixed; inset-block-start: 8px; inset-inline-end: 8px; inline-size: 36px; block-size: 36px; border-radius: 9999px">目标</button>'
+    document.body.append(host)
+    app = createApp({
+      setup: () => () => h(XhTourRoot, {
+        open: true,
+        steps: [{ id: 'a', target: '#tour-round-target', title: '圆形目标' }],
+      }, {
+        default: () => [
+          h(XhTourBackdrop),
+          h(XhTourSpotlight),
+          h(XhTourPositioner, null, () => [h(XhTourContent, null, () => [h(XhTourTitle)])]),
+        ],
+      }),
+    })
+    app.mount(host)
+    await settle()
+
+    const spotlight = part('spotlight')
+    expect(spotlight.hasAttribute('data-dimmed'), '锚定步应由高亮框压暗').toBe(true)
+    const rect = spotlight.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    const farthest = Math.max(
+      ...[[0, 0], [innerWidth, 0], [0, innerHeight], [innerWidth, innerHeight]]
+        .map(([x, y]) => Math.hypot(x! - centerX, y! - centerY)),
+    )
+    const covered = Math.min(rect.width, rect.height) / 2 + shroudSpread(spotlight)
+
+    expect(covered, `暗幕半径 ${covered}px 要盖到 ${farthest}px 外的视口角`).toBeGreaterThanOrEqual(farthest)
+  })
+})
