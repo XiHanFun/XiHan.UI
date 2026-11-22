@@ -1267,6 +1267,20 @@ describe('吸附列的偏移与外观开关', () => {
     const name = h.api().getColumnHeaderProps({ value: 'name' }) as Record<string, unknown>
     expect(name['data-frozen']).toBe('start')
     expect((name.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
+    // 这一侧的总宽同样算不出，根上不留滚动内距
+    const root = h.api().getRootProps() as Record<string, unknown>
+    expect((root.style as Record<string, unknown> | undefined)?.['--xh-_table-frozen-start']).toBeUndefined()
+  })
+
+  it('两侧冻结列的总宽写在根上，滚动容器据此留出滚动内距；没有冻结列时根上不带 style', () => {
+    const root = mount({ columns: STICKY_COLUMNS }).api().getRootProps() as Record<string, unknown>
+    expect(root.style).toEqual({
+      '--xh-_table-frozen-start': '200px',
+      '--xh-_table-frozen-end': '120px',
+    })
+
+    const plain = mount({ columns: [{ id: 'name', width: 160 }, { id: 'size' }] }).api().getRootProps() as Record<string, unknown>
+    expect(plain.style).toBeUndefined()
   })
 
   it('斑马纹 / 竖线两个开关与形态轴落到 root 上', () => {

@@ -385,6 +385,9 @@ export function connectTable<T extends PropTypes>(
   const stickySideOf = (def: TableColumnBase | undefined): 'start' | 'end' | undefined =>
     def?.sticky === true ? 'start' : def?.sticky === 'start' || def?.sticky === 'end' ? def.sticky : undefined
   const stickyInset = new Map<string, number>()
+  // 两侧冻结列的总宽：滚动容器按它留出滚动内距，滚进来的格子落在冻结列之外；有一列宽度还没量到时那一侧先不留
+  let frozenStart: number | null = 0
+  let frozenEnd: number | null = 0
   {
     let acc: number | null = 0
     for (const def of columns) {
@@ -394,6 +397,7 @@ export function connectTable<T extends PropTypes>(
         stickyInset.set(def.id, acc)
       acc = acc != null && insetWidth(def) != null ? acc + insetWidth(def)! : null
     }
+    frozenStart = acc
     acc = 0
     for (let i = columns.length - 1; i >= 0; i--) {
       const def = columns[i]!
@@ -403,6 +407,11 @@ export function connectTable<T extends PropTypes>(
         stickyInset.set(def.id, acc)
       acc = acc != null && insetWidth(def) != null ? acc + insetWidth(def)! : null
     }
+    frozenEnd = acc
+  }
+  const frozenStyle: Record<string, string> = {
+    ...(frozenStart ? { '--xh-_table-frozen-start': `${frozenStart}px` } : {}),
+    ...(frozenEnd ? { '--xh-_table-frozen-end': `${frozenEnd}px` } : {}),
   }
   // 紧挨滚动区的那两列：行首一侧最靠后的冻结列、行尾一侧最靠前的冻结列。边界提示只画在它们身上
   const frozenEdges = new Set<string>()
@@ -1014,6 +1023,7 @@ export function connectTable<T extends PropTypes>(
       // 只在有冻结列时才跟踪，没有时恒报两端都贴着
       'data-at-min-horizontal': dataAttr(scrollEdges.atStart),
       'data-at-max-horizontal': dataAttr(scrollEdges.atEnd),
+      ...(Object.keys(frozenStyle).length > 0 ? { style: frozenStyle } : {}),
     }),
 
     getCaptionProps: () => normalize.element({

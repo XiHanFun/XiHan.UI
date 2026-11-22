@@ -457,6 +457,18 @@
     inset-inline-end: var(--xh-table-sticky-inset, 0);
   }
 
+  /* 冻结列不挡滚进来的格子：滚动容器按两侧冻结列的总宽留出滚动内距，scrollIntoView、焦点移入时
+     目标落在冻结列之外，不停在视口边上压在冻结列底下。总宽由连接层量好写进 --xh-_table-frozen-start / -end */
+  [data-scope='table'][data-part='root'] {
+    scroll-padding-inline: var(--xh-_table-frozen-start, 0) var(--xh-_table-frozen-end, 0);
+  }
+
+  /* 放进滚动区时滚的是滚动区的视口，变量只往下传、写不到视口上：改由不冻结的列头与格子自己带滚动外距 */
+  [data-scope='scroll-area'][data-part='content'] > [data-scope='table'][data-part='root'] :is([data-part='column-header'], [data-part='cell']):where([data-scope='table']):not([data-frozen]),
+  [data-scope='scroll-area'][data-part='content'] > xh-table > [data-scope='table'][data-part='root'] :is([data-part='column-header'], [data-part='cell']):where([data-scope='table']):not([data-frozen]) {
+    scroll-margin-inline: var(--xh-_table-frozen-start, 0) var(--xh-_table-frozen-end, 0);
+  }
+
   /* 表头行本身透明（露出表头底），吸附的列头继承到的就是透明——得自己带表头底，
      否则横向滚动时其它列头从它下面穿过去 */
   [data-scope='table'][data-part='column-header'][data-frozen] {
