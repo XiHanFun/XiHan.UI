@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.BJYza7yf.js";import{i as t}from"./breadcrumb.r4t_j-4N.js";var n=e(),r=[{value:`home`,label:`首页`,href:`#/`},{value:`components`,label:`组件`,href:`#/components`},{value:`navigation`,label:`导航`,href:`#/components#navigation`},{value:`breadcrumb`,label:`面包屑`,current:!0}];function i(){return(0,n.jsx)(t,{collection:r})}export{i as default};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.BJYza7yf.js";import{t}from"./button.po9vP3Z1.js";import{t as n}from"./button-group.CQiCi0GW.js";var r=e();function i(){return(0,r.jsxs)(n,{separators:!1,children:[(0,r.jsx)(t,{children:`照片`}),(0,r.jsx)(t,{children:`视频`}),(0,r.jsx)(t,{children:`更多`})]})}export{i as default};

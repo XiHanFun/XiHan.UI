@@ -1,0 +1,1 @@
+import{f as e}from"./theme.Cqdt61jU.js";import{n as t}from"./normalize-props.BJYza7yf.js";import{t as n}from"./icon.DecglK92.js";var r=t();function i(){return(0,r.jsx)(n,{icon:e})}export{i as default};
