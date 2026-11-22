@@ -1,5 +1,18 @@
 # @xihan-ui/react
 
+## 5.7.1
+
+### Patch Changes
+
+- Updated dependencies [f75186f]
+  - @xihan-ui/headless@5.7.1
+  - @xihan-ui/core@5.7.1
+  - @xihan-ui/motion@5.7.1
+  - @xihan-ui/position@5.7.1
+  - @xihan-ui/pointer@5.7.1
+  - @xihan-ui/viz@5.7.1
+  - @xihan-ui/expression@5.7.1
+
 ## 5.7.0
 
 ### Minor Changes
