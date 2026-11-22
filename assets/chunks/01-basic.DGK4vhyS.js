@@ -1,1 +1,0 @@
-import{n as e}from"./normalize-props.BJYza7yf.js";import{t}from"./bar-code.DAVuEqi2.js";var n=e();function r(){return(0,n.jsx)(t,{value:`XH-2026-0915`})}export{r as default};

@@ -1,1 +1,0 @@
-import{f as e}from"./menu.CiXsSi5S.js";import{d as t}from"./pagination.DMIvsOfO.js";export{e as XhMenuRoot,t as XhPaginationRoot};

@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.Cpkjwavu.js";import{t}from"./kbd.Bc5M4JG7.js";var n=e();function r(){return(0,n.jsxs)(`div`,{style:{display:`flex`,gap:`12px`},children:[(0,n.jsx)(t,{keys:[`Enter`]}),(0,n.jsx)(t,{keys:[`Enter`],variant:`light`})]})}export{r as default};

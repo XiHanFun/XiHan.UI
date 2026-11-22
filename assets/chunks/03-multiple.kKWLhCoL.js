@@ -1,0 +1,1 @@
+import{n as e}from"./normalize-props.Cpkjwavu.js";import{n as t}from"./toggle-group.Cy0Di48y.js";var n=e(),r=[{value:`bold`,label:`B`},{value:`italic`,label:`I`},{value:`underline`,label:`U`}];function i(){return(0,n.jsx)(t,{collection:r,defaultValue:[`bold`],multiple:!0})}export{i as default};
