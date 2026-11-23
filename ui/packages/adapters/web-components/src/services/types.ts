@@ -119,6 +119,18 @@ export interface ConfirmOptions {
 /** 单按钮告知框的入参：没有取消按钮，徽记由预设档决定，其余同 confirm。 */
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
+/** 取值型弹窗的入参。正文自行拼装表单，确认时把那份值带回。 */
+export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'onOk' | 'content'> {
+  /** 每次打开照它建一份可写的值；正文与 onOk 拿到的是同一个对象，调用方给的这份不会被改。 */
+  initialValue: T
+  /** 往正文节点里拼表单，输入变了就写回 value。每次请求只调用一次，忙闲切换不重铺。 */
+  body: (body: HTMLElement, value: T) => void
+  /** 落焦到哪个节点，CSS 选择器；不给时落在正文里第一个可聚焦的控件上。 */
+  initialFocus?: string
+  /** false 只阻止关闭；抛错或拒绝进入独立动作异常，弹窗保持打开。 */
+  onOk?: (value: T) => boolean | void | Promise<unknown>
+}
+
 export interface DialogServiceOptions extends ServiceHostOptions {
   /** 确认按钮文案；未提供时取宿主所在处全局配置的 translations.dialog.ok，再退英文语言包（OK）。 */
   okText?: string
@@ -137,6 +149,8 @@ export interface DialogService {
   success: (options: AlertOptions) => Promise<void>
   warning: (options: AlertOptions) => Promise<void>
   error: (options: AlertOptions) => Promise<void>
+  /** 确认后 resolve 一份值的普通对象快照；取消 / Esc / 卸载 resolve null。 */
+  prompt: <T extends object>(options: PromptOptions<T>) => Promise<T | null>
   dispose: () => void
 }
 

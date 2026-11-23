@@ -5246,6 +5246,7 @@
       "NotificationPromiseOptions",
       "NotificationService",
       "NotificationServiceOptions",
+      "PromptOptions",
       "PropertyDeclaration",
       "PropertyDeclarations",
       "PropertyValues",

@@ -11,7 +11,7 @@ import type { Tone } from '@xihan-ui/core'
 import type { DialogServiceBadge, DialogServiceControllerSpec, DialogServiceRequest } from '@xihan-ui/headless'
 import type { XhButtonElement } from '../elements/button'
 import type { XhDialogElement } from '../elements/dialog'
-import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions } from './types'
+import type { AlertOptions, ConfirmOptions, DialogActionError, DialogBody, DialogService, DialogServiceOptions, PromptOptions } from './types'
 import { ensurePortalRoot } from '@xihan-ui/core'
 import { createDialogServiceController, dialogServiceBadgeTone, dialogServiceTranslations } from '@xihan-ui/headless'
 import { resolveXhConfig } from '../config'
@@ -31,6 +31,10 @@ interface Spec extends DialogServiceControllerSpec {
   badge?: DialogServiceBadge
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
+  /** 取值型弹窗的表单：换了请求才调一次，拼进正文里专门的那一格。 */
+  renderForm?: (form: HTMLElement) => void
+  /** 展开后先落焦到面板里匹配这个选择器的元素。 */
+  initialFocus?: string
 }
 
 export function createDialogService(options: DialogServiceOptions = {}): DialogService {
@@ -70,6 +74,11 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const title = partNode('div', 'title')
   const body = partNode('div', 'body')
   const description = partNode('div', 'description')
+  // 取值型弹窗的表单另占一格，不放进 description：读屏会把 description 整段当说明念，表单不该在里面
+  const form = document.createElement('div')
+  form.hidden = true
+  /** 表单是替哪个请求拼的：只在换了请求时重铺。 */
+  let formOwner: DialogServiceRequest<Spec> | null = null
   const errorMessage = document.createElement('p')
   errorMessage.setAttribute('role', 'alert')
   errorMessage.style.color = 'var(--xh-fg-danger)'
@@ -84,7 +93,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
   const okLabel = partNode('span', 'label')
 
   header.append(indicator, title)
-  body.append(description, errorMessage)
+  body.append(description, form, errorMessage)
   cancelRoot.append(cancelLabel)
   cancel.append(cancelRoot)
   cancel.variant = 'ghost'
@@ -127,6 +136,16 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     else {
       description.textContent = spec.content ?? ''
     }
+    // 表单只在换了请求时铺一次：忙闲切换与一次不放行都会走到这里重画按钮，
+    // 每次都重铺的话输到一半的内容就被清掉了
+    const request = serviceState.current
+    if (request !== formOwner) {
+      formOwner = request
+      form.replaceChildren()
+      form.hidden = !spec.renderForm
+      spec.renderForm?.(form)
+    }
+    dialog.initialFocus = spec.initialFocus
     const text = dialogServiceTranslations(resolveXhConfig(dialog).translations?.dialog)
     const okText = spec.okText ?? text.ok
     cancel.hidden = !spec.showCancel
@@ -223,6 +242,22 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     success: alert('success', 'success'),
     warning: alert('warning', 'warning'),
     error: alert('error', 'danger'),
+    prompt: <T extends object>(opts: PromptOptions<T>): Promise<T | null> => {
+      // 正文与 onOk 拿的是同一份可写的值：表单里改了什么，确认时就读到什么
+      const value = { ...opts.initialValue } as T
+      return controller.request({
+        title: opts.title,
+        tone: opts.tone ?? 'brand',
+        okText: opts.okText ?? defaults.okText,
+        cancelText: opts.cancelText ?? defaults.cancelText,
+        showCancel: true,
+        badge: opts.badge,
+        initialFocus: opts.initialFocus,
+        renderForm: host => opts.body(host, value),
+        onOk: opts.onOk ? () => opts.onOk!(value) : undefined,
+        onActionError: opts.onActionError,
+      }).then(ok => (ok ? { ...value } : null))
+    },
     dispose: () => {
       controller.dispose()
       dialog.removeEventListener('open-change', onOpenChange)

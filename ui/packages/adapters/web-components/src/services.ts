@@ -30,5 +30,6 @@ export type {
   NotificationPromiseOptions,
   NotificationService,
   NotificationServiceOptions,
+  PromptOptions,
   ServiceHostOptions,
 } from './services/types'
