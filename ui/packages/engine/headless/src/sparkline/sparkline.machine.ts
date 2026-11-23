@@ -13,6 +13,7 @@ import {
   advanceChartTransition,
   CHART_METRICS,
   sameChartMetrics,
+  sameChartSize,
   syncChartTransition,
   trackChartViewport,
 } from '../shared/chart'
@@ -20,10 +21,6 @@ import { sparklineModelOf } from './sparkline.logic'
 import { createSparklinePipeline, sparklineEntryScene, sparklineRevealAt } from './sparkline.model'
 
 const { createMachine } = setup<SparklineSchema>()
-
-function sameSize(a: ChartSize | null, b: ChartSize | null | undefined): boolean {
-  return a === b || (a != null && b != null && a.width === b.width && a.height === b.height)
-}
 
 // 只有一条系列，同一时刻整条一起描出、一起长出，不错开；标记点等笔尖到了才出现
 const TRANSITION: ChartTransitionOptions = {
@@ -63,7 +60,7 @@ function transitionState(params: Params<SparklineSchema>): ChartTransitionState 
 export const sparklineMachine = createMachine({
   name: 'sparkline',
   context: ({ cell }) => ({
-    size: cell<ChartSize | null>(() => ({ defaultValue: null, isEqual: sameSize })),
+    size: cell<ChartSize | null>(() => ({ defaultValue: null, isEqual: sameChartSize })),
     metrics: cell<ChartMetrics>(() => ({ defaultValue: CHART_METRICS, isEqual: sameChartMetrics })),
     frame: cell<ChartFrame | null>(() => ({ defaultValue: null })),
   }),

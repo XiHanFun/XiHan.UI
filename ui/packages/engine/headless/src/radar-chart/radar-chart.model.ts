@@ -11,7 +11,7 @@ import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../share
 import type { RadarChartTranslations, RadarCurve, RadarIndicator, RadarScale, RadarShape, RadarSummary } from './radar-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize, pointRadial, scaleLinear } from '@xihan-ui/viz'
-import { CHART_SLOT_COUNT, memoizeLast } from '../shared/chart'
+import { CHART_SLOT_COUNT, chartNumber, memoizeLast } from '../shared/chart'
 
 /** 指标的个数：少于 3 个围不成面，多于 10 个轴挤在一起读不出来。 */
 export const RADAR_MIN_INDICATORS = 3
@@ -53,16 +53,6 @@ export interface RadarSpec {
   readonly issues: readonly ChartSpecIssue[]
   /** 不妨碍画图、但读者会吃亏的写法：开发期按提醒报。 */
   readonly warnings: readonly ChartSpecIssue[]
-}
-
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number')
-    return Number.isFinite(value) ? value : null
-  if (typeof value === 'string' && value.trim() !== '') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
 }
 
 function indicatorSpecs(indicators: readonly RadarIndicator[] | undefined): RadarIndicatorSpec[] {
@@ -108,7 +98,7 @@ export function normalizeRadarSpec(
     name: String(row[nameField] ?? ''),
     slot: (i % CHART_SLOT_COUNT) + 1,
     row: i,
-    values: inds.map(ind => toNumber(row[ind.key])),
+    values: inds.map(ind => chartNumber(row[ind.key])),
   }))
   const seen = new Set<string>()
   for (const s of series) {

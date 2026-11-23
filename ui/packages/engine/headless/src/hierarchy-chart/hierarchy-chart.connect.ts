@@ -6,15 +6,15 @@
 // 提供 hierarchy chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef } from '../shared/chart'
 import type { HierarchyActive } from './hierarchy-chart.logic'
 import type { HierarchyTreeNode } from './hierarchy-chart.model'
 import type { HierarchyChartApi, HierarchyChartSchema } from './hierarchy-chart.schema'
 import type { HierarchyLegendScale, HierarchyMarkTag, HierarchyPathItem, HierarchyTooltipRow } from './hierarchy-chart.types'
 import { contains, createPressTracker, dataAttr } from '@xihan-ui/core'
-import { createScene, markPath } from '@xihan-ui/viz'
-import { chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { createScene } from '@xihan-ui/viz'
+import { chartMarkPath, chartPlotNameAttrs, chartSequentialStop, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { hierarchyChartAnatomy } from './hierarchy-chart.anatomy'
 import {
@@ -57,17 +57,6 @@ const NAV_KEYS: Readonly<Record<string, 'next' | 'prev' | 'child' | 'parent' | '
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function hierarchyMarkTag(mark: Mark): HierarchyMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
-}
-
-/** 顺序色阶上的位置换成段号与段内百分比：Chart 家族配方用一层 color-mix 在相邻两个锚点之间兑出颜色。 */
-function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
-  return t <= 0.5 ? { seg: 'low', p: `${(t * 200).toFixed(1)}%` } : { seg: 'high', p: `${((t - 0.5) * 200).toFixed(1)}%` }
 }
 
 export function connectHierarchyChart<T extends PropTypes>(
@@ -117,7 +106,7 @@ export function connectHierarchyChart<T extends PropTypes>(
   const toneOf = (node: HierarchyTreeNode): Record<string, unknown> => {
     if (model.colorBy === 'value') {
       const max = levelMax.get(node.depth) ?? 0
-      const stop = sequentialStop(0.3 + 0.7 * (max > 0 ? (node.value ?? 0) / max : 0))
+      const stop = chartSequentialStop(0.3 + 0.7 * (max > 0 ? (node.value ?? 0) / max : 0))
       return { 'data-seg': stop.seg, 'style': { '--xh-_chart-p': stop.p } }
     }
     const slot = model.colorBy === 'uniform' ? 1 : model.spec.meta.get(node)?.slot
@@ -411,7 +400,7 @@ export function connectHierarchyChart<T extends PropTypes>(
       }
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
+        d: chartMarkPath(mark),
         opacity: mark.opacity,
       }
       if (mark.part === 'node') {

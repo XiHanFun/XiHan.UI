@@ -209,7 +209,8 @@ function sameHover(a: ChartHover | null, b: ChartHover | null | undefined): bool
   return a === b || (a != null && b != null && sameChartDatum(a.ref, b.ref) && a.x === b.x && a.y === b.y)
 }
 
-function sameSize(a: ChartSize | null, b: ChartSize | null | undefined): boolean {
+/** 两份视口尺寸是不是同一个：同一个对象，或宽高都相等。 */
+export function sameChartSize(a: ChartSize | null, b: ChartSize | null | undefined): boolean {
   return a === b || (a != null && b != null && a.width === b.width && a.height === b.height)
 }
 
@@ -260,7 +261,7 @@ export function chartBaseContext<S extends ChartBaseSchema>(
   { prop, cell }: ContextParams<S>,
 ): { [K in keyof ChartBaseContext]: Bindable<ChartBaseContext[K]> } {
   return {
-    size: cell<ChartSize | null>(() => ({ defaultValue: null, isEqual: sameSize })),
+    size: cell<ChartSize | null>(() => ({ defaultValue: null, isEqual: sameChartSize })),
     offset: cell<ChartOffset>(() => ({ defaultValue: { x: 0, y: 0 }, isEqual: sameOffset })),
     metrics: cell<ChartMetrics>(() => ({ defaultValue: CHART_METRICS, isEqual: sameChartMetrics })),
     measurerVersion: cell<number>(() => ({ defaultValue: 0 })),

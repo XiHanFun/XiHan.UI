@@ -6,7 +6,7 @@
 // 提供 cartesian chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { AxisWindow, Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { AxisWindow, Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef, ChartFrame } from '../shared/chart'
 import type { CartesianActive } from './cartesian-chart.logic'
 import type { CartesianScene } from './cartesian-chart.model'
@@ -22,8 +22,8 @@ import type {
 } from './cartesian-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { wheelPixels } from '@xihan-ui/pointer'
-import { clampWindow, createScene, domainToWindow, indexRangeToWindow, isFullWindow, markPath, pan, windowToDomain, windowToIndexRange, zoomAt } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { clampWindow, createScene, domainToWindow, indexRangeToWindow, isFullWindow, pan, windowToDomain, windowToIndexRange, zoomAt } from '@xihan-ui/viz'
+import { chartMarkPath, chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, chartSequentialStop, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { cartesianChartAnatomy } from './cartesian-chart.anatomy'
 import {
@@ -75,11 +75,6 @@ function swatchMark(item: { mark: CartesianLegendItem['mark'], area: boolean, sy
   return item.symbol != null ? 'point' : item.mark === 'line' && !item.area ? 'line' : 'bar'
 }
 
-/** 色阶位置 0–1 换成段号与段内百分比：低段在起点与中点之间，高段在中点与终点之间。 */
-function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
-  return t <= 0.5 ? { seg: 'low', p: `${(t * 200).toFixed(1)}%` } : { seg: 'high', p: `${((t - 0.5) * 200).toFixed(1)}%` }
-}
-
 /** Ctrl（⌘）滚轮的缩放速率：每个像素的滚动量缩放 e^0.002 倍。 */
 const WHEEL_ZOOM_RATE = 0.002
 
@@ -99,12 +94,6 @@ const SLIDE_PAGE = 0.1
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function cartesianMarkTag(mark: Mark): CartesianMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
 }
 
 const ROLLED = new WeakMap<ChartFrame, Scene>()
@@ -935,7 +924,7 @@ export function connectCartesianChart<T extends PropTypes>(
       const at = frame?.revealAt.get(mark.key)
       const props: Record<string, unknown> = {
         ...base,
-        'd': pathOf(mark),
+        'd': chartMarkPath(mark),
         'opacity': mark.opacity,
         'pathLength': stroke ? 1 : undefined,
         'data-drawing': dataAttr(stroke || at != null),
@@ -963,7 +952,7 @@ export function connectCartesianChart<T extends PropTypes>(
         props['data-xh-chart-slot'] = spec?.slot == null ? undefined : String(spec.slot)
         props['data-tone'] = spec?.tone ?? undefined
         // 按值着色：色阶位置换成段号与段内百分比，皮肤用一层 color-mix 在相邻两个锚点之间插值
-        const stop = mark.paint?.t == null ? null : sequentialStop(mark.paint.t)
+        const stop = mark.paint?.t == null ? null : chartSequentialStop(mark.paint.t)
         if (stop) {
           props['data-seg'] = stop.seg
           props.style = { ...(props.style as Record<string, string> | undefined), '--xh-_chart-p': stop.p }
@@ -1147,8 +1136,8 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-mark': swatchMark(row),
       'data-symbol': row.symbol ?? undefined,
       // 按值着色的数据：色标画成这个数据自己的颜色
-      'data-seg': row.t == null ? undefined : sequentialStop(row.t).seg,
-      ...(row.t == null ? {} : { style: { '--xh-_chart-p': sequentialStop(row.t).p } }),
+      'data-seg': row.t == null ? undefined : chartSequentialStop(row.t).seg,
+      ...(row.t == null ? {} : { style: { '--xh-_chart-p': chartSequentialStop(row.t).p } }),
     }),
 
     getTooltipValueProps: () => normalize.element({

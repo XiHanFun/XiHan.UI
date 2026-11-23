@@ -13,7 +13,7 @@ import type { HierarchyChartTranslations, HierarchyColorBy, HierarchyLayout, Hie
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize, isVizError } from '@xihan-ui/viz'
 import { hierarchy, pack, partition, stratify, treemap } from '@xihan-ui/viz/hierarchy'
-import { CHART_SLOT_COUNT, memoizeLast } from '../shared/chart'
+import { CHART_SLOT_COUNT, chartNumber, memoizeLast } from '../shared/chart'
 
 /** 旭日图中间留的空洞占半径的比例：点它上钻一层。 */
 const SUNBURST_HOLE = 0.22
@@ -43,16 +43,6 @@ export interface HierarchySpec {
 }
 
 const EMPTY_SPEC: HierarchySpec = Object.freeze({ root: null, meta: new Map(), byKey: new Map(), issues: [] })
-
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number')
-    return Number.isFinite(value) ? value : null
-  if (typeof value === 'string' && value.trim() !== '') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
-}
 
 /** 规格归一：组树（嵌套或按父 id）、定身份、从叶子聚合数值并按值从大到小排兄弟、给第一层分支分色槽。 */
 export function normalizeHierarchySpec(
@@ -98,7 +88,7 @@ export function normalizeHierarchySpec(
       node.value = node.children.reduce((sum, child) => sum + (child.value ?? 0), 0)
       return
     }
-    const value = toNumber(node.data[valueField]) ?? 0
+    const value = chartNumber(node.data[valueField]) ?? 0
     if (value < 0 && !negative)
       negative = { name: String(node.data[nameField] ?? ''), value }
     node.value = Math.max(0, value)

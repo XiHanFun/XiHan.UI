@@ -6,14 +6,14 @@
 // 提供 funnel chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef } from '../shared/chart'
 import type { FunnelActive } from './funnel-chart.logic'
 import type { FunnelChartApi, FunnelChartSchema } from './funnel-chart.schema'
 import type { FunnelMarkTag, FunnelTooltipRow } from './funnel-chart.types'
 import { contains, dataAttr } from '@xihan-ui/core'
-import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { createScene } from '@xihan-ui/viz'
+import { chartMarkPath, chartNavIntentFromKey, chartPlotNameAttrs, chartSequentialStop, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { funnelChartAnatomy } from './funnel-chart.anatomy'
 import {
@@ -41,17 +41,6 @@ const BASELINE = { top: 'hanging', middle: 'central', bottom: 'text-after-edge',
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function funnelMarkTag(mark: Mark): FunnelMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
-}
-
-/** 顺序色阶上的位置换成段号与段内百分比：Chart 家族配方用一层 color-mix 在相邻两个锚点之间兑出颜色。 */
-function sequentialStop(t: number): { seg: 'low' | 'high', p: string } {
-  return t <= 0.5 ? { seg: 'low', p: `${(t * 200).toFixed(1)}%` } : { seg: 'high', p: `${((t - 0.5) * 200).toFixed(1)}%` }
 }
 
 export function connectFunnelChart<T extends PropTypes>(
@@ -262,7 +251,7 @@ export function connectFunnelChart<T extends PropTypes>(
       }
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
+        d: chartMarkPath(mark),
         opacity: mark.opacity,
       }
       if (mark.part === 'stage') {
@@ -270,7 +259,7 @@ export function connectFunnelChart<T extends PropTypes>(
         // 顺序色阶：第一阶段最深，逐级变浅；退场中的阶段按场景里记的位置取色
         const t = (id == null ? undefined : stageT(id)) ?? mark.paint?.t
         if (t != null) {
-          const stop = sequentialStop(t)
+          const stop = chartSequentialStop(t)
           props['data-seg'] = stop.seg
           props.style = { '--xh-_chart-p': stop.p }
         }
@@ -321,7 +310,7 @@ export function connectFunnelChart<T extends PropTypes>(
     // 数值那一行的色标画成阶段自己的颜色；转化率的两行不画色标
     getTooltipSwatchProps: (row: FunnelTooltipRow) => {
       const t = shownTooltip.tip?.t
-      const stop = row.key === 'value' && t != null ? sequentialStop(t) : null
+      const stop = row.key === 'value' && t != null ? chartSequentialStop(t) : null
       return normalize.element({
         ...parts['tooltip-swatch'].attrs,
         'data-xh-chart-part': 'tooltip-swatch',

@@ -23,9 +23,11 @@ export {
   readChartPlotName,
   sameChartDatum,
   sameChartKey,
+  sameChartSize,
   trackChartViewport,
 } from './machine-base'
 export type { ChartBaseAction, ChartBaseComputed, ChartBaseContext, ChartBaseEvent, ChartBaseProps, ChartBaseRefs, ChartBaseSchema, ChartBaseTransition, ChartOffset, ChartPlotName, ChartViewportSchema } from './machine-base'
+export { chartMarkPath, chartSequentialStop } from './marks'
 export { CHART_ESTIMATING_MEASURER, createCanvasMeasurer } from './measure'
 export { memoizeLast } from './memo'
 export { CHART_METRIC_SLOTS, CHART_METRICS, readChartMetrics, sameChartMetrics } from './metrics'
@@ -62,6 +64,7 @@ export type {
   ChartSummarySeries,
   ChartTranslations,
 } from './types'
+export { chartNumber } from './values'
 export type { NumberFormatSpec } from '@xihan-ui/viz'
 // 列式数据仓：大数据的图表数据由它承载，从 viz 转发，适配器与应用不必另装依赖
 export { createColumnStore, isColumnSource } from '@xihan-ui/viz/columns'

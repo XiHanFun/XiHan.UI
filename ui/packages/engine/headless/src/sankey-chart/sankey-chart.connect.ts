@@ -6,14 +6,14 @@
 // 提供 sankey chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef } from '../shared/chart'
 import type { SankeyActive, SankeyNavIntent } from './sankey-chart.logic'
 import type { SankeyChartApi, SankeyChartSchema } from './sankey-chart.schema'
 import type { SankeyGradient, SankeyLegendItem, SankeyMarkTag, SankeyTooltipRow } from './sankey-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
-import { createScene, markPath } from '@xihan-ui/viz'
-import { chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { createScene } from '@xihan-ui/viz'
+import { chartMarkPath, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { sankeyChartAnatomy } from './sankey-chart.anatomy'
 import {
@@ -66,12 +66,6 @@ const NAV_VERTICAL: Readonly<Record<string, SankeyNavIntent>> = {
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function sankeyMarkTag(mark: Mark): SankeyMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
 }
 
 export function connectSankeyChart<T extends PropTypes>(
@@ -423,7 +417,7 @@ export function connectSankeyChart<T extends PropTypes>(
       }
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
+        d: chartMarkPath(mark),
         opacity: mark.opacity,
       }
       if (mark.part === 'link') {

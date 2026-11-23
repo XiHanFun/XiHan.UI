@@ -6,15 +6,15 @@
 // 提供 graph chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef } from '../shared/chart'
 import type { GraphActive, GraphNavIntent } from './graph-chart.logic'
 import type { GraphChartApi, GraphChartSchema } from './graph-chart.schema'
 import type { GraphLegendItem, GraphMarkTag, GraphTooltipRow, GraphView } from './graph-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { wheelPixels } from '@xihan-ui/pointer'
-import { createScene, markPath } from '@xihan-ui/viz'
-import { chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { createScene } from '@xihan-ui/viz'
+import { chartMarkPath, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { graphChartAnatomy } from './graph-chart.anatomy'
 import {
@@ -65,12 +65,6 @@ const WHEEL_ZOOM_RATE = 0.002
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function graphMarkTag(mark: Mark): GraphMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
 }
 
 export function connectGraphChart<T extends PropTypes>(
@@ -467,7 +461,7 @@ export function connectGraphChart<T extends PropTypes>(
       }
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
+        d: chartMarkPath(mark),
         opacity: mark.opacity,
       }
       if (mark.part === 'link' || mark.part === 'arrow') {

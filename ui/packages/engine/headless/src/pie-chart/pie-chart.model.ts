@@ -11,7 +11,7 @@ import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../share
 import type { PieChartTranslations, PieLabelContent, PieLabelDetails, PieLabels, PieSort, PieSummary, PieSweep, PieVariant } from './pie-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize, foldSmall, pie, pointRadial } from '@xihan-ui/viz'
-import { CHART_SLOT_COUNT, memoizeLast, settleColumn } from '../shared/chart'
+import { CHART_SLOT_COUNT, chartNumber, memoizeLast, settleColumn } from '../shared/chart'
 
 /** 合并出来的「其他」扇区的 id：不与作者的扇区名混用。 */
 export const PIE_OTHER_ID = '__other__'
@@ -56,16 +56,6 @@ export interface PieSpec {
   readonly issues: readonly ChartSpecIssue[]
 }
 
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number')
-    return Number.isFinite(value) ? value : null
-  if (typeof value === 'string' && value.trim() !== '') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
-}
-
 const EMPTY_SPEC: PieSpec = Object.freeze({ data: [], names: [], values: [], slices: [], issues: [] })
 
 /** 规格归一：取名字与数值、核字段与负值、把尾部的小扇区并成「其他」、分色槽。 */
@@ -86,7 +76,7 @@ export function normalizePieSpec(
   if (issues.length > 0)
     return { data: rows, names: [], values: [], slices: [], issues }
 
-  const values = rows.map(row => toNumber(row[valueField]) ?? 0)
+  const values = rows.map(row => chartNumber(row[valueField]) ?? 0)
   const names = rows.map(row => String(row[nameField] ?? ''))
   const negative = values.findIndex(v => v < 0)
   if (negative >= 0)

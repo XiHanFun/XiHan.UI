@@ -6,14 +6,14 @@
 // 提供 radar chart 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { Mark, Scene, ShapeMark, TextMark } from '@xihan-ui/viz'
+import type { Mark, Scene, TextMark } from '@xihan-ui/viz'
 import type { ChartDatumRef } from '../shared/chart'
 import type { RadarActive } from './radar-chart.logic'
 import type { RadarChartApi, RadarChartSchema } from './radar-chart.schema'
 import type { RadarLegendItem, RadarMarkTag, RadarTooltipRow } from './radar-chart.types'
 import { contains, createPressTracker, dataAttr, itemValue, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
-import { createScene, markPath } from '@xihan-ui/viz'
-import { chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
+import { createScene } from '@xihan-ui/viz'
+import { chartMarkPath, chartNavIntentFromKey, chartPatternFill, chartPatterns, chartPlotNameAttrs, placeChartTooltip, retainChartTooltip } from '../shared/chart'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { radarChartAnatomy } from './radar-chart.anatomy'
 import {
@@ -44,12 +44,6 @@ const BASELINE = { top: 'hanging', middle: 'central', bottom: 'text-after-edge',
 /** 标记画成什么元素：分组是 g，文字是 text，其余几何一律是 path。 */
 export function radarMarkTag(mark: Mark): RadarMarkTag {
   return mark.kind === 'group' ? 'g' : mark.kind === 'text' ? 'text' : 'path'
-}
-
-function pathOf(mark: Mark): string {
-  if (mark.kind === 'path')
-    return mark.d
-  return markPath(mark as ShapeMark)
 }
 
 export function connectRadarChart<T extends PropTypes>(
@@ -383,7 +377,7 @@ export function connectRadarChart<T extends PropTypes>(
       }
       const props: Record<string, unknown> = {
         ...base,
-        d: pathOf(mark),
+        d: chartMarkPath(mark),
         opacity: mark.opacity,
       }
       if (mark.part === 'point' && !mark.exiting && mark.datum) {

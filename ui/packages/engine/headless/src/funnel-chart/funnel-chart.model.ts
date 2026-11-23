@@ -11,7 +11,7 @@ import type { ChartMetrics, ChartRow, ChartSize, ChartSpecIssue } from '../share
 import type { FunnelAlign, FunnelChartTranslations, FunnelConversion, FunnelDirection, FunnelLabels, FunnelShape, FunnelSummary } from './funnel-chart.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, ellipsize } from '@xihan-ui/viz'
-import { memoizeLast } from '../shared/chart'
+import { chartNumber, memoizeLast } from '../shared/chart'
 
 /** 色阶只用从 30% 起的一段：最浅的一段压在承载面上看不清。 */
 const SEQ_FLOOR = 0.3
@@ -36,16 +36,6 @@ export interface FunnelSpec {
   readonly issues: readonly ChartSpecIssue[]
 }
 
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number')
-    return Number.isFinite(value) ? value : null
-  if (typeof value === 'string' && value.trim() !== '') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
-}
-
 const EMPTY_SPEC: FunnelSpec = Object.freeze({ data: [], stages: [], issues: [] })
 
 /** 规格归一：取阶段名与数值（缺失记 0），核字段、负值与重名。 */
@@ -63,7 +53,7 @@ export function normalizeFunnelSpec(data: readonly ChartRow[] | undefined, nameF
   const stages = rows.map((row, i): FunnelStageSpec => ({
     id: String(row[nameField] ?? ''),
     name: String(row[nameField] ?? ''),
-    value: toNumber(row[valueField]) ?? 0,
+    value: chartNumber(row[valueField]) ?? 0,
     row: i,
   }))
   const negative = stages.findIndex(s => s.value < 0)

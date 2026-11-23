@@ -19,7 +19,7 @@ import type {
 } from './sparkline.types'
 import { DIAGNOSTIC_CODES } from '@xihan-ui/core'
 import { createNumberFormat, createScene, scaleLinear } from '@xihan-ui/viz'
-import { memoizeLast } from '../shared/chart'
+import { chartNumber, memoizeLast } from '../shared/chart'
 
 /** 场景里各个数据标记共用的系列 id：迷你图只有一条系列。 */
 export const SPARKLINE_SERIES = 'sparkline'
@@ -39,16 +39,6 @@ export interface SparklineSpec {
   /** 有值的点数。 */
   readonly count: number
   readonly issues: readonly ChartSpecIssue[]
-}
-
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number')
-    return Number.isFinite(value) ? value : null
-  if (typeof value === 'string' && value.trim() !== '') {
-    const n = Number(value)
-    return Number.isFinite(n) ? n : null
-  }
-  return null
 }
 
 /** 横坐标：数值与日期取时间值，其余（类目名）返回 null。 */
@@ -117,7 +107,7 @@ export function normalizeSparklineSpec(
   if (issues.length > 0)
     return { ...EMPTY_SPEC, issues }
 
-  const valueOf = (item: unknown): number | null => (isRow(item) ? toNumber(item[y!]) : toNumber(item))
+  const valueOf = (item: unknown): number | null => (isRow(item) ? chartNumber(item[y!]) : chartNumber(item))
   const rawX = rows && x ? items.map(item => (isRow(item) ? item[x] : undefined)) : null
   // 横坐标全是数值或日期时按间距排开；混进了类目名就只能按次序等距
   const continuous = rawX != null && rawX.every(v => v == null || toPosition(v) != null) && rawX.some(v => v != null)
