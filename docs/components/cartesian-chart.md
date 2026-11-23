@@ -650,7 +650,7 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | `tooltip-row` | `data-xh-chart-scale` | 'sequential' \| undefined |
 | `tooltip-row` | `data-xh-chart-slot` | undefined \| String(row.slot) |
 | `tooltip-swatch` | `data-mark` | swatchMark(row) |
-| `tooltip-swatch` | `data-seg` | undefined \| sequentialStop(row.t).seg |
+| `tooltip-swatch` | `data-seg` | undefined \| chartSequentialStop(row.t).seg |
 | `tooltip-swatch` | `data-symbol` | row.symbol |
 | `tooltip-swatch` | `data-xh-chart-part` | 'tooltip-swatch' |
 | `tooltip-value` | `data-xh-chart-part` | 'tooltip-value' |
