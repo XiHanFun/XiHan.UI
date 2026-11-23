@@ -73,6 +73,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 - `expandTrigger` 支持点击或悬停展开。
 - `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。多选时列里的条目用行首勾选框标出勾选，级联半选在方框里画横杠；单选仍是行尾对号。搜索候选是整条路径的一行，仍在行尾标勾。
 - 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
+- `maxSelected` 给多选设上限，只在不开 `cascade` 时生效（理由同[树选择](./tree-select)）。选满后没选中的叶子转 `aria-disabled`、点击与确认键都选不进去，但方向键照样落得上去；分支照常铺开子列——`changeOnSelect` 下它只是不落值、勾选框降级，行不换禁用面。搜索结果是平铺的列表，没选中的候选按禁用处理。已选的照旧可以点掉，点掉一条即腾出名额；只拦用户这一路的加选，小于 1 时不设上限，单选下不生效。
 - `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。搜索框与命令面板、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
@@ -130,6 +131,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `changeOnSelect` | `boolean` |  | 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 |
 | `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择；已选路径在触发器里排成标签。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
+| `maxSelected` | `number` |  | 多选下最多选几条路径，只在不开 cascade 时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法。 选满后没选中的叶子转 aria-disabled、点击与确认键都选不进去，但方向键照样落得上去；分支照常铺开子列—— changeOnSelect 下它只是不落值、勾选框降级，行不换禁用面。搜索结果是平铺的列表，没选中的候选按禁用处理。 已选的照旧可以点掉，点掉一条即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。 非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。 |
 | `searchable` | `boolean` |  | 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 |
 | `filter` | `CascaderFilter` |  | 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（按路径原样切换）；单选下无效。 |
@@ -263,6 +265,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `CascaderTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字是整条路径的显示名按 separator 连缀。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `maxSelected` | `number \| null` | 生效的多选上限；单选、开了级联或没设上限时为 null。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: string) => boolean` | 该条目是否为某条选中路径的末项。 |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |

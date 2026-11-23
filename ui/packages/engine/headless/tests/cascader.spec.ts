@@ -2066,3 +2066,99 @@ describe('cascader 必填', () => {
     expect(filled.required).toBeUndefined()
   })
 })
+
+describe('多选上限 maxSelected（不开级联才生效）', () => {
+  const dict = (props: unknown): Record<string, unknown> => props as Record<string, unknown>
+  const JIANGBEI = ['zhejiang', 'ningbo', 'jiangbei']
+  const XIHU = ['zhejiang', 'hangzhou', 'xihu']
+
+  it('选满后没选中的叶子转禁用面、选不进去；已选的照旧能点掉，点掉即腾出名额', () => {
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 1 })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    h.send({ type: 'ITEM.EXPAND', level: 1, value: 'ningbo' })
+    expect(h.item('jiangbei').item.getAttribute('aria-disabled')).toBe('false')
+    click(h.item('jiangbei').item)
+    expect(h.value()).toEqual([JIANGBEI])
+
+    // 满了：别的叶子转禁用面；不落值的分支照旧是活的，已选的不受影响
+    const macau = h.item('macau')
+    expect(macau.item.getAttribute('aria-disabled')).toBe('true')
+    expect(macau.item.hasAttribute('data-disabled')).toBe(true)
+    expect(h.item('ningbo').item.getAttribute('aria-disabled')).toBe('false')
+    expect(h.item('jiangbei').item.getAttribute('aria-disabled')).toBe('false')
+    click(macau.item)
+    expect(h.value()).toEqual([JIANGBEI])
+
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    h.send({ type: 'ITEM.EXPAND', level: 1, value: 'ningbo' })
+    click(h.item('jiangbei').item)
+    expect(h.value()).toEqual([])
+    expect(h.item('macau').item.getAttribute('aria-disabled')).toBe('false')
+    click(h.item('macau').item)
+    expect(h.value()).toEqual([['macau']])
+  })
+
+  it('选不进去的叶子方向键照样落得上去，确认键不选', () => {
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 1, defaultValue: [XIHU] })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    h.send({ type: 'ITEM.EXPAND', level: 1, value: 'hangzhou' })
+    h.item('xihu').item.focus()
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('yuhang')
+    expect(h.item('yuhang').item.getAttribute('aria-disabled')).toBe('true')
+    press(active(), 'Enter')
+    expect(h.value()).toEqual([XIHU])
+  })
+
+  it('机器自己也拦：绕过连接层直接送选中事件同样加不进去', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultValue: [['macau']] })
+    h.send({ type: 'ITEM.SELECT', path: XIHU })
+    expect(h.value()).toEqual([['macau']])
+    h.send({ type: 'ITEM.SELECT', path: ['macau'] })
+    expect(h.value()).toEqual([])
+  })
+
+  it('changeOnSelect 下选不进去的分支照旧铺开子列，只是不落值；勾选框降级，行不换禁用面', () => {
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 1, changeOnSelect: true, defaultValue: [['macau']] })
+    const zhejiang = h.item('zhejiang')
+    expect(zhejiang.item.getAttribute('aria-disabled')).toBe('false')
+    expect(zhejiang.item.hasAttribute('data-disabled')).toBe(false)
+    expect(zhejiang.indicator.hasAttribute('data-disabled')).toBe(true)
+    click(zhejiang.item)
+    expect(h.value()).toEqual([['macau']])
+    expect(h.shownColumns()).toEqual([0, 1])
+  })
+
+  it('搜索结果是平铺的列表：选满后没选中的候选按禁用处理，点不进去', () => {
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 1, searchable: true, defaultValue: [['macau']] })
+    h.send({ type: 'INPUT.CHANGE', value: 'a' })
+    const blocked = dict(h.api().getSearchItemProps({ path: XIHU }))
+    expect(blocked['aria-disabled']).toBe('true')
+    expect(blocked['data-disabled']).toBe('')
+    expect(dict(h.api().getSearchItemProps({ path: ['macau'] }))['aria-disabled']).toBe('false')
+    ;(blocked.onClick as () => void)()
+    expect(h.value()).toEqual([['macau']])
+  })
+
+  it('只拦用户这一路的加选：setValue 与受控值超过上限也原样收下', () => {
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 1 })
+    h.api().setValue([['macau'], XIHU])
+    expect(h.value()).toEqual([['macau'], XIHU])
+    click(h.item('macau').item)
+    expect(h.value()).toEqual([XIHU])
+
+    expect(mount({ multiple: true, maxSelected: 1, value: [['macau'], XIHU] }).value()).toEqual([['macau'], XIHU])
+  })
+
+  it('级联勾选下不生效；单选下也不生效；非整数向下取整，小于 1 不设上限', () => {
+    const cascade = mount({ defaultOpen: true, multiple: true, cascade: true, maxSelected: 1 })
+    expect(cascade.api().maxSelected).toBeNull()
+    click(cascade.item('zhejiang').item)
+    expect(cascade.value().length).toBeGreaterThan(1)
+    expect(cascade.item('macau').item.getAttribute('aria-disabled')).toBe('false')
+
+    expect(mount({ maxSelected: 1, defaultValue: ['macau'] }).api().maxSelected).toBeNull()
+    expect(mount({ multiple: true, maxSelected: 2.9 }).api().maxSelected).toBe(2)
+    expect(mount({ multiple: true, maxSelected: 0 }).api().maxSelected).toBeNull()
+  })
+})

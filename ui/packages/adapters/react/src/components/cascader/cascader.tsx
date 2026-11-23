@@ -96,6 +96,8 @@ export interface XhCascaderRootProps extends RootElementProps {
   multiple?: boolean
   /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
   maxTagCount?: number
+  /** 多选下最多选几项，只在不开 cascade 时生效：选满后没选中的条目选不进去（仍可落焦、分支照常展开），已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。 */
+  maxSelected?: number
   searchable?: boolean
   /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
   filter?: CascaderProps['filter']
@@ -143,6 +145,7 @@ export function XhCascaderRoot({
   changeOnSelect,
   multiple,
   maxTagCount,
+  maxSelected,
   searchable,
   filter,
   cascade,
@@ -185,6 +188,7 @@ export function XhCascaderRoot({
     changeOnSelect,
     multiple,
     maxTagCount,
+    maxSelected,
     searchable,
     filter,
     cascade,

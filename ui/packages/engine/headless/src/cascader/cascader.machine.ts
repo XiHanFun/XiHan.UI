@@ -17,6 +17,7 @@ import {
   cancelBranchLoads as cancelLazyBranchLoads,
   syncBranchLoads as syncLazyBranchLoads,
 } from '../shared/lazy-branch'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { dismissCloseSrc, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -538,7 +539,15 @@ export const cascaderMachine = createMachine({
           }
           const key = cascaderPathKey(path)
           const hit = current.some(item => cascaderPathKey(item) === key)
-          context.set('value', hit ? current.filter(item => cascaderPathKey(item) !== key) : [...current, path])
+          if (hit) {
+            context.set('value', current.filter(item => cascaderPathKey(item) !== key))
+            return
+          }
+          // 选满了：只拦加选这一路，取消选中在上面已经放行；级联那一路在更上面已经返回，不按上限拦
+          const max = resolveMaxSelected(prop('maxSelected'))
+          if (max != null && current.length >= max)
+            return
+          context.set('value', [...current, path])
           return
         }
         // 单选没有「取消选中」这回事：选两下就把控件点空了不是任何人期望的

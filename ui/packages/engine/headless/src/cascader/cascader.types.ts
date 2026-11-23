@@ -300,6 +300,14 @@ export interface CascaderSchema extends MachineSchema {
     multiple?: boolean
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
     maxTagCount?: number
+    /**
+     * 多选下最多选几条路径，只在不开 cascade 时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法。
+     * 选满后没选中的叶子转 aria-disabled、点击与确认键都选不进去，但方向键照样落得上去；分支照常铺开子列——
+     * changeOnSelect 下它只是不落值、勾选框降级，行不换禁用面。搜索结果是平铺的列表，没选中的候选按禁用处理。
+     * 已选的照旧可以点掉，点掉一条即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。
+     * 非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。
+     */
+    maxSelected?: number
     /** 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 */
     searchable?: boolean
     /** 自定义搜索匹配；缺省为整条路径的显示名连缀后大小写不敏感包含。 */
@@ -505,6 +513,8 @@ export interface CascaderApi<T extends PropTypes = PropTypes> {
   tags: CascaderTagMeta[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
+  /** 生效的多选上限；单选、开了级联或没设上限时为 null。 */
+  maxSelected: number | null
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
   /** 该条目是否为某条选中路径的末项。 */

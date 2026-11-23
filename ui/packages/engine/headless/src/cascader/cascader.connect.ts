@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { CascaderApi, CascaderBranchLoadSnapshot, CascaderColumnProps, CascaderLevel, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, createPressTracker, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'
 import { CASCADER_EN_US } from '../locale/en-US'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
@@ -111,6 +112,25 @@ export function connectCascader<T extends PropTypes>(
   // 整个控件禁用向下传导到每个条目，条目也能在 collection 里单独禁用
   const isDisabled = (meta: CascaderNodeMeta): boolean => disabled || meta.disabled
 
+  // 多选上限只在不开级联时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法
+  const maxSelected = multiple && !cascadeOn ? resolveMaxSelected(prop('maxSelected')) : null
+  /** 多选已到上限：没选中的路径加不进去，已选的仍能点掉。 */
+  const full = maxSelected != null && value.length >= maxSelected
+  const blockedPath = (path: readonly string[]): boolean => full && !selectedKeys.has(cascaderPathKey(path))
+  /** 选满后这一条落不了值：它本来能落值（叶子，或开了 changeOnSelect 的分支），而且还没选中。 */
+  const blockedByLimit = (meta: CascaderNodeMeta): boolean =>
+    (!meta.branch || !!prop('changeOnSelect')) && blockedPath(meta.path)
+  /**
+   * 行的禁用面：自身禁用，或选满后选不进去的叶子。选不进去的分支不在其列——它照常铺开子列，
+   * 里面可能有要点掉的已选项，只把勾选框降级。导航只认自身禁用，这些行方向键照样落得上去。
+   */
+  const rowOff = (meta: CascaderNodeMeta): boolean => isDisabled(meta) || (!meta.branch && blockedByLimit(meta))
+  /** 勾选框的禁用面：按「落不落得了值」，选不进去的分支行还活着，框先降级。 */
+  const checkOff = (v: string): boolean => {
+    const meta = metaOf(v)
+    return !!meta && (isDisabled(meta) || blockedByLimit(meta))
+  }
+
   /**
    * 条目语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
    * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
@@ -198,18 +218,21 @@ export function connectCascader<T extends PropTypes>(
       return
     send({ type: 'ITEM.FOCUS', level: meta.level, value: meta.value })
     send({ type: 'ITEM.EXPAND', level: meta.level, value: meta.value })
+    // 选满了：焦点与子列照常落过去，只是不落值
+    if (blockedByLimit(meta))
+      return
     send({ type: 'ITEM.SELECT', path: [...meta.path] })
   }
 
-  /** 条目一系（item / item-text / item-indicator）共用的状态标记。 */
-  const itemState = (v: string): Record<string, string | undefined> => {
+  /** 条目一系（item / item-text / item-indicator）共用的状态标记；禁用面缺省按行的那一份，勾选框另传。 */
+  const itemState = (v: string, off?: boolean): Record<string, string | undefined> => {
     const meta = metaOf(v)
     return {
       // 与其余 role=option 组件同一套选中编码。半选并在这一族里，不另发布尔：
       // 级联算出来的 checked 与 indeterminate 互斥（全中即 checked、部分中才 indeterminate），
       // 拆成两个属性只会逼皮肤把两套词汇拼进一条选择器
       'data-state': isIndeterminate(v) ? 'indeterminate' : isSelected(v) ? 'checked' : 'unchecked',
-      'data-disabled': dataAttr(!!meta && isDisabled(meta)),
+      'data-disabled': dataAttr(off ?? (!!meta && rowOff(meta))),
       // 焦点所在与选中互相独立
       'data-highlighted': dataAttr(!!focusedMeta && focusedMeta.value === v),
       // 落在展开路径上
@@ -223,7 +246,11 @@ export function connectCascader<T extends PropTypes>(
   const searching = searchable && inputValue.trim() !== ''
   const searchResults: CascaderSearchResult[] = searching
     ? cascaderFilterCandidates(cascaderSearchCandidates(collection, !!prop('changeOnSelect')), inputValue, prop('filter'))
-        .map(candidate => ({ ...candidate, key: cascaderPathKey(candidate.path) }))
+        .map(candidate => ({
+          ...candidate,
+          key: cascaderPathKey(candidate.path),
+          disabled: candidate.disabled || blockedPath(candidate.path),
+        }))
     : []
   // 高亮只落在可选候选上：禁用整条的候选轮不到它；整控件禁用时即使宿主强制保持
   // open，候选也没有虚假的活动项。只读仍可浏览，所以不在这里排除。
@@ -323,6 +350,7 @@ export function connectCascader<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    maxSelected,
     overflowText,
     searching,
     inputValue,
@@ -961,7 +989,7 @@ export function connectCascader<T extends PropTypes>(
       const meta = metaOf(item.value)
       const visible = isVisible(item.value)
       const focused = !!focusedMeta && focusedMeta.value === item.value
-      const handlers = press('item', item.value, !!meta && isDisabled(meta))
+      const handlers = press('item', item.value, !!meta && rowOff(meta))
       // 列内条目走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200、展开路径的中性面由家族给，
       // 选中只留行尾对号
       return normalize.element({
@@ -984,7 +1012,7 @@ export function connectCascader<T extends PropTypes>(
         // 级联勾选是三态：读屏靠 aria-checked 报半选，非级联不输出该属性
         'aria-checked': cascadeOn ? (isSelected(item.value) ? 'true' : isIndeterminate(item.value) ? 'mixed' : 'false') : undefined,
         // 集合条目用 aria-disabled 而非原生 disabled，禁用条目仍要能当方向键的起点
-        'aria-disabled': meta && isDisabled(meta) ? 'true' : 'false',
+        'aria-disabled': meta && rowOff(meta) ? 'true' : 'false',
         // 分支报「激活它会露出一个列表框」：子列是右边另起的一列，不长在条目里面，
         // 因此走 aria-haspopup 而不是 aria-expanded（option 不收 aria-expanded）。
         // 反向的那半边由子列的 aria-labelledby 指回本条目给出
@@ -1053,7 +1081,7 @@ export function connectCascader<T extends PropTypes>(
     // 多选换成行首勾选框（check-lead 列），级联半选在方框里画横杠，方框与勾由勾选标记配方画
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
-      ...itemState(item.value),
+      ...itemState(item.value, checkOff(item.value)),
       'data-xh-collection-slot': multiple ? 'check-lead' : 'indicator',
       'data-xh-check-mark': multiple ? (isIndeterminate(item.value) ? 'indeterminate' : isSelected(item.value) ? 'checked' : 'unchecked') : undefined,
       'data-xh-check-mark-profile': multiple ? 'box' : undefined,
