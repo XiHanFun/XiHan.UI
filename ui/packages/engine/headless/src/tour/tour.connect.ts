@@ -12,7 +12,7 @@ import { TOUR_EN_US } from '../locale/en-US'
 import { overlayArrowVars, overlayAvailableSpaceVars, overlayPositioned } from '../shared/overlay'
 import { resolveTranslations } from '../shared/translations'
 import { tourAnatomy } from './tour.anatomy'
-import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, tourStepCount } from './tour.machine'
+import { clampTourStep, currentTourStep, isTourLastStep, TOUR_DEFAULT_PLACEMENT, TOUR_MIN_SIDE_SPACE, tourStepCount } from './tour.machine'
 
 const parts = tourAnatomy.build()
 
@@ -184,8 +184,9 @@ export function connectTour<T extends PropTypes>(
         // 居中步显式写空串把上一步留下的内联坐标撤掉，不写键的话 WC 侧会留着旧值；限定在区域里的居中步铺满那块区域
         ...(anchored ? { ...boundedBox(null), left: `${position?.x ?? 0}px`, top: `${position?.y ?? 0}px` } : boundedBox(boundary)),
         position: 'fixed',
-        // 居中步没有引擎结果，同样发空串把上一步的高度撤掉
-        ...overlayAvailableSpaceVars('tour', anchored ? position : undefined, 160),
+        // 居中步没有引擎结果，同样发空串把上一步的高度撤掉。限高的下限与引擎改为盖住目标的门槛同一个数：
+        // 不到它的那一侧引擎已经不贴了，回报的是整个可用区域
+        ...overlayAvailableSpaceVars('tour', anchored ? position : undefined, TOUR_MIN_SIDE_SPACE),
       },
     }),
 

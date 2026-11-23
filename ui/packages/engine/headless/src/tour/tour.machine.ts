@@ -23,6 +23,12 @@ export const TOUR_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
 /** 与共享的 OVERLAY_OFFSET 不同：气泡要给聚光灯的描边与留白让出位置，间距更大。 */
 export const TOUR_DEFAULT_OFFSET = 12
 
+/**
+ * 气泡贴在目标旁边至少要有的主轴空间（px）。够它就贴在旁边，皮肤按这一侧的可用空间限高、正文在面内滚；
+ * 不到它（目标贴着视口边、或几乎与视口等高）就不把气泡挤成一条，改为盖住目标的一部分挪进视口里。
+ */
+export const TOUR_MIN_SIDE_SPACE = 160
+
 /** 目标缺席时等它出现的缺省时长（ms）。 */
 export const TOUR_TARGET_TIMEOUT = 3000
 
@@ -397,6 +403,9 @@ export const tourMachine = createMachine({
               arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
               // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
               size: true,
+              // 两侧都窄得放不下时宁可盖住目标的一部分，也不让标题或按钮伸到视口外；
+              // 盖住时可用空间按整个视口（或限定区域）算，气泡与它取小
+              overlap: { minSize: TOUR_MIN_SIDE_SPACE },
               // 限定在区域里时气泡以它为界避让
               boundary: resolveTourBoundary(scope, prop('boundary')) ?? undefined,
             },
