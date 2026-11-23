@@ -224,7 +224,7 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 | `Space` | focus on selectable row | 单选时选中这一行，多选时切换这一行；不触发行内按钮 |
 | `Shift+ArrowDown` / `Shift+ArrowUp` / `Shift+Home` / `Shift+End` | focus on row, selectionMode=multiple | 焦点移动，并把锚点到新焦点行那一段并进扩选开始前的选中；往回扩即收回，禁用行不被收进去 |
 | `Shift+Space` | focus on row, selectionMode=multiple | 把锚点到焦点行那一段并进扩选开始前的选中；没有锚点时切换这一行并记为锚点 |
-| `Enter` | focus on row | 触发行主操作；未提供主操作且允许选择时改为选中这一行 |
+| `Enter` | focus on row | 触发行主操作；确认键不改选中，选择归 Space |
 | `Ctrl+A` / `Cmd+A` | focus on multiple grid list | 选中全部可选行；已经全选时取消全部可选行 |
 | `单个可打印字符` | focus on row, typeahead 未关闭 | 按行标题连打检索，只移动焦点 |
 | `Enter` / `Space` | focus on inline button | 交给原生按钮；不改变行选中状态，也不触发行主操作 |

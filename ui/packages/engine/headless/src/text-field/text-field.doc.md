@@ -24,7 +24,7 @@
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
 - 多行且不自动高度时，纵向拖拽由视觉盒承担，拖拽角落在外框的角上，textarea 撑满盒高、自己不出拖拽角；盒内的行内衬与盒尾的清空按钮、后缀不再把拖拽角挤进框里。自动高度时不出拖拽角。
-- 默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
+- 默认即 `outline`：`--xh-bg-field` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、pressed / focus / forced-colors 均由家族配方提供，适配器不另行计算尺寸或可见性。
 - 开启 `clearable` 后，清空按钮在空值时收起；有值且可编辑时，指针落在字段盒上或焦点在盒内才显出（触屏上常显），圆形钮、静息字形半透明；字段聚焦边界平滑过渡。
 - `showCount` 显示字数部件，数字取 `count` 与 `maxLength`，达到上限时换色。

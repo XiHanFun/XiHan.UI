@@ -1,4 +1,4 @@
-<!-- 形态 | variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观 -->
+<!-- 形态 | 缺省 ghost 不带外框与底色，树直接落在页面上；variant="outline" 换成带框的外观 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,

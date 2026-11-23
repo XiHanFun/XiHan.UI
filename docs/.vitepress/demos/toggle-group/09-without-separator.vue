@@ -1,4 +1,4 @@
-<!-- 无分隔线 | 省略分隔线部件 -->
+<!-- 无分隔线 | separators 设为 false，段与段之间不画分隔线 -->
 <script setup lang="ts">
 import { BoldIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";

@@ -68,7 +68,7 @@
 
 ### 无分隔线
 
-省略分隔线部件
+separators 设为 false，段与段之间不画分隔线
 
 <XhDemo src="toggle-group/09-without-separator" />
 

@@ -50,7 +50,7 @@ disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚�
 
 ### 尺寸
 
-三档改变浮层的内边距与字号，不写 size 即默认档；把指针停在触发器上（或用 Tab 聚焦）查看差别
+三档只改变浮层的内边距，字号不变，不写 size 即默认档；把指针停在触发器上（或用 Tab 聚焦）查看差别
 
 <XhDemo src="tooltip/06-size" />
 
@@ -166,7 +166,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 | `delegate` | `string` |  | 委托模式：值是一个 CSS 选择器。trigger 此时是容器，容器里命中选择器的元素在悬停或键盘聚焦时打开提示， 提示锚在这个元素上；指针或焦点挪到另一个锚点时提示直接换过去。文字取锚点的 data-xh-tooltip， 没写时取锚点的可及名；快捷键取锚点的 aria-keyshortcuts。 |
 | `platform` | `KbdPlatform` |  | 委托模式下快捷键按哪个平台的写法显示：auto（缺省）在指向锚点时测一次。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只换内距，三档字号相同。 |
 | `translations` | `Partial<TooltipTranslations>` |  |  |
 | `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 

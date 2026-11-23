@@ -100,7 +100,7 @@ export interface TooltipSchema extends MachineSchema {
     platform?: KbdPlatform
     /** 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 */
     tone?: Tone
-    /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
+    /** 尺寸：sm / md / lg，只换内距，三档字号相同。 */
     size?: Size
     translations?: Partial<TooltipTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

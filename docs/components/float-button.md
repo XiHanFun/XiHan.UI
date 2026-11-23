@@ -71,7 +71,7 @@
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 16px，按下换底；默认（outline）使用浮层面（实体底加描边与投影），solid / subtle / ghost 使用对应语义表面。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（28 / 40 / 44px），默认 md 40px 圆形、图标 16px，按下换底；默认（outline）使用浮层面（实体底加描边与投影），solid / subtle / ghost 使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
 - 应用设为 `data-material="liquid"` 时，默认（outline）的触发器换成液态面，按住时液面随手指形变，减弱动效下不形变；展开组里的动作仍是浮层面。
 
@@ -121,7 +121,7 @@
 | `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
 | `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg（28 / 40 / 44px），缺省 md：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |

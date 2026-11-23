@@ -34,7 +34,7 @@ disabled 写为原生 fieldset[disabled]，组内每个控件一并禁用，不�
 
 ### 无效态
 
-invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报
+invalid 切换后，错误文案接入描述链并显示；它带 role=status，读屏在空闲时播报
 
 <XhDemo src="fieldset/03-invalid" />
 

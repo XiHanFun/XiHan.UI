@@ -92,7 +92,7 @@ leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪
 
 ### 变体
 
-variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观
+缺省 ghost 不带外框与底色，树直接落在页面上；variant="outline" 换成带框的外观
 
 <XhDemo src="tree/13-variant" />
 
@@ -383,14 +383,14 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `End` | focus in tree | 焦点移到末个可见行（展开着的子树也算行） |
 | `ArrowRight` | focus on branch（dir=rtl 时改由 ArrowLeft 承担） | 收起的分支就地展开；已展开则把焦点移到首个子节点；叶子上什么都不做且不吞键 |
 | `ArrowLeft` | focus in tree（dir=rtl 时改由 ArrowRight 承担） | 展开的分支就地收起；收起的分支与叶子则把焦点移到父节点；根层的行什么都不做 |
-| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态 |
+| `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点：selectionMode 为 single 或 extended 时换成这一项，multiple 时切换；焦点在分支上且 expandOnClick 打开时顺带切换展开态。checkable 打开时两键分工：Space 只改勾选，Enter 仍是选中 |
 | `Enter` / `Space` | focus on branch, 懒分支取数失败 | 重试该分支，焦点留在分支行；不改变选中值与展开集合 |
 | `Ctrl+Space` / `Cmd+Space` | focus on node, selectionMode 为 multiple 或 extended、节点未禁用 | 只切换焦点节点的选中态，其余选中不动，不改展开态 |
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
-| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, draggable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, draggable 开启 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
+| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, nodeDraggable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, nodeDraggable 开启 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
 
 ### ARIA
 

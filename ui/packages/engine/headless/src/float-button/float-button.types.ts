@@ -103,7 +103,7 @@ export interface FloatButtonAppearance {
   variant?: ActionVariant
   /** 颜色：brand / neutral / success / warning / danger / info。 */
   tone?: Tone
-  /** 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 */
+  /** 尺寸：sm / md / lg（28 / 40 / 44px），缺省 md：悬浮按钮需要易于触达，起始即比行内按钮大一档。 */
   size?: Size
   translations?: Partial<FloatButtonTranslations>
 }

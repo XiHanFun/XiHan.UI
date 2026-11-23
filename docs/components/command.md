@@ -38,7 +38,7 @@ variant 只落在 backdrop 层：opaque 压一层底色、blur 模糊背后、tr
 
 ### 远程检索
 
-filter 关闭：传入的 collection 就是当前应显示的条目，筛选归服务端；取数期间 loading 显示在途占位、列表压暗一档，空态让位
+filter 关闭：传入的 collection 就是当前应显示的条目，筛选归服务端；取数期间 loading 显示在途占位，空态让位
 
 <XhDemo src="command/04-async" />
 

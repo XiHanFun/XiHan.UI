@@ -1,4 +1,4 @@
-<!-- 无效态 | invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报 -->
+<!-- 无效态 | invalid 切换后，错误文案接入描述链并显示；它带 role=status，读屏在空闲时播报 -->
 <script setup lang="ts">
 import {
   XhFieldControl,
