@@ -86,17 +86,17 @@
 
 | 语义 | 对象 | 唯一标记 |
 | --- | --- | --- |
-| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-fg-brand`），正文颜色保持 rest，字重升到 medium；树的分支行也放对号，半选画横杠；TagGroup 保持标签自身的面，只多一枚文字后的对号 |
+| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-fg-brand`），正文颜色保持 rest，字重升到 medium；树族单选的分支行也放对号。Tree、TreeSelect、Listbox 与 Cascader 的多选不用对号，改用行首勾选框，半选在方框里画横杠；TagGroup 保持标签自身的面，只多一枚文字后的对号 |
 | 页内持久集合的选中 | Table row、Transfer、GridList、SideNav 当前项、选择卡片 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer / GridList 另有行首勾选框。SideNav 当前项是行面与字色，字重提到 semibold、行取 surface 圆角，不画指示条 |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | 透明面 + 2px 指示条 + `--xh-fg-brand` + medium；Breadcrumb 当前页不可点、无指示条 |
 | 格状当前 | Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 |
 | 分页当前页 | Pagination item | 品牌描边 + `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，不加粗（字重一变页码就变宽） |
 | 开关型（有滑块） | Tabs segment | 轨道 `--xh-bg-subtle` 内的白色抬起 indicator |
-| 分段选中 | 单选组 segmented 形态 | 字段同款轨道（`--xh-bg-field` + `--xh-border-control`）内的品牌淡底滑块 `--xh-bg-segment-selected`，字 `--xh-fg-segment-selected` + medium |
-| 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` |
+| 分段选中 | 单选组 segmented 形态 | 字段同款轨道（`--xh-bg-field` + `--xh-border-control`）内的实心主色滑块 `--xh-bg-segment-selected`（与 `--xh-bg-brand` 同值），字 `--xh-fg-segment-selected`（反白）+ medium |
+| 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`；ToggleGroup 的 `subtle` 变体才退回品牌淡底 |
 | 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger、Cascader in-path、Date / Time trigger | 与所在家族 hover 同档的中性面，不用品牌色 |
 
-选中对号一律落在行尾，不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框。
+选中对号一律落在行尾，不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框。多选的标记不是对号而是勾选框，落在行首。
 
 `--xh-bg-brand-subtle` 专属"选中 / 当前"：Calendar 的今天改成 inset 1px `--xh-fg-brand` 环 + 品牌字。Steps 已完成是唯一的例外，取品牌淡底 + 品牌对号（走过的步与当前步同属一段已点亮的进度）；点状形态的圆点不盛内容，三态由形状区分：没走到的空心圈、走过的实心标记色、当前步实心品牌并放大一档。
 

@@ -6,8 +6,8 @@
 
 | 家族 | 典型组件 | 配方给什么 |
 | --- | --- | --- |
-| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、单选组 segmented 形态的段、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、120 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
-| Field Chrome | Input、Textarea、Select trigger、Date / Time field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边式外壳（铺字段淡底，聚焦换白底与品牌描边、不画环）、`outline / subtle / ghost` 三档 × rest / hover / focus / invalid / disabled / readOnly / loading 七态、占位、前后缀、清空、标签与说明排版、缺省宽 |
+| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、单选组 segmented 形态的段、各类 trigger | 高度、内边距、图标随档、缺省语气（只有 Button 品牌实心）、按承载面的交互阶梯、150 / 200ms 按压、焦点、禁用、加载。六个 profile：`text`、`icon`、`field-inset`（字段内的清空 / 展开小钮）、`floating`（悬浮单图标动作，圆形）、`row` 与 `disclosure-trigger`（铺满一行、只换面） |
+| Field Chrome | Input、Textarea、Select trigger、Date / Time field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边式外壳（白底加控件描边，聚焦换品牌描边、内侧再加一道 inset 线）、`outline / subtle / ghost` 三档 × rest / hover / focus / invalid / disabled / readOnly / loading 七态、占位、前后缀、清空、标签与说明排版、缺省宽 |
 | Collection Item | Menu item、Listbox item、Tree node、Table row、Transfer item、SideNav link、Tabs line trigger、Anchor / Breadcrumb link、NavigationMenu / Menubar trigger | highlighted、按集合语境（`overlay / page / nav`）的 selected / current 标记、pressed 只换面、disabled、缩进、指示器 |
 | Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion / Toolbar / PageHeader 的 outline 档、各类容器面 | 边界三选一、raised 逐部件登记、标题与说明排版、内衬只走 `--xh-surface-*`、层级 |
 | Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期 / 时间面板 | Portal、定位、遮罩、材质按内容判定、进退场按锚定关系、浮层滚动面、焦点归还 |
@@ -37,9 +37,9 @@
 - 错误、选择、加载与警告不能只靠颜色。
 - 暗色下 overlay 必须能从 canvas 与 surface 中辨认。
 
-## 七个分类怎么选
+## 分类怎么选
 
-组件总览按用途分七类，与家族是两个维度——分类回答"我要做什么"，家族回答"它长什么样"：
+组件总览按用途分类，与家族是两个维度——分类回答"我要做什么"，家族回答"它长什么样"：
 
 | 分类 | 选型要点 |
 | --- | --- |
@@ -48,6 +48,7 @@
 | [导航](/components/#导航) | 页级切换用 Tabs，站内层级用 SideNav / NavigationMenu / Menubar，位置用 Breadcrumb / Anchor / Steps，右键与更多用 ContextMenu / Menu |
 | [数据录入](/components/#数据录入) | 少于七个互斥项用 RadioGroup，更多用 Select；可输入的候选用 Combobox；多选用 CheckboxGroup 或 TagsInput；日期优先分段输入（DateField）再加日历（DatePicker）；整表用 Form + Field 承担校验与重置 |
 | [数据展示](/components/#数据展示) | 记录用 Table，层级用 Tree，键值对用 Descriptions，长列表用 Virtualizer / InfiniteScroll，状态用 Tag / Badge |
+| [图表](/components/#图表) | 按数据任务选：比较与趋势用 CartesianChart（柱、线、散点、K 线、箱线），占比用 PieChart，多维对比用 RadarChart，流向用 SankeyChart，层级占比用 HierarchyChart，关系用 GraphChart，转化用 FunnelChart，密度用 Heatmap，行内趋势用 Sparkline |
 | [反馈](/components/#反馈) | 页内静态提示用 Alert，操作结果用 Notification 的轻提示预设（短、自动消失），主动推送的消息用它的卡片预设（可停留、可动作），进行中用 Progress / Spinner / Skeleton / LoadingBar |
 | [浮层](/components/#浮层) | 轻量补充用 Tooltip / HoverCard / Popover，需要确认用 Popconfirm，需要打断用 Dialog，侧边任务流用 Drawer，命令入口用 Command |
 | [AI 对话](/components/#ai-对话) | 输入用 PromptInput，流式正文用 MarkdownStream / MessageFeed，工具与推理用 ToolCall / Reasoning，审批与提问用 Approval / QuestionFlow |
