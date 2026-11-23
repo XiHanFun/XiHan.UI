@@ -190,6 +190,9 @@ export interface TreeRefs {
   expandAllPending: boolean
 }
 
+/** 关键词过滤的匹配规则：节点与 trim 过、非空的检索词，返回是否命中。 */
+export type TreeFilter = (node: TreeNode, query: string) => boolean
+
 /** 接了按压通道的两个部件：叶子行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
 export type TreePressedPart = 'item' | 'branch-control'
 
@@ -287,6 +290,14 @@ export interface TreeSchema extends MachineSchema {
      * 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。
      */
     allowDrop?: (move: TreeMove) => boolean
+    /**
+     * 检索词：trim 后非空即进入搜索视图——按 filter 把树裁到只剩命中的那几枝，命中的节点连同整棵子树留下，
+     * 祖先保留并自动展开。搜索视图里的展开单独记，不改写 expandedValue，清空检索词即回到原来的展开态。
+     * 树自己不带输入框，检索词由作者的输入框给。搜索时节点不可拖：裁剪后的位次不是数据里的位次。
+     */
+    filterText?: string
+    /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+    filter?: TreeFilter
     onNodeMove?: (move: TreeMove) => void
     onExpandedValueChange?: (details: TreeExpandedValueChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
@@ -306,6 +317,8 @@ export interface TreeSchema extends MachineSchema {
     loadedChildren: Record<string, TreeNode[]>
     /** 展开集合，恒为数组。受控（expandedValue 提供）时 cell 直读 prop。 */
     expandedValue: string[]
+    /** 搜索视图自己的展开集合：换检索词时重置为「因子孙命中而留下的分支」，不对外通知。 */
+    searchExpanded: string[]
     /** 选中集合，恒为数组。单选时长度 ≤ 1，形状不随模式变化。 */
     selection: string[]
     /** 勾选集合，恒为数组；只在 checkable 下被读写。受控（checkedValue 提供）时 cell 直读 prop。 */
@@ -404,6 +417,7 @@ export interface TreeSchema extends MachineSchema {
     | 'retryBranch'
     | 'syncBranchLoads'
     | 'seedExpandAll'
+    | 'syncSearchExpanded'
   effect: 'trackPointer' | 'trackBranchLoads' | 'trackBranchDisclosure'
 }
 
@@ -423,6 +437,8 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   selection: string[]
   /** 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 */
   focusedValue: string | null
+  /** 是否处于搜索视图：检索词 trim 后非空。空态文案要分「没有数据」与「没有命中」时读它。 */
+  searching: boolean
   /** 生效的选择模式。 */
   selectionMode: TreeSelectionMode
   /** 是否可勾选：行首勾选框与选中分开。 */

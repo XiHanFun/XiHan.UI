@@ -23,6 +23,7 @@ type TreeProps = TreeSchema['props']
 export type TreeRootSlotProps = Pick<
   TreeApi,
   | 'visibleNodes'
+  | 'searching'
   | 'expandedValue'
   | 'selection'
   | 'checkedValue'
@@ -108,6 +109,10 @@ export const XhTreeRoot = defineComponent({
     nodeDraggable: Boolean,
     /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
     allowDrop: { type: Function as PropType<TreeProps['allowDrop']> },
+    /** 检索词：非空即按 filter 把树裁到只剩命中的那几枝，祖先保留并自动展开；搜索视图的展开单独记，清空即回到原来的展开态。树自己不带输入框。 */
+    filterText: { type: String },
+    /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+    filter: { type: Function as PropType<TreeProps['filter']> },
     translations: { type: Object as PropType<TreeProps['translations']> },
   },
   // *-change 携带 { value }，update:* 携带裸集合；回传值恒为数组，单选时长度 ≤ 1
@@ -157,6 +162,7 @@ export const XhTreeRoot = defineComponent({
       const body = slots.default
         ? slots.default({
             visibleNodes: api.visibleNodes,
+            searching: api.searching,
             expandedValue: api.expandedValue,
             selection: api.selection,
             checkedValue: api.checkedValue,

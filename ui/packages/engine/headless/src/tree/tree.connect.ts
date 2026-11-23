@@ -14,6 +14,7 @@ import { isEditableTarget } from '../shared/editable-target'
 import { expandableBranches } from '../shared/expand-all'
 import { branchLoadSnapshotOf, resolveLazyCollection } from '../shared/lazy-branch'
 import { resolveTranslations } from '../shared/translations'
+import { matchTreeNodeLabel, resolveTreeSearch } from '../shared/tree-search'
 import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
 import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
@@ -69,9 +70,15 @@ export function connectTree<T extends PropTypes>(
   // 作者的 collection 是取数的依据；有效树在懒分支上补上已取回的子项，行、层级与级联都照它算
   const sourceCollection = prop('collection') ?? []
   const loadedChildren = context.get('loadedChildren')
-  const collection = resolveLazyCollection(sourceCollection, loadedChildren)
+  const fullCollection = resolveLazyCollection(sourceCollection, loadedChildren)
+  // 关键词过滤：检索词非空时，摊平、导航与空态都按裁剪后的树算，展开集合换成搜索视图自己那一份；
+  // 选中语义（级联）、标签、禁用与语气仍按整棵树算
+  const search = resolveTreeSearch(fullCollection, prop('filterText') ?? '', prop('filter') ?? matchTreeNodeLabel)
+  const searching = search != null
+  const collection = search?.nodes ?? fullCollection
   const translations: TreeTranslations = resolveTranslations(TREE_EN_US, prop('translations'))
   const expandedValue = context.get('expandedValue')
+  const viewExpanded = search ? context.get('searchExpanded') : expandedValue
   const selection = context.get('selection')
   // 可勾选：勾选与选中分开，勾选集合只在这一档里读写
   const checkable = !!prop('checkable')
@@ -100,11 +107,17 @@ export function connectTree<T extends PropTypes>(
   const ids = scope.ids('tree', 'label', 'tree')
 
   // 摊平与索引都是 (collection, 展开集合) 的纯函数；connect 在 Vue 的 render 期求值，此时 DOM 尚不存在。
-  const rows = flattenTree(collection, expandedValue)
+  const rows = flattenTree(collection, viewExpanded)
   const virtualizer = prop('virtualizer')
   assertCollectionVirtualizer('Tree', virtualizer, rows.length, prop('collection') != null)
   const rowIndex = new Map(rows.map((row, index) => [row.value, index]))
-  const metaIndex = indexTree(collection)
+  // 标签、禁用、语气与父子关系按整棵树查；层级三件套按此刻摊平的那棵树给，搜索视图里的位次与同级数才对得上
+  const metaIndex = indexTree(fullCollection)
+  const viewIndex = search ? indexTree(collection) : metaIndex
+  // 搜索视图里不在裁剪后那棵树上的节点：手写整棵树的结构里它们照样在 DOM 上，连接层替作者收起。
+  // 只在搜索时才发 hidden 这一位，平时不碰作者自己写的 hidden
+  const outOfView = (value: string): Record<string, true | undefined> =>
+    search ? { hidden: viewIndex.has(value) ? undefined : true } : {}
   const leafOnlyBranches = collectLeafOnlyBranches(collection)
   const childrenOrientations = collectChildrenOrientations(collection)
   const visible = new Map(rows.map(row => [row.value, row]))
@@ -115,7 +128,8 @@ export function connectTree<T extends PropTypes>(
   const focusedValue = rawFocused != null && visible.has(rawFocused) ? rawFocused : null
 
   const metaOf = (value: string): TreeNodeMeta | undefined => metaIndex.get(value)
-  const nodeDraggable = !!prop('nodeDraggable')
+  // 搜索时不可拖：裁剪后的位次不是数据里的位次，照它算出的落点会落错地方
+  const nodeDraggable = !!prop('nodeDraggable') && !searching
   const draggingNode = context.get('draggingNode') ?? null
   // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
   const dropTarget = context.get('dropTarget') ?? null
@@ -130,11 +144,11 @@ export function connectTree<T extends PropTypes>(
   /** 这个节点此刻是不是落点，是的话落在哪一档。 */
   const dropSide = (value: string): 'before' | 'after' | 'inside' | undefined =>
     dropTarget?.targetValue === value ? dropTarget.position : undefined
-  const isExpanded = (value: string): boolean => expandedValue.includes(value)
+  const isExpanded = (value: string): boolean => viewExpanded.includes(value)
   // 级联：父随子勾、部分勾中半选，从值集聚合得出。checkable 下聚合的是勾选集合，选中集合照朴素规则；
   // 否则只在 multiple 档聚合选中集合
   const cascade = (checkable || selectionMode === 'multiple') && !!prop('cascade')
-  const cascaded = cascade ? cascadeState(collection, checkable ? checkedValue : selection) : null
+  const cascaded = cascade ? cascadeState(fullCollection, checkable ? checkedValue : selection) : null
   const isSelected = (value: string): boolean => (cascaded && !checkable ? cascaded.checked.has(value) : selection.includes(value))
   const isChecked = (value: string): boolean => checkable && (cascaded ? cascaded.checked.has(value) : checkedValue.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
@@ -168,7 +182,7 @@ export function connectTree<T extends PropTypes>(
 
   /** 节点（item 与 branch）共用的 ARIA 与身份属性。 */
   const nodeAttrs = (value: string): Record<string, string | number | undefined> => {
-    const meta = metaOf(value)
+    const meta = viewIndex.get(value)
     return {
       // 导航、检索、选中与展开都以此为节点身份
       [ITEM_VALUE_ATTR]: value,
@@ -419,6 +433,7 @@ export function connectTree<T extends PropTypes>(
   return {
     collection,
     visibleNodes: rows,
+    searching,
     dropTarget,
     announcement: context.get('announcement'),
     expandedValue,
@@ -663,6 +678,12 @@ export function connectTree<T extends PropTypes>(
           if (!siblings.length)
             return
           event.preventDefault()
+          // 搜索视图里逐个展开：改的是它自己的展开集合，不动作者的 expandedValue
+          if (searching) {
+            for (const sibling of siblings)
+              send({ type: 'BRANCH.EXPAND', value: sibling })
+            return
+          }
           send({ type: 'EXPANDED.SET', value: [...expandedValue, ...siblings] })
           return
         }
@@ -733,6 +754,7 @@ export function connectTree<T extends PropTypes>(
         ...parts.item.attrs,
         ...nodeAttrs(node.value),
         ...itemState(node.value),
+        ...outOfView(node.value),
         // 行走 Collection Item 的 overlay 语境，与树选择同一种选中读法：悬停 / 高亮 / 按下只换面，
         // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出；行高、内衬与字号随尺寸档
         'data-xh-collection-item': '',
@@ -815,6 +837,7 @@ export function connectTree<T extends PropTypes>(
         ...nodeAttrs(node.value),
         ...branchState(node.value),
         ...loadState(node.value),
+        ...outOfView(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
         // 这一枝在取子节点：读屏据此知道子层还没到齐，皮肤据此把展开箭头换成转圈
         'aria-busy': isBranchLoading(node.value) ? 'true' : undefined,

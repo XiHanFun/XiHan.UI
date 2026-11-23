@@ -67,6 +67,8 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @prop {string[]} loadingValue - 正在取子节点的分支；在其中的分支报告 aria-busy，展开箭头换成转圈。只能通过 property 设置
  * @attr {string} label - 标题文字：不写部件时铺进标准结构的 label；手写结构时写 label 部件
  * @prop {Function} loadChildren - 取回 `hasChildren: true` 分支的直接子项；首次展开自动调用，失败后用重试钮或分支上的确认键重试。只能通过 property 设置
+ * @attr {string} filter-text - 检索词：非空即按 filter 把树裁到只剩命中的那几枝，祖先保留并自动展开；搜索视图的展开单独记，清空即回到原来的展开态。树自己不带输入框。
+ * @prop {Function} filter - 自定义匹配规则；缺省为标签大小写不敏感包含。只能通过 property 设置
  * @attr {boolean} disabled - 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
@@ -153,6 +155,8 @@ export class XhTreeElement extends XhElement {
     nodeDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'node-draggable' },
     // 函数与对象走不了属性，只作为 property 暴露
     allowDrop: { attribute: false },
+    filterText: { converter: STRING_CONVERTER, attribute: 'filter-text' },
+    filter: { attribute: false },
     translations: { attribute: false },
   }
 
@@ -184,6 +188,8 @@ export class XhTreeElement extends XhElement {
   declare direction?: Direction
   declare nodeDraggable?: boolean
   declare allowDrop?: (move: TreeNodeMoveDetails) => boolean
+  declare filterText?: string
+  declare filter?: TreeSchema['props']['filter']
   declare translations?: Partial<TreeTranslations>
 
   private readonly notifyExpanded = (details: TreeExpandedValueChangeDetails): void => {
@@ -220,6 +226,11 @@ export class XhTreeElement extends XhElement {
   // tree 机器无副作用（连打缓冲住在 refs 里、由机器自己建），
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())
+
+  /** 是否处于搜索视图（filter-text 非空）：空态文案要分「没有数据」与「没有命中」时读它。状态机尚未建立时为 false。 */
+  get searching(): boolean {
+    return this.ctrl.service ? connectTree(this.ctrl.service, wcNormalize).searching : false
+  }
 
   /** 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。状态机尚未建立时不做任何事。 */
   expandAll(): void {
@@ -269,6 +280,8 @@ export class XhTreeElement extends XhElement {
       dir: this.direction,
       nodeDraggable: this.nodeDraggable ?? false,
       allowDrop: this.allowDrop,
+      filterText: this.filterText,
+      filter: this.filter,
       translations: this.translations,
       onExpandedValueChange: this.notifyExpanded,
       onSelectionChange: this.notifySelection,

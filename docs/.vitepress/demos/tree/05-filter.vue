@@ -1,4 +1,4 @@
-<!-- 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开 -->
+<!-- 关键词过滤 | filter-text 给检索词：树按它裁到只剩命中的那几枝，祖先保留并自动展开；搜索里的展开单独记，清空检索词即回到原来的展开态 -->
 <script setup lang="ts">
 import {
   XhTextFieldClearTrigger,
@@ -18,7 +18,7 @@ import {
   XhTreeRoot,
   XhTreeTree,
 } from "@xihan-ui/vue";
-import { computed, ref, watch } from "vue";
+import { ref } from "vue";
 
 interface City {
   value: string;
@@ -60,27 +60,6 @@ const source: Region[] = [
 ];
 
 const keyword = ref("");
-
-// 分支名命中就整枝留下，否则只留命中的子节点；一个子节点都不剩的分支整枝去掉
-const collection = computed<Region[]>(() => {
-  const key = keyword.value.trim();
-  if (!key)
-    return source;
-  return source
-    .map(region => ({
-      ...region,
-      children: region.label.includes(key)
-        ? region.children
-        : region.children.filter(city => city.label.includes(key)),
-    }))
-    .filter(region => region.children.length > 0);
-});
-
-const expanded = ref<string[]>(["east"]);
-
-watch(keyword, () => {
-  expanded.value = collection.value.map(region => region.value);
-});
 </script>
 
 <template>
@@ -92,10 +71,11 @@ watch(keyword, () => {
       </XhTextFieldControl>
     </XhTextFieldRoot>
 
-    <XhTreeRoot v-model:expanded-value="expanded" :collection="collection">
+    <!-- 标记照整棵树写：不在搜索结果里的节点由组件收起 -->
+    <XhTreeRoot :collection="source" :default-expanded-value="['east']" :filter-text="keyword">
       <XhTreeLabel>投放城市</XhTreeLabel>
       <XhTreeTree>
-        <XhTreeBranch v-for="region in collection" :key="region.value" :value="region.value">
+        <XhTreeBranch v-for="region in source" :key="region.value" :value="region.value">
           <XhTreeBranchControl>
             <XhTreeBranchTrigger />
             <XhTreeBranchText>{{ region.label }}</XhTreeBranchText>
@@ -109,7 +89,7 @@ watch(keyword, () => {
           </XhTreeBranchContent>
         </XhTreeBranch>
       </XhTreeTree>
-      <!-- 空态占位：给了 collection 时由组件按剩下几枝收放 -->
+      <!-- 空态占位：一枝都没命中时由组件露出来 -->
       <XhTreeEmpty>没有匹配「{{ keyword }}」的城市</XhTreeEmpty>
     </XhTreeRoot>
   </div>

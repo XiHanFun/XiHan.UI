@@ -1,4 +1,4 @@
-// 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开
+// 关键词过滤 | filter-text 给检索词：树按它裁到只剩命中的那几枝，祖先保留并自动展开；搜索里的展开单独记，清空检索词即回到原来的展开态
 import type { ReactNode } from "react";
 import {
   XhTextFieldClearTrigger,
@@ -59,31 +59,8 @@ const source: Region[] = [
   },
 ];
 
-// 分支名命中就整枝留下，否则只留命中的子节点；一个子节点都不剩的分支整枝去掉
-function filterRegions(keyword: string): Region[] {
-  const key = keyword.trim();
-  if (!key)
-    return source;
-  return source
-    .map(region => ({
-      ...region,
-      children: region.label.includes(key)
-        ? region.children
-        : region.children.filter(city => city.label.includes(key)),
-    }))
-    .filter(region => region.children.length > 0);
-}
-
 export default function Demo(): ReactNode {
   const [keyword, setKeyword] = useState("");
-  const [expanded, setExpanded] = useState<string[]>(["east"]);
-
-  const collection = filterRegions(keyword);
-
-  function onKeyword(next: string): void {
-    setKeyword(next);
-    setExpanded(filterRegions(next).map(region => region.value));
-  }
 
   return (
     <div style={{ width: "100%", maxWidth: "320px", display: "grid", gap: "12px" }}>
@@ -92,7 +69,7 @@ export default function Demo(): ReactNode {
         placeholder="输入城市名"
         clearable
         value={keyword}
-        onValueChange={details => onKeyword(details.value)}
+        onValueChange={details => setKeyword(details.value)}
       >
         <XhTextFieldControl>
           <XhTextFieldInput aria-label="城市关键词" />
@@ -100,14 +77,11 @@ export default function Demo(): ReactNode {
         </XhTextFieldControl>
       </XhTextFieldRoot>
 
-      <XhTreeRoot
-        expandedValue={expanded}
-        onExpandedValueChange={details => setExpanded(details.value)}
-        collection={collection}
-      >
+      {/* 标记照整棵树写：不在搜索结果里的节点由组件收起 */}
+      <XhTreeRoot collection={source} defaultExpandedValue={["east"]} filterText={keyword}>
         <XhTreeLabel>投放城市</XhTreeLabel>
         <XhTreeTree>
-          {collection.map(region => (
+          {source.map(region => (
             <XhTreeBranch key={region.value} value={region.value}>
               <XhTreeBranchControl>
                 <XhTreeBranchTrigger />
@@ -125,7 +99,7 @@ export default function Demo(): ReactNode {
             </XhTreeBranch>
           ))}
         </XhTreeTree>
-        {/* 空态占位：给了 collection 时由组件按剩下几枝收放 */}
+        {/* 空态占位：一枝都没命中时由组件露出来 */}
         <XhTreeEmpty>{`没有匹配「${keyword}」的城市`}</XhTreeEmpty>
       </XhTreeRoot>
     </div>

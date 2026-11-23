@@ -25,6 +25,7 @@ import {
   resolveLazyCollection,
   syncBranchLoads,
 } from '../shared/lazy-branch'
+import { matchTreeNodeLabel, resolveTreeSearch } from '../shared/tree-search'
 import { TREE_ROW_SELECTOR } from './tree.anatomy'
 import { isTreeDropAllowed, treeMoveOf } from './tree.drag'
 
@@ -118,6 +119,25 @@ function treeCollection(prop: TreeProp, context: { get: (k: 'loadedChildren') =>
   return resolveLazyCollection(prop('collection') ?? [], context.get('loadedChildren'))
 }
 
+interface TreeViewContext {
+  get: <K extends 'loadedChildren' | 'expandedValue' | 'searchExpanded'>(k: K) => TreeSchema['context'][K]
+}
+
+/**
+ * 此刻摊平用的那份树与展开集合：搜索视图里是裁剪后的树与它自己的展开集合，
+ * 否则是有效树与作者的 expandedValue。connect 与动作都经这里取，两边算出的可见行才一致。
+ */
+export function treeView(
+  prop: TreeProp,
+  context: TreeViewContext,
+): { nodes: TreeNode[], expanded: string[], searching: boolean } {
+  const nodes = treeCollection(prop, context)
+  const search = resolveTreeSearch(nodes, prop('filterText') ?? '', prop('filter') ?? matchTreeNodeLabel)
+  return search
+    ? { nodes: search.nodes, expanded: context.get('searchExpanded'), searching: true }
+    : { nodes, expanded: context.get('expandedValue'), searching: false }
+}
+
 /** 懒分支取数接到本组件的 context、prop 与 refs 上；取数本身是与树选择共用的一套。 */
 function branchLoadPort(params: TreeActionParams): BranchLoadPort<TreeNode> {
   const { context, prop, refs, scope } = params
@@ -162,6 +182,14 @@ export const treeMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
+    // 搜索视图的展开集合：不受控、不对外通知。挂载时就带着检索词的，首帧即展开命中节点的祖先；
+    // 写成 getter 的理由同上，裁树只在建值时走一遍
+    searchExpanded: cell<string[]>(() => ({
+      get defaultValue() {
+        return resolveTreeSearch(prop('collection') ?? [], prop('filterText') ?? '', prop('filter') ?? matchTreeNodeLabel)?.expanded ?? []
+      },
+      isEqual: sameValues,
+    })),
     selection: cell<string[]>(() => ({
       value: prop('selection'),
       defaultValue: prop('defaultSelection') ?? [],
@@ -195,6 +223,8 @@ export const treeMachine = createMachine({
     track([() => prop('collection')], () => action(['syncBranchLoads', 'seedExpandAll']))
     // 受控 expandedValue、setExpandedValue 与键盘展开共用这一个入口：展开的懒分支去取，收起的中止
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
+    // 只跟检索词：collection 与 filter 常是每次渲染新建的身份，跟它们会把用户在搜索视图里手动收展的那几下冲掉
+    track([() => prop('filterText')], () => action(['syncSearchExpanded']))
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
@@ -392,7 +422,7 @@ export const treeMachine = createMachine({
         const e = params.event.current()
         if (e.type !== 'BRANCH.EXPAND' && e.type !== 'BRANCH.TOGGLE')
           return
-        if (!params.context.get('expandedValue').includes(e.value))
+        if (!treeView(params.prop, params.context).expanded.includes(e.value))
           beginBranchLoad(branchLoadPort(params), e.value, false)
       },
       retryBranch: (params) => {
@@ -432,14 +462,21 @@ export const treeMachine = createMachine({
           return
         context.set('expandedValue', unique(e.value))
       },
-      expandBranch: ({ context, event }) => {
+      /** 换检索词：搜索视图的展开集合重置为「因子孙命中而留下的分支」；不搜索时清空。 */
+      syncSearchExpanded: ({ context, prop }) => {
+        const search = resolveTreeSearch(treeCollection(prop, context), prop('filterText') ?? '', prop('filter') ?? matchTreeNodeLabel)
+        context.set('searchExpanded', search?.expanded ?? [])
+      },
+      // 搜索视图里的展开收起只改它自己的展开集合，不动作者的 expandedValue
+      expandBranch: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'BRANCH.EXPAND')
           return
-        const current = context.get('expandedValue')
+        const key = treeView(prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value))
           return
-        context.set('expandedValue', [...current, e.value])
+        context.set(key, [...current, e.value])
       },
       collapseBranch: (params) => {
         const { context } = params
@@ -447,18 +484,20 @@ export const treeMachine = createMachine({
         if (e.type !== 'BRANCH.COLLAPSE')
           return
         cancelBranchLoad(branchLoadPort(params), e.value)
-        context.set('expandedValue', context.get('expandedValue').filter(v => v !== e.value))
+        const key = treeView(params.prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        context.set(key, context.get(key).filter(v => v !== e.value))
       },
       toggleBranch: (params) => {
         const { context } = params
         const e = params.event.current()
         if (e.type !== 'BRANCH.TOGGLE')
           return
-        const current = context.get('expandedValue')
+        const key = treeView(params.prop, context).searching ? 'searchExpanded' : 'expandedValue'
+        const current = context.get(key)
         if (current.includes(e.value))
           cancelBranchLoad(branchLoadPort(params), e.value)
         context.set(
-          'expandedValue',
+          key,
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },
@@ -499,8 +538,8 @@ export const treeMachine = createMachine({
         // Ctrl/Cmd 切换这一项、裸点换成这一项，锚点都挪过来
         if (mode === 'extended') {
           if (e.extend && anchor != null) {
-            const roots = treeCollection(prop, context)
-            const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
+            const view = treeView(prop, context)
+            const order = flattenTree(view.nodes, view.expanded).map(row => row.value)
             const baseline = e.additive ? (context.get('selectionBaseline') ?? current) : []
             context.set('selectionBaseline', e.additive ? baseline : null)
             const next = applySelection({
@@ -529,9 +568,9 @@ export const treeMachine = createMachine({
         // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
         // 再叠上范围选，选出来什么会难以预料
         if (e.extend && mode === 'multiple' && !cascade && anchor != null) {
-          const roots = treeCollection(prop, context)
-          // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去
-          const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
+          const view = treeView(prop, context)
+          // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去；搜索视图里就是裁剪后的那几行
+          const order = flattenTree(view.nodes, view.expanded).map(row => row.value)
           const baseline = context.get('selectionBaseline') ?? current
           context.set('selectionBaseline', baseline)
           const next = applySelection({

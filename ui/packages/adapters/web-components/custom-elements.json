@@ -81953,6 +81953,24 @@
             },
             {
               "kind": "field",
+              "name": "filterText",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "filter-text"
+            },
+            {
+              "kind": "field",
+              "name": "filter",
+              "privacy": "public",
+              "type": {
+                "text": "Function"
+              },
+              "description": "自定义匹配规则；缺省为标签大小写不敏感包含。只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -82015,6 +82033,15 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "searching",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "是否处于搜索视图（filter-text 非空）：空态文案要分「没有数据」与「没有命中」时读它。状态机尚未建立时为 false。",
+              "readonly": true
             },
             {
               "kind": "method",
@@ -82250,6 +82277,14 @@
               "description": "标题文字：不写部件时铺进标准结构的 label；手写结构时写 label 部件",
               "name": "label",
               "fieldName": "label"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "检索词：非空即按 filter 把树裁到只剩命中的那几枝，祖先保留并自动展开；搜索视图的展开单独记，清空即回到原来的展开态。树自己不带输入框。",
+              "name": "filter-text",
+              "fieldName": "filterText"
             },
             {
               "type": {

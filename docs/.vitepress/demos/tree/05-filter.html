@@ -1,4 +1,4 @@
-<!-- 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开 -->
+<!-- 关键词过滤 | filter-text 给检索词：树按它裁到只剩命中的那几枝，祖先保留并自动展开；搜索里的展开单独记，清空检索词即回到原来的展开态 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
   <xh-text-field id="tree-filter-keyword" type="search" placeholder="输入城市名" clearable>
     <div data-xh-part="root">
@@ -69,7 +69,7 @@
           </div>
         </div>
       </div>
-      <!-- 空态占位：给了 collection 时由元素按剩下几枝收放 -->
+      <!-- 空态占位：一枝都没命中时由元素露出来 -->
       <div data-xh-part="empty"></div>
     </div>
   </xh-tree>
@@ -79,7 +79,6 @@
   const host = document.getElementById("tree-filter");
   const keyword = document.getElementById("tree-filter-keyword");
   const empty = host.querySelector('[data-xh-part="empty"]');
-  const tree = host.querySelector('[data-xh-part="tree"]');
 
   const source = [
     {
@@ -109,62 +108,12 @@
     },
   ];
 
+  // 标记照整棵树写：不在搜索结果里的节点由元素收起
   host.collection = source;
-  host.expandedValue = ["east"];
-  host.addEventListener(
-    "expanded-value-change",
-    (event) => (host.expandedValue = event.detail.value),
-  );
-
-  function part(name, text) {
-    const node = document.createElement("div");
-    node.dataset.xhPart = name;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  }
-
-  // 树数据换了，标记跟着重铺
-  function renderTree(regions) {
-    tree.replaceChildren(
-      ...regions.map((region) => {
-        const branch = part("branch");
-        branch.setAttribute("value", region.value);
-        const control = part("branch-control");
-        control.append(part("branch-trigger"), part("branch-text", region.label), part("item-indicator"));
-        const content = part("branch-content");
-        content.append(
-          ...region.children.map((city) => {
-            const item = part("item");
-            item.setAttribute("value", city.value);
-            item.append(part("item-text", city.label), part("item-indicator"));
-            return item;
-          }),
-        );
-        branch.append(control, content);
-        return branch;
-      }),
-    );
-  }
-
-  // 分支名命中就整枝留下，否则只留命中的子节点；一个子节点都不剩的分支整枝去掉
-  function filter(key) {
-    if (!key) return source;
-    return source
-      .map((region) => ({
-        ...region,
-        children: region.label.includes(key)
-          ? region.children
-          : region.children.filter((city) => city.label.includes(key)),
-      }))
-      .filter((region) => region.children.length > 0);
-  }
+  host.defaultExpandedValue = ["east"];
 
   keyword.addEventListener("value-change", (event) => {
-    const key = event.detail.value.trim();
-    const regions = filter(key);
-    host.collection = regions;
-    renderTree(regions);
-    host.expandedValue = regions.map((region) => region.value);
-    empty.textContent = `没有匹配「${key}」的城市`;
+    host.filterText = event.detail.value;
+    empty.textContent = `没有匹配「${event.detail.value.trim()}」的城市`;
   });
 </script>

@@ -28,6 +28,7 @@ type TreeProps = TreeSchema['props']
 export type TreeRootSlotProps = Pick<
   TreeApi,
   | 'visibleNodes'
+  | 'searching'
   | 'expandedValue'
   | 'selection'
   | 'checkedValue'
@@ -118,6 +119,10 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   nodeDraggable?: boolean
   /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
   allowDrop?: TreeProps['allowDrop']
+  /** 检索词：非空即按 filter 把树裁到只剩命中的那几枝，祖先保留并自动展开；搜索视图的展开单独记，清空即回到原来的展开态。树自己不带输入框。 */
+  filterText?: string
+  /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
+  filter?: TreeProps['filter']
   translations?: TreeProps['translations']
   onExpandedValueChange?: TreeProps['onExpandedValueChange']
   onSelectionChange?: TreeProps['onSelectionChange']
@@ -159,6 +164,8 @@ export function XhTreeRoot({
   dir,
   nodeDraggable,
   allowDrop,
+  filterText,
+  filter,
   translations,
   onExpandedValueChange,
   onSelectionChange,
@@ -198,6 +205,8 @@ export function XhTreeRoot({
     dir,
     nodeDraggable,
     allowDrop,
+    filterText,
+    filter,
     translations,
     onExpandedValueChange,
     onSelectionChange,
@@ -216,6 +225,7 @@ export function XhTreeRoot({
           ? renderDefaultStructure(api, label)
           : renderSlot(children, {
               visibleNodes: api.visibleNodes,
+              searching: api.searching,
               expandedValue: api.expandedValue,
               selection: api.selection,
               checkedValue: api.checkedValue,
