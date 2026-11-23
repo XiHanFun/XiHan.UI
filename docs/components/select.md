@@ -162,6 +162,12 @@ outline、subtle 和 ghost
 
 <XhDemo src="select/24-object-value" />
 
+### 限定多选数量
+
+max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
+
+<XhDemo src="select/25-max-selected" />
+
 ## 设计指引
 
 ### 何时使用
