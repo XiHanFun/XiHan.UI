@@ -10,7 +10,10 @@ XiHan.UI 的公开包都已发布到 npm，同属一个版本组、始终同号�
 # Vue 项目：适配器 + 默认皮肤
 pnpm add @xihan-ui/vue @xihan-ui/styles
 
-# 原生 / 非 Vue 项目：自定义元素 + 默认皮肤
+# React 项目：适配器 + 默认皮肤
+pnpm add @xihan-ui/react @xihan-ui/styles
+
+# 原生或其它框架的项目：自定义元素 + 默认皮肤
 pnpm add @xihan-ui/web-components @xihan-ui/styles
 
 # 只需要设计令牌，自行编写皮肤
@@ -23,7 +26,7 @@ pnpm add @xihan-ui/code-highlight
 
 `@xihan-ui/styles` 不是必需的：组件不依赖默认皮肤，只使用令牌自行编写样式是可行的路径，见下文“样式的三种接法”。
 
-适配器的引擎侧依赖（`core` / `motion` / `pointer` / `viz` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，由项目提供。
+适配器的引擎侧依赖（`core` / `motion` / `pointer` / `viz` / `headless` / `position`）写在 `dependencies` 中，安装适配器时一并安装，不需要单独列出。`@xihan-ui/vue` 的 peer 依赖是 `vue@^3.5.0`，`@xihan-ui/react` 的是 `react@^19.0.0` 与 `react-dom@^19.0.0`，由项目提供。
 
 `backgrounds` / `sound` / `code-highlight` 是可选 peer，按需安装。未安装 `code-highlight` 时，代码视图渲染纯文本，不报错。
 
@@ -154,7 +157,37 @@ export default defineNuxtConfig({
 
 模块还在服务端把视觉环境渲染到 `<html>` 上，并在首帧前读回读者存过的偏好。选项与 `$xhVisual` 的用法见 [Vue 适配器 · Nuxt](./adapters/vue#nuxt)。
 
-## 接入原生 / 非 Vue 项目
+## 接入 React 项目
+
+```tsx
+// main.tsx
+import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+
+// 皮肤入口自带层序声明与令牌，只引这一行
+import "@xihan-ui/styles";
+
+// 把八轴视觉环境写到 <html> 上，并显式处理持久化失败
+createVisualEnvironmentController({
+  root: document.documentElement,
+  storageKey: "app-visual-environment",
+  onStorageError: detail => console.error("视觉偏好持久化失败", detail),
+  initial: { mode: "system", motion: "system", transparency: "system" },
+});
+
+createRoot(document.getElementById("root")!).render(<App />);
+```
+
+组件按名称从主入口取，没有必须安装的 provider：
+
+```tsx
+import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@xihan-ui/react";
+```
+
+只支持 React 19。受控与非受控、函数式 children、服务端组件里怎么用，见 [React 适配器](./adapters/react)。
+
+## 接入原生或其它框架的项目
 
 ```ts
 import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";

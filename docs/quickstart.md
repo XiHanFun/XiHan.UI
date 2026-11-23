@@ -1,6 +1,6 @@
 # 快速上手
 
-同一个对话框的三种写法。三种写法运行同一个状态机、同一份 `connect`，差别只在由谁把属性写到 DOM 上。
+同一个对话框的四种写法：Vue 组件、React 组件、Vue 组合式函数与原生自定义元素。四种写法运行同一个状态机、同一份 `connect`，差别只在由谁把属性写到 DOM 上。
 
 ## 用法一：Vue 组件
 
@@ -76,7 +76,46 @@ const wifi = ref(true);
 
 每个值类组件同时发出两个事件：`value-change` 携带完整明细对象（如 `{ value }`），`update:value` 携带裸值供 `v-model` 使用。
 
-## 用法二：Vue 组合式函数
+## 用法二：React 组件
+
+部件与 Vue 侧同名，一个部件一个组件。根的函数式 children 拿到展开态与 `setOpen`：
+
+```tsx
+import {
+  XhButton,
+  XhDialogCloseTrigger,
+  XhDialogContent,
+  XhDialogDescription,
+  XhDialogRoot,
+  XhDialogTitle,
+  XhDialogTrigger,
+} from "@xihan-ui/react";
+
+export function ConfirmDialog() {
+  return (
+    <XhDialogRoot>
+      {({ setOpen }) => (
+        <>
+          <XhDialogTrigger>打开对话框</XhDialogTrigger>
+          <XhDialogContent>
+            <XhDialogTitle>确认操作</XhDialogTitle>
+            <XhDialogDescription>这条操作不可撤销。</XhDialogDescription>
+            <div className="row end">
+              <XhButton variant="ghost" onClick={() => setOpen(false)}>取消</XhButton>
+              <XhButton variant="solid" onClick={() => setOpen(false)}>确定</XhButton>
+            </div>
+            <XhDialogCloseTrigger>✕</XhDialogCloseTrigger>
+          </XhDialogContent>
+        </>
+      )}
+    </XhDialogRoot>
+  );
+}
+```
+
+受控写法是 `open` 加 `onOpenChange={({ open }) => setOpen(open)}`，只给 `defaultOpen` 即非受控；回调收到的是与 Vue 侧相同的明细对象。更多见 [React 适配器](./adapters/react)。
+
+## 用法三：Vue 组合式函数
 
 不需要现成的 DOM 结构时，直接使用 `api`，自行决定渲染的标签。
 
@@ -105,9 +144,9 @@ const items = [
 
 `api` 上的每个 `getXxxProps()` 返回该部件当前应有的全部属性：`data-scope` / `data-part`、`id` 与 `aria-*` 关联、`data-state` 等状态属性，以及事件处理器。用 `v-bind` 绑定即可。
 
-## 用法三：原生自定义元素
+## 用法四：原生自定义元素
 
-结构完全由作者编写，用 `data-xh-part` 标出节点的角色。元素是 Light DOM 行为宿主：它不渲染任何结构，只向作者编写的节点写入属性和事件。
+结构写在 Light DOM 里，用 `data-xh-part` 标出节点的角色，元素向这些节点写入属性和事件。提供了标准结构的元素（对话框在内）一个部件都不写时按标准结构生成，见各组件页。
 
 ```html
 <xh-dialog>
@@ -134,7 +173,7 @@ defineXhElements();
 
 ## 接入主题
 
-三种用法共用同一套八轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
+四种用法共用同一套八轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
 
 ```ts
 import { createVisualEnvironmentController } from "@xihan-ui/tokens/runtime";
@@ -156,7 +195,7 @@ visual.setPreference({ mode: "system" });
 visual.subscribe(state => console.log(state.mode, state.density, state.motion, state.transparency));
 ```
 
-七个维度分别是色彩模式、品牌、密度、书写方向、对比度、动效与透明材质，详见[设计令牌与主题](./guide/theme)。
+八个维度分别是色彩模式、品牌、密度、书写方向、对比度、动效、透明度与材质，详见[设计令牌与主题](./guide/theme)。
 
 ## 延伸阅读
 
@@ -166,4 +205,4 @@ visual.subscribe(state => console.log(state.mode, state.density, state.motion, s
 2. [状态机运行时](./guide/machine)：组件行为的定义方式与受控值的接入；
 3. [connect 与属性产出](./guide/connect)：从状态机状态到 DOM 属性。
 
-按需求继续阅读：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
+按需求继续阅读：[Vue 适配器](./adapters/vue)、[React 适配器](./adapters/react)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
