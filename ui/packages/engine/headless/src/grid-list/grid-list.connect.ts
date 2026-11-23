@@ -168,10 +168,9 @@ export function connectGridList<T extends PropTypes>(
             event.preventDefault()
             if (event.repeat)
               return
-            if (prop('onAction'))
-              send({ type: 'ROW.ACTION', value: rowValue })
-            else
-              commitSelection(rowValue)
+            // 确认键恒为行主操作，选择归 Space。不按「有没有 onAction」分叉：Vue 与 Web Components 的适配器
+            // 恒把派发事件的处理器交给机器，只有 React 按需传，按它判三端会各走各的
+            send({ type: 'ROW.ACTION', value: rowValue })
             return
           }
           case 'typeahead': {

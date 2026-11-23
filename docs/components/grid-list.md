@@ -66,7 +66,7 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 
 - selectionMode 支持 none、single 与 multiple；none 是 Action List 模式。
 - 整组只有一个行级 Tab 停靠点；上下方向键、Home/End 与连打检索只在行焦点上工作。
-- Space 改变选择，Enter 触发行主操作；焦点在 row-action 时完全交给原生按钮。
+- Space 改变选择，Enter 触发行主操作；没接 `action` 时 Enter 什么也不做，不退回成选择，三端一致。焦点在 row-action 时完全交给原生按钮。
 - 点行缺省是选择；`actionOnClick` 打开后点行触发行主操作（比如看详情），选择只由行首方框与 Space 改变，一边勾选一批行做批量操作、一边点开某一行看详情。方框不占 Tab 位，点它时焦点落在所在的行上；Shift + 点击仍是扩选。
 - 多选下 Shift 扩选：Shift + 方向键 / Home / End 移动焦点并把锚点到新焦点行那一段并进选中，Shift + Space 与 Shift + 点击扩到那一行。每一次扩选都从扩选开始前的选中集重算，往回扩即收回；禁用行占着位置但不被收进去。
 - row-actions 是独立 gridcell，按钮点击不会冒泡成行选择。

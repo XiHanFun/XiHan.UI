@@ -85,6 +85,32 @@ describe('gridList 选择与动作', () => {
     document.body.innerHTML = ''
   })
 
+  it('确认键恒为行主操作：不传 onAction 也不顺带改选择，选择只归 Space', () => {
+    const { machine } = service({ collection: [{ value: 'a', label: 'Alpha' }] })
+    machine.send({ type: 'ROW.FOCUS', value: 'a' })
+    const onKeyDown = (connectGridList(machine, normalizeProps).getRootProps() as Record<string, unknown>).onKeyDown as (event: KeyboardEvent) => void
+    const root = document.createElement('div')
+    const row = document.createElement('div')
+    root.append(row)
+    const press = (key: string): void => onKeyDown({
+      key,
+      isComposing: false,
+      keyCode: 0,
+      shiftKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      repeat: false,
+      currentTarget: root,
+      target: row,
+      preventDefault: () => {},
+    } as unknown as KeyboardEvent)
+    press('Enter')
+    expect(machine.context.get('value')).toEqual([])
+    press(' ')
+    expect(machine.context.get('value')).toEqual(['a'])
+  })
+
   it('行主操作与选择分开通知', () => {
     const onAction = vi.fn()
     const { machine } = service({ onAction })
