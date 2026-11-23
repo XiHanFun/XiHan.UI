@@ -369,7 +369,7 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 | `--xh-floating-panel-header-bg` | `header` | `background` | `default` | `--xh-material-frosted-bg` | floating-panel 的 header 部件 background 覆盖槽。 |
 | `--xh-floating-panel-header-border` | `header` | `border-block-end` | `default` | `--xh-material-frosted-separator` | floating-panel 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-floating-panel-header-gap` | `header` | `gap` | `default` | `--xh-control-gap-sm` | floating-panel 的 header 部件 gap 覆盖槽。 |
-| `--xh-floating-panel-header-px` | `header` | `padding-inline` | `default` | `--xh-space-3` | floating-panel 的 header 部件 padding-inline 覆盖槽。 |
+| `--xh-floating-panel-header-px` | `header` | `padding-inline` | `default` | `--xh-surface-px-sm` | floating-panel 的 header 部件 padding-inline 覆盖槽。 |
 | `--xh-floating-panel-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | floating-panel 的 header 部件 padding-block 覆盖槽。 |
 | `--xh-floating-panel-icon-size` | `close-trigger`<br>`content`<br>`root`<br>`trigger`<br>`window-state-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | floating-panel 的 close-trigger、content、root、trigger、window-state-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
