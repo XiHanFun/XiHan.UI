@@ -199,6 +199,29 @@ describe('field Chrome Family Recipe', () => {
     expect(css).not.toContain('--xh-elevation-raised')
   })
 
+  it('浏览器给搜索框、密码框自带的钮都收掉，且各自成条：并成一组会被不认识其中一个伪元素的浏览器整条丢掉', async () => {
+    const css = compileFieldChromeRecipe(await source())
+    // 搜索框的清除钮（Chromium / Safari）与密码框的显示密码钮（Edge）：这两件事归组件自己的部件
+    expect(block(css, '[data-xh-field-input]::-webkit-search-cancel-button')).toContain('display: none;')
+    expect(block(css, '[data-xh-field-input]::-ms-reveal')).toContain('display: none;')
+    expect(css).not.toMatch(/::-webkit-search-cancel-button\s*,/)
+    expect(css).not.toMatch(/,\s*\[data-xh-field-input\]::-webkit-search-cancel-button/)
+    expect(css).not.toMatch(/::-ms-reveal\s*,/)
+    expect(css).not.toMatch(/,\s*\[data-xh-field-input\]::-ms-reveal/)
+  })
+
+  it('自动填充的那块底不盖外壳的聚焦环：套在外壳里的输入框上下各裁掉环内侧那条线的宽度', async () => {
+    const css = compileFieldChromeRecipe(await source())
+    const inner = 'calc(var(--xh-ring-width) - var(--xh-stroke-thin))'
+    // 环内侧那条线与裁掉的宽度是同一个量：线改粗了，裁的也得跟着
+    expect(block(css, FOCUS)).toContain(`inset 0 0 0 ${inner} `)
+    expect(block(css, '[data-xh-field-chrome] [data-xh-field-input]:autofill')).toContain(`clip-path: inset(${inner} 0);`)
+    expect(block(css, '[data-xh-field-chrome] [data-xh-field-input]:-webkit-autofill')).toContain(`clip-path: inset(${inner} 0);`)
+    // 外壳自己就是原生控件时不裁：那一裁会切掉它自己的描边
+    expect(block(css, '[data-xh-field-input]:autofill')).not.toContain('clip-path')
+    expect(block(css, '[data-xh-field-input]:-webkit-autofill')).not.toContain('clip-path')
+  })
+
   it('业务侧未命名空间的 data-field 不会命中家族选择器', async () => {
     const css = compileFieldChromeRecipe(await source())
     expect(css).toContain('[data-xh-field-chrome]')

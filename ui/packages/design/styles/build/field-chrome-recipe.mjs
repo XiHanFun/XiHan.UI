@@ -155,7 +155,8 @@ export function assertFieldChromeRecipe(source) {
  * 聚焦档唯一允许的投影：焦点环的后一半，不是海拔。环是换色后的描边加上它内侧这道 inset 线，
  * 两者合起来正好一个环宽（--xh-ring-width），与别的部件盒内的环同宽、同在盒内。
  */
-const FOCUS_RING = 'inset 0 0 0 calc(var(--xh-ring-width) - var(--xh-stroke-thin)) var(--xh-field-border-focus, var(--xh-_field-variant-border-focus))'
+const RING_INNER_WIDTH = 'calc(var(--xh-ring-width) - var(--xh-stroke-thin))'
+const FOCUS_RING = `inset 0 0 0 ${RING_INNER_WIDTH} var(--xh-field-border-focus, var(--xh-_field-variant-border-focus))`
 
 // 形态矩阵不变量：字段不是抬起面（只有聚焦档画环的 inset 线）、聚焦与失效描边不随形态、disabled/readOnly 三档同面。
 function assertVariantMatrix(source) {
@@ -395,6 +396,13 @@ export function compileFieldChromeRecipe(source) {
   rule('[data-xh-field-chrome] [data-xh-action-profile=\'field-inset\']:focus-visible', '    outline: none;')
   rule('[data-xh-field-input][data-disabled]', '    color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));')
   rule('[data-xh-field-input]::placeholder', `    color: var(--xh-field-placeholder-fg, ${source.nativeInput.placeholderColor});`)
+  // 浏览器给搜索框自带的清除钮：有值且悬停或聚焦时出现在行尾。清空归组件自己的 clear-trigger，
+  // 原生那颗不收掉，开了 clearable 的搜索框行尾就并排两个叉；没开的也不该多出一个库管不着的钮
+  rule('[data-xh-field-input]::-webkit-search-cancel-button', '    display: none;')
+  // Edge 给密码框自带一颗显示密码钮：打过字且聚焦时出现在行尾。显示与隐藏归组件自己的钮，
+  // 原生那颗不收掉，Edge 里密码框行尾就并排两只眼睛。单独一条规则：别的浏览器不认识这个伪元素，
+  // 与别的选择器并成一组会连累整条规则被丢掉
+  rule('[data-xh-field-input]::-ms-reveal', '    display: none;')
   rule('[data-xh-field-input][data-xh-field-layout=\'textarea\']', [
     '    block-size: auto;',
     '    max-inline-size: 100%;',
@@ -415,6 +423,12 @@ export function compileFieldChromeRecipe(source) {
     `    box-shadow: inset 0 0 0 100vmax var(--xh-field-autofill-bg, ${source.nativeInput.autofillBackground});`,
     `    -webkit-text-fill-color: var(--xh-field-autofill-fg, ${source.nativeInput.autofillForeground});`,
   ].join('\n'))
+  // 自动填充的那块底铺满输入框的整个盒，而输入框上下贴着外壳的内沿——聚焦环内侧那条线正画在这一圈上，
+  // 被这块底盖住，环在输入框那一段就只剩描边那一半粗，行尾按钮那一段却是完整的。
+  // 上下各裁掉那条线的宽度，让出外壳自己的环（自动填充的预览与填入都是这个状态）。
+  // 只裁套在外壳里的输入框：外壳自己就是原生控件时，这一裁会切掉它自己的描边
+  rule('[data-xh-field-chrome] [data-xh-field-input]:autofill', `    clip-path: inset(${RING_INNER_WIDTH} 0);`)
+  rule('[data-xh-field-chrome] [data-xh-field-input]:-webkit-autofill', `    clip-path: inset(${RING_INNER_WIDTH} 0);`)
 
   const forced = []
   const forcedRule = (selector, state, extra = []) => rule(
