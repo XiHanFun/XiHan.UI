@@ -17,6 +17,7 @@ import { connectColorSlider } from '../color-slider'
 import { connectColorSwatchPicker } from '../color-swatch-picker'
 import { COLOR_PICKER_EN_US } from '../locale/en-US'
 import { colorCss, colorHsvaToRgba, colorHueCss, colorParse, colorResolveFormat, colorResolveHsva } from '../shared/color'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { pressHandlers } from '../shared/press'
 import { connectSelectionTags } from '../shared/selection-tags'
@@ -25,7 +26,7 @@ import { VISUALLY_HIDDEN_STYLE } from '../shared/visually-hidden'
 import { colorPickerAnatomy } from './color-picker.anatomy'
 import { colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
-import { COLOR_PICKER_DEFAULT_PLACEMENT, colorPickerIncludes, resolveColorPickerMaxSelected } from './color-picker.machine'
+import { COLOR_PICKER_DEFAULT_PLACEMENT, colorPickerIncludes } from './color-picker.machine'
 
 const parts = colorPickerAnatomy.build()
 
@@ -93,7 +94,7 @@ export function connectColorPicker<T extends PropTypes>(
   const valueText = blank ? (prop('placeholder') ?? label.placeholder) : value
   // 清空钮：单选有值、改得动时才显示；常驻形态没有盒，不铺它
   const canClear = !multiple && !inline && interactive && !blank
-  const maxSelected = resolveColorPickerMaxSelected(prop('maxSelected'))
+  const maxSelected = resolveMaxSelected(prop('maxSelected'))
   // 「添加」：工作色解析得出、还没选过、没到上限
   const canAdd = multiple && interactive && colorParse(value) != null && !colorPickerIncludes(selected, value)
     && (maxSelected == null || selected.length < maxSelected)

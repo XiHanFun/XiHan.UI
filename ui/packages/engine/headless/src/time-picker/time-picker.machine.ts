@@ -20,6 +20,7 @@ import { sameArray } from '../shared/array'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -80,14 +81,6 @@ function normalizeTimes(values: readonly string[], granularity: TimeGranularity)
       out.add(text)
   }
   return [...out].sort()
-}
-
-/** maxSelected 的生效值：非整数向下取整，小于 1 或不是有限数时不设上限。 */
-export function resolveTimePickerMaxSelected(max: number | undefined): number | null {
-  if (max == null || !Number.isFinite(max))
-    return null
-  const floor = Math.floor(max)
-  return floor >= 1 ? floor : null
 }
 
 /** 此刻该编辑哪一份逐段值；与 connect 显示用的是同一条规则。多选时就是浮层里拼着的草稿。 */
@@ -440,7 +433,7 @@ export const timePickerMachine = createMachine({
           return
         const text = formatTimeValue(params.context.get('draft'), currentGranularity(params))
         const current = params.context.get('value')
-        const max = resolveTimePickerMaxSelected(params.prop('maxSelected'))
+        const max = resolveMaxSelected(params.prop('maxSelected'))
         if (text === '' || current.includes(text) || isTimeOutOfRange(text, params.prop('min'), params.prop('max')))
           return
         if (max != null && current.length >= max)
@@ -465,7 +458,7 @@ export const timePickerMachine = createMachine({
           params.context.set('value', current.filter(value => value !== e.value))
           return
         }
-        const max = resolveTimePickerMaxSelected(params.prop('maxSelected'))
+        const max = resolveMaxSelected(params.prop('maxSelected'))
         if (max != null && current.length >= max)
           return
         params.context.set('value', normalizeTimes([...current, e.value], currentGranularity(params)))

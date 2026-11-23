@@ -10,6 +10,7 @@ import type { TimeGranularity, TimeHourCycle, TimeSegmentType } from '../time-fi
 import type { TimePickerApi, TimePickerColumnUnit, TimePickerPresetState, TimePickerPressedKey, TimePickerSchema, TimePickerTagMeta } from './time-picker.types'
 import { createPressTracker, dataAttr, focusItem, focusSafely, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'
 import { TIME_PICKER_EN_US } from '../locale/en-US'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { isTimeItemUnavailable, resolveTimeStep, timeColumnsFor, timeItemValue } from '../shared/time-constraint'
@@ -37,7 +38,7 @@ import {
   timePickerPresetQuery,
   timePickerSegmentQuery,
 } from './time-picker.anatomy'
-import { resolveTimePickerMaxSelected, TIME_PICKER_DEFAULT_PLACEMENT } from './time-picker.machine'
+import { TIME_PICKER_DEFAULT_PLACEMENT } from './time-picker.machine'
 
 const parts = timePickerAnatomy.build()
 
@@ -114,7 +115,7 @@ export function connectTimePicker<T extends PropTypes>(
   const canClear = editable && dirty
   const placeholder = prop('placeholder')
   const placeholderText = placeholder != null && placeholder !== '' ? placeholder : undefined
-  const maxSelected = resolveTimePickerMaxSelected(prop('maxSelected'))
+  const maxSelected = resolveMaxSelected(prop('maxSelected'))
   const full = maxSelected != null && values.length >= maxSelected
   // 「添加」：草稿填全、在界内、还没选过、没到上限
   const canAdd = multiple && editable && value !== '' && !values.includes(value) && !full

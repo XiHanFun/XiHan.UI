@@ -19,6 +19,7 @@ import { sameArray } from '../shared/array'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -326,14 +327,6 @@ export function toColorPickerValues(input: string | readonly string[] | undefine
   return input.filter(value => value !== '')
 }
 
-/** maxSelected 的生效值：非整数向下取整，小于 1 或不是有限数时不设上限。 */
-export function resolveColorPickerMaxSelected(max: number | undefined): number | null {
-  if (max == null || !Number.isFinite(max))
-    return null
-  const floor = Math.floor(max)
-  return floor >= 1 ? floor : null
-}
-
 /** 选中值里有没有这个颜色：按颜色比，写法不同（#fff 与 #ffffff）也算同一个。 */
 export function colorPickerIncludes(values: readonly string[], color: string): boolean {
   return values.some(value => colorSameColor(value, color))
@@ -564,7 +557,7 @@ export const colorPickerMachine = createMachine({
           return
         const color = params.context.get('value')
         const current = params.context.get('selected')
-        const max = resolveColorPickerMaxSelected(params.prop('maxSelected'))
+        const max = resolveMaxSelected(params.prop('maxSelected'))
         if (!colorParse(color) || colorPickerIncludes(current, color) || (max != null && current.length >= max))
           return
         params.context.set('selected', [...current, color])
@@ -587,7 +580,7 @@ export const colorPickerMachine = createMachine({
           params.context.set('selected', current.filter(value => !colorSameColor(value, e.value)))
           return
         }
-        const max = resolveColorPickerMaxSelected(params.prop('maxSelected'))
+        const max = resolveMaxSelected(params.prop('maxSelected'))
         if (max != null && current.length >= max)
           return
         params.context.set('selected', [...current, e.value])

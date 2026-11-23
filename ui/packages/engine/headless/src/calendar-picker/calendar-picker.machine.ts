@@ -16,6 +16,7 @@ import {
   trackLiveness,
   trackPageFade,
 } from '../shared/calendar'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { calendarPickerCellTriggerQuery } from './calendar-picker.anatomy'
 
 const { createMachine } = setup<CalendarPickerSchema>()
@@ -30,10 +31,7 @@ function isCellKey(key: CalendarPickerPressedKey): boolean {
  * 连接层与机器共用这一条，格子的禁用面与点击拦截才对得上。
  */
 export function calendarPickerMaxSelected(raw: number | undefined, mode: CalendarPickerSelectionMode): number | null {
-  if (mode !== 'multiple' || raw == null || !Number.isFinite(raw))
-    return null
-  const max = Math.floor(raw)
-  return max >= 1 ? max : null
+  return mode === 'multiple' ? resolveMaxSelected(raw) : null
 }
 
 /** 选中集合的不变量：单选长度 ≤ 1，多选去重升序。 */
