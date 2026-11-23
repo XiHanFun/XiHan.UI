@@ -23367,6 +23367,15 @@
             },
             {
               "kind": "field",
+              "name": "closeOnInteractOutside",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "close-on-interact-outside"
+            },
+            {
+              "kind": "field",
               "name": "restoreFocus",
               "privacy": "public",
               "type": {
@@ -23781,6 +23790,14 @@
               "description": "Esc 关闭，默认 true",
               "name": "close-on-escape",
               "fieldName": "closeOnEscape"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭",
+              "name": "close-on-interact-outside",
+              "fieldName": "closeOnInteractOutside"
             },
             {
               "type": {

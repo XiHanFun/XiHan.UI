@@ -39,6 +39,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
  * @attr {'dialog'|'alertdialog'} dialog-role - 语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了对话框，连同里面的触发钮
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
+ * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响 content 的最大宽度，写在 content 上
@@ -98,6 +99,7 @@ export class XhDialogElement extends XhPortalHostElement {
     dialogRole: { converter: STRING_CONVERTER, attribute: 'dialog-role' },
     modal: { converter: BOOLEAN_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
+    closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
@@ -121,6 +123,7 @@ export class XhDialogElement extends XhPortalHostElement {
   declare dialogRole?: DialogSchema['props']['role']
   declare modal?: boolean
   declare closeOnEscape?: boolean
+  declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
   declare initialFocus?: string
   declare size?: Size
@@ -217,8 +220,8 @@ export class XhDialogElement extends XhPortalHostElement {
       modal: this.modal,
       role: this.dialogRole,
       closeOnEscape: this.pendingState ? false : this.closeOnEscape,
-      // 异步确认挂起期间层外交互也收不起；平时交给机器的缺省
-      closeOnInteractOutside: this.pendingState ? false : undefined,
+      // 异步确认挂起期间层外交互也收不起；平时取作者给的，没给即交给机器的缺省
+      closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,
       size: this.size,
