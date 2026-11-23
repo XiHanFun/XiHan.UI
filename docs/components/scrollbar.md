@@ -123,11 +123,10 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `name` | `CustomEvent` |  |
-| `scroll-start` | `` | 开始滚动；detail 为 `{ offset: number, max: number }` |
-| `scroll-end` | `` | 一段滚动结束（停止 120ms）；detail 同上 |
-| `drag-start` | `` | 按住滑块；detail 同上 |
-| `drag-end` | `` | 松开滑块；detail 同上 |
+| `scroll-start` | `CustomEvent` | 开始滚动；detail 为 `{ offset: number, max: number }` |
+| `scroll-end` | `CustomEvent` | 一段滚动结束（停止 120ms）；detail 同上 |
+| `drag-start` | `CustomEvent` | 按住滑块；detail 同上 |
+| `drag-end` | `CustomEvent` | 松开滑块；detail 同上 |
 
 ### 插槽
 
