@@ -1,4 +1,5 @@
-// 分支行也摆 item-indicator：选中的分支与选中的叶子一样在行尾亮出对号（真实鼠标点行，量对号的不透明度）。
+// 分支行也摆 item-indicator：multiple 档下它是行首勾选框，选中的分支与选中的叶子一样在方框里亮出勾
+// （真实鼠标点行，量方框里那枚勾的不透明度）；作者把标记写在行尾，皮肤照样把方框排到文字之前。
 import type { TreeNode } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
@@ -58,16 +59,16 @@ function rowOf(value: string): HTMLElement {
   return branch ?? document.querySelector<HTMLElement>(`[data-scope='tree'][data-part='item'][data-value='${value}']`)!
 }
 
-/** 每一行行尾对号的不透明度，按文档序。 */
+/** 每一行方框里那枚勾的不透明度，按文档序。 */
 function checks(): Record<string, number> {
   const out: Record<string, number> = {}
   for (const value of ['pages', 'header', 'body', 'styles'])
-    out[value] = Number(getComputedStyle(rowOf(value).querySelector('[data-part="item-indicator"]')!).opacity)
+    out[value] = Number(getComputedStyle(rowOf(value).querySelector('[data-part="item-indicator"]')!, '::before').opacity)
   return out
 }
 
-describe('树的分支行对号（Web Components）', () => {
-  it('分支行摆的 item-indicator 跟着分支的选中亮起与熄灭，与叶子行一样', async () => {
+describe('树的分支行勾选框（Web Components）', () => {
+  it('分支行摆的 item-indicator 跟着分支的选中勾上与取消，与叶子行一样', async () => {
     document.body.innerHTML = '<div style="inline-size: 320px"><xh-tree selection-mode="multiple" aria-label="页面结构"><div data-xh-part="tree"><div data-xh-part="branch" value="pages"><div data-xh-part="branch-control"><button data-xh-part="branch-trigger"></button><span data-xh-part="branch-text">页面</span><span data-xh-part="item-indicator"></span></div><div data-xh-part="branch-content"><div data-xh-part="item" value="header"><span data-xh-part="item-text">页眉</span><span data-xh-part="item-indicator"></span></div><div data-xh-part="item" value="body"><span data-xh-part="item-text">正文</span><span data-xh-part="item-indicator"></span></div></div></div><div data-xh-part="item" value="styles"><span data-xh-part="item-text">样式</span><span data-xh-part="item-indicator"></span></div></div></xh-tree></div>'
     const tree = document.querySelector('xh-tree') as HTMLElement & { collection: TreeNode[], defaultExpandedValue: string[], updateComplete: Promise<unknown> }
     tree.collection = COLLECTION
@@ -75,6 +76,13 @@ describe('树的分支行对号（Web Components）', () => {
     await tree.updateComplete
     await settle()
     expect(checks()).toEqual({ pages: 0, header: 0, body: 0, styles: 0 })
+    // 方框常显，排在文字之前
+    for (const value of ['pages', 'styles']) {
+      const mark = rowOf(value).querySelector<HTMLElement>('[data-part="item-indicator"]')!
+      expect(getComputedStyle(mark).opacity).toBe('1')
+      const text = rowOf(value).querySelector<HTMLElement>('[data-part="branch-text"], [data-part="item-text"]')!
+      expect(mark.getBoundingClientRect().right).toBeLessThanOrEqual(text.getBoundingClientRect().left)
+    }
     await clickRow(rowOf('pages'))
     await clickRow(rowOf('styles'))
     expect(checks()).toEqual({ pages: 1, header: 0, body: 0, styles: 1 })

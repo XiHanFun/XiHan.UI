@@ -25,6 +25,7 @@
     display: grid;
     grid-template-columns:
       [prefix] max-content
+      [check] max-content
       [text] minmax(0, 1fr)
       [shortcut] max-content
       [suffix] max-content
@@ -91,6 +92,13 @@
 
   [data-xh-collection-slot='prefix'] {
     grid-column: prefix;
+    grid-row: 1 / span 2;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+
+  /* 多选的行首勾选框：排在前导图标、展开箭头之后、文字之前；没有勾选框的行这一列宽 0、不占位 */
+  [data-xh-collection-slot='check'] {
+    grid-column: check;
     grid-row: 1 / span 2;
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }

@@ -10835,6 +10835,7 @@
       "state": [
         "branch",
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -20600,6 +20601,7 @@
       ],
       "state": [
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -33830,6 +33832,7 @@
         "margin-inline-start"
       ],
       "state": [
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -44120,6 +44123,7 @@
         "mode=stop",
         "not([data-part='status'])",
         "not([data-variant='dot'])",
+        "not([data-xh-check-mark])",
         "preset=toast",
         "size=2xl",
         "size=3xl",
@@ -44134,7 +44138,8 @@
         "state=completed",
         "state=paused",
         "state=running",
-        "variant=dot"
+        "variant=dot",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-_color-swatch-picker-mark",
@@ -48546,6 +48551,7 @@
       ],
       "state": [
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -51162,6 +51168,7 @@
       ],
       "state": [
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -68425,6 +68432,7 @@
       ],
       "state": [
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -92313,11 +92321,13 @@
         "branch-indicator",
         "branch-trigger",
         "item",
+        "item-description",
         "item-indicator",
         "tree"
       ],
       "property": [
         "--xh-icon-size",
+        "block-size",
         "inline-size",
         "inset-inline-start",
         "padding-inline-start"
@@ -92325,15 +92335,17 @@
       "state": [
         "default",
         "has(> [data-scope='tree'][data-part='branch-trigger']:first-child)",
+        "has(> [data-scope='tree'][data-part='item-indicator'][data-xh-check-mark])",
         "lines",
         "not(:last-child)",
-        "orientation=vertical"
+        "orientation=vertical",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-_tree-indicator"
       ],
       "visibility": "public",
-      "description": "tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-indicator、tree 部件 --xh-icon-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch、branch-content、branch-control、branch-description、branch-indicator、branch-trigger、item、item-description、item-indicator、tree 部件 --xh-icon-size、block-size、inline-size、inset-inline-start、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-check-fg",
@@ -92365,6 +92377,163 @@
       ],
       "visibility": "public",
       "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-bg",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-bg-checked",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color",
+        "border-color"
+      ],
+      "state": [
+        "is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])",
+        "xh-check-mark=checked",
+        "xh-check-mark=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 background-color、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-bg-disabled",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-border",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-border-disabled",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-border-hover",
+      "component": "tree",
+      "part": [
+        "branch-control",
+        "item",
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "@media (hover: hover)",
+        "disabled",
+        "hover",
+        "is([data-scope='tree'][data-part='item'], [data-scope='tree'][data-part='branch-control'])",
+        "not([aria-disabled='true'], [data-disabled])",
+        "not([data-disabled])",
+        "xh-check-mark=unchecked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "tree 的 branch-control、item、item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-fg",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-check-mark-fg"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-item-checkbox-radius",
+      "component": "tree",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "tree 的 item-indicator 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-indicator-fg",
@@ -92795,7 +92964,8 @@
       "part": [
         "branch-control",
         "branch-description",
-        "item"
+        "item",
+        "item-description"
       ],
       "property": [
         "gap",
@@ -92804,13 +92974,15 @@
       "state": [
         "default",
         "has(> [data-scope='tree'][data-part='branch-trigger']:first-child)",
-        "orientation=vertical"
+        "has(> [data-scope='tree'][data-part='item-indicator'][data-xh-check-mark])",
+        "orientation=vertical",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-_tree-row-gap"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、branch-description、item 部件 gap、padding-inline-start 覆盖槽。"
+      "description": "tree 的 branch-control、branch-description、item、item-description 部件 gap、padding-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-leading",
@@ -94322,6 +94494,163 @@
       "description": "tree-select 的 branch-control、item 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-tree-select-item-checkbox-bg",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-bg-checked",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color",
+        "border-color"
+      ],
+      "state": [
+        "is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])",
+        "xh-check-mark=checked",
+        "xh-check-mark=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 background-color、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-bg-disabled",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-border",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-border-disabled",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-border-hover",
+      "component": "tree-select",
+      "part": [
+        "branch-control",
+        "item",
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "@media (hover: hover)",
+        "disabled",
+        "hover",
+        "is([data-scope='tree-select'][data-part='item'], [data-scope='tree-select'][data-part='branch-control'])",
+        "not([aria-disabled='true'], [data-disabled])",
+        "not([data-disabled])",
+        "xh-check-mark=unchecked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-control、item、item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-fg",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-check-mark-fg"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。"
+    },
+    {
+      "name": "--xh-tree-select-item-checkbox-radius",
+      "component": "tree-select",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 item-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-select-item-fg",
       "component": "tree-select",
       "part": [
@@ -94441,6 +94770,7 @@
       ],
       "state": [
         "default",
+        "xh-collection-slot=check",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -94495,7 +94825,8 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"

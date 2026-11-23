@@ -621,7 +621,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
 | --- | --- | --- | --- | --- |
-| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色保持 rest，字重升到 `--xh-font-weight-medium`。TagGroup 保持标签自身的面，选中只多一枚文字后的对号。树族单选、多选、级联同一种标记：分支行也放对号，半选画横杠（`--xh-glyph-mark-minus`），不用勾选方框（Tree、Listbox、TagGroup 2026-09-24 起与 TreeSelect 统一） | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
+| 对号集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention、Tree、Listbox、TagGroup | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色保持 rest，字重升到 `--xh-font-weight-medium`。TagGroup 保持标签自身的面，选中只多一枚文字后的对号。树族（Tree、TreeSelect）单选与 Tree 的 extended 用行尾对号；多选（TreeSelect `multiple`、Tree `selectionMode="multiple"`，含级联）换成行首勾选框（2026-11-25 起）：点行是勾上这一项而不是换掉已选的那一项，行尾对号读不出这一层。方框落家族网格的 `check` 列（展开箭头之后、文字之前），勾与半选杠由勾选标记配方画（§9.13），静息 `--xh-border-strong` 透明底、勾上与半选填品牌实心面（条目语气不改它）；分支行同样摆这一枚，半选画横杠（`--xh-glyph-mark-minus`）。Listbox、TagGroup 照旧是对号 | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
 | 快捷项的选中 | DatePicker、DateRangePicker、TimePicker、TimeRangePicker 的快捷项 | 静息就是淡底小钮（`--xh-bg-subtle`，control 形状），选中只多一枚行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`），面、字色与字重都不变：快捷项是一组一键写值的小钮，不是一行候选，字重一升小钮就变宽、并排的几颗跟着挪位；行尾始终留着对号轨 | highlighted / hover = 200、pressed = 300（淡底承载阶梯），叠在选中上同档；底升档时次级前景换 `--xh-fg-default` | Highlight / HighlightText |
 | 页内持久集合的选中 | Table row、Transfer、GridList、SideNav 当前项、选择卡片（RadioGroup / CheckboxGroup card 档条目） | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle`；Table row / Transfer / GridList 另有行首勾选框（勾由勾选标记配方画），方框是非颜色通道，行面是扫读通道，两者都留；选择卡片行首照常是圆圈 / 方框，描边不换、写了 `data-tone` 时面换语气淡底。配方 `markers.page.glyph` 为 trailing：page 语境若再接对号部件，对号同样落在行尾。SideNav 当前项是行面与字色，另把字重提到 `--xh-font-weight-semibold`、行取 surface 圆角，不画起始侧指示条（配方 `markers.page.current: none`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
 | 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | `nav` 语境：透明面 + 2px 指示条 + 字色 `--xh-fg-brand` + `--xh-font-weight-medium`；指示条由组件自己的滑动 indicator 部件承担（Tabs / Anchor / NavigationMenu，机器量几何、皮肤画在 list 上）；list 里没放该部件时，当前项在自己的 `::after` 上自画一条同规格的静态线（厚度 / 颜色 / 圆角读各自 `--xh-<c>-indicator-*` 同一组槽，不做动画，rtl 随逻辑属性镜像，放了部件即收起）：Tabs 横向贴底、纵向贴行向末端（与部件同侧）；Anchor 竖排贴行向起始缘、横排贴底边（链接为省略号收着 overflow，线画在链接盒内、主轴两端各退 `--xh-space-1` 避开圆角，部件则骑在 list 的轨道上）；NavigationMenu 的 `indicator` 部件表达的是「哪张面板开着」而非当前页，指向当前页面的链接始终自画静态线、不随部件收起（横排 list 里的直达链接贴底边，竖排的直达链接与面板里的链接贴行向起始缘，两端同样退 `--xh-space-1`）；Breadcrumb 当前页为不可点位置，投影 `data-xh-collection-terminal`：`--xh-fg-default` + medium、cursor default、无 hover / pressed | current + hover = 100、current + pressed = 200（terminal 不叠加） | ButtonText |
@@ -636,7 +636,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 - `--xh-bg-brand-subtle` 退出 today、open 语义：Calendar today 改为数字下方一颗 4px `--xh-fg-brand` 圆点、数字保持正文色（强制色下退出强制换色取 `CanvasText`，打印改由描边画满）。Steps 序号圆点三态都无边无影：没走到的 `--xh-bg-subtle` + `--xh-fg-muted`，当前步实心品牌（格状当前）+ 反白字，走过的步是登记的例外，取 `--xh-bg-brand-subtle` + 品牌对号（走过的步与当前步同属一段已点亮的进度，阶梯 12 → 20 → 28）；标了语气又没走到的步取语气实心 + 反白字（出错的那一步是危险色实心）。标题取 heading-3 字号（sm 收回正文字号），当前步取 heading-3 字重、正文色，走过的步正文色，没走到的步次级色；说明 12px `--xh-fg-subtle`；连接线 1px，没走到的那截 `--xh-border-default`、走过的那截品牌色。点状形态没有放对号的地方，三态改由形状区分：没走到的空心圈、走过的实心标记色（`--xh-fg-brand`）、当前步实心品牌（格状当前）并放大一档。
 - 集合行不允许零按压反馈；pressed 只换面（§9.2）。
 - 集合行都按 inset 内缩：锚定浮层里的列表（Menu 族、Select、Combobox、TreeSelect、Mention、Cascader 列、日期与时间面板的时间列）、Command 结果列表与 Listbox、Tree 的面板留 `--xh-space-1` 内衬，行取 inset 4px，悬停淡底与选中面随行内缩；Transfer 列表同样侧边内衬 `--xh-space-1`、行取 inset，上下不留内衬。
-- 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。
+- 选中对号一律落在行尾（`indicator` 列），不放行首：行首一格归前导图标、展开箭头、拖拽把手与勾选框；TagGroup 选中标签的对号同样在标签尾部（2026-09-24 起）。树族多选的标记不是对号而是勾选框，落 `check` 列，见上表。
 
 ### 7.4 集合行的语气
 
@@ -658,11 +658,12 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 ### 7.5 集合行的槽位
 
-一行按 `prefix | text | shortcut | suffix | indicator` 五列排布，说明占 text 列的第 2 行。每一格的归属固定：
+一行按 `prefix | check | text | shortcut | suffix | indicator` 六列排布，说明占 text 列的第 2 行；没有勾选框的行 `check` 列宽 0、不占位。每一格的归属固定：
 
 | 槽 | 归属 | 内容来源 |
 | --- | --- | --- |
 | `prefix` | 菜单族是行首图标（`item-icon`，数据里的 `icon` 与 `item-prefix` 插槽都落这里）；候选列表是作者内容（`item-prefix`）；树族归展开箭头与拖拽把手；穿梭框归勾选框 | 数据里的字形，或适配器的逐条钩子 |
+| `check` | 树族多选的行首勾选框（`item-indicator` 在多选时投影 `data-xh-collection-slot="check"` 与勾选标记的两位），排在 prefix 之后、文字之前；Tree 的行是 flex，按 `order` 排到同一位置 | 库 |
 | `text` | `item-text`，也是连打检索的取字来源 | `label` |
 | `description` | 第 2 行，跨 text 列 | 数据 |
 | `shortcut` | 行尾，菜单族与 Command 才有 | 数据 |
@@ -1124,7 +1125,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 ### 9.13 勾选标记与单选圆点
 
-勾选格里的勾与半选杠只有一份实现：`family/check-mark.css`，Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用。标记常驻，不按状态生成或撤掉。
+勾选格里的勾与半选杠只有一份实现：`family/check-mark.css`，Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect 多选共用。标记常驻，不按状态生成或撤掉。
 
 | 变化 | 做法 | 时长 / 缓动 |
 | --- | --- | --- |

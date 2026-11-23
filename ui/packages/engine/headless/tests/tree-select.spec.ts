@@ -1713,6 +1713,25 @@ describe('connectTreeSelect 家族角色', () => {
     expect(branch.control.hasAttribute('aria-selected')).toBe(false)
     expect(mount({ size: 'lg' }).item('license').item.getAttribute('data-xh-collection-size')).toBe('lg')
   })
+
+  it('多选的标记是行首勾选框：落 check 槽，方框里的勾与半选杠交给勾选标记配方；单选仍是行尾对号', () => {
+    const single = mount({ defaultValue: 'license' }).item('license').indicator
+    expect(single.getAttribute('data-xh-collection-slot')).toBe('indicator')
+    expect(single.hasAttribute('data-xh-check-mark')).toBe(false)
+    expect(single.hasAttribute('data-xh-check-mark-profile')).toBe(false)
+
+    const h = mount({ multiple: true, cascade: true, defaultValue: ['dom'], defaultExpandedValue: ['src', 'utils'] })
+    const dom = h.item('dom').indicator
+    expect(dom.getAttribute('data-xh-collection-slot')).toBe('check')
+    expect(dom.getAttribute('data-xh-check-mark-profile')).toBe('box')
+    expect(dom.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(h.item('math').indicator.getAttribute('data-xh-check-mark')).toBe('unchecked')
+    // 子树只勾一半：分支行的方框报半选
+    const branchMark = h.api().getItemIndicatorProps({ value: 'utils' }) as Record<string, unknown>
+    expect(branchMark['data-xh-check-mark']).toBe('indeterminate')
+    // 勾选态由所在的 treeitem 报，方框本身对读屏隐藏
+    expect(dom.getAttribute('aria-hidden')).toBe('true')
+  })
 })
 
 describe('treeSelect 自动空态', () => {

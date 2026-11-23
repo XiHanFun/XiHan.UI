@@ -132,6 +132,10 @@ export function connectTree<T extends PropTypes>(
   const cascaded = cascade ? cascadeState(collection, selection) : null
   const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selection.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
+  // multiple 下点击是切换，标记换成行首勾选框；extended 裸点击是换成这一项，仍用行尾对号
+  const checkbox = selectionMode === 'multiple'
+  const checkMarkOf = (value: string): 'checked' | 'indeterminate' | 'unchecked' =>
+    isSelected(value) ? 'checked' : isIndeterminate(value) ? 'indeterminate' : 'unchecked'
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
   /** 这个节点能不能被拖起来：开着 nodeDraggable、没禁用、节点自己没写 draggable: false。 */
@@ -743,10 +747,14 @@ export function connectTree<T extends PropTypes>(
 
     // 选中对号落在行尾（叶子与分支行共用）：半选靠自身的 data-indeterminate 换成横杠；
     // 叶子行的显隐由家族按行的 aria-selected 给，分支行的由皮肤按标记自身的 data-selected / data-indeterminate 给
+    // 单选与 extended 是行尾对号；multiple 是行首勾选框，点一下是勾上这一项，而不是换掉已选的那一项。
+    // 方框里的勾与半选杠由勾选标记配方画，排在展开箭头与拖拽把手之后、作者的图标与文字之前
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(node.value),
-      'data-xh-collection-slot': 'indicator',
+      'data-xh-collection-slot': checkbox ? 'check' : 'indicator',
+      'data-xh-check-mark': checkbox ? checkMarkOf(node.value) : undefined,
+      'data-xh-check-mark-profile': checkbox ? 'box' : undefined,
       'aria-hidden': true,
     }),
 

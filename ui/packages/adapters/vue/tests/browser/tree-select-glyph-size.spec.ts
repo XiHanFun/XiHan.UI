@@ -2,7 +2,8 @@
 // 它们与所在的盒同属 --xh-control-indicator-* 一族，--xh-tree-select-icon-size / --xh-icon-size
 // 只管作者放进行里的图标。盒早已按指示符档取尺（comfortable 16 / compact 14），但盒里的兜底字形此前
 // 读的是家族按档下发到行的 --xh-icon-size（md 20px）：20 的 chevron 与对号落在 16 / 14 的盒里比盒还大。
-// 两档密度一起量：字形与盒同边长（对号是行尾标记，不是勾选格，不取 × 0.75），作者图标两档都恒 20。
+// 两档密度一起量：单选的行尾对号与盒同边长（行尾标记，不是勾选格，不取 × 0.75）；多选换成行首勾选框，
+// 方框与对号盒同边长，框里的勾与半选杠按 Checkbox 的比例取边长的 3/4；作者图标两档都恒 20。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -73,18 +74,18 @@ function authorIcon(): ReturnType<typeof h> {
   return h(XhIcon, { label: '作者图标' }, { default: () => h('path', { d: 'M4 12h16' }) })
 }
 
-async function mount(density: 'comfortable' | 'compact'): Promise<void> {
+async function mount(density: 'comfortable' | 'compact', multiple = false): Promise<void> {
   document.documentElement.dataset.density = density
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
     // src 分支用箭头把手、docs 分支用方向指示符：两种展开字形都量到；
-    // 级联多选下只选 index：index 行尾画对号、src 分支行尾落到半选画杠；
+    // 单选只选 index：index 行尾画对号；级联多选下只选 index：index 的方框画勾、src 分支的方框落到半选画杠；
     // 作者图标塞在分支文字与叶子文字之后
     render: () => h(XhTreeSelectRoot, {
       collection,
-      multiple: true,
-      cascade: true,
+      multiple,
+      cascade: multiple,
       open: true,
       defaultValue: ['index'],
       defaultExpandedValue: ['src', 'docs'],
@@ -181,21 +182,24 @@ describe.each(['comfortable', 'compact'] as const)('树选择器自绘状态字�
     expectCenteredBox(mark)
   })
 
-  it('级联半选的分支行尾画横线，盒与杠都与对号同一把尺', async () => {
-    await mount(density)
+  it('多选的勾选框与对号盒同一把尺，框里的勾与级联半选的横杠取边长的 3/4', async () => {
+    await mount(density, true)
     const indicator = indicatorSize()
     const mark = part('branch-control').querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
-    expect(mark.hasAttribute('data-indeterminate')).toBe(true)
-    expect(mark.hasAttribute('data-selected')).toBe(false)
-    expect(getComputedStyle(mark).opacity).toBe('1')
     const selectedMark = part('item', 0).querySelector<HTMLElement>('[data-part=\'item-indicator\']')!
+    expect(mark.getAttribute('data-xh-check-mark')).toBe('indeterminate')
+    expect(selectedMark.getAttribute('data-xh-check-mark')).toBe('checked')
     expect(shownMask(mark, '::before')).not.toBe(shownMask(selectedMark, '::before'))
-    expect(mark.getBoundingClientRect().width).toBe(indicator)
-    const minus = pseudoBox(mark, '::before')
-    const observed = describeGlyph(mark, '::before')
-    expect(minus.width, observed).toBe(indicator)
-    expect(minus.height, observed).toBe(indicator)
-    expectCenteredBox(mark)
+    for (const box of [mark, selectedMark]) {
+      expect(getComputedStyle(box).opacity).toBe('1')
+      expect(box.getBoundingClientRect().width).toBe(indicator)
+      expect(box.getBoundingClientRect().height).toBe(indicator)
+      const glyph = pseudoBox(box, '::before')
+      const observed = describeGlyph(box, '::before')
+      expect(glyph.width, observed).toBe(indicator * 0.75)
+      expect(glyph.height, observed).toBe(indicator * 0.75)
+      expectCenteredBox(box)
+    }
   })
 
   it('作者塞进行里的图标仍按 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {

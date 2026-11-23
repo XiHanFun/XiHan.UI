@@ -125,6 +125,8 @@ export function connectTreeSelect<T extends PropTypes>(
   const cascaded = cascade ? cascadeState(fullCollection, value) : null
   const isSelected = (v: string): boolean => (cascaded ? cascaded.checked.has(v) : value.includes(v))
   const isIndeterminate = (v: string): boolean => cascaded?.indeterminate.has(v) ?? false
+  const checkMarkOf = (v: string): 'checked' | 'indeterminate' | 'unchecked' =>
+    isSelected(v) ? 'checked' : isIndeterminate(v) ? 'indeterminate' : 'unchecked'
   const isExpanded = (v: string): boolean => viewExpanded.includes(v)
   const branchLoadState = (v: string): TreeSelectBranchLoadSnapshot | null => {
     const node = findTreeSelectNode(sourceCollection, v, context.get('loadedChildren'))
@@ -855,10 +857,14 @@ export function connectTreeSelect<T extends PropTypes>(
     }),
 
     // 对号落在家族网格的 indicator 列（叶子与分支行共用）
+    // 单选是行尾对号；多选是行首勾选框，点一下是勾上这一项，而不是换掉已选的那一项。
+    // 方框里的勾与半选杠由勾选标记配方画，落在展开箭头与文字之间的 check 格
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...nodeState(node.value),
-      'data-xh-collection-slot': 'indicator',
+      'data-xh-collection-slot': multiple ? 'check' : 'indicator',
+      'data-xh-check-mark': multiple ? checkMarkOf(node.value) : undefined,
+      'data-xh-check-mark-profile': multiple ? 'box' : undefined,
       'aria-hidden': true,
     }),
 

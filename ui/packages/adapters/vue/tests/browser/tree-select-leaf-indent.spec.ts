@@ -62,7 +62,7 @@ function panel(): HTMLElement {
 /**
  * leading 决定这棵树按哪档配：
  * box 档两种行都带作者自己画的方框，叶子少的是箭头那一格；
- * indicator 档分支只有箭头、叶子只有指示符，首格本就一一对应。
+ * indicator 档两种行都带多选的勾选框（item-indicator），叶子同样少箭头那一格，由行盒补出来。
  */
 async function mountTree(leading: 'box' | 'indicator'): Promise<void> {
   host = document.createElement('div')
@@ -80,10 +80,11 @@ async function mountTree(leading: 'box' | 'indicator'): Promise<void> {
       h(XhTreeSelectItemText, null, () => label),
     ])
 
+  // 多选的 item-indicator 是行首勾选框：分支行也摆一枚，与标准结构一致，排在箭头之后
   const branchControl = (label: string): ReturnType<typeof h> =>
     h(XhTreeSelectBranchControl, null, () => [
       h(XhTreeSelectBranchTrigger),
-      ...(leading === 'box' ? [box()] : []),
+      leading === 'box' ? box() : h(XhTreeSelectItemIndicator),
       h(XhTreeSelectBranchText, null, () => label),
     ])
 

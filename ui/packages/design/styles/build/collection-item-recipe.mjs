@@ -9,7 +9,7 @@ const SOURCE = join(ROOT, 'recipes', 'collection-item.recipe.json')
 const OUTPUT = join(ROOT, 'family', 'collection-item.css')
 
 const SIZES = ['sm', 'md', 'lg']
-const COLUMNS = ['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator']
+const COLUMNS = ['prefix', 'check', 'text', 'description', 'shortcut', 'suffix', 'indicator']
 const CONTEXTS = ['overlay', 'page', 'nav']
 const STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'checked', 'disabled', 'loading', 'error']
 const CONTEXT_STATES = {
@@ -329,6 +329,7 @@ function pageMarkerRules(page) {
     grid-template-columns:
       [indicator] max-content
       [prefix] max-content
+      [check] max-content
       [text] minmax(0, 1fr)
       [shortcut] max-content
       [suffix] max-content;
@@ -360,6 +361,7 @@ ${rest}
     display: grid;
     grid-template-columns:
       [prefix] max-content
+      [check] max-content
       [text] minmax(0, 1fr)
       [shortcut] max-content
       [suffix] max-content
@@ -406,6 +408,13 @@ ${sizeVars(source, size)}
 
   [data-xh-collection-slot='prefix'] {
     grid-column: prefix;
+    grid-row: 1 / span 2;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+
+  /* 多选的行首勾选框：排在前导图标、展开箭头之后、文字之前；没有勾选框的行这一列宽 0、不占位 */
+  [data-xh-collection-slot='check'] {
+    grid-column: check;
     grid-row: 1 / span 2;
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }

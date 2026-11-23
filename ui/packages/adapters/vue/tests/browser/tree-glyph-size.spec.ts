@@ -2,7 +2,8 @@
 // 它们与所在的盒 / 把手同属 --xh-control-indicator-* 一族，--xh-tree-icon-size / --xh-icon-size
 // 只管作者放进行里的图标。此前箭头盒、对号盒与叶子占位都从家族按档下发的行内字形尺（md 20px）取：
 // comfortable 下 20×20 的 chevron 与对号比同一行里 16px 的拖拽把手大一圈，compact 下指示符收到 14 时它们仍是 20。
-// 两档密度一起量：指示符档 comfortable 16 / compact 14，对号与半选杠与盒同边长，作者图标两档都恒 20。
+// 两档密度一起量：指示符档 comfortable 16 / compact 14，单选的行尾对号与盒同边长；multiple 档的勾选框与箭头盒同边长，
+// 框里的勾与半选杠按 Checkbox 的比例取边长的 3/4；作者图标两档都恒 20。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -63,15 +64,21 @@ function authorIcon(): ReturnType<typeof h> {
   return h(XhIcon, { label: '作者图标' }, { default: () => h('path', { d: 'M4 12h16' }) })
 }
 
-async function mount(density: 'comfortable' | 'compact'): Promise<void> {
+async function mount(density: 'comfortable' | 'compact', multiple = false): Promise<void> {
   document.documentElement.dataset.density = density
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    // src 分支用箭头把手 + 行尾对号，docs 分支用方向指示符：两种展开字形都量到；
-    // 级联下只勾 index：叶子的对号画勾、src 分支的对号落到半选画杠；
+    // src 分支用箭头把手 + 选中标记，docs 分支用方向指示符：两种展开字形都量到；
+    // 单选只勾 index：行尾对号画勾。multiple 级联下只勾 index：叶子的方框画勾、src 分支的方框落到半选画杠；
     // 作者图标塞在分支文字与叶子文字之后
-    render: () => h(XhTreeRoot, { collection, selectionMode: 'multiple', cascade: true, defaultSelection: ['index'], defaultExpandedValue: ['src', 'docs'] }, () => [
+    render: () => h(XhTreeRoot, {
+      collection,
+      selectionMode: multiple ? 'multiple' : 'single',
+      cascade: multiple,
+      defaultSelection: ['index'],
+      defaultExpandedValue: ['src', 'docs'],
+    }, () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'src' }, () => [
           h(XhTreeBranchControl, null, () => [
@@ -158,16 +165,23 @@ describe.each(['comfortable', 'compact'] as const)('树自绘状态字形按指�
     expect(mark.getBoundingClientRect().left).toBeGreaterThanOrEqual(part('item-text', 0).getBoundingClientRect().right)
   })
 
-  it('分支行的对号在子树勾了一半时显形为半选杠，与叶子的对号同一把尺', async () => {
-    await mount(density)
+  it('multiple 档的勾选框与箭头盒同边长，框里的勾与半选杠取边长的 3/4；子树勾了一半时分支的方框画横杠', async () => {
+    await mount(density, true)
     const indicator = indicatorSize()
     const branchMark = part('branch-control').querySelector<HTMLElement>('[data-part="item-indicator"]')!
     const leafMark = part('item', 0).querySelector<HTMLElement>('[data-part="item-indicator"]')!
-    expect(branchMark.hasAttribute('data-indeterminate')).toBe(true)
-    expect(branchMark.hasAttribute('data-selected')).toBe(false)
-    expect(getComputedStyle(branchMark).opacity).toBe('1')
-    const bar = pseudoBox(branchMark, '::before')
-    expect(bar.width, describeGlyph(branchMark, '::before')).toBe(indicator)
+    expect(branchMark.getAttribute('data-xh-check-mark')).toBe('indeterminate')
+    expect(leafMark.getAttribute('data-xh-check-mark')).toBe('checked')
+    for (const mark of [branchMark, leafMark]) {
+      expect(getComputedStyle(mark).opacity).toBe('1')
+      expect(mark.getBoundingClientRect().width).toBe(indicator)
+      expect(mark.getBoundingClientRect().height).toBe(indicator)
+      const glyph = pseudoBox(mark, '::before')
+      const observed = describeGlyph(mark, '::before')
+      expect(glyph.width, observed).toBe(indicator * 0.75)
+      expect(glyph.height, observed).toBe(indicator * 0.75)
+      expectCenteredBox(mark)
+    }
     // 半选画的是横杠，不是勾
     expect(shownMask(branchMark, '::before')).not.toBe(shownMask(leafMark, '::before'))
   })

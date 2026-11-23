@@ -1233,6 +1233,7 @@
     display: grid;
     grid-template-columns:
       [prefix] max-content
+      [check] max-content
       [text] minmax(0, 1fr)
       [shortcut] max-content
       [suffix] max-content
@@ -1299,6 +1300,13 @@
 
   [data-xh-collection-slot='prefix'] {
     grid-column: prefix;
+    grid-row: 1 / span 2;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+
+  /* 多选的行首勾选框：排在前导图标、展开箭头之后、文字之前；没有勾选框的行这一列宽 0、不占位 */
+  [data-xh-collection-slot='check'] {
+    grid-column: check;
     grid-row: 1 / span 2;
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
@@ -2035,7 +2043,7 @@
 
 /* family/check-mark.css */
 /*
- * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、QuestionFlow 多选共用一份标记语言（设计真源 §9.13）。
+ * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect 多选共用一份标记语言（设计真源 §9.13）。
  *
  * 连接层在画标记的节点上投影两位：data-xh-check-mark 是标记的状态（checked / indeterminate / unchecked），
  * data-xh-check-mark-profile 说标记画在哪——
@@ -54772,6 +54780,22 @@
     padding-inline-start: calc(var(--xh-_tree-indicator-size) + var(--xh-tree-row-gap, var(--xh-_tree-row-gap)));
   }
 
+  /* multiple 档行首多一格勾选框，说明再让出这一格 */
+  .xh-scope-tree[data-part='item']:has(> .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark])
+    > .xh-scope-tree[data-part='item-description'] {
+    padding-inline-start: calc(var(--xh-_tree-indicator-size) + var(--xh-tree-row-gap, var(--xh-_tree-row-gap)));
+  }
+
+  .xh-scope-tree[data-part='branch-control']:has(> .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark])
+    > .xh-scope-tree[data-part='branch-description'] {
+    padding-inline-start: calc(var(--xh-_tree-indicator-size) + var(--xh-tree-row-gap, var(--xh-_tree-row-gap)));
+  }
+
+  .xh-scope-tree[data-part='branch-control']:has(> .xh-scope-tree[data-part='branch-trigger']:first-child):has(> .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark])
+    > .xh-scope-tree[data-part='branch-description'] {
+    padding-inline-start: calc(2 * (var(--xh-_tree-indicator-size) + var(--xh-tree-row-gap, var(--xh-_tree-row-gap))));
+  }
+
   /* 选中对号落在行尾，与树选择同位：作者在行里摆在哪儿都排到最后，
      行尾那一格（item-suffix）在它之前；正文吃满剩余宽度，对号因此贴着行的末端。
      未选中时占位不塌，切换选中不引起行宽抖动。盒尺取指示符档；盒里的对号是指示符，
@@ -54800,6 +54824,51 @@
   /* 分支行的禁用不在行的 aria-disabled 上（那在 branch 上），标记按自身的 data-disabled 降级 */
   .xh-scope-tree[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* multiple 档的勾选框：同一个 item-indicator 换成行首方框，一眼看得出点行是勾上这一项、而不是换掉已选的那一项。
+     排在展开箭头与拖拽把手之后、作者的图标与文字之前：行是 flex，前导部件提到 -2、方框 -1，其余按文档序。
+     静息透明底 + strong 描边，勾上与半选填品牌实心面（条目的语气不改它）；方框里的勾与半选杠由勾选标记配方画
+     （常驻、描线生长、交叉缩放），勾按方框边长 × 0.75 取，与 Checkbox 同比例。方框边长与箭头盒同一把尺 */
+  .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-_tree-indicator-size) * 0.75);
+    --xh-check-mark-fg: var(--xh-tree-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    order: -1;
+    block-size: var(--xh-_tree-indicator-size);
+    border: var(--xh-stroke-thin) solid var(--xh-tree-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-tree-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-tree-item-checkbox-bg, transparent);
+    opacity: 1;
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  :is(.xh-scope-tree[data-part='item'], .xh-scope-tree[data-part='branch-control']):has(> .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark])
+    > .xh-scope-tree:is([data-part='branch-trigger'], [data-part='branch-indicator'], [data-part='node-drag-trigger']) {
+    order: -2;
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    :is(.xh-scope-tree[data-part='item'], .xh-scope-tree[data-part='branch-control']):not([aria-disabled='true'], [data-disabled]):hover
+      > .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-tree-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上：只填全选的话，半选那条横杠是实心底上的前景色，压在透明底上等于没画 */
+  .xh-scope-tree[data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-tree-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-tree-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  .xh-scope-tree[data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-tree-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-tree-item-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 展开箭头与方向指示符：两者都可能被作者用作"点这里展开"的把手，
@@ -55039,7 +55108,7 @@
 
   /* 勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
      淡出播完才换回勾——不在淡出途中闪出一枚勾 */
-  .xh-scope-tree[data-part='item-indicator']:empty::before {
+  .xh-scope-tree[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -55053,11 +55122,11 @@
       mask-size 0s var(--xh-motion-duration-micro);
   }
 
-  .xh-scope-tree[data-part='item-indicator'][data-selected]:empty::before {
+  .xh-scope-tree[data-part='item-indicator'][data-selected]:not([data-xh-check-mark]):empty::before {
     transition-delay: 0s;
   }
 
-  .xh-scope-tree[data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+  .xh-scope-tree[data-part='item-indicator'][data-indeterminate]:not([data-selected], [data-xh-check-mark]):empty::before {
     -webkit-mask-size: 0 0, 100% 100%;
     mask-size: 0 0, 100% 100%;
     transition-delay: 0s;
@@ -55251,18 +55320,18 @@
        禁用取 GrayText */
     .xh-scope-tree[data-part='branch-error']::before,
     .xh-scope-tree:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
-    .xh-scope-tree[data-part='item-indicator']:empty::before {
+    .xh-scope-tree[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }
 
     .xh-scope-tree[data-part='branch-control']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
-    .xh-scope-tree[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree[data-part='item-indicator']:empty::before {
+    .xh-scope-tree[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: HighlightText;
     }
 
     .xh-scope-tree[data-part='branch-control']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
-    .xh-scope-tree[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree[data-part='item-indicator']:empty::before {
+    .xh-scope-tree[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: GrayText;
     }
   }
@@ -55844,7 +55913,7 @@
   }
 
   /* 叶子在家族网格的首列放一格与分支箭头等宽的占位：两种行的文字起点才对得齐；
-     选中标记独立固定在行尾（indicator 列），不再同时承担层级缩进 */
+     单选的对号固定在行尾（indicator 列），多选的勾选框在占位之后（check 列），都不承担层级缩进 */
   .xh-scope-tree-select[data-part='item']::before {
     content: '';
     grid-column: prefix;
@@ -55917,7 +55986,7 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记落在家族网格的 indicator 列；未选中时占位不塌，切换选中不引起行宽抖动。
+  /* 单选的对号落在家族网格的 indicator 列；未选中时占位不塌，切换选中不引起行宽抖动。
      尺寸槽按各自部件取名：行内的勾与展开箭头分别是 item- 与 branch- 段，
      触发器上那枚箭头是 --xh-tree-select-indicator-*，三处各调各的。
      盒里的对号 / 半选杠是指示符：在自己身上把 --xh-icon-size 改接到盒的尺，兜底字形与作者
@@ -55946,6 +56015,43 @@
   /* 分支行的禁用不在行的 aria-disabled 上（那在 branch 上），标记按自身的 data-disabled 降级 */
   .xh-scope-tree-select[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 多选的勾选框：同一个 item-indicator 换成行首方框，落在家族网格的 check 列（展开箭头与文字之间），
+     一眼看得出点行是勾上这一项、而不是换掉已选的那一项。静息透明底 + strong 描边，勾上与半选填品牌实心面（条目的语气不改它）；
+     方框里的勾与半选杠由勾选标记配方画（常驻、描线生长、交叉缩放），勾按方框边长 × 0.75 取，与 Checkbox 同比例。
+     方框边长与单选的对号盒同一把尺 */
+  .xh-scope-tree-select[data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-check-mark-fg: var(--xh-tree-select-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    border: var(--xh-stroke-thin) solid var(--xh-tree-select-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-tree-select-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-tree-select-item-checkbox-bg, transparent);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    :is(.xh-scope-tree-select[data-part='item'], .xh-scope-tree-select[data-part='branch-control']):not([aria-disabled='true'], [data-disabled]):hover
+      > .xh-scope-tree-select[data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-tree-select-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上：只填全选的话，半选那条横杠是实心底上的前景色，压在透明底上等于没画 */
+  .xh-scope-tree-select[data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-tree-select-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-tree-select-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  .xh-scope-tree-select[data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-tree-select-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-tree-select-item-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 展开箭头与方向指示符：两者都可能被作者用作「点这里展开」的把手，
@@ -56082,7 +56188,7 @@
 
   /* 勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
      淡出播完才换回勾——不在淡出途中闪出一枚勾 */
-  .xh-scope-tree-select[data-part='item-indicator']:empty::before {
+  .xh-scope-tree-select[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -56096,11 +56202,11 @@
       mask-size 0s var(--xh-motion-duration-micro);
   }
 
-  .xh-scope-tree-select[data-part='item-indicator'][data-selected]:empty::before {
+  .xh-scope-tree-select[data-part='item-indicator'][data-selected]:not([data-xh-check-mark]):empty::before {
     transition-delay: 0s;
   }
 
-  .xh-scope-tree-select[data-part='item-indicator'][data-indeterminate]:not([data-selected]):empty::before {
+  .xh-scope-tree-select[data-part='item-indicator'][data-indeterminate]:not([data-selected], [data-xh-check-mark]):empty::before {
     -webkit-mask-size: 0 0, 100% 100%;
     mask-size: 0 0, 100% 100%;
     transition-delay: 0s;
@@ -56147,7 +56253,7 @@
        禁用取 GrayText */
     .xh-scope-tree-select[data-part='branch-error']::before,
     .xh-scope-tree-select[data-part='indicator']:empty::before,
-    .xh-scope-tree-select[data-part='item-indicator']:empty::before,
+    .xh-scope-tree-select[data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     .xh-scope-tree-select:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
@@ -56158,14 +56264,14 @@
       background-color: ButtonText;
     }
 
-    .xh-scope-tree-select[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree-select[data-part='item-indicator']:empty::before,
+    .xh-scope-tree-select[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree-select[data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     .xh-scope-tree-select[data-part='branch-control']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-tree-select:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
     .xh-scope-tree-select[data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
       background-color: HighlightText;
     }
 
     .xh-scope-tree-select[data-part='control'][data-disabled] .xh-scope-tree-select[data-part='indicator']:empty::before,
-    .xh-scope-tree-select[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree-select[data-part='item-indicator']:empty::before,
+    .xh-scope-tree-select[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree-select[data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     .xh-scope-tree-select[data-part='branch-control']:is([aria-disabled='true'], [data-disabled]) .xh-scope-tree-select:is([data-part='branch-trigger'], [data-part='branch-indicator']):empty::before,
     .xh-scope-tree-select[data-part='clear-trigger'][data-disabled]:empty::before {
       background-color: GrayText;
