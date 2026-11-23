@@ -9146,6 +9146,7 @@
       "expandPanel",
       "expandVirtualizerRange",
       "expandableBranches",
+      "expandableTableRows",
       "expressionInputAnatomy",
       "expressionInputKeyboard",
       "expressionInputMachine",
@@ -15391,6 +15392,7 @@
       "columns",
       "data",
       "defaultColumnPreference",
+      "defaultExpandAll",
       "defaultExpandedValue",
       "defaultFilterValue",
       "defaultPage",
@@ -24297,6 +24299,7 @@
       "attributes": [
         "cascade",
         "checked-strategy",
+        "default-expand-all",
         "default-page",
         "dir",
         "empty",

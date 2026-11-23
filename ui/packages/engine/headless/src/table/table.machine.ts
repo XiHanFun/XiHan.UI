@@ -35,7 +35,7 @@ import { orderColumnIds, resolveTableColumns, tableLeafColumns } from './table.c
 import { canOwnChildren, draggableColumnIds, reorderTableRows, tableRowMoveOf, toColumnPreferenceIndex } from './table.drag'
 import { measureTableLayout, sameTableLayout, TABLE_EMPTY_LAYOUT, tableLayoutNeeds, tableScrollEdges } from './table.layout'
 import { tableRowDefs } from './table.pipeline'
-import { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowCanExpand, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+import { expandableTableRows, flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowCanExpand, tableSelectableRowIds, tableSelectionIds, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 import { tableNormalizeSort, tableToggleSort } from './table.sort'
 
 /** 拖动改列宽时的缺省下限（px）。列定义可用 minWidth 覆盖。 */
@@ -123,7 +123,11 @@ export const tableMachine = createMachine({
     })),
     expandedValue: cell<string[]>(() => ({
       value: prop('expandedValue'),
-      defaultValue: prop('defaultExpandedValue') ?? [],
+      // 写成 getter：受控判定每次读值都会重求这份参数，全部展开要走一遍全部行，只在建值与重置时才算。
+      // 可展开的行只出在手写的 rows 里，数据驱动模式的行是平的
+      get defaultValue() {
+        return prop('defaultExpandedValue') ?? (prop('defaultExpandAll') ? expandableTableRows(prop('rows') ?? []) : [])
+      },
       isEqual: sameValues,
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
@@ -158,8 +162,13 @@ export const tableMachine = createMachine({
   watch: ({ track, prop, action }) => {
     track([() => prop('loading')], () => action(['releaseWhenInert']))
     track([() => prop('navigation')], () => action(['syncCellWidgets']))
+    track([() => prop('rows')], () => action(['seedExpandAll']))
   },
-  refs: () => ({
+  refs: ({ prop }) => ({
+    expandAllPending: prop('defaultExpandAll') === true
+      && prop('defaultExpandedValue') === undefined
+      && prop('expandedValue') === undefined
+      && (prop('rows') ?? []).length === 0,
     getRootEl: () => null,
     armRowMotion: null,
     resize: null,
@@ -851,6 +860,18 @@ export const tableMachine = createMachine({
         context.set('selection', collapseChecked(roots, checked, prop('checkedStrategy') ?? 'child'))
       },
       markRowMotionTracked: ({ context }) => context.set('rowMotionTracked', true),
+      // 默认全部展开而数据晚到：挂载时 rows 还是空的，第一份非空的到了才展开，只此一次。
+      // 等的这段时间里展开集合已被写过或转成了受控，就不再替作者决定
+      seedExpandAll: ({ context, prop, refs }) => {
+        if (!refs.get('expandAllPending'))
+          return
+        const rows = prop('rows') ?? []
+        if (rows.length === 0)
+          return
+        refs.set('expandAllPending', false)
+        if (prop('expandedValue') === undefined && context.get('expandedValue').length === 0)
+          context.set('expandedValue', expandableTableRows(rows))
+      },
       setExpanded: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'EXPANDED.SET')

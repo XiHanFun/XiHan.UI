@@ -67608,6 +67608,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultExpandAll",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-expand-all"
+            },
+            {
+              "kind": "field",
               "name": "selectionMode",
               "privacy": "public",
               "type": {
@@ -67965,14 +67974,33 @@
             },
             {
               "kind": "method",
+              "name": "expandAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "展开全部可展开的行（有子行的与带详情的）；已展开的保持不动。"
+            },
+            {
+              "kind": "method",
+              "name": "collapseAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "收起全部行。"
+            },
+            {
+              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
                 "type": {
                   "text": "readonly HTMLElement[]"
                 }
-              },
-              "description": "接了 Virtualizer 时行隔着一层 xh-virtualizer：窗口里那几行由它交出来，归表格接线。"
+              }
             },
             {
               "kind": "method",
@@ -68438,6 +68466,14 @@
               "description": "行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手",
               "name": "row-reorderable",
               "fieldName": "rowReorderable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "初始展开全部可展开的行（有子行的与带详情的）；数据晚到时等第一份非空的 rows。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false",
+              "name": "default-expand-all",
+              "fieldName": "defaultExpandAll"
             },
             {
               "type": {

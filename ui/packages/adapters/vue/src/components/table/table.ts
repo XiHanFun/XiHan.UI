@@ -109,6 +109,8 @@ export type TableRootSlotProps = Pick<
   | 'selectRow'
   | 'toggleSelectAll'
   | 'toggleExpandRow'
+  | 'expandAll'
+  | 'collapseAll'
   | 'rowReorderDisabledReason'
   | 'headerRows'
   | 'headerRowCount'
@@ -191,6 +193,8 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
     pageSize: { type: Number },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
+    /** 初始展开全部可展开的行（有子行的与带详情的）；数据晚到时等第一份非空的 rows。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+    defaultExpandAll: Boolean,
     loading: Boolean,
     empty: { type: Boolean, default: undefined },
     stickyHeader: Boolean,
@@ -355,6 +359,8 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
             selectRow: ctx.api.value.selectRow,
             toggleSelectAll: ctx.api.value.toggleSelectAll,
             toggleExpandRow: ctx.api.value.toggleExpandRow,
+            expandAll: ctx.api.value.expandAll,
+            collapseAll: ctx.api.value.collapseAll,
             rowReorderDisabledReason: ctx.api.value.rowReorderDisabledReason,
           })),
       // 数据驱动模式的分页排在 root 之后：root 是 grid 系角色，分页只能是它的兄弟

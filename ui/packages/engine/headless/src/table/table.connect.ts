@@ -39,6 +39,7 @@ import { columnDragRects, columnMoveCommand, columnMoveIntentFromKey, draggableC
 import { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tableCascades, tableSelectionMode } from './table.machine'
 import { tableCellText, tableDataViewOf } from './table.pipeline'
 import {
+  expandableTableRows,
   flattenTableRows,
   tableCascadeRoots,
   tableCascadeSelectableLeaves,
@@ -993,6 +994,8 @@ export function connectTable<T extends PropTypes>(
     selectRow: (value, options) => send({ type: 'ROW.SELECT', value, extend: options?.extend }),
     toggleSelectAll: () => send({ type: 'SELECTION.ALL_TOGGLE' }),
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
+    expandAll: () => send({ type: 'EXPANDED.SET', value: [...expandedValue, ...expandableTableRows(rows)] }),
+    collapseAll: () => send({ type: 'EXPANDED.SET', value: [] }),
     expandRow: value => send({ type: 'ROW.EXPAND', value }),
     collapseRow: value => send({ type: 'ROW.COLLAPSE', value }),
     toggleExpandRow: value => send({ type: 'ROW.EXPAND_TOGGLE', value }),

@@ -20,6 +20,27 @@ import type {
  */
 
 /**
+ * 全部展开要展开的行，按定义序：有子行的，与声明了 expandable 的（详情行）。
+ * 与摊平同一套判据：id 重复只认先出现的那一行，parentId 指向不存在的行不算数。
+ */
+export function expandableTableRows(rows: readonly TableRowDef[]): string[] {
+  const seen = new Set<string>()
+  const unique: TableRowDef[] = []
+  for (const row of rows) {
+    if (seen.has(row.id))
+      continue
+    seen.add(row.id)
+    unique.push(row)
+  }
+  const parents = new Set<string>()
+  for (const row of unique) {
+    if (row.parentId != null && seen.has(row.parentId))
+      parents.add(row.parentId)
+  }
+  return unique.filter(row => parents.has(row.id) || !!row.expandable).map(row => row.id)
+}
+
+/**
  * 把行定义摊平成可见行序列：数据行逐条排开，展开着的行紧随其后插一条详情行。
  * 这是行号（aria-rowindex）的算法源头，方向键与 Home/End 也在这个序列上走。
  * 不可展开的行即便在展开集合里也不出详情行。

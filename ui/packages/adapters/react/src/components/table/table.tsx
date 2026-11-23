@@ -120,6 +120,8 @@ export type TableRootSlotProps = Pick<
   | 'selectRow'
   | 'toggleSelectAll'
   | 'toggleExpandRow'
+  | 'expandAll'
+  | 'collapseAll'
   | 'rowReorderDisabledReason'
   | 'headerRows'
   | 'headerRowCount'
@@ -210,6 +212,8 @@ export interface XhTableRootProps<TRow extends object = TableRecord> extends Roo
   pageSize?: number
   expandedValue?: string[]
   defaultExpandedValue?: string[]
+  /** 初始展开全部可展开的行（有子行的与带详情的）；数据晚到时等第一份非空的 rows。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+  defaultExpandAll?: boolean
   loading?: boolean
   empty?: boolean
   stickyHeader?: boolean
@@ -284,6 +288,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
   pageSize,
   expandedValue,
   defaultExpandedValue,
+  defaultExpandAll,
   loading,
   empty,
   stickyHeader,
@@ -342,6 +347,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
     pageSize,
     expandedValue,
     defaultExpandedValue,
+    defaultExpandAll,
     loading,
     empty,
     stickyHeader,
@@ -440,6 +446,8 @@ export function XhTableRoot<TRow extends object = TableRecord>({
               selectRow: api.selectRow,
               toggleSelectAll: api.toggleSelectAll,
               toggleExpandRow: api.toggleExpandRow,
+              expandAll: api.expandAll,
+              collapseAll: api.collapseAll,
               rowReorderDisabledReason: api.rowReorderDisabledReason,
             })}
       </div>

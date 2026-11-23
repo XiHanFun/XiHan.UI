@@ -249,6 +249,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 - 标准结构的虚拟化开关 `virtual`：表体只铺滚到的那一屏行，滚的是表格根节点，吸顶表头、冻结列与行在同一个滚动面里；行号、`aria-rowcount` 与方向键仍按完整行序，落点不在窗口里时先滚进来再交焦点。行高按 `estimateSize`（缺省 40，Web Components 为 `estimate-size`）起算，渲出后按实测校正。Virtualizer 那一块开了才加载，手写结构的表格不为它付体积；手写结构时照旧自己套 Virtualizer（见上一条）。
 - 树形表（行声明了 `parentId`）按展开展平后的可见行渲染：Vue 与 React 从插槽载荷的 `visibleRows` 读，Web Components 从元素的只读属性 `visibleRows` 读，收起的父行底下的子行不在其中；`rowNumber(行 id)` 给出大纲编号，`isExpanded(行 id)` 查展开态，展开集合变化（`expanded-value-change`）后按新的可见行重铺表体。
 - `tree` 声明这是一棵树，不必等某一行带上 `parentId`：一开始平铺的选项表也报 `treegrid`、每行写 `aria-level`，Alt + 左右键改层级归表格（平表不开时这两个键放行给页面），任何一行都能接受「放进去」（指针拖到一行中段，仍经 `allowRowDrop` 把关），叶子行不写 `aria-expanded`，读屏不会把它念成「已收起」。不开时照旧按行有没有 `parentId` 推断。用户先平铺加了几项、再把后面几项挪到第一项下面，开着它就做得到。
+- `defaultExpandAll` 让表格一挂上就展开全部可展开的行——有子行的，与声明了 `expandable` 的详情行；数据是后取的（挂载时 `rows` 还是空的）就等第一份数据到了再展开，只此一次。同时给了 `defaultExpandedValue` 时以它为准，受控时无效。运行中用 `expandAll()` / `collapseAll()`：Vue 默认插槽与 React 函数式 children 的载荷里有，`<xh-table>` 是同名方法；受控时把 `expandableTableRows(rows)`（`@xihan-ui/headless` 导出）写进 `expandedValue` 即全部展开。与[树](./tree)同一套规则。
 - 树形表（行声明了 `parentId`）在 `multiple` 下可以打开 `cascade` 级联勾选，与[树](./tree)的 `cascade` 同一套算法：勾父行整枝传导，子行全勾上父行跟着勾中，勾了一部分的父行把手显示半选（`data-indeterminate`），禁用行的子树整棵冻结。对外值按 `checkedStrategy` 收敛，缺省 `child` 只收叶行；`parent` 收到最高的整枝，`all` 收全部勾中的行。全选的基数是够得着的叶行，禁用子树冻结着的父行不妨碍全选把手勾满。级联下不接 Shift 范围选。
 - 工具条（`toolbar`）与列设置区（`column-list` + `column-visibility-trigger`）把排序、列宽与显隐接出：设置区按 `columnSettings` 渲染，隐藏的列也包含在内。两块都放在 `root` 之外：`root` 是 grid 系角色，子节点只能是行与行组。
 - 行主操作 `onAction`（事件名 `action`）：指针主键点在数据行上时报 `{ value: 行 id, column: 点中那一格的列 id }`（纵向合并格算它的起点行），焦点停在行上按 Enter 时 `column` 为 null，用来下钻或把表格当联动源。点在行内的交互控件与表格自己的把手上、行拖动松手的那一次点击、禁用行、详情行、表头与脚注都不触发；选中、展开与 Space 不受影响，点行本身不选中。
@@ -303,6 +304,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `defaultSelection` | `TableSelection` |  |  |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
+| `defaultExpandAll` | `boolean` |  | 非受控的初始展开：展开全部可展开的行——有子行的，与声明了 expandable 的（详情行）。 挂载时 rows 还是空的（数据晚到），等第一份非空的到了再展开，之后不再跟随。 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。 |
 | `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
 | `virtualizer` | `CollectionVirtualizer` |  | 与 Virtualizer 的正式接线口（Virtualizer 的 `collectionVirtualizer`）：count 必须等于可见数据行的条数， 每个虚拟条目装一行数据行（展开的详情行跟在同一个条目里）。接上后上下键与 Home / End 按完整行序计算， 落点不在窗口里时先把它滚进来再交焦点；行号照旧按完整行序报；行拖动换位不可用（窗口外的行没有落点）。 |
 | `cellSpan` | `(details: TableCellSpanDetails) => TableCellSpan \| null \| undefined` |  | 单元格合并（与 antd 的 spanMethod 同一种写法）：逐格询问，返回合并区的大小。 表格按它算出起点格的 aria-rowspan / aria-colspan：同一行里被横向合并的格子不渲染（hidden）， 下面被纵向跨过的行在那一列留一格占位保住列宽、对读屏隐藏。作者照常逐格渲染，由连接层决定谁显谁藏。 合并只在可见数据行之间，遇到展开的详情行截断。焦点仍是行级：上下键逐行走，合并格随它的起点行读出。 |
@@ -503,6 +505,8 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `selectRow` | `(value: string, options?: { extend?: boolean }) => void` | 选中某一行。extend 为真时选中锚点到该行的范围（仅复选）。 |
 | `toggleSelectAll` | `() => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
+| `expandAll` | `() => void` | 展开全部可展开的行（有子行的与带详情的）；已展开的保持不动。 |
+| `collapseAll` | `() => void` | 收起全部行。 |
 | `expandRow` | `(value: string) => void` |  |
 | `collapseRow` | `(value: string) => void` |  |
 | `toggleExpandRow` | `(value: string) => void` |  |

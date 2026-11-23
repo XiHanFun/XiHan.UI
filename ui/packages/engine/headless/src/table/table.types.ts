@@ -526,6 +526,12 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     /** 展开集合。提供即受控，语义同上。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]
+    /**
+     * 非受控的初始展开：展开全部可展开的行——有子行的，与声明了 expandable 的（详情行）。
+     * 挂载时 rows 还是空的（数据晚到），等第一份非空的到了再展开，之后不再跟随。
+     * 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。
+     */
+    defaultExpandAll?: boolean
     /** 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 */
     selectionMode?: TableSelectionMode
     /**
@@ -698,6 +704,8 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
   }
   computed: Record<string, never>
   refs: {
+    /** 默认全部展开而数据还没到：等第一份非空的 rows，展开一次后置假。 */
+    expandAllPending: boolean
     /** root 节点，实测版面从它往下量。适配器在挂载时填入。 */
     getRootEl: () => HTMLElement | null
     /** 开一个两帧的窗：窗里那一批行的增删播进退场。展开、收起动作在改展开集合之前调用；虚拟滚动时为 null。 */
@@ -833,6 +841,7 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     | 'selectRow'
     | 'toggleSelectAll'
     | 'setExpanded'
+    | 'seedExpandAll'
     | 'expandRow'
     | 'collapseRow'
     | 'toggleExpandRow'
@@ -959,6 +968,10 @@ export interface TableApi<T extends PropTypes = PropTypes> {
   selectRow: (value: string, options?: { extend?: boolean }) => void
   toggleSelectAll: () => void
   setExpandedValue: (next: string[]) => void
+  /** 展开全部可展开的行（有子行的与带详情的）；已展开的保持不动。 */
+  expandAll: () => void
+  /** 收起全部行。 */
+  collapseAll: () => void
   expandRow: (value: string) => void
   collapseRow: (value: string) => void
   toggleExpandRow: (value: string) => void

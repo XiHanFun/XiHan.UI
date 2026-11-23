@@ -31,7 +31,7 @@ export { TABLE_COLUMN_LARGE_STEP, TABLE_COLUMN_MIN_WIDTH, TABLE_COLUMN_STEP, tab
 export { tableMeta } from './table.meta'
 export { computeTableDataView, TABLE_DEFAULT_PAGE_SIZE, tableCellText, tableColumnField, tableColumnValue, tableCompareValues, tableDataViewOf, tableRowDefs, tableVisibleDataRowCount } from './table.pipeline'
 export type { TableDataInput, TableDataView } from './table.pipeline'
-export { flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowSelected, tableSelectableRowIds, tableSelectionIds, tableSelectionState, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
+export { expandableTableRows, flattenTableRows, tableCascadeRoots, tableCascadeSelectableLeaves, tableRowSelected, tableSelectableRowIds, tableSelectionIds, tableSelectionState, tableToggleRowSelection, tableToggleSelectAll } from './table.rows'
 export {
   tableNormalizeSort,
   tableSortDirectionOf,

@@ -94,6 +94,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {number} footer-rows - 表尾行数：行号空间的最后几行留给表尾，aria-rowcount 也计入；多行表尾在每个表尾 row 上写 level
  * @attr {boolean} sticky-footer - 表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
+ * @attr {boolean} default-expand-all - 初始展开全部可展开的行（有子行的与带详情的）；数据晚到时等第一份非空的 rows。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false
  * @attr {boolean} tree - 声明这是一棵树：一行 parentId 都没有时也报 treegrid、Alt + 左右键改层级、任何行都能接受「放进去」
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {'row'|'cell'} navigation - 表体的键盘导航粒度：row（缺省）只落在行上；cell 时格子也是焦点落点（treegrid），Enter / F2 进格内编辑、Esc 退回格子
@@ -189,6 +190,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
     defaultSelection: { attribute: false },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
+    defaultExpandAll: { converter: BOOLEAN_CONVERTER, attribute: 'default-expand-all' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
     cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -242,6 +244,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   declare defaultSelection?: TableSelection
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
+  declare defaultExpandAll?: boolean
   declare selectionMode?: TableSelectionMode
   declare cascade?: boolean
   declare checkedStrategy?: CascadeStrategy
@@ -351,6 +354,16 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   }
 
   /** 接了 Virtualizer 时行隔着一层 xh-virtualizer：窗口里那几行由它交出来，归表格接线。 */
+  /** 展开全部可展开的行（有子行的与带详情的）；已展开的保持不动。 */
+  expandAll(): void {
+    this.commands().expandAll()
+  }
+
+  /** 收起全部行。 */
+  collapseAll(): void {
+    this.commands().collapseAll()
+  }
+
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.virtualizer?.getRenderedItemRoots() ?? []
   }
@@ -376,6 +389,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
       defaultSelection: this.defaultSelection,
       expandedValue: this.expandedValue,
       defaultExpandedValue: this.defaultExpandedValue,
+      defaultExpandAll: this.defaultExpandAll,
       selectionMode: this.selectionMode,
       cascade: this.cascade,
       checkedStrategy: this.checkedStrategy,
