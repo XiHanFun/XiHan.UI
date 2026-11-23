@@ -7,7 +7,7 @@ import { XhDatePickerContent, XhDatePickerControl, XhDatePickerPositioner, XhDat
 import { XhPortal } from '../src/runtime/portal'
 
 describe('vue Portal 的服务端输出', () => {
-  it('逻辑位置保留 source，teleport 内容带同构 shell 与正文', async () => {
+  it('就地输出 source、shell 与正文，落点里只留锚点', async () => {
     const context: { teleports?: Record<string, string> } = {}
     const html = await renderToString(createSSRApp({
       render: () => h('main', null, [
@@ -16,9 +16,11 @@ describe('vue Portal 的服务端输出', () => {
     }), context)
 
     expect(html).toContain('data-xh-portal-source')
-    expect(context.teleports?.body).toContain('data-xh-portal-shell')
-    expect(context.teleports?.body).toContain('data-part="content"')
-    expect(context.teleports?.body).toContain('正文')
+    expect(html).toContain('data-xh-portal-shell')
+    expect(html).toContain('data-part="content"')
+    expect(html.match(/正文/g)).toHaveLength(1)
+    expect(context.teleports?.body ?? '').not.toContain('data-xh-portal-shell')
+    expect(context.teleports?.body ?? '').not.toContain('正文')
   })
 
   it('date-picker 初始 open 在服务端以客户端未就绪阶段的同一结构原地输出面板', async () => {

@@ -8,7 +8,7 @@
 import type { Cleanup } from '@xihan-ui/core'
 import type { PropType, Ref, VNode } from 'vue'
 import { connectPortalVisualBridge } from '@xihan-ui/core'
-import { defineComponent, h, onBeforeUnmount, ref, Teleport, watch } from 'vue'
+import { defineComponent, getCurrentInstance, h, inject, onBeforeUnmount, onMounted, ref, ssrContextKey, Teleport, watch } from 'vue'
 import { clearFieldContext } from '../components/field/context'
 
 /**
@@ -34,6 +34,15 @@ export const XhPortal = defineComponent({
     // 浮层内容搬到落点后不再是外层字段的控件：放在里面的输入框不被外层字段命名、描述，也不拿同一个 id。
     // 与 Web Components 一致：那边的 Portal 把节点物理搬走，字段按 DOM 祖先链找控件，本来就够不着
     clearFieldContext()
+    // 服务端与水合那一帧就地渲染，挂载后再搬到正式落点，与 React 的服务端就地输出一致。
+    // 按落点水合靠不住：服务端没有运行时的浮层容器只能写进 body，客户端的落点却是那个容器，
+    // Vue 在空落点里水合时每个实例都去认领前一个实例的标记；同页示例按分包到达的先后乱序水合，
+    // 落点相同也会认错。几个实例共用一份 DOM，之后的补丁就插不进去，正文也找不着了。
+    // 水合中的组件在 setup 时已经指向服务端那份节点，全新挂载时还是空的，以此区分两条路径
+    const inPlace = ref(inject(ssrContextKey, null) != null || getCurrentInstance()?.vnode.el != null)
+    onMounted(() => {
+      inPlace.value = false
+    })
     const sourceRef = ref<HTMLTemplateElement | null>(null)
     const shellRef = ref<HTMLElement | null>(null)
     let disconnectBridge: Cleanup | null = null
@@ -55,7 +64,7 @@ export const XhPortal = defineComponent({
       disconnectBridge = connectPortalVisualBridge({ source, shell })
     }
 
-    watch([sourceRef, shellRef, () => props.source?.value, () => props.to, () => props.disabled], connect, { flush: 'post' })
+    watch([sourceRef, shellRef, () => props.source?.value, () => props.to, () => props.disabled, inPlace], connect, { flush: 'post' })
     // 来源与壳在挂载时就已就位，转为呈现时赶在本轮渲染之前建桥：内容第一次排版、定位引擎第一次
     // 量尺寸时，壳上已经是来源的环境（密度、方向、主题），不会先按落点的环境量一遍再跳
     watch(() => props.present, connect, { flush: 'pre' })
@@ -63,7 +72,7 @@ export const XhPortal = defineComponent({
 
     return (): VNode | VNode[] => [
       ...(props.source ? [] : [h('template', { 'ref': sourceRef, 'data-xh-portal-source': '' })]),
-      h(Teleport, { to: props.to, disabled: props.disabled }, [
+      h(Teleport, { to: props.to, disabled: props.disabled || inPlace.value }, [
         h('div', {
           'ref': shellRef,
           'data-xh-portal-shell': '',
