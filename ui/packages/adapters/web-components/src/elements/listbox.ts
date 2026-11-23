@@ -9,7 +9,7 @@ import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { CollectionVirtualizer, FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxTranslations, ListboxValueChangeDetails, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, listboxStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectListbox, listboxAnatomy, listboxMachine, listboxMeta, listboxStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -136,20 +136,13 @@ export class XhListboxElement<V = string> extends XhElement {
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field/Form 只交状态；Listbox 仅消费公开的禁用、只读、错误三轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private controlState(): FormControlState {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
   }
 
   private readonly notify = (details: ListboxValueChangeDetails<unknown>): void => {

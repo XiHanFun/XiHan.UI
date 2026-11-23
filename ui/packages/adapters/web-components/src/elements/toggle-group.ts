@@ -6,10 +6,10 @@
 // 提供 toggle group 相关实现。
 
 import type { ActionVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, SelectionValueKey, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValue, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { resolveFormControlState, SelectionValueKey, ToggleGroupItemProps, ToggleGroupNode, ToggleGroupSchema, ToggleGroupValue, ToggleGroupValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectToggleGroup, resolveFormControlState, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure } from '@xihan-ui/headless'
+import { connectToggleGroup, toggleGroupAnatomy, toggleGroupMachine, toggleGroupMeta, toggleGroupStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -131,21 +131,14 @@ export class XhToggleGroupElement<V = string> extends XhElement {
 
   // toggle-group 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<ToggleGroupSchema>(this, toggleGroupMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；ToggleGroup 消费公开的禁用、只读、必填与无效四轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private controlState(): ReturnType<typeof resolveFormControlState> {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
   }
 
   private machineProps(): Partial<ToggleGroupSchema['props']> {

@@ -20,7 +20,6 @@ import type {
   ExpressionInputSegment,
   ExpressionInputTranslations,
   ExpressionInputValueChangeDetails,
-  FormControlState,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
@@ -32,7 +31,6 @@ import {
   expressionInputMachine,
   expressionInputMeta,
   expressionInputStructure,
-  resolveFormControlState,
 } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -212,20 +210,13 @@ export class XhExpressionInputElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<ExpressionInputSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),

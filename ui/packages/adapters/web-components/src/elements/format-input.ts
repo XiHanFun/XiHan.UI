@@ -7,9 +7,9 @@
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { FormatSpec } from '@xihan-ui/expression'
-import type { FormatInputApi, FormatInputKind, FormatInputSchema, FormatInputValueChangeDetails, FormControlState } from '@xihan-ui/headless'
+import type { FormatInputApi, FormatInputKind, FormatInputSchema, FormatInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectFormatInput, formatInputAnatomy, formatInputMachine, formatInputMeta, formatInputStructure, formatInputTranslations, resolveFormControlState } from '@xihan-ui/headless'
+import { connectFormatInput, formatInputAnatomy, formatInputMachine, formatInputMeta, formatInputStructure, formatInputTranslations } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -121,20 +121,13 @@ export class XhFormatInputElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<FormatInputSchema>(this, formatInputMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；格式输入消费禁用、只读与无效三轴，再经组合节点交给里面的控件。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<FormatInputSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),

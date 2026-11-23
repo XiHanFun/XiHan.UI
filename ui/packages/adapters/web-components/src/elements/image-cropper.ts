@@ -8,7 +8,6 @@
 import type { Service } from '@xihan-ui/core'
 import type {
   CropToCanvasOptions,
-  FormControlState,
   ImageCropperFlip,
   ImageCropperFlipAxis,
   ImageCropperFlipChangeDetails,
@@ -22,7 +21,7 @@ import type {
   ImageCropperZoomChangeDetails,
 } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
-import { connectImageCropper, IMAGE_CROPPER_NO_FLIP, imageCropperAnatomy, imageCropperMachine, imageCropperMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectImageCropper, IMAGE_CROPPER_NO_FLIP, imageCropperAnatomy, imageCropperMachine, imageCropperMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -218,19 +217,11 @@ export class XhImageCropperElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；ImageCropper 仅消费公开的禁用、只读两轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<ImageCropperSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
-    }, this.inheritedControl)
+    })
     return {
       ariaLabel: this.hostAriaLabel(),
       src: this.src,

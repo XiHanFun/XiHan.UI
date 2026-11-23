@@ -6,9 +6,9 @@
 // 提供 checkbox 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema, FormControlState } from '@xihan-ui/headless'
+import type { CheckboxCheckedChangeDetails, CheckboxCheckedState, CheckboxSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox, resolveFormControlState } from '@xihan-ui/headless'
+import { checkboxAnatomy, checkboxMachine, checkboxMeta, checkboxStructure, connectCheckbox } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -78,21 +78,14 @@ export class XhCheckboxElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<CheckboxSchema>(this, checkboxMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<CheckboxSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       ariaLabel: this.hostAriaLabel(),
       checked: this.checked,

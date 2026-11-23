@@ -32,7 +32,6 @@ import type {
   DateSegmentPlaceholders,
   DateSegmentSet,
   DateSegmentType,
-  FormControlState,
   TimeHourCycle,
   TimePickerColumn,
   TimeStep,
@@ -40,7 +39,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, datePickerStructure, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
+import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, datePickerStructure, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
@@ -413,20 +412,13 @@ export class XhDatePickerElement extends XhPortalHostElement {
     }
   }
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<DatePickerSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

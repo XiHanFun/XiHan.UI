@@ -7,9 +7,9 @@
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { ColorFormat } from '@xihan-ui/core/color'
-import type { ColorFieldSchema, ColorFieldValueChangeDetails, FormControlState } from '@xihan-ui/headless'
+import type { ColorFieldSchema, ColorFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { colorFieldAnatomy, colorFieldMachine, colorFieldMeta, colorFieldStructure, connectColorField, resolveFormControlState } from '@xihan-ui/headless'
+import { colorFieldAnatomy, colorFieldMachine, colorFieldMeta, colorFieldStructure, connectColorField } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -113,21 +113,14 @@ export class XhColorFieldElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<ColorFieldSchema>(this, colorFieldMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<ColorFieldSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

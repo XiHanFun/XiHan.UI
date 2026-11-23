@@ -7,7 +7,6 @@
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
-  FormControlState,
   TimeGranularity,
   TimeHourCycle,
   TimePickerColumn,
@@ -24,7 +23,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { connectTimeRangePicker, resolveFormControlState, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta, timeRangePickerStructure } from '@xihan-ui/headless'
+import { connectTimeRangePicker, resolveTimeRangePickerEndIndex, timeRangePickerAnatomy, timeRangePickerMachine, timeRangePickerMeta, timeRangePickerStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
@@ -248,20 +247,13 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<TimeRangePickerSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

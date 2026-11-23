@@ -9,7 +9,7 @@ import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core
 import type { FormControlState, TagGroupApi, TagGroupItemDeleteDetails, TagGroupItemProps, TagGroupNode, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagGroupValueChangeDetails, TagVariant } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTagGroup, resolveFormControlState, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
+import { connectTagGroup, tagGroupAnatomy, tagGroupMachine, tagGroupMeta, tagGroupStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -136,21 +136,14 @@ export class XhTagGroupElement extends XhElement {
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。 */
   private readonly declaredDisabled = createDisabledDeclarations()
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field/Form 只交状态；TagGroup 消费公开的禁用、只读、无效、必填四轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private controlState(): FormControlState {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
   }
 
   private readonly notify = (details: TagGroupValueChangeDetails): void => {

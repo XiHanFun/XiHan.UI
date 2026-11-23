@@ -6,10 +6,10 @@
 // 提供 slider 相关实现。
 
 import type { Direction, IdGenerator, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
+import type { SliderSchema, SliderValueChangeDetails, SliderValueChangeEndDetails, SliderValueTextDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope, normalizeItemIndex } from '@xihan-ui/core'
-import { connectSlider, resolveFormControlState, sliderAnatomy, sliderMachine, sliderMeta, sliderStructure } from '@xihan-ui/headless'
+import { connectSlider, sliderAnatomy, sliderMachine, sliderMeta, sliderStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -166,21 +166,13 @@ export class XhSliderElement extends XhElement {
     { scope: this.sliderScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<SliderSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

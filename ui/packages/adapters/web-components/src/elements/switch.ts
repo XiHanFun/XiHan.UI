@@ -6,9 +6,9 @@
 // 提供 switch 相关实现。
 
 import type { Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
+import type { SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectSwitch, resolveFormControlState, switchAnatomy, switchMachine, switchMeta, switchStructure } from '@xihan-ui/headless'
+import { connectSwitch, switchAnatomy, switchMachine, switchMeta, switchStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -79,21 +79,14 @@ export class XhSwitchElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<SwitchSchema>(this, switchMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<SwitchSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       ariaLabel: this.hostAriaLabel(),
       checked: this.checked,

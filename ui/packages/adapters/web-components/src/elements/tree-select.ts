@@ -8,7 +8,6 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
-  FormControlState,
   TreeSelectApi,
   TreeSelectBranchLoadDetails,
   TreeSelectBranchLoadErrorDetails,
@@ -25,7 +24,7 @@ import type {
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTreeSelect, resolveFormControlState, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
+import { connectTreeSelect, treeSelectAnatomy, treeSelectMachine, treeSelectMeta, treeSelectStructure } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { FeedbackNodes } from '../dom/feedback-nodes'
@@ -378,13 +377,6 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   /** 读取一个懒分支的 Headless 异步相位；非懒分支返回 null。 */
   branchLoadState(value: string): TreeSelectBranchLoadSnapshot | null {
     return connectTreeSelect(this.ctrl.service, wcNormalize).branchLoadState(value)
@@ -396,12 +388,12 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   }
 
   private machineProps(): Partial<TreeSelectSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

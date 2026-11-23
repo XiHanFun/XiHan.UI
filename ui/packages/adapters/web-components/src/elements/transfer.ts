@@ -8,7 +8,6 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type {
   CollectionVirtualizer,
-  FormControlState,
   TransferFilter,
   TransferItem,
   TransferSchema,
@@ -19,7 +18,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocusKey, transferMachine, transferMeta, transferStructure } from '@xihan-ui/headless'
+import { connectTransfer, transferAnatomy, transferFocusKey, transferMachine, transferMeta, transferStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -213,21 +212,13 @@ export class XhTransferElement extends XhElement {
     props: () => ({ dir: this.direction }),
   })
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<TransferSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       ariaLabel: this.hostAriaLabel(),
       collection: this.collection,

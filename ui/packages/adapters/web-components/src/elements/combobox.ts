@@ -18,13 +18,12 @@ import type {
   ComboboxSchema,
   ComboboxTagMeta,
   ComboboxValueChangeDetails,
-  FormControlState,
   SelectionValueKey,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { comboboxAnatomy, comboboxMachine, comboboxMeta, comboboxStructure, connectCombobox, resolveFormControlState } from '@xihan-ui/headless'
+import { comboboxAnatomy, comboboxMachine, comboboxMeta, comboboxStructure, connectCombobox } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
@@ -280,20 +279,14 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
   /** 每枚标签里由元素补出来的那层 label。 */
   private readonly tagLabels = new WeakMap<HTMLElement, HTMLElement>()
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<ComboboxSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
     const valueTyped = {
       collection: this.collection,

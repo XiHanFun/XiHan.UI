@@ -14,9 +14,8 @@ import type {
   EditableValueChangeDetails,
   EditableValueCommitDetails,
   EditableValueRevertDetails,
-  FormControlState,
 } from '@xihan-ui/headless'
-import { connectEditable, editableAnatomy, editableMachine, editableMeta, resolveFormControlState } from '@xihan-ui/headless'
+import { connectEditable, editableAnatomy, editableMachine, editableMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -138,20 +137,12 @@ export class XhEditableElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<EditableSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

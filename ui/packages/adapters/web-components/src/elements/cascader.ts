@@ -19,12 +19,11 @@ import type {
   CascaderTagMeta,
   CascaderValue,
   CascaderValueChangeDetails,
-  FormControlState,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader, resolveFormControlState } from '@xihan-ui/headless'
+import { cascaderAnatomy, cascaderMachine, cascaderMeta, cascaderStructure, connectCascader } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
@@ -401,20 +400,13 @@ export class XhCascaderElement extends XhPortalHostElement {
     props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<CascaderSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

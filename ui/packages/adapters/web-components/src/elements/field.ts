@@ -6,11 +6,11 @@
 // 提供 field 相关实现。
 
 import type { Scope } from '@xihan-ui/core'
-import type { FieldProps, FormControlState } from '@xihan-ui/headless'
+import type { FieldProps } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { FormControlHost } from '../runtime/form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, fieldStructure, hasNamingContent, resolveFormControlState } from '@xihan-ui/headless'
+import { connectField, fieldAnatomy, fieldControlWiring, fieldMeta, fieldStructure, hasNamingContent } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -98,8 +98,6 @@ export class XhFieldElement extends XhElement {
   declare readOnly?: boolean
   declare controlId?: string
 
-  private inheritedControl: FormControlState | undefined
-
   /** 上一帧下发过接线的库内控件：这一帧不在作用域里的收回。 */
   private wiredControls = new Set<XhElement>()
 
@@ -121,19 +119,13 @@ export class XhFieldElement extends XhElement {
   // 实例级 scope 只建一次，避免派生出的 id 每帧变化
   private readonly fieldScope: Scope = createScope(null, createCounterIdGenerator())
 
-  /** Form 发现 Light DOM 控件后调用；状态优先级仍由 headless 真源计算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   protected wire(): void {
-    const state = resolveFormControlState({
+    const state = this.resolveControlState({
       invalid: this.invalid,
       required: this.required,
       disabled: this.disabled,
       readOnly: this.readOnly,
-    }, this.inheritedControl)
+    })
     const description = this.getPart('description')
     this.watchDescription(description)
     const props: FieldProps = {

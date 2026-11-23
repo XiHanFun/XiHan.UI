@@ -8239,31 +8239,6 @@
               "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -9366,32 +9341,6 @@
               "default": "new MachineController<CheckboxGroupSchema>(this, checkboxGroupMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
-            },
-            {
               "kind": "method",
               "name": "controlState",
               "privacy": "private",
@@ -9953,32 +9902,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<CheckboxSchema>(this, checkboxMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -12460,32 +12383,6 @@
               "default": "new MachineController<ColorFieldSchema>(this, colorFieldMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -13381,31 +13278,6 @@
               "readonly": true,
               "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
               "description": "面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；条子走浮层 4px 档"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -14631,32 +14503,6 @@
               "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.ctrl.service), { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')), formField: false }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -15126,32 +14972,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ColorSwatchPickerSchema>(this, colorSwatchPickerMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -16189,31 +16009,6 @@
               "readonly": true,
               "default": "new WeakMap<HTMLElement, HTMLElement>()",
               "description": "每枚标签里由元素补出来的那层 label。"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -19302,32 +19097,6 @@
               "default": "new MachineController<DateFieldSchema>(this, dateFieldMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -20350,31 +20119,6 @@
                   "text": "DatePickerServices"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -22067,31 +21811,6 @@
                   "text": "DateRangePickerServices"
                 }
               }
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -26132,32 +25851,6 @@
               "default": "new MachineController<EditableSchema>( this, editableMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -27154,31 +26847,6 @@
               "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -28062,32 +27730,6 @@
               "default": "new MachineController<SortableSchema>( this, sortableMachine, () => (this.ctrl.service ? fieldArrayDragProps(this.ctrl.service) : { ids: [], disabled: true }), { scope: createScope(null, createCounterIdGenerator()), onBuilt: (svc) => { svc.refs.set('getRootEl', () => fieldArrayDragContainer(this.getPart('root'))) svc.refs.set('getItemEls', () => fieldArrayDragItems(this.getPart('root'))) }, }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -28692,14 +28334,6 @@
             },
             {
               "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
               "name": "wiredControls",
               "privacy": "private",
               "default": "new Set<XhElement>()",
@@ -28740,24 +28374,6 @@
               },
               "privacy": "private",
               "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "Form 发现 Light DOM 控件后调用；状态优先级仍由 headless 真源计算。"
             },
             {
               "kind": "method",
@@ -29589,32 +29205,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FileUploadSchema>( this, fileUploadMachine, () => this.machineProps(), { scope: this.uploadScope }, )"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；FileUpload 仅消费公开的禁用、无效两轴。"
             },
             {
               "kind": "method",
@@ -30619,32 +30209,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FilterBuilderSchema>(this, filterBuilderMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；条件编辑器消费禁用、只读与无效三轴，再经组合节点交给里面的控件。"
             },
             {
               "kind": "method",
@@ -33479,32 +33043,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<FormatInputSchema>(this, formatInputMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；格式输入消费禁用、只读与无效三轴，再经组合节点交给里面的控件。"
             },
             {
               "kind": "method",
@@ -39145,32 +38683,6 @@
               "default": "new MachineController<ImageCropperSchema>( this, imageCropperMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；ImageCropper 仅消费公开的禁用、只读两轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -42929,32 +42441,6 @@
               "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field/Form 只交状态；Listbox 仅消费公开的禁用、只读、错误三轴。"
-            },
-            {
               "kind": "method",
               "name": "controlState",
               "privacy": "private",
@@ -45531,31 +45017,6 @@
               "privacy": "private",
               "readonly": true,
               "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -50469,32 +49930,6 @@
               "default": "new MachineController<NumberFieldSchema>(this, numberFieldMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -52219,32 +51654,6 @@
               "default": "new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -53685,32 +53094,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<PinInputSchema>(this, pinInputMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -57977,32 +57360,6 @@
               "default": "new MachineController<RadioGroupSchema>( this, radioGroupMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "controlState",
               "privacy": "private",
@@ -58675,32 +58032,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<RatingSchema>(this, ratingMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；Rating 消费公开的禁用、只读、必填与无效四轴。"
             },
             {
               "kind": "method",
@@ -62084,31 +61415,6 @@
               "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -64166,32 +63472,6 @@
               "default": "new MachineController<SignaturePadSchema>( this, signaturePadMachine, () => this.machineProps(), { onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；SignaturePad 消费公开的四条轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -65035,32 +64315,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<SliderSchema>( this, sliderMachine, () => this.machineProps(), { scope: this.sliderScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
             },
             {
               "kind": "method",
@@ -67781,32 +67035,6 @@
               "default": "new MachineController<SwitchSchema>(this, switchMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -70444,32 +69672,6 @@
               "description": "条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的。"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field/Form 只交状态；TagGroup 消费公开的禁用、只读、无效、必填四轴。"
-            },
-            {
               "kind": "method",
               "name": "controlState",
               "privacy": "private",
@@ -71551,32 +70753,6 @@
               "default": "new MachineController<TagsInputSchema>(this, tagsInputMachine, () => this.machineProps(), { onBuilt: svc => svc.refs.set('getControlEl', () => this.getPart('control')), })"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -72327,32 +71503,6 @@
               "default": "new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -73000,32 +72150,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TimeFieldSchema>(this, timeFieldMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
             },
             {
               "kind": "method",
@@ -73838,31 +72962,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TimePickerSchema>( this, timePickerMachine, () => this.machineProps(), { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -75097,31 +74196,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<TimeRangePickerSchema>( this, timeRangePickerMachine, () => this.machineProps(), { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) }, )"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",
@@ -76947,32 +76021,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<ToggleGroupSchema>(this, toggleGroupMachine, () => this.machineProps())"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；ToggleGroup 消费公开的禁用、只读、必填与无效四轴。"
             },
             {
               "kind": "method",
@@ -80294,32 +79342,6 @@
               "description": "两侧定高小列表各走一路自绘条：虚拟化时每侧改读 Virtualizer viewport，普通形态仍读 list；\n多路形态按此刻在场的每个真实滚动层各建一套条子，挂在 root 这个定位盒上；\n两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算"
             },
             {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ],
-              "description": "最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -81629,31 +80651,6 @@
               "readonly": true,
               "default": "new OverlayScrollbarsController(this, { present: () => this.exit?.visible ?? false, shell: () => this.getPart('positioner'), // 虚拟窗口的滚动层是 Virtualizer 的视口，条子跟着它走 scrollable: () => this.virtualizer?.getViewportElement() ?? this.getPart('tree'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
-            },
-            {
-              "kind": "field",
-              "name": "inheritedControl",
-              "type": {
-                "text": "FormControlState | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "setFormControlState",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "state",
-                  "type": {
-                    "text": "FormControlState | undefined"
-                  }
-                }
-              ]
             },
             {
               "kind": "method",

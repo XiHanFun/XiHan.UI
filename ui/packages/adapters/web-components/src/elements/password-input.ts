@@ -6,9 +6,9 @@
 // 提供 password input 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails } from '@xihan-ui/headless'
+import type { PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, passwordInputStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, passwordInputStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -123,21 +123,14 @@ export class XhPasswordInputElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<PasswordInputSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

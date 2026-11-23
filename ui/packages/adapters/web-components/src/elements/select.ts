@@ -6,12 +6,12 @@
 // 提供 select 相关实现。
 
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
-import type { CollectionVirtualizer, FormControlState, SelectionValueKey, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, SelectionValueKey, SelectItemProps, SelectNode, SelectOpenChangeDetails, SelectSchema, SelectTagMeta, SelectValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import type { OverlayExit } from '../overlay-exit'
 import type { StructureVirtualBinding } from '../runtime/structure-virtual'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectSelect, resolveFormControlState, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
+import { connectSelect, selectAnatomy, selectMachine, selectMeta, selectStructure, VIRTUAL_STRUCTURE_DELEGATE } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
@@ -292,20 +292,14 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
 
   /** 条目的禁用声明：connect 每帧把 aria-disabled 写回条目，回读时跳过这些写回值，只认作者写的；没写为 undefined。 */
   private readonly declaredDisabled = createDisabledDeclarations()
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<SelectSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     // 值类型只给作者看：交给机器时擦回去，值边界在机器里把它们编成键
     const valueTyped = {
       collection: this.collection,

@@ -22,7 +22,6 @@ import type {
   ColorSliderSchema,
   ColorSwatchPickerApi,
   ColorSwatchPickerItemProps,
-  FormControlState,
   SliderSchema,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
@@ -44,7 +43,6 @@ import {
   colorSwatchPickerAnatomy,
   colorSwatchPickerMachine,
   connectColorPicker,
-  resolveFormControlState,
   sliderMachine,
 } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
@@ -340,20 +338,13 @@ export class XhColorPickerElement extends XhPortalHostElement {
     props: () => ({ size: 'sm' }),
   })
 
-  private inheritedControl: FormControlState | undefined
-
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<ColorPickerSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去；挂载点里的 label 归内嵌组件
       labelled: this.ownPart('label') != null,

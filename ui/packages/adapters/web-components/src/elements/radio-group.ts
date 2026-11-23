@@ -6,10 +6,10 @@
 // 提供 radio group 相关实现。
 
 import type { Direction, Orientation, Service, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
+import type { RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, RadioGroupVariant, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, radioGroupStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -129,21 +129,13 @@ export class XhRadioGroupElement<V = string> extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private controlState(): ResolvedFormControlState {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
   }
 
   private machineProps(): Partial<RadioGroupSchema['props']> {

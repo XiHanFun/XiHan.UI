@@ -6,9 +6,9 @@
 // 提供 checkbox group 相关实现。
 
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
-import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, FormControlState, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
+import type { CheckboxGroupItemProps, CheckboxGroupNode, CheckboxGroupSchema, CheckboxGroupValueChangeDetails, CheckboxGroupVariant, ResolvedFormControlState, SelectionValueKey } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup, resolveFormControlState } from '@xihan-ui/headless'
+import { checkboxGroupAnatomy, checkboxGroupMachine, checkboxGroupMeta, checkboxGroupStructure, connectCheckboxGroup } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -130,21 +130,14 @@ export class XhCheckboxGroupElement<V = string> extends XhElement {
   }
 
   private readonly ctrl = new MachineController<CheckboxGroupSchema>(this, checkboxGroupMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private controlState(): ResolvedFormControlState {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
   }
 
   private machineProps(): Partial<CheckboxGroupSchema['props']> {

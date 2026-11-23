@@ -6,9 +6,9 @@
 // 提供 date field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
+import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateHourCycle, DateSegmentSet, DateSegmentType } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, dateFieldStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { HOUR_CYCLE_CONVERTER } from '../dom/hour-cycle'
 import { wcNormalize } from '../dom/normalize'
@@ -180,21 +180,14 @@ export class XhDateFieldElement extends XhElement {
 
   // date-field 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<DateFieldSchema>(this, dateFieldMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<DateFieldSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

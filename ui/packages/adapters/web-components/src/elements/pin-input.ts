@@ -6,9 +6,9 @@
 // 提供 pin input 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
+import type { PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, pinInputStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -137,21 +137,14 @@ export class XhPinInputElement extends XhElement {
 
   // pin-input 机器无副作用：不需要 config/layer/refs，controller 只带 props。
   private readonly ctrl = new MachineController<PinInputSchema>(this, pinInputMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<PinInputSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

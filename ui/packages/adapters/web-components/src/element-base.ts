@@ -5,13 +5,13 @@
 
 // 提供 element base 相关实现。
 
-import type { FieldControlWiring, FormFieldModel, StructureChild } from '@xihan-ui/headless'
+import type { FieldControlWiring, FormControlState, FormFieldModel, ResolvedFormControlState, StructureChild } from '@xihan-ui/headless'
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import type { StructureSpec } from './dom/structure'
 import type { FieldTarget } from './runtime/form-control-host'
 import { GHOST_ATTR } from '@xihan-ui/core'
-import { fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
+import { fieldGroupAttrs, fieldStateAttrs, resolveFormControlState, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { onXhConfigChange, withXhConfig } from './config'
 import { mergeAsChildProps } from './dom/as-child'
 import { GEN_ATTR } from './dom/generated-nodes'
@@ -115,6 +115,20 @@ export abstract class XhElement extends XhReactiveElement {
   setFormFieldModel(model: FormFieldModel | null): void {
     this.formFieldModel = model
     this.requestUpdate()
+  }
+
+  /** 最近的 Form 或 Field 下发的控件状态（禁用、只读、无效、必填）；不在其中时为 undefined。 */
+  private inheritedControl: FormControlState | undefined
+
+  /** Form 或 Field 发现此 Light-DOM 控件后调用，undefined 收回；不是公开的业务写值入口。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  /** 元素自己写的四态与外层下发的合成一份，交给状态机：自己写了的以自己为准，没写的取外层的。 */
+  protected resolveControlState(own: FormControlState): ResolvedFormControlState {
+    return resolveFormControlState(own, this.inheritedControl)
   }
 
   /**

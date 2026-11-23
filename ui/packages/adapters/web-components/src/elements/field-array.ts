@@ -6,10 +6,10 @@
 // 提供 field array 相关实现。
 
 import type { Service } from '@xihan-ui/core'
-import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema, SortableSchema } from '@xihan-ui/headless'
+import type { FieldArrayApi, FieldArrayColumn, FieldArrayItem, FieldArrayItemProps, FieldArrayLayout, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormPath, FormSchema, SortableSchema } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectFieldArray, fieldArrayAnatomy, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, resolveFormControlState, sortableMachine } from '@xihan-ui/headless'
+import { connectFieldArray, fieldArrayAnatomy, fieldArrayDragContainer, fieldArrayDragItems, fieldArrayDragProps, fieldArrayMachine, fieldArrayMeta, fieldArrayStructure, sortableMachine } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -154,20 +154,12 @@ export class XhFieldArrayElement extends XhElement {
     },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；FieldArray 仅消费公开的禁用、只读、无效三轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<FieldArraySchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       ariaLabel: this.hostAriaLabel(),
       value: this.value,

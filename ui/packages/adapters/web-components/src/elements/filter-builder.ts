@@ -6,9 +6,9 @@
 // 提供 filter builder 相关实现。
 
 import type { ControlVariant, Size } from '@xihan-ui/core'
-import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterField, FilterGroup, FilterOperator, FilterParameter, FilterPath, FormControlState } from '@xihan-ui/headless'
+import type { FilterBuilderApi, FilterBuilderCreateId, FilterBuilderSchema, FilterBuilderValueChangeDetails, FilterField, FilterGroup, FilterOperator, FilterParameter, FilterPath } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectFilterBuilder, filterBuilderAnatomy, filterBuilderMachine, filterBuilderMeta, filterBuilderStructure, filterBuilderTranslations, resolveFormControlState } from '@xihan-ui/headless'
+import { connectFilterBuilder, filterBuilderAnatomy, filterBuilderMachine, filterBuilderMeta, filterBuilderStructure, filterBuilderTranslations } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -165,20 +165,13 @@ export class XhFilterBuilderElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<FilterBuilderSchema>(this, filterBuilderMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；条件编辑器消费禁用、只读与无效三轴，再经组合节点交给里面的控件。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<FilterBuilderSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       labelled: this.getPart('label') != null,
       ariaLabel: this.hostAriaLabel(),

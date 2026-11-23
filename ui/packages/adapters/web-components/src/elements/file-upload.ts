@@ -20,11 +20,10 @@ import type {
   FileUploadSchema,
   FileUploadSnapshot,
   FileUploadTranslations,
-  FormControlState,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
-import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, fileUploadStructure, resolveFormControlState } from '@xihan-ui/headless'
+import { connectFileUpload, fileUploadAnatomy, fileUploadMachine, fileUploadMeta, fileUploadStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -219,21 +218,13 @@ export class XhFileUploadElement extends XhElement {
     { scope: this.uploadScope },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；FileUpload 仅消费公开的禁用、无效两轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<FileUploadSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       invalid: this.invalid,
       readOnly: this.readOnly,
       required: this.required,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

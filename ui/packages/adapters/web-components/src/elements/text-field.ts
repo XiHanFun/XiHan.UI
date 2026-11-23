@@ -6,9 +6,9 @@
 // 提供 text field 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
+import type { TextFieldSchema, TextFieldType, TextFieldValueChangeDetails } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { autoSizeTextarea, connectTextField, resolveFormControlState, textFieldAnatomy, textFieldMachine, textFieldMeta, textFieldStructure } from '@xihan-ui/headless'
+import { autoSizeTextarea, connectTextField, textFieldAnatomy, textFieldMachine, textFieldMeta, textFieldStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -131,21 +131,14 @@ export class XhTextFieldElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<TextFieldSchema>(this, textFieldMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private machineProps(): Partial<TextFieldSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,

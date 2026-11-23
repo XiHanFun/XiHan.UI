@@ -6,10 +6,10 @@
 // 提供 color swatch picker 相关实现。
 
 import type { Direction, Size, Tone } from '@xihan-ui/core'
-import type { ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerValueChangeDetails, FormControlState, ResolvedFormControlState } from '@xihan-ui/headless'
+import type { ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerValueChangeDetails, ResolvedFormControlState } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { colorSwatchPickerAnatomy, colorSwatchPickerMachine, colorSwatchPickerMeta, colorSwatchPickerStructure, connectColorSwatchPicker, resolveFormControlState } from '@xihan-ui/headless'
+import { colorSwatchPickerAnatomy, colorSwatchPickerMachine, colorSwatchPickerMeta, colorSwatchPickerStructure, connectColorSwatchPicker } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createDisabledDeclarations } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
@@ -106,21 +106,14 @@ export class XhColorSwatchPickerElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<ColorSwatchPickerSchema>(this, colorSwatchPickerMachine, () => this.machineProps())
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
 
   private controlState(): ResolvedFormControlState {
-    return resolveFormControlState({
+    return this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,
       required: this.required,
-    }, this.inheritedControl)
+    })
   }
 
   private machineProps(): Partial<ColorSwatchPickerSchema['props']> {

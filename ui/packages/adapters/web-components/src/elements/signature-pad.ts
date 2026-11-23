@@ -7,7 +7,6 @@
 
 import type { Service } from '@xihan-ui/core'
 import type {
-  FormControlState,
   SignaturePadApi,
   SignaturePadDrawDetails,
   SignaturePadDrawEndDetails,
@@ -18,7 +17,7 @@ import type {
   SignaturePadValueChangeDetails,
 } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
-import { connectSignaturePad, EMPTY_SIGNATURE, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
+import { connectSignaturePad, EMPTY_SIGNATURE, signaturePadAnatomy, signaturePadMachine, signaturePadMeta, signaturePadStructure } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -134,21 +133,13 @@ export class XhSignaturePadElement extends XhElement {
     { onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private inheritedControl: FormControlState | undefined
-
-  /** 最近的 Field 或 Form 只交状态；SignaturePad 消费公开的四条轴。 */
-  setFormControlState(state: FormControlState | undefined): void {
-    this.inheritedControl = state
-    this.requestUpdate()
-  }
-
   private machineProps(): Partial<SignaturePadSchema['props']> {
-    const control = resolveFormControlState({
+    const control = this.resolveControlState({
       disabled: this.disabled,
       readOnly: this.readOnly,
       required: this.required,
       invalid: this.invalid,
-    }, this.inheritedControl)
+    })
     return {
       // 作者写没写 label 角色节点决定可聚焦部件的 aria-labelledby 指不指过去
       labelled: this.getPart('label') != null,
