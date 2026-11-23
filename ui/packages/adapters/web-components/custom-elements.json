@@ -82334,6 +82334,9 @@
               "name": "--xh-tree-select-item-gap"
             },
             {
+              "name": "--xh-tree-select-item-h"
+            },
+            {
               "name": "--xh-tree-select-item-indicator-fg"
             },
             {

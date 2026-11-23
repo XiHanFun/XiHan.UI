@@ -95076,6 +95076,25 @@
       "description": "tree-select 的 branch-control、item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
+      "name": "--xh-tree-select-item-h",
+      "component": "tree-select",
+      "part": [
+        "branch-control",
+        "item"
+      ],
+      "property": [
+        "min-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_tree-select-row-h"
+      ],
+      "visibility": "public",
+      "description": "tree-select 的 branch-control、item 部件 min-block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-tree-select-item-indicator-fg",
       "component": "tree-select",
       "part": [

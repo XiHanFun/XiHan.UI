@@ -87,6 +87,7 @@
     --xh-_tree-select-h: var(--xh-control-h-md);
     --xh-_tree-select-px: var(--xh-control-px-md);
     --xh-_tree-select-row-py: var(--xh-list-option-py-md);
+    --xh-_tree-select-row-h: var(--xh-list-option-h-md);
     --xh-_tree-select-row-px: var(--xh-control-px-md);
     --xh-_tree-select-gap: var(--xh-control-gap-md);
     --xh-_tree-select-font-size: var(--xh-control-font-md);
@@ -120,6 +121,7 @@
     --xh-_tree-select-h: var(--xh-control-h-sm);
     --xh-_tree-select-px: var(--xh-control-px-sm);
     --xh-_tree-select-row-py: var(--xh-list-option-py-sm);
+    --xh-_tree-select-row-h: var(--xh-list-option-h-sm);
     --xh-_tree-select-row-px: var(--xh-control-px-sm);
     --xh-_tree-select-gap: var(--xh-control-gap-sm);
     --xh-_tree-select-font-size: var(--xh-control-font-sm);
@@ -130,6 +132,7 @@
     --xh-_tree-select-h: var(--xh-control-h-lg);
     --xh-_tree-select-px: var(--xh-control-px-lg);
     --xh-_tree-select-row-py: var(--xh-list-option-py-lg);
+    --xh-_tree-select-row-h: var(--xh-list-option-h-lg);
     --xh-_tree-select-row-px: var(--xh-control-px-lg);
     --xh-_tree-select-gap: var(--xh-control-gap-lg);
     --xh-_tree-select-font-size: var(--xh-control-font-lg);
@@ -541,6 +544,8 @@
   [data-scope='tree-select'][data-part='item'],
   [data-scope='tree-select'][data-part='branch-control'] {
     --xh-collection-block-padding: var(--xh-tree-select-item-py, var(--xh-_tree-select-row-py));
+    /* 候选面板是锚定浮层里的集合，行按档定高，与 Select 的选项同一把尺；带说明的行照常撑高 */
+    --xh-collection-row-h: var(--xh-tree-select-item-h, var(--xh-_tree-select-row-h));
     --xh-collection-inline-padding: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
     --xh-collection-gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
     --xh-collection-font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));

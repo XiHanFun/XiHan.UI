@@ -4745,6 +4745,7 @@ export type ComponentTokenName
     | '--xh-tree-select-item-font-size'
     | '--xh-tree-select-item-font-weight-selected'
     | '--xh-tree-select-item-gap'
+    | '--xh-tree-select-item-h'
     | '--xh-tree-select-item-indicator-fg'
     | '--xh-tree-select-item-indicator-size'
     | '--xh-tree-select-item-leading'
