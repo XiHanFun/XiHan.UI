@@ -71,9 +71,9 @@
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 16px，按下缩放并换底；默认（outline）使用磨砂浮动表面，solid / subtle / ghost 使用对应语义表面。
+- 触发器走 Action Control floating 档：`size` 取 sm / md / lg（32 / 40 / 48px），默认 md 40px 圆形、图标 16px，按下换底；默认（outline）使用浮层面（实体底加描边与投影），solid / subtle / ghost 使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
-- 应用设为 `data-material="liquid"` 时，默认（outline）的触发器换成液态面，按住时液面随手指形变，减弱动效下不形变；展开组里的动作仍是磨砂面。
+- 应用设为 `data-material="liquid"` 时，默认（outline）的触发器换成液态面，按住时液面随手指形变，减弱动效下不形变；展开组里的动作仍是浮层面。
 
 ### 组合
 

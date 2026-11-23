@@ -75,8 +75,8 @@ open 与 position 都由外部持有：面板只报告意图，值写回后才�
 - 进出铺满时位置与尺寸补过去、圆角同步收放；拖动与改尺寸照旧跟手。
 - 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），受控与非受控齐全。
 - 八个调整尺寸的把手在节点上声明各自守护的边，西边与北边的把手会同时改变位置。
-- 默认皮肤使用 M2 磨砂面：描边、顶边高光、投影与光学采样同出一份配方；高对比、减少透明、强制色与打印时原位收敛为实体面；浮层内标题 14 / 600。
-- 开合触发器走 Action Control text 档：默认 `outline` 描边、md 高度，按下缩放并换底。标题栏的形态按钮与关闭按钮走 icon 档 sm、`ghost` 面：磨砂白面上悬停 100 → 按下 200，焦点面透明吃库环；当前形态的那颗按钮是按下的开关（`aria-pressed`），取品牌淡底 `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，悬停 20% → 按下 28%。Space / Enter 与触屏按住期间由连接层投影 `data-pressed`。
+- 默认皮肤使用浮层面：实体底、描边与投影同出一份材质配方；主题给它开了透景时，高对比、减少透明、强制色与打印下原位收回实体面；浮层内标题 14 / 600。
+- 开合触发器走 Action Control text 档：默认 `outline` 描边、md 高度，按下换底。标题栏的形态按钮与关闭按钮走 icon 档 sm、`ghost` 面：浮层面上悬停 100 → 按下 200，焦点面透明吃库环；当前形态的那颗按钮是按下的开关（`aria-pressed`），取品牌淡底 `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，悬停 20% → 按下 28%。Space / Enter 与触屏按住期间由连接层投影 `data-pressed`。
 - 正文是浮在页面之上的滚动面：原生细条，`overscroll-behavior: contain` 让滚到头不带走页面。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快速移动、Enter / Space 送回初始位置；调整把手上方向键推动边缘；Esc 关闭。
 - 指针拖动面板时报一对起止事件：按下拖拽把手进入拖动报 `onDragStart`（事件名 `drag-start`，带按下处的 `clientX` / `clientY`），这一场移动收尾报 `onDragEnd`（`drag-end`，带 `clientX` / `clientY` 与 `canceled`）。手松开时坐标是松手处、`canceled` 为 false；系统收回指针、拖动途中面板被收起时 `canceled` 为 true，坐标是最后跟到的那一点。两者一一对应，途中的位置照旧由 `onPositionChange` 连续报出；改尺与键盘平移不报。宿主可以据此在拖动期间画停靠提示、松手时判断落在哪里。

@@ -21,10 +21,10 @@ provideXhConfig({
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `locale` | `string` | BCP 47 语言标记，供日期时间类组件（`calendar` / `date-*` / `time-*`）使用。它只决定这些组件的日期时间格式，不切换文案。 |
+| `locale` | `string` | BCP 47 语言标记，供日期时间类组件（`calendar-*` / `date-*` / `time-*`）使用。它只决定这些组件的日期时间格式，不切换文案。 |
 | `translations` | `XhTranslationOverrides` | 按组件 id 分组的文案覆盖。每个组件的可覆盖键即其 `<Pascal>Translations` 中的字段，组件页的 Props 表可以查到。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | 尺寸档的默认值，作用于每个声明了三档 `size` 的组件，包括运行状态机与不运行状态机的（按钮、徽标、空状态等）。它与 `data-density` 是两条独立的轴：`size` 切换控件高度与字号档，密度只收紧间距。`floating-panel` 的 `size` 是一对像素数、同名不同义，不受它影响。 |
-| `portalContainer` | `() => Element \| null` | 指定同一 Document 内的浮层目标，未配置时由运行时提供默认 Portal。现有组件通常允许返回 `null` 使用默认目标；Vue DatePicker 的严格规则见下文。它不负责切换 Scope，跨 Document 目标会失败。Vue 与 React 可配置；Web Components 暂不公开该配置，Menu 子菜单使用所属 Document 的运行时 Portal 根。 |
+| `portalContainer` | `() => Element \| null` | 指定同一 Document 内的浮层目标，未配置时由运行时提供默认 Portal。现有组件通常允许返回 `null` 使用默认目标；Vue DatePicker 的严格规则见下文。它不负责切换 Scope，跨 Document 目标会失败。Vue 与 React 可配置；Web Components 在 `<xh-config>` 上经 property 设置，作用于它的子树。 |
 | `scrollRoot` | `() => HTMLElement \| null` | 实际滚动的元素。宿主把滚动移进内容容器（`body` 本身不滚动）时必须提供，否则模态浮层的滚动锁是空操作。返回 `null` 明确锁定页面，不自动探测后代滚动容器；同一 Document 的并行锁必须指向同一规范化目标。 |
 
 方向不在这里。`dir` 走 DOM：写在 `<html dir="rtl">` 或任意祖先上即可，行为层从计算样式读取，皮肤中的 `[dir='rtl']` 规则也随之生效。在这份配置中再加 JS 侧的 `dir` 只会多一条不一致的通道。
@@ -118,6 +118,6 @@ provideXhConfig({ translations: { dialog: { close: "Close" } } });
 
 Vue 与 React 的浮层搬到 Portal 时，每个实例会把逻辑来源最近声明的 `data-theme`、`data-brand`、`data-density`、`data-contrast`、`data-motion`、`data-transparency` 和 `dir` 投影到自己的无盒壳，并复制来源解析出的 CSS 自定义属性；共享 Portal 根不带这些属性。同一落点里的两个局部主题因此互不覆盖。来源没有声明的轴与变量继续继承显式 `portalContainer`，普通计算样式不会被复制。
 
-Web Components 的普通声明式浮层仍在 Light DOM 原位。多级 Menu 是明确例外：展开的 submenu positioner 会进入所属 Document 的运行时 Portal，以免主题给父菜单开透景时，它的背景滤镜建立 fixed 包含块；它同样使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
+Web Components 的浮层展开后同样搬进所属 Document 的运行时 Portal（或 `portalContainer` 给的落点），使用独占无盒壳桥接上述视觉轴，关闭或断连后恢复作者原位置。
 
 `shape` 是组件自身形态，不是主题环境轴。系统 `prefers-reduced-transparency` 媒体路径在同一浏览器中天然同时作用于来源与 Portal；`data-transparency="reduce"` 是同源的显式视觉轴，令牌层会在该局部范围将材质实体化并由实例壳继承，业务皮肤也可消费它扩展自己的非材质降级。
