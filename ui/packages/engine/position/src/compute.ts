@@ -49,6 +49,11 @@ export interface ComputeInput {
   arrow?: { size: number, padding?: number }
   /** 要可用空间就把量交进来；不给则不算。padding 是浮层距可用区域边缘的最小距离。 */
   size?: { padding?: number }
+  /**
+   * 翻面之后仍放不下、落定那一侧的主轴空间又不到 minSize 时，沿主轴挪进可用区域、盖住锚点的一部分；
+   * 不给则守着那一侧，宁可越出去。
+   */
+  overlap?: { minSize: number }
 }
 
 export interface ComputeOutput {
@@ -189,20 +194,37 @@ function mainAxisSpace(input: ComputeInput, side: Side, pad: number): number {
 
 /**
  * 落定这一侧后的可用空间：主轴量到锚点，交叉轴按可用区域整条边算（shift 最多也就挪这么宽）。
+ * 盖住了锚点时主轴也不再量到锚点，同样按可用区域整条边算。
  * 负值归零，调用方拿它当 CSS 长度用，负长度会让整条声明失效。
  */
 function spaceOn(
   input: ComputeInput,
   side: Side,
   spec: { padding?: number },
+  overlapped: boolean,
 ): { availableWidth: number, availableHeight: number } {
   const pad = Math.max(0, spec.padding ?? 0)
+  const fullWidth = Math.max(0, input.clip.right - input.clip.left - pad * 2)
+  const fullHeight = Math.max(0, input.clip.bottom - input.clip.top - pad * 2)
+  if (overlapped)
+    return { availableWidth: fullWidth, availableHeight: fullHeight }
   const main = Math.max(0, mainAxisSpace(input, side, pad))
-  const crossWidth = Math.max(0, input.clip.right - input.clip.left - pad * 2)
-  const crossHeight = Math.max(0, input.clip.bottom - input.clip.top - pad * 2)
   return isVertical(side)
-    ? { availableWidth: crossWidth, availableHeight: main }
-    : { availableWidth: main, availableHeight: crossHeight }
+    ? { availableWidth: fullWidth, availableHeight: main }
+    : { availableWidth: main, availableHeight: fullHeight }
+}
+
+/**
+ * 该不该盖住锚点：落定这一侧仍放不下，且这一侧的主轴空间不到门槛。
+ * 空间量法与回报给调用方的可用空间同一套余量，够门槛的一侧交给调用方限高之后就放得下，不必盖。
+ */
+function shouldOverlap(input: ComputeInput, side: Side, coords: { x: number, y: number }): boolean {
+  if (!input.overlap)
+    return false
+  if (overflowOn(coords, input.floating, input.clip, side) <= 0)
+    return false
+  const pad = Math.max(0, input.size?.padding ?? input.padding)
+  return mainAxisSpace(input, side, pad) < input.overlap.minSize
 }
 
 export function computePlacement(input: ComputeInput): ComputeOutput {
@@ -225,8 +247,8 @@ export function computePlacement(input: ComputeInput): ComputeOutput {
   }
 
   // 交叉轴顶到边就沿轴挪回来，不改落在哪一侧
+  const pad = Math.max(0, input.padding)
   if (input.shift) {
-    const pad = Math.max(0, input.padding)
     if (isVertical(side)) {
       coords = {
         ...coords,
@@ -237,6 +259,24 @@ export function computePlacement(input: ComputeInput): ComputeOutput {
       coords = {
         ...coords,
         y: clamp(coords.y, input.clip.top + pad, input.clip.bottom - pad - input.floating.height),
+      }
+    }
+  }
+
+  // 两侧都放不下、这一侧又窄得不值得挤：主轴上也挪回可用区域里，盖住锚点的一部分。
+  // placement 仍报落定的那一侧，进退场方向与箭头朝向跟着它走
+  const overlapped = shouldOverlap(input, side, coords)
+  if (overlapped) {
+    if (isVertical(side)) {
+      coords = {
+        ...coords,
+        y: clamp(coords.y, input.clip.top + pad, input.clip.bottom - pad - input.floating.height),
+      }
+    }
+    else {
+      coords = {
+        ...coords,
+        x: clamp(coords.x, input.clip.left + pad, input.clip.right - pad - input.floating.width),
       }
     }
   }
@@ -252,7 +292,7 @@ export function computePlacement(input: ComputeInput): ComputeOutput {
   // 可用空间同样算在最后：量的必须是 side 翻定之后那一侧，按请求的那一侧算会差出整整一个面板
   if (!input.size)
     return output
-  return { ...output, ...spaceOn(input, side, input.size), anchorWidth: input.anchor.width }
+  return { ...output, ...spaceOn(input, side, input.size, overlapped), anchorWidth: input.anchor.width }
 }
 
 /** 两个区域的交集。不相交时给出的区域宽高为负，调用方按空处理。 */

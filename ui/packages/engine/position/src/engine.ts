@@ -94,6 +94,7 @@ export function createPositionEngine(): PositionEnginePort {
           dir: options.dir,
           arrow: options.arrow,
           size: sizeSpec(options.size),
+          overlap: options.overlap,
         })
 
         // hidden 问的是锚点还看得见吗，与浮层落在哪儿无关，因此按锚点自己的裁剪祖先算

@@ -106,6 +106,7 @@ export type {
   PositionArrowOptions,
   PositionEnginePort,
   PositionOptions,
+  PositionOverlapOptions,
   PositionRect,
   PositionResult,
   PositionStrategy,

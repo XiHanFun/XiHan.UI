@@ -59,6 +59,7 @@ stop(); // 停止跟随
 | `flip` | `true` | 主轴空间不足时翻到对面 |
 | `shift` | `true` | 交叉轴溢出时沿边推回，贴边留 4px 余量 |
 | `strategy` | `'absolute'` | 坐标系，见下 |
+| `overlap` | 不开 | `{ minSize }`：翻面后仍放不下、这一侧主轴空间又不到 `minSize` 时，沿主轴挪进可用区域，盖住锚点的一部分；开了 `size` 时可用空间改按可用区域的整条主轴算。菜单与列表不开（盖住触发器，按下后松手会误选），引导步骤开 |
 
 回传的 `PositionResult` 除坐标外，还有最终采用的 `placement`（翻面后可能与请求的不同，皮肤依靠 `data-side` / `data-align` 绘制箭头）与 `hidden`（锚点已被裁剪，浮层应隐藏）。
 

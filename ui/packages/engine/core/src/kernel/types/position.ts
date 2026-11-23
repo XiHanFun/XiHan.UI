@@ -89,6 +89,18 @@ export interface PositionOptions {
    * 缺省只受视口与裁剪祖先约束。
    */
   boundary?: Anchor
+  /**
+   * 翻面之后仍放不下、落定那一侧的主轴空间又不到 minSize 时，不再把浮层挤在锚点旁边：
+   * 沿主轴挪进可用区域，宁可盖住锚点的一部分；开了 size 的话，可用空间随之按可用区域的整条主轴算。
+   * 缺省不开：菜单与列表盖住触发器，按下后松手就会落在条目上误选，只给盖住锚点无妨的面开（如引导步骤）。
+   */
+  overlap?: PositionOverlapOptions
+}
+
+/** 盖住锚点的门槛。 */
+export interface PositionOverlapOptions {
+  /** 落定那一侧的主轴空间（扣掉 offset 与余量）不到它就改为盖住锚点；够它就照常贴在旁边，交给调用方按可用空间限高。 */
+  minSize: number
 }
 
 /** 虚拟锚点（上下文菜单 / 文本选区）：只需能给出矩形。 */

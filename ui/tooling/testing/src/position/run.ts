@@ -160,6 +160,44 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
         stage.cleanup()
       }
     })
+
+    hooks.it('开了 overlap：锚点几乎与视口等高、两侧都窄过门槛时，沿主轴挪进视口盖住锚点的一部分', async () => {
+      const stage = createStage()
+      try {
+        // 上方只剩 40px、下方只剩 16px，浮层 120 高哪一侧都贴不下
+        const anchor = stage.putAnchor(16, 40, 200, window.innerHeight - 56)
+        const floating = stage.putFloating(160, 120)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'top', offset: OFFSET, overlap: { minSize: 160 } })
+        await probe.settle()
+
+        expectSame(probe.last().placement.split('-')[0], 'top', '盖住锚点时仍报落定的那一侧')
+        const rect = floating.getBoundingClientRect()
+        expectAtLeast(rect.top, 0, '盖住锚点后浮层上沿应留在视口内')
+        expectAtLeast(window.innerHeight, rect.bottom, '盖住锚点后浮层下沿应留在视口内')
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('开了 overlap 但这一侧够门槛：照常贴在旁边，不盖锚点', async () => {
+      const stage = createStage()
+      try {
+        // 锚点在视口正中，上方空间远超门槛，浮层放得下
+        const center = viewportCenter()
+        const anchor = stage.putAnchor(center.x, center.y)
+        const floating = stage.putFloating(40, 80)
+        const probe = attachProbe(engine, anchor, floating, { placement: 'top', offset: OFFSET, overlap: { minSize: 160 } })
+        await probe.settle()
+
+        expectPlacedAt(anchor.getBoundingClientRect(), floating.getBoundingClientRect(), 'top', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
   })
 
   hooks.describe(`定位引擎：可用空间（${engineName}）`, () => {
@@ -227,6 +265,34 @@ export function runPositionEngine(engine: PositionEnginePort, hooks: TestHooks, 
         const rect = panel.getBoundingClientRect()
         expectAtLeast(rect.top, 0, '限高后面板上沿应留在视口内')
         expectPlacedAt(anchor.getBoundingClientRect(), rect, 'top-start', OFFSET)
+        probe.stop()
+      }
+      finally {
+        stage.cleanup()
+      }
+    })
+
+    hooks.it('盖住锚点时可用空间按整个视口算：长面板限高后整块留在视口里，内部滚得动', async () => {
+      const stage = createStage()
+      try {
+        // 锚点几乎与视口等高：上下都窄过门槛，面板改为盖住锚点
+        const anchor = stage.putAnchor(16, 40, 200, window.innerHeight - 56)
+        const panel = putLongPanel(stage)
+
+        const probe = attachProbe(
+          engine,
+          anchor,
+          panel,
+          { placement: 'top-start', offset: OFFSET, strategy: 'fixed', size: true, overlap: { minSize: 160 } },
+          (result, el) => { el.style.maxBlockSize = `${result.availableHeight}px` },
+        )
+        await probe.settle()
+
+        if (panel.scrollHeight <= panel.clientHeight)
+          throw new Error(`限高后面板本应在内部滚动，实测 scrollHeight=${panel.scrollHeight}、clientHeight=${panel.clientHeight}`)
+        const rect = panel.getBoundingClientRect()
+        expectAtLeast(rect.top, 0, '盖住锚点后面板上沿应留在视口内')
+        expectAtLeast(window.innerHeight + POSITION_TOLERANCE, rect.bottom, '盖住锚点后面板下沿应留在视口内')
         probe.stop()
       }
       finally {

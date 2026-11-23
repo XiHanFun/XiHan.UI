@@ -335,6 +335,77 @@ describe('可用空间', () => {
   })
 })
 
+describe('盖住锚点', () => {
+  // 后台壳的内容区那种目标：上下各只剩几十像素，浮层哪一侧都贴不下
+  const TALL = { x: 100, y: 56, width: 800, height: 900 }
+  const CARD = { width: 300, height: 150 }
+  const SIZE = { padding: 4 }
+
+  it('没开就守着越出较少的那一侧，宁可伸出去', () => {
+    const result = place({ anchor: TALL, floating: CARD, placement: 'top', flip: true, shift: true })
+    expect(result.placement).toBe('top')
+    // 56 - 150 - 8
+    expect(result.y).toBe(-102)
+  })
+
+  it('两侧都放不下、这一侧窄过门槛：主轴挪回可用区域，placement 仍报落定那一侧', () => {
+    const result = place({ anchor: TALL, floating: CARD, placement: 'top', flip: true, shift: true, overlap: { minSize: 160 } })
+    expect(result.placement).toBe('top')
+    // 贴着可用区域上界，留出 padding
+    expect(result.y).toBe(4)
+    // 交叉轴不受影响，箭头仍对着锚点中心：500 - 350
+    expect(result.x).toBe(350)
+  })
+
+  it('盖住时可用空间按可用区域的整条主轴算，不再量到锚点', () => {
+    const result = place({ anchor: TALL, floating: CARD, placement: 'top', flip: true, overlap: { minSize: 160 }, size: SIZE })
+    // 1000 - 4 * 2，而不是上侧的 56 - 8 - 4 = 44
+    expect(result.availableHeight).toBe(992)
+    expect(result.availableWidth).toBe(992)
+  })
+
+  it('这一侧够门槛就照常贴在旁边，交给调用方按可用空间限高', () => {
+    // 上侧剩 200 - 8 - 4 = 188，下侧只剩 8：浮层 250 高两侧都放不下，但上侧限高之后放得下
+    const result = place({
+      anchor: { x: 100, y: 200, width: 800, height: 780 },
+      floating: { width: 300, height: 250 },
+      placement: 'top',
+      flip: true,
+      overlap: { minSize: 160 },
+      size: SIZE,
+    })
+    expect(result.placement).toBe('top')
+    expect(result.y).toBe(-58)
+    expect(result.availableHeight).toBe(188)
+  })
+
+  it('放得下就不动，开不开结果一样', () => {
+    expect(place({ placement: 'top', overlap: { minSize: 160 }, size: SIZE }))
+      .toEqual(place({ placement: 'top', size: SIZE }))
+  })
+
+  it('左右两侧盖住时走横轴', () => {
+    // 右侧剩 1000 - 940 - 8 - 4 = 48，左侧剩 40 - 8 - 4 = 28：守着右侧，横向挪回可用区域
+    const result = place({
+      anchor: { x: 40, y: 100, width: 900, height: 100 },
+      floating: { width: 300, height: 80 },
+      placement: 'right',
+      flip: true,
+      overlap: { minSize: 160 },
+      size: SIZE,
+    })
+    expect(result.placement).toBe('right')
+    expect(result.x).toBe(696)
+    expect(result.y).toBe(110)
+    expect(result.availableWidth).toBe(992)
+  })
+
+  it('浮层比可用区域还高时贴住起始缘，不许两头都够不着', () => {
+    const result = place({ anchor: TALL, floating: { width: 300, height: 1200 }, placement: 'top', flip: true, overlap: { minSize: 160 } })
+    expect(result.y).toBe(4)
+  })
+})
+
 describe('placement 拆装', () => {
   it('无后缀即居中', () => {
     expect(splitPlacement('bottom')).toEqual({ side: 'bottom', align: 'center' })
