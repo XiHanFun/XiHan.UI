@@ -7,6 +7,7 @@
 
 import type { TagPressedPart, TagSchema } from './tag.types'
 import { setup } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<TagSchema>()
@@ -58,7 +59,7 @@ export const tagMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TagSchema>(),
       // 关闭钮嵌在本体里，按在钮上那一下会冒泡到本体：先到的（事件目标）算数，按住期间另一个部件不进
       canPress: ({ context, prop, event }) => {
         const e = event.current()
@@ -79,8 +80,7 @@ export const tagMachine = createMachine({
       }),
     },
     actions: {
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
+      ...controlledOpenActions<TagSchema>(),
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
       startPress: ({ context, event }) => {
         const e = event.current()

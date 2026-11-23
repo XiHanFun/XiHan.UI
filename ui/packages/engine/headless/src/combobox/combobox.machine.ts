@@ -9,6 +9,7 @@ import type { Params, PositionResult } from '@xihan-ui/core'
 import type { ComboboxFocusIntent, ComboboxNode, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -188,7 +189,7 @@ export const comboboxMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<ComboboxSchema>(),
       isMultiple: ({ prop }) => !!prop('multiple'),
       hasHighlight: ({ context }) => context.get('highlightedValue') != null,
       // 禁用、只读与加载都改不了值，一票否决；候选自身的禁用随事件带入；清空按钮没有东西可清时不进
@@ -200,6 +201,7 @@ export const comboboxMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<ComboboxSchema>(),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
@@ -237,17 +239,6 @@ export const comboboxMachine = createMachine({
         params.context.set('filterQuery', '')
         params.context.reset('highlightedValue')
         params.action(['syncValueText'])
-      },
-
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       setFocusIntent: ({ context, event }) => {

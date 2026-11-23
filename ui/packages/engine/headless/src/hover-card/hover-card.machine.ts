@@ -8,6 +8,7 @@
 import type { PositionResult, Transition } from '@xihan-ui/core'
 import type { HoverCardSchema } from './hover-card.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -153,23 +154,15 @@ export const hoverCardMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<HoverCardSchema>(),
       isDisabled: ({ prop }) => !!prop('disabled'),
       isFocusHeld: ({ context }) => context.get('focusHeld'),
     },
     actions: {
+      ...controlledOpenActions<HoverCardSchema>(),
       clearOpenedAtMount,
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       markFocusHeld: ({ context }) => context.set('focusHeld', true),
       clearFocusHeld: ({ context }) => context.set('focusHeld', false),
-      // 仅受控时回写
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
-      },
     },
     effects: {
       waitForOpenDelay: ({ prop, send }) =>

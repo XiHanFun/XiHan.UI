@@ -7,6 +7,7 @@
 
 import type { ToolCallSchema } from './tool-call.types'
 import { isSSR, setIntervalEffect, setup } from '@xihan-ui/core'
+import { controlledOpenGuards, controlledOpenSync } from '../shared/controlled-open'
 import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 
@@ -168,13 +169,14 @@ export const toolCallMachine = createMachine({
       },
     },
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<ToolCallSchema>(),
       isAutoAllowed: ({ prop }) => prop('autoDisclosure') !== false,
       // 走组合子而不是裸内联函数：createMachine 的自检会把裸函数直接拦下
       isAutoEnabled: guards.and(guards.not('isOpenControlled'), 'isAutoAllowed'),
       canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      ...controlledOpenSync<ToolCallSchema>(),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       // 启动时进入初态那一次不算；之后每进一次叶态，内容与箭头就按动效走
@@ -193,13 +195,6 @@ export const toolCallMachine = createMachine({
       invokeOnAutoClose: ({ prop }) => prop('onOpenChange')?.({ open: false, source: 'auto' }),
       invokeOnApiOpen: ({ prop }) => prop('onOpenChange')?.({ open: true, source: 'api' }),
       invokeOnApiClose: ({ prop }) => prop('onOpenChange')?.({ open: false, source: 'api' }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
-      },
       // 电平同步：每次 running 变化都按当前值发一条，不看方向
       // watch 只在挂载后 running 真的翻了才触发
       syncRunning: ({ context, prop, send }) => {

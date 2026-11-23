@@ -9,7 +9,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { SelectFocusIntent, SelectNode, SelectSchema } from './select.types'
 import { createTypeahead, focusFirst, getTabbables, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, removeLinks, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -179,7 +179,7 @@ export const selectMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<SelectSchema>(),
       isMultiple: ({ prop }) => !!prop('multiple'),
       isReadOnly: ({ prop }) => !!prop('readOnly'),
       // 禁用与只读都改不了值，一票否决；条目自身的禁用随事件带入；清空按钮没有值可清时不进
@@ -191,6 +191,7 @@ export const selectMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<SelectSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
       markOpened: ({ context }) => {
@@ -231,8 +232,6 @@ export const selectMachine = createMachine({
         params.action(['syncValueText'])
       },
 
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       setValue: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type === 'VALUE.SET') {
@@ -256,13 +255,6 @@ export const selectMachine = createMachine({
         const next = normalizeSelection(current, !!prop('multiple'))
         if (!sameValues(current, next))
           context.set('value', next)
-      },
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       // 给了 collection 就按数据取文本，一次算完；没给才回到活 DOM 现查那条老路，
       // 那条路上首帧条目可能还没挂上身份标记，查不到就推迟一拍重来

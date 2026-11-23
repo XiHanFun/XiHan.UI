@@ -17,6 +17,7 @@ import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { COLOR_PICKER_EN_US } from '../locale/en-US'
 import { sameArray } from '../shared/array'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorSameColor, colorToString } from '../shared/color'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -525,13 +526,14 @@ export const colorPickerMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<ColorPickerSchema>(),
       isInline: ({ prop }) => !!prop('inline'),
       canInteract: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       canPick: ({ prop, context }) =>
         !prop('disabled') && !prop('readOnly') && context.get('eyeDropperSupported'),
     },
     actions: {
+      ...controlledOpenActions<ColorPickerSchema>(),
       clearOpenedAtMount,
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
 
@@ -604,9 +606,6 @@ export const colorPickerMachine = createMachine({
         syncValueError(params)
         syncFormatError(params)
       },
-
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
 
       // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭。常驻形态不认 open
       syncOpen: ({ prop, send }) => {

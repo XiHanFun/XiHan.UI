@@ -13,7 +13,7 @@ import type { ImageViewerImageStatus, ImageViewerItem, ImageViewerPressedPart, I
 import { requireOverlayKit, setup } from '@xihan-ui/core'
 import { createSpringValue, glideSpring, projectRelease, rubberClamp } from '@xihan-ui/motion'
 import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDoc } from '@xihan-ui/pointer'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
 import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction } from '../shared/overlay-shell'
@@ -326,7 +326,7 @@ export const imageViewerMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<ImageViewerSchema>(),
       // 只在展开态接；贴住端点的缩放钮与到边界的翻页钮是原生 disabled，那份事实由 connect 判定后随事件带入
       canPress: ({ state, event }) => {
         const e = event.current()
@@ -334,6 +334,7 @@ export const imageViewerMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<ImageViewerSchema>({ reason: true }),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
@@ -351,15 +352,6 @@ export const imageViewerMachine = createMachine({
         const part = context.get('pressed')
         if (part != null && pressedPartInert(prop, context.get('transform'), context.get('index'), part))
           context.set('pressed', null)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       // 越界下标在写入口就夹掉，受控宿主拿到的回调值永远可用
       setIndex: ({ context, prop, event }) => {

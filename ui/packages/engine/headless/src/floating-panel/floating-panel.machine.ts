@@ -8,6 +8,7 @@
 import type { FloatingPanelPressedPart, FloatingPanelSchema, FloatingPanelWindowState } from './floating-panel.types'
 import { getWindowStack, setup, tweenBlockSize } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { floatingPanelAnatomy } from './floating-panel.anatomy'
@@ -165,7 +166,7 @@ export const floatingPanelMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<FloatingPanelSchema>(),
       canInteract: ({ prop }) => !prop('disabled'),
       // 铺满的面板没有"位置"可言，搬它等于把它从视口里推出去
       canDrag: ({ prop, context }) =>
@@ -180,6 +181,7 @@ export const floatingPanelMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<FloatingPanelSchema>(),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
@@ -227,15 +229,6 @@ export const floatingPanelMachine = createMachine({
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled') && context.get('pressed')?.startsWith('window-state:'))
           context.set('pressed', null)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       setPosition: ({ context, event }) => {

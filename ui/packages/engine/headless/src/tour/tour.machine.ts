@@ -10,6 +10,7 @@ import type { OverlayRelease } from '../shared/overlay-shell'
 import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
 import { canTakeFocus, requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
@@ -198,7 +199,7 @@ export const tourMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TourSchema>(),
       isLastStep: ({ prop, context }) => {
         const count = tourStepCount(prop('steps'))
         return isTourLastStep(clampTourStep(context.get('value'), count), count)
@@ -219,20 +220,12 @@ export const tourMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<TourSchema>(),
       clearOpenedAtMount,
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       invokeOnComplete: ({ prop, context }) =>
         prop('onComplete')?.({ step: stepOf(prop, context.get('value')) }),
       invokeOnSkip: ({ prop, context }) =>
         prop('onSkip')?.({ step: stepOf(prop, context.get('value')) }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
-      },
       // 越界步序在写入口就夹掉，受控宿主拿到的回调值永远可用
       setValue: ({ context, prop, event }) => {
         const e = event.current()

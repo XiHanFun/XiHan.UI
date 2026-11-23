@@ -7,6 +7,7 @@
 
 import type { AlertSchema } from './alert.types'
 import { expandIn, setup } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { trackPartPresence } from '../shared/part-presence'
 
 const { createMachine } = setup<AlertSchema>()
@@ -60,10 +61,11 @@ export const alertMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<AlertSchema>(),
       canPress: ({ prop }) => prop('closable') ?? true,
     },
     actions: {
+      ...controlledOpenActions<AlertSchema>(),
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
       releaseWhenInert: ({ context, prop }) => {
@@ -103,15 +105,6 @@ export const alertMachine = createMachine({
         context.set('rendered', e.rendered)
         if (!e.rendered)
           context.set('exitBlockSize', null)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
     },
     effects: {

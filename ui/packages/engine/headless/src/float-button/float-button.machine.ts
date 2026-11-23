@@ -10,6 +10,7 @@ import type { FloatButtonPoint, FloatButtonPosition, FloatButtonSchema } from '.
 import { setup } from '@xihan-ui/core'
 import { createSpringValue } from '@xihan-ui/motion'
 import { createPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -141,12 +142,13 @@ export const floatButtonMachine = createMachine({
   },
   implementations: {
     guards: {
+      ...controlledOpenGuards<FloatButtonSchema>(),
       isDisabled: ({ prop }) => prop('disabled') ?? false,
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
       canPress: ({ prop }) => !prop('disabled'),
       canDrag: ({ prop }) => !!prop('draggable') && !prop('disabled'),
     },
     actions: {
+      ...controlledOpenActions<FloatButtonSchema>(),
       clearOpenedAtMount,
       startPress: ({ context }) => context.set('pressed', true),
       endPress: ({ context }) => context.set('pressed', false),
@@ -294,14 +296,6 @@ export const floatButtonMachine = createMachine({
       // 收起先把展开组留着：等条目各自的退场动画播完，才藏
       startExit: ({ context }) => context.set('exiting', true),
       endExit: ({ context }) => context.set('exiting', false),
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
-      },
       syncDisabled: ({ prop, send }) => {
         if (prop('disabled')) {
           send({ type: 'DISABLE' })

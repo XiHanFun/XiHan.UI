@@ -7,6 +7,7 @@
 
 import type { CollapsibleSchema } from './collapsible.types'
 import { isSSR, setup } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { retainDisclosureHandoff } from '../shared/disclosure-handoff'
 
 const { createMachine } = setup<CollapsibleSchema>()
@@ -81,10 +82,11 @@ export const collapsibleMachine = createMachine({
       },
     },
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<CollapsibleSchema>(),
       canPress: ({ prop }) => !prop('disabled'),
     },
     actions: {
+      ...controlledOpenActions<CollapsibleSchema>(),
       // 第一次开合（用户操作或受控改写）起，内容与箭头按动效走
       markMoved: ({ context }) => context.set('moved', true),
       markOpened: ({ context }) => context.set('opened', true),
@@ -93,15 +95,6 @@ export const collapsibleMachine = createMachine({
       releaseWhenInert: ({ context, prop }) => {
         if (prop('disabled'))
           context.set('pressed', false)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
     },
   },

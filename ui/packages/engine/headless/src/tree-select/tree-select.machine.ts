@@ -11,7 +11,7 @@ import type { TreeVisibleNode } from '../tree'
 import type { TreeSelectFocusIntent, TreeSelectNode, TreeSelectPressedPart, TreeSelectSchema } from './tree-select.types'
 import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQuerySelector, itemValue, navigateItems, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
@@ -319,7 +319,7 @@ export const treeSelectMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TreeSelectSchema>(),
       isMultiple: ({ prop }) => !!prop('multiple'),
       // 禁用、只读与加载都改不了值，一票否决；节点自身的禁用随事件带入；清空按钮没有值可清时不进
       canPress: ({ prop, context, event }) => {
@@ -330,6 +330,7 @@ export const treeSelectMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<TreeSelectSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
@@ -382,17 +383,6 @@ export const treeSelectMachine = createMachine({
           return
         const current = context.get('renderedNodeCount')
         context.set('renderedNodeCount', e.type === 'NODE.MOUNT' ? current + 1 : Math.max(0, current - 1))
-      },
-
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
-
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       setFocusIntent: ({ context, event }) => {

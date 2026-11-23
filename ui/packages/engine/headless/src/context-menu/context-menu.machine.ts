@@ -8,7 +8,7 @@
 import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
@@ -186,7 +186,7 @@ export const contextMenuMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<ContextMenuSchema>(),
       isDisabled: ({ prop }) => !!prop('disabled'),
       // 条目自身的禁用由 connect 判定后随事件带入
       canPressItem: ({ event }) => {
@@ -210,6 +210,7 @@ export const contextMenuMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<ContextMenuSchema>({ reason: true }),
       clearOpenedAtMount,
       startItemPress: ({ context, event }) => {
         const e = event.current()
@@ -232,8 +233,6 @@ export const contextMenuMachine = createMachine({
         else if (state.get() === 'pressing')
           send({ type: 'PRESS.END' })
       },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnItemSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT' && (e.kind === 'item' || e.close))
@@ -259,13 +258,6 @@ export const contextMenuMachine = createMachine({
         const e = event.current()
         if (e.type === 'RADIO.VALUE.SET')
           context.set('radioValue', { ...e.value })
-      },
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       // 展开期外坐标也照记：受控时状态要等宿主写回 open 才转移，届时读的就是这里存下的这一份
       reanchor: ({ refs }) => refs.get('reanchor')?.(),

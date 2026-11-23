@@ -12,6 +12,7 @@ import type { TimePickerColumn, TimePickerFocusIntent } from '../time-picker'
 import type { TimeRangePickerColumnRef, TimeRangePickerEndIndex, TimeRangePickerPressedKey, TimeRangePickerSchema, TimeRangePickerSegmentRef } from './time-range-picker.types'
 import { canTakeFocus, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
@@ -312,7 +313,7 @@ export const timeRangePickerMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TimeRangePickerSchema>(),
       // 只读仍可展开、可在列里走，只是改不动值
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       /** 这一次写值来自快捷选项：两端整份都定了，浮层该收起。 */
@@ -332,6 +333,7 @@ export const timeRangePickerMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<TimeRangePickerSchema>(),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))
@@ -372,17 +374,6 @@ export const timeRangePickerMachine = createMachine({
           || context.get('drafts').some(draft => draft.hour != null || draft.minute != null || draft.second != null || draft.dayPeriod != null)
         if (pressed === 'clear' && !dirty)
           context.set('pressed', null)
-      },
-
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       /** Tab 与层外交互关闭时把焦点让出，其余出口一律归还触发器。 */

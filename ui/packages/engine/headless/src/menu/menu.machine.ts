@@ -8,7 +8,7 @@
 import type { Layer, Placement, PositionResult } from '@xihan-ui/core'
 import type { MenuFocusIntent, MenuSchema } from './menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setup, trackHoverIntent } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { equalMenuRadioValue, setMenuRadioValue, toggleMenuCheckboxValue } from '../shared/menu-choice'
@@ -142,7 +142,7 @@ export const menuMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<MenuSchema>(),
       // 整张菜单禁用一票否决，条目自身的禁用由 connect 判定后随事件带入
       canPress: ({ prop, event }) => {
         const e = event.current()
@@ -154,6 +154,7 @@ export const menuMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<MenuSchema>({ reason: true }),
       clearOpenedAtMount,
       reanchor: ({ refs }) => refs.get('reanchor')?.(),
       startPress: ({ context, event }) => {
@@ -172,8 +173,6 @@ export const menuMachine = createMachine({
         if (prop('disabled'))
           context.set('pressedValue', null)
       },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
       invokeOnItemSelect: ({ prop, event }) => {
         const e = event.current()
         if (e.type === 'ITEM.SELECT' && (e.kind === 'item' || e.close))
@@ -199,13 +198,6 @@ export const menuMachine = createMachine({
         const e = event.current()
         if (e.type === 'RADIO.VALUE.SET')
           context.set('radioValue', { ...e.value })
-      },
-      // 仅受控时回写；open 变回 undefined 即转非受控
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       setFocusIntent: ({ context, event }) => {
         const e = event.current()

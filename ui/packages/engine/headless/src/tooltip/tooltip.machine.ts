@@ -9,6 +9,7 @@ import type { PositionResult, Transition, VirtualAnchor } from '@xihan-ui/core'
 import type { TooltipGroup } from './tooltip.group'
 import type { TooltipAnchor, TooltipRefs, TooltipSchema } from './tooltip.types'
 import { requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
 import { setupLayerTransaction, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -187,7 +188,7 @@ export const tooltipMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TooltipSchema>(),
       isDisabled: ({ prop }) => !!prop('disabled'),
       isFocusOpened: ({ context }) => context.get('focusOpened'),
       hasAnchor: ({ event }) => {
@@ -196,9 +197,8 @@ export const tooltipMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<TooltipSchema>(),
       clearOpenedAtMount,
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
       clearFocusOpened: ({ context }) => context.set('focusOpened', false),
       // 热窗口内打开即接替：不播进场。打开那一刻判，收起即清
@@ -229,13 +229,6 @@ export const tooltipMachine = createMachine({
         else
           return
         refs.get('reanchor')?.()
-      },
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制收起
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
     },
     effects: {

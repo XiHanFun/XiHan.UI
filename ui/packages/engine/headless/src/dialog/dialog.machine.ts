@@ -8,7 +8,7 @@
 import type { OverlayRelease } from '../shared/overlay-shell'
 import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } from './dialog.types'
 import { getTabbables, removeLinks, requireOverlayKit, setup, warn } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
@@ -111,11 +111,12 @@ export const dialogMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<DialogSchema>(),
       // 作者开了拖动、且此刻没有别的手势在跑：同一次按下冒泡到标题栏与 header 只算一次
       canDrag: ({ prop, context }) => !!prop('draggable') && context.get('gesture') == null,
     },
     actions: {
+      ...controlledOpenActions<DialogSchema>({ reason: true }),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
@@ -196,15 +197,6 @@ export const dialogMachine = createMachine({
       markOpened: ({ context }) => {
         if (!context.get('opened'))
           context.set('opened', true)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
     },

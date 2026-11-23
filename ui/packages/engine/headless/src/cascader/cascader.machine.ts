@@ -9,7 +9,7 @@ import type { ActionFn, ContextFacade, PositionResult } from '@xihan-ui/core'
 import type { BranchLoadPort } from '../shared/lazy-branch'
 import type { CascaderBranchLoadSnapshot, CascaderFocusIntent, CascaderNode, CascaderNodeMeta, CascaderPressedPart, CascaderSchema, CascaderValue } from './cascader.types'
 import { cascadeToggle, collapseChecked, itemValue, queryItems, resetDeclaredValue, setup } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,
@@ -332,7 +332,7 @@ export const cascaderMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<CascaderSchema>(),
       isMultiple: ({ prop }) => !!prop('multiple'),
       // 选中的是分支：不收起
       staysOpenOnSelect: ({ prop, context, event }) => {
@@ -350,6 +350,7 @@ export const cascaderMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<CascaderSchema>({ reason: true }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
@@ -382,8 +383,6 @@ export const cascaderMachine = createMachine({
       },
       // 只还原表单值，保持当前浏览位置与实际 DOM 焦点，不擅自关闭受控浮层。
       resetToDefault: params => void resetDeclaredValue(params, 'value', 'value', 'defaultValue'),
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
 
       setInputValue: ({ context, event }) => {
         const e = event.current()
@@ -402,14 +401,6 @@ export const cascaderMachine = createMachine({
         if (context.get('inputValue') !== '')
           context.set('inputValue', '')
         context.set('searchIndex', 0)
-      },
-
-      // 只在 open 为布尔时回写；变回 undefined 即转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       setFocusIntent: ({ context, event }) => {

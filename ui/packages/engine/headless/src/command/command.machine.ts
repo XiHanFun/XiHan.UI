@@ -7,7 +7,7 @@
 
 import type { CommandNodeMeta, CommandSchema } from './command.types'
 import { requireOverlayKit, setup, trackArrivals } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { createModalLayerResources, dismissCloseSrc, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
@@ -137,7 +137,7 @@ export const commandMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<CommandSchema>(),
       // 命中即「选完不收起」：转移停在第一条上，不带 target
       keepsOpenOnSelect: ({ prop }) => (prop('closeOnSelect') ?? true) === false,
       // 加载中选不了命令，一票否决；命令自身的禁用随事件带入
@@ -147,6 +147,7 @@ export const commandMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<CommandSchema>({ reason: true }),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
         const e = event.current()
@@ -165,16 +166,6 @@ export const commandMachine = createMachine({
       releaseWhenInert: ({ context, prop }) => {
         if (context.get('pressedValue') != null && prop('loading'))
           context.set('pressedValue', null)
-      },
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop, event }) => prop('onOpenChange')?.({ open: false, reason: closeReasonOf(event.current()) }),
-
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       setInputValue: ({ context, event }) => {

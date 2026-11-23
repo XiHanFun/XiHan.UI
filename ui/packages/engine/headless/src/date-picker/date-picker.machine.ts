@@ -17,6 +17,7 @@ import { calendarPickerAnatomy } from '../calendar-picker'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { sortIso } from '../shared/calendar'
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -331,7 +332,7 @@ export const datePickerMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<DatePickerSchema>(),
 
       /**
        * 这一次写值该不该收起浮层：只认日历与快捷选项两路，多选不收起。
@@ -362,6 +363,7 @@ export const datePickerMachine = createMachine({
       },
     },
     actions: {
+      ...controlledOpenActions<DatePickerSchema>(),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))
@@ -392,17 +394,6 @@ export const datePickerMachine = createMachine({
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         params.context.reset('focusedValue')
-      },
-
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
 
       /** 点输入行展开的那一路不搬焦点，其余（触发钮、键盘、命令式）照搬。 */

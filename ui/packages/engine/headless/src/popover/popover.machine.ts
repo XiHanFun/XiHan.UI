@@ -9,7 +9,7 @@ import type { PositionResult } from '@xihan-ui/core'
 import type { OverlayRelease } from '../shared/overlay-shell'
 import type { PopoverPressedPart, PopoverSchema } from './popover.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, requireOverlayKit, setup } from '@xihan-ui/core'
-import { closeReasonOf } from '../shared/close-reason'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
@@ -102,10 +102,11 @@ export const popoverMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<PopoverSchema>(),
       isDisabled: ({ prop }) => !!prop('disabled'),
     },
     actions: {
+      ...controlledOpenActions<PopoverSchema>({ reason: true }),
       startPress: ({ context, event }) => {
         const e = event.current()
         if (e.type === 'PRESS.START')
@@ -119,24 +120,11 @@ export const popoverMachine = createMachine({
       },
       releasePress: ({ context }) => context.set('pressed', null),
       clearOpenedAtMount,
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      // 关闭原因在事件里现成：消解层回报的 src，没有 src 的走 programmatic
-      invokeOnClose: ({ prop, event }) => {
-        const e = event.current()
-        prop('onOpenChange')?.({ open: false, reason: closeReasonOf(e) })
-      },
       // Tab 与层外交互是「焦点已经去别处了」，再抢回触发器会把用户拽回来；其余出口一律归还
       setReturnFocus: ({ context, event }) => {
         const e = event.current()
         const handedOff = e.type === 'CLOSE' && (e.src === 'tab' || e.src === 'interact-outside')
         context.set('returnFocus', !handedOff)
-      },
-      // 只在受控（open 为布尔）时回写；open 变回 undefined = 转非受控，不强制关闭
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
       },
       syncModalResources: ({ refs }) => refs.get('syncModalResources')?.(),
       reanchor: ({ refs }) => refs.get('reanchor')?.(),

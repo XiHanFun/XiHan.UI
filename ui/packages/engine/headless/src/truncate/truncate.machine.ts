@@ -8,6 +8,7 @@
 import type { Params } from '@xihan-ui/core'
 import type { TruncateMetrics, TruncateSchema } from './truncate.types'
 import { setup, tweenBlockSize } from '@xihan-ui/core'
+import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 
 const { createMachine } = setup<TruncateSchema>()
 
@@ -114,9 +115,10 @@ export const truncateMachine = createMachine({
   },
   implementations: {
     guards: {
-      isOpenControlled: ({ prop }) => prop('open') !== undefined,
+      ...controlledOpenGuards<TruncateSchema>(),
     },
     actions: {
+      ...controlledOpenActions<TruncateSchema>(),
       measure: params => runMeasure(params),
 
       /** 推迟一拍再量：状态刚改，这一帧的裁剪还没提交到 DOM。 */
@@ -137,16 +139,6 @@ export const truncateMachine = createMachine({
         })
       },
 
-      invokeOnOpen: ({ prop }) => prop('onOpenChange')?.({ open: true }),
-      invokeOnClose: ({ prop }) => prop('onOpenChange')?.({ open: false }),
-
-      // 只在受控（open 为布尔）时回写；变回 undefined = 转非受控，不强制收回
-      syncOpen: ({ prop, send }) => {
-        const open = prop('open')
-        if (open === undefined)
-          return
-        send(open ? { type: 'CONTROLLED.OPEN' } : { type: 'CONTROLLED.CLOSE' })
-      },
     },
     effects: {
       /**
