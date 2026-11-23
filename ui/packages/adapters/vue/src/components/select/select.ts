@@ -97,6 +97,8 @@ const XhSelectRootImpl = /* @__PURE__ */ defineComponent({
     name: { type: String },
     translations: { type: Object as PropType<SelectProps['translations']> },
     maxTagCount: { type: Number },
+    /** 多选下最多选几项：选满后没选中的条目按禁用处理、加不进去，已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。 */
+    maxSelected: { type: Number },
     placeholder: { type: String },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },

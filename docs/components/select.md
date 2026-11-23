@@ -181,6 +181,7 @@ outline、subtle 和 ghost
 - 通过 `hidden-select` 参与表单。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数；`label` 给标题文字、`clearable` 带清空按钮。浮层里列表之后铺空态、在途、取数失败的提示与重试钮，露哪一种按 `loading`、`error` 与条数收放；文字取 `translations`，空态文字可由 `empty` 给出。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`；Vue 用同名插槽，React 给 `empty` 一个节点。
 - 多选值在触发器里排成标签（不写结构时直接铺出），超出 `maxTagCount` 后合并为 `+N`；组合框、树选择与级联选择的多选用同一套呈现。
+- `maxSelected` 给多选设上限：选满后没选中的条目按禁用处理（转 `aria-disabled`，方向键与连打检索跳过，点击与确认键都加不进去），已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，`setValue` 与受控值原样收下；小于 1 时不设上限，单选下不生效。
 - 支持分组、加载、空状态和底部操作区。
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
@@ -246,6 +247,7 @@ outline、subtle 和 ghost
 | `error` | `boolean` |  | 整表取数失败：浮层里露出 error 部件（role=alert）与 retry-trigger，空态占位让位；loading 同时为真时在途占位优先。 点重试钮、或浮层里没有高亮条目时按 Enter / Space，派发 onRetry；宿主重新取数时撤掉 error、置上 loading。 |
 | `translations` | `Partial<SelectTranslations>` |  | 读屏文案，默认英文。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
+| `maxSelected` | `number` |  | 多选下最多选几项。选满后没选中的条目按禁用处理：转 aria-disabled，方向键与连打检索跳过，点击与确认键都加不进去； 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。 非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。 |
 | `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦截。 |
 | `name` | `string` |  | 表单字段名。提供后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
@@ -370,6 +372,7 @@ outline、subtle 和 ghost
 | `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
 | `tags` | `SelectTagMeta<V>[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `maxSelected` | `number \| null` | 生效的多选上限；单选或没设上限时为 null。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `highlightedValue` | `V \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |

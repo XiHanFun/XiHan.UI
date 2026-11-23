@@ -68,6 +68,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} loading - 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {boolean} error - 整表取数失败：浮层里露出 error 与 retry-trigger，空态占位让位
  * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
+ * @attr {number} max-selected - 多选下最多选几项：选满后没选中的条目按禁用处理、加不进去，已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。
  * @attr {boolean} required - 原生表单校验：无选中值时提交被拦截；多选下的条件是至少选中一项
  * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
@@ -182,6 +183,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
     size: { converter: STRING_CONVERTER },
     translations: { attribute: false },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
   }
 
   // 属性只递得进单值，多选集合走 property
@@ -217,6 +219,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
   /** 读屏文案（clearTrigger 等）；对象无法表达为属性，只作为 property 暴露。 */
   declare translations?: SelectSchema['props']['translations']
   declare maxTagCount?: number
+  declare maxSelected?: number
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly selectScope = createScope(() => this, this.idGen)
@@ -335,6 +338,7 @@ export class XhSelectElement<V = string> extends XhPortalHostElement {
       size: this.size,
       translations: this.translations,
       maxTagCount: this.maxTagCount,
+      maxSelected: this.maxSelected,
       onClear: this.notifyClear,
       onOpenChange: this.notifyOpen,
       onRetry: this.notifyRetry,

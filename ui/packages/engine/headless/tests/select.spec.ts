@@ -1424,3 +1424,104 @@ describe('select 整表取数失败', () => {
     expect(custom.translations.retry).toBe('再来一次')
   })
 })
+
+describe('多选上限 maxSelected', () => {
+  it('选满后没选中的条目转禁用、点不进集合；已选的照旧能点掉，点掉即腾出名额', async () => {
+    const h = mount({ multiple: true, maxSelected: 2, defaultOpen: true })
+    await tick()
+    click(h.item('apple'))
+    expect(h.item('cherry').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('banana'))
+    expect(h.value()).toEqual(['apple', 'banana'])
+
+    // 满了：没选中的那一条转禁用，已选的不受影响
+    expect(h.item('cherry').getAttribute('aria-disabled')).toBe('true')
+    expect(h.item('cherry').hasAttribute('data-disabled')).toBe(true)
+    expect(h.item('apple').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('cherry'))
+    expect(h.value()).toEqual(['apple', 'banana'])
+
+    click(h.item('apple'))
+    expect(h.value()).toEqual(['banana'])
+    expect(h.item('cherry').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('cherry'))
+    expect(h.value()).toEqual(['banana', 'cherry'])
+  })
+
+  it('选满后确认键也加不进去，方向键跳过加不进去的条目', async () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true, defaultValue: ['banana'] })
+    await tick()
+    focus(h.item('cherry'))
+    const enter = press(h.content, 'Enter')
+    expect(h.value()).toEqual(['banana'])
+    expect(enter.defaultPrevented).toBe(false)
+
+    // 只剩已选的那一条可达：从它出发往下、往上都回到它自己
+    focus(h.item('banana'))
+    press(h.content, 'ArrowDown')
+    expect(h.highlighted()).toBe('banana')
+    press(h.content, 'ArrowUp')
+    expect(h.highlighted()).toBe('banana')
+  })
+
+  it('机器自己也拦：绕过连接层直接送选中事件同样加不进去', async () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true, defaultValue: ['banana'] })
+    await tick()
+    h.send({ type: 'ITEM.SELECT', value: 'cherry' })
+    expect(h.value()).toEqual(['banana'])
+    h.send({ type: 'ITEM.SELECT', value: 'banana' })
+    expect(h.value()).toEqual([])
+  })
+
+  it('只拦用户这一路的加选：setValue 与受控值超过上限也原样收下', async () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true })
+    await tick()
+    h.api().setValue(['apple', 'banana'])
+    expect(h.value()).toEqual(['apple', 'banana'])
+    // 已经超了：没选中的照样加不进去，已选的能点掉
+    expect(h.item('cherry').getAttribute('aria-disabled')).toBe('true')
+    click(h.item('apple'))
+    expect(h.value()).toEqual(['banana'])
+
+    expect(mount({ multiple: true, maxSelected: 1, value: ['apple', 'cherry'] }).value()).toEqual(['apple', 'cherry'])
+  })
+
+  it('单选下不生效；非整数向下取整，小于 1 不设上限', async () => {
+    const single = mount({ maxSelected: 1, defaultOpen: true, defaultValue: 'apple' })
+    await tick()
+    expect(single.item('banana').getAttribute('aria-disabled')).toBe('false')
+    expect(single.api().maxSelected).toBeNull()
+    click(single.item('banana'))
+    expect(single.value()).toEqual(['banana'])
+
+    expect(mount({ multiple: true, maxSelected: 2.9 }).api().maxSelected).toBe(2)
+    const unlimited = mount({ multiple: true, maxSelected: 0, defaultOpen: true })
+    await tick()
+    expect(unlimited.api().maxSelected).toBeNull()
+    click(unlimited.item('apple'))
+    click(unlimited.item('banana'))
+    click(unlimited.item('cherry'))
+    expect(unlimited.value()).toEqual(['apple', 'banana', 'cherry'])
+  })
+
+  it('虚拟列表按数据走：选满后方向键同样跳过加不进去的条目', async () => {
+    const collection = [{ value: 'apple' }, { value: 'banana' }, { value: 'cherry' }]
+    const focusIndex = vi.fn()
+    const h = mount({
+      multiple: true,
+      maxSelected: 1,
+      defaultOpen: true,
+      defaultValue: ['banana'],
+      collection,
+      virtualizer: { count: 3, scrollToIndex: vi.fn(), focusIndex, getRenderedItemRoots: () => [], getViewportElement: () => null },
+    })
+    await tick()
+    h.send({ type: 'ITEM.HIGHLIGHT', value: 'banana' })
+    press(h.content, 'ArrowDown')
+    expect(h.highlighted()).toBe('banana')
+
+    h.send({ type: 'ITEM.HIGHLIGHT', value: 'cherry' })
+    press(h.content, 'Enter')
+    expect(h.value()).toEqual(['banana'])
+  })
+})

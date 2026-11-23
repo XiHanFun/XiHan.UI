@@ -11,6 +11,7 @@ import { createTypeahead, focusFirst, getTabbables, isItemDisabled, itemQuerySel
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { SELECTION_TAG_DEFAULT_MAX, trackSelectionTagMotion } from '../shared/selection-tags'
@@ -243,7 +244,15 @@ export const selectMachine = createMachine({
         const current = context.get('value')
         // 多选点已选中的项即取消选中，是列表多选的通行手势
         if (prop('multiple')) {
-          context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+          if (current.includes(e.value)) {
+            context.set('value', current.filter(v => v !== e.value))
+            return
+          }
+          // 选满了：只拦加选这一路，取消选中在上面已经放行
+          const max = resolveMaxSelected(prop('maxSelected'))
+          if (max != null && current.length >= max)
+            return
+          context.set('value', [...current, e.value])
           return
         }
         context.set('value', [e.value])

@@ -200,6 +200,12 @@ export interface SelectSchema<V = string> extends MachineSchema {
     translations?: Partial<SelectTranslations>
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 */
     maxTagCount?: number
+    /**
+     * 多选下最多选几项。选满后没选中的条目按禁用处理：转 aria-disabled，方向键与连打检索跳过，点击与确认键都加不进去；
+     * 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。
+     * 非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。
+     */
+    maxSelected?: number
     /** 原生表单校验：无选中值时提交被拦截。 */
     required?: boolean
     /** 表单字段名。提供后隐藏 select 才带 name，选中值随表单一并提交。 */
@@ -338,6 +344,8 @@ export interface SelectApi<T extends PropTypes = PropTypes, V = string> {
   tags: SelectTagMeta<V>[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
+  /** 生效的多选上限；单选或没设上限时为 null。 */
+  maxSelected: number | null
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
   /** 高亮锚点；收起时为 null。 */

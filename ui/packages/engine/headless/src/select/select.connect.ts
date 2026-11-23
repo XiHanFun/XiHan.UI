@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { SelectApi, SelectItemProps, SelectNodeMeta, SelectSchema } from './select.types'
 import { contains, createPressTracker, dataAttr, focusItem, focusSafely, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { SELECT_EN_US } from '../locale/en-US'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
@@ -126,9 +127,17 @@ function connectSelectKeys<T extends PropTypes>(
   const loop = prop('loop') ?? true
   const dir = prop('dir')
 
-  /** 条目禁用：部件上写的优先，没写就回 collection 里查。 */
-  const itemDisabled = (item: SelectItemProps): boolean =>
+  /** 条目自身的禁用：部件上写的优先，没写就回 collection 里查。 */
+  const ownDisabled = (item: SelectItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  const maxSelected = multiple ? resolveMaxSelected(prop('maxSelected')) : null
+  /** 多选已到上限：没选中的条目加不进去，已选的仍能点掉。 */
+  const full = maxSelected != null && value.length >= maxSelected
+  const blockedByLimit = (v: string): boolean => full && !value.includes(v)
+
+  /** 这一条此刻按下去能不能改值：自身禁用，或选满后加不进去。条目的禁用面、导航、点击与确认键都按它。 */
+  const itemDisabled = (item: SelectItemProps): boolean => ownDisabled(item) || blockedByLimit(item.value)
 
   /**
    * 条目语气：只认 collection 里这一条自己写的那族色，根上的 tone 不下发。
@@ -174,7 +183,7 @@ function connectSelectKeys<T extends PropTypes>(
     return virtualCollectionMatch(collection, from, query, {
       value: item => item.value,
       text: item => item.label,
-      disabled: item => item.disabled,
+      disabled: item => item.disabled || blockedByLimit(item.value),
       loop,
     })
   }
@@ -192,7 +201,7 @@ function connectSelectKeys<T extends PropTypes>(
     if (virtualizer) {
       const target = virtualCollectionTarget(collection, highlighted, intent, {
         value: item => item.value,
-        disabled: item => item.disabled,
+        disabled: item => item.disabled || blockedByLimit(item.value),
         loop,
       })
       if (target) {
@@ -209,7 +218,7 @@ function connectSelectKeys<T extends PropTypes>(
     if (highlighted == null || !interactive)
       return
     if (virtualizer) {
-      if (metaOf.get(highlighted)?.disabled)
+      if (metaOf.get(highlighted)?.disabled || blockedByLimit(highlighted))
         return
     }
     else {
@@ -236,6 +245,7 @@ function connectSelectKeys<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    maxSelected,
     overflowText,
     highlightedValue: highlighted,
     setOpen: (next) => {

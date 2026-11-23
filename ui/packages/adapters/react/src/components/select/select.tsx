@@ -88,6 +88,8 @@ export interface XhSelectRootProps<V = string> extends RootElementProps {
   name?: string
   translations?: SelectProps['translations']
   maxTagCount?: number
+  /** 多选下最多选几项：选满后没选中的条目按禁用处理、加不进去，已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。 */
+  maxSelected?: number
   placeholder?: string
   placement?: Placement
   offset?: number
@@ -156,6 +158,7 @@ export function XhSelectRoot<V = string>({
   name,
   translations,
   maxTagCount,
+  maxSelected,
   placeholder,
   placement,
   offset,
@@ -199,6 +202,7 @@ export function XhSelectRoot<V = string>({
     name,
     translations,
     maxTagCount,
+    maxSelected,
     placeholder,
     placement,
     offset,
