@@ -202,6 +202,7 @@ describe('text-field 的常态描边槽不牵着聚焦描边', () => {
 })
 
 // —— tree：叶子的勾与分支的箭头各有各的名字 ——
+// 单选档才是行尾的对号；多选档同一个 item-indicator 换成行首方框，配色另由 item-checkbox-* 那组槽管
 
 const TREE_COLLECTION = [
   { value: 'branch', label: '分支', children: [{ value: 'leaf', label: '叶子' }] },
@@ -210,7 +211,7 @@ const TREE_COLLECTION = [
 function TREE(): unknown {
   return h(
     XhTreeRoot,
-    { collection: TREE_COLLECTION, selectionMode: 'multiple', defaultExpandedValue: ['branch'] },
+    { collection: TREE_COLLECTION, selectionMode: 'single', defaultExpandedValue: ['branch'] },
     () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'branch' }, () => [
