@@ -11,7 +11,7 @@ import { focusItem, HOVER_INTENT_OPEN_DELAY, isShadowRoot, navigateItems, setTim
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { OVERLAY_OFFSET } from '../shared/overlay'
-import { createOverlayKitGate, dismissCloseSrc, trackOverlayLayer } from '../shared/overlay-shell'
+import { createOverlayKitGate, dismissCloseSrc, trackOverlayLayer, trackOverlayPosition } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
 import { isSideNavSearching, resolveSideNavSearch } from './side-nav.search'
 
@@ -649,44 +649,31 @@ export const sideNavMachine = createMachine({
       },
       // 挂载定位引擎：锚点是触发按钮，被定位的是定位层（已搬到浮层落点），结果写进 context 供 connect 读
       trackPopoutPosition: ({ refs, prop, context, flush }) => {
-        const engine = refs.get('position')
-        if (!engine)
-          return undefined
-        let stop: (() => void) | undefined
-        let disposed = false
-        flush(() => {
-          if (disposed)
-            return
+        // 锚点与浮层都按正弹出的那一枝取；没有弹出的枝即这一轮不挂
+        const ofPopout = (pick: (value: string) => HTMLElement | null): HTMLElement | null => {
           const value = context.get('popoutValue')
-          if (value == null)
-            return
-          const anchor = refs.get('getPopoutAnchorEl')(value)
-          const floating = refs.get('getPopoutPositionerEl')(value)
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('dir') === 'rtl' ? 'left-start' : 'right-start',
-              offset: OVERLAY_OFFSET,
-              strategy: 'fixed',
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            // 记到正弹出的那一枝名下
-            (result) => {
-              const owner = context.get('popoutValue')
-              if (owner != null)
-                context.set('popoutPlacements', { ...context.get('popoutPlacements'), [owner]: result })
-            },
-          )
-        })
-        return () => {
-          disposed = true
-          stop?.()
+          return value == null ? null : pick(value)
         }
+        return trackOverlayPosition({
+          engine: refs.get('position'),
+          flush,
+          getAnchor: () => ofPopout(refs.get('getPopoutAnchorEl')),
+          getFloating: () => ofPopout(refs.get('getPopoutPositionerEl')),
+          options: () => ({
+            placement: prop('dir') === 'rtl' ? 'left-start' : 'right-start',
+            offset: OVERLAY_OFFSET,
+            strategy: 'fixed',
+            dir: prop('dir'),
+            // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+            size: true,
+          }),
+          // 记到正弹出的那一枝名下
+          onResult: (result) => {
+            const owner = context.get('popoutValue')
+            if (owner != null)
+              context.set('popoutPlacements', { ...context.get('popoutPlacements'), [owner]: result })
+          },
+        })
       },
       // popout 状态效应只报告会话进出；资源本体由根级按身份管理并等待对应 Presence。
       trackPopoutLayer: ({ refs, context }) => {

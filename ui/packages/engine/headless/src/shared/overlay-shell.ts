@@ -76,7 +76,11 @@ export interface OverlayPositionOptions {
   options: () => PositionOptions
   /** 引擎每次回报位置时调用。 */
   onResult: (result: PositionResult) => void
-  /** 挂之前先把上一轮坐标清掉。不给即保留上一轮的坐标。 */
+  /**
+   * 挂之前先把上一轮坐标清掉。不给即保留上一轮的坐标。
+   * 每次展开都重新定位的浮层要给：引擎量完之前不算落位，皮肤据此藏着；不清的话重开会按上次的位置判「已落位」，
+   * 页面滚过就在旧位置闪一帧。
+   */
   clear?: () => void
   /**
    * 收下重挂句柄：换锚点的组件把它记进 refs，之后调一次就重挂一轮。

@@ -11,7 +11,7 @@ import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const HOVER_CARD_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -170,49 +170,26 @@ export const hoverCardMachine = createMachine({
       waitForCloseDelay: ({ prop, send }) =>
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? CLOSE_DELAY),
       // 位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
-        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
-        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 等 DOM 落定再挂
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? HOVER_CARD_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        engine: refs.get('position'),
+        flush,
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? HOVER_CARD_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+          // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+          arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
       /** Layer 与 DismissableLayer 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。 */
       trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
         presence: () => refs.get('presence'),

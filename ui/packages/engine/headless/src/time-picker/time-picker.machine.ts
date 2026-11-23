@@ -21,7 +21,7 @@ import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scro
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
@@ -553,46 +553,22 @@ export const timePickerMachine = createMachine({
       }),
       trackColumnScroll: params => alignColumnsOnOpen(columnScrollTarget(params)),
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读
-      trackPosition: ({ refs, prop, context, flush }) => {
-        // 进入展开态先清上一次的坐标：引擎量完之前不算落位，皮肤据此藏着。
-        // 不清的话重开会按上次的位置判「已落位」——页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? TIME_PICKER_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              // start / end 是逻辑对齐，RTL 下行内轴要翻过来
-              dir: prop('dir'),
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        engine: refs.get('position'),
+        flush,
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? TIME_PICKER_DEFAULT_PLACEMENT,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          // start / end 是逻辑对齐，RTL 下行内轴要翻过来
+          dir: prop('dir'),
+        }),
+        onResult: result => context.set('position', result),
+      }),
 
       // Layer、DismissableLayer 与 FocusScope 共用 Presence 生命周期；退场中仍占栈顶但不再响应关闭。
       trackLayer: (params) => {

@@ -13,7 +13,7 @@ import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createOverlayKitGate, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
 import { sameTourSpotlight, tourSpotlightBox } from './tour.spotlight'
 
 const { createMachine } = setup<TourSchema>()
@@ -358,71 +358,39 @@ export const tourMachine = createMachine({
     effects: {
       // 定位全程在 effect 里：引擎订阅的返回值即 cleanup，位置结果写进 context 供 connect 读。
       trackPosition: ({ refs, prop, context, scope, flush }) => {
-        const engine = refs.get('position')
-        // 无引擎（纯逻辑测试 / 无布局环境 / SSR）：不定位，其余照常
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let queued = false
-        let disposed = false
-
-        const attach = (): void => {
-          queued = false
-          if (disposed)
-            return
-          // 换锚点先撤旧订阅：引擎的 autoUpdate 会一直跟着旧目标算
-          stop?.()
-          stop = undefined
-          const floating = refs.get('getFloatingEl')()
-          const step = currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
-          const target = resolveTourTarget(scope, step)
-          // 居中步没有锚点，位置结果一并清掉，否则会留着上一步的坐标
-          if (!floating || !target) {
+        const stepNow = (): ReturnType<typeof currentTourStep> => currentTourStep(prop('steps'), stepOf(prop, context.get('value')))
+        // 居中步没有锚点（或气泡还没就位）时位置结果一并清掉，否则会留着上一步的坐标
+        const orClear = <T>(found: T | null): T | null => {
+          if (!found)
             context.set('position', null)
-            return
-          }
-          stop = engine.attach(
-            target,
-            floating,
-            {
-              placement: step?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT,
-              offset: prop('offset') ?? TOUR_DEFAULT_OFFSET,
-              // positioner 渲染成 fixed（见 connect），坐标系必须跟着走视口系，
-              // 否则页面一滚气泡就整体偏掉一个 scrollY
-              strategy: 'fixed',
-              dir: prop('dir'),
-              // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
-              arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-              // 两侧都窄得放不下时宁可盖住目标的一部分，也不让标题或按钮伸到视口外；
-              // 盖住时可用空间按整个视口（或限定区域）算，气泡与它取小
-              overlap: { minSize: TOUR_MIN_SIDE_SPACE },
-              // 限定在区域里时气泡以它为界避让
-              boundary: resolveTourBoundary(scope, prop('boundary')) ?? undefined,
-            },
-            result => context.set('position', result),
-          )
+          return found
         }
-
-        // 必须等 DOM 落定再挂：进入展开态这一刻 content 还带 hidden、高度为 0，算出的坐标会错位。
-        // 同一拍里的多次请求合并成一次。
-        const schedule = (): void => {
-          if (queued || disposed)
-            return
-          queued = true
-          flush(attach)
-        }
-
-        refs.set('reanchor', schedule)
-        schedule()
-
-        return () => {
-          disposed = true
-          refs.set('reanchor', null)
-          stop?.()
-        }
+        return trackOverlayPosition({
+          engine: refs.get('position'),
+          flush,
+          getFloating: () => orClear(refs.get('getFloatingEl')()),
+          getAnchor: () => orClear(resolveTourTarget(scope, stepNow())),
+          options: () => ({
+            placement: stepNow()?.placement ?? prop('placement') ?? TOUR_DEFAULT_PLACEMENT,
+            offset: prop('offset') ?? TOUR_DEFAULT_OFFSET,
+            // positioner 渲染成 fixed（见 connect），坐标系必须跟着走视口系，
+            // 否则页面一滚气泡就整体偏掉一个 scrollY
+            strategy: 'fixed',
+            dir: prop('dir'),
+            // 引擎量不到箭头，尺寸与让开圆角的余量由这里交进去
+            arrow: { size: OVERLAY_ARROW_SIZE, padding: OVERLAY_ARROW_PADDING },
+            // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+            size: true,
+            // 两侧都窄得放不下时宁可盖住目标的一部分，也不让标题或按钮伸到视口外；
+            // 盖住时可用空间按整个视口（或限定区域）算，气泡与它取小
+            overlap: { minSize: TOUR_MIN_SIDE_SPACE },
+            // 限定在区域里时气泡以它为界避让
+            boundary: resolveTourBoundary(scope, prop('boundary')) ?? undefined,
+          }),
+          onResult: result => context.set('position', result),
+          // 换步时由 watch 调这个句柄重挂一轮；换锚点先撤旧订阅，引擎的自动跟随不会再跟着旧目标算
+          onSchedule: schedule => refs.set('reanchor', schedule),
+        })
       },
       /**
        * 高亮框跟随窗口尺寸与滚动。滚动走捕获段，嵌套滚动容器的滚动也收得到；

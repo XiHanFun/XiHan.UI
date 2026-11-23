@@ -12,7 +12,7 @@ import type { PaginationPressedKey, PaginationSchema, PaginationTranslations } f
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { PAGINATION_EN_US } from '../locale/en-US'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { resolveTranslations } from '../shared/translations'
 import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
@@ -191,46 +191,23 @@ export const paginationMachine = createMachine({
       waitForCloseDelay: ({ prop, send }) =>
         setTimeoutEffect(() => send({ type: 'after.closeDelay' }), prop('closeDelay') ?? PAGINATION_CLOSE_DELAY),
       /** 摊开期间跟着锚点定位；坐标算出来之前皮肤把浮层藏着。 */
-      trackPosition: ({ refs, prop, context, flush }) => {
-        // 进入可见态先清上一次的坐标：不清的话重开会按上次的位置判「已落位」，
-        // 页面滚过就在旧位置闪一帧
-        context.set('position', null)
-        const engine = refs.get('position')
-        if (!engine)
-          return undefined
-
-        let stop: (() => void) | undefined
-        let disposed = false
-
-        // 等 DOM 落定再挂：坐标依赖浮层自己的尺寸
-        flush(() => {
-          if (disposed)
-            return
-          const anchor = refs.get('getAnchorEl')()
-          const floating = refs.get('getFloatingEl')()
-          if (!anchor || !floating)
-            return
-          stop = engine.attach(
-            anchor,
-            floating,
-            {
-              placement: prop('placement') ?? OVERLAY_PLACEMENT_LIST,
-              offset: prop('offset') ?? OVERLAY_OFFSET,
-              // positioner 渲染成 fixed，坐标系必须跟着走视口系
-              strategy: 'fixed',
-              dir: prop('dir'),
-              // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
-              size: true,
-            },
-            result => context.set('position', result),
-          )
-        })
-
-        return () => {
-          disposed = true
-          stop?.()
-        }
-      },
+      trackPosition: ({ refs, prop, context, flush }) => trackOverlayPosition({
+        engine: refs.get('position'),
+        flush,
+        clear: () => context.set('position', null),
+        getAnchor: () => refs.get('getAnchorEl')(),
+        getFloating: () => refs.get('getFloatingEl')(),
+        options: () => ({
+          placement: prop('placement') ?? OVERLAY_PLACEMENT_LIST,
+          offset: prop('offset') ?? OVERLAY_OFFSET,
+          // positioner 渲染成 fixed，坐标系必须跟着走视口系
+          strategy: 'fixed',
+          dir: prop('dir'),
+          // 落定那一侧的可用空间，connect 转成内联自定义属性给皮肤限高
+          size: true,
+        }),
+        onResult: result => context.set('position', result),
+      }),
       /** 摊开期间把层压入消解栈：Escape 与点外面都能收起。不建焦点域、不锁滚动。 */
       trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
         presence: () => refs.get('presence'),
