@@ -4,7 +4,7 @@
  */
 
 /*
- * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect 多选共用一份标记语言（设计真源 §9.13）。
+ * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect / Listbox / Cascader 多选共用一份标记语言（设计真源 §9.13）。
  *
  * 连接层在画标记的节点上投影两位：data-xh-check-mark 是标记的状态（checked / indeterminate / unchecked），
  * data-xh-check-mark-profile 说标记画在哪——

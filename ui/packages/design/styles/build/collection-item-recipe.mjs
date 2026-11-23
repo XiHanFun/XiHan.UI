@@ -9,7 +9,7 @@ const SOURCE = join(ROOT, 'recipes', 'collection-item.recipe.json')
 const OUTPUT = join(ROOT, 'family', 'collection-item.css')
 
 const SIZES = ['sm', 'md', 'lg']
-const COLUMNS = ['prefix', 'check', 'text', 'description', 'shortcut', 'suffix', 'indicator']
+const COLUMNS = ['check-lead', 'prefix', 'check', 'text', 'description', 'shortcut', 'suffix', 'indicator']
 const CONTEXTS = ['overlay', 'page', 'nav']
 const STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'checked', 'disabled', 'loading', 'error']
 const CONTEXT_STATES = {
@@ -328,6 +328,7 @@ function pageMarkerRules(page) {
   return `${head}
     grid-template-columns:
       [indicator] max-content
+      [check-lead] max-content
       [prefix] max-content
       [check] max-content
       [text] minmax(0, 1fr)
@@ -360,6 +361,7 @@ ${rest}
 
     display: grid;
     grid-template-columns:
+      [check-lead] max-content
       [prefix] max-content
       [check] max-content
       [text] minmax(0, 1fr)
@@ -412,7 +414,15 @@ ${sizeVars(source, size)}
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* 多选的行首勾选框：排在前导图标、展开箭头之后、文字之前；没有勾选框的行这一列宽 0、不占位 */
+  /* 多选的行首勾选框，两个落点，没有勾选框的行这两列宽 0、不占位：
+     prefix 是结构性前导（树的展开箭头）时落它之后的 check 列，箭头仍贴着层级缩进；
+     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面 */
+  [data-xh-collection-slot='check-lead'] {
+    grid-column: check-lead;
+    grid-row: 1 / span 2;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+
   [data-xh-collection-slot='check'] {
     grid-column: check;
     grid-row: 1 / span 2;

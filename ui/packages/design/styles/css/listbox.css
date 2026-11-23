@@ -6,6 +6,7 @@
 /* 定义 listbox 样式。 */
 
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
 @import '../family/motion.css';
@@ -343,7 +344,7 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记落在家族网格行尾的 indicator 列（page 与 overlay 同位）；显隐与颜色由家族按选中态给，
+  /* 单选与 extended 的对号落在家族网格行尾的 indicator 列（page 与 overlay 同位），多选的勾选框见下面；显隐与颜色由家族按选中态给，
      未选中时占位不塌，切换选中不引起行宽抖动。
      盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
      兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
@@ -362,9 +363,46 @@
     display: none;
   }
 
+  /* 多选的勾选框：同一个 item-indicator 换成行首方框，落在家族网格的 check-lead 列（行首内容之前），
+     一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。静息透明底 + strong 描边，勾上与半选填品牌实心面
+     （条目的语气不改它）；方框里的勾与半选杠由勾选标记配方画（常驻、描线生长、交叉缩放），
+     勾按方框边长 × 0.75 取，与 Checkbox 同比例。方框边长与单选的对号盒同一把尺 */
+  [data-scope='listbox'][data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-check-mark-fg: var(--xh-listbox-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    border: var(--xh-stroke-thin) solid var(--xh-listbox-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-listbox-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-listbox-item-checkbox-bg, transparent);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    [data-scope='listbox'][data-part='item']:not([aria-disabled='true'], [data-disabled]):hover
+      > [data-scope='listbox'][data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-listbox-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上 */
+  [data-scope='listbox'][data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-listbox-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-listbox-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  [data-scope='listbox'][data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-listbox-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-listbox-item-checkbox-bg-disabled, var(--xh-bg-subtle));
+  }
+
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中。
      尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块） */
-  [data-scope='listbox'][data-part='item-indicator']:empty::before {
+  [data-scope='listbox'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -387,16 +425,16 @@
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
        禁用取 GrayText */
-    [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    [data-scope='listbox'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }
 
-    [data-scope='listbox'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    [data-scope='listbox'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='listbox'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: HighlightText;
     }
 
-    [data-scope='listbox'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='listbox'][data-part='item-indicator']:empty::before {
+    [data-scope='listbox'][data-part='item']:is([aria-disabled='true'], [data-disabled]) [data-scope='listbox'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: GrayText;
     }
   }

@@ -10712,6 +10712,161 @@
       "description": "cascader 的 item 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-item-checkbox-bg",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-bg-checked",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color",
+        "border-color"
+      ],
+      "state": [
+        "is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])",
+        "xh-check-mark=checked",
+        "xh-check-mark=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 background-color、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-bg-disabled",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-border",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-border-disabled",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-border-hover",
+      "component": "cascader",
+      "part": [
+        "item",
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "@media (hover: hover)",
+        "disabled",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled])",
+        "not([data-disabled])",
+        "xh-check-mark=unchecked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item、item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-fg",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-check-mark-fg"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。"
+    },
+    {
+      "name": "--xh-cascader-item-checkbox-radius",
+      "component": "cascader",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 item-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-item-fg",
       "component": "cascader",
       "part": [
@@ -10836,6 +10991,7 @@
         "branch",
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -10914,7 +11070,8 @@
         "padding-inline-end"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
@@ -20602,6 +20759,7 @@
       "state": [
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -33833,6 +33991,7 @@
       ],
       "state": [
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -48437,6 +48596,161 @@
       "description": "listbox 的 item 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-listbox-item-checkbox-bg",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-bg-checked",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color",
+        "border-color"
+      ],
+      "state": [
+        "is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])",
+        "xh-check-mark=checked",
+        "xh-check-mark=indeterminate"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 background-color、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-bg-disabled",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-border",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-border-disabled",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-border-hover",
+      "component": "listbox",
+      "part": [
+        "item",
+        "item-indicator"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "@media (hover: hover)",
+        "disabled",
+        "hover",
+        "not([aria-disabled='true'], [data-disabled])",
+        "not([data-disabled])",
+        "xh-check-mark=unchecked"
+      ],
+      "defaultToken": [
+        "--xh-border-control-hover"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item、item-indicator 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-fg",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-check-mark-fg"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。"
+    },
+    {
+      "name": "--xh-listbox-item-checkbox-radius",
+      "component": "listbox",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-check-mark"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "listbox 的 item-indicator 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-listbox-item-fg",
       "component": "listbox",
       "part": [
@@ -48552,6 +48866,7 @@
       "state": [
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -48605,7 +48920,8 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-check-mark"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
@@ -51169,6 +51485,7 @@
       "state": [
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -68433,6 +68750,7 @@
       "state": [
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",
@@ -94745,6 +95063,7 @@
       "state": [
         "default",
         "xh-collection-slot=check",
+        "xh-collection-slot=check-lead",
         "xh-collection-slot=indicator",
         "xh-collection-slot=prefix",
         "xh-collection-slot=shortcut",

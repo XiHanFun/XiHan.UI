@@ -101,7 +101,7 @@ async function settle(): Promise<void> {
   )
 }
 
-async function mount(density: 'comfortable' | 'compact'): Promise<void> {
+async function mount(density: 'comfortable' | 'compact', multiple = true): Promise<void> {
   document.documentElement.dataset.density = density
   host = document.createElement('div')
   document.body.append(host)
@@ -110,12 +110,12 @@ async function mount(density: 'comfortable' | 'compact'): Promise<void> {
     // hangzhou：标记盒里塞作者的 XhIcon（与盒同尺），条目里再直接放一枚作者图标（仍按家族下发的 20）
     render: () => h(XhCascaderRoot, {
       collection: COLLECTION,
-      multiple: true,
-      cascade: true,
+      multiple,
+      cascade: multiple,
       changeOnSelect: true,
       searchable: true,
       open: true,
-      value: [['region', 'east', 'shanghai']],
+      value: multiple ? [['region', 'east', 'shanghai']] : ['region', 'east', 'shanghai'],
     }, {
       default: ({ levels }: { levels: CascaderLevel[] }) => [
         h(XhCascaderControl, null, () => [
@@ -169,8 +169,8 @@ function expectCenteredBox(box: HTMLElement): void {
 }
 
 describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态字形按指示符档取尺（%s）', (density) => {
-  it('选中叶项行尾的标记盒等于 --xh-control-indicator-size、兜底的勾与盒同边长', async () => {
-    await mount(density)
+  it('单选：选中叶项行尾的标记盒等于 --xh-control-indicator-size、兜底的勾与盒同边长', async () => {
+    await mount(density, false)
     const indicator = indicatorSize()
     const mark = indicatorOf('shanghai')
     expect(item('shanghai').getAttribute('data-state')).toBe('checked')
@@ -187,20 +187,26 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     expectCenteredBox(mark)
   })
 
-  it('级联半选的分支行尾画横杠，盒与杠都与勾同一把尺', async () => {
+  it('多选是行首勾选框：方框与对号盒同一把尺，框里的勾与级联半选的横杠取边长的 3/4，排在正文之前', async () => {
     await mount(density)
     const indicator = indicatorSize()
-    const mark = indicatorOf('east')
+    const half = indicatorOf('east')
+    const checked = indicatorOf('shanghai')
     expect(item('east').getAttribute('data-state')).toBe('indeterminate')
-    expect(mark.getAttribute('data-state')).toBe('indeterminate')
-    expect(getComputedStyle(mark).opacity).toBe('1')
-    expect(shownMask(mark, '::before')).not.toBe(shownMask(indicatorOf('shanghai'), '::before'))
-    expect(mark.getBoundingClientRect().width).toBe(indicator)
-    const minus = pseudoBox(mark, '::before')
-    const observed = describeGlyph(mark, '::before')
-    expect(minus.width, observed).toBe(indicator)
-    expect(minus.height, observed).toBe(indicator)
-    expectCenteredBox(mark)
+    expect(half.getAttribute('data-xh-check-mark')).toBe('indeterminate')
+    expect(checked.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(shownMask(half, '::before')).not.toBe(shownMask(checked, '::before'))
+    for (const mark of [half, checked]) {
+      expect(getComputedStyle(mark).opacity).toBe('1')
+      expect(mark.getBoundingClientRect().width).toBe(indicator)
+      const glyph = pseudoBox(mark, '::before')
+      const observed = describeGlyph(mark, '::before')
+      expect(glyph.width, observed).toBe(indicator * 0.75)
+      expect(glyph.height, observed).toBe(indicator * 0.75)
+      expectCenteredBox(mark)
+    }
+    const text = item('shanghai').querySelector<HTMLElement>('[data-part="item-text"]')!
+    expect(checked.getBoundingClientRect().right).toBeLessThanOrEqual(text.getBoundingClientRect().left)
   })
 
   it('分支条目行尾的展开 chevron 等于 --xh-control-indicator-size，与同一行的标记盒同尺', async () => {
@@ -217,8 +223,8 @@ describe.each(['comfortable', 'compact'] as const)('级联选择器自绘状态�
     }
   })
 
-  it('作者塞进标记盒里的 XhIcon 与盒同尺，随指示符档换档', async () => {
-    await mount(density)
+  it('单选：作者塞进标记盒里的 XhIcon 与盒同尺，随指示符档换档', async () => {
+    await mount(density, false)
     const indicator = indicatorSize()
     const mark = indicatorOf('hangzhou')
     expect(Number.parseFloat(getComputedStyle(mark).getPropertyValue('--xh-icon-size'))).toBe(indicator)

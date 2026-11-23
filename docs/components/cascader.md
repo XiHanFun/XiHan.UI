@@ -71,7 +71,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 - `changeOnSelect` 允许选择中间层。
 - `expandTrigger` 支持点击或悬停展开。
-- `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
+- `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。多选时列里的条目用行首勾选框标出勾选，级联半选在方框里画横杠；单选仍是行尾对号。搜索候选是整条路径的一行，仍在行尾标勾。
 - 多选的已选路径在触发器里排成标签，与[选择器](./select)同一套呈现：文字是整条路径（按 `separator` 连缀），超出 `maxTagCount`（默认 3）合并为 `+N`；标签身份写路径的比较键（`api.tags` 里的 `key`），触发器外可放带删除钮的标签，value-text 仍留在 DOM 里给触发器的可及名。
 - `searchable` 按完整路径筛选选项；`filter` 接管匹配规则，拿到的候选是一条可落值的完整路径（`path` 与逐段的 `labels`），检索词已 trim，空串不调用。搜索框与命令面板、穿梭框的搜索框同一种写法：控件高与字号随尺寸档，只画一道面内分隔的下划线，聚焦不画环（插入符就是焦点指示），占位文字与其它字段同一支前景。
 - 选项可逐条声明语气，不向下传导；搜索结果取整条路径末段的语气。
@@ -519,7 +519,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-in-path` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `item-indicator` | `data-xh-check-mark` | 'indeterminate' \| 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-collection-slot` | 'check-lead' \| 'indicator' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
 | `branch-loading` | `data-level` | String(column.level) |
@@ -614,14 +616,22 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-item-bg-hover` | `item`<br>`search-item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:focus-visible, [data-highlighted])`<br>`is(:hover, [data-highlighted], [data-in-path])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | cascader 的 item、search-item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-item-bg-pressed` | `item`<br>`search-item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`not([data-disabled])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | cascader 的 item、search-item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-cascader-item-indicator-fg` | cascader 的 item 部件 color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-bg` | `item-indicator` | `background-color` | `xh-check-mark` | `transparent` | cascader 的 item-indicator 部件 background-color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-bg-checked` | `item-indicator` | `background-color`<br>`border-color` | `is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])`<br>`xh-check-mark=checked`<br>`xh-check-mark=indeterminate` | `--xh-bg-brand` | cascader 的 item-indicator 部件 background-color、border-color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-bg-disabled` | `item-indicator` | `background-color` | `disabled`<br>`xh-check-mark` | `--xh-bg-subtle` | cascader 的 item-indicator 部件 background-color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-border` | `item-indicator` | `border` | `xh-check-mark` | `--xh-border-strong` | cascader 的 item-indicator 部件 border 覆盖槽。 |
+| `--xh-cascader-item-checkbox-border-disabled` | `item-indicator` | `border-color` | `disabled`<br>`xh-check-mark` | `--xh-border-default` | cascader 的 item-indicator 部件 border-color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-border-hover` | `item`<br>`item-indicator` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled])`<br>`not([data-disabled])`<br>`xh-check-mark=unchecked` | `--xh-border-control-hover` | cascader 的 item、item-indicator 部件 border-color 覆盖槽。 |
+| `--xh-cascader-item-checkbox-fg` | `item-indicator` | `--xh-check-mark-fg` | `xh-check-mark` | `--xh-fg-on-brand` | cascader 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。 |
+| `--xh-cascader-item-checkbox-radius` | `item-indicator` | `border-radius` | `xh-check-mark` | `--xh-shape-inset` | cascader 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-item-fg` | `item`<br>`search-item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | cascader 的 item、search-item 部件 color 覆盖槽。 |
 | `--xh-cascader-item-fg-selected` | `item`<br>`search-item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-cascader-item-fg` | cascader 的 item、search-item 部件 color 覆盖槽。 |
 | `--xh-cascader-item-font-size` | `empty`<br>`item`<br>`search-item` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 empty、item、search-item 部件 font-size 覆盖槽。 |
 | `--xh-cascader-item-font-weight-selected` | `item`<br>`search-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | cascader 的 item、search-item 部件 font-weight 覆盖槽。 |
-| `--xh-cascader-item-gap` | `item`<br>`search-item` | `margin-inline-end`<br>`margin-inline-start`<br>`padding-inline-end` | `branch`<br>`default`<br>`xh-collection-slot=check`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_cascader-gap` | cascader 的 item、search-item 部件 margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。 |
+| `--xh-cascader-item-gap` | `item`<br>`search-item` | `margin-inline-end`<br>`margin-inline-start`<br>`padding-inline-end` | `branch`<br>`default`<br>`xh-collection-slot=check`<br>`xh-collection-slot=check-lead`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_cascader-gap` | cascader 的 item、search-item 部件 margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-h` | `item`<br>`search-item` | `min-block-size` | `default` | `--xh-_cascader-row-h` | cascader 的 item、search-item 部件 min-block-size 覆盖槽。 |
 | `--xh-cascader-item-indicator-fg` | `item`<br>`search-item` | `background-color`<br>`color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_cascader-accent` | cascader 的 item、search-item 部件 background-color、color 覆盖槽。 |
-| `--xh-cascader-item-indicator-size` | `item-indicator`<br>`search-item` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`padding-inline-end` | `default` | `--xh-control-indicator-size` | cascader 的 item-indicator、search-item 部件 --xh-icon-size、block-size、inline-size、padding-inline-end 覆盖槽。 |
+| `--xh-cascader-item-indicator-size` | `item-indicator`<br>`search-item` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`padding-inline-end` | `default`<br>`xh-check-mark` | `--xh-control-indicator-size` | cascader 的 item-indicator、search-item 部件 --xh-icon-size、block-size、inline-size、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-leading` | `item`<br>`search-item` | `line-height` | `default` | `--xh-leading-normal` | cascader 的 item、search-item 部件 line-height 覆盖槽。 |
 | `--xh-cascader-item-max-w` | `item` | `max-inline-size` | `default` | `--xh-overlay-max-w` | cascader 的 item 部件 max-inline-size 覆盖槽。 |
 | `--xh-cascader-item-px` | `item`<br>`search-item` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_cascader-row-px` | cascader 的 item、search-item 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
@@ -652,7 +662,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `color` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

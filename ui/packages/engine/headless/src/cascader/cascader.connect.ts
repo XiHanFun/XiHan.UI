@@ -1049,11 +1049,14 @@ export function connectCascader<T extends PropTypes>(
       'data-xh-collection-slot': 'suffix',
     }),
 
-    // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给（半选由皮肤给）
+    // 单选的对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给；
+    // 多选换成行首勾选框（check-lead 列），级联半选在方框里画横杠，方框与勾由勾选标记配方画
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(item.value),
-      'data-xh-collection-slot': 'indicator',
+      'data-xh-collection-slot': multiple ? 'check-lead' : 'indicator',
+      'data-xh-check-mark': multiple ? (isIndeterminate(item.value) ? 'indeterminate' : isSelected(item.value) ? 'checked' : 'unchecked') : undefined,
+      'data-xh-check-mark-profile': multiple ? 'box' : undefined,
       'aria-hidden': true,
     }),
   }

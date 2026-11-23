@@ -48,15 +48,15 @@ function authorIcon(label: string): ReturnType<typeof h> {
   return h(XhIcon, { label }, { default: () => h('path', { d: 'M4 12h16' }) })
 }
 
-async function mount(density: 'comfortable' | 'compact'): Promise<void> {
+async function mount(density: 'comfortable' | 'compact', selectionMode: 'single' | 'multiple' = 'single'): Promise<void> {
   document.documentElement.dataset.density = density
   host = document.createElement('div')
   host.style.inlineSize = '240px'
   document.body.append(host)
   app = createApp({
-    // apple：选中，空标记盒由皮肤画兜底的勾；banana：标记盒里塞作者的 XhIcon（与盒同尺），
+    // apple：选中，空标记盒由皮肤画兜底的勾（单选是行尾对号，多选是行首勾选框）；banana：标记盒里塞作者的 XhIcon，
     // 条目里再直接放一枚作者图标（仍按家族下发的 20）；cherry：未选中，只量盒
-    render: () => h(XhListboxRoot, { selectionMode: 'multiple', defaultValue: ['apple', 'banana'] }, () => [
+    render: () => h(XhListboxRoot, { selectionMode, defaultValue: ['apple'] }, () => [
       h(XhListboxContent, null, () => [
         h(XhListboxItem, { value: 'apple' }, () => [
           h(XhListboxItemText, null, () => '苹果'),
@@ -141,6 +141,23 @@ describe.each(['comfortable', 'compact'] as const)('列表框自绘状态字形�
     const rect = svg.getBoundingClientRect()
     expect(rect.width, `标记位图标 ${rect.width}×${rect.height}`).toBe(indicator)
     expect(rect.height, `标记位图标 ${rect.width}×${rect.height}`).toBe(indicator)
+  })
+
+  it('多选是行首勾选框：方框与对号盒同一把尺，框里的勾取边长的 3/4，排在正文之前；未勾的方框常显', async () => {
+    await mount(density, 'multiple')
+    const indicator = indicatorSize()
+    const mark = indicatorOf('apple')
+    expect(mark.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(indicatorOf('cherry').getAttribute('data-xh-check-mark')).toBe('unchecked')
+    expect(getComputedStyle(indicatorOf('cherry')).opacity).toBe('1')
+    expect(mark.getBoundingClientRect().width).toBe(indicator)
+    const check = pseudoBox(mark, '::before')
+    const observed = describeGlyph(mark, '::before')
+    expect(check.width, observed).toBe(indicator * 0.75)
+    expect(check.height, observed).toBe(indicator * 0.75)
+    expectCenteredBox(mark)
+    const text = item('apple').querySelector<HTMLElement>('[data-part="item-text"]')!
+    expect(mark.getBoundingClientRect().right).toBeLessThanOrEqual(text.getBoundingClientRect().left)
   })
 
   it('作者直接放进条目里的图标仍按家族下发的 --xh-icon-size（md 18px）取尺，不随指示符档变', async () => {

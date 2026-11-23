@@ -178,7 +178,7 @@ afterEach(async () => {
 })
 
 describe('级联选择的统一选中标记', () => {
-  it.each([false, true])('multiple=%s：列项选中显示对号并加粗一档，正文颜色与展开路径保持中性', async (multiple) => {
+  it.each([false, true])('multiple=%s：列项选中显示标记并加粗一档（单选行尾对号、多选行首勾选框），正文颜色与展开路径保持中性', async (multiple) => {
     await mountCascader({ multiple })
     const selected = item('shanghai')
     const path = item('east')
@@ -192,10 +192,19 @@ describe('级联选择的统一选中标记', () => {
     expect(getComputedStyle(selected).backgroundColor).toBe(resolvedColor('--xh-bg-subtle'))
     expect(getComputedStyle(path).backgroundColor).toBe(getComputedStyle(selected).backgroundColor)
     expect(getComputedStyle(selectedIndicator).opacity).toBe('1')
-    expect(getComputedStyle(itemIndicator('hangzhou')).opacity).toBe('0')
+    // 单选的对号只在选中项露面、同在行尾；多选的勾选框常显、同在行首
+    expect(getComputedStyle(itemIndicator('hangzhou')).opacity).toBe(multiple ? '1' : '0')
     expect(mask(selectedIndicator)).toBe(resolvedMask('--xh-glyph-mark-check'))
-    expect(itemIndicator('hangzhou').getBoundingClientRect().right)
-      .toBeCloseTo(selectedIndicator.getBoundingClientRect().right, 0)
+    if (multiple) {
+      expect(itemIndicator('hangzhou').getBoundingClientRect().left)
+        .toBeCloseTo(selectedIndicator.getBoundingClientRect().left, 0)
+      const text = selected.querySelector<HTMLElement>(`[data-part='item-text']`)!
+      expect(selectedIndicator.getBoundingClientRect().right).toBeLessThanOrEqual(text.getBoundingClientRect().left)
+    }
+    else {
+      expect(itemIndicator('hangzhou').getBoundingClientRect().right)
+        .toBeCloseTo(selectedIndicator.getBoundingClientRect().right, 0)
+    }
 
     await userEvent.tab()
     selected.focus()

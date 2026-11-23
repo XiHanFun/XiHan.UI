@@ -8990,6 +8990,30 @@
               "name": "--xh-cascader-item-check-fg"
             },
             {
+              "name": "--xh-cascader-item-checkbox-bg"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-bg-checked"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-bg-disabled"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-border"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-border-disabled"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-border-hover"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-fg"
+            },
+            {
+              "name": "--xh-cascader-item-checkbox-radius"
+            },
+            {
               "name": "--xh-cascader-item-fg"
             },
             {
@@ -43214,6 +43238,30 @@
             },
             {
               "name": "--xh-listbox-item-check-fg"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-bg"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-bg-checked"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-bg-disabled"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-border"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-border-disabled"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-border-hover"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-fg"
+            },
+            {
+              "name": "--xh-listbox-item-checkbox-radius"
             },
             {
               "name": "--xh-listbox-item-fg"

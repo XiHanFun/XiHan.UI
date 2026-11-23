@@ -89,7 +89,7 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 ### 最佳实践
 
-- 使用 `item-indicator` 表示选中，并始终保留其空间。选中与下拉候选同一种读法：行不换面、不换字色，只在行尾画对号。
+- 使用 `item-indicator` 表示选中，并始终保留其空间。单选与 `extended` 与下拉候选同一种读法：行不换面、不换字色，只在行尾画对号；`multiple` 换成行首勾选框，排在 `item-prefix` 的图标、头像之前，一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。
 - 条目标题保持简短，补充信息使用次级文字。
 - 长列表设置固定高度，并按需启用虚拟化。
 - 空态与加载态放在 `content` 外，与其互斥显示。
@@ -338,7 +338,9 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `item-indicator` | `data-disabled` | ''（条件成立时才出现） |
 | `item-indicator` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
-| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
+| `item-indicator` | `data-xh-check-mark` | 'checked' \| 'unchecked' \| undefined |
+| `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
+| `item-indicator` | `data-xh-collection-slot` | 'check-lead' \| 'indicator' |
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
@@ -386,13 +388,21 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 | `--xh-listbox-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | listbox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-listbox-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | listbox 的 item 部件 background-color 覆盖槽。 |
 | `--xh-listbox-item-check-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-listbox-item-indicator-fg` | listbox 的 item 部件 color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-bg` | `item-indicator` | `background-color` | `xh-check-mark` | `transparent` | listbox 的 item-indicator 部件 background-color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-bg-checked` | `item-indicator` | `background-color`<br>`border-color` | `is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate'])`<br>`xh-check-mark=checked`<br>`xh-check-mark=indeterminate` | `--xh-bg-brand` | listbox 的 item-indicator 部件 background-color、border-color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-bg-disabled` | `item-indicator` | `background-color` | `disabled`<br>`xh-check-mark` | `--xh-bg-subtle` | listbox 的 item-indicator 部件 background-color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-border` | `item-indicator` | `border` | `xh-check-mark` | `--xh-border-strong` | listbox 的 item-indicator 部件 border 覆盖槽。 |
+| `--xh-listbox-item-checkbox-border-disabled` | `item-indicator` | `border-color` | `disabled`<br>`xh-check-mark` | `--xh-border-default` | listbox 的 item-indicator 部件 border-color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-border-hover` | `item`<br>`item-indicator` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([aria-disabled='true'], [data-disabled])`<br>`not([data-disabled])`<br>`xh-check-mark=unchecked` | `--xh-border-control-hover` | listbox 的 item、item-indicator 部件 border-color 覆盖槽。 |
+| `--xh-listbox-item-checkbox-fg` | `item-indicator` | `--xh-check-mark-fg` | `xh-check-mark` | `--xh-fg-on-brand` | listbox 的 item-indicator 部件 --xh-check-mark-fg 覆盖槽。 |
+| `--xh-listbox-item-checkbox-radius` | `item-indicator` | `border-radius` | `xh-check-mark` | `--xh-shape-inset` | listbox 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-listbox-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-fg-default` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-listbox-item-fg` | listbox 的 item 部件 color 覆盖槽。 |
 | `--xh-listbox-item-font-size` | `item` | `font-size` | `default` | `--xh-_listbox-font-size` | listbox 的 item 部件 font-size 覆盖槽。 |
 | `--xh-listbox-item-font-weight-selected` | `item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | listbox 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=check`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-listbox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `default`<br>`xh-collection-slot=check`<br>`xh-collection-slot=check-lead`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_listbox-gap` | listbox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-listbox-item-indicator-fg` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_listbox-accent` | listbox 的 item 部件 color 覆盖槽。 |
-| `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-listbox-item-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`xh-check-mark` | `--xh-control-indicator-size` | listbox 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-listbox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | listbox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-listbox-item-px` | `item` | `padding-inline` | `default` | `--xh-_listbox-item-px` | listbox 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-listbox-item-py` | `item` | `padding-block` | `default` | `--xh-_listbox-item-py` | listbox 的 item 部件 padding-block 覆盖槽。 |
@@ -415,11 +425,15 @@ collection 保留完整语义，Virtualizer 只决定当前挂载哪些 option
 
 ### 动效
 
-动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
+动效角色：按压 · 状态 · 切换 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `mask-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

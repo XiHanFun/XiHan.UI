@@ -519,11 +519,15 @@ function connectListboxKeys<T extends PropTypes>(
       'data-xh-collection-slot': 'description',
     }),
 
-    // 选中标记落在家族网格行尾的 indicator 列，显隐由家族按 data-state='checked' 给
+    // 单选与 extended（裸点击是换成这一项）的选中标记是家族网格行尾的对号，显隐由家族按 data-state='checked' 给；
+    // multiple 换成行首勾选框，排在行首内容（item-prefix 的图标、头像）之前的 check-lead 列，
+    // 一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。方框里的勾由勾选标记配方画
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...stateAttrs(item),
-      'data-xh-collection-slot': 'indicator',
+      'data-xh-collection-slot': mode === 'multiple' ? 'check-lead' : 'indicator',
+      'data-xh-check-mark': mode === 'multiple' ? (isSelected(item.value) ? 'checked' : 'unchecked') : undefined,
+      'data-xh-check-mark-profile': mode === 'multiple' ? 'box' : undefined,
       'aria-hidden': true,
     }),
   }

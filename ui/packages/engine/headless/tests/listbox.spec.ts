@@ -729,6 +729,23 @@ describe('集合相位三件套', () => {
     expect((h.api().getItemTextProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('text')
     expect((h.api().getItemIndicatorProps(decl) as Record<string, unknown>)['data-xh-collection-slot']).toBe('indicator')
   })
+
+  it('multiple 的选中标记是行首勾选框：落 check-lead 槽（行首内容之前），方框里的勾交给勾选标记配方；extended 仍是行尾对号', () => {
+    const multi = mount({ selectionMode: 'multiple', defaultValue: ['apple'] })
+    const checked = multi.api().getItemIndicatorProps({ value: 'apple' }) as Record<string, unknown>
+    const unchecked = multi.api().getItemIndicatorProps({ value: 'cherry' }) as Record<string, unknown>
+    expect(checked['data-xh-collection-slot']).toBe('check-lead')
+    expect(checked['data-xh-check-mark-profile']).toBe('box')
+    expect(checked['data-xh-check-mark']).toBe('checked')
+    expect(unchecked['data-xh-check-mark']).toBe('unchecked')
+    expect(checked['aria-hidden']).toBe(true)
+
+    for (const selectionMode of ['single', 'extended'] as const) {
+      const props = mount({ selectionMode }).api().getItemIndicatorProps({ value: 'apple' }) as Record<string, unknown>
+      expect(props['data-xh-collection-slot']).toBe('indicator')
+      expect(props['data-xh-check-mark']).toBeUndefined()
+    }
+  })
 })
 
 describe('按压通道：Space / Enter 与触屏按住投影 data-pressed，条目按 value 记、取下一页只记部件', () => {

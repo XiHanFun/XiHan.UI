@@ -1195,6 +1195,19 @@ describe('connectCascader 家族角色', () => {
     expect(mount({ size: 'sm' }).clear.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
+  it('多选的选中标记是行首勾选框：落 check-lead 槽，级联半选在方框里画横杠；单选仍是行尾对号', () => {
+    const h = mount({ multiple: true, cascade: true, defaultOpen: true, defaultValue: [['zhejiang', 'hangzhou', 'xihu']] })
+    h.send({ type: 'ITEM.EXPAND', level: 0, value: 'zhejiang' })
+    h.send({ type: 'ITEM.EXPAND', level: 1, value: 'hangzhou' })
+    const xihu = h.item('xihu').indicator
+    expect(xihu.getAttribute('data-xh-collection-slot')).toBe('check-lead')
+    expect(xihu.getAttribute('data-xh-check-mark-profile')).toBe('box')
+    expect(xihu.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(h.item('yuhang').indicator.getAttribute('data-xh-check-mark')).toBe('unchecked')
+    expect(h.item('hangzhou').indicator.getAttribute('data-xh-check-mark')).toBe('indeterminate')
+    expect(xihu.getAttribute('aria-hidden')).toBe('true')
+  })
+
   it('列内条目与搜索候选都投影 Collection Item 的 overlay 语境与尺寸档；正文与对号各落自己的槽', () => {
     const h = mount({ searchable: true })
     const macau = h.item('macau')
@@ -1203,6 +1216,7 @@ describe('connectCascader 家族角色', () => {
     expect(macau.item.getAttribute('data-xh-collection-context')).toBe('overlay')
     expect(macau.text.getAttribute('data-xh-collection-slot')).toBe('text')
     expect(macau.indicator.getAttribute('data-xh-collection-slot')).toBe('indicator')
+    expect(macau.indicator.hasAttribute('data-xh-check-mark')).toBe(false)
     const search = h.api().getSearchItemProps({ path: ['macau'] }) as Record<string, unknown>
     expect(search['data-xh-collection-item']).toBe('')
     expect(search['data-xh-collection-size']).toBe('md')

@@ -1232,6 +1232,7 @@
 
     display: grid;
     grid-template-columns:
+      [check-lead] max-content
       [prefix] max-content
       [check] max-content
       [text] minmax(0, 1fr)
@@ -1304,7 +1305,15 @@
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* 多选的行首勾选框：排在前导图标、展开箭头之后、文字之前；没有勾选框的行这一列宽 0、不占位 */
+  /* 多选的行首勾选框，两个落点，没有勾选框的行这两列宽 0、不占位：
+     prefix 是结构性前导（树的展开箭头）时落它之后的 check 列，箭头仍贴着层级缩进；
+     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面 */
+  [data-xh-collection-slot='check-lead'] {
+    grid-column: check-lead;
+    grid-row: 1 / span 2;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
+  }
+
   [data-xh-collection-slot='check'] {
     grid-column: check;
     grid-row: 1 / span 2;
@@ -2043,7 +2052,7 @@
 
 /* family/check-mark.css */
 /*
- * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect 多选共用一份标记语言（设计真源 §9.13）。
+ * 勾选格里的勾与半选杠：Checkbox、CheckboxGroup、Transfer、Table、GridList、QuestionFlow 多选与 Tree / TreeSelect / Listbox / Cascader 多选共用一份标记语言（设计真源 §9.13）。
  *
  * 连接层在画标记的节点上投影两位：data-xh-check-mark 是标记的状态（checked / indeterminate / unchecked），
  * data-xh-check-mark-profile 说标记画在哪——
@@ -22822,7 +22831,7 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
+  /* 单选的对号落在家族网格的 indicator 列（多选的勾选框见下面），只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
      未选中时占位不塌，切换选中不引起行宽抖动。
      盒里的勾与半选杠是指示符：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
      塞进盒里的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺）；
@@ -22845,7 +22854,7 @@
      尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块）。
      勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
      淡出播完才换回勾——不在淡出途中闪出一枚勾 */
-  .xh-scope-cascader[data-part='item-indicator']:empty::before {
+  .xh-scope-cascader[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -22859,7 +22868,7 @@
       mask-size 0s var(--xh-motion-duration-micro);
   }
 
-  .xh-scope-cascader[data-part='item-indicator'][data-state='checked']:empty::before {
+  .xh-scope-cascader[data-part='item-indicator'][data-state='checked']:not([data-xh-check-mark]):empty::before {
     transition-delay: 0s;
   }
 
@@ -22869,7 +22878,7 @@
     opacity: 1;
   }
 
-  .xh-scope-cascader[data-part='item-indicator'][data-state='indeterminate']:empty::before {
+  .xh-scope-cascader[data-part='item-indicator'][data-state='indeterminate']:not([data-xh-check-mark]):empty::before {
     -webkit-mask-size: 0 0, 100% 100%;
     mask-size: 0 0, 100% 100%;
     transition-delay: 0s;
@@ -22878,6 +22887,43 @@
   /* 家族按行的禁用降级标记色；半选横线也一并跟着 */
   .xh-scope-cascader[data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 多选的勾选框：同一个 item-indicator 换成行首方框，落在家族网格的 check-lead 列（行首内容之前），
+     一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。静息透明底 + strong 描边，勾上与半选填品牌实心面
+     （条目的语气不改它）；方框里的勾与半选杠由勾选标记配方画（常驻、描线生长、交叉缩放），
+     勾按方框边长 × 0.75 取，与 Checkbox 同比例。方框边长与单选的对号盒同一把尺 */
+  .xh-scope-cascader[data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-check-mark-fg: var(--xh-cascader-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-cascader-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-cascader-item-checkbox-bg, transparent);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    .xh-scope-cascader[data-part='item']:not([aria-disabled='true'], [data-disabled]):hover
+      > .xh-scope-cascader[data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-cascader-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上 */
+  .xh-scope-cascader[data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-cascader-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-cascader-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  .xh-scope-cascader[data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-cascader-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-cascader-item-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* —— 搜索视图：输入框横占整行排在列上方，候选列表替换列视图 —— */
@@ -23203,7 +23249,7 @@
        触发器里的下拉箭头落在字段面上取 CanvasText，字段禁用时取 GrayText；
        清除钮是按钮面，取 ButtonText，悬停与按下换 HighlightText，禁用取 GrayText */
     .xh-scope-cascader[data-part='item'][data-branch]::after,
-    .xh-scope-cascader[data-part='item-indicator']:empty::before,
+    .xh-scope-cascader[data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     .xh-scope-cascader[data-part='search-item']::after,
     .xh-scope-cascader[data-part='indicator']:empty::before {
       forced-color-adjust: none;
@@ -23216,14 +23262,14 @@
     }
 
     .xh-scope-cascader[data-part='item'][data-branch]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
-    .xh-scope-cascader[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-cascader[data-part='item-indicator']:empty::before,
+    .xh-scope-cascader[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-cascader[data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     .xh-scope-cascader[data-part='search-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
     .xh-scope-cascader[data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
       background-color: HighlightText;
     }
 
     .xh-scope-cascader[data-part='item'][data-branch][data-disabled]::after,
-    .xh-scope-cascader[data-part='item-indicator'][data-disabled]:empty::before,
+    .xh-scope-cascader[data-part='item-indicator'][data-disabled]:not([data-xh-check-mark]):empty::before,
     .xh-scope-cascader[data-part='search-item'][data-disabled]::after,
     .xh-scope-cascader[data-part='control'][data-disabled] .xh-scope-cascader[data-part='indicator']:empty::before,
     .xh-scope-cascader[data-part='clear-trigger'][data-disabled]:empty::before {
@@ -36208,7 +36254,7 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记落在家族网格行尾的 indicator 列（page 与 overlay 同位）；显隐与颜色由家族按选中态给，
+  /* 单选与 extended 的对号落在家族网格行尾的 indicator 列（page 与 overlay 同位），多选的勾选框见下面；显隐与颜色由家族按选中态给，
      未选中时占位不塌，切换选中不引起行宽抖动。
      盒与盒里的勾是指示符：盒按指示符档取尺，并在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的
      兜底勾与作者塞进盒里的 XhIcon 读同一把尺、与盒同边长（对号不是勾选格，不取 × 0.75，与 Menu 族同口径）；
@@ -36227,9 +36273,46 @@
     display: none;
   }
 
+  /* 多选的勾选框：同一个 item-indicator 换成行首方框，落在家族网格的 check-lead 列（行首内容之前），
+     一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。静息透明底 + strong 描边，勾上与半选填品牌实心面
+     （条目的语气不改它）；方框里的勾与半选杠由勾选标记配方画（常驻、描线生长、交叉缩放），
+     勾按方框边长 × 0.75 取，与 Checkbox 同比例。方框边长与单选的对号盒同一把尺 */
+  .xh-scope-listbox[data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-listbox-item-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-check-mark-fg: var(--xh-listbox-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    border: var(--xh-stroke-thin) solid var(--xh-listbox-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-listbox-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-listbox-item-checkbox-bg, transparent);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    .xh-scope-listbox[data-part='item']:not([aria-disabled='true'], [data-disabled]):hover
+      > .xh-scope-listbox[data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-listbox-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上 */
+  .xh-scope-listbox[data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-listbox-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-listbox-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  .xh-scope-listbox[data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-listbox-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-listbox-item-checkbox-bg-disabled, var(--xh-bg-subtle));
+  }
+
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中。
      尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块） */
-  .xh-scope-listbox[data-part='item-indicator']:empty::before {
+  .xh-scope-listbox[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -36252,16 +36335,16 @@
        字形退出强制换色、直接写系统色（不能取 currentColor：退出强制换色的伪元素读到的是被系统换掉之前的作者色）：
        条目面上取 CanvasText；按下与没被高亮时的悬停，家族把条目涂成 Highlight，字形换 HighlightText；
        禁用取 GrayText */
-    .xh-scope-listbox[data-part='item-indicator']:empty::before {
+    .xh-scope-listbox[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       forced-color-adjust: none;
       background-color: CanvasText;
     }
 
-    .xh-scope-listbox[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-listbox[data-part='item-indicator']:empty::before {
+    .xh-scope-listbox[data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) .xh-scope-listbox[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: HighlightText;
     }
 
-    .xh-scope-listbox[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-listbox[data-part='item-indicator']:empty::before {
+    .xh-scope-listbox[data-part='item']:is([aria-disabled='true'], [data-disabled]) .xh-scope-listbox[data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
       background-color: GrayText;
     }
   }

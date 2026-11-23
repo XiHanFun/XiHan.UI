@@ -6,6 +6,7 @@
 /* Cascader 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';
+@import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
 
@@ -600,7 +601,7 @@
     text-overflow: ellipsis;
   }
 
-  /* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
+  /* 单选的对号落在家族网格的 indicator 列（多选的勾选框见下面），只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
      未选中时占位不塌，切换选中不引起行宽抖动。
      盒里的勾与半选杠是指示符：盒在自己身上把 --xh-icon-size 改接到盒的尺，皮肤画的兜底字形与作者
      塞进盒里的 XhIcon 读同一把尺、与盒同边长（行尾标记不是勾选格，不取 × 0.75，与搜索候选行尾的勾同尺）；
@@ -623,7 +624,7 @@
      尺寸读标记盒自己改接过的 --xh-icon-size：与盒同边长，随指示符档换档（见上面标记盒那块）。
      勾与半选杠叠成两层遮罩，按状态只换两层的尺寸：离开半选淡出的那一段里横杠留着，
      淡出播完才换回勾——不在淡出途中闪出一枚勾 */
-  [data-scope='cascader'][data-part='item-indicator']:empty::before {
+  [data-scope='cascader'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before {
     content: '';
     display: inline-block;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -637,7 +638,7 @@
       mask-size 0s var(--xh-motion-duration-micro);
   }
 
-  [data-scope='cascader'][data-part='item-indicator'][data-state='checked']:empty::before {
+  [data-scope='cascader'][data-part='item-indicator'][data-state='checked']:not([data-xh-check-mark]):empty::before {
     transition-delay: 0s;
   }
 
@@ -647,7 +648,7 @@
     opacity: 1;
   }
 
-  [data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:empty::before {
+  [data-scope='cascader'][data-part='item-indicator'][data-state='indeterminate']:not([data-xh-check-mark]):empty::before {
     -webkit-mask-size: 0 0, 100% 100%;
     mask-size: 0 0, 100% 100%;
     transition-delay: 0s;
@@ -656,6 +657,43 @@
   /* 家族按行的禁用降级标记色；半选横线也一并跟着 */
   [data-scope='cascader'][data-part='item-indicator'][data-disabled] {
     color: var(--xh-fg-disabled);
+  }
+
+  /* 多选的勾选框：同一个 item-indicator 换成行首方框，落在家族网格的 check-lead 列（行首内容之前），
+     一眼看得出点一下是勾上这一项、而不是换掉已选的那一项。静息透明底 + strong 描边，勾上与半选填品牌实心面
+     （条目的语气不改它）；方框里的勾与半选杠由勾选标记配方画（常驻、描线生长、交叉缩放），
+     勾按方框边长 × 0.75 取，与 Checkbox 同比例。方框边长与单选的对号盒同一把尺 */
+  [data-scope='cascader'][data-part='item-indicator'][data-xh-check-mark] {
+    --xh-icon-size: calc(var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-check-mark-fg: var(--xh-cascader-item-checkbox-fg, var(--xh-fg-on-brand));
+
+    border: var(--xh-stroke-thin) solid var(--xh-cascader-item-checkbox-border, var(--xh-border-strong));
+    border-radius: var(--xh-cascader-item-checkbox-radius, var(--xh-shape-inset));
+    background-color: var(--xh-cascader-item-checkbox-bg, transparent);
+    transition:
+      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 指针落在行上时，没勾的方框描边升一档，与 Checkbox 悬停标签时同一条阶梯 */
+  @media (hover: hover) {
+    [data-scope='cascader'][data-part='item']:not([aria-disabled='true'], [data-disabled]):hover
+      > [data-scope='cascader'][data-part='item-indicator'][data-xh-check-mark='unchecked']:not([data-disabled]) {
+      border-color: var(--xh-cascader-item-checkbox-border-hover, var(--xh-border-control-hover));
+    }
+  }
+
+  /* 勾上与半选都是「有值」，方框都填上 */
+  [data-scope='cascader'][data-part='item-indicator']:is([data-xh-check-mark='checked'], [data-xh-check-mark='indeterminate']) {
+    border-color: var(--xh-cascader-item-checkbox-bg-checked, var(--xh-bg-brand));
+    background-color: var(--xh-cascader-item-checkbox-bg-checked, var(--xh-bg-brand));
+  }
+
+  [data-scope='cascader'][data-part='item-indicator'][data-xh-check-mark][data-disabled] {
+    --xh-check-mark-fg: var(--xh-fg-disabled);
+
+    border-color: var(--xh-cascader-item-checkbox-border-disabled, var(--xh-border-default));
+    background-color: var(--xh-cascader-item-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* —— 搜索视图：输入框横占整行排在列上方，候选列表替换列视图 —— */
@@ -981,7 +1019,7 @@
        触发器里的下拉箭头落在字段面上取 CanvasText，字段禁用时取 GrayText；
        清除钮是按钮面，取 ButtonText，悬停与按下换 HighlightText，禁用取 GrayText */
     [data-scope='cascader'][data-part='item'][data-branch]::after,
-    [data-scope='cascader'][data-part='item-indicator']:empty::before,
+    [data-scope='cascader'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     [data-scope='cascader'][data-part='search-item']::after,
     [data-scope='cascader'][data-part='indicator']:empty::before {
       forced-color-adjust: none;
@@ -994,14 +1032,14 @@
     }
 
     [data-scope='cascader'][data-part='item'][data-branch]:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
-    [data-scope='cascader'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='cascader'][data-part='item-indicator']:empty::before,
+    [data-scope='cascader'][data-part='item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted])) [data-scope='cascader'][data-part='item-indicator']:not([data-xh-check-mark]):empty::before,
     [data-scope='cascader'][data-part='search-item']:not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error]):is(:active, [data-pressed], :hover:not(:focus-visible, [data-highlighted]))::after,
     [data-scope='cascader'][data-part='clear-trigger']:not([data-disabled]):not([data-loading]):is(:hover, :active, [data-pressed]):empty::before {
       background-color: HighlightText;
     }
 
     [data-scope='cascader'][data-part='item'][data-branch][data-disabled]::after,
-    [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
+    [data-scope='cascader'][data-part='item-indicator'][data-disabled]:not([data-xh-check-mark]):empty::before,
     [data-scope='cascader'][data-part='search-item'][data-disabled]::after,
     [data-scope='cascader'][data-part='control'][data-disabled] [data-scope='cascader'][data-part='indicator']:empty::before,
     [data-scope='cascader'][data-part='clear-trigger'][data-disabled]:empty::before {

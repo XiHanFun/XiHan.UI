@@ -62,7 +62,7 @@ async function mount(defaultValue = ['apple']): Promise<void> {
 describe('列表框的选中反馈', () => {
   for (const selectionMode of ['single', 'multiple'] as const) {
     for (const [theme, dir] of [['light', 'ltr'], ['dark', 'rtl']] as const) {
-      it(`${selectionMode}/${theme}/${dir}：选中行透明底 + 行尾对号，悬停 / 按下只换面，真实选择不改变行几何`, async () => {
+      it(`${selectionMode}/${theme}/${dir}：选中行透明底 + ${selectionMode === 'single' ? '行尾对号' : '行首勾选框'}，悬停 / 按下只换面，真实选择不改变行几何`, async () => {
         host = document.createElement('div')
         host.dataset.theme = theme
         host.dir = dir
@@ -83,10 +83,12 @@ describe('列表框的选中反馈', () => {
         expect(appleStyle.fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-medium', apple))
         expect(getComputedStyle(banana).fontWeight).toBe(tokenValue('font-weight', '--xh-font-weight-regular', banana))
         expect(getComputedStyle(indicator(apple)).opacity).toBe('1')
-        expect(getComputedStyle(indicator(banana)).opacity).toBe('0')
+        // 单选的对号只在选中行露面、在文字之后；多选的勾选框常显、在文字之前
+        expect(getComputedStyle(indicator(banana)).opacity).toBe(selectionMode === 'single' ? '0' : '1')
         const appleMark = indicator(apple).getBoundingClientRect()
         const appleText = apple.querySelector<HTMLElement>(`[data-part='item-text']`)!.getBoundingClientRect()
-        expect(dir === 'ltr' ? appleMark.left >= appleText.right : appleMark.right <= appleText.left).toBe(true)
+        const trailing = dir === 'ltr' ? appleMark.left >= appleText.right : appleMark.right <= appleText.left
+        expect(trailing).toBe(selectionMode === 'single')
 
         // 未选中行：悬停 100 档
         await userEvent.hover(banana)
