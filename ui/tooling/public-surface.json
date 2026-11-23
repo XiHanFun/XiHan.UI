@@ -23450,7 +23450,8 @@
         "levels",
         "loading",
         "rows",
-        "size"
+        "size",
+        "threshold"
       ],
       "events": [
         "stick-change"

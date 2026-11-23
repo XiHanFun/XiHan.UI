@@ -35,6 +35,8 @@ export const XhLogRoot = defineComponent({
     size: { type: String as PropType<Size> },
     /** 只显示这几个级别的行，缺省全部显示。 */
     levels: { type: Array as PropType<readonly LogLevel[]> },
+    /** 距底部多少 px 仍算在底部，缺省 64。 */
+    threshold: { type: Number },
     /** 与虚拟滚动接线：传入 XhVirtualizerRoot 插槽里的 collectionVirtualizer。 */
     virtualizer: { type: Object as PropType<CollectionVirtualizer> },
     translations: { type: Object as PropType<Partial<LogTranslations>> },

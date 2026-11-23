@@ -43759,6 +43759,15 @@
             },
             {
               "kind": "field",
+              "name": "threshold",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "threshold"
+            },
+            {
+              "kind": "field",
               "name": "virtualizer",
               "privacy": "public",
               "type": {
@@ -43818,7 +43827,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<LogSchema>( this, logMachine, () => ({ onStickChange: this.notify, virtualizer: this.virtualizer }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
+              "default": "new MachineController<LogSchema>( this, logMachine, () => ({ onStickChange: this.notify, virtualizer: this.virtualizer, threshold: this.threshold }), { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) }, )"
             },
             {
               "kind": "method",
@@ -43946,6 +43955,14 @@
               "description": "只显示这几个级别的行，空白分隔（如 \"warn error\"），缺省全部显示；没写 level 的行不受影响",
               "name": "levels",
               "fieldName": "levels"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "距底部多少 px 仍算在底部，缺省 64",
+              "name": "threshold",
+              "fieldName": "threshold"
             }
           ],
           "superclass": {

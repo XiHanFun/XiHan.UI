@@ -47,6 +47,7 @@ function lineLevel(el: HTMLElement): LogLevel | undefined {
  * @attr {boolean} loading - 行仍在传输中：日志区报告 aria-busy，根写 data-loading
  * @attr {string} size - 尺寸：sm / md / lg
  * @attr {string} levels - 只显示这几个级别的行，空白分隔（如 "warn error"），缺省全部显示；没写 level 的行不受影响
+ * @attr {number} threshold - 距底部多少 px 仍算在底部，缺省 64
  * @fires stick-change - 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @csspart root - 组件根容器，承载 data-size / data-loading / data-at-bottom / data-sticking
  * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写入内联样式
@@ -65,6 +66,7 @@ export class XhLogElement extends XhElement {
     loading: { converter: BOOLEAN_CONVERTER },
     size: { converter: STRING_CONVERTER },
     levels: { converter: LEVELS_CONVERTER },
+    threshold: { converter: NUMBER_CONVERTER },
     // 对象值走不了 HTML 属性，只作为 property 暴露
     virtualizer: { attribute: false },
     translations: { attribute: false },
@@ -74,6 +76,7 @@ export class XhLogElement extends XhElement {
   declare loading?: boolean
   declare size?: Size
   declare levels?: readonly LogLevel[]
+  declare threshold?: number
   /** 与虚拟滚动接线：xh-virtualizer 的 collectionVirtualizer。 */
   declare virtualizer?: CollectionVirtualizer
   /** 日志区与回到底部按钮的无障碍名，由 connect 写到节点上。 */
@@ -92,7 +95,7 @@ export class XhLogElement extends XhElement {
   private readonly ctrl = new MachineController<LogSchema>(
     this,
     logMachine,
-    () => ({ onStickChange: this.notify, virtualizer: this.virtualizer }),
+    () => ({ onStickChange: this.notify, virtualizer: this.virtualizer, threshold: this.threshold }),
     { scope: this.logScope, onBuilt: svc => this.injectRefs(svc) },
   )
 

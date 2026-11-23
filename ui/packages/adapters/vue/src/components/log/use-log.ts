@@ -24,7 +24,7 @@ export interface LogContext {
 
 /** 状态机只接收 onStickChange，rows / loading / translations 是纯视图属性，直接进入 connect。 */
 export function useLog(
-  props: LogProps & Pick<LogSchema['props'], 'virtualizer'>,
+  props: LogProps & Pick<LogSchema['props'], 'virtualizer' | 'threshold'>,
   onStickChange?: LogSchema['props']['onStickChange'],
 ): LogContext {
   const viewportRef = ref<HTMLElement | null>(null)
@@ -32,8 +32,8 @@ export function useLog(
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  // 虚拟滚动接线决定粘底跟谁走，是机器的事；其余视图属性直接进 connect
-  const service = useMachine(logMachine, () => ({ onStickChange, virtualizer: props.virtualizer }), scope)
+  // 虚拟滚动接线决定粘底跟谁走、阈值决定多近算在底部，都是机器的事；其余视图属性直接进 connect
+  const service = useMachine(logMachine, () => ({ onStickChange, virtualizer: props.virtualizer, threshold: props.threshold }), scope)
 
   // 无 DOM 环境不装 config，此时粘底效应整套不挂载
   if (typeof document !== 'undefined')

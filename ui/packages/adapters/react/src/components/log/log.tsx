@@ -39,6 +39,8 @@ export interface XhLogRootProps extends RootElementProps {
   size?: Size
   /** 只显示这几个级别的行，缺省全部显示。 */
   levels?: readonly LogLevel[]
+  /** 距底部多少 px 仍算在底部，缺省 64。 */
+  threshold?: number
   /** 与虚拟滚动接线：传入 XhVirtualizerRoot 函数式 children 里的 collectionVirtualizer。 */
   virtualizer?: CollectionVirtualizer
   translations?: Partial<LogTranslations>
@@ -51,13 +53,14 @@ export function XhLogRoot({
   loading,
   size,
   levels,
+  threshold,
   virtualizer,
   translations,
   onStickChange,
   children,
   ...rest
 }: XhLogRootProps): ReactNode {
-  const ctx = useLog({ ...withXhConfig('log', { rows, loading, size, levels, translations }) as LogProps, virtualizer }, onStickChange)
+  const ctx = useLog({ ...withXhConfig('log', { rows, loading, size, levels, translations }) as LogProps, virtualizer, threshold }, onStickChange)
   const { api } = ctx
   return (
     <LogProvider value={ctx}>
