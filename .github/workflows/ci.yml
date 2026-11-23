@@ -16,9 +16,15 @@ defaults:
   run:
     working-directory: ui
 
-# 原先是两条长链：quality 约 21 分钟、browser 约 34 分钟，各在一台 4 核 runner 上串行跑完。
-# 现在按「吃不吃构建产物、要不要浏览器」拆成互不等待的 job，最慢的单测与浏览器用例再按包、按分片铺开，
-# 整轮的墙钟时间由最长的那一个 job 决定。每个 job 自己装依赖、自己构建，互相不传产物。
+# 分组的出发点：整轮的墙钟时间由最长的那一个 job 决定，所以按「吃不吃构建产物、要不要浏览器」
+# 拆成互不等待的 job，最慢的单测与浏览器用例再按包、按分片铺开。每个 job 自己装依赖、自己构建，
+# 互相不传产物——全量构建不到一分钟，另起一个构建 job 再传产物反而让所有下游多等它一轮。
+#
+# 两条约束：
+#   · job 总数不超过 20。超过账户的并发上限后多出来的 job 要排队等空位，排到哪一个不由我们定，
+#     排到最长的那个时整轮就多等一截。加分片前先数一遍。
+#   · 同一个 job 里互不依赖的检查都带 `if: !cancelled()`：前一步红了后面的照跑，一轮看全所有的红，
+#     不必修一处推一次才露出下一处。真有先后依赖的（吃构建产物的、吃文档站产物的）另按那一步的结果判。
 jobs:
   # 不吃构建产物的静态门禁
   lint:
@@ -31,19 +37,25 @@ jobs:
       - name: Gate (依赖 / 令牌 / 浮层 / 皮肤 / 部件接线 / 导出 / 角色组)
         run: pnpm gate
       - name: Token artifacts in sync
+        if: ${{ !cancelled() }}
         run: pnpm gate:tokens
       - name: Custom elements manifest in sync
+        if: ${{ !cancelled() }}
         run: pnpm gate:cem
       - name: Unlayered skin in sync
+        if: ${{ !cancelled() }}
         run: pnpm gate:styled
       - name: Lint
+        if: ${{ !cancelled() }}
         run: pnpm lint
       - name: Commit message
-        if: github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         run: pnpm exec commitlint --from origin/${{ github.base_ref }} --to HEAD
 
-  quality:
-    name: 类型、构建与产物
+  # 类型检查单占一台：它是不碰浏览器的 job 里最长的一步，和下面吃产物的那一串挤在一起时
+  # 后者要等它跑完才开始，两段串成全轮最长的非浏览器 job。
+  typecheck:
+    name: 类型检查
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -51,71 +63,86 @@ jobs:
       - uses: ./.github/actions/setup-ui
       - name: Typecheck
         run: pnpm typecheck
+
+  artifacts:
+    name: 构建与产物
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-ui
       - name: Build
+        id: build
         run: pnpm build
-      # 下面几步都吃构建产物，必须排在 Build 之后：
+      # 下面几步都吃构建产物，构建成功才跑，彼此之间互不依赖：
       # 组件文档由 headless 产物与类型生成；React 示例的类型判据要读 icons 的 dist（它没有
       # TS 源码）；公开面从各包已构建的 .d.ts 采集（产物才是使用者拿到的那一份）；
       # dependency-cruiser 按 exports 条件解析兄弟包，同样指向 dist。
       - name: Component docs in sync
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:docs
       - name: React demo types
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:demo-types
       - name: Public surface baseline
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:surface
       - name: Boundaries (dependency-cruiser)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm boundaries
       - name: Size limit
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm size
       # cjs-resolves-to-esm 是 ESM-only 的刻意选择，node10 / node16-from-ESM / bundler 三列均绿
       - name: 子路径导出与 dist 对得上
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:exports
       - name: Publish artifacts (publint + attw)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:publish
 
   # 文档站是全仓唯一会编译 .vue 示例的地方，也是站内死链唯一的判据（没配 ignoreDeadLinks，
   # 断一条就构建失败）；渲染期抛的异常由 .vitepress/config.ts 的 buildEnd 收口成非零退出。
   # 它以 link: 吃 ui 的 dist，所以先构建 ui。文档站独立锁文件随仓库提交，本地与 CI 均按锁文件安装。
+  #
+  # Nuxt 示例并在这一个 job 里：两边都只要 ui 的构建产物、都不碰浏览器，各自只有几十秒到一两分钟，
+  # 单开一台 runner 时装依赖加构建的固定开销比它自己还长。
+  # 示例（仓库根 examples/nuxt）在系统临时目录里装：Nuxt 不进 ui 的依赖与锁文件。
+  # 它对着本仓刚打出的包装（pnpm pack 把 workspace: 换成真实版本，与发到 npm 的那一份同形），
+  # 只靠 modules: ['@xihan-ui/vue/nuxt'] 接上，类型检查、构建后起服务检查首屏。
   docs:
-    name: 文档站
+    name: 文档站与 Nuxt 示例
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-ui
       - name: Build
+        id: build
         run: pnpm build
       - name: 装文档站依赖
+        id: docs-install
         working-directory: ./docs
         run: pnpm install --frozen-lockfile
       - name: 文档站 Lint
+        if: ${{ !cancelled() && steps.docs-install.outcome == 'success' }}
         working-directory: ./docs
         run: pnpm lint
       - name: 构建文档站（编译 .vue 示例 + 站内死链）
+        id: docs-build
+        if: ${{ !cancelled() && steps.docs-install.outcome == 'success' }}
         working-directory: ./docs
         run: pnpm build
-      # 机读资产由文档站构建期落盘，必须排在上一步之后
+      # 机读资产由文档站构建期落盘，文档站构建成功才有东西可对
       - name: 机读资产与库对账
+        if: ${{ !cancelled() && steps.docs-build.outcome == 'success' }}
         run: pnpm gate:llms
-
-  # Nuxt 示例（仓库根 examples/nuxt）在系统临时目录里装：Nuxt 不进 ui 的依赖与锁文件。
-  # 示例对着本仓刚打出的包装（pnpm pack 把 workspace: 换成真实版本，与发到 npm 的那一份同形），
-  # 只靠 modules: ['@xihan-ui/vue/nuxt'] 接上，类型检查、构建后起服务检查首屏。
-  nuxt:
-    name: Nuxt 示例
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-ui
-      - name: Build
-        run: pnpm build
       - name: 装进 Nuxt 示例，类型检查、构建并检查首屏
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: pnpm gate:nuxt
 
-  # 单测按包分组，各占一台 runner。四个大包单跑一个要六到八分钟（一个 worker 时），
-  # 挤在一台 4 核机器上时 test-unit.mjs 只能给每包一个 worker；拆开后一组只有一两个包，
-  # worker 数按组里的包数放宽到占满四核。
+  # 单测按包分组，各占一台 runner。四个大包各占一组、各开四个 worker 占满四核；
+  # 两个包挤一台时 turbo 让它们并行，每包只分得到两个 worker，那一组就成了单测里最长的。
   unit:
     name: 单测（${{ matrix.name }}）
     runs-on: ubuntu-latest
@@ -130,9 +157,12 @@ jobs:
           - name: headless
             filter: '--filter=@xihan-ui/headless'
             workers: 4
-          - name: react + web-components
-            filter: '--filter=@xihan-ui/react --filter=@xihan-ui/web-components'
-            workers: 2
+          - name: react
+            filter: '--filter=@xihan-ui/react'
+            workers: 4
+          - name: web-components
+            filter: '--filter=@xihan-ui/web-components'
+            workers: 4
           # 其余全部包用排除写法：以后新增的包自动落进这一组，不会漏测。
           # 上面加一组时，这里要同步排除它，否则那几个包会跑两遍（多跑，不会漏）。
           - name: 其余包
@@ -151,8 +181,9 @@ jobs:
 
   # 单开一组：真实浏览器要下 ~300MB 的 Chromium，不该把上面那几条快链路堵住。
   # 三端的全量无障碍扫描是各包最重的一块（每端两份文件、单份约三分钟），在浏览器配置里单成 *-a11y 项目，
-  # 这里每端独占一片（--project=*-a11y*）；其余用例用 --project=!*-a11y* 排除它们，vue 再按 vitest --shard 切四片
-  # （按文件路径哈希切连续区间，各片合起来不重不漏），react、web-components 与 position 合一片。
+  # 这里每端独占一片（--project=*-a11y*）；其余用例用 --project=!*-a11y* 排除它们，vue 再按 vitest --shard 切五片
+  # （按文件路径哈希切连续区间，各片合起来不重不漏），react 一片，web-components 与 position 合一片。
+  # test-browser.mjs 逐包串行跑：react 与 web-components 各要三四分钟，合在一片里就是全轮最长的 job，所以分开。
   # 以后新增的项目名不带 -a11y 就自动落进常规分片，不会漏跑。
   browser:
     name: 浏览器态（${{ matrix.name }}）
@@ -162,11 +193,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { name: vue 1/4, id: vue-1, args: '--pkg=vue -- "--project=!*-a11y*" --shard=1/4' }
-          - { name: vue 2/4, id: vue-2, args: '--pkg=vue -- "--project=!*-a11y*" --shard=2/4' }
-          - { name: vue 3/4, id: vue-3, args: '--pkg=vue -- "--project=!*-a11y*" --shard=3/4' }
-          - { name: vue 4/4, id: vue-4, args: '--pkg=vue -- "--project=!*-a11y*" --shard=4/4' }
-          - { name: react + web-components + position, id: rest, args: '--pkg=react,web-components,position -- "--project=!*-a11y*"' }
+          - { name: vue 1/5, id: vue-1, args: '--pkg=vue -- "--project=!*-a11y*" --shard=1/5' }
+          - { name: vue 2/5, id: vue-2, args: '--pkg=vue -- "--project=!*-a11y*" --shard=2/5' }
+          - { name: vue 3/5, id: vue-3, args: '--pkg=vue -- "--project=!*-a11y*" --shard=3/5' }
+          - { name: vue 4/5, id: vue-4, args: '--pkg=vue -- "--project=!*-a11y*" --shard=4/5' }
+          - { name: vue 5/5, id: vue-5, args: '--pkg=vue -- "--project=!*-a11y*" --shard=5/5' }
+          - { name: react, id: react, args: '--pkg=react -- "--project=!*-a11y*"' }
+          - { name: web-components + position, id: wc, args: '--pkg=web-components,position -- "--project=!*-a11y*"' }
           - { name: vue 无障碍, id: vue-a11y, args: '--pkg=vue -- "--project=*-a11y*"' }
           - { name: react 无障碍, id: react-a11y, args: '--pkg=react -- "--project=*-a11y*"' }
           - { name: web-components 无障碍, id: wc-a11y, args: '--pkg=web-components -- "--project=*-a11y*"' }
