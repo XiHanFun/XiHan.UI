@@ -1,5 +1,5 @@
 <!-- 连接线 | lines 从父节点的展开箭头引出竖线，每个子节点横出一段接到行首、最后一个子节点拐成直角收住，层级深的时候一眼看得出谁挂在谁下面；只是外观，不改结构与键盘 -->
-<xh-tree lines id="tree-lines">
+<xh-tree lines default-expand-all id="tree-lines">
   <div data-xh-part="root" style="inline-size: 100%; max-inline-size: 320px">
     <span data-xh-part="label">项目文件</span>
     <div data-xh-part="tree">
@@ -61,7 +61,7 @@
 </xh-tree>
 
 <script type="module">
-  // 层级、显示文本与节点禁用都查这份树数据，标记只管长相
+  // 层级、显示文本与节点禁用都查这份树数据，标记只管长相；default-expand-all 等这份数据到了才展开
   const tree = document.getElementById("tree-lines");
   tree.collection = [
     {
@@ -89,11 +89,4 @@
     },
     { value: "readme", label: "README.md" },
   ];
-
-  // 展开集合是数组，只走属性；这里由宿主持有，组件发的事件宿主写回才算数
-  tree.expandedValue = ["src", "components", "docs"];
-  tree.addEventListener(
-    "expanded-value-change",
-    (event) => (tree.expandedValue = event.detail.value),
-  );
 </script>

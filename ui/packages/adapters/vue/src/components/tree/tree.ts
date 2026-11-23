@@ -33,6 +33,8 @@ export type TreeRootSlotProps = Pick<
   | 'isIndeterminate'
   | 'expand'
   | 'collapse'
+  | 'expandAll'
+  | 'collapseAll'
   | 'select'
   | 'toggleChecked'
 >
@@ -77,6 +79,8 @@ export const XhTreeRoot = defineComponent({
     size: { type: String as PropType<TreeProps['size']> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
+    /** 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+    defaultExpandAll: Boolean,
     selection: { type: Array as PropType<string[]> },
     defaultSelection: { type: Array as PropType<string[]> },
     /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
@@ -163,6 +167,8 @@ export const XhTreeRoot = defineComponent({
             isIndeterminate: api.isIndeterminate,
             expand: api.expand,
             collapse: api.collapse,
+            expandAll: api.expandAll,
+            collapseAll: api.collapseAll,
             select: api.select,
             toggleChecked: api.toggleChecked,
           })

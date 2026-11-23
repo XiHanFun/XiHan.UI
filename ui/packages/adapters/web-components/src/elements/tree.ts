@@ -56,6 +56,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md：行高、行内内衬、字号、指示符盒与层级缩进随档
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
+ * @attr {boolean} default-expand-all - 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false
  * @attr {boolean} checkable - 可勾选：行首勾选框与选中分开；点行与确认键选中（看详情），只有点勾选框与空格改勾选集合，默认 false
  * @prop {string[]} checkedValue - 勾选集合，checkable 下生效；提供即受控。只能通过 property 设置
  * @prop {string[]} defaultCheckedValue - 勾选集合的初值，checkable 下生效。只能通过 property 设置
@@ -129,6 +130,7 @@ export class XhTreeElement extends XhElement {
     size: { converter: STRING_CONVERTER },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
+    defaultExpandAll: { converter: BOOLEAN_CONVERTER, attribute: 'default-expand-all' },
     selection: { attribute: false },
     defaultSelection: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
@@ -162,6 +164,7 @@ export class XhTreeElement extends XhElement {
   declare size?: TreeSchema['props']['size']
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
+  declare defaultExpandAll?: boolean
   declare selection?: string[]
   declare defaultSelection?: string[]
   declare selectionMode?: TreeSchema['props']['selectionMode']
@@ -218,6 +221,18 @@ export class XhTreeElement extends XhElement {
   // 不需要 config/layer/定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TreeSchema>(this, treeMachine, () => this.machineProps())
 
+  /** 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。状态机尚未建立时不做任何事。 */
+  expandAll(): void {
+    if (this.ctrl.service)
+      connectTree(this.ctrl.service, wcNormalize).expandAll()
+  }
+
+  /** 收起全部分支；状态机尚未建立时不做任何事。 */
+  collapseAll(): void {
+    if (this.ctrl.service)
+      connectTree(this.ctrl.service, wcNormalize).collapseAll()
+  }
+
   protected override externalPartRoots(): readonly HTMLElement[] {
     return this.virtualizer?.getRenderedItemRoots() ?? []
   }
@@ -234,6 +249,7 @@ export class XhTreeElement extends XhElement {
       expandedValue: this.expandedValue,
       // 机器自己兜 undefined，这里不补 []：props 每次读都新建数组会造成无谓的引用变动
       defaultExpandedValue: this.defaultExpandedValue,
+      defaultExpandAll: this.defaultExpandAll,
       selection: this.selection,
       defaultSelection: this.defaultSelection,
       selectionMode: this.selectionMode,

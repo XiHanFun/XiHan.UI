@@ -11,6 +11,7 @@ import type { TreeApi, TreeBranchLoadSnapshot, TreeNode, TreeNodeMeta, TreePress
 import { cascadeState, contains, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemQuerySelector, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'
 import { TREE_EN_US } from '../locale/en-US'
 import { isEditableTarget } from '../shared/editable-target'
+import { expandableBranches } from '../shared/expand-all'
 import { branchLoadSnapshotOf, resolveLazyCollection } from '../shared/lazy-branch'
 import { resolveTranslations } from '../shared/translations'
 import { assertCollectionVirtualizer, virtualCollectionMatch, virtualCollectionTarget } from '../shared/virtual-collection'
@@ -439,6 +440,12 @@ export function connectTree<T extends PropTypes>(
     toggleChecked: value => send({ type: 'NODE.CHECK', value }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
+    // 并进现有的展开集合：正在取数的懒分支还没有子项、不在「全部」之列，但也不该被这一下收起
+    expandAll: () => send({
+      type: 'EXPANDED.SET',
+      value: [...expandedValue, ...expandableBranches(prop('collection') ?? [], context.get('loadedChildren'))],
+    }),
+    collapseAll: () => send({ type: 'EXPANDED.SET', value: [] }),
     retryBranch: value => send({ type: 'BRANCH.RETRY', value }),
     select: (value, options) => send({ type: 'NODE.SELECT', value, extend: options?.extend, additive: options?.additive }),
 

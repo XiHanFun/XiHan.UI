@@ -52,6 +52,8 @@ export type TreeSelectRootSlotProps = Pick<
   | 'setInputValue'
   | 'expand'
   | 'collapse'
+  | 'expandAll'
+  | 'collapseAll'
   | 'retryBranch'
   | 'select'
   | 'clear'
@@ -112,6 +114,8 @@ export const XhTreeSelectRoot = defineComponent({
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
+    /** 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+    defaultExpandAll: Boolean,
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     multiple: Boolean,
@@ -209,6 +213,8 @@ export const XhTreeSelectRoot = defineComponent({
           setInputValue: ctx.api.value.setInputValue,
           expand: ctx.api.value.expand,
           collapse: ctx.api.value.collapse,
+          expandAll: ctx.api.value.expandAll,
+          collapseAll: ctx.api.value.collapseAll,
           retryBranch: ctx.api.value.retryBranch,
           select: ctx.api.value.select,
           clear: ctx.api.value.clear,

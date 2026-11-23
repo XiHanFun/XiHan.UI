@@ -46,7 +46,7 @@ export default function Demo(): ReactNode {
     <XhTreeRoot
       lines
       collection={collection}
-      defaultExpandedValue={["src", "components", "docs"]}
+      defaultExpandAll
       style={{ inlineSize: "100%", maxInlineSize: "320px" }}
     >
       <XhTreeLabel>项目文件</XhTreeLabel>

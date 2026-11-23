@@ -53,6 +53,8 @@ export type TreeSelectRootSlotProps = Pick<
   | 'setInputValue'
   | 'expand'
   | 'collapse'
+  | 'expandAll'
+  | 'collapseAll'
   | 'retryBranch'
   | 'select'
   | 'clear'
@@ -104,6 +106,8 @@ export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>
   defaultValue?: string | string[]
   expandedValue?: string[]
   defaultExpandedValue?: string[]
+  /** 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+  defaultExpandAll?: boolean
   open?: boolean
   defaultOpen?: boolean
   multiple?: boolean
@@ -155,6 +159,7 @@ export function XhTreeSelectRoot({
   defaultValue,
   expandedValue,
   defaultExpandedValue,
+  defaultExpandAll,
   open,
   defaultOpen,
   multiple,
@@ -199,6 +204,7 @@ export function XhTreeSelectRoot({
     defaultValue,
     expandedValue,
     defaultExpandedValue,
+    defaultExpandAll,
     open,
     defaultOpen,
     multiple,
@@ -259,6 +265,8 @@ export function XhTreeSelectRoot({
         setInputValue: api.setInputValue,
         expand: api.expand,
         collapse: api.collapse,
+        expandAll: api.expandAll,
+        collapseAll: api.collapseAll,
         retryBranch: api.retryBranch,
         select: api.select,
         clear: api.clear,

@@ -95,6 +95,8 @@ export interface TreeSelectRefs {
   branchLoadSequence: { n: number }
   /** load 状态与成功 children 所属的原始节点对象；同 value 换节点时据此作废旧结果。 */
   branchLoadOwners: Map<string, TreeSelectNode>
+  /** 默认全部展开而数据还没到：等第一份非空的 collection，展开一次后置假。 */
+  expandAllPending: boolean
 }
 
 export interface TreeSelectOpenChangeDetails {
@@ -197,6 +199,12 @@ export interface TreeSelectSchema extends MachineSchema {
     /** 展开集合。提供即受控，语义同上。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]
+    /**
+     * 非受控的初始展开：展开全部已有子项的分支。挂载时 collection 还是空的（数据晚到），等第一份非空的到了再展开，
+     * 之后不再跟随。还没取回子项的懒分支不在其列，不会一挂上就把每个懒分支都请求一遍。
+     * 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。
+     */
+    defaultExpandAll?: boolean
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -370,6 +378,7 @@ export interface TreeSelectSchema extends MachineSchema {
     | 'loadExpandedBranch'
     | 'retryBranch'
     | 'syncBranchLoads'
+    | 'seedExpandAll'
     | 'loadExpandedBranches'
     | 'resumeBranchLoads'
     | 'syncRenderedNodes'
@@ -438,6 +447,10 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   setInputValue: (next: string) => void
   expand: (value: string) => void
   collapse: (value: string) => void
+  /** 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。 */
+  expandAll: () => void
+  /** 收起全部分支。 */
+  collapseAll: () => void
   /** 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 */
   retryBranch: (value: string) => void
   /** 单选替换、多选切换，与点击节点同一语义。 */

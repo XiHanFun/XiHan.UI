@@ -5,6 +5,7 @@
 
 // 导出 tree 模块的公共接口。
 
+export { expandableBranches } from '../shared/expand-all'
 export { treeAnatomy, treeBranchQuery, treeItemQuery } from './tree.anatomy'
 export { connectTree } from './tree.connect'
 export { isSelfOrDescendant, isTreeDropAllowed, treeMoveCommand, treeMoveIntentFromKey, treeMoveOf } from './tree.drag'

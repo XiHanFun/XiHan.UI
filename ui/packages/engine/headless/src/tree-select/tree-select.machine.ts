@@ -13,6 +13,7 @@ import { cascadeToggle, collapseChecked, createTypeahead, isItemDisabled, itemQu
 import { sameArray as sameValues, toArray as toValues, uniqueArray as unique } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
+import { awaitsExpandAll, expandableBranches, seedExpandedValue } from '../shared/expand-all'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import {
   abortBranchLoads,
@@ -199,7 +200,14 @@ export const treeSelectMachine = createMachine({
     })),
     expandedValue: cell<string[]>(() => ({
       value: prop('expandedValue'),
-      defaultValue: prop('defaultExpandedValue') ?? [],
+      // 写成 getter：受控判定每次读值都会重求这份参数，全部展开要走一遍整棵树，只在建值与重置时才算
+      get defaultValue() {
+        return seedExpandedValue({
+          collection: prop('collection'),
+          defaultExpandAll: prop('defaultExpandAll'),
+          defaultExpandedValue: prop('defaultExpandedValue'),
+        })
+      },
       isEqual: sameValues,
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
@@ -218,7 +226,7 @@ export const treeSelectMachine = createMachine({
     pressedValue: cell<string | null>(() => ({ defaultValue: null })),
     tagListTracked: cell<boolean>(() => ({ defaultValue: false })),
   }),
-  refs: () => ({
+  refs: ({ prop }) => ({
     config: null,
     registerLayer: null,
     presence: null,
@@ -231,6 +239,12 @@ export const treeSelectMachine = createMachine({
     branchLoadControllers: new Map(),
     branchLoadSequence: { n: 0 },
     branchLoadOwners: new Map(),
+    expandAllPending: awaitsExpandAll({
+      collection: prop('collection'),
+      defaultExpandAll: prop('defaultExpandAll'),
+      defaultExpandedValue: prop('defaultExpandedValue'),
+      expandedValue: prop('expandedValue'),
+    }),
   }),
   initialState: ({ prop }) => (openAtMount(prop) ? 'open' : 'closed'),
   // 开合受控时用户事件只发意图，宿主写回 open 后由 watch 派发 CONTROLLED.* 无条件回写；
@@ -238,7 +252,7 @@ export const treeSelectMachine = createMachine({
   watch: ({ track, prop, context, action }) => {
     track([() => prop('open')], () => action(['syncOpen']))
     // 外部删掉或补齐分支时，运输中的旧请求必须失效，不能把结果写回已不存在的数据树。
-    track([() => prop('collection')], () => action(['syncBranchLoads']))
+    track([() => prop('collection')], () => action(['syncBranchLoads', 'seedExpandAll']))
     // 受控 expandedValue、初始 defaultExpandedValue 与 API 改写共用这一个入口。
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
     // 值清空时清空按钮随之藏起，按住它的那一下不会再来 keyup：与禁用 / 只读 / 加载一道由机器自己收
@@ -505,6 +519,19 @@ export const treeSelectMachine = createMachine({
       },
 
       clearValue: ({ context }) => context.set('value', []),
+
+      // 默认全部展开而数据晚到：挂载时 collection 还是空的，第一份非空的到了才展开，只此一次。
+      // 等的这段时间里展开集合已被写过或转成了受控，就不再替作者决定
+      seedExpandAll: ({ context, prop, refs }) => {
+        if (!refs.get('expandAllPending'))
+          return
+        const collection = prop('collection') ?? []
+        if (collection.length === 0)
+          return
+        refs.set('expandAllPending', false)
+        if (prop('expandedValue') === undefined && context.get('expandedValue').length === 0)
+          context.set('expandedValue', expandableBranches(collection))
+      },
 
       setExpanded: ({ context, event }) => {
         const e = event.current()

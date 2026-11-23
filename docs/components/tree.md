@@ -149,6 +149,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 ### 特性
 
 - 展开集合与选中集合两套值各自可受控。
+- `defaultExpandAll` 让树一挂上就展开全部已有子项的分支；数据是后取的（挂载时 `collection` 还是空的）就等第一份数据到了再展开，只此一次。还没取回子项的懒分支不算在内，不会一挂上把每个懒分支都请求一遍；同时给了 `defaultExpandedValue` 时以它为准。运行中用 `expandAll()` / `collapseAll()`：Vue 默认插槽与 React 函数式 children 的载荷里有，自定义元素是同名方法；受控时把 `expandableBranches(collection)`（`@xihan-ui/headless` 导出）写进 `expandedValue` 即全部展开，写空数组即全部收起。
 - `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
 - 选择模式 `selectionMode`：缺省 `single` 单选；`multiple` 点击与确认键切换，按住 Shift 点击把锚点到这一项那一段并进来；`extended` 照文件管理器，点击与确认键换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 切换这一项，按住 Shift 点击选锚点到这一项那一段（同时按 Ctrl / Cmd 则并进）。锚点是最近一次点击或切换的那一项；选中从外面换了（受控时宿主另写了值、`setSelection`、初始的选中），锚点落到多出来的最后一项，清空了就没有锚点。级联勾选只在 `multiple` 下生效。
@@ -209,6 +210,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `leafOrientation` | `Orientation` |  | 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。 只作用于子节点全是叶子的层：菜单授权中即按钮层： 一个菜单下十几个按钮，横向排成一行，省去纵向翻找。中间层与整棵树恒为纵向， 它们承载的是层级本身，横向排布会失去层级信息。 这是结构判据，逐层自动识别。需要精确指定哪一层横向排布时，在节点上标注 `childrenOrientation`，它优先于本项。 只影响排布，不改变键盘：方向键在树上是层级操作（左右收展、上下移动可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
+| `defaultExpandAll` | `boolean` |  | 非受控的初始展开：展开全部已有子项的分支。挂载时 collection 还是空的（数据晚到），等第一份非空的到了再展开， 之后不再跟随。还没取回子项的懒分支不在其列，不会一挂上就把每个懒分支都请求一遍。 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。 |
 | `selection` | `string[]` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
 | `selectionMode` | `TreeSelectionMode` |  | 选择模式，默认 single；multiple 与 extended 下 tree 带 aria-multiselectable=true。 |
@@ -342,6 +344,8 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `toggleChecked` | `(value: string) => void` | 切换一个节点的勾选，与点它的勾选框同一语义；级联时整枝传导。 |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
+| `expandAll` | `() => void` | 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。 |
+| `collapseAll` | `() => void` | 收起全部分支。 |
 | `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
 | `select` | `(value: string, options?: { extend?: boolean, additive?: boolean }) => void` | 选中某个节点，与点击同一语义：extend 对应按住 Shift（选锚点到该节点的范围，单选与级联下不认）， additive 对应按住 Ctrl/Cmd（extended 下切换这一项）。 |
 | `getRootProps` | `() => T['element']` |  |

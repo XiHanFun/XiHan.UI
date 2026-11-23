@@ -16,6 +16,7 @@ import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { hitAlongNested } from '../shared/drag'
 import { dragAnnouncement } from '../shared/drag-announce'
 import { snapshotDrift } from '../shared/drag-drift'
+import { awaitsExpandAll, expandableBranches, seedExpandedValue } from '../shared/expand-all'
 import {
   abortBranchLoads,
   beginBranchLoad,
@@ -150,7 +151,14 @@ export const treeMachine = createMachine({
     loadedChildren: cell(() => ({ defaultValue: {} })),
     expandedValue: cell<string[]>(() => ({
       value: prop('expandedValue'),
-      defaultValue: prop('defaultExpandedValue') ?? [],
+      // 写成 getter：受控判定每次读值都会重求这份参数，全部展开要走一遍整棵树，只在建值与重置时才算
+      get defaultValue() {
+        return seedExpandedValue({
+          collection: prop('collection'),
+          defaultExpandAll: prop('defaultExpandAll'),
+          defaultExpandedValue: prop('defaultExpandedValue'),
+        })
+      },
       isEqual: sameValues,
       onChange: value => prop('onExpandedValueChange')?.({ value }),
     })),
@@ -184,14 +192,14 @@ export const treeMachine = createMachine({
     track([() => prop('disabled'), () => prop('loading')], () => action(['releaseWhenInert']))
     track([context.dep('selection')], () => action(['followSelection']))
     // 外部删掉或补齐分支时，在途的旧请求必须失效，不能把结果写回已不存在的数据树
-    track([() => prop('collection')], () => action(['syncBranchLoads']))
+    track([() => prop('collection')], () => action(['syncBranchLoads', 'seedExpandAll']))
     // 受控 expandedValue、setExpandedValue 与键盘展开共用这一个入口：展开的懒分支去取，收起的中止
     track([context.dep('expandedValue')], () => action(['loadExpandedBranches']))
   },
   // 跟手的会话整个生命周期都在，不按拖动状态挂卸。常驻的代价只是几个早退的
   // pointermove，换来的是树的状态树一行都不用改——8 个既有事件原地不动
   effects: ['trackPointer', 'trackBranchLoads', 'trackBranchDisclosure'],
-  refs: () => ({
+  refs: ({ prop }) => ({
     typeahead: createTypeahead(),
     gesture: null,
     nodeDrag: null,
@@ -200,6 +208,12 @@ export const treeMachine = createMachine({
     branchLoadControllers: new Map(),
     branchLoadSequence: { n: 0 },
     branchLoadOwners: new Map(),
+    expandAllPending: awaitsExpandAll({
+      collection: prop('collection'),
+      defaultExpandAll: prop('defaultExpandAll'),
+      defaultExpandedValue: prop('defaultExpandedValue'),
+      expandedValue: prop('expandedValue'),
+    }),
   }),
   initialState: () => 'idle',
   states: {
@@ -400,6 +414,18 @@ export const treeMachine = createMachine({
           beginBranchLoad(port, value, false)
       },
 
+      // 默认全部展开而数据晚到：挂载时 collection 还是空的，第一份非空的到了才展开，只此一次。
+      // 等的这段时间里展开集合已被写过或转成了受控，就不再替作者决定
+      seedExpandAll: ({ context, prop, refs }) => {
+        if (!refs.get('expandAllPending'))
+          return
+        const collection = prop('collection') ?? []
+        if (collection.length === 0)
+          return
+        refs.set('expandAllPending', false)
+        if (prop('expandedValue') === undefined && context.get('expandedValue').length === 0)
+          context.set('expandedValue', expandableBranches(collection))
+      },
       setExpanded: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'EXPANDED.SET')

@@ -46,7 +46,7 @@ const collection = [
   <XhTreeRoot
     lines
     :collection="collection"
-    :default-expanded-value="['src', 'components', 'docs']"
+    default-expand-all
     style="inline-size: 100%; max-inline-size: 320px"
   >
     <XhTreeLabel>项目文件</XhTreeLabel>

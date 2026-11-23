@@ -186,6 +186,8 @@ export interface TreeRefs {
   branchLoadSequence: BranchLoadRuntime<TreeNode>['sequence']
   /** load 状态与成功 children 所属的原始节点对象；同 value 换节点时据此作废旧结果。 */
   branchLoadOwners: BranchLoadRuntime<TreeNode>['owners']
+  /** 默认全部展开而数据还没到：等第一份非空的 collection，展开一次后置假。 */
+  expandAllPending: boolean
 }
 
 /** 接了按压通道的两个部件：叶子行与分支行都按 node.value 记，同一个值在两个部件上分开认。 */
@@ -223,6 +225,12 @@ export interface TreeSchema extends MachineSchema {
     /** 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]
+    /**
+     * 非受控的初始展开：展开全部已有子项的分支。挂载时 collection 还是空的（数据晚到），等第一份非空的到了再展开，
+     * 之后不再跟随。还没取回子项的懒分支不在其列，不会一挂上就把每个懒分支都请求一遍。
+     * 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。
+     */
+    defaultExpandAll?: boolean
     /** 选中集合。提供即受控，语义同上。 */
     selection?: string[]
     defaultSelection?: string[]
@@ -395,6 +403,7 @@ export interface TreeSchema extends MachineSchema {
     | 'loadExpandedBranches'
     | 'retryBranch'
     | 'syncBranchLoads'
+    | 'seedExpandAll'
   effect: 'trackPointer' | 'trackBranchLoads' | 'trackBranchDisclosure'
 }
 
@@ -439,6 +448,10 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   toggleChecked: (value: string) => void
   expand: (value: string) => void
   collapse: (value: string) => void
+  /** 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。 */
+  expandAll: () => void
+  /** 收起全部分支。 */
+  collapseAll: () => void
   /** 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 */
   retryBranch: (value: string) => void
   /**

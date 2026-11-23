@@ -66,6 +66,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @customElement xh-tree-select
  * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
+ * @attr {boolean} default-expand-all - 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中；已选项在触发器里排成标签
@@ -165,6 +166,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     expandedValue: { attribute: false },
     defaultExpandedValue: { attribute: false },
+    defaultExpandAll: { converter: BOOLEAN_CONVERTER, attribute: 'default-expand-all' },
     open: { converter: BOOLEAN_CONVERTER },
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     multiple: { converter: BOOLEAN_CONVERTER },
@@ -204,6 +206,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare defaultValue?: string | string[]
   declare expandedValue?: string[]
   declare defaultExpandedValue?: string[]
+  declare defaultExpandAll?: boolean
   declare open?: boolean
   declare defaultOpen?: boolean
   declare multiple?: boolean
@@ -345,6 +348,16 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     this.api()?.deselect(value)
   }
 
+  /** 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。状态机尚未建立时不做任何事。 */
+  expandAll(): void {
+    this.api()?.expandAll()
+  }
+
+  /** 收起全部分支；状态机尚未建立时不做任何事。 */
+  collapseAll(): void {
+    this.api()?.collapseAll()
+  }
+
   /**
    * 标签里只有文字时替它包一层 tag 的 label：截断规则挂在 label 上。作者自己写了子节点就原样放行，
    * 返回 null。补出来的那层不打 data-xh-part，不进角色节点表。
@@ -406,6 +419,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       expandedValue: this.expandedValue,
       // 不补 []，缺省由机器兜
       defaultExpandedValue: this.defaultExpandedValue,
+      defaultExpandAll: this.defaultExpandAll,
       open: this.open,
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,

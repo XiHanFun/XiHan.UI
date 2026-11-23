@@ -80147,6 +80147,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultExpandAll",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-expand-all"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "privacy": "public",
               "type": {
@@ -80627,6 +80636,26 @@
             },
             {
               "kind": "method",
+              "name": "expandAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
+              "name": "collapseAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "收起全部分支；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
               "name": "ensureTagLabel",
               "privacy": "private",
               "return": {
@@ -80886,6 +80915,14 @@
               "description": "非受控初始选中值",
               "name": "default-value",
               "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false",
+              "name": "default-expand-all",
+              "fieldName": "defaultExpandAll"
             },
             {
               "type": {
@@ -81618,6 +81655,15 @@
             },
             {
               "kind": "field",
+              "name": "defaultExpandAll",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-expand-all"
+            },
+            {
+              "kind": "field",
               "name": "selection",
               "privacy": "public",
               "type": {
@@ -81851,6 +81897,26 @@
             },
             {
               "kind": "method",
+              "name": "expandAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
+              "name": "collapseAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "收起全部分支；状态机尚未建立时不做任何事。"
+            },
+            {
+              "kind": "method",
               "name": "externalPartRoots",
               "privacy": "protected",
               "return": {
@@ -82007,6 +82073,14 @@
               "description": "末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开",
               "name": "leaf-orientation",
               "fieldName": "leafOrientation"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue（property） 时以它为准，受控时无效。默认 false",
+              "name": "default-expand-all",
+              "fieldName": "defaultExpandAll"
             },
             {
               "type": {

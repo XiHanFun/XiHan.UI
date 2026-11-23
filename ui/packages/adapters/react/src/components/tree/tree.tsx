@@ -38,6 +38,8 @@ export type TreeRootSlotProps = Pick<
   | 'isIndeterminate'
   | 'expand'
   | 'collapse'
+  | 'expandAll'
+  | 'collapseAll'
   | 'select'
   | 'toggleChecked'
 >
@@ -87,6 +89,8 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   size?: Size
   expandedValue?: string[]
   defaultExpandedValue?: string[]
+  /** 初始展开全部已有子项的分支；数据晚到时等第一份非空的 collection。给了 defaultExpandedValue 时以它为准，受控时无效。 */
+  defaultExpandAll?: boolean
   selection?: string[]
   defaultSelection?: string[]
   /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
@@ -135,6 +139,7 @@ export function XhTreeRoot({
   size,
   expandedValue,
   defaultExpandedValue,
+  defaultExpandAll,
   selection,
   defaultSelection,
   selectionMode,
@@ -173,6 +178,7 @@ export function XhTreeRoot({
     size,
     expandedValue,
     defaultExpandedValue,
+    defaultExpandAll,
     selection,
     defaultSelection,
     selectionMode,
@@ -220,6 +226,8 @@ export function XhTreeRoot({
               isIndeterminate: api.isIndeterminate,
               expand: api.expand,
               collapse: api.collapse,
+              expandAll: api.expandAll,
+              collapseAll: api.collapseAll,
               select: api.select,
               toggleChecked: api.toggleChecked,
             })}

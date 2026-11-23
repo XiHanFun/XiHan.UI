@@ -117,6 +117,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 ### 特性
 
 - 选中与展开两套值各自可受控。
+- `defaultExpandAll` 与 `expandAll()` / `collapseAll()` 同[树](./tree)一套规则：展开全部已有子项的分支，还没取回子项的懒分支不算在内。
 - 只给 `collection` 时照标准结构铺：标题（给了 `label`）、盒（触发器，`clearable` 时再带清空钮）与浮层里的树，`searchable` 时树前面带搜索框，多选时触发器里铺标签行；没给 `collection` 也铺出盒与一棵空树。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数；Web Components 的标题可用宿主直接子节点 `slot="label"` 接管。节点副文本、行尾、表单影子与底部操作区要手写结构时自己摆。
 - 多选的已选项在触发器里排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签文字取 collection 的 label（收起子树里的选中值同样报得出名字）；Vue / React 的自动结构在多选时直接铺出标签行。
 - 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
@@ -177,6 +178,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `defaultValue` | `string \| string[]` |  |  |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
+| `defaultExpandAll` | `boolean` |  | 非受控的初始展开：展开全部已有子项的分支。挂载时 collection 还是空的（数据晚到），等第一份非空的到了再展开， 之后不再跟随。还没取回子项的懒分支不在其列，不会一挂上就把每个懒分支都请求一遍。 同时给了 defaultExpandedValue 时以它为准；受控（给了 expandedValue）时无效。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择；已选项在触发器里排成标签。 |
@@ -335,6 +337,8 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `setInputValue` | `(next: string) => void` | 改写检索词，与在搜索框里输入同一语义。 |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
+| `expandAll` | `() => void` | 展开全部已有子项的分支；已展开的保持不动，还没取回子项的懒分支不去取。 |
+| `collapseAll` | `() => void` | 收起全部分支。 |
 | `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
 | `select` | `(value: string) => void` | 单选替换、多选切换，与点击节点同一语义。 |
 | `clear` | `() => void` |  |
