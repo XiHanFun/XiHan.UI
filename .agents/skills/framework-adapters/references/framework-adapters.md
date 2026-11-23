@@ -73,7 +73,7 @@ export function Example() {
 ## 4. Web Components
 
 - 先调用 `defineXhElements()`；主入口 import 不自动注册。只用到几个元素时按需注册：`defineXhElement('xh-table', XhTableElement)`，标签与类由 `XhElementTagMap` 约束，与全量注册走同一张注册表。
-- 自定义元素使用 Light DOM，不自动生成作者结构。唯一例外：组件在 headless 里提供了标准结构函数（`<组件>Structure(api)`，产出与 anatomy 对应的 `StructureNode` 树，和 anatomy 放在同一目录）时，作者只写 `root` 的情况下元素经 `dom/structure.ts` 的 `placeStructure` 照它生成部件节点（带 `data-xh-gen`、按 key 复用），Vue / React 的缺省树经各自 `runtime/structure` 的 `renderStructure` 照同一份渲。三端出自同一个函数，一致性套件用 `defaultStructure: true` 的夹具逐帧对拍。目前是 heatmap。
+- 自定义元素使用 Light DOM，作者写了部件就不替作者生成结构。组件在 headless 里提供了标准结构函数（`<组件>Structure(api)`，产出与 anatomy 对应的 `StructureNode` 树，和 anatomy 放在同一目录）时，作者只写 `root` 的情况下元素经 `dom/structure.ts` 的 `placeStructure` 照它生成部件节点（带 `data-xh-gen`、按 key 复用），Vue / React 的缺省树经各自 `runtime/structure` 的 `renderStructure` 照同一份渲。三端出自同一个函数，一致性套件用 `defaultStructure: true` 的夹具逐帧对拍。提供了 `<组件>.structure.ts` 的组件都走这条路（已有五十多个），不再是个别例外。
 - 作者用 `data-xh-part` 声明节点角色。
 - 元素升级后写入 `data-scope`、`data-part`、ARIA 和事件。
 - `data-xh-part` 是输入声明，`data-part` 是接线结果，不能混用。

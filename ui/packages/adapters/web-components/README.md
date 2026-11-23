@@ -3,7 +3,7 @@
 Web Components 适配器：把框架无关的 headless（anatomy + machine + connect）落在
 自研基类 `XhReactiveElement` 上的 **Light-DOM 行为宿主**（零第三方运行时依赖）。
 
-- 元素不渲染结构；用户写带 `data-xh-part` 的 Light-DOM 子节点，元素发现后用
+- 用户写带 `data-xh-part` 的 Light-DOM 子节点（提供了标准结构的元素，一个部件都不写时按标准结构生成），元素发现后用
   `spreadProps` 把 `connect()` 产出命令式打上去。每个组件一个 `xh-*` 元素，part 不是各自的元素。
 - `MachineController` 把机器唯一解释器 `createService` 桥到 controller 生命周期，
   不重造 FSM。元素类只在 `@xihan-ui/web-components/define` 子路径，`defineXhElements()` 显式注册。
@@ -30,8 +30,8 @@ Web Components 适配器：把框架无关的 headless（anatomy + machine + con
   收不进来的 28 个逐条登记在 `tooling/testing/runners/parity.spec.ts` 的 `EXCLUDED` 里并各带理由；
   dialog 在这 28 个里，理由就是这条 presence 模型差异——它属永久性差异，跨适配器保证由两端
   各自跑同一份 dialog conformance 规格提供。
-- **顶层/Portal**：真机可给 content 加 Popover API 上顶层；jsdom 无 Popover，当前只靠
-  `data-state` + focus-scope + dismiss-layer，不搬运 DOM。
+- **顶层/Portal**：浮层展开后把内容搬进所属 Document 的运行时 Portal（或 `<xh-config>` 的 `portalContainer` 给的落点），
+  收起或断连后放回作者写的原位置；层栈、焦点域与消解层同 Vue / React 共用一套。
 - **重连（元素在 DOM 中移动）**：解释器 stop 后不可复活，`MachineController` 在 stop 后
   重建机器（从 `initialState`、context 重置）——状态不跨移动保留。
   重建后的状态与重建前相同，cell 不会 bump 版本，因此**不会**自动排更新；
