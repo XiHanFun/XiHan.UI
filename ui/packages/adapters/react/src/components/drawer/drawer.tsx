@@ -37,6 +37,8 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
   restoreFocus?: boolean
+  /** 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 */
+  initialFocus?: string
   size?: Size
   variant?: OverlayBackdropVariant
   /**
@@ -102,6 +104,7 @@ export function XhDrawerRoot({
   closeOnEscape,
   closeOnInteractOutside,
   restoreFocus,
+  initialFocus,
   size,
   variant,
   contained,
@@ -139,6 +142,7 @@ export function XhDrawerRoot({
     closeOnEscape,
     closeOnInteractOutside,
     restoreFocus,
+    initialFocus,
     size,
     variant,
     contained,

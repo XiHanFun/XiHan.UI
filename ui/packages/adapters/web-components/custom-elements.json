@@ -25088,6 +25088,15 @@
             },
             {
               "kind": "field",
+              "name": "initialFocus",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "initial-focus"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -25558,6 +25567,14 @@
               "description": "关闭后把焦点归还触发元素，默认 true",
               "name": "restore-focus",
               "fieldName": "restoreFocus"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "展开后先聚焦到 content 内匹配此选择器的元素",
+              "name": "initial-focus",
+              "fieldName": "initialFocus"
             },
             {
               "type": {

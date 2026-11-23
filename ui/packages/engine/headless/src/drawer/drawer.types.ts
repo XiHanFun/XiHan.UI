@@ -67,6 +67,8 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | '
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
+    /** 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 */
+    initialFocus?: string
     /** 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 */
     size?: Size
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */

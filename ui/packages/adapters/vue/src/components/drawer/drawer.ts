@@ -38,6 +38,7 @@ export const XhDrawerRoot = defineComponent({
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
     restoreFocus: { type: Boolean, default: undefined },
+    initialFocus: { type: String },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<OverlayBackdropVariant> },
     /**

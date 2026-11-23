@@ -55,6 +55,7 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
+ * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：横向放置时影响面板宽度、纵向放置时影响面板高度
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @attr {boolean} resizable - 可调厚度：朝向页面那条边上的 resize-trigger 拖动或用方向键推
@@ -122,6 +123,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
+    initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     resizable: { converter: BOOLEAN_CONVERTER },
@@ -150,6 +152,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
+  declare initialFocus?: string
   declare size?: Size
   declare variant?: OverlayBackdropVariant
   declare resizable?: boolean
@@ -251,6 +254,7 @@ export class XhDrawerElement extends XhPortalHostElement {
       closeOnEscape: this.pendingState ? false : this.closeOnEscape,
       closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,
       restoreFocus: this.restoreFocus,
+      initialFocus: this.initialFocus,
       size: this.size,
       variant: this.variant,
       translations: this.translations,

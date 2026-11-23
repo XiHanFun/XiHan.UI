@@ -139,6 +139,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
+| `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的抽屉。 |
