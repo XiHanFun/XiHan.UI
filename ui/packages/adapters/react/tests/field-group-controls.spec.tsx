@@ -10,10 +10,12 @@ import {
   XhCheckboxGroupItemText,
   XhCheckboxGroupRoot,
   XhColorSwatchPickerRoot,
+  XhExpressionInputRoot,
   XhFieldDescription,
   XhFieldErrorText,
   XhFieldLabel,
   XhFieldRoot,
+  XhFormatInputRoot,
   XhListboxRoot,
   XhPasswordInputCapsLockIndicator,
   XhPasswordInputControl,
@@ -150,6 +152,18 @@ describe('组类控件直接放进字段', () => {
 })
 
 describe('输入框自带描述链的控件放进字段', () => {
+  // 组根恒带 aria-describedby 这个键（没有解析错误时值是 undefined）：照单全收地展开会把字段给的那条盖掉
+  it('format-input：组根自己的描述链不顶掉字段的说明与错误文案', () => {
+    const container = inField(<XhFormatInputRoot />, true)
+    expectWired(container, part(container, 'format-input', 'root'), true)
+  })
+
+  // 标准结构（只写根）：输入框的描述链指着问题列表，字段的说明与错误文案排在它前面
+  it('expression-input：输入框自己的描述链不顶掉字段的说明与错误文案', () => {
+    const container = inField(<XhExpressionInputRoot />, true)
+    expectWired(container, part(container, 'expression-input', 'input'), true)
+  })
+
   it('password-input：输入框自己的描述链不顶掉字段的说明与错误文案', () => {
     const container = inField(<XhPasswordInputRoot><XhPasswordInputControl><XhPasswordInputInput /></XhPasswordInputControl></XhPasswordInputRoot>, true)
     expectWired(container, part(container, 'password-input', 'input'), true)

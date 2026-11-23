@@ -6,7 +6,7 @@
 // 提供 use field control 相关实现。
 
 import type { ComputedRef } from 'vue'
-import { fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldLabel } from '@xihan-ui/headless'
+import { fieldControlWiring, fieldGroupAttrs, fieldStateAttrs, withFieldDescription, withFieldLabel } from '@xihan-ui/headless'
 import { computed } from 'vue'
 import { useOptionalFieldContext } from './context'
 import { wiringOnly } from './field'
@@ -68,11 +68,18 @@ export function useFieldGroupWiring(): ComputedRef<Record<string, unknown>> {
  *
  * 字段的标签排在最前，控件自己的部分（值文本等）跟在后面，两边都可朗读。
  * 不在字段内时属性原样返回。
+ *
+ * 描述链在这里一并拼好：调用处的写法是把字段接线与部件属性先后展开，部件属性只要带着
+ * aria-describedby 这个键（值是 undefined 也算，如 FormatInput 没有解析错误时的组根），
+ * 就把字段给的那条盖掉，字段的说明与错误文案读屏念不到。字段的排在前面，部件自己的跟在后面，
+ * 重复的只留一份；与 Web Components 基类的合并同一条规则。
  */
 export function useFieldLabelWiring(): ComputedRef<(props: Record<string, unknown>) => Record<string, unknown>> {
   const ctx = useOptionalFieldContext()
   return computed(() => {
-    const labelId = ctx ? fieldControlWiring(ctx.api.value).labelId : undefined
-    return (props: Record<string, unknown>) => withFieldLabel(props, labelId)
+    if (!ctx)
+      return (props: Record<string, unknown>) => props
+    const { labelId, describedBy } = fieldControlWiring(ctx.api.value)
+    return (props: Record<string, unknown>) => withFieldLabel(withFieldDescription(props, describedBy), labelId)
   })
 }

@@ -10,7 +10,7 @@ import type { FunctionTable } from '@xihan-ui/expression'
 import type { ExpressionInputApi, ExpressionInputAutoSize, ExpressionInputEl, ExpressionInputHost, ExpressionInputItem, ExpressionInputSchema, ExpressionInputTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { expressionInputStructure, withFieldDescription } from '@xihan-ui/headless'
+import { expressionInputStructure } from '@xihan-ui/headless'
 import { useEffect } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -205,12 +205,9 @@ export function XhExpressionInputInput({ as, ...rest }: XhExpressionInputInputPr
   const tag: ExpressionInputHost = as ?? (ctx.multiline ? 'textarea' : 'input')
   const { setMultiline } = ctx
   useEffect(() => setMultiline(tag === 'textarea'), [setMultiline, tag])
-  // 输入框自己的描述链（问题列表）与字段的拼起来，字段的在前
+  // 输入框自己的描述链（问题列表）与字段的由 fieldLabel 拼起来，字段的在前
   const props = mergeReactProps(
-    fieldLabel(withFieldDescription(
-      { ...fieldWiring, ...ctx.api.getInputProps({ as: tag }) },
-      fieldWiring['aria-describedby'] as string | undefined,
-    )),
+    fieldLabel({ ...fieldWiring, ...ctx.api.getInputProps({ as: tag }) }),
     rest,
     { ref: (el: ExpressionInputEl | null) => { ctx.inputRef.current = el } },
   )

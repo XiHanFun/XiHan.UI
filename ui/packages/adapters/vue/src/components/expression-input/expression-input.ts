@@ -10,7 +10,7 @@ import type { FunctionTable } from '@xihan-ui/expression'
 import type { ExpressionInputApi, ExpressionInputAutoSize, ExpressionInputEl, ExpressionInputHost, ExpressionInputItem, ExpressionInputSchema, ExpressionInputTranslations } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { expressionInputStructure, withFieldDescription } from '@xihan-ui/headless'
+import { expressionInputStructure } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, mergeProps, onUnmounted, provide, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
@@ -159,15 +159,12 @@ export const XhExpressionInputInput = defineComponent({
     watch(tag, (host) => {
       ctx.multiline.value = host === 'textarea'
     }, { immediate: true })
-    // 输入框自己的描述链（问题列表）与字段的拼起来，字段的在前
-    return () => h(tag.value, fieldLabel.value(withFieldDescription(
-      {
-        ...fieldWiring.value,
-        ...ctx.api.value.getInputProps({ as: tag.value }),
-        ref: (el: unknown) => { ctx.inputRef.value = el as ExpressionInputEl },
-      },
-      fieldWiring.value['aria-describedby'] as string | undefined,
-    )))
+    // 输入框自己的描述链（问题列表）与字段的由 fieldLabel 拼起来，字段的在前
+    return () => h(tag.value, fieldLabel.value({
+      ...fieldWiring.value,
+      ...ctx.api.value.getInputProps({ as: tag.value }),
+      ref: (el: unknown) => { ctx.inputRef.value = el as ExpressionInputEl },
+    }))
   },
 })
 
