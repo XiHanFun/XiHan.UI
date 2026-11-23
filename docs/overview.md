@@ -24,18 +24,18 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | --- | --- | --- |
 | 1 | `core` | `motion` |
 | 1 | `motion` | — |
-| 1 | `tokens` | — |
 | 1 | `icons` | — |
 | 1 | `pointer` | — |
 | 1 | `viz` | — |
 | 1 | `expression` | — |
 | 1 | `xlsx` | — |
+| 2 | `tokens` | `core` |
 | 2 | `position` | `core` |
 | 2 | `code-highlight` | `core` |
 | 2 | `chat-stream` | `core` |
 | 2 | `markdown` | `core` |
 | 2 | `sound` | `core` |
-| 2 | `designer-kit` | `core` `pointer` `expression` |
+| 2 | `designer-kit` | `core` `pointer` `expression` `viz` |
 | 2 | `animations` | `core` `motion` |
 | 3 | `headless` | `core` `tokens` `motion` `pointer` `viz` `expression` |
 | 3 | `styles` | —（纯 CSS，不得依赖任何 JS 包） |
@@ -43,7 +43,8 @@ XiHan.UI 是一个 pnpm + turbo 的 monorepo。它的组织方式服务于一个
 | 4 | `vue` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` `expression` |
 | 4 | `react` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `sound` `motion` `pointer` `expression` |
 | 4 | `web-components` | `core` `headless` `position` `code-highlight` `tokens` `backgrounds` `motion` `pointer` `expression` |
-| 5 | `designer-shell` | `core` `pointer` `designer-kit` `web-components` |
+| 5 | `designer-shell` | `core` `pointer` `designer-kit` `web-components` `tokens` `viz` |
+| 5 | `cli` | — |
 
 除分层外还有三条硬规则，同样由门禁执行：
 

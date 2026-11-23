@@ -7,13 +7,13 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | 包 | 依赖 | peer 依赖 | 层 |
 | --- | --- | --- | --- |
 | `@xihan-ui/core` | `motion` | — | 1 |
-| `@xihan-ui/tokens` | — | — | 1 |
 | `@xihan-ui/icons` | — | — | 1 |
 | `@xihan-ui/motion` | — | — | 1 |
 | `@xihan-ui/pointer` | — | — | 1 |
 | `@xihan-ui/viz` | — | — | 1 |
 | `@xihan-ui/expression` | — | — | 1 |
 | `@xihan-ui/xlsx` | — | — | 1 |
+| `@xihan-ui/tokens` | `core` | — | 2 |
 | `@xihan-ui/position` | `core` | — | 2 |
 | `@xihan-ui/code-highlight` | `core` | — | 2 |
 | `@xihan-ui/chat-stream` | `core` | — | 2 |
@@ -25,48 +25,21 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/styles` | `tokens`（只取其 CSS 产物） | — | 3 |
 | `@xihan-ui/backgrounds` | `core` `motion` | — | 3 |
 | `@xihan-ui/vue` | `core` `motion` `pointer` `viz` `expression` `headless` `position` | `vue`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
+| `@xihan-ui/react` | `core` `motion` `pointer` `viz` `expression` `headless` `position` | `react`、`react-dom`、`backgrounds`（可选）、`sound`（可选）、`code-highlight`（可选） | 4 |
 | `@xihan-ui/web-components` | `core` `motion` `pointer` `viz` `expression` `headless` `position` | `backgrounds`（可选）、`code-highlight`（可选） | 4 |
-| `@xihan-ui/designer-shell` | `core` `pointer` `viz` `designer-kit` `web-components` | — | 5 |
+| `@xihan-ui/designer-shell` | `core` `pointer` `viz` `tokens` `designer-kit` `web-components` | — | 5 |
 | `@xihan-ui/cli` | — | — | 5 |
 
 发布走 changesets，所有库包同属一个 fixed 版本组，一起升到同一个版本号。
 
 ## 依赖图
 
-箭头方向 = 依赖方向，只画实际声明的依赖。同层之间只有 `core → motion` 一条横向依赖。
+依赖只从高层指向低层，层号见上表。同层之间只有 `core → motion` 一条横向依赖；三个适配器（`vue`、`react`、`web-components`）同在第 4 层，依赖完全相同，互不依赖；`designer-shell` 在第 5 层，只建在 `web-components` 之上。
 
-```
-层 5   ┌──────────────────┐
-       │  designer-shell  │  只出 Web Components
-       └────────┬─────────┘
-                │  core · pointer · viz · designer-kit · web-components
-                ▼
-层 4   ┌─────────────┐       ┌──────────────────┐
-       │     vue     │       │  web-components  │  peer: backgrounds · code-highlight（可选）；vue 另有 peer: sound（可选）、vue
-       └──────┬──────┘       └────────┬─────────┘
-              │  core · motion · pointer · viz · expression · headless · position
-              └───────────┬───────────┘
-                          ▼
-层 3   ┌──────────────┐  ┌───────────────────┐   ┌────────────────┐
-       │   headless   │  │    backgrounds    │   │ styles（纯CSS）│
-       └──────┬───────┘  └─────────┬─────────┘   └───────┬────────┘
-   core·motion·pointer·viz·        core·motion            tokens 的 CSS 产物
-   expression │                    │
-              ▼                    ▼
-层 2   ┌──────────┐ ┌────────────────┐ ┌─────────────┐ ┌───────┐ ┌────────────┐ ┌──────────────┐ ┌──────────┐
-       │ position │ │ code-highlight │ │ chat-stream │ │ sound │ │ animations │ │ designer-kit │ │ markdown │
-       └────┬─────┘ └───────┬────────┘ └──────┬──────┘ └───┬───┘ └─────┬──────┘ └──────┬───────┘ └──────────┘
-            └───────────────┴─────────────────┴───────────┴───────────┴───────────────┘             无依赖
-                          ▼
-层 1   ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌───────┐  ┌─────────┐  ┌─────┐  ┌────────────┐  ┌──────┐
-       │   core   │─►│  motion  │   │  tokens  │  │ icons │  │ pointer │  │ viz │  │ expression │  │ xlsx │
-       └──────────┘  └──────────┘   └──────────┘  └───────┘  └─────────┘  └─────┘  └────────────┘  └──────┘
-                     零运行时依赖      无依赖        无依赖      无依赖     无依赖      无依赖      无依赖
-```
 
-五个包完全独立，可以单独使用：
+五个包可以单独使用，不必装适配器：
 
-- `@xihan-ui/tokens`：只需要设计令牌与主题运行时，不需要组件；
+- `@xihan-ui/tokens`：只需要设计令牌与主题运行时，不需要组件（它只带上 `core`）；
 - `@xihan-ui/markdown`：只需要流式 Markdown 渲染内核；
 - `@xihan-ui/expression`：只需要在模板里写公式与条件；
 - `@xihan-ui/xlsx`：只需要把表格写成 Excel 文件；
@@ -129,17 +102,17 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 
 | 包 | 子路径 |
 | --- | --- |
-| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./clipboard`（往系统剪贴板写文本，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） |
+| `@xihan-ui/core` | `./metadata` `./skin-check` `./vite` `./vanilla` `./presence` `./json`（JSON 值的类型与纯函数，零依赖） `./options`（选项与选项树的结构校验，零依赖） `./hotkey`（快捷键的平台写法与按键命中，零依赖） `./url`（图片与链接地址的安全判定，零依赖） `./clipboard`（往系统剪贴板写文本，零依赖） `./template`（文本模板，占位只写数据路径） `./rich-text`（富文本模型、HTML 白名单解析与检查，零依赖） `./rich-text-dom`（按富文本模型生成 DOM） `./svg-export`（SVG 克隆成独立文件、序列化与栅格化成 PNG，只在浏览器里用） `./color`（颜色换算：十六进制、RGB、HSV、HSL、OKLCH 互转，CSS 颜色写法的解析与写出，零依赖） `./date`（不带时区的日期值、公历运算、按时区读写时刻与按地区的周） `./visual-environment`（八轴视觉环境的类型与解析） |
 | `@xihan-ui/designer-kit` | `./field-inference`（从 JSON 样例与 JSON Schema 推断字段树、合并字段） `./properties`（属性描述、显示条件、取值检查与自定义编辑器接口） `./schema`（结构校验的问题形状与读取器） |
-| `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./style.css`（零件的样式） |
+| `@xihan-ui/designer-shell` | `./locale`（零件的中文文案） `./language`（按语言取组件库与零件的同语言包并成一份配置） `./style.css`（零件的样式） `./style.unlayered.css`（无层版样式） |
 | `@xihan-ui/tokens` | `./runtime` `./tokens.css` `./tokens.json` |
 | `@xihan-ui/icons` | `./codegen` |
-| `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） |
+| `@xihan-ui/viz` | `./hierarchy`（层级布局：层级节点、组树、矩形树图、分区与圆堆积） `./sankey`（桑基布局） `./graph`（关系图布局） `./columns`（列式数据仓、降采样与流式追加） `./canvas`（画布绘制的原语） |
 | `@xihan-ui/headless` | `./locale`（内建语言包） |
-| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` |
+| `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` `./nuxt`（Nuxt 模块） |
 | `@xihan-ui/react` | `./backgrounds` `./behavior` `./locale` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 155 条（143 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口 |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 155 条（143 份组件皮肤 + 12 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口、`./global.css`（可选的全局入口）、`./vite`（按用到的组件自动注入皮肤的 Vite 插件）、`./component-tokens` 与 `./components.tokens.json`（组件覆盖槽的清单） |
 
 其余十二个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `xlsx`）只有主入口。
 

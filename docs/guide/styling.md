@@ -1,6 +1,6 @@
 # 皮肤与样式分层
 
-`@xihan-ui/styles` 是纯 CSS 包：不依赖任何 JS 包，也不被任何 JS 包依赖。它可以脱离 JS 层单独使用，也可以整体替换为自定义皮肤。
+`@xihan-ui/styles` 的运行时只有 CSS：它只为 `@import` 令牌产物而依赖 `@xihan-ui/tokens`，不被任何 JS 包依赖；另带一个构建期用的 Vite 插件（`@xihan-ui/styles/vite`）。它可以脱离 JS 层单独使用，也可以整体替换为自定义皮肤。
 
 皮肤源文件按 `[data-scope='x'][data-part='y']` 书写，发布产物把其中的 `[data-scope='x']` 换成挂载类 `.xh-scope-x`：浏览器按类名给规则分桶，几千条皮肤规则不再挤进 `data-scope` 一个属性桶。两者特异性相同，适配器渲染的每个角色节点都同时带 `data-scope` 与对应的挂载类。脱离 JS 层、自己书写标记时，带 `data-scope="x"` 的节点要一并写上 `class="xh-scope-x"`，否则皮肤不命中；覆盖样式照常用部件选择器。
 
