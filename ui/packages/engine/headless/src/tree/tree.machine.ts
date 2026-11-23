@@ -160,6 +160,13 @@ export const treeMachine = createMachine({
       isEqual: sameValues,
       onChange: value => prop('onSelectionChange')?.({ value }),
     })),
+    // 勾选与选中是两份状态：checkable 下点勾选框与空格改它，点行照旧改选中
+    checkedValue: cell<string[]>(() => ({
+      value: prop('checkedValue'),
+      defaultValue: prop('defaultCheckedValue') ?? [],
+      isEqual: sameValues,
+      onChange: value => prop('onCheckedValueChange')?.({ value }),
+    })),
     // 焦点锚点不受控、不对外通知：它只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
     selectionAnchor: cell<string | null>(() => ({ defaultValue: null })),
@@ -206,6 +213,8 @@ export const treeMachine = createMachine({
         'BRANCH.RETRY': { actions: ['retryBranch'] },
         'SELECTION.SET': { actions: ['setSelection'] },
         'NODE.SELECT': { actions: ['selectNode'] },
+        'CHECKED.SET': { actions: ['setCheckedValue'] },
+        'NODE.CHECK': { actions: ['checkNode'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'TREE.BLUR': { actions: ['clearFocusedValue'] },
         'NODE_DRAG.START': { actions: ['startNodeDrag'] },
@@ -489,9 +498,11 @@ export const treeMachine = createMachine({
           return
         }
 
+        // checkable 下级联归勾选集合，选中集合照朴素规则走
+        const cascade = !!prop('cascade') && !prop('checkable')
         // 按住 Shift 选一段。级联那一路不接：勾一个本来就带一片，
         // 再叠上范围选，选出来什么会难以预料
-        if (e.extend && mode === 'multiple' && !prop('cascade') && anchor != null) {
+        if (e.extend && mode === 'multiple' && !cascade && anchor != null) {
           const roots = treeCollection(prop, context)
           // 全序取展开后的可见行：折叠起来的子节点不在屏幕上，不该被一段选进去
           const order = flattenTree(roots, context.get('expandedValue')).map(row => row.value)
@@ -516,7 +527,7 @@ export const treeMachine = createMachine({
           return
         }
         // 级联：整枝传导后按收敛策略落对外值；朴素切换只动被点的那一个
-        if (prop('cascade')) {
+        if (cascade) {
           const roots = treeCollection(prop, context)
           const state = cascadeToggle(roots, current, e.value)
           commit(collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
@@ -525,6 +536,26 @@ export const treeMachine = createMachine({
         commit(
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
+      },
+      setCheckedValue: ({ context, event }) => {
+        const e = event.current()
+        if (e.type !== 'CHECKED.SET')
+          return
+        context.set('checkedValue', [...new Set(e.value)])
+      },
+      // 勾选只在 checkable 下有意义；级联时整枝传导后按收敛策略落对外值，与多选的级联同一套规则
+      checkNode: ({ context, prop, event }) => {
+        const e = event.current()
+        if (e.type !== 'NODE.CHECK' || !prop('checkable'))
+          return
+        const current = context.get('checkedValue')
+        if (prop('cascade')) {
+          const roots = treeCollection(prop, context)
+          const state = cascadeToggle(roots, current, e.value)
+          context.set('checkedValue', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+          return
+        }
+        context.set('checkedValue', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
       },
       setFocusedValue: ({ context, event }) => {
         const e = event.current()

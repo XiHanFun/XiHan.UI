@@ -54339,6 +54339,23 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
     translate var(--xh-motion-duration-move) var(--xh-motion-ease-continuous);
 }
 
+/* checkable 档：行首已是勾选框，选中（当前项，用来看详情）改由品牌淡底行面表达，行走家族的页内持久集合语境
+   （selected → hover → pressed 一条品牌淡底阶梯，字色换 on-brand-subtle）。上面为透明底 + 行尾对号那一读法
+   映射的选中档槽在这里清回未声明，家族那一档的缺省值才接得上 */
+.xh-scope-tree:is([data-part='item'], [data-part='branch-control'])[data-xh-collection-context='page'] {
+  --xh-collection-fg-selected: initial;
+  --xh-collection-fg-selected-hover: initial;
+  --xh-collection-fg-selected-highlight: initial;
+  --xh-collection-fg-selected-pressed: initial;
+  --xh-collection-font-weight-selected: initial;
+  --xh-collection-font-weight-selected-hover: initial;
+  --xh-collection-font-weight-selected-highlight: initial;
+  --xh-collection-font-weight-selected-pressed: initial;
+  --xh-collection-bg-selected-hover: initial;
+  --xh-collection-bg-selected-highlight: initial;
+  --xh-collection-bg-selected-pressed: initial;
+}
+
 /* 已有节点时重新取数：不换成占位，行保留上一帧、按 micro 淡到禁用透明度，数据到了再淡回；
    树框（描边与底）不淡，取数在途时行不接指针 */
 .xh-scope-tree[data-part='tree'][data-loading] :is(.xh-scope-tree[data-part='item'], .xh-scope-tree[data-part='branch-control']) {

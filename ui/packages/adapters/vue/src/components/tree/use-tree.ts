@@ -31,7 +31,7 @@ export function useTree(
   onExpandedValueChange?: TreeSchema['props']['onExpandedValueChange'],
   onSelectionChange?: TreeSchema['props']['onSelectionChange'],
   onNodeMove?: TreeSchema['props']['onNodeMove'],
-  branchLoadHandlers: Pick<TreeSchema['props'], 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError'> = {},
+  branchLoadHandlers: Pick<TreeSchema['props'], 'onBranchLoadStart' | 'onBranchLoad' | 'onBranchLoadError' | 'onCheckedValueChange'> = {},
 ): TreeContext {
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)

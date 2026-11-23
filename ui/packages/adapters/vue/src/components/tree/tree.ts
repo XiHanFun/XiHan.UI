@@ -25,13 +25,16 @@ export type TreeRootSlotProps = Pick<
   | 'visibleNodes'
   | 'expandedValue'
   | 'selection'
+  | 'checkedValue'
   | 'focusedValue'
   | 'isExpanded'
   | 'isSelected'
+  | 'isChecked'
   | 'isIndeterminate'
   | 'expand'
   | 'collapse'
   | 'select'
+  | 'toggleChecked'
 >
 
 /** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报整树失焦 */
@@ -78,6 +81,11 @@ export const XhTreeRoot = defineComponent({
     defaultSelection: { type: Array as PropType<string[]> },
     /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
     selectionMode: { type: String as PropType<TreeProps['selectionMode']> },
+    /** 可勾选：行首勾选框与选中分开。点行与确认键选中（看详情），只有点勾选框与空格改勾选集合。 */
+    checkable: Boolean,
+    /** 勾选集合，checkable 下生效；提供即受控。 */
+    checkedValue: { type: Array as PropType<string[]> },
+    defaultCheckedValue: { type: Array as PropType<string[]> },
     /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
     leafOrientation: { type: String as PropType<TreeProps['leafOrientation']> },
     cascade: Boolean,
@@ -104,6 +112,8 @@ export const XhTreeRoot = defineComponent({
     'update:expandedValue': (_value: PayloadOf<TreeProps, 'onExpandedValueChange'>['value']) => true,
     'selection-change': (_details: PayloadOf<TreeProps, 'onSelectionChange'>) => true,
     'update:selection': (_value: PayloadOf<TreeProps, 'onSelectionChange'>['value']) => true,
+    'checked-value-change': (_details: PayloadOf<TreeProps, 'onCheckedValueChange'>) => true,
+    'update:checkedValue': (_value: PayloadOf<TreeProps, 'onCheckedValueChange'>['value']) => true,
     // 搬家是通知，节点顺序的真源在使用者的数据里，故没有配对的 update:*
     'node-move': (_move: PayloadOf<TreeProps, 'onNodeMove'>) => true,
     'branch-load-start': (_details: PayloadOf<TreeProps, 'onBranchLoadStart'>) => true,
@@ -131,6 +141,10 @@ export const XhTreeRoot = defineComponent({
       onBranchLoadStart: details => emit('branch-load-start', details),
       onBranchLoad: details => emit('branch-load', details),
       onBranchLoadError: details => emit('branch-load-error', details),
+      onCheckedValueChange: (details) => {
+        emit('checked-value-change', details)
+        emit('update:checkedValue', details.value)
+      },
     })
     provideTree(ctx)
     // 没写默认插槽时铺标准结构
@@ -141,13 +155,16 @@ export const XhTreeRoot = defineComponent({
             visibleNodes: api.visibleNodes,
             expandedValue: api.expandedValue,
             selection: api.selection,
+            checkedValue: api.checkedValue,
             focusedValue: api.focusedValue,
             isExpanded: api.isExpanded,
             isSelected: api.isSelected,
+            isChecked: api.isChecked,
             isIndeterminate: api.isIndeterminate,
             expand: api.expand,
             collapse: api.collapse,
             select: api.select,
+            toggleChecked: api.toggleChecked,
           })
         : renderDefaultStructure(api, props.label, slots.label)
       return h('div', api.getRootProps(), body)

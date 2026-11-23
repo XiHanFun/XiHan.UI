@@ -1375,3 +1375,98 @@ describe('副文本', () => {
     expect(props['data-part']).toBe('item-description')
   })
 })
+
+describe('可勾选：勾选与选中分开', () => {
+  it('点行只选中（当前项），不动勾选；点勾选框只勾选，不冒泡到行、不动选中，焦点落在所在的行上', () => {
+    const h = mount({ checkable: true, defaultExpandedValue: ['src'] })
+    click(h.item('index').item)
+    expect(h.selected()).toEqual(['index'])
+    expect(h.api().checkedValue).toEqual([])
+    expect(h.item('index').item.getAttribute('aria-selected')).toBe('true')
+    expect(h.item('index').item.getAttribute('aria-checked')).toBe('false')
+
+    click(h.item('license').indicator)
+    expect(h.api().checkedValue).toEqual(['license'])
+    expect(h.selected()).toEqual(['index'])
+    expect(focused()).toBe('license')
+    expect(h.item('license').item.getAttribute('aria-checked')).toBe('true')
+    expect(h.item('license').item.getAttribute('aria-selected')).toBe('false')
+    // 方框画的是勾选集合，不是选中
+    expect(h.item('license').indicator.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(h.item('index').indicator.getAttribute('data-xh-check-mark')).toBe('unchecked')
+    click(h.item('license').indicator)
+    expect(h.api().checkedValue).toEqual([])
+  })
+
+  it('空格切换勾选，确认键选中：两件事各有一个键', () => {
+    const h = mount({ checkable: true, defaultExpandedValue: ['src'] })
+    h.item('index').item.focus()
+    expect(press(active(), ' ').defaultPrevented).toBe(true)
+    expect(h.api().checkedValue).toEqual(['index'])
+    expect(h.selected()).toEqual([])
+    press(active(), 'Enter')
+    expect(h.selected()).toEqual(['index'])
+    expect(h.api().checkedValue).toEqual(['index'])
+    press(active(), ' ')
+    expect(h.api().checkedValue).toEqual([])
+  })
+
+  it('级联作用在勾选集合上：勾分支整枝传导、部分勾选半选；选中集合照朴素规则', () => {
+    const h = mount({ checkable: true, cascade: true, defaultExpandedValue: ['src', 'utils'] })
+    // 这套标记里分支行摆的是 branch-indicator，分支的勾选框点击归浏览器用例；这里经 api 走同一个事件
+    h.api().toggleChecked('utils')
+    expect(h.api().checkedValue).toEqual(['dom', 'math'])
+    expect(h.branch('utils').branch.getAttribute('aria-checked')).toBe('true')
+    expect(h.branch('src').branch.getAttribute('aria-checked')).toBe('mixed')
+    expect(h.api().isIndeterminate('src')).toBe(true)
+    // 叶子的方框随整枝勾上
+    expect(h.item('dom').indicator.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(h.selected()).toEqual([])
+    // 点行选中的只是这一行，不整枝传导
+    click(h.branch('utils').control)
+    expect(h.selected()).toEqual(['utils'])
+    expect(h.branch('src').branch.getAttribute('aria-selected')).toBe('false')
+  })
+
+  it('禁用节点的勾选框点不动；勾选变化经 onCheckedValueChange 报出，受控时只报不改', () => {
+    const onCheckedValueChange = vi.fn()
+    const h = mount({ checkable: true, defaultExpandedValue: ['src'], onCheckedValueChange })
+    click(h.item('readme').indicator)
+    expect(h.api().checkedValue).toEqual([])
+    expect(onCheckedValueChange).not.toHaveBeenCalled()
+    click(h.item('index').indicator)
+    expect(onCheckedValueChange).toHaveBeenLastCalledWith({ value: ['index'] })
+
+    const controlled = vi.fn()
+    const c = mount({ checkable: true, checkedValue: ['license'], onCheckedValueChange: controlled })
+    click(c.item('license').indicator)
+    expect(controlled).toHaveBeenLastCalledWith({ value: [] })
+    expect(c.api().checkedValue).toEqual(['license'])
+    c.setProps({ checkedValue: [] })
+    expect(c.api().checkedValue).toEqual([])
+  })
+
+  it('行走页内持久集合的语境：选中（当前项）由行面表达，行首方框落 check 槽', () => {
+    const h = mount({ checkable: true, defaultSelection: ['license'] })
+    expect(h.item('license').item.getAttribute('data-xh-collection-context')).toBe('page')
+    expect(h.branch('src').control.getAttribute('data-xh-collection-context')).toBe('page')
+    expect(h.item('license').indicator.getAttribute('data-xh-collection-slot')).toBe('check')
+    expect(h.treeEl.getAttribute('aria-multiselectable')).toBe('false')
+    expect(h.api().checkable).toBe(true)
+    expect(h.api().isChecked('license')).toBe(false)
+    h.api().toggleChecked('license')
+    expect(h.api().isChecked('license')).toBe(true)
+    h.api().setCheckedValue([])
+    expect(h.api().checkedValue).toEqual([])
+  })
+
+  it('不开 checkable 时 multiple 档的点行就是勾选：点方框冒泡到行，切换选中集合', () => {
+    const h = mount({ selectionMode: 'multiple', defaultExpandedValue: ['src'] })
+    click(h.item('index').indicator)
+    expect(h.selected()).toEqual(['index'])
+    click(h.item('index').text)
+    expect(h.selected()).toEqual([])
+    expect(h.api().checkedValue).toEqual([])
+    expect(h.item('index').item.getAttribute('data-xh-collection-context')).toBe('overlay')
+  })
+})

@@ -30,13 +30,16 @@ export type TreeRootSlotProps = Pick<
   | 'visibleNodes'
   | 'expandedValue'
   | 'selection'
+  | 'checkedValue'
   | 'focusedValue'
   | 'isExpanded'
   | 'isSelected'
+  | 'isChecked'
   | 'isIndeterminate'
   | 'expand'
   | 'collapse'
   | 'select'
+  | 'toggleChecked'
 >
 
 /** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报整树失焦。 */
@@ -88,6 +91,11 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   defaultSelection?: string[]
   /** 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选。 */
   selectionMode?: TreeSchema['props']['selectionMode']
+  /** 可勾选：行首勾选框与选中分开。点行与确认键选中（看详情），只有点勾选框与空格改勾选集合。 */
+  checkable?: boolean
+  /** 勾选集合，checkable 下生效；提供即受控。 */
+  checkedValue?: string[]
+  defaultCheckedValue?: string[]
   /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
   leafOrientation?: Orientation
   cascade?: boolean
@@ -109,6 +117,7 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   translations?: TreeProps['translations']
   onExpandedValueChange?: TreeProps['onExpandedValueChange']
   onSelectionChange?: TreeProps['onSelectionChange']
+  onCheckedValueChange?: TreeProps['onCheckedValueChange']
   /** 移动是通知，节点顺序的真源在使用者的数据中。 */
   onNodeMove?: TreeProps['onNodeMove']
   onBranchLoadStart?: TreeProps['onBranchLoadStart']
@@ -129,6 +138,9 @@ export function XhTreeRoot({
   selection,
   defaultSelection,
   selectionMode,
+  checkable,
+  checkedValue,
+  defaultCheckedValue,
   leafOrientation,
   cascade,
   checkedStrategy,
@@ -145,6 +157,7 @@ export function XhTreeRoot({
   translations,
   onExpandedValueChange,
   onSelectionChange,
+  onCheckedValueChange,
   onNodeMove,
   onBranchLoadStart,
   onBranchLoad,
@@ -163,6 +176,9 @@ export function XhTreeRoot({
     selection,
     defaultSelection,
     selectionMode,
+    checkable,
+    checkedValue,
+    defaultCheckedValue,
     leafOrientation,
     cascade,
     checkedStrategy,
@@ -179,6 +195,7 @@ export function XhTreeRoot({
     translations,
     onExpandedValueChange,
     onSelectionChange,
+    onCheckedValueChange,
     onNodeMove,
     onBranchLoadStart,
     onBranchLoad,
@@ -195,20 +212,23 @@ export function XhTreeRoot({
               visibleNodes: api.visibleNodes,
               expandedValue: api.expandedValue,
               selection: api.selection,
+              checkedValue: api.checkedValue,
               focusedValue: api.focusedValue,
               isExpanded: api.isExpanded,
               isSelected: api.isSelected,
+              isChecked: api.isChecked,
               isIndeterminate: api.isIndeterminate,
               expand: api.expand,
               collapse: api.collapse,
               select: api.select,
+              toggleChecked: api.toggleChecked,
             })}
       </div>
     </TreeProvider>
   )
 }
 
-XhTreeRoot.xhEvents = ['expanded-value-change', 'selection-change', 'node-move', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
+XhTreeRoot.xhEvents = ['expanded-value-change', 'selection-change', 'checked-value-change', 'node-move', 'branch-load-start', 'branch-load', 'branch-load-error'] as const
 
 export interface XhTreeLabelProps extends ComponentPropsWithRef<'span'> {}
 export function XhTreeLabel({ children, ...rest }: XhTreeLabelProps): ReactNode {

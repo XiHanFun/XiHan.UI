@@ -72,6 +72,9 @@ export function connectTree<T extends PropTypes>(
   const translations: TreeTranslations = resolveTranslations(TREE_EN_US, prop('translations'))
   const expandedValue = context.get('expandedValue')
   const selection = context.get('selection')
+  // 可勾选：勾选与选中分开，勾选集合只在这一档里读写
+  const checkable = !!prop('checkable')
+  const checkedValue = checkable ? context.get('checkedValue') : []
   const treeDisabled = !!prop('disabled')
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；节点手写时库数不出有几条
@@ -127,15 +130,21 @@ export function connectTree<T extends PropTypes>(
   const dropSide = (value: string): 'before' | 'after' | 'inside' | undefined =>
     dropTarget?.targetValue === value ? dropTarget.position : undefined
   const isExpanded = (value: string): boolean => expandedValue.includes(value)
-  // 级联模式下选中态从值集聚合得出：父随子勾、部分勾中半选
-  const cascade = selectionMode === 'multiple' && !!prop('cascade')
-  const cascaded = cascade ? cascadeState(collection, selection) : null
-  const isSelected = (value: string): boolean => (cascaded ? cascaded.checked.has(value) : selection.includes(value))
+  // 级联：父随子勾、部分勾中半选，从值集聚合得出。checkable 下聚合的是勾选集合，选中集合照朴素规则；
+  // 否则只在 multiple 档聚合选中集合
+  const cascade = (checkable || selectionMode === 'multiple') && !!prop('cascade')
+  const cascaded = cascade ? cascadeState(collection, checkable ? checkedValue : selection) : null
+  const isSelected = (value: string): boolean => (cascaded && !checkable ? cascaded.checked.has(value) : selection.includes(value))
+  const isChecked = (value: string): boolean => checkable && (cascaded ? cascaded.checked.has(value) : checkedValue.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
-  // multiple 下点击是切换，标记换成行首勾选框；extended 裸点击是换成这一项，仍用行尾对号
-  const checkbox = selectionMode === 'multiple'
+  // 行首勾选框：checkable 下方框画勾选集合；不开 checkable 时 multiple 档的点行就是切换，方框画选中集合。
+  // 单选与 extended（裸点击是换成这一项）仍用行尾对号
+  const checkbox = checkable || selectionMode === 'multiple'
+  // 行的集合语境：checkable 下行首已是勾选框，选中（当前项）改由品牌淡底行面表达，走页内持久集合那一档；
+  // 其余与树选择同一种读法（透明底 + 行尾对号）
+  const rowContext = checkable ? 'page' : 'overlay'
   const checkMarkOf = (value: string): 'checked' | 'indeterminate' | 'unchecked' =>
-    isSelected(value) ? 'checked' : isIndeterminate(value) ? 'indeterminate' : 'unchecked'
+    (checkable ? isChecked(value) : isSelected(value)) ? 'checked' : isIndeterminate(value) ? 'indeterminate' : 'unchecked'
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
   /** 这个节点能不能被拖起来：开着 nodeDraggable、没禁用、节点自己没写 draggable: false。 */
@@ -169,8 +178,11 @@ export function connectTree<T extends PropTypes>(
       'aria-setsize': meta?.setSize,
       // 未选中必须显式输出 false，省略会让读屏无从区分未选中与不是可选节点
       'aria-selected': isSelected(value) ? 'true' : 'false',
-      // 级联勾选是三态：读屏靠 aria-checked 报半选，非级联不输出该属性
-      'aria-checked': cascade ? (isSelected(value) ? 'true' : isIndeterminate(value) ? 'mixed' : 'false') : undefined,
+      // 勾选是三态：读屏靠 aria-checked 报勾上与半选。checkable 下它说的是勾选集合，与 aria-selected（选中）各说各的；
+      // 不开 checkable 时只有级联输出它
+      'aria-checked': checkable || cascade
+        ? ((checkable ? isChecked(value) : isSelected(value)) ? 'true' : isIndeterminate(value) ? 'mixed' : 'false')
+        : undefined,
       // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
       'aria-disabled': isDisabled(value) ? 'true' : 'false',
       // roving tabindex：整棵树只有锚点节点留在 Tab 序列内
@@ -396,6 +408,13 @@ export function connectTree<T extends PropTypes>(
       send({ type: 'BRANCH.TOGGLE', value: row.value })
   }
 
+  /** checkable 下空格与点勾选框的落点：只切换勾选，不动选中与展开。 */
+  const checkValue = (value: string): void => {
+    if (!checkable || isDisabled(value))
+      return
+    send({ type: 'NODE.CHECK', value })
+  }
+
   return {
     collection,
     visibleNodes: rows,
@@ -405,14 +424,19 @@ export function connectTree<T extends PropTypes>(
     selection,
     focusedValue,
     selectionMode,
+    checkable,
+    checkedValue,
     disabled: treeDisabled,
     translations,
     isExpanded,
     isSelected,
+    isChecked,
     isIndeterminate,
     branchLoadState,
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
+    setCheckedValue: next => send({ type: 'CHECKED.SET', value: next }),
+    toggleChecked: value => send({ type: 'NODE.CHECK', value }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),
     retryBranch: value => send({ type: 'BRANCH.RETRY', value }),
@@ -644,11 +668,15 @@ export function connectTree<T extends PropTypes>(
           focusMatch(tree, query)
           return
         }
+        // checkable 下空格是勾选、确认键是选中，两件事各有一个键；否则空格与确认键同义
         if (key === ' ') {
           if (!row)
             return
           event.preventDefault()
-          activate(row)
+          if (checkable)
+            checkValue(row.value)
+          else
+            activate(row)
         }
       },
       'onFocus': (event: FocusEvent) => {
@@ -702,7 +730,7 @@ export function connectTree<T extends PropTypes>(
         // 选中是透明底 + 行尾对号，由家族按 aria-selected / aria-disabled 给出；行高、内衬与字号随尺寸档
         'data-xh-collection-item': '',
         'data-xh-collection-size': size,
-        'data-xh-collection-context': 'overlay',
+        'data-xh-collection-context': rowContext,
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
@@ -756,6 +784,19 @@ export function connectTree<T extends PropTypes>(
       'data-xh-check-mark': checkbox ? checkMarkOf(node.value) : undefined,
       'data-xh-check-mark-profile': checkbox ? 'box' : undefined,
       'aria-hidden': true,
+      // checkable 下点方框只切换勾选：不冒泡到行，行的点击（选中、看详情）不跟着发生。
+      // 方框对读屏隐藏、也不占 Tab 位，焦点照旧落在所在的行上；键盘那一路是空格
+      'onClick': checkable
+        ? (event: MouseEvent) => {
+            event.stopPropagation()
+            if (isDisabled(node.value))
+              return
+            const row = rowElOf(event.currentTarget as HTMLElement)
+            if (row)
+              focusValue(row)
+            checkValue(node.value)
+          }
+        : undefined,
     }),
 
     getBranchProps: (node) => {
@@ -789,7 +830,7 @@ export function connectTree<T extends PropTypes>(
         ...branchState(node.value),
         'data-xh-collection-item': '',
         'data-xh-collection-size': size,
-        'data-xh-collection-context': 'overlay',
+        'data-xh-collection-context': rowContext,
         // 该节点自身的性质；家族据此换字与悬停 / 按下的面，选中与禁用压过它
         'data-tone': nodeTone(node.value),
         'data-dragging': dataAttr(draggingNode === node.value),

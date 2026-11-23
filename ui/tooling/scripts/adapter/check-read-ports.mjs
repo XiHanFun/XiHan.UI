@@ -131,7 +131,7 @@ const PENDING = {
   'tooltip': ['open', 'setOpen'],
   'tour': ['open', 'value', 'count', 'currentStep', 'firstStep', 'lastStep', 'progressText', 'setOpen', 'setValue', 'goToNextStep', 'goToPrevStep', 'skip'],
   'transfer': ['value', 'selection', 'canMove', 'checkState', 'isChecked', 'setValue', 'setSelection', 'toggle', 'toggleAll', 'move'],
-  'tree': ['visibleNodes', 'expandedValue', 'selection', 'focusedValue', 'isExpanded', 'isSelected', 'isIndeterminate', 'expand', 'collapse', 'select'],
+  'tree': ['visibleNodes', 'expandedValue', 'selection', 'checkedValue', 'focusedValue', 'isExpanded', 'isSelected', 'isChecked', 'isIndeterminate', 'expand', 'collapse', 'select', 'toggleChecked'],
   'tree-select': ['open', 'value', 'expandedValue', 'visibleNodes', 'focusedValue', 'displayText', 'canClear', 'isSelected', 'isIndeterminate', 'isExpanded', 'setOpen', 'setValue', 'setExpandedValue', 'expand', 'collapse', 'select', 'clear'],
   'virtualizer': ['startIndex', 'endIndex', 'scrolling', 'lanes'],
 }

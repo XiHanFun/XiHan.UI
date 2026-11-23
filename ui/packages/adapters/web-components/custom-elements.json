@@ -82198,6 +82198,30 @@
               "name": "--xh-tree-select-item-check-fg"
             },
             {
+              "name": "--xh-tree-select-item-checkbox-bg"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-bg-checked"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-bg-disabled"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-border"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-border-disabled"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-border-hover"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-fg"
+            },
+            {
+              "name": "--xh-tree-select-item-checkbox-radius"
+            },
+            {
               "name": "--xh-tree-select-item-fg"
             },
             {
@@ -82522,6 +82546,33 @@
             },
             {
               "kind": "field",
+              "name": "checkable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "checkable"
+            },
+            {
+              "kind": "field",
+              "name": "checkedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "勾选集合，checkable 下生效；提供即受控。只能通过 property 设置"
+            },
+            {
+              "kind": "field",
+              "name": "defaultCheckedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "勾选集合的初值，checkable 下生效。只能通过 property 设置"
+            },
+            {
+              "kind": "field",
               "name": "leafOrientation",
               "privacy": "public",
               "type": {
@@ -82658,6 +82709,12 @@
             },
             {
               "kind": "field",
+              "name": "notifyChecked",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "notifyNodeMove",
               "privacy": "private",
               "readonly": true
@@ -82786,6 +82843,13 @@
               }
             },
             {
+              "description": "勾选集合变化（checkable 下）；detail 为 `{ value: string[] }`",
+              "name": "checked-value-change",
+              "type": {
+                "text": "TreeCheckedValueChangeDetails"
+              }
+            },
+            {
               "description": "节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）",
               "name": "node-move",
               "type": {
@@ -82851,7 +82915,15 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "selection-mode=\"multiple\" 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
+              "description": "可勾选：行首勾选框与选中分开；点行与确认键选中（看详情），只有点勾选框与空格改勾选集合，默认 false",
+              "name": "checkable",
+              "fieldName": "checkable"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false；checkable 下作用在勾选集合上，否则只在 selection-mode=\"multiple\" 下作用在选中集合上",
               "name": "cascade",
               "fieldName": "cascade"
             },
@@ -83037,6 +83109,30 @@
             },
             {
               "name": "--xh-tree-item-check-fg"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-bg"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-bg-checked"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-bg-disabled"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-border"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-border-disabled"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-border-hover"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-fg"
+            },
+            {
+              "name": "--xh-tree-item-checkbox-radius"
             },
             {
               "name": "--xh-tree-item-indicator-fg"

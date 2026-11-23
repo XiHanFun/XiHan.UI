@@ -131,3 +131,61 @@ describe('树 multiple 档的行首勾选框', () => {
     })
   }
 })
+
+describe('树的 checkable 档：勾选与选中分开', () => {
+  async function mountCheckable(): Promise<{ checked: string[][], selected: string[][] }> {
+    const checked: string[][] = []
+    const selected: string[][] = []
+    await mountTree({
+      'checkable': true,
+      'cascade': true,
+      'defaultSelection': [],
+      'onUpdate:checkedValue': (value: string[]) => checked.push(value),
+      'onUpdate:selection': (value: string[]) => selected.push(value),
+    })
+    return { checked, selected }
+  }
+
+  it('点行空白处只选中（品牌淡底行面），不勾选；点分支的方框整枝勾上，不改选中', async () => {
+    const log = await mountCheckable()
+    const readme = row('readme')
+    // 点在行尾的空白处：文字之后、行盒之内
+    const box = readme.getBoundingClientRect()
+    await userEvent.click(readme, { position: { x: box.width - 4, y: box.height / 2 } })
+    await nextTick()
+    expect(log.selected.at(-1)).toEqual(['readme'])
+    expect(log.checked).toEqual([])
+    expect(readme.getAttribute('aria-selected')).toBe('true')
+    expect(readme.getAttribute('aria-checked')).toBe('false')
+    expect(child(readme, 'item-indicator').getAttribute('data-xh-check-mark')).toBe('unchecked')
+    await userEvent.unhover(readme)
+    // 焦点还在这一行上：选中叠高亮走品牌淡底的上一档；焦点离开后回到选中档
+    expect(getComputedStyle(readme).backgroundColor).toBe(tokenValue('background-color', '--xh-bg-brand-subtle-hover', readme))
+    readme.blur()
+    await nextTick()
+    expect(getComputedStyle(readme).backgroundColor).toBe(tokenValue('background-color', '--xh-bg-brand-subtle', readme))
+
+    const srcBox = child(row('src'), 'item-indicator')
+    await userEvent.click(srcBox)
+    await nextTick()
+    expect(log.checked.at(-1)).toEqual(['index', 'app'])
+    expect(log.selected.at(-1)).toEqual(['readme'])
+    expect(srcBox.getAttribute('data-xh-check-mark')).toBe('checked')
+    expect(getComputedStyle(srcBox).backgroundColor).toBe(tokenValue('background-color', '--xh-bg-brand', srcBox))
+    // 点方框不让分支行变成当前项，但焦点落到了它所在的行上
+    expect(row('src').hasAttribute('data-selected')).toBe(false)
+    expect(document.activeElement?.getAttribute('data-value')).toBe('src')
+  })
+
+  it('空格切换勾选、确认键选中', async () => {
+    const log = await mountCheckable()
+    const index = host!.querySelector<HTMLElement>(`[data-scope='tree'][data-part='item'][data-value='index']`)!
+    index.focus()
+    await userEvent.keyboard(' ')
+    expect(log.checked.at(-1)).toEqual(['index'])
+    expect(log.selected).toEqual([])
+    await userEvent.keyboard('{Enter}')
+    expect(log.selected.at(-1)).toEqual(['index'])
+    expect(log.checked.at(-1)).toEqual(['index'])
+  })
+})

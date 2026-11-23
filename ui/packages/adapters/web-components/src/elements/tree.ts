@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadStartDetails, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadStartDetails, TreeCheckedValueChangeDetails, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTree, treeAnatomy, treeMachine, treeMeta, treeStructure } from '@xihan-ui/headless'
@@ -56,7 +56,10 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {'sm'|'md'|'lg'} size - 尺寸，默认 md：行高、行内内衬、字号、指示符盒与层级缩进随档
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single：multiple 点击切换；extended 点击换选、Ctrl/Cmd 点击加选、Shift 点击连选
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
- * @attr {boolean} cascade - selection-mode="multiple" 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
+ * @attr {boolean} checkable - 可勾选：行首勾选框与选中分开；点行与确认键选中（看详情），只有点勾选框与空格改勾选集合，默认 false
+ * @prop {string[]} checkedValue - 勾选集合，checkable 下生效；提供即受控。只能通过 property 设置
+ * @prop {string[]} defaultCheckedValue - 勾选集合的初值，checkable 下生效。只能通过 property 设置
+ * @attr {boolean} cascade - 父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false；checkable 下作用在勾选集合上，否则只在 selection-mode="multiple" 下作用在选中集合上
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
  * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认关闭（展开与选中分开，展开归箭头与左右方向键）；写 expand-on-click 打开
  * @attr {boolean} lines - 连接线：父节点展开箭头的中线向下引一道竖线，每个子节点横出一段接到行首，最后一个子节点止于行中线
@@ -70,6 +73,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {boolean} node-draggable - 节点可以拖动移动，默认关闭；不命名为 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
+ * @fires checked-value-change - 勾选集合变化（checkable 下）；detail 为 `{ value: string[] }`
  * @fires node-move - 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）
  * @fires branch-load-start - 分支请求开始；detail 为 `{ value, node, reason }`
  * @fires branch-load - 分支请求成功；detail 为 `{ value, node, children }`
@@ -128,6 +132,9 @@ export class XhTreeElement extends XhElement {
     selection: { attribute: false },
     defaultSelection: { attribute: false },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    checkable: { converter: BOOLEAN_CONVERTER },
+    checkedValue: { attribute: false },
+    defaultCheckedValue: { attribute: false },
     leafOrientation: { converter: STRING_CONVERTER, attribute: 'leaf-orientation' },
     cascade: { converter: BOOLEAN_CONVERTER },
     checkedStrategy: { converter: STRING_CONVERTER, attribute: 'checked-strategy' },
@@ -158,6 +165,9 @@ export class XhTreeElement extends XhElement {
   declare selection?: string[]
   declare defaultSelection?: string[]
   declare selectionMode?: TreeSchema['props']['selectionMode']
+  declare checkable?: boolean
+  declare checkedValue?: string[]
+  declare defaultCheckedValue?: string[]
   declare leafOrientation?: Orientation
   declare cascade?: boolean
   declare checkedStrategy?: TreeSchema['props']['checkedStrategy']
@@ -179,6 +189,10 @@ export class XhTreeElement extends XhElement {
 
   private readonly notifySelection = (details: TreeSelectionChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('selection-change', { detail: details, bubbles: true, composed: true }))
+  }
+
+  private readonly notifyChecked = (details: TreeCheckedValueChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('checked-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly notifyNodeMove = (details: TreeNodeMoveDetails): void => {
@@ -223,6 +237,9 @@ export class XhTreeElement extends XhElement {
       selection: this.selection,
       defaultSelection: this.defaultSelection,
       selectionMode: this.selectionMode,
+      checkable: this.checkable ?? false,
+      checkedValue: this.checkedValue,
+      defaultCheckedValue: this.defaultCheckedValue,
       cascade: this.cascade,
       leafOrientation: this.leafOrientation,
       checkedStrategy: this.checkedStrategy,
@@ -239,6 +256,7 @@ export class XhTreeElement extends XhElement {
       translations: this.translations,
       onExpandedValueChange: this.notifyExpanded,
       onSelectionChange: this.notifySelection,
+      onCheckedValueChange: this.notifyChecked,
       onNodeMove: this.notifyNodeMove,
       onBranchLoadStart: this.notifyBranchLoadStart,
       onBranchLoad: this.notifyBranchLoad,

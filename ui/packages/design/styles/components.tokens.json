@@ -92355,28 +92355,22 @@
         "item"
       ],
       "property": [
+        "--xh-collection-indicator-fg-selected",
+        "--xh-collection-indicator-fg-selected-highlight",
+        "--xh-collection-indicator-fg-selected-hover",
+        "--xh-collection-indicator-fg-selected-pressed",
         "color"
       ],
       "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
+        "default",
         "state=checked",
-        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
         "--xh-tree-item-indicator-fg"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-indicator-fg-selected、--xh-collection-indicator-fg-selected-highlight、--xh-collection-indicator-fg-selected-hover、--xh-collection-indicator-fg-selected-pressed、color 覆盖槽。"
     },
     {
       "name": "--xh-tree-item-checkbox-bg",
@@ -92543,28 +92537,22 @@
         "item"
       ],
       "property": [
+        "--xh-collection-indicator-fg-selected",
+        "--xh-collection-indicator-fg-selected-highlight",
+        "--xh-collection-indicator-fg-selected-hover",
+        "--xh-collection-indicator-fg-selected-pressed",
         "color"
       ],
       "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
+        "default",
         "state=checked",
-        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
         "--xh-fg-brand"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-indicator-fg-selected、--xh-collection-indicator-fg-selected-highlight、--xh-collection-indicator-fg-selected-hover、--xh-collection-indicator-fg-selected-pressed、color 覆盖槽。"
     },
     {
       "name": "--xh-tree-label-fg",
@@ -92835,24 +92823,24 @@
         "item"
       ],
       "property": [
+        "--xh-collection-bg-selected-highlight",
+        "--xh-collection-bg-selected-hover",
         "background-color"
       ],
       "state": [
+        "default",
         "disabled",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "selected",
-        "xh-collection-context=overlay"
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 background-color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-bg-selected-highlight、--xh-collection-bg-selected-hover、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-bg-pressed",
@@ -92862,23 +92850,22 @@
         "item"
       ],
       "property": [
+        "--xh-collection-bg-selected-pressed",
         "background-color"
       ],
       "state": [
+        "default",
         "disabled",
         "error",
         "is(:active, [data-pressed])",
-        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 background-color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-bg-selected-pressed、background-color 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-fg",
@@ -92888,6 +92875,10 @@
         "item"
       ],
       "property": [
+        "--xh-collection-fg-selected",
+        "--xh-collection-fg-selected-highlight",
+        "--xh-collection-fg-selected-hover",
+        "--xh-collection-fg-selected-pressed",
         "color"
       ],
       "state": [
@@ -92898,17 +92889,14 @@
         "hover",
         "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
         "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-fg-selected、--xh-collection-fg-selected-highlight、--xh-collection-fg-selected-hover、--xh-collection-fg-selected-pressed、color 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-fg-selected",
@@ -92918,26 +92906,19 @@
         "item"
       ],
       "property": [
-        "color"
+        "--xh-collection-fg-selected",
+        "--xh-collection-fg-selected-highlight",
+        "--xh-collection-fg-selected-hover",
+        "--xh-collection-fg-selected-pressed"
       ],
       "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
+        "default"
       ],
       "defaultToken": [
         "--xh-tree-row-fg"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 color 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-fg-selected、--xh-collection-fg-selected-highlight、--xh-collection-fg-selected-hover、--xh-collection-fg-selected-pressed 覆盖槽。"
     },
     {
       "name": "--xh-tree-row-font-size",
@@ -93098,26 +93079,19 @@
         "item"
       ],
       "property": [
-        "font-weight"
+        "--xh-collection-font-weight-selected",
+        "--xh-collection-font-weight-selected-highlight",
+        "--xh-collection-font-weight-selected-hover",
+        "--xh-collection-font-weight-selected-pressed"
       ],
       "state": [
-        "disabled",
-        "error",
-        "highlighted",
-        "hover",
-        "is(:active, [data-pressed])",
-        "is(:focus-visible, [data-highlighted])",
-        "is([aria-selected='true'], [data-selected])",
-        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
-        "pressed",
-        "selected",
-        "xh-collection-context=overlay"
+        "default"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
       ],
       "visibility": "public",
-      "description": "tree 的 branch-control、item 部件 font-weight 覆盖槽。"
+      "description": "tree 的 branch-control、item 部件 --xh-collection-font-weight-selected、--xh-collection-font-weight-selected-highlight、--xh-collection-font-weight-selected-hover、--xh-collection-font-weight-selected-pressed 覆盖槽。"
     },
     {
       "name": "--xh-tree-tree-gap",
