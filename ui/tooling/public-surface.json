@@ -24048,7 +24048,6 @@
       "events": [
         "drag-end",
         "drag-start",
-        "name",
         "scroll-end",
         "scroll-start"
       ]

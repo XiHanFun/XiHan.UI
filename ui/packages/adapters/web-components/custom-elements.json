@@ -61227,31 +61227,6 @@
             },
             {
               "kind": "method",
-              "name": "fire",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "'scroll-start' | 'scroll-end' | 'drag-start' | 'drag-end'"
-                  }
-                },
-                {
-                  "name": "detail",
-                  "type": {
-                    "text": "unknown"
-                  }
-                }
-              ],
-              "description": "事件名逐个写在调用点：形参名会被清单分析器当成事件名，凑出一个永不派发的条目。"
-            },
-            {
-              "kind": "method",
               "name": "resolveScrollable",
               "privacy": "private",
               "return": {
@@ -61292,26 +61267,32 @@
           ],
           "events": [
             {
-              "name": "name",
+              "name": "scroll-start",
               "type": {
                 "text": "CustomEvent"
-              }
+              },
+              "description": "开始滚动；detail 为 `{ offset: number, max: number }`"
             },
             {
-              "description": "开始滚动；detail 为 `{ offset: number, max: number }`",
-              "name": "scroll-start"
+              "name": "scroll-end",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "一段滚动结束（停止 120ms）；detail 同上"
             },
             {
-              "description": "一段滚动结束（停止 120ms）；detail 同上",
-              "name": "scroll-end"
+              "name": "drag-start",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "按住滑块；detail 同上"
             },
             {
-              "description": "按住滑块；detail 同上",
-              "name": "drag-start"
-            },
-            {
-              "description": "松开滑块；detail 同上",
-              "name": "drag-end"
+              "name": "drag-end",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "松开滑块；detail 同上"
             }
           ],
           "attributes": [

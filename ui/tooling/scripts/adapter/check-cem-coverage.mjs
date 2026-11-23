@@ -8,7 +8,12 @@
 // public-surface 基线全都读这份清单，所以缺一个元素是静默的：CEM 生成成功，
 // gate:cem 的 git diff 也干净（因为生成结果本来就一直是错的）。
 //
-// 判据是双向差集：define.ts 注册了但清单里没有 → 漏收；清单里有但没注册 → 死条目。
+// 判据一是双向差集：define.ts 注册了但清单里没有 → 漏收；清单里有但没注册 → 死条目。
+//
+// 判据二：清单里的每个事件都得来自类注释的 @fires。分析器另会从派发处自己推事件名——
+// 构造事件时第一个实参是字面量就取它，是变量就取变量名。派发经一个带 name 形参的辅助函数转一手，
+// 清单里就多出一个叫 name 的事件：它永不派发，却进了编辑器补全与公开面基线（xh-scrollbar 这样挂过）。
+// 这种推出来的条目没有说明文字，@fires 写出来的都有，按这一点认。
 import { readFile } from 'node:fs/promises'
 
 /**
@@ -30,10 +35,19 @@ for (const match of source.matchAll(RE_DEFINE_CALL)) registered.add(match[1])
 
 const manifest = JSON.parse(await readFile(MANIFEST, 'utf8'))
 const declared = new Map()
+/** 没有说明文字的事件：分析器从派发处推出来的，不是 @fires 写的。 */
+const inferredEvents = []
+let eventCount = 0
 for (const module of manifest.modules ?? []) {
   for (const declaration of module.declarations ?? []) {
-    if (declaration.tagName)
-      declared.set(declaration.tagName, module.path)
+    if (!declaration.tagName)
+      continue
+    declared.set(declaration.tagName, module.path)
+    for (const event of declaration.events ?? []) {
+      eventCount++
+      if (!event.description)
+        inferredEvents.push(`${declaration.tagName} 的 ${event.name}（${module.path}）`)
+    }
   }
 }
 
@@ -50,5 +64,13 @@ if (missing.length || orphaned.length) {
   process.exit(1)
 }
 
-console.log(`[check-cem-coverage] 通过：${registered.size} 个注册元素在清单里一一对得上`)
+if (inferredEvents.length) {
+  console.error('[check-cem-coverage] ✗ 清单里有不是 @fires 写出来的事件：')
+  for (const entry of inferredEvents)
+    console.error(`  ${entry}`)
+  console.error('这是分析器从派发处推出来的名字。派发处把事件名写成字面量（不要经带 name 形参的辅助函数转手），并在类注释里补一条 @fires。')
+  process.exit(1)
+}
+
+console.log(`[check-cem-coverage] 通过：${registered.size} 个注册元素在清单里一一对得上，${eventCount} 条事件都来自 @fires`)
 console.log(`[check-cem-coverage] 适用面：${SCOPE}`)

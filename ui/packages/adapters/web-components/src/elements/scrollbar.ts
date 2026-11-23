@@ -119,16 +119,13 @@ export class XhScrollbarElement extends XhElement {
       forceVisible: this.forceVisible ?? false,
       dir: this.direction,
       translations: this.translations,
-      onScrollStart: details => this.fire('scroll-start', details),
-      onScrollEnd: details => this.fire('scroll-end', details),
-      onDragStart: details => this.fire('drag-start', details),
-      onDragEnd: details => this.fire('drag-end', details),
+      // 事件名逐个写成字面量：清单分析器按构造事件时的第一个实参认事件名，
+      // 经一个带 name 形参的辅助函数转一手，它会把形参名当成事件名，清单里多出一个永不派发的 name
+      onScrollStart: detail => this.dispatchEvent(new CustomEvent('scroll-start', { detail, bubbles: true, composed: true })),
+      onScrollEnd: detail => this.dispatchEvent(new CustomEvent('scroll-end', { detail, bubbles: true, composed: true })),
+      onDragStart: detail => this.dispatchEvent(new CustomEvent('drag-start', { detail, bubbles: true, composed: true })),
+      onDragEnd: detail => this.dispatchEvent(new CustomEvent('drag-end', { detail, bubbles: true, composed: true })),
     }
-  }
-
-  /** 事件名逐个写在调用点：形参名会被清单分析器当成事件名，凑出一个永不派发的条目。 */
-  private fire(name: 'scroll-start' | 'scroll-end' | 'drag-start' | 'drag-end', detail: unknown): void {
-    this.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }))
   }
 
   /**
