@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
 import { easing, resolveEasing } from '../src/easing'
-import { readMotion } from '../src/read'
+import { parseCssTime, readMotion } from '../src/read'
 import { resolveMotionPreference, setMotionOverride } from '../src/reduced-motion'
-import { motionDurations } from '../src/semantic'
+import { motionDurations, motionEasings } from '../src/semantic'
 
 function mount(attrs: Record<string, string> = {}): { host: HTMLElement, el: HTMLElement } {
   const host = document.createElement('div')
@@ -54,6 +54,29 @@ describe('readMotion', () => {
     const motion = readMotion(el)
     expect(motion.easing('continuous')(0.3)).toBeCloseTo(0.3, 5)
     expect(motion.easing('enter-strong')(0.3)).toBeCloseTo(resolveEasing(easing.outStrong)(0.3), 10)
+  })
+
+  it('曲线的 CSS 写法原样给出，供 Web Animations 的 easing 用；读不到时取语义名对应的那一条', () => {
+    const { el } = mount()
+    el.style.setProperty('--xh-motion-ease-continuous', '  cubic-bezier(0, 0, 1, 1) ')
+    const motion = readMotion(el)
+    expect(motion.easingCss('continuous')).toBe('cubic-bezier(0, 0, 1, 1)')
+    expect(motion.easingCss('enter')).toBe(motionEasings.enter)
+  })
+})
+
+describe('parseCssTime', () => {
+  it('ms 与 s 两种写法都换成毫秒', () => {
+    expect(parseCssTime('150ms')).toBe(150)
+    expect(parseCssTime('0.2s')).toBe(200)
+    expect(parseCssTime(' .5s ')).toBe(500)
+  })
+
+  it('空串、缺省与认不出的写法都返回 null，由调用方决定退到哪', () => {
+    expect(parseCssTime('')).toBeNull()
+    expect(parseCssTime(undefined)).toBeNull()
+    expect(parseCssTime('fast')).toBeNull()
+    expect(parseCssTime('200')).toBeNull()
   })
 })
 

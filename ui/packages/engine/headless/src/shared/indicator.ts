@@ -12,7 +12,7 @@ import type { Direction } from '@xihan-ui/core'
 import type { AnimationHandle, SpringValue } from '@xihan-ui/motion'
 import { readDirection } from '@xihan-ui/core'
 import { isLiquidMaterial } from '@xihan-ui/core/visual-environment'
-import { animate, createSpringValue, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, createSpringValue, readMotion } from '@xihan-ui/motion'
 
 /** 指示器的盒子，逻辑方向：起始缘从行首 / 块首量起，单位 px。 */
 export interface IndicatorBox {
@@ -298,7 +298,7 @@ export interface IndicatorPresence<B> {
 
 /** 取过渡曲线令牌的 CSS 串，读不到时退回 JS 侧的同名缓动。 */
 function easeOf(el: Element, name: 'enter' | 'exit'): string {
-  return el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue(`--xh-motion-ease-${name}`).trim() || motionEasings[name]
+  return readMotion(el).easingCss(name)
 }
 
 /**

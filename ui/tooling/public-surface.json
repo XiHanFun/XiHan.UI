@@ -10181,6 +10181,7 @@
       "nearestSnap",
       "onMotionPreferenceChange",
       "onReducedMotionChange",
+      "parseCssTime",
       "prefersReducedMotion",
       "projectRelease",
       "readMotion",

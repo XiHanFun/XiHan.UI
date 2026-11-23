@@ -21,10 +21,12 @@ export interface MotionReading {
   duration: (name: MotionDurationName) => number
   /** 语义缓动的采样函数。 */
   easing: (name: MotionEaseName) => EasingFunction
+  /** 语义缓动的 CSS 写法，直接交给 Web Animations 的 easing；读不到令牌时退回 JS 侧的同名缓动。 */
+  easingCss: (name: MotionEaseName) => string
 }
 
-/** 解析 `200ms` / `0.2s` 形式的时长；空串与其它写法返回 null。 */
-function parseDuration(raw: string | undefined): number | null {
+/** 解析 `200ms` / `0.2s` 形式的时长，返回毫秒；空串与其它写法返回 null。 */
+export function parseCssTime(raw: string | undefined): number | null {
   const match = raw?.trim().match(/^(\d+(?:\.\d+)?|\.\d+)(ms|s)$/)
   if (!match)
     return null
@@ -46,14 +48,16 @@ export function readMotion(target: Element): MotionReading {
 
   return {
     duration(name) {
-      const parsed = parseDuration(style?.getPropertyValue(`--xh-motion-duration-${name}`))
+      const parsed = parseCssTime(style?.getPropertyValue(`--xh-motion-duration-${name}`))
       if (parsed !== null)
         return parsed
       return (isReduced() ? reducedMotionDurations : motionDurations)[name]
     },
     easing(name) {
-      const raw = style?.getPropertyValue(`--xh-motion-ease-${name}`).trim()
-      return resolveEasing(raw || motionEasings[name])
+      return resolveEasing(this.easingCss(name))
+    },
+    easingCss(name) {
+      return style?.getPropertyValue(`--xh-motion-ease-${name}`).trim() || motionEasings[name]
     },
   }
 }

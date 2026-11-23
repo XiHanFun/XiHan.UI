@@ -11,7 +11,7 @@
 // 时长取 expand / collapse、曲线取 disclosure，都从元素现读：作者对槽的覆盖与容器上的 data-motion 一并生效，
 // 减弱动效下直接到位。
 
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, readMotion } from '@xihan-ui/motion'
 import { GHOST_ATTR, markGhost } from './list-motion'
 import { heightOf } from './size-tween'
 
@@ -80,7 +80,7 @@ function progressOf(animation: Animation | undefined): number {
 
 /** 展开与收起取同一条 disclosure 曲线，从元素现读。 */
 function easingOf(el: Element): string {
-  return el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-disclosure').trim() || motionEasings.disclosure
+  return readMotion(el).easingCss('disclosure')
 }
 
 /** 刚起播的那一段脚本动画：animate 之后取元素上最后一个既非 CSS 关键帧、也非 CSS 过渡的动画。 */

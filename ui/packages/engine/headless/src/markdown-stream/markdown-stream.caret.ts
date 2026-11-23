@@ -9,6 +9,7 @@
 // 出字之后它绝对定位到正文最后一个字后面，落点从字的矩形量出、写进外壳上的私有槽；
 // 量字不往已消毒的 html 里注入节点，「原生 HTML 一律不透传」照样成立。
 
+import { parseCssTime, readMotion } from '@xihan-ui/motion'
 import { graphemes } from '../shared/grapheme'
 import { markdownStreamAnatomy } from './markdown-stream.anatomy'
 
@@ -79,24 +80,18 @@ function px(value: number): string {
   return `${Math.round(value * 100) / 100}px`
 }
 
-/** 解析 `150ms` / `0.15s` 形式的时长令牌；读不到（皮肤没引入）记 0。 */
-function durationMs(raw: string): number {
-  const match = raw.trim().match(/^(\d+(?:\.\d+)?|\.\d+)(ms|s)$/)
-  return match ? Number(match[1]) * (match[2] === 's' ? 1000 : 1) : 0
-}
-
 /**
  * 在外壳的 ::after 上播退场淡出：时长与曲线直接读外壳上的动效令牌，减弱动效时令牌已降到 1ms。
  * 播的时候光标保持可见，播完回到皮肤里不在场的样子；读不到令牌或宿主没有 Web Animations 时不播
  */
 function fadeOut(root: HTMLElement): Animation | null {
-  const style = root.ownerDocument.defaultView?.getComputedStyle(root)
-  const duration = durationMs(style?.getPropertyValue('--xh-motion-duration-exit') ?? '')
+  // 时长直接解析令牌，不走 readMotion 带缺省值的 duration()：皮肤没引入时令牌读不到，就不播
+  const duration = parseCssTime(root.ownerDocument.defaultView?.getComputedStyle(root).getPropertyValue('--xh-motion-duration-exit')) ?? 0
   if (!(duration > 0) || typeof root.animate !== 'function')
     return null
   return root.animate([{ opacity: 1, visibility: 'visible' }, { opacity: 0, visibility: 'visible' }], {
     duration,
-    easing: style?.getPropertyValue('--xh-motion-ease-exit').trim() || 'ease-in',
+    easing: readMotion(root).easingCss('exit'),
     pseudoElement: '::after',
   })
 }

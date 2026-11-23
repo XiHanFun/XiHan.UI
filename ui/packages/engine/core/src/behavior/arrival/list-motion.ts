@@ -15,7 +15,7 @@
 // Web 动画（glideBy），时长与曲线从元素读 move / continuous 令牌，与同一元素上的 CSS 过渡同步。
 
 import type { TrackArrivalsOptions } from './track-arrivals'
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, readMotion } from '@xihan-ui/motion'
 import { attachCssExit, createPresence } from '../presence'
 import { INSTANT_ATTR, STAGGER_CAP, STAGGER_INDEX_PROPERTY } from './track-arrivals'
 
@@ -165,10 +165,9 @@ export function glideBy(el: HTMLElement, dx: number, dy: number): void {
   if (x === 0 && y === 0)
     return
   const motion = readMotion(el)
-  const easing = win.getComputedStyle(el).getPropertyValue('--xh-motion-ease-continuous').trim() || motionEasings.continuous
   const handle = animate(el, [{ transform: `translate(${x}px, ${y}px)` }, { transform: 'none' }], {
     duration: motion.duration('move'),
-    easing,
+    easing: motion.easingCss('continuous'),
   })
   glides.set(el, handle)
   void handle.finished.then(() => {

@@ -10,7 +10,7 @@ import type { CalendarGranularity, CalendarView } from './grid'
 import type { CalendarBaseAction, CalendarBaseContext, CalendarBaseEvent, CalendarBaseProps, CalendarBaseRefs } from './types'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/core'
 import { getLocalTimeZone, PlainDate, startOfMonth, today } from '@xihan-ui/core/date'
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, readMotion } from '@xihan-ui/motion'
 import { sameArray as sameValues, toArray as toValues } from '../array'
 import { calendarPageMonths, calendarPeriodOf, calendarPeriodStart, calendarWeekListedIn, parseCalendarDate, visibleCountOf } from './grid'
 
@@ -147,7 +147,7 @@ export function trackPageFade<S extends CalendarBaseSchema>(): EffectFn<S> {
           const motion = readMotion(el)
           void animate(el, [{ opacity: 0 }, { opacity: 1 }], {
             duration: motion.duration('enter'),
-            easing: el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-enter').trim() || motionEasings.enter,
+            easing: motion.easingCss('enter'),
           })
         }
       })

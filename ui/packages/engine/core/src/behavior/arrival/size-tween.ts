@@ -8,7 +8,7 @@
 // 状态改之前先量下盒子此刻的高度，宿主提交新排法之后再量一次，从旧高度补到新高度，overflow 整段裁着。
 // 中途反向时从此刻的高度接着走。时长按方向取 expand / collapse、曲线取 disclosure，都从元素现读；减弱动效下直接到位。
 
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, readMotion } from '@xihan-ui/motion'
 
 /**
  * 边框盒的块尺寸，不取整：offsetHeight 取整到像素，补到它那一刻会差出半像素一跳。
@@ -44,12 +44,11 @@ export function tweenBlockSize(el: HTMLElement): (hold?: Keyframe) => Promise<un
     const to = heightOf(el)
     if (Math.abs(to - from) < 0.5)
       return undefined
-    const win = el.ownerDocument.defaultView
-    const easing = win?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-disclosure').trim() || motionEasings.disclosure
+    const motion = readMotion(el)
     const frame = (height: number): Keyframe => ({ ...hold, blockSize: `${height}px`, overflow: 'clip', boxSizing: 'border-box' })
     const handle = animate(el, [frame(from), frame(to)], {
-      duration: readMotion(el).duration(to > from ? 'expand' : 'collapse'),
-      easing,
+      duration: motion.duration(to > from ? 'expand' : 'collapse'),
+      easing: motion.easingCss('disclosure'),
     })
     tweens.set(el, handle)
     void handle.finished.then(() => {
@@ -72,8 +71,7 @@ export function tweenBoxSize(el: HTMLElement): () => void {
     const to = { inline: widthOf(el), block: heightOf(el) }
     if (Math.abs(to.inline - from.inline) < 0.5 && Math.abs(to.block - from.block) < 0.5)
       return
-    const win = el.ownerDocument.defaultView
-    const easing = win?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-continuous').trim() || motionEasings.continuous
+    const easing = readMotion(el).easingCss('continuous')
     const frame = (size: { inline: number, block: number }): Keyframe => ({
       inlineSize: `${size.inline}px`,
       blockSize: `${size.block}px`,

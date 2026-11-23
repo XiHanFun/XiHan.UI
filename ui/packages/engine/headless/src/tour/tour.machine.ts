@@ -9,7 +9,7 @@ import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { OverlayRelease } from '../shared/overlay-shell'
 import type { TourBoundaryRect, TourPressedPart, TourSchema, TourSpotlightRect, TourStep, TourTarget } from './tour.types'
 import { canTakeFocus, requireOverlayKit, setTimeoutEffect, setup } from '@xihan-ui/core'
-import { animate, motionEasings, readMotion } from '@xihan-ui/motion'
+import { animate, readMotion } from '@xihan-ui/motion'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
@@ -259,8 +259,8 @@ export const tourMachine = createMachine({
         flush(() => {
           const content = scope.getById(scope.partId('tour', 'content'))
           for (const el of content?.querySelectorAll<HTMLElement>(`[data-scope='tour']:is([data-part='title'], [data-part='description'])`) ?? []) {
-            const easing = el.ownerDocument.defaultView?.getComputedStyle(el).getPropertyValue('--xh-motion-ease-enter').trim() || motionEasings.enter
-            void animate(el, [{ opacity: 0 }, { opacity: 1 }], { duration: readMotion(el).duration('enter'), easing })
+            const motion = readMotion(el)
+            void animate(el, [{ opacity: 0 }, { opacity: 1 }], { duration: motion.duration('enter'), easing: motion.easingCss('enter') })
           }
         })
       },

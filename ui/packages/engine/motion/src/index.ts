@@ -24,6 +24,7 @@ export { glideSpring, nearestSnap, projectRelease, rubberBand, rubberClamp } fro
 // 从元素读取语义动效令牌
 export { readMotion } from './read'
 export type { MotionReading } from './read'
+export { parseCssTime } from './read'
 // 减弱动效
 export {
   getMotionOverride,
