@@ -37,6 +37,8 @@ export interface XhDialogRootProps {
   restoreFocus?: boolean
   initialFocus?: string
   size?: Size
+  /** 全屏：面板铺满视口，贴边不取圆角、不画描边与投影；宽度档与拖动在这一档不生效。默认 false。 */
+  fullscreen?: boolean
   variant?: OverlayBackdropVariant
   /** 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。 */
   draggable?: boolean

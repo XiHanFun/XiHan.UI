@@ -41,7 +41,9 @@ export function connectDialog<T extends PropTypes>(
   const ids = scope.ids('dialog', 'trigger', 'content', 'title', 'description')
   const rendered = prop('parts')
   const stateAttr = open ? 'open' : 'closed'
-  const draggable = !!prop('draggable')
+  const fullscreen = !!prop('fullscreen')
+  // 全屏的面板四边都贴着视口，没有可以挪的余地
+  const draggable = !!prop('draggable') && !fullscreen
   const offset = context.get('offset')
   const dragging = context.get('gesture') === 'drag'
 
@@ -146,6 +148,8 @@ export function connectDialog<T extends PropTypes>(
       'data-state': stateAttr,
       // 由皮肤的 inset 直接摆，不问引擎要坐标，没有「还没量完」的窗口：恒已落位
       'data-positioned': '',
+      // 全屏：定位层收掉与视口边之间的内衬，把面板拉满
+      'data-fullscreen': dataAttr(fullscreen),
     }),
     getContentProps: () => normalize.element({
       ...parts.content.attrs,
@@ -163,6 +167,7 @@ export function connectDialog<T extends PropTypes>(
       'data-instant': instant,
       // 尺寸轴落在 content 上：解剖里没有 root，positioner 非必需，且 content 会被 portal 走
       'data-size': prop('size'),
+      'data-fullscreen': dataAttr(fullscreen),
       // 拖动：位移写成两个私有槽，皮肤按它平移面板；跟手期间另打 data-dragging
       'data-draggable': dataAttr(draggable),
       'data-dragging': dataAttr(dragging),

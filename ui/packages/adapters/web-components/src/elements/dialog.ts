@@ -43,6 +43,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响 content 的最大宽度，写在 content 上
+ * @attr {boolean} fullscreen - 全屏：面板铺满视口，贴边不取圆角、不画描边与投影；宽度档与拖动在这一档不生效。默认 false。要写 positioner 部件，面板才被拉满
  * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @attr {boolean} panel-draggable - 可拖动：按住标题栏或拖动把手挪走面板，方向键在把手上挪一步；面板始终夹在视口内。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
  * @attr {boolean} unmount-on-exit - 收起动画播完后卸掉 content 里 `<template>` 克隆出的内容，默认 true；写 "false" 时第一次打开克隆、此后常驻。没写模板的作者节点始终常驻
@@ -103,6 +104,7 @@ export class XhDialogElement extends XhPortalHostElement {
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
     initialFocus: { converter: STRING_CONVERTER, attribute: 'initial-focus' },
     size: { converter: STRING_CONVERTER },
+    fullscreen: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
     // 与浮动面板同一个名字：避开原生的 draggable，那是 HTML 全局枚举属性，同名的响应式字段还会与 HTMLElement.draggable 访问器打架
     panelDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'panel-draggable' },
@@ -127,6 +129,7 @@ export class XhDialogElement extends XhPortalHostElement {
   declare restoreFocus?: boolean
   declare initialFocus?: string
   declare size?: Size
+  declare fullscreen?: boolean
   declare variant?: OverlayBackdropVariant
   declare panelDraggable?: boolean
   declare unmountOnExit?: boolean
@@ -225,6 +228,7 @@ export class XhDialogElement extends XhPortalHostElement {
       restoreFocus: this.restoreFocus,
       initialFocus: this.initialFocus,
       size: this.size,
+      fullscreen: this.fullscreen,
       variant: this.variant,
       draggable: this.panelDraggable,
       unmountOnExit: this.unmountOnExit,

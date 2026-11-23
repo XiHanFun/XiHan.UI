@@ -143,6 +143,23 @@
     --xh-_dialog-max-w: var(--xh-overlay-sheet-w-lg);
   }
 
+  /* —— 全屏 ——
+     面板铺满视口。定位层只留安全区那一段内衬（桌面上为零），面板沿两条轴撑满它；
+     四边都贴着视口：不取圆角，不画描边与投影——没有露在外面的边界要交代，也没有底可以投影。
+     宽度档在这一档不生效。 */
+  [data-scope='dialog'][data-part='positioner'][data-fullscreen] {
+    --xh-dialog-positioner-padding: var(--xh-space-0);
+
+    align-items: stretch;
+  }
+
+  [data-scope='dialog'][data-part='content'][data-fullscreen] {
+    max-inline-size: none;
+    border-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   [data-scope='dialog'][data-part='content']:focus-visible {
     outline: none;
   }
@@ -154,6 +171,15 @@
 
   [data-scope='dialog'][data-part='content'][data-state='closed'] {
     animation: xh-sheet-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  }
+
+  /* 全屏面只淡变：整幅铺满视口的面再带位移与缩放，等于整个屏幕在动 */
+  [data-scope='dialog'][data-part='content'][data-fullscreen][data-state='open']:not([data-instant]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='dialog'][data-part='content'][data-fullscreen][data-state='closed'] {
+    animation: xh-fade-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* —— 拖动 ——

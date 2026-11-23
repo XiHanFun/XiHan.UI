@@ -23156,6 +23156,15 @@
             },
             {
               "kind": "field",
+              "name": "fullscreen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fullscreen"
+            },
+            {
+              "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
@@ -23575,6 +23584,14 @@
               "description": "尺寸：只影响 content 的最大宽度，写在 content 上",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "全屏：面板铺满视口，贴边不取圆角、不画描边与投影；宽度档与拖动在这一档不生效。默认 false。要写 positioner 部件，面板才被拉满",
+              "name": "fullscreen",
+              "fieldName": "fullscreen"
             },
             {
               "type": {

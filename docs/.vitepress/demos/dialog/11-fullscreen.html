@@ -1,0 +1,33 @@
+<!-- 全屏 | fullscreen 让面板铺满视口：头尾定在原处，正文吃掉剩下的高度；内容多到值得占满一屏时用，比如编辑一份长表单 -->
+<xh-dialog id="dialog-fullscreen" fullscreen>
+  <button data-xh-part="trigger">全屏编辑</button>
+  <div data-xh-part="backdrop"></div>
+  <!-- 面板靠定位层拉满，全屏时这一层不能省 -->
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="header">
+        <h2 data-xh-part="title">编辑季度报表</h2>
+      </div>
+      <div data-xh-part="body">
+        <p>正文占满头尾之间的全部高度，内容超出时在这一段里滚动。</p>
+      </div>
+      <div data-xh-part="footer">
+        <xh-button>
+          <button data-xh-part="root" data-dismiss>取消</button>
+        </xh-button>
+        <xh-button variant="solid">
+          <button data-xh-part="root" data-dismiss>保存</button>
+        </xh-button>
+      </div>
+      <button data-xh-part="close-trigger" aria-label="关闭"></button>
+    </div>
+  </div>
+</xh-dialog>
+
+<script type="module">
+  // 页脚的两颗按钮把关闭转交给关闭部件
+  const dialog = document.getElementById("dialog-fullscreen");
+  const close = dialog.querySelector('[data-xh-part="close-trigger"]');
+  for (const button of dialog.querySelectorAll("[data-dismiss]"))
+    button.addEventListener("click", () => close.click());
+</script>

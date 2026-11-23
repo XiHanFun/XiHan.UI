@@ -378,3 +378,28 @@ describe('dialog 只引用在场的标题与说明', () => {
     expect(content({ parts: { title: true, description: false } })['aria-describedby']).toBeUndefined()
   })
 })
+
+describe('dialog 全屏', () => {
+  const partsOf = (props: DialogSchema['props']): { positioner: Record<string, unknown>, content: Record<string, unknown> } => {
+    const api = connectDialog(makeService(props), normalizeProps)
+    return {
+      positioner: api.getPositionerProps() as Record<string, unknown>,
+      content: api.getContentProps() as Record<string, unknown>,
+    }
+  }
+
+  it('fullscreen 落在 positioner 与 content 上；不写时两处都不带', () => {
+    const on = partsOf({ fullscreen: true })
+    expect(on.positioner['data-fullscreen']).toBe('')
+    expect(on.content['data-fullscreen']).toBe('')
+
+    const off = partsOf({})
+    expect(off.positioner['data-fullscreen']).toBeUndefined()
+    expect(off.content['data-fullscreen']).toBeUndefined()
+  })
+
+  it('全屏时拖动不生效：面板四边都贴着视口，没有可以挪的余地', () => {
+    expect(partsOf({ fullscreen: true, draggable: true }).content['data-draggable']).toBeUndefined()
+    expect(partsOf({ draggable: true }).content['data-draggable']).toBe('')
+  })
+})

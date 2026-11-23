@@ -125,6 +125,11 @@ export interface DialogSchema extends MachineSchema {
     initialFocus?: string
     /** 尺寸：sm / md / lg。只影响 content 的最大宽度，写在 content 上（本组件没有 root 部件）。 */
     size?: Size
+    /**
+     * 全屏：面板铺满视口——定位层只留安全区那一段内衬，面板撑满它；贴住视口的边不取圆角、不画描边与投影，
+     * 进退场取全屏面的淡变。宽度档 size 与拖动 draggable 在这一档不生效。写在 positioner 与 content 上。默认 false。
+     */
+    fullscreen?: boolean
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
     /**
