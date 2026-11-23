@@ -181,7 +181,7 @@ outline、subtle 和 ghost
 - 通过 `hidden-select` 参与表单。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数；`label` 给标题文字、`clearable` 带清空按钮。浮层里列表之后铺空态、在途、取数失败的提示与重试钮，露哪一种按 `loading`、`error` 与条数收放；文字取 `translations`，空态文字可由 `empty` 给出。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`；Vue 用同名插槽，React 给 `empty` 一个节点。
 - 多选值在触发器里排成标签（不写结构时直接铺出），超出 `maxTagCount` 后合并为 `+N`；组合框、树选择与级联选择的多选用同一套呈现。
-- 支持分组、加载、空状态、底部操作区和滚动加载。
+- 支持分组、加载、空状态和底部操作区。
 - 选项可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 选项可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 选项来自模板或宿主数据时，用 `@xihan-ui/core/options` 导出的 `findOptionViolation(collection, { tree?, unique?, requireLabel?, strict?, isValue? })` 先校验结构（`isValue` 换掉缺省只收字符串的 `value` 检查，供取值是数字、布尔的选项列表用），返回第一处问题的 JSON Pointer 与原因；单选组、复选组、组合框、树选择与级联吃同一套节点形状，同样适用。
