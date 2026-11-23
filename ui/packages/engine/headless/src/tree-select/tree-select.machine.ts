@@ -25,6 +25,7 @@ import {
   resolveLazyCollection,
   syncBranchLoads as syncLazyBranchLoads,
 } from '../shared/lazy-branch'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { dismissCloseSrc, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -504,7 +505,15 @@ export const treeSelectMachine = createMachine({
             context.set('value', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
             return
           }
-          context.set('value', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+          if (current.includes(e.value)) {
+            context.set('value', current.filter(v => v !== e.value))
+            return
+          }
+          // 选满了：只拦加选这一路，取消选中在上面已经放行；级联那一路在更上面已经返回，不按上限拦
+          const max = resolveMaxSelected(prop('maxSelected'))
+          if (max != null && current.length >= max)
+            return
+          context.set('value', [...current, e.value])
           return
         }
         // 单选没有取消选中这回事，选两下不会把控件点空

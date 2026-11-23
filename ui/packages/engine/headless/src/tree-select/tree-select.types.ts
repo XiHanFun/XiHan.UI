@@ -213,6 +213,13 @@ export interface TreeSelectSchema extends MachineSchema {
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
     maxTagCount?: number
     /**
+     * 多选下最多选几项，只在不开 cascade 时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法。
+     * 选满后没选中的节点转 aria-disabled、点击与确认键都选不进去，但方向键照样落得上去、分支照常展开——
+     * 里面可能有要点掉的已选项；已选的照旧可以点掉，点掉一个即腾出名额。
+     * 只拦用户这一路的加选，setValue 与受控 value 原样收下。非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。
+     */
+    maxSelected?: number
+    /**
      * 浮层内搜索：input 部件可用，展开时焦点先落在搜索框上，输入即按 filter 把树裁到只剩命中的那几枝，
      * 命中节点的祖先自动展开。关闭时搜索框仍在 DOM 中但带 hidden。收起浮层即清空检索词。
      */
@@ -432,6 +439,8 @@ export interface TreeSelectApi<T extends PropTypes = PropTypes> {
   tags: TreeSelectTagMeta[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
+  /** 生效的多选上限；单选、开了级联或没设上限时为 null。 */
+  maxSelected: number | null
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
   isSelected: (value: string) => boolean

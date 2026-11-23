@@ -120,6 +120,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 - `defaultExpandAll` 与 `expandAll()` / `collapseAll()` 同[树](./tree)一套规则：展开全部已有子项的分支，还没取回子项的懒分支不算在内。
 - 只给 `collection` 时照标准结构铺：标题（给了 `label`）、盒（触发器，`clearable` 时再带清空钮）与浮层里的树，`searchable` 时树前面带搜索框，多选时触发器里铺标签行；没给 `collection` 也铺出盒与一棵空树。Vue / React 不写默认插槽与 Web Components 不写部件（或只写 `root`）时生成的节点出自同一个结构函数；Web Components 的标题可用宿主直接子节点 `slot="label"` 接管。节点副文本、行尾、表单影子与底部操作区要手写结构时自己摆。
 - 多选的已选项在触发器里排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签文字取 collection 的 label（收起子树里的选中值同样报得出名字）；Vue / React 的自动结构在多选时直接铺出标签行。
+- `maxSelected` 给多选设上限，只在不开 `cascade` 时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法。选满后没选中的节点转 `aria-disabled`、点击与确认键都选不进去，但方向键与连打检索照样落得上去、分支照常展开（展开箭头不带禁用面）——里面可能有要点掉的已选项；已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，`setValue` 与受控值原样收下；小于 1 时不设上限，单选下不生效。
 - 原生表单按每个选中值生成一个同名隐藏字段；`['a,b', 'c']` 用 `FormData.getAll(name)` 读取为两个原值，不使用逗号拼接。零选中没有提交项，禁用不提交，只读仍提交。
 - 声明 `HiddenInput` 部件才参与原生表单。`form` 可指定外部表单 ID，提交与重置使用同一所有者；显式 ID 不存在时不回退祖先表单。非受控 reset 恢复 `defaultValue`，受控值由业务响应重置请求。
 - 单选用行尾对号表示选中；多选换成行首勾选框，排在展开箭头之后、文字之前，一眼看得出点行是勾上这一项、而不是换掉已选的那一项。分支与叶子用同一种标记，级联半选在方框里画横杠；正文保持正常颜色，中性底只用于悬停和键盘高亮。
@@ -183,6 +184,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `defaultOpen` | `boolean` |  |  |
 | `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择；已选项在触发器里排成标签。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
+| `maxSelected` | `number` |  | 多选下最多选几项，只在不开 cascade 时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法。 选满后没选中的节点转 aria-disabled、点击与确认键都选不进去，但方向键照样落得上去、分支照常展开—— 里面可能有要点掉的已选项；已选的照旧可以点掉，点掉一个即腾出名额。 只拦用户这一路的加选，setValue 与受控 value 原样收下。非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。 |
 | `searchable` | `boolean` |  | 浮层内搜索：input 部件可用，展开时焦点先落在搜索框上，输入即按 filter 把树裁到只剩命中的那几枝， 命中节点的祖先自动展开。关闭时搜索框仍在 DOM 中但带 hidden。收起浮层即清空检索词。 |
 | `filter` | `TreeSelectFilter` |  | 自定义匹配规则；缺省为标签大小写不敏感包含。 |
 | `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
@@ -326,6 +328,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `TreeSelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value 同序；文字取自 collection 的 label。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `maxSelected` | `number \| null` | 生效的多选上限；单选、开了级联或没设上限时为 null。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |

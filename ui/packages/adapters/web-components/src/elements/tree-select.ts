@@ -71,6 +71,7 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中；已选项在触发器里排成标签
  * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
+ * @attr {number} max-selected - 多选下最多选几项，只在不开 cascade 时生效：选满后没选中的节点选不进去（仍可落焦、分支照常展开），已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。
  * @attr {boolean} searchable - 浮层内搜索：展开时焦点先落在 input 上，输入即按 filter 把树裁到只剩命中的那几枝；自定义匹配规则经 filter property 给
  * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
@@ -171,6 +172,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     searchable: { converter: BOOLEAN_CONVERTER },
     // 函数只走 property，属性表达不了
     filter: { attribute: false },
@@ -211,6 +213,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare multiple?: boolean
   declare maxTagCount?: number
+  declare maxSelected?: number
   declare searchable?: boolean
   /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
   declare filter?: TreeSelectSchema['props']['filter']
@@ -424,6 +427,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
       maxTagCount: this.maxTagCount,
+      maxSelected: this.maxSelected,
       searchable: this.searchable ?? false,
       filter: this.filter,
       cascade: this.cascade,

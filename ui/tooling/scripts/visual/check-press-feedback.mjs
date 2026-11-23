@@ -262,6 +262,7 @@ const NO_PRESS = {
   // 随文的文字链接式入口
   'tree:branch-retry-trigger': '失败说明下面一行随文的重试链接，只接指针（tabindex=-1，键盘在出错的分支行上按 Enter / Space 重试）；悬停出下划线，按下的回执是分支随即切回在途、加载环顶上来',
   'tree-select:branch-retry-trigger': '失败说明下面一行随文的重试链接，只接指针（tabindex=-1，键盘在出错的分支行上按 Enter / Space 重试）；悬停出下划线，按下的回执是分支随即切回在途、加载环顶上来',
+  'tree-select:branch-trigger': '行首的展开箭头，平时光标与按下的面都随所在的分支行；只有多选选满、行换成禁用面时才自己写 pointer（行选不进去，箭头照常展开），按下的回执是箭头当即转向、子层展开',
   // 数据标记：几何就是数据
   'hierarchy-chart:node': '节点是数据标记，面积与位置就是数值；点下去的回执是整张图换到下一层，缩放它会让面积比例与相邻节点的间隙一起走样',
 }
@@ -454,8 +455,12 @@ for (const key of Object.keys(NO_PRESS)) {
     problems.push(`${key} 在解剖里查不到这个部件——名单过期了`)
     continue
   }
-  const css = await readFile(`${SKINS}/${name}.css`, 'utf8')
-  if (new RegExp(`\\[data-part='${part}'\\][^{]*:active`).test(css))
+  const css = (await readFile(`${SKINS}/${name}.css`, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  // 逐条选择器判：逗号分组里排在它后面的别的部件带 :active，不是它自己的按压规则
+  const pressed = new RegExp(`\\[data-part='${part}'\\][^{]*:active`)
+  const hasPressRule = [...css.matchAll(/([^{}]+)\{/g)]
+    .some(rule => splitSelectors(rule[1]).some(selector => pressed.test(selector)))
+  if (hasPressRule)
     problems.push(`${key} 登记成不给按压反馈，皮肤里却已经有 :active 规则——把它挪进 PRESSABLE`)
 }
 

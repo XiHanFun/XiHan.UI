@@ -8,9 +8,10 @@
 import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectPressedPart, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'
-import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
+import { cascadeState, createPressTracker, dataAttr, focusItem, indexOfValue, isComposingEvent, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey } from '@xihan-ui/core'
 import { TREE_SELECT_EN_US } from '../locale/en-US'
 import { expandableBranches } from '../shared/expand-all'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
@@ -142,6 +143,22 @@ export function connectTreeSelect<T extends PropTypes>(
   // 控件级禁用向下传导，节点也可在 collection 里单独禁用
   const isDisabled = (v: string): boolean => disabled || !!metaOf(v)?.disabled
 
+  // 多选上限只在不开级联时生效：级联勾选一次带上整枝，对外值的条数又随收敛策略变，上限在那里没有唯一的算法
+  const maxSelected = multiple && !cascade ? resolveMaxSelected(prop('maxSelected')) : null
+  /** 多选已到上限：没选中的节点选不进去，已选的仍能点掉。 */
+  const full = maxSelected != null && value.length >= maxSelected
+  const blockedByLimit = (v: string): boolean => full && !value.includes(v)
+  /**
+   * 这个节点此刻能不能改选中值：自身禁用，或选满后加不进去。禁用面、点击与确认键按它；
+   * 导航与展开只看自身禁用——选不进去的分支还得打得开，里面可能有要点掉的已选项。
+   */
+  const cannotPick = (v: string): boolean => isDisabled(v) || blockedByLimit(v)
+  /** 方向键与连打检索跳不跳过这个节点：只认自身禁用。按值判，不读节点上的 aria-disabled（选不进去的节点也报它）。 */
+  const skipsNode = (el: HTMLElement): boolean => {
+    const v = itemValue(el)
+    return v != null && isDisabled(v)
+  }
+
   /**
    * 节点语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
    * 没写时返回 undefined，作者直接写在部件上的 data-tone 原样留着。
@@ -187,23 +204,26 @@ export function connectTreeSelect<T extends PropTypes>(
       // 级联勾选是三态：读屏靠 aria-checked 报半选，非级联不输出该属性
       'aria-checked': cascade ? (isSelected(v) ? 'true' : isIndeterminate(v) ? 'mixed' : 'false') : undefined,
       // 集合条目用 aria-disabled 而非原生 disabled，禁用节点仍可作为方向键起点
-      'aria-disabled': isDisabled(v) ? 'true' : 'false',
+      'aria-disabled': cannotPick(v) ? 'true' : 'false',
       // roving tabindex：只有锚点节点留在 Tab 序列内
       'tabindex': focusedValue === v ? 0 : -1,
     }
   }
 
-  /** 叶子一系（item / item-text / item-indicator）共用的状态标记。 */
-  const nodeState = (v: string): Record<string, string | undefined> => ({
+  /** 叶子一系（item / item-text / item-indicator）共用的状态标记；禁用面缺省按「能不能选」。 */
+  const nodeState = (v: string, off = cannotPick(v)): Record<string, string | undefined> => ({
     'data-selected': dataAttr(isSelected(v)),
     'data-indeterminate': dataAttr(isIndeterminate(v)),
-    'data-disabled': dataAttr(isDisabled(v)),
+    'data-disabled': dataAttr(off),
     'data-highlighted': dataAttr(focusedValue === v),
   })
 
-  /** 分支一系在叶子状态基础上追加展开态。 */
-  const branchState = (v: string): Record<string, string | undefined> => ({
-    ...nodeState(v),
+  /**
+   * 分支一系在叶子状态基础上追加展开态。禁用面缺省只认自身禁用：展开箭头、子层与取数反馈在选满后照常可用；
+   * 行自己（branch / branch-control / branch-text）另传「能不能选」。
+   */
+  const branchState = (v: string, off = isDisabled(v)): Record<string, string | undefined> => ({
+    ...nodeState(v, off),
     'data-state': isExpanded(v) ? 'open' : 'closed',
     'data-loading': dataAttr(branchLoadState(v)?.status === 'loading'),
     'data-error': dataAttr(branchLoadState(v)?.status === 'error'),
@@ -255,7 +275,8 @@ export function connectTreeSelect<T extends PropTypes>(
       }))
       return
     }
-    focusValue(navigateItems(treeSelectNodeEls(container, rows), focusedValue, intent, { loop }))
+    const els = treeSelectNodeEls(container, rows)
+    focusValue(navigateItems(els, focusedValue, intent, { loop, skip: i => skipsNode(els[i]!) }))
   }
 
   /** 按值把焦点搬到某一行。 */
@@ -288,7 +309,7 @@ export function connectTreeSelect<T extends PropTypes>(
     const list = treeSelectNodeEls(container, rows)
     focusValue(matchTypeahead(list, indexOfValue(list, focusedValue), query, {
       text: nodeText,
-      skip: isItemDisabled,
+      skip: skipsNode,
     }))
   }
 
@@ -300,7 +321,7 @@ export function connectTreeSelect<T extends PropTypes>(
       send({ type: 'BRANCH.RETRY', value: row.value })
       return
     }
-    if (readOnly)
+    if (readOnly || blockedByLimit(row.value))
       return
     send({ type: 'NODE.SELECT', value: row.value })
   }
@@ -331,6 +352,7 @@ export function connectTreeSelect<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    maxSelected,
     overflowText,
     isSelected,
     isIndeterminate,
@@ -812,7 +834,7 @@ export function connectTreeSelect<T extends PropTypes>(
 
     // 叶子行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
     getItemProps: (node) => {
-      const handlers = press('item', node.value, isDisabled(node.value))
+      const handlers = press('item', node.value, cannotPick(node.value))
       return normalize.element({
         ...parts.item.attrs,
         ...nodeAttrs(node.value),
@@ -826,7 +848,7 @@ export function connectTreeSelect<T extends PropTypes>(
         // Space / Enter 与触屏按住投影 data-pressed，家族的按下面同时认它与指针 :active
         'data-pressed': dataAttr(pressedPart === 'item' && pressedValue === node.value),
         'onClick': (event: MouseEvent) => {
-          if (!interactive || isDisabled(node.value))
+          if (!interactive || cannotPick(node.value))
             return
           // 叶子本身就是 treeitem，直接认 currentTarget
           focusValue(event.currentTarget as HTMLElement)
@@ -878,11 +900,11 @@ export function connectTreeSelect<T extends PropTypes>(
     getBranchProps: (node) => {
       // 焦点落在 branch 上、按压面画在 branch-control 上：键盘那一路由这里替行代发，
       // 只认落在自己身上的按键与失焦（子树里的会冒泡上来）
-      const handlers = press('branch-control', node.value, isDisabled(node.value))
+      const handlers = press('branch-control', node.value, cannotPick(node.value))
       return normalize.element({
         ...parts.branch.attrs,
         ...nodeAttrs(node.value),
-        ...branchState(node.value),
+        ...branchState(node.value, cannotPick(node.value)),
         ...outOfView(node.value),
         'aria-expanded': isExpanded(node.value) ? 'true' : 'false',
         'aria-busy': branchLoadState(node.value)?.status === 'loading' ? 'true' : undefined,
@@ -897,10 +919,10 @@ export function connectTreeSelect<T extends PropTypes>(
 
     // 分支行同走 Collection Item 的 overlay 语境；aria-selected 在 branch 上，选中对号的显隐由皮肤按 data-selected 给
     getBranchControlProps: (node) => {
-      const handlers = press('branch-control', node.value, isDisabled(node.value))
+      const handlers = press('branch-control', node.value, cannotPick(node.value))
       return normalize.element({
         ...parts['branch-control'].attrs,
-        ...branchState(node.value),
+        ...branchState(node.value, cannotPick(node.value)),
         'data-xh-collection-item': '',
         'data-xh-collection-size': prop('size') ?? 'md',
         'data-xh-collection-context': 'overlay',
@@ -919,6 +941,9 @@ export function connectTreeSelect<T extends PropTypes>(
           const branchEl = branchElOf(event.currentTarget as HTMLElement)
           if (branchEl)
             focusValue(branchEl)
+          // 选满后选不进去：焦点照样落过来，方向键从这里接着走
+          if (blockedByLimit(node.value))
+            return
           // 点行只选中不展开，展开归箭头与左右方向键
           send({ type: 'NODE.SELECT', value: node.value })
         },
@@ -956,7 +981,7 @@ export function connectTreeSelect<T extends PropTypes>(
 
     getBranchTextProps: node => normalize.element({
       ...parts['branch-text'].attrs,
-      ...branchState(node.value),
+      ...branchState(node.value, cannotPick(node.value)),
       'data-xh-collection-slot': 'text',
     }),
 

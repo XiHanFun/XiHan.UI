@@ -121,6 +121,8 @@ export const XhTreeSelectRoot = defineComponent({
     multiple: Boolean,
     /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
     maxTagCount: { type: Number },
+    /** 多选下最多选几项，只在不开 cascade 时生效：选满后没选中的节点选不进去（仍可落焦、分支照常展开），已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。 */
+    maxSelected: { type: Number },
     /** 浮层内搜索：展开时焦点先落在搜索框上，输入即把树裁到只剩命中的那几枝。 */
     searchable: Boolean,
     /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */

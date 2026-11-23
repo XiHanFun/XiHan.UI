@@ -2057,3 +2057,102 @@ describe('tree-select 必填', () => {
     expect(filled.required).toBeUndefined()
   })
 })
+
+describe('多选上限 maxSelected（不开级联才生效）', () => {
+  it('选满后没选中的节点转禁用面、选不进去；已选的照旧能点掉，点掉即腾出名额', async () => {
+    const h = mount({ multiple: true, maxSelected: 2, defaultOpen: true, defaultExpandedValue: ['src'] })
+    await tick()
+    click(h.item('index').item)
+    expect(h.node('license').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('license').item)
+    expect(h.value()).toEqual(['index', 'license'])
+
+    // 满了：叶子与分支都报 aria-disabled，分支行按 data-disabled 降级；已选的不受影响
+    expect(h.node('utils').getAttribute('aria-disabled')).toBe('true')
+    expect(h.branch('utils').control.hasAttribute('data-disabled')).toBe(true)
+    expect(h.node('index').getAttribute('aria-disabled')).toBe('false')
+    click(h.branch('utils').control)
+    expect(h.value()).toEqual(['index', 'license'])
+
+    click(h.item('index').item)
+    expect(h.value()).toEqual(['license'])
+    expect(h.node('utils').getAttribute('aria-disabled')).toBe('false')
+    click(h.branch('utils').control)
+    expect(h.value()).toEqual(['license', 'utils'])
+  })
+
+  it('选不进去的分支照常展开：箭头不带禁用面，点它与右方向键都展得开', async () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultValue: ['license'], defaultExpandedValue: ['src'] })
+    h.trigger.focus()
+    press(h.trigger, 'Enter')
+    await settle()
+
+    expect(h.branch('utils').control.hasAttribute('data-disabled')).toBe(true)
+    expect(h.branch('utils').trigger.hasAttribute('data-disabled')).toBe(false)
+    click(h.branch('utils').trigger)
+    expect(h.expanded()).toEqual(['src', 'utils'])
+
+    click(h.branch('utils').trigger)
+    expect(h.expanded()).toEqual(['src'])
+    expect(focusedValue()).toBe('utils')
+    press(active(), 'ArrowRight')
+    expect(h.expanded()).toEqual(['src', 'utils'])
+  })
+
+  it('选不进去的节点方向键与连打检索照样落得上去，确认键不选；自身禁用的照旧跳过', async () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultValue: ['license'], defaultExpandedValue: ['src'] })
+    h.trigger.focus()
+    press(h.trigger, 'Enter')
+    await settle()
+    expect(focusedValue()).toBe('license')
+
+    press(active(), 'Home')
+    expect(focusedValue()).toBe('src')
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('index')
+    press(active(), 'Enter')
+    expect(h.value()).toEqual(['license'])
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('utils')
+    // readme 是作者自己禁用的，照旧跨过去
+    press(active(), 'ArrowDown')
+    expect(focusedValue()).toBe('docs')
+    press(active(), 'i')
+    expect(focusedValue()).toBe('index')
+  })
+
+  it('机器自己也拦：绕过连接层直接送选中事件同样加不进去', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultValue: ['license'] })
+    h.send({ type: 'NODE.SELECT', value: 'index' })
+    expect(h.value()).toEqual(['license'])
+    h.send({ type: 'NODE.SELECT', value: 'license' })
+    expect(h.value()).toEqual([])
+  })
+
+  it('只拦用户这一路的加选：setValue 与受控值超过上限也原样收下', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true, defaultExpandedValue: ['src'] })
+    h.api().setValue(['index', 'license'])
+    expect(h.value()).toEqual(['index', 'license'])
+    expect(h.node('utils').getAttribute('aria-disabled')).toBe('true')
+    click(h.item('index').item)
+    expect(h.value()).toEqual(['license'])
+
+    expect(mount({ multiple: true, maxSelected: 1, value: ['index', 'license'] }).value()).toEqual(['index', 'license'])
+  })
+
+  it('级联勾选下不生效：一次勾选带上整枝，不按上限拦；单选下也不生效', async () => {
+    const cascade = mount({ multiple: true, cascade: true, maxSelected: 1, defaultOpen: true, defaultExpandedValue: ['src'] })
+    await tick()
+    expect(cascade.api().maxSelected).toBeNull()
+    click(cascade.branch('utils').control)
+    expect(cascade.value()).toEqual(['dom', 'math'])
+    expect(cascade.node('license').getAttribute('aria-disabled')).toBe('false')
+
+    const single = mount({ maxSelected: 1, defaultOpen: true, defaultValue: 'license' })
+    expect(single.api().maxSelected).toBeNull()
+    expect(single.node('src').getAttribute('aria-disabled')).toBe('false')
+
+    expect(mount({ multiple: true, maxSelected: 2.9 }).api().maxSelected).toBe(2)
+    expect(mount({ multiple: true, maxSelected: 0 }).api().maxSelected).toBeNull()
+  })
+})

@@ -772,6 +772,11 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 选满后选不进去的分支只是行不可选，箭头照常展开：行上的 not-allowed 不带到没被禁用的箭头上 */
+  [data-scope='tree-select'][data-part='branch-control'][data-disabled] > [data-scope='tree-select'][data-part='branch-trigger']:not([data-disabled]) {
+    cursor: pointer;
+  }
+
   /* 层级缩进靠子层容器自己顶：分支物理嵌套着子层，每深一层就多缩一格，
      无需把层级号写进内联样式，也就不必在两个适配器里各写一遍 */
   [data-scope='tree-select'][data-part='branch-content'] {
