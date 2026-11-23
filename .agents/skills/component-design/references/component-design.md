@@ -658,7 +658,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 ### 7.5 集合行的槽位
 
-一行按 `check-lead | prefix | check | text | shortcut | suffix | indicator` 七列排布，说明占 text 列的第 2 行；没有勾选框的行两列勾选框都宽 0、不占位。每一格的归属固定：
+一行按 `prefix | text | shortcut | suffix | indicator` 五列排布，说明占 text 列的第 2 行；带勾选框的行再多开一列——`check-lead` 开在 prefix 之前，`check` 开在 prefix 之后，一行只开其中一列，没有勾选框的行两列都不存在。条目里没声明落位的作者节点（直属的裸图标、尾部提示）靠网格自动落位，按 DOM 顺序填空着的格子：正文前的落 prefix，正文后的依次落 shortcut 与 suffix；所以空列不能常驻，否则尾部提示会被排进去、跑到正文前面。每一格的归属固定：
 
 | 槽 | 归属 | 内容来源 |
 | --- | --- | --- |

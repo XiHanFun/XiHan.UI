@@ -1232,9 +1232,7 @@
 
     display: grid;
     grid-template-columns:
-      [check-lead] max-content
       [prefix] max-content
-      [check] max-content
       [text] minmax(0, 1fr)
       [shortcut] max-content
       [suffix] max-content
@@ -1305,9 +1303,32 @@
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* 多选的行首勾选框，两个落点，没有勾选框的行这两列宽 0、不占位：
+  /* 多选的行首勾选框，两个落点：
      prefix 是结构性前导（树的展开箭头）时落它之后的 check 列，箭头仍贴着层级缩进；
-     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面 */
+     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面。
+     这两条列只在这一行真有勾选框时才开。没声明落位的作者节点（直属的裸图标、尾部提示）靠网格自动落位：
+     按 DOM 顺序填空着的格子，正文前那个落 prefix、正文后的依次落 shortcut 与 suffix。
+     勾选框的列若常驻，没有勾选框时它们是空着的头几格，尾部提示就被排进去、跑到正文前面 */
+  [data-xh-collection-item]:has(> [data-xh-collection-slot='check-lead']) {
+    grid-template-columns:
+      [check-lead] max-content
+      [prefix] max-content
+      [text] minmax(0, 1fr)
+      [shortcut] max-content
+      [suffix] max-content
+      [indicator] max-content;
+  }
+
+  [data-xh-collection-item]:has(> [data-xh-collection-slot='check']) {
+    grid-template-columns:
+      [prefix] max-content
+      [check] max-content
+      [text] minmax(0, 1fr)
+      [shortcut] max-content
+      [suffix] max-content
+      [indicator] max-content;
+  }
+
   [data-xh-collection-slot='check-lead'] {
     grid-column: check-lead;
     grid-row: 1 / span 2;

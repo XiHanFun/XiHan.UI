@@ -46,11 +46,11 @@ function fallbackOf(body, slot) {
 }
 
 describe('collection Item recipe', () => {
-  it('固定三尺寸、六内容列、三上下文、九个基础态与上下文态', async () => {
+  it('固定三尺寸、八内容列、三上下文、九个基础态与上下文态', async () => {
     const recipe = await source()
     const css = compileCollectionItemRecipe(recipe)
     expect(recipe.sizes).toEqual(['sm', 'md', 'lg'])
-    expect(recipe.columns).toEqual(['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator'])
+    expect(recipe.columns).toEqual(['check-lead', 'prefix', 'check', 'text', 'description', 'shortcut', 'suffix', 'indicator'])
     expect(recipe.contexts).toEqual(['overlay', 'page', 'nav'])
     expect(recipe.states).toEqual([
       'rest',
@@ -84,6 +84,16 @@ describe('collection Item recipe', () => {
     expect(css).toContain('[data-xh-collection-item][aria-disabled=\'true\']')
     expect(css).toContain('[data-xh-collection-item][aria-busy=\'true\']')
     expect(css).toContain('[data-xh-collection-item][data-error]')
+  })
+
+  // 没声明落位的作者节点（条目里直属的裸图标、尾部提示）靠网格自动落位，按 DOM 顺序填空着的格子。
+  // 勾选框的列若常驻，没有勾选框的行里它们就是空着的头几格，尾部提示被排进去、跑到正文前面。
+  it('勾选框的两条列只在这一行真有勾选框时才进列模板', async () => {
+    const css = compileCollectionItemRecipe(await source())
+    const tracks = selector => [...ruleBody(css, selector).match(/grid-template-columns:([^;]+);/)[1].matchAll(/\[([\w-]+)\]/g)].map(match => match[1])
+    expect(tracks('[data-xh-collection-item]')).toEqual(['prefix', 'text', 'shortcut', 'suffix', 'indicator'])
+    expect(tracks('[data-xh-collection-item]:has(> [data-xh-collection-slot=\'check-lead\'])')).toEqual(['check-lead', 'prefix', 'text', 'shortcut', 'suffix', 'indicator'])
+    expect(tracks('[data-xh-collection-item]:has(> [data-xh-collection-slot=\'check\'])')).toEqual(['prefix', 'check', 'text', 'shortcut', 'suffix', 'indicator'])
   })
 
   it('路径与选择不依赖字重或宽度变化，separator 不使用负 margin', async () => {

@@ -35,6 +35,8 @@ const STATE_SLOT = {
   opacity: 'opacity',
   markerColor: 'indicator-fg',
 }
+/** 勾选框的两个落点，各自一条列：只在这一行真有勾选框时才进列模板（见 columnTemplate）。 */
+const CHECK_SLOTS = ['check-lead', 'check']
 const MARKER_GLYPHS = ['trailing', 'leading', 'none']
 const MARKER_CURRENTS = ['none', 'bar']
 /**
@@ -315,6 +317,24 @@ function stateExtras(source, state, indent) {
 }
 
 /**
+ * 一行的列模板，逐条列各占一行、带六格缩进，直接嵌进声明里。
+ * check 指明这一行的勾选框落在哪条列（没有勾选框时不给，两条勾选框列都不进模板）；
+ * leadingIndicator 把对号列从行尾挪到行首。
+ */
+function columnTemplate({ check = null, leadingIndicator = false } = {}) {
+  return [
+    leadingIndicator && '[indicator] max-content',
+    check === 'check-lead' && '[check-lead] max-content',
+    '[prefix] max-content',
+    check === 'check' && '[check] max-content',
+    '[text] minmax(0, 1fr)',
+    '[shortcut] max-content',
+    '[suffix] max-content',
+    !leadingIndicator && '[indicator] max-content',
+  ].filter(Boolean).map(track => `      ${track}`).join('\n')
+}
+
+/**
  * page 上下文的标记落位：对号按 markers.page.glyph 排在行尾（trailing，与 overlay 同列）或行首（leading）；
  * 当前项的起始侧指示条按 markers.page.current 开关（none 即只由行面与字色表达）。
  */
@@ -327,14 +347,13 @@ function pageMarkerRules(page) {
     return `${head}\n  }\n`
   return `${head}
     grid-template-columns:
-      [indicator] max-content
-      [check-lead] max-content
-      [prefix] max-content
-      [check] max-content
-      [text] minmax(0, 1fr)
-      [shortcut] max-content
-      [suffix] max-content;
+${columnTemplate({ leadingIndicator: true })};
   }
+
+${CHECK_SLOTS.map(check => `  [data-xh-collection-item][data-xh-collection-context='page']:has(> [data-xh-collection-slot='${check}']) {
+    grid-template-columns:
+${columnTemplate({ check, leadingIndicator: true })};
+  }`).join('\n\n')}
 
   [data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
     margin-inline-start: 0;
@@ -361,13 +380,7 @@ ${rest}
 
     display: grid;
     grid-template-columns:
-      [check-lead] max-content
-      [prefix] max-content
-      [check] max-content
-      [text] minmax(0, 1fr)
-      [shortcut] max-content
-      [suffix] max-content
-      [indicator] max-content;
+${columnTemplate()};
     /* 第 2 行是说明行。各皮肤为了省略号给 text 槽写了 overflow: hidden，它因此成为滚动容器、自动最小尺寸
        归 0；轨道尺寸算法里第 1 行的 base size 只有 0，处理跨两行的 prefix / indicator 等图标时会把图标高度
        平均分给两行，没有说明的条目也长出半个图标高的第 2 行，图标随之整体下沉。minmax(0, max-content)
@@ -414,9 +427,17 @@ ${sizeVars(source, size)}
     margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  /* 多选的行首勾选框，两个落点，没有勾选框的行这两列宽 0、不占位：
+  /* 多选的行首勾选框，两个落点：
      prefix 是结构性前导（树的展开箭头）时落它之后的 check 列，箭头仍贴着层级缩进；
-     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面 */
+     prefix 是行首内容（图标、头像）时落它之前的 check-lead 列，勾选框排在一行的最前面。
+     这两条列只在这一行真有勾选框时才开。没声明落位的作者节点（直属的裸图标、尾部提示）靠网格自动落位：
+     按 DOM 顺序填空着的格子，正文前那个落 prefix、正文后的依次落 shortcut 与 suffix。
+     勾选框的列若常驻，没有勾选框时它们是空着的头几格，尾部提示就被排进去、跑到正文前面 */
+${CHECK_SLOTS.map(check => `  [data-xh-collection-item]:has(> [data-xh-collection-slot='${check}']) {
+    grid-template-columns:
+${columnTemplate({ check })};
+  }`).join('\n\n')}
+
   [data-xh-collection-slot='check-lead'] {
     grid-column: check-lead;
     grid-row: 1 / span 2;
