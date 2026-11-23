@@ -38,7 +38,7 @@ DOM 上出现的属性分三类，只有前两类是对外的样式接口：
 | 属性 | 含义 | 谁写 |
 | --- | --- | --- |
 | `data-scope` / `data-part` | 结构标识：所属组件与部件 | 解剖 |
-| `data-state` / `data-disabled` / `data-orientation` / `data-highlighted` / `data-side` / `data-align` | 状态：当前的状态 | `connect` |
+| `data-state` / `data-disabled` / `data-orientation` / `data-highlighted` / `data-placement` | 状态：当前的状态 | `connect` |
 | `data-xh-*` | 内部标记（层栈、集合项、焦点哨兵、滚动分片等） | 原语内部 |
 
 第三类以 `data-xh-` 前缀与前两类区分。不在皮肤中选择它们，它们是实现细节，不承诺稳定。
@@ -67,18 +67,16 @@ export const accordionMeta: ComponentMeta = {
 
 | 档 | 传了数据之后 | 哪些组件 |
 | --- | --- | --- |
-| 根级代铺 | `<XhXxxRoot :collection>` 可以单独使用，整套部件由组件铺开；写了默认插槽即整体接管 | `accordion` `checkbox-group` `combobox` `context-menu` `listbox` `mention` `menu` `menubar` `navigation-menu` `radio-group` `select` `tabs` `toggle-group` |
-| 仅元信息 | 不铺任何节点，结构全部手写；数据只供组件内部判断禁用、层级、选中 | `tree` `tree-select` `cascader` `transfer` `side-nav` `table`（`columns` / `rows`）`steps`（`count`） |
-
-判据是结构的自由度：扁平集合的 DOM 形状确定，代铺不会限制任何写法；层级与多区（树、级联、穿梭框）的结构有较多合理变体，代铺会迫使作者推翻重写。
+| 根级代铺 | `<XhXxxRoot :collection>` 可以单独使用，整套部件由组件按标准结构铺开；写了默认插槽即整体接管 | 提供了标准结构的组件：扁平集合（`select` `listbox` `menu` `tabs` 等），以及层级与多区的 `tree` `tree-select` `cascader` `transfer` `table`。各组件页的用法一节写明能不能只写根 |
+| 仅元信息 | 不铺任何节点，结构全部手写；数据只供组件内部判断禁用、层级、选中 | `side-nav` `steps`（`count`） |
 
 代铺一档有一条硬约束，由 `tests/collection-required-parts.spec.ts` 逐个组件保证：铺出的结构必须包含该组件的必备部件，与手写全套部件产出的 DOM 一致。少一个部件即渲染出一个看似正常、实际不工作的组件：浮层无法打开、方向键找不到条目、读屏在自定义元素侧报告 `wc.missing-part`。为新组件增加代铺时，先在该测试中增加一行。
 
-## 两套适配器的用法
+## 三个适配器的用法
 
-Vue 适配器把部件封装为组件。`XhAccordionContent` 内部把 `api.getContentProps()` 展开到一个 `<div>` 上，属性由 `connect` 提供，`data-part` 不需要作者编写，但它存在于 DOM 上。
+Vue 与 React 适配器把部件封装为组件。`XhAccordionContent` 内部把 `api.getContentProps()` 展开到一个 `<div>` 上，属性由 `connect` 提供，`data-part` 不需要作者编写，但它存在于 DOM 上。
 
-Web Components 适配器相反：结构由作者编写，用 `data-xh-part` 声明节点的角色，元素发现它们之后写入属性。
+Web Components 适配器的结构写在 Light DOM 里：作者用 `data-xh-part` 声明节点的角色，元素发现它们之后写入属性。提供了标准结构的元素，一个部件都不写时按标准结构生成。
 
 ```html
 <xh-accordion>
@@ -135,7 +133,7 @@ export function connectAccordion<T extends PropTypes>(
 ): AccordionApi<T>;
 ```
 
-`normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/core` 的恒等归一化器 `normalizeProps`。
+`normalize` 按元素类型分成 `element` / `button` / `input` / `label` / `img` 等若干 getter，各框架各实现一份。Vue 适配器传 `vueNormalize`，React 适配器传 `reactNormalize`，Web Components 适配器传 `wcNormalize`，无头场景直接用 `@xihan-ui/core` 的恒等归一化器 `normalizeProps`。
 
 需要叠加自定义属性时使用 `mergeProps`，合并语义固定：
 

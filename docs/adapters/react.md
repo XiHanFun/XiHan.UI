@@ -45,7 +45,7 @@ import { XhDialogContent, XhDialogRoot, XhDialogTitle, XhDialogTrigger } from "@
 
 ```tsx
 <XhSelectRoot value={value} onValueChange={({ value }) => setValue(value)}>
-  {({ hasValue, valueText }) => (hasValue ? valueText : "请选择")}
+  {({ displayText }) => displayText || "请选择"}
 </XhSelectRoot>;
 ```
 
@@ -180,13 +180,13 @@ toast.success("已保存");
 import { setSoundPlayer, useSoundOnPress, withNotificationSound } from "@xihan-ui/react/sound";
 ```
 
-Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改为返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-里用)。
+Vue 侧由 `v-sound` 指令完成同一件事。React 没有指令介质，改为返回 ref 回调的 hook；两侧的服务包装名与选项完全同名同形。默认映射与开关见[声音层](../guide/sound#在-react-中使用)。
 
 ## 服务端渲染
 
 - `createReactRuntime()` 的 `isServer` 由 `typeof window === 'undefined'` 判定，服务端不挂事件、不读媒体查询；
 - scope 的基名取自 `useId`，同一棵树两端一致，不会 hydration 不匹配；
-- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../guide/theme#服务端渲染)。
+- 主题属性建议在服务端就渲染到 `<html>` 上，见[设计令牌与主题](../installation#服务端渲染)。
 
 ### React Server Components
 

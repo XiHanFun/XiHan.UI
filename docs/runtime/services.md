@@ -78,7 +78,7 @@ const next = await dialog.prompt({
 // next 是 { email, password } 的普通对象快照；取消 / Escape 得到 null
 ```
 
-`prompt` 的 `onOk` 返回 `false` 表示不放行。`confirm` 的 `onOk` 不适用这条：它的返回值不参与判定，只有拒绝才阻止关闭。
+`confirm` 与 `prompt` 的 `onOk` 返回 `false` 都表示不放行，对话框保持打开；抛错或返回被拒绝的 Promise 进入失败态，同样保持打开。
 
 ### 同一时刻只有一个
 

@@ -196,7 +196,7 @@ declare module 'vue' {
 </template>
 ```
 
-载荷类型本身也从主入口导出（命名如 `TabsPanelSlotProps`、`StepsRootSlotProps`），需要把插槽内容拆成子组件时可以直接用于标注 props。
+载荷类型本身也从主入口导出（命名如 `DialogRootSlotProps`、`StepsRootSlotProps`），需要把插槽内容拆成子组件时可以直接用于标注 props。
 
 插槽键在类型上一律可选：组件内部按作者是否编写该插槽决定是否按 `collection` 铺开默认结构，键若非可选，该判断在类型上恒为真。
 
@@ -267,7 +267,7 @@ import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrou
 import { setSoundPlayer, vSound, withNotificationSound } from "@xihan-ui/vue/sound";
 ```
 
-默认映射与开关见[声音层](../guide/sound#在-vue-里用)。
+默认映射与开关见[声音层](../guide/sound#在-vue-中使用)。
 
 ## 服务端渲染
 

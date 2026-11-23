@@ -218,7 +218,7 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 
 ## 语气不跨组件继承
 
-库内有 `tone` 的组件，自己写了就用自己的，没写就用组件自己的缺省语气，不接外层容器的：没写 `tone` 的 Button 放进 `tone="danger"` 的 Alert，或放进一个写了 `data-tone="danger"` 的自定义节点，仍是缺省的品牌色；没写 `tone` 的 Tooltip 从这样的容器里打开，仍是缺省的反白底。
+库内有 `tone` 的组件，自己写了就用自己的，没写就用组件自己的缺省语气，不接外层容器的：没写 `tone` 的 Button 放进 `tone="danger"` 的 Alert，或放进一个写了 `data-tone="danger"` 的自定义节点，仍是缺省的品牌色；没写 `tone` 的 Tooltip 从这样的容器里打开，仍是缺省的浮层面。
 
 组把语气交给子组件，是组件显式下发的：ButtonGroup 写到没写 `tone` 的段上，TagGroup、TagsInput 与选择器写到值标签上，Menu 写到子菜单上；子组件自己写了 `tone` 的，以子组件为准。CheckboxGroup、RadioGroup、ToggleGroup、Tabs 这类组的条目是组自己的部件，跟着组的语气走，条目外面再包一层布局组件（Flex、Grid、ScrollArea 等没有 `tone` 的组件）也不影响。
 
@@ -368,7 +368,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 移除 `@xihan-ui/styles`，只保留令牌（或连令牌一起移除），组件行为不受影响。需要了解的全部接口是：
 
 1. `data-scope` + `data-part`：结构标识，见[组件参考](../components/)中每个组件的解剖；
-2. `data-state` / `data-disabled` / `data-readonly` / `data-invalid` / `data-orientation` / `data-highlighted` / `data-side` / `data-align`：状态钩子；
+2. `data-state` / `data-disabled` / `data-readonly` / `data-invalid` / `data-orientation` / `data-highlighted` / `data-placement`：状态钩子；
 3. 组件自身的语义属性，如 `data-variant`、`data-position`。
 
 两条贯穿全库的取值约定，写全局规则时可以依赖：

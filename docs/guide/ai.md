@@ -33,9 +33,9 @@ const transport = createHttpSseTransport({
 
 `Transport` 是一个接口，`stream(req, signal)` 返回归一化事件的异步生成器。HTTP + SSE 只是它的一个实现：换成 WebSocket 或其他协议时实现同一个接口即可，上层无需修改。
 
-`stream()` 不抛异常。错误路径一律先产出一条事件再结束：取消产出 `abort`，其余产出 `retryable` 的 `error`。异常在流的边界转换为数据，上层不必到处 try/catch。
+`stream()` 不抛异常。错误路径一律先产出一条事件再结束：取消产出 `abort`，其余产出 `error`：网络异常、HTTP 429 与 5xx 标为 `retryable`，其余状态码、协议版本不符与没有正文的响应不可重试。异常在流的边界转换为数据，上层不必到处 try/catch。
 
-服务端协议按 Data Stream v1 归一（`normalizeDataStreamV1`），请求头 `x-vercel-ai-ui-message-stream: v1`。
+服务端协议按 Data Stream v1 归一（`normalizeDataStreamV1`），服务端须在响应头返回 `x-vercel-ai-ui-message-stream: v1`；缺了或版本不符即报错，不读正文。
 
 ## 消息模型
 
