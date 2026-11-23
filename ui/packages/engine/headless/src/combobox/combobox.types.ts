@@ -192,6 +192,12 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
     multiple?: boolean
     /** 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 */
     maxTagCount?: number
+    /**
+     * 多选下最多选几项。选满后没选中的候选按禁用处理：转 aria-disabled，方向键跳过，点击与确认键都加不进去，
+     * allowCustomValue 下回车也造不出新的一项（输入串留着）；已选的照旧可以去掉，去掉一个即腾出名额。
+     * 只拦用户这一路的加选，setValue 与受控 value 原样收下。非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。
+     */
+    maxSelected?: number
     /** 整个控件禁用：输入框与两个按钮都使用原生 disabled。 */
     disabled?: boolean
     /** 只读：文字可选可复制，但展开、选中、清空一概不发生。 */
@@ -389,6 +395,8 @@ export interface ComboboxApi<T extends PropTypes = PropTypes, V = string> {
   tags: ComboboxTagMeta<V>[]
   /** 被 maxTagCount 折叠的标签数。 */
   overflowCount: number
+  /** 生效的多选上限；单选或没设上限时为 null。 */
+  maxSelected: number | null
   /** +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 */
   overflowText: string
   isSelected: (value: V) => boolean

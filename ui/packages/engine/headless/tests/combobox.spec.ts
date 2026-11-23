@@ -1499,3 +1499,86 @@ describe('combobox 必填', () => {
     expect(filled.required).toBeUndefined()
   })
 })
+
+describe('多选上限 maxSelected', () => {
+  it('选满后没选中的候选转禁用、点不进集合；已选的照旧能点掉，点掉即腾出名额', () => {
+    const h = mount({ multiple: true, maxSelected: 2, defaultOpen: true })
+    click(h.item('apple'))
+    expect(h.item('durian').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('cherry'))
+    expect(h.value()).toEqual(['apple', 'cherry'])
+
+    // 满了：没选中的那一条转禁用，已选的不受影响
+    expect(h.item('durian').getAttribute('aria-disabled')).toBe('true')
+    expect(h.item('durian').hasAttribute('data-disabled')).toBe(true)
+    expect(h.item('apple').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('durian'))
+    expect(h.value()).toEqual(['apple', 'cherry'])
+
+    click(h.item('apple'))
+    expect(h.value()).toEqual(['cherry'])
+    expect(h.item('durian').getAttribute('aria-disabled')).toBe('false')
+    click(h.item('durian'))
+    expect(h.value()).toEqual(['cherry', 'durian'])
+  })
+
+  it('选满后方向键跳过加不进去的候选，确认键也加不进去', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true, defaultValue: ['cherry'] })
+    // 只剩已选的那一条可达
+    press(h.input, 'ArrowDown')
+    expect(h.api().highlightedValue).toBe('cherry')
+    press(h.input, 'ArrowDown')
+    expect(h.api().highlightedValue).toBe('cherry')
+
+    // 高亮被别的路送到加不进去的候选上：确认键不认
+    h.send({ type: 'ITEM.HIGHLIGHT', value: 'durian' })
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['cherry'])
+  })
+
+  it('机器自己也拦：绕过连接层直接送选中事件同样加不进去', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true, defaultValue: ['cherry'] })
+    h.send({ type: 'ITEM.SELECT', value: 'durian' })
+    expect(h.value()).toEqual(['cherry'])
+    h.send({ type: 'ITEM.SELECT', value: 'cherry' })
+    expect(h.value()).toEqual([])
+  })
+
+  it('允许自定义值时回车也造不出第 N+1 个；输入串留着，不替用户吞掉', () => {
+    const h = mount({ multiple: true, maxSelected: 1, allowCustomValue: true, defaultValue: ['cherry'] })
+    type(h.input, 'kiwi')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['cherry'])
+    expect(h.inputValue()).toBe('kiwi')
+
+    // 退格腾出名额之后就收得进去
+    type(h.input, '')
+    press(h.input, 'Backspace')
+    expect(h.value()).toEqual([])
+    type(h.input, 'kiwi')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['kiwi'])
+  })
+
+  it('只拦用户这一路的加选：setValue 与受控值超过上限也原样收下', () => {
+    const h = mount({ multiple: true, maxSelected: 1, defaultOpen: true })
+    h.api().setValue(['apple', 'cherry'])
+    expect(h.value()).toEqual(['apple', 'cherry'])
+    expect(h.item('durian').getAttribute('aria-disabled')).toBe('true')
+    click(h.item('apple'))
+    expect(h.value()).toEqual(['cherry'])
+
+    expect(mount({ multiple: true, maxSelected: 1, value: ['apple', 'cherry'] }).value()).toEqual(['apple', 'cherry'])
+  })
+
+  it('单选下不生效；非整数向下取整，小于 1 不设上限', () => {
+    const single = mount({ maxSelected: 1, defaultOpen: true, defaultValue: 'apple' })
+    expect(single.item('cherry').getAttribute('aria-disabled')).toBe('false')
+    expect(single.api().maxSelected).toBeNull()
+    click(single.item('cherry'))
+    expect(single.value()).toEqual(['cherry'])
+
+    expect(mount({ multiple: true, maxSelected: 2.9 }).api().maxSelected).toBe(2)
+    expect(mount({ multiple: true, maxSelected: 0 }).api().maxSelected).toBeNull()
+  })
+})

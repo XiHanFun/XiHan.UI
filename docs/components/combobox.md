@@ -90,6 +90,7 @@
 - 支持单选、多选、分组和自定义值。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：`label` 给标题文字、`empty` 给空态文字、`clearable` 带清空按钮，空态之后是在途占位（文字取 `translations.loading`，展开、在途且没有候选时露出），末尾一份表单影子，给了 `name` 或必填时才铺（必填时那份空值占位拦得住空表单），两样都没有就不铺。Web Components 里标题、空态、条目文字与行首行尾可以写在宿主的直接子节点上接管：`slot="label"`、`slot="empty"`、`slot="item:<值>"`、`slot="item-prefix:<值>"`、`slot="item-suffix:<值>"`。
 - 多选的已选项在输入框前排成标签，与[选择器](./select)同一套呈现：超出 `maxTagCount`（默认 3）合并为 `+N`，标签带删除钮，输入串为空时退格删掉最后一个；已选项被筛出候选后标签仍显示选中那一刻的文字。
+- `maxSelected` 给多选设上限，与[选择器](./select)同一条规则：选满后没选中的候选按禁用处理（转 `aria-disabled`，方向键跳过，点击与确认键都加不进去），`allowCustomValue` 下回车也造不出新的一项、输入串留着；已选的照旧可以去掉，去掉一个即腾出名额。只拦用户这一路的加选；小于 1 时不设上限，单选下不生效。
 - 候选可逐条声明语气，失效或需要留意的那条自带该族字色与高亮底。
 - 候选可写副文本，第 2 行放一句解释，与标题同列、走 muted 档。
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
@@ -153,6 +154,7 @@
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
 | `multiple` | `boolean` |  | 多选：选中为集合，选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签。 |
 | `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3。 |
+| `maxSelected` | `number` |  | 多选下最多选几项。选满后没选中的候选按禁用处理：转 aria-disabled，方向键跳过，点击与确认键都加不进去， allowCustomValue 下回车也造不出新的一项（输入串留着）；已选的照旧可以去掉，去掉一个即腾出名额。 只拦用户这一路的加选，setValue 与受控 value 原样收下。非整数向下取整，小于 1 或不是有限数时不设上限；单选下不生效。 |
 | `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
 | `invalid` | `boolean` |  | 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 |
@@ -283,6 +285,7 @@
 | `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `tags` | `ComboboxTagMeta<V>[]` | 多选时可见的标签（受 maxTagCount 截断），与 value 同序；单选恒为空数组，选中项的文字在输入框里。 |
 | `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `maxSelected` | `number \| null` | 生效的多选上限；单选或没设上限时为 null。 |
 | `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `isSelected` | `(value: V) => boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |

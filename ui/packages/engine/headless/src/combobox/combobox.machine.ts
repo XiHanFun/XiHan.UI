@@ -11,6 +11,7 @@ import { isItemDisabled, itemValue, navigateItems, queryItems, resetDeclaredValu
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { controlledOpenActions, controlledOpenGuards } from '../shared/controlled-open'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
@@ -494,6 +495,12 @@ export const comboboxMachine = createMachine({
         const e = event.current()
         if (e.type !== 'ITEM.SELECT')
           return
+        // 多选选满了：只拦加选这一路，取消选中照常放行
+        if (prop('multiple') && !context.get('value').includes(e.value)) {
+          const max = resolveMaxSelected(prop('maxSelected'))
+          if (max != null && context.get('value').length >= max)
+            return
+        }
         // 文字在事件那一刻取好带过来：选完这一项常常就被宿主筛出候选，之后查不到了
         if (e.label != null && context.get('valueLabels')[e.value] !== e.label)
           context.set('valueLabels', { ...context.get('valueLabels'), [e.value]: e.label })
@@ -518,14 +525,19 @@ export const comboboxMachine = createMachine({
         const text = context.get('inputValue')
         if (text === '')
           return
-        context.set('filterQuery', '')
         const current = context.get('value')
         if (prop('multiple')) {
+          // 选满了造不出新的一项：输入串原样留着，不替用户吞掉
+          const max = resolveMaxSelected(prop('maxSelected'))
+          if (!current.includes(text) && max != null && current.length >= max)
+            return
+          context.set('filterQuery', '')
           if (!current.includes(text))
             context.set('value', [...current, text])
           context.set('inputValue', '')
           return
         }
+        context.set('filterQuery', '')
         // 输入串等于当前选中项的显示文本时不提交，否则值会被换成标签
         if (text === context.get('valueText'))
           return

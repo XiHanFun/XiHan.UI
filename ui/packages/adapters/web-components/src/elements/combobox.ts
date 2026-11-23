@@ -73,6 +73,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便继续筛选；已选项在输入框前排成标签
  * @attr {number} max-tag-count - 多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3
+ * @attr {number} max-selected - 多选下最多选几项：选满后没选中的候选按禁用处理、加不进去，已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。
  * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都使用原生 disabled
  * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
  * @attr {boolean} invalid - 校验失败标注
@@ -169,6 +170,7 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
     defaultOpen: { converter: BOOLEAN_CONVERTER, attribute: 'default-open' },
     multiple: { converter: BOOLEAN_CONVERTER },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
+    maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -206,6 +208,7 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
   declare defaultOpen?: boolean
   declare multiple?: boolean
   declare maxTagCount?: number
+  declare maxSelected?: number
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -309,6 +312,7 @@ export class XhComboboxElement<V = string> extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       multiple: this.multiple ?? false,
       maxTagCount: this.maxTagCount,
+      maxSelected: this.maxSelected,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,

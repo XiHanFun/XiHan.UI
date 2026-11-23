@@ -9,6 +9,7 @@ import type { NavIntent, NormalizeProps, PressHandlers, PropTypes, Service } fro
 import type { ComboboxApi, ComboboxInputEl, ComboboxInputProps, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxPressedPart, ComboboxSchema } from './combobox.types'
 import { contains, createPressTracker, dataAttr, isComposingEvent, isItemDisabled, ITEM_VALUE_ATTR, itemValue, mergeProps, navigateItems, queryItems } from '@xihan-ui/core'
 import { COMBOBOX_EN_US } from '../locale/en-US'
+import { resolveMaxSelected } from '../shared/max-selected'
 import { overlayAnchorWidthVar, overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSelectionTags } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
@@ -146,9 +147,17 @@ function connectComboboxKeys<T extends PropTypes>(
   const itemId = (v: string): string => scope.partId(comboboxAnatomy.name, `item:${encodeURIComponent(v)}`)
   const groupLabelId = (group: string): string => scope.partId(comboboxAnatomy.name, `group-label:${group}`)
 
-  /** 候选禁用：部件上写的优先，没写就回 collection 里查。 */
-  const itemDisabled = (item: ComboboxItemProps): boolean =>
+  /** 候选自身的禁用：部件上写的优先，没写就回 collection 里查。 */
+  const ownDisabled = (item: ComboboxItemProps): boolean =>
     item.disabled ?? metaOf.get(item.value)?.disabled ?? false
+
+  const maxSelected = multiple ? resolveMaxSelected(prop('maxSelected')) : null
+  /** 多选已到上限：没选中的候选加不进去，已选的仍能点掉。 */
+  const full = maxSelected != null && value.length >= maxSelected
+  const blockedByLimit = (v: string): boolean => full && !value.includes(v)
+
+  /** 这一条此刻按下去能不能改值：自身禁用，或选满后加不进去。候选的禁用面、导航、点击与确认键都按它。 */
+  const itemDisabled = (item: ComboboxItemProps): boolean => ownDisabled(item) || blockedByLimit(item.value)
 
   /**
    * 候选语气：只认 collection 里这一条自己写的那族色，根上的 tone 不下发。
@@ -187,7 +196,7 @@ function connectComboboxKeys<T extends PropTypes>(
     if (highlighted == null || context.get('pressedPart') === 'item')
       return
     if (virtualizer) {
-      send({ type: 'PRESS.START', part: 'item', value: highlighted, disabled: metaOf.get(highlighted)?.disabled ?? true })
+      send({ type: 'PRESS.START', part: 'item', value: highlighted, disabled: (metaOf.get(highlighted)?.disabled ?? true) || blockedByLimit(highlighted) })
       return
     }
     const el = items().find(item => itemValue(item) === highlighted)
@@ -213,7 +222,7 @@ function connectComboboxKeys<T extends PropTypes>(
     if (virtualizer) {
       const target = virtualCollectionTarget(collection, highlighted, intent, {
         value: item => item.value,
-        disabled: item => item.disabled,
+        disabled: item => item.disabled || blockedByLimit(item.value),
         loop,
       })
       if (target) {
@@ -231,7 +240,7 @@ function connectComboboxKeys<T extends PropTypes>(
       return false
     if (virtualizer) {
       const meta = metaOf.get(highlighted)
-      if (!meta || meta.disabled)
+      if (!meta || meta.disabled || blockedByLimit(highlighted))
         return false
       send({ type: 'ITEM.SELECT', value: highlighted, label: meta.label })
       return true
@@ -271,6 +280,7 @@ function connectComboboxKeys<T extends PropTypes>(
     canClear,
     tags,
     overflowCount,
+    maxSelected,
     overflowText,
     isSelected,
     setOpen: (next) => {

@@ -71,6 +71,8 @@ export interface XhComboboxRootProps<V = string> extends RootElementProps {
   multiple?: boolean
   /** 多选标签最多显示的数量，其余折进 +N；默认 3。 */
   maxTagCount?: number
+  /** 多选下最多选几项：选满后没选中的候选按禁用处理、加不进去，已选的照旧可以去掉；只拦用户这一路的加选。小于 1 时不设上限，单选下不生效。 */
+  maxSelected?: number
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -123,6 +125,7 @@ export function XhComboboxRoot<V = string>({
   form,
   multiple,
   maxTagCount,
+  maxSelected,
   disabled,
   readOnly,
   invalid,
@@ -166,6 +169,7 @@ export function XhComboboxRoot<V = string>({
     form,
     multiple,
     maxTagCount,
+    maxSelected,
     disabled,
     readOnly,
     invalid,
