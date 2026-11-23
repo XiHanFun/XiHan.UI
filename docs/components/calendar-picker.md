@@ -117,6 +117,36 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | 状态机 | `calendarPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/calendar-picker.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `selectionMode` | `CalendarPickerSelectionMode` |  |  |
+| `maxSelected` | `number` |  | multiple 下最多选几个周期。选满后没选中的格子转 aria-disabled（仍可聚焦），点击与确认键都加不进去； 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。 非整数向下取整，小于 1 或不是有限数时不设上限；single 下不生效。 |
+| `isDateUnavailable` | `(value: string) => boolean` |  | 作者提供的不可用判定，接收 ISO 串。返回真的日期与界外日期同等处理。 |
+| `translations` | `Partial<CalendarPickerTranslations>` |  |  |
+| `onValueChange` | `(details: CalendarPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `value` | `string \| string[]` |  | 选中值，ISO 串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
+| `defaultValue` | `string \| string[]` |  |  |
+| `focusedValue` | `string` |  | 当前聚焦的那天，ISO 串；它同时决定展示哪个月。给定即受控。 缺省时退回首个选中值，再退回今天。 |
+| `defaultFocusedValue` | `string` |  |  |
+| `min` | `string` |  | 可选范围下界（含当天），ISO 串。界外的日子转 aria-disabled，但仍可聚焦。 |
+| `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
+| `invalid` | `boolean` |  | 校验失败：根节点带 data-invalid。 |
+| `locale` | `string` |  | 决定周首日与月份/星期几的文案，不给按宿主语言，宿主也没有时按 en-US。 |
+| `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六（与热力图同一套写法），非整数向下取整后按 7 取模。 不给按 locale：en-US 从星期日排起，zh-CN 从星期一排起。表头、每行的行首与 Home / End 都跟着它走； 周粒度挑的仍是 ISO 周（星期一到星期日），要让一行正好是一周，写 1。 |
+| `timeZone` | `string` |  | 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 |
+| `disabled` | `boolean` |  | 整张日历禁用：翻月按钮转原生 disabled，格子全转 aria-disabled，键盘与点击都不改值。 |
+| `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |
+| `weekdayFormat` | `CalendarWeekdayFormat` |  | 表头缩写粒度，默认 narrow：中文是「一 二 三」、英文是「M T W」，七列在日期格的宽度里不挤； short（「周一」「Mon」）几乎占满格宽，七列挨在一起读不开。全称始终给读屏用。 |
+| `fixedWeeks` | `boolean` |  | 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 |
+| `granularity` | `CalendarGranularity` |  | 选择粒度。格子值一律是周期首日的 ISO 串。 |
+| `activeView` | `CalendarView` |  | 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。 它与 granularity 是两件事：granularity 是作者要挑的粒度，这个是人钻到了哪一层。 点标题里的年会把它抬到 year，再点一格就往 granularity 那一档钻回去；到了目标粒度， 点一格才是选中。缺省即等于 granularity。 |
+| `defaultActiveView` | `CalendarView` |  | 非受控初值，缺省同 granularity。 |
+| `visibleCount` | `number` |  | 并排展示几个连续月，默认 1。翻页时整窗一起走一个月，不是各翻各的。 小于 1 的写法回落到 1。 |
+| `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
+| `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -147,31 +177,6 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 | `XhCalendarPickerHeading` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
 | `XhCalendarPickerHeadingMonthTrigger` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
 | `XhCalendarPickerHeadingYearTrigger` | `index` | `number` |  | 属于第几个面板，默认 0。单面板时不必写。 |
-| `XhCalendarPickerRoot` | `value` | `string \| string[]` |  |  |
-| `XhCalendarPickerRoot` | `defaultValue` | `string \| string[]` |  |  |
-| `XhCalendarPickerRoot` | `selectionMode` | `CalendarPickerSelectionMode` |  |  |
-| `XhCalendarPickerRoot` | `maxSelected` | `number` |  | multiple 下最多选几个周期；选满后没选中的格子不可再加选。 |
-| `XhCalendarPickerRoot` | `focusedValue` | `string` |  |  |
-| `XhCalendarPickerRoot` | `defaultFocusedValue` | `string` |  |  |
-| `XhCalendarPickerRoot` | `min` | `string` |  |  |
-| `XhCalendarPickerRoot` | `max` | `string` |  |  |
-| `XhCalendarPickerRoot` | `isDateUnavailable` | `(value: string) => boolean` |  |  |
-| `XhCalendarPickerRoot` | `invalid` | `boolean` |  | 校验失败：根带 data-invalid。 |
-| `XhCalendarPickerRoot` | `locale` | `string` |  |  |
-| `XhCalendarPickerRoot` | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。 |
-| `XhCalendarPickerRoot` | `timeZone` | `string` |  |  |
-| `XhCalendarPickerRoot` | `disabled` | `boolean` |  |  |
-| `XhCalendarPickerRoot` | `readOnly` | `boolean` |  |  |
-| `XhCalendarPickerRoot` | `weekdayFormat` | `CalendarWeekdayFormat` |  |  |
-| `XhCalendarPickerRoot` | `fixedWeeks` | `boolean` |  |  |
-| `XhCalendarPickerRoot` | `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。区间选择是另一个组件（XhCalendarRangePicker）。 |
-| `XhCalendarPickerRoot` | `activeView` | `CalendarView` |  | 面板当前所处的层级；给定即受控，默认跟随 granularity。 |
-| `XhCalendarPickerRoot` | `defaultActiveView` | `CalendarView` |  | 非受控初值，默认同 granularity。 |
-| `XhCalendarPickerRoot` | `visibleCount` | `number` |  | 并排展示几页，默认 1。 |
-| `XhCalendarPickerRoot` | `translations` | `Partial<CalendarPickerTranslations>` |  |  |
-| `XhCalendarPickerRoot` | `onValueChange` | `CalendarPickerProps['onValueChange']` |  |  |
-| `XhCalendarPickerRoot` | `onFocusedValueChange` | `CalendarPickerProps['onFocusedValueChange']` |  |  |
-| `XhCalendarPickerRoot` | `onActiveViewChange` | `CalendarPickerProps['onActiveViewChange']` |  |  |
 | `XhCalendarPickerRoot` | `children` | `SlotChildren<CalendarPickerRootSlotProps>` |  |  |
 | `XhCalendarPickerWeekDay` | `value` | `number \| string` | 是 | 列序 0-6，兼收字符串。 |
 | `XhCalendarPickerWeekNumber` | `value` | `string` | 是 | 该行行首那一天的 ISO 串。 |

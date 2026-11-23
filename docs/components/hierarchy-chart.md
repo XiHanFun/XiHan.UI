@@ -114,6 +114,35 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | 状态机 | `hierarchyChartMachine` |
 | 皮肤 | `@xihan-ui/styles/hierarchy-chart.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `data` | `ChartRow \| readonly ChartRow[]` |  | 数据：嵌套的树（子节点在 childrenField 里），或扁平的行（按 idField 与 parentField 组树）。 |
+| `childrenField` | `string` |  | 嵌套数据的子节点字段，缺省 children。 |
+| `idField` | `string` |  | 扁平数据：行的身份字段；嵌套数据写了它也用它当节点的身份。 |
+| `parentField` | `string` |  | 扁平数据：父节点的身份字段。 |
+| `nameField` | `string` |  | 名字字段，缺省 name。 |
+| `valueField` | `string` |  | 数值字段，缺省 value：只取叶子的值，上层的值是子孙之和。 |
+| `layout` | `HierarchyLayout` |  | 空间填充的方式，缺省 treemap。 |
+| `tile` | `HierarchyTile` |  | 矩形树图的铺法，缺省 squarify。 |
+| `depth` | `number` |  | 同时看得见的层数，缺省 2。 |
+| `colorBy` | `HierarchyColorBy` |  | 着色，缺省 branch。 |
+| `palette` | `ChartPalette` |  | colorBy="value" 时顺序色阶的色板。 |
+| `orientation` | `'vertical' \| 'horizontal'` |  | 冰柱图的方向：vertical 层自上而下（缺省），horizontal 层自左而右。 |
+| `rootKey` | `string \| null` |  | 当前的根（受控）：下钻到的那个节点的身份，null 是最顶层。 |
+| `defaultRootKey` | `string \| null` |  | 初始的根（非受控）。 |
+| `onRootKeyChange` | `(details: HierarchyRootKeyChangeDetails) => void` |  | 下钻或上钻换了根时通知。 |
+| `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式：标签、提示框、可及名与数据表共用。 |
+| `translations` | `Partial<HierarchyChartTranslations>` |  |  |
+| `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
+| `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
+| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
+| `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
+| `onDatumPress` | `(details: ChartDatumDetails) => void` |  | 指针点击、Enter 或 Space 按在某个数据上时通知。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -143,30 +172,6 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhHierarchyChartRoot` | `data` | `ChartRow \| readonly ChartRow[]` |  | 数据：嵌套的树，或扁平的行（配合 idField 与 parentField）。 |
-| `XhHierarchyChartRoot` | `childrenField` | `string` |  | 嵌套数据的子节点字段，缺省 children。 |
-| `XhHierarchyChartRoot` | `idField` | `string` |  | 扁平数据：行的身份字段。 |
-| `XhHierarchyChartRoot` | `parentField` | `string` |  | 扁平数据：父节点的身份字段。 |
-| `XhHierarchyChartRoot` | `nameField` | `string` |  | 名字字段，缺省 name。 |
-| `XhHierarchyChartRoot` | `valueField` | `string` |  | 数值字段，缺省 value：只取叶子的值。 |
-| `XhHierarchyChartRoot` | `layout` | `HierarchyLayout` |  | 空间填充的方式，缺省 treemap。 |
-| `XhHierarchyChartRoot` | `tile` | `HierarchyTile` |  | 矩形树图的铺法，缺省 squarify。 |
-| `XhHierarchyChartRoot` | `depth` | `number` |  | 同时看得见的层数，缺省 2。 |
-| `XhHierarchyChartRoot` | `colorBy` | `HierarchyColorBy` |  | 着色，缺省 branch。 |
-| `XhHierarchyChartRoot` | `palette` | `ChartPalette` |  | 按值着色时顺序色阶的色板。 |
-| `XhHierarchyChartRoot` | `orientation` | `'vertical' \| 'horizontal'` |  | 冰柱图的方向，缺省 vertical。 |
-| `XhHierarchyChartRoot` | `rootKey` | `string \| null` |  | 当前的根（受控）：节点的身份，null 是最顶层。 |
-| `XhHierarchyChartRoot` | `defaultRootKey` | `string \| null` |  | 初始的根（非受控）。 |
-| `XhHierarchyChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
-| `XhHierarchyChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是节点的身份。 |
-| `XhHierarchyChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
-| `XhHierarchyChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhHierarchyChartRoot` | `locale` | `string` |  |  |
-| `XhHierarchyChartRoot` | `translations` | `Partial<HierarchyChartTranslations>` |  |  |
-| `XhHierarchyChartRoot` | `onRootKeyChange` | `HierarchyChartProps['onRootKeyChange']` |  |  |
-| `XhHierarchyChartRoot` | `onActiveKeyChange` | `HierarchyChartProps['onActiveKeyChange']` |  |  |
-| `XhHierarchyChartRoot` | `onDatumActive` | `HierarchyChartProps['onDatumActive']` |  |  |
-| `XhHierarchyChartRoot` | `onDatumPress` | `HierarchyChartProps['onDatumPress']` |  |  |
 | `XhHierarchyChartRoot` | `caption` | `ReactNode` |  | 缺省结构里的标题内容。 |
 | `XhHierarchyChartRoot` | `renderTooltip` | `(props: HierarchyChartTooltipSlotProps) => ReactNode` |  | 缺省结构里的提示框内容。 |
 | `XhHierarchyChartRoot` | `empty` | `ReactNode` |  | 缺省结构里的空态内容。 |

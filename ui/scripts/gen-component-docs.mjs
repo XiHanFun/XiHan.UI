@@ -1030,6 +1030,31 @@ function typeMeta(id) {
               })
             }
           }
+          // props 写成交叉类型（图表族的 ChartCommonProps & {…}、日历族的 CalendarBaseProps & {…}）时
+          // 不是类型字面量，上面一条都收不到，页面就没有 Props 表。经类型检查器展开成员：
+          // 本组件自己声明的排在前面，从共享基座来的跟在后面，各自保持声明次序。
+          // 整份引用一个具名类型的（props: BadgeProps）不走这里：它们的表由 connect 的视图属性那条路径出
+          else if (key === 'props' && ts.isIntersectionTypeNode(member.type)) {
+            const own = []
+            const inherited = []
+            for (const sym of checker.getPropertiesOfType(checker.getTypeAtLocation(member.type))) {
+              const decl = sym.declarations?.[0]
+              if (!decl || !ts.isPropertySignature(decl) || !decl.type)
+                continue
+              const declSf = decl.getSourceFile()
+              const entry = {
+                name: sym.name,
+                type: typeText(decl.type, declSf),
+                optional: Boolean(decl.questionToken),
+                doc: jsdoc(decl, declSf),
+              }
+              if (declSf === sf)
+                own.push(entry)
+              else
+                inherited.push(entry)
+            }
+            machineProps.push(...own, ...inherited)
+          }
           if (key === 'state')
             result.states = unionMembers(member.type, sf)
           if (key === 'event')

@@ -104,6 +104,49 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 | 状态机 | `sankeyChartMachine` |
 | 皮肤 | `@xihan-ui/styles/sankey-chart.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `nodes` | `readonly SankeyNodeDatum[]` |  | 节点：身份、名字与分组；缺省按流带里出现的先后推断，没有名字与分组。 |
+| `links` | `readonly SankeyLinkDatum[]` |  | 流带：源、目标与流量。成环、自环、负值与不存在的节点都报错。 |
+| `orientation` | `SankeyOrientation` |  | 流向，缺省 horizontal。 |
+| `nodeAlign` | `SankeyNodeAlign` |  | 节点分列的方式，缺省 justify。 |
+| `linkColor` | `SankeyLinkColor` |  | 流带的颜色，缺省 neutral。 |
+| `nodeSort` | `SankeyNodeSort` |  | 列内次序，缺省 auto。 |
+| `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式：提示框、可及名与数据表共用。 |
+| `translations` | `Partial<SankeyChartTranslations>` |  |  |
+| `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）；饼图的「系列」是扇区。 |
+| `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
+| `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
+| `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
+| `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
+| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
+| `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
+| `onDatumPress` | `(details: ChartDatumDetails) => void` |  | 指针点击、Enter 或 Space 按在某个数据上时通知。 |
+
+### SankeyNodeDatum
+
+`nodes` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `name` | `string` |  | 显示的名字，缺省同 id。 |
+| `group` | `string` |  | 分组：同一组的节点同一个颜色，图例按组显隐。 |
+
+### SankeyLinkDatum
+
+`links` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `source` | `string` | 是 |  |
+| `target` | `string` | 是 |  |
+| `value` | `number` | 是 |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -133,24 +176,6 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhSankeyChartRoot` | `nodes` | `readonly SankeyNodeDatum[]` |  | 节点：身份、名字与分组；缺省按流带里出现的先后推断。 |
-| `XhSankeyChartRoot` | `links` | `readonly SankeyLinkDatum[]` |  | 流带：源、目标与流量。 |
-| `XhSankeyChartRoot` | `orientation` | `SankeyOrientation` |  | 流向，缺省 horizontal。 |
-| `XhSankeyChartRoot` | `nodeAlign` | `SankeyNodeAlign` |  | 节点分列的方式，缺省 justify。 |
-| `XhSankeyChartRoot` | `linkColor` | `SankeyLinkColor` |  | 流带的颜色，缺省 neutral。 |
-| `XhSankeyChartRoot` | `nodeSort` | `SankeyNodeSort` |  | 列内次序，缺省 auto。 |
-| `XhSankeyChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
-| `XhSankeyChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的分组（受控）。 |
-| `XhSankeyChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的分组（非受控）。 |
-| `XhSankeyChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是节点的身份或「源→目标」。 |
-| `XhSankeyChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
-| `XhSankeyChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhSankeyChartRoot` | `locale` | `string` |  |  |
-| `XhSankeyChartRoot` | `translations` | `Partial<SankeyChartTranslations>` |  |  |
-| `XhSankeyChartRoot` | `onHiddenSeriesChange` | `SankeyChartProps['onHiddenSeriesChange']` |  |  |
-| `XhSankeyChartRoot` | `onActiveKeyChange` | `SankeyChartProps['onActiveKeyChange']` |  |  |
-| `XhSankeyChartRoot` | `onDatumActive` | `SankeyChartProps['onDatumActive']` |  |  |
-| `XhSankeyChartRoot` | `onDatumPress` | `SankeyChartProps['onDatumPress']` |  |  |
 | `XhSankeyChartRoot` | `caption` | `ReactNode` |  | 缺省结构里的标题内容。 |
 | `XhSankeyChartRoot` | `renderTooltip` | `(props: SankeyChartTooltipSlotProps) => ReactNode` |  | 缺省结构里的提示框内容。 |
 | `XhSankeyChartRoot` | `empty` | `ReactNode` |  | 缺省结构里的空态内容。 |

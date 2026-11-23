@@ -108,20 +108,20 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `defaultPosition` | `FloatButtonPosition` |  | 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`：贴右边（LTR）、中心在视口 75% 高处。 |
-| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `disabled` | `boolean` |  |  |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `draggable` | `boolean` |  | 能否用指针拖着触发器移动，默认 false。按下后移动过激活距离才算拖动，不到这个距离仍是一次点按。 |
-| `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
-| `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
+| `snap` | `FloatButtonSnap` |  | 松手后贴向哪里，默认 inline（贴左右两边里近的那条）。 |
+| `position` | `FloatButtonPosition` |  | 位置。提供即受控：拖动只发 onPositionChange，宿主写回才落到新位置。 |
+| `defaultPosition` | `FloatButtonPosition` |  | 初始位置，例如 `{ edge: 'inline-end', ratio: 0.75 }`：贴右边（LTR）、中心在视口 75% 高处。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onPositionChange` | `(details: FloatButtonPositionChangeDetails) => void` |  | 拖动落定后的新位置：贴边时给贴边位置（按比例，换个视口尺寸照样成立），snap 为 none 时给像素坐标。 落定才通知一次，拖动途中不发；要记住位置就在这里存。 |
-| `open` | `boolean` |  |  |
+| `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
+| `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
-| `position` | `FloatButtonPosition` |  | 位置。提供即受控：拖动只发 onPositionChange，宿主写回才落到新位置。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
-| `snap` | `FloatButtonSnap` |  | 松手后贴向哪里，默认 inline（贴左右两边里近的那条）。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 outline（缺省中性，描边 + 磨砂面；solid 才品牌实心）。 |

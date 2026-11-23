@@ -113,6 +113,43 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | 状态机 | `radarChartMachine` |
 | 皮肤 | `@xihan-ui/styles/radar-chart.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `data` | `readonly ChartRow[]` |  | 数据：对象数组，每行一个实体（一个系列）。 |
+| `nameField` | `string` |  | 实体名所在的字段：图例、提示框与数据表显示它，hiddenSeries 用它。 |
+| `indicators` | `readonly RadarIndicator[]` |  | 指标：3–10 个，按顺时针从 12 点方向排开。 |
+| `shape` | `RadarShape` |  | 网格形状，缺省 polygon。 |
+| `area` | `boolean` |  | 轮廓里铺一层系列色的淡洗，缺省 true。 |
+| `scale` | `RadarScale` |  | 量程，缺省 independent。 |
+| `curve` | `RadarCurve` |  | 轮廓的画法，缺省 linear。 |
+| `rings` | `number` |  | 网格分几圈，2–10，缺省 4；上限按这个圈数取整到刻度上。 |
+| `ringLabels` | `boolean` |  | 在 12 点方向那根轴上写出每一圈的数值，缺省 false。只在各指标量程相同时写 （scale 为 shared，或各指标写了同样的上下限）：量程各不相同时每根轴的刻度不一样，写在一根轴上会误读。 |
+| `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式：提示框、可及名与数据表共用。 |
+| `translations` | `Partial<RadarChartTranslations>` |  |  |
+| `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）；饼图的「系列」是扇区。 |
+| `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
+| `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
+| `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
+| `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
+| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
+| `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
+| `onDatumPress` | `(details: ChartDatumDetails) => void` |  | 指针点击、Enter 或 Space 按在某个数据上时通知。 |
+
+### RadarIndicator
+
+`indicators` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 是 |  |
+| `label` | `string` |  | 显示的名字，缺省同 key。 |
+| `min` | `number` |  |  |
+| `max` | `number` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -142,27 +179,6 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhRadarChartRoot` | `data` | `readonly ChartRow[]` |  | 数据：对象数组，每行一个实体（一个系列）。 |
-| `XhRadarChartRoot` | `nameField` | `string` |  | 实体名所在的字段。 |
-| `XhRadarChartRoot` | `indicators` | `readonly RadarIndicator[]` |  | 指标：3–10 个，自 12 点方向顺时针排开。 |
-| `XhRadarChartRoot` | `shape` | `RadarShape` |  | 网格形状，缺省 polygon。 |
-| `XhRadarChartRoot` | `area` | `boolean` |  | 轮廓里铺一层系列色的淡洗，缺省 true。 |
-| `XhRadarChartRoot` | `scale` | `RadarScale` |  | 量程，缺省 independent。 |
-| `XhRadarChartRoot` | `curve` | `RadarCurve` |  | 轮廓的画法，缺省 linear。 |
-| `XhRadarChartRoot` | `rings` | `number` |  | 网格分几圈，2–10，缺省 4。 |
-| `XhRadarChartRoot` | `ringLabels` | `boolean` |  | 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写。 |
-| `XhRadarChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
-| `XhRadarChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的实体（受控）。 |
-| `XhRadarChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的实体（非受控）。 |
-| `XhRadarChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是指标的 key。 |
-| `XhRadarChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
-| `XhRadarChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhRadarChartRoot` | `locale` | `string` |  |  |
-| `XhRadarChartRoot` | `translations` | `Partial<RadarChartTranslations>` |  |  |
-| `XhRadarChartRoot` | `onHiddenSeriesChange` | `RadarChartProps['onHiddenSeriesChange']` |  |  |
-| `XhRadarChartRoot` | `onActiveKeyChange` | `RadarChartProps['onActiveKeyChange']` |  |  |
-| `XhRadarChartRoot` | `onDatumActive` | `RadarChartProps['onDatumActive']` |  |  |
-| `XhRadarChartRoot` | `onDatumPress` | `RadarChartProps['onDatumPress']` |  |  |
 | `XhRadarChartRoot` | `caption` | `ReactNode` |  | 缺省结构里的标题内容。 |
 | `XhRadarChartRoot` | `renderTooltip` | `(props: RadarChartTooltipSlotProps) => ReactNode` |  | 缺省结构里的提示框内容。 |
 | `XhRadarChartRoot` | `empty` | `ReactNode` |  | 缺省结构里的空态内容。 |

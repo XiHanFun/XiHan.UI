@@ -133,6 +133,57 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 | 状态机 | `graphChartMachine` |
 | 皮肤 | `@xihan-ui/styles/graph-chart.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `nodes` | `readonly GraphNodeDatum[]` |  |  |
+| `links` | `readonly GraphLinkDatum[]` |  |  |
+| `layout` | `GraphLayout` |  | 布局，缺省 force。 |
+| `root` | `string` |  | 树与径向树的根；不写时取没有入边的那个节点。 |
+| `directed` | `boolean` |  | 有向：连线的目标一端画箭头，提示框分出入。 |
+| `draggableNodes` | `boolean` |  | 力导布局下可以拖动节点，缺省 true。叫 draggableNodes 不叫 draggable：后者是 HTML 的原生属性，写在宿主上会让整张图可以被拖走。 |
+| `zoom` | `boolean` |  | 画布可以平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − 键），缺省 false。 |
+| `view` | `GraphView` |  | 画布视图（缩放倍数与平移）。提供即受控：写入只发 onViewChange，由宿主写回； 几张图接同一份视图即联动，也可以把视图存下来、下次打开还原。zoom 关掉时视图不动。 |
+| `defaultView` | `GraphView` |  |  |
+| `onViewChange` | `(details: GraphViewChangeDetails) => void` |  |  |
+| `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式：提示框、可及名与数据表共用。 |
+| `translations` | `Partial<GraphChartTranslations>` |  |  |
+| `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）；饼图的「系列」是扇区。 |
+| `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
+| `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
+| `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
+| `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
+| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
+| `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
+| `onDatumPress` | `(details: ChartDatumDetails) => void` |  | 指针点击、Enter 或 Space 按在某个数据上时通知。 |
+
+### GraphNodeDatum
+
+`nodes` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | 是 |  |
+| `name` | `string` |  | 显示的名字，缺省同 id。 |
+| `group` | `string` |  |  |
+| `value` | `number` |  | 数值：经平方根比例尺决定节点面积；不写时节点一样大。 |
+| `x` | `number` |  | 预设坐标：layout 为 preset 时节点按它摆放。单位随意（经纬度、设计稿像素都行）， 整体等比缩放到绘图区里，纵轴向下为正。其余布局不读它。 |
+| `y` | `number` |  |  |
+
+### GraphLinkDatum
+
+`links` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `source` | `string` | 是 |  |
+| `target` | `string` | 是 |  |
+| `value` | `number` |  |  |
+| `label` | `string` |  | 连线上写的字（关系名）：画在连线中点，数据表里多一列。 |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -163,28 +214,6 @@ layout="preset" 按节点上写的 x / y 摆放，整体等比缩放进绘图区
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhGraphChartRoot` | `nodes` | `readonly GraphNodeDatum[]` |  | 节点：身份、名字、分组与数值。 |
-| `XhGraphChartRoot` | `links` | `readonly GraphLinkDatum[]` |  | 连线：两端节点的身份与可选的权重。 |
-| `XhGraphChartRoot` | `layout` | `GraphLayout` |  | 布局，缺省 force。 |
-| `XhGraphChartRoot` | `root` | `string` |  | 树与径向树的根；不写时取没有入边的节点。 |
-| `XhGraphChartRoot` | `directed` | `boolean` |  | 有向：连线的目标一端画箭头。 |
-| `XhGraphChartRoot` | `draggableNodes` | `boolean` |  | 力导布局下可以拖动节点，缺省 true。 |
-| `XhGraphChartRoot` | `zoom` | `boolean` |  | 画布可以平移缩放，缺省 false。 |
-| `XhGraphChartRoot` | `view` | `GraphView` |  | 画布视图：给了即受控，写入只发 onViewChange。 |
-| `XhGraphChartRoot` | `defaultView` | `GraphView` |  |  |
-| `XhGraphChartRoot` | `format` | `NumberFormatSpec \| ((value: number) => string)` |  | 数值格式。 |
-| `XhGraphChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的分组（受控）。 |
-| `XhGraphChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的分组（非受控）。 |
-| `XhGraphChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的键（受控）：与别的图联动时是节点的身份。 |
-| `XhGraphChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
-| `XhGraphChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhGraphChartRoot` | `locale` | `string` |  |  |
-| `XhGraphChartRoot` | `translations` | `Partial<GraphChartTranslations>` |  |  |
-| `XhGraphChartRoot` | `onHiddenSeriesChange` | `GraphChartProps['onHiddenSeriesChange']` |  |  |
-| `XhGraphChartRoot` | `onActiveKeyChange` | `GraphChartProps['onActiveKeyChange']` |  |  |
-| `XhGraphChartRoot` | `onDatumActive` | `GraphChartProps['onDatumActive']` |  |  |
-| `XhGraphChartRoot` | `onDatumPress` | `GraphChartProps['onDatumPress']` |  |  |
-| `XhGraphChartRoot` | `onViewChange` | `GraphChartProps['onViewChange']` |  | 画布视图变化（缩放、平移、复位）。 |
 | `XhGraphChartRoot` | `caption` | `ReactNode` |  | 缺省结构里的标题内容。 |
 | `XhGraphChartRoot` | `renderTooltip` | `(props: GraphChartTooltipSlotProps) => ReactNode` |  | 缺省结构里的提示框内容。 |
 | `XhGraphChartRoot` | `empty` | `ReactNode` |  | 缺省结构里的空态内容。 |

@@ -359,6 +359,97 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 | 状态机 | `cartesianChartMachine` |
 | 皮肤 | `@xihan-ui/styles/cartesian-chart.css` |
 
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `data` | `readonly ChartRow[] \| ColumnSource` |  | 数据：对象数组，系列用字段名把列映射到通道；或 createColumnStore 建的列式数据，走大数据的管线、总是画在画布上。 |
+| `series` | `readonly CartesianSeries[]` |  |  |
+| `xAxis` | `CartesianAxis` |  |  |
+| `yAxis` | `CartesianAxis` |  |  |
+| `orientation` | `CartesianOrientation` |  | 朝向，缺省 vertical。 |
+| `renderer` | `CartesianRenderer` |  | 数据层画在哪：svg、canvas，或 auto（缺省）——数据层逐个成节点的标记超过节点预算时改用画布。 画布只画数据层：坐标轴、网格、注释、焦点代理、摘要与数据表仍是 SVG / DOM。 |
+| `trigger` | `CartesianTrigger` |  | 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 |
+| `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计，含负值时正负两端各写一个；百分比堆叠不写。缺省 false。 |
+| `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）；系列多、要一眼找到最大的时按数值排。 |
+| `palette` | `ChartPalette` |  | 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上；不写时取顺序色阶令牌。 |
+| `annotations` | `readonly CartesianAnnotation[]` |  | 注释：参考线、参考带、标出的数据、平均线与趋势线；只给眼睛看，摘要写出参考线、参考带与平均线。 |
+| `zoom` | `CartesianZoom` |  | 缩放：x 沿自变量轴、y 沿数值轴、xy 两个方向，缺省 none。开启后按住 Ctrl（⌘）滚轮、触屏捏合、键盘 + / − 缩放， 放大后拖动绘图区平移；自变量方向可缩放时缩放条（zoom-slider）可用。 |
+| `window` | `CartesianWindow` |  | 缩放窗口（受控）：两根轴各露出的一段，写定义域里的值；不写或写 null 的轴是整条。 |
+| `defaultWindow` | `CartesianWindow` |  | 初始缩放窗口（非受控）。 |
+| `onWindowChange` | `(details: CartesianWindowChangeDetails) => void` |  | 滚轮、捏合、拖动、键盘或缩放条改了窗口时通知。 |
+| `follow` | `boolean` |  | 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变。 拖动、滚轮或键盘让窗口右端离开数据末端即变为 false，回到末端变回 true；写成 true 时窗口一步跳到末端。 |
+| `defaultFollow` | `boolean` |  | 初始是否跟随（非受控），缺省 true。 |
+| `onFollowChange` | `(details: CartesianFollowChangeDetails) => void` |  | 跟随的开关变了：用户把窗口拖离或拖回数据末端时通知。 |
+| `brush` | `CartesianBrush` |  | 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。开启后在绘图区拖动即刷选（放大后改用缩放条或键盘平移）， Shift + 方向键从锚点起沿自变量扩展或收缩，Escape 清掉。 |
+| `brushSelection` | `CartesianBrushSelection \| null` |  | 刷选的范围（受控）：定义域里的值，写法同缩放窗口；null 为没有刷选。 |
+| `defaultBrushSelection` | `CartesianBrushSelection \| null` |  | 初始刷选范围（非受控）。 |
+| `onBrushSelectionChange` | `(details: CartesianBrushSelectionChangeDetails) => void` |  | 刷选的范围变了：指针松手时派发一次，键盘每按一次派发一次。 |
+| `translations` | `Partial<CartesianChartTranslations>` |  |  |
+| `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）；饼图的「系列」是扇区。 |
+| `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
+| `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
+| `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
+| `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
+| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
+| `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
+| `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
+| `onDatumPress` | `(details: ChartDatumDetails) => void` |  | 指针点击、Enter 或 Space 按在某个数据上时通知。 |
+
+### CartesianSeries
+
+`series` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `mark` | `'bar'` | 是 |  |
+| `x` | `string \| readonly [string, string]` | 是 | 自变量字段。写成二元组 [起, 止] 是分箱区间（直方图）：柱按区间的真实宽度画，自变量轴是数值轴， 相邻两箱之间留一道表面间隙；提示框、可及名与数据表把键写成「起 – 止」。 |
+| `y` | `string \| readonly [string, string]` | 是 | 数值字段。写成二元组 [下, 上] 是区间：柱从下端画到上端浮着（浮动柱，数值轴不强制含 0）， 棒棒糖形态时两头各一个点（哑铃）；提示框、可及名与数据表写成「下 – 上」。区间不参与堆叠。 |
+| `shape` | `'bar' \| 'lollipop'` |  | 形态：bar 实心柱（缺省），lollipop 一根细杆顶一个点，类目多、柱挤在一起时更轻。 |
+| `stack` | `string` |  | 同名的柱系列堆叠在一起。 |
+| `stackOffset` | `'none' \| 'expand' \| 'diverging'` |  | 堆叠方式：none 逐段累加，expand 每列归一成百分比，diverging 正值向上、负值向下；同一堆叠组须一致。含负值时缺省 diverging。 |
+| `labels` | `'none' \| 'inside' \| 'end'` |  | 数据标签：inside 写在柱内居中，end 写在柱的远端外侧（负值翻到另一侧；堆叠中的段写在段内的远端）。 放不下、与更要紧的标签重叠时不写。缺省 none。 |
+| `waterfall` | `{ total?: string }` |  | 瀑布：每一步接在上一步的累计值上，涨取涨色、跌取跌色；total 字段为真的行是小计，从 0 画到当前累计值， 它的 y 被忽略。相邻两步之间连一道细线。瀑布不参与堆叠。 |
+| `trend` | `readonly [string, string]` |  | 按两个字段的涨跌取色：to ≥ from 为涨、否则为跌，取涨跌色（成交量随 K 线写 ['open', 'close']）； 两个字段缺一个的行保持系列色。瀑布按每一步的增减取色，不与它同写。 |
+| `id` | `string` |  | 系列 id，缺省取 y 的字段名；图例显隐、hiddenSeries 与部件上的 data-series-id 都用它。 |
+| `name` | `string` |  | 图例与提示框里的名字，缺省同 id。 |
+| `slot` | `number` |  | 固定色槽 1–8：同一业务实体在不同图表里保持同色。 |
+| `tone` | `Tone` |  | 语义系列：颜色本身带好坏含义时写语气，改用语气色；同一张图不混用分类色与语气色。 |
+| `curve` | `CartesianCurve` |  | 插值，缺省 linear。 |
+| `area` | `boolean` |  | 画面积：折线下铺一层系列色淡洗。 |
+| `symbols` | `'auto' \| 'always' \| 'none'` |  | 数据点：auto 点间距足够时显示，always 始终显示，none 不显示。缺省 auto。 |
+| `connectNulls` | `boolean` |  | 缺失值处连上而不断开，缺省 false。 |
+| `endLabel` | `boolean` |  | 线尾标签：在折线末端写系列名与末值，几条线挤在一起时上下推开；系列不多时可以代替图例。缺省 false。 |
+| `size` | `string` |  | 气泡：按面积映射这个字段（半径取平方根），全部散点系列共用一把尺；缺失、负值或 0 的行不画。 |
+| `symbol` | `SymbolName` |  | 点的形状；缺省按色槽依次取圆、方、菱形、三角……颜色之外再多一道身份。 |
+| `jitter` | `number` |  | 类目轴上的横向抖动：类目步长的比例 0–1。以数据身份为种子，重渲染不跳；数据会换序时给 datumId，同一个点才落在同一处。缺省 0。 |
+| `datumId` | `string` |  | 数据身份字段：过渡里同一个点从旧位置滑到新位置、抖动的种子都取它；缺省按 x 与同一 x 上的出现次序。 |
+| `color` | `string` |  | 按值着色：点的颜色取这个字段在顺序色阶上的位置，全部按值着色的系列共用一把尺，图例里多一条色阶。 写了它，这个系列不再取分类色（形状照旧随色槽）；这个字段缺失的点取色阶中点。 |
+| `open` | `string` | 是 |  |
+| `high` | `string` | 是 |  |
+| `low` | `string` | 是 |  |
+| `close` | `string` | 是 |  |
+| `style` | `'candle' \| 'ohlc'` |  | candle 蜡烛（实体加影线，缺省），ohlc 美国线（竖线加左开右收两道短横）。 |
+| `outliers` | `boolean` |  | 画离群点，缺省 true；false 时须线直达最小与最大值。 |
+
+### CartesianAnnotation
+
+`annotations` 的元素。
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `kind` | `'line'` | 是 | 参考线：目标、阈值、上一期的水平。 |
+| `axis` | `'x' \| 'y'` | 是 |  |
+| `value` | `number \| string \| Date` | 是 |  |
+| `label` | `string` |  |  |
+| `from` | `number \| string \| Date` | 是 |  |
+| `to` | `number \| string \| Date` | 是 |  |
+| `series` | `string` | 是 |  |
+| `at` | `'max' \| 'min' \| 'last' \| { x: number \| string \| Date }` | 是 |  |
+| `method` | `'linear' \| 'moving-average'` | 是 |  |
+| `window` | `number` |  |  |
+
 ### 事件
 
 自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
@@ -391,39 +482,6 @@ data 写成 createColumnStore 建的列式数据：一百万个采样点按像�
 
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
-| `XhCartesianChartRoot` | `data` | `readonly ChartRow[] \| ColumnSource` |  | 数据：对象数组，系列用字段名把列映射到通道；或 createColumnStore 建的列式数据，走大数据的管线、总是画在画布上。 |
-| `XhCartesianChartRoot` | `series` | `readonly CartesianSeries[]` |  |  |
-| `XhCartesianChartRoot` | `xAxis` | `CartesianAxis` |  |  |
-| `XhCartesianChartRoot` | `yAxis` | `CartesianAxis` |  |  |
-| `XhCartesianChartRoot` | `orientation` | `CartesianOrientation` |  | 朝向，缺省 vertical。 |
-| `XhCartesianChartRoot` | `renderer` | `CartesianRenderer` |  | 数据层画在哪：svg、canvas，或 auto（缺省）——数据层逐个成节点的标记超过节点预算时改用画布。 |
-| `XhCartesianChartRoot` | `trigger` | `CartesianTrigger` |  | 提示框汇报什么；缺省含柱或折线时 axis，只有散点时 item。 |
-| `XhCartesianChartRoot` | `totals` | `boolean` |  | 堆叠柱的合计：每个堆叠组在最外端写出合计。 |
-| `XhCartesianChartRoot` | `tooltipOrder` | `CartesianTooltipOrder` |  | 提示框里各系列的行序，缺省 series（按图例次序）。 |
-| `XhCartesianChartRoot` | `palette` | `ChartPalette` |  | 顺序色阶的色板：按值着色的点与色阶图例换到这个色相上。 |
-| `XhCartesianChartRoot` | `annotations` | `readonly CartesianAnnotation[]` |  | 注释：参考线、参考带、标出的数据、平均线与趋势线。 |
-| `XhCartesianChartRoot` | `zoom` | `CartesianZoom` |  | 缩放：x 沿自变量轴、y 沿数值轴、xy 两个方向，缺省 none。 |
-| `XhCartesianChartRoot` | `window` | `CartesianWindow` |  | 缩放窗口（受控）。 |
-| `XhCartesianChartRoot` | `defaultWindow` | `CartesianWindow` |  | 初始缩放窗口（非受控）。 |
-| `XhCartesianChartRoot` | `onWindowChange` | `CartesianChartProps['onWindowChange']` |  |  |
-| `XhCartesianChartRoot` | `follow` | `boolean` |  | 缩放窗口跟随最新的数据（受控）：窗口右端贴着数据末端时，新数据到来窗口随之右移、宽度不变。 |
-| `XhCartesianChartRoot` | `defaultFollow` | `boolean` |  | 初始是否跟随（非受控），缺省 true。 |
-| `XhCartesianChartRoot` | `onFollowChange` | `CartesianChartProps['onFollowChange']` |  |  |
-| `XhCartesianChartRoot` | `brush` | `CartesianBrush` |  | 刷选：x 沿自变量轴、y 沿数值轴、xy 框矩形，缺省 none。 |
-| `XhCartesianChartRoot` | `brushSelection` | `CartesianBrushSelection \| null` |  | 刷选范围（受控），null 为没有刷选。 |
-| `XhCartesianChartRoot` | `defaultBrushSelection` | `CartesianBrushSelection \| null` |  | 初始刷选范围（非受控）。 |
-| `XhCartesianChartRoot` | `onBrushSelectionChange` | `CartesianChartProps['onBrushSelectionChange']` |  |  |
-| `XhCartesianChartRoot` | `hiddenSeries` | `string[]` |  | 隐藏的系列（受控）。 |
-| `XhCartesianChartRoot` | `defaultHiddenSeries` | `string[]` |  | 初始隐藏的系列（非受控）。 |
-| `XhCartesianChartRoot` | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。 |
-| `XhCartesianChartRoot` | `pending` | `boolean` |  | 数据重取中：保留上一帧、整体降低不透明度。 |
-| `XhCartesianChartRoot` | `animated` | `boolean` |  | 播放过渡动画，缺省 true；false 时直接画终态。 |
-| `XhCartesianChartRoot` | `locale` | `string` |  |  |
-| `XhCartesianChartRoot` | `translations` | `Partial<CartesianChartTranslations>` |  |  |
-| `XhCartesianChartRoot` | `onHiddenSeriesChange` | `CartesianChartProps['onHiddenSeriesChange']` |  |  |
-| `XhCartesianChartRoot` | `onActiveKeyChange` | `CartesianChartProps['onActiveKeyChange']` |  |  |
-| `XhCartesianChartRoot` | `onDatumActive` | `CartesianChartProps['onDatumActive']` |  |  |
-| `XhCartesianChartRoot` | `onDatumPress` | `CartesianChartProps['onDatumPress']` |  |  |
 | `XhCartesianChartRoot` | `caption` | `ReactNode` |  | 缺省结构里的标题内容。 |
 | `XhCartesianChartRoot` | `renderTooltip` | `(props: CartesianChartTooltipSlotProps) => ReactNode` |  | 缺省结构里的提示框内容。 |
 | `XhCartesianChartRoot` | `empty` | `ReactNode` |  | 缺省结构里的空态内容。 |
