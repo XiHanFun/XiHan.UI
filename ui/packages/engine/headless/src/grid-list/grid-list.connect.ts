@@ -31,6 +31,8 @@ export function connectGridList<T extends PropTypes>(
   const loading = !!prop('loading')
   const editable = !disabled && !readOnly && !loading
   const selectable = selectionMode !== 'none'
+  // 点行归行主操作（看详情），选中只由行首方框与空格键改变
+  const actionOnClick = selectable && !!prop('actionOnClick')
   const counted = prop('collection') != null
   const ids = scope.ids('grid-list', 'label', 'root')
   const anchor = focusedValue ?? value[0] ?? null
@@ -223,16 +225,17 @@ export function connectGridList<T extends PropTypes>(
         'onClick': (event: MouseEvent) => {
           if (off || fromInlineControl(event.target, event.currentTarget as HTMLElement))
             return
-          if (selectionMode === 'none') {
-            send({ type: 'ROW.ACTION', value: row.value })
-            return
-          }
-          // Shift + 点击：锚点到这一行那一段并进选中（只在多选下）
+          // Shift + 点击：锚点到这一行那一段并进选中（只在多选下）；actionOnClick 下照样是选择手势
           const root = event.shiftKey && selectionMode === 'multiple'
             ? (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
             : null
           if (root) {
             extendTo(root, row.value)
+            return
+          }
+          // 不选择，或点行归行主操作（看详情）：选中改由行首方框与空格键
+          if (selectionMode === 'none' || actionOnClick) {
+            send({ type: 'ROW.ACTION', value: row.value })
             return
           }
           commitSelection(row.value)
@@ -262,6 +265,22 @@ export function connectGridList<T extends PropTypes>(
       'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
       'hidden': !selectable || undefined,
+      // actionOnClick 下点行是行主操作，点方框才选中：方框自己接点击、不冒泡成行的点击。
+      // 方框对读屏隐藏、不可聚焦，按下时焦点照旧落在所在的行上；键盘那一路是空格
+      'onClick': actionOnClick && selectable
+        ? (event: MouseEvent) => {
+            event.stopPropagation()
+            if (isDisabled(row) || readOnly)
+              return
+            const root = event.shiftKey && selectionMode === 'multiple'
+              ? (event.currentTarget as HTMLElement).closest<HTMLElement>(parts.root.selector)
+              : null
+            if (root)
+              extendTo(root, row.value)
+            else
+              commitSelection(row.value)
+          }
+        : undefined,
     }),
     getRowContentProps: row => normalize.element({
       ...parts['row-content'].attrs,

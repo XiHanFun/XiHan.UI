@@ -42,6 +42,12 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 
 <XhDemo src="grid-list/04-action-list" />
 
+### 点行看详情
+
+actionOnClick 让点行触发行主操作（看详情），勾选只由行首方框与 Space 改变，适合一边勾选做批量操作、一边点开某一行
+
+<XhDemo src="grid-list/05-action-on-click" />
+
 ## 设计指引
 
 ### 何时使用
@@ -61,6 +67,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 - selectionMode 支持 none、single 与 multiple；none 是 Action List 模式。
 - 整组只有一个行级 Tab 停靠点；上下方向键、Home/End 与连打检索只在行焦点上工作。
 - Space 改变选择，Enter 触发行主操作；焦点在 row-action 时完全交给原生按钮。
+- 点行缺省是选择；`actionOnClick` 打开后点行触发行主操作（比如看详情），选择只由行首方框与 Space 改变，一边勾选一批行做批量操作、一边点开某一行看详情。方框不占 Tab 位，点它时焦点落在所在的行上；Shift + 点击仍是扩选。
 - 多选下 Shift 扩选：Shift + 方向键 / Home / End 移动焦点并把锚点到新焦点行那一段并进选中，Shift + Space 与 Shift + 点击扩到那一行。每一次扩选都从扩选开始前的选中集重算，往回扩即收回；禁用行占着位置但不被收进去。
 - row-actions 是独立 gridcell，按钮点击不会冒泡成行选择。
 - 在途分两种：还没有行时 `loading` 占位露面，一枚加载环排在文案之前；已有行时重新取数不换成占位，行保留上一帧淡下，取完再淡回。两种都由 `root` 报告 `aria-busy`。
@@ -94,6 +101,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `value` | `string \| string[]` |  |  |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `GridListSelectionMode` |  | none 只保留行主操作与行内按钮；single / multiple 开启选择。默认 single。 |
+| `actionOnClick` | `boolean` |  | 点行触发行主操作（onAction，比如看详情）而不是选中，默认 false。打开后选中只由行首方框与空格键改变， 一边勾选一批行做批量操作、一边点开某一行看详情。selectionMode 为 none 时点行本来就触发行主操作。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
@@ -106,7 +114,7 @@ GridList 负责选择和行内按钮，Sortable 负责指针与键盘重排
 | `size` | `Size` |  |  |
 | `translations` | `Partial<GridListTranslations>` |  |  |
 | `onValueChange` | `(details: GridListValueChangeDetails) => void` |  |  |
-| `onAction` | `(details: GridListActionDetails) => void` |  | Enter 或 selectionMode=none 时点击行触发；行内按钮保留自己的原生事件。 |
+| `onAction` | `(details: GridListActionDetails) => void` |  | Enter、selectionMode=none 或 actionOnClick 时点击行触发；行内按钮保留自己的原生事件。 |
 
 ### GridListNode
 

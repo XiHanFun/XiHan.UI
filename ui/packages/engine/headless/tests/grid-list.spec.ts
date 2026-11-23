@@ -48,6 +48,43 @@ describe('gridList 选择与动作', () => {
     expect(machine.context.get('value')).toEqual(['b'])
   })
 
+  it('actionOnClick：点行是行主操作、不改选中；点行首方框只改选中、不冒泡成行主操作', () => {
+    const onAction = vi.fn()
+    const collection = [{ value: 'a', label: 'Alpha' }, { value: 'b', label: 'Beta' }]
+    const { machine, props } = service({ collection, selectionMode: 'multiple', actionOnClick: true, onAction })
+    const wire = (): { row: HTMLElement, box: HTMLElement } => {
+      const api = connectGridList(machine, normalizeProps)
+      const row = document.createElement('div')
+      const box = document.createElement('span')
+      row.append(box)
+      document.body.append(row)
+      const rowClick = (api.getRowProps({ value: 'a' }) as Record<string, unknown>).onClick as EventListener
+      const boxClick = (api.getRowSelectionIndicatorProps({ value: 'a' }) as Record<string, unknown>).onClick as EventListener | undefined
+      row.addEventListener('click', rowClick)
+      if (boxClick)
+        box.addEventListener('click', boxClick)
+      return { row, box }
+    }
+
+    const opted = wire()
+    opted.row.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(onAction).toHaveBeenCalledWith({ value: 'a' })
+    expect(machine.context.get('value')).toEqual([])
+    opted.box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(machine.context.get('value')).toEqual(['a'])
+    expect(onAction).toHaveBeenCalledTimes(1)
+    opted.box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(machine.context.get('value')).toEqual([])
+
+    // 不开时方框不接点击：点方框冒泡到行，与点行同样是切换选中
+    props.set({ collection, selectionMode: 'multiple', onAction })
+    const plain = wire()
+    plain.box.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(machine.context.get('value')).toEqual(['a'])
+    expect(onAction).toHaveBeenCalledTimes(1)
+    document.body.innerHTML = ''
+  })
+
   it('行主操作与选择分开通知', () => {
     const onAction = vi.fn()
     const { machine } = service({ onAction })

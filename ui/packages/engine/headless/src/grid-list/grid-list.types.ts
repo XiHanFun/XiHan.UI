@@ -55,6 +55,11 @@ export interface GridListSchema extends MachineSchema {
     defaultValue?: string | string[]
     /** none 只保留行主操作与行内按钮；single / multiple 开启选择。默认 single。 */
     selectionMode?: GridListSelectionMode
+    /**
+     * 点行触发行主操作（onAction，比如看详情）而不是选中，默认 false。打开后选中只由行首方框与空格键改变，
+     * 一边勾选一批行做批量操作、一边点开某一行看详情。selectionMode 为 none 时点行本来就触发行主操作。
+     */
+    actionOnClick?: boolean
     disabled?: boolean
     readOnly?: boolean
     invalid?: boolean
@@ -68,7 +73,7 @@ export interface GridListSchema extends MachineSchema {
     size?: Size
     translations?: Partial<GridListTranslations>
     onValueChange?: (details: GridListValueChangeDetails) => void
-    /** Enter 或 selectionMode=none 时点击行触发；行内按钮保留自己的原生事件。 */
+    /** Enter、selectionMode=none 或 actionOnClick 时点击行触发；行内按钮保留自己的原生事件。 */
     onAction?: (details: GridListActionDetails) => void
   }
   context: {

@@ -22,6 +22,8 @@ export interface XhGridListRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   value?: string | string[]
   defaultValue?: string | string[]
   selectionMode?: GridListSelectionMode
+  /** 点行触发行主操作（onAction，比如看详情）而不是选中；选中只由行首方框与空格键改变。 */
+  actionOnClick?: boolean
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -43,6 +45,7 @@ export function XhGridListRoot({
   value,
   defaultValue,
   selectionMode,
+  actionOnClick,
   disabled,
   readOnly,
   invalid,
@@ -64,6 +67,7 @@ export function XhGridListRoot({
     value,
     defaultValue,
     selectionMode,
+    actionOnClick,
     disabled,
     readOnly,
     invalid,

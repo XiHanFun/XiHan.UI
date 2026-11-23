@@ -35485,6 +35485,15 @@
             },
             {
               "kind": "field",
+              "name": "actionOnClick",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "action-on-click"
+            },
+            {
+              "kind": "field",
               "name": "disabled",
               "privacy": "public",
               "type": {
@@ -35765,6 +35774,14 @@
               "description": "选择模式，默认 single",
               "name": "selection-mode",
               "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "点行触发行主操作（action 事件，比如看详情）而不是选中；选中只由行首方框与空格键改变，默认 false",
+              "name": "action-on-click",
+              "fieldName": "actionOnClick"
             },
             {
               "type": {

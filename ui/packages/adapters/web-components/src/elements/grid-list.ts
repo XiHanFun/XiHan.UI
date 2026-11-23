@@ -32,6 +32,7 @@ const STRING_CONVERTER = { fromAttribute: (value: string | null) => value ?? und
  * @attr {string} value - 受控选中值；多选数组走 property
  * @attr {string} default-value - 非受控初始值
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 single
+ * @attr {boolean} action-on-click - 点行触发行主操作（action 事件，比如看详情）而不是选中；选中只由行首方框与空格键改变，默认 false
  * @attr {boolean} disabled - 整体禁用
  * @attr {boolean} read-only - 只读：可浏览和使用行内按钮，不可改变选择
  * @attr {boolean} invalid - 校验失败
@@ -63,6 +64,7 @@ export class XhGridListElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    actionOnClick: { converter: BOOLEAN_CONVERTER, attribute: 'action-on-click' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
@@ -82,6 +84,7 @@ export class XhGridListElement extends XhElement {
   declare value?: string | string[]
   declare defaultValue?: string | string[]
   declare selectionMode?: GridListSelectionMode
+  declare actionOnClick?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
@@ -124,6 +127,7 @@ export class XhGridListElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       selectionMode: this.selectionMode,
+      actionOnClick: this.actionOnClick ?? false,
       disabled: this.disabled,
       readOnly: this.readOnly,
       invalid: this.invalid,

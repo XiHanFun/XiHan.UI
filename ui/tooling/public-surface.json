@@ -14367,6 +14367,7 @@
       "ruled"
     ],
     "grid-list": [
+      "actionOnClick",
       "collection",
       "defaultValue",
       "dir",
@@ -23133,6 +23134,7 @@
     },
     "xh-grid-list": {
       "attributes": [
+        "action-on-click",
         "default-value",
         "dir",
         "disabled",

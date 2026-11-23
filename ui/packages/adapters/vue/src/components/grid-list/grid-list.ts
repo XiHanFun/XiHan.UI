@@ -23,6 +23,8 @@ export const XhGridListRoot = defineComponent({
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
     selectionMode: { type: String as PropType<GridListSelectionMode> },
+    /** 点行触发行主操作（action，比如看详情）而不是选中；选中只由行首方框与空格键改变。 */
+    actionOnClick: Boolean,
     disabled: Boolean,
     readOnly: Boolean,
     invalid: Boolean,
