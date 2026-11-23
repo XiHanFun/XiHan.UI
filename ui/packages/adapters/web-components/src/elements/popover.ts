@@ -11,6 +11,7 @@ import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectPopover, popoverAnatomy, popoverMachine, popoverMeta } from '@xihan-ui/headless'
 import { createDeferredPositionEngine } from '@xihan-ui/position'
+import { resolveXhConfig } from '../config'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
 import { createNamingContentWatch } from '../dom/naming-watch'
 import { wcNormalize } from '../dom/normalize'
@@ -149,7 +150,12 @@ export class XhPopoverElement extends XhPortalHostElement {
   private ensureConfig(): void {
     if (this.config)
       return
-    this.config = createRuntimeConfig({ scope: this.popoverScope, idGenerator: this.idGen })
+    // modal 档会加滚动锁。scrollRoot 每次现读：配置沿祖先链解析，元素搬家或 <xh-config> 改了都要跟上
+    this.config = createRuntimeConfig({
+      scope: this.popoverScope,
+      idGenerator: this.idGen,
+      scrollRoot: () => resolveXhConfig(this).scrollRoot?.() ?? null,
+    })
   }
 
   protected override externalPartRoots(): readonly HTMLElement[] {

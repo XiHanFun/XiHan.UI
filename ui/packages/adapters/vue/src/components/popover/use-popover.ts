@@ -56,7 +56,12 @@ export function usePopover(
   let config: RuntimeConfig | null = null
 
   if (typeof document !== 'undefined') {
-    config = createRuntimeConfig({ scope, idGenerator: idGen })
+    config = createRuntimeConfig({
+      scope,
+      idGenerator: idGen,
+      // modal 档会加滚动锁。宿主把滚动搬进内容容器时 body 本身不滚，这条把真正在滚的那层交给滚动锁
+      scrollRoot: () => xhConfig.value.scrollRoot?.() ?? null,
+    })
 
     // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
