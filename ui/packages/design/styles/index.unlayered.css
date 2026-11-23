@@ -6668,7 +6668,8 @@
   align-items: center;
   gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
   padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
-  padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
+  /* 横向内衬与正文同一支：标题的左缘与正文的左缘对在一条线上，密度变了一起收 */
+  padding-inline: var(--xh-floating-panel-header-px, var(--xh-surface-px-sm));
   border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-material-frosted-separator));
   background: var(--xh-floating-panel-header-bg, var(--xh-material-frosted-bg));
 }

@@ -39380,7 +39380,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-surface-px-sm"
       ],
       "visibility": "public",
       "description": "floating-panel 的 header 部件 padding-inline 覆盖槽。"

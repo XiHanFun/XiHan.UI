@@ -531,7 +531,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | Dialog | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限为视口可用高，正文内滚；分三段时内衬由三段各给（头横 20、正文纵 24 横 20、尾纵 16 横 20），头下尾上各一条贴边的 1px `--xh-border-subtle` 分隔线，面是实体 sheet，不叠渐变与顶光 |
 | Command | 铺满可用宽，上限随 size 24 / 32 / 48rem | 上限 `overlay-max-h` |
 | Drawer | 厚度随 size 16 / 20 / 28rem，不超过视口；可拖拽时夹在 `minPanelSize`（缺省 160px）与 `maxPanelSize` 之间 | 贴边铺满；分三段时面板一层只让出安全区，三段横向内衬 `--xh-surface-px-sm`（16px），正文纵向 `--xh-surface-py-sm`（12px），尾段纵向 16px，头下尾上各一条贴边的 1px `--xh-border-subtle` 分隔线 |
-| FloatingPanel | 缺省 360 × 240px，下限 `minSize` 缺省 160 × 120px，上限 `maxSize` 缺省不封顶 | 同左 |
+| FloatingPanel | 缺省 360 × 240px，下限 `minSize` 缺省 160 × 120px，上限 `maxSize` 缺省不封顶；头部与正文横向内衬同取 `--xh-surface-px-sm`（16px，紧凑 12px），标题与正文的起始线对齐 | 同左 |
 | Notification | 卡宽 `overlay-notification-w`（300px），toast 档 `overlay-toast-w`；不超过视口宽 − 32px | 描述上限 `viewport-h-md`，超出内滚 |
 | ImageViewer | 图片上限 90% 视口宽 | 图片上限 85% 视口高 |
 
