@@ -723,9 +723,14 @@ export function trackOverlayLayer(o: OverlayLayerOptions): OverlayRelease | unde
   return Object.assign(() => cleanup(), { returnFocus: () => focusScope?.returnFocus(), nested: cleanup.nested })
 }
 
+/** 消解层回报的原因翻成关闭事件的来源：Escape 是 esc，其余（层外按下、层外聚焦）都算层外交互。 */
+export function dismissCloseSrc(reason: DismissReason): 'esc' | 'interact-outside' {
+  return reason === 'escape-key' ? 'esc' : 'interact-outside'
+}
+
 /** 消解层的标准映射：Escape 与层外交互都收起，只在关闭原因上分开。 */
 export function overlayCloseOnDismiss(
   send: (event: { type: 'CLOSE', src: 'esc' | 'interact-outside' }) => void,
 ): (reason: DismissReason) => void {
-  return reason => send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+  return reason => send({ type: 'CLOSE', src: dismissCloseSrc(reason) })
 }

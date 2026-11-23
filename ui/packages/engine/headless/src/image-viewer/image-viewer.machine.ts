@@ -16,7 +16,7 @@ import { createMultiPointerSession, pinchChange, pinchSnapshot, resolveSessionDo
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { trackLiquidPart } from '../shared/liquid'
-import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction } from '../shared/overlay-shell'
 
 const { createMachine } = setup<ImageViewerSchema>()
 
@@ -562,8 +562,7 @@ export const imageViewerMachine = createMachine({
               if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? true))
                 e.preventDefault()
             },
-            onDismiss: reason =>
-              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+            onDismiss: overlayCloseOnDismiss(send),
           })
           defer(() => dismiss.dispose())
 

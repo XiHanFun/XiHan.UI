@@ -11,7 +11,7 @@ import { focusItem, HOVER_INTENT_OPEN_DELAY, isShadowRoot, navigateItems, setTim
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
 import { attachDisclosureMotion } from '../shared/disclosure-motion'
 import { OVERLAY_OFFSET } from '../shared/overlay'
-import { createOverlayKitGate, trackOverlayLayer } from '../shared/overlay-shell'
+import { createOverlayKitGate, dismissCloseSrc, trackOverlayLayer } from '../shared/overlay-shell'
 import { indexTree } from '../tree'
 import { isSideNavSearching, resolveSideNavSearch } from './side-nav.search'
 
@@ -568,7 +568,7 @@ export const sideNavMachine = createMachine({
             },
             flush,
             active: () => isCurrent(value),
-            onDismiss: reason => send({ type: 'POPOUT.CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+            onDismiss: reason => send({ type: 'POPOUT.CLOSE', src: dismissCloseSrc(reason) }),
             focusScope: focusScoped
               ? {
                   container: () => refs.get('getPopoutContentEl')(value),

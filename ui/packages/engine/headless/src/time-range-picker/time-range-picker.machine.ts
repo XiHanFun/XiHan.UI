@@ -14,7 +14,7 @@ import { canTakeFocus, queryItems, resetDeclaredValue, setup } from '@xihan-ui/c
 import { alignColumnsOnOpen, followColumnSelection } from '../shared/column-scroll'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { timeColumnsFor, timeItemValue } from '../shared/time-constraint'
 import {
   appendSegmentDigit,
@@ -614,8 +614,7 @@ export const timeRangePickerMachine = createMachine({
             registerLayer: refs.get('registerLayer'),
             flush,
             active: () => state.get() === 'open',
-            onDismiss: reason =>
-              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+            onDismiss: overlayCloseOnDismiss(send),
             focusScope: {
               // 每次读最新 ref，容器晚一拍就位也能命中
               container: () => refs.get('getContentEl')(),

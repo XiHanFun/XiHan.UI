@@ -9,7 +9,7 @@ import type { CommandNodeMeta, CommandSchema } from './command.types'
 import { requireOverlayKit, setup, trackArrivals } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { createModalLayerResources, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
+import { createModalLayerResources, dismissCloseSrc, setupLayerTransaction, trackPresenceResources } from '../shared/overlay-shell'
 import { flattenCommandGroups, navigateCommandResults, resolveCommandGroups } from './command.filter'
 import { hiddenCommandValues } from './command.visibility'
 
@@ -328,7 +328,7 @@ export const commandMachine = createMachine({
                 },
                 onDismiss: (reason) => {
                   if (state.get() === 'open')
-                    send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' })
+                    send({ type: 'CLOSE', src: dismissCloseSrc(reason) })
                 },
               })
               defer(() => dismiss.dispose())

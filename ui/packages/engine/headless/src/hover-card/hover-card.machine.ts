@@ -10,7 +10,7 @@ import type { HoverCardSchema } from './hover-card.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
 export const HOVER_CARD_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_ANCHORED
@@ -230,10 +230,7 @@ export const hoverCardMachine = createMachine({
           registerLayer: refs.get('registerLayer'),
           flush,
           active: () => state.matches('visible'),
-          onDismiss: reason => send({
-            type: 'CLOSE',
-            src: reason === 'escape-key' ? 'esc' : 'interact-outside',
-          }),
+          onDismiss: overlayCloseOnDismiss(send),
         }),
       }),
     },

@@ -13,7 +13,7 @@ import { closeReasonOf } from '../shared/close-reason'
 import { trackExternalAnchorAria } from '../shared/external-anchor'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { OVERLAY_ARROW_PADDING, OVERLAY_ARROW_SIZE, OVERLAY_OFFSET, OVERLAY_PLACEMENT_ANCHORED } from '../shared/overlay'
-import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction, trackOverlayPosition } from '../shared/overlay-shell'
 import { popoverAnatomy } from './popover.anatomy'
 
 /** 没传 placement 时浮层交给定位引擎的落点。 */
@@ -219,7 +219,7 @@ export const popoverMachine = createMachine({
               if (state.get() !== 'open' || !(prop('closeOnInteractOutside') ?? true))
                 event.preventDefault()
             },
-            onDismiss: reason => send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+            onDismiss: overlayCloseOnDismiss(send),
           })
           defer(() => dismiss.dispose())
 

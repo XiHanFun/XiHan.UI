@@ -25,7 +25,7 @@ import {
   syncBranchLoads as syncLazyBranchLoads,
 } from '../shared/lazy-branch'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { dismissCloseSrc, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { virtualCollectionTarget } from '../shared/virtual-collection'
 import { flattenTree } from '../tree'
@@ -689,7 +689,7 @@ export const treeSelectMachine = createMachine({
                 send({ type: 'INPUT.CHANGE', value: '' })
                 return
               }
-              overlayCloseOnDismiss(send)(reason)
+              send({ type: 'CLOSE', src: dismissCloseSrc(reason) })
             },
             focusScope: {
               // 每次读最新 ref，容器晚一拍就位也能命中

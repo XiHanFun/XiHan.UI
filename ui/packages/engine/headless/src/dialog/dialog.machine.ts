@@ -10,7 +10,7 @@ import type { DialogGesture, DialogOffset, DialogPressedPart, DialogSchema } fro
 import { getTabbables, removeLinks, requireOverlayKit, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
-import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, setupLayerTransaction } from '../shared/overlay-shell'
+import { createLayerReleaseGate, createModalLayerResources, createOverlayKitGate, overlayCloseOnDismiss, setupLayerTransaction } from '../shared/overlay-shell'
 import { clampDialogOffset, dialogDragBounds, startGesturePointer } from './dialog.gesture'
 
 const { createMachine } = setup<DialogSchema>()
@@ -249,8 +249,7 @@ export const dialogMachine = createMachine({
               if (state.get() !== 'open' || !allowed)
                 e.preventDefault()
             },
-            onDismiss: reason =>
-              send({ type: 'CLOSE', src: reason === 'escape-key' ? 'esc' : 'interact-outside' }),
+            onDismiss: overlayCloseOnDismiss(send),
           })
           defer(() => dismiss.dispose())
 
