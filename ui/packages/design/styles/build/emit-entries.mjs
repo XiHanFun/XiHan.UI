@@ -160,15 +160,20 @@ for (const [oldName, { target }] of Object.entries(DEPRECATED_SUBPATHS)) {
  * 注释不算空白（`.a/＊＊/.b` 就是 `.a.b`），只在它两侧的记号会粘成一个时补一个空格。
  * 逗号两侧的空白在选择器、@ 规则头与声明值里都不影响语义；其余空白（后代组合符、calc() 的
  * 加减号两侧、`and (` 之间）都留成一个空格。
+ *
+ * 产物逐段攒进数组、收尾拼一次。原先直接在字符串上 `+=` 再读末位字符：引擎把连续拼接存成一棵树，
+ * 每读一次末位就要把整棵树拼实，全量入口近 3 MB、每个字符读一次，耗时随长度的平方涨
+ * （本机一分钟、CI 两分多钟，全仓的构建都排在它后面）。
  */
 function minifyCss(css) {
   const tight = new Set(['{', '}', ';', ','])
-  let out = ''
+  /** 记号逐个进：字符串整段一项，其余每个字符一项，所以块末那个分号一定独占末项。 */
+  const out = []
   let space = false
-  const last = () => out[out.length - 1]
+  const last = () => out.at(-1)?.at(-1)
   const flushSpace = (next) => {
-    if (space && out && !tight.has(last()) && !tight.has(next))
-      out += ' '
+    if (space && out.length > 0 && !tight.has(last()) && !tight.has(next))
+      out.push(' ')
     space = false
   }
   let i = 0
@@ -177,14 +182,14 @@ function minifyCss(css) {
     if (c === '/' && css[i + 1] === '*') {
       const end = css.indexOf('*/', i + 2)
       i = end === -1 ? css.length : end + 2
-      if (out && /[\w-]/.test(last()) && /[\w(-]/.test(css[i] ?? ''))
+      if (out.length > 0 && /[\w-]/.test(last()) && /[\w(-]/.test(css[i] ?? ''))
         space = true
       continue
     }
     if (c === '"' || c === '\'') {
       const end = skipString(css, i)
       flushSpace(c)
-      out += css.slice(i, end + 1)
+      out.push(css.slice(i, end + 1))
       i = end + 1
       continue
     }
@@ -196,16 +201,16 @@ function minifyCss(css) {
     if (tight.has(c)) {
       space = false
       if (c === '}' && last() === ';')
-        out = out.slice(0, -1)
-      out += c
+        out.pop()
+      out.push(c)
       i++
       continue
     }
     flushSpace(c)
-    out += c
+    out.push(c)
     i++
   }
-  return `${out}\n`
+  return `${out.join('')}\n`
 }
 
 /**
