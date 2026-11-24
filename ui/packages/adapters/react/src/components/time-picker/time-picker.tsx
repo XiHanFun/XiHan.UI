@@ -15,7 +15,6 @@ import type {
   TimePickerPreset,
   TimePickerPresetState,
   TimePickerSchema,
-  TimePickerSelectionMode,
   TimeSegmentType,
   TimeStep,
   TimeUnavailablePredicate,
@@ -74,7 +73,7 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   value?: string | string[]
   defaultValue?: string | string[]
   /** 选择模式，默认 single；multiple 时列上拼草稿、按「添加」收进值，输入行里排成标签。 */
-  selectionMode?: TimePickerSelectionMode
+  multiple?: boolean
   /** multiple 下最多选几个时刻。 */
   maxSelected?: number
   /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
@@ -122,7 +121,7 @@ export function XhTimePickerRoot({
   label,
   value,
   defaultValue,
-  selectionMode,
+  multiple,
   maxSelected,
   maxTagCount,
   open,
@@ -158,7 +157,7 @@ export function XhTimePickerRoot({
     ariaLabel,
     value,
     defaultValue,
-    selectionMode,
+    multiple,
     maxSelected,
     maxTagCount,
     open,
@@ -527,7 +526,7 @@ export interface XhTimePickerHiddenInputProps extends Omit<ComponentPropsWithRef
 export function XhTimePickerHiddenInput({ ...rest }: XhTimePickerHiddenInputProps): ReactNode {
   const ctx = useTimePickerContext()
   // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
-  if (ctx.api.selectionMode === 'multiple') {
+  if (ctx.api.multiple) {
     return ctx.api.value.map(value => (
       <input
         key={value}

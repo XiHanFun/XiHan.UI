@@ -26,7 +26,7 @@
 
 ### 多选
 
-selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序
+multiple：点击一次加入，再点击一次移除，集合按日期升序
 
 <XhDemo src="calendar-picker/02-multiple" />
 
@@ -70,7 +70,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 ### 特性
 
 - 标准结构由标题栏、前后翻页按钮、星期表头和日期网格组成；网格数据通过插槽作用域交给作者渲染。
-- `granularity` 决定周期格的生成方式，`selectionMode` 独立决定单选或多选；两个维度互不绑定。
+- `granularity` 决定周期格的生成方式，`multiple` 独立决定单选或多选；两个维度互不绑定。
 - 五种粒度统一产出 `CalendarPeriod`：稳定键、周期首尾、标签与相邻容器标记都来自同一份数据。
 - `week` 是一级粒度，使用一行一个整周的网格；不通过日格高亮模拟整周选择。
 - 周、月、季度与年这几层同样按行渲染：插槽里的 `rows`（多面板读 `panels[i].rows`）已按列数切好——周一行一格，月与年一行三格，季度一行四格；一行写一个 `week-row`，格子放进行里。网格是 `role=grid`，行承担 `role=row`，格子不直接铺进网格。
@@ -121,7 +121,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `selectionMode` | `CalendarPickerSelectionMode` |  |  |
+| `multiple` | `boolean` |  | 多选：点格子切换选中，选中集合去重升序；缺省单选，点一个换掉原来那个。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个周期。选满后没选中的格子转 aria-disabled（仍可聚焦），点击与确认键都加不进去； 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。 非整数向下取整，小于 1 或不是有限数时不设上限；single 下不生效。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 作者提供的不可用判定，接收 ISO 串。返回真的日期与界外日期同等处理。 |
 | `translations` | `Partial<CalendarPickerTranslations>` |  |  |
@@ -197,7 +197,7 @@ max-selected=3：选满后其余日子不可再加选，点掉一个即腾出名
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `selectionMode` | `CalendarPickerSelectionMode` |  |
+| `multiple` | `boolean` |  |
 | `maxSelected` | `number \| null` | 实际生效的多选上限；single 或没设上限时为 null。 |
 
 ## 无障碍

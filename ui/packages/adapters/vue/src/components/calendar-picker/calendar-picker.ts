@@ -5,7 +5,7 @@
 
 // 提供 calendar picker 相关实现。
 
-import type { CalendarCellProps, CalendarGranularity, CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarCellProps, CalendarGranularity, CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -44,7 +44,7 @@ export const XhCalendarPickerRoot = defineComponent({
   props: {
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
-    selectionMode: { type: String as PropType<CalendarPickerSelectionMode> },
+    multiple: { type: Boolean, default: undefined },
     /** multiple 下最多选几个周期；选满后没选中的格子不可再加选。 */
     maxSelected: { type: Number },
     focusedValue: { type: String },
@@ -62,7 +62,7 @@ export const XhCalendarPickerRoot = defineComponent({
     readOnly: Boolean,
     weekdayFormat: { type: String as PropType<CalendarWeekdayFormat> },
     fixedWeeks: Boolean,
-    /** 选择粒度；与 selectionMode 正交。区间选择是另一个组件（XhCalendarRangePicker）。 */
+    /** 选择粒度；与 multiple 正交。区间选择是另一个组件（XhCalendarRangePicker）。 */
     granularity: { type: String as PropType<CalendarGranularity> },
     /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
     activeView: { type: String as PropType<CalendarView> },

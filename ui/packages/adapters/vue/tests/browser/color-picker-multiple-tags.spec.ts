@@ -43,7 +43,7 @@ async function mount(props: Record<string, unknown>): Promise<Mounted> {
   app = createApp({
     render: () => h(XhColorPickerRoot, {
       'name': 'palette',
-      'selectionMode': 'multiple',
+      'multiple': true,
       'swatches': SWATCHES,
       ...props,
       'onValue-change': (details: { value: string[] }) => changes.push(details.value),

@@ -63,7 +63,7 @@ export function connectColorPicker<T extends PropTypes>(
 
   // 工作色：取色区、滑块、数值框与触发钮里的色块读的都是它；单选时它就是选中值
   const value = context.get('value')
-  const multiple = prop('selectionMode') === 'multiple'
+  const multiple = prop('multiple') === true
   const selected = context.get('selected')
   // 单选还没选颜色：色块不画颜色、值文字显示占位提示；取色面仍从工作色起调
   const blank = !multiple && context.get('blank')
@@ -171,7 +171,7 @@ export function connectColorPicker<T extends PropTypes>(
   return {
     open,
     value: values,
-    selectionMode: multiple ? 'multiple' : 'single',
+    multiple,
     color: value,
     empty: blank,
     valueText,

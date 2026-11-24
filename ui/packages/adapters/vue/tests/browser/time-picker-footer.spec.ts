@@ -56,7 +56,7 @@ async function mount(options: { theme?: 'light' | 'dark', dir?: 'ltr' | 'rtl', m
     dir,
     defaultOpen: true,
     defaultValue: multiple ? ['09:30'] : '09:30',
-    selectionMode: multiple ? 'multiple' : 'single',
+    multiple,
     presets: [{ value: '09:30', label: '上午九点半' }],
   }, () => [
     h(XhTimePickerControl, null, () => [

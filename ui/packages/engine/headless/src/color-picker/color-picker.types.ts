@@ -23,7 +23,6 @@ export type ColorPickerDragTarget = 'area'
  * 选择模式：single 取一个颜色；multiple 选一组颜色——浮层里调出来的工作色是草稿，按「添加」才收进值，
  * 预设色块点一下切换选中，输入行里排成一排带色点的标签。
  */
-export type ColorPickerSelectionMode = 'single' | 'multiple'
 
 /** 多选时一枚标签：value 是它代表的选中颜色（按 format 序列化的串），label 是显示文本。 */
 export interface ColorPickerTagMeta {
@@ -193,7 +192,8 @@ export interface ColorPickerSchema extends MachineSchema {
     value?: string | string[]
     defaultValue?: string | string[]
     /** 选择模式，默认 single。 */
-    selectionMode?: ColorPickerSelectionMode
+    /** 多选：浮层里调出的工作色是草稿，按「添加」收进值；缺省单选。 */
+    multiple?: boolean
     /** multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 */
     maxSelected?: number
     /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
@@ -395,7 +395,7 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选是一项、未选时为空，多选按加入先后。 */
   value: string[]
-  selectionMode: ColorPickerSelectionMode
+  multiple: boolean
   /** 工作色的值串：取色面从它调起；单选时就是选中值，多选时是浮层里调着的草稿。单选未选时是取色面的起调色 #000000。 */
   color: string
   /** 单选还没选颜色：色块不画颜色，值文字显示 placeholder，清空钮收起。 */

@@ -4160,12 +4160,12 @@
             },
             {
               "kind": "field",
-              "name": "selectionMode",
+              "name": "multiple",
               "privacy": "public",
               "type": {
-                "text": "CalendarPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "selection-mode"
+              "attribute": "multiple"
             },
             {
               "kind": "field",
@@ -4504,11 +4504,11 @@
             },
             {
               "type": {
-                "text": "CalendarPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "description": "选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
+              "description": "多选，默认单选；区间选择是 `<xh-calendar-range-picker>`",
+              "name": "multiple",
+              "fieldName": "multiple"
             },
             {
               "type": {
@@ -4618,7 +4618,7 @@
               "type": {
                 "text": "CalendarGranularity | undefined"
               },
-              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "description": "选择粒度，默认 day；与 multiple 正交",
               "name": "granularity",
               "fieldName": "granularity"
             },
@@ -12939,12 +12939,12 @@
             },
             {
               "kind": "field",
-              "name": "selectionMode",
+              "name": "multiple",
               "privacy": "public",
               "type": {
-                "text": "ColorPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "selection-mode"
+              "attribute": "multiple"
             },
             {
               "kind": "field",
@@ -13833,11 +13833,11 @@
             },
             {
               "type": {
-                "text": "ColorPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "description": "选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
+              "description": "多选，默认单选；开着时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签",
+              "name": "multiple",
+              "fieldName": "multiple"
             },
             {
               "type": {
@@ -19761,12 +19761,12 @@
             },
             {
               "kind": "field",
-              "name": "selectionMode",
+              "name": "multiple",
               "privacy": "public",
               "type": {
-                "text": "CalendarPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "selection-mode"
+              "attribute": "multiple"
             },
             {
               "kind": "field",
@@ -20614,11 +20614,11 @@
             },
             {
               "type": {
-                "text": "CalendarPickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "description": "选择模式，默认 single",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
+              "description": "多选，默认单选；选中的周期在输入行里排成标签",
+              "name": "multiple",
+              "fieldName": "multiple"
             },
             {
               "type": {
@@ -20640,7 +20640,7 @@
               "type": {
                 "text": "CalendarGranularity | undefined"
               },
-              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "description": "选择粒度，默认 day；与 multiple 正交",
               "name": "granularity",
               "fieldName": "granularity"
             },
@@ -72768,12 +72768,12 @@
             },
             {
               "kind": "field",
-              "name": "selectionMode",
+              "name": "multiple",
               "privacy": "public",
               "type": {
-                "text": "TimePickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "selection-mode"
+              "attribute": "multiple"
             },
             {
               "kind": "field",
@@ -73358,11 +73358,11 @@
             },
             {
               "type": {
-                "text": "TimePickerSelectionMode | undefined"
+                "text": "boolean | undefined"
               },
-              "description": "选择模式，默认 single；multiple 时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
+              "description": "多选，默认单选；开着时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签",
+              "name": "multiple",
+              "fieldName": "multiple"
             },
             {
               "type": {

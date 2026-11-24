@@ -53,7 +53,7 @@ export interface DatePickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type DatePickerStructureModel = Pick<DatePickerApi, 'selectionMode' | 'tags' | 'field' | 'presets' | 'showTime' | 'timeColumns' | 'getTimeItemText' | 'translations'> & {
+type DatePickerStructureModel = Pick<DatePickerApi, 'multiple' | 'tags' | 'field' | 'presets' | 'showTime' | 'timeColumns' | 'getTimeItemText' | 'translations'> & {
   calendar: Pick<DatePickerApi['calendar'], 'panels' | 'weekDays' | 'headingOrder'>
 }
 
@@ -65,7 +65,7 @@ type DatePickerStructureModel = Pick<DatePickerApi, 'selectionMode' | 'tags' | '
  *   浮层里这几块直接并排，横排与换行由皮肤按在场的部件排。
  */
 export function datePickerStructure(model: DatePickerStructureModel, options: DatePickerStructureOptions = {}): DatePickerNode[] {
-  const multiple = model.selectionMode === 'multiple'
+  const multiple = model.multiple
   const nodes: DatePickerNode[] = []
   if (options.slotted?.('label'))
     nodes.push({ key: 'label', tag: 'span', part: 'label', slot: { name: 'label' } })

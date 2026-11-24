@@ -13,7 +13,6 @@ import type {
   ColorPickerOpenChangeDetails,
   ColorPickerRecentColorsChangeDetails,
   ColorPickerSchema,
-  ColorPickerSelectionMode,
   ColorPickerServices,
   ColorPickerTagMeta,
   ColorPickerTranslations,
@@ -91,7 +90,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控颜色值串；未提供该属性即非受控。多选的一组颜色是数组，只走 property；单选给空数组（property）是未选：色块不画颜色，value-text 显示 placeholder
  * @attr {string} default-value - 非受控初值，默认 #000000；多选的数组与单选的未选（空数组）只走 property
- * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签
+ * @attr {boolean} multiple - 多选，默认单选；开着时浮层里调出的工作色是草稿、按 confirm-trigger 收进值，色板的格子点一下切换，输入行里排成标签
  * @attr {number} max-selected - multiple 下最多选几个颜色
  * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
  * @attr {'hex'|'rgba'|'hsla'|'oklch'} format - 值串写法，默认 hex
@@ -179,7 +178,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     format: { converter: STRING_CONVERTER },
@@ -209,7 +208,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
   declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
-  declare selectionMode?: ColorPickerSelectionMode
+  declare multiple?: boolean
   declare maxSelected?: number
   declare maxTagCount?: number
   declare format?: ColorFormat
@@ -351,7 +350,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
       ariaLabel: this.hostAriaLabel(),
       value: this.value,
       defaultValue: this.defaultValue,
-      selectionMode: this.selectionMode,
+      multiple: this.multiple,
       maxSelected: this.maxSelected,
       maxTagCount: this.maxTagCount,
       format: this.format,
@@ -670,7 +669,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps())
     put('confirm-trigger', api.getConfirmTriggerProps())
     // 多选时一个选中值一份同名输入，单选仍是一份
-    this.hiddenInputs.sync(this.ownPart('hidden-input'), api.selectionMode === 'multiple'
+    this.hiddenInputs.sync(this.ownPart('hidden-input'), api.multiple
       ? api.value.map(value => api.getHiddenInputProps({ value }))
       : [api.getHiddenInputProps()])
 

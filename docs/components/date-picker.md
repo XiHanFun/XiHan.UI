@@ -68,7 +68,7 @@ timeStep 让分列每 15 分钟一格；min / max 带时间段时首尾两天界
 
 ### 多选成标签
 
-selectionMode="multiple" 时选中的日期在输入行里排成标签，点标签上的叉或在日历钮上按退格摘掉，放不下的折进 +N；浮层选完不收起
+multiple 时选中的日期在输入行里排成标签，点标签上的叉或在日历钮上按退格摘掉，放不下的折进 +N；浮层选完不收起
 
 <XhDemo src="date-picker/09-multiple" />
 
@@ -87,16 +87,16 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 
 ### 特性
 
-- `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选或多选。
+- `granularity` 支持 day / week / month / quarter / year，`multiple` 独立控制单选或多选。
 - 不写结构时按标准结构铺出整套部件（Vue 不写默认插槽、React 不给 children、Web Components 不写部件或只写 `root`），三端出自同一个结构函数：标题（`label` 给文字），盒里的段组（多选时是带删除钮的标签行）、清空钮与日历钮，表单影子，浮层里依次是快捷选项列、每个面板一份日历（标题栏、表头与日期格）、`showTime` 的时间列与底栏的确认钮（文字取 `translations.confirmTrigger`）。翻月、换层级与选中变化时结构随之重铺。Web Components 里标题可以写在宿主的直接子节点上接管：`slot="label"`。
 - 自己写结构时，浮层里的日历照插槽数据渲染：日视图读 `weeks`，周、月、季度与年读按行切好的 `rows`（多面板读 `panels[i].rows`），一行写一个 `week-row`、格子放进行里，写法同[日历选择器](./calendar-picker)。Vue / React 的时间列可以用 `XhDatePickerTimePanel` 整组铺，也可以逐列写 `XhDatePickerTimeColumn`（`unit`），列里不写内容时按可选值铺 `XhDatePickerTimeItem`。
-- 多选（`selectionMode="multiple"`）时选中的日期在输入行里排成标签（库内 [标签](./tag)，与[选择器](./select)多选同一套）：段位收起，日历钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签文字按粒度与 `locale` 排出（日 2026/10/02、月 2026年10月、周 2026-W40、季 2026-Q4），标签是定长文字、不截短，一行放不下就折到下一行，盒随行数长高、到上限后在盒内滚动；超过 `maxTagCount`（默认 3）的折进 +N；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入。
+- 多选（`multiple`）时选中的日期在输入行里排成标签（库内 [标签](./tag)，与[选择器](./select)多选同一套）：段位收起，日历钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签文字按粒度与 `locale` 排出（日 2026/10/02、月 2026年10月、周 2026-W40、季 2026-Q4），标签是定长文字、不截短，一行放不下就折到下一行，盒随行数长高、到上限后在盒内滚动；超过 `maxTagCount`（默认 3）的折进 +N；没有选中时整条 `placeholder` 落在标签行上；表单一个选中值一份同名隐藏输入。
 - `placeholder` 给字符串是整条占位：一段都没填、焦点也不在段上时输入行显示这句文字（「请选择生效时间」），段位与分隔符淡出让位，焦点一进到段上就换回 yyyy / mm / dd 段位；给对象是逐段的占位串。整条占位由皮肤以生成内容画出，段位仍可聚焦、仍在读屏树里。
 - 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。周粒度按 ISO 周（星期一到星期日）成段，输入行的「2026-33」按 ISO 周年计，与 `locale` 和 `firstDayOfWeek` 都无关：en-US 这类星期日开头的 locale 下，日视图的一行比所挑的 ISO 周早一天开始。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项：每项是一颗淡底小钮，当前值落在哪一项就在它末端画对号。
 - `firstDayOfWeek`（0 = 星期日 … 6 = 星期六）与 `maxSelected`（多选上限）原样交给浮层里的日历，用法与示例见[日历选择器](./calendar-picker)；输入行的段序仍按 `locale`，带的日期比上限多的快捷选项不可按下。
-- `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
+- `showTime` 在 `granularity=day` 且单选 时让输入行显示完整日期时间，并加入时、分或秒选择列。
 - 时间列与时间选择器共用一份约束：`hourCycle={12}` 多出上下午列与上下午段（缺省按 `locale` 推断，没给 `locale` 时 24）；`timeStep` 按时、分、秒各设步长；`isTimeUnavailable` 逐格判定，第三个参数带已选的时分与这份时间所属的日期。
 - `min` / `max` 可以带时间段（`2026-09-28T09:30`）：日历按日期段收，与它同一天时界外的时刻留在列里、标为不可选，列长不随所选的日子变。
 - 日期时间组合面板的时间列顶边接着日历标题栏的分隔线、底边与日期网格对齐，列与列之间不画线；各时间列只纵向滚动，列底留白让末尾几格也能滚到列顶。
@@ -159,7 +159,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 未提供时按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定今天与格式化文案使用的时区，默认取宿主本地时区。 |
 | `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日 … 6 = 星期六（与日历选择器同一套写法）；不给按 locale。 只改浮层日历的表头、每一行的行首与 Home / End，月份名、星期名与段位先后仍按 locale。 |
-| `selectionMode` | `CalendarPickerSelectionMode` |  | 选择模式，默认 single。区间选择是另一个组件（日期范围选择器）。 |
+| `multiple` | `boolean` |  | 多选：选中的周期在输入行里排成标签；缺省单选。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个周期，交给内嵌日历：选满后没选中的格子不可再加选，已选的仍可点掉。 带的日期比它多的快捷选项不可按下。非整数向下取整，小于 1 或不是有限数时不设上限。 |
 | `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 |
@@ -168,11 +168,11 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `invalid` | `boolean` |  | 校验失败：段位报告 aria-invalid，各角色节点带 data-invalid。 未提供时也会自行判定：已填齐但越界。 |
 | `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
-| `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 |
+| `granularity` | `CalendarGranularity` |  | 选择粒度；与 multiple 正交。输入行与周期网格都由它决定。 |
 | `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 没有配套的 defaultActiveView：面板每次展开都会重置该档，非受控初值没有生效时刻， 提供后也观察不到任何效果。修改初始层级使用 granularity。 |
 | `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
 | `placeholder` | `string \| DateSegmentPlaceholders` |  | 占位。给字符串是整条占位：一段都没填、焦点也不在段上时，输入行显示这句文字（「请选择生效时间」）， 焦点进到段上即换回段位。给对象是逐段的占位串，覆盖内置的 yyyy / mm / dd。 |
-| `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。 与 selectionMode 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项 自动不可按下；showTime 下写入的日期附带当前已选的时间。 |
+| `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。 与 multiple 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项 自动不可按下；showTime 下写入的日期附带当前已选的时间。 |
 | `visibleCount` | `number` |  | 展示的连续日历面板数；默认 1。 |
 | `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开启。关闭后网格按当月实际周数收缩，翻页时浮层高度随之变化。 |
 | `defaultFocusedValue` | `string` |  | 初始聚焦日，ISO 串；同时决定展开时先落在哪一页。 未提供时回退为首个选中值，再回退为今天。表单重置回到该值。 |
@@ -290,7 +290,7 @@ selectionMode="multiple" 时选中的日期在输入行里排成标签，点标�
 | `open` | `boolean` |  |
 | `value` | `string[]` | 选中集合，ISO 串；形状不随模式变化。 |
 | `valueAsString` | `string \| null` | 首个选中值；无选中时为 null。 |
-| `selectionMode` | `CalendarPickerSelectionMode` |  |
+| `multiple` | `boolean` |  |
 | `periodValue` | `CalendarPeriodValue \| null` | single 的规范化周期值；multiple 没有连续区间语义，返回 null。 |
 | `focusedValue` | `string` | 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 |
 | `granularity` | `CalendarGranularity` | 作者选择的粒度。 |

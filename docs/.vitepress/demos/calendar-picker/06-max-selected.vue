@@ -25,7 +25,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15"]);
     v-model:value="value"
     default-focused-value="2026-09-13"
     locale="zh-CN"
-    selection-mode="multiple"
+    multiple
     :max-selected="3"
     fixed-weeks
     style="max-inline-size: 280px"

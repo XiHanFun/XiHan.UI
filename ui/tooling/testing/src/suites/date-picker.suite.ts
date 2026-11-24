@@ -1154,7 +1154,7 @@ export const datePickerSuite: ConformanceSuite = {
     {
       name: 'maxSelected 交给内嵌日历：多选选满后没选中的格子转 aria-disabled，已选的仍可点掉',
       spec: { apg: APG },
-      props: { ...BASE_PROPS, defaultValue: [ANCHOR], selectionMode: 'multiple', maxSelected: 1 },
+      props: { ...BASE_PROPS, defaultValue: [ANCHOR], multiple: true, maxSelected: 1 },
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { attr: { part: 'content', name: 'hidden', value: null } } },
@@ -1174,7 +1174,7 @@ export const datePickerSuite: ConformanceSuite = {
       name: '多选时段位收起，触发钮是键盘入口：退格摘掉最后一个选中值',
       spec: { apg: APG },
       covers: ['date-picker.kbd.remove-last'],
-      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], selectionMode: 'multiple' },
+      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], multiple: true },
       initial: {
         parts: { 'segment-group': { hidden: '' } },
       },
@@ -1279,7 +1279,7 @@ export const datePickerSuite: ConformanceSuite = {
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       // 多选时触发钮是键盘入口，名字借标题
-      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], selectionMode: 'multiple', label: '出差日期' },
+      props: { ...BASE_PROPS, defaultValue: ['2024-02-01', ANCHOR], multiple: true, label: '出差日期' },
       initial: {
         order: ['root', 'label', 'control', 'tag-list', 'clear-trigger', 'trigger', 'positioner', 'content', 'calendar'],
         counts: { 'segment-group': 0 },

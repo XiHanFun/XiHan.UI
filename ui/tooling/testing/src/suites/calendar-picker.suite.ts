@@ -528,7 +528,7 @@ export const calendarPickerSuite: ConformanceSuite = {
     {
       name: '多选：点击切换而不是替换，集合按日期升序，grid 报 aria-multiselectable',
       spec: { apg: APG },
-      props: { ...BASE_PROPS, selectionMode: 'multiple' },
+      props: { ...BASE_PROPS, multiple: true },
       initial: { parts: { grid: { 'aria-multiselectable': 'true' } } },
       steps: [
         { kind: 'click', part: `cell-trigger[${at('2024-02-18')}]` },
@@ -554,7 +554,7 @@ export const calendarPickerSuite: ConformanceSuite = {
     {
       name: 'maxSelected：多选选满后没选中的格子转 aria-disabled、点不进去，点掉一个即腾出名额',
       spec: { apg: APG },
-      props: { ...BASE_PROPS, selectionMode: 'multiple', maxSelected: 1, defaultValue: [ANCHOR] },
+      props: { ...BASE_PROPS, multiple: true, maxSelected: 1, defaultValue: [ANCHOR] },
       initial: {
         parts: {
           [`cell-trigger[${at('2024-02-18')}]`]: { 'aria-disabled': 'true', 'data-disabled': '' },

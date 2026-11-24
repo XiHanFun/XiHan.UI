@@ -470,7 +470,7 @@ describe('开合与受控', () => {
 describe('选中值的三个入口', () => {
   it('裸串是单选简写，内部一律归一成数组', () => {
     expect(mount({ defaultValue: '2026-07-28' }).value()).toEqual(['2026-07-28'])
-    expect(mount({ defaultValue: ['2026-07-01', '2026-07-09'], selectionMode: 'multiple' }).value())
+    expect(mount({ defaultValue: ['2026-07-01', '2026-07-09'], multiple: true }).value())
       .toEqual(['2026-07-01', '2026-07-09'])
     expect(mount().value()).toEqual([])
   })
@@ -480,7 +480,7 @@ describe('选中值的三个入口', () => {
     single.api().setValue(['2026-07-28', '2026-08-01'])
     expect(single.value()).toEqual(['2026-07-28'])
 
-    const multiple = mount({ selectionMode: 'multiple' })
+    const multiple = mount({ multiple: true })
     multiple.api().setValue(['2026-07-30', '2026-07-02', '2026-07-02'])
     expect(multiple.value()).toEqual(['2026-07-02', '2026-07-30'])
   })
@@ -565,7 +565,7 @@ describe('closeOnSelect', () => {
   })
 
   it('多选：选多少次都不收起', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'multiple' })
+    const h = mount({ defaultOpen: true, multiple: true })
     const days = h.rendered()
     click(h.cell(days[10]!))
     click(h.cell(days[12]!))
@@ -734,7 +734,7 @@ describe('点输入行即展开', () => {
   })
 
   it('段上 Enter 收起：敲出来的值不触发选完即收，得给一个我填完了的手势', async () => {
-    const h = await open({ selectionMode: 'multiple' })
+    const h = await open({ multiple: true })
     expect(h.state()).toBe('open')
     const group = h.input
     press(group, 'Enter')
@@ -864,16 +864,16 @@ describe('defaultFocusedValue 决定先落在哪一页', () => {
 describe('日历面板数量', () => {
   it('单选与多选默认都只铺一个面板', () => {
     expect(mount({ defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
-    const multiple = mount({ selectionMode: 'multiple', defaultFocusedValue: '2026-08-17' }).api()
+    const multiple = mount({ multiple: true, defaultFocusedValue: '2026-08-17' }).api()
     expect(multiple.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8]])
-    expect(mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ multiple: true, defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
     expect(mount({ granularity: 'month', defaultValue: '2026-02-01' }).api().calendar.panels).toHaveLength(1)
   })
 
   it('visibleCount 显式给了以它为准，两种模式都听它的', () => {
     expect(mount({ visibleCount: 3, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(3)
-    expect(mount({ selectionMode: 'multiple', visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
-    expect(mount({ selectionMode: 'multiple', visibleCount: 2, defaultValue: ['2026-07-01', '2026-07-31'] }).api().calendar.panels).toHaveLength(2)
+    expect(mount({ multiple: true, visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ multiple: true, visibleCount: 2, defaultValue: ['2026-07-01', '2026-07-31'] }).api().calendar.panels).toHaveLength(2)
   })
 
   it('恒六行：五行月与六行月的网格一样高，关掉才按实际周数收', () => {
@@ -923,7 +923,7 @@ describe('内嵌日历原样复用，不重写一条', () => {
   })
 
   it('maxSelected 转给日历：多选选满后没选中的格子不可再加选，已选的仍可点掉', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'multiple', maxSelected: 2, defaultValue: ['2026-07-10', '2026-07-20'] })
+    const h = mount({ defaultOpen: true, multiple: true, maxSelected: 2, defaultValue: ['2026-07-10', '2026-07-20'] })
     expect(h.api().calendar.maxSelected).toBe(2)
     expect(h.cell('2026-07-15').getAttribute('aria-disabled')).toBe('true')
     click(h.cell('2026-07-15'))
@@ -1102,7 +1102,7 @@ describe('granularity 与输入行段集联动', () => {
       end: '2026-09-30',
       keys: ['2026-Q3'],
     })
-    expect(mount({ selectionMode: 'multiple', defaultValue: ['2026-01-01', '2026-02-01'] }).api().periodValue).toBeNull()
+    expect(mount({ multiple: true, defaultValue: ['2026-01-01', '2026-02-01'] }).api().periodValue).toBeNull()
   })
 })
 
@@ -1382,7 +1382,7 @@ describe('快捷选项', () => {
     expect(single.value()).toEqual(['2026-07-10'])
     expect(single.state()).toBe('closed')
 
-    const multiple = mount({ defaultOpen: true, selectionMode: 'multiple', presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '首尾两天' }] })
+    const multiple = mount({ defaultOpen: true, multiple: true, presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '首尾两天' }] })
     expect(multiple.api().presets.map(p => p.disabled)).toEqual([false, false])
     pick(multiple, '2026-07-01/2026-07-31')
     expect(multiple.value()).toEqual(['2026-07-01', '2026-07-31'])
@@ -1393,7 +1393,7 @@ describe('快捷选项', () => {
   it('maxSelected：带的日期比上限多的那条按不下去；选满时整份替换的快捷选项照常可按', () => {
     const h = mount({
       defaultOpen: true,
-      selectionMode: 'multiple',
+      multiple: true,
       maxSelected: 2,
       defaultValue: ['2026-07-02', '2026-07-03'],
       presets: [{ value: '2026-07-10/2026-07-20', label: '两天' }, { value: '2026-07-01/2026-07-02/2026-07-03', label: '三天' }],
@@ -1890,7 +1890,7 @@ describe('多选：选中值在盒里排成标签', () => {
   type Handler = (event: unknown) => void
 
   it('与选中值同序排成标签，日按 locale 排成紧凑的数字写法；单选没有标签、标签行收起', () => {
-    const multiple = mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-07-09'] }).api()
+    const multiple = mount({ multiple: true, defaultValue: ['2026-07-01', '2026-07-09'] }).api()
     expect(multiple.tags).toEqual([{ value: '2026-07-01', label: '2026/07/01' }, { value: '2026-07-09', label: '2026/07/09' }])
     expect((multiple.getTagListProps() as Record<string, unknown>).hidden).toBeUndefined()
     const single = mount({ defaultValue: '2026-07-01' }).api()
@@ -1899,17 +1899,17 @@ describe('多选：选中值在盒里排成标签', () => {
   })
 
   it('月、周粒度的标签取周期的名字', () => {
-    expect(mount({ selectionMode: 'multiple', granularity: 'month', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026年7月')
-    expect(mount({ selectionMode: 'multiple', granularity: 'week', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026-W27')
+    expect(mount({ multiple: true, granularity: 'month', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026年7月')
+    expect(mount({ multiple: true, granularity: 'week', defaultValue: ['2026-07-01'] }).api().tags[0]!.label).toBe('2026-W27')
   })
 
   it('多选时段位整体收起，选中值改由标签行呈现', () => {
-    expect((mount({ selectionMode: 'multiple' }).api().getSegmentGroupProps() as Record<string, unknown>).hidden).toBe(true)
+    expect((mount({ multiple: true }).api().getSegmentGroupProps() as Record<string, unknown>).hidden).toBe(true)
     expect((mount({}).api().getSegmentGroupProps() as Record<string, unknown>).hidden).toBeUndefined()
   })
 
   it('超过 maxTagCount 的折进 +N：只摆前几枚，+N 那一枚带 data-count 并显形', () => {
-    const api = mount({ selectionMode: 'multiple', maxTagCount: 2, defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03', '2026-07-04'] }).api()
+    const api = mount({ multiple: true, maxTagCount: 2, defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03', '2026-07-04'] }).api()
     expect(api.tags.map(tag => tag.value)).toEqual(['2026-07-01', '2026-07-02'])
     expect(api.overflowCount).toBe(2)
     expect(api.overflowText).toBe('+2')
@@ -1919,7 +1919,7 @@ describe('多选：选中值在盒里排成标签', () => {
   })
 
   it('没有选中时标签行承载整条占位，有了选中就撤下', () => {
-    const h = mount({ selectionMode: 'multiple', placeholder: '请选择日期' })
+    const h = mount({ multiple: true, placeholder: '请选择日期' })
     const list = h.api().getTagListProps() as Record<string, unknown>
     expect(list['data-placeholder-text']).toBe('请选择日期')
     expect(list['data-placeholder-shown']).toBe('')
@@ -1929,7 +1929,7 @@ describe('多选：选中值在盒里排成标签', () => {
 
   it('删除钮摘掉它那一个；触发钮上按退格摘掉最后一个；只读时都不动', () => {
     const changes: string[][] = []
-    const h = mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03'], onValueChange: d => changes.push(d.value) })
+    const h = mount({ multiple: true, defaultValue: ['2026-07-01', '2026-07-02', '2026-07-03'], onValueChange: d => changes.push(d.value) })
     const remove = h.api().getItemDeleteTriggerProps({ value: '2026-07-02' }) as Record<string, unknown>
     expect(remove.tabindex).toBe(-1)
     ;(remove.onClick as Handler)(new MouseEvent('click'))
@@ -1940,13 +1940,13 @@ describe('多选：选中值在盒里排成标签', () => {
     expect(h.value()).toEqual(['2026-07-01'])
     expect(changes).toEqual([['2026-07-01', '2026-07-03'], ['2026-07-01']])
 
-    const readOnly = mount({ selectionMode: 'multiple', readOnly: true, defaultValue: ['2026-07-01'] })
+    const readOnly = mount({ multiple: true, readOnly: true, defaultValue: ['2026-07-01'] })
     ;((readOnly.api().getTriggerProps() as Record<string, unknown>).onKeyDown as Handler)(new KeyboardEvent('keydown', { key: 'Backspace', cancelable: true }))
     expect(readOnly.value()).toEqual(['2026-07-01'])
   })
 
   it('表单出口：多选时一个选中值一份同名输入', () => {
-    const api = mount({ selectionMode: 'multiple', name: 'days', defaultValue: ['2026-07-01', '2026-07-09'] }).api()
+    const api = mount({ multiple: true, name: 'days', defaultValue: ['2026-07-01', '2026-07-09'] }).api()
     expect((api.field.getHiddenInputProps({ value: '2026-07-09' }) as Record<string, unknown>).value).toBe('2026-07-09')
     expect((api.field.getHiddenInputProps({ value: '2026-07-09' }) as Record<string, unknown>).name).toBe('days')
   })
@@ -1975,7 +1975,7 @@ describe('datePickerStructure', () => {
 
   it('多选、快捷选项、两个面板：标签行带删除钮，翻页钮分在首末两个面板；多选不带时间', () => {
     const api = mount({
-      selectionMode: 'multiple',
+      multiple: true,
       defaultValue: ['2026-07-01', '2026-07-09'],
       presets: [{ value: '2026-07-01', label: '月初' }],
       showTime: true,

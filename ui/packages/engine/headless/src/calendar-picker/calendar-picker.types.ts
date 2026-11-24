@@ -15,7 +15,6 @@ import type { CalendarBaseAction, CalendarBaseApi, CalendarBaseContext, Calendar
  *
  * 区间选择是另一个组件（日历范围选择器），不在此处。
  */
-export type CalendarPickerSelectionMode = 'single' | 'multiple'
 
 export interface CalendarPickerValueChangeDetails {
   /** 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1），形状不随模式变化。 */
@@ -45,7 +44,8 @@ export type CalendarPickerPressedKey
 
 export interface CalendarPickerSchema extends MachineSchema {
   props: CalendarBaseProps & {
-    selectionMode?: CalendarPickerSelectionMode
+    /** 多选：点格子切换选中，选中集合去重升序；缺省单选，点一个换掉原来那个。 */
+    multiple?: boolean
     /**
      * multiple 下最多选几个周期。选满后没选中的格子转 aria-disabled（仍可聚焦），点击与确认键都加不进去；
      * 已选的照旧可以点掉，点掉一个即腾出名额。只拦用户这一路的加选，setValue 与受控 value 原样收下。
@@ -82,7 +82,7 @@ export interface CalendarPickerSchema extends MachineSchema {
     | 'setValue'
     | 'selectCell'
     | 'syncGranularity'
-    | 'syncSelectionMode'
+    | 'syncMultiple'
     | 'startPress'
     | 'endPress'
     | 'releaseWhenInert'
@@ -92,7 +92,7 @@ export interface CalendarPickerSchema extends MachineSchema {
 }
 
 export interface CalendarPickerApi<T extends PropTypes = PropTypes> extends CalendarBaseApi<T> {
-  selectionMode: CalendarPickerSelectionMode
+  multiple: boolean
   /** 实际生效的多选上限；single 或没设上限时为 null。 */
   maxSelected: number | null
 }

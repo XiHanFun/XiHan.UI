@@ -14,7 +14,6 @@ import type {
   TimePickerOpenChangeDetails,
   TimePickerPreset,
   TimePickerSchema,
-  TimePickerSelectionMode,
   TimePickerTagMeta,
   TimePickerValueChangeDetails,
   TimeSegmentType,
@@ -80,7 +79,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {string} label - 标题文字：生成结构时铺带这段文字的 label 部件；手写部件时不使用它
  * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控。多选的一组时刻是数组，只走 property
  * @attr {string} default-value - 非受控初值；多选的数组只走 property
- * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；multiple 时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签
+ * @attr {boolean} multiple - 多选，默认单选；开着时列上拼草稿、按 confirm-trigger 收进值，输入行里排成标签
  * @attr {number} max-selected - multiple 下最多选几个时刻
  * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
  * @attr {boolean} open - 受控开合；未提供该属性即非受控
@@ -155,7 +154,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     label: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     open: { converter: BOOLEAN_CONVERTER },
@@ -189,7 +188,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
   declare label?: string
   declare value?: string | string[]
   declare defaultValue?: string | string[]
-  declare selectionMode?: TimePickerSelectionMode
+  declare multiple?: boolean
   declare maxSelected?: number
   declare maxTagCount?: number
   declare open?: boolean
@@ -263,7 +262,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
       ariaLabel: this.hostAriaLabel(),
       value: this.value,
       defaultValue: this.defaultValue,
-      selectionMode: this.selectionMode,
+      multiple: this.multiple,
       maxSelected: this.maxSelected,
       maxTagCount: this.maxTagCount,
       open: this.open,
@@ -489,7 +488,7 @@ export class XhTimePickerElement extends XhPortalHostElement {
     put('positioner', api.getPositionerProps())
     put('content', withoutHidden(api.getContentProps()))
     // 多选时一个选中值一份同名输入，单选仍是一份
-    this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.multiple
       ? api.value.map(value => api.getHiddenInputProps({ value }))
       : [api.getHiddenInputProps()])
     put('preset-group', api.getPresetGroupProps())

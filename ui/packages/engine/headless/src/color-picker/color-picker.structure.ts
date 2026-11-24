@@ -59,7 +59,7 @@ export interface ColorPickerStructureOptions {
   slotted?: StructureSlotted
 }
 
-type ColorPickerStructureModel = Pick<ColorPickerApi, 'inline' | 'selectionMode' | 'alpha' | 'tags' | 'swatchPicker' | 'recentSwatchPicker' | 'translations'>
+type ColorPickerStructureModel = Pick<ColorPickerApi, 'inline' | 'multiple' | 'alpha' | 'tags' | 'swatchPicker' | 'recentSwatchPicker' | 'translations'>
 
 const NOTHING_SLOTTED: StructureSlotted = () => false
 
@@ -111,7 +111,7 @@ function swatchPickerStructure(key: string, part: 'swatch-picker' | 'recent-swat
  */
 export function colorPickerStructure(model: ColorPickerStructureModel, options: ColorPickerStructureOptions = {}): ColorPickerNode[] {
   const slotted = options.slotted ?? NOTHING_SLOTTED
-  const multiple = model.selectionMode === 'multiple'
+  const multiple = model.multiple
   const panel: ColorPickerNode[] = [
     { key: 'saturation-area', tag: 'div', part: 'saturation-area', children: [{ key: 'area-thumb', tag: 'div', part: 'area-thumb' }] },
     sliderStructure('hue-slider', 'hue-slider'),

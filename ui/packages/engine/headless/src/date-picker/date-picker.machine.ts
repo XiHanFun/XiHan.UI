@@ -6,7 +6,7 @@
 // 提供 date picker 相关实现。
 
 import type { Params, PositionResult, Service } from '@xihan-ui/core'
-import type { CalendarPickerSchema, CalendarPickerSelectionMode } from '../calendar-picker'
+import type { CalendarPickerSchema } from '../calendar-picker'
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { CalendarGranularity, CalendarView } from '../shared/calendar'
 import type { ColumnScrollTarget } from '../shared/column-scroll'
@@ -61,8 +61,8 @@ const CELL_TRIGGER_SELECTOR = calendarPickerAnatomy.build()['cell-trigger'].sele
 const TIME_COLUMN_SELECTOR = datePickerAnatomy.build()['time-column'].selector
 
 /** 收口选中集合：单选长度 ≤ 1，多选去重升序。 */
-function normalizeSelection(next: readonly string[], mode: CalendarPickerSelectionMode): string[] {
-  return mode === 'single' ? next.slice(0, 1) : sortIso(next)
+function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
+  return multiple ? sortIso(next) : next.slice(0, 1)
 }
 
 /** 首个选中值；没有选中时为 null。 */
@@ -95,7 +95,7 @@ export function datePickerLocale(service: Service<DatePickerSchema>): string {
 /** showTime 生效（只支持单选，其余模式维持纯日期值）。 */
 export function datePickerShowTime(service: Service<DatePickerSchema>): boolean {
   return !!service.prop('showTime')
-    && (service.prop('selectionMode') ?? 'single') === 'single'
+    && service.prop('multiple') !== true
     && (service.prop('granularity') ?? 'day') === 'day'
 }
 
@@ -120,7 +120,7 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     // showTime 下值带时间段，日历只认日期段
     value: withTime ? context.get('value').map(datePickerDatePart) : context.get('value'),
     focusedValue: datePickerFocusedValue(service),
-    selectionMode: prop('selectionMode'),
+    multiple: prop('multiple'),
     maxSelected: prop('maxSelected'),
     granularity: prop('granularity'),
     // 钻到哪一层由编排机持有：日历是内嵌的，收起再展开要回到作者要的那一档
@@ -342,11 +342,11 @@ export const datePickerMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET' || (e.src !== 'calendar' && e.src !== 'preset'))
           return false
-        if (prop('showTime') && (prop('selectionMode') ?? 'single') === 'single')
+        if (prop('showTime') && prop('multiple') !== true)
           return false
         if ((prop('closeOnSelect') ?? true) === false)
           return false
-        if ((prop('selectionMode') ?? 'single') === 'multiple')
+        if (prop('multiple') === true)
           return false
         return e.value.length >= 1
       },
@@ -414,7 +414,7 @@ export const datePickerMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
+        context.set('value', normalizeSelection(e.value, prop('multiple') === true))
       },
 
       clearValue: ({ context }) => context.set('value', []),

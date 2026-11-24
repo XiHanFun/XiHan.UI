@@ -1,4 +1,4 @@
-// 多选 | selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序
+// 多选 | multiple：点击一次加入，再点击一次移除，集合按日期升序
 import type { ReactNode } from "react";
 import {
   XhCalendarPickerCell,
@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         defaultFocusedValue="2026-09-13"
         locale="zh-CN"
-        selectionMode="multiple"
+        multiple
         fixedWeeks
         style={{ maxInlineSize: "280px" }}
       >

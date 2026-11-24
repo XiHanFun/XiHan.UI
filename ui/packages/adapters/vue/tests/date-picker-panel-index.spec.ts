@@ -48,7 +48,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
       h(XhDatePickerRoot, {
         locale: 'zh-CN',
         timeZone: 'UTC',
-        selectionMode: 'multiple',
+        multiple: true,
         visibleCount: 2,
         defaultOpen: true,
         defaultValue: ['2026-07-01', '2026-08-05'],
@@ -124,7 +124,7 @@ describe('双面板的面板号写在日历上', () => {
         h(XhDatePickerRoot, {
           locale: 'zh-CN',
           timeZone: 'UTC',
-          selectionMode: 'multiple',
+          multiple: true,
           visibleCount: 2,
           defaultOpen: true,
           defaultValue: ['2026-07-01', '2026-08-05'],

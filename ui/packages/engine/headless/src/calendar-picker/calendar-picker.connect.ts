@@ -26,8 +26,8 @@ export function connectCalendarPicker<T extends PropTypes>(
   const frame = createCalendarFrame(service, calendarPickerAnatomy.name)
   const { periodAt, focusedValue, view, disabled: calendarDisabled, readOnly } = frame
 
-  const mode = prop('selectionMode') ?? 'single'
-  const maxSelected = calendarPickerMaxSelected(prop('maxSelected'), mode)
+  const multiple = prop('multiple') === true
+  const maxSelected = calendarPickerMaxSelected(prop('maxSelected'), multiple)
   const value = context.get('value')
   const isDateUnavailable = prop('isDateUnavailable')
   const invalid = !!prop('invalid')
@@ -115,7 +115,7 @@ export function connectCalendarPicker<T extends PropTypes>(
 
   return {
     value,
-    selectionMode: mode,
+    multiple,
     maxSelected,
     focusedValue,
     panels: frame.panels,
@@ -292,7 +292,7 @@ export function connectCalendarPicker<T extends PropTypes>(
       // 皮肤按它换排布：日视图铺七列周行，其余周期按 CALENDAR_PERIOD_COLUMNS 一行几格
       'data-view': view,
       // 三条状态都显式给，不省略
-      'aria-multiselectable': mode === 'multiple' ? 'true' : 'false',
+      'aria-multiselectable': multiple ? 'true' : 'false',
       'aria-disabled': calendarDisabled ? 'true' : 'false',
       'aria-readonly': readOnly ? 'true' : 'false',
       'data-disabled': dataAttr(calendarDisabled),

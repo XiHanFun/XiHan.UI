@@ -91,11 +91,11 @@ describe('时间选择器的整条占位', () => {
   })
 
   it('多选没有选中时标签行显示整条占位，选上一个即撤下', async () => {
-    await mount({ placeholder: '请选择时间', selectionMode: 'multiple' })
+    await mount({ placeholder: '请选择时间', multiple: true })
     expect(getComputedStyle(part('tag-list'), '::before').content).toBe('"请选择时间"')
     app!.unmount()
     host!.remove()
-    await mount({ placeholder: '请选择时间', selectionMode: 'multiple', defaultValue: ['09:30'] })
+    await mount({ placeholder: '请选择时间', multiple: true, defaultValue: ['09:30'] })
     expect(getComputedStyle(part('tag-list'), '::before').content).toBe('none')
   })
 })

@@ -14,7 +14,7 @@ interface ColorPickerHost extends HTMLElement {
   inline?: boolean
   alpha?: boolean
   swatches?: string[]
-  selectionMode?: 'single' | 'multiple'
+  multiple?: boolean
   defaultValue?: string | string[]
   defaultOpen?: boolean
 }
@@ -98,7 +98,7 @@ describe('xh-color-picker 生成结构', () => {
   })
 
   it('多选：盒里铺标签行（标签带文字与删除钮），浮层末尾是「添加」，按下后标签随值增加', async () => {
-    const el = mount({ selectionMode: 'multiple', defaultValue: ['#ff0000'], defaultOpen: true })
+    const el = mount({ multiple: true, defaultValue: ['#ff0000'], defaultOpen: true })
     await settle(el)
     const tagLabels = (): string[] => Array.from(el.querySelectorAll('[data-scope="tag"][data-part="root"]:not([data-count])'), tag => tag.querySelector('[data-part="label"]')!.textContent ?? '')
     expect(partsOf(part(el, 'control')!)).toEqual(['tag-list', 'trigger'])

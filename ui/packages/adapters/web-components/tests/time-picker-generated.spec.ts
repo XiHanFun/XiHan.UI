@@ -11,7 +11,7 @@ interface TimePickerHost extends HTMLElement {
   updateComplete: Promise<unknown>
   label?: string
   defaultValue?: string | string[]
-  selectionMode?: string
+  multiple?: boolean
   granularity?: string
   hourCycle?: number
   presets?: readonly { value: string, label: string }[]
@@ -81,7 +81,7 @@ describe('xh-time-picker 生成结构', () => {
   })
 
   it('多选：盒里换成标签行，浮层底栏铺添加钮；按标签上的删除钮摘掉那一个', async () => {
-    const el = mount({ selectionMode: 'multiple', defaultValue: ['09:00', '14:30'] })
+    const el = mount({ multiple: true, defaultValue: ['09:00', '14:30'] })
     await settle(el)
     expect(part(el, 'segment-group')).toBeNull()
     expect(childParts(part(el, 'content')!)).toEqual(['column', 'column', 'footer'])

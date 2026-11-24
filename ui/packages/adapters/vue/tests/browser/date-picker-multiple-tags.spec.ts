@@ -38,7 +38,7 @@ async function mount(props: Record<string, unknown>): Promise<Mounted> {
     render: () => h(XhDatePickerRoot, {
       'locale': 'zh-CN',
       'name': 'days',
-      'selectionMode': 'multiple',
+      'multiple': true,
       ...props,
       'onValue-change': (details: { value: string[] }) => changes.push(details.value),
     }, () => [
@@ -150,7 +150,7 @@ describe('date-picker 多选成标签', () => {
   })
 
   it('单选不出标签行，段位照常', async () => {
-    await mount({ selectionMode: 'single', defaultValue: '2026-07-01' })
+    await mount({ multiple: false, defaultValue: '2026-07-01' })
     expect(getComputedStyle(part('tag-list')).display).toBe('none')
     expect(getComputedStyle(part('segment-group')).display).not.toBe('none')
   })

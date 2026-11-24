@@ -13,7 +13,7 @@ interface DatePickerHost extends HTMLElement {
   locale?: string
   timeZone?: string
   defaultValue?: string | string[]
-  selectionMode?: string
+  multiple?: boolean
   showTime?: boolean
   presets?: readonly { value: string, label: string }[]
 }
@@ -80,7 +80,7 @@ describe('xh-date-picker 生成结构', () => {
   })
 
   it('多选：盒里换成标签行，按标签上的删除钮摘掉那一天', async () => {
-    const el = mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-07-09'] })
+    const el = mount({ multiple: true, defaultValue: ['2026-07-01', '2026-07-09'] })
     await settle(el)
     expect(part(el, 'segment-group')).toBeNull()
     const tags = (): HTMLElement[] => parts(el, 'tag', 'root').filter(tag => !tag.hidden)

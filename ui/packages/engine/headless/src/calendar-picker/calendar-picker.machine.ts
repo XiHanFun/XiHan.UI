@@ -5,7 +5,7 @@
 
 // 提供 calendar picker 相关实现。
 
-import type { CalendarPickerPressedKey, CalendarPickerSchema, CalendarPickerSelectionMode } from './calendar-picker.types'
+import type { CalendarPickerPressedKey, CalendarPickerSchema } from './calendar-picker.types'
 import { setup } from '@xihan-ui/core'
 import {
   calendarBaseActions,
@@ -30,13 +30,13 @@ function isCellKey(key: CalendarPickerPressedKey): boolean {
  * 多选上限归一：只在 multiple 下生效；非整数向下取整，小于 1 或不是有限数即不设上限。
  * 连接层与机器共用这一条，格子的禁用面与点击拦截才对得上。
  */
-export function calendarPickerMaxSelected(raw: number | undefined, mode: CalendarPickerSelectionMode): number | null {
-  return mode === 'multiple' ? resolveMaxSelected(raw) : null
+export function calendarPickerMaxSelected(raw: number | undefined, multiple: boolean): number | null {
+  return multiple ? resolveMaxSelected(raw) : null
 }
 
 /** 选中集合的不变量：单选长度 ≤ 1，多选去重升序。 */
-function normalizeSelection(next: readonly string[], mode: CalendarPickerSelectionMode): string[] {
-  return mode === 'single' ? next.slice(0, 1) : sortIso(next)
+function normalizeSelection(next: readonly string[], multiple: boolean): string[] {
+  return multiple ? sortIso(next) : next.slice(0, 1)
 }
 
 // 选中值与聚焦日住在 context 的 cell 里（prop 给定即受控），不编码进 FSM 状态。
@@ -54,7 +54,7 @@ export const calendarPickerMachine = createMachine({
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
   watch: ({ track, prop, context, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
-    track([() => prop('selectionMode')], () => action(['syncSelectionMode']))
+    track([() => prop('multiple')], () => action(['syncMultiple']))
     // 按住途中整张转入禁用或只读：不会再来 keyup，按压面由机器自己收
     track([() => prop('disabled'), () => prop('readOnly')], () => action(['releaseWhenInert']))
     // 钻层时整页格子换掉、标题钮到顶转禁用：被按住的那一个不会再来 keyup / blur（节点被换掉不派 blur），一并松开
@@ -119,7 +119,7 @@ export const calendarPickerMachine = createMachine({
         const e = event.current()
         if (e.type !== 'VALUE.SET')
           return
-        context.set('value', normalizeSelection(e.value, prop('selectionMode') ?? 'single'))
+        context.set('value', normalizeSelection(e.value, prop('multiple') === true))
       },
 
       // 单选替换、多选切换；选满后只能点掉，不能再加
@@ -127,25 +127,25 @@ export const calendarPickerMachine = createMachine({
         const e = event.current()
         if (e.type !== 'CELL.SELECT')
           return
-        const mode = prop('selectionMode') ?? 'single'
-        if (mode === 'single') {
+        const multiple = prop('multiple') === true
+        if (!multiple) {
           context.set('value', [e.value])
           return
         }
         const current = context.get('value')
-        const max = calendarPickerMaxSelected(prop('maxSelected'), mode)
+        const max = calendarPickerMaxSelected(prop('maxSelected'), multiple)
         if (!current.includes(e.value) && max != null && current.length >= max)
           return
         const next = current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value]
-        context.set('value', normalizeSelection(next, 'multiple'))
+        context.set('value', normalizeSelection(next, true))
       },
 
       /** 作者换了粒度：回到新层级，并清空不能跨粒度解释的选择。 */
       syncGranularity: params => syncGranularityBase(params),
 
-      /** 切换模式时收口现值：多选变单选只留第一个。 */
-      syncSelectionMode: ({ context, prop }) => {
-        context.set('value', normalizeSelection(context.get('value'), prop('selectionMode') ?? 'single'))
+      /** 多选开关切换时收口现值：多选变单选只留第一个。 */
+      syncMultiple: ({ context, prop }) => {
+        context.set('value', normalizeSelection(context.get('value'), prop('multiple') === true))
       },
     },
   },

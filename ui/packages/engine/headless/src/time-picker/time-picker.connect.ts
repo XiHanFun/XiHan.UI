@@ -97,7 +97,7 @@ export function connectTimePicker<T extends PropTypes>(
   const editable = !disabled && !readOnly
 
   // 单选时值至多一项，段位与列编辑的就是它；多选时列上拼的是草稿，按「添加」才收进值
-  const multiple = prop('selectionMode') === 'multiple'
+  const multiple = prop('multiple') === true
   const values = context.get('value')
   const draft = multiple ? context.get('draft') : resolveTimeDraft(values[0] ?? '', context.get('draft'))
   /** 单选的当前值；多选时是草稿拼出来的那一个（没填全为空串）。 */
@@ -341,7 +341,7 @@ export function connectTimePicker<T extends PropTypes>(
   return {
     open,
     value: values,
-    selectionMode: multiple ? 'multiple' : 'single',
+    multiple,
     draftValue: value,
     empty,
     outOfRange,

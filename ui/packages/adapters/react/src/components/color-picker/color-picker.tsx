@@ -11,7 +11,6 @@ import type {
   ColorPickerApi,
   ColorPickerInputChannel,
   ColorPickerSchema,
-  ColorPickerSelectionMode,
   ColorPickerTranslations,
   StructureChild,
 } from '@xihan-ui/headless'
@@ -58,7 +57,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   /** 非受控初值。 */
   defaultValue?: string | string[]
   /** 选择模式，默认 single；multiple 时工作色是草稿、按「添加」收进值，色块点一下切换，输入行里排成标签。 */
-  selectionMode?: ColorPickerSelectionMode
+  multiple?: boolean
   /** multiple 下最多选几个颜色。 */
   maxSelected?: number
   /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
@@ -111,7 +110,7 @@ export function XhColorPickerRoot({
   ariaLabel,
   value,
   defaultValue,
-  selectionMode,
+  multiple,
   maxSelected,
   maxTagCount,
   format,
@@ -147,7 +146,7 @@ export function XhColorPickerRoot({
     ariaLabel,
     value,
     defaultValue,
-    selectionMode,
+    multiple,
     maxSelected,
     maxTagCount,
     format,
@@ -574,7 +573,7 @@ export interface XhColorPickerHiddenInputProps extends Omit<ComponentPropsWithRe
 /** 表单出口：颜色随该原生输入提交，对键盘与读屏不可见；多选时一个选中值一份同名输入。 */
 export function XhColorPickerHiddenInput({ ...rest }: XhColorPickerHiddenInputProps): ReactNode {
   const ctx = useColorPickerContext()
-  if (ctx.api.selectionMode === 'multiple') {
+  if (ctx.api.multiple) {
     return ctx.api.value.map(value => (
       <input
         key={value}

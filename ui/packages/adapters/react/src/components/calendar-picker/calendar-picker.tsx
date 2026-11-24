@@ -5,7 +5,7 @@
 
 // 提供 calendar picker 相关实现。
 
-import type { CalendarGranularity, CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarGranularity, CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
@@ -44,7 +44,7 @@ export type CalendarPickerRootSlotProps = Pick<
 export interface XhCalendarPickerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'> {
   value?: string | string[]
   defaultValue?: string | string[]
-  selectionMode?: CalendarPickerSelectionMode
+  multiple?: boolean
   /** multiple 下最多选几个周期；选满后没选中的格子不可再加选。 */
   maxSelected?: number
   focusedValue?: string
@@ -62,7 +62,7 @@ export interface XhCalendarPickerRootProps extends Omit<ComponentPropsWithRef<'d
   readOnly?: boolean
   weekdayFormat?: CalendarWeekdayFormat
   fixedWeeks?: boolean
-  /** 选择粒度；与 selectionMode 正交。区间选择是另一个组件（XhCalendarRangePicker）。 */
+  /** 选择粒度；与 multiple 正交。区间选择是另一个组件（XhCalendarRangePicker）。 */
   granularity?: CalendarGranularity
   /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
   activeView?: CalendarView
@@ -81,7 +81,7 @@ export interface XhCalendarPickerRootProps extends Omit<ComponentPropsWithRef<'d
 export function XhCalendarPickerRoot({
   value,
   defaultValue,
-  selectionMode,
+  multiple,
   maxSelected,
   focusedValue,
   defaultFocusedValue,
@@ -110,7 +110,7 @@ export function XhCalendarPickerRoot({
   const ctx = useCalendarPicker(withXhConfig('calendar-picker', {
     value,
     defaultValue,
-    selectionMode,
+    multiple,
     maxSelected,
     focusedValue,
     defaultFocusedValue,

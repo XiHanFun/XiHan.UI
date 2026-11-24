@@ -1,4 +1,4 @@
-<!-- 多选成标签 | selectionMode="multiple" 时选中的日期在输入行里排成标签，点标签上的叉或在日历钮上按退格摘掉，放不下的折进 +N；浮层选完不收起 -->
+<!-- 多选成标签 | multiple 时选中的日期在输入行里排成标签，点标签上的叉或在日历钮上按退格摘掉，放不下的折进 +N；浮层选完不收起 -->
 <script setup lang="ts">
 import {
   XhDatePickerCalendar,
@@ -30,7 +30,7 @@ import {
     v-slot="{ weeks, weekDays }"
     locale="zh-CN"
     name="duty-days"
-    selection-mode="multiple"
+    multiple
     placeholder="选择值班日期"
     :default-value="['2026-10-08', '2026-10-15', '2026-10-22', '2026-10-29']"
   >

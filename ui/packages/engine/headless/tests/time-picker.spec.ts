@@ -520,7 +520,7 @@ describe('开合', () => {
   })
 
   it('tab 不拦按键也不收起：焦点走到列后的底栏照开着，走出浮层才收起且不抢回触发器', async () => {
-    const h = open({ selectionMode: 'multiple' })
+    const h = open({ multiple: true })
     h.trigger.click()
     // 本层参与者延后一枚微任务武装，焦点外移的判定要等它就位
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -1213,7 +1213,7 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
 
   it('列上点选只改草稿不写值；「添加」把草稿收进值，浮层不收、草稿留着，改一列就能接着添', () => {
     const changes: string[][] = []
-    const h = open({ selectionMode: 'multiple', onValueChange: d => changes.push(d.value) })
+    const h = open({ multiple: true, onValueChange: d => changes.push(d.value) })
     h.trigger.click()
     h.option('hour', '09').click()
     h.option('minute', '30').click()
@@ -1229,7 +1229,7 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
   })
 
   it('「添加」只在草稿填全、没选过、没满时可按；单选时整个收起', () => {
-    const h = open({ selectionMode: 'multiple', maxSelected: 1 })
+    const h = open({ multiple: true, maxSelected: 1 })
     h.trigger.click()
     expect(props(h, api => api.getConfirmTriggerProps()).disabled).toBe(true)
     h.option('hour', '09').click()
@@ -1241,9 +1241,9 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
     expect((open({}).api().getConfirmTriggerProps() as Record<string, unknown>).hidden).toBe(true)
   })
 
-  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随选择模式收起', () => {
-    for (const selectionMode of ['single', 'multiple'] as const) {
-      const footer = open({ selectionMode }).api().getFooterProps() as Record<string, unknown>
+  it('底栏只是一块通栏操作区：带本组件的 scope 与 part，不报角色、不占 Tab 位、不随单选多选收起', () => {
+    for (const multiple of [false, true]) {
+      const footer = open({ multiple }).api().getFooterProps() as Record<string, unknown>
       expect(footer['data-scope']).toBe('time-picker')
       expect(footer['data-part']).toBe('footer')
       expect(footer.role).toBeUndefined()
@@ -1253,7 +1253,7 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
   })
 
   it('快捷选项点一下切换选中，浮层不收', () => {
-    const h = open({ selectionMode: 'multiple', presets: [{ value: '09:00', label: '上班' }, { value: '18:00', label: '下班' }] })
+    const h = open({ multiple: true, presets: [{ value: '09:00', label: '上班' }, { value: '18:00', label: '下班' }] })
     h.trigger.click()
     ;(props(h, api => api.getPresetProps({ value: '18:00' })).onClick as Handler)(new MouseEvent('click'))
     ;(props(h, api => api.getPresetProps({ value: '09:00' })).onClick as Handler)(new MouseEvent('click'))
@@ -1265,7 +1265,7 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
   })
 
   it('选中的时刻排成标签，段位收起；删除钮摘掉那一个，触发钮上退格摘掉最后一个', () => {
-    const h = mount({ selectionMode: 'multiple', defaultValue: ['08:00', '12:30', '18:00'], locale: 'zh-CN', hourCycle: 24 })
+    const h = mount({ multiple: true, defaultValue: ['08:00', '12:30', '18:00'], locale: 'zh-CN', hourCycle: 24 })
     expect(h.api().tags.map(tag => tag.label)).toEqual(['08:00', '12:30', '18:00'])
     expect(props(h, api => api.getSegmentGroupProps()).hidden).toBe(true)
     expect(props(h, api => api.getTagListProps()).hidden).toBeUndefined()
@@ -1278,14 +1278,14 @@ describe('多选：列上拼草稿，按「添加」收进值，选中的时刻�
   })
 
   it('12 小时制的标签按 locale 带上下午；超过 maxTagCount 的折进 +N', () => {
-    const api = mount({ selectionMode: 'multiple', maxTagCount: 1, defaultValue: ['13:45', '09:00'], locale: 'en-US', hourCycle: 12 }).api()
+    const api = mount({ multiple: true, maxTagCount: 1, defaultValue: ['13:45', '09:00'], locale: 'en-US', hourCycle: 12 }).api()
     expect(api.tags).toHaveLength(1)
     expect(api.tags[0]!.label).toMatch(/01:45\sPM/)
     expect(api.overflowText).toBe('+1')
   })
 
   it('表单出口：一个选中值一份同名输入；宿主写进来的值归一、去重并按时刻升序', () => {
-    const h = mount({ selectionMode: 'multiple', name: 'slots' })
+    const h = mount({ multiple: true, name: 'slots' })
     h.api().setValue(['18:00', '09:00:30', '18:00', 'bad'])
     expect(h.value()).toEqual(['09:00', '18:00'])
     expect((h.api().getHiddenInputProps({ value: '18:00' }) as Record<string, unknown>).value).toBe('18:00')
@@ -1314,11 +1314,11 @@ describe('time-picker 整条占位', () => {
   })
 
   it('多选：没有选中值时标签行带占位，段组不露；选了一个即撤下', () => {
-    const empty = mount({ placeholder: '请选择时间', selectionMode: 'multiple' }).api()
+    const empty = mount({ placeholder: '请选择时间', multiple: true }).api()
     expect((empty.getTagListProps() as Record<string, unknown>)['data-placeholder-text']).toBe('请选择时间')
     expect((empty.getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBe('')
     expect((empty.getSegmentGroupProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
-    const picked = mount({ placeholder: '请选择时间', selectionMode: 'multiple', defaultValue: ['09:30'] }).api()
+    const picked = mount({ placeholder: '请选择时间', multiple: true, defaultValue: ['09:30'] }).api()
     expect((picked.getTagListProps() as Record<string, unknown>)['data-placeholder-shown']).toBeUndefined()
   })
 })
@@ -1353,7 +1353,7 @@ describe('timePickerStructure', () => {
   })
 
   it('多选与快捷选项：盒里换成带删除钮的标签行，浮层里先铺快捷选项，各列之后是底栏的添加钮', () => {
-    const api = mount({ selectionMode: 'multiple', defaultValue: ['09:00', '14:30'], presets: [{ value: '09:00', label: '上班' }] }).api()
+    const api = mount({ multiple: true, defaultValue: ['09:00', '14:30'], presets: [{ value: '09:00', label: '上班' }] }).api()
     const nodes = timePickerStructure(api, { slotted: name => name === 'label' })
     expect(nodes[0]).toMatchObject({ tag: 'label', slot: { name: 'label' } })
     const control = nodes[1]!.children! as StructureNode[]

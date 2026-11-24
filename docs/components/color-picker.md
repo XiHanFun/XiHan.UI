@@ -68,7 +68,7 @@ inline 让取色面直接铺在页面里，与浮层形态同一台机器、同�
 
 ### 多选成标签
 
-selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉
+multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉
 
 <XhDemo src="color-picker/09-multiple" />
 
@@ -101,7 +101,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 - 单选给空数组是未选：色块不画颜色、画一道斜线，值文字显示 `placeholder`（缺省取 `translations.placeholder`），表单影子是空串，`required` 据此拦下；打开浮层从 `#000000` 起调，选定一个颜色才有值。`value` 与 `defaultValue` 都不给时照旧从 `#000000` 起、算作已选。
 - 单选有值时盒里露出清空钮（`clear-trigger`）：按下清回未选，先发 `onValueChange`（`value` 为空数组）再发 `onClear`，不碰开合；未选、多选、禁用、只读与常驻形态时收起。`setValue([])` 同样清回未选，不发 `onClear`。
 - 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交选中的值串。
-- 多选（`selectionMode="multiple"`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
+- 多选（`multiple`）时浮层里调出的工作色是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、工作色留着，接着调就能添下一个；预设色板点一下切换选中，格子本身不再标选中。工作色解析不出、已经选过（按颜色比较，写法不同也算同一个）或到了 `maxSelected` 时「添加」不可按。
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
 - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
@@ -145,7 +145,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| string[]` |  | 选中的颜色，值串数组。提供即受控：写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组；单选给空数组时是未选：色块不画颜色、值文字显示 placeholder， 取色面从 #000000 起调，选定一个颜色才有值。value 与 defaultValue 都不给时从 #000000 起、算作已选。 |
 | `defaultValue` | `string \| string[]` |  |  |
-| `selectionMode` | `ColorPickerSelectionMode` |  | 选择模式，默认 single。 |
+| `multiple` | `boolean` |  | 多选：浮层里调出的工作色是草稿，按「添加」收进值；缺省单选。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个颜色：选满后「添加」不可按、色块只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
 | `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `format` | `ColorFormat` |  | 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 |
@@ -243,7 +243,7 @@ selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」�
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `value` | `string[]` | 选中的颜色，值串数组（与 onValueChange 发出的是同一个）：单选是一项、未选时为空，多选按加入先后。 |
-| `selectionMode` | `ColorPickerSelectionMode` |  |
+| `multiple` | `boolean` |  |
 | `color` | `string` | 工作色的值串：取色面从它调起；单选时就是选中值，多选时是浮层里调着的草稿。单选未选时是取色面的起调色 #000000。 |
 | `empty` | `boolean` | 单选还没选颜色：色块不画颜色，值文字显示 placeholder，清空钮收起。 |
 | `valueText` | `string` | 值文字显示的内容：工作色的值串；单选未选时是 placeholder。 |

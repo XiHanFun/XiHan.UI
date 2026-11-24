@@ -88,9 +88,9 @@ const CASES: readonly Case[] = [
   {
     name: 'date-picker',
     render: () => (
-      <XhDatePickerRoot className="mine" style={PROBE} defaultValue="2024-01-01" selectionMode="single" />
+      <XhDatePickerRoot className="mine" style={PROBE} defaultValue="2024-01-01" multiple={false} />
     ),
-    leaks: ['defaultvalue', 'selectionmode'],
+    leaks: ['defaultvalue', 'multiple'],
   },
   {
     name: 'diff-view',

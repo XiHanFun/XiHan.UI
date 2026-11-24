@@ -69,7 +69,7 @@ async function mount(tree: ReactNode): Promise<void> {
 const BASE: XhDatePickerRootProps = {
   locale: 'zh-CN',
   timeZone: 'UTC',
-  selectionMode: 'multiple',
+  multiple: true,
   visibleCount: 2,
   defaultOpen: true,
   defaultValue: ['2026-07-01', '2026-08-05'],

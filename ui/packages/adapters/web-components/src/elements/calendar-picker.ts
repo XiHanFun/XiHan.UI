@@ -12,7 +12,6 @@ import type {
   CalendarPanel,
   CalendarPeriod,
   CalendarPickerSchema,
-  CalendarPickerSelectionMode,
   CalendarPickerTranslations,
   CalendarPickerValueChangeDetails,
   CalendarView,
@@ -48,7 +47,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @customElement xh-calendar-picker
  * @attr {string} value - 受控选中值（单选简写，ISO 串）；未提供即非受控，多选使用 property
  * @attr {string} default-value - 非受控初始选中值
- * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`
+ * @attr {boolean} multiple - 多选，默认单选；区间选择是 `<xh-calendar-range-picker>`
  * @attr {number} max-selected - multiple 下最多选几个周期；选满后没选中的格子不可再加选，已选的仍可点掉
  * @attr {string} focused-value - 受控聚焦日（ISO 串），同时决定展示哪个月
  * @attr {string} default-focused-value - 非受控初始聚焦日；未提供时回退为首个选中值，再回退为今天
@@ -63,7 +62,7 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @prop {Partial<CalendarPickerTranslations>} translations - 读屏文案（今天），只能通过 property 设置
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 narrow（中文「一 二 三」）；short 是「周一」
  * @attr {boolean} fixed-weeks - 恒渲染六行
- * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 multiple 正交
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
  * @attr {'day'|'week'|'month'|'quarter'|'year'} default-active-view - 非受控初值，默认同 granularity
  * @attr {number} visible-count - 并排展示的页数
@@ -95,7 +94,7 @@ export class XhCalendarPickerElement extends XhElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     focusedValue: { converter: STRING_CONVERTER, attribute: 'focused-value' },
     defaultFocusedValue: { converter: STRING_CONVERTER, attribute: 'default-focused-value' },
@@ -120,7 +119,7 @@ export class XhCalendarPickerElement extends XhElement {
 
   declare value?: string | string[]
   declare defaultValue?: string | string[]
-  declare selectionMode?: CalendarPickerSelectionMode
+  declare multiple?: boolean
   declare maxSelected?: number
   declare focusedValue?: string
   declare defaultFocusedValue?: string
@@ -169,7 +168,7 @@ export class XhCalendarPickerElement extends XhElement {
     return {
       value: this.value,
       defaultValue: this.defaultValue,
-      selectionMode: this.selectionMode,
+      multiple: this.multiple,
       maxSelected: this.maxSelected,
       focusedValue: this.focusedValue,
       defaultFocusedValue: this.defaultFocusedValue,

@@ -7,7 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker/calendar-picker.types'
+import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerTranslations } from '../calendar-picker/calendar-picker.types'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentPlaceholders, DateSegmentSet } from '../date-field/date-field.types'
 import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { ResolvedTimeStep, TimeStep, TimeUnavailablePredicate } from '../shared/time-constraint'
@@ -180,7 +180,8 @@ export interface DatePickerSchema extends MachineSchema {
      */
     firstDayOfWeek?: number
     /** 选择模式，默认 single。区间选择是另一个组件（日期范围选择器）。 */
-    selectionMode?: CalendarPickerSelectionMode
+    /** 多选：选中的周期在输入行里排成标签；缺省单选。 */
+    multiple?: boolean
     /**
      * multiple 下最多选几个周期，交给内嵌日历：选满后没选中的格子不可再加选，已选的仍可点掉。
      * 带的日期比它多的快捷选项不可按下。非整数向下取整，小于 1 或不是有限数时不设上限。
@@ -203,7 +204,7 @@ export interface DatePickerSchema extends MachineSchema {
     required?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 */
     name?: string
-    /** 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 */
+    /** 选择粒度；与 multiple 正交。输入行与周期网格都由它决定。 */
     granularity?: CalendarGranularity
     /**
      * 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。
@@ -226,7 +227,7 @@ export interface DatePickerSchema extends MachineSchema {
     /**
      * 快捷选项（「今天」「明天」等）。提供后浮层中多出一列，点击即整份写入选中值。
      * 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。
-     * 与 selectionMode 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项
+     * 与 multiple 不匹配（单选提供了多条）、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项
      * 自动不可按下；showTime 下写入的日期附带当前已选的时间。
      */
     presets?: DatePickerPreset[]
@@ -421,7 +422,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   value: string[]
   /** 首个选中值；无选中时为 null。 */
   valueAsString: string | null
-  selectionMode: CalendarPickerSelectionMode
+  multiple: boolean
   /** single 的规范化周期值；multiple 没有连续区间语义，返回 null。 */
   periodValue: CalendarPeriodValue | null
   /** 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 */

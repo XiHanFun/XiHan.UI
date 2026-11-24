@@ -9,7 +9,6 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type {
   CalendarGranularity,
   CalendarPickerApi,
-  CalendarPickerSelectionMode,
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
@@ -118,12 +117,12 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。只改日历的表头、行首与 Home / End，月份名与星期名仍按 locale。 */
   firstDayOfWeek?: number
   timeZone?: string
-  selectionMode?: CalendarPickerSelectionMode
+  multiple?: boolean
   /** multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选，已选的仍可点掉。 */
   maxSelected?: number
   /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
   maxTagCount?: number
-  /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
+  /** 选择粒度；与 multiple 正交，输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
   /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
   activeView?: CalendarView
@@ -190,7 +189,7 @@ export function XhDatePickerRoot({
   locale,
   firstDayOfWeek,
   timeZone,
-  selectionMode,
+  multiple,
   maxSelected,
   maxTagCount,
   granularity,
@@ -239,7 +238,7 @@ export function XhDatePickerRoot({
     locale,
     firstDayOfWeek,
     timeZone,
-    selectionMode,
+    multiple,
     maxSelected,
     maxTagCount,
     granularity,
@@ -859,7 +858,7 @@ export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef
 export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): ReactNode {
   const ctx = useDatePickerContext()
   // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
-  if (ctx.api.selectionMode === 'multiple') {
+  if (ctx.api.multiple) {
     return ctx.api.value.map(value => (
       <input
         key={value}

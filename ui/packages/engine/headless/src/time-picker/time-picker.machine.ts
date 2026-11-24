@@ -52,7 +52,7 @@ const { and } = guards
 export const TIME_PICKER_DEFAULT_PLACEMENT = OVERLAY_PLACEMENT_LIST
 
 function isMultiple(params: Pick<Params<TimePickerSchema>, 'prop'>): boolean {
-  return params.prop('selectionMode') === 'multiple'
+  return params.prop('multiple') === true
 }
 
 /** 单选时的当前值：值至多一项，还没填全时为空串。 */
@@ -151,7 +151,7 @@ export const timePickerMachine = createMachine({
     })),
     draft: cell<TimeDraft>(() => ({
       // 单选时缓冲从值起步；多选的草稿与值无关，从空起步
-      defaultValue: prop('selectionMode') === 'multiple'
+      defaultValue: prop('multiple') === true
         ? emptyTimeDraft()
         : draftFromTime(parseTimeValue((toTimePickerValues(prop('value')) ?? toTimePickerValues(prop('defaultValue')) ?? [])[0])),
       // 逐段比内容而不是比引用：每次写入都产出新对象，不比内容会重复通知宿主

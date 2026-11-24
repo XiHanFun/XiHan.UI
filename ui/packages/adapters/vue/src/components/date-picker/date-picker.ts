@@ -10,7 +10,6 @@ import type {
   CalendarCellProps,
   CalendarGranularity,
   CalendarPickerApi,
-  CalendarPickerSelectionMode,
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
@@ -118,12 +117,12 @@ export const XhDatePickerRoot = defineComponent({
     /** 周首日，0 = 星期日 … 6 = 星期六；不给按 locale。只改日历的表头、行首与 Home / End，月份名与星期名仍按 locale。 */
     firstDayOfWeek: { type: Number },
     timeZone: { type: String },
-    selectionMode: { type: String as PropType<CalendarPickerSelectionMode> },
+    multiple: { type: Boolean, default: undefined },
     /** multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选，已选的仍可点掉。 */
     maxSelected: { type: Number },
     /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
     maxTagCount: { type: Number },
-    /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
+    /** 选择粒度；与 multiple 正交，输入行铺设哪几段也跟随它。 */
     granularity: { type: String as PropType<CalendarGranularity> },
     /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
     activeView: { type: String as PropType<CalendarView> },
@@ -843,7 +842,7 @@ export const XhDatePickerHiddenInput = defineComponent({
   setup() {
     const ctx = useDatePickerContext()
     // 多选时一个选中值一份同名输入，表单按原生多值收；单选仍是一份
-    return () => ctx.api.value.selectionMode === 'multiple'
+    return () => ctx.api.value.multiple
       ? ctx.api.value.value.map(value => h('input', { key: value, ...ctx.api.value.field.getHiddenInputProps({ value }) }))
       : h('input', ctx.api.value.field.getHiddenInputProps())
   },

@@ -1,10 +1,10 @@
-<!-- 多选 | selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序 -->
+<!-- 多选 | multiple：点击一次加入，再点击一次移除，集合按日期升序 -->
 <div id="calendar-picker-multiple-mount"></div>
 <span data-demo-output>已选：<span id="calendar-picker-multiple-value">2026-09-08、2026-09-15、2026-09-22</span></span>
 
 <!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
 <template id="calendar-picker-multiple-template">
-  <xh-calendar-picker locale="zh-CN" selection-mode="multiple" default-focused-value="2026-09-13" fixed-weeks>
+  <xh-calendar-picker locale="zh-CN" multiple default-focused-value="2026-09-13" fixed-weeks>
     <div data-xh-part="root" style="max-inline-size: 280px">
       <div data-xh-part="header">
         <button data-xh-part="prev-trigger" aria-label="上个月"></button>

@@ -1,4 +1,4 @@
-<!-- 多选成标签 | selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉 -->
+<!-- 多选成标签 | multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉 -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -24,7 +24,7 @@ const value = ref<string[]>(["09:00", "14:30"]);
   <XhTimePickerRoot
     v-model:value="value"
     name="reminders"
-    selection-mode="multiple"
+    multiple
     :time-step="{ minute: 15 }"
   >
     <XhTimePickerLabel>提醒时刻</XhTimePickerLabel>

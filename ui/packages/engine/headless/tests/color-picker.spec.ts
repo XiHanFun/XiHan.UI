@@ -1170,7 +1170,7 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
 
   it('调色只改工作色不写值；「添加」把工作色收进值，同一个颜色加不进第二次', () => {
     const onValueChange = vi.fn()
-    const s = makeService({ selectionMode: 'multiple', onValueChange })
+    const s = makeService({ multiple: true, onValueChange })
     s.send({ type: 'VALUE.SET', value: '#ff0000' })
     expect(api(s).value).toEqual([])
     expect(api(s).color).toBe('#ff0000')
@@ -1186,7 +1186,7 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
   })
 
   it('色块点一下切换选中：没选过的加进来，选过的点掉；工作色跟到那一格', () => {
-    const s = makeService({ selectionMode: 'multiple', swatches: ['#112233', '#445566'] })
+    const s = makeService({ multiple: true, swatches: ['#112233', '#445566'] })
     const swatch = servicesOf(s).swatchPicker
     swatch.prop('onValueChange')?.({ value: '#445566' })
     expect(api(s).value).toEqual(['#445566'])
@@ -1196,7 +1196,7 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
   })
 
   it('maxSelected 选满后「添加」与没选过的色块都加不进', () => {
-    const s = makeService({ selectionMode: 'multiple', maxSelected: 1, defaultValue: ['#112233'] })
+    const s = makeService({ multiple: true, maxSelected: 1, defaultValue: ['#112233'] })
     s.send({ type: 'VALUE.SET', value: '#ff0000' })
     expect(api(s).canAdd).toBe(false)
     s.send({ type: 'VALUE.TOGGLE', value: '#ff0000' })
@@ -1204,7 +1204,7 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
   })
 
   it('选中的颜色排成标签，标签上写着画色点用的颜色；删除钮摘掉那一个，触发钮上退格摘掉最后一个', () => {
-    const s = makeService({ selectionMode: 'multiple', defaultValue: ['#112233', '#445566', '#778899'] })
+    const s = makeService({ multiple: true, defaultValue: ['#112233', '#445566', '#778899'] })
     expect(api(s).tags.map(tag => tag.label)).toEqual(['#112233', '#445566', '#778899'])
     expect(((api(s).getTagProps({ value: '#112233' }) as Dict).style as Record<string, string>)['--xh-_color-picker-tag-color']).toBeTruthy()
     expect((api(s).getTagListProps() as Dict).hidden).toBeUndefined()
@@ -1227,7 +1227,7 @@ describe('多选：工作色是草稿，按「添加」收进值，色块切换�
   })
 
   it('多选的 setValue 整份替换：解析不出的丢掉，同一个颜色只留一份；表单一值一份同名输入', () => {
-    const s = makeService({ selectionMode: 'multiple', name: 'palette' })
+    const s = makeService({ multiple: true, name: 'palette' })
     api(s).setValue(['#ffffff', 'nope', '#FFF', '#000000'])
     expect(api(s).value).toEqual(['#ffffff', '#000000'])
     expect((api(s).getHiddenInputProps({ value: '#000000' }) as Dict).value).toBe('#000000')
@@ -1260,7 +1260,7 @@ describe('connectColorPicker 无效与必填', () => {
   })
 
   it('required：标题写 data-required，触发钮是按钮不收 aria-required，表单影子写原生 required', () => {
-    const picker = api(makeService({ required: true, name: 'color', selectionMode: 'multiple' }))
+    const picker = api(makeService({ required: true, name: 'color', multiple: true }))
     expect((picker.getLabelProps() as Record<string, unknown>)['data-required']).toBe('')
     expect((picker.getTriggerProps() as Record<string, unknown>)['aria-required']).toBeUndefined()
     const input = picker.getHiddenInputProps(undefined) as Record<string, unknown>
@@ -1349,7 +1349,7 @@ describe('单选的未选与清空钮', () => {
   })
 
   it('禁用、只读、多选与常驻形态都没有清空钮', () => {
-    for (const props of [{ disabled: true }, { readOnly: true }, { selectionMode: 'multiple' as const }, { inline: true }])
+    for (const props of [{ disabled: true }, { readOnly: true }, { multiple: true }, { inline: true }])
       expect((api(makeService({ defaultValue: '#3b82f6', ...props })).getClearTriggerProps() as Dict).hidden).toBe(true)
   })
 

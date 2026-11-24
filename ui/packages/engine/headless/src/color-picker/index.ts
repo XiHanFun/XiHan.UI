@@ -53,7 +53,6 @@ export type {
   ColorPickerRecentColorsChangeDetails,
   ColorPickerRefs,
   ColorPickerSchema,
-  ColorPickerSelectionMode,
   ColorPickerServices,
   ColorPickerTagMeta,
   ColorPickerTagProps,

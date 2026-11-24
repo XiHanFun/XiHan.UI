@@ -20,7 +20,6 @@ export type TimePickerColumnUnit = TimeColumnUnit
  * 选择模式：single 选一个时刻；multiple 选一组时刻——浮层里各列拼出的是草稿，按「添加」才收进值，
  * 输入行里的段位让位给一排标签。
  */
-export type TimePickerSelectionMode = 'single' | 'multiple'
 
 /**
  * 展开时焦点落在时列的哪一格：
@@ -155,7 +154,8 @@ export interface TimePickerSchema extends MachineSchema {
     value?: string | string[]
     defaultValue?: string | string[]
     /** 选择模式，默认 single。 */
-    selectionMode?: TimePickerSelectionMode
+    /** 多选：各列拼出的是草稿，按「添加」收进值；缺省单选。 */
+    multiple?: boolean
     /** multiple 下最多选几个时刻：选满后「添加」不可按、快捷选项只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 */
     maxSelected?: number
     /** 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 */
@@ -351,7 +351,7 @@ export interface TimePickerApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 选中的时刻，ISO 时间串数组；单选至多一项，任一必填段为空时为空数组。 */
   value: string[]
-  selectionMode: TimePickerSelectionMode
+  multiple: boolean
   /** 多选时浮层里拼着的草稿（填全了才有，否则空串）；单选时就是当前值。 */
   draftValue: string
   /** 没有选中值（单选时还没填全也算）。 */

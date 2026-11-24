@@ -55,7 +55,7 @@ async function mount(theme: 'light' | 'dark', shape: Shape = 'single', keyboardO
     defaultOpen: !keyboardOpen,
     defaultValue: ['2026-09-12'],
     locale: 'zh-CN',
-    selectionMode: shape === 'multiple' ? 'multiple' : 'single',
+    multiple: shape === 'multiple',
     showTime: shape === 'show-time',
     presets: shape === 'presets' ? [{ value: '2026-09-12', label: '发布日' }] : undefined,
   }, {

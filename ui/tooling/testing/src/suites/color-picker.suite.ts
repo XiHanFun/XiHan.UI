@@ -309,7 +309,7 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '作者不写结构的多选：盒里铺标签行，浮层末尾是「添加」，按下把工作色收进值',
       spec: { apg: APG_DIALOG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
-      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'], defaultOpen: true },
+      props: { multiple: true, defaultValue: ['#ff0000', '#00ff00'], defaultOpen: true },
       initial: {
         order: ['root', 'control', 'tag-list', 'trigger', 'swatch', 'value-text', 'positioner', 'content', 'saturation-area', 'area-thumb', 'hue-slider', 'channel-input', 'recent-swatch-picker', 'confirm-trigger'],
         parts: { 'confirm-trigger': { hidden: null, disabled: null } },
@@ -989,7 +989,7 @@ export const colorPickerSuite: ConformanceSuite = {
       spec: { apg: APG_DIALOG },
       covers: ['color-picker.kbd.remove-last'],
       fixture: withConfirmTrigger,
-      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'] },
+      props: { multiple: true, defaultValue: ['#ff0000', '#00ff00'] },
       initial: {
         parts: { 'value-text': { hidden: '' } },
       },
@@ -1006,7 +1006,7 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '多选的「添加」：把工作色收进值，浮层不收；选过的颜色再按不下去',
       spec: { apg: APG_DIALOG },
       fixture: withConfirmTrigger,
-      props: { selectionMode: 'multiple', defaultValue: ['#ff0000'], defaultOpen: true },
+      props: { multiple: true, defaultValue: ['#ff0000'], defaultOpen: true },
       initial: {
         parts: { 'confirm-trigger': { hidden: null, disabled: null } },
       },
@@ -1025,7 +1025,7 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '多选的预设色板只是切换入口：格子不标选中，点一下选过的点掉、没选过的加进来',
       spec: { apg: APG_DIALOG },
       fixture: withConfirmTrigger,
-      props: { selectionMode: 'multiple', defaultValue: ['#ff0000'], defaultOpen: true },
+      props: { multiple: true, defaultValue: ['#ff0000'], defaultOpen: true },
       steps: [
         {
           kind: 'raw',
@@ -1053,7 +1053,7 @@ export const colorPickerSuite: ConformanceSuite = {
       name: '多选的表单影子：一个选中值一份同名输入，摘掉一个就少一份',
       spec: { apg: APG_DIALOG },
       fixture: base => withHiddenInput(withConfirmTrigger(base)),
-      props: { selectionMode: 'multiple', defaultValue: ['#ff0000', '#00ff00'], name: 'theme' },
+      props: { multiple: true, defaultValue: ['#ff0000', '#00ff00'], name: 'theme' },
       steps: [
         {
           kind: 'raw',

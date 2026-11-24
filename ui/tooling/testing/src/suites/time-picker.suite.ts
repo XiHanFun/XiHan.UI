@@ -745,7 +745,7 @@ export const timePickerSuite: ConformanceSuite = {
       name: 'Tab 不拦按键也不收起：在列上按 Tab 焦点落到底栏「添加」、浮层仍开着；走出浮层才收起且不抢回焦点',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['time-picker.kbd.tab'],
-      props: { ...BASE, hourCycle: 24, selectionMode: 'multiple' },
+      props: { ...BASE, hourCycle: 24, multiple: true },
       steps: [
         { kind: 'click', part: 'trigger' },
         { kind: 'settle', until: { activeElement: HOUR_08 } },
@@ -1379,7 +1379,7 @@ export const timePickerSuite: ConformanceSuite = {
     {
       name: '多选的底栏是 content 里的通栏操作区：不报角色、不占 Tab 位，「添加」写在它里面，按下收进值、浮层不收',
       spec: { apg: APG },
-      props: { ...BASE, selectionMode: 'multiple' },
+      props: { ...BASE, multiple: true },
       steps: [
         { kind: 'click', part: 'trigger' },
         {
@@ -1416,7 +1416,7 @@ export const timePickerSuite: ConformanceSuite = {
       name: '多选时段位收起，触发钮是键盘入口：退格摘掉最后一个选中值',
       spec: { apg: APG },
       covers: ['time-picker.kbd.remove-last'],
-      props: { ...BASE, selectionMode: 'multiple', defaultValue: ['08:30', '09:00'] },
+      props: { ...BASE, multiple: true, defaultValue: ['08:30', '09:00'] },
       initial: {
         parts: { 'segment-group': { hidden: '' }, 'confirm-trigger': { hidden: null, disabled: '' } },
       },
@@ -1466,7 +1466,7 @@ export const timePickerSuite: ConformanceSuite = {
       spec: { apg: APG },
       fixture: (): FixtureNode => ({ part: 'root', defaultStructure: true }),
       // 添加钮的文字由作者经 translations 改写，生成的结构照改写后的那份填；表单影子一个选中值一份
-      props: { ...BASE, label: '提醒时间', selectionMode: 'multiple', defaultValue: ['09:00', '10:30'], presets: [...PRESETS], translations: { confirmTrigger: '添加' } },
+      props: { ...BASE, label: '提醒时间', multiple: true, defaultValue: ['09:00', '10:30'], presets: [...PRESETS], translations: { confirmTrigger: '添加' } },
       initial: {
         order: ['root', 'label', 'control', 'tag-list', 'clear-trigger', 'trigger', 'hidden-input[0]', 'hidden-input[1]', 'positioner', 'content', 'preset-group', 'preset[0]', 'preset[1]', 'preset[2]', 'column[0]', 'item[0]', 'item[1]', 'item[2]', 'item[3]', 'column[1]', 'item[4]', 'item[5]', 'footer', 'confirm-trigger'],
         counts: { 'segment-group': 0 },

@@ -1,4 +1,4 @@
-<!-- 多选成标签 | selectionMode="multiple" 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉 -->
+<!-- 多选成标签 | multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮层不收，可以接着添；预设色板点一下切换选中。选中的颜色在输入行里排成带色点的标签，点叉或在展开钮上按退格摘掉 -->
 <script setup lang="ts">
 import {
   XhColorPickerAreaThumb,
@@ -27,7 +27,7 @@ const value = ref<string[]>(["#00a98e", "#3b82f6"]);
   <XhColorPickerRoot
     v-model:value="value"
     name="palette"
-    selection-mode="multiple"
+    multiple
     :swatches="swatches"
   >
     <XhColorPickerLabel>配色</XhColorPickerLabel>

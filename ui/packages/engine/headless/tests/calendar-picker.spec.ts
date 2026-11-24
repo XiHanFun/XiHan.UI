@@ -544,7 +544,7 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
   })
 
   it('周粒度也支持单选', () => {
-    const single = mountDrill({ defaultFocusedValue: '2026-08-13', granularity: 'week', selectionMode: 'single' })
+    const single = mountDrill({ defaultFocusedValue: '2026-08-13', granularity: 'week', multiple: false })
     single.api().select('2026-08-13')
     expect(single.value()).toEqual(['2026-08-10'])
   })
@@ -934,7 +934,7 @@ describe('选中', () => {
   })
 
   it('多选：点击切换，集合按日期升序', () => {
-    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple' })
+    const h = mount({ defaultFocusedValue: '2024-02-15', multiple: true })
     click(h.cell('2024-02-20'))
     click(h.cell('2024-02-15'))
     expect(h.value()).toEqual(['2024-02-15', '2024-02-20'])
@@ -944,7 +944,7 @@ describe('选中', () => {
   })
 
   it('maxSelected：选满后没选中的格子转 aria-disabled、点击与确认键都加不进去，点掉一个即腾出名额', () => {
-    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 2 })
+    const h = mount({ defaultFocusedValue: '2024-02-15', multiple: true, maxSelected: 2 })
     expect(h.api().maxSelected).toBe(2)
     click(h.cell('2024-02-15'))
     click(h.cell('2024-02-20'))
@@ -968,7 +968,7 @@ describe('选中', () => {
   })
 
   it('maxSelected：setValue 与受控 value 原样收下；single 下与写坏的上限都不生效', () => {
-    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 1 })
+    const h = mount({ defaultFocusedValue: '2024-02-15', multiple: true, maxSelected: 1 })
     h.api().setValue(['2024-02-15', '2024-02-16'])
     expect(h.value()).toEqual(['2024-02-15', '2024-02-16'])
     expect(h.cell('2024-02-17').getAttribute('aria-disabled')).toBe('true')
@@ -976,9 +976,9 @@ describe('选中', () => {
     expect(single.api().maxSelected).toBeNull()
     click(single.cell('2024-02-20'))
     expect(single.value()).toEqual(['2024-02-20'])
-    const broken = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 0 })
+    const broken = mount({ defaultFocusedValue: '2024-02-15', multiple: true, maxSelected: 0 })
     expect(broken.api().maxSelected).toBeNull()
-    const fractional = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', maxSelected: 2.9 })
+    const fractional = mount({ defaultFocusedValue: '2024-02-15', multiple: true, maxSelected: 2.9 })
     expect(fractional.api().maxSelected).toBe(2)
   })
 
@@ -1041,7 +1041,7 @@ describe('选中', () => {
 
   it('同一份选中值重复写入不重复通知：数组按元素比，不看引用', () => {
     const onValueChange = vi.fn()
-    const h = mount({ defaultFocusedValue: '2024-02-15', selectionMode: 'multiple', defaultValue: ['2024-02-15'], onValueChange })
+    const h = mount({ defaultFocusedValue: '2024-02-15', multiple: true, defaultValue: ['2024-02-15'], onValueChange })
     h.api().setValue(['2024-02-15'])
     expect(onValueChange).not.toHaveBeenCalled()
     h.api().setValue(['2024-02-15', '2024-02-16'])
@@ -1373,13 +1373,13 @@ describe('标题钻取', () => {
     const h = mountDrill({
       defaultFocusedValue: '2026-02-18',
       defaultValue: ['2026-02-18', '2026-03-18'],
-      selectionMode: 'multiple',
+      multiple: true,
     })
-    h.setProps({ selectionMode: 'single' })
+    h.setProps({ multiple: false })
     expect(h.value()).toEqual(['2026-02-18'])
 
     // 切回多选：留下的那一个值照旧在集合里，再点是往里加
-    h.setProps({ selectionMode: 'multiple' })
+    h.setProps({ multiple: true })
     h.api().select('2026-03-18')
     expect(h.value()).toEqual(['2026-02-18', '2026-03-18'])
   })

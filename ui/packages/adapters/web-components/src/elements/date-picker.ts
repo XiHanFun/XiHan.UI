@@ -13,7 +13,6 @@ import type {
   CalendarPeriod,
   CalendarPeriodValue,
   CalendarPickerSchema,
-  CalendarPickerSelectionMode,
   CalendarView,
   CalendarViewChangeDetails,
   CalendarWeekDay,
@@ -124,10 +123,10 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} locale - 决定周首日、月份文案与段位先后；未提供时按宿主语言，宿主也没有时按 en-US
  * @attr {number} first-day-of-week - 周首日，0 = 星期日 … 6 = 星期六；未提供时按 locale
  * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
- * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single
+ * @attr {boolean} multiple - 多选，默认单选；选中的周期在输入行里排成标签
  * @attr {number} max-selected - multiple 下最多选几个周期；选满后日历里没选中的格子不可再加选
  * @attr {number} max-tag-count - multiple 下输入行最多摆几枚标签，其余折进 overflow-tag；默认 3
- * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 multiple 正交
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
  * @prop {DatePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
  * @attr {number} visible-count - 并排展示的页数；默认 1
@@ -230,7 +229,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     locale: { converter: STRING_CONVERTER },
     firstDayOfWeek: { converter: NUMBER_CONVERTER, attribute: 'first-day-of-week' },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
-    selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
+    multiple: { converter: BOOLEAN_CONVERTER },
     maxSelected: { converter: NUMBER_CONVERTER, attribute: 'max-selected' },
     maxTagCount: { converter: NUMBER_CONVERTER, attribute: 'max-tag-count' },
     granularity: { converter: STRING_CONVERTER },
@@ -278,7 +277,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare locale?: string
   declare firstDayOfWeek?: number
   declare timeZone?: string
-  declare selectionMode?: CalendarPickerSelectionMode
+  declare multiple?: boolean
   declare maxSelected?: number
   declare maxTagCount?: number
   declare granularity?: CalendarGranularity
@@ -432,7 +431,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       locale: this.locale,
       firstDayOfWeek: this.firstDayOfWeek,
       timeZone: this.timeZone,
-      selectionMode: this.selectionMode,
+      multiple: this.multiple,
       maxSelected: this.maxSelected,
       maxTagCount: this.maxTagCount,
       granularity: this.granularity,
@@ -737,7 +736,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       this.spreader.spread(segmentGroup, api.getSegmentGroupProps())
     this.wireSegments(segmentGroup ?? (this as unknown as HTMLElement), api.field)
     // 多选时一个选中值一份同名输入，单选仍是一份
-    this.hiddenInputs.sync(this.getPart('hidden-input'), api.selectionMode === 'multiple'
+    this.hiddenInputs.sync(this.getPart('hidden-input'), api.multiple
       ? api.value.map(value => api.field.getHiddenInputProps({ value }))
       : [api.field.getHiddenInputProps()])
 

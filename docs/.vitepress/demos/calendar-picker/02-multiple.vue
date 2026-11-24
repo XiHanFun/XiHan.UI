@@ -1,4 +1,4 @@
-<!-- 多选 | selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序 -->
+<!-- 多选 | multiple：点击一次加入，再点击一次移除，集合按日期升序 -->
 <script setup lang="ts">
 import {
   XhCalendarPickerCell,
@@ -25,7 +25,7 @@ const value = ref<string[]>(["2026-09-08", "2026-09-15", "2026-09-22"]);
     v-model:value="value"
     default-focused-value="2026-09-13"
     locale="zh-CN"
-    selection-mode="multiple"
+    multiple
     fixed-weeks
     style="max-inline-size: 280px"
   >

@@ -88,7 +88,7 @@ export function connectDatePicker<T extends PropTypes>(
   const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'segment-group')
 
   const value = context.get('value')
-  const selectionMode = prop('selectionMode') ?? 'single'
+  const multiple = prop('multiple') === true
   // 内嵌日历拿原始的 translations 自取那几句读屏文案，这里只读本组件自己那一桶
   const label = resolveTranslations(DATE_PICKER_EN_US, prop('translations'))
   const disabled = !!prop('disabled')
@@ -125,7 +125,7 @@ export function connectDatePicker<T extends PropTypes>(
 
   // 内嵌日历：整份 api 原样转发
   const calendar = connectCalendarPicker(services.calendar, normalize)
-  const periodValue = selectionMode === 'multiple'
+  const periodValue = multiple
     ? null
     : calendarPeriodValue(
         calendar.granularity,
@@ -135,7 +135,7 @@ export function connectDatePicker<T extends PropTypes>(
       )
 
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
-  const showTime = !!prop('showTime') && selectionMode === 'single'
+  const showTime = !!prop('showTime') && !multiple
   const timeGranularity = prop('timeGranularity') ?? 'minute'
   // 小时制缺省按 locale 推断，与 TimePicker / TimeRangePicker 同一口径
   const hourCycle = resolveHourCycle(prop('hourCycle'), prop('locale'))
@@ -200,7 +200,7 @@ export function connectDatePicker<T extends PropTypes>(
   // —— 快捷选项：一条选项就是一次整份写值 ——
   /** 这条选项带的日期数与选择模式合不合：单选恰一条、多选至少一条且不超过上限。 */
   const fitsSelection = (dates: readonly string[]): boolean =>
-    selectionMode === 'single'
+    !multiple
       ? dates.length === 1
       : dates.length >= 1 && (calendar.maxSelected == null || dates.length <= calendar.maxSelected)
   const presetInput = prop('presets') ?? []
@@ -264,7 +264,6 @@ export function connectDatePicker<T extends PropTypes>(
   const variant = prop('variant') ?? 'outline'
 
   // —— 多选：选中值在盒里排成标签，段位让位；套的是库里的 tag，截断与 +N 的做法与 Select 同一套 ——
-  const multiple = selectionMode === 'multiple'
   const placeholder = prop('placeholder')
   const placeholderText = typeof placeholder === 'string' && placeholder !== '' ? placeholder : undefined
   const tagLabel = createTagLabeler(calendar.granularity, prop('locale'))
@@ -408,7 +407,7 @@ export function connectDatePicker<T extends PropTypes>(
     open,
     value,
     valueAsString: value[0] ?? null,
-    selectionMode,
+    multiple,
     periodValue,
     // 取日历已收口的结果（宿主设过的 → 首个选中值 → 今天），不在这里重算
     focusedValue: calendar.focusedValue,

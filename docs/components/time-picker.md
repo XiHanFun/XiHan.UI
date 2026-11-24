@@ -92,7 +92,7 @@ isTimeUnavailable 的第三个参数带已选的时：9 点只能约 30 分以�
 
 ### 多选成标签
 
-selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉
+multiple 时各列拼出的是草稿，按「添加」收进值、浮层不收，可以接着添；选中的时刻在输入行里排成标签，点叉或在展开钮上按退格摘掉
 
 <XhDemo src="time-picker/13-multiple" />
 
@@ -115,7 +115,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 - `isTimeUnavailable` 逐格判断可选性：时列按 24 小时制给值，第三个参数带已选的时与分，写得出「9 点只能选 30 分以后」。
 - 浮层内可以放置“当前时刻”与确认按钮。
 - 值恒为 ISO 时间串数组：单选至多一项（还没填全时为空数组），宿主可以写裸串；`onValueChange` 的 `value` 恒为数组。
-- 多选（`selectionMode="multiple"`）时各列拼出的是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、草稿留着，改一列就能接着添；快捷选项点一下切换选中。草稿没填全、越界、已经选过或到了 `maxSelected` 时「添加」不可按。
+- 多选（`multiple`）时各列拼出的是草稿，按「添加」（`confirm-trigger`）收进值，浮层不收、草稿留着，改一列就能接着添；快捷选项点一下切换选中。草稿没填全、越界、已经选过或到了 `maxSelected` 时「添加」不可按。
 - 「添加」写在底栏（`footer`）里：底栏是浮层底部的通栏操作区，落在快捷选项列与各列下面独占一行，上沿一道分隔线、四周 8 的内衬；作者另放的说明文字排在行首、取弱化的说明档字，「添加」落在行尾。底栏里只有「添加」时，单选下它随「添加」一并收起，不留空栏。
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按时刻升序：段位收起，展开钮常驻并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签按 `locale` 与小时制排出（13:45、下午1:45），不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
@@ -164,7 +164,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | `ariaLabel` | `string` |  | 不显示出来的名字，写成 aria-label 落在与字段标签同一个部件上。 放进字段（字段接线）或渲染了 label 部件时名字以它们为准，aria-labelledby 盖过它。 |
 | `value` | `string \| string[]` |  | 受控值，ISO 时间串数组。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选可写裸串，内部一律归一为数组（空串即空数组）。 |
 | `defaultValue` | `string \| string[]` |  |  |
-| `selectionMode` | `TimePickerSelectionMode` |  | 选择模式，默认 single。 |
+| `multiple` | `boolean` |  | 多选：各列拼出的是草稿，按「添加」收进值；缺省单选。 |
 | `maxSelected` | `number` |  | multiple 下最多选几个时刻：选满后「添加」不可按、快捷选项只能点掉已选的。非整数向下取整，小于 1 或不是有限数时不设上限。 |
 | `maxTagCount` | `number` |  | 多选时输入行最多摆几枚标签，其余折进 +N 那一枚；默认 3。 |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
@@ -274,7 +274,7 @@ selectionMode="multiple" 时各列拼出的是草稿，按「添加」收进值�
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `value` | `string[]` | 选中的时刻，ISO 时间串数组；单选至多一项，任一必填段为空时为空数组。 |
-| `selectionMode` | `TimePickerSelectionMode` |  |
+| `multiple` | `boolean` |  |
 | `draftValue` | `string` | 多选时浮层里拼着的草稿（填全了才有，否则空串）；单选时就是当前值。 |
 | `empty` | `boolean` | 没有选中值（单选时还没填全也算）。 |
 | `outOfRange` | `boolean` | 已填全但落在 min / max 之外。只是标注，不改写值。 |

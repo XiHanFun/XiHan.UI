@@ -48,7 +48,7 @@ async function mount(props: Record<string, unknown>): Promise<Mounted> {
       'locale': 'zh-CN',
       'hourCycle': 24,
       'name': 'slots',
-      'selectionMode': 'multiple',
+      'multiple': true,
       'presets': PRESETS,
       ...props,
       'onValue-change': (details: { value: string[] }) => changes.push(details.value),

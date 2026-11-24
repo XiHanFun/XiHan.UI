@@ -291,7 +291,7 @@ export function colorPickerRecentSwatchPickerProps(service: Service<ColorPickerS
 function swatchPickerProps(service: Service<ColorPickerSchema>, swatches: readonly string[], group: string): ColorSwatchPickerSchema['props'] {
   const { prop, context, send } = service
   const translations = resolveTranslations(COLOR_PICKER_EN_US, prop('translations'))
-  const multiple = prop('selectionMode') === 'multiple'
+  const multiple = prop('multiple') === true
   return {
     swatches: swatches.map(value => ({ value })),
     // 多选时色板只是切换的入口：选中的那一组在输入行的标签里，色板本身不再标一格；单选未选时也不标
@@ -333,7 +333,7 @@ export function colorPickerIncludes(values: readonly string[], color: string): b
 }
 
 function isMultiple(params: Pick<MachineParams, 'prop'>): boolean {
-  return params.prop('selectionMode') === 'multiple'
+  return params.prop('multiple') === true
 }
 
 function stepSize(large: boolean): number {
@@ -350,7 +350,7 @@ export const colorPickerMachine = createMachine({
     openedAtMount: openedAtMountCell(cell, openAtMount(prop)),
     // 工作色：单选时它就是选中值（受控时直读 prop 的首项），多选时是浮层里调着的草稿、不对外通知
     value: cell<string>(() => {
-      if (prop('selectionMode') === 'multiple')
+      if (prop('multiple') === true)
         return { defaultValue: COLOR_FALLBACK }
       const controlled = toColorPickerValues(prop('value'))
       return {
@@ -361,7 +361,7 @@ export const colorPickerMachine = createMachine({
     }),
     // 多选的选中值；单选不用它
     selected: cell<string[]>(() => {
-      const multiple = prop('selectionMode') === 'multiple'
+      const multiple = prop('multiple') === true
       return {
         value: multiple ? toColorPickerValues(prop('value')) : undefined,
         defaultValue: toColorPickerValues(prop('defaultValue')) ?? [],
@@ -374,7 +374,7 @@ export const colorPickerMachine = createMachine({
     }),
     // 单选的未选：value / defaultValue 给空数组、或按了清空钮；受控时直读 prop，多选恒为 false
     blank: cell<boolean>(() => {
-      if (prop('selectionMode') === 'multiple')
+      if (prop('multiple') === true)
         return { defaultValue: false }
       const controlled = toColorPickerValues(prop('value'))
       return {

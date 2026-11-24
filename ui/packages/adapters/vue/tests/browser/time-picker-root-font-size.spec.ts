@@ -70,7 +70,7 @@ afterEach(() => {
 describe('时间选择浮层在很小的根字号下', () => {
   for (const rootFontSize of ['10px', '16px']) {
     it(`根字号 ${rootFontSize}：时间选择器的底栏落在面板描边之内，面板不出竖向滚动`, async () => {
-      await mount(rootFontSize, () => h(XhTimePickerRoot, { open: true, selectionMode: 'multiple' }, () => [
+      await mount(rootFontSize, () => h(XhTimePickerRoot, { open: true, multiple: true }, () => [
         h(XhTimePickerControl, null, () => [h(XhTimePickerTagList), h(XhTimePickerTrigger)]),
         h(XhTimePickerPositioner, null, () => h(XhTimePickerContent, null, () => [
           ...(['hour', 'minute'] as const).map(unit => h(XhTimePickerColumn, { unit }, () =>

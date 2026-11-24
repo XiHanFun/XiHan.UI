@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         defaultFocusedValue="2026-09-13"
         locale="zh-CN"
-        selectionMode="multiple"
+        multiple
         maxSelected={3}
         fixedWeeks
         style={{ maxInlineSize: "280px" }}
