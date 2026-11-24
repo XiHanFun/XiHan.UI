@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 锚定弹层的缩放原点，全部锚定弹层共用一份：弹层只有一套进出场（淡入 + 从 --xh-motion-scale-enter 放大 +
+ * 从锚点一侧短移），原点也只有一套——面板从贴着锚点的那条边涨开，像是从触发器里长出来。
+ *
+ * 主轴按落定的那一侧取：落在锚点下方，原点在面板上缘；上方在下缘；右侧在左缘；左侧在右缘。
+ * 交叉轴按 placement 的对齐取：start / end 对齐时面板与锚点在那一端齐平，缩放从那一端涨开；居中对齐留在中线。
+ * placement 是物理方向（定位引擎按 top / right / bottom / left 出值），主轴原点也是物理量、不随书写方向翻；
+ * 上下两侧的 start / end 是行内轴上的逻辑对齐，起始缘按 --xh-direction-start / -end 取（RTL 下起始在右），
+ * 左右两侧的 start / end 落在块轴上，不随书写方向翻。
+ *
+ * 定位层（positioner）按 data-placement 写两支私有槽，播进场的那一层（多为 content）继承它们读成 transform-origin。
+ * 进场位移（--xh-_overlay-enter-*）仍在各皮肤里。Tour 只认锚定步、居中步仍带缺省 placement，Command 没有锚点，
+ * 两家的原点留在各自皮肤里。作用域用 :where，不抬特异性。
+ */
+@layer xihan.components {
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner'][data-placement^='top'] {
+    --xh-_overlay-origin-y: 100%;
+  }
+
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner'][data-placement^='bottom'] {
+    --xh-_overlay-origin-y: 0;
+  }
+
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner'][data-placement^='left'] {
+    --xh-_overlay-origin-x: 100%;
+  }
+
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner'][data-placement^='right'] {
+    --xh-_overlay-origin-x: 0;
+  }
+
+  /* 交叉轴：上下两侧的起始缘与末尾缘按书写方向取 */
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']) {
+    --xh-_overlay-origin-x: var(--xh-direction-start);
+  }
+
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']) {
+    --xh-_overlay-origin-x: var(--xh-direction-end);
+  }
+
+  /* 交叉轴：左右两侧的 start / end 落在块轴上 */
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner']:is([data-placement='left-start'], [data-placement='right-start']) {
+    --xh-_overlay-origin-y: 0;
+  }
+
+  :where([data-scope='cascader'], [data-scope='citation'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='side-nav'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='positioner']:is([data-placement='left-end'], [data-placement='right-end']) {
+    --xh-_overlay-origin-y: 100%;
+  }
+
+  /* 播进场的那一层读成缩放原点：多为 content；Citation 是 hover 档的预览卡，SideNav 是折叠态弹出的分支 */
+  :where([data-scope='cascader'], [data-scope='color-picker'], [data-scope='combobox'], [data-scope='context-menu'], [data-scope='date-picker'], [data-scope='date-range-picker'], [data-scope='expression-input'], [data-scope='hover-card'], [data-scope='mention'], [data-scope='menu'], [data-scope='menubar'], [data-scope='pagination'], [data-scope='popconfirm'], [data-scope='popover'], [data-scope='select'], [data-scope='time-picker'], [data-scope='time-range-picker'], [data-scope='tooltip'], [data-scope='tree-select'])[data-part='content'],
+  :where([data-scope='citation'])[data-part='preview'][data-preview-mode='hover'],
+  :where([data-scope='side-nav'])[data-part='branch-content'][data-popout] {
+    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
+  }
+}

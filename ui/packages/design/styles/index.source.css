@@ -182,6 +182,8 @@
 @import './css/tour.css';
 /* 排在六份浮层皮肤之后：箭头几何里摘边框那几条要压过它们的 border 简写 */
 @import './css/overlay-arrow.css';
+/* 锚定弹层的缩放原点：只写私有槽与 transform-origin，作用域用 :where，排在哪份皮肤前后都不抢特异性 */
+@import './css/overlay-origin.css';
 @import './css/transfer.css';
 @import './css/tree.css';
 @import './css/tree-select.css';

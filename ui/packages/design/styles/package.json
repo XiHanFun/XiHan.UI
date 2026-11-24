@@ -145,6 +145,7 @@
     "./number-animation.css": "./dist/css/number-animation.css",
     "./number-field.css": "./dist/css/number-field.css",
     "./overlay-arrow.css": "./dist/css/overlay-arrow.css",
+    "./overlay-origin.css": "./dist/css/overlay-origin.css",
     "./page-header.css": "./dist/css/page-header.css",
     "./pagination.css": "./dist/css/pagination.css",
     "./password-input.css": "./dist/css/password-input.css",

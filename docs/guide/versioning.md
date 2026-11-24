@@ -137,7 +137,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-样式钩子。自带皮肤消费了 273 个属性名 / 1209 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
+样式钩子。自带皮肤消费了 273 个属性名 / 1212 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤依据的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -193,7 +193,7 @@ brand  neutral  success  warning  danger  info
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。这是自定义语气的唯一机制：写入 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读取这批槽的 64 份皮肤随之生效。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 46 | `xh-pop-in`、`xh-fade-out`、`xh-spin`。共享关键帧住在 `family/motion.css`（子入口 `@xihan-ui/styles/motion.css`），皮肤 `@import` 它；组件专属关键帧仍在各皮肤。在 `xihan.overrides` 层中重定义同名关键帧即可替换该段动画（关键帧名因此是公开面），所以改名与删名同样是 major |
 | 跨包内联属性 | 150 | 浮层定位共用的 `--xh-_<组件>-available-w` / `-available-h` / `-anchor-w` / `-arrow-x` / `-arrow-y`，指示条与滑块的几何 `--xh-_tabs-indicator-x`、`--xh-_radio-group-thumb-w`，值类比例 `--xh-_progress-value`、`--xh-_loading-bar-value`，浮动按钮的贴边与停点 `--xh-_float-button-offset`、`--xh-_float-button-ratio`、`--xh-_float-button-x`，图表提示框坐标 `--xh-_chart-tip-x`、`--xh-_chart-tip-y`，表格两侧冻结列的总宽 `--xh-_table-frozen-start`、`--xh-_table-frozen-end`，以及 `--xh-_truncate-lines`、`--xh-_color-picker-tag-color`、`--xh-_carousel-autoplay-duration` 等。由 headless 写入内联 `style`，皮肤必须读取。整套更换皮肤时若不读取这些值，浮层限高与箭头、选中指示、进度、文本截断、浮动按钮贴边、图表提示框或表格冻结列的滚动让位会失效，且不报任何错误。core 写入的层级、动效与液态材质取值不在此列，见下方「排除」 |
-| `@xihan-ui/styles` 的 CSS 子路径 | 173 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 155 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./not-defined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css`，以及改名前的旧路径 `./undefined.css`（内容同 `./not-defined.css`，6.0.0 移除）；另有组件令牌的 `./component-tokens`、`./components.tokens.json` 与按需注入插件 `./vite` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 174 | `.`、`./index.css`、`./index.unlayered.css`，家族文件 `./action-control.css`、`./chart.css`、`./collection-item.css`、`./field-chrome.css`、`./swatch.css`、`./material.css`、`./loading-ring.css`、`./motion.css`，与 156 条 `.css`：143 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./not-defined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css`，以及改名前的旧路径 `./undefined.css`（内容同 `./not-defined.css`，6.0.0 移除）；另有组件令牌的 `./component-tokens`、`./components.tokens.json` 与按需注入插件 `./vite` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -434,7 +434,7 @@ Web Components 侧不构成额外约束：全部 Light DOM，不使用 shadow DO
 以入库基线（`ui/tooling/public-surface.json`，20983 个名字）比对当前状态：
 基线中有而当前没有，即为删除或改名，构建失败。新增一律放行，因为新增是 minor。
 
-覆盖：包名与 246 条子入口、11231 个导出名、143 个 `data-scope` 与 1427 条部件配对、
+覆盖：包名与 247 条子入口、11231 个导出名、143 个 `data-scope` 与 1427 条部件配对、
 143 个组件的 2351 个 prop 名、328 种 `data-*`、33 个 `data-state` 取值、811 个令牌、
 5 个 `@layer` 名、4835 个组件覆盖槽、147 个自定义元素及其 attribute 与事件。
 

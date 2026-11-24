@@ -154,25 +154,21 @@
     display: none;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：卡片从贴着引用编号的那条边涨开。两个槽由预览继承；
-     placement 是物理方向，origin 与 translate 也是物理量，不随书写方向翻 */
+  /* 进场位移按落定的那一侧给，槽由预览继承；缩放原点归定位层公共层 overlay-origin.css。
+     placement 是物理方向，translate 也是物理量，不随书写方向翻 */
   [data-scope='citation'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='citation'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='citation'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='citation'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
   }
 
@@ -192,7 +188,6 @@
     /* 卡片不做滚动面：引文收到有限几行，全文经打开来源的链接看 */
     overflow: clip;
     border-radius: var(--xh-citation-card-radius, var(--xh-shape-overlay));
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   }
 
   /* hover 档的引文按行数裁，裁掉的那一行末尾收省略号 */

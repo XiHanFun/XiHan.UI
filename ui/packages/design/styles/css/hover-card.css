@@ -70,47 +70,22 @@
     visibility: hidden;
   }
 
-  /* 缩放原点与进场位移按落定的那一侧给：卡片从贴着锚点的那条边涨开、沿主轴退让一小段。
-     两个槽由 content 继承。placement 是物理方向（引擎按 top / right / bottom / left 出值），
-     origin 与 translate 也是物理量，两边同轴，不随书写方向翻 */
+  /* 进场位移按落定的那一侧给：卡片沿主轴退让一小段，槽由 content 继承。缩放原点归定位层公共层
+     overlay-origin.css。placement 是物理方向，translate 也是物理量，不随书写方向翻 */
   [data-scope='hover-card'][data-part='positioner'][data-placement^='top'] {
-    --xh-_overlay-origin-y: 100%;
     --xh-_overlay-enter-down: 1;
   }
 
   [data-scope='hover-card'][data-part='positioner'][data-placement^='bottom'] {
-    --xh-_overlay-origin-y: 0;
     --xh-_overlay-enter-up: 1;
   }
 
   [data-scope='hover-card'][data-part='positioner'][data-placement^='left'] {
-    --xh-_overlay-origin-x: 100%;
     --xh-_overlay-enter-right: 1;
   }
 
   [data-scope='hover-card'][data-part='positioner'][data-placement^='right'] {
-    --xh-_overlay-origin-x: 0;
     --xh-_overlay-enter-left: 1;
-  }
-
-  /* 交叉轴原点按对齐取：start / end 对齐时卡片与锚点在那一端齐平，缩放从那一端涨开，贴着短链接的卡片
-     才像是从链接里长出来；居中对齐留在中线。上下两侧的 start / end 是行内轴上的逻辑对齐，RTL 下起始缘在右；
-     左右两侧的 start / end 落在块轴上，不随书写方向翻 */
-  /* 起始缘与末尾缘按就近的书写方向取：LTR 起始在左，RTL 起始在右 */
-  [data-scope='hover-card'][data-part='positioner']:is([data-placement='top-start'], [data-placement='bottom-start']) {
-    --xh-_overlay-origin-x: var(--xh-direction-start);
-  }
-
-  [data-scope='hover-card'][data-part='positioner']:is([data-placement='top-end'], [data-placement='bottom-end']) {
-    --xh-_overlay-origin-x: var(--xh-direction-end);
-  }
-
-  [data-scope='hover-card'][data-part='positioner']:is([data-placement='left-start'], [data-placement='right-start']) {
-    --xh-_overlay-origin-y: 0;
-  }
-
-  [data-scope='hover-card'][data-part='positioner']:is([data-placement='left-end'], [data-placement='right-end']) {
-    --xh-_overlay-origin-y: 100%;
   }
 
   /* 与 tooltip 不同：卡片本体承载交互，必须吃指针——
@@ -148,8 +123,6 @@
     padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-px));
     border-radius: var(--xh-hover-card-radius, var(--xh-shape-overlay));
     pointer-events: auto;
-    /* 进退场的缩放锚在贴着锚点的那条边上；两个分量由 positioner 按 placement 写进私有槽 */
-    transform-origin: var(--xh-_overlay-origin-x, 50%) var(--xh-_overlay-origin-y, 50%);
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：

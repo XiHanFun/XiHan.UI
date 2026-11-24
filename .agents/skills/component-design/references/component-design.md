@@ -1015,7 +1015,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 
 带退场的部件，`hidden` 与内联 `display: none` 都跟退场闸门走，退场播完才落：connect 给的 `hidden` 跟着开合走，由适配器按闸门覆盖。宿主的 `[hidden]{display:none!important}`（Tailwind preflight、VitePress 默认主题都有这条）压得过皮肤声明的 `display`，`hidden` 跟着开合走退场就一帧都播不出来。退场窗口内靠 `inert` 或 Layer 状态挡住交互。
 
-弹层只有一套进出场，锚定关系只决定有没有位移：面板贴着一个锚点就从锚点一侧短移，不贴锚点就原地淡入放大。SideNav 折叠态的弹出分支贴着分支行，Pagination 摊开的页码面板贴着省略位，两者都按锚定取位移；Pagination 的页大小选择是 Select，归 Select。浮层不再引 `xh-overlay-slide-*` 与 `xh-pop-in`；`xh-pop-in` 只留给页内浮现的小件与标签行的列表加入（§9.6）。
+弹层只有一套进出场，锚定关系只决定有没有位移：面板贴着一个锚点就从锚点一侧短移，不贴锚点就原地淡入放大。原点同样只有一套：锚定弹层一律从贴着锚点的那条边放大——主轴按落定的那一侧取（落在下方原点在上缘，依此类推），交叉轴按 placement 的对齐取（start / end 对齐时从那一端涨开，上下两侧的 start / end 随书写方向，居中对齐留在中线）；落位到原点的映射只写在定位层公共层 `css/overlay-origin.css` 里，皮肤不各写。Tour 只认锚定步（居中步原地放大）、Command 没有锚点，原点留在各自皮肤里。SideNav 折叠态的弹出分支贴着分支行，Pagination 摊开的页码面板贴着省略位，两者都按锚定取位移；Pagination 的页大小选择是 Select，归 Select。浮层不再引 `xh-overlay-slide-*` 与 `xh-pop-in`；`xh-pop-in` 只留给页内浮现的小件与标签行的列表加入（§9.6）。
 
 - Notification 从视口边缘推入属出现，不属整幅滑入：卡片小、距离短，时长取 `enter` / `exit`；`slide` 时长只给以视口尺度移动的面（抽屉、覆盖式侧栏、走马灯翻页）。
   - 逐条排开的卡片预设从所贴的那条边整张推进来、边推边淡入（`xh-slide-in` + `xh-slide-fade-in`，位移取卡片自身的整宽或整高 `--xh-motion-travel`）：贴行尾 / 行首的从行尾 / 行首进，居中的顶、底两个位从顶边、底边进，中线那一行只上浮 `--xh-motion-distance-lg`。退场只淡出（`xh-fade-out`）、不往回推，空位由列表换位以 `move` 收拢。逐条排开的轻提示走 `xh-sheet-in / out`。
