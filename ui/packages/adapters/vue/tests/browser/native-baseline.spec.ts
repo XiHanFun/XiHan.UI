@@ -194,6 +194,41 @@ describe('库节点的样子不取决于标签', () => {
     expect(getComputedStyle(el).minInlineSize).toBe('0px')
   })
 
+  it('媒体元素按块排：行内的图片底下留着字降部的缝，容器会比图片高一截', () => {
+    const host = mountStage()
+    for (const tag of ['img', 'svg', 'video', 'canvas']) {
+      const el = tag === 'svg' ? document.createElementNS('http://www.w3.org/2000/svg', 'svg') : document.createElement(tag)
+      el.setAttribute('data-scope', 'native-baseline-probe')
+      el.setAttribute('data-part', 'node')
+      host.append(el)
+      expect(getComputedStyle(el).display, tag).toBe('block')
+    }
+    // 量得出来的那一面：容器恰好与图片等高
+    const frame = document.createElement('div')
+    const image = probe('img', { width: '40', height: '40', alt: '' })
+    frame.append(image)
+    host.append(frame)
+    expect(frame.getBoundingClientRect().height).toBe(image.getBoundingClientRect().height)
+    // 带 hidden 的不按块排：给了 display 就把浏览器那条 [hidden] 盖掉，先藏着的图片会被显出来
+    const concealed = probe('img', { width: '40', height: '40', alt: '', hidden: '' })
+    host.append(concealed)
+    expect(getComputedStyle(concealed).display).toBe('none')
+  })
+
+  it('带 hidden 的部件怎么让位留给皮肤：基线不把它一刀切成不渲染', () => {
+    const host = mountStage()
+    const el = probe('p')
+    el.textContent = '错误文案'
+    el.hidden = true
+    // 没有皮肤另写时，浏览器自己那条 [hidden] 照旧生效
+    host.append(el)
+    expect(getComputedStyle(el).display).toBe('none')
+    // 皮肤给了 display（字段的错误文案占着预留的那一行）就按皮肤的来；行内样式在这里顶替皮肤规则
+    el.style.display = 'block'
+    expect(getComputedStyle(el).display).toBe('block')
+    expect(el.getBoundingClientRect().height).toBeGreaterThan(0)
+  })
+
   it('只收库节点：宿主页面自己的元素一个不碰', () => {
     const host = mountStage()
     const plain = document.createElement('h2')

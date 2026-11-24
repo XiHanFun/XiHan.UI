@@ -23,6 +23,170 @@
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
+/* 库自己的基线排在一切样式规则之前：它的特指度是零，再加上源序最先，任何规则——连同皮肤里
+   故意写成零特指度的那些（字段集与表单的项距）——都压得过它。夹在皮肤中间时，排在它前面的
+   零特指度规则在无层产物里会被它靠源序压掉。 */
+
+/* styles/reset.css */
+/*
+ * 库自己的基线，只作用于带 data-scope 的库节点，不碰宿主页面的任何元素。
+ *
+ * 层序上 xihan.reset 在 xihan.components 之前，所以组件皮肤里的任何显式声明都盖得住这里。
+ *
+ * 本层全部选择器（剥去伪元素）特指度为 (0,0,0)：一律以 :where() 包住；引入顺序上紧随令牌、
+ * 排在一切样式规则之前。无层产物 index.unlayered.css 里没有层序可依，只按特指度与源序竞争：
+ * 特指度最低、源序最先，任何皮肤与配方规则都压得住它，连皮肤里故意写成零特指度的规则
+ * （字段集与表单的项距）也靠排在后面取胜。
+ * 代价是无层模式下宿主的元素选择器 (0,0,1) 也压得过，写在文档站「皮肤与样式分层」。
+ */
+
+/* 尺寸一律含边框：皮肤里的宽高都是照可见盒子写的。 */
+:where([data-scope]) {
+  box-sizing: border-box;
+}
+
+/* 伪元素自身带 (0,0,1)，无法再低；:where() 只压掉宿主那一截。 */
+:where([data-scope])::before,
+:where([data-scope])::after {
+  box-sizing: border-box;
+}
+
+/*
+ * 浏览器按标签给的缺省外观，统一在这里收：皮肤与配方不各收各的。
+ *
+ * 库节点的样子只由皮肤与配方决定，不取决于它渲染成什么标签、在哪个浏览器里。按钮的底色、描边、内衬与原生外观，
+ * 标题的加粗放大，段落、列表与图文的外边距，链接的蓝字，表单控件被锁死的字体与字色，字段集的描边，
+ * 单元格的内衬——一律归零或改成继承；要哪一项由皮肤自己写。这几条对 div / span 都是初始值或本来就继承，
+ * 只有浏览器按标签另给了缺省值的那些节点才真的被改到。
+ * 不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
+ *
+ * 不在这里收的：display（标签的排版身份；媒体元素一处例外见下）、white-space（pre 与 textarea 的语义）、vertical-align（单元格取中）、
+ * text-align（表单控件由浏览器钉在行首，改成继承会让居中容器里的输入框跟着居中）、
+ * cursor 与焦点轮廓（各有专门的规则）。
+ * 投影也不收：浏览器不给任何标签缺省投影，没有东西可收。
+ */
+:where([data-scope]) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  appearance: none;
+}
+
+/* 链接的下划线、增删与缩写的划线：不继承，逐个归零 */
+:where([data-scope]):where(a, abbr, ins, del, u, s) {
+  text-decoration: none;
+}
+
+/* 项目符号：只给本来就带符号的标签归零。list-style 会继承，写在容器上会把作者正文里的列表符号也带走 */
+:where([data-scope]):where(ul, ol, menu, li, summary) {
+  list-style: none;
+}
+
+/* 表格的格间隙；字段集按内容撑开的最小宽度 */
+:where([data-scope]):where(table) {
+  border-spacing: 0;
+}
+
+:where([data-scope]):where(fieldset) {
+  min-inline-size: 0;
+}
+
+/*
+ * 图片、矢量图、视频与画布按块排：行内的替换元素坐在文字基线上，底下留着一条字降部的缝，
+ * 容器比图片高出几个像素。要随文排的由皮肤自己写。
+ * 带 hidden 的不在此列：这里给了 display 就把浏览器那条 [hidden] { display: none } 盖掉，
+ * 还没加载完、先藏着的头像图片会被显出来。
+ */
+:where([data-scope]):where(img, svg, video, canvas):where(:not([hidden])) {
+  display: block;
+}
+
+/*
+ * 这里不统一钉 [hidden] { display: none }：带 hidden 的部件怎么让位由皮肤逐个定。
+ * 多数是不渲染，但字段的错误文案在没有说明时仍占着预留的那一行（外框等高，文案原位淡入淡出），
+ * 一刀切成 display: none 就把这个设计压掉了——带 !important 的宿主重置正是这样压掉它的。
+ */
+
+/*
+ * 浏览器塞进表单控件里的自带按钮：搜索框的清除钮（Chromium / Edge / WebKit，有值且悬停或聚焦时出现）、
+ * 密码框的显示密码钮（Edge）。这两件事归组件自己的部件，原生那颗不收掉，行尾就并排两颗。
+ * 各自成条：别的浏览器不认识对方的伪元素，并成一组会连累整条规则被丢掉。
+ * 四个引擎里实测过库会产出的输入类型（text / search / password / email / tel / url），只有这两样会冒出来。
+ */
+:where([data-scope])::-webkit-search-cancel-button {
+  display: none;
+}
+
+:where([data-scope])::-ms-reveal {
+  display: none;
+}
+
+/*
+ * 浮层定位层的生命周期契约：落位才露。
+ *
+ * 坐标依赖浮层自己的尺寸，尺寸要等元素进 DOM 参与排版才量得到，所以浮层一定先渲染、
+ * 再量、再定位——展开的那几帧坐标还是兜底的 0。默认藏着，连接层算出坐标后打
+ * data-positioned 才显示，忘了接线的新浮层只会不显示，不会先在视口左上角闪一帧。
+ * 用 visibility 而不是 display：display:none 会让浮层退出排版，引擎量不到它的尺寸。
+ * 锚点被滚出可视区时引擎置 hidden，各皮肤另有一条 [data-hidden] 压回去。
+ */
+:where([data-scope][data-part='positioner']) {
+  visibility: hidden;
+}
+
+:where([data-scope][data-part='positioner'][data-positioned]) {
+  visibility: visible;
+}
+
+/*
+ * 库内原生滚动面与作者容器共用的细条。
+ *
+ * 两档滚动面里的「原生细条」档：页内结构容器（Table、Tree、Virtualizer viewport、
+ * Dialog / Drawer body、Log 视口一类）不接自绘条，靠这里把原生条统一成 thin + 令牌色阶。
+ * 三个入口：库节点（[data-scope][data-part]）、作者自建滚动容器与文档示例（[data-xh-scroll]）、
+ * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
+ * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
+ * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
+ * ::-webkit-scrollbar-thumb 的圆角取 pill：原生滑块与自绘 scrollbar:thumb 同为一维对象，
+ * 不再按厚度折半凑半圆，三档厚度都是同一身份。
+ *
+ * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
+ * var() 在计算值阶段沿元素树取值，层序只裁决同一属性的两条声明谁赢。
+ * [data-xh-scrollbar] 的 scrollbar-width: none 是 (0,1,0)，有层与无层两种产物里都压得住本条；
+ * ::-webkit-scrollbar 伪元素自带 (0,0,1)，ScrollArea 那条 display: none 同样压得住。
+ */
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar {
+  width: var(--xh-scrollbar-thickness-md);
+  height: var(--xh-scrollbar-thickness-md);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-track {
+  background: var(--xh-bg-scrollbar-track);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb {
+  border-radius: var(--xh-shape-pill);
+  background: var(--xh-fg-scrollbar-thumb);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb:hover {
+  background: var(--xh-fg-scrollbar-thumb-hover);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb:active {
+  background: var(--xh-fg-scrollbar-thumb-active);
+}
+
 /* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
 
 /* styles/focus.css */
@@ -13290,152 +13454,6 @@
   .xh-scope-prompt-input[data-part='submit-trigger'][data-mode='stop'][data-disabled]:empty::before {
     background-color: GrayText;
   }
-}
-
-/* styles/reset.css */
-/*
- * 库自己的基线，只作用于带 data-scope 的库节点，不碰宿主页面的任何元素。
- *
- * 层序上 xihan.reset 在 xihan.components 之前，所以组件皮肤里的任何显式声明都盖得住这里。
- *
- * 本层全部选择器（剥去伪元素）特指度为 (0,0,0)：一律以 :where() 包住。无层产物
- * index.unlayered.css 里没有层序可依，只按特指度竞争，而 Family Recipe 的根规则
- * （[data-xh-action-control] 一类，(0,1,0)）在产物里排在本文件之前——本层若同为 (0,1,0)，
- * 靠源序就把配方的三档字号压掉。压到 (0,0,0) 后，无层产物里任何皮肤与配方规则都压得住它；
- * 代价是无层模式下宿主的元素选择器 (0,0,1) 也压得过，写在文档站「皮肤与样式分层」。
- */
-
-/* 尺寸一律含边框：皮肤里的宽高都是照可见盒子写的。 */
-:where([data-scope]) {
-  box-sizing: border-box;
-}
-
-/* 伪元素自身带 (0,0,1)，无法再低；:where() 只压掉宿主那一截。 */
-:where([data-scope])::before,
-:where([data-scope])::after {
-  box-sizing: border-box;
-}
-
-/*
- * 浏览器按标签给的缺省外观，统一在这里收：皮肤与配方不各收各的。
- *
- * 库节点的样子只由皮肤与配方决定，不取决于它渲染成什么标签、在哪个浏览器里。按钮的底色、描边、内衬与原生外观，
- * 标题的加粗放大，段落、列表与图文的外边距，链接的蓝字，表单控件被锁死的字体与字色，字段集的描边，
- * 单元格的内衬——一律归零或改成继承；要哪一项由皮肤自己写。这几条对 div / span 都是初始值或本来就继承，
- * 只有浏览器按标签另给了缺省值的那些节点才真的被改到。
- * 不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
- *
- * 不在这里收的：display（标签的排版身份）、white-space（pre 与 textarea 的语义）、vertical-align（单元格取中）、
- * text-align（表单控件由浏览器钉在行首，改成继承会让居中容器里的输入框跟着居中）、
- * cursor 与焦点轮廓（各有专门的规则）。
- * 投影也不收：浏览器不给任何标签缺省投影，没有东西可收；而公共聚焦层那道内侧间隔线正是一条 (0,0,0) 的
- * box-shadow，无层产物里本层排在它之后，这里再写一条同档的就按源序把它压掉。
- * 同理，本层声明的每一个属性，别处都不许再有 (0,0,0) 的规则去定它（check-layer-order 逐条核）。
- */
-:where([data-scope]) {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  appearance: none;
-}
-
-/* 链接的下划线、增删与缩写的划线：不继承，逐个归零 */
-:where([data-scope]):where(a, abbr, ins, del, u, s) {
-  text-decoration: none;
-}
-
-/* 项目符号：只给本来就带符号的标签归零。list-style 会继承，写在容器上会把作者正文里的列表符号也带走 */
-:where([data-scope]):where(ul, ol, menu, li, summary) {
-  list-style: none;
-}
-
-/* 表格的格间隙；字段集按内容撑开的最小宽度 */
-:where([data-scope]):where(table) {
-  border-spacing: 0;
-}
-
-:where([data-scope]):where(fieldset) {
-  min-inline-size: 0;
-}
-
-/*
- * 浏览器塞进表单控件里的自带按钮：搜索框的清除钮（Chromium / Edge / WebKit，有值且悬停或聚焦时出现）、
- * 密码框的显示密码钮（Edge）。这两件事归组件自己的部件，原生那颗不收掉，行尾就并排两颗。
- * 各自成条：别的浏览器不认识对方的伪元素，并成一组会连累整条规则被丢掉。
- * 四个引擎里实测过库会产出的输入类型（text / search / password / email / tel / url），只有这两样会冒出来。
- */
-:where([data-scope])::-webkit-search-cancel-button {
-  display: none;
-}
-
-:where([data-scope])::-ms-reveal {
-  display: none;
-}
-
-/*
- * 浮层定位层的生命周期契约：落位才露。
- *
- * 坐标依赖浮层自己的尺寸，尺寸要等元素进 DOM 参与排版才量得到，所以浮层一定先渲染、
- * 再量、再定位——展开的那几帧坐标还是兜底的 0。默认藏着，连接层算出坐标后打
- * data-positioned 才显示，忘了接线的新浮层只会不显示，不会先在视口左上角闪一帧。
- * 用 visibility 而不是 display：display:none 会让浮层退出排版，引擎量不到它的尺寸。
- * 锚点被滚出可视区时引擎置 hidden，各皮肤另有一条 [data-hidden] 压回去。
- */
-:where([data-scope][data-part='positioner']) {
-  visibility: hidden;
-}
-
-:where([data-scope][data-part='positioner'][data-positioned]) {
-  visibility: visible;
-}
-
-/*
- * 库内原生滚动面与作者容器共用的细条。
- *
- * 两档滚动面里的「原生细条」档：页内结构容器（Table、Tree、Virtualizer viewport、
- * Dialog / Drawer body、Log 视口一类）不接自绘条，靠这里把原生条统一成 thin + 令牌色阶。
- * 三个入口：库节点（[data-scope][data-part]）、作者自建滚动容器与文档示例（[data-xh-scroll]）、
- * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
- * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
- * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
- * ::-webkit-scrollbar-thumb 的圆角取 pill：原生滑块与自绘 scrollbar:thumb 同为一维对象，
- * 不再按厚度折半凑半圆，三档厚度都是同一身份。
- *
- * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
- * var() 在计算值阶段沿元素树取值，层序只裁决同一属性的两条声明谁赢。
- * [data-xh-scrollbar] 的 scrollbar-width: none 是 (0,1,0)，有层与无层两种产物里都压得住本条；
- * ::-webkit-scrollbar 伪元素自带 (0,0,1)，ScrollArea 那条 display: none 同样压得住。
- */
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre) {
-  scrollbar-width: thin;
-  scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
-}
-
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar {
-  width: var(--xh-scrollbar-thickness-md);
-  height: var(--xh-scrollbar-thickness-md);
-}
-
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-track {
-  background: var(--xh-bg-scrollbar-track);
-}
-
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb {
-  border-radius: var(--xh-shape-pill);
-  background: var(--xh-fg-scrollbar-thumb);
-}
-
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb:hover {
-  background: var(--xh-fg-scrollbar-thumb-hover);
-}
-
-:where([data-scope][data-part], [data-xh-scroll], .xh-scope-typography[data-part='prose'] pre)::-webkit-scrollbar-thumb:active {
-  background: var(--xh-fg-scrollbar-thumb-active);
 }
 
 /* styles/reasoning.css */

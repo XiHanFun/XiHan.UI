@@ -14,6 +14,11 @@
    tokens.css 自带 @layer xihan.tokens，层序由 layers.css 定。 */
 @import '@xihan-ui/tokens/tokens.css';
 
+/* 库自己的基线排在一切样式规则之前：它的特指度是零，再加上源序最先，任何规则——连同皮肤里
+   故意写成零特指度的那些（字段集与表单的项距）——都压得过它。夹在皮肤中间时，排在它前面的
+   零特指度规则在无层产物里会被它靠源序压掉。 */
+@import './css/reset.css';
+
 /* 排在全部组件皮肤之前：聚焦环的公共层，组件只在需要往内收时给私有槽赋值。 */
 @import './css/focus.css';
 
@@ -66,7 +71,6 @@
 @import './css/password-input.css';
 @import './css/popconfirm.css';
 @import './css/prompt-input.css';
-@import './css/reset.css';
 @import './css/reasoning.css';
 @import './css/resizable.css';
 @import './css/signature-pad.css';

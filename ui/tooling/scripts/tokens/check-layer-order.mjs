@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // 门禁：层序声明在皮肤与令牌两份产物里逐字一致、在 tokens.css 里排在 @layer 块之前，
-// 源入口与两份扁平产物里层序与令牌都排在任何样式规则之前，且 reset 层全部选择器为 (0,0,0)——
-// 无层产物里配方排在 reset 之前，reset 只有低一档才不会靠源序压掉配方的字号；反向断言产物里
-// 每条声明 reset 所收属性（字体、外边距、内衬、描边、底、字色一类）的规则都高于 (0,0,0)。
+// 源入口与两份扁平产物里层序与令牌都排在任何样式规则之前，且 reset 层全部选择器为 (0,0,0)、
+// 紧随令牌排在其余一切样式规则之前——无层产物里只按特指度与源序竞争，reset 两样都垫底，
+// 任何配方与皮肤规则（连同皮肤里故意写成零特指度的那些）都压得过它。
 // 两份扁平产物里每份家族配方都只内联一次、
 // 落在四份公共层之后、一切组件皮肤之前：配方与皮肤同层同档，皮肤对配方的覆盖只有配方先出现
 // 才成立；配方对公共层的覆盖（field-chrome 把内嵌 input 的聚焦环置 none，与 focus.css 同为
@@ -62,20 +62,23 @@ if (imports[1] !== '@xihan-ui/tokens/tokens.css')
 // 聚焦环公共层排在全部组件皮肤之前：它与组件皮肤同特指度（0,3,0），同层内靠源序定胜负。
 // 一旦被某份皮肤挤到后面，那份皮肤要另画环的规则就压不过公共层，而两边取值都合法、
 // 门禁与构建全绿，只有真去 Tab 一遍才看得出环没变。
+// 库自己的基线紧随令牌、排在其余一切规则之前：它的特指度是零，源序再垫底，任何规则都压得过它。
+// 夹在皮肤中间时，排在它前面的零特指度规则（字段集的项距）在无层产物里会被它靠源序压掉。
+if (imports[2] !== './css/reset.css')
+  errors.push(`${ENTRIES.source} 的第三条 @import 是 ${imports[2] ?? '(没有)'}，reset 必须紧随令牌、排在其余一切样式规则之前`)
 const focusAt = imports.indexOf('./css/focus.css')
 if (focusAt === -1)
   errors.push(`${ENTRIES.source} 里找不到 ./css/focus.css 的 @import——聚焦环公共层没被引入`)
-else if (focusAt !== 2)
-  errors.push(`${ENTRIES.source} 的第三条 @import 是 ${imports[2] ?? '(没有)'}，聚焦环公共层必须紧随令牌、排在全部组件皮肤之前`)
+else if (focusAt !== 3)
+  errors.push(`${ENTRIES.source} 的第四条 @import 是 ${imports[3] ?? '(没有)'}，聚焦环公共层必须紧随 reset、排在全部组件皮肤之前`)
 
 if (orders.layers && orders.tokens && orders.layers.join(',') !== orders.tokens.join(','))
   errors.push(`层序不一致：\n    ${FILES.layers}  ${orders.layers.join(', ')}\n    ${FILES.tokens}  ${orders.tokens.join(', ')}`)
 
-// reset 层特指度压到 (0,0,0)：无层产物里没有层序可依，只按特指度竞争。Family Recipe 的
-// 根规则（[data-xh-action-control] 一类，(0,1,0)）在产物里排在 reset 段之前；reset 若仍是
-// (0,1,0)，其 `font: inherit` 就靠源序压掉配方的三档字号——文档站 Button 无论 sm/md/lg
-// 全是 16px，而有层产物、单测与其余门禁全绿。修法是压低 reset，不是抬高配方：reset 层的
-// 每条选择器剥去伪元素后必须整个由 :where() 包住。伪元素自身带 (0,0,1)，无法再低。
+// reset 层特指度压到 (0,0,0)：无层产物里没有层序可依，只按特指度与源序竞争。reset 若是
+// (0,1,0)，其 `font: inherit`、`margin: 0` 就压得过皮肤里故意写成零特指度的规则，也与宿主的
+// 单类规则同档。reset 层的每条选择器剥去伪元素后必须整个由 :where() 包住；伪元素自身带 (0,0,1)，
+// 无法再低。源序上它还得排在最前：同为 (0,0,0) 的规则只剩源序竞争，reset 在前才输。
 const RESET = 'packages/design/styles/css/reset.css'
 const RESET_MARKER = '/* styles/reset.css */'
 // 无层产物里的根规则形态：emit-entries 给家族属性加了 [data-scope] 前缀，抬到 (0,2,0)
@@ -158,13 +161,30 @@ function selectorsOf(css) {
  * 与配方、皮肤在真实元素上的规则互不竞争，随伪元素一起剥掉。
  */
 function isZeroSpecificity(selector) {
-  let rest = selector.replace(/::[\w-]+(\([^()]*\))?(?::(?:hover|active|focus|focus-visible|focus-within))*/g, '')
-  let previous
-  do {
-    previous = rest
-    rest = rest.replace(/:where\([^()]*\)/g, '')
-  } while (rest !== previous)
+  const rest = stripWhere(selector.replace(/::[\w-]+(\([^()]*\))?(?::(?:hover|active|focus|focus-visible|focus-within))*/g, ''))
   return /^[\s>+~*]*$/.test(rest)
+}
+
+/** 去掉每个 :where( … )。括号按配对找：里面再套 :not() / :is() 的也整个去掉。 */
+function stripWhere(selector) {
+  let out = ''
+  let i = 0
+  while (i < selector.length) {
+    if (!selector.startsWith(':where(', i)) {
+      out += selector[i++]
+      continue
+    }
+    let depth = 0
+    let j = i + ':where'.length
+    for (; j < selector.length; j++) {
+      if (selector[j] === '(')
+        depth++
+      else if (selector[j] === ')' && --depth === 0)
+        break
+    }
+    i = j + 1
+  }
+  return out
 }
 
 const layeredCss = await readFile(ENTRIES.layered, 'utf8')
@@ -210,8 +230,16 @@ for (const [key, css] of [['layered', layeredCss], ['unlayered', unlayeredCss]])
   }
   const familyStart = Math.min(...familyAt)
   const familyEnd = Math.max(...familyAt)
+  // reset 不是皮肤也不是公共层：它紧随层序声明、排在其余每一段之前（无层产物里的道理见下面 reset 那一节；
+  // 有层产物里层序已经定了胜负，位置跟着真源走）
+  const resetSeg = segments.find(seg => seg.dir === 'styles' && seg.name === 'reset.css')
+  const firstOther = segments.find(seg => !(seg.dir === 'styles' && (seg.name === 'layers.css' || seg.name === 'reset.css')))
+  if (!resetSeg)
+    errors.push(`${file} 里找不到 styles/reset.css 的段——reset 没被内联进产物`)
+  else if (firstOther && resetSeg.at > firstOther.at)
+    errors.push(`${file} 里 styles/reset.css 排在 ${firstOther.dir}/${firstOther.name} 之后——reset 必须紧随层序声明、排在其余每一段之前`)
   for (const seg of segments.filter(seg => seg.dir === 'styles')) {
-    if (seg.name === 'layers.css')
+    if (seg.name === 'layers.css' || seg.name === 'reset.css')
       continue
     if (PUBLIC_LAYERS.includes(seg.name)) {
       if (seg.at > familyStart)
@@ -271,54 +299,16 @@ else {
         errors.push(`${ENTRIES.unlayered} 的 reset 段选择器 \`${selector}\` 不是 (0,0,0)：无层产物里 reset 会压掉配方字号`)
     }
 
-    // 配方还得排在 reset 之前：同为按源序竞争时，reset 只有低一档才不会压掉配方的字号
-    const before = unlayeredCss.slice(0, markerAt)
-    for (const root of FAMILY_ROOTS) {
-      const rule = `\n${root} {`
-      if (unlayeredCss.includes(rule) && !before.includes(rule))
-        errors.push(`${ENTRIES.unlayered} 里 \`${root}\` 根规则没有排在 reset 段之前——配方与 reset 的先后变了，重新核对特指度取舍`)
-    }
-
-    // 反向那一半：reset 压到 (0,0,0) 只保证它不靠源序赢，前提是每条要定同一属性的规则都比它高。
-    // reset 在库节点上声明了哪些属性（外边距、内衬、描边、底、字色、字体、原生外观……），无层产物里
-    // reset 段之外的规则（含 @media 一类条件块内的）就不得以 (0,0,0) 再定这些属性——排在 reset 之前的
-    // 那条会被按源序压回 reset 的值，且有层产物、单测与其余门禁照样全绿。
-    // 伪元素上的规则各自只与同一伪元素的规则竞争，两边都不算进来。
-    const segmentEnd = nextMarkerAt === -1 ? unlayeredCss.length : segmentStart + nextMarkerAt
-    const resetProps = new Set()
-    for (const { selectors, body } of styleRulesOf(stripComments(segment))) {
-      if (selectors.every(selector => selector.includes('::')))
-        continue
-      for (const prop of propertiesOf(body))
-        resetProps.add(prop)
-    }
-    const outside = unlayeredCss.slice(0, markerAt) + unlayeredCss.slice(segmentEnd)
-    for (const { selectors, body } of styleRulesOf(stripComments(outside))) {
-      const clash = propertiesOf(body).filter(prop => [...resetProps].some(owned => sameProperty(owned, prop)))
-      if (clash.length === 0)
-        continue
-      for (const selector of selectors) {
-        if (selector.includes('::'))
-          continue
-        if (isZeroSpecificity(selector))
-          errors.push(`${ENTRIES.unlayered} 里声明 ${[...new Set(clash)].join(' / ')} 的规则 \`${selector}\` 是 (0,0,0)，与 reset 的同一属性同档、只能靠源序竞争——给它至少 (0,0,1) 的特指度，或别让 reset 收这个属性`)
-      }
+    // reset 段排在其余一切样式规则之前：它之前只许有层序、令牌的 @import、@property 一类语句与注释。
+    // 同为 (0,0,0) 的规则只剩源序竞争——皮肤里故意写成零特指度的规则（字段集与表单的项距、
+    // 公共聚焦层的内侧间隔线）排在 reset 之后才压得过它。reset 夹在皮肤中间时，排在它前面的那几条
+    // 会被 reset 的 margin: 0 一类按源序压回去，而有层产物、单测与其余门禁照样全绿。
+    const beforeReset = styleRulesOf(stripComments(unlayeredCss.slice(0, markerAt)))
+    if (beforeReset.length > 0) {
+      const first = beforeReset[0].selectors[0]
+      errors.push(`${ENTRIES.unlayered} 里 reset 段之前还有 ${beforeReset.length} 条样式规则（第一条 \`${first}\`）——reset 必须紧随令牌、排在一切规则之前，否则同为 (0,0,0) 的规则会被它靠源序压掉`)
     }
   }
-}
-
-/** 一段声明体里出现的属性名（自定义属性不算：它们不与 reset 的任何声明竞争）。 */
-function propertiesOf(body) {
-  // 嵌套块（@media 里的规则由 styleRulesOf 另行展开）不在这一层声明里
-  const flat = body.replace(/\{[^{}]*\}/g, '')
-  return [...flat.matchAll(/(?:^|;)\s*([a-z-]+)\s*:/g)].map(match => match[1]).filter(prop => !prop.startsWith('--'))
-}
-
-/** 两个属性是否会落到同一个计算值上：同名，或一方是另一方的简写（font 还带着 line-height）。 */
-function sameProperty(owned, prop) {
-  if (owned === prop || prop.startsWith(`${owned}-`) || owned.startsWith(`${prop}-`))
-    return true
-  return (owned === 'font' && prop === 'line-height') || (owned === 'line-height' && prop === 'font')
 }
 
 /** 递归取一段 CSS 里全部样式规则（含条件 @ 块内的）的选择器与声明体。 */
@@ -357,4 +347,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，两份扁平产物里 ${FAMILY_ROOTS.length} 条家族根规则各内联一次、落在 ${PUBLIC_LAYERS.length} 份公共层之后、全部组件皮肤与 reset 之前，字号规则都高于 reset`)
+console.log(`[check-layer-order] 通过：${orders.layers.join(' → ')}；reset 层 (0,0,0)，两份扁平产物里 ${FAMILY_ROOTS.length} 条家族根规则各内联一次、落在 ${PUBLIC_LAYERS.length} 份公共层之后、全部组件皮肤之前，reset 排在一切样式规则之前`)

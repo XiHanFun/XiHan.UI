@@ -31,11 +31,6 @@ describe('浏览器缺省外观的基线', () => {
       expect(block, declaration).toContain(declaration)
   })
 
-  it('基线层不收投影：公共聚焦层的内侧间隔线是同档的 box-shadow，无层产物里排在基线之前，再写一条就按源序压掉它', async () => {
-    const css = stripComments(await readFile(join(STYLES, 'css/reset.css'), 'utf8'))
-    expect(css).not.toMatch(/box-shadow\s*:/)
-  })
-
   it('皮肤与配方不各收各的：浏览器自带界面的伪元素只出现在基线层', async () => {
     const offenders = []
     for (const dir of ['css', 'family', 'build']) {
