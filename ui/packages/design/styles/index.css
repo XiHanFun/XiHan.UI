@@ -40976,7 +40976,7 @@
     .xh-scope-progress[data-part='range'][data-state='indeterminate'] {
       position: static;
       inline-size: 100%;
-      opacity: 0.5;
+      opacity: var(--xh-state-disabled-opacity);
       translate: none;
       animation: none;
     }
@@ -40990,7 +40990,7 @@
   :where([data-motion='reduce']) .xh-scope-progress[data-part='range'][data-state='indeterminate'] {
     position: static;
     inline-size: 100%;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
     translate: none;
     animation: none;
   }
@@ -41099,7 +41099,7 @@
     .xh-scope-progress[data-part='range'][data-state='indeterminate'] {
       position: static;
       inline-size: 100%;
-      opacity: 0.5;
+      opacity: var(--xh-state-disabled-opacity);
       translate: none;
       animation: none;
     }
@@ -45299,9 +45299,10 @@
   .xh-scope-sortable[data-part='item'][data-dragging] {
     /* 拖起来的那一项浮在上面。层级由连接层写内联，这里只管观感。
        海拔取 lifted：被指针拎起、正跟着手走的东西比贴在页面上的 raised 高一档，又不到锚定浮层那一层。
-       拖起的面是作者自己的内容，皮肤不给它强加描边——描边归作者的项目布局 */
+       拖起的面是作者自己的内容，皮肤不给它强加描边——描边归作者的项目布局。
+       透明度与 Table、Tabs、Tree 拖起的那一项同取拖起状态令牌 */
     box-shadow: var(--xh-sortable-item-shadow-dragging, var(--xh-elevation-lifted));
-    opacity: var(--xh-sortable-item-opacity-dragging, 0.9);
+    opacity: var(--xh-sortable-item-opacity-dragging, var(--xh-state-dragging-opacity));
   }
 
   /* 把手是只有字形的离散动作钮（定尺把手）：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、
@@ -45649,11 +45650,9 @@
   }
 
   /* 禁用的整体压暗只做一次，落在最外层：面板与分隔条各自再叠一层 opacity 会越叠越黑。
-     这一档压的是宿主塞进面板里的正文，不是控件自己的图形，所以地板比 --xh-state-disabled-opacity
-     高：那一档是 0.5，黑字白底压完只有 3.94:1，读不出字。压暗仍要表达「这块动不了」，
-     所以留一个槽让使用者按自己的配色调，而不是直接不压。 */
+     取全库同一支禁用透明度；压的是宿主塞进面板里的正文，正文要更清楚的经 --xh-splitter-disabled-opacity 调浅 */
   .xh-scope-splitter[data-part='root'][data-disabled] {
-    opacity: var(--xh-splitter-disabled-opacity, 0.6);
+    opacity: var(--xh-splitter-disabled-opacity, var(--xh-state-disabled-opacity));
   }
 
   /* 拖动期间整块不许选中文字：手在分隔条上来回蹭时会顺带把两侧的正文刷成高亮 */

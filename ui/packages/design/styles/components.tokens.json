@@ -72357,7 +72357,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "0.9"
+        "--xh-state-dragging-opacity"
       ],
       "visibility": "public",
       "description": "sortable 的 item 部件 opacity 覆盖槽。"
@@ -72827,7 +72827,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "0.6"
+        "--xh-state-disabled-opacity"
       ],
       "visibility": "public",
       "description": "splitter 的 root 部件 opacity 覆盖槽。"

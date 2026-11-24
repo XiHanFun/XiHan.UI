@@ -372,7 +372,7 @@
     [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
       position: static;
       inline-size: 100%;
-      opacity: 0.5;
+      opacity: var(--xh-state-disabled-opacity);
       translate: none;
       animation: none;
     }
@@ -386,7 +386,7 @@
   :where([data-motion='reduce']) [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
     position: static;
     inline-size: 100%;
-    opacity: 0.5;
+    opacity: var(--xh-state-disabled-opacity);
     translate: none;
     animation: none;
   }
@@ -496,7 +496,7 @@
     [data-scope='progress'][data-part='range'][data-state='indeterminate'] {
       position: static;
       inline-size: 100%;
-      opacity: 0.5;
+      opacity: var(--xh-state-disabled-opacity);
       translate: none;
       animation: none;
     }
