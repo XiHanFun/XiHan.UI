@@ -429,7 +429,7 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |
 | `--xh-command-positioner-pb` | `positioner` | `padding-block-end` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-block-end 覆盖槽。 |
 | `--xh-command-positioner-px` | `positioner` | `padding-inline` | `default` | `--xh-space-4` | command 的 positioner 部件 padding-inline 覆盖槽。 |
-| `--xh-command-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | command 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-command-radius` | `content` | `border-radius` | `default` | `--xh-shape-sheet` | command 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-command-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | command 的 content 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

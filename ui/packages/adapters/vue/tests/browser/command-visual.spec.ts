@@ -63,15 +63,15 @@ async function mount(options: { many?: boolean, openAfterMount?: boolean } = {})
 }
 
 describe('command 面板与命令', () => {
-  it('面板是 overlay 圆角 + sheet 三件套：material-elevated 的边 / 底 / 影，边界由描边承担', async () => {
+  it('面板是 sheet：sheet 圆角（与 Dialog 同档 10px）+ material-elevated 的边 / 底 / 影，边界由描边承担', async () => {
     await mount()
     const content = getComputedStyle(part('content'))
     expect(content.borderTopWidth).toBe('1px')
     expect(content.borderTopColor).toBe(resolve('--xh-material-elevated-border', 'border-color'))
     expect(content.backgroundColor).toBe(resolve('--xh-material-elevated-bg'))
     expect(content.boxShadow).toBe(resolve('--xh-material-elevated-shadow', 'box-shadow'))
-    expect(content.borderTopLeftRadius).toBe(getComputedStyle(part('content')).borderTopLeftRadius)
-    expect(content.borderTopLeftRadius).toBe(resolve('--xh-shape-overlay', 'border-top-left-radius'))
+    // 带遮罩、宽度与 Dialog 同一组令牌的模态面，圆角也取 sheet；贴着锚点的 Tour 气泡才留 overlay
+    expect(content.borderTopLeftRadius).toBe(resolve('--xh-shape-sheet', 'border-top-left-radius'))
   })
 
   it('进场从上方落下：起点在终点之上一小段，缩放锚在面板顶缘，位移与缩放同向', async () => {

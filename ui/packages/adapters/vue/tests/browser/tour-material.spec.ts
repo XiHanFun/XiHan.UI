@@ -99,6 +99,8 @@ describe('tour 的 M4 sheet 气泡与 Action Control 动作钮', () => {
     expect(content.backgroundColor).not.toBe(TRANSPARENT)
     expect(content.backgroundColor).not.toMatch(/\/ 0\.\d/)
     expect(content.boxShadow).toBe(tokenValue('box-shadow', '--xh-material-elevated-shadow', part('content')))
+    // 气泡贴着锚点，圆角留在 overlay 档：带遮罩的模态面（Dialog、Command）才取 sheet
+    expect(content.borderTopLeftRadius).toBe(tokenValue('border-top-left-radius', '--xh-shape-overlay', part('content')))
 
     const arrow = getComputedStyle(part('arrow'))
     expect(arrow.backgroundColor).toBe(content.backgroundColor)

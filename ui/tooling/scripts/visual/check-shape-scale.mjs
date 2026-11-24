@@ -235,6 +235,9 @@ const IDENTITY = {
   'radio-group:thumb': 'inset',
   // sheet：模态与强反馈面，比浮层再圆一档（Drawer 只取朝向页面的两个角，逻辑角长属性不在本表管辖）
   'dialog:content': 'sheet',
+  // Command 带遮罩、宽度与 Dialog 同一组令牌，是模态面；Tour 贴着锚点，留在 overlay 档
+  'command:content': 'sheet',
+  'tour:content': 'overlay',
   // 字段里的清空钮（设计真源 §8.3）：盒里一颗正方的单图标钮，取圆形；其余 clear-trigger（FileUpload、SignaturePad 的清空）仍按后缀走 control
   'cascader:clear-trigger': 'circle',
   'color-field:clear-trigger': 'circle',

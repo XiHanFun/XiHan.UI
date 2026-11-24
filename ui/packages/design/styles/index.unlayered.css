@@ -27503,10 +27503,10 @@
   max-inline-size: var(--xh-command-max-w, var(--xh-_command-max-w));
   /* 封顶才有可滚的余量：不封顶结果列表会一路撑到视口外，滚动条永远出不来 */
   max-block-size: var(--xh-command-max-h, var(--xh-overlay-max-h));
-  /* 模态命令面板与 Dialog 同档：overlay 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影），
+  /* 模态命令面板与 Dialog 同档：sheet 圆角 + sheet 三件套（material-elevated 的边 / 底 / 影），
      边界由描边承担，不再只靠落影 */
   border: var(--xh-stroke-thin) solid var(--xh-command-border, var(--xh-material-elevated-border));
-  border-radius: var(--xh-command-radius, var(--xh-shape-overlay));
+  border-radius: var(--xh-command-radius, var(--xh-shape-sheet));
   background: var(--xh-command-bg, var(--xh-material-elevated-bg));
   color: var(--xh-command-fg, var(--xh-material-elevated-fg));
   box-shadow: var(--xh-command-shadow, var(--xh-material-elevated-shadow));

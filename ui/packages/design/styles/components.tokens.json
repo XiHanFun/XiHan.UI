@@ -22212,7 +22212,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "--xh-shape-sheet"
       ],
       "visibility": "public",
       "description": "command 的 content 部件 border-radius 覆盖槽。"
