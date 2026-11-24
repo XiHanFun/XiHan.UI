@@ -238,6 +238,7 @@ reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪
 | `--xh-tone-border` | 描边 |
 | `--xh-tone-border-control` | 可操作区的边界，对面 3:1 |
 | `--xh-tone-soft` | 色条、指示条等装饰性强调，对画布 3:1 |
+| `--xh-tone-disabled` | 选中又禁用的语气面：实心底往承载面兑一半 |
 
 这一族只在写了 `data-tone` 的节点及其后代内有取值；`data-tone` 是它们的开关，不是可选修饰。
 

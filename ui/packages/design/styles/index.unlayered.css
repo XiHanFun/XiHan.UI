@@ -9512,8 +9512,8 @@
   --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
   --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
   --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
-  /* 翻着又被禁用：底色掺一半中性面，选中信息不丢。掺的是淡底的不透明档，墨色淡底半透明 */
-  --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+  /* 翻着又被禁用：取选中又禁用的品牌淡底面，选中信息不丢 */
+  --xh-action-bg-disabled: var(--xh-bg-brand-subtle-disabled);
   --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
   --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
   --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);
@@ -10339,7 +10339,7 @@
   --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
   --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
   --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
-  --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+  --xh-action-bg-disabled: var(--xh-bg-brand-subtle-disabled);
   --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
   --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
   --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);
@@ -15984,6 +15984,8 @@
   --xh-_tone-subtle-hover: color-mix(in oklab, var(--xh-_tone) 20%, var(--xh-bg-surface));
   --xh-_tone-subtle-active: color-mix(in oklab, var(--xh-_tone) 28%, var(--xh-bg-surface));
   --xh-_tone-border: color-mix(in oklab, var(--xh-_tone) 40%, var(--xh-bg-surface));
+  /* 选中又禁用的语气面：与 --xh-bg-brand-disabled 同一个式子，主色往承载面兑一半 */
+  --xh-_tone-disabled: color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface));
   /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
      这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
   --xh-_tone-border-control: var(--xh-_tone);
@@ -16112,6 +16114,7 @@
   --xh-tone-border: var(--xh-_tone-border);
   --xh-tone-border-control: var(--xh-_tone-border-control);
   --xh-tone-soft: var(--xh-_tone-soft);
+  --xh-tone-disabled: var(--xh-_tone-disabled);
 }
 
 /* 语气边界：有语气轴的组件没写 tone 时用自己的缺省语气，不接外层容器的。
@@ -16204,6 +16207,7 @@
   --xh-_tone-border: initial;
   --xh-_tone-border-control: initial;
   --xh-_tone-soft: initial;
+  --xh-_tone-disabled: initial;
   --xh-_tone-fg: initial;
 }
 
@@ -41980,7 +41984,7 @@
 .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-tone] {
   --xh-_radio-group-thumb-bg: var(--xh-_tone, var(--xh-bg-segment-selected));
   --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-hover, var(--xh-bg-segment-selected-hover));
-  --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface));
+  --xh-_radio-group-thumb-bg-disabled: var(--xh-_tone-disabled);
   --xh-_radio-group-segment-fg-checked: var(--xh-_tone-on, var(--xh-fg-segment-selected));
   --xh-_radio-group-segment-fg-checked-disabled: var(--xh-_tone-on, var(--xh-fg-segment-selected-disabled));
 }
@@ -51554,12 +51558,9 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-_toggle-bg-on-active: var(--xh-toggle-bg-on-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
   --xh-_toggle-fg-on: var(--xh-toggle-fg-on, var(--xh-_tone-on, var(--xh-fg-on-brand)));
   --xh-_toggle-border-on: var(--xh-toggle-border-on, var(--xh-_tone, var(--xh-bg-brand)));
-  /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。
-     掺的是淡底的不透明档：墨色淡底半透明，掺进去整块面会跟着变半透明 */
-  --xh-_toggle-bg-on-disabled: var(
-    --xh-toggle-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle-opaque))
-  );
+  /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时取选中又禁用的面（主色往承载面兑一半），选中信息不丢；
+     写了语气取语气层同一个式子的那一支 */
+  --xh-_toggle-bg-on-disabled: var(--xh-toggle-bg-on-disabled, var(--xh-_tone-disabled, var(--xh-bg-brand-disabled)));
   --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
   --xh-action-bg-rest: var(--xh-toggle-bg, var(--xh-_action-variant-bg-rest));
   --xh-action-bg-hover: var(--xh-toggle-bg-hover, var(--xh-_action-variant-bg-hover));
@@ -51617,7 +51618,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 /* 按下面的影位：四档的按下面都是实心面，缺省画实心面的顶边内高光（与切换按钮组的选中段、表单提交钮同一条式子，
    走 box-shadow 的影槽；家族的 --xh-action-highlight-* 是渐变用的颜色槽，装不下这条式子），使用者的 --xh-toggle-shadow
    写了就换成它。聚焦那一档不写兜底：使用者没给阴影时这支槽无效，家族按缺省画焦点环内侧的底色间隔线（读上面写的
-   --xh-_ring-gap），实心面上单靠一道环读不出来，高光此时让位；禁用的面掺了灰，不留高光 */
+   --xh-_ring-gap），实心面上单靠一道环读不出来，高光此时让位；禁用的面兑淡了一半，不留高光 */
 .xh-scope-toggle[data-part='root'][data-state='on'] {
   --xh-action-shadow-rest: var(--xh-toggle-shadow, var(--xh-_highlight-tone));
   --xh-action-shadow-hover: var(--xh-toggle-shadow, var(--xh-_highlight-tone));
@@ -51627,13 +51628,13 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 }
 
 /* solid 按下后是矩阵给的实心面（顶边内高光由上面的影位那条统一给）。
-   禁用同样掺一半中性面保留选中信息（与上面三档同一条规则）：矩阵 solid 列的 disabled 是中性
+   禁用同样往承载面兑一半保留选中信息（与上面三档同一个式子）：矩阵 solid 列的 disabled 是中性
    bg-subtle + fg-disabled，直接吃它就与未按下的禁用面分不开；底取实心面本身（矩阵在暗色下
-   换过的品牌实心也一并跟着）掺 --xh-bg-subtle，前景留实心面的配对前景。 */
+   换过的品牌实心也一并跟着）往承载面兑一半，前景留实心面的配对前景。 */
 .xh-scope-toggle[data-part='root'][data-variant='solid'][data-state='on'] {
   --xh-action-bg-disabled: var(
     --xh-toggle-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-subtle-opaque))
+    color-mix(in oklab, var(--xh-_action-variant-bg-rest) 50%, var(--xh-bg-surface))
   );
   --xh-action-fg-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_action-variant-fg-rest));
 }
@@ -51915,7 +51916,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
   --xh-action-bg-disabled: var(
     --xh-toggle-group-item-bg-on-disabled,
-    color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-subtle-opaque))
+    color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-surface))
   );
   --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
   --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
@@ -51946,8 +51947,8 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），禁用面由家族按 data-disabled 给：
    底 / 字 / 边读上面映射的 -disabled 三支，不用 opacity 变淡（半透明会把压在下面那条边透出来，共边处当场变成两条线）；
-   禁用且选中的段底色掺一半 muted 进 brand（映射在选中态那条里），既看得出选中，也看得出改不动；
-   改不动的段收掉内高光：底已经掺了灰，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
+   禁用且选中的段底色往承载面兑一半（映射在选中态那条里），既看得出选中，也看得出改不动；
+   改不动的段收掉内高光：底已经兑淡了，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
 
 /* 焦点环要浮在共边之上：环画在段自己的盒内，但段与段共一条边，不抬层的话环贴着共边的那一截会被后一段的描边盖住 */
 .xh-scope-toggle-group[data-part='item']:focus-visible {
@@ -52710,7 +52711,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 
 /* 无滑块开关的按下态：实心主色 + 面上反白（与 Toggle、切换按钮组的选中段同一块面），hover / 按下走主色的深一档、再深一档，
    描边同色；实心面带顶边内高光（走 box-shadow 的影槽，工具条没有语气轴，恒取品牌那一档）。四态都经桥接槽交给家族画；
-   禁用且按下的面掺一半中性面，既看得出按下也看得出改不动，字留反白、不留高光（与 Toggle 同一条规则）；
+   禁用且按下的面取选中又禁用的品牌面（主色往承载面兑一半），既看得出按下也看得出改不动，字留反白、不留高光（与 Toggle 同一条规则）；
    键盘焦点环内侧衬一道底色间隔线（家族缺省，影槽的聚焦档不写），实心面上单靠一道环读不出来 */
 .xh-scope-toolbar[data-part='item'][aria-pressed='true'] {
   --xh-_ring-gap: var(--xh-ring-gap);
@@ -52724,7 +52725,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
   --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
   --xh-action-bg-disabled: var(
     --xh-toolbar-item-bg-pressed-disabled,
-    color-mix(in oklab, var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand)) 50%, var(--xh-bg-subtle-opaque))
+    var(--xh-bg-brand-disabled)
   );
   --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
   --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
@@ -52757,7 +52758,7 @@ xh-menu ~ .xh-scope-table[data-part='column-resize-trigger'] {
 }
 
 /* 组内未选中的段才铺中性面：选中段的实心主色由上面 aria-pressed 那条给，这条比它更特定，不守卫会把它盖掉；
-   禁用面同理（组里的禁用面是中性淡底，按下且禁用的掺色面在 aria-pressed 那条里） */
+   禁用面同理（组里的禁用面是中性淡底，按下且禁用的面在 aria-pressed 那条里） */
 .xh-scope-toolbar[data-part='group'] > .xh-scope-toolbar[data-part='item']:not([aria-pressed='true']) {
   --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
   --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));

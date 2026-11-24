@@ -395,7 +395,7 @@
     --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
     --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
     --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
-    --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+    --xh-action-bg-disabled: var(--xh-bg-brand-subtle-disabled);
     --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
     --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
     --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);

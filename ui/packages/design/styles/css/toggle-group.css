@@ -265,7 +265,7 @@
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-subtle-opaque))
+      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-surface))
     );
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
@@ -296,8 +296,8 @@
 
   /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），禁用面由家族按 data-disabled 给：
      底 / 字 / 边读上面映射的 -disabled 三支，不用 opacity 变淡（半透明会把压在下面那条边透出来，共边处当场变成两条线）；
-     禁用且选中的段底色掺一半 muted 进 brand（映射在选中态那条里），既看得出选中，也看得出改不动；
-     改不动的段收掉内高光：底已经掺了灰，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
+     禁用且选中的段底色往承载面兑一半（映射在选中态那条里），既看得出选中，也看得出改不动；
+     改不动的段收掉内高光：底已经兑淡了，再留一条亮线只剩噪点（家族的 -shadow-disabled 缺省 none） */
 
   /* 焦点环要浮在共边之上：环画在段自己的盒内，但段与段共一条边，不抬层的话环贴着共边的那一截会被后一段的描边盖住 */
   [data-scope='toggle-group'][data-part='item']:focus-visible {

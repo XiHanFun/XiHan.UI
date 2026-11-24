@@ -425,8 +425,8 @@
     --xh-action-bg-hover: var(--xh-bg-brand-subtle-hover);
     --xh-action-bg-pressed: var(--xh-bg-brand-subtle-active);
     --xh-action-bg-focus-visible: var(--xh-bg-brand-subtle);
-    /* 翻着又被禁用：底色掺一半中性面，选中信息不丢。掺的是淡底的不透明档，墨色淡底半透明 */
-    --xh-action-bg-disabled: color-mix(in oklab, var(--xh-bg-brand-subtle) 50%, var(--xh-bg-subtle-opaque));
+    /* 翻着又被禁用：取选中又禁用的品牌淡底面，选中信息不丢 */
+    --xh-action-bg-disabled: var(--xh-bg-brand-subtle-disabled);
     --xh-action-fg-rest: var(--xh-fg-on-brand-subtle);
     --xh-action-fg-hover: var(--xh-fg-on-brand-subtle);
     --xh-action-fg-pressed: var(--xh-fg-on-brand-subtle);

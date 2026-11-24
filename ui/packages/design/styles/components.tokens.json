@@ -86782,7 +86782,6 @@
         "background-color"
       ],
       "state": [
-        "disabled",
         "focus-visible",
         "not([data-variant='solid'])",
         "state=on",
@@ -86840,7 +86839,7 @@
       ],
       "defaultToken": [
         "--xh-_action-variant-bg-rest",
-        "--xh-_toggle-bg-on"
+        "--xh-_tone-disabled"
       ],
       "visibility": "public",
       "description": "toggle 的 root 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -88978,7 +88977,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-toolbar-item-bg-pressed"
+        "--xh-bg-brand-disabled"
       ],
       "visibility": "public",
       "description": "toolbar 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"

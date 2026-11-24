@@ -70,6 +70,8 @@ const FIXED = [
   ['--xh-bg-brand-subtle-active', 0.28],
   ['--xh-bg-segment-selected-hover', 0.88],
   ['--xh-bg-segment-selected-disabled', 0.5],
+  ['--xh-bg-brand-disabled', 0.5],
+  ['--xh-bg-brand-subtle-disabled', 0.06],
 ]
 
 /** 直接取墨色本身的令牌。 */

@@ -79,10 +79,20 @@
       "$type": "color",
       "$value": "{bg.brand-hover}"
     },
-    "segment-selected-disabled": {
-      "$description": "禁用的选中段：主色往承载面兑一半，仍看得出选的是哪一段、又一眼看出动不了。",
+    "brand-disabled": {
+      "$description": "选中又禁用的品牌实心面（按下的 Toggle、Toolbar 条目，选中的分段）：主色往承载面兑一半，仍看得出选的是哪一个、又一眼看出动不了。",
       "$type": "color",
       "$value": "color-mix(in oklab, {bg.brand} 50%, {bg.surface})"
+    },
+    "brand-subtle-disabled": {
+      "$description": "选中又禁用的品牌淡底面（品牌淡底的开关钮）：与 {bg.brand-disabled} 同一个式子，淡底往承载面兑一半。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand-subtle} 50%, {bg.surface})"
+    },
+    "segment-selected-disabled": {
+      "$description": "禁用的选中段：与选中段取实心品牌面同理，取 {bg.brand-disabled}。",
+      "$type": "color",
+      "$value": "{bg.brand-disabled}"
     },
     "overlay": {
       "$description": "模态遮罩：正文深灰兑 40%，压暗页面而不发黑，背后仍认得出是哪一页（naive 同档）；深色主题另取纯黑 60%。",

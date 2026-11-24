@@ -179,7 +179,7 @@
 
   /* 无滑块开关的按下态：实心主色 + 面上反白（与 Toggle、切换按钮组的选中段同一块面），hover / 按下走主色的深一档、再深一档，
      描边同色；实心面带顶边内高光（走 box-shadow 的影槽，工具条没有语气轴，恒取品牌那一档）。四态都经桥接槽交给家族画；
-     禁用且按下的面掺一半中性面，既看得出按下也看得出改不动，字留反白、不留高光（与 Toggle 同一条规则）；
+     禁用且按下的面取选中又禁用的品牌面（主色往承载面兑一半），既看得出按下也看得出改不动，字留反白、不留高光（与 Toggle 同一条规则）；
      键盘焦点环内侧衬一道底色间隔线（家族缺省，影槽的聚焦档不写），实心面上单靠一道环读不出来 */
   [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
     --xh-_ring-gap: var(--xh-ring-gap);
@@ -193,7 +193,7 @@
     --xh-action-bg-focus-visible: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand));
     --xh-action-bg-disabled: var(
       --xh-toolbar-item-bg-pressed-disabled,
-      color-mix(in oklab, var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand)) 50%, var(--xh-bg-subtle-opaque))
+      var(--xh-bg-brand-disabled)
     );
     --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
     --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand));
@@ -226,7 +226,7 @@
   }
 
   /* 组内未选中的段才铺中性面：选中段的实心主色由上面 aria-pressed 那条给，这条比它更特定，不守卫会把它盖掉；
-     禁用面同理（组里的禁用面是中性淡底，按下且禁用的掺色面在 aria-pressed 那条里） */
+     禁用面同理（组里的禁用面是中性淡底，按下且禁用的面在 aria-pressed 那条里） */
   [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item']:not([aria-pressed='true']) {
     --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
     --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));

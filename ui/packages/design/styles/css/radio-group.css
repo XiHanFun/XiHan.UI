@@ -381,7 +381,7 @@
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-tone] {
     --xh-_radio-group-thumb-bg: var(--xh-_tone, var(--xh-bg-segment-selected));
     --xh-_radio-group-thumb-bg-hover: var(--xh-_tone-hover, var(--xh-bg-segment-selected-hover));
-    --xh-_radio-group-thumb-bg-disabled: color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface));
+    --xh-_radio-group-thumb-bg-disabled: var(--xh-_tone-disabled);
     --xh-_radio-group-segment-fg-checked: var(--xh-_tone-on, var(--xh-fg-segment-selected));
     --xh-_radio-group-segment-fg-checked-disabled: var(--xh-_tone-on, var(--xh-fg-segment-selected-disabled));
   }

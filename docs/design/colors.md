@@ -93,7 +93,7 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-field', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
+  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-field', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-brand-disabled', '--xh-bg-brand-subtle-disabled', '--xh-bg-overlay']"
   :notes="{
     '--xh-bg-page': '页面底：面之下那一层，铺满视口',
     '--xh-bg-canvas': '不透明画布：自动填充遮罩、色块选中环等必须不透明的地方；控件盒静息不再填它',
@@ -108,6 +108,8 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
     '--xh-bg-subtle-active-opaque': '淡底 active 档的不透明档',
     '--xh-bg-brand': '主要动作实心底',
     '--xh-bg-brand-subtle': '选中 / 当前专属，12% 品牌拼色',
+    '--xh-bg-brand-disabled': '选中又禁用的品牌实心面：主色往承载面兑一半',
+    '--xh-bg-brand-subtle-disabled': '选中又禁用的品牌淡底面：同一个式子',
     '--xh-bg-overlay': '模态遮罩',
   }"
 />

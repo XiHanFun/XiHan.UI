@@ -54,6 +54,8 @@
     --xh-_tone-subtle-hover: color-mix(in oklab, var(--xh-_tone) 20%, var(--xh-bg-surface));
     --xh-_tone-subtle-active: color-mix(in oklab, var(--xh-_tone) 28%, var(--xh-bg-surface));
     --xh-_tone-border: color-mix(in oklab, var(--xh-_tone) 40%, var(--xh-bg-surface));
+    /* 选中又禁用的语气面：与 --xh-bg-brand-disabled 同一个式子，主色往承载面兑一半 */
+    --xh-_tone-disabled: color-mix(in oklab, var(--xh-_tone) 50%, var(--xh-bg-surface));
     /* 控件的可操作区边界要 3:1，兑了底色的 --xh-_tone-border 六族全在 1.44–2.18，够不着。
        这一支直接取主色本体；两族在各自的底上仍不够，在下面按主题单独兜 */
     --xh-_tone-border-control: var(--xh-_tone);
@@ -167,6 +169,7 @@
     --xh-tone-border: var(--xh-_tone-border);
     --xh-tone-border-control: var(--xh-_tone-border-control);
     --xh-tone-soft: var(--xh-_tone-soft);
+    --xh-tone-disabled: var(--xh-_tone-disabled);
   }
 
   /* 语气边界：有语气轴的组件没写 tone 时用自己的缺省语气，不接外层容器的。
@@ -259,6 +262,7 @@
     --xh-_tone-border: initial;
     --xh-_tone-border-control: initial;
     --xh-_tone-soft: initial;
+    --xh-_tone-disabled: initial;
     --xh-_tone-fg: initial;
   }
 

@@ -28,6 +28,7 @@ const PAIRS = {
   '--xh-_tone-border': '--xh-tone-border',
   '--xh-_tone-border-control': '--xh-tone-border-control',
   '--xh-_tone-soft': '--xh-tone-soft',
+  '--xh-_tone-disabled': '--xh-tone-disabled',
 }
 
 /** 不出公开令牌的私有槽，逐条写明理由；名单里的槽必须真的还在 tone.css 里声明着。 */
