@@ -37,7 +37,7 @@ const NUMBER_CONVERTER = {
  * `<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，
  * 关闭时用内联 style.display 隐藏浮层子树。
  *
- * 键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。
+ * 键盘与 ARIA 契约同 dialog；placement 决定滑入方向，以 data-placement 写在 root 与 content 上供样式取用。
  *
  * 不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写
  * `slot="trigger"`、`slot="title"`、`slot="description"`、`slot="body"`、`slot="footer"` 的节点）给出各段内容，
@@ -50,7 +50,7 @@ const NUMBER_CONVERTER = {
  * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
  * @attr {boolean} contained - 局部抽屉：遮罩与定位层从 fixed 改为 absolute，只覆盖最近的定位祖先而不是整屏。
  *   本元素是 Light DOM，浮层位于作者书写的位置，因此挂载容器本身不需要属性；写上它是为了让皮肤按容器绘制
- * @attr {'top'|'right'|'bottom'|'left'} side - 滑出的边，默认 right
+ * @attr {'top'|'right'|'bottom'|'left'} placement - 滑出的边，默认 right
  * @attr {'dialog'|'alertdialog'} dialog-role - 语义角色，写在 content 上，默认 dialog。不命名为 role：那是 HTML 全局属性，写在宿主上宿主自己就成了抽屉，连同里面的触发钮
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭
@@ -77,11 +77,11 @@ const NUMBER_CONVERTER = {
  * @fires cancel-press - 点了取消钮；随后收起。Escape、层外交互与关闭钮只发 open-change
  * @fires exit-complete - 退出完成且本层资源已释放
  * @fires panel-size-change - 厚度变化意图；detail 为 `{ panelSize: number }`
- * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
+ * @csspart root - 留在页面原地的容器，承载 data-placement / data-size / data-state
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器（贴边布局写在它身上）
- * @csspart content - 抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-side / data-size）
+ * @csspart content - 抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-placement / data-size）
  * @csspart header - 面板头：标题与说明所在的段，不随正文滚动
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
@@ -119,7 +119,7 @@ export class XhDrawerElement extends XhPortalHostElement {
     dialogRole: { converter: STRING_CONVERTER, attribute: 'dialog-role' },
     modal: { converter: BOOLEAN_CONVERTER },
     contained: { converter: BOOLEAN_CONVERTER },
-    side: { converter: STRING_CONVERTER },
+    placement: { converter: STRING_CONVERTER },
     closeOnEscape: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-escape' },
     closeOnInteractOutside: { converter: BOOLEAN_CONVERTER, attribute: 'close-on-interact-outside' },
     restoreFocus: { converter: BOOLEAN_CONVERTER, attribute: 'restore-focus' },
@@ -148,7 +148,7 @@ export class XhDrawerElement extends XhPortalHostElement {
   declare dialogRole?: DrawerSchema['props']['role']
   declare modal?: boolean
   declare contained?: boolean
-  declare side?: DrawerSchema['props']['side']
+  declare placement?: DrawerSchema['props']['placement']
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
@@ -249,7 +249,7 @@ export class XhDrawerElement extends XhPortalHostElement {
       defaultOpen: this.defaultOpen ?? false,
       modal: this.modal,
       contained: this.contained ?? false,
-      side: this.side,
+      placement: this.placement,
       role: this.dialogRole,
       closeOnEscape: this.pendingState ? false : this.closeOnEscape,
       closeOnInteractOutside: this.pendingState ? false : this.closeOnInteractOutside,

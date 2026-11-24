@@ -11,7 +11,7 @@ import type { ConfirmErrorDetails, ConfirmIntents } from '../shared/confirm-gate
 import type { TitleDescriptionParts } from '../shared/title-description'
 
 /** 抽屉贴靠的视口边，也是滑入方向的来源。 */
-export type DrawerSide = 'top' | 'right' | 'bottom' | 'left'
+export type DrawerPlacement = 'top' | 'right' | 'bottom' | 'left'
 
 export interface DrawerTranslations {
   close: string
@@ -42,7 +42,7 @@ export interface DrawerOpenChangeDetails {
 
 /**
  * 抽屉的 schema：状态、效应与 refs 取自对话框，改尺在它上面另加一段。
- * props 这一层自行定义：多出 side、contained 与改尺那几项，文案与开合回调换成抽屉自身的形状。
+ * props 这一层自行定义：多出 placement、contained 与改尺那几项，文案与开合回调换成抽屉自身的形状。
  */
 export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | 'event' | 'guard' | 'action'> {
   props: {
@@ -61,15 +61,15 @@ export interface DrawerSchema extends Omit<DialogSchema, 'props' | 'context' | '
      * 作者写在何处即在何处），这里只表达按局部容器绘制这一点。
      */
     contained?: boolean
-    /** 滑出的边，默认 'right'。只影响输出的 data-side，不参与状态转移。 */
-    side?: DrawerSide
+    /** 滑出的边，默认 'right'。只影响输出的 data-placement，不参与状态转移。 */
+    placement?: DrawerPlacement
     role?: 'dialog' | 'alertdialog'
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
     /** 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 */
     initialFocus?: string
-    /** 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 */
+    /** 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 placement 而定。 */
     size?: Size
     /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
@@ -141,7 +141,7 @@ export interface DrawerApi<T extends PropTypes = PropTypes> {
   /** 正在被指针调厚度。 */
   resizing: boolean
   /** 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 */
-  side: DrawerSide
+  placement: DrawerPlacement
   /** 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起抽屉。 */
   pending: boolean
   /** 最近一次确认动作的错误；新确认或取消时清空。 */

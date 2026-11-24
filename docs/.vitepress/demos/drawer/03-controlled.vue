@@ -14,7 +14,7 @@ const open = ref(false);
 </script>
 
 <template>
-  <XhDrawerRoot v-model:open="open" side="left" :translations="{ close: '关闭' }">
+  <XhDrawerRoot v-model:open="open" placement="left" :translations="{ close: '关闭' }">
     <XhButton variant="solid" @click="open = true">打开左侧抽屉</XhButton>
     <XhDrawerContent>
       <XhDrawerTitle>受控抽屉</XhDrawerTitle>

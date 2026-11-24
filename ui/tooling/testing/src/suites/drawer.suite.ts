@@ -43,7 +43,7 @@ function withOnlyClose(base: FixtureNode): FixtureNode {
   }
 }
 
-// 抽屉 = 贴边渲染的对话框：ARIA 与键盘契约逐条相同，多出来的是 side 与改尺。
+// 抽屉 = 贴边渲染的对话框：ARIA 与键盘契约逐条相同，多出来的是 placement 与改尺。
 // backdrop / positioner 由 content 组件内部装配，不作为独立 fixture 节点；
 // 采集器仍会从 document 抓到它们。
 export const drawerSuite: ConformanceSuite = {
@@ -129,8 +129,8 @@ export const drawerSuite: ConformanceSuite = {
         order: ['root', 'trigger'],
         counts: { content: 0, backdrop: 0 },
         parts: {
-          // side 缺省即 right；收起态也要说得出方向
-          root: { 'data-side': 'right', 'data-state': 'closed' },
+          // placement 缺省即 right；收起态也要说得出方向
+          root: { 'data-placement': 'right', 'data-state': 'closed' },
           trigger: {
             'type': 'button',
             'aria-haspopup': 'dialog',
@@ -165,7 +165,7 @@ export const drawerSuite: ConformanceSuite = {
                 'aria-modal': 'true',
                 'tabindex': '-1',
                 'data-state': 'open',
-                'data-side': 'right',
+                'data-placement': 'right',
                 'aria-labelledby': '@part(title)',
                 'aria-describedby': '@part(description)',
               },
@@ -185,33 +185,33 @@ export const drawerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'side 决定滑出边：root 与 content 始终报同一条边，改 side 两边一起走',
+      name: 'placement 决定滑出边：root 与 content 始终报同一条边，改 placement 两边一起走',
       spec: { apg: APG },
-      props: { side: 'left' },
+      props: { placement: 'left' },
       steps: [
         {
           kind: 'click',
           part: 'trigger',
-          expect: { parts: { root: { 'data-side': 'left' } } },
+          expect: { parts: { root: { 'data-placement': 'left' } } },
         },
         {
           kind: 'settle',
           until: { present: 'content' },
           expect: {
             parts: {
-              root: { 'data-side': 'left' },
+              root: { 'data-placement': 'left' },
               // content 被 portal 出去了，写在 root 上的选择器够不着它，它必须自带这条边
-              content: { 'data-side': 'left' },
+              content: { 'data-placement': 'left' },
             },
           },
         },
         {
           kind: 'setProps',
-          props: { side: 'bottom' },
+          props: { placement: 'bottom' },
           expect: {
             parts: {
-              root: { 'data-side': 'bottom' },
-              content: { 'data-side': 'bottom' },
+              root: { 'data-placement': 'bottom' },
+              content: { 'data-placement': 'bottom' },
             },
           },
         },
@@ -359,7 +359,7 @@ export const drawerSuite: ConformanceSuite = {
             'aria-valuemin': '200',
             'aria-valuemax': '360',
             'tabindex': '0',
-            'data-side': 'right',
+            'data-placement': 'right',
             'hidden': null,
           },
         },

@@ -6,7 +6,7 @@
 // 提供 drawer 相关实现。
 
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { DrawerActionIntents, DrawerApi, DrawerConfirmErrorDetails, DrawerSchema, DrawerSide, DrawerStructureActions } from '@xihan-ui/headless'
+import type { DrawerActionIntents, DrawerApi, DrawerConfirmErrorDetails, DrawerPlacement, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { drawerStructure, withoutPanelShell } from '@xihan-ui/headless'
@@ -24,7 +24,7 @@ import { useDrawer } from './use-drawer'
 type DrawerProps = DrawerSchema['props']
 
 /** 默认插槽的载荷：展开状态、已解析的滑出边，与开合命令。 */
-export type DrawerRootSlotProps = Pick<DrawerApi, 'open' | 'side' | 'setOpen'>
+export type DrawerRootSlotProps = Pick<DrawerApi, 'open' | 'placement' | 'setOpen'>
 
 export const XhDrawerRoot = defineComponent({
   name: 'XhDrawerRoot',
@@ -33,7 +33,7 @@ export const XhDrawerRoot = defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     modal: { type: Boolean, default: undefined },
-    side: { type: String as PropType<DrawerSide> },
+    placement: { type: String as PropType<DrawerPlacement> },
     role: { type: String as PropType<'dialog' | 'alertdialog'> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
@@ -124,11 +124,11 @@ export const XhDrawerRoot = defineComponent({
       onCancelPress: () => emit('cancel-press'),
     })
     provideDrawer(ctx)
-    // root 是真实节点，content 会被 portal 到 body，data-side 挂在这里供页面内的部分读取
+    // root 是真实节点，content 会被 portal 到 body，data-placement 挂在这里供页面内的部分读取
     return () => h('div', ctx.api.value.getRootProps(), slots.default
       ? slots.default({
           open: ctx.api.value.open,
-          side: ctx.api.value.side,
+          placement: ctx.api.value.placement,
           setOpen: ctx.api.value.setOpen,
         })
       : renderDefaultStructure({

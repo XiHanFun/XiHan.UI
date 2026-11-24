@@ -31286,7 +31286,7 @@
     --xh-drawer-skin: 1;
   }
 
-  /* root 留在页面原地，只是 data-side / data-state 的落点，不该凭空多出一层盒子把
+  /* root 留在页面原地，只是 data-placement / data-state 的落点，不该凭空多出一层盒子把
      trigger 从作者的 flex / grid 行里挤出去，故 display: contents。 */
   .xh-scope-drawer[data-part='root'] {
     /* 作者塞进面板里的图标按控件档取；触发器与关闭钮另由家族配方按各自的档下发字形尺 */
@@ -31423,7 +31423,7 @@
     --xh-_drawer-shift-block: var(--xh-motion-travel);
     /* 尺寸档只换这一个私有槽：左右放置时它是面板宽度、上下放置时是面板高度，
        两种取法都在下面「四条边」那两条规则里。声明在 content 而不是 root：
-       content 会被 portal 到 body，root 上的槽位继承不过来（data-side 也是同一个道理） */
+       content 会被 portal 到 body，root 上的槽位继承不过来（data-placement 也是同一个道理） */
     --xh-_drawer-size: var(--xh-overlay-drawer-w-md);
     /* 系统占着的那几段：分三段时面板一层只让出它们，设计内衬交给三段各自给。
        安全区只有物理方向的四个名字，行内轴上两侧同取较宽的那一段，RTL 下不会翻错边 */
@@ -31499,7 +31499,7 @@
 
   /* —— 尺寸 —— */
   /* 只有面板厚度分档；中间档不写规则，缺省即中档。
-     data-size 与 data-side 一样同时打在 root 与 content 上，这里只认 content 自己那一份。 */
+     data-size 与 data-placement 一样同时打在 root 与 content 上，这里只认 content 自己那一份。 */
   .xh-scope-drawer[data-part='content'][data-size='sm'] {
     --xh-_drawer-size: var(--xh-overlay-drawer-w-sm);
   }
@@ -31509,12 +31509,12 @@
   }
 
   /* —— 四条边 ——
-     data-side 同时打在 root 与 content 上；content 会被 portal 到 body，
+     data-placement 同时打在 root 与 content 上；content 会被 portal 到 body，
      选择器只认得 content 自己身上这一份。 */
 
   /* 左右：满高、定宽 */
-  .xh-scope-drawer[data-part='content'][data-side='left'],
-  .xh-scope-drawer[data-part='content'][data-side='right'] {
+  .xh-scope-drawer[data-part='content'][data-placement='left'],
+  .xh-scope-drawer[data-part='content'][data-placement='right'] {
     inset-block: 0;
     /* 调过厚度就按连接层写进私有槽的像素走，压过 size 档与使用者槽 */
     inline-size: var(--xh-_drawer-panel-size, var(--xh-drawer-size, var(--xh-_drawer-size)));
@@ -31524,33 +31524,33 @@
 
   /* 贴住视口（或容器）的那条边不取圆角：圆了反而露出底下的页面。朝向页面那两个角与 Dialog 同一把尺，
      取 sheet 圆角：使用者把圆角种子调大时抽屉不会单独方着；要另定经 --xh-drawer-radius */
-  .xh-scope-drawer[data-part='content'][data-side='left'] {
+  .xh-scope-drawer[data-part='content'][data-placement='left'] {
     inset-inline-start: 0;
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
     border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='right'] {
+  .xh-scope-drawer[data-part='content'][data-placement='right'] {
     inset-inline-end: 0;
     border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
     border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
   }
 
   /* 上下：满宽、定高 */
-  .xh-scope-drawer[data-part='content'][data-side='top'],
-  .xh-scope-drawer[data-part='content'][data-side='bottom'] {
+  .xh-scope-drawer[data-part='content'][data-placement='top'],
+  .xh-scope-drawer[data-part='content'][data-placement='bottom'] {
     inset-inline: 0;
     block-size: var(--xh-_drawer-panel-size, var(--xh-drawer-size, var(--xh-_drawer-size)));
     max-block-size: 100%;
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='top'] {
+  .xh-scope-drawer[data-part='content'][data-placement='top'] {
     inset-block-start: 0;
     border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
     border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='bottom'] {
+  .xh-scope-drawer[data-part='content'][data-placement='bottom'] {
     inset-block-end: 0;
     border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
     border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-sheet));
@@ -31564,19 +31564,19 @@
      （inset-inline-start 等），RTL 下 inline-end 落在物理左边；translate 没有逻辑等价物，
      若这里写死物理方向，就会出现"面板贴在左边、却从右边滑进来"。shift 槽在 RTL 下翻符号，
      两者才始终同向。竖排书写模式下 block 轴不再是 Y 轴，位移会退化为纵向，但贴边本身仍由逻辑 inset 保证。 */
-  .xh-scope-drawer[data-part='content'][data-side='right'] {
+  .xh-scope-drawer[data-part='content'][data-placement='right'] {
     --xh-_slide-from-x: var(--xh-_drawer-shift-inline);
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='left'] {
+  .xh-scope-drawer[data-part='content'][data-placement='left'] {
     --xh-_slide-from-x: calc(-1 * var(--xh-_drawer-shift-inline));
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='top'] {
+  .xh-scope-drawer[data-part='content'][data-placement='top'] {
     --xh-_slide-from-y: calc(-1 * var(--xh-_drawer-shift-block));
   }
 
-  .xh-scope-drawer[data-part='content'][data-side='bottom'] {
+  .xh-scope-drawer[data-part='content'][data-placement='bottom'] {
     --xh-_slide-from-y: var(--xh-_drawer-shift-block);
   }
 
@@ -31811,42 +31811,42 @@
     outline: none;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='left'],
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='right'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='left'],
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='right'] {
     inset-block: 0;
     inline-size: var(--xh-drawer-resize-trigger-size, var(--xh-space-2));
     cursor: ew-resize;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='right'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='right'] {
     inset-inline-start: 0;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='left'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='left'] {
     inset-inline-end: 0;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='top'],
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='bottom'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='top'],
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='bottom'] {
     inset-inline: 0;
     block-size: var(--xh-drawer-resize-trigger-size, var(--xh-space-2));
     cursor: ns-resize;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='top'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='top'] {
     inset-block-end: 0;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger'][data-side='bottom'] {
+  .xh-scope-drawer[data-part='resize-trigger'][data-placement='bottom'] {
     inset-block-start: 0;
   }
 
-  .xh-scope-drawer[data-part='resize-trigger']:is([data-side='left'], [data-side='right'])::after {
+  .xh-scope-drawer[data-part='resize-trigger']:is([data-placement='left'], [data-placement='right'])::after {
     inline-size: var(--xh-drawer-resize-indicator-thickness, var(--xh-stroke-strong));
     block-size: var(--xh-drawer-resize-indicator-length, var(--xh-space-8));
   }
 
-  .xh-scope-drawer[data-part='resize-trigger']:is([data-side='top'], [data-side='bottom'])::after {
+  .xh-scope-drawer[data-part='resize-trigger']:is([data-placement='top'], [data-placement='bottom'])::after {
     inline-size: var(--xh-drawer-resize-indicator-length, var(--xh-space-8));
     block-size: var(--xh-drawer-resize-indicator-thickness, var(--xh-stroke-strong));
   }

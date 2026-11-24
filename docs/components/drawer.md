@@ -26,7 +26,7 @@
 
 ### 贴边方向
 
-side 只写为 data-side，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边
+placement 只写为 data-placement，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边
 
 <XhDemo src="drawer/02-side" />
 
@@ -86,7 +86,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 
 ### 特性
 
-- `side` 决定滑出方向；`contained` 让它只占据某个容器而不是整个视口。
+- `placement` 决定滑出方向；`contained` 让它只占据某个容器而不是整个视口。
 - 焦点进入时落在 `initialFocus`；没给时落在内容里第一个可聚焦的控件上，越过关闭钮与改尺把手（除它们之外没有可聚焦的才落在关闭钮上）。关闭后归还触发器。
 - `role` 写成 `alertdialog` 时内容是警示对话框：读屏用更强的语气，点外面不关。Web Components 侧的属性是 `dialog-role`：`role` 是 HTML 全局属性，写在宿主上宿主本身就成了对话框，连同里面的触发钮。
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
@@ -134,13 +134,13 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `defaultOpen` | `boolean` |  |  |
 | `modal` | `boolean` |  | 是否启用模态约束，默认 true。false 时不提供遮罩，页面其余部分保持可交互； 展开期间可以切换，滚动锁、背景失活与焦点陷阱会同步更新。 |
 | `contained` | `boolean` |  | 浮层挂在局部容器中而不是视口：遮罩与定位层从 fixed 改为 absolute， 因此只覆盖该容器、不再覆盖整屏。 挂到哪个容器由适配器决定（Vue 由 root 的 container 决定，WC 本身是 Light DOM、 作者写在何处即在何处），这里只表达按局部容器绘制这一点。 |
-| `side` | `DrawerSide` |  | 滑出的边，默认 'right'。只影响输出的 data-side，不参与状态转移。 |
+| `placement` | `DrawerPlacement` |  | 滑出的边，默认 'right'。只影响输出的 data-placement，不参与状态转移。 |
 | `role` | `'dialog' \| 'alertdialog'` |  |  |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
 | `initialFocus` | `string` |  | 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 side 而定。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。横向放置时影响面板宽度、纵向放置时影响面板高度，随 placement 而定。 |
 | `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `unmountOnExit` | `boolean` |  | 收起动画播完后卸载内容，默认 true。内容总是第一次打开才挂载；设为 false 时此后收起只隐藏、不卸载， 再打开不重挂：内容里的组件状态、输入与滚动位置都留着，重开也不再付一遍挂载开销。 适合反复开合、内容又重（设置面板、长表单）的抽屉。 |
 | `parts` | `TitleDescriptionParts` |  | 作者实际渲染了哪些部件，由适配器统计；省略即按都在场处理（服务端直出与挂载前）。 title 不在场时 content 不写 aria-labelledby，名字由作者在 content 上写 aria-label； description 不在场、或渲染了但读不出一句话（判断同 `hasNamingContent`）时不写 aria-describedby。 |
@@ -229,7 +229,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `open` | `boolean` |  |
 | `panelSize` | `number \| null` | 当前厚度；没被调过、也没给初值时为 null。 |
 | `resizing` | `boolean` | 正在被指针调厚度。 |
-| `side` | `DrawerSide` | 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 |
+| `placement` | `DrawerPlacement` | 已解析的滑出边（prop 未提供时是默认值），作者据此配置动画。 |
 | `pending` | `boolean` | 异步确认进行中：确认钮转圈、再次点击无效，Escape 与层外交互不收起抽屉。 |
 | `actionError` | `DrawerConfirmErrorDetails \| null` | 最近一次确认动作的错误；新确认或取消时清空。 |
 | `setOpen` | `(next: boolean) => void` | 确认异步挂起期间，收起只能经取消钮或关闭钮：程序与触发器的 setOpen(false) 无效。 |
@@ -308,7 +308,7 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-contained` | ''（条件成立时才出现） |
-| `root` | `data-side` | props.side |
+| `root` | `data-placement` | props.placement |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `trigger` | `data-pressed` | ''（条件成立时才出现） |
@@ -327,8 +327,8 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `positioner` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-contained` | ''（条件成立时才出现） |
 | `content` | `data-instant` | ''（条件成立时才出现） |
+| `content` | `data-placement` | props.placement |
 | `content` | `data-resizing` | ''（条件成立时才出现） |
-| `content` | `data-side` | props.side |
 | `content` | `data-size` | props.size |
 | `content` | `data-state` | 'open' \| 'closed' |
 | `confirm-trigger` | `data-loading` | ''（条件成立时才出现） |
@@ -352,8 +352,8 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `close-trigger` | `data-xh-action-profile` | 'icon' |
 | `close-trigger` | `data-xh-action-size` | 'sm' |
 | `close-trigger` | `data-xh-action-variant` | 'ghost' |
+| `resize-trigger` | `data-placement` | props.placement |
 | `resize-trigger` | `data-resizing` | ''（条件成立时才出现） |
-| `resize-trigger` | `data-side` | props.side |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -391,17 +391,17 @@ resizable 在朝向页面的那条边上放一根把手：拖动或用方向键�
 | `--xh-drawer-layer` | `content`<br>`positioner` | `z-index` | `default` | `--xh-_layer` | drawer 的 content、positioner 部件 z-index 覆盖槽。 |
 | `--xh-drawer-px` | `content` | `padding-inline` | `contained`<br>`default` | `--xh-surface-px-sm` | drawer 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-drawer-py` | `content` | `padding-block-end`<br>`padding-block-start` | `contained`<br>`default` | `--xh-_drawer-header-pt`<br>`--xh-overlay-sheet-footer-py` | drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
-| `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-shape-sheet` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
-| `--xh-drawer-resize-indicator-length` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-side='left'], [data-side='right'])`<br>`is([data-side='top'], [data-side='bottom'])`<br>`side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-space-8` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-drawer-resize-indicator-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-side='left'], [data-side='right'])`<br>`is([data-side='top'], [data-side='bottom'])`<br>`side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-stroke-strong` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `placement=bottom`<br>`placement=left`<br>`placement=right`<br>`placement=top` | `--xh-shape-sheet` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-drawer-resize-indicator-length` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-placement='left'], [data-placement='right'])`<br>`is([data-placement='top'], [data-placement='bottom'])`<br>`placement=bottom`<br>`placement=left`<br>`placement=right`<br>`placement=top` | `--xh-space-8` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-resize-indicator-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `is([data-placement='left'], [data-placement='right'])`<br>`is([data-placement='top'], [data-placement='bottom'])`<br>`placement=bottom`<br>`placement=left`<br>`placement=right`<br>`placement=top` | `--xh-stroke-strong` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-resize-trigger-bg` | `resize-trigger` | `background` | `default` | `--xh-border-control` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-drawer-resize-trigger-bg-active` | `resize-trigger` | `background` | `resizing` | `--xh-bg-brand` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-drawer-resize-trigger-bg-hover` | `resize-trigger` | `background` | `hover` | `--xh-border-control-hover` | drawer 的 resize-trigger 部件 background 覆盖槽。 |
 | `--xh-drawer-resize-trigger-radius` | `resize-trigger` | `border-radius` | `default` | `--xh-shape-pill` | drawer 的 resize-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-drawer-resize-trigger-size` | `resize-trigger` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-space-2` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-resize-trigger-size` | `resize-trigger` | `block-size`<br>`inline-size` | `placement=bottom`<br>`placement=left`<br>`placement=right`<br>`placement=top` | `--xh-space-2` | drawer 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-separator` | `content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='drawer'][data-part='body'])` | `--xh-material-elevated-separator` | drawer 的 content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-drawer-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | drawer 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-drawer-size` | `content` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-_drawer-size` | drawer 的 content 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-drawer-size` | `content` | `block-size`<br>`inline-size` | `placement=bottom`<br>`placement=left`<br>`placement=right`<br>`placement=top` | `--xh-_drawer-size` | drawer 的 content 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | drawer 的 title 部件 color 覆盖槽。 |
 | `--xh-drawer-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | drawer 的 title 部件 font-size 覆盖槽。 |
 | `--xh-drawer-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | drawer 的 title 部件 font-weight 覆盖槽。 |

@@ -102,9 +102,9 @@ const CASES: readonly Case[] = [
   {
     name: 'drawer',
     render: () => (
-      <XhDrawerRoot className="mine" style={PROBE} side="right" restoreFocus={false} />
+      <XhDrawerRoot className="mine" style={PROBE} placement="right" restoreFocus={false} />
     ),
-    leaks: ['side', 'restorefocus'],
+    leaks: ['placement', 'restorefocus'],
   },
   {
     name: 'editable',

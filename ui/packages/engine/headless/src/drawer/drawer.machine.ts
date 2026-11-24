@@ -7,7 +7,7 @@
 
 import type { MachineConfig } from '@xihan-ui/core'
 import type { DialogGestureSession } from '../dialog'
-import type { DrawerSchema, DrawerSide } from './drawer.types'
+import type { DrawerPlacement, DrawerSchema } from './drawer.types'
 import { setup } from '@xihan-ui/core'
 import { dialogMachine } from '../dialog'
 import { clampToBounds, startGesturePointer } from '../dialog/dialog.gesture'
@@ -19,7 +19,7 @@ export const DRAWER_MIN_PANEL_SIZE = 160
 
 // 抽屉就是贴边渲染的模态对话框：开合转移、受控回写、消解层、焦点域、滚动锁与背景失活
 // 逐条相同，跑的是对话框那一份配置。dialogMachine 的类型锚是 DialogSchema，抽屉的 props
-// 多出 side、contained 与改尺那几项，context 与事件多出改尺那一段，这里按抽屉的 schema 重标一次。
+// 多出 placement、contained 与改尺那几项，context 与事件多出改尺那一段，这里按抽屉的 schema 重标一次。
 const base = dialogMachine as unknown as MachineConfig<DrawerSchema>
 
 /** 改尺这一场的几何：推哪根轴、往屏幕正向拖是变厚还是变薄、上下限多少、起点多厚。 */
@@ -36,11 +36,11 @@ interface ResizeGeometry {
  * 把手守的那条边与手上推的方向要跟着翻；top / bottom 是块方向，不随书写方向翻。
  * 上限取作者给的与视口（contained 时是所在容器）中较小的那个：面板不能比放它的地方还厚。
  */
-function measure(content: HTMLElement, side: DrawerSide, win: Window, min: number | undefined, max: number | undefined): ResizeGeometry {
-  const horizontal = side === 'left' || side === 'right'
+function measure(content: HTMLElement, placement: DrawerPlacement, win: Window, min: number | undefined, max: number | undefined): ResizeGeometry {
+  const horizontal = placement === 'left' || placement === 'right'
   const rtl = horizontal && win.getComputedStyle(content).direction === 'rtl'
   // 贴在屏幕右边（或底边）的面板，往左（往上）拖是变厚
-  const atEnd = side === 'bottom' || (side === 'right') !== rtl
+  const atEnd = placement === 'bottom' || (placement === 'right') !== rtl
   const rect = content.getBoundingClientRect()
   const box = content.offsetParent as HTMLElement | null
   const room = horizontal
@@ -108,7 +108,7 @@ export const drawerMachine = createMachine({
         const content = refs.get('getContentEl')()
         if (!content)
           return
-        const geometry = measure(content, prop('side') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
+        const geometry = measure(content, prop('placement') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
         // 起点取已经落定的厚度：没调过才用量到的那个
         const start = context.get('panelSize') ?? geometry.size
         const session: DialogGestureSession = {
@@ -147,7 +147,7 @@ export const drawerMachine = createMachine({
         const content = refs.get('getContentEl')()
         if (e.type !== 'RESIZE.NUDGE' || !content)
           return
-        const geometry = measure(content, prop('side') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
+        const geometry = measure(content, prop('placement') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
         const delta = geometry.axis === 'x' ? e.dx : e.dy
         if (delta === 0)
           return
@@ -161,7 +161,7 @@ export const drawerMachine = createMachine({
         const content = refs.get('getContentEl')()
         if (e.type !== 'RESIZE.TO_BOUND' || !content)
           return
-        const geometry = measure(content, prop('side') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
+        const geometry = measure(content, prop('placement') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize'))
         const next = Math.round(e.bound === 'min' ? geometry.min : geometry.max)
         context.set('panelSize', next)
         context.set('measuredPanelSize', next)
@@ -169,7 +169,7 @@ export const drawerMachine = createMachine({
       measurePanel: ({ context, prop, refs, scope }) => {
         const content = refs.get('getContentEl')()
         if (content)
-          context.set('measuredPanelSize', measure(content, prop('side') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize')).size)
+          context.set('measuredPanelSize', measure(content, prop('placement') ?? 'right', scope.getWin(), prop('minPanelSize'), prop('maxPanelSize')).size)
       },
     },
   },

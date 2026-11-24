@@ -30,11 +30,11 @@ function part(name: string): HTMLElement {
   return document.querySelector<HTMLElement>(`[data-scope='drawer'][data-part='${name}']`)!
 }
 
-function mount(side: 'left' | 'right' | 'top' | 'bottom' = 'right', open = ref(true)): void {
+function mount(placement: 'left' | 'right' | 'top' | 'bottom' = 'right', open = ref(true)): void {
   const host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhDrawerRoot, { open: open.value, side, variant: 'blur' }, () => [
+    render: () => h(XhDrawerRoot, { open: open.value, placement, variant: 'blur' }, () => [
       h(XhDrawerTrigger, null, () => '打开'),
       h(XhDrawerContent, null, () => [h(XhDrawerTitle, null, () => '设置'), h('button', '保存')]),
     ]),
@@ -63,11 +63,11 @@ function mountSections(): void {
  * 不分三段、内容超出面板：一个定高 380px、overflow: hidden 的框（里面的图比框大），后面接一段 1200px 的正文。
  * 框是 overflow 非 visible 的弹性项，自动最小高度为 0，面板若参与纵向压缩，超出的那部分就从它身上扣。
  */
-function mountOverflowingSingleLayer(side: 'left' | 'right' | 'top' | 'bottom'): void {
+function mountOverflowingSingleLayer(placement: 'left' | 'right' | 'top' | 'bottom'): void {
   const host = document.createElement('div')
   document.body.append(host)
   app = createApp({
-    render: () => h(XhDrawerRoot, { open: true, side }, () => [
+    render: () => h(XhDrawerRoot, { open: true, placement }, () => [
       h(XhDrawerTrigger, null, () => '打开'),
       h(XhDrawerContent, null, () => [
         h(XhDrawerTitle, null, () => '流程实例'),
@@ -118,9 +118,9 @@ function paddingBox(element: HTMLElement): { left: number, right: number, top: n
 }
 
 /** 挂载时收着、挂载之后再打开：挂载即开的那一次属于首帧，不播入场。 */
-async function mountThenOpen(side: 'left' | 'right' | 'top' | 'bottom'): Promise<void> {
+async function mountThenOpen(placement: 'left' | 'right' | 'top' | 'bottom'): Promise<void> {
   const open = ref(false)
-  mount(side, open)
+  mount(placement, open)
   await settle()
   open.value = true
   await settle()
@@ -166,8 +166,8 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     ['left', ['borderTopRightRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderBottomLeftRadius']],
     ['top', ['borderBottomLeftRadius', 'borderBottomRightRadius'], ['borderTopLeftRadius', 'borderTopRightRadius']],
     ['bottom', ['borderTopLeftRadius', 'borderTopRightRadius'], ['borderBottomLeftRadius', 'borderBottomRightRadius']],
-  ] as const satisfies ReadonlyArray<readonly [string, readonly Corner[], readonly Corner[]]>)('%s：朝向页面的两个角取 sheet 圆角，贴住视口的两个角不圆', async (side, inner, edge) => {
-    mount(side)
+  ] as const satisfies ReadonlyArray<readonly [string, readonly Corner[], readonly Corner[]]>)('%s：朝向页面的两个角取 sheet 圆角，贴住视口的两个角不圆', async (placement, inner, edge) => {
+    mount(placement)
     await settle()
 
     const content = getComputedStyle(part('content'))
@@ -262,8 +262,8 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     expect(box.right - part('close-trigger').getBoundingClientRect().right).toBeCloseTo(44 + 16, 0)
   })
 
-  it.each(['right', 'bottom'] as const)('%s：不分三段时面板是唯一的滚动层，定高、overflow: hidden 的子节点保持声明的高度，超出的内容整块滚', async (side) => {
-    mountOverflowingSingleLayer(side)
+  it.each(['right', 'bottom'] as const)('%s：不分三段时面板是唯一的滚动层，定高、overflow: hidden 的子节点保持声明的高度，超出的内容整块滚', async (placement) => {
+    mountOverflowingSingleLayer(placement)
     await settle()
 
     const content = part('content')
@@ -321,8 +321,8 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     expect(titleRect.left - box.left).toBeCloseTo(16, 0)
   })
 
-  it.each(['right', 'left', 'top', 'bottom'] as const)('%s：开着时入场动画走 --xh-motion-duration-slide（320ms），不是 enter 档', async (side) => {
-    await mountThenOpen(side)
+  it.each(['right', 'left', 'top', 'bottom'] as const)('%s：开着时入场动画走 --xh-motion-duration-slide（320ms），不是 enter 档', async (placement) => {
+    await mountThenOpen(placement)
 
     // 第一段是整幅位移，第二段是并列的淡变（缺省档两端都是不透明）
     const content = getComputedStyle(part('content'))
@@ -335,8 +335,8 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
     ['left', '-100%'],
     ['top', '0px -100%'],
     ['bottom', '0px 100%'],
-  ] as const)('%s：入场首帧从所贴的那条边外整幅推入', async (side, from) => {
-    await mountThenOpen(side)
+  ] as const)('%s：入场首帧从所贴的那条边外整幅推入', async (placement, from) => {
+    await mountThenOpen(placement)
 
     const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
     slide!.pause()
@@ -347,10 +347,10 @@ describe('drawer 的 M4 sheet 面板与 slide 入场', () => {
   it.each([
     ['right', '-100%'],
     ['left', '100%'],
-  ] as const)('从右到左（RTL）下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (side, from) => {
+  ] as const)('从右到左（RTL）下 %s：行内方向的推入随书写方向翻转，与逻辑贴边同侧', async (placement, from) => {
     document.documentElement.dir = 'rtl'
     try {
-      await mountThenOpen(side)
+      await mountThenOpen(placement)
 
       const [slide] = part('content').getAnimations().filter(a => (a as CSSAnimation).animationName === 'xh-slide-in')
       slide!.pause()

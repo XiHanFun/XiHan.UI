@@ -76,7 +76,7 @@ const PENDING = {
   'date-range-picker': ['open', 'value', 'start', 'end', 'focusedValue', 'visibleMonth', 'canGoPrev', 'canGoNext', 'canClear', 'setOpen', 'setValue', 'clear'],
   'dialog': ['open', 'setOpen'],
   'diff-view': ['view', 'rows', 'expandedValue', 'stats', 'truncated', 'truncatedLines', 'isEmpty', 'toggleGap', 'setExpandedValue'],
-  'drawer': ['open', 'side', 'setOpen'],
+  'drawer': ['open', 'placement', 'setOpen'],
   'field-array': ['value', 'count', 'empty', 'atMin', 'atMax', 'canAdd'],
   'editable': ['value', 'displayValue', 'editing', 'empty', 'setValue', 'edit', 'submit', 'cancel'],
   'file-upload': ['remoteFiles', 'dragging', 'empty', 'disabled', 'maxFiles', 'getFileSizeText'],

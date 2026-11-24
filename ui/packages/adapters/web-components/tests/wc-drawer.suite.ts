@@ -19,7 +19,7 @@ const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
  * data-state=closed 与 positioner 的 hidden 收起；Vue 版则走退场租约，播完动画整棵卸载。
  * 共享套件按"卸载"写断言，在这边一条都对不上。
  *
- * 抽屉相对 dialog 只多一个 side，因此这里重点验它：root 与 content 都要标出滑出边，
+ * 抽屉相对 dialog 只多一个 placement，因此这里重点验它：root 与 content 都要标出滑出边，
  * 其余（ARIA 接线、焦点进出、受控、Escape）与 dialog 同构，各留一条守住不回归。
  */
 export const wcDrawerSuite: ConformanceSuite = {
@@ -27,8 +27,8 @@ export const wcDrawerSuite: ConformanceSuite = {
   anatomy: drawerAnatomy,
   keyboard: drawerKeyboard,
   fixture: {
-    // 显式写出 root：data-side 与 data-state 都落在它身上，样式靠这两个决定
-    // 抽屉从哪条边滑进来。dialog 的 WC fixture 没有这一层，因为它没有 side
+    // 显式写出 root：data-placement 与 data-state 都落在它身上，样式靠这两个决定
+    // 抽屉从哪条边滑进来。dialog 的 WC fixture 没有这一层，因为它没有 placement
     part: 'root',
     tag: 'div',
     children: [
@@ -80,7 +80,7 @@ export const wcDrawerSuite: ConformanceSuite = {
             'data-xh-action-variant': 'outline',
             'data-pressed': null,
           },
-          'content': { 'data-state': 'closed', 'role': 'dialog', 'data-side': 'right' },
+          'content': { 'data-state': 'closed', 'role': 'dialog', 'data-placement': 'right' },
           'positioner': { 'data-state': 'closed' },
           // 面板角落的叉：Action Control icon 档 sm、ghost 面
           'close-trigger': {
@@ -95,15 +95,15 @@ export const wcDrawerSuite: ConformanceSuite = {
       },
     },
     {
-      // side 是抽屉相对 dialog 唯一的新语义：样式靠它决定从哪一边滑进来，
+      // placement 是抽屉相对 dialog 唯一的新语义：样式靠它决定从哪一边滑进来，
       // 落不到 DOM 上的话四个方向长得一模一样
-      name: 'side=left：root 与 content 同步标出滑出边',
+      name: 'placement=left：root 与 content 同步标出滑出边',
       spec: { apg: APG },
-      props: { side: 'left' },
+      props: { placement: 'left' },
       initial: {
         parts: {
-          root: { 'data-side': 'left' },
-          content: { 'data-side': 'left' },
+          root: { 'data-placement': 'left' },
+          content: { 'data-placement': 'left' },
         },
       },
     },
@@ -219,7 +219,7 @@ export const wcDrawerSuite: ConformanceSuite = {
             'aria-valuemin': '200',
             'aria-valuemax': '360',
             'tabindex': '0',
-            'data-side': 'right',
+            'data-placement': 'right',
             'hidden': null,
           },
         },

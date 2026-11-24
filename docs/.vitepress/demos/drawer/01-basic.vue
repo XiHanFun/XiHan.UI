@@ -17,7 +17,7 @@ import {
     <XhDrawerContent>
       <XhDrawerTitle>筛选条件</XhDrawerTitle>
       <XhDrawerDescription>
-        面板贴住右边，这是 side 的默认值。
+        面板贴住右边，这是 placement 的默认值。
       </XhDrawerDescription>
       <XhButton variant="solid" @click="setOpen(false)">应用并关闭</XhButton>
       <XhDrawerCloseTrigger />

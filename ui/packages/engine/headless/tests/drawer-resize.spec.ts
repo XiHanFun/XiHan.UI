@@ -69,7 +69,7 @@ describe('把手', () => {
     expect(handle['aria-valuemax']).toBe('600')
     expect(handle['aria-valuenow']).toBeUndefined()
     expect(handle.hidden).toBeUndefined()
-    expect((makeDrawer({ side: 'top' }).api().getResizeTriggerProps() as Dict)['aria-orientation']).toBe('horizontal')
+    expect((makeDrawer({ placement: 'top' }).api().getResizeTriggerProps() as Dict)['aria-orientation']).toBe('horizontal')
   })
 
   it('得焦时量一次实际厚度，报给读屏，不对外通知', () => {
@@ -100,16 +100,16 @@ describe('键盘', () => {
   })
 
   it('贴左边与从右往左排版时方向翻过来：推向页面那一侧才变厚', () => {
-    const left = makeDrawer({ side: 'left' })
+    const left = makeDrawer({ placement: 'left' })
     keydown(left.api, 'ArrowRight')
     expect(left.api().panelSize).toBe(328)
-    const rtl = makeDrawer({ side: 'right' }, 'rtl')
+    const rtl = makeDrawer({ placement: 'right' }, 'rtl')
     keydown(rtl.api, 'ArrowRight')
     expect(rtl.api().panelSize).toBe(328)
   })
 
   it('贴底边：上键变厚；横向键不推', () => {
-    const d = makeDrawer({ side: 'bottom' })
+    const d = makeDrawer({ placement: 'bottom' })
     keydown(d.api, 'ArrowUp')
     expect(d.api().panelSize).toBe(328)
     keydown(d.api, 'ArrowLeft')

@@ -50,7 +50,7 @@ export function useDrawer(
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   // contained 由 container 派生,在 getter 里算:在 setup 期展开 props 会把响应式冻住,
-  // 之后改 side / open 这些都推不动了
+  // 之后改 placement / open 这些都推不动了
   const presence = useTitleDescriptionPresence()
   // ref 同步写入：thenable 被识别的同一拍里，机器就要开始拒绝 Escape 与层外交互关闭
   const pending = ref(false)

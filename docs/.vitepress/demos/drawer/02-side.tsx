@@ -1,4 +1,4 @@
-// 贴边方向 | side 只写为 data-side，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边
+// 贴边方向 | placement 只写为 data-placement，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边
 import type { ReactNode } from "react";
 import {
   XhDrawerCloseTrigger,
@@ -20,14 +20,14 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
       {sides.map(s => (
-        <XhDrawerRoot key={s.value} side={s.value} translations={{ close: "关闭" }}>
-          {({ side }) => (
+        <XhDrawerRoot key={s.value} placement={s.value} translations={{ close: "关闭" }}>
+          {({ placement }) => (
             <>
               <XhDrawerTrigger>{s.label}</XhDrawerTrigger>
               <XhDrawerContent>
                 <XhDrawerTitle>{`${s.label}抽屉`}</XhDrawerTitle>
                 <XhDrawerDescription>
-                  {`当前 data-side 是 ${side}。`}
+                  {`当前 data-placement 是 ${placement}。`}
                 </XhDrawerDescription>
                 <XhDrawerCloseTrigger />
               </XhDrawerContent>

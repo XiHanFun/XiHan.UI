@@ -1,4 +1,4 @@
-<!-- 贴边方向 | side 只写为 data-side，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边 -->
+<!-- 贴边方向 | placement 只写为 data-placement，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边 -->
 <script setup lang="ts">
 import {
   XhDrawerCloseTrigger,
@@ -22,15 +22,15 @@ const sides = [
     <XhDrawerRoot
       v-for="s in sides"
       :key="s.value"
-      v-slot="{ side }"
-      :side="s.value"
+      v-slot="{ placement }"
+      :placement="s.value"
       :translations="{ close: '关闭' }"
     >
       <XhDrawerTrigger>{{ s.label }}</XhDrawerTrigger>
       <XhDrawerContent>
         <XhDrawerTitle>{{ s.label }}抽屉</XhDrawerTitle>
         <XhDrawerDescription>
-          当前 data-side 是 {{ side }}。
+          当前 data-placement 是 {{ placement }}。
         </XhDrawerDescription>
         <XhDrawerCloseTrigger />
       </XhDrawerContent>

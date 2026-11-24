@@ -6,7 +6,7 @@
 // 提供 drawer 相关实现。
 
 import type { OverlayBackdropVariant, Size } from '@xihan-ui/core'
-import type { DrawerActionIntents, DrawerApi, DrawerSchema, DrawerSide, DrawerStructureActions } from '@xihan-ui/headless'
+import type { DrawerActionIntents, DrawerApi, DrawerPlacement, DrawerSchema, DrawerStructureActions } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { AsChildProps } from '../../runtime/as-child'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -26,13 +26,13 @@ import { useDrawer } from './use-drawer'
 type DrawerProps = DrawerSchema['props']
 
 /** 函数式 children 的载荷：展开状态、已解析的滑出边，与开合命令。 */
-export interface DrawerRootSlotProps extends Pick<DrawerApi, 'open' | 'side' | 'setOpen'> {}
+export interface DrawerRootSlotProps extends Pick<DrawerApi, 'open' | 'placement' | 'setOpen'> {}
 
 export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'title'> {
   open?: boolean
   defaultOpen?: boolean
   modal?: boolean
-  side?: DrawerSide
+  placement?: DrawerPlacement
   role?: 'dialog' | 'alertdialog'
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
@@ -99,7 +99,7 @@ export function XhDrawerRoot({
   open,
   defaultOpen,
   modal,
-  side,
+  placement,
   role,
   closeOnEscape,
   closeOnInteractOutside,
@@ -137,7 +137,7 @@ export function XhDrawerRoot({
     open,
     defaultOpen,
     modal,
-    side,
+    placement,
     role,
     closeOnEscape,
     closeOnInteractOutside,
@@ -158,12 +158,12 @@ export function XhDrawerRoot({
     onPanelSizeChange,
   }) as DrawerProps, container, { onConfirm, onConfirmError, onCancelPress })
   const api = ctx.api
-  // root 是真实节点，content 会被搬到浮层落点，data-side 挂在这里供页面内的部分读取
+  // root 是真实节点，content 会被搬到浮层落点，data-placement 挂在这里供页面内的部分读取
   return (
     <DrawerProvider value={ctx}>
       <div {...mergeReactProps(api.getRootProps(), rest)}>
         {children !== undefined
-          ? renderSlot(children, { open: api.open, side: api.side, setOpen: api.setOpen })
+          ? renderSlot(children, { open: api.open, placement: api.placement, setOpen: api.setOpen })
           : renderDefaultStructure({ actions, confirmText, cancelText, resizable, translations: ctx.service.prop('translations') }, { trigger, title, description, body, footer })}
       </div>
     </DrawerProvider>

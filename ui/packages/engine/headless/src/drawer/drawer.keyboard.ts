@@ -8,7 +8,7 @@
 import type { KeyboardTable } from '../spec/types'
 
 // 抽屉的开合键盘契约与模态对话框逐条相同：它就是贴边渲染的对话框，
-// side 只改滑入方向，不改任何一条按键语义。改尺把手另按窗口分隔条的模式推厚度。
+// placement 只改滑入方向，不改任何一条按键语义。改尺把手另按窗口分隔条的模式推厚度。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction'
 
 export const drawerKeyboard: KeyboardTable = {

@@ -6,10 +6,10 @@
 // 导出 drawer 模块的公共接口。
 
 export { drawerAnatomy } from './drawer.anatomy'
-export { connectDrawer, DRAWER_DEFAULT_SIDE } from './drawer.connect'
+export { connectDrawer, DRAWER_DEFAULT_PLACEMENT } from './drawer.connect'
 export { drawerKeyboard } from './drawer.keyboard'
 export { DRAWER_MIN_PANEL_SIZE, drawerMachine } from './drawer.machine'
 export { drawerMeta } from './drawer.meta'
 export { drawerStructure } from './drawer.structure'
 export type { DrawerStructureActions, DrawerStructureOptions } from './drawer.structure'
-export type { DrawerActionIntents, DrawerApi, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerPanelSizeChangeDetails, DrawerRefs, DrawerSchema, DrawerSide, DrawerTranslations } from './drawer.types'
+export type { DrawerActionIntents, DrawerApi, DrawerConfirmErrorDetails, DrawerOpenChangeDetails, DrawerPanelSizeChangeDetails, DrawerPlacement, DrawerRefs, DrawerSchema, DrawerTranslations } from './drawer.types'

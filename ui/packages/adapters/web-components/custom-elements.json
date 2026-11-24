@@ -24688,11 +24688,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。\n\n不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写\n`slot=\"trigger\"`、`slot=\"title\"`、`slot=\"description\"`、`slot=\"body\"`、`slot=\"footer\"` 的节点）给出各段内容，\n页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋\n`confirmAction = () => thenable`：抽屉等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。",
+          "description": "`<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；placement 决定滑入方向，以 data-placement 写在 root 与 content 上供样式取用。\n\n不写部件时元素按标准结构生成：trigger-text、title-text、description 几个属性（或宿主直接子节点上写\n`slot=\"trigger\"`、`slot=\"title\"`、`slot=\"description\"`、`slot=\"body\"`、`slot=\"footer\"` 的节点）给出各段内容，\n页脚按 actions 铺取消与确定两颗钮。确定钮发 confirm；要等异步动作落定再收起，给元素赋\n`confirmAction = () => thenable`：抽屉等兑现才收、确定钮转圈，拒绝留在原地并发 confirm-error。",
           "name": "XhDrawerElement",
           "cssParts": [
             {
-              "description": "留在页面原地的容器，承载 data-side / data-size / data-state",
+              "description": "留在页面原地的容器，承载 data-placement / data-size / data-state",
               "name": "root"
             },
             {
@@ -24708,7 +24708,7 @@
               "name": "positioner"
             },
             {
-              "description": "抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-side / data-size）",
+              "description": "抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-placement / data-size）",
               "name": "content"
             },
             {
@@ -24822,12 +24822,12 @@
             },
             {
               "kind": "field",
-              "name": "side",
+              "name": "placement",
               "privacy": "public",
               "type": {
-                "text": "DrawerSchema['props']['side'] | undefined"
+                "text": "DrawerSchema['props']['placement'] | undefined"
               },
-              "attribute": "side"
+              "attribute": "placement"
             },
             {
               "kind": "field",
@@ -25300,11 +25300,11 @@
             },
             {
               "type": {
-                "text": "DrawerSchema['props']['side'] | undefined"
+                "text": "DrawerSchema['props']['placement'] | undefined"
               },
               "description": "滑出的边，默认 right",
-              "name": "side",
-              "fieldName": "side"
+              "name": "placement",
+              "fieldName": "placement"
             },
             {
               "type": {

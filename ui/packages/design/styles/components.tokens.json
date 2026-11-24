@@ -31212,10 +31212,10 @@
         "border-start-start-radius"
       ],
       "state": [
-        "side=bottom",
-        "side=left",
-        "side=right",
-        "side=top"
+        "placement=bottom",
+        "placement=left",
+        "placement=right",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-shape-sheet"
@@ -31234,12 +31234,12 @@
         "inline-size"
       ],
       "state": [
-        "is([data-side='left'], [data-side='right'])",
-        "is([data-side='top'], [data-side='bottom'])",
-        "side=bottom",
-        "side=left",
-        "side=right",
-        "side=top"
+        "is([data-placement='left'], [data-placement='right'])",
+        "is([data-placement='top'], [data-placement='bottom'])",
+        "placement=bottom",
+        "placement=left",
+        "placement=right",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-space-8"
@@ -31258,12 +31258,12 @@
         "inline-size"
       ],
       "state": [
-        "is([data-side='left'], [data-side='right'])",
-        "is([data-side='top'], [data-side='bottom'])",
-        "side=bottom",
-        "side=left",
-        "side=right",
-        "side=top"
+        "is([data-placement='left'], [data-placement='right'])",
+        "is([data-placement='top'], [data-placement='bottom'])",
+        "placement=bottom",
+        "placement=left",
+        "placement=right",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-stroke-strong"
@@ -31354,10 +31354,10 @@
         "inline-size"
       ],
       "state": [
-        "side=bottom",
-        "side=left",
-        "side=right",
-        "side=top"
+        "placement=bottom",
+        "placement=left",
+        "placement=right",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-space-2"
@@ -31415,10 +31415,10 @@
         "inline-size"
       ],
       "state": [
-        "side=bottom",
-        "side=left",
-        "side=right",
-        "side=top"
+        "placement=bottom",
+        "placement=left",
+        "placement=right",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-_drawer-size"

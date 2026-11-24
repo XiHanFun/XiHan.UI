@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
           这块区域就是抽屉的容器：展开时遮罩只盖住它，页面其余部分照常可点。
         </p>
 
-        <XhDrawerRoot container={() => panel} side="right" size="sm">
+        <XhDrawerRoot container={() => panel} placement="right" size="sm">
           <XhDrawerTrigger>在这块区域里展开</XhDrawerTrigger>
           <XhDrawerContent>
             <XhDrawerTitle>局部抽屉</XhDrawerTitle>

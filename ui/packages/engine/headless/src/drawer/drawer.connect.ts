@@ -7,7 +7,7 @@
 
 import type { NormalizeProps, PressHandlers, PropTypes, Service } from '@xihan-ui/core'
 import type { DialogPressedPart } from '../dialog'
-import type { DrawerActionIntents, DrawerApi, DrawerSchema, DrawerSide } from './drawer.types'
+import type { DrawerActionIntents, DrawerApi, DrawerPlacement, DrawerSchema } from './drawer.types'
 import { createPressTracker, dataAttr } from '@xihan-ui/core'
 import { DRAWER_EN_US } from '../locale/en-US'
 import { RESIZABLE_LARGE_STEP, RESIZABLE_STEP } from '../resizable'
@@ -19,8 +19,8 @@ import { DRAWER_MIN_PANEL_SIZE } from './drawer.machine'
 
 const parts = drawerAnatomy.build()
 
-/** side 缺省时的落点。 */
-export const DRAWER_DEFAULT_SIDE: DrawerSide = 'right'
+/** placement 缺省时的落点。 */
+export const DRAWER_DEFAULT_PLACEMENT: DrawerPlacement = 'right'
 
 /** 方向键对应的屏幕方向：物理键位，RTL 下不翻；推向哪条边变厚由机器按贴边的一侧与书写方向定。 */
 const ARROW_DELTA: Readonly<Record<string, { dx: number, dy: number } | undefined>> = {
@@ -43,7 +43,7 @@ export function connectDrawer<T extends PropTypes>(
   const open = state.get() === 'open'
   const modal = prop('modal') ?? true
   const role = prop('role') ?? 'dialog'
-  const side = prop('side') ?? DRAWER_DEFAULT_SIDE
+  const placement = prop('placement') ?? DRAWER_DEFAULT_PLACEMENT
   const contained = !!prop('contained')
   const resizable = !!prop('resizable')
   const panelSize = context.get('panelSize') ?? null
@@ -87,7 +87,7 @@ export function connectDrawer<T extends PropTypes>(
 
   return {
     open,
-    side,
+    placement,
     panelSize,
     resizing,
     pending,
@@ -102,11 +102,11 @@ export function connectDrawer<T extends PropTypes>(
       opened: context.get('opened'),
       present,
     }),
-    // root 留在页面原地（content 会被 portal 走），收起态也带 data-state / data-side
+    // root 留在页面原地（content 会被 portal 走），收起态也带 data-state / data-placement
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-side': side,
+      'data-placement': placement,
       'data-size': prop('size'),
       'data-contained': dataAttr(contained),
     }),
@@ -166,8 +166,8 @@ export function connectDrawer<T extends PropTypes>(
       'aria-describedby': rendered?.description !== false ? ids.description : undefined,
       'data-state': stateAttr,
       'data-instant': instant,
-      // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-side / data-size
-      'data-side': side,
+      // content 被 portal 到 body 后 root 上的选择器够不着它，故自身也带 data-placement / data-size
+      'data-placement': placement,
       'data-size': prop('size'),
       'data-contained': dataAttr(contained),
       // 调过厚度就写进私有槽，压过 size 档；没调过写空串，撤掉上一轮留在节点上的值
@@ -233,7 +233,7 @@ export function connectDrawer<T extends PropTypes>(
     }),
     // 把手是一条能被方向键推来推去的分隔条，不是按钮：激活键在这里没有语义
     getResizeTriggerProps: () => {
-      const horizontal = side === 'left' || side === 'right'
+      const horizontal = placement === 'left' || placement === 'right'
       const min = prop('minPanelSize') ?? DRAWER_MIN_PANEL_SIZE
       const max = prop('maxPanelSize')
       const now = panelSize ?? context.get('measuredPanelSize')
@@ -250,7 +250,7 @@ export function connectDrawer<T extends PropTypes>(
         // 不给上限即只受视口限制，这一条随之缺席
         'aria-valuemax': max != null && Number.isFinite(max) ? String(max) : undefined,
         'tabindex': resizable ? 0 : undefined,
-        'data-side': side,
+        'data-placement': placement,
         'data-resizing': dataAttr(resizing),
         // 没开改尺时整条收起：留一个推不动的把手只会误导
         'hidden': !resizable || undefined,

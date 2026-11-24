@@ -2,7 +2,7 @@
 import type { RuntimeConfig, Service } from '@xihan-ui/core'
 // 直接指到组件目录：drawer 尚未接进 src/index.ts（统一接线由别处做），
 // 从子路径进也保证这份用例接的是本组件自己的实现。
-import type { DrawerOpenChangeDetails, DrawerSchema, DrawerSide } from '../src/drawer'
+import type { DrawerOpenChangeDetails, DrawerPlacement, DrawerSchema } from '../src/drawer'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -38,10 +38,10 @@ describe('drawerMachine 状态转移', () => {
     expect(s.state.get()).toBe('closed')
   })
 
-  it('side 只是展示 prop：改它不引起任何状态转移', () => {
-    const s = makeService({ defaultOpen: true, side: 'left' })
+  it('placement 只是展示 prop：改它不引起任何状态转移', () => {
+    const s = makeService({ defaultOpen: true, placement: 'left' })
     expect(s.state.get()).toBe('open')
-    expect(connectDrawer(s, normalizeProps).side).toBe('left')
+    expect(connectDrawer(s, normalizeProps).placement).toBe('left')
   })
 
   it('受控 open：用户事件只发意图不自改状态，宿主写回后才跟随', () => {
@@ -91,18 +91,18 @@ describe('connectDrawer 内容挂卸', () => {
 })
 
 describe('connectDrawer 属性输出', () => {
-  it('side 缺省为 right，root 与 content 都带 data-side', () => {
+  it('placement 缺省为 right，root 与 content 都带 data-placement', () => {
     const api = connectDrawer(makeService(), normalizeProps)
-    expect(api.side).toBe('right')
-    expect(attrs(api, 'root')['data-side']).toBe('right')
-    expect(attrs(api, 'content')['data-side']).toBe('right')
+    expect(api.placement).toBe('right')
+    expect(attrs(api, 'root')['data-placement']).toBe('right')
+    expect(attrs(api, 'content')['data-placement']).toBe('right')
   })
 
-  it.each<DrawerSide>(['top', 'right', 'bottom', 'left'])('side=%s 同步落到 root 与 content', (side) => {
-    const api = connectDrawer(makeService({ side }), normalizeProps)
-    expect(api.side).toBe(side)
-    expect(attrs(api, 'root')['data-side']).toBe(side)
-    expect(attrs(api, 'content')['data-side']).toBe(side)
+  it.each<DrawerPlacement>(['top', 'right', 'bottom', 'left'])('placement=%s 同步落到 root 与 content', (placement) => {
+    const api = connectDrawer(makeService({ placement }), normalizeProps)
+    expect(api.placement).toBe(placement)
+    expect(attrs(api, 'root')['data-placement']).toBe(placement)
+    expect(attrs(api, 'content')['data-placement']).toBe(placement)
   })
 
   it('root 带 anatomy 标记与 data-state，开合都跟着走', () => {

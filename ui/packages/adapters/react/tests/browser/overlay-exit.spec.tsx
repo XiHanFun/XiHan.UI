@@ -360,7 +360,7 @@ describe('drawer 退场', () => {
     const closing = query('drawer', 'content')
     expect(closing, '退场动画播完之前 content 不能被卸载').not.toBeNull()
     expect(getComputedStyle(closing!).display, 'content 收起态不能是 display:none').not.toBe('none')
-    // side 缺省是 right，滑出按边配对
+    // placement 缺省是 right，滑出按边配对
     expectPlaying(closing!, 'xh-slide-out')
   })
 

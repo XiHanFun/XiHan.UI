@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
     <>
       <XhDrawerRoot
         open={open}
-        side="left"
+        placement="left"
         translations={{ close: "关闭" }}
         onOpenChange={details => setOpen(details.open)}
       >
