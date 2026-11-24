@@ -9819,6 +9819,15 @@
     z-index: 2;
   }
 
+  /* 实心的动作段静息时也压在外轮廓之上，面铺到组的外沿，与悬停时一致。
+     它的面是有颜色的：半透明的中性描边压上去，上、下与外侧就多出一圈发暗的边，看上去比旁边的输入区高出一个像素。
+     禁用的退成中性面，不抬——组壳的外轮廓在它那一段照旧画着。
+     第二支是 Web Components：组的直接子节点是 <xh-button> 宿主，实心的那颗按钮在它里面一层 */
+  .xh-scope-input-group[data-part='root'] > [data-xh-action-variant='solid']:not([data-disabled]),
+  .xh-scope-input-group[data-part='root'] > :has(> [data-xh-action-variant='solid']:not([data-disabled])) {
+    z-index: 2;
+  }
+
   /* —— 两端圆角 —— */
   /* 画着描边的那个盒子有三种落点：段本身、段就是控件盒、控件盒在段里一层。
      :is() 取其中最特指的一支算特指度，三种落点因此都压得住控件自己那条圆角规则。
