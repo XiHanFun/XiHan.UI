@@ -48,7 +48,7 @@ const NUMBER_CONVERTER = {
  * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 150
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 100
- * @attr {number} skip-delay-duration - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
+ * @attr {number} skip-delay - 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与
  * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
  * @attr {boolean} follow-cursor - 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger
  * @attr {string} delegate - 委托模式：CSS 选择器。trigger 是容器，命中它的元素悬停或键盘聚焦时打开提示并作锚点，文字取锚点的 data-xh-tooltip 或可及名，快捷键取 aria-keyshortcuts
@@ -83,7 +83,7 @@ export class XhTooltipElement extends XhPortalHostElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
-    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
+    skipDelay: { converter: NUMBER_CONVERTER, attribute: 'skip-delay' },
     disabled: { converter: BOOLEAN_CONVERTER },
     followCursor: { converter: BOOLEAN_CONVERTER, attribute: 'follow-cursor' },
     delegate: { converter: STRING_CONVERTER },
@@ -100,7 +100,7 @@ export class XhTooltipElement extends XhPortalHostElement {
   declare direction?: Direction
   declare openDelay?: number
   declare closeDelay?: number
-  declare skipDelayDuration?: number
+  declare skipDelay?: number
   declare disabled?: boolean
   declare followCursor?: boolean
   declare delegate?: string
@@ -145,7 +145,7 @@ export class XhTooltipElement extends XhPortalHostElement {
       dir: this.direction,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
-      skipDelayDuration: this.skipDelayDuration,
+      skipDelay: this.skipDelay,
       disabled: this.disabled ?? false,
       followCursor: this.followCursor ?? false,
       delegate: this.delegate,
@@ -312,25 +312,25 @@ export function findTooltipGroup(from: Element): TooltipGroup | null {
  * @customElement xh-tooltip-provider
  * @attr {number} open-delay - 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准
  * @attr {number} close-delay - 组内提示悬停移出到收起的缺省等待毫秒
- * @attr {number} skip-delay-duration - 组内提示的缺省接替窗口毫秒；0 表示组内不接替
+ * @attr {number} skip-delay - 组内提示的缺省接替窗口毫秒；0 表示组内不接替
  */
 export class XhTooltipProviderElement extends XhReactiveElement implements TooltipGroupScope {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
   static override properties = {
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
-    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
+    skipDelay: { converter: NUMBER_CONVERTER, attribute: 'skip-delay' },
   }
 
   declare openDelay?: number
   declare closeDelay?: number
-  declare skipDelayDuration?: number
+  declare skipDelay?: number
 
   /** 这一组：元素的一生里只建一次；缺省值每次现读，改属性下一次开合即生效。 */
   readonly tooltipGroup: TooltipGroup = createTooltipGroup(() => ({
     openDelay: this.openDelay,
     closeDelay: this.closeDelay,
-    skipDelayDuration: this.skipDelayDuration,
+    skipDelay: this.skipDelay,
   }))
 
   protected override createRenderRoot(): HTMLElement | DocumentFragment {

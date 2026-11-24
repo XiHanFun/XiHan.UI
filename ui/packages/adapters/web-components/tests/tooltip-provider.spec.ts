@@ -50,7 +50,7 @@ describe('xh-tooltip-provider', () => {
   it('组内提示取组的 open-delay；组内另一个开着时下一个直接接替，上一个收起', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(Date.now() + 60_000)
-    document.body.innerHTML = `<xh-tooltip-provider open-delay="150" skip-delay-duration="300">${tooltipHtml('保存')}${tooltipHtml('撤销')}</xh-tooltip-provider>`
+    document.body.innerHTML = `<xh-tooltip-provider open-delay="150" skip-delay="300">${tooltipHtml('保存')}${tooltipHtml('撤销')}</xh-tooltip-provider>`
     await settle()
     trigger('保存').dispatchEvent(new Event('pointerenter'))
     vi.advanceTimersByTime(149)
@@ -70,7 +70,7 @@ describe('xh-tooltip-provider', () => {
   it('挪出 Provider 的提示回到页面级那一组：不再取组的缺省', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(Date.now() + 120_000)
-    document.body.innerHTML = `<xh-tooltip-provider open-delay="50" skip-delay-duration="0">${tooltipHtml('导出', 'skip-delay-duration="0"')}</xh-tooltip-provider>`
+    document.body.innerHTML = `<xh-tooltip-provider open-delay="50" skip-delay="0">${tooltipHtml('导出', 'skip-delay="0"')}</xh-tooltip-provider>`
     await settle()
     const tooltip = document.querySelector('xh-tooltip')!
     document.body.append(tooltip)

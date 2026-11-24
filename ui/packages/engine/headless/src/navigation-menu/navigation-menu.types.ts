@@ -136,9 +136,9 @@ export interface NavigationMenuSchema extends MachineSchema {
     /** 方向键轴向，默认 horizontal。 */
     orientation?: Orientation
     /** 悬停 / 聚焦到 trigger 后等待多久才展开，默认 200ms。 */
-    delayDuration?: number
+    openDelay?: number
     /** 收起之后的静默窗口，默认 300ms；窗口内再次触及任意 trigger 直接展开。 */
-    skipDelayDuration?: number
+    skipDelay?: number
     /** 文字方向，默认 ltr。 */
     dir?: Direction
     /** 方向键到达末尾是否回绕，默认 true。 */
@@ -214,8 +214,8 @@ export interface NavigationMenuSchema extends MachineSchema {
     /** 适配器按面板 value 注册或精确注销其视觉 Presence。 */
     | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
     // 定时器到点，名称与对应的 delay prop 同名
-    | { type: 'after.delayDuration' }
-    | { type: 'after.skipDelayDuration' }
+    | { type: 'after.openDelay' }
+    | { type: 'after.skipDelay' }
     /** 入口、子级开关或面板链接被 Space / Enter 或触屏按住；disabled 是条目自身的禁用事实，由 connect 判定后随事件带入。 */
     | { type: 'PRESS.START', part: NavigationMenuPressedPart, value: string, disabled?: boolean }
     /** 按住的部件抬起、失焦或指针取消；只松开 part + value 对应的那一个。 */

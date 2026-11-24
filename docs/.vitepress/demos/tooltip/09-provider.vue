@@ -16,7 +16,7 @@ const tools = [
 </script>
 
 <template>
-  <XhTooltipProvider :open-delay="400" :skip-delay-duration="500">
+  <XhTooltipProvider :open-delay="400" :skip-delay="500">
     <div style="display: flex; gap: 8px">
       <XhTooltipRoot v-for="tool in tools" :key="tool.label">
         <XhTooltipTrigger>{{ tool.label }}</XhTooltipTrigger>

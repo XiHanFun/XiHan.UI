@@ -264,7 +264,7 @@ describe('wc 提示开在导航面板里', () => {
     // 收起等待拉长：指针移到空白处之后提示仍然可见
     await mount(
       `<div style="inline-size:320px">
-        <xh-navigation-menu delay-duration="0">
+        <xh-navigation-menu open-delay="0">
           <nav data-xh-part="root"><ul data-xh-part="list">
             <li data-xh-part="item">
               <button data-xh-part="trigger" value="products" data-test="nav-trigger">产品</button>

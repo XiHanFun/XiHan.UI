@@ -161,7 +161,7 @@ export const citationMachine = createMachine({
       isWarm: ({ context, prop }) => {
         if (context.get('open'))
           return true
-        const skip = resolveSkipDelay(prop('skipDelayDuration'))
+        const skip = resolveSkipDelay(prop('skipDelay'))
         return skip > 0 && Date.now() - context.get('closedAt') < skip
       },
       isSameTarget: ({ context, event }) => {

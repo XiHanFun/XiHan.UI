@@ -10306,12 +10306,12 @@
             },
             {
               "kind": "field",
-              "name": "skipDelayDuration",
+              "name": "skipDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "skip-delay-duration"
+              "attribute": "skip-delay"
             },
             {
               "kind": "field",
@@ -10586,8 +10586,8 @@
                 "text": "number | undefined"
               },
               "description": "hover 档：卡片刚收起的这么久里指向另一处引用直接接替，默认 300",
-              "name": "skip-delay-duration",
-              "fieldName": "skipDelayDuration"
+              "name": "skip-delay",
+              "fieldName": "skipDelay"
             },
             {
               "type": {
@@ -45832,21 +45832,21 @@
             },
             {
               "kind": "field",
-              "name": "hoverOpenDelay",
+              "name": "openDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "hover-open-delay"
+              "attribute": "open-delay"
             },
             {
               "kind": "field",
-              "name": "hoverCloseDelay",
+              "name": "closeDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "hover-close-delay"
+              "attribute": "close-delay"
             },
             {
               "kind": "field",
@@ -46367,18 +46367,18 @@
               "fieldName": "openOnHover"
             },
             {
-              "name": "hover-open-delay",
+              "name": "open-delay",
               "type": {
                 "text": "number | undefined"
               },
-              "fieldName": "hoverOpenDelay"
+              "fieldName": "openDelay"
             },
             {
-              "name": "hover-close-delay",
+              "name": "close-delay",
               "type": {
                 "text": "number | undefined"
               },
-              "fieldName": "hoverCloseDelay"
+              "fieldName": "closeDelay"
             },
             {
               "name": "fit-available-height",
@@ -48044,21 +48044,21 @@
             },
             {
               "kind": "field",
-              "name": "delayDuration",
+              "name": "openDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "delay-duration"
+              "attribute": "open-delay"
             },
             {
               "kind": "field",
-              "name": "skipDelayDuration",
+              "name": "skipDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "skip-delay-duration"
+              "attribute": "skip-delay"
             },
             {
               "kind": "field",
@@ -48343,16 +48343,16 @@
                 "text": "number | undefined"
               },
               "description": "悬停 / 聚焦到展开的等待毫秒，默认 200",
-              "name": "delay-duration",
-              "fieldName": "delayDuration"
+              "name": "open-delay",
+              "fieldName": "openDelay"
             },
             {
               "type": {
                 "text": "number | undefined"
               },
               "description": "收起之后的静默毫秒，默认 300；窗口内再次触及 trigger 直接展开",
-              "name": "skip-delay-duration",
-              "fieldName": "skipDelayDuration"
+              "name": "skip-delay",
+              "fieldName": "skipDelay"
             },
             {
               "type": {
@@ -77788,12 +77788,12 @@
             },
             {
               "kind": "field",
-              "name": "skipDelayDuration",
+              "name": "skipDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "skip-delay-duration"
+              "attribute": "skip-delay"
             },
             {
               "kind": "field",
@@ -78093,8 +78093,8 @@
                 "text": "number | undefined"
               },
               "description": "跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与",
-              "name": "skip-delay-duration",
-              "fieldName": "skipDelayDuration"
+              "name": "skip-delay",
+              "fieldName": "skipDelay"
             },
             {
               "type": {
@@ -78239,12 +78239,12 @@
             },
             {
               "kind": "field",
-              "name": "skipDelayDuration",
+              "name": "skipDelay",
               "privacy": "public",
               "type": {
                 "text": "number | undefined"
               },
-              "attribute": "skip-delay-duration"
+              "attribute": "skip-delay"
             },
             {
               "kind": "field",
@@ -78278,8 +78278,8 @@
                 "text": "number | undefined"
               },
               "description": "组内提示的缺省接替窗口毫秒；0 表示组内不接替",
-              "name": "skip-delay-duration",
-              "fieldName": "skipDelayDuration"
+              "name": "skip-delay",
+              "fieldName": "skipDelay"
             }
           ],
           "superclass": {

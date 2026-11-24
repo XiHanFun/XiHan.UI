@@ -16,7 +16,7 @@ const tools = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhTooltipProvider openDelay={400} skipDelayDuration={500}>
+    <XhTooltipProvider openDelay={400} skipDelay={500}>
       <div style={{ display: "flex", gap: "8px" }}>
         {tools.map(tool => (
           <XhTooltipRoot key={tool.label}>

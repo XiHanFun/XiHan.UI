@@ -82,7 +82,7 @@ export interface TooltipSchema extends MachineSchema {
      * 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、
      * 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。
      */
-    skipDelayDuration?: number
+    skipDelay?: number
     /** 只关闭提示本身，不影响被包裹控件的可用性。 */
     disabled?: boolean
     /**

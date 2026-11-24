@@ -57,7 +57,7 @@ async function mount(): Promise<HTMLElement> {
   document.body.append(host)
   root = createRoot(host)
   await inAct(() => root!.render(
-    <XhTooltipRoot delegate="button" platform="other" openDelay={0} closeDelay={0} skipDelayDuration={0}>
+    <XhTooltipRoot delegate="button" platform="other" openDelay={0} closeDelay={0} skipDelay={0}>
       <XhTooltipTrigger>
         <button type="button" aria-label="撤销" aria-keyshortcuts="Control+Z">U</button>
         <button type="button" aria-label="删除" data-xh-tooltip="删除选中的对象" disabled>D</button>

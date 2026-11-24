@@ -65,8 +65,8 @@ function authorDisabled(el: HTMLElement): boolean {
  * @attr {string} value - 受控展开项；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始展开项
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
- * @attr {number} delay-duration - 悬停 / 聚焦到展开的等待毫秒，默认 200
- * @attr {number} skip-delay-duration - 收起之后的静默毫秒，默认 300；窗口内再次触及 trigger 直接展开
+ * @attr {number} open-delay - 悬停 / 聚焦到展开的等待毫秒，默认 200
+ * @attr {number} skip-delay - 收起之后的静默毫秒，默认 300；窗口内再次触及 trigger 直接展开
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义
  * @attr {boolean} loop - 方向键到达末尾回绕，默认开启；写 loop="false" 关闭
  * @attr {boolean} disabled - 整套导航禁用：入口全部为 aria-disabled，面板不再展开
@@ -110,8 +110,8 @@ export class XhNavigationMenuElement extends XhElement {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
     orientation: { converter: STRING_CONVERTER },
-    delayDuration: { converter: NUMBER_CONVERTER, attribute: 'delay-duration' },
-    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
+    openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
+    skipDelay: { converter: NUMBER_CONVERTER, attribute: 'skip-delay' },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     loop: { converter: BOOLEAN_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
@@ -125,8 +125,8 @@ export class XhNavigationMenuElement extends XhElement {
   declare value?: string
   declare defaultValue?: string
   declare orientation?: Orientation
-  declare delayDuration?: number
-  declare skipDelayDuration?: number
+  declare openDelay?: number
+  declare skipDelay?: number
   declare direction?: Direction
   declare loop?: boolean
   declare disabled?: boolean
@@ -170,8 +170,8 @@ export class XhNavigationMenuElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       orientation: this.orientation,
-      delayDuration: this.delayDuration,
-      skipDelayDuration: this.skipDelayDuration,
+      openDelay: this.openDelay,
+      skipDelay: this.skipDelay,
       dir: this.direction,
       // 布尔属性缺席即 undefined，把缺省交回 connect（回绕默认开）
       loop: this.loop,

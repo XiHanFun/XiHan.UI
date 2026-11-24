@@ -36,14 +36,14 @@ export const XhTooltipProvider = defineComponent({
     /** 组内提示悬停移出到收起的缺省等待毫秒。 */
     closeDelay: { type: Number },
     /** 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 */
-    skipDelayDuration: { type: Number },
+    skipDelay: { type: Number },
   },
   setup(props, { slots }) {
     // 组在 Provider 的一生里只建一次；缺省值每次现读，改 props 下一次开合即生效
     provideTooltipGroup(createTooltipGroup(() => ({
       openDelay: props.openDelay,
       closeDelay: props.closeDelay,
-      skipDelayDuration: props.skipDelayDuration,
+      skipDelay: props.skipDelay,
     })))
     return () => slots.default?.()
   },
@@ -61,7 +61,7 @@ export const XhTooltipRoot = defineComponent({
     openDelay: { type: Number },
     closeDelay: { type: Number },
     /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
-    skipDelayDuration: { type: Number },
+    skipDelay: { type: Number },
     disabled: Boolean,
     /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
     followCursor: { type: Boolean, default: undefined },

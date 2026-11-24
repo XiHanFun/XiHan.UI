@@ -124,8 +124,8 @@ export class XhMenuElement extends XhPortalHostElement {
     icon: { attribute: false },
     value: { converter: STRING_CONVERTER },
     openOnHover: { converter: BOOLEAN_CONVERTER, attribute: 'open-on-hover' },
-    hoverOpenDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-open-delay' },
-    hoverCloseDelay: { converter: NUMBER_CONVERTER, attribute: 'hover-close-delay' },
+    openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
+    closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
     fitAvailableHeight: { converter: BOOLEAN_CONVERTER, attribute: 'fit-available-height' },
   }
 
@@ -157,8 +157,8 @@ export class XhMenuElement extends XhPortalHostElement {
   declare icon?: IconRecord | null
   declare value?: string
   declare openOnHover?: boolean
-  declare hoverOpenDelay?: number
-  declare hoverCloseDelay?: number
+  declare openDelay?: number
+  declare closeDelay?: number
   /** 内容只按可用高度封顶，不叠 20rem 的固定上限；子菜单没写时跟着所属的菜单或菜单栏（菜单栏的子菜单为真）。 */
   declare fitAvailableHeight?: boolean
 
@@ -282,8 +282,8 @@ export class XhMenuElement extends XhPortalHostElement {
       translations: this.translations,
       submenu: this.submenu,
       openOnHover: this.openOnHover,
-      hoverOpenDelay: this.hoverOpenDelay,
-      hoverCloseDelay: this.hoverCloseDelay,
+      openDelay: this.openDelay,
+      closeDelay: this.closeDelay,
       fitAvailableHeight: this.fitAvailableHeight ?? this.parentTriggerOwner?.fitAvailableHeight?.(),
       onOpenChange: this.notifyOpen,
       onItemSelect: this.notifyItemSelect,

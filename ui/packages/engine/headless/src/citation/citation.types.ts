@@ -112,7 +112,7 @@ export interface CitationSchema extends MachineSchema {
      * hover 档：卡片刚收起不到这么久，指向另一处引用即直接出现、不再等 openDelay，缺省 300；
      * 卡片开着时指向另一处引用始终直接切过去。0 表示不接替。
      */
-    skipDelayDuration?: number
+    skipDelay?: number
     /** hover 档：卡片相对引用编号的朝向，缺省 bottom，空间不足时由定位引擎避让。 */
     placement?: Placement
     /** hover 档：卡片与引用编号的间距（px）。 */

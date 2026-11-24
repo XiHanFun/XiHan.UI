@@ -56,7 +56,7 @@ describe('xhTooltipProvider', () => {
     vi.useFakeTimers()
     vi.setSystemTime(Date.now() + 60_000)
     mount(
-      <XhTooltipProvider openDelay={150} skipDelayDuration={300}>
+      <XhTooltipProvider openDelay={150} skipDelay={300}>
         {tip('保存')}
         {tip('撤销')}
       </XhTooltipProvider>,
@@ -76,7 +76,7 @@ describe('xhTooltipProvider', () => {
   it('提示自己写的 openDelay 压过组的缺省', () => {
     vi.useFakeTimers()
     vi.setSystemTime(Date.now() + 120_000)
-    mount(<XhTooltipProvider openDelay={150} skipDelayDuration={0}>{tip('导出', { openDelay: 400 })}</XhTooltipProvider>)
+    mount(<XhTooltipProvider openDelay={150} skipDelay={0}>{tip('导出', { openDelay: 400 })}</XhTooltipProvider>)
     enter(part('导出', 'trigger'))
     act(() => vi.advanceTimersByTime(150))
     expect(part('导出', 'content').dataset.state).toBe('closed')

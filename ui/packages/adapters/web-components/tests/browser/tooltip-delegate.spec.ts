@@ -38,7 +38,7 @@ async function mount(): Promise<HTMLElement> {
   // 离开视口边缘：提示居中对齐锚点时不会被避让挤偏
   box.style.padding = '96px 160px'
   box.innerHTML = `
-    <xh-tooltip delegate="button" platform="other" open-delay="0" close-delay="0" skip-delay-duration="0">
+    <xh-tooltip delegate="button" platform="other" open-delay="0" close-delay="0" skip-delay="0">
       <div data-xh-part="trigger">
         <button type="button" aria-label="撤销" aria-keyshortcuts="Control+Z">U</button>
         <button type="button" aria-label="删除" data-xh-tooltip="删除选中的对象" disabled>D</button>

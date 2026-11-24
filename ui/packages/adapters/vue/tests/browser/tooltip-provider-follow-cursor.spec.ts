@@ -51,7 +51,7 @@ async function mount(render: () => unknown): Promise<void> {
 
 describe('tooltip 提示组', () => {
   it('组内提示没写 openDelay 时按组给的缺省等待；组内另一个开着时下一个直接接替', async () => {
-    await mount(() => h(XhTooltipProvider, { openDelay: 150, skipDelayDuration: 300 }, () => [tooltip('保存'), tooltip('撤销')]))
+    await mount(() => h(XhTooltipProvider, { openDelay: 150, skipDelay: 300 }, () => [tooltip('保存'), tooltip('撤销')]))
     // 从指针到达那一刻量起，等满组给的 150ms 才开
     const waited = watchHoverOpen(trigger('保存'), () => content('保存').dataset.state === 'open')
     await userEvent.hover(trigger('保存'))
@@ -66,7 +66,7 @@ describe('tooltip 提示组', () => {
 
   it('不同组互不收走：组外聚焦打开的提示，在组内提示打开后仍然开着', async () => {
     await mount(() => [
-      tooltip('组外', { skipDelayDuration: 0 }),
+      tooltip('组外', { skipDelay: 0 }),
       h(XhTooltipProvider, { openDelay: 0 }, () => [tooltip('组内')]),
     ])
     trigger('组外').focus()

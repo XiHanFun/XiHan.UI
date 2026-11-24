@@ -68,16 +68,16 @@ function mountThreeLevels(): { select: ReturnType<typeof vi.fn> } {
         h(XhMenuItem, { value: 'open' }, () => '打开'),
         h(XhMenuSub, {
           value: 'share',
-          hoverOpenDelay: OPEN_DELAY,
-          hoverCloseDelay: CLOSE_DELAY,
+          openDelay: OPEN_DELAY,
+          closeDelay: CLOSE_DELAY,
         }, () => [
           h(XhMenuSubTrigger, () => '发送到…'),
           h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => [
             h(XhMenuItem, { value: 'share-email' }, () => '邮件'),
             h(XhMenuSub, {
               value: 'share-im',
-              hoverOpenDelay: OPEN_DELAY,
-              hoverCloseDelay: CLOSE_DELAY,
+              openDelay: OPEN_DELAY,
+              closeDelay: CLOSE_DELAY,
             }, () => [
               h(XhMenuSubTrigger, () => '即时通讯…'),
               h(XhMenuPositioner, null, () => h(XhMenuContent, null, () => [

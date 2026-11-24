@@ -279,9 +279,9 @@ export const navigationMenuSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '悬停 trigger：等满 delayDuration 才展开',
+      name: '悬停 trigger：等满 openDelay 才展开',
       spec: { apg: APG },
-      props: { delayDuration: 20 },
+      props: { openDelay: 20 },
       steps: [
         hover(1),
         {
@@ -302,7 +302,7 @@ export const navigationMenuSuite: ConformanceSuite = {
       name: '已经展开着再悬停别处：当场换一项，不再等一遍延时',
       spec: { apg: APG },
       // 延时故意设得很长：真要重新计时的话，这一步之后面板绝不会已经换过去
-      props: { defaultValue: 'products', delayDuration: 5000 },
+      props: { defaultValue: 'products', openDelay: 5000 },
       steps: [
         {
           ...hover(2),

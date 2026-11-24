@@ -217,9 +217,9 @@ export interface MenuSchema extends MachineSchema {
     /** 悬停触发：进入触发器延时展开、经安全三角离开才收起。子菜单默认开启，普通菜单默认关闭。 */
     openOnHover?: boolean
     /** 悬停到展开的延时（ms），默认 100。 */
-    hoverOpenDelay?: number
+    openDelay?: number
     /** 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 */
-    hoverCloseDelay?: number
+    closeDelay?: number
     /** open 变化回调。 */
     onOpenChange?: (details: MenuOpenChangeDetails) => void
     /** 条目被选中；菜单随之关闭。 */

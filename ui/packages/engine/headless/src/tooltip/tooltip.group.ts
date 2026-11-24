@@ -16,7 +16,7 @@ export interface TooltipGroupOptions {
   /** 悬停移出到收起的等待毫秒。 */
   closeDelay?: number
   /** 跳过等待的窗口毫秒；0 或负数表示组内的提示不接替。 */
-  skipDelayDuration?: number
+  skipDelay?: number
 }
 
 /** 一组提示：共用接替窗口、同一时刻只开一个，并给组内提示下发延时的缺省值。 */

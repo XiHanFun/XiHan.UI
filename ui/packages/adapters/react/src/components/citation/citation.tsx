@@ -38,7 +38,7 @@ export interface XhCitationRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   /** hover 档：指针离开到收起的等待毫秒，缺省 300。 */
   closeDelay?: number
   /** hover 档：卡片刚收起的这么久里指向另一处引用直接接替，缺省 300。 */
-  skipDelayDuration?: number
+  skipDelay?: number
   /** hover 档：卡片相对引用编号的朝向，缺省 bottom。 */
   placement?: Placement
   /** hover 档：卡片与引用编号的间距（px）。 */
@@ -63,7 +63,7 @@ export function XhCitationRoot({
   previewMode,
   openDelay,
   closeDelay,
-  skipDelayDuration,
+  skipDelay,
   placement,
   offset,
   translations,
@@ -86,7 +86,7 @@ export function XhCitationRoot({
     previewMode,
     openDelay,
     closeDelay,
-    skipDelayDuration,
+    skipDelay,
     placement,
     offset,
     translations,

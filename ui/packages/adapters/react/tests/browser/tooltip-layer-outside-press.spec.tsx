@@ -296,7 +296,7 @@ describe('react 提示开在导航面板里', () => {
     flushSync(() => root!.render(
       <>
         <div style={{ inlineSize: 320 }}>
-          <XhNavigationMenuRoot delayDuration={0}>
+          <XhNavigationMenuRoot openDelay={0}>
             <XhNavigationMenuList>
               <XhNavigationMenuItem>
                 <XhNavigationMenuTrigger value="products" data-test="nav-trigger">产品</XhNavigationMenuTrigger>

@@ -16,8 +16,8 @@
 ## 特性
 
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
-- 同页的提示共用一个接替窗口（`skipDelayDuration`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
-- `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelayDuration` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
+- 同页的提示共用一个接替窗口（`skipDelay`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
+- `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelay` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
 - `followCursor` 让由指针打开的提示锚在指针落点上，指针在触发器上挪动时跟过去；触屏没有悬停落点、键盘聚焦没有指针，这两种情形仍锚在触发器上。跟随中的浮层不接指针，免得挡住触发器上的移动；位置跟手，不做过渡。
 - `delegate` 让一个提示管一整个容器，一条工具栏不必每个按钮各包一个提示：
   - 值是 CSS 选择器。trigger 此时是容器，皮肤让它不占盒子；容器里命中选择器的元素就是一个个锚点。

@@ -46,7 +46,7 @@ function delayOf(own: number | undefined, group: TooltipGroup, key: 'openDelay' 
 
 /** 接替窗口同样先看提示自己，再看所在组，最后取内建缺省。 */
 function skipDelayOf(own: number | undefined, group: TooltipGroup): number {
-  return resolveSkipDelay(own ?? group.defaults().skipDelayDuration)
+  return resolveSkipDelay(own ?? group.defaults().skipDelay)
 }
 
 // 展开态收起：受控只发意图、停在原地等宿主写回；非受控直接落到 closed 并一并通知。
@@ -204,7 +204,7 @@ export const tooltipMachine = createMachine({
       // 热窗口内打开即接替：不播进场。打开那一刻判，收起即清
       syncInstant: ({ context, prop, scope, refs }) => {
         const group = groupOf(refs)
-        context.set('instant', group.isWarm(scope.id, skipDelayOf(prop('skipDelayDuration'), group)))
+        context.set('instant', group.isWarm(scope.id, skipDelayOf(prop('skipDelay'), group)))
       },
       clearInstant: ({ context }) => context.set('instant', false),
       // 委托模式：事件带着锚点来时记下它，换了元素就按新锚点重挂一轮定位
@@ -237,7 +237,7 @@ export const tooltipMachine = createMachine({
         const group = groupOf(refs)
         return setTimeoutEffect(
           () => send({ type: 'after.openDelay' }),
-          group.isWarm(scope.id, skipDelayOf(prop('skipDelayDuration'), group)) ? 0 : delayOf(prop('openDelay'), group, 'openDelay'),
+          group.isWarm(scope.id, skipDelayOf(prop('skipDelay'), group)) ? 0 : delayOf(prop('openDelay'), group, 'openDelay'),
         )
       },
       waitForCloseDelay: ({ prop, send, refs }) =>

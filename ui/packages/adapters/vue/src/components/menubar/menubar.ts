@@ -492,8 +492,8 @@ export const XhMenubarSub = defineComponent({
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number },
-    hoverCloseDelay: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
     /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
     /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */

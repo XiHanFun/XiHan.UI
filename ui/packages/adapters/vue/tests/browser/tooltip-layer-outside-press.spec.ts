@@ -218,7 +218,7 @@ describe('vue 下拉开着时悬停展开导航面板', () => {
     app = createApp({
       render: () => [
         // 导航在上、自己占一块定宽的盒子，面板朝下展开；下拉在它下面，隔开够远
-        h('div', { style: 'inline-size:320px' }, h(XhNavigationMenuRoot, { delayDuration: 0 }, () => h(XhNavigationMenuList, null, () => h(XhNavigationMenuItem, null, () => [
+        h('div', { style: 'inline-size:320px' }, h(XhNavigationMenuRoot, { openDelay: 0 }, () => h(XhNavigationMenuList, null, () => h(XhNavigationMenuItem, null, () => [
           h(XhNavigationMenuTrigger, { 'value': 'products', 'data-test': 'nav-trigger' }, () => '产品'),
           h(XhNavigationMenuContent, { value: 'products' }, () => h('p', { 'data-test': 'nav-panel' }, '产品概览')),
         ])))),
@@ -248,7 +248,7 @@ describe('vue 下拉开着时悬停展开导航面板', () => {
     document.body.append(host)
     app = createApp({
       render: () => [
-        h('div', { style: 'inline-size:320px' }, h(XhNavigationMenuRoot, { delayDuration: 0 }, () => h(XhNavigationMenuList, null, () => h(XhNavigationMenuItem, null, () => [
+        h('div', { style: 'inline-size:320px' }, h(XhNavigationMenuRoot, { openDelay: 0 }, () => h(XhNavigationMenuList, null, () => h(XhNavigationMenuItem, null, () => [
           h(XhNavigationMenuTrigger, { 'value': 'products', 'data-test': 'nav-trigger' }, () => '产品'),
           // 收起等待拉长：指针移到空白处之后提示仍然可见
           h(XhNavigationMenuContent, { value: 'products' }, () => tooltip({ closeDelay: 60_000 })),

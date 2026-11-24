@@ -50,7 +50,7 @@ const NUMBER_CONVERTER = {
  * @attr {'inline'|'hover'} preview-mode - 预览怎样出现：inline（缺省）正文流里的一块面；hover 锚定在引用编号上的悬停卡片，预览写在 positioner 里
  * @attr {number} open-delay - hover 档：指针停在引用上到卡片出现的等待毫秒，默认 700
  * @attr {number} close-delay - hover 档：指针离开到收起的等待毫秒，默认 300
- * @attr {number} skip-delay-duration - hover 档：卡片刚收起的这么久里指向另一处引用直接接替，默认 300
+ * @attr {number} skip-delay - hover 档：卡片刚收起的这么久里指向另一处引用直接接替，默认 300
  * @attr {string} placement - hover 档：卡片相对引用编号的朝向，默认 bottom
  * @attr {number} offset - hover 档：卡片与引用编号的间距（px）
  * @fires active-source-change - 当前来源变化
@@ -79,7 +79,7 @@ export class XhCitationElement extends XhPortalHostElement {
     previewMode: { attribute: 'preview-mode' },
     openDelay: { converter: NUMBER_CONVERTER, attribute: 'open-delay' },
     closeDelay: { converter: NUMBER_CONVERTER, attribute: 'close-delay' },
-    skipDelayDuration: { converter: NUMBER_CONVERTER, attribute: 'skip-delay-duration' },
+    skipDelay: { converter: NUMBER_CONVERTER, attribute: 'skip-delay' },
     placement: {},
     offset: { converter: NUMBER_CONVERTER },
     sources: { attribute: false },
@@ -106,7 +106,7 @@ export class XhCitationElement extends XhPortalHostElement {
   declare previewMode?: CitationPreviewMode
   declare openDelay?: number
   declare closeDelay?: number
-  declare skipDelayDuration?: number
+  declare skipDelay?: number
   declare placement?: Placement
   declare offset?: number
   declare translations?: CitationSchema['props']['translations']
@@ -189,7 +189,7 @@ export class XhCitationElement extends XhPortalHostElement {
       previewMode: this.previewMode,
       openDelay: this.openDelay,
       closeDelay: this.closeDelay,
-      skipDelayDuration: this.skipDelayDuration,
+      skipDelay: this.skipDelay,
       placement: this.placement,
       offset: this.offset,
       translations: this.translations,

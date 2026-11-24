@@ -123,8 +123,8 @@
 | `value` | `string \| null` |  | 当前展开项，提供即受控；null 表示全部收起。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal。 |
-| `delayDuration` | `number` |  | 悬停 / 聚焦到 trigger 后等待多久才展开，默认 200ms。 |
-| `skipDelayDuration` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再次触及任意 trigger 直接展开。 |
+| `openDelay` | `number` |  | 悬停 / 聚焦到 trigger 后等待多久才展开，默认 200ms。 |
+| `skipDelay` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再次触及任意 trigger 直接展开。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `disabled` | `boolean` |  | 整套导航禁用：所有入口都为 aria-disabled，面板不再展开。 |
@@ -193,7 +193,7 @@
 
 **状态**：`idle` · `opening` · `skipping`
 
-**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `PRESENCE.SET` · `after.delayDuration` · `after.skipDelayDuration` · `PRESS.START` · `PRESS.END` · `BRANCH.TOGGLE` · `BRANCH.DISMISS`
+**事件**：`TRIGGER.POINTER` · `TRIGGER.FOCUS` · `TRIGGER.TOGGLE` · `DISMISS` · `VALUE.SET` · `PRESENCE.SET` · `after.openDelay` · `after.skipDelay` · `PRESS.START` · `PRESS.END` · `BRANCH.TOGGLE` · `BRANCH.DISMISS`
 
 **判据**：`hasValue` · `isCurrent` · `shouldKeepOpen` · `canPress`
 
@@ -232,11 +232,11 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | held on trigger / branch-trigger / link, 导航未禁用且条目未禁用 | 按住期间入口、子级开关或面板链接投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下，子级开关与链接随面板收起一并撤下。开合与激活语义照旧由这一次按键承担 |
-| `ArrowRight` / `ArrowDown` | focus in trigger, 按键与 orientation 同轴 | 焦点移到下一个 trigger（禁用项跳过、尽头按 loop 回绕）；随后的自动展开走 delayDuration |
+| `ArrowRight` / `ArrowDown` | focus in trigger, 按键与 orientation 同轴 | 焦点移到下一个 trigger（禁用项跳过、尽头按 loop 回绕）；随后的自动展开走 openDelay |
 | `ArrowLeft` / `ArrowUp` | focus in trigger, 按键与 orientation 同轴 | 焦点移到上一个 trigger |
 | `Home` | focus in trigger | 焦点移到首个可停留 trigger |
 | `End` | focus in trigger | 焦点移到末个可停留 trigger |
-| `Enter` / `Space` | focus in trigger, not disabled | 立即展开对应面板（不走 delayDuration）；面板是自动弹出来的那一次不收起，再按一次才收起 |
+| `Enter` / `Space` | focus in trigger, not disabled | 立即展开对应面板（不走 openDelay）；面板是自动弹出来的那一次不收起，再按一次才收起 |
 | `Enter` / `Space` | focus in branch-trigger, not disabled | 展开或收起面板里的这一枝子级，焦点留在开关上；同一张面板只展开一枝，展开这一枝时另一枝收起。子级紧跟在开关之后，展开后 Tab 走进去，收着时带 hidden 被整段跳过 |
 | `Escape` | focus in 展开的 branch-content | 只收起这一枝子级并把焦点归还它的 branch-trigger，面板仍开着；再按一次 Escape 才收起面板 |
 | `Escape` | open, 焦点不在展开的 branch-content 里 | 收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来 |

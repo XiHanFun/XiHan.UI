@@ -72,7 +72,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 - 来源列表只占一个 Tab 位，支持 ↑ / ↓、Home、End 与 Enter / Space；`Escape` 收起预览并按需归还焦点。
 - 预览有两种出现方式，由 `previewMode` 决定：
   - `inline`（缺省）：预览是正文流里的一块面，展开时从 0 长到整块、收起时收回 0，后面的段落随之平移；首帧就开着的预览直接呈现。缺省取它：现有结构不用改，也不依赖悬停，触屏与键盘同样顺手。
-  - `hover`：预览放进 `positioner` 部件，锚定在引用编号旁的悬停卡片，搬到 portal 落点、不推动正文。指针停留 `openDelay`（缺省 700ms）出现，离开编号与卡片 `closeDelay`（缺省 300ms）后收起，中途移进卡片即撤销；卡片开着或刚收起不到 `skipDelayDuration`（缺省 300ms）时，指向另一处引用直接接替，与悬停卡片、文字提示同一套节奏。焦点落到引用上当场打开，焦点离开引用与卡片即收起；触屏没有悬停，点按照常开合。Escape 与卡片外的按下都会收起它。
+  - `hover`：预览放进 `positioner` 部件，锚定在引用编号旁的悬停卡片，搬到 portal 落点、不推动正文。指针停留 `openDelay`（缺省 700ms）出现，离开编号与卡片 `closeDelay`（缺省 300ms）后收起，中途移进卡片即撤销；卡片开着或刚收起不到 `skipDelay`（缺省 300ms）时，指向另一处引用直接接替，与悬停卡片、文字提示同一套节奏。焦点落到引用上当场打开，焦点离开引用与卡片即收起；触屏没有悬停，点按照常开合。Escape 与卡片外的按下都会收起它。
 - 一处引用引了几个来源时写 `sourceIds`（Web Components 在 `value` 里写成空白分隔的几个 id），预览里的 `prev-trigger` / `next-trigger` 在这几个来源之间轮换，`preview-index` 显示「2 / 3」；只有一个来源时三者收起。hover 档轮换时卡片就地换内容，不再播一次出现。
 - URL 来源保留原生链接导航；文档来源通过 `source-open` 把 `SourcePart` 与当前 anchor 交回宿主。
 - `activeSourceId` 与 `open` 可分别受控，受控时只有宿主写回才改变可见状态。
@@ -103,7 +103,7 @@ preview-mode="hover" 把预览放进 positioner，锚定在引用编号旁：指
 | `previewMode` | `CitationPreviewMode` |  | 预览怎样出现，缺省 inline。 hover 档要在根里放 positioner 部件，预览放进它里面，定位到当前引用编号旁。 |
 | `openDelay` | `number` |  | hover 档：指针停在引用上到卡片出现的等待毫秒，缺省 700。 |
 | `closeDelay` | `number` |  | hover 档：指针离开引用与卡片到收起的等待毫秒，缺省 300；也是从编号挪进卡片的通行时间。 |
-| `skipDelayDuration` | `number` |  | hover 档：卡片刚收起不到这么久，指向另一处引用即直接出现、不再等 openDelay，缺省 300； 卡片开着时指向另一处引用始终直接切过去。0 表示不接替。 |
+| `skipDelay` | `number` |  | hover 档：卡片刚收起不到这么久，指向另一处引用即直接出现、不再等 openDelay，缺省 300； 卡片开着时指向另一处引用始终直接切过去。0 表示不接替。 |
 | `placement` | `Placement` |  | hover 档：卡片相对引用编号的朝向，缺省 bottom，空间不足时由定位引擎避让。 |
 | `offset` | `number` |  | hover 档：卡片与引用编号的间距（px）。 |
 | `sources` | `readonly CitationSource[]` |  | @xihan-ui/chat-stream 的 SourcePart[] 可直接传入。 |

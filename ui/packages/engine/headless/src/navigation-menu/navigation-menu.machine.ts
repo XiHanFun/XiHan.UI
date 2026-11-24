@@ -149,7 +149,7 @@ export const navigationMenuMachine = createMachine({
         // 内部转移：状态不重入，换项时计时器不重新计时
         'TRIGGER.POINTER': { actions: ['setPendingValue'] },
         'TRIGGER.FOCUS': { actions: ['setPendingValue'] },
-        'after.delayDuration': { target: 'idle', actions: ['commitPendingValue'] },
+        'after.openDelay': { target: 'idle', actions: ['commitPendingValue'] },
         // 等待期内点击立即展开
         'TRIGGER.TOGGLE': { target: 'idle', actions: ['setValue', 'clearPendingValue'] },
         // 等待期内离开：不通知也不进静默窗口
@@ -163,7 +163,7 @@ export const navigationMenuMachine = createMachine({
         'TRIGGER.POINTER': { target: 'idle', actions: ['setValue'] },
         'TRIGGER.TOGGLE': { target: 'idle', actions: ['setValue'] },
         // 静默窗口内不认聚焦，避免 Escape 归还焦点时重新弹出面板
-        'after.skipDelayDuration': { target: 'idle' },
+        'after.skipDelay': { target: 'idle' },
       },
     },
   },
@@ -577,9 +577,9 @@ export const navigationMenuMachine = createMachine({
         }
       },
       waitForOpenDelay: ({ prop, send }) =>
-        setTimeoutEffect(() => send({ type: 'after.delayDuration' }), prop('delayDuration') ?? NAVIGATION_MENU_DELAY),
+        setTimeoutEffect(() => send({ type: 'after.openDelay' }), prop('openDelay') ?? NAVIGATION_MENU_DELAY),
       waitForSkipDelay: ({ prop, send }) =>
-        setTimeoutEffect(() => send({ type: 'after.skipDelayDuration' }), prop('skipDelayDuration') ?? NAVIGATION_MENU_SKIP_DELAY),
+        setTimeoutEffect(() => send({ type: 'after.skipDelay' }), prop('skipDelay') ?? NAVIGATION_MENU_SKIP_DELAY),
     },
   },
 })

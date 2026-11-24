@@ -65,8 +65,8 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<MenuTranslations>> },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number },
-    hoverCloseDelay: { type: Number },
+    openDelay: { type: Number },
+    closeDelay: { type: Number },
     /**
      * 只提供 collection 时，触发器插槽给出的节点直接作为触发器使用，不再外包一个 <button>。
      * 放置部件的写法有 XhMenuTrigger 自己的 asChild，该 prop 是自动铺设路径的同一能力。
@@ -267,7 +267,7 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number },
+    openDelay: { type: Number },
     /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
     /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
@@ -276,7 +276,7 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     size: { type: String as PropType<Size> },
     /** 只按可用高度封顶；默认继承父层，理由同 tone。 */
     fitAvailableHeight: { type: Boolean, default: undefined },
-    hoverCloseDelay: { type: Number },
+    closeDelay: { type: Number },
   },
   emits: {
     'checkbox-value-change': (_details: PayloadOf<MenuProps, 'onCheckboxValueChange'>) => true,

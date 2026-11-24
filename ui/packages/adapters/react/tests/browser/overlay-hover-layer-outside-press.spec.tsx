@@ -147,7 +147,7 @@ const citation: HoverSubject = {
 const hoverMenu: HoverSubject = {
   name: '悬停展开的菜单',
   render: hold => (
-    <XhMenuRoot openOnHover hoverOpenDelay={0} {...(hold ? { hoverCloseDelay: HOLD } : {})}>
+    <XhMenuRoot openOnHover openDelay={0} {...(hold ? { closeDelay: HOLD } : {})}>
       <XhMenuTrigger data-test="hover-trigger">更多</XhMenuTrigger>
       <XhMenuPositioner>
         <XhMenuContent data-test="hover-content">

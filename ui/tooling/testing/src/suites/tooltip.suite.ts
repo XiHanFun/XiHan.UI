@@ -91,7 +91,7 @@ export const tooltipSuite: ConformanceSuite = {
       },
     ],
   },
-  // 同页的提示共用一个接替窗口：会打开提示的用例都把 skipDelayDuration 写成 0，
+  // 同页的提示共用一个接替窗口：会打开提示的用例都把 skipDelay 写成 0，
   // 前一个用例（或对拍里先跑的另一端）刚收起的提示才不会让这一个直接接替、多投影出 data-instant
   cases: [
     {
@@ -121,7 +121,7 @@ export const tooltipSuite: ConformanceSuite = {
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tooltip.kbd.tab'],
       // 延时若被误用在聚焦路径上，本用例会因 content 仍 hidden 而失败
-      props: { openDelay: 5000, skipDelayDuration: 0 },
+      props: { openDelay: 5000, skipDelay: 0 },
       steps: [
         {
           kind: 'focus',
@@ -139,7 +139,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: 'aria-describedby 指向 content：tooltip 是描述不是名字',
       spec: { apg: `${APG}#roles_states_properties` },
-      props: { skipDelayDuration: 0 },
+      props: { skipDelay: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -158,7 +158,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '悬停进入：等到 openDelay 到点才展开',
       spec: { apg: APG, zag: 'tooltip.machine#opening' },
       // 关掉接替：这条守的是等待本身，前一个用例刚收起的提示会让这一个不等就接替
-      props: { openDelay: 50, skipDelayDuration: 0 },
+      props: { openDelay: 50, skipDelay: 0 },
       steps: [
         {
           kind: 'raw',
@@ -182,7 +182,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: 'followCursor：定位层带跟随标记；指针进入照样按 openDelay 展开',
       spec: { apg: APG },
-      props: { followCursor: true, openDelay: 50, skipDelayDuration: 0 },
+      props: { followCursor: true, openDelay: 50, skipDelay: 0 },
       initial: {
         parts: { positioner: { 'data-follow-cursor': '' } },
       },
@@ -210,7 +210,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: 'Escape 立即收起：不等 closeDelay',
       spec: { apg: `${APG}#keyboardinteraction` },
       covers: ['tooltip.kbd.escape'],
-      props: { closeDelay: 5000, skipDelayDuration: 0 },
+      props: { closeDelay: 5000, skipDelay: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -229,7 +229,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '指针按下：立即收起给真正的操作让位',
       spec: { apg: APG },
-      props: { closeDelay: 5000, skipDelayDuration: 0 },
+      props: { closeDelay: 5000, skipDelay: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -246,7 +246,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '随按下而来的聚焦不再打开；指针移出之后的聚焦照常打开',
       spec: { apg: APG },
-      props: { skipDelayDuration: 0 },
+      props: { skipDelay: 0 },
       steps: [
         {
           kind: 'raw',
@@ -281,7 +281,7 @@ export const tooltipSuite: ConformanceSuite = {
       // 焦点停在 trigger 上时，鼠标路过再移开不收走描述，收起由 BLUR 负责
       name: '聚焦打开后，指针移出不收起（收起归 BLUR 管）',
       spec: { apg: APG },
-      props: { closeDelay: 20, skipDelayDuration: 0 },
+      props: { closeDelay: 20, skipDelay: 0 },
       steps: [
         { kind: 'focus', part: 'trigger' },
         {
@@ -306,7 +306,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '悬停等待期内命令式展开：立即展开，不等 openDelay',
       spec: { apg: APG },
       // 关掉接替：先得真的进到等待态，前一个用例刚收起的提示会让悬停不等就接替
-      props: { openDelay: 5000, skipDelayDuration: 0 },
+      props: { openDelay: 5000, skipDelay: 0 },
       steps: [
         {
           kind: 'raw',
@@ -349,7 +349,7 @@ export const tooltipSuite: ConformanceSuite = {
     {
       name: '受控 open：聚焦只发 open-change 不自改 DOM，父写回 open 后才展开',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { open: false, skipDelayDuration: 0 },
+      props: { open: false, skipDelay: 0 },
       steps: [
         {
           kind: 'focus',
@@ -387,7 +387,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '委托：悬停锚点等 openDelay 打开，文字取可及名、快捷键取 aria-keyshortcuts；文字与名字相同不挂 aria-describedby',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: delegateFixture,
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelayDuration: 0 },
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelay: 0 },
       steps: [
         {
           kind: 'raw',
@@ -418,7 +418,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '委托：指针挪到另一个锚点直接换过去、不收起；写了 data-xh-tooltip 的锚点用 aria-describedby 引用 text',
       spec: { apg: `${APG}#roles_states_properties` },
       fixture: delegateFixture,
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelayDuration: 0 },
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelay: 0 },
       steps: [
         { kind: 'raw', why: '先悬停第一个锚点', run: dispatchOnAnchor('undo', 'pointerover') },
         { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },
@@ -445,7 +445,7 @@ export const tooltipSuite: ConformanceSuite = {
       fixture: delegateFixture,
       // 收起延时不写 0：0 毫秒的定时器落在哪一步取决于宿主冲刷时让不让出宏任务，逐帧比对会把同一个行为比成两样；
       // 写一段真实的延时，移出那一步三端都还开着，下一步一起等到收起
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, closeDelay: 50, skipDelayDuration: 0 },
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, closeDelay: 50, skipDelay: 0 },
       steps: [
         { kind: 'raw', why: '悬停写了 data-xh-tooltip 的锚点', run: dispatchOnAnchor('delete', 'pointerover') },
         { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },
@@ -470,7 +470,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '委托：键盘聚焦锚点立即打开、不等 openDelay，焦点离开容器即收起',
       spec: { apg: `${APG}#keyboardinteraction` },
       fixture: delegateFixture,
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 5000, skipDelayDuration: 0 },
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 5000, skipDelay: 0 },
       steps: [
         {
           kind: 'raw',
@@ -496,7 +496,7 @@ export const tooltipSuite: ConformanceSuite = {
       name: '委托：按下锚点收起，随按下而来的聚焦不再打开',
       spec: { apg: APG },
       fixture: delegateFixture,
-      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelayDuration: 0 },
+      props: { delegate: '[data-anchor]', platform: 'other', openDelay: 50, skipDelay: 0 },
       steps: [
         { kind: 'raw', why: '先悬停锚点', run: dispatchOnAnchor('undo', 'pointerover') },
         { kind: 'settle', until: { attr: { part: 'content', name: 'data-state', value: 'open' } } },

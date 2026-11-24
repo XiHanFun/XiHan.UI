@@ -204,8 +204,8 @@
 | `XhContextMenuSub` | `offset` | `number` |  |  |
 | `XhContextMenuSub` | `loop` | `boolean` |  |  |
 | `XhContextMenuSub` | `openOnHover` | `boolean` |  |  |
-| `XhContextMenuSub` | `hoverOpenDelay` | `number` |  |  |
-| `XhContextMenuSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhContextMenuSub` | `openDelay` | `number` |  |  |
+| `XhContextMenuSub` | `closeDelay` | `number` |  |  |
 | `XhContextMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhContextMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhContextMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |

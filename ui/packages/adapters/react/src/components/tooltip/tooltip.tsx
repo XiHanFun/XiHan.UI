@@ -33,7 +33,7 @@ export interface XhTooltipProviderProps {
   /** 组内提示悬停移出到收起的缺省等待毫秒。 */
   closeDelay?: number
   /** 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 */
-  skipDelayDuration?: number
+  skipDelay?: number
   children?: ReactNode
 }
 
@@ -41,10 +41,10 @@ export interface XhTooltipProviderProps {
  * 提示组：子树里的提示归同一组，共用接替窗口、同一时刻只开一个，没写延时的取这里给的缺省。
  * 本身不渲染节点，也不改动子节点的排布。
  */
-export function XhTooltipProvider({ openDelay, closeDelay, skipDelayDuration, children }: XhTooltipProviderProps): ReactNode {
+export function XhTooltipProvider({ openDelay, closeDelay, skipDelay, children }: XhTooltipProviderProps): ReactNode {
   // 组在 Provider 的一生里只建一次；缺省值每次现读，改 props 下一次开合即生效
-  const latest = useRef({ openDelay, closeDelay, skipDelayDuration })
-  latest.current = { openDelay, closeDelay, skipDelayDuration }
+  const latest = useRef({ openDelay, closeDelay, skipDelay })
+  latest.current = { openDelay, closeDelay, skipDelay }
   const [group] = useState(() => createTooltipGroup(() => latest.current))
   return <TooltipGroupContext value={group}>{children}</TooltipGroupContext>
 }
@@ -59,7 +59,7 @@ export interface XhTooltipRootProps {
   openDelay?: number
   closeDelay?: number
   /** 跳过等待的窗口毫秒，默认 300：另一个提示开着或刚收起时，指向这一个直接接替、不播进场；0 不参与。 */
-  skipDelayDuration?: number
+  skipDelay?: number
   disabled?: boolean
   /** 跟随鼠标：由指针打开的提示锚在指针落点上并随移动更新；触屏与聚焦打开时锚回 trigger。 */
   followCursor?: boolean

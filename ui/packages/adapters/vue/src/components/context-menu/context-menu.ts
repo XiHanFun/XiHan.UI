@@ -321,14 +321,14 @@ export const XhContextMenuSub = defineComponent({
     offset: { type: Number },
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
-    hoverOpenDelay: { type: Number },
+    openDelay: { type: Number },
     /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
     /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
     tone: { type: String as PropType<Tone> },
     /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
-    hoverCloseDelay: { type: Number },
+    closeDelay: { type: Number },
   },
   emits: {
     'checkbox-value-change': (_details: PayloadOf<MenuSchema['props'], 'onCheckboxValueChange'>) => true,

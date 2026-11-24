@@ -228,9 +228,9 @@ describe('citation 悬停预览', () => {
     expect(api().activeSourceId).toBe('web')
   })
 
-  it('接替窗口过了就重新等 openDelay；skipDelayDuration 为 0 不接替', () => {
+  it('接替窗口过了就重新等 openDelay；skipDelay 为 0 不接替', () => {
     vi.useFakeTimers()
-    const { api } = setup({ sources, previewMode: 'hover', skipDelayDuration: 0 })
+    const { api } = setup({ sources, previewMode: 'hover', skipDelay: 0 })
     enter(trigger(api, 'web'))
     vi.advanceTimersByTime(700)
     leave(trigger(api, 'web'))

@@ -13636,7 +13636,7 @@
       "placement",
       "previewMode",
       "size",
-      "skipDelayDuration",
+      "skipDelay",
       "sources",
       "translations"
     ],
@@ -14713,6 +14713,7 @@
     "menu": [
       "anchor",
       "checkboxValue",
+      "closeDelay",
       "collection",
       "defaultCheckboxValue",
       "defaultOpen",
@@ -14720,8 +14721,6 @@
       "dir",
       "disabled",
       "fitAvailableHeight",
-      "hoverCloseDelay",
-      "hoverOpenDelay",
       "loop",
       "offset",
       "onCheckboxValueChange",
@@ -14729,6 +14728,7 @@
       "onOpenChange",
       "onRadioValueChange",
       "open",
+      "openDelay",
       "openOnHover",
       "placement",
       "radioValue",
@@ -14774,14 +14774,14 @@
     "navigation-menu": [
       "collection",
       "defaultValue",
-      "delayDuration",
       "dir",
       "disabled",
       "loop",
       "onValueChange",
+      "openDelay",
       "orientation",
       "size",
-      "skipDelayDuration",
+      "skipDelay",
       "tone",
       "translations",
       "value"
@@ -15741,7 +15741,7 @@
       "placement",
       "platform",
       "size",
-      "skipDelayDuration",
+      "skipDelay",
       "tone",
       "translations"
     ],
@@ -22380,7 +22380,7 @@
         "placement",
         "preview-mode",
         "size",
-        "skip-delay-duration"
+        "skip-delay"
       ],
       "events": [
         "active-source-change",
@@ -23561,16 +23561,16 @@
     },
     "xh-menu": {
       "attributes": [
+        "close-delay",
         "default-open",
         "dir",
         "disabled",
         "fit-available-height",
-        "hover-close-delay",
-        "hover-open-delay",
         "label",
         "loop",
         "offset",
         "open",
+        "open-delay",
         "open-on-hover",
         "placement",
         "size",
@@ -23623,13 +23623,13 @@
     "xh-navigation-menu": {
       "attributes": [
         "default-value",
-        "delay-duration",
         "dir",
         "disabled",
         "loop",
+        "open-delay",
         "orientation",
         "size",
-        "skip-delay-duration",
+        "skip-delay",
         "tone",
         "value"
       ],
@@ -24672,7 +24672,7 @@
         "placement",
         "platform",
         "size",
-        "skip-delay-duration",
+        "skip-delay",
         "tone"
       ],
       "events": [
@@ -24683,7 +24683,7 @@
       "attributes": [
         "close-delay",
         "open-delay",
-        "skip-delay-duration"
+        "skip-delay"
       ],
       "events": []
     },

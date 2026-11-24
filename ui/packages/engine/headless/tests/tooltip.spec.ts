@@ -10,13 +10,13 @@ const live: Array<() => void> = []
 
 /**
  * 定位引擎与层栈都缺省（无布局环境）：机器照常转移，只是不产出坐标、不入栈。
- * 同页的提示共用一个接替窗口：没点名 skipDelayDuration 的用例按 0 起（不参与接替），
+ * 同页的提示共用一个接替窗口：没点名 skipDelay 的用例按 0 起（不参与接替），
  * 前后用例开着、刚收起的提示才不会把下一个用例的等待吞掉。
  */
 function makeTooltip(initial: Props = {}) {
   const changes: TooltipOpenChangeDetails[] = []
   const runtime = createVanillaRuntime()
-  const props = runtime.signal<Props>({ skipDelayDuration: 0, ...initial, onOpenChange: d => changes.push(d) })
+  const props = runtime.signal<Props>({ skipDelay: 0, ...initial, onOpenChange: d => changes.push(d) })
   const service = createService(tooltipMachine, { props: () => props.get(), runtime })
   runtime.start()
   let stopped = false
@@ -258,8 +258,8 @@ describe('tooltipMachine 接替：同页提示共用的跳过等待窗口', () =
 
   it('另一个提示开着时，指向这一个不等 openDelay、不播进场直接打开；上一个随之收起', () => {
     farClock()
-    const first = makeTooltip({ openDelay: 500, skipDelayDuration: 300 })
-    const second = makeTooltip({ openDelay: 500, skipDelayDuration: 300 })
+    const first = makeTooltip({ openDelay: 500, skipDelay: 300 })
+    const second = makeTooltip({ openDelay: 500, skipDelay: 300 })
     first.send('POINTER.ENTER')
     vi.advanceTimersByTime(500)
     expect(first.api().open).toBe(true)
@@ -274,8 +274,8 @@ describe('tooltipMachine 接替：同页提示共用的跳过等待窗口', () =
 
   it('刚收起一个的窗口内同样接替；窗口过后恢复等待、照常播进场', () => {
     farClock()
-    const first = makeTooltip({ openDelay: 500, closeDelay: 0, skipDelayDuration: 300 })
-    const second = makeTooltip({ openDelay: 500, skipDelayDuration: 300 })
+    const first = makeTooltip({ openDelay: 500, closeDelay: 0, skipDelay: 300 })
+    const second = makeTooltip({ openDelay: 500, skipDelay: 300 })
     first.send('OPEN')
     first.send('CLOSE')
     expect(first.api().open).toBe(false)
@@ -298,12 +298,12 @@ describe('tooltipMachine 接替：同页提示共用的跳过等待窗口', () =
     expect(second.content()['data-instant']).toBeUndefined()
   })
 
-  it('skipDelayDuration 为 0（或负数、非有限数）的提示不参与接替：别的开着也照样等', () => {
+  it('skipDelay 为 0（或负数、非有限数）的提示不参与接替：别的开着也照样等', () => {
     farClock()
-    const first = makeTooltip({ skipDelayDuration: 300 })
+    const first = makeTooltip({ skipDelay: 300 })
     first.send('OPEN')
-    for (const skipDelayDuration of [0, -1, Number.NaN]) {
-      const other = makeTooltip({ openDelay: 500, skipDelayDuration })
+    for (const skipDelay of [0, -1, Number.NaN]) {
+      const other = makeTooltip({ openDelay: 500, skipDelay })
       other.send('POINTER.ENTER')
       vi.advanceTimersByTime(0)
       expect(other.api().open).toBe(false)
@@ -313,8 +313,8 @@ describe('tooltipMachine 接替：同页提示共用的跳过等待窗口', () =
 
   it('聚焦打开同样接替：热窗口内不播进场', () => {
     farClock()
-    const first = makeTooltip({ skipDelayDuration: 300 })
-    const second = makeTooltip({ skipDelayDuration: 300 })
+    const first = makeTooltip({ skipDelay: 300 })
+    const second = makeTooltip({ skipDelay: 300 })
     first.send('OPEN')
     second.send('FOCUS')
     expect(second.api().open).toBe(true)

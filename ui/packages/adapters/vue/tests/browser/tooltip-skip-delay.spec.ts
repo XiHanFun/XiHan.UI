@@ -49,7 +49,7 @@ function trigger(label: string): HTMLElement {
   return all('trigger').find(el => el.textContent === label)!
 }
 
-/** 指针进到这个提示的 trigger、到它翻开隔了多久（见 hover-open-delay）。 */
+/** 指针进到这个提示的 trigger、到它翻开隔了多久（见 open-delay）。 */
 function watchOpen(label: string): () => number | null {
   return watchHoverOpen(trigger(label), () => content(label).dataset.state === 'open')
 }
@@ -75,7 +75,7 @@ describe('tooltip 跳过延迟', () => {
   it('刚关掉一个的窗口内指向下一个同样立即打开；窗口过后恢复等待', async () => {
     // 窗口从收起那一刻起算，到指向下一个之间隔着「移开—等收起—再悬停」几次真指针往返；
     // 负载重的 CI 上这几步能吃掉三百来毫秒，窗口给宽，量的才是接替本身而不是往返快慢
-    await mount({ closeDelay: 0, skipDelayDuration: 1500 })
+    await mount({ closeDelay: 0, skipDelay: 1500 })
     await userEvent.hover(trigger('保存'))
     await expect.poll(() => content('保存').dataset.state, { timeout: 2000 }).toBe('open')
     await userEvent.hover(document.body)
@@ -95,8 +95,8 @@ describe('tooltip 跳过延迟', () => {
     expect(content('重做').hasAttribute('data-instant')).toBe(false)
   })
 
-  it('skipDelayDuration 为 0 时不跳过：每一个都等待', async () => {
-    await mount({ closeDelay: 0, skipDelayDuration: 0 })
+  it('skipDelay 为 0 时不跳过：每一个都等待', async () => {
+    await mount({ closeDelay: 0, skipDelay: 0 })
     await userEvent.hover(trigger('保存'))
     await expect.poll(() => content('保存').dataset.state, { timeout: 2000 }).toBe('open')
     // 上一个还开着也不接替：从指针到达那一刻量起，等满 openDelay 才开

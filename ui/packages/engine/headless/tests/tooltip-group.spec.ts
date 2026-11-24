@@ -48,7 +48,7 @@ function inGroup(group: TooltipGroup, props: Props = {}): Harness {
 describe('提示组的延时缺省', () => {
   it('组给的 openDelay / closeDelay 作为组内提示的缺省；提示自己写的压过组', () => {
     farClock()
-    const group = createTooltipGroup(() => ({ openDelay: 100, closeDelay: 50, skipDelayDuration: 0 }))
+    const group = createTooltipGroup(() => ({ openDelay: 100, closeDelay: 50, skipDelay: 0 }))
     const plain = inGroup(group)
     plain.send({ type: 'POINTER.ENTER' })
     vi.advanceTimersByTime(99)
@@ -72,7 +72,7 @@ describe('提示组的延时缺省', () => {
   it('组的缺省每次现读：Provider 改了值，下一次开合就按新值等', () => {
     farClock()
     let openDelay = 100
-    const group = createTooltipGroup(() => ({ openDelay, skipDelayDuration: 0 }))
+    const group = createTooltipGroup(() => ({ openDelay, skipDelay: 0 }))
     const t = inGroup(group)
     openDelay = 250
     t.send({ type: 'POINTER.ENTER' })
@@ -86,7 +86,7 @@ describe('提示组的延时缺省', () => {
 describe('同组只开一个', () => {
   it('组里另一个开着时，指向这一个按组的接替窗口直接打开，上一个随之收起', () => {
     farClock()
-    const group = createTooltipGroup(() => ({ openDelay: 500, skipDelayDuration: 300 }))
+    const group = createTooltipGroup(() => ({ openDelay: 500, skipDelay: 300 }))
     const first = inGroup(group)
     const second = inGroup(group)
     first.send({ type: 'OPEN' })
@@ -99,8 +99,8 @@ describe('同组只开一个', () => {
 
   it('不同组互不接替、互不收起：组外的提示照样等 openDelay，组里开着的不被它收走', () => {
     farClock()
-    const group = createTooltipGroup(() => ({ openDelay: 500, skipDelayDuration: 300 }))
-    const other = createTooltipGroup(() => ({ openDelay: 500, skipDelayDuration: 300 }))
+    const group = createTooltipGroup(() => ({ openDelay: 500, skipDelay: 300 }))
+    const other = createTooltipGroup(() => ({ openDelay: 500, skipDelay: 300 }))
     const inside = inGroup(group)
     const outside = inGroup(other)
     inside.send({ type: 'OPEN' })
@@ -136,7 +136,7 @@ describe('跟随鼠标', () => {
     const trigger = document.createElement('button')
     const floating = document.createElement('div')
     const recorder = recordingEngine()
-    const t = makeTooltip({ followCursor: true, openDelay: 0, skipDelayDuration: 0, ...props }, (service) => {
+    const t = makeTooltip({ followCursor: true, openDelay: 0, skipDelay: 0, ...props }, (service) => {
       service.refs.set('position', recorder.engine)
       service.refs.set('getAnchorEl', () => trigger)
       service.refs.set('getFloatingEl', () => floating)

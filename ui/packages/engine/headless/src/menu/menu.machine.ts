@@ -258,8 +258,8 @@ export const menuMachine = createMachine({
             trigger,
             getContentEl: () => refs.get('getContentEl')(),
             getHoverBranches: () => refs.get('getHoverBranches')(),
-            openDelay: prop('hoverOpenDelay'),
-            closeDelay: prop('hoverCloseDelay'),
+            openDelay: prop('openDelay'),
+            closeDelay: prop('closeDelay'),
             onOpenIntent: () => send({ type: 'OPEN', focus: 'none' }),
             onCloseIntent: () => {
               send({ type: 'CLOSE', src: 'hover' })

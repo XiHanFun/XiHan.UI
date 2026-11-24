@@ -100,8 +100,8 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 ### 特性
 
 - `openDelay` / `closeDelay` 防止指针经过时连续闪烁。
-- 同页的提示共用一个接替窗口（`skipDelayDuration`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
-- `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelayDuration` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
+- 同页的提示共用一个接替窗口（`skipDelay`，默认 300ms）：另一个提示还开着、或刚收起一个不到这么久时，指向下一个不再等 `openDelay`、也不播进场，直接接替，上一个随之收起。横扫一排工具栏钮时提示一个个跟上。
+- `XhTooltipProvider`（Web Components 为 `<xh-tooltip-provider>` 容器元素）把子树里的提示放进同一组：组内共用接替窗口、同一时刻只开一个，不同组之间互不接替、互不收起；组上的 `openDelay` / `closeDelay` / `skipDelay` 是组内提示的缺省，提示自己写了就以提示为准。没放进 Provider 的提示同属页面级的那一组。Provider 自身不渲染节点，Web Components 那个元素是 `display: contents`。
 - `followCursor` 让由指针打开的提示锚在指针落点上，指针在触发器上挪动时跟过去；触屏没有悬停落点、键盘聚焦没有指针，这两种情形仍锚在触发器上。跟随中的浮层不接指针，免得挡住触发器上的移动；位置跟手，不做过渡。
 - `delegate` 让一个提示管一整个容器，一条工具栏不必每个按钮各包一个提示：
   - 值是 CSS 选择器。trigger 此时是容器，皮肤让它不占盒子；容器里命中选择器的元素就是一个个锚点。
@@ -160,7 +160,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
 | `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 150。 |
 | `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 100。 |
-| `skipDelayDuration` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
+| `skipDelay` | `number` |  | 跳过等待的窗口毫秒，默认 300：另一个提示还开着，或刚收起一个不到这么久时，指向这一个不等 openDelay、 也不播进场，直接接替（上一个随之收起）。0 或负数表示不参与接替，每次都等 openDelay。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `followCursor` | `boolean` |  | 跟随鼠标：由指针打开的提示锚在指针落点上，随指针在 trigger 上移动而更新，默认 false。 触屏没有悬停落点、聚焦打开没有指针，这两种情形退回锚定到 trigger。 |
 | `delegate` | `string` |  | 委托模式：值是一个 CSS 选择器。trigger 此时是容器，容器里命中选择器的元素在悬停或键盘聚焦时打开提示， 提示锚在这个元素上；指针或焦点挪到另一个锚点时提示直接换过去。文字取锚点的 data-xh-tooltip， 没写时取锚点的可及名；快捷键取锚点的 aria-keyshortcuts。 |
@@ -195,7 +195,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 | `XhTooltipPositioner` | `container` | `() => Element \| null` |  | 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 |
 | `XhTooltipProvider` | `openDelay` | `number` |  | 组内提示悬停进入到展开的缺省等待毫秒；提示自己写了就以提示为准。 |
 | `XhTooltipProvider` | `closeDelay` | `number` |  | 组内提示悬停移出到收起的缺省等待毫秒。 |
-| `XhTooltipProvider` | `skipDelayDuration` | `number` |  | 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 |
+| `XhTooltipProvider` | `skipDelay` | `number` |  | 组内提示的缺省接替窗口毫秒；0 表示组内不接替。 |
 | `XhTooltipProvider` | `children` | `ReactNode` |  |  |
 | `XhTooltipRoot` | `children` | `SlotChildren<TooltipRootSlotProps>` |  |  |
 

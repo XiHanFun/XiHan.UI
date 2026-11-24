@@ -77,8 +77,8 @@ export interface XhMenuRootProps {
   disabled?: boolean
   translations?: Partial<MenuTranslations>
   openOnHover?: boolean
-  hoverOpenDelay?: number
-  hoverCloseDelay?: number
+  openDelay?: number
+  closeDelay?: number
   /** 触发器中放置的内容；只提供 collection 时由它承载。 */
   trigger?: ReactNode
   /** 只提供 collection 时，trigger 给出的节点直接作为触发器使用，不再外包一个 button。 */
@@ -393,8 +393,8 @@ export interface XhMenuSubProps {
   offset?: number
   loop?: boolean
   openOnHover?: boolean
-  hoverOpenDelay?: number
-  hoverCloseDelay?: number
+  openDelay?: number
+  closeDelay?: number
   /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
   dir?: Direction
   /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */

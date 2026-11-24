@@ -32,8 +32,8 @@ export interface XhNavigationMenuRootProps extends RootElementProps {
   value?: string | null
   defaultValue?: string | null
   orientation?: Orientation
-  delayDuration?: number
-  skipDelayDuration?: number
+  openDelay?: number
+  skipDelay?: number
   dir?: Direction
   loop?: boolean
   disabled?: boolean
@@ -52,8 +52,8 @@ export function XhNavigationMenuRoot({
   value,
   defaultValue,
   orientation,
-  delayDuration,
-  skipDelayDuration,
+  openDelay,
+  skipDelay,
   dir,
   loop,
   disabled,
@@ -70,8 +70,8 @@ export function XhNavigationMenuRoot({
     value,
     defaultValue,
     orientation,
-    delayDuration,
-    skipDelayDuration,
+    openDelay,
+    skipDelay,
     dir,
     loop,
     disabled,

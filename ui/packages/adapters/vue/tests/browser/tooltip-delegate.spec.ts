@@ -42,7 +42,7 @@ async function mount(): Promise<HTMLElement> {
   host.style.padding = '96px 160px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhTooltipRoot, { delegate: 'button', platform: 'other', openDelay: 0, closeDelay: 0, skipDelayDuration: 0 }, () => [
+    render: () => h(XhTooltipRoot, { delegate: 'button', platform: 'other', openDelay: 0, closeDelay: 0, skipDelay: 0 }, () => [
       h(XhTooltipTrigger, null, () => [
         h('button', { 'type': 'button', 'aria-label': '撤销', 'aria-keyshortcuts': 'Control+Z' }, 'U'),
         h('button', { 'type': 'button', 'aria-label': '删除', 'data-xh-tooltip': '删除选中的对象', 'disabled': true }, 'D'),

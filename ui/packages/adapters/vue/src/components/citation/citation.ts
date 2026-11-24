@@ -34,7 +34,7 @@ export const XhCitationRoot = defineComponent({
     previewMode: { type: String as PropType<CitationPreviewMode> },
     openDelay: { type: Number },
     closeDelay: { type: Number },
-    skipDelayDuration: { type: Number },
+    skipDelay: { type: Number },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
     translations: { type: Object as PropType<CitationProps['translations']> },

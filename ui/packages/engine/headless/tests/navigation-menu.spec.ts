@@ -183,7 +183,7 @@ afterEach(() => {
 })
 
 describe('navigationMenu 悬停延时', () => {
-  it('悬停 trigger 要等满 delayDuration 才展开；缺省 200ms', () => {
+  it('悬停 trigger 要等满 openDelay 才展开；缺省 200ms', () => {
     const c = makeMenu()
     c.hover(0)
     expect(c.state()).toBe('opening')
@@ -227,7 +227,7 @@ describe('navigationMenu 悬停延时', () => {
   })
 
   it('聚焦 trigger 与悬停同一条路：同样走延时', () => {
-    const c = makeMenu({ delayDuration: 50 })
+    const c = makeMenu({ openDelay: 50 })
     c.triggers[1]!.focus()
     expect(c.state()).toBe('opening')
     vi.advanceTimersByTime(50)
@@ -263,8 +263,8 @@ describe('navigationMenu 静默窗口', () => {
     expect(c.value()).toBe('docs')
   })
 
-  it('skipDelayDuration 可调', () => {
-    const c = makeMenu({ defaultValue: 'products', skipDelayDuration: 1000 })
+  it('skipDelay 可调', () => {
+    const c = makeMenu({ defaultValue: 'products', skipDelay: 1000 })
     c.leave()
     vi.advanceTimersByTime(900)
     c.hover(1)
@@ -297,7 +297,7 @@ describe('navigationMenu 显式激活', () => {
   // 悬停弹出来之后顺手点一下（键盘上是 Tab 聚焦弹出后按 Enter），
   // 用户的意思是"我要用它"，当场收起就是把他刚够到的东西抽走。
   it('自动弹出来的那一项被点到：留着；再点一次才收起', () => {
-    const c = makeMenu({ delayDuration: 10 })
+    const c = makeMenu({ openDelay: 10 })
     c.hover(0)
     vi.advanceTimersByTime(10)
     expect(c.value()).toBe('products')
@@ -762,7 +762,7 @@ describe('navigationMenu 禁用条目', () => {
   })
 
   it('禁用的那一项悬停与点击都不展开', () => {
-    const c = makeMenu({ delayDuration: 10 }, 'docs')
+    const c = makeMenu({ openDelay: 10 }, 'docs')
     c.hover(1)
     vi.advanceTimersByTime(50)
     expect(c.value()).toBeNull()

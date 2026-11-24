@@ -140,8 +140,8 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `translations` | `Partial<MenuTranslations>` |  |  |
 | `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染为父菜单的条目形态 （经 getSubmenuTriggerProps），默认落位改为侧向，悬停触发默认开启。 |
 | `openOnHover` | `boolean` |  | 悬停触发：进入触发器延时展开、经安全三角离开才收起。子菜单默认开启，普通菜单默认关闭。 |
-| `hoverOpenDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
-| `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
+| `openDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
+| `closeDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onItemSelect` | `(details: MenuItemSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 | `onCheckboxValueChange` | `(details: MenuCheckboxValueChangeDetails) => void` |  |  |
@@ -225,8 +225,8 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `XhMenuSub` | `offset` | `number` |  |  |
 | `XhMenuSub` | `loop` | `boolean` |  |  |
 | `XhMenuSub` | `openOnHover` | `boolean` |  |  |
-| `XhMenuSub` | `hoverOpenDelay` | `number` |  |  |
-| `XhMenuSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenuSub` | `openDelay` | `number` |  |  |
+| `XhMenuSub` | `closeDelay` | `number` |  |  |
 | `XhMenuSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenuSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenuSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |

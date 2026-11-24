@@ -128,7 +128,7 @@ const citation: HoverSubject = {
 
 const hoverMenu: HoverSubject = {
   name: '悬停展开的菜单',
-  render: hold => h(XhMenuRoot, { openOnHover: true, hoverOpenDelay: 0, ...(hold ? { hoverCloseDelay: HOLD } : {}) }, () => [
+  render: hold => h(XhMenuRoot, { openOnHover: true, openDelay: 0, ...(hold ? { closeDelay: HOLD } : {}) }, () => [
     h(XhMenuTrigger, { 'data-test': 'hover-trigger' }, () => '更多'),
     h(XhMenuPositioner, null, () => h(XhMenuContent, { 'data-test': 'hover-content' }, () => [
       h(XhMenuItem, { value: 'edit' }, () => '编辑'),

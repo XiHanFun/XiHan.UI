@@ -204,8 +204,8 @@ checkbox 与 radio 的值独立于当前展开菜单
 | `XhMenubarSub` | `offset` | `number` |  |  |
 | `XhMenubarSub` | `loop` | `boolean` |  |  |
 | `XhMenubarSub` | `openOnHover` | `boolean` |  |  |
-| `XhMenubarSub` | `hoverOpenDelay` | `number` |  |  |
-| `XhMenubarSub` | `hoverCloseDelay` | `number` |  |  |
+| `XhMenubarSub` | `openDelay` | `number` |  |  |
+| `XhMenubarSub` | `closeDelay` | `number` |  |  |
 | `XhMenubarSub` | `dir` | `Direction` |  | 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 |
 | `XhMenubarSub` | `tone` | `Tone` |  | 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 |
 | `XhMenubarSub` | `size` | `Size` |  | 尺寸；默认继承父层，理由同 tone。 |
