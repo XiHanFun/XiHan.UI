@@ -2,7 +2,8 @@
 // 门禁：层序声明在皮肤与令牌两份产物里逐字一致、在 tokens.css 里排在 @layer 块之前，
 // 源入口与两份扁平产物里层序与令牌都排在任何样式规则之前，且 reset 层全部选择器为 (0,0,0)——
 // 无层产物里配方排在 reset 之前，reset 只有低一档才不会靠源序压掉配方的字号；反向断言产物里
-// 每条声明 font / font-size 的规则都高于 (0,0,0)。两份扁平产物里每份家族配方都只内联一次、
+// 每条声明 reset 所收属性（字体、外边距、内衬、描边、底、字色一类）的规则都高于 (0,0,0)。
+// 两份扁平产物里每份家族配方都只内联一次、
 // 落在四份公共层之后、一切组件皮肤之前：配方与皮肤同层同档，皮肤对配方的覆盖只有配方先出现
 // 才成立；配方对公共层的覆盖（field-chrome 把内嵌 input 的聚焦环置 none，与 focus.css 同为
 // (0,3,0)）只有公共层先出现才成立。产物里不得残留皮肤自带的 family @import（否则不去重
@@ -278,22 +279,46 @@ else {
         errors.push(`${ENTRIES.unlayered} 里 \`${root}\` 根规则没有排在 reset 段之前——配方与 reset 的先后变了，重新核对特指度取舍`)
     }
 
-    // 反向那一半：reset 压到 (0,0,0) 只保证它不靠源序赢，前提是每条要定字号的规则都比它高。
-    // 无层产物里任何声明 font / font-size 的规则（含 @media 一类条件块内的），选择器剥去伪元素后
-    // 都不得同为 (0,0,0)——否则排在 reset 之前的那条会被 `font: inherit` 按源序压回继承值，
-    // 且有层产物、单测与其余门禁照样全绿。reset 那条 `font: inherit` 自身是唯一豁免。
-    const RESET_FONT_RULE = ':where([data-scope]):where(button, input, optgroup, select, textarea)'
-    for (const { selectors, body } of styleRulesOf(stripComments(unlayeredCss))) {
-      if (!/(?:^|[;\s])font(?:-size)?\s*:/.test(body))
+    // 反向那一半：reset 压到 (0,0,0) 只保证它不靠源序赢，前提是每条要定同一属性的规则都比它高。
+    // reset 在库节点上声明了哪些属性（外边距、内衬、描边、底、字色、字体、原生外观……），无层产物里
+    // reset 段之外的规则（含 @media 一类条件块内的）就不得以 (0,0,0) 再定这些属性——排在 reset 之前的
+    // 那条会被按源序压回 reset 的值，且有层产物、单测与其余门禁照样全绿。
+    // 伪元素上的规则各自只与同一伪元素的规则竞争，两边都不算进来。
+    const segmentEnd = nextMarkerAt === -1 ? unlayeredCss.length : segmentStart + nextMarkerAt
+    const resetProps = new Set()
+    for (const { selectors, body } of styleRulesOf(stripComments(segment))) {
+      if (selectors.every(selector => selector.includes('::')))
+        continue
+      for (const prop of propertiesOf(body))
+        resetProps.add(prop)
+    }
+    const outside = unlayeredCss.slice(0, markerAt) + unlayeredCss.slice(segmentEnd)
+    for (const { selectors, body } of styleRulesOf(stripComments(outside))) {
+      const clash = propertiesOf(body).filter(prop => [...resetProps].some(owned => sameProperty(owned, prop)))
+      if (clash.length === 0)
         continue
       for (const selector of selectors) {
-        if (selector === RESET_FONT_RULE)
+        if (selector.includes('::'))
           continue
         if (isZeroSpecificity(selector))
-          errors.push(`${ENTRIES.unlayered} 里声明字号的规则 \`${selector}\` 是 (0,0,0)，与 reset 的 font: inherit 同档、只能靠源序竞争——给它至少 (0,0,1) 的特指度`)
+          errors.push(`${ENTRIES.unlayered} 里声明 ${[...new Set(clash)].join(' / ')} 的规则 \`${selector}\` 是 (0,0,0)，与 reset 的同一属性同档、只能靠源序竞争——给它至少 (0,0,1) 的特指度，或别让 reset 收这个属性`)
       }
     }
   }
+}
+
+/** 一段声明体里出现的属性名（自定义属性不算：它们不与 reset 的任何声明竞争）。 */
+function propertiesOf(body) {
+  // 嵌套块（@media 里的规则由 styleRulesOf 另行展开）不在这一层声明里
+  const flat = body.replace(/\{[^{}]*\}/g, '')
+  return [...flat.matchAll(/(?:^|;)\s*([a-z-]+)\s*:/g)].map(match => match[1]).filter(prop => !prop.startsWith('--'))
+}
+
+/** 两个属性是否会落到同一个计算值上：同名，或一方是另一方的简写（font 还带着 line-height）。 */
+function sameProperty(owned, prop) {
+  if (owned === prop || prop.startsWith(`${owned}-`) || owned.startsWith(`${prop}-`))
+    return true
+  return (owned === 'font' && prop === 'line-height') || (owned === 'line-height' && prop === 'font')
 }
 
 /** 递归取一段 CSS 里全部样式规则（含条件 @ 块内的）的选择器与声明体。 */

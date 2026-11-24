@@ -55,6 +55,8 @@
     "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
     "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",
     "image-cropper [data-part='crop-handle'][data-scope='image-cropper']": "把手本体是跨越裁切边界的透明命中区，聚焦时由 ::after 的短条或折角自身切换为焦点色",
+    "image-cropper [data-part='rotate-slider'][data-scope='image-cropper']": "原生 range：整条输入盒不画环，环画在拇指上（::-webkit-slider-thumb / ::-moz-range-thumb 的 outline），与库里的滑块同一道",
+    "image-cropper [data-part='zoom-slider'][data-scope='image-cropper']": "原生 range：整条输入盒不画环，环画在拇指上（::-webkit-slider-thumb / ::-moz-range-thumb 的 outline），与库里的滑块同一道",
     "json-viewer [data-part='branch'][data-scope='json-viewer']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "json-viewer [data-part='tree'][data-scope='json-viewer']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
     "listbox [data-part='content'][data-scope='listbox']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",

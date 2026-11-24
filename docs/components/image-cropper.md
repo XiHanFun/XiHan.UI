@@ -330,7 +330,9 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 | `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
 | `--xh-image-cropper-handle-thickness` | `crop-handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=ne`<br>`position=nw`<br>`position=s`<br>`position=se`<br>`position=sw`<br>`position=w` | `--xh-stroke-strong` | image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 | `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
-| `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `accent-color` | `default` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。 |
+| `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `border` | `-moz-range-thumb`<br>`-webkit-slider-thumb`<br>`is([data-part='zoom-slider'], [data-part='rotate-slider'])` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 border 覆盖槽。 |
+| `--xh-image-cropper-slider-thumb-radius` | `rotate-slider`<br>`zoom-slider` | `border-radius` | `-moz-range-thumb`<br>`-webkit-slider-thumb`<br>`is([data-part='zoom-slider'], [data-part='rotate-slider'])` | `--xh-shape-circle` | image-cropper 的 rotate-slider、zoom-slider 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-slider-track-radius` | `rotate-slider`<br>`zoom-slider` | `border-radius` | `-moz-range-track`<br>`-webkit-slider-runnable-track`<br>`is([data-part='zoom-slider'], [data-part='rotate-slider'])` | `--xh-shape-pill` | image-cropper 的 rotate-slider、zoom-slider 部件 border-radius 覆盖槽。 |
 | `--xh-image-cropper-slider-w` | `rotate-slider`<br>`zoom-slider` | `inline-size` | `default` | `100%` | image-cropper 的 rotate-slider、zoom-slider 部件 inline-size 覆盖槽。 |
 | `--xh-image-cropper-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | image-cropper 的 viewport 部件 border-radius 覆盖槽。 |
 | `--xh-image-cropper-w` | `root` | `inline-size` | `default` | `100%` | image-cropper 的 root 部件 inline-size 覆盖槽。 |
@@ -343,6 +345,10 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 `background-color` · `border-color` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

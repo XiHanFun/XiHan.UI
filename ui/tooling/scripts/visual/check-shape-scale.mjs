@@ -83,6 +83,10 @@ const IDENTITY = {
   'switch:thumb': 'circle',
   'slider:thumb': 'circle',
   'color-slider:thumb': 'circle',
+  // 图片裁切的两根滑杆是原生 range，拇指是浏览器内部的节点，两家引擎各有各的伪元素名；
+  // 两根并在一条 :is() 里写，键按第一个部件记
+  'image-cropper:zoom-slider::-webkit-slider-thumb': 'circle',
+  'image-cropper:zoom-slider::-moz-range-thumb': 'circle',
   'color-picker:area-thumb': 'circle',
   'steps:indicator': 'circle',
   'timeline:indicator': 'circle',
@@ -150,6 +154,9 @@ const IDENTITY = {
   'slider:track': 'pill',
   'slider:range': 'pill',
   'color-slider:track': 'pill',
+  // 同上：原生 range 的轨道
+  'image-cropper:zoom-slider::-webkit-slider-runnable-track': 'pill',
+  'image-cropper:zoom-slider::-moz-range-track': 'pill',
   'progress:track': 'pill',
   'progress:range': 'pill',
   'progress:buffer': 'pill',
@@ -315,7 +322,8 @@ function identityKeyOf(comp, branch) {
   const scope = /data-scope='([a-z-]+)'/.exec(subject)?.[1]
     ?? [...compounds].reverse().map(c => /data-scope='([a-z-]+)'/.exec(c)?.[1]).find(Boolean)
     ?? comp
-  const pseudo = /::(before|after)/.exec(subject)?.[1]
+  // 伪元素取全名：原生控件的内部节点（range 的轨道与拇指）各有各的形状身份，不与宿主部件共用一个键
+  const pseudo = /::([a-z-]+)/.exec(subject)?.[1]
   const base = `${comp}:${scope === comp ? '' : `${scope}/`}${part}${pseudo ? `::${pseudo}` : ''}`
   const qualified = Object.keys(IDENTITY).find(key => key.startsWith(`${base}[`) && subject.includes(key.slice(base.length)))
   return { key: qualified ?? base, part }

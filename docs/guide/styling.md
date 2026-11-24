@@ -42,21 +42,41 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
     box-sizing: border-box;
   }
 
-  :where([data-scope]):where(button, input, optgroup, select, textarea) {
-    font: inherit;
-    letter-spacing: inherit;
-  }
-
-  :where([data-scope]):where(button) {
+  /* 浏览器按标签给的缺省外观，统一在这里收 */
+  :where([data-scope]) {
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: transparent;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    appearance: none;
+  }
+
+  :where([data-scope]):where(a, abbr, ins, del, u, s) {
+    text-decoration: none;
+  }
+
+  :where([data-scope]):where(ul, ol, menu, li, summary) {
+    list-style: none;
+  }
+
+  /* 浏览器塞进表单控件里的自带按钮 */
+  :where([data-scope])::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  :where([data-scope])::-ms-reveal {
+    display: none;
   }
 }
 ```
 
 没有全局 reset，不影响宿主页面的任何元素。与现有页面共存不需要隔离。
+
+库节点的样子只由皮肤与配方决定，不取决于它渲染成什么标签、在哪个浏览器里：按钮的底色、描边、内衬与原生外观，标题的加粗放大，段落与列表的外边距，链接的蓝字与下划线，表单控件被锁死的字体与字色，搜索框自带的清除钮、Edge 密码框自带的显示密码钮——统一在这一层收掉，皮肤不各收各的。用原生控件承载行为的地方（图片裁切的两根滑杆是原生 `range`），样子同样由皮肤自己画。浏览器的自动填充弹层是浏览器自己的界面，样式管不到，要不要让它出现由作者用 `autocomplete` 定；被自动填充的输入框的底色与字色由字段外壳接管。
 
 库里渲染成 `<button>` 的部件（关闭钮、步进钮、图例项、分页条目……）不依赖宿主页面的全局 reset：浏览器给按钮的缺省内衬、边框、外边距与底色在 reset 层清掉，皮肤要哪一项再自己写。作者自己写的 `<button data-xh-part="trigger">` 接线后同样带 `data-scope`，也会被清成无壳的样子，与文档站里看到的一致；触发钮要按钮外观时，把 [按钮](../components/button) 当作这个部件写进去。
 

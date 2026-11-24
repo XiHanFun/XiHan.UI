@@ -1117,14 +1117,6 @@
   color: var(--xh-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
-[data-xh-field-input]::-webkit-search-cancel-button {
-  display: none;
-}
-
-[data-xh-field-input]::-ms-reveal {
-  display: none;
-}
-
 [data-xh-field-input][data-xh-field-layout='textarea'] {
   block-size: auto;
   max-inline-size: 100%;
@@ -9166,14 +9158,89 @@
   cursor: not-allowed;
 }
 
-/* 两条控制轴用原生 range：拇指与轨道交给平台画，这里只给横向铺满与品牌色。
-   不写 block-size：原生 range 的高度由 UA 与拇指尺寸定，写死会把拇指切掉一截。 */
+/* 两条控制轴的行为归原生 range（键盘、读屏、拖动都是现成的），样子自己画：与库里的滑块同一副——
+   淡底阶梯 200 档的细槽，表面底加品牌描边的圆拇指。浏览器各画各的那一套不要：同一个裁切器在几家浏览器里
+   不该是几种滑杆。原生外观由基线层统一收掉，这里只管画。
+   拇指与轨道是浏览器内部的节点，两家引擎各有各的伪元素名，只能各写一遍；
+   不能并成一组——别家不认识的伪元素会连累整条规则被丢掉。 */
 .xh-scope-image-cropper[data-part='zoom-slider'],
 .xh-scope-image-cropper[data-part='rotate-slider'] {
+  --xh-_image-cropper-thumb-size: var(--xh-track-thumb-size-md);
+  --xh-_image-cropper-track-h: var(--xh-stroke-thick);
+  --xh-_image-cropper-track-bg: var(--xh-bg-subtle-hover);
+  --xh-_image-cropper-thumb-border: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
+
   inline-size: var(--xh-image-cropper-slider-w, 100%);
-  /* 原生 range 自带左右各一段外边距，与铺满的宽度叠在一起就把这两条轴顶出容器 */
-  margin-inline: 0;
-  accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
+  /* 盒高取细指针的命中下限，比拇指高：整个盒都接得住按下（按在轨道上下也即跳即拖），
+     轨道在盒里居中，拇指上下不被切 */
+  block-size: var(--xh-control-target-min);
+  cursor: pointer;
+}
+
+/* 粗指针：真实的盒放大到粗指针命中下限，手指落在轨道上下这一截同样按下即跳 */
+@media (pointer: coarse) {
+  .xh-scope-image-cropper[data-part='zoom-slider'],
+  .xh-scope-image-cropper[data-part='rotate-slider'] {
+    min-block-size: var(--xh-control-hit-coarse);
+  }
+}
+
+.xh-scope-image-cropper[data-part='zoom-slider'][data-disabled],
+.xh-scope-image-cropper[data-part='rotate-slider'][data-disabled] {
+  /* 禁用：底槽退到 100 档淡底，拇指的描边退成中性色，与库里的滑块同一副 */
+  --xh-_image-cropper-track-bg: var(--xh-bg-subtle);
+  --xh-_image-cropper-thumb-border: var(--xh-bg-subtle-hover-opaque);
+
+  cursor: not-allowed;
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-webkit-slider-runnable-track {
+  block-size: var(--xh-_image-cropper-track-h);
+  border-radius: var(--xh-image-cropper-slider-track-radius, var(--xh-shape-pill));
+  background: var(--xh-_image-cropper-track-bg);
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-webkit-slider-thumb {
+  box-sizing: border-box;
+  inline-size: var(--xh-_image-cropper-thumb-size);
+  block-size: var(--xh-_image-cropper-thumb-size);
+  /* 这家引擎把拇指的上沿对在轨道的上沿：回拉到拇指的圆心落在轨道中线上 */
+  margin-block-start: calc((var(--xh-_image-cropper-track-h) - var(--xh-_image-cropper-thumb-size)) / 2);
+  border: var(--xh-stroke-thick) solid var(--xh-_image-cropper-thumb-border);
+  border-radius: var(--xh-image-cropper-slider-thumb-radius, var(--xh-shape-circle));
+  background: var(--xh-bg-surface);
+  appearance: none;
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-moz-range-track {
+  block-size: var(--xh-_image-cropper-track-h);
+  border-radius: var(--xh-image-cropper-slider-track-radius, var(--xh-shape-pill));
+  background: var(--xh-_image-cropper-track-bg);
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--xh-_image-cropper-thumb-size);
+  block-size: var(--xh-_image-cropper-thumb-size);
+  border: var(--xh-stroke-thick) solid var(--xh-_image-cropper-thumb-border);
+  border-radius: var(--xh-image-cropper-slider-thumb-radius, var(--xh-shape-circle));
+  background: var(--xh-bg-surface);
+}
+
+/* 焦点标在拇指上，与库里的滑块同一道环：画在品牌描边的内侧，仍在拇指自己的盒内。输入框自己那一圈不画 */
+.xh-scope-image-cropper[data-part='zoom-slider']:focus-visible,
+.xh-scope-image-cropper[data-part='rotate-slider']:focus-visible {
+  outline: none;
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider']):focus-visible::-webkit-slider-thumb {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+}
+
+.xh-scope-image-cropper:is([data-part='zoom-slider'], [data-part='rotate-slider']):focus-visible::-moz-range-thumb {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
 }
 
 /*
@@ -13247,24 +13314,64 @@
 }
 
 /*
- * UA 样式会把表单控件的字体锁成系统默认，不跟随页面。
- * 这几个元素是 UA 唯一强制字体的地方，标题一类不在其中，故不做全局 font: inherit。
+ * 浏览器按标签给的缺省外观，统一在这里收：皮肤与配方不各收各的。
+ *
+ * 库节点的样子只由皮肤与配方决定，不取决于它渲染成什么标签、在哪个浏览器里。按钮的底色、描边、内衬与原生外观，
+ * 标题的加粗放大，段落、列表与图文的外边距，链接的蓝字，表单控件被锁死的字体与字色，字段集的描边，
+ * 单元格的内衬——一律归零或改成继承；要哪一项由皮肤自己写。这几条对 div / span 都是初始值或本来就继承，
+ * 只有浏览器按标签另给了缺省值的那些节点才真的被改到。
+ * 不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
+ *
+ * 不在这里收的：display（标签的排版身份）、white-space（pre 与 textarea 的语义）、vertical-align（单元格取中）、
+ * text-align（表单控件由浏览器钉在行首，改成继承会让居中容器里的输入框跟着居中）、
+ * cursor 与焦点轮廓（各有专门的规则）。
+ * 投影也不收：浏览器不给任何标签缺省投影，没有东西可收；而公共聚焦层那道内侧间隔线正是一条 (0,0,0) 的
+ * box-shadow，无层产物里本层排在它之后，这里再写一条同档的就按源序把它压掉。
+ * 同理，本层声明的每一个属性，别处都不许再有 (0,0,0) 的规则去定它（check-layer-order 逐条核）。
  */
-:where([data-scope]):where(button, input, optgroup, select, textarea) {
-  font: inherit;
-  letter-spacing: inherit;
-}
-
-/*
- * UA 给 <button> 的内边距、边框、外边距与底色一律清掉：库里渲染成 button 的部件（关闭钮、步进钮、图例项、
- * 分页条目……）都按可见盒子定尺，浏览器缺省的 1px 6px 内衬会把定尺小钮里的字形挤扁，缺省的灰底也会漏出来。
- * 皮肤要哪一项就自己写，任何皮肤与配方规则都压得住这里。不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
- */
-:where([data-scope]):where(button) {
+:where([data-scope]) {
   margin: 0;
   padding: 0;
   border: 0;
-  background-color: transparent;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  appearance: none;
+}
+
+/* 链接的下划线、增删与缩写的划线：不继承，逐个归零 */
+:where([data-scope]):where(a, abbr, ins, del, u, s) {
+  text-decoration: none;
+}
+
+/* 项目符号：只给本来就带符号的标签归零。list-style 会继承，写在容器上会把作者正文里的列表符号也带走 */
+:where([data-scope]):where(ul, ol, menu, li, summary) {
+  list-style: none;
+}
+
+/* 表格的格间隙；字段集按内容撑开的最小宽度 */
+:where([data-scope]):where(table) {
+  border-spacing: 0;
+}
+
+:where([data-scope]):where(fieldset) {
+  min-inline-size: 0;
+}
+
+/*
+ * 浏览器塞进表单控件里的自带按钮：搜索框的清除钮（Chromium / Edge / WebKit，有值且悬停或聚焦时出现）、
+ * 密码框的显示密码钮（Edge）。这两件事归组件自己的部件，原生那颗不收掉，行尾就并排两颗。
+ * 各自成条：别的浏览器不认识对方的伪元素，并成一组会连累整条规则被丢掉。
+ * 四个引擎里实测过库会产出的输入类型（text / search / password / email / tel / url），只有这两样会冒出来。
+ */
+:where([data-scope])::-webkit-search-cancel-button {
+  display: none;
+}
+
+:where([data-scope])::-ms-reveal {
+  display: none;
 }
 
 /*
@@ -24640,7 +24747,8 @@
   /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
   overflow-x: auto;
   padding-block: var(--xh-code-view-py, var(--xh-space-3));
-  margin: 0;
+  /* 等宽字体自己声明：浏览器给 pre 的那份由基线层统一收掉了，行与行之间的空白也要按等宽算 */
+  font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
   line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
 }
 

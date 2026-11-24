@@ -396,13 +396,6 @@ export function compileFieldChromeRecipe(source) {
   rule('[data-xh-field-chrome] [data-xh-action-profile=\'field-inset\']:focus-visible', '    outline: none;')
   rule('[data-xh-field-input][data-disabled]', '    color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));')
   rule('[data-xh-field-input]::placeholder', `    color: var(--xh-field-placeholder-fg, ${source.nativeInput.placeholderColor});`)
-  // 浏览器给搜索框自带的清除钮：有值且悬停或聚焦时出现在行尾。清空归组件自己的 clear-trigger，
-  // 原生那颗不收掉，开了 clearable 的搜索框行尾就并排两个叉；没开的也不该多出一个库管不着的钮
-  rule('[data-xh-field-input]::-webkit-search-cancel-button', '    display: none;')
-  // Edge 给密码框自带一颗显示密码钮：打过字且聚焦时出现在行尾。显示与隐藏归组件自己的钮，
-  // 原生那颗不收掉，Edge 里密码框行尾就并排两只眼睛。单独一条规则：别的浏览器不认识这个伪元素，
-  // 与别的选择器并成一组会连累整条规则被丢掉
-  rule('[data-xh-field-input]::-ms-reveal', '    display: none;')
   rule('[data-xh-field-input][data-xh-field-layout=\'textarea\']', [
     '    block-size: auto;',
     '    max-inline-size: 100%;',

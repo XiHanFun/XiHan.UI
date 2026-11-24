@@ -339,7 +339,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-folded-fg` | `line-content` | `background-color` | `folded` | `--xh-fg-subtle` | code-view 的 line-content 部件 background-color 覆盖槽。 |
 | `--xh-code-view-folded-gap` | `line-content` | `margin-inline-start` | `folded` | `--xh-space-1` | code-view 的 line-content 部件 margin-inline-start 覆盖槽。 |
-| `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
+| `--xh-code-view-font` | `code`<br>`filename`<br>`pre` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename、pre 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
 | `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-subtle` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
 | `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |

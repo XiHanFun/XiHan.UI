@@ -87,7 +87,8 @@
     /* 逻辑属性 overflow-inline 尚无可用实现，写物理轴 */
     overflow-x: auto;
     padding-block: var(--xh-code-view-py, var(--xh-space-3));
-    margin: 0;
+    /* 等宽字体自己声明：浏览器给 pre 的那份由基线层统一收掉了，行与行之间的空白也要按等宽算 */
+    font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
     line-height: var(--xh-code-view-line-height, var(--xh-text-code-leading));
   }
 

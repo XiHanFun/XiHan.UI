@@ -39158,6 +39158,12 @@
               "name": "--xh-image-cropper-slider-accent"
             },
             {
+              "name": "--xh-image-cropper-slider-thumb-radius"
+            },
+            {
+              "name": "--xh-image-cropper-slider-track-radius"
+            },
+            {
               "name": "--xh-image-cropper-slider-w"
             },
             {

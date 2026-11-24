@@ -322,14 +322,89 @@
     cursor: not-allowed;
   }
 
-  /* 两条控制轴用原生 range：拇指与轨道交给平台画，这里只给横向铺满与品牌色。
-     不写 block-size：原生 range 的高度由 UA 与拇指尺寸定，写死会把拇指切掉一截。 */
+  /* 两条控制轴的行为归原生 range（键盘、读屏、拖动都是现成的），样子自己画：与库里的滑块同一副——
+     淡底阶梯 200 档的细槽，表面底加品牌描边的圆拇指。浏览器各画各的那一套不要：同一个裁切器在几家浏览器里
+     不该是几种滑杆。原生外观由基线层统一收掉，这里只管画。
+     拇指与轨道是浏览器内部的节点，两家引擎各有各的伪元素名，只能各写一遍；
+     不能并成一组——别家不认识的伪元素会连累整条规则被丢掉。 */
   [data-scope='image-cropper'][data-part='zoom-slider'],
   [data-scope='image-cropper'][data-part='rotate-slider'] {
+    --xh-_image-cropper-thumb-size: var(--xh-track-thumb-size-md);
+    --xh-_image-cropper-track-h: var(--xh-stroke-thick);
+    --xh-_image-cropper-track-bg: var(--xh-bg-subtle-hover);
+    --xh-_image-cropper-thumb-border: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
+
     inline-size: var(--xh-image-cropper-slider-w, 100%);
-    /* 原生 range 自带左右各一段外边距，与铺满的宽度叠在一起就把这两条轴顶出容器 */
-    margin-inline: 0;
-    accent-color: var(--xh-image-cropper-slider-accent, var(--xh-bg-brand));
+    /* 盒高取细指针的命中下限，比拇指高：整个盒都接得住按下（按在轨道上下也即跳即拖），
+       轨道在盒里居中，拇指上下不被切 */
+    block-size: var(--xh-control-target-min);
+    cursor: pointer;
+  }
+
+  /* 粗指针：真实的盒放大到粗指针命中下限，手指落在轨道上下这一截同样按下即跳 */
+  @media (pointer: coarse) {
+    [data-scope='image-cropper'][data-part='zoom-slider'],
+    [data-scope='image-cropper'][data-part='rotate-slider'] {
+      min-block-size: var(--xh-control-hit-coarse);
+    }
+  }
+
+  [data-scope='image-cropper'][data-part='zoom-slider'][data-disabled],
+  [data-scope='image-cropper'][data-part='rotate-slider'][data-disabled] {
+    /* 禁用：底槽退到 100 档淡底，拇指的描边退成中性色，与库里的滑块同一副 */
+    --xh-_image-cropper-track-bg: var(--xh-bg-subtle);
+    --xh-_image-cropper-thumb-border: var(--xh-bg-subtle-hover-opaque);
+
+    cursor: not-allowed;
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-webkit-slider-runnable-track {
+    block-size: var(--xh-_image-cropper-track-h);
+    border-radius: var(--xh-image-cropper-slider-track-radius, var(--xh-shape-pill));
+    background: var(--xh-_image-cropper-track-bg);
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-webkit-slider-thumb {
+    box-sizing: border-box;
+    inline-size: var(--xh-_image-cropper-thumb-size);
+    block-size: var(--xh-_image-cropper-thumb-size);
+    /* 这家引擎把拇指的上沿对在轨道的上沿：回拉到拇指的圆心落在轨道中线上 */
+    margin-block-start: calc((var(--xh-_image-cropper-track-h) - var(--xh-_image-cropper-thumb-size)) / 2);
+    border: var(--xh-stroke-thick) solid var(--xh-_image-cropper-thumb-border);
+    border-radius: var(--xh-image-cropper-slider-thumb-radius, var(--xh-shape-circle));
+    background: var(--xh-bg-surface);
+    appearance: none;
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-moz-range-track {
+    block-size: var(--xh-_image-cropper-track-h);
+    border-radius: var(--xh-image-cropper-slider-track-radius, var(--xh-shape-pill));
+    background: var(--xh-_image-cropper-track-bg);
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider'])::-moz-range-thumb {
+    box-sizing: border-box;
+    inline-size: var(--xh-_image-cropper-thumb-size);
+    block-size: var(--xh-_image-cropper-thumb-size);
+    border: var(--xh-stroke-thick) solid var(--xh-_image-cropper-thumb-border);
+    border-radius: var(--xh-image-cropper-slider-thumb-radius, var(--xh-shape-circle));
+    background: var(--xh-bg-surface);
+  }
+
+  /* 焦点标在拇指上，与库里的滑块同一道环：画在品牌描边的内侧，仍在拇指自己的盒内。输入框自己那一圈不画 */
+  [data-scope='image-cropper'][data-part='zoom-slider']:focus-visible,
+  [data-scope='image-cropper'][data-part='rotate-slider']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider']):focus-visible::-webkit-slider-thumb {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
+  }
+
+  [data-scope='image-cropper']:is([data-part='zoom-slider'], [data-part='rotate-slider']):focus-visible::-moz-range-thumb {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: calc(var(--xh-ring-offset) - var(--xh-stroke-thick));
   }
 
   /*

@@ -71,9 +71,9 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [channel-input]
-padding-top: 1px
+padding-top: 0px
 padding-right: 8px
-padding-bottom: 1px
+padding-bottom: 0px
 padding-left: 8px
 row-gap: normal
 column-gap: normal

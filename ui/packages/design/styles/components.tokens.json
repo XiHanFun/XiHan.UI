@@ -14984,7 +14984,8 @@
       "component": "code-view",
       "part": [
         "code",
-        "filename"
+        "filename",
+        "pre"
       ],
       "property": [
         "font-family"
@@ -14996,7 +14997,7 @@
         "--xh-font-family-mono"
       ],
       "visibility": "public",
-      "description": "code-view 的 code、filename 部件 font-family 覆盖槽。"
+      "description": "code-view 的 code、filename、pre 部件 font-family 覆盖槽。"
     },
     {
       "name": "--xh-code-view-font-size",
@@ -44883,16 +44884,60 @@
         "zoom-slider"
       ],
       "property": [
-        "accent-color"
+        "border"
       ],
       "state": [
-        "default"
+        "-moz-range-thumb",
+        "-webkit-slider-thumb",
+        "is([data-part='zoom-slider'], [data-part='rotate-slider'])"
       ],
       "defaultToken": [
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。"
+      "description": "image-cropper 的 rotate-slider、zoom-slider 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-cropper-slider-thumb-radius",
+      "component": "image-cropper",
+      "part": [
+        "rotate-slider",
+        "zoom-slider"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "-moz-range-thumb",
+        "-webkit-slider-thumb",
+        "is([data-part='zoom-slider'], [data-part='rotate-slider'])"
+      ],
+      "defaultToken": [
+        "--xh-shape-circle"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 rotate-slider、zoom-slider 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-cropper-slider-track-radius",
+      "component": "image-cropper",
+      "part": [
+        "rotate-slider",
+        "zoom-slider"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "-moz-range-track",
+        "-webkit-slider-runnable-track",
+        "is([data-part='zoom-slider'], [data-part='rotate-slider'])"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 rotate-slider、zoom-slider 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-slider-w",

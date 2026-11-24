@@ -2236,6 +2236,8 @@ export type ComponentTokenName
     | '--xh-image-cropper-handle-thickness'
     | '--xh-image-cropper-mask'
     | '--xh-image-cropper-slider-accent'
+    | '--xh-image-cropper-slider-thumb-radius'
+    | '--xh-image-cropper-slider-track-radius'
     | '--xh-image-cropper-slider-w'
     | '--xh-image-cropper-viewport-radius'
     | '--xh-image-cropper-w'

@@ -341,6 +341,10 @@ function scanSkin(css, parts, actionParts) {
         : subject != null && parts.has(subject) ? [subject] : []
       if (matchedParts.length === 0)
         continue
+      // 浏览器内部节点的伪元素（原生 range 的轨道与拇指、滚动条、占位文字一类）不是部件自己的盒：
+      // 指针落点是宿主那个盒，里面画多细的轨道都不改命中区。只有 ::before / ::after 才可能是外扩的命中区。
+      if (/::(?!before\b|after\b)[\w-]+/.test(branch))
+        continue
       const pseudo = /::(?:before|after)/.test(branch)
 
       for (const part of matchedParts) {

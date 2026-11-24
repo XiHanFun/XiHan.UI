@@ -199,15 +199,10 @@ describe('field Chrome Family Recipe', () => {
     expect(css).not.toContain('--xh-elevation-raised')
   })
 
-  it('浏览器给搜索框、密码框自带的钮都收掉，且各自成条：并成一组会被不认识其中一个伪元素的浏览器整条丢掉', async () => {
+  it('浏览器自带的清除钮与显示密码钮不在配方里收：那是基线层的事，配方只管自己的样式', async () => {
     const css = compileFieldChromeRecipe(await source())
-    // 搜索框的清除钮（Chromium / Safari）与密码框的显示密码钮（Edge）：这两件事归组件自己的部件
-    expect(block(css, '[data-xh-field-input]::-webkit-search-cancel-button')).toContain('display: none;')
-    expect(block(css, '[data-xh-field-input]::-ms-reveal')).toContain('display: none;')
-    expect(css).not.toMatch(/::-webkit-search-cancel-button\s*,/)
-    expect(css).not.toMatch(/,\s*\[data-xh-field-input\]::-webkit-search-cancel-button/)
-    expect(css).not.toMatch(/::-ms-reveal\s*,/)
-    expect(css).not.toMatch(/,\s*\[data-xh-field-input\]::-ms-reveal/)
+    expect(css).not.toContain('::-webkit-search-cancel-button')
+    expect(css).not.toContain('::-ms-reveal')
   })
 
   it('自动填充的那块底不盖外壳的聚焦环：套在外壳里的输入框上下各裁掉环内侧那条线的宽度', async () => {

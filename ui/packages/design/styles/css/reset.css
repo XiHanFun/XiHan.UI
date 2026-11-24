@@ -27,24 +27,64 @@
   }
 
   /*
-   * UA 样式会把表单控件的字体锁成系统默认，不跟随页面。
-   * 这几个元素是 UA 唯一强制字体的地方，标题一类不在其中，故不做全局 font: inherit。
+   * 浏览器按标签给的缺省外观，统一在这里收：皮肤与配方不各收各的。
+   *
+   * 库节点的样子只由皮肤与配方决定，不取决于它渲染成什么标签、在哪个浏览器里。按钮的底色、描边、内衬与原生外观，
+   * 标题的加粗放大，段落、列表与图文的外边距，链接的蓝字，表单控件被锁死的字体与字色，字段集的描边，
+   * 单元格的内衬——一律归零或改成继承；要哪一项由皮肤自己写。这几条对 div / span 都是初始值或本来就继承，
+   * 只有浏览器按标签另给了缺省值的那些节点才真的被改到。
+   * 不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
+   *
+   * 不在这里收的：display（标签的排版身份）、white-space（pre 与 textarea 的语义）、vertical-align（单元格取中）、
+   * text-align（表单控件由浏览器钉在行首，改成继承会让居中容器里的输入框跟着居中）、
+   * cursor 与焦点轮廓（各有专门的规则）。
+   * 投影也不收：浏览器不给任何标签缺省投影，没有东西可收；而公共聚焦层那道内侧间隔线正是一条 (0,0,0) 的
+   * box-shadow，无层产物里本层排在它之后，这里再写一条同档的就按源序把它压掉。
+   * 同理，本层声明的每一个属性，别处都不许再有 (0,0,0) 的规则去定它（check-layer-order 逐条核）。
    */
-  :where([data-scope]):where(button, input, optgroup, select, textarea) {
-    font: inherit;
-    letter-spacing: inherit;
-  }
-
-  /*
-   * UA 给 <button> 的内边距、边框、外边距与底色一律清掉：库里渲染成 button 的部件（关闭钮、步进钮、图例项、
-   * 分页条目……）都按可见盒子定尺，浏览器缺省的 1px 6px 内衬会把定尺小钮里的字形挤扁，缺省的灰底也会漏出来。
-   * 皮肤要哪一项就自己写，任何皮肤与配方规则都压得住这里。不依赖宿主页面的全局 reset：文档站有，作者的页面未必有。
-   */
-  :where([data-scope]):where(button) {
+  :where([data-scope]) {
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: transparent;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    appearance: none;
+  }
+
+  /* 链接的下划线、增删与缩写的划线：不继承，逐个归零 */
+  :where([data-scope]):where(a, abbr, ins, del, u, s) {
+    text-decoration: none;
+  }
+
+  /* 项目符号：只给本来就带符号的标签归零。list-style 会继承，写在容器上会把作者正文里的列表符号也带走 */
+  :where([data-scope]):where(ul, ol, menu, li, summary) {
+    list-style: none;
+  }
+
+  /* 表格的格间隙；字段集按内容撑开的最小宽度 */
+  :where([data-scope]):where(table) {
+    border-spacing: 0;
+  }
+
+  :where([data-scope]):where(fieldset) {
+    min-inline-size: 0;
+  }
+
+  /*
+   * 浏览器塞进表单控件里的自带按钮：搜索框的清除钮（Chromium / Edge / WebKit，有值且悬停或聚焦时出现）、
+   * 密码框的显示密码钮（Edge）。这两件事归组件自己的部件，原生那颗不收掉，行尾就并排两颗。
+   * 各自成条：别的浏览器不认识对方的伪元素，并成一组会连累整条规则被丢掉。
+   * 四个引擎里实测过库会产出的输入类型（text / search / password / email / tel / url），只有这两样会冒出来。
+   */
+  :where([data-scope])::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  :where([data-scope])::-ms-reveal {
+    display: none;
   }
 
   /*

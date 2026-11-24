@@ -221,14 +221,6 @@
     color: var(--xh-field-placeholder-fg, var(--xh-fg-subtle));
   }
 
-  [data-xh-field-input]::-webkit-search-cancel-button {
-    display: none;
-  }
-
-  [data-xh-field-input]::-ms-reveal {
-    display: none;
-  }
-
   [data-xh-field-input][data-xh-field-layout='textarea'] {
     block-size: auto;
     max-inline-size: 100%;
