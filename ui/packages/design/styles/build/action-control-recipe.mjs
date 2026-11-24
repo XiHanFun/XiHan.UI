@@ -144,7 +144,7 @@ export function assertActionControlRecipe(source) {
     const value = source.profiles[profile]
     assertExactKeys(value, ['description', 'layout', 'sizes'], `profiles.${profile}`)
     assertString(value.description, `profiles.${profile}.description`)
-    assertExactKeys(value.layout, ['square', 'fill', 'justify', 'press', 'radius'], `profiles.${profile}.layout`)
+    assertExactKeys(value.layout, ['square', 'fill', 'justify', 'press', 'radius', 'faceInset'], `profiles.${profile}.layout`)
     if (typeof value.layout.square !== 'boolean')
       throw new Error(`[action-control-recipe] profiles.${profile}.layout.square 必须是布尔值`)
     if (typeof value.layout.fill !== 'boolean')
@@ -159,6 +159,10 @@ export function assertActionControlRecipe(source) {
     if (value.layout.square && value.layout.fill)
       throw new Error(`[action-control-recipe] profiles.${profile}.layout.square 与 fill 互斥`)
     assertString(value.layout.radius, `profiles.${profile}.layout.radius`)
+    assertString(value.layout.faceInset, `profiles.${profile}.layout.faceInset`)
+    /* 面内收靠四周内衬加只铺到内容盒的面实现，铺满一行的档内衬另有用处、没有独立的面可收。 */
+    if (value.layout.faceInset !== '0' && !value.layout.square)
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.faceInset 只给正方盒的档，其余写 "0"`)
     assertExactKeys(value.sizes, SIZES, `profiles.${profile}.sizes`)
     for (const size of SIZES) {
       const entry = value.sizes[size]
@@ -390,9 +394,23 @@ export function compileActionControlRecipe(source) {
       ...commonFields.map(field =>
         `    --xh-_action-profile-${field.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)}: ${value.sizes.xs[field]};`,
       ),
+      ...(value.layout.faceInset === '0' ? [] : [`    --xh-_action-profile-face-inset: ${value.layout.faceInset};`]),
       ...(value.layout.square
         ? ['    flex: none;', '    inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));']
         : []),
+      /* 面比视觉盒内收一圈：视觉盒（也就是命中盒）不动，四周留出内收量的内衬，面只铺到内容盒。
+         字段里的内嵌钮上下各离盒沿一个环宽，面若铺满就顶在字段的聚焦环上；内收之后环内再空出一个环宽。
+         这一档不画描边，描边宽度清零：内收量只由内衬定，不随各皮肤有没有把描边清零而差一个像素。
+         外圆角相应加一圈，面的角才是登记的那一档（方面是内嵌档，与字段盒同心；圆面仍是圆）。
+         组件要撤掉内收（数字字段叠放的步进钮自己定了四周内收）把 --xh-action-face-inset 置 0px。 */
+      ...(value.layout.faceInset === '0'
+        ? []
+        : [
+            '    padding: var(--xh-action-face-inset, var(--xh-_action-profile-face-inset));',
+            '    border-width: 0;',
+            '    border-radius: calc(var(--xh-action-radius, var(--xh-_action-profile-radius)) + var(--xh-action-face-inset, var(--xh-_action-profile-face-inset)));',
+            '    background-clip: content-box;',
+          ]),
       /* 铺满一行的档：宽度由容器给，高度随内容与块轴内距走，最小高度仍守视觉尺寸。 */
       ...(value.layout.fill
         ? [

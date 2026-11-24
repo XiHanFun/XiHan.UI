@@ -22,6 +22,7 @@ import {
   XhDateRangePickerWeekDay,
   XhDateRangePickerWeekRow,
 } from '../../src'
+import { faceRadius } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -200,7 +201,7 @@ describe('日期范围选择器的家族观感', () => {
     await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const rest = getComputedStyle(clear)
-    expect(rest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-circle', clear))
+    expect(faceRadius(clear)).toBe(resolveRadius('--xh-shape-circle', clear))
     expect(rest.width).toBe(rest.height)
     expect(alpha(rest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')

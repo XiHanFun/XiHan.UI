@@ -20,6 +20,7 @@ import {
   XhTimeRangePickerSegmentGroup,
   XhTimeRangePickerTrigger,
 } from '../../src'
+import { faceRadius } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -306,7 +307,7 @@ describe('时间范围选择器的家族观感', () => {
     await userEvent.hover(part('control'))
     expect(getComputedStyle(part('trigger')).display).toBe('none')
     const clearRest = getComputedStyle(clear)
-    expect(clearRest.borderTopLeftRadius).toBe(resolveRadius('--xh-shape-circle', clear))
+    expect(faceRadius(clear)).toBe(resolveRadius('--xh-shape-circle', clear))
     expect(clearRest.width).toBe(clearRest.height)
     expect(alpha(clearRest.backgroundColor)).toBe(0)
     const probe = document.createElement('span')

@@ -552,7 +552,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | cascader 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-cascader-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | cascader 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | cascader 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-cascader-branch-arrow-fg` | `item` | `background-color` | `branch` | `--xh-fg-muted` | cascader 的 item 部件 background-color 覆盖槽。 |
 | `--xh-cascader-branch-arrow-size` | `item` | `block-size`<br>`inline-size` | `branch` | `--xh-control-indicator-size` | cascader 的 item 部件 block-size、inline-size 覆盖槽。 |

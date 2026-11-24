@@ -587,7 +587,7 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `--xh-select-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | select 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-select-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-select-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | select 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-select-action-size` | `clear-trigger`<br>`indicator` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size`<br>`--xh-control-action-size` | select 的 clear-trigger、indicator 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-select-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `xh-material=frosted` | `--xh-_material-backdrop` | select 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-select-content-bg` | `content` | `background` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-bg` | select 的 content 部件 background 覆盖槽。 |

@@ -35,6 +35,23 @@ export function tokenValue(property: string, token: string, scope: Element = doc
   return value
 }
 
+/**
+ * 面的圆角。字段里的内嵌钮，面比视觉盒内收一圈（四周内衬、面只铺到内容盒），外圆角相应加了一圈：
+ * 登记的形状档说的是面，不是盒。从盒的外圆角里把内衬减回去，读到的就是面自己的角；
+ * 没有内衬的钮两者相等。圆形的读回来是 calc(50% + 内衬)，减回去是 50%。
+ */
+export function faceRadius(element: Element): string {
+  const style = getComputedStyle(element)
+  const inset = Number.parseFloat(style.paddingTop)
+  const outer = style.borderTopLeftRadius
+  const circle = /^calc\(50% \+ ([\d.]+)px\)$/.exec(outer)
+  if (circle)
+    return Number.parseFloat(circle[1]!) === inset ? '50%' : outer
+  if (!outer.endsWith('px'))
+    return outer
+  return `${Number.parseFloat(outer) - inset}px`
+}
+
 /** 定尺动作控件按下时的缩放倍率，与 getComputedStyle().scale 同一格式（缺省 '1'，即只换面）。 */
 export function pressScale(scope: Element = document.documentElement): string {
   const value = getComputedStyle(scope).getPropertyValue('--xh-motion-scale-press').trim()

@@ -361,7 +361,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `--xh-text-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-text-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | text-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-text-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_text-field-action-font-size` | text-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | text-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-text-field-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | text-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-text-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | text-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-text-field-affix-fg` | `prefix`<br>`suffix` | `color` | `xh-field-affix` | `--xh-fg-muted` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |
 | `--xh-text-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled`<br>`xh-field-affix` | `--xh-fg-disabled` | text-field 的 prefix、suffix 部件 color 覆盖槽。 |

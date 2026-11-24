@@ -480,6 +480,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | floating | 浮在内容之上的单图标圆钮：Log / MessageFeed 回底与 FloatButton、BackTop 的 sm / lg 档取本行；FloatButton、BackTop 的 md 档，Carousel 翻页与播放钮，ImageViewer 翻页与关闭钮另有尺寸，见表下 | `control-action-size` | `control-box-sm` | `control-box-md` | `control-box-lg` |
 
 - text 档宽按内容，下限等于高；icon、field-inset、floating 是正方盒。
+- field-inset 的面比视觉盒内收一个环宽（`--xh-ring-width`）：表里的尺寸是视觉盒，也是命中盒，上下各离字段盒沿一个环宽；面若铺满就顶在字段的聚焦环上。内收之后环之内再空出一个环宽，方面的圆角仍是 inset、与字段盒同心，圆面仍是圆。由 Action Control 配方给（四周内衬 + 面只铺到内容盒 + 外圆角加一圈），组件皮肤不各写；自己定了四周内收的（NumberField 叠放的增减钮）把 `--xh-action-face-inset` 置 `0px`。
 - 字形：text / icon 为 16 / 16 / 18 / 20px；field-inset 为 `control-indicator-sm`、`control-indicator-sm`、`control-indicator-sm`、`control-indicator-md`（12 / 12 / 12 / 16px）；floating 为 16 / 16 / 18 / 20px。
 - floating 缺省 md（box-md 36px，compact 32px）：浮在内容之上的圆钮在矮视口与小卡片里不叠住内容与彼此。独立浮在页面一角的 BackTop 与 FloatButton 的 md 档取 `control-float-md`（40px，compact 36px），sm / lg 仍取 box 档，字形 sm / md 16px、lg 20px，贴视口边 24px；FloatButton 的触发器与展开组里的动作项同一张尺寸表、同一块面（subtle 档取不透明淡底）。主控制钮（Carousel 与 ImageViewer 的翻页、BackTop、FloatButton）随组件 `size` 同档；从属的钮（Log / MessageFeed 的回到底部）比组件低一档、最低 sm。Carousel 的翻页与播放钮随组件 `size` 取 24 / 24 / 28px（`control-target-min` / 同 / `control-h-sm`）、字形 12 / 16 / 20px：钮不压画面，sm 不低于 24px 的最小目标、只把字形收小；sm / md 不随密度收，紧凑档 lg 随 `control-h-sm` 收到 24px——floating 档在细指针下不外扩命中区，视觉盒就是命中区，紧凑档也不能低于 24px。ImageViewer 的翻页与关闭钮同档，视觉盒取控件高 `control-h-*`（md 32px）、字形 sm / md 16px、lg 20px，距边分别为 20px 与 32px：看片台上的媒体控制不压画面。
 - Dialog、Drawer、Popover、Tour、Notification 的关闭钮取 `control-h-sm`。

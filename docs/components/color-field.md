@@ -274,7 +274,7 @@
 | `--xh-color-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_color-field-action-font-size` | color-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-color-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | color-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-color-field-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | color-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | color-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-color-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-color-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-field 的 control 部件 background-color 覆盖槽。 |

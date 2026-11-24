@@ -723,8 +723,13 @@
   --xh-_action-profile-padding-inline: 0;
   --xh-_action-profile-padding-block: 0;
   --xh-_action-profile-gap: 0;
+  --xh-_action-profile-face-inset: var(--xh-ring-width);
   flex: none;
   inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));
+  padding: var(--xh-action-face-inset, var(--xh-_action-profile-face-inset));
+  border-width: 0;
+  border-radius: calc(var(--xh-action-radius, var(--xh-_action-profile-radius)) + var(--xh-action-face-inset, var(--xh-_action-profile-face-inset)));
+  background-clip: content-box;
 }
 
 [data-scope][data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='xs'] {
@@ -39248,8 +39253,6 @@
   --xh-action-font-size: var(--xh-number-field-trigger-font-size, var(--xh-_number-field-trigger-font-size));
   /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
   --xh-icon-size: var(--xh-_action-profile-glyph-size);
-
-  border-width: 0;
 }
 
 /* DOM 顺序不承担视觉位置：既有用法即使把减钮写在 input 前面，默认仍统一收进右侧动作组。 */
@@ -39310,6 +39313,8 @@
     --xh-action-bg-pressed: var(--xh-number-field-trigger-bg-active, var(--xh-bg-subtle-active));
     --xh-action-bg-disabled: var(--xh-number-field-stepper-bg, var(--xh-bg-subtle));
     --xh-action-scale-pressed: none;
+    /* 叠放的两颗四周已经内收、彼此共边相接：家族给内嵌钮的那一圈面内收在这里撤掉，面铺满钮自己的盒 */
+    --xh-action-face-inset: 0px;
     --xh-icon-size: var(--xh-control-indicator-xs);
 
     position: absolute;

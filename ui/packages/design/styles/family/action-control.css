@@ -276,8 +276,13 @@
     --xh-_action-profile-padding-inline: 0;
     --xh-_action-profile-padding-block: 0;
     --xh-_action-profile-gap: 0;
+    --xh-_action-profile-face-inset: var(--xh-ring-width);
     flex: none;
     inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));
+    padding: var(--xh-action-face-inset, var(--xh-_action-profile-face-inset));
+    border-width: 0;
+    border-radius: calc(var(--xh-action-radius, var(--xh-_action-profile-radius)) + var(--xh-action-face-inset, var(--xh-_action-profile-face-inset)));
+    background-clip: content-box;
   }
 
   [data-xh-action-control][data-xh-action-profile='field-inset'][data-xh-action-size='xs'] {

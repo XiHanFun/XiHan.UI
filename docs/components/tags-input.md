@@ -385,7 +385,7 @@ delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号�
 | `--xh-tags-input-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-tags-input-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-tags-input-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | tags-input 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | tags-input 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | tags-input 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | tags-input 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-tags-input-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | tags-input 的 control 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | tags-input 的 control 部件 background-color 覆盖槽。 |

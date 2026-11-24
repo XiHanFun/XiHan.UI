@@ -12,7 +12,7 @@ import {
   XhEditableRoot,
   XhEditableSubmitTrigger,
 } from '../../src'
-import { tokenValue } from './design-token'
+import { faceRadius, tokenValue } from './design-token'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -69,7 +69,7 @@ function tokenColor(name: string): string {
   return color
 }
 
-/** 纯图标按钮：field-inset 档的正方视觉盒、inset 圆角，符号由兜底字形画。 */
+/** 纯图标按钮：field-inset 档的正方视觉盒、面取 inset 圆角，符号由兜底字形画。 */
 function expectIconButton(name: string, size: number): void {
   const button = part(name)
   const rect = button.getBoundingClientRect()
@@ -77,7 +77,7 @@ function expectIconButton(name: string, size: number): void {
   expect(button.getAttribute('aria-label')).not.toBeNull()
   expect(rect.width).toBe(size)
   expect(rect.height).toBe(size)
-  expect(getComputedStyle(button).borderRadius).toBe(tokenValue('border-radius', '--xh-shape-inset'))
+  expect(faceRadius(button)).toBe(tokenValue('border-radius', '--xh-shape-inset'))
   const mark = getComputedStyle(button, '::before')
   expect(mark.content).toBe('""')
   expect(mark.maskImage).not.toBe('none')

@@ -36,16 +36,16 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [clear-trigger]
-padding-top: 0px
-padding-right: 0px
-padding-bottom: 0px
-padding-left: 0px
+padding-top: 2px
+padding-right: 2px
+padding-bottom: 2px
+padding-left: 2px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 50%
-border-top-right-radius: 50%
-border-bottom-right-radius: 50%
-border-bottom-left-radius: 50%
+border-top-left-radius: calc(50% + 2px)
+border-top-right-radius: calc(50% + 2px)
+border-bottom-right-radius: calc(50% + 2px)
+border-bottom-left-radius: calc(50% + 2px)
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
@@ -316,16 +316,16 @@ outline-offset: 0px
 outline-color: oklch(0.208 0.006 258)
 
 [trigger]
-padding-top: 0px
-padding-right: 0px
-padding-bottom: 0px
-padding-left: 0px
+padding-top: 2px
+padding-right: 2px
+padding-bottom: 2px
+padding-left: 2px
 row-gap: 0px
 column-gap: 0px
-border-top-left-radius: 4px
-border-top-right-radius: 4px
-border-bottom-right-radius: 4px
-border-bottom-left-radius: 4px
+border-top-left-radius: 6px
+border-top-right-radius: 6px
+border-bottom-right-radius: 6px
+border-bottom-left-radius: 6px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px

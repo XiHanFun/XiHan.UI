@@ -311,7 +311,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `--xh-time-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-field-clear` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-time-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | time-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-time-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | time-field 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-circle` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-action-radius` | `clear-trigger` | `border-radius` | `default`<br>`xh-action-profile=field-inset` | `--xh-shape-circle` | time-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | time-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | time-field 的 control 部件 background-color 覆盖槽。 |
 | `--xh-time-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | time-field 的 control 部件 background-color 覆盖槽。 |
