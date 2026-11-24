@@ -36,7 +36,7 @@ export const XhVirtualizerRoot = defineComponent({
     count: { type: Number },
     estimateSize: { type: [Number, Function] as PropType<number | ((index: number) => number)> },
     overscan: { type: Number },
-    horizontal: { type: Boolean, default: undefined },
+    orientation: { type: String as PropType<VirtualizerSchema['props']['orientation']> },
     gap: { type: Number },
     getItemKey: { type: Function as PropType<(index: number) => string | number> },
     scrollMargin: { type: Number },

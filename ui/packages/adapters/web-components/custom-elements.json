@@ -83209,12 +83209,12 @@
             },
             {
               "kind": "field",
-              "name": "horizontal",
+              "name": "orientation",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "VirtualizerSchema['props']['orientation'] | undefined"
               },
-              "attribute": "horizontal"
+              "attribute": "orientation"
             },
             {
               "kind": "field",
@@ -83514,11 +83514,11 @@
             },
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "VirtualizerSchema['props']['orientation'] | undefined"
               },
-              "description": "横向列表（主轴是行内轴），默认 false",
-              "name": "horizontal",
-              "fieldName": "horizontal"
+              "description": "主轴方向，默认 vertical；horizontal 时主轴是行内轴",
+              "name": "orientation",
+              "fieldName": "orientation"
             },
             {
               "type": {

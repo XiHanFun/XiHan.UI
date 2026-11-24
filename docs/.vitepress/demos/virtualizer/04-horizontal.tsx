@@ -1,4 +1,4 @@
-// 横向列表 | horizontal 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
+// 横向列表 | orientation="horizontal" 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhVirtualizerContent,
@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
       count={500}
       estimateSize={120}
       gap={8}
-      horizontal
+      orientation="horizontal"
       style={{ blockSize: "96px", inlineSize: "100%", maxInlineSize: "420px" }}
     >
       {({ virtualItems }) => (

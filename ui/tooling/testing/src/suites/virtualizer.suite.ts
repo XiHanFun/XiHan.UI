@@ -196,7 +196,7 @@ export const virtualizerSuite: ConformanceSuite = {
     {
       name: '横向列表：方向标记翻过来，位移落在行内轴',
       spec: { apg: WCAG },
-      props: { ...BASE, horizontal: true },
+      props: { ...BASE, orientation: 'horizontal' },
       steps: [
         layoutStep,
         {

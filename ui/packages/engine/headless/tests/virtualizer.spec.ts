@@ -274,7 +274,7 @@ function makeRig(initial: Props = {}, initialSize = 100): Rig {
     },
     setProps: next => props.set({ ...props.get(), ...next }),
     scroll: (offset) => {
-      const horizontal = props.get().horizontal ?? false
+      const horizontal = props.get().orientation === 'horizontal'
       if (horizontal)
         viewport.scrollLeft = offset
       else
@@ -403,9 +403,9 @@ describe('区间与总尺寸', () => {
   })
 
   it('横向列表量的是行内轴，读的是 scrollLeft', async () => {
-    const r = rig({ ...LIST, horizontal: true, overscan: 0 })
+    const r = rig({ ...LIST, orientation: 'horizontal', overscan: 0 })
     await settle()
-    expect(r.api().horizontal).toBe(true)
+    expect(r.api().orientation).toBe('horizontal')
     r.scroll(300)
     expect(r.api().startIndex).toBe(10)
     expect(r.viewport.scrollLeft).toBe(300)
@@ -702,7 +702,7 @@ describe('连接层产出', () => {
     await settle()
     expect((vertical.api().getRootProps() as Dict)['data-orientation']).toBe('vertical')
 
-    const horizontal = rig({ ...LIST, horizontal: true })
+    const horizontal = rig({ ...LIST, orientation: 'horizontal' })
     await settle()
     expect((horizontal.api().getRootProps() as Dict)['data-orientation']).toBe('horizontal')
     expect((horizontal.api().getViewportProps() as Dict)['data-orientation']).toBe('horizontal')

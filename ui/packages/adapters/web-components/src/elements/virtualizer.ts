@@ -44,7 +44,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {number} count - 总条数，默认 0
  * @attr {number} estimate-size - 每条的估算主轴尺寸（px）；不等高的列表改用 estimateSize property 传入函数
  * @attr {number} overscan - 可视区前后各多渲染的条数，默认 5
- * @attr {boolean} horizontal - 横向列表（主轴是行内轴），默认 false
+ * @attr {'vertical'|'horizontal'} orientation - 主轴方向，默认 vertical；horizontal 时主轴是行内轴
  * @attr {number} gap - 相邻两条之间的主轴间距（px），默认 0
  * @attr {number} scroll-margin - 列表起点距滚动容器起点的距离（px），默认 0
  * @attr {number} padding-start - 列表前内边距（px），默认 0
@@ -67,7 +67,7 @@ export class XhVirtualizerElement extends XhElement {
     count: { converter: NUMBER_CONVERTER },
     estimateSize: { converter: NUMBER_CONVERTER, attribute: 'estimate-size' },
     overscan: { converter: NUMBER_CONVERTER },
-    horizontal: { converter: BOOLEAN_CONVERTER },
+    orientation: { converter: STRING_CONVERTER },
     gap: { converter: NUMBER_CONVERTER },
     scrollMargin: { converter: NUMBER_CONVERTER, attribute: 'scroll-margin' },
     paddingStart: { converter: NUMBER_CONVERTER, attribute: 'padding-start' },
@@ -85,7 +85,7 @@ export class XhVirtualizerElement extends XhElement {
   declare count?: number
   declare estimateSize?: number | ((index: number) => number)
   declare overscan?: number
-  declare horizontal?: boolean
+  declare orientation?: VirtualizerSchema['props']['orientation']
   declare gap?: number
   declare scrollMargin?: number
   declare paddingStart?: number
@@ -122,7 +122,7 @@ export class XhVirtualizerElement extends XhElement {
       count: this.count,
       estimateSize: this.estimateSize,
       overscan: this.overscan,
-      horizontal: this.horizontal,
+      orientation: this.orientation,
       gap: this.gap,
       scrollMargin: this.scrollMargin,
       paddingStart: this.paddingStart,

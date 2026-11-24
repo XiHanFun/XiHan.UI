@@ -38,7 +38,7 @@ scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿
 
 ### 横向列表
 
-horizontal 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
+orientation="horizontal" 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
 
 <XhDemo src="virtualizer/04-horizontal" />
 
@@ -135,7 +135,7 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 | `count` | `number` |  | 总条数，默认 0。 |
 | `estimateSize` | `number \| ((index: number) => number)` |  | 每条的估算主轴尺寸（px）。等高列表可以直接提供一个数字。 未提供时按 0 计算：所有条目都会落进窗口，先渲染出来再依靠 measureElement 回填真实尺寸。 |
 | `overscan` | `number` |  | 可视区前后各多渲染的条数，默认 5。 |
-| `horizontal` | `boolean` |  | 横向列表（主轴是行内轴），默认 false。 |
+| `orientation` | `Orientation` |  | 主轴方向：vertical 竖排（缺省），horizontal 横排（主轴是行内轴）。 |
 | `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接计算，不依靠外边距。 |
 | `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时提供稳定 key，测量缓存才能跟随条目。 |
 | `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 应渲染的区间变化。只在快照实际变化时回调，滚动但可见区间未变不会触发。 |
@@ -193,7 +193,7 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 | `totalSize` | `number` | 整份列表的主轴总长（px）。 |
 | `startIndex` | `number \| null` | 可视区首条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
 | `endIndex` | `number \| null` | 可视区末条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
-| `horizontal` | `boolean` |  |
+| `orientation` | `Orientation` | 已解析的主轴方向。 |
 | `lanes` | `number` |  |
 | `scrolling` | `boolean` | 正在滚动。 |
 | `collectionVirtualizer` | `CollectionVirtualizer` | 交给集合组件的正式虚拟化桥。 |
@@ -228,17 +228,17 @@ stickyIndices 登记标题的下标：滚过它之后它钉在起点，下一组
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `root` | `data-orientation` | props.orientation |
 | `root` | `data-scroll-container` | undefined \| props.scrollContainer |
 | `root` | `data-scrolling` | ''（条件成立时才出现） |
 | `viewport` | `data-anchor` | 'end' \| undefined |
-| `viewport` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `viewport` | `data-orientation` | props.orientation |
 | `viewport` | `data-scroll-container` | undefined \| props.scrollContainer |
-| `content` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `content` | `data-orientation` | props.orientation |
 | `item` | `data-fixed` | ''（条件成立时才出现） |
 | `item` | `data-index` | props.index |
 | `item` | `data-lane` | item.lane \| undefined |
-| `item` | `data-orientation` | 'horizontal' \| 'vertical' |
+| `item` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量

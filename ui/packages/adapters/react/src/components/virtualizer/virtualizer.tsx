@@ -39,7 +39,7 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   /** 可视区前后各多渲染几条。 */
   overscan?: number
   /** 横向列表（主轴是行内轴）。 */
-  horizontal?: boolean
+  orientation?: VirtualizerSchema['props']['orientation']
   /** 相邻两条之间的主轴间距（px）。 */
   gap?: number
   /** 条目身份；列表会增删时提供稳定 key，测量缓存才能跟随条目。 */
@@ -70,7 +70,7 @@ export function XhVirtualizerRoot({
   count,
   estimateSize,
   overscan,
-  horizontal,
+  orientation,
   gap,
   getItemKey,
   scrollMargin,
@@ -90,7 +90,7 @@ export function XhVirtualizerRoot({
     count,
     estimateSize,
     overscan,
-    horizontal,
+    orientation,
     gap,
     getItemKey,
     scrollMargin,

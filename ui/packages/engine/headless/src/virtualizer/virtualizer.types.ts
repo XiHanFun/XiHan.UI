@@ -5,7 +5,7 @@
 
 // 定义 virtualizer 类型契约。
 
-import type { MachineSchema, PropTypes } from '@xihan-ui/core'
+import type { MachineSchema, Orientation, PropTypes } from '@xihan-ui/core'
 import type { VirtualizerAlign } from './virtualizer.geometry'
 import type { VirtualizerAnchor, VirtualizerKernel, VirtualizerScrollContainer } from './virtualizer.kernel'
 import type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'
@@ -94,8 +94,8 @@ export interface VirtualizerSchema extends MachineSchema {
     estimateSize?: number | ((index: number) => number)
     /** 可视区前后各多渲染的条数，默认 5。 */
     overscan?: number
-    /** 横向列表（主轴是行内轴），默认 false。 */
-    horizontal?: boolean
+    /** 主轴方向：vertical 竖排（缺省），horizontal 横排（主轴是行内轴）。 */
+    orientation?: Orientation
     /** 相邻两条之间的主轴间距（px），默认 0。位移由内核直接计算，不依靠外边距。 */
     gap?: number
     /** 条目身份。默认即下标；列表会增删时提供稳定 key，测量缓存才能跟随条目。 */
@@ -169,7 +169,8 @@ export interface VirtualizerApi<T extends PropTypes = PropTypes> {
   startIndex: number | null
   /** 可视区末条下标（不含过扫描）；没有任何条目可容纳时为 null。 */
   endIndex: number | null
-  horizontal: boolean
+  /** 已解析的主轴方向。 */
+  orientation: Orientation
   lanes: number
   /** 正在滚动。 */
   scrolling: boolean

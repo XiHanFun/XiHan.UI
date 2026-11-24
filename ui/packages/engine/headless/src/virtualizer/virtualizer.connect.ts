@@ -25,10 +25,10 @@ export function connectVirtualizer<T extends PropTypes>(
   const { state, prop, context, refs, send, scope } = service
 
   const snapshot = context.get('snapshot')
-  const horizontal = prop('horizontal') ?? false
+  const orientation = prop('orientation') ?? 'vertical'
+  const horizontal = orientation === 'horizontal'
   const lanes = resolveVirtualizerLanes(prop('lanes'))
   const scrolling = state.get() === 'scrolling'
-  const orientation = horizontal ? 'horizontal' : 'vertical'
   const scrollContainer = prop('scrollContainer') ?? 'viewport'
   // window 与 ancestor 形态下视口不是滚动容器
   const viewportScrolls = scrollContainer === 'viewport'
@@ -88,7 +88,7 @@ export function connectVirtualizer<T extends PropTypes>(
     totalSize: snapshot.totalSize,
     startIndex: snapshot.startIndex,
     endIndex: snapshot.endIndex,
-    horizontal,
+    orientation,
     lanes,
     scrolling,
     collectionVirtualizer,
