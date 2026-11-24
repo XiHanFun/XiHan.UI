@@ -600,12 +600,13 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | cascader 的 footer 部件 padding-block 覆盖槽。 |
 | `--xh-cascader-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | cascader 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-cascader-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | cascader 的 group 部件 gap 覆盖槽。 |
-| `--xh-cascader-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-subtle` | cascader 的 group-label 部件 color 覆盖槽。 |
+| `--xh-cascader-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | cascader 的 group-label 部件 color 覆盖槽。 |
 | `--xh-cascader-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | cascader 的 group-label 部件 font-size 覆盖槽。 |
-| `--xh-cascader-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-regular` | cascader 的 group-label 部件 font-weight 覆盖槽。 |
+| `--xh-cascader-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | cascader 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_cascader-row-px` | cascader 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | cascader 的 group-label 部件 padding-block 覆盖槽。 |
-| `--xh-cascader-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | cascader 的 group 部件 margin-block-start 覆盖槽。 |
+| `--xh-cascader-group-separator-color` | `group` | `border-block-start` | `default` | `--xh-material-solid-separator` | cascader 的 group 部件 border-block-start 覆盖槽。 |
+| `--xh-cascader-group-spacing` | `group` | `padding-block-start` | `default` | `--xh-space-1_5` | cascader 的 group 部件 padding-block-start 覆盖槽。 |
 | `--xh-cascader-icon-size` | `control`<br>`item`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_collection-glyph-size`<br>`--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | cascader 的 control、item、positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-cascader-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | cascader 的 indicator 部件 color 覆盖槽。 |
 | `--xh-cascader-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-surface` | cascader 的 input 部件 box-shadow 覆盖槽。 |

@@ -169,9 +169,9 @@
     position: relative;
     padding-block: var(--xh-side-nav-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-side-nav-group-label-px, var(--xh-_side-nav-row-px));
-    font-size: var(--xh-text-caption-size);
-    font-weight: var(--xh-text-label-weight);
-    color: var(--xh-fg-subtle);
+    font-size: var(--xh-side-nav-group-label-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-side-nav-group-label-font-weight, var(--xh-font-weight-medium));
+    color: var(--xh-side-nav-group-label-fg, var(--xh-fg-muted));
     user-select: none;
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }

@@ -517,7 +517,7 @@
     display: none;
   }
 
-  /* 后继分组用一条实体细线分段；既有 spacing 槽改管线后的内距，总节奏不另造一套。 */
+  /* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（Combobox、Cascader 同一副）。 */
   [data-scope='select'][data-part='group'] + [data-scope='select'][data-part='group'] {
     padding-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
     border-block-start: var(--xh-stroke-thin) solid

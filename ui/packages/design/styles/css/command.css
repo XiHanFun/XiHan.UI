@@ -244,7 +244,7 @@
 
   /* 组间留白只加在后继分组上：首组顶上已经有列表的内边距，再加一层会显得头重 */
   [data-scope='command'][data-part='group'] + [data-scope='command'][data-part='group'] {
-    margin-block-start: var(--xh-command-group-spacing, var(--xh-space-2));
+    margin-block-start: var(--xh-command-group-spacing, var(--xh-space-1_5));
   }
 
   /* 分组标题不是命令、进不了导航，画成小号次要文字，内缩与条目对齐 */
@@ -252,9 +252,9 @@
     display: block;
     padding-block: var(--xh-command-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-command-group-label-px, var(--xh-_command-px));
-    color: var(--xh-command-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-command-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-command-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-regular));
+    font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
   }

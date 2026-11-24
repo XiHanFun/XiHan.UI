@@ -436,6 +436,9 @@
 | `--xh-side-nav-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | side-nav 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`group-list`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、group-list、list、root 部件 gap 覆盖槽。 |
+| `--xh-side-nav-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | side-nav 的 group-label 部件 color 覆盖槽。 |
+| `--xh-side-nav-group-label-font-size` | `group-label` | `font-size` | `default` | `--xh-text-caption-size` | side-nav 的 group-label 部件 font-size 覆盖槽。 |
+| `--xh-side-nav-group-label-font-weight` | `group-label` | `font-weight` | `default` | `--xh-font-weight-medium` | side-nav 的 group-label 部件 font-weight 覆盖槽。 |
 | `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-icon-size` | `branch-trigger`<br>`link`<br>`positioner`<br>`root` | `--xh-icon-size` | `default`<br>`is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | side-nav 的 branch-trigger、link、positioner、root 部件 --xh-icon-size 覆盖槽。 |

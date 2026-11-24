@@ -92,7 +92,7 @@ border-left-color: oklch(0.461 0.018 258)
 min-height: 0px
 font-size: 12px
 line-height: 12px
-font-weight: 400
+font-weight: 500
 color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
 transition-property: all

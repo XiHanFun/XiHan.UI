@@ -240,7 +240,7 @@
     display: none;
   }
 
-  /* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
+  /* 分组标题不是条目、进不了导航，画成小号中等字重的次要文字，上方让出 8px 与上一组分开；
      内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
   [data-scope='menubar'][data-part='group-label'] {
     display: block;
@@ -249,7 +249,7 @@
     padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
     color: var(--xh-menubar-group-label-fg, var(--xh-material-frosted-fg-muted));
     font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-regular));
+    font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
   }

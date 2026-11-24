@@ -10353,7 +10353,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 color 覆盖槽。"
@@ -10389,7 +10389,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "cascader 的 group-label 部件 font-weight 覆盖槽。"
@@ -10431,13 +10431,31 @@
       "description": "cascader 的 group-label 部件 padding-block 覆盖槽。"
     },
     {
+      "name": "--xh-cascader-group-separator-color",
+      "component": "cascader",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-solid-separator"
+      ],
+      "visibility": "public",
+      "description": "cascader 的 group 部件 border-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-cascader-group-spacing",
       "component": "cascader",
       "part": [
         "group"
       ],
       "property": [
-        "margin-block-start"
+        "padding-block-start"
       ],
       "state": [
         "default"
@@ -10446,7 +10464,7 @@
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "cascader 的 group 部件 margin-block-start 覆盖槽。"
+      "description": "cascader 的 group 部件 padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-cascader-icon-size",
@@ -20431,13 +20449,31 @@
       "description": "combobox 的 group-label 部件 padding-block 覆盖槽。"
     },
     {
+      "name": "--xh-combobox-group-separator-color",
+      "component": "combobox",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-separator"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 group 部件 border-block-start 覆盖槽。"
+    },
+    {
       "name": "--xh-combobox-group-spacing",
       "component": "combobox",
       "part": [
         "group"
       ],
       "property": [
-        "margin-block-start"
+        "padding-block-start"
       ],
       "state": [
         "default"
@@ -20446,7 +20482,7 @@
         "--xh-space-1_5"
       ],
       "visibility": "public",
-      "description": "combobox 的 group 部件 margin-block-start 覆盖槽。"
+      "description": "combobox 的 group 部件 padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-combobox-icon-size",
@@ -21453,7 +21489,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 color 覆盖槽。"
@@ -21489,7 +21525,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "command 的 group-label 部件 font-weight 覆盖槽。"
@@ -21543,7 +21579,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "command 的 group 部件 margin-block-start 覆盖槽。"
@@ -22452,7 +22488,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "context-menu 的 group-label 部件 font-weight 覆盖槽。"
@@ -52025,7 +52061,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "menu 的 group-label 部件 font-weight 覆盖槽。"
@@ -52934,7 +52970,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "menubar 的 group-label 部件 font-weight 覆盖槽。"
@@ -69482,6 +69518,60 @@
       ],
       "visibility": "public",
       "description": "side-nav 的 branch、branch-content、group、group-list、list、root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-group-label-fg",
+      "component": "side-nav",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 group-label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-group-label-font-size",
+      "component": "side-nav",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 group-label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-side-nav-group-label-font-weight",
+      "component": "side-nav",
+      "part": [
+        "group-label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "side-nav 的 group-label 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-group-label-px",

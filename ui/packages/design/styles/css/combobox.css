@@ -393,9 +393,12 @@
     display: none;
   }
 
-  /* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
+  /* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（与 Select 同一副）；
+     首组顶上已经有 content 的内边距，不再加 */
   [data-scope='combobox'][data-part='group'] + [data-scope='combobox'][data-part='group'] {
-    margin-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
+    padding-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
+    border-block-start: var(--xh-stroke-thin) solid
+      var(--xh-combobox-group-separator-color, var(--xh-material-frosted-separator));
   }
 
   /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */

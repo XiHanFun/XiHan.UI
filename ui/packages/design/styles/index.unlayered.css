@@ -22664,9 +22664,12 @@
   display: none;
 }
 
-/* 组间留白只加在后继分组上：首组顶上已经有列的内边距，再加一层会显得头重 */
+/* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（与 Select 同一副）；
+   面板是 floating 实体面，线取实体面的面内分隔。首组顶上已经有列的内边距，不再加 */
 .xh-scope-cascader[data-part='group'] + .xh-scope-cascader[data-part='group'] {
-  margin-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
+  padding-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
+  border-block-start: var(--xh-stroke-thin) solid
+    var(--xh-cascader-group-separator-color, var(--xh-material-solid-separator));
 }
 
 /* 分组标题不是条目、进不了导航，画成小号次要文字，
@@ -22675,9 +22678,9 @@
   display: block;
   padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
-  color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
+  color: var(--xh-cascader-group-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
-  font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-regular));
+  font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -27140,9 +27143,12 @@
   display: none;
 }
 
-/* 组间留白只加在后继分组上：首组顶上已经有 content 的内边距，再加一层会显得头重 */
+/* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（与 Select 同一副）；
+   首组顶上已经有 content 的内边距，不再加 */
 .xh-scope-combobox[data-part='group'] + .xh-scope-combobox[data-part='group'] {
-  margin-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
+  padding-block-start: var(--xh-combobox-group-spacing, var(--xh-space-1_5));
+  border-block-start: var(--xh-stroke-thin) solid
+    var(--xh-combobox-group-separator-color, var(--xh-material-frosted-separator));
 }
 
 /* 分组标题不是候选、进不了导航，画成小号次要文字，内缩与候选对齐（同一个 padding-inline） */
@@ -27636,7 +27642,7 @@
 
 /* 组间留白只加在后继分组上：首组顶上已经有列表的内边距，再加一层会显得头重 */
 .xh-scope-command[data-part='group'] + .xh-scope-command[data-part='group'] {
-  margin-block-start: var(--xh-command-group-spacing, var(--xh-space-2));
+  margin-block-start: var(--xh-command-group-spacing, var(--xh-space-1_5));
 }
 
 /* 分组标题不是命令、进不了导航，画成小号次要文字，内缩与条目对齐 */
@@ -27644,9 +27650,9 @@
   display: block;
   padding-block: var(--xh-command-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-command-group-label-px, var(--xh-_command-px));
-  color: var(--xh-command-group-label-fg, var(--xh-fg-subtle));
+  color: var(--xh-command-group-label-fg, var(--xh-fg-muted));
   font-size: var(--xh-command-group-label-font-size, var(--xh-text-caption-size));
-  font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-regular));
+  font-weight: var(--xh-command-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -28021,7 +28027,7 @@
   display: none;
 }
 
-/* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
+/* 分组标题不是条目、进不了导航，画成小号中等字重的次要文字，上方让出 8px 与上一组分开；
    内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
 .xh-scope-context-menu[data-part='group-label'] {
   display: block;
@@ -28030,7 +28036,7 @@
   padding-inline: var(--xh-context-menu-group-label-px, var(--xh-_context-menu-item-px));
   color: var(--xh-context-menu-group-label-fg, var(--xh-material-frosted-fg-muted));
   font-size: var(--xh-context-menu-group-label-font-size, var(--xh-text-caption-size));
-  font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-regular));
+  font-weight: var(--xh-context-menu-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -36822,7 +36828,7 @@
   display: none;
 }
 
-/* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
+/* 分组标题不是条目、进不了导航，画成小号中等字重的次要文字，上方让出 8px 与上一组分开；
    内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
 .xh-scope-menu[data-part='group-label'] {
   display: block;
@@ -36831,7 +36837,7 @@
   padding-inline: var(--xh-menu-group-label-px, var(--xh-_menu-item-px));
   color: var(--xh-menu-group-label-fg, var(--xh-material-frosted-fg-muted));
   font-size: var(--xh-menu-group-label-font-size, var(--xh-text-caption-size));
-  font-weight: var(--xh-menu-group-label-font-weight, var(--xh-font-weight-regular));
+  font-weight: var(--xh-menu-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -37134,7 +37140,7 @@
   display: none;
 }
 
-/* 分组标题不是条目、进不了导航，画成小号常规字重的次要文字，上方让出 8px 与上一组分开；
+/* 分组标题不是条目、进不了导航，画成小号中等字重的次要文字，上方让出 8px 与上一组分开；
    内缩与条目对齐（同一个 padding-inline），标题与条目文字才在一条竖线上 */
 .xh-scope-menubar[data-part='group-label'] {
   display: block;
@@ -37143,7 +37149,7 @@
   padding-inline: var(--xh-menubar-group-label-px, var(--xh-_menubar-item-px));
   color: var(--xh-menubar-group-label-fg, var(--xh-material-frosted-fg-muted));
   font-size: var(--xh-menubar-group-label-font-size, var(--xh-text-caption-size));
-  font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-regular));
+  font-weight: var(--xh-menubar-group-label-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
   user-select: none;
 }
@@ -43699,7 +43705,7 @@
   display: none;
 }
 
-/* 后继分组用一条实体细线分段；既有 spacing 槽改管线后的内距，总节奏不另造一套。 */
+/* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（Combobox、Cascader 同一副）。 */
 .xh-scope-select[data-part='group'] + .xh-scope-select[data-part='group'] {
   padding-block-start: var(--xh-select-group-spacing, var(--xh-space-1_5));
   border-block-start: var(--xh-stroke-thin) solid
@@ -44435,9 +44441,9 @@
   position: relative;
   padding-block: var(--xh-side-nav-group-label-py, var(--xh-space-1));
   padding-inline: var(--xh-side-nav-group-label-px, var(--xh-_side-nav-row-px));
-  font-size: var(--xh-text-caption-size);
-  font-weight: var(--xh-text-label-weight);
-  color: var(--xh-fg-subtle);
+  font-size: var(--xh-side-nav-group-label-font-size, var(--xh-text-caption-size));
+  font-weight: var(--xh-side-nav-group-label-font-weight, var(--xh-font-weight-medium));
+  color: var(--xh-side-nav-group-label-fg, var(--xh-fg-muted));
   user-select: none;
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }

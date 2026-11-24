@@ -424,9 +424,12 @@
     display: none;
   }
 
-  /* 组间留白只加在后继分组上：首组顶上已经有列的内边距，再加一层会显得头重 */
+  /* 浮层里的候选面板，后继分组用一道面内分隔线分段，spacing 槽管线下的内距（与 Select 同一副）；
+     面板是 floating 实体面，线取实体面的面内分隔。首组顶上已经有列的内边距，不再加 */
   [data-scope='cascader'][data-part='group'] + [data-scope='cascader'][data-part='group'] {
-    margin-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
+    padding-block-start: var(--xh-cascader-group-spacing, var(--xh-space-1_5));
+    border-block-start: var(--xh-stroke-thin) solid
+      var(--xh-cascader-group-separator-color, var(--xh-material-solid-separator));
   }
 
   /* 分组标题不是条目、进不了导航，画成小号次要文字，
@@ -435,9 +438,9 @@
     display: block;
     padding-block: var(--xh-cascader-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-cascader-group-label-px, var(--xh-_cascader-row-px));
-    color: var(--xh-cascader-group-label-fg, var(--xh-fg-subtle));
+    color: var(--xh-cascader-group-label-fg, var(--xh-fg-muted));
     font-size: var(--xh-cascader-group-label-font-size, var(--xh-text-caption-size));
-    font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-regular));
+    font-weight: var(--xh-cascader-group-label-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     user-select: none;
   }

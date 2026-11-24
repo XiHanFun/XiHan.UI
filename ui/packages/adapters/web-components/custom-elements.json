@@ -8943,6 +8943,9 @@
               "name": "--xh-cascader-group-label-py"
             },
             {
+              "name": "--xh-cascader-group-separator-color"
+            },
+            {
               "name": "--xh-cascader-group-spacing"
             },
             {
@@ -16670,6 +16673,9 @@
             },
             {
               "name": "--xh-combobox-group-label-py"
+            },
+            {
+              "name": "--xh-combobox-group-separator-color"
             },
             {
               "name": "--xh-combobox-group-spacing"
@@ -63205,6 +63211,15 @@
             },
             {
               "name": "--xh-side-nav-gap"
+            },
+            {
+              "name": "--xh-side-nav-group-label-fg"
+            },
+            {
+              "name": "--xh-side-nav-group-label-font-size"
+            },
+            {
+              "name": "--xh-side-nav-group-label-font-weight"
             },
             {
               "name": "--xh-side-nav-group-label-px"

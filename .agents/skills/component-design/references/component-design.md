@@ -355,6 +355,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 页头副标题（PageHeader description） | `--xh-text-body-size` 14 / `--xh-fg-subtle` | 与标题同一行，中间 1 × 16px 竖线、两侧 `--xh-space-3` |
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（20 / 24 / 28） | — |
 | 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
+| 集合分组标题（Menu 族、Select、Combobox、Cascader、Listbox、Transfer、Command、SideNav） | `--xh-text-caption-size` 12 / `--xh-font-weight-medium` / 所在面的次要字色（frosted 浮层上取 `--xh-material-frosted-fg-muted`，实体面、floating 与 sheet 上取 `--xh-fg-muted`）；不取 `--xh-fg-subtle`，那一档留给占位字与禁用标签 | 内缩与条目文字对齐；菜单族上方让出 `--xh-space-2`；组与组之间见 §7.5 |
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |
 
 - 必填星号与错误文案是公共层规则：星号 `--xh-glyph-mark-required` 排在标签文字之前（`::before`，带空替代文本、不进控件可及名，必填由 `aria-required` 表达），取 `--xh-text-caption-size` + `--xh-fg-danger`、与文字隔 `--xh-space-1`，自带标签的字段不得各画一套。
@@ -702,6 +703,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 | 随文目录 | Anchor | 块向内距 `--xh-space-1`，贴近正文阅读节奏，不按控件高 |
 
 - 新增集合组件从上表的语境里取一种，不另立行高；同一语境内 sm / md / lg 只随控件档变。
+- 组与组之间：浮层里的候选面板（Select、Combobox、Cascader）在后继分组顶上画一道所在面的面内分隔线（frosted 取 `--xh-material-frosted-separator`，floating 取 `--xh-material-solid-separator`），线下留 `--xh-space-1_5`；页内列表与命令面板（Listbox、Transfer、Command）不画线，后继分组只隔 `--xh-space-1_5`。菜单族不自动画线，要分段由作者放 `separator` 部件。三家的 `--xh-<c>-group-spacing` 都管这一段留白（画线的管线下那一截）。
 - 行高不随选中、当前或语气改变：这些状态只换面与字色。
 
 ### 7.6 数据色

@@ -66,6 +66,17 @@ const FAMILIES = [
     ],
   },
   {
+    // 集合里的分组标题：说明档字号、中等字重、所在面的次要字色。字号与字重全家比；
+    // 字色按所在面分两组比——frosted 浮层上取材质的 muted，实体面、floating 与 sheet 上取 --xh-fg-muted
+    name: '分组标题族',
+    members: ['menu', 'context-menu', 'menubar', 'select', 'combobox', 'cascader', 'listbox', 'transfer', 'command', 'side-nav'],
+    parts: [
+      { part: 'group-label', state: '', props: ['font-size', 'font-weight'] },
+      { part: 'group-label', state: '', props: ['color'], only: ['menu', 'context-menu', 'menubar', 'select', 'combobox'] },
+      { part: 'group-label', state: '', props: ['color'], only: ['cascader', 'listbox', 'transfer', 'command', 'side-nav'] },
+    ],
+  },
+  {
     name: '气泡族',
     members: ['popover', 'popconfirm', 'hover-card'],
     parts: [
