@@ -229,7 +229,7 @@ export interface XhSankeyChartRootProps extends Omit<ComponentPropsWithRef<'figu
   /** 激活的键（受控）：与别的图联动时是节点的身份或「源→目标」。 */
   activeKey?: ChartKey | null
   /** 数据重取中：保留上一帧、整体降低不透明度。 */
-  pending?: boolean
+  loading?: boolean
   /** 播放过渡动画，缺省 true；false 时直接画终态。 */
   animated?: boolean
   locale?: string
@@ -259,7 +259,7 @@ export function XhSankeyChartRoot({
   hiddenSeries,
   defaultHiddenSeries,
   activeKey,
-  pending,
+  loading,
   animated,
   locale,
   translations,
@@ -284,7 +284,7 @@ export function XhSankeyChartRoot({
     hiddenSeries,
     defaultHiddenSeries,
     activeKey,
-    pending,
+    loading,
     animated,
     locale,
     translations,

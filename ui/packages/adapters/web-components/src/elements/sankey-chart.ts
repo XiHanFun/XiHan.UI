@@ -54,7 +54,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'justify'|'start'|'end'|'center'} node-align - 节点分列的方式，默认 justify
  * @attr {'neutral'|'source'|'target'|'gradient'} link-color - 流带的颜色，默认 neutral
  * @attr {'auto'|'input'} node-sort - 列内次序，默认 auto
- * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的节点或流带（受控）：节点的身份或「源→目标」
@@ -62,7 +62,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @fires active-key-change - 指针或键盘换了激活的节点或流带；detail 为 `{ activeKey }`，收起时为 null
  * @fires datum-active - 悬停或聚焦到某个节点或流带；detail 为数据详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个节点或流带上；detail 为数据详情
- * @csspart root - `<figure>`，承载 pending 与错误状态
+ * @csspart root - `<figure>`，承载 loading 与错误状态
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart legend - 图例工具条，项由元素生成
  * @csspart viewport - 尺寸观测的宿主
@@ -91,7 +91,7 @@ export class XhSankeyChartElement extends XhElement {
     linkColor: { converter: STRING_CONVERTER, attribute: 'link-color' },
     nodeSort: { converter: STRING_CONVERTER, attribute: 'node-sort' },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
   }
@@ -107,7 +107,7 @@ export class XhSankeyChartElement extends XhElement {
   declare linkColor?: SankeyLinkColor
   declare nodeSort?: SankeyNodeSort
   declare activeKey?: ChartKey | null
-  declare pending?: boolean
+  declare loading?: boolean
   declare animated?: boolean
   declare locale?: string
 
@@ -146,7 +146,7 @@ export class XhSankeyChartElement extends XhElement {
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
-      pending: this.pending,
+      loading: this.loading,
       animated: this.animated,
       locale: this.locale,
       translations: this.translations,

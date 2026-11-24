@@ -52,7 +52,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} draggable-nodes - 力导布局下可以拖动节点，默认开；`draggable-nodes="false"` 时关掉
  * @attr {boolean} zoom - 画布可以平移缩放（Ctrl / ⌘ 加滚轮、拖动空白处、+ / − 键）
  * @fires view-change - 画布视图变化（缩放、平移、复位）；detail 为 `{ view }`，受控时由宿主写回 view property
- * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的节点（受控）：节点的身份
@@ -60,7 +60,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @fires active-key-change - 指针或键盘换了激活的节点；detail 为 `{ activeKey }`，收起时为 null
  * @fires datum-active - 悬停或聚焦到某个节点；detail 为节点详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个节点上；detail 为节点详情
- * @csspart root - `<figure>`，承载 pending 与错误状态
+ * @csspart root - `<figure>`，承载 loading 与错误状态
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart legend - 图例工具条，项由元素生成
  * @csspart viewport - 尺寸观测的宿主
@@ -93,7 +93,7 @@ export class XhGraphChartElement extends XhElement {
     draggableNodes: { converter: BOOLEAN_CONVERTER, attribute: 'draggable-nodes' },
     zoom: { converter: BOOLEAN_CONVERTER },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
   }
@@ -112,7 +112,7 @@ export class XhGraphChartElement extends XhElement {
   declare view?: GraphView
   declare defaultView?: GraphView
   declare activeKey?: ChartKey | null
-  declare pending?: boolean
+  declare loading?: boolean
   declare animated?: boolean
   declare locale?: string
 
@@ -159,7 +159,7 @@ export class XhGraphChartElement extends XhElement {
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
-      pending: this.pending,
+      loading: this.loading,
       animated: this.animated,
       locale: this.locale,
       translations: this.translations,

@@ -1,4 +1,4 @@
-// 取数中与空态在真浏览器里的样子：网格淡到图表的 pending 透明度、对照条不淡；
+// 取数中与空态在真浏览器里的样子：网格淡到图表的 loading 透明度、对照条不淡；
 // 空态叠在热力图上居中，有数据时收起不占位。只写 root，结构由元素生成。
 import type { XhHeatmapElement } from '../../src/elements/heatmap'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -39,9 +39,9 @@ async function settledOpacity(el: HTMLElement): Promise<number> {
 }
 
 describe('heatmap 取数中与空态', () => {
-  it('pending：网格淡到 --xh-chart-pending-alpha，对照条照常', async () => {
-    const el = await mount(' pending', [{ date: '2024-01-02', count: 3 }])
-    const alpha = Number(getComputedStyle(document.documentElement).getPropertyValue('--xh-chart-pending-alpha').trim())
+  it('loading：网格淡到 --xh-chart-loading-alpha，对照条照常', async () => {
+    const el = await mount(' loading', [{ date: '2024-01-02', count: 3 }])
+    const alpha = Number(getComputedStyle(document.documentElement).getPropertyValue('--xh-chart-loading-alpha').trim())
     expect(alpha).toBeGreaterThan(0)
     expect(alpha).toBeLessThan(1)
     expect(await settledOpacity(part(el, 'grid'))).toBeCloseTo(alpha, 2)

@@ -144,7 +144,7 @@ export function connectCartesianChart<T extends PropTypes>(
   const renderer = cartesianRenderer(prop('renderer'), model)
   const canvas = renderer === 'canvas'
   // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
-  const loading = prop('pending') === true && empty
+  const loading = prop('loading') === true && empty
 
   const focused = context.get('focused')
   const focusWithin = context.get('focusWithin')
@@ -524,8 +524,8 @@ export function connectCartesianChart<T extends PropTypes>(
       'data-palette': prop('palette'),
       // 规格不合法时不画标记：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
-      'data-loading': dataAttr(prop('pending') === true),
-      'aria-busy': prop('pending') === true ? 'true' : undefined,
+      'data-loading': dataAttr(prop('loading') === true),
+      'aria-busy': prop('loading') === true ? 'true' : undefined,
     }),
 
     getCaptionProps: () => normalize.element({

@@ -587,7 +587,7 @@ export const tokens = {
   "--xh-chart-area-alpha": "0.2",
   "--xh-chart-link-alpha": "0.35",
   "--xh-chart-dim-alpha": "0.3",
-  "--xh-chart-pending-alpha": "0.6",
+  "--xh-chart-loading-alpha": "0.6",
   "--xh-direction-sign": "1",
   "--xh-direction-start": "0%",
   "--xh-direction-end": "100%",

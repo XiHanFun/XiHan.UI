@@ -96,7 +96,7 @@ export const XhHeatmapRoot = defineComponent({
     size: { type: String as PropType<Size> },
     animated: { type: Boolean, default: undefined },
     format: { type: [Object, Function] as PropType<NumberFormatSpec | ((value: number) => string)> },
-    pending: { type: Boolean, default: undefined },
+    loading: { type: Boolean, default: undefined },
     activeKey: { type: [String, null] as PropType<string | null> },
     translations: { type: Object as PropType<Partial<HeatmapTranslations>> },
   },

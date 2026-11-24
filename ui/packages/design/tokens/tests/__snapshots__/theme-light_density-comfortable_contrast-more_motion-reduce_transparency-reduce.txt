@@ -78,6 +78,7 @@
 --xh-chart-legend-scale-width: calc(32px * 3)  ← calc(var(--xh-space-8) * 3)
 --xh-chart-line-width: 2px  ← var(--xh-stroke-thick)
 --xh-chart-link-alpha: 0.35
+--xh-chart-loading-alpha: 0.6
 --xh-chart-node-width: 12px  ← var(--xh-space-3)
 --xh-chart-on-categorical-1: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-on-categorical-2: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
@@ -159,7 +160,6 @@
 --xh-chart-palette-muted-on-6: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-muted-on-7: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
 --xh-chart-palette-muted-on-8: oklch(0.145 0.005 258)  ← var(--xh-color-neutral-950)
---xh-chart-pending-alpha: 0.6
 --xh-chart-point-size: 8px  ← var(--xh-space-2)
 --xh-chart-rise: color-mix(in oklab, oklch(0.648 0.165 149) 50%, oklch(1 0 0))  ← color-mix(in oklab, var(--xh-color-success-600) 50%, var(--xh-color-neutral-0))
 --xh-chart-sequential-end: oklch(0.632 0.209 277)  ← var(--xh-color-brand-500)

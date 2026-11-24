@@ -22,7 +22,7 @@ async function mount(): Promise<HTMLElement> {
   host.style.inlineSize = '480px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhPieChartRoot, { data: [], nameField: 'channel', valueField: 'visits', pending: true, animated: false }, { caption: () => '访问来源' }),
+    render: () => h(XhPieChartRoot, { data: [], nameField: 'channel', valueField: 'visits', loading: true, animated: false }, { caption: () => '访问来源' }),
   })
   app.mount(host)
   await nextTick()

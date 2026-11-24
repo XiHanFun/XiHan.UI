@@ -1544,8 +1544,8 @@
       "$type": "number",
       "$value": 0.3
     },
-    "pending-alpha": {
-      "$description": "重新取数期间旧数据保留显示的不透明度。",
+    "loading-alpha": {
+      "$description": "重新取数期间（loading）旧数据保留显示的不透明度。",
       "$type": "number",
       "$value": 0.6
     }

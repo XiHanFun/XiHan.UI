@@ -209,9 +209,9 @@ const cases: readonly ConformanceCase[] = [
     ],
   },
   {
-    name: 'pending：保留上一帧，根上 aria-busy',
+    name: 'loading：保留上一帧，根上 aria-busy',
     spec: { adr: 'chart-pending' },
-    props: { pending: true },
+    props: { loading: true },
     initial: {
       counts: { bar: 6 },
       parts: { root: { 'aria-busy': 'true', 'data-loading': '' } },

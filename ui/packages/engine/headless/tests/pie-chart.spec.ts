@@ -251,7 +251,7 @@ describe('悬停、键盘与图例', () => {
   })
 
   it('取数中还没有扇区：空态写「加载中」并带加载状态', async () => {
-    const rig = await makeRig({ ...BASE, data: [], pending: true })
+    const rig = await makeRig({ ...BASE, data: [], loading: true })
     expect(rig.api().emptyText).toBe('Loading…')
     expect(rig.api().getEmptyProps() as Record<string, unknown>).toMatchObject({ 'data-state': 'loading' })
   })

@@ -133,9 +133,9 @@ export function connectHeatmap<T extends PropTypes>(
   const translations = resolveTranslations(HEATMAP_EN_US, prop('translations'))
   const { gridLabel, cellLabel, matrixCellLabel, legendLabel } = translations
   const format = heatmapValueFormat(options)
-  const pending = prop('pending') === true
+  const busy = prop('loading') === true
   const empty = !heatmapHasData(options)
-  const loading = pending && empty
+  const loading = busy && empty
   // 对照条两端是写进界面的可见文字，缺省跟着月份名、星期名那条 locale 的缺省走。
   // 发散色阶两端各代表中点两侧最远的那个数，「少 / 多」说不清哪端是负，两端恒写数值；
   // legendLow / legendHigh 只换顺序色阶两端的词，全局语言包里的「少 / 多」因此落不到发散色阶上
@@ -331,8 +331,8 @@ export function connectHeatmap<T extends PropTypes>(
       // 数据变化后的换色进行中：格子的颜色按数据角色的时长过渡，主题与语气换色不受它拖慢
       'data-animating': dataAttr(transition === 'update'),
       // 重取数据：网格保留上一帧并淡下去
-      'data-loading': dataAttr(pending),
-      'aria-busy': pending ? 'true' : undefined,
+      'data-loading': dataAttr(busy),
+      'aria-busy': busy ? 'true' : undefined,
     }),
 
     getGridProps: () => normalize.element({

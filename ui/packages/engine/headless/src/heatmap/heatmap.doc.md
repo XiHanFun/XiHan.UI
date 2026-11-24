@@ -39,7 +39,7 @@
 - 一格被按下时（指针点击，或焦点在格上按 Enter）派发 `onDatumPress`（事件名 `datum-press`），悬停或聚焦到某一格派发 `onDatumActive`（`datum-active`，收起时为 null），与其余图表同名同义。载荷与详情同源：联动键 `key`、日期或行列、原始值 `count`、按 `format` 写好的 `formatted.value`、档位、侧别、在色阶中的位置，用来下钻到那一天或那一对行列。它只报告按下，不产生选中状态。
 - 联动键：日期形态是 ISO 日期，矩阵形态是 `heatmapMatrixKey(row, column)`。指针或键盘换格时派发 `onActiveKeyChange`（`active-key-change`）；给了 `activeKey` 即受控，指针与键盘都不在网格上时，键命中的那一格描出与悬停相同的一圈，用来与别的图联动，或标出另一处选中的值。联动不打开详情条：详情条的落点在事件那一刻量 DOM，联动没有这一步。联动键只认字符串：日期一律写 ISO 日期串（`YYYY-MM-DD`），`Date` 对象与数字不命中任何一格——热力图的日期是不带时区的墙上日期，组件不替使用者换算。
 - 数值格式由 `format` 决定（`NumberFormatSpec` 或函数），详情的 `formatted.value`、格子的可访问名称与发散色阶对照条两端的数值共用这一份；缺省按 `locale` 的常规数字写法。
-- `pending` 表示数据重取中：网格与月份行保留上一帧、淡到与其余图表相同的 `--xh-chart-pending-alpha`，对照条照常，根上 `aria-busy`。
+- `loading` 表示数据重取中：网格与月份行保留上一帧、淡到与其余图表相同的 `--xh-chart-loading-alpha`，对照条照常，根上 `aria-busy`。
 - 网格里一条数据都没有时（日期形态看区间内，矩阵形态看行列上）显示 `empty` 部件，叠在热力图上居中，文案取 `translations.emptyText`；取数中还没有数据时改写 `translations.loadingText` 并带一枚加载环。判据是「没有数据」而不是「全为 0」：写了 0 的条目也算数据，0 本身是能画出来的事实。
 - 档数可调：未提供 `thresholds` 时把有数据的那几档在 (0, 最大值] 上等宽分开（分界取整、逐档至少加 1），提供时以其为准。分档由图表引擎的分档比例尺完成；`thresholds` 里有重复或不是有限数的值时剔除并在诊断通道报 `chart.invalid-range`，档数按剩下的算。
 - 在图外报告“总天数 / 空白天数与占比 / 最大值 / 平均值”不需要再次遍历数据：三张网格都带 `max`（最大值）、`total`（总和）与 `emptyCount`（值为 0 的格子数），格子总数从 `cells.size` 读取。`emptyCount` 统计值为 0 的格子：没有数据的日期与写了 0 的日期都计入。它不是色阶第 0 档的格子数：未提供 `thresholds` 时首个下界始终为 1，两个数相等；提供 `thresholds` 后第 0 档还会包含低于首个下界的非零值，两个数不再相等。

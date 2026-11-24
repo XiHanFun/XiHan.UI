@@ -1,4 +1,4 @@
-// 加载态 | pending 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值
+// 加载态 | loading 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值
 import type { ReactNode } from "react";
 import { XhButton, XhCartesianChartRoot } from "@xihan-ui/react";
 import { useEffect, useState } from "react";
@@ -27,28 +27,28 @@ const series = [{ mark: "bar", x: "month", y: "amount", name: "销售额" }] as 
 
 export default function Demo(): ReactNode {
   const [data, setData] = useState<{ month: string; amount: number }[]>([]);
-  const [pending, setPending] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [turn, setTurn] = useState(0);
 
-  // pending 一打开就去取：取回来换上数据、关掉 pending
+  // loading 一打开就去取：取回来换上数据、关掉 loading
   useEffect(() => {
-    if (!pending)
+    if (!loading)
       return;
     const timer = setTimeout(() => {
       setData(batches[turn % batches.length]!);
       setTurn(turn + 1);
-      setPending(false);
+      setLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [pending, turn]);
+  }, [loading, turn]);
 
   return (
     <div style={{ display: "grid", gap: "var(--xh-space-3)", justifyItems: "start", width: "100%" }}>
-      <XhButton variant="subtle" disabled={pending} onClick={() => setPending(true)}>刷新</XhButton>
+      <XhButton variant="subtle" disabled={loading} onClick={() => setLoading(true)}>刷新</XhButton>
       <XhCartesianChartRoot
         data={data}
         series={series}
-        pending={pending}
+        loading={loading}
         caption="月度销售额"
         style={{ width: "100%" }}
       />

@@ -106,7 +106,7 @@ export function connectFunnelChart<T extends PropTypes>(
   }
 
   // 取数中、还没有可画的阶段：空态写「加载中」并转圈，不先报「没有数据」
-  const loading = prop('pending') === true && empty
+  const loading = prop('loading') === true && empty
   const stageT = (id: string): number | undefined => model.derived.visible.find(s => s.spec.id === id)?.t
 
   // 提示框隐去时留着上一回露面的内容、落点与色标的色阶位，退场淡出途中不先变空、不跳回原点、色标不先藏起
@@ -135,8 +135,8 @@ export function connectFunnelChart<T extends PropTypes>(
       'data-xh-chart-part': 'root',
       // 规格不合法时不画：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
-      'data-loading': dataAttr(prop('pending') === true),
-      'aria-busy': prop('pending') === true ? 'true' : undefined,
+      'data-loading': dataAttr(prop('loading') === true),
+      'aria-busy': prop('loading') === true ? 'true' : undefined,
       // 阶段由深入浅取这个色相；不写时取顺序色阶令牌
       'data-palette': prop('palette'),
     }),

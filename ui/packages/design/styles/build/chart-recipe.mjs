@@ -231,7 +231,7 @@ export function compileChartRecipe(source) {
   ])
 
   comment('重取数据：保留上一帧，整体淡下去，不闪骨架、不跳布局')
-  rule(`${part('root')}[data-loading] > ${part('viewport')}`, 'opacity: var(--xh-chart-pending-alpha);')
+  rule(`${part('root')}[data-loading] > ${part('viewport')}`, 'opacity: var(--xh-chart-loading-alpha);')
 
   comment('绘图区脱离文档流：svg 的 width 属性来自测得的视口宽，留在流里会反过来撑住视口，容器收窄时图不跟着缩。\n     斜排的刻度标签与外侧标签会伸出盒子，不裁；焦点环由 focus-ring 部件画在标记外，不靠 SVG 元素自己的 outline')
   rule(part('plot'), [

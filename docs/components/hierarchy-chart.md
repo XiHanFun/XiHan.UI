@@ -82,7 +82,7 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 - 下钻：点有子节点的节点，或键盘聚焦后按 Enter，把它设为当前的根；点叶子报告按下（`onDatumPress`）。下钻路径（`path`）列出从最顶层到当前的根，点上层的项回到那一层；还在最顶层时路径收起。旭日图点中间的空洞上钻一层。`rootKey` / `defaultRootKey` / `onRootKeyChange` 让宿主受控或记住下钻的位置；`api.drillTo(key)` 与 `api.drillUp()` 供作者从外部下钻。
 - 悬停取指针下最深的节点：提示框的头部是从当前的根到这个节点的路径，下面是数值、占上一层与占总体；与它不在同一条祖孙链上的节点淡出到 `--xh-chart-dim-alpha`。
 - `format` 指定数值格式（数字格式或函数），标签、提示框、可及名与数据表共用。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
+- `loading` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时矩形淡入，旭日的扇区顺着扫开，圆堆积的圆从圆心长出，标签淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场。下钻与上钻从当前的画面插值到新画面：留下的节点从原位放大或缩回，新露出的节点出现、离开的淡出。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、下钻路径、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、path、viewport 与其中空的 `<svg>` plot，可选 legend、empty 与 tooltip），路径项、色阶、节点与提示框的缺省内容由元素生成进去。
 - Web Components 侧的数据与数值格式只走 JS property；字段名、布局、铺法、层数、着色、色板、方向与 `root-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
@@ -137,7 +137,7 @@ colorBy="value" 让颜色深浅对应数值，palette 换色相；图例每层�
 | `translations` | `Partial<HierarchyChartTranslations>` |  |  |
 | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
 | `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
-| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `loading` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
 | `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
 | `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |

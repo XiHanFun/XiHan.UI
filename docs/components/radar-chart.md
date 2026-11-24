@@ -80,7 +80,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 - 悬停时按角度落到最近的指标轴，那根轴加粗成准线，取这根轴上离指针最近的顶点；提示框列出全部可见实体在这个指标上的值（缺失的写 `translations.missingValue`），被指着的那一行加粗。其余实体淡出到 `--xh-chart-dim-alpha`，悬停图例项时同样只保留那个实体。
 - `format` 指定数值格式（数字格式或函数），提示框、可及名与数据表共用。
 - 多张图接到同一个受控的 `activeKey` 上时，雷达图按指标的 `key` 与其他图对齐。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
+- `loading` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时各实体的轮廓与顶点从圆心一起张开，网格与指标名淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场（空态里已画出的网格留在原处）；之后的数据变化与图例切换从当前形状插值到新形状，隐藏的实体收回并淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 过渡的快慢由动效令牌决定：入场取 `--xh-motion-duration-reveal`，数据更新与图例切换取 `--xh-motion-duration-morph`，在图或它的容器上改写它们只影响这张图。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），网格、系列、图例项与提示框的缺省内容由元素生成进去。
@@ -133,7 +133,7 @@ ring-labels 在 12 点方向那根轴上写出每一圈的数值，rings 定圈�
 | `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
 | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
 | `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
-| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `loading` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
 | `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
 | `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |

@@ -200,7 +200,7 @@ export interface HeatmapSchema extends MachineSchema {
     /** 数值格式：详情、格子的可及名与发散色阶对照条两端共用；缺省按 locale 的常规数字写法。 */
     format?: NumberFormatSpec | ((value: number) => string)
     /** 数据重取中：保留上一帧，网格整体降低不透明度，根上 aria-busy。 */
-    pending?: boolean
+    loading?: boolean
     /**
      * 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是 `heatmapMatrixKey(row, column)`。
      * 指针与键盘都不在网格上时，键命中的那一格描出与悬停相同的一圈，用来与别的图联动；

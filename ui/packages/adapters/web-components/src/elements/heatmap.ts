@@ -98,7 +98,7 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 色板，取基础色板同名色相作色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} animated - 播放过渡，默认开；`animated="false"` 时直接画终态
- * @attr {boolean} pending - 数据重取中：保留上一帧、网格整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、网格整体降低不透明度
  * @attr {string} active-key - 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是 heatmapMatrixKey(row, column)
  * @fires datum-active - 详情应显示哪一格（悬停或聚焦）；detail 为 `{ key, date, row, column, count, level, polarity, percent, formatted }`，收起时为 null
  * @fires datum-press - 点按一格，或焦点在格上按 Enter；detail 与 datum-active 同形
@@ -153,7 +153,7 @@ export class XhHeatmapElement extends XhElement {
     palette: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
   }
 
@@ -177,7 +177,7 @@ export class XhHeatmapElement extends XhElement {
   declare palette?: HeatmapPalette
   declare size?: Size
   declare animated?: boolean
-  declare pending?: boolean
+  declare loading?: boolean
   declare activeKey?: string | null
 
   private readonly notifyActive = (details: HeatmapDatumDetails | null): void => {
@@ -221,7 +221,7 @@ export class XhHeatmapElement extends XhElement {
       size: this.size,
       animated: this.animated,
       format: this.format,
-      pending: this.pending,
+      loading: this.loading,
       activeKey: this.activeKey,
       translations: this.translations,
       onDatumActive: this.notifyActive,

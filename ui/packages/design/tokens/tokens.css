@@ -723,7 +723,7 @@
     --xh-chart-area-alpha: 0.2;
     --xh-chart-link-alpha: 0.35;
     --xh-chart-dim-alpha: 0.3;
-    --xh-chart-pending-alpha: 0.6;
+    --xh-chart-loading-alpha: 0.6;
   }
 
   /* 材质里跨主题同源的通道：值是指向主题语义的 var() 引用，自定义属性在声明处求值，

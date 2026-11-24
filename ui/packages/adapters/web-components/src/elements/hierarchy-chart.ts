@@ -64,7 +64,7 @@ const TOP_KEY = '\u0000top'
  * @attr {'vertical'|'horizontal'} orientation - 冰柱图的方向，默认 vertical
  * @attr {string} root-key - 当前的根（受控）：节点的身份
  * @attr {string} default-root-key - 初始的根（非受控）
- * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的节点（受控）：与别的图联动时是节点的身份
@@ -72,7 +72,7 @@ const TOP_KEY = '\u0000top'
  * @fires active-key-change - 指针或键盘换了激活的节点；detail 为 `{ activeKey }`，收起时为 null
  * @fires datum-active - 悬停或聚焦到某个节点；detail 为节点详情，收起时为 null
  * @fires datum-press - 指针点击叶子、Enter 按在叶子上或 Space 按在节点上；detail 为节点详情
- * @csspart root - `<figure>`，承载 pending、错误状态与色板
+ * @csspart root - `<figure>`，承载 loading、错误状态与色板
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart path - 下钻路径，路径项由元素生成；还在最顶层时收起
  * @csspart legend - 图例：按值着色时每个看得见的层一条色阶，由元素生成；其余着色方式收起
@@ -108,7 +108,7 @@ export class XhHierarchyChartElement extends XhElement {
     rootKey: { converter: STRING_CONVERTER, attribute: 'root-key' },
     defaultRootKey: { converter: STRING_CONVERTER, attribute: 'default-root-key' },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
   }
@@ -130,7 +130,7 @@ export class XhHierarchyChartElement extends XhElement {
   declare rootKey?: string | null
   declare defaultRootKey?: string | null
   declare activeKey?: ChartKey | null
-  declare pending?: boolean
+  declare loading?: boolean
   declare animated?: boolean
   declare locale?: string
 
@@ -175,7 +175,7 @@ export class XhHierarchyChartElement extends XhElement {
       defaultRootKey: this.defaultRootKey,
       format: this.format,
       activeKey: this.activeKey,
-      pending: this.pending,
+      loading: this.loading,
       animated: this.animated,
       locale: this.locale,
       translations: this.translations,

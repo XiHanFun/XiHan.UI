@@ -73,7 +73,7 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 - 悬停节点时连着它的流带换成它的颜色，其余淡出到 `--xh-chart-dim-alpha`；提示框写合计与流入、流出的明细（各列前 6 条，多出来的合成「其他」）。悬停流带时只留它和两端，提示框写流量与它占源节点流出、占目标节点流入的比例。细的节点沿流向放宽到最小命中尺寸 `--xh-chart-hit-min`。
 - `format` 指定数值格式（数字格式或函数），提示框、可及名与数据表共用。
 - 多张图接到同一个受控的 `activeKey` 上时，节点按身份、流带按「源→目标」与其他图对齐。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有流带才写 `emptyText`。
+- `loading` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有数据时，空态写 `translations.loadingText` 并转一个圈，取完仍没有流带才写 `emptyText`。
 - 首次出现时流带与节点一起淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前的位置与宽度插值到新布局，离开的节点与流带淡出后才移除。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、图例、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、legend、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），渐变、流带、节点、图例项与提示框的缺省内容由元素生成进去。
 - Web Components 侧的节点、流带与数值格式只走 JS property；流向、分列、列内次序、流带着色与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
@@ -121,7 +121,7 @@ linkColor="gradient" 让流带从源节点的颜色渐变到目标节点的颜�
 | `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
 | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
 | `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
-| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `loading` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
 | `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
 | `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |

@@ -187,8 +187,8 @@ describe('提示框', () => {
 })
 
 describe('状态', () => {
-  it('pending：视口淡下去，根上 aria-busy', async () => {
-    mount({ data: SALES, series: [{ mark: 'bar', x: 'month', y: 'amount' }], pending: true })
+  it('loading：视口淡下去，根上 aria-busy', async () => {
+    mount({ data: SALES, series: [{ mark: 'bar', x: 'month', y: 'amount' }], loading: true })
     await settle()
     expect(one('root').getAttribute('aria-busy')).toBe('true')
     expect(Number(getComputedStyle(one('viewport')).opacity)).toBeLessThan(1)

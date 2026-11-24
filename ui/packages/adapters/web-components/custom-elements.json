@@ -6321,7 +6321,7 @@
           "name": "XhCartesianChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 orientation、pending 与错误状态",
+              "description": "`<figure>`，承载 orientation、loading 与错误状态",
               "name": "root"
             },
             {
@@ -6568,12 +6568,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -7321,8 +7321,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -33495,7 +33495,7 @@
           "name": "XhFunnelChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending、错误状态与色板",
+              "description": "`<figure>`，承载 loading、错误状态与色板",
               "name": "root"
             },
             {
@@ -33652,12 +33652,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -34135,8 +34135,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -34227,7 +34227,7 @@
           "name": "XhGraphChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending 与错误状态",
+              "description": "`<figure>`，承载 loading 与错误状态",
               "name": "root"
             },
             {
@@ -34385,12 +34385,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -34904,8 +34904,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -36104,12 +36104,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -36404,8 +36404,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、网格整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -36561,7 +36561,7 @@
           "name": "XhHierarchyChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending、错误状态与色板",
+              "description": "`<figure>`，承载 loading、错误状态与色板",
               "name": "root"
             },
             {
@@ -36755,12 +36755,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -37316,8 +37316,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -52034,7 +52034,7 @@
           "name": "XhPieChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending 与错误状态",
+              "description": "`<figure>`，承载 loading 与错误状态",
               "name": "root"
             },
             {
@@ -52208,12 +52208,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -52798,8 +52798,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -56361,7 +56361,7 @@
           "name": "XhRadarChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending 与错误状态",
+              "description": "`<figure>`，承载 loading 与错误状态",
               "name": "root"
             },
             {
@@ -56521,12 +56521,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -57061,8 +57061,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -59278,7 +59278,7 @@
           "name": "XhSankeyChartElement",
           "cssParts": [
             {
-              "description": "`<figure>`，承载 pending 与错误状态",
+              "description": "`<figure>`，承载 loading 与错误状态",
               "name": "root"
             },
             {
@@ -59411,12 +59411,12 @@
             },
             {
               "kind": "field",
-              "name": "pending",
+              "name": "loading",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "pending"
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -59927,8 +59927,8 @@
                 "text": "boolean | undefined"
               },
               "description": "数据重取中：保留上一帧、整体降低不透明度",
-              "name": "pending",
-              "fieldName": "pending"
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {

@@ -13,7 +13,7 @@ interface HeatmapHost extends HTMLElement {
   value?: unknown[]
   rows?: string[]
   columns?: string[]
-  pending?: boolean
+  loading?: boolean
 }
 
 const RANGE = { startDate: '2024-01-01', endDate: '2024-01-31' }
@@ -117,7 +117,7 @@ describe('xh-heatmap 生成结构', () => {
     const empty = root(el).querySelector<HTMLElement>('[data-part="empty"]')!
     expect(empty.hasAttribute('hidden')).toBe(false)
     expect(empty.textContent).toBe('No data')
-    el.pending = true
+    el.loading = true
     await settle(el)
     expect(empty.textContent).toBe('Loading…')
     expect(root(el).getAttribute('aria-busy')).toBe('true')

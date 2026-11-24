@@ -644,16 +644,16 @@ describe('无障碍', () => {
   })
 
   it('取数中还没有数据：空态写「加载中」并带加载状态；取完仍没有数据写「没有数据」', async () => {
-    const rig = await makeRig({ data: [], series: BARS.series, pending: true })
+    const rig = await makeRig({ data: [], series: BARS.series, loading: true })
     expect(rig.api().emptyText).toBe('Loading…')
     expect(rig.api().getEmptyProps() as Dict).toMatchObject({ 'data-state': 'loading' })
-    rig.setProps({ pending: false })
+    rig.setProps({ loading: false })
     expect(rig.api().emptyText).toBe('No data')
     expect((rig.api().getEmptyProps() as Dict)['data-state']).toBeUndefined()
   })
 
-  it('pending：根上 aria-busy', async () => {
-    const rig = await makeRig({ ...BARS, pending: true })
+  it('loading：根上 aria-busy', async () => {
+    const rig = await makeRig({ ...BARS, loading: true })
     expect((rig.api().getRootProps() as Dict)['aria-busy']).toBe('true')
   })
 })

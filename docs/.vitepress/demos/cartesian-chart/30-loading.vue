@@ -1,4 +1,4 @@
-<!-- 加载态 | pending 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值 -->
+<!-- 加载态 | loading 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值 -->
 <script setup lang="ts">
 import { XhButton, XhCartesianChartRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -24,14 +24,14 @@ const batches = [
 ];
 
 const data = ref<{ month: string; amount: number }[]>([]);
-const pending = ref(false);
+const loading = ref(false);
 let turn = 0;
 
 function load(): void {
-  pending.value = true;
+  loading.value = true;
   setTimeout(() => {
     data.value = batches[turn++ % batches.length]!;
-    pending.value = false;
+    loading.value = false;
   }, 1000);
 }
 
@@ -40,11 +40,11 @@ load();
 
 <template>
   <div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
-    <XhButton variant="subtle" :disabled="pending" @click="load">刷新</XhButton>
+    <XhButton variant="subtle" :disabled="loading" @click="load">刷新</XhButton>
     <XhCartesianChartRoot
       :data="data"
       :series="[{ mark: 'bar', x: 'month', y: 'amount', name: '销售额' }]"
-      :pending="pending"
+      :loading="loading"
       style="width: 100%"
     >
       <template #caption>月度销售额</template>

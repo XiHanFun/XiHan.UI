@@ -75,7 +75,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 - `hiddenSeries` 隐藏的阶段不画，转化率跳过它按相邻的可见阶段重算。
 - `format` 指定数值格式（数字格式或函数），标签、提示框、可及名与数据表共用；转化率固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，漏斗图按阶段名与其他图的类目对齐。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有阶段时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
+- `loading` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有阶段时，空态写 `translations.loadingText` 并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时各阶段从中线（`align="start"` 时从起始边）一起横向展开，标签与转化率淡入，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化从当前宽度插值到新宽度。`animated={false}`（Web Components 写 `animated="false"`）关闭过渡；系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。
 - 三个适配器的作者侧写法不同，最终 DOM 一致：Vue 与 React 不写默认内容时铺开缺省结构（标题、视口与绘图区、空态、提示框），提示框内容可由作用域插槽 / 函数式 children 替换；Web Components 侧作者写外壳（root、caption、viewport 与其中空的 `<svg>` plot，可选 empty 与 tooltip），阶段、标签与转化率由元素生成进去。
 - Web Components 侧的数据与数值格式只走 JS property；字段名、形状、对齐、方向、转化率、标签、色板与 `active-key` 另有同名属性。宿主元素缺省是行内元素，放进 flex / grid 时要给它一个宽度。
@@ -127,7 +127,7 @@ direction="up" 画成金字塔：第一阶段在最下面，往上逐级收窄�
 | `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
 | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
 | `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
-| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `loading` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
 | `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
 | `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |

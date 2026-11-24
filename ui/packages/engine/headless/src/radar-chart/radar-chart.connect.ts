@@ -144,7 +144,7 @@ export function connectRadarChart<T extends PropTypes>(
   const patternStyle = (slot: number): Record<string, unknown> =>
     ({ 'data-xh-chart-pattern': String(slot), 'style': { '--xh-_chart-pattern': chartPatternFill(ids.plot, slot) } })
   // 取数中、还没有可画的数据：空态写「加载中」并转圈，不先报「没有数据」
-  const loading = prop('pending') === true && empty
+  const loading = prop('loading') === true && empty
 
   // 提示框隐去时留着上一回露面的内容与落点，退场淡出途中不先变空、不跳回原点
   const shownTooltip = retainChartTooltip(service, tooltip, tip)
@@ -174,8 +174,8 @@ export function connectRadarChart<T extends PropTypes>(
       'data-xh-chart-part': 'root',
       // 规格不合法时不画：诊断通道报出原因，根上留一个可观察的状态
       'data-state': invalid ? 'error' : undefined,
-      'data-loading': dataAttr(prop('pending') === true),
-      'aria-busy': prop('pending') === true ? 'true' : undefined,
+      'data-loading': dataAttr(prop('loading') === true),
+      'aria-busy': prop('loading') === true ? 'true' : undefined,
     }),
 
     getCaptionProps: () => normalize.element({

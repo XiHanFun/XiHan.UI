@@ -795,7 +795,7 @@ export const heatmapSuite: ConformanceSuite = {
       name: '空态：区间内一条数据都没有时显示，取数中改写加载文案并在根上报 aria-busy',
       spec: { adr: 'visual-axes' },
       fixture: buildEmptyFixture,
-      props: { ...RANGE, pending: true },
+      props: { ...RANGE, loading: true },
       initial: {
         parts: {
           root: { 'data-loading': '', 'aria-busy': 'true' },

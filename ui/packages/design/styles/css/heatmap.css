@@ -189,7 +189,7 @@
   }
 
   [data-scope='heatmap'][data-part='root'][data-loading] > :is([data-part='grid'], [data-part='row']):where([data-scope='heatmap']) {
-    opacity: var(--xh-chart-pending-alpha);
+    opacity: var(--xh-chart-loading-alpha);
   }
 
   [data-scope='heatmap'][data-part='row'] {

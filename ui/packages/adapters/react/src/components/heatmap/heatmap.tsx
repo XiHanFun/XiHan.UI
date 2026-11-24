@@ -107,7 +107,7 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   /** 数值格式：详情、格子的可及名与发散色阶对照条两端共用。 */
   format?: NumberFormatSpec | ((value: number) => string)
   /** 数据重取中：保留上一帧、网格整体降低不透明度。 */
-  pending?: boolean
+  loading?: boolean
   /** 激活的键（受控）：日期形态是 ISO 日期，矩阵形态是行列合成的串。 */
   activeKey?: string | null
   translations?: Partial<HeatmapTranslations>
@@ -146,7 +146,7 @@ export function XhHeatmapRoot({
   size,
   animated,
   format,
-  pending,
+  loading,
   activeKey,
   translations,
   onDatumActive,
@@ -178,7 +178,7 @@ export function XhHeatmapRoot({
     size,
     animated,
     format,
-    pending,
+    loading,
     activeKey,
     translations,
     onDatumActive,

@@ -54,7 +54,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'previous'|'first'|'none'} conversion - 转化率的基准，默认 previous
  * @attr {'inside'|'outside'} labels - 阶段标签，默认 inside（放不下时写到阶段外侧）
  * @attr {'red'|'orange'|'amber'|'yellow'|'lime'|'green'|'teal'|'cyan'|'blue'|'indigo'|'purple'|'pink'|'gray'} palette - 顺序色阶的色板：阶段由深入浅取这个色相
- * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的阶段（受控）：与别的图联动时是阶段名
@@ -62,7 +62,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @fires active-key-change - 指针或键盘换了激活的阶段；detail 为 `{ activeKey }`，收起时为 null
  * @fires datum-active - 悬停或聚焦到某个阶段；detail 为阶段详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个阶段上；detail 为阶段详情
- * @csspart root - `<figure>`，承载 pending、错误状态与色板
+ * @csspart root - `<figure>`，承载 loading、错误状态与色板
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart viewport - 尺寸观测的宿主
  * @csspart plot - 绘图区 `<svg>`，阶段、标签与转化率由元素生成
@@ -93,7 +93,7 @@ export class XhFunnelChartElement extends XhElement {
     labels: { converter: STRING_CONVERTER },
     palette: { converter: STRING_CONVERTER },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
   }
@@ -112,7 +112,7 @@ export class XhFunnelChartElement extends XhElement {
   declare labels?: FunnelLabels
   declare palette?: ChartPalette
   declare activeKey?: ChartKey | null
-  declare pending?: boolean
+  declare loading?: boolean
   declare animated?: boolean
   declare locale?: string
 
@@ -154,7 +154,7 @@ export class XhFunnelChartElement extends XhElement {
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
-      pending: this.pending,
+      loading: this.loading,
       animated: this.animated,
       locale: this.locale,
       translations: this.translations,

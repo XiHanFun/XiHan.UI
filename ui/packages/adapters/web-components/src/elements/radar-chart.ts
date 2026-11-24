@@ -57,7 +57,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'linear'|'catmull-rom'} curve - 轮廓的画法，默认 linear
  * @attr {number} rings - 网格分几圈，2–10，默认 4
  * @attr {boolean} ring-labels - 在 12 点方向那根轴上写出每一圈的数值；只在各指标量程相同时写
- * @attr {boolean} pending - 数据重取中：保留上一帧、整体降低不透明度
+ * @attr {boolean} loading - 数据重取中：保留上一帧、整体降低不透明度
  * @attr {boolean} animated - 播放过渡动画，默认开；`animated="false"` 时直接画终态
  * @attr {string} locale - 数字与内建文案的语言；未提供时按宿主语言
  * @attr {string} active-key - 激活的指标（受控）：与别的图联动时是指标的 key
@@ -65,7 +65,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires active-key-change - 指针或键盘换了激活的指标；detail 为 `{ activeKey }`，收起时为 null
  * @fires datum-active - 悬停或聚焦到某个顶点；detail 为数据详情，收起时为 null
  * @fires datum-press - 指针点击、Enter 或 Space 按在某个顶点上；detail 为数据详情
- * @csspart root - `<figure>`，承载 pending 与错误状态
+ * @csspart root - `<figure>`，承载 loading 与错误状态
  * @csspart caption - `<figcaption>`，图表的可及名来源
  * @csspart legend - 图例工具条，项由元素生成
  * @csspart viewport - 尺寸观测的宿主
@@ -97,7 +97,7 @@ export class XhRadarChartElement extends XhElement {
     rings: { converter: NUMBER_CONVERTER },
     ringLabels: { converter: BOOLEAN_CONVERTER, attribute: 'ring-labels' },
     activeKey: { converter: STRING_CONVERTER, attribute: 'active-key' },
-    pending: { converter: BOOLEAN_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     animated: { converter: BOOLEAN_CONVERTER },
     locale: { converter: STRING_CONVERTER },
   }
@@ -116,7 +116,7 @@ export class XhRadarChartElement extends XhElement {
   declare rings?: number
   declare ringLabels?: boolean
   declare activeKey?: ChartKey | null
-  declare pending?: boolean
+  declare loading?: boolean
   declare animated?: boolean
   declare locale?: string
 
@@ -158,7 +158,7 @@ export class XhRadarChartElement extends XhElement {
       hiddenSeries: this.hiddenSeries,
       defaultHiddenSeries: this.defaultHiddenSeries,
       activeKey: this.activeKey,
-      pending: this.pending,
+      loading: this.loading,
       animated: this.animated,
       locale: this.locale,
       translations: this.translations,

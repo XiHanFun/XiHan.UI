@@ -1,4 +1,4 @@
-<!-- 加载态 | pending 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值 -->
+<!-- 加载态 | loading 表示正在取数：首次还没有数据时空态写「加载中」并转圈，之后重取时保留上一帧、整体变淡，取回来再过渡到新值 -->
 <div style="display: grid; gap: var(--xh-space-3); justify-items: start; width: 100%">
   <xh-button id="cartesian-chart-loading-refresh" variant="subtle">
     <button data-xh-part="root">刷新</button>
@@ -42,11 +42,11 @@
 
   let turn = 0;
   function load() {
-    chart.pending = true;
+    chart.loading = true;
     refresh.disabled = true;
     setTimeout(() => {
       chart.data = batches[turn++ % batches.length];
-      chart.pending = false;
+      chart.loading = false;
       refresh.disabled = false;
     }, 1000);
   }

@@ -1671,8 +1671,8 @@ describe('图表家族的约定', () => {
     expect(harness.cell('周一/下午').hasAttribute('data-highlighted')).toBe(false)
   })
 
-  it('pending：根上 data-loading 与 aria-busy，网格照常在场', () => {
-    const api = apiOf(mount({ ...RANGE, value: VALUE, pending: true }).service)
+  it('loading：根上 data-loading 与 aria-busy，网格照常在场', () => {
+    const api = apiOf(mount({ ...RANGE, value: VALUE, loading: true }).service)
     const root = api.getRootProps() as Record<string, unknown>
     expect(root['data-loading']).toBe('')
     expect(root['aria-busy']).toBe('true')
@@ -1698,7 +1698,7 @@ describe('图表家族的约定', () => {
   })
 
   it('取数中且还没有数据：空态写加载文案并带加载环', () => {
-    const api = apiOf(mount({ ...RANGE, pending: true, translations: { loadingText: '取数中' } }).service)
+    const api = apiOf(mount({ ...RANGE, loading: true, translations: { loadingText: '取数中' } }).service)
     const empty = api.getEmptyProps() as Record<string, unknown>
     expect(empty['data-state']).toBe('loading')
     expect(empty['data-loading']).toBe('')

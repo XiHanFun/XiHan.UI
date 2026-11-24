@@ -111,7 +111,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 - 环形中心是 HTML 叠层，缺省显示合计与说明文字（`translations.centerLabel`，缺省 Total）；悬停、键盘聚焦或联动到一个扇区时换成它的占比与名字，离开后回到合计；Vue 用 `center` 插槽、React 用 `renderCenter`、Web Components 在 center 部件里写内容，都可以替换。
 - `format` 指定数值格式（数字格式或函数），提示框、标签、中心合计与数据表共用；占比固定写成一位小数的百分数。
 - 多张图接到同一个受控的 `activeKey` 上时，饼图按扇区名与其他图的类目对齐：在柱状图上悬停「华东」，饼图的「华东」扇区一起指示。
-- `pending` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有扇区时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
+- `loading` 表示正在重新取数：保留上一帧、整体降低不透明度并在根上写 `aria-busy`。首次取数、手里还没有扇区时，空态写 `translations.loadingText`（缺省 Loading…）并转一个圈，取完仍没有数据才写 `emptyText`。
 - 首次出现时整圈从起始角顺着扫开，标签与引导线等扫开的边缘到了才出现，环形中心等整圈扫完再淡入，合计从 0 数上去，数据晚于挂载到达（异步取数，或 Web Components 连上之后才赋 `data`）时同样播这段入场；之后的数据变化与图例切换从当前角度插值到新角度，合计从旧值滚到新值，隐藏的扇区收拢并淡出后才移除。按数据次序排列（`sort="none"`）时扇区不换位，只在原处伸缩。
 - `animated={false}`（Web Components 写 `animated="false"`）关闭过渡，数据一变直接画终态。系统开了减弱动效或容器写了 `data-motion="reduce"` 时几何直接到位，只保留淡入淡出。视口尺寸变化后的重排不播过渡。
 - 过渡的快慢由动效令牌决定，组件从绘图区的计算样式读取：入场取 `--xh-motion-duration-reveal`（缺省 960ms），数据更新与图例切换取 `--xh-motion-duration-morph`（缺省 400ms）。在图或它的容器上改写它们，例如 `style="--xh-motion-duration-reveal: 1s"`，只影响这张图；入场的曲线取 `--xh-motion-ease-enter`，更新取 `--xh-motion-ease-continuous`。
@@ -166,7 +166,7 @@ labelContent 决定标签写什么：取 name-value 等内建写法，或给函�
 | `onHiddenSeriesChange` | `(details: ChartHiddenSeriesChangeDetails) => void` |  | 图例切换显隐时通知。 |
 | `activeKey` | `ChartKey \| null` |  | 激活的自变量键（受控）。多张图接到同一份状态上时，十字准线与提示框随之联动： 两个量纲不共用一根 y 轴，而是两张图在同一个键上一起指示。 |
 | `onActiveKeyChange` | `(details: ChartActiveKeyChangeDetails) => void` |  | 指针或键盘把激活的键换掉时通知；收起时为 null。 |
-| `pending` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
+| `loading` | `boolean` |  | 数据重取中：保留上一帧，整体降低不透明度，根上 aria-busy。 |
 | `animated` | `boolean` |  | 播放过渡动画，缺省 true：首次出现时柱从基线长出、扇区扫开、折线描出，数据变化与图例切换时从当前位置插值到新位置。 false 时直接画终态。系统开了减弱动效或容器写了 data-motion="reduce" 时几何直接落到终态，只保留淡入淡出。 |
 | `locale` | `string` |  | 数字、日期格式与内建文案的语言；未提供时按宿主语言。 |
 | `onDatumActive` | `(details: ChartDatumDetails \| null) => void` |  | 悬停或聚焦到某个数据时通知；收起时为 null。同一个数据不重复通知。 |
