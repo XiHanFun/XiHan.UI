@@ -48,7 +48,7 @@ export interface XhRadioGroupRootProps<V = string> extends RootElementProps {
   /** 方向键到达末尾是否回绕，默认开启。 */
   loop?: boolean
   /** 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效。 */
-  block?: boolean
+  fullWidth?: boolean
   tone?: Tone
   size?: Size
   /** 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段。 */
@@ -74,7 +74,7 @@ export function XhRadioGroupRoot<V = string>({
   dir,
   name,
   loop,
-  block,
+  fullWidth,
   tone,
   size,
   variant,
@@ -97,7 +97,7 @@ export function XhRadioGroupRoot<V = string>({
     dir,
     name,
     loop,
-    block,
+    fullWidth,
     tone,
     size,
     variant,

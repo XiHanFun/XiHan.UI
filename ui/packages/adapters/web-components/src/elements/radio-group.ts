@@ -45,7 +45,7 @@ import { MachineController } from '../runtime/machine-controller'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义与滑块的起始缘；未提供时从 DOM 读取祖先链上的方向
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
- * @attr {boolean} block - 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效
+ * @attr {boolean} full-width - 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'list'|'card'|'segmented'} variant - 结构形态，默认 list；card 把每个条目画成一张可点的卡，segmented 画成轨道里的一排段
@@ -91,7 +91,7 @@ export class XhRadioGroupElement<V = string> extends XhElement {
     direction: { attribute: 'dir' },
     name: {},
     loop: { converter: BOOLEAN_CONVERTER },
-    block: { converter: BOOLEAN_CONVERTER },
+    fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
     tone: {},
     size: {},
     variant: {},
@@ -110,7 +110,7 @@ export class XhRadioGroupElement<V = string> extends XhElement {
   declare direction?: Direction
   declare name?: string
   declare loop?: boolean
-  declare block?: boolean
+  declare fullWidth?: boolean
   declare tone?: Tone
   declare size?: Size
   declare variant?: RadioGroupVariant
@@ -158,7 +158,7 @@ export class XhRadioGroupElement<V = string> extends XhElement {
       dir: this.direction,
       name: this.name,
       loop: this.loop,
-      block: this.block,
+      fullWidth: this.fullWidth,
       tone: this.tone,
       size: this.size,
       variant: this.variant,

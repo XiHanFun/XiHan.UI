@@ -129,7 +129,7 @@ function connectRadioGroupKeys<T extends PropTypes>(
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-variant': variant,
-      'data-block': dataAttr(!!prop('block')),
+      'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-disabled': dataAttr(groupDisabled),
       // role=radiogroup 本身接受这三条，不必像 role=group 那样下放到条目
       'aria-readonly': readOnly ? 'true' : 'false',

@@ -114,7 +114,7 @@ export interface RadioGroupSchema<V = string> extends MachineSchema {
     /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
     /** 撑满行宽，各段等分剩余空间；只在 segmented 形态下生效。 */
-    block?: boolean
+    fullWidth?: boolean
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */

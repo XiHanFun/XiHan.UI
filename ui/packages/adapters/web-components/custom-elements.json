@@ -57353,12 +57353,12 @@
             },
             {
               "kind": "field",
-              "name": "block",
+              "name": "fullWidth",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "block"
+              "attribute": "full-width"
             },
             {
               "kind": "field",
@@ -57644,8 +57644,8 @@
                 "text": "boolean | undefined"
               },
               "description": "撑满行宽，各段等分剩余空间；只在 segmented 形态下生效",
-              "name": "block",
-              "fieldName": "block"
+              "name": "full-width",
+              "fieldName": "fullWidth"
             },
             {
               "type": {

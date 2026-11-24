@@ -225,11 +225,11 @@ describe('radio-group segmented 形态 · 投影', () => {
       expect(day.hasAttribute(name)).toBe(false)
   })
 
-  it('block 原样投影到根，缺省不输出', () => {
+  it('fullWidth 原样投影到根，缺省不输出', () => {
     const h = mount()
-    expect(h.root.hasAttribute('data-block')).toBe(false)
-    h.setProps({ block: true })
-    expect(h.root.getAttribute('data-block')).toBe('')
+    expect(h.root.hasAttribute('data-full-width')).toBe(false)
+    h.setProps({ fullWidth: true })
+    expect(h.root.getAttribute('data-full-width')).toBe('')
   })
 
   it('api.variant 是结算后的形态：没传即 list', () => {
@@ -371,7 +371,7 @@ describe('radio-group segmented 形态 · 滑块', () => {
     await measured(h)
     expect(slot(h.thumb, '--xh-_radio-group-thumb-x')).toBe('200px')
 
-    // 首段文本变长把后两段整体推右；block 模式下根的宽度钉在父级上，根本身一动不动
+    // 首段文本变长把后两段整体推右；fullWidth 模式下根的宽度钉在父级上，根本身一动不动
     stubOffset(h.item('day'), h.root, { left: 0, top: 0, width: 160, height: 40 })
     stubOffset(h.item('week'), h.root, { left: 160, top: 0, width: 100, height: 40 })
     stubOffset(h.item('month'), h.root, { left: 260, top: 0, width: 100, height: 40 })

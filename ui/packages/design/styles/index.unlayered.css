@@ -41939,14 +41939,14 @@
 }
 
 /* 撑满行宽：各段等分剩余空间，长短不一的文字也排得齐 */
-.xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-block] {
+.xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-full-width] {
   display: flex;
   inline-size: 100%;
 }
 
 /* 等分只在横排成立：竖排的主轴是块轴，flex-basis: 0 会顶掉段自己的高度档，
    竖排下段本来就靠上面那条 inline-size: 100% 与 align-items: stretch 撑满宽度 */
-.xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-block][data-orientation='horizontal']
+.xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-full-width][data-orientation='horizontal']
   > .xh-scope-radio-group[data-part='item'] {
   flex: 1 1 0;
 }

@@ -734,7 +734,7 @@ export const radioGroupSuite: ConformanceSuite = {
             'data-variant': 'segmented',
             'aria-orientation': 'horizontal',
             'data-orientation': 'horizontal',
-            'data-block': null,
+            'data-full-width': null,
           },
           'item': [
             {
@@ -821,9 +821,9 @@ export const radioGroupSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'segmented 形态：block 与三轴原样透传到 data-*，显式给的 orientation 压过形态缺省',
+      name: 'segmented 形态：fullWidth 与三轴原样透传到 data-*，显式给的 orientation 压过形态缺省',
       spec: { apg: APG },
-      props: { variant: 'segmented', tone: 'success', size: 'lg', block: true, orientation: 'vertical' },
+      props: { variant: 'segmented', tone: 'success', size: 'lg', fullWidth: true, orientation: 'vertical' },
       fixture: segmentedFixture,
       initial: {
         parts: {
@@ -831,7 +831,7 @@ export const radioGroupSuite: ConformanceSuite = {
             'data-variant': 'segmented',
             'data-tone': 'success',
             'data-size': 'lg',
-            'data-block': '',
+            'data-full-width': '',
             'aria-orientation': 'vertical',
             'data-orientation': 'vertical',
           },

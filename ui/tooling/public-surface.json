@@ -15055,11 +15055,11 @@
     ],
     "radio-group": [
       "ariaLabel",
-      "block",
       "collection",
       "defaultValue",
       "dir",
       "disabled",
+      "fullWidth",
       "invalid",
       "labelled",
       "loop",
@@ -15949,7 +15949,6 @@
     "data-axis",
     "data-banded",
     "data-banner",
-    "data-block",
     "data-block-folding",
     "data-bold",
     "data-bound",
@@ -23941,10 +23940,10 @@
     },
     "xh-radio-group": {
       "attributes": [
-        "block",
         "default-value",
         "dir",
         "disabled",
+        "full-width",
         "invalid",
         "label",
         "loop",

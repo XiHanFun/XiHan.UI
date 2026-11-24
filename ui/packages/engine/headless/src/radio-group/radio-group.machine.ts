@@ -55,7 +55,7 @@ export const radioGroupMachine = createMachine({
   watch: ({ track, context, prop, action }) => {
     // 选中值一变就把滑块挪过去
     track([context.dep('value')], () => action(['measureThumb']))
-    // 条目增删改名同样要重量：block 模式下根的宽度钉在父级上，段宽全变了根却一动不动，
+    // 条目增删改名同样要重量：fullWidth 模式下根的宽度钉在父级上，段宽全变了根却一动不动，
     // 尺寸观察器一声不响，滑块会停在旧位置。排布方向一换，段全换了位置
     track([() => collectionKeyOf(prop('collection')), () => resolveRadioGroupOrientation(prop('orientation'), prop('variant'))], () => action(['measureThumb']))
     // 形态一换：进 segmented 挂上尺寸观察并量出落点，离开时摘掉观察、收起滑块

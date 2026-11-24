@@ -41,7 +41,7 @@ const XhRadioGroupRootImpl = defineComponent({
     dir: { type: String as PropType<Direction> },
     name: { type: String },
     loop: { type: Boolean, default: undefined },
-    block: { type: Boolean, default: undefined },
+    fullWidth: { type: Boolean, default: undefined },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<RadioGroupVariant> },
