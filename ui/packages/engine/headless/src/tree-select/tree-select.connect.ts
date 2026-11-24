@@ -809,6 +809,8 @@ export function connectTreeSelect<T extends PropTypes>(
     // collection 与手写节点都用上方统一空态；取数在途时让位。
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'role': 'status',
       'data-state': stateAttr,
       'hidden': loading || !empty || undefined,
@@ -817,6 +819,7 @@ export function connectTreeSelect<T extends PropTypes>(
     // 在途占位：与空态占位同一个位置、同一套收放判据，只是条件相反
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       'role': 'status',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',

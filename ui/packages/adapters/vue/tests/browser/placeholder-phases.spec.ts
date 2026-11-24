@@ -1,5 +1,6 @@
-// 占位态的四个相位在各集合组件上是同一副样子：
-// 首次加载 = 加载环 + 一句文案；空 = 一句文案；两者文字取次要文字、块向内距 space-3、字号随档；
+// 占位态的四个相位在各集合组件上是同一副样子，由占位态家族配方画（连接层投影 data-xh-placeholder）：
+// 首次加载 = 加载环 + 一句文案；空 = 一句文案；错误 = 一枚警示字形 + 一句文案；
+// 文字取所在面的次要文字（不取 --xh-fg-subtle）、块向内距 space-3、字号随档、单行行距，内容居中；
 // 刷新 = 已有条目时保留上一帧、容器报 aria-busy，在途占位让位；条目此刻仍可操作，不淡化。
 //
 // 判据是伪元素、计算样式与过渡结果，jsdom 不给这些。
@@ -35,6 +36,12 @@ import {
   XhCommandList,
   XhCommandLoading,
   XhCommandRoot,
+  XhGridListEmpty,
+  XhGridListLoading,
+  XhGridListRoot,
+  XhGridListRow,
+  XhGridListRowContent,
+  XhGridListRowText,
   XhListboxContent,
   XhListboxEmpty,
   XhListboxItem,
@@ -52,14 +59,21 @@ import {
   XhSelectContent,
   XhSelectControl,
   XhSelectEmpty,
+  XhSelectError,
   XhSelectItem,
   XhSelectItemText,
   XhSelectList,
   XhSelectLoading,
   XhSelectPositioner,
+  XhSelectRetryTrigger,
   XhSelectRoot,
   XhSelectTrigger,
   XhSelectValueText,
+  XhTableBody,
+  XhTableEmpty,
+  XhTableLoading,
+  XhTableRoot,
+  XhTableRow,
   XhTransferEmpty,
   XhTransferItem,
   XhTransferItemText,
@@ -68,7 +82,13 @@ import {
   XhTransferRoot,
   XhTransferSourcePanel,
   XhTransferTargetPanel,
+  XhTreeEmpty,
+  XhTreeItem,
+  XhTreeItemText,
+  XhTreeLoading,
+  XhTreeRoot,
   XhTreeSelectRoot,
+  XhTreeTree,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -81,6 +101,8 @@ interface Case {
   muted: string
   /** 刷新相位里保留上一帧的那一层：它照常可操作，不该淡下去。 */
   dim: string
+  /** 刷新期间不接交互的内容（Tree 与 GridList 的行）按规则淡下去，不在「不淡化」那条里比。 */
+  refreshDims?: boolean
   /** 挂上之后把浮层打开（没有受控开合的组件靠真实输入唤起）。 */
   open?: () => Promise<void>
 }
@@ -136,7 +158,7 @@ const CASES: Case[] = [
         ])),
       ],
     }),
-    muted: '--xh-fg-subtle',
+    muted: '--xh-fg-muted',
     dim: 'column',
   },
   {
@@ -210,6 +232,40 @@ const CASES: Case[] = [
     muted: '--xh-fg-muted',
     dim: 'list',
   },
+  {
+    scope: 'tree',
+    render: ({ loading, items }) => h(XhTreeRoot, { collection: items ? ITEMS : [], loading }, () => [
+      h(XhTreeTree, null, () => (items ? ITEMS : []).map(node =>
+        h(XhTreeItem, { key: node.value, value: node.value }, () => h(XhTreeItemText, null, () => node.label)))),
+      h(XhTreeLoading, null, () => '正在读取'),
+      h(XhTreeEmpty, null, () => '没有节点'),
+    ]),
+    muted: '--xh-fg-muted',
+    dim: 'tree',
+    refreshDims: true,
+  },
+  {
+    scope: 'grid-list',
+    render: ({ loading, items }) => h(XhGridListRoot, { collection: items ? ITEMS : [], loading }, () => [
+      ...(items ? ITEMS : []).map(node =>
+        h(XhGridListRow, { key: node.value, value: node.value }, () => h(XhGridListRowContent, null, () => h(XhGridListRowText, null, () => node.label)))),
+      h(XhGridListLoading, null, () => '正在读取'),
+      h(XhGridListEmpty, null, () => '没有记录'),
+    ]),
+    muted: '--xh-fg-muted',
+    dim: 'row',
+    refreshDims: true,
+  },
+  {
+    scope: 'table',
+    render: ({ loading, items }) => h(XhTableRoot, { columns: [{ id: 'label', label: '名称' }], rows: items ? ITEMS : [], loading, rowKey: 'value' }, () => [
+      h(XhTableBody, null, () => (items ? ITEMS : []).map(node => h(XhTableRow, { key: node.value, value: node.value }, () => node.label))),
+      h(XhTableLoading, null, () => '正在读取'),
+      h(XhTableEmpty, null, () => '没有记录'),
+    ]),
+    muted: '--xh-fg-muted',
+    dim: 'body',
+  },
 ]
 
 let app: App | null = null
@@ -267,6 +323,9 @@ describe.each(CASES)('$scope 的占位态', (c) => {
     expect(style.color).toBe(resolved(loading, 'color', `var(${c.muted})`))
     expect(style.paddingTop).toBe(resolved(loading, 'padding-top', 'var(--xh-space-3)'))
     expect(style.fontSize).toBe(resolved(loading, 'font-size', 'var(--xh-control-font-md)'))
+    expect(loading.dataset.xhPlaceholder).toBe('loading')
+    expect(style.lineHeight).toBe(style.fontSize)
+    expect(style.justifyContent).toBe('center')
   })
 
   it('空：文字取次要文字、块向内距 space-3', async () => {
@@ -277,9 +336,13 @@ describe.each(CASES)('$scope 的占位态', (c) => {
     expect(style.color).toBe(resolved(empty, 'color', `var(${c.muted})`))
     expect(style.paddingTop).toBe(resolved(empty, 'padding-top', 'var(--xh-space-3)'))
     expect(style.paddingBottom).toBe(resolved(empty, 'padding-bottom', 'var(--xh-space-3)'))
+    expect(empty.dataset.xhPlaceholder).toBe('empty')
+    expect(style.lineHeight).toBe(style.fontSize)
+    expect(style.justifyContent).toBe('center')
+    expect(style.animationName).toBe('xh-fade-in')
   })
 
-  it('刷新：保留上一帧，在途占位让位，容器报 aria-busy，内容不淡化', async () => {
+  it.skipIf(c.refreshDims)('刷新：保留上一帧，在途占位让位，容器报 aria-busy，内容不淡化', async () => {
     const state = await mount(c, { loading: false, items: true })
     const target = part(c.scope, c.dim)
     expect(getComputedStyle(target).opacity).toBe('1')
@@ -291,5 +354,36 @@ describe.each(CASES)('$scope 的占位态', (c) => {
     // 条目此刻仍可操作：淡到禁用透明度会把文字压到 4.5:1 以下（WCAG 1.4.3 只豁免失效控件）
     expect(target.getAnimations().some(a => (a as CSSTransition).transitionProperty === 'opacity')).toBe(false)
     expect(getComputedStyle(target).opacity).toBe('1')
+  })
+})
+
+describe('select 的错误相位', () => {
+  it('一枚警示字形排在文案之前（危险色），文字仍取次要文字，与空、在途占位同一副排版', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhSelectRoot, { collection: [], error: true, defaultOpen: true }, () => [
+        h(XhSelectControl, null, () => h(XhSelectTrigger, null, () => h(XhSelectValueText))),
+        h(XhSelectPositioner, null, () => h(XhSelectContent, null, () => [
+          h(XhSelectList),
+          h(XhSelectError, null, () => '读取失败'),
+          h(XhSelectRetryTrigger, null, () => '重试'),
+        ])),
+      ]),
+    })
+    app.mount(host)
+    await nextTick()
+    await nextTick()
+    const error = part('select', 'error')
+    expect(error.hidden).toBe(false)
+    expect(error.dataset.xhPlaceholder).toBe('error')
+    const style = getComputedStyle(error)
+    expect(style.color).toBe(resolved(error, 'color', 'var(--xh-material-frosted-fg-muted)'))
+    expect(style.paddingTop).toBe(resolved(error, 'padding-top', 'var(--xh-space-3)'))
+    expect(style.lineHeight).toBe(style.fontSize)
+    const glyph = getComputedStyle(error, '::before')
+    expect(glyph.backgroundColor).toBe(resolved(error, 'background-color', 'var(--xh-fg-danger)'))
+    expect(glyph.maskImage || glyph.getPropertyValue('-webkit-mask-image')).toContain('url(')
+    expect(Number.parseFloat(glyph.inlineSize)).toBeGreaterThan(0)
   })
 })

@@ -421,10 +421,12 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-side` | panel.side |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `to-target-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `to-target-trigger` | `data-xh-action-control` | '' |
@@ -470,10 +472,10 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-checkbox-radius` | `item-checkbox`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item-checkbox、select-all-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-check-mark-box-size`<br>`--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-check-mark-box-size、--xh-icon-size、block-size、inline-size 覆盖槽。 |
-| `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | transfer 的 empty 部件 color 覆盖槽。 |
-| `--xh-transfer-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | transfer 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-transfer-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | transfer 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-transfer-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-transfer-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-transfer-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | transfer 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-transfer-fg` | `root` | `color` | `default` | `--xh-fg-default` | transfer 的 root 部件 color 覆盖槽。 |
 | `--xh-transfer-gap` | `root` | `gap` | `default` | `--xh-space-5` | transfer 的 root 部件 gap 覆盖槽。 |
 | `--xh-transfer-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | transfer 的 group 部件 gap 覆盖槽。 |
@@ -500,10 +502,10 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-list-h` | `list` | `block-size` | `default` | `--xh-viewport-h-sm` | transfer 的 list 部件 block-size 覆盖槽。 |
 | `--xh-transfer-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | transfer 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-list-py` | `list` | `padding-block` | `default` | `--xh-space-0` | transfer 的 list 部件 padding-block 覆盖槽。 |
-| `--xh-transfer-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | transfer 的 loading 部件 color 覆盖槽。 |
-| `--xh-transfer-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-transfer-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-transfer-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | transfer 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-transfer-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | transfer 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-transfer-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-transfer-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_transfer-px` | transfer 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-transfer-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | transfer 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-transfer-panel-bg` | `source-panel`<br>`target-panel` | `background` | `default` | `--xh-bg-surface` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-bg-disabled` | `source-panel`<br>`target-panel` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-border` | `source-panel`<br>`target-panel` | `border` | `default` | `--xh-border-default` | transfer 的 source-panel、target-panel 部件 border 覆盖槽。 |
@@ -548,7 +550,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

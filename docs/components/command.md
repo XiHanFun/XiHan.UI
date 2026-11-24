@@ -360,9 +360,11 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `item-suffix` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-suffix` | `data-xh-collection-slot` | 'suffix' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
@@ -377,10 +379,10 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-backdrop-layer` | `backdrop` | `z-index` | `default` | `--xh-_layer` | command 的 backdrop 部件 z-index 覆盖槽。 |
 | `--xh-command-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | command 的 content 部件 background 覆盖槽。 |
 | `--xh-command-border` | `content` | `border` | `default` | `--xh-material-elevated-border` | command 的 content 部件 border 覆盖槽。 |
-| `--xh-command-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | command 的 empty 部件 color 覆盖槽。 |
-| `--xh-command-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_command-font-size` | command 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-command-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_command-px` | command 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-command-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | command 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-command-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | command 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-command-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_command-font-size` | command 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-command-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_command-px` | command 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-command-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | command 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-command-fg` | `content` | `color` | `default` | `--xh-material-elevated-fg` | command 的 content 部件 color 覆盖槽。 |
 | `--xh-command-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-elevated-border` | command 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-command-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | command 的 footer 部件 color 覆盖槽。 |
@@ -418,10 +420,10 @@ filter 关闭：传入的 collection 就是当前应显示的条目，筛选归�
 | `--xh-command-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | command 的 list 部件 gap 覆盖槽。 |
 | `--xh-command-list-px` | `list` | `padding-inline` | `default` | `--xh-space-1` | command 的 list 部件 padding-inline 覆盖槽。 |
 | `--xh-command-list-py` | `list` | `padding-block` | `default` | `--xh-space-1` | command 的 list 部件 padding-block 覆盖槽。 |
-| `--xh-command-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | command 的 loading 部件 color 覆盖槽。 |
-| `--xh-command-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-command-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_command-px` | command 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-command-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | command 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-command-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | command 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-command-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_command-font-size` | command 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-command-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_command-px` | command 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-command-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | command 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-command-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | command 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-command-max-w` | `content` | `max-inline-size` | `default` | `--xh-_command-max-w` | command 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-command-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | command 的 input 部件 color 覆盖槽。 |

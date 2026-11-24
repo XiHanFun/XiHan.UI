@@ -309,8 +309,10 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 | `row-action` | `data-xh-action-profile` | 'text' |
 | `row-action` | `data-xh-action-size` | 'xs' |
 | `row-action` | `data-xh-action-variant` | 'ghost' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -350,18 +352,18 @@ actionOnClick 让点行触发行主操作（看详情），勾选只由行首方
 | `--xh-grid-list-row-indicator-size` | `row-selection-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_grid-list-indicator` | grid-list 的 row-selection-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-grid-list-row-loading-opacity` | `root`<br>`row` | `opacity` | `loading` | `--xh-state-disabled-opacity` | grid-list 的 root、row 部件 opacity 覆盖槽。 |
 | `--xh-grid-list-row-radius` | `row` | `border-radius` | `default` | `--xh-shape-control` | grid-list 的 row 部件 border-radius 覆盖槽。 |
-| `--xh-grid-list-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | grid-list 的 empty、loading 部件 color 覆盖槽。 |
-| `--xh-grid-list-state-font-size` | `empty`<br>`loading` | `font-size` | `default` | `--xh-_grid-list-state-font-size` | grid-list 的 empty、loading 部件 font-size 覆盖槽。 |
-| `--xh-grid-list-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-control-gap-md` | grid-list 的 empty、loading 部件 gap 覆盖槽。 |
-| `--xh-grid-list-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-_grid-list-state-px` | grid-list 的 empty、loading 部件 padding-inline 覆盖槽。 |
-| `--xh-grid-list-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | grid-list 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-grid-list-state-fg` | `empty`<br>`loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | grid-list 的 empty、loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-grid-list-state-font-size` | `empty`<br>`loading` | `--xh-placeholder-font-size` | `default` | `--xh-_grid-list-state-font-size` | grid-list 的 empty、loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-grid-list-state-gap` | `empty`<br>`loading` | `--xh-placeholder-gap` | `default` | `--xh-control-gap-md` | grid-list 的 empty、loading 部件 --xh-placeholder-gap 覆盖槽。 |
+| `--xh-grid-list-state-px` | `empty`<br>`loading` | `--xh-placeholder-px` | `default` | `--xh-_grid-list-state-px` | grid-list 的 empty、loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-grid-list-state-py` | `empty`<br>`loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | grid-list 的 empty、loading 部件 --xh-placeholder-py 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 出现 · 列表（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `clip-path` · `color` · `mask-size` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -524,8 +524,10 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `item-indicator` | `data-xh-check-mark` | 'indeterminate' \| 'checked' \| 'unchecked' \| undefined |
 | `item-indicator` | `data-xh-check-mark-profile` | 'box' \| undefined |
 | `item-indicator` | `data-xh-collection-slot` | 'check-lead' \| 'indicator' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `branch-loading` | `data-level` | String(column.level) |
 | `branch-error` | `data-level` | String(column.level) |
 | `branch-retry-trigger` | `data-disabled` | ''（条件成立时才出现） |
@@ -589,9 +591,9 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | cascader 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | cascader 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | cascader 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-cascader-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | cascader 的 empty 部件 color 覆盖槽。 |
+| `--xh-cascader-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | cascader 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
 | `--xh-cascader-empty-min-h` | `empty` | `min-block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 empty 部件 min-block-size 覆盖槽。 |
-| `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |
+| `--xh-cascader-empty-p` | `empty` | `--xh-placeholder-px`<br>`--xh-placeholder-py` | `default` | `--xh-_cascader-row-px`<br>`--xh-space-3` | cascader 的 empty 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。 |
 | `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-cascader-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | cascader 的 footer 部件 color 覆盖槽。 |
 | `--xh-cascader-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 footer 部件 font-size 覆盖槽。 |
@@ -629,7 +631,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-item-checkbox-radius` | `item-indicator` | `border-radius` | `xh-check-mark` | `--xh-shape-inset` | cascader 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-item-fg` | `item`<br>`search-item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`in-path`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | cascader 的 item、search-item 部件 color 覆盖槽。 |
 | `--xh-cascader-item-fg-selected` | `item`<br>`search-item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-cascader-item-fg` | cascader 的 item、search-item 部件 color 覆盖槽。 |
-| `--xh-cascader-item-font-size` | `empty`<br>`item`<br>`search-item` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 empty、item、search-item 部件 font-size 覆盖槽。 |
+| `--xh-cascader-item-font-size` | `empty`<br>`item`<br>`search-item` | `--xh-placeholder-font-size`<br>`font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 empty、item、search-item 部件 --xh-placeholder-font-size、font-size 覆盖槽。 |
 | `--xh-cascader-item-font-weight-selected` | `item`<br>`search-item` | `font-weight` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=overlay` | `--xh-font-weight-medium` | cascader 的 item、search-item 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-item-gap` | `item`<br>`search-item` | `margin-inline-end`<br>`margin-inline-start`<br>`padding-inline-end` | `branch`<br>`default`<br>`xh-collection-slot=check`<br>`xh-collection-slot=check-lead`<br>`xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_cascader-gap` | cascader 的 item、search-item 部件 margin-inline-end、margin-inline-start、padding-inline-end 覆盖槽。 |
 | `--xh-cascader-item-h` | `item`<br>`search-item` | `min-block-size` | `default` | `--xh-_cascader-row-h` | cascader 的 item、search-item 部件 min-block-size 覆盖槽。 |
@@ -646,10 +648,10 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | cascader 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-cascader-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | cascader 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-cascader-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | cascader 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-cascader-loading-fg` | `loading` | `color` | `default` | `--xh-fg-subtle` | cascader 的 loading 部件 color 覆盖槽。 |
-| `--xh-cascader-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 loading 部件 font-size 覆盖槽。 |
+| `--xh-cascader-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | cascader 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-cascader-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
 | `--xh-cascader-loading-min-h` | `loading` | `min-block-size` | `default` | `--xh-viewport-h-sm` | cascader 的 loading 部件 min-block-size 覆盖槽。 |
-| `--xh-cascader-loading-p` | `loading` | `padding` | `default` | `--xh-space-3` | cascader 的 loading 部件 padding 覆盖槽。 |
+| `--xh-cascader-loading-p` | `loading` | `--xh-placeholder-px`<br>`--xh-placeholder-py` | `default` | `--xh-_cascader-row-px`<br>`--xh-space-3` | cascader 的 loading 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。 |
 | `--xh-cascader-loading-ring-fg` | `loading` | `border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`where([data-motion='reduce'])`<br>`xh-loading-ring`<br>`xh-loading-ring=overlay` | `--xh-fg-brand` | cascader 的 loading 部件 border、border-color 覆盖槽。 |
 | `--xh-cascader-placeholder-fg` | `input`<br>`value-text` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | cascader 的 input、value-text 部件 color 覆盖槽。 |
 | `--xh-cascader-search-divider` | `input` | `border-block-end` | `default` | `--xh-material-solid-border` | cascader 的 input 部件 border-block-end 覆盖槽。 |

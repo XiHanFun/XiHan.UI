@@ -860,15 +860,18 @@ export function connectCascader<T extends PropTypes>(
     // 空态占位：搜索视图看候选、列视图看根列，哪边有条目就藏起来
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       // 空态文字不属于任一 listbox，作为礼貌状态区单独播报。
-      role: 'status',
-      hidden: loading || (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
+      'role': 'status',
+      'hidden': loading || (searching ? searchResults.length > 0 : collection.length > 0) || undefined,
     }),
 
     // 在途占位只接管当前视图确实没有候选的首次加载。已有候选或祖先列时保持它们可用，
     // content 上的 aria-busy 已足以表达后台刷新，不再往列尾额外塞一块状态区。
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       'role': 'status',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',

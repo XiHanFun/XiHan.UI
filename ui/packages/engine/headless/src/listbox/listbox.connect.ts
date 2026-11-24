@@ -377,6 +377,8 @@ function connectListboxKeys<T extends PropTypes>(
     // 取数在途时让位给在途占位，两者不同屏
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'data-disabled': dataAttr(listDisabled),
       'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
     }),
@@ -385,6 +387,7 @@ function connectListboxKeys<T extends PropTypes>(
     // 已经有条目可看时不顶上来，翻下一页的回执归 load-more-trigger
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(loading),

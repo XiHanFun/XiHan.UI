@@ -514,6 +514,8 @@ export function connectTransfer<T extends PropTypes>(
     // 本侧一条可见条目都没有时露面：搬空了、或搜索把它筛干净了都算
     getEmptyProps: panel => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'data-side': panel.side,
       'data-disabled': dataAttr(disabled),
       // 取数在途时让位给在途占位，两者不同屏
@@ -524,6 +526,7 @@ export function connectTransfer<T extends PropTypes>(
     // 已有看得见的条目时列表原样留着、只报 aria-busy，占位让位
     getLoadingProps: panel => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       'data-side': panel.side,
       'data-disabled': dataAttr(disabled),
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出

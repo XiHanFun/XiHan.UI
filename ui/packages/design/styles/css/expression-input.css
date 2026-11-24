@@ -11,6 +11,7 @@
 @import '../family/collection-item.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 @import '../family/material.css';
 
@@ -337,27 +338,16 @@
     text-overflow: ellipsis;
   }
 
+  /* 空态占位：排版由占位态家族配方画（连接层投影 data-xh-placeholder），这里只把使用者槽桥到配方；
+     与 content 叠在同一格里，同级定位把文字画在表面之上 */
   [data-scope='expression-input'][data-part='empty'] {
+    --xh-placeholder-py: var(--xh-expression-input-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-expression-input-empty-px, var(--xh-_expression-input-px));
+    --xh-placeholder-fg: var(--xh-expression-input-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-expression-input-empty-font-size, var(--xh-_expression-input-font-size));
+
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     grid-area: 1 / 1;
-    padding-block: var(--xh-expression-input-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-expression-input-empty-px, var(--xh-_expression-input-px));
-    color: var(--xh-expression-input-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-expression-input-empty-font-size, var(--xh-_expression-input-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  [data-scope='expression-input'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='expression-input'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='expression-input'][data-part='empty']:empty {

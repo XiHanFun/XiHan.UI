@@ -565,6 +565,8 @@ function connectSelectKeys<T extends PropTypes>(
     // 给了 collection 才由连接层判定露不露面；条目手写时库数不出有几条，那一档不写 hidden，归作者自己收放
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'data-state': stateAttr,
       'hidden': counted ? (loading || failed || collection.length > 0) || undefined : (loading || failed) || undefined,
     }),
@@ -573,6 +575,7 @@ function connectSelectKeys<T extends PropTypes>(
     // 已经有条目可看时不顶上来
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(loading),
@@ -583,6 +586,7 @@ function connectSelectKeys<T extends PropTypes>(
     // 整表取数失败的提示：与空态、在途占位同一个位置，三者至多露一种
     getErrorProps: () => normalize.element({
       ...parts.error.attrs,
+      'data-xh-placeholder': 'error',
       'role': 'alert',
       'data-state': stateAttr,
       'hidden': !failed || undefined,

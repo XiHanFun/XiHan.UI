@@ -8,6 +8,7 @@
 @import '../family/action-control.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
@@ -512,66 +513,29 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 空态提示保持为 listbox 的同级 role=status；它只承载文字，表面由同格 content 统一绘制。 */
-  [data-scope='combobox'][data-part='empty'] {
-    /* 与带滤镜的 content 同属定位绘制层，按 DOM 顺序将状态文字画在表面之上。 */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-area: 1 / 1;
-    padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-empty-px, var(--xh-_combobox-item-px));
-    color: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-    pointer-events: none;
-  }
-
-  /* 漏了这条，候选一有结果空态提示就永远撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
-  [data-scope='combobox'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='combobox'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位与空态占同一个表面、两者不同屏；同样只承载状态文字。 */
+  /* 占位（空、在途）：listbox 的同级 role=status，只承载状态文字，同一副排版由占位态家族配方画
+     （连接层投影 data-xh-placeholder）；表面由同格 content 统一绘制。
+     与带滤镜的 content 同属定位绘制层、叠在同一格里，按 DOM 顺序把状态文字画在表面之上 */
+  [data-scope='combobox'][data-part='empty'],
   [data-scope='combobox'][data-part='loading'] {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_combobox-gap);
     grid-area: 1 / 1;
-    padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-loading-px, var(--xh-_combobox-item-px));
-    color: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
     pointer-events: none;
   }
 
-  [data-scope='combobox'][data-part='loading'][hidden] {
-    display: none;
+  [data-scope='combobox'][data-part='empty'] {
+    --xh-placeholder-py: var(--xh-combobox-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-combobox-empty-px, var(--xh-_combobox-item-px));
+    --xh-placeholder-fg: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
   }
 
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='combobox'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='combobox'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  [data-scope='combobox'][data-part='loading'] {
+    --xh-placeholder-py: var(--xh-combobox-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-combobox-loading-px, var(--xh-_combobox-item-px));
+    --xh-placeholder-fg: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
+    --xh-placeholder-gap: var(--xh-_combobox-gap);
   }
 
   /* 自动结构没收到状态文案时，空 status 不生成盒；打开着的空 listbox 也不画无意义表面。

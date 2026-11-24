@@ -115,10 +115,10 @@ describe('级联选择首次加载表面', () => {
     expect(style.backgroundImage).toBe('none')
   })
 
-  it('加载与空态共用弱一档的次要文字，视图切换不额外产生表面', async () => {
+  it('加载与空态共用次要文字（不取留给占位字与禁用标签的 subtle），视图切换不额外产生表面', async () => {
     const state = await mountCascader({ theme: 'dark' })
     const probe = document.createElement('span')
-    probe.style.color = 'var(--xh-fg-subtle)'
+    probe.style.color = 'var(--xh-fg-muted)'
     part('content').append(probe)
     const muted = getComputedStyle(probe).color
     probe.remove()

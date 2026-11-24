@@ -9,6 +9,7 @@
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -1194,44 +1195,23 @@
     display: none;
   }
 
-  /* 两个占位节点常挂，只在表体为空时才显形，占同一个位置、同一副排版：一行文案居中，字号随表格的尺寸档
-     （从 root 继承），次要文字色，块向内距一档、行内与单元格文字对齐，不设最小高——占位不撑出空白 */
+  /* 两个占位节点常挂，只在表体为空时才显形，占同一个位置、同一副排版，由占位态家族配方画
+     （连接层投影 data-xh-placeholder）：字号与表格的尺寸档同档，这里只把使用者槽桥到配方。
+     最小高缺省 0——占位不撑出空白；作者要一块固定高的空表体经 --xh-table-state-min-h 给 */
   [data-scope='table'][data-part='empty'],
   [data-scope='table'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-table-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-gap: var(--xh-table-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-py: var(--xh-table-state-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-table-state-px, var(--xh-control-px-sm));
+    --xh-placeholder-fg: var(--xh-table-state-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-table-font-size, var(--xh-_table-font-size));
+
     min-block-size: var(--xh-table-state-min-h, 0);
-    padding-block: var(--xh-table-state-py, var(--xh-space-3));
-    padding-inline: var(--xh-table-state-px, var(--xh-control-px-sm));
-    color: var(--xh-table-state-fg, var(--xh-fg-muted));
-    text-align: center;
   }
 
-  [data-scope='table'][data-part='empty'][hidden],
-  [data-scope='table'][data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='table'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='table'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
-     这里只给它盒子：直径取表格尺寸档的图标档；转一圈的时长走公开槽 */
-  [data-scope='table'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    animation-duration: var(--xh-table-loading-duration, var(--xh-motion-loop-spin));
+  /* 加载环转一圈的时长走公开槽，画法归加载环配方 */
+  [data-scope='table'][data-part='loading'] {
+    --xh-_loading-ring-duration: var(--xh-table-loading-duration, var(--xh-motion-loop-spin));
   }
 
   /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、

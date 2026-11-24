@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
+ * 占位态家族配方：集合与浮层「此刻没有可看的内容」时画的那一句——空、加载、错误三个相位，
+ * 占同一个位置、同一副排版，同一时刻只露一种（露哪一种归连接层）。
+ *
+ * 连接层在占位部件上投影 data-xh-placeholder="empty | loading | error"；加载相位另投影
+ * data-xh-loading-ring 与 data-loading，那枚环由加载环配方画，这里只给它在文案前留出一格。
+ * 占位自己不画面：底、描边与投影归宿主。
+ *
+ * 排版：一句居中的次要文字。块向内距 --xh-space-3；行内内距与条目文字对齐、字号与所在尺寸档的
+ * 条目同档——两者由皮肤把条目的私有槽桥进 --xh-placeholder-px / -font-size；单行取 leading-none；
+ * 不设最小高，占位不撑出空白（Cascader 一列定高，最小高是它登记的例外，写在它自己的皮肤里）。
+ * 颜色：次要文字。实体面、floating 与 sheet 上 --xh-fg-muted；frosted 浮层上由皮肤桥成材质的 muted。
+ * 不取 --xh-fg-subtle：那一档留给占位字与禁用标签。
+ * 错误相位：文案前一枚 --xh-glyph-mark-warning（--xh-fg-danger），错误不只靠颜色读出。
+ * 从 hidden 露面时按 enter 淡入：与列表互换时不当帧弹出。
+ *
+ * 淡入的关键帧走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
+ * 全量入口里每份家族只内联一次。
+ */
+@layer xihan.components {
+  [data-xh-placeholder] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-placeholder-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-placeholder-py, var(--xh-space-3));
+    padding-inline: var(--xh-placeholder-px, var(--xh-control-px-md));
+    color: var(--xh-placeholder-fg, var(--xh-fg-muted));
+    font-size: var(--xh-placeholder-font-size, var(--xh-control-font-md));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-xh-placeholder]:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-xh-placeholder][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 加载环的那一格：直径取所在尺寸档的图标档，画法归加载环配方 */
+  [data-xh-placeholder='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
+  [data-xh-placeholder='error']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    background-color: var(--xh-fg-danger);
+    -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-xh-placeholder][hidden] {
+    display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失：退出强制换色、直接写系统色 */
+    [data-xh-placeholder='error']::before {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+  }
+}

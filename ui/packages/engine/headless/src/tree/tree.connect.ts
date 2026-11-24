@@ -529,6 +529,8 @@ export function connectTree<T extends PropTypes>(
     // 取数在途时让位给在途占位，两者不同屏
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'data-disabled': dataAttr(treeDisabled),
       'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
     }),
@@ -537,6 +539,7 @@ export function connectTree<T extends PropTypes>(
     // 环走加载环配方，随 data-loading 淡入并转
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(placeholderLoading),
       'data-disabled': dataAttr(treeDisabled),

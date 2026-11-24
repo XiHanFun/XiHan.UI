@@ -3214,6 +3214,81 @@
   }
 }
 
+/* family/placeholder.css */
+/*
+ * 占位态家族配方：集合与浮层「此刻没有可看的内容」时画的那一句——空、加载、错误三个相位，
+ * 占同一个位置、同一副排版，同一时刻只露一种（露哪一种归连接层）。
+ *
+ * 连接层在占位部件上投影 data-xh-placeholder="empty | loading | error"；加载相位另投影
+ * data-xh-loading-ring 与 data-loading，那枚环由加载环配方画，这里只给它在文案前留出一格。
+ * 占位自己不画面：底、描边与投影归宿主。
+ *
+ * 排版：一句居中的次要文字。块向内距 --xh-space-3；行内内距与条目文字对齐、字号与所在尺寸档的
+ * 条目同档——两者由皮肤把条目的私有槽桥进 --xh-placeholder-px / -font-size；单行取 leading-none；
+ * 不设最小高，占位不撑出空白（Cascader 一列定高，最小高是它登记的例外，写在它自己的皮肤里）。
+ * 颜色：次要文字。实体面、floating 与 sheet 上 --xh-fg-muted；frosted 浮层上由皮肤桥成材质的 muted。
+ * 不取 --xh-fg-subtle：那一档留给占位字与禁用标签。
+ * 错误相位：文案前一枚 --xh-glyph-mark-warning（--xh-fg-danger），错误不只靠颜色读出。
+ * 从 hidden 露面时按 enter 淡入：与列表互换时不当帧弹出。
+ *
+ * 淡入的关键帧走 motion.css：引入本配方的皮肤同时 @import 它；家族文件之间不互相引入，
+ * 全量入口里每份家族只内联一次。
+ */
+@layer xihan.components {
+  [data-xh-placeholder] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--xh-placeholder-gap, var(--xh-control-gap-md));
+    padding-block: var(--xh-placeholder-py, var(--xh-space-3));
+    padding-inline: var(--xh-placeholder-px, var(--xh-control-px-md));
+    color: var(--xh-placeholder-fg, var(--xh-fg-muted));
+    font-size: var(--xh-placeholder-font-size, var(--xh-control-font-md));
+    line-height: var(--xh-leading-none);
+    text-align: center;
+  }
+
+  [data-xh-placeholder]:not([hidden]) {
+    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+  }
+
+  [data-xh-placeholder][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 加载环的那一格：直径取所在尺寸档的图标档，画法归加载环配方 */
+  [data-xh-placeholder='loading']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  }
+
+  [data-xh-placeholder='error']::before {
+    content: '';
+    flex: none;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    background-color: var(--xh-fg-danger);
+    -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  }
+
+  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+  [data-xh-placeholder][hidden] {
+    display: none;
+  }
+
+  @media (forced-colors: active) {
+    /* 字形是 mask 挖出来的一块底色，这一档里底色被系统换成 Canvas，字形跟着消失：退出强制换色、直接写系统色 */
+    [data-xh-placeholder='error']::before {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+  }
+}
+
 /* family/tag-list.css */
 /*
  * 标签行家族配方：多选控件把已选值摆成一行标签，Select、Combobox、TreeSelect、Cascader 共用这一份排法。
@@ -12280,63 +12355,27 @@
     display: none;
   }
 
-  /* 空态保持为 listbox 的同级 role=status，只把文字叠到 content 的唯一表面。 */
-  .xh-scope-mention[data-part='empty'] {
-    /* 同级定位保证状态文字绘制在磨砂 content 上方，不需要额外层号。 */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-area: 1 / 1;
-    padding-block: var(--xh-mention-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
-    color: var(--xh-mention-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  .xh-scope-mention[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-mention[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位与空态同格、两者不同屏；它同样不重复绘制表面。 */
+  /* 占位（空、在途）：同一副排版由占位态家族配方画（连接层投影 data-xh-placeholder），不重复绘制表面。
+     与磨砂 content 叠在同一格里，同级定位保证状态文字画在表面之上，不需要额外层号 */
+  .xh-scope-mention[data-part='empty'],
   .xh-scope-mention[data-part='loading'] {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_mention-gap);
     grid-area: 1 / 1;
-    padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
-    color: var(--xh-mention-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
   }
 
-  .xh-scope-mention[data-part='loading'][hidden] {
-    display: none;
+  .xh-scope-mention[data-part='empty'] {
+    --xh-placeholder-py: var(--xh-mention-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
+    --xh-placeholder-fg: var(--xh-mention-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
   }
 
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-mention[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-mention[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  .xh-scope-mention[data-part='loading'] {
+    --xh-placeholder-py: var(--xh-mention-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
+    --xh-placeholder-fg: var(--xh-mention-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
+    --xh-placeholder-gap: var(--xh-_mention-gap);
   }
 
   .xh-scope-mention[data-part='empty']:empty,
@@ -23302,50 +23341,31 @@
     display: none;
   }
 
+  /* 空态与在途占位：排版、淡入与 [hidden] 由占位态家族配方给（连接层投影 data-xh-placeholder），
+     这里只把使用者槽桥到配方。-p 槽沿用四边同值的写法：没写时块向取 space-3、行内与条目文字对齐。
+     登记的例外：撑到一列的高度（viewport-h-sm），居中落在面板里，不缩成一条窄条——Cascader 每列定高，
+     占位比列矮一截时整块面板会在开合之间跳高 */
   .xh-scope-cascader[data-part='empty'] {
-    display: flex;
+    --xh-placeholder-py: var(--xh-cascader-empty-p, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-cascader-empty-p, var(--xh-_cascader-row-px));
+    --xh-placeholder-fg: var(--xh-cascader-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+
     flex: 1 1 100%;
-    align-items: center;
-    justify-content: center;
-    /* 空态与在途占位撑到一列的高度，居中落在面板里，不缩成一条窄条 */
     min-block-size: var(--xh-cascader-empty-min-h, var(--xh-viewport-h-sm));
-    padding: var(--xh-cascader-empty-p, var(--xh-space-3));
-    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
-  .xh-scope-cascader[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-cascader[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-cascader[data-part='loading'] {
-    /* 加载环取品牌色，文案仍是弱一档的前景 */
+    --xh-placeholder-py: var(--xh-cascader-loading-p, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-cascader-loading-p, var(--xh-_cascader-row-px));
+    --xh-placeholder-fg: var(--xh-cascader-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
+    --xh-placeholder-gap: var(--xh-_cascader-gap);
+    /* 加载环取品牌色，文案仍是次要文字 */
     --xh-_loading-ring-fg: var(--xh-cascader-loading-ring-fg, var(--xh-fg-brand));
 
-    display: flex;
     flex: 0 0 100%;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_cascader-gap);
     min-block-size: var(--xh-cascader-loading-min-h, var(--xh-viewport-h-sm));
-    padding: var(--xh-cascader-loading-p, var(--xh-space-3));
-    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
-  }
-
-  .xh-scope-cascader[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-cascader[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 懒分支那一列：条目还没取回时列里只有一句次要文字（在途或失败），失败时下面跟一颗重试钮；
@@ -23382,15 +23402,6 @@
   /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
   .xh-scope-cascader[data-part='branch-error']:not([hidden]) {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-cascader[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。
@@ -27467,66 +27478,29 @@
     mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   }
 
-  /* 空态提示保持为 listbox 的同级 role=status；它只承载文字，表面由同格 content 统一绘制。 */
-  .xh-scope-combobox[data-part='empty'] {
-    /* 与带滤镜的 content 同属定位绘制层，按 DOM 顺序将状态文字画在表面之上。 */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-area: 1 / 1;
-    padding-block: var(--xh-combobox-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-empty-px, var(--xh-_combobox-item-px));
-    color: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-    pointer-events: none;
-  }
-
-  /* 漏了这条，候选一有结果空态提示就永远撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
-  .xh-scope-combobox[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-combobox[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位与空态占同一个表面、两者不同屏；同样只承载状态文字。 */
+  /* 占位（空、在途）：listbox 的同级 role=status，只承载状态文字，同一副排版由占位态家族配方画
+     （连接层投影 data-xh-placeholder）；表面由同格 content 统一绘制。
+     与带滤镜的 content 同属定位绘制层、叠在同一格里，按 DOM 顺序把状态文字画在表面之上 */
+  .xh-scope-combobox[data-part='empty'],
   .xh-scope-combobox[data-part='loading'] {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_combobox-gap);
     grid-area: 1 / 1;
-    padding-block: var(--xh-combobox-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-combobox-loading-px, var(--xh-_combobox-item-px));
-    color: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
     pointer-events: none;
   }
 
-  .xh-scope-combobox[data-part='loading'][hidden] {
-    display: none;
+  .xh-scope-combobox[data-part='empty'] {
+    --xh-placeholder-py: var(--xh-combobox-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-combobox-empty-px, var(--xh-_combobox-item-px));
+    --xh-placeholder-fg: var(--xh-combobox-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-combobox-empty-font-size, var(--xh-_combobox-font-size));
   }
 
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-combobox[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-combobox[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  .xh-scope-combobox[data-part='loading'] {
+    --xh-placeholder-py: var(--xh-combobox-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-combobox-loading-px, var(--xh-_combobox-item-px));
+    --xh-placeholder-fg: var(--xh-combobox-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-combobox-loading-font-size, var(--xh-_combobox-font-size));
+    --xh-placeholder-gap: var(--xh-_combobox-gap);
   }
 
   /* 自动结构没收到状态文案时，空 status 不生成盒；打开着的空 listbox 也不画无意义表面。
@@ -27924,40 +27898,21 @@
   }
 
   /* —— 两个占位 —— */
-  /* 空态占位：待在面板里、列表的兄弟；盒与阴影归面板，这里只画一句居中的次要文字 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-command[data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-command-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-command-empty-px, var(--xh-_command-px));
-    color: var(--xh-command-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-command-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-command-empty-px, var(--xh-_command-px));
+    --xh-placeholder-fg: var(--xh-command-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
   }
 
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-command[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_command-gap);
-    flex: none;
-    padding-block: var(--xh-command-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-command-loading-px, var(--xh-_command-px));
-    color: var(--xh-command-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-command[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-py: var(--xh-command-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-command-loading-px, var(--xh-_command-px));
+    --xh-placeholder-fg: var(--xh-command-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
+    --xh-placeholder-gap: var(--xh-_command-gap);
   }
 
   /* 未提供状态内容时不渲染一块纯留白，提示文案仍由作者明确提供。 */
@@ -27992,20 +27947,8 @@
   .xh-scope-command[data-part='group-label'][hidden],
   .xh-scope-command[data-part='item'][hidden],
   .xh-scope-command[data-part='item-text'][hidden],
-  .xh-scope-command[data-part='empty'][hidden],
-  .xh-scope-command[data-part='loading'][hidden],
   .xh-scope-command[data-part='footer'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-command[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-command[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   @media print {
@@ -32597,27 +32540,16 @@
     text-overflow: ellipsis;
   }
 
+  /* 空态占位：排版由占位态家族配方画（连接层投影 data-xh-placeholder），这里只把使用者槽桥到配方；
+     与 content 叠在同一格里，同级定位把文字画在表面之上 */
   .xh-scope-expression-input[data-part='empty'] {
+    --xh-placeholder-py: var(--xh-expression-input-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-expression-input-empty-px, var(--xh-_expression-input-px));
+    --xh-placeholder-fg: var(--xh-expression-input-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-expression-input-empty-font-size, var(--xh-_expression-input-font-size));
+
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     grid-area: 1 / 1;
-    padding-block: var(--xh-expression-input-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-expression-input-empty-px, var(--xh-_expression-input-px));
-    color: var(--xh-expression-input-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-expression-input-empty-font-size, var(--xh-_expression-input-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  .xh-scope-expression-input[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-expression-input[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-expression-input[data-part='empty']:empty {
@@ -34621,48 +34553,22 @@
     background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-_grid-list-indicator-accent));
   }
 
-  /* 空态与加载态占同一个位置、同一副排版：一行文案居中，字号与行内内衬随尺寸档与条目同档，次要文字色，
-     块向内距一档，不设最小高 */
+  /* 空态与加载态占同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     这里只把使用者槽桥到配方 */
   .xh-scope-grid-list[data-part='empty'],
   .xh-scope-grid-list[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-grid-list-state-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-grid-list-state-py, var(--xh-space-3));
-    padding-inline: var(--xh-grid-list-state-px, var(--xh-_grid-list-state-px));
-    color: var(--xh-grid-list-state-fg, var(--xh-fg-muted));
-    font-size: var(--xh-grid-list-state-font-size, var(--xh-_grid-list-state-font-size));
-    line-height: var(--xh-leading-normal);
-    text-align: center;
-  }
-
-  /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
-     这里只给它盒子：直径取尺寸档的图标档 */
-  .xh-scope-grid-list[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-gap: var(--xh-grid-list-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-py: var(--xh-grid-list-state-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-grid-list-state-px, var(--xh-_grid-list-state-px));
+    --xh-placeholder-fg: var(--xh-grid-list-state-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-grid-list-state-font-size, var(--xh-_grid-list-state-font-size));
   }
 
   .xh-scope-grid-list[data-part='row-selection-indicator'][hidden],
   .xh-scope-grid-list[data-part='row-content'][hidden],
   .xh-scope-grid-list[data-part='row-actions'][hidden],
-  .xh-scope-grid-list[data-part='empty'][hidden],
-  .xh-scope-grid-list[data-part='loading'][hidden],
   .xh-scope-grid-list[data-part='root'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-grid-list[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-grid-list[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   @media print {
@@ -36308,62 +36214,21 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 空态占位：待在 root 里、content 的兄弟（列表框只许拥有 option 与 group）。
-     它只画作者提供的居中文字；零候选的 content 自身收起，不再留下空描边或留白。 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-listbox[data-part='empty'] {
-    display: block;
-    padding-block: var(--xh-listbox-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-listbox-empty-px, var(--xh-_listbox-item-px));
-    color: var(--xh-listbox-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-listbox-empty-font-size, var(--xh-_listbox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-listbox-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-listbox-empty-px, var(--xh-_listbox-item-px));
+    --xh-placeholder-fg: var(--xh-listbox-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-listbox-empty-font-size, var(--xh-_listbox-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  .xh-scope-listbox[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-listbox[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  .xh-scope-listbox[data-part='empty'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-listbox[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_listbox-gap);
-    padding-block: var(--xh-listbox-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-listbox-loading-px, var(--xh-_listbox-item-px));
-    color: var(--xh-listbox-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-listbox-loading-font-size, var(--xh-_listbox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  .xh-scope-listbox[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-listbox[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-listbox[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-py: var(--xh-listbox-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-listbox-loading-px, var(--xh-_listbox-item-px));
+    --xh-placeholder-fg: var(--xh-listbox-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-listbox-loading-font-size, var(--xh-_listbox-font-size));
+    --xh-placeholder-gap: var(--xh-_listbox-gap);
   }
 
   /* 取下一页的按钮：铺满一行摆在列表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
@@ -43902,72 +43767,28 @@
     will-change: opacity, scale;
   }
 
-  /* 空态占位：待在 content 里、list 的兄弟；盒与阴影归 content，这里只画一句居中的次要文字 */
+  /* 占位（空、在途、取数失败）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-select[data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-select-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-empty-px, var(--xh-_select-item-px));
-    color: var(--xh-select-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-empty-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  .xh-scope-select[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-select[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-select[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_select-gap);
-    flex: none;
-    padding-block: var(--xh-select-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-loading-px, var(--xh-_select-item-px));
-    color: var(--xh-select-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-loading-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
+    --xh-placeholder-gap: var(--xh-_select-gap);
   }
 
-  .xh-scope-select[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-select[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-select[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-  }
-
-  /* 整表取数失败：与空态、在途占位同一个位置、同一副观感，三者至多露一种，露哪一种归连接层；
-     重试钮跟在提示下面 */
   .xh-scope-select[data-part='error'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-select-error-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-error-px, var(--xh-_select-item-px));
-    color: var(--xh-select-error-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-error-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-error-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-error-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-error-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-error-font-size, var(--xh-_select-font-size));
   }
 
   /* 重试钮是 Action Control 家族的 text ghost 档，盒与按压都归家族；这里只让它在浮层里居中 */
@@ -43975,14 +43796,8 @@
     align-self: center;
   }
 
-  .xh-scope-select[data-part='error'][hidden],
   .xh-scope-select[data-part='retry-trigger'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-select[data-part='error']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   .xh-scope-select[data-part='group'] {
@@ -44695,15 +44510,13 @@
     visibility: hidden;
   }
 
-  /* 搜索一条都没命中的占位：list 的兄弟，只一句次要文字，面归侧栏所在的宿主 */
+  /* 搜索一条都没命中的占位：list 的兄弟，面归侧栏所在的宿主；排版与露面时的淡入由占位态家族配方给
+     （连接层投影 data-xh-placeholder），这里只把使用者槽桥到配方 */
   .xh-scope-side-nav[data-part='empty'] {
-    padding-block: var(--xh-side-nav-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-side-nav-empty-px, var(--xh-_side-nav-row-px));
-    color: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
-    text-align: center;
-    /* 从 hidden 露面时淡入（节点重新得到盒时起播）：最后一条命中被筛掉时不当帧弹出 */
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    --xh-placeholder-py: var(--xh-side-nav-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-side-nav-empty-px, var(--xh-_side-nav-row-px));
+    --xh-placeholder-fg: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
   }
 
   /* 三层列表同一副排法：顶层、分组里的与分支的子层都是 ul，行与行之间同一个 gap，不带 UA 的缩进与外边距 */
@@ -48204,44 +48017,23 @@
     display: none;
   }
 
-  /* 两个占位节点常挂，只在表体为空时才显形，占同一个位置、同一副排版：一行文案居中，字号随表格的尺寸档
-     （从 root 继承），次要文字色，块向内距一档、行内与单元格文字对齐，不设最小高——占位不撑出空白 */
+  /* 两个占位节点常挂，只在表体为空时才显形，占同一个位置、同一副排版，由占位态家族配方画
+     （连接层投影 data-xh-placeholder）：字号与表格的尺寸档同档，这里只把使用者槽桥到配方。
+     最小高缺省 0——占位不撑出空白；作者要一块固定高的空表体经 --xh-table-state-min-h 给 */
   .xh-scope-table[data-part='empty'],
   .xh-scope-table[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-table-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-gap: var(--xh-table-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-py: var(--xh-table-state-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-table-state-px, var(--xh-control-px-sm));
+    --xh-placeholder-fg: var(--xh-table-state-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-table-font-size, var(--xh-_table-font-size));
+
     min-block-size: var(--xh-table-state-min-h, 0);
-    padding-block: var(--xh-table-state-py, var(--xh-space-3));
-    padding-inline: var(--xh-table-state-px, var(--xh-control-px-sm));
-    color: var(--xh-table-state-fg, var(--xh-fg-muted));
-    text-align: center;
   }
 
-  .xh-scope-table[data-part='empty'][hidden],
-  .xh-scope-table[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-table[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-table[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
-     这里只给它盒子：直径取表格尺寸档的图标档；转一圈的时长走公开槽 */
-  .xh-scope-table[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    animation-duration: var(--xh-table-loading-duration, var(--xh-motion-loop-spin));
+  /* 加载环转一圈的时长走公开槽，画法归加载环配方 */
+  .xh-scope-table[data-part='loading'] {
+    --xh-_loading-ring-duration: var(--xh-table-loading-duration, var(--xh-motion-loop-spin));
   }
 
   /* 取下一页的按钮：铺满一行摆在表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、
@@ -54330,68 +54122,21 @@
     outline: none;
   }
 
-  /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
-     盒归面板，这里只画一句居中的次要文字 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-transfer[data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-transfer-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-transfer-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
+    --xh-placeholder-fg: var(--xh-transfer-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  .xh-scope-transfer[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-transfer[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  .xh-scope-transfer[data-part='empty'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-transfer[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_transfer-gap);
-    flex: none;
-    padding-block: var(--xh-transfer-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  .xh-scope-transfer[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-transfer[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-transfer[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-  }
-
-  .xh-scope-transfer[data-part='loading'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    --xh-placeholder-py: var(--xh-transfer-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
+    --xh-placeholder-fg: var(--xh-transfer-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
+    --xh-placeholder-gap: var(--xh-_transfer-gap);
   }
 
   .xh-scope-transfer[data-part='group'] {
@@ -54827,67 +54572,21 @@
     display: none;
   }
 
-  /* 空态占位：待在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
-     与在途占位同一副排版：一行居中的次要文字，字号与行内内衬随尺寸档与条目同档，块向内距一档 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-tree[data-part='empty'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-block: var(--xh-tree-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-tree-empty-px, var(--xh-_tree-row-px));
-    color: var(--xh-tree-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-tree-empty-font-size, var(--xh-_tree-font-size));
-    line-height: var(--xh-leading-normal);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-tree-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-tree-empty-px, var(--xh-_tree-row-px));
+    --xh-placeholder-fg: var(--xh-tree-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-tree-empty-font-size, var(--xh-_tree-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  .xh-scope-tree[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-tree[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  .xh-scope-tree[data-part='empty'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副排版，两者不同屏。还没有节点时一枚加载环排在文案之前 */
   .xh-scope-tree[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-tree-loading-gap, var(--xh-_tree-row-gap));
-    padding-block: var(--xh-tree-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-tree-loading-px, var(--xh-_tree-row-px));
-    color: var(--xh-tree-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-tree-loading-font-size, var(--xh-_tree-font-size));
-    line-height: var(--xh-leading-normal);
-    text-align: center;
-  }
-
-  /* 环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），这里只给它盒子：直径取尺寸档的图标档 */
-  .xh-scope-tree[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-  }
-
-  .xh-scope-tree[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-tree[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  .xh-scope-tree[data-part='loading'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    --xh-placeholder-py: var(--xh-tree-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-tree-loading-px, var(--xh-_tree-row-px));
+    --xh-placeholder-fg: var(--xh-tree-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-tree-loading-font-size, var(--xh-_tree-font-size));
+    --xh-placeholder-gap: var(--xh-tree-loading-gap, var(--xh-_tree-row-gap));
   }
 
   /* 焦点在树外时容器自己进 Tab 序列兜底，落焦不画环：高亮永远长在行上 */
@@ -56064,60 +55763,21 @@
     -webkit-text-fill-color: var(--xh-tree-select-input-autofill-fg, var(--xh-fg-default));
   }
 
-  /* 空态占位：待在 content 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。
-     盒与阴影归 content，这里只画一句居中的次要文字 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   .xh-scope-tree-select[data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-tree-select-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-tree-select-empty-px, var(--xh-_tree-select-row-px));
-    color: var(--xh-tree-select-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-tree-select-empty-font-size, var(--xh-_tree-select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-tree-select-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-tree-select-empty-px, var(--xh-_tree-select-row-px));
+    --xh-placeholder-fg: var(--xh-tree-select-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-tree-select-empty-font-size, var(--xh-_tree-select-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  .xh-scope-tree-select[data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-tree-select[data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   .xh-scope-tree-select[data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_tree-select-gap);
-    flex: none;
-    padding-block: var(--xh-tree-select-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-tree-select-loading-px, var(--xh-_tree-select-row-px));
-    color: var(--xh-tree-select-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-tree-select-loading-font-size, var(--xh-_tree-select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  .xh-scope-tree-select[data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  .xh-scope-tree-select[data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  .xh-scope-tree-select[data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-py: var(--xh-tree-select-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-tree-select-loading-px, var(--xh-_tree-select-row-px));
+    --xh-placeholder-fg: var(--xh-tree-select-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-tree-select-loading-font-size, var(--xh-_tree-select-font-size));
+    --xh-placeholder-gap: var(--xh-_tree-select-gap);
   }
 
   /* 浮层底部的操作区：排在树下面，与树之间用一条分隔线断开；不参与收缩，行再多也压不扁它 */

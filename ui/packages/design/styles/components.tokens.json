@@ -10147,16 +10147,16 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "cascader 的 empty 部件 color 覆盖槽。"
+      "description": "cascader 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-cascader-empty-min-h",
@@ -10183,16 +10183,18 @@
         "empty"
       ],
       "property": [
-        "padding"
+        "--xh-placeholder-px",
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
+        "--xh-_cascader-row-px",
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "cascader 的 empty 部件 padding 覆盖槽。"
+      "description": "cascader 的 empty 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-cascader-footer-border",
@@ -10954,6 +10956,7 @@
         "search-item"
       ],
       "property": [
+        "--xh-placeholder-font-size",
         "font-size"
       ],
       "state": [
@@ -10963,7 +10966,7 @@
         "--xh-_cascader-font-size"
       ],
       "visibility": "public",
-      "description": "cascader 的 empty、item、search-item 部件 font-size 覆盖槽。"
+      "description": "cascader 的 empty、item、search-item 部件 --xh-placeholder-font-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-item-font-weight-selected",
@@ -11309,16 +11312,16 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "cascader 的 loading 部件 color 覆盖槽。"
+      "description": "cascader 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-cascader-loading-font-size",
@@ -11327,7 +11330,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -11336,7 +11339,7 @@
         "--xh-_cascader-font-size"
       ],
       "visibility": "public",
-      "description": "cascader 的 loading 部件 font-size 覆盖槽。"
+      "description": "cascader 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-cascader-loading-min-h",
@@ -11363,16 +11366,18 @@
         "loading"
       ],
       "property": [
-        "padding"
+        "--xh-placeholder-px",
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
+        "--xh-_cascader-row-px",
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "cascader 的 loading 部件 padding 覆盖槽。"
+      "description": "cascader 的 loading 部件 --xh-placeholder-px、--xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-cascader-loading-ring-fg",
@@ -20255,7 +20260,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -20264,7 +20269,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "combobox 的 empty 部件 color 覆盖槽。"
+      "description": "combobox 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-combobox-empty-font-size",
@@ -20273,7 +20278,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -20282,7 +20287,7 @@
         "--xh-_combobox-font-size"
       ],
       "visibility": "public",
-      "description": "combobox 的 empty 部件 font-size 覆盖槽。"
+      "description": "combobox 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-empty-px",
@@ -20291,7 +20296,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -20300,7 +20305,7 @@
         "--xh-_combobox-item-px"
       ],
       "visibility": "public",
-      "description": "combobox 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "combobox 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-combobox-empty-py",
@@ -20309,7 +20314,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -20318,7 +20323,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "combobox 的 empty 部件 padding-block 覆盖槽。"
+      "description": "combobox 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-combobox-gap",
@@ -21068,7 +21073,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -21077,7 +21082,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "combobox 的 loading 部件 color 覆盖槽。"
+      "description": "combobox 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-combobox-loading-font-size",
@@ -21086,7 +21091,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -21095,7 +21100,7 @@
         "--xh-_combobox-font-size"
       ],
       "visibility": "public",
-      "description": "combobox 的 loading 部件 font-size 覆盖槽。"
+      "description": "combobox 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-loading-px",
@@ -21104,7 +21109,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -21113,7 +21118,7 @@
         "--xh-_combobox-item-px"
       ],
       "visibility": "public",
-      "description": "combobox 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "combobox 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-combobox-loading-py",
@@ -21122,7 +21127,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -21131,7 +21136,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "combobox 的 loading 部件 padding-block 覆盖槽。"
+      "description": "combobox 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-combobox-placeholder-fg",
@@ -21267,7 +21272,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -21276,7 +21281,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "command 的 empty 部件 color 覆盖槽。"
+      "description": "command 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-command-empty-font-size",
@@ -21285,7 +21290,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -21294,7 +21299,7 @@
         "--xh-_command-font-size"
       ],
       "visibility": "public",
-      "description": "command 的 empty 部件 font-size 覆盖槽。"
+      "description": "command 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-command-empty-px",
@@ -21303,7 +21308,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -21312,7 +21317,7 @@
         "--xh-_command-px"
       ],
       "visibility": "public",
-      "description": "command 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "command 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-command-empty-py",
@@ -21321,7 +21326,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -21330,7 +21335,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "command 的 empty 部件 padding-block 覆盖槽。"
+      "description": "command 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-command-fg",
@@ -22038,7 +22043,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -22047,7 +22052,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "command 的 loading 部件 color 覆盖槽。"
+      "description": "command 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-command-loading-font-size",
@@ -22056,7 +22061,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -22065,7 +22070,7 @@
         "--xh-_command-font-size"
       ],
       "visibility": "public",
-      "description": "command 的 loading 部件 font-size 覆盖槽。"
+      "description": "command 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-command-loading-px",
@@ -22074,7 +22079,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -22083,7 +22088,7 @@
         "--xh-_command-px"
       ],
       "visibility": "public",
-      "description": "command 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "command 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-command-loading-py",
@@ -22092,7 +22097,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -22101,7 +22106,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "command 的 loading 部件 padding-block 覆盖槽。"
+      "description": "command 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-command-max-h",
@@ -33599,7 +33604,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -33608,7 +33613,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "expression-input 的 empty 部件 color 覆盖槽。"
+      "description": "expression-input 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-expression-input-empty-font-size",
@@ -33617,7 +33622,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -33626,7 +33631,7 @@
         "--xh-_expression-input-font-size"
       ],
       "visibility": "public",
-      "description": "expression-input 的 empty 部件 font-size 覆盖槽。"
+      "description": "expression-input 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-expression-input-empty-px",
@@ -33635,7 +33640,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -33644,7 +33649,7 @@
         "--xh-_expression-input-px"
       ],
       "visibility": "public",
-      "description": "expression-input 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "expression-input 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-expression-input-empty-py",
@@ -33653,7 +33658,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -33662,7 +33667,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "expression-input 的 empty 部件 padding-block 覆盖槽。"
+      "description": "expression-input 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-expression-input-gap",
@@ -42057,7 +42062,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -42066,7 +42071,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "grid-list 的 empty、loading 部件 color 覆盖槽。"
+      "description": "grid-list 的 empty、loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-state-font-size",
@@ -42076,7 +42081,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -42085,7 +42090,7 @@
         "--xh-_grid-list-state-font-size"
       ],
       "visibility": "public",
-      "description": "grid-list 的 empty、loading 部件 font-size 覆盖槽。"
+      "description": "grid-list 的 empty、loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-state-gap",
@@ -42095,7 +42100,7 @@
         "loading"
       ],
       "property": [
-        "gap"
+        "--xh-placeholder-gap"
       ],
       "state": [
         "default"
@@ -42104,7 +42109,7 @@
         "--xh-control-gap-md"
       ],
       "visibility": "public",
-      "description": "grid-list 的 empty、loading 部件 gap 覆盖槽。"
+      "description": "grid-list 的 empty、loading 部件 --xh-placeholder-gap 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-state-px",
@@ -42114,7 +42119,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -42123,7 +42128,7 @@
         "--xh-_grid-list-state-px"
       ],
       "visibility": "public",
-      "description": "grid-list 的 empty、loading 部件 padding-inline 覆盖槽。"
+      "description": "grid-list 的 empty、loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-grid-list-state-py",
@@ -42133,7 +42138,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -42142,7 +42147,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "grid-list 的 empty、loading 部件 padding-block 覆盖槽。"
+      "description": "grid-list 的 empty、loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-bg",
@@ -44188,7 +44193,6 @@
         "last-trigger",
         "line-content",
         "line-fold-trigger",
-        "loading",
         "move-down-trigger",
         "move-up-trigger",
         "next-trigger",
@@ -44268,7 +44272,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、loading、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-error、branch-indicator、branch-loading、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-header、comment-trigger、condition-delete-trigger、control、decrement-trigger、dismiss-trigger、edit-trigger、ellipsis-trigger、expand-trigger、first-trigger、flip-horizontal-trigger、flip-vertical-trigger、group-delete-trigger、increment-trigger、indicator、item、item-close-trigger、item-delete-trigger、item-indicator、item-preview、last-trigger、line-content、line-fold-trigger、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、overflow-trigger、path、path-item、prev-trigger、prev-year-trigger、reset-trigger、root、rotate-left-trigger、rotate-right-trigger、scroll-to-end-trigger、separator、sort-trigger、status、submit-trigger、to-source-trigger、to-target-trigger、toolbar、trend、trigger、trigger-indicator、truncation、viewport、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、column-gap、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
@@ -48280,7 +48284,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -48289,7 +48293,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "listbox 的 empty 部件 color 覆盖槽。"
+      "description": "listbox 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-listbox-empty-font-size",
@@ -48298,7 +48302,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -48307,7 +48311,7 @@
         "--xh-_listbox-font-size"
       ],
       "visibility": "public",
-      "description": "listbox 的 empty 部件 font-size 覆盖槽。"
+      "description": "listbox 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-listbox-empty-px",
@@ -48316,7 +48320,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -48325,7 +48329,7 @@
         "--xh-_listbox-item-px"
       ],
       "visibility": "public",
-      "description": "listbox 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "listbox 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-listbox-empty-py",
@@ -48334,7 +48338,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -48343,7 +48347,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "listbox 的 empty 部件 padding-block 覆盖槽。"
+      "description": "listbox 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-listbox-gap",
@@ -49199,7 +49203,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -49208,7 +49212,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "listbox 的 loading 部件 color 覆盖槽。"
+      "description": "listbox 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-listbox-loading-font-size",
@@ -49217,7 +49221,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -49226,7 +49230,7 @@
         "--xh-_listbox-font-size"
       ],
       "visibility": "public",
-      "description": "listbox 的 loading 部件 font-size 覆盖槽。"
+      "description": "listbox 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-listbox-loading-px",
@@ -49235,7 +49239,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -49244,7 +49248,7 @@
         "--xh-_listbox-item-px"
       ],
       "visibility": "public",
-      "description": "listbox 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "listbox 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-listbox-loading-py",
@@ -49253,7 +49257,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -49262,7 +49266,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "listbox 的 loading 部件 padding-block 覆盖槽。"
+      "description": "listbox 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-loading-bar-fade",
@@ -50945,7 +50949,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -50954,7 +50958,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "mention 的 empty 部件 color 覆盖槽。"
+      "description": "mention 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-mention-empty-font-size",
@@ -50963,7 +50967,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -50972,7 +50976,7 @@
         "--xh-_mention-font-size"
       ],
       "visibility": "public",
-      "description": "mention 的 empty 部件 font-size 覆盖槽。"
+      "description": "mention 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-mention-empty-px",
@@ -50981,7 +50985,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -50990,7 +50994,7 @@
         "--xh-_mention-item-px"
       ],
       "visibility": "public",
-      "description": "mention 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "mention 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-mention-empty-py",
@@ -50999,7 +51003,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -51008,7 +51012,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "mention 的 empty 部件 padding-block 覆盖槽。"
+      "description": "mention 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-autofill-bg",
@@ -51702,7 +51706,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -51711,7 +51715,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "mention 的 loading 部件 color 覆盖槽。"
+      "description": "mention 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-mention-loading-font-size",
@@ -51720,7 +51724,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -51729,7 +51733,7 @@
         "--xh-_mention-font-size"
       ],
       "visibility": "public",
-      "description": "mention 的 loading 部件 font-size 覆盖槽。"
+      "description": "mention 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-mention-loading-px",
@@ -51738,7 +51742,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -51747,7 +51751,7 @@
         "--xh-_mention-item-px"
       ],
       "visibility": "public",
-      "description": "mention 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "mention 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-mention-loading-py",
@@ -51756,7 +51760,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -51765,7 +51769,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "mention 的 loading 部件 padding-block 覆盖槽。"
+      "description": "mention 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-mention-placeholder-fg",
@@ -68069,7 +68073,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -68078,7 +68082,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "select 的 empty 部件 color 覆盖槽。"
+      "description": "select 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-select-empty-font-size",
@@ -68087,7 +68091,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -68096,7 +68100,7 @@
         "--xh-_select-font-size"
       ],
       "visibility": "public",
-      "description": "select 的 empty 部件 font-size 覆盖槽。"
+      "description": "select 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-select-empty-px",
@@ -68105,7 +68109,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -68114,7 +68118,7 @@
         "--xh-_select-item-px"
       ],
       "visibility": "public",
-      "description": "select 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "select 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-select-empty-py",
@@ -68123,7 +68127,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -68132,7 +68136,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "select 的 empty 部件 padding-block 覆盖槽。"
+      "description": "select 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-select-error-fg",
@@ -68141,7 +68145,7 @@
         "error"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -68150,7 +68154,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "select 的 error 部件 color 覆盖槽。"
+      "description": "select 的 error 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-select-error-font-size",
@@ -68159,7 +68163,7 @@
         "error"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -68168,7 +68172,7 @@
         "--xh-_select-font-size"
       ],
       "visibility": "public",
-      "description": "select 的 error 部件 font-size 覆盖槽。"
+      "description": "select 的 error 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-select-error-px",
@@ -68177,7 +68181,7 @@
         "error"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -68186,7 +68190,7 @@
         "--xh-_select-item-px"
       ],
       "visibility": "public",
-      "description": "select 的 error 部件 padding-inline 覆盖槽。"
+      "description": "select 的 error 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-select-error-py",
@@ -68195,7 +68199,7 @@
         "error"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -68204,7 +68208,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "select 的 error 部件 padding-block 覆盖槽。"
+      "description": "select 的 error 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-select-footer-border",
@@ -68973,7 +68977,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -68982,7 +68986,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "select 的 loading 部件 color 覆盖槽。"
+      "description": "select 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-select-loading-font-size",
@@ -68991,7 +68995,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -69000,7 +69004,7 @@
         "--xh-_select-font-size"
       ],
       "visibility": "public",
-      "description": "select 的 loading 部件 font-size 覆盖槽。"
+      "description": "select 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-select-loading-px",
@@ -69009,7 +69013,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -69018,7 +69022,7 @@
         "--xh-_select-item-px"
       ],
       "visibility": "public",
-      "description": "select 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "select 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-select-loading-py",
@@ -69027,7 +69031,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -69036,7 +69040,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "select 的 loading 部件 padding-block 覆盖槽。"
+      "description": "select 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-select-placeholder-fg",
@@ -69413,7 +69417,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -69422,7 +69426,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "side-nav 的 empty 部件 color 覆盖槽。"
+      "description": "side-nav 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-empty-font-size",
@@ -69431,7 +69435,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -69440,7 +69444,7 @@
         "--xh-_side-nav-row-font-size"
       ],
       "visibility": "public",
-      "description": "side-nav 的 empty 部件 font-size 覆盖槽。"
+      "description": "side-nav 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-empty-px",
@@ -69449,7 +69453,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -69458,7 +69462,7 @@
         "--xh-_side-nav-row-px"
       ],
       "visibility": "public",
-      "description": "side-nav 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "side-nav 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-empty-py",
@@ -69467,7 +69471,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -69476,7 +69480,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "side-nav 的 empty 部件 padding-block 覆盖槽。"
+      "description": "side-nav 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-side-nav-fg",
@@ -75696,10 +75700,13 @@
       "name": "--xh-table-font-size",
       "component": "table",
       "part": [
+        "empty",
+        "loading",
         "root",
         "row"
       ],
       "property": [
+        "--xh-placeholder-font-size",
         "font-size"
       ],
       "state": [
@@ -75709,7 +75716,7 @@
         "--xh-_table-font-size"
       ],
       "visibility": "public",
-      "description": "table 的 root、row 部件 font-size 覆盖槽。"
+      "description": "table 的 empty、loading、root、row 部件 --xh-placeholder-font-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-table-footer-bg",
@@ -75994,16 +76001,16 @@
         "loading"
       ],
       "property": [
-        "animation-duration"
+        "animation"
       ],
       "state": [
-        "default"
+        "xh-loading-ring"
       ],
       "defaultToken": [
         "--xh-motion-loop-spin"
       ],
       "visibility": "public",
-      "description": "table 的 loading 部件 animation-duration 覆盖槽。"
+      "description": "table 的 loading 部件 animation 覆盖槽。"
     },
     {
       "name": "--xh-table-max-h",
@@ -76627,7 +76634,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -76636,7 +76643,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "table 的 empty、loading 部件 color 覆盖槽。"
+      "description": "table 的 empty、loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-table-state-gap",
@@ -76646,7 +76653,7 @@
         "loading"
       ],
       "property": [
-        "gap"
+        "--xh-placeholder-gap"
       ],
       "state": [
         "default"
@@ -76655,7 +76662,7 @@
         "--xh-control-gap-md"
       ],
       "visibility": "public",
-      "description": "table 的 empty、loading 部件 gap 覆盖槽。"
+      "description": "table 的 empty、loading 部件 --xh-placeholder-gap 覆盖槽。"
     },
     {
       "name": "--xh-table-state-min-h",
@@ -76684,7 +76691,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -76693,7 +76700,7 @@
         "--xh-control-px-sm"
       ],
       "visibility": "public",
-      "description": "table 的 empty、loading 部件 padding-inline 覆盖槽。"
+      "description": "table 的 empty、loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-table-state-py",
@@ -76703,7 +76710,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -76712,7 +76719,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "table 的 empty、loading 部件 padding-block 覆盖槽。"
+      "description": "table 的 empty、loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-table-sticky-column-layer",
@@ -90628,7 +90635,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -90637,7 +90644,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "transfer 的 empty 部件 color 覆盖槽。"
+      "description": "transfer 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-transfer-empty-font-size",
@@ -90646,7 +90653,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -90655,7 +90662,7 @@
         "--xh-_transfer-font-size"
       ],
       "visibility": "public",
-      "description": "transfer 的 empty 部件 font-size 覆盖槽。"
+      "description": "transfer 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-transfer-empty-px",
@@ -90664,7 +90671,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -90673,7 +90680,7 @@
         "--xh-_transfer-px"
       ],
       "visibility": "public",
-      "description": "transfer 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "transfer 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-transfer-empty-py",
@@ -90682,7 +90689,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -90691,7 +90698,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "transfer 的 empty 部件 padding-block 覆盖槽。"
+      "description": "transfer 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-transfer-fg",
@@ -91209,7 +91216,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -91218,7 +91225,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "transfer 的 loading 部件 color 覆盖槽。"
+      "description": "transfer 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-transfer-loading-font-size",
@@ -91227,7 +91234,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -91236,7 +91243,7 @@
         "--xh-_transfer-font-size"
       ],
       "visibility": "public",
-      "description": "transfer 的 loading 部件 font-size 覆盖槽。"
+      "description": "transfer 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-transfer-loading-px",
@@ -91245,7 +91252,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -91254,7 +91261,7 @@
         "--xh-_transfer-px"
       ],
       "visibility": "public",
-      "description": "transfer 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "transfer 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-transfer-loading-py",
@@ -91263,7 +91270,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -91272,7 +91279,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "transfer 的 loading 部件 padding-block 覆盖槽。"
+      "description": "transfer 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-transfer-panel-bg",
@@ -92497,7 +92504,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -92506,7 +92513,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "tree 的 empty 部件 color 覆盖槽。"
+      "description": "tree 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-tree-empty-font-size",
@@ -92515,7 +92522,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -92524,7 +92531,7 @@
         "--xh-_tree-font-size"
       ],
       "visibility": "public",
-      "description": "tree 的 empty 部件 font-size 覆盖槽。"
+      "description": "tree 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-empty-px",
@@ -92533,7 +92540,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -92542,7 +92549,7 @@
         "--xh-_tree-row-px"
       ],
       "visibility": "public",
-      "description": "tree 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "tree 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-tree-empty-py",
@@ -92551,7 +92558,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -92560,7 +92567,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "tree 的 empty 部件 padding-block 覆盖槽。"
+      "description": "tree 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-tree-fg",
@@ -93007,7 +93014,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -93016,7 +93023,7 @@
         "--xh-fg-muted"
       ],
       "visibility": "public",
-      "description": "tree 的 loading 部件 color 覆盖槽。"
+      "description": "tree 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-font-size",
@@ -93025,7 +93032,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -93034,7 +93041,7 @@
         "--xh-_tree-font-size"
       ],
       "visibility": "public",
-      "description": "tree 的 loading 部件 font-size 覆盖槽。"
+      "description": "tree 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-gap",
@@ -93043,7 +93050,7 @@
         "loading"
       ],
       "property": [
-        "gap"
+        "--xh-placeholder-gap"
       ],
       "state": [
         "default"
@@ -93052,7 +93059,7 @@
         "--xh-_tree-row-gap"
       ],
       "visibility": "public",
-      "description": "tree 的 loading 部件 gap 覆盖槽。"
+      "description": "tree 的 loading 部件 --xh-placeholder-gap 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-px",
@@ -93061,7 +93068,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -93070,7 +93077,7 @@
         "--xh-_tree-row-px"
       ],
       "visibility": "public",
-      "description": "tree 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "tree 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-tree-loading-py",
@@ -93079,7 +93086,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -93088,7 +93095,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "tree 的 loading 部件 padding-block 覆盖槽。"
+      "description": "tree 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-tree-max-h",
@@ -94350,7 +94357,7 @@
         "empty"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -94359,7 +94366,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "tree-select 的 empty 部件 color 覆盖槽。"
+      "description": "tree-select 的 empty 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-empty-font-size",
@@ -94368,7 +94375,7 @@
         "empty"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -94377,7 +94384,7 @@
         "--xh-_tree-select-font-size"
       ],
       "visibility": "public",
-      "description": "tree-select 的 empty 部件 font-size 覆盖槽。"
+      "description": "tree-select 的 empty 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-empty-px",
@@ -94386,7 +94393,7 @@
         "empty"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -94395,7 +94402,7 @@
         "--xh-_tree-select-row-px"
       ],
       "visibility": "public",
-      "description": "tree-select 的 empty 部件 padding-inline 覆盖槽。"
+      "description": "tree-select 的 empty 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-empty-py",
@@ -94404,7 +94411,7 @@
         "empty"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -94413,7 +94420,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "tree-select 的 empty 部件 padding-block 覆盖槽。"
+      "description": "tree-select 的 empty 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-footer-border",
@@ -95367,7 +95374,7 @@
         "loading"
       ],
       "property": [
-        "color"
+        "--xh-placeholder-fg"
       ],
       "state": [
         "default"
@@ -95376,7 +95383,7 @@
         "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
-      "description": "tree-select 的 loading 部件 color 覆盖槽。"
+      "description": "tree-select 的 loading 部件 --xh-placeholder-fg 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-loading-font-size",
@@ -95385,7 +95392,7 @@
         "loading"
       ],
       "property": [
-        "font-size"
+        "--xh-placeholder-font-size"
       ],
       "state": [
         "default"
@@ -95394,7 +95401,7 @@
         "--xh-_tree-select-font-size"
       ],
       "visibility": "public",
-      "description": "tree-select 的 loading 部件 font-size 覆盖槽。"
+      "description": "tree-select 的 loading 部件 --xh-placeholder-font-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-loading-px",
@@ -95403,7 +95410,7 @@
         "loading"
       ],
       "property": [
-        "padding-inline"
+        "--xh-placeholder-px"
       ],
       "state": [
         "default"
@@ -95412,7 +95419,7 @@
         "--xh-_tree-select-row-px"
       ],
       "visibility": "public",
-      "description": "tree-select 的 loading 部件 padding-inline 覆盖槽。"
+      "description": "tree-select 的 loading 部件 --xh-placeholder-px 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-loading-py",
@@ -95421,7 +95428,7 @@
         "loading"
       ],
       "property": [
-        "padding-block"
+        "--xh-placeholder-py"
       ],
       "state": [
         "default"
@@ -95430,7 +95437,7 @@
         "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "tree-select 的 loading 部件 padding-block 覆盖槽。"
+      "description": "tree-select 的 loading 部件 --xh-placeholder-py 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-placeholder-fg",

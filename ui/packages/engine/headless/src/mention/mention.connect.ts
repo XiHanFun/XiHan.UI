@@ -367,6 +367,8 @@ export function connectMention<T extends PropTypes>(
     // role=status 自带 polite 活区
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'role': 'status',
       'data-state': stateAttr,
       // 取数在途时让位给在途占位，两者不同屏
@@ -377,6 +379,7 @@ export function connectMention<T extends PropTypes>(
     // 唤起了才顶上来：没唤起时整块候选浮层都不在场
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(loading),

@@ -336,6 +336,7 @@
 | `item-description` | `data-highlighted` | ''（条件成立时才出现） |
 | `item-description` | `data-xh-collection-slot` | 'description' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -373,10 +374,10 @@
 | `--xh-expression-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | expression-input 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-expression-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | expression-input 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-expression-input-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | expression-input 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-expression-input-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | expression-input 的 empty 部件 color 覆盖槽。 |
-| `--xh-expression-input-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_expression-input-font-size` | expression-input 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-expression-input-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_expression-input-px` | expression-input 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-expression-input-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | expression-input 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-expression-input-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | expression-input 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-expression-input-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_expression-input-font-size` | expression-input 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-expression-input-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_expression-input-px` | expression-input 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-expression-input-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | expression-input 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-expression-input-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | expression-input 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-expression-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | expression-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-expression-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | expression-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
@@ -415,7 +416,7 @@
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-drop-in` · `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-drop-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

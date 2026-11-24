@@ -475,9 +475,11 @@
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `overflow-tag` | `data-count` | String(overflowCount) |
 | `tag` | `data-value` | v |
 
@@ -526,10 +528,10 @@
 | `--xh-combobox-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | combobox 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | combobox 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-combobox-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | combobox 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
-| `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-combobox-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | combobox 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-combobox-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-combobox-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-combobox-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_combobox-item-px` | combobox 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-combobox-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | combobox 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-combobox-gap` | `label`<br>`root` | `gap`<br>`margin-block-end` | `default` | `--xh-space-1` | combobox 的 label、root 部件 gap、margin-block-end 覆盖槽。 |
 | `--xh-combobox-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | combobox 的 group 部件 gap 覆盖槽。 |
 | `--xh-combobox-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 group-label 部件 color 覆盖槽。 |
@@ -566,10 +568,10 @@
 | `--xh-combobox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | combobox 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | combobox 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-combobox-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | combobox 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-combobox-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 color 覆盖槽。 |
-| `--xh-combobox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-combobox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | combobox 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-combobox-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-combobox-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-combobox-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_combobox-item-px` | combobox 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-combobox-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | combobox 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
 | `--xh-combobox-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | combobox 的 tag-list 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->

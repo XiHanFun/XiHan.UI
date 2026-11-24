@@ -562,10 +562,13 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `error` | `data-state` | 'open' \| 'closed' |
+| `error` | `data-xh-placeholder` | 'error' |
 | `retry-trigger` | `data-xh-action-control` | '' |
 | `retry-trigger` | `data-xh-action-display` | 'always' |
 | `retry-trigger` | `data-xh-action-profile` | 'text' |
@@ -617,14 +620,14 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `--xh-select-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | select 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-select-control-w` | `root` | `inline-size`<br>`min-inline-size` | `default` | `--xh-control-w` | select 的 root 部件 inline-size、min-inline-size 覆盖槽。 |
-| `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
-| `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-select-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-select-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | select 的 empty 部件 padding-block 覆盖槽。 |
-| `--xh-select-error-fg` | `error` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 error 部件 color 覆盖槽。 |
-| `--xh-select-error-font-size` | `error` | `font-size` | `default` | `--xh-_select-font-size` | select 的 error 部件 font-size 覆盖槽。 |
-| `--xh-select-error-px` | `error` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 error 部件 padding-inline 覆盖槽。 |
-| `--xh-select-error-py` | `error` | `padding-block` | `default` | `--xh-space-3` | select 的 error 部件 padding-block 覆盖槽。 |
+| `--xh-select-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-select-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-select-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_select-item-px` | select 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-select-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | select 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
+| `--xh-select-error-fg` | `error` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | select 的 error 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-select-error-font-size` | `error` | `--xh-placeholder-font-size` | `default` | `--xh-_select-font-size` | select 的 error 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-select-error-px` | `error` | `--xh-placeholder-px` | `default` | `--xh-_select-item-px` | select 的 error 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-select-error-py` | `error` | `--xh-placeholder-py` | `default` | `--xh-space-3` | select 的 error 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-select-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-frosted-separator` | select 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-select-footer-fg` | `footer` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 footer 部件 color 覆盖槽。 |
 | `--xh-select-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | select 的 footer 部件 font-size 覆盖槽。 |
@@ -663,10 +666,10 @@ max-selected=2：选满后其余选项不可再选，点掉一个即腾出名额
 | `--xh-select-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | select 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-select-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | select 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-select-list-gap` | `list` | `gap` | `default` | `--xh-list-option-gap` | select 的 list 部件 gap 覆盖槽。 |
-| `--xh-select-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 loading 部件 color 覆盖槽。 |
-| `--xh-select-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_select-font-size` | select 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-select-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-select-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | select 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-select-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | select 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-select-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_select-font-size` | select 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-select-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_select-item-px` | select 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-select-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | select 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-select-placeholder-fg` | `value-text` | `color` | `placeholder` | `--xh-fg-subtle` | select 的 value-text 部件 color 覆盖槽。 |
 | `--xh-select-tag-list-gap` | `tag-list` | `gap` | `xh-tag-list` | `--xh-space-1` | select 的 tag-list 部件 gap 覆盖槽。 |
 | `--xh-select-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | select 的 trigger 部件 color 覆盖槽。 |

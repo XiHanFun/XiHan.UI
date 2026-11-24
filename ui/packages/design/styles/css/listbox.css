@@ -9,6 +9,7 @@
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -187,62 +188,21 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 空态占位：待在 root 里、content 的兄弟（列表框只许拥有 option 与 group）。
-     它只画作者提供的居中文字；零候选的 content 自身收起，不再留下空描边或留白。 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   [data-scope='listbox'][data-part='empty'] {
-    display: block;
-    padding-block: var(--xh-listbox-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-listbox-empty-px, var(--xh-_listbox-item-px));
-    color: var(--xh-listbox-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-listbox-empty-font-size, var(--xh-_listbox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-listbox-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-listbox-empty-px, var(--xh-_listbox-item-px));
+    --xh-placeholder-fg: var(--xh-listbox-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-listbox-empty-font-size, var(--xh-_listbox-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  [data-scope='listbox'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='listbox'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  [data-scope='listbox'][data-part='empty'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='listbox'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_listbox-gap);
-    padding-block: var(--xh-listbox-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-listbox-loading-px, var(--xh-_listbox-item-px));
-    color: var(--xh-listbox-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-listbox-loading-font-size, var(--xh-_listbox-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  [data-scope='listbox'][data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='listbox'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='listbox'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-py: var(--xh-listbox-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-listbox-loading-px, var(--xh-_listbox-item-px));
+    --xh-placeholder-fg: var(--xh-listbox-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-listbox-loading-font-size, var(--xh-_listbox-font-size));
+    --xh-placeholder-gap: var(--xh-_listbox-gap);
   }
 
   /* 取下一页的按钮：铺满一行摆在列表尾——铺满一行的独立动作条目，接 Action Control 的 row 档、

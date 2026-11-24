@@ -7,6 +7,7 @@
 @import '../family/field-chrome.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
@@ -320,63 +321,27 @@
 
 
 
-  /* 空态保持为 listbox 的同级 role=status，只把文字叠到 content 的唯一表面。 */
-  [data-scope='mention'][data-part='empty'] {
-    /* 同级定位保证状态文字绘制在磨砂 content 上方，不需要额外层号。 */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    grid-area: 1 / 1;
-    padding-block: var(--xh-mention-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
-    color: var(--xh-mention-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  [data-scope='mention'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='mention'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位与空态同格、两者不同屏；它同样不重复绘制表面。 */
+  /* 占位（空、在途）：同一副排版由占位态家族配方画（连接层投影 data-xh-placeholder），不重复绘制表面。
+     与磨砂 content 叠在同一格里，同级定位保证状态文字画在表面之上，不需要额外层号 */
+  [data-scope='mention'][data-part='empty'],
   [data-scope='mention'][data-part='loading'] {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_mention-gap);
     grid-area: 1 / 1;
-    padding-block: var(--xh-mention-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
-    color: var(--xh-mention-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
   }
 
-  [data-scope='mention'][data-part='loading'][hidden] {
-    display: none;
+  [data-scope='mention'][data-part='empty'] {
+    --xh-placeholder-py: var(--xh-mention-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-mention-empty-px, var(--xh-_mention-item-px));
+    --xh-placeholder-fg: var(--xh-mention-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-mention-empty-font-size, var(--xh-_mention-font-size));
   }
 
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='mention'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='mention'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  [data-scope='mention'][data-part='loading'] {
+    --xh-placeholder-py: var(--xh-mention-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-mention-loading-px, var(--xh-_mention-item-px));
+    --xh-placeholder-fg: var(--xh-mention-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-mention-loading-font-size, var(--xh-_mention-font-size));
+    --xh-placeholder-gap: var(--xh-_mention-gap);
   }
 
   [data-scope='mention'][data-part='empty']:empty,

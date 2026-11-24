@@ -354,6 +354,8 @@ export function connectExpressionInput<T extends PropTypes>(
     // 空态必须待在 role=listbox 之外，放 positioner 里当 content 的兄弟
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       'role': 'status',
       'data-state': stateAttr,
       'hidden': !empty || undefined,

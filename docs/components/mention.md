@@ -346,9 +346,11 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `content` | `data-state` | 'open' \| 'closed' |
 | `content` | `data-xh-material` | 'frosted' |
 | `empty` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-highlighted` | ''（条件成立时才出现） |
 | `item` | `data-pressed` | ''（条件成立时才出现） |
@@ -390,10 +392,10 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | mention 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-mention-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | mention 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-mention-content-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | mention 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-mention-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 color 覆盖槽。 |
-| `--xh-mention-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-mention-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-mention-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | mention 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-mention-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | mention 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-mention-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_mention-font-size` | mention 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-mention-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_mention-item-px` | mention 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-mention-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | mention 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-mention-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | mention 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-mention-input-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | mention 的 input 部件 background-color 覆盖槽。 |
@@ -428,10 +430,10 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-2` | mention 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-mention-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 color 覆盖槽。 |
-| `--xh-mention-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-mention-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-mention-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | mention 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-mention-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-material-frosted-fg-muted` | mention 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-mention-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_mention-font-size` | mention 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-mention-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_mention-item-px` | mention 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-mention-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | mention 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-mention-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | mention 的 input 部件 color 覆盖槽。 |
 | `--xh-mention-textarea-py` | `input` | `padding-block` | `xh-field-layout=textarea` | `--xh-space-1` | mention 的 input 部件 padding-block 覆盖槽。 |
 <!-- xh-component-tokens:end -->
@@ -440,7 +442,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 动效角色：按压 · 状态 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

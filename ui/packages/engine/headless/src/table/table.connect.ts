@@ -1882,13 +1882,16 @@ export function connectTable<T extends PropTypes>(
     // 加载态的播报由 root 的 aria-busy 承担。节点常挂，只靠 hidden 显隐。
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
-      hidden: !showEmpty || undefined,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
+      'hidden': !showEmpty || undefined,
     }),
 
     // 只在还没有行时露面：环走加载环配方，随 data-loading 淡入并转；已有行时的重新取数不换成占位，
     // 表体原样留着、照常可操作，只由 root 报 aria-busy
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(showLoading),
       'hidden': !showLoading || undefined,

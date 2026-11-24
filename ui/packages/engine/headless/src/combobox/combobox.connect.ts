@@ -756,6 +756,8 @@ function connectComboboxKeys<T extends PropTypes>(
 
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
       // 空态节点必须待在 role=listbox 之外（列表里只允许 option 与 group），放 positioner 里当 content 的兄弟；
       // role=status 自带 polite 活区
       'role': 'status',
@@ -768,6 +770,7 @@ function connectComboboxKeys<T extends PropTypes>(
     // 展开着才顶上来：收起时整块浮层都不在场
     getLoadingProps: () => normalize.element({
       ...parts.loading.attrs,
+      'data-xh-placeholder': 'loading',
       // 首次加载的那枚环由加载环配方画，随 data-loading 淡入淡出
       'data-xh-loading-ring': '',
       'data-loading': dataAttr(loading),

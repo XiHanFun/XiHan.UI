@@ -791,8 +791,10 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `expand-trigger` | `data-xh-action-variant` | 'ghost' |
 | `expanded-row` | `data-dragging` | ''（条件成立时才出现） |
 | `expanded-row` | `data-state` | 'open' \| 'closed' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-pressed` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-xh-action-control` | '' |
@@ -844,7 +846,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-filter-fg` | `column-header`<br>`trigger` | `color` | `default` | `--xh-fg-subtle` | table 的 column-header、trigger 部件 color 覆盖槽。 |
 | `--xh-table-filter-fg-active` | `column-header`<br>`trigger` | `color` | `filtered` | `--xh-fg-brand` | table 的 column-header、trigger 部件 color 覆盖槽。 |
 | `--xh-table-filter-size` | `column-header`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 column-header、trigger 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-table-font-size` | `root`<br>`row` | `font-size` | `default` | `--xh-_table-font-size` | table 的 root、row 部件 font-size 覆盖槽。 |
+| `--xh-table-font-size` | `empty`<br>`loading`<br>`root`<br>`row` | `--xh-placeholder-font-size`<br>`font-size` | `default` | `--xh-_table-font-size` | table 的 empty、loading、root、row 部件 --xh-placeholder-font-size、font-size 覆盖槽。 |
 | `--xh-table-footer-bg` | `cell`<br>`footer`<br>`row` | `background` | `default`<br>`fixed`<br>`frozen` | `--xh-bg-subtle`<br>`--xh-bg-subtle-opaque` | table 的 cell、footer、row 部件 background 覆盖槽。 |
 | `--xh-table-footer-border` | `footer` | `border-block-start` | `default` | `--xh-border-subtle` | table 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-table-footer-font-weight` | `footer` | `font-weight` | `default` | `--xh-font-weight-medium` | table 的 footer 部件 font-weight 覆盖槽。 |
@@ -859,7 +861,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-load-more-trigger-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-space-4` | table 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-table-load-more-trigger-py` | `load-more-trigger` | `padding-block` | `xh-action-profile=row` | `--xh-space-3` | table 的 load-more-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-table-loading-duration` | `loading` | `animation-duration` | `default` | `--xh-motion-loop-spin` | table 的 loading 部件 animation-duration 覆盖槽。 |
+| `--xh-table-loading-duration` | `loading` | `animation` | `xh-loading-ring` | `--xh-motion-loop-spin` | table 的 loading 部件 animation 覆盖槽。 |
 | `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
 | `--xh-table-pagination-gap` | `root` | `margin-block-start` | `default` | `--xh-space-3` | table 的 root 部件 margin-block-start 覆盖槽。 |
 | `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
@@ -889,11 +891,11 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `--xh-table-sort-fg-active` | `sort-trigger` | `color` | `disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`sort`<br>`sort-index` | `--xh-fg-default` | table 的 sort-trigger 部件 color 覆盖槽。 |
 | `--xh-table-sort-size` | `sort-trigger` | `--xh-icon-size` | `default` | `--xh-_table-trigger-size` | table 的 sort-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-table-span-layer` | `cell`<br>`column-header` | `z-index` | `is([data-part='cell'], [data-part='column-header'])`<br>`row-span` | `1` | table 的 cell、column-header 部件 z-index 覆盖槽。 |
-| `--xh-table-state-fg` | `empty`<br>`loading` | `color` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 color 覆盖槽。 |
-| `--xh-table-state-gap` | `empty`<br>`loading` | `gap` | `default` | `--xh-control-gap-md` | table 的 empty、loading 部件 gap 覆盖槽。 |
+| `--xh-table-state-fg` | `empty`<br>`loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | table 的 empty、loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-table-state-gap` | `empty`<br>`loading` | `--xh-placeholder-gap` | `default` | `--xh-control-gap-md` | table 的 empty、loading 部件 --xh-placeholder-gap 覆盖槽。 |
 | `--xh-table-state-min-h` | `empty`<br>`loading` | `min-block-size` | `default` | `0` | table 的 empty、loading 部件 min-block-size 覆盖槽。 |
-| `--xh-table-state-px` | `empty`<br>`loading` | `padding-inline` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 padding-inline 覆盖槽。 |
-| `--xh-table-state-py` | `empty`<br>`loading` | `padding-block` | `default` | `--xh-space-3` | table 的 empty、loading 部件 padding-block 覆盖槽。 |
+| `--xh-table-state-px` | `empty`<br>`loading` | `--xh-placeholder-px` | `default` | `--xh-control-px-sm` | table 的 empty、loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-table-state-py` | `empty`<br>`loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | table 的 empty、loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-table-sticky-column-layer` | `cell`<br>`column-header`<br>`row` | `z-index` | `drop`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`focus-visible`<br>`frozen`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-drop])` | `1` | table 的 cell、column-header、row 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-footer-layer` | `footer` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 footer 部件 z-index 覆盖槽。 |
 | `--xh-table-sticky-header-layer` | `header` | `z-index` | `fixed` | `--xh-layer-sticky` | table 的 header 部件 z-index 覆盖槽。 |
@@ -917,7 +919,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 
 可覆盖的动效槽：`--xh-table-loading-duration`。
 
-共享关键帧 `xh-fade-in` · `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-fade-out` · `xh-item-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

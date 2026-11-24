@@ -8,6 +8,7 @@
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -212,48 +213,22 @@
     background: var(--xh-grid-list-row-indicator-bg-selected, var(--xh-_grid-list-indicator-accent));
   }
 
-  /* 空态与加载态占同一个位置、同一副排版：一行文案居中，字号与行内内衬随尺寸档与条目同档，次要文字色，
-     块向内距一档，不设最小高 */
+  /* 空态与加载态占同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     这里只把使用者槽桥到配方 */
   [data-scope='grid-list'][data-part='empty'],
   [data-scope='grid-list'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-grid-list-state-gap, var(--xh-control-gap-md));
-    padding-block: var(--xh-grid-list-state-py, var(--xh-space-3));
-    padding-inline: var(--xh-grid-list-state-px, var(--xh-_grid-list-state-px));
-    color: var(--xh-grid-list-state-fg, var(--xh-fg-muted));
-    font-size: var(--xh-grid-list-state-font-size, var(--xh-_grid-list-state-font-size));
-    line-height: var(--xh-leading-normal);
-    text-align: center;
-  }
-
-  /* 还没有行、正在取：一枚加载环排在文案之前。环由加载环配方画成（轨道 + 起始边、随 data-loading 淡入并转），
-     这里只给它盒子：直径取尺寸档的图标档 */
-  [data-scope='grid-list'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-gap: var(--xh-grid-list-state-gap, var(--xh-control-gap-md));
+    --xh-placeholder-py: var(--xh-grid-list-state-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-grid-list-state-px, var(--xh-_grid-list-state-px));
+    --xh-placeholder-fg: var(--xh-grid-list-state-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-grid-list-state-font-size, var(--xh-_grid-list-state-font-size));
   }
 
   [data-scope='grid-list'][data-part='row-selection-indicator'][hidden],
   [data-scope='grid-list'][data-part='row-content'][hidden],
   [data-scope='grid-list'][data-part='row-actions'][hidden],
-  [data-scope='grid-list'][data-part='empty'][hidden],
-  [data-scope='grid-list'][data-part='loading'][hidden],
   [data-scope='grid-list'][data-part='root'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='grid-list'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='grid-list'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   @media print {

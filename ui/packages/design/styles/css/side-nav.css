@@ -9,6 +9,7 @@
    本皮肤 @import 它们，单独引入仍成立。 */
 @import '../family/field-chrome.css';
 @import '../family/collection-item.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 /* 图标栏的名称提示就是库内的 Tooltip（data-scope="tooltip" 的 positioner 与 content），
@@ -125,15 +126,13 @@
     visibility: hidden;
   }
 
-  /* 搜索一条都没命中的占位：list 的兄弟，只一句次要文字，面归侧栏所在的宿主 */
+  /* 搜索一条都没命中的占位：list 的兄弟，面归侧栏所在的宿主；排版与露面时的淡入由占位态家族配方给
+     （连接层投影 data-xh-placeholder），这里只把使用者槽桥到配方 */
   [data-scope='side-nav'][data-part='empty'] {
-    padding-block: var(--xh-side-nav-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-side-nav-empty-px, var(--xh-_side-nav-row-px));
-    color: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
-    text-align: center;
-    /* 从 hidden 露面时淡入（节点重新得到盒时起播）：最后一条命中被筛掉时不当帧弹出 */
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
+    --xh-placeholder-py: var(--xh-side-nav-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-side-nav-empty-px, var(--xh-_side-nav-row-px));
+    --xh-placeholder-fg: var(--xh-side-nav-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-side-nav-empty-font-size, var(--xh-_side-nav-row-font-size));
   }
 
   /* 三层列表同一副排法：顶层、分组里的与分支的子层都是 ul，行与行之间同一个 gap，不带 UA 的缩进与外边距 */

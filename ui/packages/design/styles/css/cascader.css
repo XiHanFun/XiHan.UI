@@ -9,6 +9,7 @@
 @import '../family/check-mark.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 @import '../family/motion.css';
@@ -888,50 +889,31 @@
     display: none;
   }
 
+  /* 空态与在途占位：排版、淡入与 [hidden] 由占位态家族配方给（连接层投影 data-xh-placeholder），
+     这里只把使用者槽桥到配方。-p 槽沿用四边同值的写法：没写时块向取 space-3、行内与条目文字对齐。
+     登记的例外：撑到一列的高度（viewport-h-sm），居中落在面板里，不缩成一条窄条——Cascader 每列定高，
+     占位比列矮一截时整块面板会在开合之间跳高 */
   [data-scope='cascader'][data-part='empty'] {
-    display: flex;
+    --xh-placeholder-py: var(--xh-cascader-empty-p, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-cascader-empty-p, var(--xh-_cascader-row-px));
+    --xh-placeholder-fg: var(--xh-cascader-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+
     flex: 1 1 100%;
-    align-items: center;
-    justify-content: center;
-    /* 空态与在途占位撑到一列的高度，居中落在面板里，不缩成一条窄条 */
     min-block-size: var(--xh-cascader-empty-min-h, var(--xh-viewport-h-sm));
-    padding: var(--xh-cascader-empty-p, var(--xh-space-3));
-    color: var(--xh-cascader-empty-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   }
 
-  [data-scope='cascader'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='cascader'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='cascader'][data-part='loading'] {
-    /* 加载环取品牌色，文案仍是弱一档的前景 */
+    --xh-placeholder-py: var(--xh-cascader-loading-p, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-cascader-loading-p, var(--xh-_cascader-row-px));
+    --xh-placeholder-fg: var(--xh-cascader-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
+    --xh-placeholder-gap: var(--xh-_cascader-gap);
+    /* 加载环取品牌色，文案仍是次要文字 */
     --xh-_loading-ring-fg: var(--xh-cascader-loading-ring-fg, var(--xh-fg-brand));
 
-    display: flex;
     flex: 0 0 100%;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_cascader-gap);
     min-block-size: var(--xh-cascader-loading-min-h, var(--xh-viewport-h-sm));
-    padding: var(--xh-cascader-loading-p, var(--xh-space-3));
-    color: var(--xh-cascader-loading-fg, var(--xh-fg-subtle));
-    font-size: var(--xh-cascader-loading-font-size, var(--xh-_cascader-font-size));
-  }
-
-  [data-scope='cascader'][data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='cascader'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   /* 懒分支那一列：条目还没取回时列里只有一句次要文字（在途或失败），失败时下面跟一颗重试钮；
@@ -968,15 +950,6 @@
   /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
   [data-scope='cascader'][data-part='branch-error']:not([hidden]) {
     animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='cascader'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   }
 
   /* 底栏在场时浮层壳允许换行：列照旧并排在第一行，底栏占满一整行落在列下面。

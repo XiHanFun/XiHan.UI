@@ -314,7 +314,9 @@ export function connectGridList<T extends PropTypes>(
     }),
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
-      hidden: counted ? (loading || collection.length > 0) || undefined : loading || undefined,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
+      'hidden': counted ? (loading || collection.length > 0) || undefined : loading || undefined,
     }),
     // 还没有行、正在取：环走加载环配方，随 data-loading 淡入并转。已有行时重新取数不换成占位，
     // 由 root 的 data-loading 让行保留上一帧淡下
@@ -322,6 +324,7 @@ export function connectGridList<T extends PropTypes>(
       const shown = counted ? loading && collection.length === 0 : loading
       return normalize.element({
         ...parts.loading.attrs,
+        'data-xh-placeholder': 'loading',
         'data-xh-loading-ring': '',
         'data-loading': dataAttr(shown),
         'hidden': !shown || undefined,

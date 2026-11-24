@@ -21,7 +21,7 @@ border-bottom-color: oklch(0.461 0.018 258)
 border-left-color: oklch(0.461 0.018 258)
 min-height: auto
 font-size: 14px
-line-height: 21px
+line-height: 14px
 font-weight: 400
 color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)
@@ -91,7 +91,7 @@ border-bottom-color: oklch(0.461 0.018 258)
 border-left-color: oklch(0.461 0.018 258)
 min-height: 0px
 font-size: 14px
-line-height: 21px
+line-height: 14px
 font-weight: 400
 color: oklch(0.461 0.018 258)
 background-color: rgba(0, 0, 0, 0)

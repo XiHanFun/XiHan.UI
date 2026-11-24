@@ -415,8 +415,10 @@ export function connectSideNav<T extends PropTypes>(
     // 空态占位：list 的兄弟（ul 只许装列表项）。只在搜索一条都没命中时露面，露面即播报
     getEmptyProps: () => normalize.element({
       ...parts.empty.attrs,
-      role: 'status',
-      hidden: !empty || undefined,
+      // 占位态家族配方按它画排版、淡入与 [hidden]（与在途、错误占位同一副）
+      'data-xh-placeholder': 'empty',
+      'role': 'status',
+      'hidden': !empty || undefined,
     }),
 
     // 身份取它包着的那条链接：搜索时没命中就整行收起，不在列表里留一格空行

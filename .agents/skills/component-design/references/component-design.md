@@ -1186,7 +1186,8 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 | 错误 | 取数或载入失败 | 一枚 `--xh-glyph-mark-warning` 字形（`--xh-fg-danger`，非颜色通道）排在一句说明之前；有重试能力时另给重试入口。媒体在画面正中画同一枚字形，不露浏览器的破图 |
 
 - 文字：字号与所在尺寸档的条目同档（`--xh-control-font-*`），颜色取次要文字：实体面、floating 与 sheet 上 `--xh-fg-muted`，frosted 浮层上取材质的 `--xh-material-frosted-fg-muted`（常规档二者同值，强制色下后者退成 `CanvasText`）。不取 `--xh-fg-subtle`：那一档留给占位字与禁用标签。
-- 排版：块向内距 `--xh-space-3`，行内内距与条目文字对齐（取条目的行内内衬槽），内容居中；不设最小高，占位不撑出空白。浮层与字段盒等宽时占位铺满这一宽度。
+- 排版：块向内距 `--xh-space-3`，行内内距与条目文字对齐（取条目的行内内衬槽），内容居中，单行取 `--xh-leading-none`；不设最小高，占位不撑出空白。浮层与字段盒等宽时占位铺满这一宽度。登记的例外：Cascader 每列定高，占位撑到一列的高（`--xh-viewport-h-sm`）、居中落在面板里，免得面板在开合之间跳高。
+- 实现：占位态家族配方（`family/placeholder.css`，连接层在占位部件上投影 `data-xh-placeholder="empty | loading | error"`）给排版、颜色缺省、加载环那一格、错误字形、露面淡入与 `[hidden]`；组件皮肤只把使用者槽桥到 `--xh-placeholder-py / -px / -fg / -font-size / -gap`，叠放、网格落位与例外的最小高留在皮肤里。Select、Combobox、TreeSelect、Cascader、Mention、ExpressionInput、Listbox、Transfer、Tree、GridList、Table、Command、SideNav 已接。
 - 加载环：直径取所在尺寸档的图标档 `--xh-icon-size`，与文案的间距取控件间距；减弱动效与打印下换成静止的点线环，淡入淡出照常（配方给）。
 - Spinner 独立成件，环档自己画（它另有渐隐弧与三点两档、语气与延迟露面），但与加载环配方逐项同值：环粗、270° 的弧与缺口、弧色（品牌色）、圆角与转圈节拍；三档直径同控件内图标档（sm 16 / md 18 / lg 20）。配文取品牌色、正文字号、中等字重；`orientation="vertical"` 时转圈在上、配文在下，间距 6px。强制色下弧取 Highlight、缺口取 Canvas。
 - 进行中的动作钮（Button、Clipboard、DownloadTrigger、Popconfirm 确认钮）是同一种环（弧随钮的字色，不取品牌色），只有一种做法：钮宽不变，环居中压在钮上（承载者投影 `data-xh-loading-ring="overlay"`）；进入在途要等一个 `micro` 才起淡，钮里原有的内容同一刻淡出留位，不到一个 `micro` 就结束的短请求什么都不闪；退出在途不等，环与内容按 `micro` 交叉淡回，不硬切。

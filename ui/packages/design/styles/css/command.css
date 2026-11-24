@@ -9,6 +9,7 @@
 @import '../family/collection-item.css';
 @import '../family/field-chrome.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -317,40 +318,21 @@
   }
 
   /* —— 两个占位 —— */
-  /* 空态占位：待在面板里、列表的兄弟；盒与阴影归面板，这里只画一句居中的次要文字 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   [data-scope='command'][data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-command-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-command-empty-px, var(--xh-_command-px));
-    color: var(--xh-command-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-command-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-command-empty-px, var(--xh-_command-px));
+    --xh-placeholder-fg: var(--xh-command-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-command-empty-font-size, var(--xh-_command-font-size));
   }
 
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='command'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_command-gap);
-    flex: none;
-    padding-block: var(--xh-command-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-command-loading-px, var(--xh-_command-px));
-    color: var(--xh-command-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='command'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    --xh-placeholder-py: var(--xh-command-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-command-loading-px, var(--xh-_command-px));
+    --xh-placeholder-fg: var(--xh-command-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-command-loading-font-size, var(--xh-_command-font-size));
+    --xh-placeholder-gap: var(--xh-_command-gap);
   }
 
   /* 未提供状态内容时不渲染一块纯留白，提示文案仍由作者明确提供。 */
@@ -385,20 +367,8 @@
   [data-scope='command'][data-part='group-label'][hidden],
   [data-scope='command'][data-part='item'][hidden],
   [data-scope='command'][data-part='item-text'][hidden],
-  [data-scope='command'][data-part='empty'][hidden],
-  [data-scope='command'][data-part='loading'][hidden],
   [data-scope='command'][data-part='footer'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='command'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='command'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   @media print {

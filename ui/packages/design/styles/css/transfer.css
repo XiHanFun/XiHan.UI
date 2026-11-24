@@ -10,6 +10,7 @@
 @import '../family/collection-item.css';
 @import '../family/field-chrome.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 
 @layer xihan.components {
@@ -281,68 +282,21 @@
     outline: none;
   }
 
-  /* 空态占位：待在面板里、list 的兄弟（列表框只许拥有 option 与 group）。
-     盒归面板，这里只画一句居中的次要文字 */
+  /* 占位（空、在途）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   [data-scope='transfer'][data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-transfer-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-empty-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-transfer-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-transfer-empty-px, var(--xh-_transfer-px));
+    --xh-placeholder-fg: var(--xh-transfer-empty-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-transfer-empty-font-size, var(--xh-_transfer-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  [data-scope='transfer'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='transfer'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  [data-scope='transfer'][data-part='empty'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='transfer'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_transfer-gap);
-    flex: none;
-    padding-block: var(--xh-transfer-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
-    color: var(--xh-transfer-loading-fg, var(--xh-fg-muted));
-    font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
-  }
-
-  [data-scope='transfer'][data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='transfer'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='transfer'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-  }
-
-  [data-scope='transfer'][data-part='loading'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    --xh-placeholder-py: var(--xh-transfer-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-transfer-loading-px, var(--xh-_transfer-px));
+    --xh-placeholder-fg: var(--xh-transfer-loading-fg, var(--xh-fg-muted));
+    --xh-placeholder-font-size: var(--xh-transfer-loading-font-size, var(--xh-_transfer-font-size));
+    --xh-placeholder-gap: var(--xh-_transfer-gap);
   }
 
   [data-scope='transfer'][data-part='group'] {

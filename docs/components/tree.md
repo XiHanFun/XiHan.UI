@@ -589,9 +589,11 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `node-drag-trigger` | `data-dragging` | ''（条件成立时才出现） |
 | `node-drag-trigger` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-loading` | ''（条件成立时才出现） |
 | `loading` | `data-xh-loading-ring` | '' |
+| `loading` | `data-xh-placeholder` | 'loading' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -622,10 +624,10 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `--xh-tree-drop-fg` | `branch-control`<br>`item` | `background`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-bg-brand` | tree 的 branch-control、item 部件 background、box-shadow 覆盖槽。 |
 | `--xh-tree-drop-inside-bg` | `branch-control`<br>`item` | `background` | `disabled`<br>`drop=inside`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | tree 的 branch-control、item 部件 background 覆盖槽。 |
 | `--xh-tree-drop-line` | `branch-control`<br>`item` | `block-size`<br>`box-shadow` | `disabled`<br>`drop=after`<br>`drop=before`<br>`drop=inside`<br>`is([data-drop='before'], [data-drop='after'])`<br>`not([data-disabled])` | `--xh-stroke-thick` | tree 的 branch-control、item 部件 block-size、box-shadow 覆盖槽。 |
-| `--xh-tree-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | tree 的 empty 部件 color 覆盖槽。 |
-| `--xh-tree-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-tree-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_tree-row-px` | tree 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-tree-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | tree 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-tree-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | tree 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-tree-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_tree-font-size` | tree 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-tree-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_tree-row-px` | tree 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-tree-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | tree 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-tree-fg` | `tree` | `color` | `default` | `--xh-fg-default` | tree 的 tree 部件 color 覆盖槽。 |
 | `--xh-tree-gap` | `root` | `gap` | `default` | `--xh-space-2` | tree 的 root 部件 gap 覆盖槽。 |
 | `--xh-tree-icon-size` | `branch-control`<br>`item`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tree 的 branch-control、item、root 部件 --xh-icon-size 覆盖槽。 |
@@ -646,11 +648,11 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `--xh-tree-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tree 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-tree-leaf-row-gap` | `branch-content` | `column-gap` | `orientation=horizontal` | `--xh-space-3` | tree 的 branch-content 部件 column-gap 覆盖槽。 |
 | `--xh-tree-line-color` | `branch`<br>`branch-content`<br>`branch-control`<br>`item`<br>`tree` | `background`<br>`border-block-end`<br>`border-inline-start` | `last-child`<br>`lines`<br>`not(:last-child)`<br>`orientation=vertical` | `--xh-border-default` | tree 的 branch、branch-content、branch-control、item、tree 部件 background、border-block-end、border-inline-start 覆盖槽。 |
-| `--xh-tree-loading-fg` | `loading` | `color` | `default` | `--xh-fg-muted` | tree 的 loading 部件 color 覆盖槽。 |
-| `--xh-tree-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 font-size 覆盖槽。 |
-| `--xh-tree-loading-gap` | `loading` | `gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 gap 覆盖槽。 |
-| `--xh-tree-loading-px` | `loading` | `padding-inline` | `default` | `--xh-_tree-row-px` | tree 的 loading 部件 padding-inline 覆盖槽。 |
-| `--xh-tree-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | tree 的 loading 部件 padding-block 覆盖槽。 |
+| `--xh-tree-loading-fg` | `loading` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | tree 的 loading 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-tree-loading-font-size` | `loading` | `--xh-placeholder-font-size` | `default` | `--xh-_tree-font-size` | tree 的 loading 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-tree-loading-gap` | `loading` | `--xh-placeholder-gap` | `default` | `--xh-_tree-row-gap` | tree 的 loading 部件 --xh-placeholder-gap 覆盖槽。 |
+| `--xh-tree-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_tree-row-px` | tree 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-tree-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | tree 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-tree-max-h` | `tree` | `max-block-size` | `default` | `--xh-viewport-h-lg` | tree 的 tree 部件 max-block-size 覆盖槽。 |
 | `--xh-tree-px` | `tree` | `padding-inline` | `default` | `--xh-space-1` | tree 的 tree 部件 padding-inline 覆盖槽。 |
 | `--xh-tree-py` | `tree` | `padding-block` | `default` | `--xh-space-1` | tree 的 tree 部件 padding-block 覆盖槽。 |
@@ -674,7 +676,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 
 动效角色：按压 · 状态 · 切换 · 指示与换位 · 披露 · 出现 · 循环（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `box-shadow` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`-webkit-mask-size` · `background-color` · `border-color` · `box-shadow` · `clip-path` · `color` · `mask-size` · `opacity` · `rotate` · `text-decoration-color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

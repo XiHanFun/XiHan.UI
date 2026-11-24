@@ -414,6 +414,7 @@
 | `link` | `data-xh-collection-item` | '' |
 | `link` | `data-xh-collection-size` | props.size |
 | `link-text` | `data-xh-collection-slot` | 'text' |
+| `empty` | `data-xh-placeholder` | 'empty' |
 | `popout-positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `popout-positioner` | `data-placement` | placed?.placement |
 | `popout-positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -430,10 +431,10 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-side-nav-branch-indicator-size` | `branch-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | side-nav 的 branch-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `--xh-sider-collapsed-w` | side-nav 的 root 部件 inline-size 覆盖槽。 |
-| `--xh-side-nav-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | side-nav 的 empty 部件 color 覆盖槽。 |
-| `--xh-side-nav-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 empty 部件 font-size 覆盖槽。 |
-| `--xh-side-nav-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 empty 部件 padding-inline 覆盖槽。 |
-| `--xh-side-nav-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | side-nav 的 empty 部件 padding-block 覆盖槽。 |
+| `--xh-side-nav-empty-fg` | `empty` | `--xh-placeholder-fg` | `default` | `--xh-fg-muted` | side-nav 的 empty 部件 --xh-placeholder-fg 覆盖槽。 |
+| `--xh-side-nav-empty-font-size` | `empty` | `--xh-placeholder-font-size` | `default` | `--xh-_side-nav-row-font-size` | side-nav 的 empty 部件 --xh-placeholder-font-size 覆盖槽。 |
+| `--xh-side-nav-empty-px` | `empty` | `--xh-placeholder-px` | `default` | `--xh-_side-nav-row-px` | side-nav 的 empty 部件 --xh-placeholder-px 覆盖槽。 |
+| `--xh-side-nav-empty-py` | `empty` | `--xh-placeholder-py` | `default` | `--xh-space-3` | side-nav 的 empty 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`group-list`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、group-list、list、root 部件 gap 覆盖槽。 |
 | `--xh-side-nav-group-label-fg` | `group-label` | `color` | `default` | `--xh-fg-muted` | side-nav 的 group-label 部件 color 覆盖槽。 |
@@ -481,7 +482,7 @@
 
 动效角色：按压 · 状态 · 指示与换位 · 披露 · 出现（见[动效规范](../design/motion#角色)）。
 
-共享关键帧 `xh-fade-in` · `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-pop-in` · `xh-pop-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`color` · `inline-size` · `opacity` · `rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

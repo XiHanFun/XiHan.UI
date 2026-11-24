@@ -8,6 +8,7 @@
 @import '../family/action-control.css';
 @import '../family/collection-item.css';
 @import '../family/loading-ring.css';
+@import '../family/placeholder.css';
 @import '../family/motion.css';
 @import '../family/material.css';
 @import '../family/tag-list.css';
@@ -424,72 +425,28 @@
     will-change: opacity, scale;
   }
 
-  /* 空态占位：待在 content 里、list 的兄弟；盒与阴影归 content，这里只画一句居中的次要文字 */
+  /* 占位（空、在途、取数失败）：同一个位置、同一副排版，由占位态家族配方画（连接层投影 data-xh-placeholder）；
+     盒与阴影归宿主，这里只把使用者槽桥到配方 */
   [data-scope='select'][data-part='empty'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-select-empty-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-empty-px, var(--xh-_select-item-px));
-    color: var(--xh-select-empty-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-empty-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-empty-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-empty-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-empty-font-size, var(--xh-_select-font-size));
   }
 
-  /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-  [data-scope='select'][data-part='empty'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='select'][data-part='empty']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 在途占位：与空态占位同一个位置、同一副观感，两者不同屏 */
   [data-scope='select'][data-part='loading'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-_select-gap);
-    flex: none;
-    padding-block: var(--xh-select-loading-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-loading-px, var(--xh-_select-item-px));
-    color: var(--xh-select-loading-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-loading-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-loading-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-loading-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-loading-font-size, var(--xh-_select-font-size));
+    --xh-placeholder-gap: var(--xh-_select-gap);
   }
 
-  [data-scope='select'][data-part='loading'][hidden] {
-    display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='select'][data-part='loading']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
-  }
-
-  /* 首次加载：文案前一枚加载环，由加载环配方画（连接层投影 data-xh-loading-ring 与 data-loading），
-     直径取所在尺寸档的图标档 */
-  [data-scope='select'][data-part='loading']::before {
-    content: '';
-    flex: none;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
-  }
-
-  /* 整表取数失败：与空态、在途占位同一个位置、同一副观感，三者至多露一种，露哪一种归连接层；
-     重试钮跟在提示下面 */
   [data-scope='select'][data-part='error'] {
-    display: block;
-    flex: none;
-    padding-block: var(--xh-select-error-py, var(--xh-space-3));
-    padding-inline: var(--xh-select-error-px, var(--xh-_select-item-px));
-    color: var(--xh-select-error-fg, var(--xh-material-frosted-fg-muted));
-    font-size: var(--xh-select-error-font-size, var(--xh-_select-font-size));
-    line-height: var(--xh-leading-none);
-    text-align: center;
+    --xh-placeholder-py: var(--xh-select-error-py, var(--xh-space-3));
+    --xh-placeholder-px: var(--xh-select-error-px, var(--xh-_select-item-px));
+    --xh-placeholder-fg: var(--xh-select-error-fg, var(--xh-material-frosted-fg-muted));
+    --xh-placeholder-font-size: var(--xh-select-error-font-size, var(--xh-_select-font-size));
   }
 
   /* 重试钮是 Action Control 家族的 text ghost 档，盒与按压都归家族；这里只让它在浮层里居中 */
@@ -497,14 +454,8 @@
     align-self: center;
   }
 
-  [data-scope='select'][data-part='error'][hidden],
   [data-scope='select'][data-part='retry-trigger'][hidden] {
     display: none;
-  }
-
-  /* 占位从 hidden 露出时淡入（节点重新得到盒时起播）：与列表互换时不当帧弹出 */
-  [data-scope='select'][data-part='error']:not([hidden]) {
-    animation: xh-fade-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter);
   }
 
   [data-scope='select'][data-part='group'] {
