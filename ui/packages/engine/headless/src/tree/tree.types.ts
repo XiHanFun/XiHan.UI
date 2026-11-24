@@ -142,7 +142,7 @@ export interface TreeSelectionChangeDetails {
   value: string[]
 }
 
-export interface TreeCheckedValueChangeDetails {
+export interface TreeCheckedChangeDetails {
   value: string[]
 }
 
@@ -241,13 +241,13 @@ export interface TreeSchema extends MachineSchema {
     selectionMode?: TreeSelectionMode
     /**
      * 可勾选：每一行行首一枚勾选框，勾选与选中是两份状态。点行与确认键照 selectionMode 选中（单选即当前项，
-     * 用来看详情），只有点勾选框与空格键改勾选集合 checkedValue。默认 false。
+     * 用来看详情），只有点勾选框与空格键改勾选集合 checked。默认 false。
      * 不开时 multiple 档的点行本身就是勾选，适合纯勾选清单。
      */
     checkable?: boolean
     /** 勾选集合，checkable 下生效。提供即受控，语义同 selection。 */
-    checkedValue?: string[]
-    defaultCheckedValue?: string[]
+    checked?: string[]
+    defaultChecked?: string[]
     /**
      * 父子级联勾选：勾分支整枝传导、子全勾父勾、部分勾选半选，禁用子树整棵冻结。默认 false（朴素切换）。
      * checkable 下作用在勾选集合上；否则只在 selectionMode 为 multiple 时作用在选中集合上，single 与 extended 下无效。
@@ -302,7 +302,7 @@ export interface TreeSchema extends MachineSchema {
     onExpandedValueChange?: (details: TreeExpandedValueChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
     /** 勾选集合变化（checkable 下点勾选框或按空格）。 */
-    onCheckedValueChange?: (details: TreeCheckedValueChangeDetails) => void
+    onCheckedChange?: (details: TreeCheckedChangeDetails) => void
     /** 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 */
     onBranchLoadStart?: (details: TreeBranchLoadStartDetails) => void
     /** 一轮有效分支请求成功；children 为空仍是成功，不转换为错误。 */
@@ -321,8 +321,8 @@ export interface TreeSchema extends MachineSchema {
     searchExpanded: string[]
     /** 选中集合，恒为数组。单选时长度 ≤ 1，形状不随模式变化。 */
     selection: string[]
-    /** 勾选集合，恒为数组；只在 checkable 下被读写。受控（checkedValue 提供）时 cell 直读 prop。 */
-    checkedValue: string[]
+    /** 勾选集合，恒为数组；只在 checkable 下被读写。受控（checked 提供）时 cell 直读 prop。 */
+    checked: string[]
     /** 焦点位于树内时的瞬态锚点，焦点离开即清空。 */
     focusedValue: string | null
     /**
@@ -399,7 +399,7 @@ export interface TreeSchema extends MachineSchema {
     | 'toggleBranch'
     | 'setSelection'
     | 'selectNode'
-    | 'setCheckedValue'
+    | 'setChecked'
     | 'checkNode'
     | 'setFocusedValue'
     | 'clearFocusedValue'
@@ -444,7 +444,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   /** 是否可勾选：行首勾选框与选中分开。 */
   checkable: boolean
   /** 勾选集合；不开 checkable 时恒为空数组。 */
-  checkedValue: string[]
+  checked: string[]
   disabled: boolean
   /** 生效的文案：内建英文与 translations 合并后的那一份。 */
   translations: TreeTranslations
@@ -459,7 +459,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   setExpandedValue: (next: string[]) => void
   setSelection: (next: string[]) => void
   /** 整体改写勾选集合（checkable 下生效）。 */
-  setCheckedValue: (next: string[]) => void
+  setChecked: (next: string[]) => void
   /** 切换一个节点的勾选，与点它的勾选框同一语义；级联时整枝传导。 */
   toggleChecked: (value: string) => void
   expand: (value: string) => void

@@ -31,7 +31,7 @@ const checked = ref<string[]>([]);
   <div style="display: grid; gap: 8px; justify-items: start">
     <XhTreeRoot
       v-model:selection="current"
-      v-model:checked-value="checked"
+      v-model:checked="checked"
       :collection="collection"
       :default-expanded-value="['identity', 'security']"
       label="缓存键"

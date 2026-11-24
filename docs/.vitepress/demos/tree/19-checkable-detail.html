@@ -43,9 +43,9 @@
     current.textContent = event.detail.value[0] ?? "（未选）";
   });
 
-  tree.checkedValue = [];
-  tree.addEventListener("checked-value-change", (event) => {
-    tree.checkedValue = event.detail.value;
+  tree.checked = [];
+  tree.addEventListener("checked-change", (event) => {
+    tree.checked = event.detail.value;
     checked.textContent = event.detail.value.join("、") || "（无）";
   });
 </script>

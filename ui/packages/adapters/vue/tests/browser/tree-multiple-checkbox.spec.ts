@@ -140,7 +140,7 @@ describe('树的 checkable 档：勾选与选中分开', () => {
       'checkable': true,
       'cascade': true,
       'defaultSelection': [],
-      'onUpdate:checkedValue': (value: string[]) => checked.push(value),
+      'onUpdate:checked': (value: string[]) => checked.push(value),
       'onUpdate:selection': (value: string[]) => selected.push(value),
     })
     return { checked, selected }

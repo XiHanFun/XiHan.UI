@@ -1208,6 +1208,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 受控值统一 `value/onValueChange`。
 - 开合统一 `open/onOpenChange`。
 - 布尔 prop 使用肯定命名。
+- 选中集合：单一选中集合的组件用 `value / onValueChange`；同时有选中、勾选、展开几套集合的数据视图（Table、Tree、Transfer）用 `selection / defaultSelection / onSelectionChange` 指选中那一套，Tree 的勾选集合叫 `checked / defaultChecked / onCheckedChange`。
 - 多选开关：只有单 / 多两档的字段与选择器用布尔 `multiple`（Select、Combobox、Cascader、TreeSelect、DatePicker、TimePicker、ColorPicker、CalendarPicker、Accordion、ToggleGroup）；能关掉选择、或另有 extended 档的集合用 `selectionMode`（Listbox、Tree、Table、GridList、TagGroup）。
 - 默认值在 Headless 定义，三个适配器不得各自设置。
 - 非法组合立即报错，不静默修正。

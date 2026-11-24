@@ -82,7 +82,7 @@ export function connectTree<T extends PropTypes>(
   const selection = context.get('selection')
   // 可勾选：勾选与选中分开，勾选集合只在这一档里读写
   const checkable = !!prop('checkable')
-  const checkedValue = checkable ? context.get('checkedValue') : []
+  const checked = checkable ? context.get('checked') : []
   const treeDisabled = !!prop('disabled')
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；节点手写时库数不出有几条
@@ -148,9 +148,9 @@ export function connectTree<T extends PropTypes>(
   // 级联：父随子勾、部分勾中半选，从值集聚合得出。checkable 下聚合的是勾选集合，选中集合照朴素规则；
   // 否则只在 multiple 档聚合选中集合
   const cascade = (checkable || selectionMode === 'multiple') && !!prop('cascade')
-  const cascaded = cascade ? cascadeState(fullCollection, checkable ? checkedValue : selection) : null
+  const cascaded = cascade ? cascadeState(fullCollection, checkable ? checked : selection) : null
   const isSelected = (value: string): boolean => (cascaded && !checkable ? cascaded.checked.has(value) : selection.includes(value))
-  const isChecked = (value: string): boolean => checkable && (cascaded ? cascaded.checked.has(value) : checkedValue.includes(value))
+  const isChecked = (value: string): boolean => checkable && (cascaded ? cascaded.checked.has(value) : checked.includes(value))
   const isIndeterminate = (value: string): boolean => cascaded?.indeterminate.has(value) ?? false
   // 行首勾选框：checkable 下方框画勾选集合；不开 checkable 时 multiple 档的点行就是切换，方框画选中集合。
   // 单选与 extended（裸点击是换成这一项）仍用行尾对号
@@ -441,7 +441,7 @@ export function connectTree<T extends PropTypes>(
     focusedValue,
     selectionMode,
     checkable,
-    checkedValue,
+    checked,
     disabled: treeDisabled,
     translations,
     isExpanded,
@@ -451,7 +451,7 @@ export function connectTree<T extends PropTypes>(
     branchLoadState,
     setExpandedValue: next => send({ type: 'EXPANDED.SET', value: next }),
     setSelection: next => send({ type: 'SELECTION.SET', value: next }),
-    setCheckedValue: next => send({ type: 'CHECKED.SET', value: next }),
+    setChecked: next => send({ type: 'CHECKED.SET', value: next }),
     toggleChecked: value => send({ type: 'NODE.CHECK', value }),
     expand: value => send({ type: 'BRANCH.EXPAND', value }),
     collapse: value => send({ type: 'BRANCH.COLLAPSE', value }),

@@ -197,11 +197,11 @@ export const treeMachine = createMachine({
       onChange: value => prop('onSelectionChange')?.({ value }),
     })),
     // 勾选与选中是两份状态：checkable 下点勾选框与空格改它，点行照旧改选中
-    checkedValue: cell<string[]>(() => ({
-      value: prop('checkedValue'),
-      defaultValue: prop('defaultCheckedValue') ?? [],
+    checked: cell<string[]>(() => ({
+      value: prop('checked'),
+      defaultValue: prop('defaultChecked') ?? [],
       isEqual: sameValues,
-      onChange: value => prop('onCheckedValueChange')?.({ value }),
+      onChange: value => prop('onCheckedChange')?.({ value }),
     })),
     // 焦点锚点不受控、不对外通知：它只服务 roving tabindex 与方向键起点
     focusedValue: cell<string | null>(() => ({ defaultValue: null })),
@@ -257,7 +257,7 @@ export const treeMachine = createMachine({
         'BRANCH.RETRY': { actions: ['retryBranch'] },
         'SELECTION.SET': { actions: ['setSelection'] },
         'NODE.SELECT': { actions: ['selectNode'] },
-        'CHECKED.SET': { actions: ['setCheckedValue'] },
+        'CHECKED.SET': { actions: ['setChecked'] },
         'NODE.CHECK': { actions: ['checkNode'] },
         'NODE.FOCUS': { actions: ['setFocusedValue'] },
         'TREE.BLUR': { actions: ['clearFocusedValue'] },
@@ -602,25 +602,25 @@ export const treeMachine = createMachine({
           current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value],
         )
       },
-      setCheckedValue: ({ context, event }) => {
+      setChecked: ({ context, event }) => {
         const e = event.current()
         if (e.type !== 'CHECKED.SET')
           return
-        context.set('checkedValue', [...new Set(e.value)])
+        context.set('checked', [...new Set(e.value)])
       },
       // 勾选只在 checkable 下有意义；级联时整枝传导后按收敛策略落对外值，与多选的级联同一套规则
       checkNode: ({ context, prop, event }) => {
         const e = event.current()
         if (e.type !== 'NODE.CHECK' || !prop('checkable'))
           return
-        const current = context.get('checkedValue')
+        const current = context.get('checked')
         if (prop('cascade')) {
           const roots = treeCollection(prop, context)
           const state = cascadeToggle(roots, current, e.value)
-          context.set('checkedValue', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
+          context.set('checked', collapseChecked(roots, state.checked, prop('checkedStrategy') ?? 'child'))
           return
         }
-        context.set('checkedValue', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
+        context.set('checked', current.includes(e.value) ? current.filter(v => v !== e.value) : [...current, e.value])
       },
       setFocusedValue: ({ context, event }) => {
         const e = event.current()

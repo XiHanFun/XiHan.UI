@@ -81825,7 +81825,7 @@
             },
             {
               "kind": "field",
-              "name": "checkedValue",
+              "name": "checked",
               "privacy": "public",
               "type": {
                 "text": "string[]"
@@ -81834,7 +81834,7 @@
             },
             {
               "kind": "field",
-              "name": "defaultCheckedValue",
+              "name": "defaultChecked",
               "privacy": "public",
               "type": {
                 "text": "string[]"
@@ -82161,9 +82161,9 @@
             },
             {
               "description": "勾选集合变化（checkable 下）；detail 为 `{ value: string[] }`",
-              "name": "checked-value-change",
+              "name": "checked-change",
               "type": {
-                "text": "TreeCheckedValueChangeDetails"
+                "text": "TreeCheckedChangeDetails"
               }
             },
             {

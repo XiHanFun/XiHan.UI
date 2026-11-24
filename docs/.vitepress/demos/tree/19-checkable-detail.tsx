@@ -32,8 +32,8 @@ export default function Demo(): ReactNode {
       <XhTreeRoot
         selection={current}
         onSelectionChange={details => setCurrent(details.value)}
-        checkedValue={checked}
-        onCheckedValueChange={details => setChecked(details.value)}
+        checked={checked}
+        onCheckedChange={details => setChecked(details.value)}
         collection={collection}
         defaultExpandedValue={["identity", "security"]}
         label="缓存键"

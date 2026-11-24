@@ -154,7 +154,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 - `variant` 决定外框形态，默认 `ghost`，树直接落在页面或宿主面上；`outline` 加一圈描边与底色，`subtle` 换成淡底无描边。
 - `size` 取 `sm` / `md` / `lg`，默认 `md`，走集合家族的尺寸档：行高、行内内衬、字号、展开箭头与对号盒、拖拽把手与层级缩进一起随档。
 - 选择模式 `selectionMode`：缺省 `single` 单选；`multiple` 点击与确认键切换，按住 Shift 点击把锚点到这一项那一段并进来；`extended` 照文件管理器，点击与确认键换成这一项，按住 Ctrl / Cmd 点击或按 Ctrl / Cmd + Space 切换这一项，按住 Shift 点击选锚点到这一项那一段（同时按 Ctrl / Cmd 则并进）。锚点是最近一次点击或切换的那一项；选中从外面换了（受控时宿主另写了值、`setSelection`、初始的选中），锚点落到多出来的最后一项，清空了就没有锚点。级联勾选只在 `multiple` 下生效。
-- `checkable` 让勾选与选中各管一件事：行首勾选框与空格键只改勾选集合 `checkedValue`（批量删除、批量授权），点行与确认键照 `selectionMode` 选中（单选即当前项，用来看详情），两份集合各自可受控、各报各的事件。勾选框不占 Tab 位，焦点仍在所在的行上；树项用 `aria-checked` 报勾选、`aria-selected` 报选中。行首已是勾选框，选中改由品牌淡底行面表达。`cascade` 与 `checkedStrategy` 此时作用在勾选集合上。不开 `checkable` 时，`multiple` 档的点行本身就是勾选，适合纯勾选清单。
+- `checkable` 让勾选与选中各管一件事：行首勾选框与空格键只改勾选集合 `checked`（批量删除、批量授权），点行与确认键照 `selectionMode` 选中（单选即当前项，用来看详情），两份集合各自可受控、各报各的事件。勾选框不占 Tab 位，焦点仍在所在的行上；树项用 `aria-checked` 报勾选、`aria-selected` 报选中。行首已是勾选框，选中改由品牌淡底行面表达。`cascade` 与 `checkedStrategy` 此时作用在勾选集合上。不开 `checkable` 时，`multiple` 档的点行本身就是勾选，适合纯勾选清单。
 - 选中与[树形选择器](./tree-select)同一种读法：行不换面。单选与 `extended` 在行尾画对号；`multiple`（含级联）换成行首勾选框，排在展开箭头之后、文字之前，一眼看得出点行是勾上这一项、而不是换掉已选的那一项。分支行也摆 `item-indicator`，级联下的半选在方框里画横杠。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、子节点异步加载、拖放换父。拖放与 Alt + 方向键落下之后，宿主写回 `collection` 的那一次重排里，行从旧位置滑到新位置（换了父被重建的节点按节点值认回）；落点线取品牌实心色，与表格、排序同一种。
@@ -215,9 +215,9 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `selection` | `string[]` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
 | `selectionMode` | `TreeSelectionMode` |  | 选择模式，默认 single；multiple 与 extended 下 tree 带 aria-multiselectable=true。 |
-| `checkable` | `boolean` |  | 可勾选：每一行行首一枚勾选框，勾选与选中是两份状态。点行与确认键照 selectionMode 选中（单选即当前项， 用来看详情），只有点勾选框与空格键改勾选集合 checkedValue。默认 false。 不开时 multiple 档的点行本身就是勾选，适合纯勾选清单。 |
-| `checkedValue` | `string[]` |  | 勾选集合，checkable 下生效。提供即受控，语义同 selection。 |
-| `defaultCheckedValue` | `string[]` |  |  |
+| `checkable` | `boolean` |  | 可勾选：每一行行首一枚勾选框，勾选与选中是两份状态。点行与确认键照 selectionMode 选中（单选即当前项， 用来看详情），只有点勾选框与空格键改勾选集合 checked。默认 false。 不开时 multiple 档的点行本身就是勾选，适合纯勾选清单。 |
+| `checked` | `string[]` |  | 勾选集合，checkable 下生效。提供即受控，语义同 selection。 |
+| `defaultChecked` | `string[]` |  |  |
 | `cascade` | `boolean` |  | 父子级联勾选：勾分支整枝传导、子全勾父勾、部分勾选半选，禁用子树整棵冻结。默认 false（朴素切换）。 checkable 下作用在勾选集合上；否则只在 selectionMode 为 multiple 时作用在选中集合上，single 与 extended 下无效。 |
 | `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
 | `expandOnClick` | `boolean` |  | 点击分支行（与确认键）是否同时展开 / 收起，默认 false：展开与选中分开，只有 branch-trigger 与左右方向键能改变展开态。 |
@@ -237,7 +237,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `onNodeMove` | `(move: TreeMove) => void` |  |  |
 | `onExpandedValueChange` | `(details: TreeExpandedValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
-| `onCheckedValueChange` | `(details: TreeCheckedValueChangeDetails) => void` |  | 勾选集合变化（checkable 下点勾选框或按空格）。 |
+| `onCheckedChange` | `(details: TreeCheckedChangeDetails) => void` |  | 勾选集合变化（checkable 下点勾选框或按空格）。 |
 | `onBranchLoadStart` | `(details: TreeBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 |
 | `onBranchLoad` | `(details: TreeBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换为错误。 |
 | `onBranchLoadError` | `(details: TreeBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loadChildren 给出的原始 error。 |
@@ -266,7 +266,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | --- | --- | --- |
 | `expanded-value-change` | `TreeExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `checked-value-change` | `TreeCheckedValueChangeDetails` | 勾选集合变化（checkable 下）；detail 为 `{ value: string[] }` |
+| `checked-change` | `TreeCheckedChangeDetails` | 勾选集合变化（checkable 下）；detail 为 `{ value: string[] }` |
 | `node-move` | `TreeNodeMoveDetails` | 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正） |
 | `branch-load-start` | `TreeBranchLoadStartDetails` | 分支请求开始；detail 为 `{ value, node, reason }` |
 | `branch-load` | `TreeBranchLoadDetails` | 分支请求成功；detail 为 `{ value, node, children }` |
@@ -334,7 +334,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `searching` | `boolean` | 是否处于搜索视图：检索词 trim 后非空。空态文案要分「没有数据」与「没有命中」时读它。 |
 | `selectionMode` | `TreeSelectionMode` | 生效的选择模式。 |
 | `checkable` | `boolean` | 是否可勾选：行首勾选框与选中分开。 |
-| `checkedValue` | `string[]` | 勾选集合；不开 checkable 时恒为空数组。 |
+| `checked` | `string[]` | 勾选集合；不开 checkable 时恒为空数组。 |
 | `disabled` | `boolean` |  |
 | `translations` | `TreeTranslations` | 生效的文案：内建英文与 translations 合并后的那一份。 |
 | `isExpanded` | `(value: string) => boolean` |  |
@@ -344,7 +344,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `branchLoadState` | `(value: string) => TreeBranchLoadSnapshot \| null` | 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
-| `setCheckedValue` | `(next: string[]) => void` | 整体改写勾选集合（checkable 下生效）。 |
+| `setChecked` | `(next: string[]) => void` | 整体改写勾选集合（checkable 下生效）。 |
 | `toggleChecked` | `(value: string) => void` | 切换一个节点的勾选，与点它的勾选框同一语义；级联时整枝传导。 |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
