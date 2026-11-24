@@ -41,7 +41,7 @@ const DISABLED_QUESTIONS = [
 ]
 
 /** 同一份标记，第二题（多选）最多选一项。 */
-const LIMITED_QUESTIONS = [QUESTIONS[0]!, { ...QUESTIONS[1]!, maxSelections: 1 }, QUESTIONS[2]!]
+const LIMITED_QUESTIONS = [QUESTIONS[0]!, { ...QUESTIONS[1]!, maxSelected: 1 }, QUESTIONS[2]!]
 
 /** 每题在题干后面加一块题目说明，内容留空由组件代填。 */
 function withDescriptions(base: FixtureNode): FixtureNode {

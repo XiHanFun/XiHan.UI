@@ -1,4 +1,4 @@
-// 说明与多选上下限 | 选项的 description 写进 item-description，跟着选项名一起念；多选的 minSelections / maxSelections 管选够与选满，数量要求写进题目说明 description 并描述选项组
+// 说明与多选上下限 | 选项的 description 写进 item-description，跟着选项名一起念；多选的 minSelected / maxSelected 管选够与选满，数量要求写进题目说明 description 并描述选项组
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
@@ -35,8 +35,8 @@ const questions: QuestionFlowQuestion[] = [
     prompt: "上线前跑哪些检查？",
     type: "multiple",
     // 没写 description 时，数量要求代填成题目说明
-    minSelections: 2,
-    maxSelections: 3,
+    minSelected: 2,
+    maxSelected: 3,
     options: [
       { value: "unit", label: "单元测试" },
       { value: "e2e", label: "端到端", description: "约 20 分钟" },

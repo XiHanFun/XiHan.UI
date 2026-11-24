@@ -44,7 +44,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 ### 说明与多选上下限
 
-选项的 description 写进 item-description，跟着选项名一起念；多选的 minSelections / maxSelections 管选够与选满，数量要求写进题目说明 description 并描述选项组
+选项的 description 写进 item-description，跟着选项名一起念；多选的 minSelected / maxSelected 管选够与选满，数量要求写进题目说明 description 并描述选项组
 
 <XhDemo src="question-flow/05-descriptions" />
 
@@ -68,7 +68,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 - 单选自动前进，多选等待用户点击继续：选中一项后隔一小段自动翻到下一题；连续更改时，每次更改都从整段延时重新计时。自动前进只走到下一题，末题上停止，不替用户提交。
 - 一个按钮两个身份：不是末题时为“继续”，末题时为“发送”。它原位切换 `data-mode` 与可访问名称，正在按它的用户不会按空。
 - 自由文本与选项同等有效：填写了“都不是，我想要……”即视为已作答，继续键随之可用。
-- 多选的数量要求：`minSelections` 管选够——选够之前继续键不可用（写了自由文本同样算作答）；`maxSelections` 管选满——选满之后其余未选项转为不可选（`aria-disabled`），取消一项又能再选，程序化的 `toggleOption` 守同一条上限。选项组带 `data-at-max` 供皮肤取用。
+- 多选的数量要求：`minSelected` 管选够——选够之前继续键不可用（写了自由文本同样算作答）；`maxSelected` 管选满——选满之后其余未选项转为不可选（`aria-disabled`），取消一项又能再选，程序化的 `toggleOption` 守同一条上限。选项组带 `data-at-max` 供皮肤取用。
 - 两种说明：题目的 `description` 写进 `description` 部件并成为选项组的描述，缺席时由多选的数量要求代填（文案取 `translations.selectionRange`）；选项的 `description` 写进 `item-description` 部件，排在选项之内另起一行。有没有题目说明看数据，没有时该部件收起。
 - 进度只播报一次：`counter` 部件 `aria-hidden`，逐题跳动的数字不进入活动区域；换题与提交由 `announcement` 读出一句。
 - 跳过是明确路径：`allowSkip` 关闭时整个跳过键收起，而不是保留一个不可用的按钮。末题上跳过即提交，否则最后一题没有出口。
@@ -142,8 +142,8 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `options` | `readonly QuestionFlowOption[]` | 是 |  |
 | `optional` | `boolean` |  | 允许不作答直接进入下一题。 |
 | `description` | `string` |  | 题目的补充说明，写进 description 部件并成为选项组的描述；缺席时由多选的数量要求代填。 |
-| `minSelections` | `number` |  | 多选至少选几项，默认 1。选够之前继续键不可用（写了自由文本同样算作答）。 只对 multiple 生效；非有限值或小于 1 按 1 算。 |
-| `maxSelections` | `number` |  | 多选最多选几项。选满之后其余未选项转为不可选（aria-disabled），取消一项又能再选。 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelections 时按 minSelections 算。 |
+| `minSelected` | `number` |  | 多选至少选几项，默认 1。选够之前继续键不可用（写了自由文本同样算作答）。 只对 multiple 生效；非有限值或小于 1 按 1 算。 |
+| `maxSelected` | `number` |  | 多选最多选几项。选满之后其余未选项转为不可选（aria-disabled），取消一项又能再选。 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelected 时按 minSelected 算。 |
 
 ### 事件
 
@@ -276,7 +276,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `ArrowUp` / `ArrowLeft` | 焦点在当前题的选项上 | 焦点移到上一个可停留选项；单选时同时选中它 |
 | `Home` | 焦点在当前题的选项上 | 焦点移到首个可停留选项；单选时同时选中它 |
 | `End` | 焦点在当前题的选项上 | 焦点移到末个可停留选项；单选时同时选中它 |
-| `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消；多选已选满 maxSelections 时，未选项转为不可选，按了不加，取消已选项照常 |
+| `Space` | 焦点在当前题的选项上 | 切换该项。单选点已选中的那一项不取消；多选已选满 maxSelected 时，未选项转为不可选，按了不加，取消已选项照常 |
 | `Enter` | 焦点在当前题的选项或自由文本上，且这一题答得能往下走 | 前进一题；已经在末题就交卷 |
 | `Space` | 按住当前题的未禁用选项 | 按住期间该选项投影 data-pressed，与指针 :active 同一副按压面（row 档只换面不缩放）；抬起、失焦、换题或交卷撤下。Enter 不是选项的激活键，不进按压面 |
 | `Enter` / `Space` | 按住未禁用的上一题 / 下一题 / 跳过 / 继续（发送）按钮 | 按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起、失焦、换题或交卷撤下 |

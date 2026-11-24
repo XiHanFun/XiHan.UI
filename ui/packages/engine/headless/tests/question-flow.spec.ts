@@ -496,15 +496,15 @@ describe('question-flow：多选的数量要求与说明', () => {
       id: 'm',
       prompt: '选几个语言',
       type: 'multiple',
-      minSelections: 2,
-      maxSelections: 3,
+      minSelected: 2,
+      maxSelected: 3,
       options: [{ value: 'ts' }, { value: 'go' }, { value: 'rs' }, { value: 'py', description: '只用来写脚本' }],
     },
     { id: 's', prompt: '单选', options: [{ value: 'x' }] },
   ]
   const item = (r: Rig, value: string): Dict => r.api().getItemProps({ questionId: 'm', value }) as Dict
 
-  it('选够 minSelections 之前继续键不可用；写了自由文本同样算作答', () => {
+  it('选够 minSelected 之前继续键不可用；写了自由文本同样算作答', () => {
     const r = mount({ questions: LIMITED })
     r.api().toggleOption('m', 'ts')
     expect(r.api().canAdvance).toBe(false)
@@ -517,7 +517,7 @@ describe('question-flow：多选的数量要求与说明', () => {
     expect(noted.api().canAdvance).toBe(true)
   })
 
-  it('选满 maxSelections：其余未选项转为不可选，点了不加；取消一项又能再选', () => {
+  it('选满 maxSelected：其余未选项转为不可选，点了不加；取消一项又能再选', () => {
     const r = mount({ questions: LIMITED })
     for (const value of ['ts', 'go', 'rs'])
       click(item(r, value))
@@ -553,8 +553,8 @@ describe('question-flow：多选的数量要求与说明', () => {
   it('非法的上下限按规则夹住：min 小于 1 按 1，max 小于 min 按 min，单选恒为一项', () => {
     const r = mount({
       questions: [
-        { id: 'a', type: 'multiple', minSelections: 0, maxSelections: Number.NaN, options: [] },
-        { id: 'b', type: 'multiple', minSelections: 3, maxSelections: 2, options: [] },
+        { id: 'a', type: 'multiple', minSelected: 0, maxSelected: Number.NaN, options: [] },
+        { id: 'b', type: 'multiple', minSelected: 3, maxSelected: 2, options: [] },
       ],
     })
     expect(r.api().selectionLimitsOf('a')).toEqual({ min: 1, max: undefined })

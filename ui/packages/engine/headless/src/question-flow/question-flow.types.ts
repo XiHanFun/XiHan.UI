@@ -42,12 +42,12 @@ export interface QuestionFlowQuestion {
    * 多选至少选几项，默认 1。选够之前继续键不可用（写了自由文本同样算作答）。
    * 只对 multiple 生效；非有限值或小于 1 按 1 算。
    */
-  minSelections?: number
+  minSelected?: number
   /**
    * 多选最多选几项。选满之后其余未选项转为不可选（aria-disabled），取消一项又能再选。
-   * 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelections 时按 minSelections 算。
+   * 只对 multiple 生效；非有限值或小于 1 当没给，小于 minSelected 时按 minSelected 算。
    */
-  maxSelections?: number
+  maxSelected?: number
 }
 
 /** 一道多选题的数量要求，已夹成合法值。 */
@@ -304,13 +304,13 @@ export interface QuestionFlowTranslations {
   selectionRange: (min: number, max: number | undefined) => string
 }
 
-/** 一道题的数量要求：单选恒为一项；多选按 minSelections / maxSelections 夹成合法值。 */
+/** 一道题的数量要求：单选恒为一项；多选按 minSelected / maxSelected 夹成合法值。 */
 export function questionSelectionLimits(question: QuestionFlowQuestion | undefined): QuestionFlowSelectionLimits {
   if ((question?.type ?? 'single') === 'single')
     return { min: 1, max: 1 }
-  const rawMin = question!.minSelections
+  const rawMin = question!.minSelected
   const min = rawMin !== undefined && Number.isFinite(rawMin) && rawMin >= 1 ? Math.floor(rawMin) : 1
-  const rawMax = question!.maxSelections
+  const rawMax = question!.maxSelected
   const max = rawMax !== undefined && Number.isFinite(rawMax) && rawMax >= 1 ? Math.max(Math.floor(rawMax), min) : undefined
   return { min, max }
 }
@@ -324,7 +324,7 @@ export function clampQuestionIndex(index: number, count: number): number {
   return Math.min(Math.max(Math.trunc(index), 0), count - 1)
 }
 
-/** 该题是否可以进入下一题：选够了选项（多选看 minSelections）、已填自由文本，或它本身可跳过。 */
+/** 该题是否可以进入下一题：选够了选项（多选看 minSelected）、已填自由文本，或它本身可跳过。 */
 export function canAdvanceQuestion(
   question: QuestionFlowQuestion | undefined,
   answers: QuestionFlowAnswers,
