@@ -852,8 +852,8 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "alert 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。"
@@ -28559,24 +28559,6 @@
       "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-dialog-close-bg-focus",
-      "component": "dialog",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-focus-visible"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-dialog-close-bg-hover",
       "component": "dialog",
       "part": [
@@ -28612,24 +28594,6 @@
       ],
       "defaultToken": [
         "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-dialog-close-fg-focus",
-      "component": "dialog",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-dialog-close-fg-hover"
       ],
       "visibility": "public",
       "description": "dialog 的 close-trigger 部件 color 覆盖槽。"
@@ -30779,24 +30743,6 @@
       "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-drawer-close-bg-focus",
-      "component": "drawer",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-focus-visible"
-      ],
-      "visibility": "public",
-      "description": "drawer 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-drawer-close-bg-hover",
       "component": "drawer",
       "part": [
@@ -30832,24 +30778,6 @@
       ],
       "defaultToken": [
         "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "drawer 的 close-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-drawer-close-fg-focus",
-      "component": "drawer",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-drawer-close-fg-hover"
       ],
       "visibility": "public",
       "description": "drawer 的 close-trigger 部件 color 覆盖槽。"
@@ -39036,30 +38964,6 @@
       "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-floating-panel-action-fg-active",
-      "component": "floating-panel",
-      "part": [
-        "close-trigger",
-        "window-state-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled",
-        "is(:active, [data-pressed])",
-        "loading",
-        "not([data-disabled])",
-        "not([data-loading])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-fg-pressed"
-      ],
-      "visibility": "public",
-      "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-floating-panel-action-fg-hover",
       "component": "floating-panel",
       "part": [
@@ -39073,13 +38977,16 @@
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-_action-variant-fg-focus-visible",
-        "--xh-_action-variant-fg-hover"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed"
       ],
       "visibility": "public",
       "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
@@ -39433,7 +39340,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "floating-panel 的 close-trigger、content、root、trigger、window-state-trigger 部件 --xh-icon-size 覆盖槽。"
@@ -61051,24 +60959,6 @@
       "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
-      "name": "--xh-popover-close-bg-focus",
-      "component": "popover",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-_action-variant-bg-focus-visible"
-      ],
-      "visibility": "public",
-      "description": "popover 的 close-trigger 部件 background-color 覆盖槽。"
-    },
-    {
       "name": "--xh-popover-close-bg-hover",
       "component": "popover",
       "part": [
@@ -61104,24 +60994,6 @@
       ],
       "defaultToken": [
         "--xh-material-frosted-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "popover 的 close-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-popover-close-fg-focus",
-      "component": "popover",
-      "part": [
-        "close-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-popover-close-fg-hover"
       ],
       "visibility": "public",
       "description": "popover 的 close-trigger 部件 color 覆盖槽。"
@@ -61285,7 +61157,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "popover 的 close-trigger、content、trigger 部件 --xh-icon-size 覆盖槽。"
@@ -89967,7 +89840,8 @@
       ],
       "defaultToken": [
         "--xh-_action-profile-glyph-size",
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-xs"
       ],
       "visibility": "public",
       "description": "tour 的 close-trigger、content、next-trigger、prev-trigger、root、skip-trigger 部件 --xh-icon-size 覆盖槽。"

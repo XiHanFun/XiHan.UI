@@ -118,8 +118,8 @@ describe('警告提示的表面与信息层级', () => {
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(style.boxShadow).toBe('none')
     expect(style.color).toBe(tokenColor('--xh-fg-muted'))
-    // 兜底叉形按钮档取 sm 字形（16px），root 上给指示符的是 md 档（18px）
-    expect(getComputedStyle(close, '::before').width).toBe('16px')
+    // 面板角上关闭钮的叉取 12px，比钮的随档字形低一档；root 上给指示符的是 md 档（18px）
+    expect(getComputedStyle(close, '::before').width).toBe(`${tokenLength('--xh-glyph-size-xs')}px`)
     expect(resolvedLength(part('indicator'), 'var(--xh-icon-size)')).toBe(18)
 
     // 本体已是语气 12% 淡底，叉的悬停面再升一档到 20%，才在底上看得出来

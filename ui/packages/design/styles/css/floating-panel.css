@@ -297,7 +297,7 @@
     --xh-action-bg-pressed: var(--xh-floating-panel-action-bg-active, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
     --xh-action-fg-hover: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-hover));
-    --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-active, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-pressed: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-pressed));
     --xh-action-fg-focus-visible: var(--xh-floating-panel-action-fg-hover, var(--xh-_action-variant-fg-focus-visible));
     /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-_action-profile-glyph-size));
@@ -309,9 +309,11 @@
     --xh-action-radius: var(--xh-floating-panel-action-radius, var(--xh-shape-control));
   }
 
+  /* 面板角上关闭钮的叉取 12px，比钮的随档字形低一档；形态钮的字形仍随档 */
   [data-scope='floating-panel'][data-part='close-trigger'] {
     --xh-action-visual-size: var(--xh-floating-panel-close-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-floating-panel-close-radius, var(--xh-shape-control));
+    --xh-icon-size: var(--xh-floating-panel-icon-size, var(--xh-glyph-size-xs));
   }
 
   [data-scope='floating-panel'][data-part='window-state-trigger'][hidden],

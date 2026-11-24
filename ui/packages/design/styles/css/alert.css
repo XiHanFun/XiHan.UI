@@ -165,8 +165,8 @@
     --xh-action-shadow-rest: none;
     --xh-action-shadow-hover: none;
     --xh-action-shadow-pressed: none;
-    /* 叉的字形按钮档取值（sm → 16px），与 root 上给指示符的 md 档分开 */
-    --xh-icon-size: var(--xh-alert-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 面板角上关闭钮的叉取 12px，比钮的随档字形低一档；与 root 上给指示符的 md 档分开 */
+    --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-xs));
 
     flex: none;
     align-self: center;

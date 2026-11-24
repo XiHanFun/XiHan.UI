@@ -23701,16 +23701,10 @@
               "name": "--xh-dialog-close-bg-active"
             },
             {
-              "name": "--xh-dialog-close-bg-focus"
-            },
-            {
               "name": "--xh-dialog-close-bg-hover"
             },
             {
               "name": "--xh-dialog-close-fg"
-            },
-            {
-              "name": "--xh-dialog-close-fg-focus"
             },
             {
               "name": "--xh-dialog-close-fg-hover"
@@ -25491,16 +25485,10 @@
               "name": "--xh-drawer-close-bg-active"
             },
             {
-              "name": "--xh-drawer-close-bg-focus"
-            },
-            {
               "name": "--xh-drawer-close-bg-hover"
             },
             {
               "name": "--xh-drawer-close-fg"
-            },
-            {
-              "name": "--xh-drawer-close-fg-focus"
             },
             {
               "name": "--xh-drawer-close-fg-hover"
@@ -31943,9 +31931,6 @@
             },
             {
               "name": "--xh-floating-panel-action-fg"
-            },
-            {
-              "name": "--xh-floating-panel-action-fg-active"
             },
             {
               "name": "--xh-floating-panel-action-fg-hover"
@@ -54471,16 +54456,10 @@
               "name": "--xh-popover-close-bg-active"
             },
             {
-              "name": "--xh-popover-close-bg-focus"
-            },
-            {
               "name": "--xh-popover-close-bg-hover"
             },
             {
               "name": "--xh-popover-close-fg"
-            },
-            {
-              "name": "--xh-popover-close-fg-focus"
             },
             {
               "name": "--xh-popover-close-fg-hover"

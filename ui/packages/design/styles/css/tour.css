@@ -352,8 +352,8 @@
     --xh-action-fg-hover: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-hover));
     --xh-action-fg-pressed: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-pressed));
     --xh-action-fg-focus-visible: var(--xh-tour-close-fg-hover, var(--xh-_action-variant-fg-focus-visible));
-    /* 作者塞进按钮的图标随档取字形尺（sm = 16px），与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-tour-icon-size, var(--xh-_action-profile-glyph-size));
+    /* 面板角上关闭钮的叉取 12px，比钮的随档字形低一档；作者塞进按钮的图标与兜底叉同一把尺 */
+    --xh-icon-size: var(--xh-tour-icon-size, var(--xh-glyph-size-xs));
 
     position: absolute;
     inset-block-start: var(--xh-surface-action-inset);
