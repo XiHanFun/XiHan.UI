@@ -16316,6 +16316,7 @@
     "--xh-bg-canvas",
     "--xh-bg-field",
     "--xh-bg-field-invalid",
+    "--xh-bg-header",
     "--xh-bg-mark",
     "--xh-bg-media-chrome",
     "--xh-bg-media-chrome-active",

@@ -512,7 +512,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-panel-border-invalid` | `root`<br>`source-panel`<br>`target-panel` | `border-color` | `invalid`<br>`is([data-scope='transfer'][data-part='source-panel'], [data-scope='transfer'][data-part='target-panel'])` | `--xh-border-invalid` | transfer 的 root、source-panel、target-panel 部件 border-color 覆盖槽。 |
 | `--xh-transfer-panel-count-fg` | `panel-count` | `color` | `default` | `--xh-fg-muted` | transfer 的 panel-count 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-count-font-size` | `panel-count` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 panel-count 部件 font-size 覆盖槽。 |
-| `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-subtle` | transfer 的 panel-header 部件 background 覆盖槽。 |
+| `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-header` | transfer 的 panel-header 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-header-gap` | `panel-header` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 panel-header 部件 gap 覆盖槽。 |
 | `--xh-transfer-panel-header-px` | `panel-header` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 panel-header 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-panel-header-py` | `panel-header` | `padding-block` | `default` | `--xh-space-3` | transfer 的 panel-header 部件 padding-block 覆盖槽。 |

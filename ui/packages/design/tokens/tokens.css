@@ -885,6 +885,7 @@
     --xh-bg-subtle-hover-opaque: color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface));
     --xh-bg-subtle-active-opaque: color-mix(in srgb, var(--xh-ink) 16.9%, var(--xh-bg-surface));
     --xh-border-default-opaque: color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface));
+    --xh-bg-header: color-mix(in srgb, var(--xh-bg-subtle-opaque) 55%, var(--xh-bg-surface));
     --xh-bg-page: var(--xh-color-neutral-100);
     --xh-bg-canvas: var(--xh-color-neutral-0);
     --xh-bg-surface: var(--xh-color-neutral-0);
@@ -1108,6 +1109,7 @@
     --xh-bg-subtle-hover-opaque: color-mix(in srgb, var(--xh-ink) 17.4%, var(--xh-bg-surface));
     --xh-bg-subtle-active-opaque: color-mix(in srgb, var(--xh-ink) 20.7%, var(--xh-bg-surface));
     --xh-border-default-opaque: color-mix(in srgb, var(--xh-ink) 22%, var(--xh-bg-surface));
+    --xh-bg-header: color-mix(in srgb, var(--xh-bg-subtle-opaque) 55%, var(--xh-bg-surface));
     --xh-bg-page: var(--xh-color-neutral-950);
     --xh-bg-canvas: var(--xh-color-neutral-950);
     --xh-bg-surface: var(--xh-color-neutral-900);
@@ -1337,6 +1339,7 @@
       --xh-bg-subtle-hover-opaque: color-mix(in srgb, var(--xh-ink) 17.4%, var(--xh-bg-surface));
       --xh-bg-subtle-active-opaque: color-mix(in srgb, var(--xh-ink) 20.7%, var(--xh-bg-surface));
       --xh-border-default-opaque: color-mix(in srgb, var(--xh-ink) 22%, var(--xh-bg-surface));
+      --xh-bg-header: color-mix(in srgb, var(--xh-bg-subtle-opaque) 55%, var(--xh-bg-surface));
       --xh-bg-page: var(--xh-color-neutral-950);
       --xh-bg-canvas: var(--xh-color-neutral-950);
       --xh-bg-surface: var(--xh-color-neutral-900);

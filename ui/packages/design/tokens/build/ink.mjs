@@ -212,6 +212,9 @@ export function inkBlocks({ color, moreRoutes, reevaluate }, indent = '  ') {
       defaults[theme].set(name, inkMix(alphas[theme][name]))
     for (const [opaque, name] of OPAQUE)
       additions[theme].set(opaque, `color-mix(in srgb, var(--xh-ink) ${percent(alphas[theme][name])}, var(--xh-bg-surface))`)
+    // 头部带（表头、面板标头、描述列表的标签格）：淡底的 55% 兑进缺省面的实色。比表体里悬停与斑马纹用的淡底浅一档，
+    // 两端都是实色，吸顶时滚过去的行不会从它底下透出来
+    additions[theme].set('--xh-bg-header', 'color-mix(in srgb, var(--xh-bg-subtle-opaque) 55%, var(--xh-bg-surface))')
   }
 
   // 底色是作者在自己的区块上填的输入：每个域都从未声明开始，不从外层域继承，未填时各处 var() 走兜底。

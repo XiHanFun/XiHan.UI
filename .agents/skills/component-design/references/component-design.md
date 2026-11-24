@@ -542,7 +542,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 
 | 组件 | 尺寸 |
 | --- | --- |
-| Table | 限高 `viewport-h-lg`；单元格最小宽 3rem；列 `width` 是伸缩基准，`minWidth` / `maxWidth` 落成内联上下限，三者同值即定宽；空态与加载态最小高 0 |
+| Table | 表头底取头部带令牌 `--xh-bg-header`（淡底的 55% 兑进承载面的实色，比表体的悬停淡底浅一档，吸顶时不透底；Transfer 面板标头、Descriptions 描边档的标签格同取它）；限高 `viewport-h-lg`；单元格最小宽 3rem；列 `width` 是伸缩基准，`minWidth` / `maxWidth` 落成内联上下限，三者同值即定宽；空态与加载态最小高 0 |
 | Tree | 限高 `viewport-h-lg` |
 | Listbox | 限高 `viewport-h-md` |
 | Transfer | 列表定高 `viewport-h-md` |

@@ -148,7 +148,8 @@
     align-items: center;
     padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-panel-header-px, var(--xh-_transfer-px));
-    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-subtle));
+    /* 头部带：与 Table 表头、Descriptions 标签格同取一支 */
+    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-header));
   }
 
   /* 标题占满剩余宽度，把计数挤到行尾侧 */

@@ -77,7 +77,7 @@ describe('descriptions 根面', () => {
     const item = getComputedStyle(list.item)
     const label = getComputedStyle(list.label)
     expect(Number.parseFloat(item.paddingTop)).toBe(0)
-    expect(label.backgroundColor).toBe(tokenColor('--xh-bg-muted'))
+    expect(label.backgroundColor).toBe(tokenColor('--xh-bg-header'))
     expect(Number.parseFloat(label.borderInlineEndWidth)).toBe(1)
     expect(label.borderInlineEndColor).toBe(tokenColor('--xh-border-default'))
     expect(Number.parseFloat(label.paddingInlineStart)).toBe(20)

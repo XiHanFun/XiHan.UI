@@ -240,7 +240,7 @@
       > [data-scope='descriptions'][data-part='label'] {
       margin-inline-end: calc(-1 * var(--xh-_descriptions-line));
       border-inline-end: var(--xh-_descriptions-line) solid var(--xh-descriptions-divider, var(--xh-border-default));
-      background: var(--xh-descriptions-label-bg, var(--xh-bg-subtle));
+      background: var(--xh-descriptions-label-bg, var(--xh-bg-header));
       background-clip: padding-box;
     }
 
