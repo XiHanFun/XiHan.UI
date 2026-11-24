@@ -36,8 +36,11 @@ const PRIMITIVE = /var\(\s*--xh-radius-[\w-]+/
 
 /** 简写、border-<side>-radius 与逻辑角长属性。 */
 const RADIUS_PROP = /^border(?:-[\w-]+)?-radius$/
-/** Action Control 的圆角桥接槽：接了家族的部件圆角写在这里，与 border-radius 同等看待。 */
-const ACTION_RADIUS = '--xh-action-radius'
+/**
+ * 家族配方的圆角桥接槽：接了家族的部件圆角写在这里，与 border-radius 同等看待。
+ * Action Control 的 --xh-action-radius；Collection Item 分隔线的 --xh-collection-separator-radius。
+ */
+const BRIDGE_RADIUS = new Set(['--xh-action-radius', '--xh-collection-separator-radius'])
 /** 私有槽赋值：原语先灌进私有槽再消费同样是下探。 */
 const RADIUS_SLOT = /^--xh-_[\w-]*radius[\w-]*$/
 /** 纯百分比尺寸：两轴各按容器取值，同值判不出正方。 */
@@ -369,7 +372,7 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
   const blockOf = selectors => all.filter(d => d.selectors.join('>') === selectors.join('>'))
 
   for (const { prop, value, index, selectors } of all) {
-    const isRadiusProp = RADIUS_PROP.test(prop) || prop === ACTION_RADIUS
+    const isRadiusProp = RADIUS_PROP.test(prop) || BRIDGE_RADIUS.has(prop)
     if (!isRadiusProp && !RADIUS_SLOT.test(prop))
       continue
     checked++
@@ -388,12 +391,12 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
     const key = `${comp}:${part}${pseudo ? `::${pseudo}` : ''}`
 
     // 第三条判据：形状身份
-    if ((prop === 'border-radius' || prop === ACTION_RADIUS) && !selectors.some(s => s.startsWith('@keyframes'))) {
+    if ((prop === 'border-radius' || BRIDGE_RADIUS.has(prop)) && !selectors.some(s => s.startsWith('@keyframes'))) {
       const shapes = ends(value).filter(t => t.startsWith('--xh-shape-')).map(t => t.replace('--xh-shape-', ''))
       for (const hit of identityKeysOf(comp, selector)) {
         // 桥接槽只核逐部件登记的身份：按后缀归档的 close / clear 钮在 field-inset 档里取 inset，
         // 那是家族按 profile 给的形状，不在这条身份表管辖之内
-        const want = prop === ACTION_RADIUS && !(hit.key in IDENTITY) ? null : wantOf(hit.key, hit.part)
+        const want = BRIDGE_RADIUS.has(prop) && !(hit.key in IDENTITY) ? null : wantOf(hit.key, hit.part)
         const where = `${file}:${lineOf(index)}`
         if (want) {
           identityChecked++

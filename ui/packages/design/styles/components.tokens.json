@@ -22964,16 +22964,16 @@
         "separator"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-material-frosted-separator"
       ],
       "visibility": "public",
-      "description": "context-menu 的 separator 部件 background 覆盖槽。"
+      "description": "context-menu 的 separator 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-context-menu-separator-my",
@@ -22985,7 +22985,7 @@
         "margin-block"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-space-0_5"
@@ -23003,7 +23003,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-shape-pill"
@@ -23021,7 +23021,7 @@
         "block-size"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-stroke-thin"
@@ -52536,16 +52536,16 @@
         "separator"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-material-frosted-separator"
       ],
       "visibility": "public",
-      "description": "menu 的 separator 部件 background 覆盖槽。"
+      "description": "menu 的 separator 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-menu-separator-my",
@@ -52557,7 +52557,7 @@
         "margin-block"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-space-0_5"
@@ -52575,7 +52575,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-shape-pill"
@@ -52593,7 +52593,7 @@
         "block-size"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-stroke-thin"
@@ -53504,16 +53504,16 @@
         "separator"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-material-frosted-separator"
       ],
       "visibility": "public",
-      "description": "menubar 的 separator 部件 background 覆盖槽。"
+      "description": "menubar 的 separator 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-menubar-separator-my",
@@ -53525,7 +53525,7 @@
         "margin-block"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-space-0_5"
@@ -53543,7 +53543,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-shape-pill"
@@ -53561,7 +53561,7 @@
         "block-size"
       ],
       "state": [
-        "default"
+        "xh-collection-separator"
       ],
       "defaultToken": [
         "--xh-stroke-thin"

@@ -385,8 +385,10 @@
     }
   },
   "separator": {
-    "blockMargin": "var(--xh-space-1)",
-    "inlineMargin": "var(--xh-control-px-md)",
+    "thickness": "var(--xh-stroke-thin)",
+    "blockMargin": "var(--xh-space-0_5)",
+    "inlineMargin": "0",
+    "radius": "var(--xh-shape-pill)",
     "color": "var(--xh-material-frosted-separator)"
   },
   "motion": {

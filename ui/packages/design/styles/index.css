@@ -1927,11 +1927,13 @@
     --xh-_collection-opacity: var(--xh-collection-opacity-error, 1);
   }
 
+  /* 分隔线与条目的面齐平：内容面的内衬已把面内缩一截，线不再另缩；上下各留 2px，一维细线取 pill */
   [data-xh-collection-separator] {
-    block-size: var(--xh-stroke-thin);
-    margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-1));
-    margin-inline: var(--xh-collection-separator-inline-margin, var(--xh-control-px-md));
+    block-size: var(--xh-collection-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-0_5));
+    margin-inline: var(--xh-collection-separator-inline-margin, 0);
     border: 0;
+    border-radius: var(--xh-collection-separator-radius, var(--xh-shape-pill));
     background-color: var(--xh-collection-separator-color, var(--xh-material-frosted-separator));
   }
 
@@ -28448,11 +28450,13 @@
     flex-wrap: wrap;
   }
 
+  /* 分隔线的几何、颜色与强制色档由 Collection Item 配方画（连接层投影 data-xh-collection-separator），
+     这里只把使用者槽桥到配方：线与条目的面齐平，上下各 2px */
   .xh-scope-context-menu[data-part='separator'] {
-    block-size: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
-    border-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-thickness: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
+    --xh-collection-separator-block-margin: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
+    --xh-collection-separator-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
+    --xh-collection-separator-color: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
   }
 
   .xh-scope-context-menu[data-part='separator'][hidden] {
@@ -28518,14 +28522,6 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     .xh-scope-context-menu[data-part='positioner'] {
       display: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
-       几组条目就连成了一长串。换成前景色画回来 */
-    .xh-scope-context-menu[data-part='separator'] {
-      background: CanvasText;
     }
   }
 }
@@ -37110,11 +37106,13 @@
     display: none;
   }
 
+  /* 分隔线的几何、颜色与强制色档由 Collection Item 配方画（连接层投影 data-xh-collection-separator），
+     这里只把使用者槽桥到配方：线与条目的面齐平，上下各 2px */
   .xh-scope-menu[data-part='separator'] {
-    block-size: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-menu-separator-my, var(--xh-space-0_5));
-    border-radius: var(--xh-menu-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-thickness: var(--xh-menu-separator-thickness, var(--xh-stroke-thin));
+    --xh-collection-separator-block-margin: var(--xh-menu-separator-my, var(--xh-space-0_5));
+    --xh-collection-separator-radius: var(--xh-menu-separator-radius, var(--xh-shape-pill));
+    --xh-collection-separator-color: var(--xh-menu-separator-color, var(--xh-material-frosted-separator));
   }
 
   /* 箭头的底色与描边色，几何在 overlay-arrow.css。
@@ -37134,14 +37132,6 @@
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   .xh-scope-menu[data-part='item'][hidden] {
     display: none;
-  }
-
-  @media (forced-colors: active) {
-    /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
-       几组条目就连成了一长串。换成前景色画回来 */
-    .xh-scope-menu[data-part='separator'] {
-      background: CanvasText;
-    }
   }
 
   @media print {
@@ -37630,12 +37620,14 @@
   }
 
   /* 分隔线横跨菜单，与菜单栏自身的 orientation 无关：菜单永远是一列条目。
+     几何、颜色与强制色档由 Collection Item 配方画（连接层投影 data-xh-collection-separator），
+     这里只把使用者槽桥到配方：线与条目的面齐平，上下各 2px。
      不给 display，因此 UA 的 [hidden]{display:none} 自己就压得住 */
   .xh-scope-menubar[data-part='separator'] {
-    block-size: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-menubar-separator-my, var(--xh-space-0_5));
-    border-radius: var(--xh-menubar-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-menubar-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-thickness: var(--xh-menubar-separator-thickness, var(--xh-stroke-thin));
+    --xh-collection-separator-block-margin: var(--xh-menubar-separator-my, var(--xh-space-0_5));
+    --xh-collection-separator-radius: var(--xh-menubar-separator-radius, var(--xh-shape-pill));
+    --xh-collection-separator-color: var(--xh-menubar-separator-color, var(--xh-material-frosted-separator));
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中。
@@ -37658,14 +37650,6 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     .xh-scope-menubar[data-part='positioner'] {
       display: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
-       几组条目就连成了一长串。换成前景色画回来 */
-    .xh-scope-menubar[data-part='separator'] {
-      background: CanvasText;
     }
   }
 

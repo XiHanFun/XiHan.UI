@@ -445,10 +445,10 @@ CheckboxItem 与 RadioGroup 修改持久设置，切换后菜单保持展开
 | `--xh-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_menu-max-h` | menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | menu 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | menu 的 content 部件 min-inline-size 覆盖槽。 |
-| `--xh-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | menu 的 separator 部件 background 覆盖槽。 |
-| `--xh-menu-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | menu 的 separator 部件 margin-block 覆盖槽。 |
-| `--xh-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | menu 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | menu 的 separator 部件 block-size 覆盖槽。 |
+| `--xh-menu-separator-color` | `separator` | `background-color` | `xh-collection-separator` | `--xh-material-frosted-separator` | menu 的 separator 部件 background-color 覆盖槽。 |
+| `--xh-menu-separator-my` | `separator` | `margin-block` | `xh-collection-separator` | `--xh-space-0_5` | menu 的 separator 部件 margin-block 覆盖槽。 |
+| `--xh-menu-separator-radius` | `separator` | `border-radius` | `xh-collection-separator` | `--xh-shape-pill` | menu 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-menu-separator-thickness` | `separator` | `block-size` | `xh-collection-separator` | `--xh-stroke-thin` | menu 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `currentColor` | menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-menu-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | menu 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-bg-subtle` | menu 的 trigger 部件 background 覆盖槽。 |

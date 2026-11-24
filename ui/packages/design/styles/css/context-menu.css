@@ -408,11 +408,13 @@
     flex-wrap: wrap;
   }
 
+  /* 分隔线的几何、颜色与强制色档由 Collection Item 配方画（连接层投影 data-xh-collection-separator），
+     这里只把使用者槽桥到配方：线与条目的面齐平，上下各 2px */
   [data-scope='context-menu'][data-part='separator'] {
-    block-size: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
-    margin-block: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
-    border-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
-    background: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
+    --xh-collection-separator-thickness: var(--xh-context-menu-separator-thickness, var(--xh-stroke-thin));
+    --xh-collection-separator-block-margin: var(--xh-context-menu-separator-my, var(--xh-space-0_5));
+    --xh-collection-separator-radius: var(--xh-context-menu-separator-radius, var(--xh-shape-pill));
+    --xh-collection-separator-color: var(--xh-context-menu-separator-color, var(--xh-material-frosted-separator));
   }
 
   [data-scope='context-menu'][data-part='separator'][hidden] {
@@ -478,14 +480,6 @@
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
     [data-scope='context-menu'][data-part='positioner'] {
       display: none;
-    }
-  }
-
-  @media (forced-colors: active) {
-    /* 分组之间那条线画的是一块纯底色，这一档里底色被统一换成 Canvas，线整条消失，
-       几组条目就连成了一长串。换成前景色画回来 */
-    [data-scope='context-menu'][data-part='separator'] {
-      background: CanvasText;
     }
   }
 }

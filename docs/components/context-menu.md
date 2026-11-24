@@ -415,10 +415,10 @@
 | `--xh-context-menu-max-h` | `content` | `max-block-size` | `default` | `--xh-_context-menu-max-h` | context-menu 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-context-menu-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | context-menu 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-context-menu-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-menu-min-w` | context-menu 的 content 部件 min-inline-size 覆盖槽。 |
-| `--xh-context-menu-separator-color` | `separator` | `background` | `default` | `--xh-material-frosted-separator` | context-menu 的 separator 部件 background 覆盖槽。 |
-| `--xh-context-menu-separator-my` | `separator` | `margin-block` | `default` | `--xh-space-0_5` | context-menu 的 separator 部件 margin-block 覆盖槽。 |
-| `--xh-context-menu-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | context-menu 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-context-menu-separator-thickness` | `separator` | `block-size` | `default` | `--xh-stroke-thin` | context-menu 的 separator 部件 block-size 覆盖槽。 |
+| `--xh-context-menu-separator-color` | `separator` | `background-color` | `xh-collection-separator` | `--xh-material-frosted-separator` | context-menu 的 separator 部件 background-color 覆盖槽。 |
+| `--xh-context-menu-separator-my` | `separator` | `margin-block` | `xh-collection-separator` | `--xh-space-0_5` | context-menu 的 separator 部件 margin-block 覆盖槽。 |
+| `--xh-context-menu-separator-radius` | `separator` | `border-radius` | `xh-collection-separator` | `--xh-shape-pill` | context-menu 的 separator 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-separator-thickness` | `separator` | `block-size` | `xh-collection-separator` | `--xh-stroke-thin` | context-menu 的 separator 部件 block-size 覆盖槽。 |
 | `--xh-context-menu-submenu-indicator-fg` | `item` | `background-color` | `default` | `currentColor` | context-menu 的 item 部件 background-color 覆盖槽。 |
 | `--xh-context-menu-submenu-indicator-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | context-menu 的 item 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-context-menu-trigger-bg-pressing` | `trigger` | `background` | `pressing` | `--xh-bg-subtle` | context-menu 的 trigger 部件 background 覆盖槽。 |

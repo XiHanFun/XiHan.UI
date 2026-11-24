@@ -89,9 +89,11 @@ function menuProbe(partName: 'content' | 'separator'): HTMLElement {
   probe.dataset.scope = 'menu'
   probe.classList.add('xh-scope-menu')
   probe.dataset.part = partName
-  // 内容面的材质由家族配方按连接层投影的标记画
+  // 内容面的材质与分隔线都由家族配方按连接层投影的标记画
   if (partName === 'content')
     probe.dataset.xhMaterial = 'frosted'
+  if (partName === 'separator')
+    probe.dataset.xhCollectionSeparator = ''
   probe.style.position = 'absolute'
   document.body.append(probe)
   return probe

@@ -541,11 +541,13 @@
     --xh-_collection-opacity: var(--xh-collection-opacity-error, 1);
   }
 
+  /* 分隔线与条目的面齐平：内容面的内衬已把面内缩一截，线不再另缩；上下各留 2px，一维细线取 pill */
   [data-xh-collection-separator] {
-    block-size: var(--xh-stroke-thin);
-    margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-1));
-    margin-inline: var(--xh-collection-separator-inline-margin, var(--xh-control-px-md));
+    block-size: var(--xh-collection-separator-thickness, var(--xh-stroke-thin));
+    margin-block: var(--xh-collection-separator-block-margin, var(--xh-space-0_5));
+    margin-inline: var(--xh-collection-separator-inline-margin, 0);
     border: 0;
+    border-radius: var(--xh-collection-separator-radius, var(--xh-shape-pill));
     background-color: var(--xh-collection-separator-color, var(--xh-material-frosted-separator));
   }
 

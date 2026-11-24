@@ -704,6 +704,7 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 - 新增集合组件从上表的语境里取一种，不另立行高；同一语境内 sm / md / lg 只随控件档变。
 - 组与组之间：浮层里的候选面板（Select、Combobox、Cascader）在后继分组顶上画一道所在面的面内分隔线（frosted 取 `--xh-material-frosted-separator`，floating 取 `--xh-material-solid-separator`），线下留 `--xh-space-1_5`；页内列表与命令面板（Listbox、Transfer、Command）不画线，后继分组只隔 `--xh-space-1_5`。菜单族不自动画线，要分段由作者放 `separator` 部件。三家的 `--xh-<c>-group-spacing` 都管这一段留白（画线的管线下那一截）。
+- 菜单族的 `separator` 由 Collection Item 配方画（连接层投影 `data-xh-collection-separator`）：与条目的面齐平——内容面的内衬已把面内缩 `--xh-space-1`，线不再另缩——上下各留 `--xh-space-0_5`，1px 细线取 pill，颜色取所在面的面内分隔，强制色下换 `CanvasText`。皮肤只把 `--xh-<c>-separator-*` 使用者槽桥到 `--xh-collection-separator-*`，不各写几何与颜色。
 - 行高不随选中、当前或语气改变：这些状态只换面与字色。
 
 ### 7.6 数据色

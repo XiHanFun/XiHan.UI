@@ -209,7 +209,7 @@ export function assertCollectionItemRecipe(source) {
   for (const state of TONE_STATES)
     assertFields(source.toneValues[state], TONE_FIELDS, `toneValues.${state}`)
 
-  assertFields(source.separator, ['blockMargin', 'inlineMargin', 'color'], 'root.separator')
+  assertFields(source.separator, ['thickness', 'blockMargin', 'inlineMargin', 'radius', 'color'], 'root.separator')
   if (source.separator.blockMargin.startsWith('-') || source.separator.inlineMargin.startsWith('-'))
     fail('separator margin 不允许使用负值')
   assertFields(source.motion, ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing'], 'root.motion')
@@ -556,11 +556,13 @@ ${stateVars(source, 'loading')}
 ${stateVars(source, 'error')}
   }
 
+  /* 分隔线与条目的面齐平：内容面的内衬已把面内缩一截，线不再另缩；上下各留 2px，一维细线取 pill */
   [data-xh-collection-separator] {
-    block-size: var(--xh-stroke-thin);
+    block-size: var(--xh-collection-separator-thickness, ${source.separator.thickness});
     margin-block: var(--xh-collection-separator-block-margin, ${source.separator.blockMargin});
     margin-inline: var(--xh-collection-separator-inline-margin, ${source.separator.inlineMargin});
     border: 0;
+    border-radius: var(--xh-collection-separator-radius, ${source.separator.radius});
     background-color: var(--xh-collection-separator-color, ${source.separator.color});
   }
 
