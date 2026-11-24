@@ -258,7 +258,7 @@ const CASES: Case[] = [
   },
   {
     scope: 'table',
-    render: ({ loading, items }) => h(XhTableRoot, { columns: [{ id: 'label', label: '名称' }], rows: items ? ITEMS : [], loading, rowKey: 'value' }, () => [
+    render: ({ loading, items }) => h(XhTableRoot, { columns: [{ id: 'label', label: '名称' }], rows: (items ? ITEMS : []).map(node => ({ id: node.value, label: node.label })), loading }, () => [
       h(XhTableBody, null, () => (items ? ITEMS : []).map(node => h(XhTableRow, { key: node.value, value: node.value }, () => node.label))),
       h(XhTableLoading, null, () => '正在读取'),
       h(XhTableEmpty, null, () => '没有记录'),
