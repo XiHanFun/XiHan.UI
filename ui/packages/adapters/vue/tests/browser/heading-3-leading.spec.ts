@@ -9,14 +9,14 @@ import '@xihan-ui/styles'
 
 /** 取 heading-3 的标题部件：scope → 部件名。 */
 const TITLES: Record<string, string> = {
-  'alert': 'title',
-  'card': 'title',
-  'descriptions': 'title',
-  'dialog': 'title',
-  'drawer': 'title',
-  'fieldset': 'legend',
-  'notification': 'item-title',
-  'tour': 'title',
+  alert: 'title',
+  card: 'title',
+  descriptions: 'title',
+  dialog: 'title',
+  drawer: 'title',
+  fieldset: 'legend',
+  notification: 'item-title',
+  tour: 'title',
 }
 
 let host: HTMLElement | null = null
