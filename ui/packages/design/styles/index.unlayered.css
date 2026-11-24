@@ -23238,7 +23238,8 @@
   padding-inline: var(--xh-cascader-footer-px, var(--xh-_cascader-row-px));
   border-block-start: var(--xh-stroke-thin) solid var(--xh-cascader-footer-border, var(--xh-material-solid-border));
   color: var(--xh-cascader-footer-fg, var(--xh-fg-muted));
-  font-size: var(--xh-cascader-footer-font-size, var(--xh-_cascader-font-size));
+  /* 底栏是一行次级说明：说明档 13px，不随尺寸档与条目一样大 */
+  font-size: var(--xh-cascader-footer-font-size, var(--xh-text-secondary-size));
 }
 
 /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -27773,7 +27774,8 @@
   padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
   border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-border));
   color: var(--xh-command-footer-fg, var(--xh-fg-muted));
-  font-size: var(--xh-command-footer-font-size, var(--xh-text-caption-size));
+  /* 底栏是一行次级说明：与别家候选面板同取说明档 13px */
+  font-size: var(--xh-command-footer-font-size, var(--xh-text-secondary-size));
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。

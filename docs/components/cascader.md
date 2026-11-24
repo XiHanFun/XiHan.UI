@@ -594,7 +594,7 @@ filter 接管匹配规则：候选是一条完整路径，这里把路径上各�
 | `--xh-cascader-empty-p` | `empty` | `padding` | `default` | `--xh-space-3` | cascader 的 empty 部件 padding 覆盖槽。 |
 | `--xh-cascader-footer-border` | `footer` | `border-block-start` | `default` | `--xh-material-solid-border` | cascader 的 footer 部件 border-block-start 覆盖槽。 |
 | `--xh-cascader-footer-fg` | `footer` | `color` | `default` | `--xh-fg-muted` | cascader 的 footer 部件 color 覆盖槽。 |
-| `--xh-cascader-footer-font-size` | `footer` | `font-size` | `default` | `--xh-_cascader-font-size` | cascader 的 footer 部件 font-size 覆盖槽。 |
+| `--xh-cascader-footer-font-size` | `footer` | `font-size` | `default` | `--xh-text-secondary-size` | cascader 的 footer 部件 font-size 覆盖槽。 |
 | `--xh-cascader-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | cascader 的 footer 部件 gap 覆盖槽。 |
 | `--xh-cascader-footer-px` | `footer` | `padding-inline` | `default` | `--xh-_cascader-row-px` | cascader 的 footer 部件 padding-inline 覆盖槽。 |
 | `--xh-cascader-footer-py` | `footer` | `padding-block` | `default` | `--xh-space-2` | cascader 的 footer 部件 padding-block 覆盖槽。 |

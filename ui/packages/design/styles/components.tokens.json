@@ -10243,7 +10243,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_cascader-font-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "cascader 的 footer 部件 font-size 覆盖槽。"
@@ -21399,7 +21399,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "command 的 footer 部件 font-size 覆盖槽。"

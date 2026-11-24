@@ -373,7 +373,8 @@
     padding-inline: var(--xh-command-footer-px, var(--xh-_command-px));
     border-block-start: var(--xh-stroke-thin) solid var(--xh-command-footer-border, var(--xh-material-elevated-border));
     color: var(--xh-command-footer-fg, var(--xh-fg-muted));
-    font-size: var(--xh-command-footer-font-size, var(--xh-text-caption-size));
+    /* 底栏是一行次级说明：与别家候选面板同取说明档 13px */
+    font-size: var(--xh-command-footer-font-size, var(--xh-text-secondary-size));
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
