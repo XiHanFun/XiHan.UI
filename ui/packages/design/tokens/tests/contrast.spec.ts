@@ -335,10 +335,9 @@ const MORE_BORDERS = [...new Set(
 
 describe('缺省面的墨色取值读自 tokens.css', () => {
   // 读不到时下面每条判据都会退回按中性色原值算，悄悄失去意义
-  it('浅色 / 深色主题块各有八支墨色令牌（描边与淡底；置灰字属于文字，只在域里改写），比例都在 0–1 之间', () => {
+  it('浅色 / 深色主题块各有七支墨色令牌（描边与淡底；置灰字属于文字，只在域里改写），比例都在 0–1 之间', () => {
     for (const theme of ['light', 'dark'] as const) {
       expect([...INK[theme].alphas.keys()].sort()).toEqual([
-        'bg.muted',
         'bg.subtle',
         'bg.subtle-active',
         'bg.subtle-hover',
@@ -383,7 +382,7 @@ describe('禁用态按 1.4.3 豁免，只钉住不比正文更差', () => {
   })
 })
 
-// 禁用态的实心按钮（发送钮这一类）：字压成 fg.disabled，底一起退到 bg.muted。
+// 禁用态的实心按钮（发送钮这一类）：字压成 fg.disabled，底一起退到中性淡底 bg.subtle（禁用面只有这一支，没有另一支同值的 muted）。
 // 这一档的比值本来就低（浅色 2.36、深色 1.94），钉住只是不许更淡——
 // 「看得出这是一颗按不动的按钮」靠的是底退成中性面，不是靠比值；
 // 留着高彩度的实心品牌底只换字，它看着仍是一颗主按钮。
@@ -394,14 +393,14 @@ const DISABLED_FILL_RATCHET: ReadonlyArray<[keyof typeof themes, number]> = [
 
 describe('禁用态实心按钮的字底棘轮（1.4.3 豁免，只钉住不许更淡）', () => {
   for (const [theme, baseline] of DISABLED_FILL_RATCHET) {
-    it(`${theme} fg.disabled / bg.muted 不低于 ${baseline}`, () => {
-      expect(round(contrast(theme, 'fg.disabled', 'bg.muted'))).toBeGreaterThanOrEqual(baseline)
+    it(`${theme} fg.disabled / bg.subtle 不低于 ${baseline}`, () => {
+      expect(round(contrast(theme, 'fg.disabled', 'bg.subtle'))).toBeGreaterThanOrEqual(baseline)
     })
   }
 
   it('禁用底与常态那块实心底不是同一块颜色：只换字就没有这一档可言', () => {
     for (const theme of ['light', 'dark'] as const)
-      expect(resolve(theme, 'bg.muted')).not.toBe(resolve(theme, 'bg.brand'))
+      expect(resolve(theme, 'bg.subtle')).not.toBe(resolve(theme, 'bg.brand'))
   })
 })
 

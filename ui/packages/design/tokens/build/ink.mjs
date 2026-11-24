@@ -31,7 +31,6 @@ const EQUIVALENT = [
   '--xh-bg-subtle',
   '--xh-bg-subtle-hover',
   '--xh-bg-subtle-active',
-  '--xh-bg-muted',
   '--xh-border-default',
   '--xh-border-subtle',
   '--xh-border-strong',
@@ -46,13 +45,13 @@ const EQUIVALENT = [
 const BASES = ['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-material-elevated-bg']
 
 /** 淡底：承载内容的面，只按缺省面求等价比例，不因更深的页面底加重，也不因更浅的页面底变淡。 */
-const FILLS = new Set(['--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-muted'])
+const FILLS = new Set(['--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active'])
 
 /** 缺省面上改写成墨色的令牌：描边与淡底。置灰字只在域里改写。 */
 const GLOBAL = EQUIVALENT.filter(name => name !== '--xh-fg-disabled')
 
 /**
- * 不透明档：按同一比例叠在缺省面上的实色，名字加 -opaque。淡底四支给要盖住下层内容的面用；
+ * 不透明档：按同一比例叠在缺省面上的实色，名字加 -opaque。淡底三支给要盖住下层内容的面用；
  * 装饰边一支给压在任意内容上、必须自带一道浅框的部件用（滑杆拇指）。
  */
 export const OPAQUE = [...FILLS, '--xh-border-default'].map(name => [`${name}-opaque`, name])

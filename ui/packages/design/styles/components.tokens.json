@@ -28231,7 +28231,7 @@
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "descriptions 的 item、label、root 部件 background 覆盖槽。"
@@ -44561,7 +44561,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "image-cropper 的 viewport 部件 background 覆盖槽。"
@@ -62264,7 +62264,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -65626,7 +65626,7 @@
         "variant=segmented"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "radio-group 的 root 部件 background 覆盖槽。"
@@ -73495,7 +73495,7 @@
         "variant=dot"
       ],
       "defaultToken": [
-        "--xh-bg-muted",
+        "--xh-bg-subtle",
         "--xh-fg-disabled"
       ],
       "visibility": "public",
@@ -78260,8 +78260,8 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-muted",
-        "--xh-bg-muted-opaque"
+        "--xh-bg-subtle",
+        "--xh-bg-subtle-opaque"
       ],
       "visibility": "public",
       "description": "tag 的 root 部件 --xh-ink-surface、background 覆盖槽。"
@@ -87288,7 +87288,7 @@
         "xh-ink-surface"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "toggle-group 的 item 部件 --xh-ink-surface、background-color 覆盖槽。"
@@ -90524,7 +90524,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "transfer 的 item-checkbox 部件 background 覆盖槽。"
@@ -91353,7 +91353,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "transfer 的 source-panel、target-panel 部件 background 覆盖槽。"
@@ -91447,7 +91447,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-header 部件 background 覆盖槽。"

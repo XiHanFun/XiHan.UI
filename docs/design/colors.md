@@ -93,21 +93,19 @@ danger 动作与 error 状态分开定义，不共用业务语义；状态色表
 
 <XhTokenTable
   kind="color"
-  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-field', '--xh-bg-muted', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-muted-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
+  :names="['--xh-bg-page', '--xh-bg-canvas', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-field', '--xh-bg-subtle-opaque', '--xh-bg-subtle-hover-opaque', '--xh-bg-subtle-active-opaque', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-bg-brand-subtle-hover', '--xh-bg-brand-subtle-active', '--xh-bg-overlay']"
   :notes="{
     '--xh-bg-page': '页面底：面之下那一层，铺满视口',
     '--xh-bg-canvas': '不透明画布：自动填充遮罩、色块选中环等必须不透明的地方；控件盒静息不再填它',
     '--xh-bg-surface': '静态内容面缺省底',
     '--xh-bg-surface-raised': '抬起的面：Card、滑块',
-    '--xh-bg-subtle': '淡底；白底上的 hover',
+    '--xh-bg-subtle': '淡底；白底上的 hover；也是禁用面、头部带与图标底的中性面（没有另一支同值的令牌）',
     '--xh-bg-subtle-hover': '白底上的 pressed；淡底上的 hover',
     '--xh-bg-subtle-active': '淡底上的 pressed，只留给按下',
     '--xh-bg-field': '字段外壳静息的底：缺省与承载面同色（白底），边界由字段描边承担；主题要淡底字段只改这一支',
-    '--xh-bg-muted': '禁用实心钮退到的中性面',
     '--xh-bg-subtle-opaque': '淡底的不透明档：要盖住下层内容的面（吸顶表头、浮动钮、层叠头像）',
     '--xh-bg-subtle-hover-opaque': '淡底 hover 档的不透明档',
     '--xh-bg-subtle-active-opaque': '淡底 active 档的不透明档',
-    '--xh-bg-muted-opaque': '中性面的不透明档',
     '--xh-bg-brand': '主要动作实心底',
     '--xh-bg-brand-subtle': '选中 / 当前专属，12% 品牌拼色',
     '--xh-bg-overlay': '模态遮罩',

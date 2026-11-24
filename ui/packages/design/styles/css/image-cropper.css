@@ -41,7 +41,7 @@
     display: block;
     overflow: clip;
     border-radius: var(--xh-image-cropper-viewport-radius, var(--xh-shape-surface));
-    background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
+    background: var(--xh-image-cropper-bg, var(--xh-bg-subtle));
     user-select: none;
   }
 

@@ -464,7 +464,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-transfer-checkbox-bg` | `item-checkbox`<br>`select-all-trigger` | `background` | `default` | `transparent` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-bg-checked` | `item-checkbox`<br>`select-all-trigger` | `background` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-checkbox-bg-disabled` | `item-checkbox` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 item-checkbox 部件 background 覆盖槽。 |
+| `--xh-transfer-checkbox-bg-disabled` | `item-checkbox` | `background` | `disabled` | `--xh-bg-subtle` | transfer 的 item-checkbox 部件 background 覆盖槽。 |
 | `--xh-transfer-checkbox-border` | `item-checkbox`<br>`select-all-trigger` | `border` | `default` | `--xh-border-strong` | transfer 的 item-checkbox、select-all-trigger 部件 border 覆盖槽。 |
 | `--xh-transfer-checkbox-border-checked` | `item-checkbox`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-accent` | transfer 的 item-checkbox、select-all-trigger 部件 border-color 覆盖槽。 |
 | `--xh-transfer-checkbox-border-disabled` | `item-checkbox` | `border-color` | `disabled` | `--xh-border-default` | transfer 的 item-checkbox 部件 border-color 覆盖槽。 |
@@ -507,12 +507,12 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-loading-px` | `loading` | `--xh-placeholder-px` | `default` | `--xh-_transfer-px` | transfer 的 loading 部件 --xh-placeholder-px 覆盖槽。 |
 | `--xh-transfer-loading-py` | `loading` | `--xh-placeholder-py` | `default` | `--xh-space-3` | transfer 的 loading 部件 --xh-placeholder-py 覆盖槽。 |
 | `--xh-transfer-panel-bg` | `source-panel`<br>`target-panel` | `background` | `default` | `--xh-bg-surface` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
-| `--xh-transfer-panel-bg-disabled` | `source-panel`<br>`target-panel` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
+| `--xh-transfer-panel-bg-disabled` | `source-panel`<br>`target-panel` | `background` | `disabled` | `--xh-bg-subtle` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-border` | `source-panel`<br>`target-panel` | `border` | `default` | `--xh-border-default` | transfer 的 source-panel、target-panel 部件 border 覆盖槽。 |
 | `--xh-transfer-panel-border-invalid` | `root`<br>`source-panel`<br>`target-panel` | `border-color` | `invalid`<br>`is([data-scope='transfer'][data-part='source-panel'], [data-scope='transfer'][data-part='target-panel'])` | `--xh-border-invalid` | transfer 的 root、source-panel、target-panel 部件 border-color 覆盖槽。 |
 | `--xh-transfer-panel-count-fg` | `panel-count` | `color` | `default` | `--xh-fg-muted` | transfer 的 panel-count 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-count-font-size` | `panel-count` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 panel-count 部件 font-size 覆盖槽。 |
-| `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-muted` | transfer 的 panel-header 部件 background 覆盖槽。 |
+| `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-subtle` | transfer 的 panel-header 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-header-gap` | `panel-header` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 panel-header 部件 gap 覆盖槽。 |
 | `--xh-transfer-panel-header-px` | `panel-header` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 panel-header 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-panel-header-py` | `panel-header` | `padding-block` | `default` | `--xh-space-3` | transfer 的 panel-header 部件 padding-block 覆盖槽。 |

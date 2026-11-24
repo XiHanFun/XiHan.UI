@@ -296,7 +296,7 @@
     inline-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
     block-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
     border-radius: var(--xh-dialog-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-muted)));
+    background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
     color: var(--xh-dialog-indicator-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 

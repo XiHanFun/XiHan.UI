@@ -75,7 +75,7 @@ describe('tokens.css 里的墨色域', () => {
     const lightAt = css.indexOf(`:where(:root), :where([data-theme='light']), :where([data-theme='system']), :where([data-xh-ink='dark']) {`)
     const light = css.slice(lightAt, css.indexOf('\n  }', lightAt))
     expect(light).toMatch(/--xh-fg-disabled: var\(--xh-color-neutral-\d+\);/)
-    for (const [name, alpha] of [['subtle', '4.7%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%'], ['muted', '4.7%']])
+    for (const [name, alpha] of [['subtle', '4.7%'], ['subtle-hover', '10.2%'], ['subtle-active', '16.9%']])
       expect(light).toContain(`--xh-bg-${name}-opaque: color-mix(in srgb, var(--xh-ink) ${alpha}, var(--xh-bg-surface));`)
   })
 

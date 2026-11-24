@@ -22,7 +22,7 @@ const frameStyle: CSSProperties = {
   inlineSize: "100%",
   blockSize: "6px",
   borderRadius: "var(--xh-shape-pill)",
-  background: "var(--xh-bg-muted)",
+  background: "var(--xh-bg-subtle)",
 };
 
 export default function Demo(): ReactNode {

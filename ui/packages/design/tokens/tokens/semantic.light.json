@@ -44,10 +44,6 @@
       "$type": "color",
       "$value": "{color.yellow.200}"
     },
-    "muted": {
-      "$type": "color",
-      "$value": "{color.neutral.100}"
-    },
     "brand": {
       "$type": "color",
       "$value": "{color.brand.600}"

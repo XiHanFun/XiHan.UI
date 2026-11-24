@@ -439,7 +439,7 @@
 
   [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
     border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-default));
-    background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
     /* 这一步动不了，作者给圆点加的影跟着收掉 */
     box-shadow: none;

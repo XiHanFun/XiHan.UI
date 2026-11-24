@@ -10,7 +10,6 @@
     "field": { "$description": "字段外壳的静息底：缺省与承载面同色，盒的边界由字段描边承担。", "$type": "color", "$value": "{bg.surface}" },
     "field-invalid": { "$description": "字段外壳校验失败时的底：失效色兑 4%，聚焦时让位给承载面。", "$type": "color", "$value": "color-mix(in oklab, {border.invalid} 4%, transparent)" },
     "mark": { "$description": "正文里的标记底：深黄，字仍取正文色。", "$type": "color", "$value": "{color.yellow.900}" },
-    "muted": { "$type": "color", "$value": "{color.neutral.800}" },
     "brand": { "$type": "color", "$value": "{color.brand.500}" },
     "brand-hover": { "$type": "color", "$value": "{color.brand.400}" },
     "brand-active": { "$type": "color", "$value": "{color.brand.300}" },

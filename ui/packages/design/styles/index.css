@@ -4498,7 +4498,7 @@
       > .xh-scope-descriptions[data-part='label'] {
       margin-inline-end: calc(-1 * var(--xh-_descriptions-line));
       border-inline-end: var(--xh-_descriptions-line) solid var(--xh-descriptions-divider, var(--xh-border-default));
-      background: var(--xh-descriptions-label-bg, var(--xh-bg-muted));
+      background: var(--xh-descriptions-label-bg, var(--xh-bg-subtle));
       background-clip: padding-box;
     }
 
@@ -9186,7 +9186,7 @@
     display: block;
     overflow: clip;
     border-radius: var(--xh-image-cropper-viewport-radius, var(--xh-shape-surface));
-    background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
+    background: var(--xh-image-cropper-bg, var(--xh-bg-subtle));
     user-select: none;
   }
 
@@ -13493,7 +13493,7 @@
     --xh-action-shadow-hover: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-pressed: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
     /* 输入为空时按钮转灰但不收起 */
-    --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
+    --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-subtle));
     --xh-action-font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
     /* 按钮不参与弹性伸缩 */
     flex: none;
@@ -14648,7 +14648,7 @@
 
   .xh-scope-tag[data-part='root'][data-variant='solid'][data-xh-ink-surface][data-disabled] {
     /* 置灰面是墨色淡底：选墨只看分量、不看透明度，取它的不透明档 */
-    --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-muted-opaque));
+    --xh-ink-surface: var(--xh-tag-bg-disabled, var(--xh-bg-subtle-opaque));
   }
 
   .xh-scope-tag[data-part='root'][data-variant='subtle'] {
@@ -14754,7 +14754,7 @@
   .xh-scope-tag[data-part='root'][data-disabled],
   .xh-scope-tag[data-part='root'][data-tone][data-disabled] {
     border-color: var(--xh-tag-border-disabled, var(--xh-border-default));
-    background: var(--xh-tag-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-tag-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-fg-disabled);
     /* 底已经退成置灰色，实心档那条内高光跟着收掉 */
     box-shadow: none;
@@ -31053,7 +31053,7 @@
     inline-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
     block-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
     border-radius: var(--xh-dialog-indicator-radius, var(--xh-shape-circle));
-    background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-muted)));
+    background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
     color: var(--xh-dialog-indicator-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
   }
 
@@ -42268,7 +42268,7 @@
   }
 
   .xh-scope-radio-group[data-part='root'][data-variant='segmented'][data-disabled] {
-    background: var(--xh-radio-group-track-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-radio-group-track-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。
@@ -46192,7 +46192,7 @@
 
   .xh-scope-steps[data-part='item'][data-disabled] .xh-scope-steps[data-part='indicator'] {
     border-color: var(--xh-steps-indicator-border-disabled, var(--xh-border-default));
-    background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-steps-indicator-bg-disabled, var(--xh-bg-subtle));
     color: var(--xh-steps-indicator-fg-disabled, var(--xh-fg-disabled));
     /* 这一步动不了，作者给圆点加的影跟着收掉 */
     box-shadow: none;
@@ -52179,7 +52179,7 @@
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-_toggle-group-item-bg-hover));
     --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-active, var(--xh-_toggle-group-item-bg-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
-    --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-muted));
+    --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-subtle));
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
     --xh-action-fg-pressed: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
@@ -52264,7 +52264,7 @@
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted-opaque))
+      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-subtle-opaque))
     );
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
@@ -52971,7 +52971,7 @@
     --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
     --xh-_toolbar-root-border: var(--xh-border-default);
     --xh-_toolbar-root-bg: var(--xh-bg-surface);
-    --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
+    --xh-_toolbar-root-bg-disabled: var(--xh-bg-subtle);
 
     border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
     box-shadow: var(--xh-toolbar-shadow, none);
@@ -53973,7 +53973,7 @@
   /* 整体禁用只写在 root 与各角色节点上；面板自己也带 data-disabled，观感一处收口 */
   .xh-scope-transfer[data-part='source-panel'][data-disabled],
   .xh-scope-transfer[data-part='target-panel'][data-disabled] {
-    background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 面板内三个角色的槽都带 panel- 段，与部件名逐字对上。
@@ -53984,7 +53984,7 @@
     align-items: center;
     padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-panel-header-px, var(--xh-_transfer-px));
-    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-muted));
+    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-subtle));
   }
 
   /* 标题占满剩余宽度，把计数挤到行尾侧 */
@@ -54284,7 +54284,7 @@
 
   .xh-scope-transfer[data-part='item-checkbox'][data-disabled] {
     border-color: var(--xh-transfer-checkbox-border-disabled, var(--xh-border-default));
-    background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），禁用同时打原生 disabled 与 data-disabled。

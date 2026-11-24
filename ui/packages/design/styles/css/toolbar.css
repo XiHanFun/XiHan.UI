@@ -85,7 +85,7 @@
     --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
     --xh-_toolbar-root-border: var(--xh-border-default);
     --xh-_toolbar-root-bg: var(--xh-bg-surface);
-    --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
+    --xh-_toolbar-root-bg-disabled: var(--xh-bg-subtle);
 
     border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
     box-shadow: var(--xh-toolbar-shadow, none);

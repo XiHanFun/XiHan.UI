@@ -372,7 +372,7 @@
   }
 
   [data-scope='radio-group'][data-part='root'][data-variant='segmented'][data-disabled] {
-    background: var(--xh-radio-group-track-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-radio-group-track-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 语气：选择器带 [data-tone] 限定，不限定的话放在语气容器里的分段会跟着改色。

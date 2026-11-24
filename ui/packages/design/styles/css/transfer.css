@@ -137,7 +137,7 @@
   /* 整体禁用只写在 root 与各角色节点上；面板自己也带 data-disabled，观感一处收口 */
   [data-scope='transfer'][data-part='source-panel'][data-disabled],
   [data-scope='transfer'][data-part='target-panel'][data-disabled] {
-    background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-transfer-panel-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 面板内三个角色的槽都带 panel- 段，与部件名逐字对上。
@@ -148,7 +148,7 @@
     align-items: center;
     padding-block: var(--xh-transfer-panel-header-py, var(--xh-space-3));
     padding-inline: var(--xh-transfer-panel-header-px, var(--xh-_transfer-px));
-    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-muted));
+    background: var(--xh-transfer-panel-header-bg, var(--xh-bg-subtle));
   }
 
   /* 标题占满剩余宽度，把计数挤到行尾侧 */
@@ -448,7 +448,7 @@
 
   [data-scope='transfer'][data-part='item-checkbox'][data-disabled] {
     border-color: var(--xh-transfer-checkbox-border-disabled, var(--xh-border-default));
-    background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-muted));
+    background: var(--xh-transfer-checkbox-bg-disabled, var(--xh-bg-subtle));
   }
 
   /* 全选格是原生按钮（三态经 aria-checked 上报，激活由平台负责），禁用同时打原生 disabled 与 data-disabled。

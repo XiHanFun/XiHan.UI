@@ -180,7 +180,7 @@
     --xh-action-bg-hover: var(--xh-toggle-group-item-bg-hover, var(--xh-_toggle-group-item-bg-hover));
     --xh-action-bg-pressed: var(--xh-toggle-group-item-bg-active, var(--xh-_toggle-group-item-bg-active));
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg, var(--xh-_toggle-group-item-bg));
-    --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-muted));
+    --xh-action-bg-disabled: var(--xh-toggle-group-item-bg-disabled, var(--xh-bg-subtle));
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
     --xh-action-fg-pressed: var(--xh-toggle-group-item-fg, var(--xh-_toggle-group-item-fg));
@@ -265,7 +265,7 @@
     --xh-action-bg-focus-visible: var(--xh-toggle-group-item-bg-on, var(--xh-_toggle-group-item-bg-on));
     --xh-action-bg-disabled: var(
       --xh-toggle-group-item-bg-on-disabled,
-      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted-opaque))
+      color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-subtle-opaque))
     );
     --xh-action-fg-rest: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));
     --xh-action-fg-hover: var(--xh-toggle-group-item-fg-on, var(--xh-_toggle-group-item-fg-on));

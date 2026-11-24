@@ -16318,8 +16318,6 @@
     "--xh-bg-media-chrome",
     "--xh-bg-media-chrome-active",
     "--xh-bg-media-chrome-hover",
-    "--xh-bg-muted",
-    "--xh-bg-muted-opaque",
     "--xh-bg-overlay",
     "--xh-bg-page",
     "--xh-bg-scrollbar-track",

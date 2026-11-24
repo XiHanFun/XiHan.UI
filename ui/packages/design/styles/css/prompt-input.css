@@ -168,7 +168,7 @@
     --xh-action-shadow-hover: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
     --xh-action-shadow-pressed: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
     /* 输入为空时按钮转灰但不收起 */
-    --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
+    --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-subtle));
     --xh-action-font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
     /* 按钮不参与弹性伸缩 */
     flex: none;

@@ -317,7 +317,7 @@ toCanvas 按所见出图：裁切矩形、旋转、翻转与圆形外形一并�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-muted` | image-cropper 的 viewport 部件 background 覆盖槽。 |
+| `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-subtle` | image-cropper 的 viewport 部件 background 覆盖槽。 |
 | `--xh-image-cropper-crop-area-radius` | `crop-area` | `border-radius` | `shape=round` | `--xh-shape-circle` | image-cropper 的 crop-area 部件 border-radius 覆盖槽。 |
 | `--xh-image-cropper-crop-border` | `crop-area` | `border-color` | `default` | `--xh-bg-surface` | image-cropper 的 crop-area 部件 border-color 覆盖槽。 |
 | `--xh-image-cropper-grid-line` | `grid` | `background-image` | `default` | `--xh-bg-subtle-opaque` | image-cropper 的 grid 部件 background-image 覆盖槽。 |

@@ -610,7 +610,6 @@ export const tokens = {
   "--xh-bg-field": "var(--xh-bg-surface)",
   "--xh-bg-field-invalid": "color-mix(in oklab, var(--xh-border-invalid) 4%, transparent)",
   "--xh-bg-mark": "var(--xh-color-yellow-200)",
-  "--xh-bg-muted": "color-mix(in oklab, var(--xh-ink) 4.7%, transparent)",
   "--xh-bg-brand": "var(--xh-color-brand-600)",
   "--xh-bg-brand-hover": "var(--xh-color-brand-700)",
   "--xh-bg-brand-active": "var(--xh-color-brand-800)",
@@ -817,7 +816,6 @@ export const tokens = {
   "--xh-bg-subtle-opaque": "color-mix(in srgb, var(--xh-ink) 4.7%, var(--xh-bg-surface))",
   "--xh-bg-subtle-hover-opaque": "color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface))",
   "--xh-bg-subtle-active-opaque": "color-mix(in srgb, var(--xh-ink) 16.9%, var(--xh-bg-surface))",
-  "--xh-bg-muted-opaque": "color-mix(in srgb, var(--xh-ink) 4.7%, var(--xh-bg-surface))",
   "--xh-border-default-opaque": "color-mix(in srgb, var(--xh-ink) 10.2%, var(--xh-bg-surface))"
 } as const
 
