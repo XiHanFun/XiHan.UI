@@ -4365,7 +4365,7 @@
     color: var(--xh-descriptions-title-fg, var(--xh-fg-default));
     font-size: var(--xh-descriptions-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-descriptions-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-relaxed);
+    line-height: var(--xh-text-heading-3-leading);
   }
 
   /* 附加内容贴在行尾：操作钮或状态标签，一行放不下时整块换到下一行 */
@@ -5812,7 +5812,7 @@
     color: var(--xh-fieldset-legend-fg, var(--xh-fg-default));
     font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-tight);
+    line-height: var(--xh-text-heading-3-leading);
     /* 整组转无效或转禁用时组标题换色，两档之间接一段过渡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -16562,7 +16562,7 @@
     color: var(--xh-alert-title-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-alert-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
+    line-height: var(--xh-alert-title-leading, var(--xh-text-heading-3-leading));
   }
 
   .xh-scope-alert[data-part='description'] {
@@ -20849,11 +20849,13 @@
   }
 
   /* 头部条：根的直接子节点才是条——一行区块标题时高 46px（紧凑 40px），标题在条里竖向居中，
-     横向内衬与正文同起点，底边一道 1px 内部分隔线。嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
+     横向内衬与正文同起点，底边一道 1px 内部分隔线。条高由最小高给，块向内衬只是标题折行时的下限：
+     取 6px，紧凑档一行标题（行框 24px）加两头内衬与底线 37px，仍落在 40px 之内，不把条撑高。
+     嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
   .xh-scope-card[data-part='root'] > .xh-scope-card[data-part='header'] {
     justify-content: center;
     min-block-size: var(--xh-card-header-h, var(--xh-surface-header-h));
-    padding-block: var(--xh-card-header-py, var(--xh-space-2));
+    padding-block: var(--xh-card-header-py, var(--xh-space-1_5));
     padding-inline: var(--xh-_card-px);
     border-block-end: var(--xh-stroke-thin) solid var(--xh-card-header-border, var(--xh-border-subtle));
   }
@@ -20868,7 +20870,7 @@
     color: var(--xh-card-title-fg, var(--xh-fg-default));
     font-size: var(--xh-card-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-card-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-card-title-leading, var(--xh-leading-tight));
+    line-height: var(--xh-card-title-leading, var(--xh-text-heading-3-leading));
   }
 
   .xh-scope-card[data-part='description'] {
@@ -30877,7 +30879,7 @@
     --xh-_dialog-safe-inline: var(--xh-space-0);
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
-    --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-text-heading-3-leading)) / 2);
     /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
     --xh-_dialog-header-pb: calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin));
 
@@ -31177,7 +31179,7 @@
     margin: 0;
     font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-dialog-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-normal);
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-dialog-title-fg, var(--xh-fg-default));
   }
 
@@ -31451,7 +31453,7 @@
     /* 头部带：标题首行与角上的关闭钮都落在这条带的中线上，与对话框同一组槽 */
     --xh-_drawer-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
-    --xh-_drawer-header-pt: calc((var(--xh-_drawer-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    --xh-_drawer-header-pt: calc((var(--xh-_drawer-header-h) - var(--xh-text-heading-3-size) * var(--xh-text-heading-3-leading)) / 2);
     /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
     --xh-_drawer-header-pb: calc(var(--xh-_drawer-header-pt) - var(--xh-stroke-thin));
     /* 带的上沿：不分三段时上内衬与安全区取大的一头，安全区更深时整条带往下让出差值 */
@@ -31719,7 +31721,7 @@
     margin: 0;
     font-size: var(--xh-drawer-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-drawer-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-normal);
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-drawer-title-fg, var(--xh-fg-default));
   }
 
@@ -38861,7 +38863,7 @@
   /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行框，
      字形在盒里居中，标题字号改了也不会错位。卡片的类型字形不随控件内图标档，与 16px 标题的一行（24px）同高 */
   .xh-scope-notification[data-part='item-indicator'] {
-    --xh-_notification-title-line: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-leading-normal));
+    --xh-_notification-title-line: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-notification-title-leading, var(--xh-text-heading-3-leading)));
     --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-_notification-title-line));
     /* 加载环随语气色（加载环配方缺省取品牌色），与语气字形同一支 */
     --xh-_loading-ring-fg: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
@@ -38966,7 +38968,7 @@
     color: var(--xh-notification-title-fg, var(--xh-fg-default));
     font-size: var(--xh-notification-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-notification-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-notification-title-leading, var(--xh-leading-normal));
+    line-height: var(--xh-notification-title-leading, var(--xh-text-heading-3-leading));
   }
 
   /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息。
@@ -39149,7 +39151,7 @@
         var(--xh-notification-item-py, var(--xh-overlay-notification-p)) +
         (
           var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) *
-          var(--xh-notification-title-leading, var(--xh-leading-normal)) -
+          var(--xh-notification-title-leading, var(--xh-text-heading-3-leading)) -
           var(--xh-notification-close-size, var(--xh-control-h-sm))
         ) / 2
       )
@@ -53593,6 +53595,7 @@
     margin: 0;
     font-size: var(--xh-tour-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-tour-title-font-weight, var(--xh-text-heading-3-weight));
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-tour-title-fg, var(--xh-fg-default));
   }
 

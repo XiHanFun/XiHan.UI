@@ -248,7 +248,7 @@ banner 把提示贴在页面顶部铺满整行：不取圆角，只在朝向页�
 | `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | alert 的 title 部件 color 覆盖槽。 |
 | `--xh-alert-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | alert 的 title 部件 font-size 覆盖槽。 |
 | `--xh-alert-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | alert 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | alert 的 title 部件 line-height 覆盖槽。 |
+| `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-text-heading-3-leading` | alert 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

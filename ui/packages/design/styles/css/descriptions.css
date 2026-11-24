@@ -111,7 +111,7 @@
     color: var(--xh-descriptions-title-fg, var(--xh-fg-default));
     font-size: var(--xh-descriptions-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-descriptions-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-relaxed);
+    line-height: var(--xh-text-heading-3-leading);
   }
 
   /* 附加内容贴在行尾：操作钮或状态标签，一行放不下时整块换到下一行 */

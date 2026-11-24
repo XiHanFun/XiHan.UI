@@ -491,7 +491,7 @@
   /* 卡片：独占第一列第一行，并与标题首行顶对齐：盒高取一行标题的行框，
      字形在盒里居中，标题字号改了也不会错位。卡片的类型字形不随控件内图标档，与 16px 标题的一行（24px）同高 */
   [data-scope='notification'][data-part='item-indicator'] {
-    --xh-_notification-title-line: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-leading-normal));
+    --xh-_notification-title-line: calc(var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) * var(--xh-notification-title-leading, var(--xh-text-heading-3-leading)));
     --xh-icon-size: var(--xh-notification-indicator-size, var(--xh-_notification-title-line));
     /* 加载环随语气色（加载环配方缺省取品牌色），与语气字形同一支 */
     --xh-_loading-ring-fg: var(--xh-notification-indicator-fg, var(--xh-_tone-fg));
@@ -596,7 +596,7 @@
     color: var(--xh-notification-title-fg, var(--xh-fg-default));
     font-size: var(--xh-notification-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-notification-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-notification-title-leading, var(--xh-leading-normal));
+    line-height: var(--xh-notification-title-leading, var(--xh-text-heading-3-leading));
   }
 
   /* 轻提示的语气落到标题与行首字形：一句话的结果，颜色本身就是信息。
@@ -779,7 +779,7 @@
         var(--xh-notification-item-py, var(--xh-overlay-notification-p)) +
         (
           var(--xh-notification-title-font-size, var(--xh-text-heading-3-size)) *
-          var(--xh-notification-title-leading, var(--xh-leading-normal)) -
+          var(--xh-notification-title-leading, var(--xh-text-heading-3-leading)) -
           var(--xh-notification-close-size, var(--xh-control-h-sm))
         ) / 2
       )

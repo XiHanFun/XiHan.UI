@@ -189,7 +189,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | `--xh-card-glint-duration` | `root` | `animation` | `@media (hover: hover) and (pointer: fine) and (forced-colors: none)`<br>`hover`<br>`interactive`<br>`material=liquid`<br>`where([data-material='liquid'])` | `--xh-motion-duration-glint` | card 的 root 部件 animation 覆盖槽。 |
 | `--xh-card-header-border` | `header`<br>`root` | `border-block-end` | `default` | `--xh-border-subtle` | card 的 header、root 部件 border-block-end 覆盖槽。 |
 | `--xh-card-header-h` | `header`<br>`root` | `min-block-size` | `default` | `--xh-surface-header-h` | card 的 header、root 部件 min-block-size 覆盖槽。 |
-| `--xh-card-header-py` | `header`<br>`root` | `padding-block` | `default` | `--xh-space-2` | card 的 header、root 部件 padding-block 覆盖槽。 |
+| `--xh-card-header-py` | `header`<br>`root` | `padding-block` | `default` | `--xh-space-1_5` | card 的 header、root 部件 padding-block 覆盖槽。 |
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
 | `--xh-card-p` | `content`<br>`footer`<br>`header`<br>`root` | `padding`<br>`padding-block-end`<br>`padding-inline` | `default` | `--xh-space-4`<br>`--xh-surface-pad-lg` | card 的 content、footer、header、root 部件 padding、padding-block-end、padding-inline 覆盖槽。 |
 | `--xh-card-radius` | `root`<br>`trigger` | `border-radius` | `default`<br>`interactive` | `--xh-shape-surface` | card 的 root、trigger 部件 border-radius 覆盖槽。 |
@@ -198,7 +198,7 @@ interactive 加标题里的 trigger：整张卡片都是点击区，读屏只读
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
 | `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | card 的 title 部件 font-size 覆盖槽。 |
 | `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | card 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | card 的 title 部件 line-height 覆盖槽。 |
+| `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-text-heading-3-leading` | card 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

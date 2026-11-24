@@ -165,11 +165,13 @@
   }
 
   /* 头部条：根的直接子节点才是条——一行区块标题时高 46px（紧凑 40px），标题在条里竖向居中，
-     横向内衬与正文同起点，底边一道 1px 内部分隔线。嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
+     横向内衬与正文同起点，底边一道 1px 内部分隔线。条高由最小高给，块向内衬只是标题折行时的下限：
+     取 6px，紧凑档一行标题（行框 24px）加两头内衬与底线 37px，仍落在 40px 之内，不把条撑高。
+     嵌在正文里的 header（横向卡片把标题与正文排在一列）不画条 */
   [data-scope='card'][data-part='root'] > [data-scope='card'][data-part='header'] {
     justify-content: center;
     min-block-size: var(--xh-card-header-h, var(--xh-surface-header-h));
-    padding-block: var(--xh-card-header-py, var(--xh-space-2));
+    padding-block: var(--xh-card-header-py, var(--xh-space-1_5));
     padding-inline: var(--xh-_card-px);
     border-block-end: var(--xh-stroke-thin) solid var(--xh-card-header-border, var(--xh-border-subtle));
   }
@@ -184,7 +186,7 @@
     color: var(--xh-card-title-fg, var(--xh-fg-default));
     font-size: var(--xh-card-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-card-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-card-title-leading, var(--xh-leading-tight));
+    line-height: var(--xh-card-title-leading, var(--xh-text-heading-3-leading));
   }
 
   [data-scope='card'][data-part='description'] {

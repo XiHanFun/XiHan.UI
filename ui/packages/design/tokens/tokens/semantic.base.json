@@ -1374,6 +1374,11 @@
       "$type": "number",
       "$value": "{font-weight.medium}"
     },
+    "heading-3-leading": {
+      "$description": "面板与区块标题的行高：16px 一行的行框 24px，面板角上的关闭钮与通知的类型字形按这一行的中线对齐。",
+      "$type": "number",
+      "$value": "{leading.normal}"
+    },
     "heading-1-size": {
       "$type": "dimension",
       "$value": "{font-size.2xl}"

@@ -97,7 +97,7 @@
     --xh-_dialog-safe-inline: var(--xh-space-0);
     --xh-_dialog-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
-    --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    --xh-_dialog-header-pt: calc((var(--xh-_dialog-header-h) - var(--xh-text-heading-3-size) * var(--xh-text-heading-3-leading)) / 2);
     /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
     --xh-_dialog-header-pb: calc(var(--xh-_dialog-header-pt) - var(--xh-stroke-thin));
 
@@ -397,7 +397,7 @@
     margin: 0;
     font-size: var(--xh-dialog-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-dialog-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-normal);
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-dialog-title-fg, var(--xh-fg-default));
   }
 

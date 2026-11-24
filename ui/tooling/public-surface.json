@@ -17077,6 +17077,7 @@
     "--xh-text-heading-1-weight",
     "--xh-text-heading-2-size",
     "--xh-text-heading-2-weight",
+    "--xh-text-heading-3-leading",
     "--xh-text-heading-3-size",
     "--xh-text-heading-3-weight",
     "--xh-text-label-size",

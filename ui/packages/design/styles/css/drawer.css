@@ -163,7 +163,7 @@
     /* 头部带：标题首行与角上的关闭钮都落在这条带的中线上，与对话框同一组槽 */
     --xh-_drawer-header-h: var(--xh-overlay-header-h);
     /* 标题首行在带里居中要让出的上内衬：带高减标题行高再对半 */
-    --xh-_drawer-header-pt: calc((var(--xh-_drawer-header-h) - var(--xh-text-heading-3-size) * var(--xh-leading-normal)) / 2);
+    --xh-_drawer-header-pt: calc((var(--xh-_drawer-header-h) - var(--xh-text-heading-3-size) * var(--xh-text-heading-3-leading)) / 2);
     /* 分三段时头的下内衬扣掉分隔线那 1px，只有标题时整条带恰好是带高 */
     --xh-_drawer-header-pb: calc(var(--xh-_drawer-header-pt) - var(--xh-stroke-thin));
     /* 带的上沿：不分三段时上内衬与安全区取大的一头，安全区更深时整条带往下让出差值 */
@@ -431,7 +431,7 @@
     margin: 0;
     font-size: var(--xh-drawer-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-drawer-title-font-weight, var(--xh-text-heading-3-weight));
-    line-height: var(--xh-leading-normal);
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-drawer-title-fg, var(--xh-fg-default));
   }
 

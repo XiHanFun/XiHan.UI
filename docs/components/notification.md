@@ -377,7 +377,7 @@ item-action-trigger 按下时先发 action 事件，再使该条进入退场；�
 | `--xh-notification-title-fg` | `item`<br>`item-title` | `color` | `default`<br>`preset=toast` | `--xh-_tone-fg`<br>`--xh-fg-default` | notification 的 item、item-title 部件 color 覆盖槽。 |
 | `--xh-notification-title-font-size` | `item`<br>`item-close-trigger`<br>`item-indicator`<br>`item-title` | `--xh-icon-size`<br>`block-size`<br>`font-size`<br>`inline-size`<br>`inset-block-start` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-text-body-size`<br>`--xh-text-heading-3-size` | notification 的 item、item-close-trigger、item-indicator、item-title 部件 --xh-icon-size、block-size、font-size、inline-size、inset-block-start 覆盖槽。 |
 | `--xh-notification-title-font-weight` | `item`<br>`item-title` | `font-weight` | `default`<br>`preset=toast` | `--xh-font-weight-medium`<br>`--xh-text-heading-3-weight` | notification 的 item、item-title 部件 font-weight 覆盖槽。 |
-| `--xh-notification-title-leading` | `item`<br>`item-close-trigger`<br>`item-title` | `inset-block-start`<br>`line-height` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-leading-normal`<br>`--xh-leading-tight` | notification 的 item、item-close-trigger、item-title 部件 inset-block-start、line-height 覆盖槽。 |
+| `--xh-notification-title-leading` | `item`<br>`item-close-trigger`<br>`item-indicator`<br>`item-title` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`inset-block-start`<br>`line-height` | `default`<br>`preset=card`<br>`preset=toast` | `--xh-leading-tight`<br>`--xh-text-heading-3-leading` | notification 的 item、item-close-trigger、item-indicator、item-title 部件 --xh-icon-size、block-size、inline-size、inset-block-start、line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

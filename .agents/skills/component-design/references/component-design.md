@@ -348,7 +348,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 其余说明（Card、Alert、Dialog 等面内的 description） | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal`；Steps 的步骤说明压在标题下，取次级标注 12 / `--xh-fg-subtle` | — |
 | 错误文案 | 12 / `--xh-fg-danger` | 与说明共用控件下方那一行辅助行 |
 | 浮层内与小面标题（Popover、HoverCard、Popconfirm、FloatingPanel、Approval、EmptyState、Citation） | 14 / `--xh-font-weight-medium` | — |
-| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour） | heading-3：16 / 500 | — |
+| 区块与面板标题（Card、Descriptions、Alert、Notification、Steps；Dialog、Drawer、Tour；Fieldset 组标题） | heading-3：16 / 500，行高 `--xh-text-heading-3-leading`（1.5，行框 24px）；面板角上的关闭钮与通知的类型字形按这一行的中线对齐 | — |
 | 页面标题（PageHeader） | heading-2：20 / 500 | — |
 | 气泡正文（Popover、Popconfirm、HoverCard 的 description） | `--xh-text-body-size` 14 / `--xh-fg-muted` / `--xh-leading-normal` | 与标题 `--xh-space-1` |
 | 通知卡片正文（Notification 卡片预设的 item-description；轻提示预设的说明仍按其余说明档） | `--xh-text-body-size` 14 / `--xh-fg-default`，行高随卡片取 `--xh-text-body-leading` | 与标题 `--xh-space-2` |

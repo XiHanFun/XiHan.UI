@@ -1051,7 +1051,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-tight"
+        "--xh-text-heading-3-leading"
       ],
       "visibility": "public",
       "description": "alert 的 title 部件 line-height 覆盖槽。"
@@ -7719,7 +7719,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "card 的 header、root 部件 padding-block 覆盖槽。"
@@ -7894,7 +7894,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-tight"
+        "--xh-text-heading-3-leading"
       ],
       "visibility": "public",
       "description": "card 的 title 部件 line-height 覆盖槽。"
@@ -56125,9 +56125,13 @@
       "part": [
         "item",
         "item-close-trigger",
+        "item-indicator",
         "item-title"
       ],
       "property": [
+        "--xh-icon-size",
+        "block-size",
+        "inline-size",
         "inset-block-start",
         "line-height"
       ],
@@ -56137,11 +56141,11 @@
         "preset=toast"
       ],
       "defaultToken": [
-        "--xh-leading-normal",
-        "--xh-leading-tight"
+        "--xh-leading-tight",
+        "--xh-text-heading-3-leading"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-close-trigger、item-title 部件 inset-block-start、line-height 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-indicator、item-title 部件 --xh-icon-size、block-size、inline-size、inset-block-start、line-height 覆盖槽。"
     },
     {
       "name": "--xh-number-animation-fg",

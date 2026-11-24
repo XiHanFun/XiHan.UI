@@ -688,6 +688,7 @@
     --xh-text-secondary-size: var(--xh-font-size-sm);
     --xh-text-heading-3-size: var(--xh-font-size-lg);
     --xh-text-heading-3-weight: var(--xh-font-weight-medium);
+    --xh-text-heading-3-leading: var(--xh-leading-normal);
     --xh-text-heading-1-size: var(--xh-font-size-2xl);
     --xh-text-heading-1-weight: var(--xh-font-weight-medium);
     --xh-text-heading-2-size: var(--xh-font-size-xl);

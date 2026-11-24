@@ -240,6 +240,7 @@
     margin: 0;
     font-size: var(--xh-tour-title-font-size, var(--xh-text-heading-3-size));
     font-weight: var(--xh-tour-title-font-weight, var(--xh-text-heading-3-weight));
+    line-height: var(--xh-text-heading-3-leading);
     color: var(--xh-tour-title-fg, var(--xh-fg-default));
   }
 
