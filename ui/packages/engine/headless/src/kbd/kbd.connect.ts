@@ -72,7 +72,7 @@ export function connectKbd<T extends PropTypes>(props: KbdProps, normalize: Norm
         return
       if (preventDefault)
         event.preventDefault()
-      props.onHotKey?.({ keys: [...props.keys], event })
+      props.onHotkey?.({ keys: [...props.keys], event })
     },
     getRootProps: () => normalize.element({
       ...parts.root.attrs,

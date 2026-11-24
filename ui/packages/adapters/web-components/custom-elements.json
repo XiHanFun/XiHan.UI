@@ -41483,7 +41483,7 @@
           "events": [
             {
               "description": "组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`",
-              "name": "hot-key",
+              "name": "hotkey",
               "type": {
                 "text": "KbdTriggerDetails"
               }

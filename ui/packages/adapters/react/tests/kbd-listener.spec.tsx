@@ -37,7 +37,7 @@ describe('react Kbd 快捷键注册', () => {
     await mount(
       <XhKbd
         keys={['Mod', 'S']}
-        onHotKey={() => {
+        onHotkey={() => {
           hits += 1
         }}
       />,
@@ -49,7 +49,7 @@ describe('react Kbd 快捷键注册', () => {
       <XhKbd
         keys={['Mod', 'S']}
         register
-        onHotKey={() => {
+        onHotkey={() => {
           hits += 1
         }}
       />,
@@ -67,7 +67,7 @@ describe('react Kbd 快捷键注册', () => {
         keys={['Mod', 'S']}
         register
         target={() => local}
-        onHotKey={() => {
+        onHotkey={() => {
           hits += 1
         }}
       />,

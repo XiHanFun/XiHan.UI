@@ -14573,7 +14573,7 @@
     "kbd": [
       "enabled",
       "keys",
-      "onHotKey",
+      "onHotkey",
       "platform",
       "preventDefault",
       "register",
@@ -23402,7 +23402,7 @@
         "variant"
       ],
       "events": [
-        "hot-key"
+        "hotkey"
       ]
     },
     "xh-layout": {

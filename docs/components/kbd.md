@@ -97,7 +97,7 @@ default 使用中性底，light 保持透明
 | --- | --- | --- | --- |
 | `enabled` | `boolean` |  | 已注册的监听是否生效，默认 true。 |
 | `keys` | `string[]` | 是 | 单键或组合键，例如 ['Escape']、['Mod', 'K']。 |
-| `onHotKey` | `(details: KbdTriggerDetails) => void` |  | 已注册组合被按下时触发。 |
+| `onHotkey` | `(details: KbdTriggerDetails) => void` |  | 已注册组合被按下时触发。 |
 | `platform` | `KbdPlatform` |  | 平台键名；auto 在适配器探测前按非 Mac 输出。 |
 | `preventDefault` | `boolean` |  | 命中时是否阻止浏览器默认动作，默认 true。 |
 | `register` | `boolean` |  | 是否注册快捷键监听，默认 false。 |
@@ -111,7 +111,7 @@ default 使用中性底，light 保持透明
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `hot-key` | `KbdTriggerDetails` | 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }` |
+| `hotkey` | `KbdTriggerDetails` | 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }` |
 
 ### connect API
 
@@ -138,7 +138,7 @@ default 使用中性底，light 保持透明
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `keys 指定的组合` | register 开启、enabled 未关，且不在输入法组合期 | 触发 onHotKey；preventDefault 开启（默认）时同时拦下浏览器默认动作 |
+| `keys 指定的组合` | register 开启、enabled 未关，且不在输入法组合期 | 触发 onHotkey；preventDefault 开启（默认）时同时拦下浏览器默认动作 |
 | `keys 指定的组合` | 组合里没有 Ctrl / Meta / Alt，且按键落在输入区里 | 不触发也不拦截，输入优先 |
 
 ### ARIA

@@ -7,6 +7,6 @@ const count = ref(0);
 </script>
 
 <template>
-  <XhKbd :keys="['Mod', 'K']" register @hot-key="count += 1" />
+  <XhKbd :keys="['Mod', 'K']" register @hotkey="count += 1" />
   <output data-demo-output>{{ count ? `已触发 ${count} 次` : "按下组合键" }}</output>
 </template>

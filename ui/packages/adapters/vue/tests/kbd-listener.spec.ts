@@ -31,7 +31,7 @@ describe('vue Kbd 快捷键注册', () => {
         keys: ['Mod', 'K'],
         register: true,
         target: () => current.value,
-        onHotKey: () => { hits += 1 },
+        onHotkey: () => { hits += 1 },
       }),
     })
     app.mount(host)

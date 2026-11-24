@@ -38,7 +38,7 @@ export default function Demo(): ReactNode {
     <>
       {/* 唤起的入口：监听装在整篇文档上，面板收着也按得出来 */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <XhKbd keys={["Mod", "K"]} register onHotKey={() => setOpen(true)} />
+        <XhKbd keys={["Mod", "K"]} register onHotkey={() => setOpen(true)} />
         <span>按一下唤起命令面板</span>
       </div>
 

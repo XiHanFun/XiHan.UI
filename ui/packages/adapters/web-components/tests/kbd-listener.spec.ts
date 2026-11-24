@@ -37,7 +37,7 @@ describe('xh-kbd 快捷键注册', () => {
     host.keys = ['Mod', 'S']
     host.register = true
     let hits = 0
-    host.addEventListener('hot-key', () => {
+    host.addEventListener('hotkey', () => {
       hits += 1
     })
     document.body.append(host)

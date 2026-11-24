@@ -34,7 +34,7 @@ export interface KbdProps {
   /** 逐键名称和整组读屏文案。 */
   translations?: Partial<KbdTranslations>
   /** 已注册组合被按下时触发。 */
-  onHotKey?: (details: KbdTriggerDetails) => void
+  onHotkey?: (details: KbdTriggerDetails) => void
 }
 
 export interface KbdKeyProps {

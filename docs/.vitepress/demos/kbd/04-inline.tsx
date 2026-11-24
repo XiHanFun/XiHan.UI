@@ -7,7 +7,7 @@ export default function Demo(): ReactNode {
   const [count, setCount] = useState(0);
   return (
     <>
-      <XhKbd keys={["Mod", "K"]} register onHotKey={() => setCount(value => value + 1)} />
+      <XhKbd keys={["Mod", "K"]} register onHotkey={() => setCount(value => value + 1)} />
       <output data-demo-output>{count ? `已触发 ${count} 次` : "按下组合键"}</output>
     </>
   );

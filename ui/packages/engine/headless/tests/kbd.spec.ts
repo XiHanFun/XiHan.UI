@@ -70,7 +70,7 @@ describe('kbd 展示契约', () => {
 describe('kbd 快捷键注册', () => {
   function registered(props: Omit<KbdProps, 'register'>) {
     const hits: KbdTriggerDetails[] = []
-    return { hits, current: api({ ...props, register: true, onHotKey: details => hits.push(details) }) }
+    return { hits, current: api({ ...props, register: true, onHotkey: details => hits.push(details) }) }
   }
 
   it('默认仅展示；register 开启后才解析监听目标并投影注册事实', () => {

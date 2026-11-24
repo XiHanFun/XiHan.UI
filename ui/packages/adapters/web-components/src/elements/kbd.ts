@@ -25,7 +25,7 @@ const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? unde
  * @attr {boolean} register - 是否注册快捷键监听，默认 false
  * @attr {boolean} prevent-default - 命中后是否阻止默认动作，默认 true
  * @attr {boolean} enabled - 已注册监听是否生效，默认 true
- * @fires hot-key - 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`
+ * @fires hotkey - 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`
  * @csspart root - 原生 kbd 表面与整组可读名称
  * @csspart key - 一个可见键名
  */
@@ -55,7 +55,7 @@ export class XhKbdElement extends XhElement {
   #bound: EventTarget | null = null
   #painted = ''
   #notify = (details: KbdTriggerDetails): void => {
-    this.dispatchEvent(new CustomEvent('hot-key', { detail: details, bubbles: true, composed: true }))
+    this.dispatchEvent(new CustomEvent('hotkey', { detail: details, bubbles: true, composed: true }))
   }
 
   #api(): KbdApi {
@@ -68,7 +68,7 @@ export class XhKbdElement extends XhElement {
       preventDefault: this.preventDefault,
       enabled: this.enabled,
       translations: this.translations,
-      onHotKey: this.#notify,
+      onHotkey: this.#notify,
     } satisfies KbdProps), wcNormalize)
   }
 

@@ -25,10 +25,10 @@ export interface XhKbdProps extends Omit<ComponentPropsWithRef<'kbd'>, 'children
   preventDefault?: boolean
   enabled?: boolean
   translations?: Partial<KbdTranslations>
-  onHotKey?: KbdProps['onHotKey']
+  onHotkey?: KbdProps['onHotkey']
 }
 
-export function XhKbd({ keys, platform, variant, register, target, preventDefault, enabled, translations, onHotKey, ...rest }: XhKbdProps): ReactNode {
+export function XhKbd({ keys, platform, variant, register, target, preventDefault, enabled, translations, onHotkey, ...rest }: XhKbdProps): ReactNode {
   const resolvedPlatform = useKbdPlatform(platform)
   const api = connectKbd(withXhConfig('kbd', {
     keys,
@@ -39,7 +39,7 @@ export function XhKbd({ keys, platform, variant, register, target, preventDefaul
     preventDefault,
     enabled,
     translations,
-    onHotKey,
+    onHotkey,
   }) as KbdProps, reactNormalize)
   const latest = useRef({ api })
   latest.current = { api }
@@ -70,4 +70,4 @@ export function XhKbd({ keys, platform, variant, register, target, preventDefaul
   )
 }
 
-XhKbd.xhEvents = ['hot-key'] as const
+XhKbd.xhEvents = ['hotkey'] as const

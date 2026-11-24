@@ -28,7 +28,7 @@ export const XhKbd = defineComponent({
     translations: { type: Object as PropType<Partial<KbdTranslations>> },
   },
   emits: {
-    'hot-key': (_details: PayloadOf<KbdProps, 'onHotKey'>) => true,
+    'hotkey': (_details: PayloadOf<KbdProps, 'onHotkey'>) => true,
   },
   setup(props, { emit }) {
     const detected = useKbdPlatform()
@@ -62,7 +62,7 @@ export const XhKbd = defineComponent({
       get translations() {
         return props.translations
       },
-      onHotKey: (details: PayloadOf<KbdProps, 'onHotKey'>) => emit('hot-key', details),
+      onHotkey: (details: PayloadOf<KbdProps, 'onHotkey'>) => emit('hotkey', details),
     }) as KbdProps
     const api = computed(() => connectKbd(configured, vueNormalize))
     const onKeyDown = (event: Event): void => api.value.handleKeyDown(event as KeyboardEvent)
