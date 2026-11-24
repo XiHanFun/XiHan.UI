@@ -8925,10 +8925,13 @@
 
   /* 量坐标的那个盒子。里面装的是图片像素坐标，不是文字：裁切框与把手的落点一律写物理属性，
      不依赖这里的文字方向。overflow 收口：放大后的图片与遮罩都靠它裁掉。 */
+  /* 裁切用 clip 而不是 hidden：hidden 仍是滚动容器。把手骑在裁切框的边界上，框贴着图片边缘时有一半伸出视口，
+     把手一拿到焦点浏览器就把视口滚过去让它「可见」——整张图连同裁切框朝左上挪几个像素、右边和下边露出底色，
+     看上去像图片缩小了一圈，松手也不回来。clip 不可滚，圆角照样裁。 */
   .xh-scope-image-cropper[data-part='viewport'] {
     position: relative;
     display: block;
-    overflow: hidden;
+    overflow: clip;
     border-radius: var(--xh-image-cropper-viewport-radius, var(--xh-shape-surface));
     background: var(--xh-image-cropper-bg, var(--xh-bg-muted));
     user-select: none;
