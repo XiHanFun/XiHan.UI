@@ -7,13 +7,13 @@ import type { A11yTheme, KnownViolations } from './run'
  * 只在一个主题下成立的登记要挪进各适配器基线的 knownByTheme。
  */
 export const knownA11yViolations: KnownViolations = {
-  // 禁用标签的文字用 --xh-fg-disabled 落在 --xh-bg-muted 上，实测 2.36:1（浅色）/ 1.94:1（深色）。
+  // 禁用标签的文字用 --xh-fg-disabled 落在中性淡底 --xh-bg-subtle 上，实测 2.36:1（浅色）/ 1.94:1（深色）。
   // 这不是 tag 自己的取值：整个禁用族都是这一档——toggle-group 条目、download-trigger、
   // form 提交钮、number-field 步进钮、signature-pad 清除钮、timer 控制钮、toolbar、calendar 格子
-  // 同样是 fg-disabled 落在 bg-muted 上，逐个算都是 2.36 / 1.94；
+  // 同样是 fg-disabled 落在 bg-subtle 上，逐个算都是 2.36 / 1.94；
   // 输入框一族（text-field、number-field、combobox、date-field、time-field、tags-input、
   // pin-input、password-input、mention、editable、field、file-upload、cascader、tree-select、
-  // color-picker、date-picker）落在 bg-subtle 上，与 bg-muted 同值，也是 2.36 / 1.94；
+  // color-picker、date-picker）同样落在 bg-subtle 上，也是 2.36 / 1.94；
   // 改用 opacity 表达禁用的那一族（button、checkbox）更低，浅色只有 1.34 ~ 1.9。
   // 令牌层对此有明写的口径（tokens/tests/contrast.spec.ts「禁用态按 1.4.3 豁免」）：
   // WCAG 1.4.3 对失效的用户界面组件免除对比度要求，这一档只钉住不低于 2.5（对 bg-canvas）。
@@ -26,7 +26,7 @@ export const knownA11yViolations: KnownViolations = {
   // translations.input，为的是钉住这条契约，于是扫出来的就是一个没有名字的 textarea。
   // 真实用法里由作者命名：给 translations.input，或自己写 <label for> / aria-label。
   'prompt-input': { label: '输入框的可访问名归作者，组件不无条件发 aria-label；夹具刻意不给文案以钉住这条契约' },
-  'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-muted 一档（浅色 2.36:1、深色 1.93:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
+  'tag': { 'color-contrast': '禁用标签的文字是全库统一的 fg-disabled/bg-subtle 一档（浅色 2.36:1、深色 1.93:1），按 1.4.3 失效控件豁免；tag 的 root 没有 axe 认得的禁用语义，所以只有它被扫出来' },
   // select 摆在触发器外的那枚可删标签与 tag 同一档：触发器里的那些在原生 disabled 的按钮内，axe 跳过；外面这枚是个没有角色的 span
   // combobox 的标签行排在输入框前、不在任何原生 disabled 的控件里，禁用时的标签文字与 select 触发器外那枚同一档
   'combobox': { 'color-contrast': '禁用时标签行里的标签文字同 tag：fg-disabled 落在 bg-subtle 上，按 1.4.3 失效控件豁免；标签行不在原生 disabled 的控件里，axe 看得见' },

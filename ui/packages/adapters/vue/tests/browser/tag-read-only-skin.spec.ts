@@ -121,7 +121,7 @@ describe('标签的只读与禁用', () => {
     expect(disabled.rootWidth).toBe(plain.rootWidth)
     expect(disabled.rootHeight).toBe(plain.rootHeight)
     // 整枚退成置灰色：底与字都不再是常态那一副
-    expect(disabled.rootBg).toBe(resolveColor('var(--xh-bg-muted)'))
+    expect(disabled.rootBg).toBe(resolveColor('var(--xh-bg-subtle)'))
     expect(disabled.rootFg).toBe(resolveColor('var(--xh-fg-disabled)'))
     expect(disabled.rootBg).not.toBe(plain.rootBg)
   })
@@ -149,7 +149,7 @@ describe('标签的只读与禁用', () => {
     const both = await look('subtle', { readOnly: true, disabled: true })
     expect(both.rootDisabled).toBe(true)
     expect(both.closeDisabled).toBe(true)
-    expect(both.rootBg).toBe(resolveColor('var(--xh-bg-muted)'))
+    expect(both.rootBg).toBe(resolveColor('var(--xh-bg-subtle)'))
   })
 
   it('只读的叉悬停不换底：常态的叉悬停会兑出一层底色，只读的叉压上去仍是透空的', async () => {

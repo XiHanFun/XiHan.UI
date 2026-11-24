@@ -74,9 +74,8 @@ const SURFACES = [
   surface('surface', 'var(--xh-bg-surface)'),
   surface('surface-raised', 'var(--xh-bg-surface-raised)'),
   surface('subtle', 'var(--xh-bg-subtle)'),
-  surface('muted', 'var(--xh-bg-muted)'),
   surface('field', 'var(--xh-bg-field)'),
-  `<div style="background: var(--xh-bg-surface)">${`<div style="background: var(--xh-bg-subtle)">${surface('muted 叠在 subtle 上', 'var(--xh-bg-muted)')}</div>`}</div>`,
+  `<div style="background: var(--xh-bg-surface)">${`<div style="background: var(--xh-bg-subtle)">${surface('subtle 叠在 subtle 上', 'var(--xh-bg-subtle)')}</div>`}</div>`,
 ].join('')
 
 const FIELD_IN_COLLAPSIBLE = `

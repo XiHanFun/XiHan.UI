@@ -362,7 +362,7 @@ describe('禁用与只读', () => {
     const close = tagPart('close-trigger') as HTMLButtonElement
 
     expect(pill.getAttribute('data-disabled')).toBe('')
-    expect(getComputedStyle(pill).backgroundColor).toBe(resolveColor('var(--xh-bg-muted)'))
+    expect(getComputedStyle(pill).backgroundColor).toBe(resolveColor('var(--xh-bg-subtle)'))
     expect(getComputedStyle(pill).color).toBe(resolveColor('var(--xh-fg-disabled)'))
     expect(close.disabled).toBe(true)
     expect(getComputedStyle(close).display).not.toBe('none')

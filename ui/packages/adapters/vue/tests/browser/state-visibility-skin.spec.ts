@@ -192,7 +192,7 @@ describe('prompt-input 的禁用发送钮', () => {
     // 字与底几乎同亮度，按钮看着像一块色斑而不是一颗按钮。字底两档的实算差距由令牌层的用例守
     const el = submit('')
     expect((el as HTMLButtonElement).disabled).toBe(true)
-    expect(getComputedStyle(el).backgroundColor).toBe(token('--xh-bg-muted'))
+    expect(getComputedStyle(el).backgroundColor).toBe(token('--xh-bg-subtle'))
     expect(getComputedStyle(el).color).toBe(token('--xh-fg-disabled'))
   })
 

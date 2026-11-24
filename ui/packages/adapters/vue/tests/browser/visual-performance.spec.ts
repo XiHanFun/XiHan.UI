@@ -120,7 +120,7 @@ function installStageStyle(): void {
       background-image:
         radial-gradient(circle at 20% 30%, var(--xh-accent-500) 0 8%, transparent 28%),
         radial-gradient(circle at 75% 65%, var(--xh-info-500) 0 10%, transparent 32%),
-        repeating-linear-gradient(135deg, transparent 0 18px, var(--xh-bg-muted) 18px 36px);
+        repeating-linear-gradient(135deg, transparent 0 18px, var(--xh-bg-subtle) 18px 36px);
       background-size: 360px 280px, 420px 320px, 72px 72px;
     }
   `

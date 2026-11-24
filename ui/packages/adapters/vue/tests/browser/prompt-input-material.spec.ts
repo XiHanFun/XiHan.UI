@@ -135,7 +135,7 @@ describe('prompt-input 的字段描边外壳', () => {
     await settle()
     expect(trigger.disabled).toBe(true)
     expect(trigger.hasAttribute('data-disabled')).toBe(true)
-    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-muted'))
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-subtle'))
     expect(getComputedStyle(trigger).boxShadow).toBe('none')
   })
 
