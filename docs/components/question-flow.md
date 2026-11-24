@@ -403,7 +403,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-action-radius` | `skip-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 skip-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-_tone-subtle`<br>`--xh-bg-surface` | question-flow 的 root 部件 background 覆盖槽。 |
 | `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-border-default` | question-flow 的 root 部件 border 覆盖槽。 |
-| `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 counter 部件 color 覆盖槽。 |
+| `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-muted` | question-flow 的 counter 部件 color 覆盖槽。 |
 | `--xh-question-flow-counter-font-size` | `counter` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 counter 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | question-flow 的 description 部件 color 覆盖槽。 |
 | `--xh-question-flow-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | question-flow 的 description 部件 font-size 覆盖槽。 |

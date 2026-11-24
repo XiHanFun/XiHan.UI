@@ -329,9 +329,11 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `--xh-message-feed-unread-count-bg` | `unread-count` | `background` | `default` | `--xh-bg-brand` | message-feed 的 unread-count 部件 background 覆盖槽。 |
 | `--xh-message-feed-unread-count-fg` | `unread-count` | `color` | `default` | `--xh-fg-on-brand` | message-feed 的 unread-count 部件 color 覆盖槽。 |
 | `--xh-message-feed-unread-count-font-size` | `unread-count` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 unread-count 部件 font-size 覆盖槽。 |
-| `--xh-message-feed-unread-count-px` | `unread-count` | `padding-inline` | `default` | `--xh-space-1` | message-feed 的 unread-count 部件 padding-inline 覆盖槽。 |
+| `--xh-message-feed-unread-count-font-weight` | `unread-count` | `font-weight` | `default` | `--xh-font-weight-medium` | message-feed 的 unread-count 部件 font-weight 覆盖槽。 |
+| `--xh-message-feed-unread-count-px` | `unread-count` | `padding-inline` | `default` | `--xh-space-0_5` | message-feed 的 unread-count 部件 padding-inline 覆盖槽。 |
 | `--xh-message-feed-unread-count-radius` | `unread-count` | `border-radius` | `default` | `--xh-shape-pill` | message-feed 的 unread-count 部件 border-radius 覆盖槽。 |
-| `--xh-message-feed-unread-count-size` | `unread-count` | `block-size`<br>`line-height`<br>`min-inline-size` | `default` | `--xh-space-4` | message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。 |
+| `--xh-message-feed-unread-count-ring` | `unread-count` | `border` | `default` | `--xh-bg-surface` | message-feed 的 unread-count 部件 border 覆盖槽。 |
+| `--xh-message-feed-unread-count-size` | `unread-count` | `block-size`<br>`min-inline-size` | `default` | `--xh-space-3` | message-feed 的 unread-count 部件 block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

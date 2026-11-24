@@ -510,7 +510,7 @@ page-size 让每侧只渲染当前这一页，两侧各翻各的；翻页器用�
 | `--xh-transfer-panel-bg-disabled` | `source-panel`<br>`target-panel` | `background` | `disabled` | `--xh-bg-muted` | transfer 的 source-panel、target-panel 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-border` | `source-panel`<br>`target-panel` | `border` | `default` | `--xh-border-default` | transfer 的 source-panel、target-panel 部件 border 覆盖槽。 |
 | `--xh-transfer-panel-border-invalid` | `root`<br>`source-panel`<br>`target-panel` | `border-color` | `invalid`<br>`is([data-scope='transfer'][data-part='source-panel'], [data-scope='transfer'][data-part='target-panel'])` | `--xh-border-invalid` | transfer 的 root、source-panel、target-panel 部件 border-color 覆盖槽。 |
-| `--xh-transfer-panel-count-fg` | `panel-count` | `color` | `default` | `--xh-fg-subtle` | transfer 的 panel-count 部件 color 覆盖槽。 |
+| `--xh-transfer-panel-count-fg` | `panel-count` | `color` | `default` | `--xh-fg-muted` | transfer 的 panel-count 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-count-font-size` | `panel-count` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 panel-count 部件 font-size 覆盖槽。 |
 | `--xh-transfer-panel-header-bg` | `panel-header` | `background` | `default` | `--xh-bg-muted` | transfer 的 panel-header 部件 background 覆盖槽。 |
 | `--xh-transfer-panel-header-gap` | `panel-header` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 panel-header 部件 gap 覆盖槽。 |

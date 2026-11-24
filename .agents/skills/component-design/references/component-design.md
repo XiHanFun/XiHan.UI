@@ -354,7 +354,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 | 通知卡片正文（Notification 卡片预设的 item-description；轻提示预设的说明仍按其余说明档） | `--xh-text-body-size` 14 / `--xh-fg-default`，行高随卡片取 `--xh-text-body-leading` | 与标题 `--xh-space-2` |
 | 页头副标题（PageHeader description） | `--xh-text-body-size` 14 / `--xh-fg-subtle` | 与标题同一行，中间 1 × 16px 竖线、两侧 `--xh-space-3` |
 | 大号数值（Statistic、Timer、NumberAnimation） | sm / md / lg 依次取 heading-2 / heading-1 / display（20 / 24 / 28） | — |
-| 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
+| 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 / `--xh-fg-muted`；不取 `--xh-fg-subtle`，那一档留给占位字与禁用标签。计数做成实心徽标时不另画：取 Badge 的对应档（MessageFeed 回到底部钮上的未读数取 sm 档） | — |
 | 列表型候选面板的底栏（Select、TreeSelect、Cascader、Command 的 footer） | `--xh-text-secondary-size` 13 / 所在面的次要字色（frosted 浮层上取 `--xh-material-frosted-fg-muted`，floating 与 sheet 上取 `--xh-fg-muted`）；不随尺寸档变 | — |
 | 集合分组标题（Menu 族、Select、Combobox、Cascader、Listbox、Transfer、Command、SideNav） | `--xh-text-caption-size` 12 / `--xh-font-weight-medium` / 所在面的次要字色（frosted 浮层上取 `--xh-material-frosted-fg-muted`，实体面、floating 与 sheet 上取 `--xh-fg-muted`）；不取 `--xh-fg-subtle`，那一档留给占位字与禁用标签 | 内缩与条目文字对齐；菜单族上方让出 `--xh-space-2`；组与组之间见 §7.5 |
 | 图表轴标签、数据标签、轴标题 | `--xh-text-caption-size` 12 / `--xh-fg-muted`；轴刻度用等宽数字（`tabular-nums`）；不使用系列色 | 刻度标签与刻度线 `--xh-space-1` |

@@ -445,7 +445,7 @@
   [data-scope='question-flow'][data-part='counter'] {
     display: inline-flex;
     align-items: center;
-    color: var(--xh-question-flow-counter-fg, var(--xh-fg-subtle));
+    color: var(--xh-question-flow-counter-fg, var(--xh-fg-muted));
     font-size: var(--xh-question-flow-counter-font-size, var(--xh-text-caption-size));
     font-variant-numeric: tabular-nums;
   }

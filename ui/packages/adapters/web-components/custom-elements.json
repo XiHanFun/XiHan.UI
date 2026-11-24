@@ -47884,10 +47884,16 @@
               "name": "--xh-message-feed-unread-count-font-size"
             },
             {
+              "name": "--xh-message-feed-unread-count-font-weight"
+            },
+            {
               "name": "--xh-message-feed-unread-count-px"
             },
             {
               "name": "--xh-message-feed-unread-count-radius"
+            },
+            {
+              "name": "--xh-message-feed-unread-count-ring"
             },
             {
               "name": "--xh-message-feed-unread-count-size"

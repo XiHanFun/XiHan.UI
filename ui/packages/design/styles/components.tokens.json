@@ -54276,6 +54276,24 @@
       "description": "message-feed 的 unread-count 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-message-feed-unread-count-font-weight",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 font-weight 覆盖槽。"
+    },
+    {
       "name": "--xh-message-feed-unread-count-px",
       "component": "message-feed",
       "part": [
@@ -54288,7 +54306,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "message-feed 的 unread-count 部件 padding-inline 覆盖槽。"
@@ -54312,6 +54330,24 @@
       "description": "message-feed 的 unread-count 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-message-feed-unread-count-ring",
+      "component": "message-feed",
+      "part": [
+        "unread-count"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "message-feed 的 unread-count 部件 border 覆盖槽。"
+    },
+    {
       "name": "--xh-message-feed-unread-count-size",
       "component": "message-feed",
       "part": [
@@ -54319,17 +54355,16 @@
       ],
       "property": [
         "block-size",
-        "line-height",
         "min-inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "message-feed 的 unread-count 部件 block-size、line-height、min-inline-size 覆盖槽。"
+      "description": "message-feed 的 unread-count 部件 block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-navigation-menu-branch-content-indent",
@@ -62678,7 +62713,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "question-flow 的 counter 部件 color 覆盖槽。"
@@ -91376,7 +91411,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-subtle"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-count 部件 color 覆盖槽。"
