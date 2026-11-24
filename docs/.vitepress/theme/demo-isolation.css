@@ -1,54 +1,22 @@
 /*
- * 示例舞台隔离：把 VitePress .vp-doc 写在这些标签上的正文排版退回浏览器默认，
- * 示例里的外观只由组件皮肤决定。
+ * 示例舞台隔离。
  *
- * 取值一律用 revert：退回 UA 默认而不是清零或继承，裸 <hr> 的边框、<code> 的等宽
- * 字体、<h2> 的字重都还在。属性逐条对应 .vp-doc 写下的声明。
+ * 主题按标签写的两份样式——Markdown 正文排版（vp-doc.css）与全站基础重置（base.css）——不落进舞台：
+ * 舞台带 vp-raw 类，postcss.config.mjs 里的 postcssIsolateStyles 把那两份样式的每条选择器都接上
+ * :not(:where(.vp-raw, .vp-raw *))。舞台里的库节点只吃库自己的基线与皮肤，作者写的裸标签是浏览器默认，
+ * 与「把组件放进一张什么都没有的页面」一样。这里不再逐个标签、逐条属性地把主题规则抵消回去：
+ * 那份名单要跟着主题的写法维护，漏一个标签（img 的上下外边距）就是一处错位。
  *
- * 选择器特异度 (0,2,0)（:where() 不计权），与皮肤的 [data-scope][data-part] 同权，
- * 靠 index.ts 里的导入顺序让皮肤排在后面。
- * .xh-demo__missing 是示例外壳自己的提示文案，不参与隔离。
+ * 传送到 body 的浮层内容不在舞台里，主题的基础重置在那里原样生效。
+ * 下面只剩舞台自己的事：令牌接线、排版辅助与输出栏。
  */
-.vp-doc
-  .xh-demo__stage
-  :where(h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, li, table, tr, th, td, hr, a, code):where(
-    :not(.xh-demo__missing)
-  ) {
-  margin: revert;
-  padding: revert;
-  border: revert;
-  background: revert;
-  color: revert;
-  font: revert;
-  letter-spacing: revert;
-  line-height: revert;
-  text-align: revert;
-  list-style: revert;
-  text-decoration: revert;
-  transition: revert;
-  display: revert;
-  overflow: revert;
-}
 
 /*
- * 宿主的焦点环复位（VitePress base.css，无层）：
- *   button:focus, button:focus-visible { outline: 4px auto -webkit-focus-ring-color }   (0,1,1)
- *   button:focus:not(:focus-visible) { outline: none !important }                       (0,2,1) !important
- *
- * 库的环由 focus.css 的 [data-scope][data-part]:focus-visible (0,3,0) 画，特指度本就压过第一条，
- * 键盘落焦时示例里看到的一直是库的 2px --xh-ring-focus 环；第一条真正落到的是示例里作者自己写的裸
- * <button>（empty-state 的搜索钮之类）——那一类没有库的环可言，这里把它退回 UA 默认，示例舞台里
- * 不再冒出 VitePress 的 4px auto 环。选择器停在 (0,2,0)：压过宿主那条，又不高于任何库规则
- * （同为 (0,2,0) 的靠 index.ts 里皮肤排在后面取胜）。
- *
- * 第二条带 !important，作者层里没有任何写法能把它「还给」库的普通声明：important 先于特指度与层序，
- * revert / revert-layer 从 important 声明出发只会落到 UA，不会落回库。所以它照旧生效——指针落焦的
- * 按钮在示例里 outline 算成 none。库在这一刻本来也不画环（focus.css 只画 :focus-visible；集合条目
- * 静息的描边是透明的），常态下看不出差别；只有 forced-colors 下指针落焦的选中项少一圈状态环。
- * 传送到 body 的浮层内容不在 .xh-demo__stage 里，两条宿主规则在那里原样生效。
+ * 示例作者自己写的容器按含边框的盒量尺寸：示例里的行内宽高与内衬都是照这个写的，
+ * 而这条原本由主题的基础重置给、现在不落进舞台了。库节点不在此列——它们的盒模型由库自己的基线定。
  */
-.xh-demo__stage :where(button):focus {
-  outline: revert;
+.xh-demo__stage :where(:not([data-scope])) {
+  box-sizing: border-box;
 }
 
 /*

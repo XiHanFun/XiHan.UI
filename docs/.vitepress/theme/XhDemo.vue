@@ -232,7 +232,7 @@ async function copy() {
 <template>
   <div class="xh-demo">
     <div
-      class="xh-demo__stage"
+      class="xh-demo__stage vp-raw"
       :class="{ 'xh-demo__stage--themed': themed }"
       v-bind="stageBindings"
     >
