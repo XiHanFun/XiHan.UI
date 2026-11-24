@@ -253,7 +253,7 @@ disabled 只关闭卡片本身，触发器照常可点击、可聚焦，也照�
 | `--xh-hover-card-py` | `content` | `padding-block` | `default` | `--xh-_hover-card-py` | hover-card 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-hover-card-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | hover-card 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-hover-card-shadow` | `content` | `box-shadow` | `not([data-xh-action-control])`<br>`xh-material=frosted` | `--xh-_material-shadow` | hover-card 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | hover-card 的 title 部件 color 覆盖槽。 |
+| `--xh-hover-card-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | hover-card 的 title 部件 color 覆盖槽。 |
 | `--xh-hover-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | hover-card 的 title 部件 font-size 覆盖槽。 |
 | `--xh-hover-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | hover-card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-hover-card-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-sm` | hover-card 的 trigger 部件 gap 覆盖槽。 |

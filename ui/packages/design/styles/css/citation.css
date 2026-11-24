@@ -275,6 +275,7 @@
     color: var(--xh-citation-title-fg, var(--xh-fg-default));
     font-size: var(--xh-citation-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-citation-title-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-tight);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

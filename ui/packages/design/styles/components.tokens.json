@@ -33026,7 +33026,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-leading-normal"
+        "--xh-_empty-state-title-leading"
       ],
       "visibility": "public",
       "description": "empty-state 的 title 部件 line-height 覆盖槽。"
@@ -43926,7 +43926,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
       "description": "hover-card 的 title 部件 color 覆盖槽。"

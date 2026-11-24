@@ -81,6 +81,9 @@ const FAMILIES = [
     members: ['popover', 'popconfirm', 'hover-card'],
     parts: [
       { part: 'content', state: '', props: ['gap', 'padding-block', 'padding-inline', 'border', 'border-radius', 'background', 'box-shadow'] },
+      // 标题走浮层内与小面标题档（14 / medium、紧凑行距、材质前景），说明走气泡正文档
+      { part: 'title', state: '', props: ['font-size', 'font-weight', 'line-height', 'color'] },
+      { part: 'description', state: '', props: ['font-size', 'line-height', 'color'] },
     ],
   },
   {

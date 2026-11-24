@@ -405,6 +405,7 @@
   [data-scope='dialog'][data-part='description'] {
     margin: 0;
     font-size: var(--xh-dialog-description-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
   }
 

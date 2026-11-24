@@ -20,8 +20,9 @@
     --xh-_empty-state-gap: var(--xh-stack-gap-md);
     --xh-_empty-state-py: var(--xh-section-py-md);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
-    /* 标题走小面标题档 14/500；sm 同档只缩图形与留白，lg 升到区块标题 heading-3 */
+    /* 标题走小面标题档 14/500、紧凑行距；sm 同档只缩图形与留白，lg 升到区块标题 heading-3（行高随之取它那一支） */
     --xh-_empty-state-title-size: var(--xh-text-label-size);
+    --xh-_empty-state-title-leading: var(--xh-leading-tight);
     /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
     --xh-_empty-state-accent: var(--xh-fg-subtle);
 
@@ -52,6 +53,7 @@
     --xh-_empty-state-py: var(--xh-section-py-lg);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-3xl);
     --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
+    --xh-_empty-state-title-leading: var(--xh-text-heading-3-leading);
   }
 
   /* —— 状态码 —— */
@@ -122,7 +124,7 @@
     color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
     font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
     font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-empty-state-title-leading, var(--xh-leading-normal));
+    line-height: var(--xh-empty-state-title-leading, var(--xh-_empty-state-title-leading));
   }
 
   /* 标题与说明是一组：两者之间只留 4px，图形与它们、它们与动作之间才是整档间距 */

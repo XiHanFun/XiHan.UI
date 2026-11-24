@@ -193,7 +193,9 @@
     margin: 0;
     font-size: var(--xh-hover-card-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-hover-card-title-font-weight, var(--xh-font-weight-medium));
-    color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
+    line-height: var(--xh-leading-tight);
+    /* 磨砂浮层上的标题取材质前景，与 Popover、Popconfirm 同一支：强制色与高对比度档下跟着材质换成系统色 */
+    color: var(--xh-hover-card-title-fg, var(--xh-material-frosted-fg));
   }
 
   /* 说明就是卡片的正文：14px 正文字号 + fg-muted 次级色 */

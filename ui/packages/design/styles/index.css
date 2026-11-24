@@ -16697,8 +16697,9 @@
     --xh-_empty-state-gap: var(--xh-stack-gap-md);
     --xh-_empty-state-py: var(--xh-section-py-md);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
-    /* 标题走小面标题档 14/500；sm 同档只缩图形与留白，lg 升到区块标题 heading-3 */
+    /* 标题走小面标题档 14/500、紧凑行距；sm 同档只缩图形与留白，lg 升到区块标题 heading-3（行高随之取它那一支） */
     --xh-_empty-state-title-size: var(--xh-text-label-size);
+    --xh-_empty-state-title-leading: var(--xh-leading-tight);
     /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
     --xh-_empty-state-accent: var(--xh-fg-subtle);
 
@@ -16729,6 +16730,7 @@
     --xh-_empty-state-py: var(--xh-section-py-lg);
     --xh-_empty-state-icon-size: var(--xh-glyph-size-3xl);
     --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
+    --xh-_empty-state-title-leading: var(--xh-text-heading-3-leading);
   }
 
   /* —— 状态码 —— */
@@ -16799,7 +16801,7 @@
     color: var(--xh-empty-state-title-fg, var(--xh-fg-default));
     font-size: var(--xh-empty-state-title-font-size, var(--xh-_empty-state-title-size));
     font-weight: var(--xh-empty-state-title-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-empty-state-title-leading, var(--xh-leading-normal));
+    line-height: var(--xh-empty-state-title-leading, var(--xh-_empty-state-title-leading));
   }
 
   /* 标题与说明是一组：两者之间只留 4px，图形与它们、它们与动作之间才是整档间距 */
@@ -24380,6 +24382,7 @@
     color: var(--xh-citation-title-fg, var(--xh-fg-default));
     font-size: var(--xh-citation-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-citation-title-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-tight);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -31187,6 +31190,7 @@
   .xh-scope-dialog[data-part='description'] {
     margin: 0;
     font-size: var(--xh-dialog-description-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-dialog-description-fg, var(--xh-fg-muted));
   }
 
@@ -31729,6 +31733,7 @@
   .xh-scope-drawer[data-part='description'] {
     margin: 0;
     font-size: var(--xh-drawer-description-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
     color: var(--xh-drawer-description-fg, var(--xh-fg-muted));
   }
 
@@ -35065,7 +35070,9 @@
     margin: 0;
     font-size: var(--xh-hover-card-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-hover-card-title-font-weight, var(--xh-font-weight-medium));
-    color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
+    line-height: var(--xh-leading-tight);
+    /* 磨砂浮层上的标题取材质前景，与 Popover、Popconfirm 同一支：强制色与高对比度档下跟着材质换成系统色 */
+    color: var(--xh-hover-card-title-fg, var(--xh-material-frosted-fg));
   }
 
   /* 说明就是卡片的正文：14px 正文字号 + fg-muted 次级色 */
@@ -40560,6 +40567,7 @@
     margin: 0;
     font-size: var(--xh-popover-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-popover-title-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-tight);
     color: var(--xh-popover-title-fg, var(--xh-material-frosted-fg));
   }
 
