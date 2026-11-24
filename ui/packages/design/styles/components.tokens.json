@@ -1668,7 +1668,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-_tone",
+        "--xh-_tone-border-control",
         "--xh-border-default"
       ],
       "visibility": "public",
@@ -44049,7 +44049,7 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-_tone-border",
+        "--xh-_tone-border-control",
         "--xh-border-default"
       ],
       "visibility": "public",
@@ -61531,7 +61531,7 @@
         "variant=dashboard"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_tone-soft"
       ],
       "visibility": "public",
       "description": "progress 的 range 部件 background、stroke 覆盖槽。"
@@ -72615,7 +72615,7 @@
         "where([data-motion='reduce'])"
       ],
       "defaultToken": [
-        "--xh-_tone",
+        "--xh-_tone-soft",
         "--xh-fg-brand"
       ],
       "visibility": "public",

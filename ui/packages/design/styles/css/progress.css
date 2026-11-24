@@ -73,7 +73,7 @@
     inline-size: 100%;
     block-size: var(--xh-_progress-range-size, 100%);
     border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
-    background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
+    background: var(--xh-progress-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
     translate: calc((var(--xh-_progress-value, 0) - 1) * 100%) 0;
     /* 值跨过分段时换色与位移同拍 */
     transition:
@@ -197,7 +197,7 @@
 
   [data-scope='progress'][data-part='range'][data-variant='circle'],
   [data-scope='progress'][data-part='range'][data-variant='dashboard'] {
-    stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
+    stroke: var(--xh-progress-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
     stroke-linecap: var(--xh-progress-linecap, round);
     /* 环形的走完多少由虚线偏移表达，线形那一套按比例的平移在这里归零：SVG 图元的百分比平移按整个 viewBox 算，会把整段弧挪出画面 */
     translate: none;

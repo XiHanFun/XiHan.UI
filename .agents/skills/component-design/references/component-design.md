@@ -615,7 +615,7 @@ selected / current 的标记方式不由组件自定，按 §7.3 的「语义 �
 9. disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互；字段 disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，readOnly 只换 `--xh-bg-subtle` 不动描边。
 10. 错误、选择、加载和警告不能只靠颜色，必须有图标、形状、文案或结构通道。
 11. 暗色不是简单反相；overlay 必须能从 canvas 和 surface 中辨认。
-12. 所有背景 / 前景组合必须通过对比度门禁；令牌提交附亮 / 暗 × 淡底 / 前景 / 指示条对比度表。
+12. 所有背景 / 前景组合必须通过对比度门禁；令牌提交附亮 / 暗 × 淡底 / 前景 / 指示条对比度表。语气色画成非文字图形（色条、指示条、进度填充、转圈的弧、面的语气描边）时同样要对承载面 3:1：取按主题兜过底的 `--xh-_tone-soft` / `--xh-_tone-border-control`，不取裸主色 `--xh-_tone`（浅色档的 warning 主色只有 2.70:1）；兑了底色的 `--xh-_tone-border`（40%）只给 Alert 这类语气淡底面的装饰外边。Tag 的描边档与 Icon 的描边框同是「语气淡底 + 语气描边的小盒」，同取控件描边档。
 13. 语气不跨组件继承：有 `tone` 的组件没写就用自己的缺省语气，不接外层容器的。`tone.css` 在这些组件的根（Menu、Tooltip 是内容部件）与浮层壳上把 `--xh-_tone*` 清回未声明，名单由 `check-tone-boundary` 与连接层核对；Portal 视觉桥不带 `data-tone`。组给子组件的语气由连接层显式写到子组件的 `data-tone` 上（ButtonGroup 的段、TagGroup / TagsInput / 选择器的值标签、Menu 的子菜单、Tabs 的「更多」下拉），不靠继承；组自己的条目是部件，照旧从根继承，没有 `tone` 的组件夹在中间不挡。
 
 ### 7.3 选中与当前态

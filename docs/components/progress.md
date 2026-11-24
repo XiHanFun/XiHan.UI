@@ -326,7 +326,7 @@ buffer 在填充之后画第二段浅色填充，表示已经就绪、还没用�
 | `--xh-progress-label-font-size` | `label` | `font-size` | `default` | `--xh-text-caption-size` | progress 的 label 部件 font-size 覆盖槽。 |
 | `--xh-progress-linecap` | `range` | `stroke-linecap` | `variant=circle`<br>`variant=dashboard` | `round` | progress 的 range 部件 stroke-linecap 覆盖槽。 |
 | `--xh-progress-needle-color` | `needle` | `fill` | `default` | `--xh-fg-default` | progress 的 needle 部件 fill 覆盖槽。 |
-| `--xh-progress-range` | `range` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-_tone` | progress 的 range 部件 background、stroke 覆盖槽。 |
+| `--xh-progress-range` | `range` | `background`<br>`stroke` | `default`<br>`variant=circle`<br>`variant=dashboard` | `--xh-_tone-soft` | progress 的 range 部件 background、stroke 覆盖槽。 |
 | `--xh-progress-range-radius` | `buffer`<br>`range` | `border-radius` | `default` | `--xh-shape-pill` | progress 的 buffer、range 部件 border-radius 覆盖槽。 |
 | `--xh-progress-size` | `root` | `block-size`<br>`inline-size` | `size=lg`<br>`size=sm`<br>`variant=circle`<br>`variant=dashboard` | `10rem`<br>`5rem`<br>`7.5rem` | progress 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-progress-step-gap` | `track` | `-webkit-mask-image`<br>`mask-image` | `stepped` | `--xh-space-0_5` | progress 的 track 部件 -webkit-mask-image、mask-image 覆盖槽。 |

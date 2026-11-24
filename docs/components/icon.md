@@ -200,7 +200,7 @@ sm、md、lg 三档底框与头像同档
 | --- | --- | --- | --- | --- | --- |
 | `--xh-icon-fg` | `root` | `color` | `default`<br>`frame=ghost`<br>`frame=outline`<br>`frame=solid`<br>`frame=subtle`<br>`tone` | `--xh-_tone-fg`<br>`--xh-_tone-on`<br>`--xh-fg-default`<br>`--xh-fg-on-brand`<br>`currentColor` | icon 的 root 部件 color 覆盖槽。 |
 | `--xh-icon-frame-bg` | `root` | `background` | `frame=solid`<br>`frame=subtle`<br>`tone` | `--xh-_tone`<br>`--xh-_tone-subtle`<br>`--xh-bg-brand`<br>`--xh-bg-subtle` | icon 的 root 部件 background 覆盖槽。 |
-| `--xh-icon-frame-border` | `root` | `border-color` | `frame=outline`<br>`tone` | `--xh-_tone-border`<br>`--xh-border-default` | icon 的 root 部件 border-color 覆盖槽。 |
+| `--xh-icon-frame-border` | `root` | `border-color` | `frame=outline`<br>`tone` | `--xh-_tone-border-control`<br>`--xh-border-default` | icon 的 root 部件 border-color 覆盖槽。 |
 | `--xh-icon-frame-glyph-size` | `root` | `padding` | `frame`<br>`size=lg`<br>`size=sm` | `--xh-_icon-glyph-step`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-sm` | icon 的 root 部件 padding 覆盖槽。 |
 | `--xh-icon-frame-radius` | `root` | `border-radius` | `frame` | `--xh-shape-circle` | icon 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-icon-frame-shadow` | `root` | `box-shadow` | `frame=solid`<br>`tone` | `--xh-_highlight-brand`<br>`--xh-_highlight-tone` | icon 的 root 部件 box-shadow 覆盖槽。 |

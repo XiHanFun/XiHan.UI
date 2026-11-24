@@ -222,8 +222,10 @@
     color: var(--xh-icon-fg, var(--xh-fg-default));
   }
 
+  /* 写了语气的描边框与 Tag 的描边档同是「语气淡底 + 语气描边的小盒」，同取按主题兜到 3:1 的控件描边档：
+     兑了底色的 --xh-_tone-border 六族都在 1.44–2.18，当轮廓看不清 */
   [data-scope='icon'][data-part='root'][data-frame='outline'][data-tone] {
-    border-color: var(--xh-icon-frame-border, var(--xh-_tone-border));
+    border-color: var(--xh-icon-frame-border, var(--xh-_tone-border-control));
     color: var(--xh-icon-fg, var(--xh-_tone-fg));
   }
 

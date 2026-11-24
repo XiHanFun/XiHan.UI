@@ -111,9 +111,9 @@
     display: none;
   }
 
-  /* 语气只染描边：作者定的强调，待决时把这块面从正文里提出来 */
+  /* 语气只染描边：作者定的强调，待决时把这块面从正文里提出来。描边是面的边界，取按主题兜到 3:1 的控件描边档 */
   [data-scope='approval'][data-part='root'][data-tone] {
-    border-color: var(--xh-approval-border, var(--xh-_tone, var(--xh-border-default)));
+    border-color: var(--xh-approval-border, var(--xh-_tone-border-control, var(--xh-border-default)));
   }
 
   /* 判过了就不再抢注意力：语气色边退回中性描边（根面外边不取 subtle）。

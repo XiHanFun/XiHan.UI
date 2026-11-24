@@ -69,10 +69,11 @@ describe('线形轨道', () => {
     expect(getComputedStyle(one('range')).backgroundColor).toBe(token('--xh-bg-brand'))
   })
 
-  it.each(['success', 'warning', 'danger'] as const)('%s 语气的填充取语气实色，轨道仍是中性', async (tone) => {
+  // 填充是非文字图形，要对轨道 3:1：取按主题兜过底的那一档（浅色档的 warning 主色只有 2.70:1，兜到 700）
+  it.each([['success', 600], ['warning', 700], ['danger', 600]] as const)('%s 语气的填充取保证 3:1 的语气实色，轨道仍是中性', async (tone, step) => {
     await mount({ tone })
     const root = one('root')
-    expect(getComputedStyle(one('range')).backgroundColor).toBe(token(`--xh-color-${tone}-600`))
+    expect(getComputedStyle(one('range')).backgroundColor).toBe(token(`--xh-color-${tone}-${step}`))
     expect(getComputedStyle(one('track')).backgroundColor).toBe(token('--xh-bg-subtle-hover', root))
   })
 })

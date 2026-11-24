@@ -192,7 +192,7 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-motion-loop-spin` | spinner 的 root 部件 animation 覆盖槽。 |
-| `--xh-spinner-fg` | `root` | `background`<br>`border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-fg-brand` | spinner 的 root 部件 background、border、border-color 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone-soft`<br>`--xh-fg-brand` | spinner 的 root 部件 background、border、border-color 覆盖槽。 |
 | `--xh-spinner-gap` | `root` | `gap` | `default`<br>`orientation=vertical` | `--xh-control-gap-md`<br>`--xh-space-1_5` | spinner 的 root 部件 gap 覆盖槽。 |
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-brand` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | spinner 的 label 部件 font-size 覆盖槽。 |

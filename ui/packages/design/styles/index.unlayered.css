@@ -16939,7 +16939,7 @@
    选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
    那个节点上，放在语气容器里的转圈会跟着一起改色 */
 .xh-scope-spinner[data-part='root'][data-tone]::before {
-  border-color: var(--xh-spinner-fg, var(--xh-_tone));
+  border-color: var(--xh-spinner-fg, var(--xh-_tone-soft));
   border-block-start-color: var(--xh-spinner-track, transparent);
 }
 
@@ -16964,7 +16964,7 @@
 }
 
 .xh-scope-spinner[data-part='root'][data-variant='arc'][data-tone]::before {
-  background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-_tone)));
+  background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-_tone-soft)));
 }
 
 /*
@@ -16992,9 +16992,9 @@
 
 .xh-scope-spinner[data-part='root'][data-variant='dots'][data-tone]::before {
   background:
-    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 0 50% / 25% 25% no-repeat,
-    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
-    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone-soft)) 100%, transparent) 0 50% / 25% 25% no-repeat,
+    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone-soft)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+    radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone-soft)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
 }
 
 /* 三点档的波自带一条动画，压不住上面那两块基础降级里的 animation: none，
@@ -17041,7 +17041,7 @@
 
   /* 静止态整圈同色，语气跟着铺满整圈 */
   .xh-scope-spinner[data-part='root'][data-tone]::before {
-    border-color: var(--xh-spinner-fg, var(--xh-_tone));
+    border-color: var(--xh-spinner-fg, var(--xh-_tone-soft));
   }
 }
 
@@ -17052,7 +17052,7 @@
 }
 
 :where([data-motion='reduce']) .xh-scope-spinner[data-part='root'][data-tone]::before {
-  border-color: var(--xh-spinner-fg, var(--xh-_tone));
+  border-color: var(--xh-spinner-fg, var(--xh-_tone-soft));
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -17073,7 +17073,7 @@
   }
 
   .xh-scope-spinner[data-part='root'][data-tone]::before {
-    border-color: var(--xh-spinner-fg, var(--xh-_tone));
+    border-color: var(--xh-spinner-fg, var(--xh-_tone-soft));
   }
 }
 
@@ -17774,9 +17774,9 @@
   display: none;
 }
 
-/* 语气只染描边：作者定的强调，待决时把这块面从正文里提出来 */
+/* 语气只染描边：作者定的强调，待决时把这块面从正文里提出来。描边是面的边界，取按主题兜到 3:1 的控件描边档 */
 .xh-scope-approval[data-part='root'][data-tone] {
-  border-color: var(--xh-approval-border, var(--xh-_tone, var(--xh-border-default)));
+  border-color: var(--xh-approval-border, var(--xh-_tone-border-control, var(--xh-border-default)));
 }
 
 /* 判过了就不再抢注意力：语气色边退回中性描边（根面外边不取 subtle）。
@@ -35019,8 +35019,10 @@
   color: var(--xh-icon-fg, var(--xh-fg-default));
 }
 
+/* 写了语气的描边框与 Tag 的描边档同是「语气淡底 + 语气描边的小盒」，同取按主题兜到 3:1 的控件描边档：
+   兑了底色的 --xh-_tone-border 六族都在 1.44–2.18，当轮廓看不清 */
 .xh-scope-icon[data-part='root'][data-frame='outline'][data-tone] {
-  border-color: var(--xh-icon-frame-border, var(--xh-_tone-border));
+  border-color: var(--xh-icon-frame-border, var(--xh-_tone-border-control));
   color: var(--xh-icon-fg, var(--xh-_tone-fg));
 }
 
@@ -40370,7 +40372,7 @@
   inline-size: 100%;
   block-size: var(--xh-_progress-range-size, 100%);
   border-radius: var(--xh-progress-range-radius, var(--xh-shape-pill));
-  background: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
+  background: var(--xh-progress-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
   translate: calc((var(--xh-_progress-value, 0) - 1) * 100%) 0;
   /* 值跨过分段时换色与位移同拍 */
   transition:
@@ -40494,7 +40496,7 @@
 
 .xh-scope-progress[data-part='range'][data-variant='circle'],
 .xh-scope-progress[data-part='range'][data-variant='dashboard'] {
-  stroke: var(--xh-progress-range, var(--xh-_tone, var(--xh-bg-brand)));
+  stroke: var(--xh-progress-range, var(--xh-_tone-soft, var(--xh-bg-brand)));
   stroke-linecap: var(--xh-progress-linecap, round);
   /* 环形的走完多少由虚线偏移表达，线形那一套按比例的平移在这里归零：SVG 图元的百分比平移按整个 viewBox 算，会把整段弧挪出画面 */
   translate: none;
