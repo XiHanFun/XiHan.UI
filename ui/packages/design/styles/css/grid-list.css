@@ -170,7 +170,7 @@
 
   [data-scope='grid-list'][data-part='row-description'] {
     color: var(--xh-grid-list-row-description-fg, var(--xh-fg-muted));
-    font-size: var(--xh-grid-list-row-description-font-size, var(--xh-control-caption-md));
+    font-size: var(--xh-grid-list-row-description-font-size, var(--xh-_collection-caption-size));
     white-space: nowrap;
   }
 

@@ -22688,7 +22688,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-md"
+        "--xh-_collection-caption-size"
       ],
       "visibility": "public",
       "description": "context-menu 的 item-description 部件 font-size 覆盖槽。"
@@ -41821,7 +41821,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-md"
+        "--xh-_collection-caption-size"
       ],
       "visibility": "public",
       "description": "grid-list 的 row-description 部件 font-size 覆盖槽。"
@@ -52259,7 +52259,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-md"
+        "--xh-_collection-caption-size"
       ],
       "visibility": "public",
       "description": "menu 的 item-description 部件 font-size 覆盖槽。"
@@ -53172,7 +53172,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-caption-md"
+        "--xh-_collection-caption-size"
       ],
       "visibility": "public",
       "description": "menubar 的 item-description 部件 font-size 覆盖槽。"

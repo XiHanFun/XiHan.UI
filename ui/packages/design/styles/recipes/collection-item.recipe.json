@@ -28,6 +28,7 @@
       "inlinePadding": "var(--xh-control-px-sm)",
       "gap": "var(--xh-control-gap-sm)",
       "fontSize": "var(--xh-control-font-sm)",
+      "captionSize": "var(--xh-control-caption-sm)",
       "glyphSize": "var(--xh-glyph-size-sm)"
     },
     "md": {
@@ -35,6 +36,7 @@
       "inlinePadding": "var(--xh-control-px-md)",
       "gap": "var(--xh-control-gap-md)",
       "fontSize": "var(--xh-control-font-md)",
+      "captionSize": "var(--xh-control-caption-md)",
       "glyphSize": "var(--xh-glyph-size-md)"
     },
     "lg": {
@@ -42,6 +44,7 @@
       "inlinePadding": "var(--xh-control-px-lg)",
       "gap": "var(--xh-control-gap-lg)",
       "fontSize": "var(--xh-control-font-lg)",
+      "captionSize": "var(--xh-control-caption-lg)",
       "glyphSize": "var(--xh-glyph-size-lg)"
     }
   },

@@ -1386,6 +1386,7 @@
   --xh-_collection-inline-padding: var(--xh-control-px-md);
   --xh-_collection-gap: var(--xh-control-gap-md);
   --xh-_collection-font-size: var(--xh-control-font-md);
+  --xh-_collection-caption-size: var(--xh-control-caption-md);
   --xh-_collection-glyph-size: var(--xh-glyph-size-md);
   --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
   --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-material-frosted-fg));
@@ -1446,6 +1447,7 @@
   --xh-_collection-inline-padding: var(--xh-control-px-sm);
   --xh-_collection-gap: var(--xh-control-gap-sm);
   --xh-_collection-font-size: var(--xh-control-font-sm);
+  --xh-_collection-caption-size: var(--xh-control-caption-sm);
   --xh-_collection-glyph-size: var(--xh-glyph-size-sm);
 }
 
@@ -1454,6 +1456,7 @@
   --xh-_collection-inline-padding: var(--xh-control-px-md);
   --xh-_collection-gap: var(--xh-control-gap-md);
   --xh-_collection-font-size: var(--xh-control-font-md);
+  --xh-_collection-caption-size: var(--xh-control-caption-md);
   --xh-_collection-glyph-size: var(--xh-glyph-size-md);
 }
 
@@ -1462,6 +1465,7 @@
   --xh-_collection-inline-padding: var(--xh-control-px-lg);
   --xh-_collection-gap: var(--xh-control-gap-lg);
   --xh-_collection-font-size: var(--xh-control-font-lg);
+  --xh-_collection-caption-size: var(--xh-control-caption-lg);
   --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
 }
 
@@ -1520,7 +1524,7 @@
   grid-row: 2;
   min-inline-size: 0;
   color: var(--xh-_collection-description-fg);
-  font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
+  font-size: var(--xh-collection-description-font-size, var(--xh-_collection-caption-size));
 }
 
 /* 快捷键提示：与说明同档同色的次级文字，只是落位在行尾而不是第 2 行。
@@ -1528,7 +1532,7 @@
 [data-xh-collection-slot='shortcut'] {
   grid-column: shortcut;
   color: var(--xh-_collection-description-fg);
-  font-size: var(--xh-collection-shortcut-font-size, var(--xh-control-caption-md));
+  font-size: var(--xh-collection-shortcut-font-size, var(--xh-_collection-caption-size));
   white-space: nowrap;
 }
 
@@ -28135,8 +28139,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-context-menu-item-description-fg, var(--xh-material-frosted-fg-muted));
-  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
-  font-size: var(--xh-context-menu-item-description-font-size, var(--xh-control-caption-md));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号随条目的尺寸档低一级（12 / 13 / 14），不取 caption 令牌 */
+  font-size: var(--xh-context-menu-item-description-font-size, var(--xh-_collection-caption-size));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -34238,7 +34242,7 @@
 
 .xh-scope-grid-list[data-part='row-description'] {
   color: var(--xh-grid-list-row-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-grid-list-row-description-font-size, var(--xh-control-caption-md));
+  font-size: var(--xh-grid-list-row-description-font-size, var(--xh-_collection-caption-size));
   white-space: nowrap;
 }
 
@@ -36591,8 +36595,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-menu-item-description-fg, var(--xh-material-frosted-fg-muted));
-  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
-  font-size: var(--xh-menu-item-description-font-size, var(--xh-control-caption-md));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号随条目的尺寸档低一级（12 / 13 / 14），不取 caption 令牌 */
+  font-size: var(--xh-menu-item-description-font-size, var(--xh-_collection-caption-size));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -37138,8 +37142,8 @@
   order: 2;
   min-inline-size: 0;
   color: var(--xh-menubar-item-description-fg, var(--xh-material-frosted-fg-muted));
-  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
-  font-size: var(--xh-menubar-item-description-font-size, var(--xh-control-caption-md));
+  /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号随条目的尺寸档低一级（12 / 13 / 14），不取 caption 令牌 */
+  font-size: var(--xh-menubar-item-description-font-size, var(--xh-_collection-caption-size));
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

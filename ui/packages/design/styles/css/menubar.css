@@ -430,8 +430,8 @@
     order: 2;
     min-inline-size: 0;
     color: var(--xh-menubar-item-description-fg, var(--xh-material-frosted-fg-muted));
-    /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号，不取 caption 令牌 */
-    font-size: var(--xh-menubar-item-description-font-size, var(--xh-control-caption-md));
+    /* 与同一行的快捷键、Select 等列表的说明同档：控件次级字号随条目的尺寸档低一级（12 / 13 / 14），不取 caption 令牌 */
+    font-size: var(--xh-menubar-item-description-font-size, var(--xh-_collection-caption-size));
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

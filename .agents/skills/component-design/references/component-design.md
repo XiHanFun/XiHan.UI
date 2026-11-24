@@ -683,10 +683,10 @@ Collection Item 家族的 `tone` 表达条目**动作自身的性质**（删除�
 
 | 槽 | 落位 | 字号 | 颜色 |
 | --- | --- | --- | --- |
-| `description` | text 槽第 2 行 | `--xh-control-caption-md` | `--xh-collection-description-fg` |
-| `shortcut` | 行尾 `shortcut` 列，跨两行居中，排在 `suffix` 之前 | `--xh-control-caption-md` | `--xh-collection-description-fg` |
+| `description` | text 槽第 2 行 | `--xh-control-caption-*` 随档（sm / md / lg = 12 / 13 / 14） | `--xh-collection-description-fg` |
+| `shortcut` | 行尾 `shortcut` 列，跨两行居中，排在 `suffix` 之前 | `--xh-control-caption-*` 随档（sm / md / lg = 12 / 13 / 14） | `--xh-collection-description-fg` |
 
-- 两者都走控件内次级文字档（`--xh-control-caption-*`，比同档主文字低一级），不是 §6.4 表里给非控件语境的 `--xh-text-caption-size`。
+- 两者都走控件内次级文字档（`--xh-control-caption-*`，比同档主文字低一级），不是 §6.4 表里给非控件语境的 `--xh-text-caption-size`；由 Collection Item 配方按条目的尺寸档给（`--xh-_collection-caption-size`），皮肤不钉成某一档。
 - 两者都不跟随语气（§7.4）：一行里出现两种彩字，语气就失去指向。
 - 快捷键提示不换行：它是一串按键记号，折行会读成两个组合。
 - 快捷键是纯装饰，可及名由条目自己的文字承担；只为真正注册了的快捷键显示提示，写一个不存在的组合比不写更糟。

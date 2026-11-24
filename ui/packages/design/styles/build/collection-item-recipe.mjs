@@ -21,7 +21,7 @@ const CONTEXT_STATES = {
    */
   nav: ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'current', 'current+hover', 'current+highlight', 'current+pressed', 'terminal'],
 }
-const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
+const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'captionSize', 'glyphSize']
 const STATE_FIELDS = ['backgroundColor', 'color', 'descriptionColor', 'indicatorColor', 'outlineColor', 'fontWeight', 'cursor', 'opacity']
 const FORCED_FIELDS = ['backgroundColor', 'color', 'outlineColor', 'markerColor']
 const STATE_SLOT = {
@@ -283,6 +283,8 @@ function sizeVars(source, size) {
     `    --xh-_collection-inline-padding: ${value.inlinePadding};`,
     `    --xh-_collection-gap: ${value.gap};`,
     `    --xh-_collection-font-size: ${value.fontSize};`,
+    // 说明与快捷键：控件内次级文字档，比同档主文字低一级（sm / md / lg = 12 / 13 / 14）
+    `    --xh-_collection-caption-size: ${value.captionSize};`,
     `    --xh-_collection-glyph-size: ${value.glyphSize};`,
   ].join('\n')
 }
@@ -461,7 +463,7 @@ ${columnTemplate({ check })};
     grid-row: 2;
     min-inline-size: 0;
     color: var(--xh-_collection-description-fg);
-    font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
+    font-size: var(--xh-collection-description-font-size, var(--xh-_collection-caption-size));
   }
 
   /* 快捷键提示：与说明同档同色的次级文字，只是落位在行尾而不是第 2 行。
@@ -469,7 +471,7 @@ ${columnTemplate({ check })};
   [data-xh-collection-slot='shortcut'] {
     grid-column: shortcut;
     color: var(--xh-_collection-description-fg);
-    font-size: var(--xh-collection-shortcut-font-size, var(--xh-control-caption-md));
+    font-size: var(--xh-collection-shortcut-font-size, var(--xh-_collection-caption-size));
     white-space: nowrap;
   }
 

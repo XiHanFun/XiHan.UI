@@ -10,6 +10,7 @@
     --xh-_collection-inline-padding: var(--xh-control-px-md);
     --xh-_collection-gap: var(--xh-control-gap-md);
     --xh-_collection-font-size: var(--xh-control-font-md);
+    --xh-_collection-caption-size: var(--xh-control-caption-md);
     --xh-_collection-glyph-size: var(--xh-glyph-size-md);
     --xh-_collection-bg: var(--xh-collection-bg-rest, transparent);
     --xh-_collection-fg: var(--xh-collection-fg-rest, var(--xh-material-frosted-fg));
@@ -70,6 +71,7 @@
     --xh-_collection-inline-padding: var(--xh-control-px-sm);
     --xh-_collection-gap: var(--xh-control-gap-sm);
     --xh-_collection-font-size: var(--xh-control-font-sm);
+    --xh-_collection-caption-size: var(--xh-control-caption-sm);
     --xh-_collection-glyph-size: var(--xh-glyph-size-sm);
   }
 
@@ -78,6 +80,7 @@
     --xh-_collection-inline-padding: var(--xh-control-px-md);
     --xh-_collection-gap: var(--xh-control-gap-md);
     --xh-_collection-font-size: var(--xh-control-font-md);
+    --xh-_collection-caption-size: var(--xh-control-caption-md);
     --xh-_collection-glyph-size: var(--xh-glyph-size-md);
   }
 
@@ -86,6 +89,7 @@
     --xh-_collection-inline-padding: var(--xh-control-px-lg);
     --xh-_collection-gap: var(--xh-control-gap-lg);
     --xh-_collection-font-size: var(--xh-control-font-lg);
+    --xh-_collection-caption-size: var(--xh-control-caption-lg);
     --xh-_collection-glyph-size: var(--xh-glyph-size-lg);
   }
 
@@ -144,7 +148,7 @@
     grid-row: 2;
     min-inline-size: 0;
     color: var(--xh-_collection-description-fg);
-    font-size: var(--xh-collection-description-font-size, var(--xh-control-caption-md));
+    font-size: var(--xh-collection-description-font-size, var(--xh-_collection-caption-size));
   }
 
   /* 快捷键提示：与说明同档同色的次级文字，只是落位在行尾而不是第 2 行。
@@ -152,7 +156,7 @@
   [data-xh-collection-slot='shortcut'] {
     grid-column: shortcut;
     color: var(--xh-_collection-description-fg);
-    font-size: var(--xh-collection-shortcut-font-size, var(--xh-control-caption-md));
+    font-size: var(--xh-collection-shortcut-font-size, var(--xh-_collection-caption-size));
     white-space: nowrap;
   }
 
