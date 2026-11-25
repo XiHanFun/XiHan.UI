@@ -96,6 +96,7 @@
 - 行首与行尾两格各有逐条钩子：只想加个图标或计数，不必把整条重搭。
 - 同一层里只要有一条写了行首格，这一层的行首格都至少一个图标宽，没写的条目也空出这一格，正文左缘对齐；整层都没有就不留。
 - 输入值、选中值与展开状态均可独立受控。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`；点在列表外、焦点离开组件报 `interact-outside`；Tab 报 `tab`；再点触发钮、Alt+↑、没有可确认的候选时按 Enter 报 `close-trigger`；单选选中候选、`allowCustomValue` 下回车收下输入串报 `selection`；`setOpen(false)` 报 `programmatic`。展开时不带，多选选中不收起。
 - `loading` 与 `empty` 分别表示加载和空结果。
 - 内置过滤：给了 `collection` 再写 `filter` 即按用户打的字筛候选，`contains` 显示文本包含检索词、`startsWith` 以检索词开头，都不分大小写，也可以给函数 `(node, query) => boolean` 自己判。检索词是用户打的那段字，不是输入框里的字：选中后回显的选中项文字、`inputBehavior="autocomplete"` 补出的那段都不拿去筛，再展开看到全部候选。没写 `filter` 即不过滤，候选由调用方按 `onInputValueChange` 换，远程搜索就这么写。
 - 支持异步候选和自定义条目内容。
@@ -198,7 +199,7 @@
 | `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: 值[] }`，值是 value / collection 里交进来的原值（字符串、数字或对象） |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 | `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
-| `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

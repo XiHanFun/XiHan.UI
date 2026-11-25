@@ -312,7 +312,7 @@ export const comboboxSuite: ConformanceSuite = {
           part: 'trigger',
           expect: {
             parts: { content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -400,7 +400,7 @@ export const comboboxSuite: ConformanceSuite = {
           modifiers: ['Alt'],
           expect: {
             parts: { input: { 'aria-expanded': 'false' }, content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -447,7 +447,7 @@ export const comboboxSuite: ConformanceSuite = {
             // 先值后开合
             events: [
               { type: 'value-change', detail: { value: ['cherry'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -482,7 +482,7 @@ export const comboboxSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: ['apple'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -514,7 +514,7 @@ export const comboboxSuite: ConformanceSuite = {
           key: 'Escape',
           expect: {
             parts: { input: { 'aria-expanded': 'false' }, content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
       ],
@@ -531,7 +531,7 @@ export const comboboxSuite: ConformanceSuite = {
           key: 'Tab',
           expect: {
             parts: { input: { 'aria-expanded': 'false' }, content: { hidden: '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'tab' } }],
           },
         },
       ],
@@ -581,7 +581,7 @@ export const comboboxSuite: ConformanceSuite = {
             parts: { 'item[0]': { 'aria-selected': 'true' } },
             events: [
               { type: 'value-change', detail: { value: ['apple'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -610,7 +610,7 @@ export const comboboxSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: ['kiwi'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -693,7 +693,7 @@ export const comboboxSuite: ConformanceSuite = {
             },
             events: [
               { type: 'value-change', detail: { value: ['cherry'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -1117,7 +1117,7 @@ export const comboboxSuite: ConformanceSuite = {
             parts: { 'item[1]': { 'aria-selected': 'true' }, 'clear-trigger': { hidden: null } },
             events: [
               { type: 'value-change', detail: { value: ['banana'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },
@@ -1166,7 +1166,7 @@ export const comboboxSuite: ConformanceSuite = {
             parts: { input: { 'aria-expanded': 'false' } },
             events: [
               { type: 'value-change', detail: { value: ['berlin'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'selection' } },
             ],
           },
         },

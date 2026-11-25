@@ -1239,7 +1239,7 @@ describe('comboboxCombobox 浮层的层与消解', () => {
 
     press(document.body, 'Escape')
     expect(h.state()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'esc' })
   })
 
   it('层外按下指针收起', async () => {
@@ -1249,7 +1249,7 @@ describe('comboboxCombobox 浮层的层与消解', () => {
     await tick()
     pointerDown(document.body)
     expect(h.state()).toBe('closed')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'interact-outside' })
   })
 
   it('焦点跑到层外不由消解层收口：那一路归输入框自己的 blur，两处都认会为同一次离场发两遍', async () => {
@@ -1580,5 +1580,52 @@ describe('多选上限 maxSelected', () => {
 
     expect(mount({ multiple: true, maxSelected: 2.9 }).api().maxSelected).toBe(2)
     expect(mount({ multiple: true, maxSelected: 0 }).api().maxSelected).toBeNull()
+  })
+})
+
+describe('comboboxMachine 关闭原因', () => {
+  // 收起意图带上这一次是怎么关的：取消（esc / 层外）常要回滚输入串，选完不用
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+
+  it('焦点离开组件报 interact-outside，Tab 报 tab', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    h.input.focus()
+    press(h.input, 'ArrowDown')
+    h.input.dispatchEvent(new FocusEvent('blur', { relatedTarget: null }))
+    expect(h.state()).toBe('closed')
+    press(h.input, 'ArrowDown')
+    press(h.input, 'Tab')
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['interact-outside', 'tab'])
+  })
+
+  it('再点触发钮、Alt+↑、没有可确认的候选时按 Enter 都报 close-trigger', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange })
+    click(h.trigger)
+    click(h.trigger)
+    press(h.input, 'ArrowDown', { altKey: true })
+    press(h.input, 'ArrowUp', { altKey: true })
+    press(h.input, 'ArrowDown', { altKey: true })
+    press(h.input, 'Enter')
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['close-trigger', 'close-trigger', 'close-trigger'])
+  })
+
+  it('选中候选与收下自定义输入串报 selection，setOpen(false) 报 programmatic，展开不带原因', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange, allowCustomValue: true })
+    press(h.input, 'ArrowDown')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['apple'])
+    type(h.input, 'kiwi')
+    press(h.input, 'Enter')
+    expect(h.value()).toEqual(['kiwi'])
+    h.api().setOpen(true)
+    h.api().setOpen(false)
+    expect(reasons(onOpenChange)).toEqual(['selection', 'selection', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open).every(d => d.reason === undefined)).toBe(true)
   })
 })

@@ -202,7 +202,11 @@ export const comboboxMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<ComboboxSchema>(),
+      // 专有出口：输入框失焦与消解层的层外聚焦同属层外交互；收下自定义输入串与选中候选同属选完即收
+      ...controlledOpenActions<ComboboxSchema>({
+        reason: true,
+        extra: event => event.type === 'INPUT.BLUR' ? 'interact-outside' : event.type === 'VALUE.COMMIT' ? 'selection' : undefined,
+      }),
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
       clearOpenedAtMount,
       startPress: ({ context, event }) => {
@@ -639,7 +643,7 @@ export const comboboxMachine = createMachine({
             // 两处都收口时 onOpenChange 会为同一次离场发两遍
             if (reason === 'focus-outside')
               return
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'interact-outside' })
           },
         }),
       }),

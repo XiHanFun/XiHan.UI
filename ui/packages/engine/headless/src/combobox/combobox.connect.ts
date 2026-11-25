@@ -441,7 +441,7 @@ function connectComboboxKeys<T extends PropTypes>(
           }
           if (key === 'ArrowUp' && open) {
             event.preventDefault()
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'close-trigger' })
           }
           return
         }
@@ -481,13 +481,13 @@ function connectComboboxKeys<T extends PropTypes>(
           if (commitHighlighted())
             return
           // 没有高亮：允许自定义值就把输入串收成值，否则只收起
-          send(prop('allowCustomValue') ? { type: 'VALUE.COMMIT' } : { type: 'CLOSE' })
+          send(prop('allowCustomValue') ? { type: 'VALUE.COMMIT' } : { type: 'CLOSE', src: 'close-trigger' })
           return
         }
         if (key === 'Tab') {
           // 不拦：焦点要按 Tab 序列自然离开，列表让开即可
           if (open)
-            send({ type: 'CLOSE' })
+            send({ type: 'CLOSE', src: 'tab' })
           return
         }
         if (key === 'Escape') {

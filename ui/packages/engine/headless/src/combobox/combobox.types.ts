@@ -5,7 +5,7 @@
 
 // 定义 combobox 类型契约。
 
-import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SelectionValueKey } from '../shared/value-codec'
 import type { CollectionVirtualizer } from '../virtualizer'
@@ -60,6 +60,13 @@ export interface ComboboxRefs {
 
 export interface ComboboxOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc；点在列表外、焦点离开组件报 interact-outside；Tab 报 tab；
+   * 再点触发钮、Alt+↑、没有可确认的候选时按 Enter 报 close-trigger；单选选中候选、收下自定义输入串报 selection；
+   * 代码调用（setOpen(false)）报 programmatic。多选选中不收起。
+   */
+  reason?: OverlayCloseReason
 }
 
 /** V 是选中值的类型，缺省 string；数字、对象都行，见 ComboboxSchema 的 valueKey。 */
@@ -285,7 +292,8 @@ export interface ComboboxSchema<V = string> extends MachineSchema {
   event:
     | { type: 'OPEN', focus?: ComboboxFocusIntent }
     | { type: 'TOGGLE', focus?: ComboboxFocusIntent }
-    | { type: 'CLOSE' }
+    /** src 记收起的来源：层外按下、Tab 带走焦点、键盘上的显式收起（Alt+↑、没有可确认的 Enter）；代码调的 setOpen(false) 不带。 */
+    | { type: 'CLOSE', src?: 'interact-outside' | 'tab' | 'close-trigger' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }
