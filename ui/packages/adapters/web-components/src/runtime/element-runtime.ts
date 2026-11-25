@@ -3,14 +3,14 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提供 lit runtime 相关实现。
+// 提供自定义元素的响应式运行时。
 
 import type { Bindable, CellParams, Dep, ReactiveRuntime } from '@xihan-ui/core'
 import type { ReactiveControllerHost } from '../reactive'
 
 // 把机器的 ReactiveRuntime 契约桥到自定义元素基类的 controller 生命周期。
 
-export interface LitRuntime extends ReactiveRuntime {
+export interface ElementRuntime extends ReactiveRuntime {
   /** hostConnected 调用，跑排队的 onMount。 */
   mount: () => void
   /** hostDisconnected 调用，逆序跑一次 cleanup。 */
@@ -33,7 +33,7 @@ interface Tracker {
 /** flush 最多等这么多轮更新；宿主一直自排新一轮时到此为止，回调照跑不吊死。 */
 const MAX_FLUSH_ROUNDS = 100
 
-export function createLitRuntime(host: ReactiveControllerHost): LitRuntime {
+export function createElementRuntime(host: ReactiveControllerHost): ElementRuntime {
   const mounts: Array<() => void> = []
   const cleanups: Array<() => void> = []
   const trackers: Tracker[] = []

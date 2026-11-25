@@ -2,7 +2,7 @@
 import type { ReactiveControllerHost } from '../src/reactive'
 import { describe, expect, it } from 'vitest'
 import { XhReactiveElement } from '../src/reactive'
-import { createLitRuntime } from '../src/runtime/lit-runtime'
+import { createElementRuntime } from '../src/runtime/element-runtime'
 
 function fakeHost(updateComplete: () => Promise<boolean> = () => Promise.resolve(true)): ReactiveControllerHost {
   return {
@@ -17,7 +17,7 @@ function fakeHost(updateComplete: () => Promise<boolean> = () => Promise.resolve
 
 describe('runTrackers：抛错的 tracker 不吞变化', () => {
   it('fn 抛错后同一次依赖变化会补跑，成功后不重复跑', () => {
-    const runtime = createLitRuntime(fakeHost())
+    const runtime = createElementRuntime(fakeHost())
     let dep = 0
     let calls = 0
     const fired: number[] = []
@@ -42,7 +42,7 @@ describe('runTrackers：抛错的 tracker 不吞变化', () => {
   })
 
   it('连续抛错期间依赖继续变化，补跑交付的是最新值', () => {
-    const runtime = createLitRuntime(fakeHost())
+    const runtime = createElementRuntime(fakeHost())
     let dep = 0
     let ok = false
     const fired: number[] = []
@@ -64,7 +64,7 @@ describe('runTrackers：抛错的 tracker 不吞变化', () => {
 
 describe('runTrackers：单个 tracker 抛错不挡后面的', () => {
   it('前一个恒抛，后一个每次依赖变化都照跑', () => {
-    const runtime = createLitRuntime(fakeHost())
+    const runtime = createElementRuntime(fakeHost())
     let dep = 0
     const fired: number[] = []
     runtime.track([() => dep], () => {
@@ -84,7 +84,7 @@ describe('runTrackers：单个 tracker 抛错不挡后面的', () => {
   })
 
   it('异常不被吞掉：多个 tracker 同时抛错时抛 AggregateError 带上全部原因', () => {
-    const runtime = createLitRuntime(fakeHost())
+    const runtime = createElementRuntime(fakeHost())
     let dep = 0
     const fired: number[] = []
     runtime.track([() => dep], () => {
@@ -129,7 +129,7 @@ describe('flush：等 DOM 真正落定', () => {
   it('宿主在 updated 里又排了一轮时，回调排在最后一轮之后', async () => {
     const el = document.createElement('xh-flush-probe') as XhFlushProbeElement
     document.body.appendChild(el)
-    const runtime = createLitRuntime(el)
+    const runtime = createElementRuntime(el)
     runtime.flush(() => el.log.push('flush-callback'))
 
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -139,7 +139,7 @@ describe('flush：等 DOM 真正落定', () => {
 
   it('宿主永远落不定时不死等，回调仍会跑', async () => {
     let reads = 0
-    const runtime = createLitRuntime(fakeHost(() => {
+    const runtime = createElementRuntime(fakeHost(() => {
       reads += 1
       return Promise.resolve(false)
     }))

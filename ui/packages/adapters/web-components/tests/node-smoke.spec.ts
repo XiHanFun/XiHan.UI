@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest'
 describe('node import smoke（无 DOM 惰性注册）', () => {
   it('主入口可 import，导出运行时原语，不触碰 HTMLElement', async () => {
     const mod = await import('../src/index')
-    expect(typeof mod.createLitRuntime).toBe('function')
+    expect(typeof mod.createElementRuntime).toBe('function')
     expect(typeof mod.MachineController).toBe('function')
     expect(typeof mod.defineElement).toBe('function')
     expect(typeof mod.createSpreader).toBe('function')

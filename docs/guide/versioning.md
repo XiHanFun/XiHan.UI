@@ -88,7 +88,7 @@ XiHan.UI 的公开面横跨五种介质：替换自带皮肤、手写 Light DOM 
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 143 | 它们描述的 part 名单受约束（见第二节），但这三个对象本身的组织方式不受约束。部件名单以组件文档页的解剖表为准，不应 import 这些对象 |
 | Vue 的 `provide*` / `use*Context` 函数 | 119 | [Vue 适配器](../adapters/vue) 已写明父子组件之间的 provide / inject 是内部实现，不对外开放。需要下探时使用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字形似组合式函数，实际是 inject 管道，与上一行同类 |
-| 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型未从同一个包导出，无法构造调用 |
+| 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createElementRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型未从同一个包导出，无法构造调用 |
 | WC 的元素类导出 `Xh*Element` | 148 | 仅用于 `instanceof` 与手动 `customElements.define`，不支持 `extends`（元素类的基类不导出、`wire()` 是 protected abstract）。获取元素使用 `document.querySelector`。编写自己的元素继承 `authoring` 子入口的 `XhReactiveElement`，它不计在这一行 |
 | WC 元素上的 `static partContract` | 143 | 部件校验的输入数据，实现细节 |
 | `dist/` 内部文件名 | — | `element-Bx4xCiT2.js` 这类打包 chunk 每次构建都可能变化，不得 deep import |

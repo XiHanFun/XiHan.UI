@@ -9,12 +9,12 @@ import type { Disposable, MachineConfig, MachineSchema, Scope, Service } from '@
 import type { FormFieldModel } from '@xihan-ui/headless'
 import type { XhConfig } from '../config'
 import type { ReactiveController, ReactiveControllerHost } from '../reactive'
-import type { LitRuntime } from './lit-runtime'
+import type { ElementRuntime } from './element-runtime'
 import { createFormResetBridge, createService, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
 import { isPlainObject } from '@xihan-ui/core/json'
 import { bindFormModel, formModelOf, withXhConfigBase } from '@xihan-ui/headless'
 import { resolveXhConfig, xhConfigGeneration } from '../config'
-import { createLitRuntime } from './lit-runtime'
+import { createElementRuntime } from './element-runtime'
 
 export interface MachineControllerOptions<T extends MachineSchema> {
   scope?: Scope
@@ -77,7 +77,7 @@ function seedsChanged(seeds: ReadonlyMap<string, unknown>, props: object): boole
 // 一台机器一个 controller：hostConnected 建机器并 mount、hostUpdate 跑 trackers、hostDisconnected unmount。
 export class MachineController<T extends MachineSchema> implements ReactiveController {
   service!: Service<T>
-  private runtime: LitRuntime | undefined
+  private runtime: ElementRuntime | undefined
   private started = false
   private connected = false
   private formReset: Disposable | undefined
@@ -127,7 +127,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
   }
 
   private build(): void {
-    this.runtime = createLitRuntime(this.host)
+    this.runtime = createElementRuntime(this.host)
     this.service = createService(this.machine, { props: this.props, runtime: this.runtime, scope: this.opts.scope })
     this.seeds = seedsOf(this.rawProps())
     this.live = false
