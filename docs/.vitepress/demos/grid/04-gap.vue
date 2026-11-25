@@ -13,7 +13,7 @@ const groups = [
   <div style="display: grid; gap: 16px; inline-size: min(480px, 100%)">
     <div v-for="group in groups" :key="group.gap">
       <div style="margin-block-end: 6px; color: var(--xh-fg-muted); font-size: 13px">{{ group.label }}</div>
-      <XhGridRoot :cols="3" :gap="group.gap">
+      <XhGridRoot :columns="3" :gap="group.gap">
         <XhGridItem
           v-for="item in 3"
           :key="item"

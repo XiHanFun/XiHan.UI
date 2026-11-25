@@ -146,9 +146,9 @@ const SAME_VALUE = {
   'gutter = 4ch': 'code-view 是按位数分档的梯子的第四级，diff-view 是固定默认',
   // 列数是作者写进 prop 的那个整数被逐值搬进 CSS，不是设计档位：两处的「2」都只是「两列」。
   // 收成语义令牌等于给「两列」起个名字，改令牌会同时改掉两个组件里作者自己声明的列数
-  'cols = 2': '栅格与表单各自把作者给的列数搬进 CSS，不是可调的设计档位',
-  'cols = 3': '同 cols = 2',
-  'cols = 4': '同 cols = 2',
+  'columns = 2': '栅格与表单各自把作者给的列数搬进 CSS，不是可调的设计档位',
+  'columns = 3': '同 columns = 2',
+  'columns = 4': '同 columns = 2',
 }
 
 const shared = [...groups].filter(([key, comps]) => !(key in SAME_VALUE) && comps.size >= 2)

@@ -43,13 +43,13 @@
   }
 
   /* 网格：字段排进等宽列，各列下限写 0，一段长文本不会把自己那列撑宽。
-     列数由 data-columns 逐档给，换档只改 --xh-_form-cols 这一个槽 */
+     列数由 data-columns 逐档给，换档只改 --xh-_form-columns 这一个槽 */
   [data-scope='form'][data-part='root'][data-layout='grid'] {
     display: grid;
-    grid-template-columns: repeat(var(--xh-_form-cols), minmax(0, 1fr));
+    grid-template-columns: repeat(var(--xh-_form-columns), minmax(0, 1fr));
     column-gap: var(--xh-form-gap, var(--xh-space-5));
 
-    --xh-_form-cols: 1;
+    --xh-_form-columns: 1;
   }
 
   /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -76,15 +76,15 @@
 
   /* 一列是网格档的缺省，这里从两列起逐档写 */
   [data-scope='form'][data-part='root'][data-columns='2'] {
-    --xh-_form-cols: 2;
+    --xh-_form-columns: 2;
   }
 
   [data-scope='form'][data-part='root'][data-columns='3'] {
-    --xh-_form-cols: 3;
+    --xh-_form-columns: 3;
   }
 
   [data-scope='form'][data-part='root'][data-columns='4'] {
-    --xh-_form-cols: 4;
+    --xh-_form-columns: 4;
   }
 
   /* 逐档列数：移动优先，先按 data-columns 排定，视口每宽到一档就换成那一档的列数，
@@ -94,73 +94,73 @@
      每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档 */
   @media (min-width: 640px) {
     [data-scope='form'][data-part='root'][data-columns-sm='1'] {
-      --xh-_form-cols: 1;
+      --xh-_form-columns: 1;
     }
 
     [data-scope='form'][data-part='root'][data-columns-sm='2'] {
-      --xh-_form-cols: 2;
+      --xh-_form-columns: 2;
     }
 
     [data-scope='form'][data-part='root'][data-columns-sm='3'] {
-      --xh-_form-cols: 3;
+      --xh-_form-columns: 3;
     }
 
     [data-scope='form'][data-part='root'][data-columns-sm='4'] {
-      --xh-_form-cols: 4;
+      --xh-_form-columns: 4;
     }
   }
 
   @media (min-width: 768px) {
     [data-scope='form'][data-part='root'][data-columns-md='1'] {
-      --xh-_form-cols: 1;
+      --xh-_form-columns: 1;
     }
 
     [data-scope='form'][data-part='root'][data-columns-md='2'] {
-      --xh-_form-cols: 2;
+      --xh-_form-columns: 2;
     }
 
     [data-scope='form'][data-part='root'][data-columns-md='3'] {
-      --xh-_form-cols: 3;
+      --xh-_form-columns: 3;
     }
 
     [data-scope='form'][data-part='root'][data-columns-md='4'] {
-      --xh-_form-cols: 4;
+      --xh-_form-columns: 4;
     }
   }
 
   @media (min-width: 1024px) {
     [data-scope='form'][data-part='root'][data-columns-lg='1'] {
-      --xh-_form-cols: 1;
+      --xh-_form-columns: 1;
     }
 
     [data-scope='form'][data-part='root'][data-columns-lg='2'] {
-      --xh-_form-cols: 2;
+      --xh-_form-columns: 2;
     }
 
     [data-scope='form'][data-part='root'][data-columns-lg='3'] {
-      --xh-_form-cols: 3;
+      --xh-_form-columns: 3;
     }
 
     [data-scope='form'][data-part='root'][data-columns-lg='4'] {
-      --xh-_form-cols: 4;
+      --xh-_form-columns: 4;
     }
   }
 
   @media (min-width: 1280px) {
     [data-scope='form'][data-part='root'][data-columns-xl='1'] {
-      --xh-_form-cols: 1;
+      --xh-_form-columns: 1;
     }
 
     [data-scope='form'][data-part='root'][data-columns-xl='2'] {
-      --xh-_form-cols: 2;
+      --xh-_form-columns: 2;
     }
 
     [data-scope='form'][data-part='root'][data-columns-xl='3'] {
-      --xh-_form-cols: 3;
+      --xh-_form-columns: 3;
     }
 
     [data-scope='form'][data-part='root'][data-columns-xl='4'] {
-      --xh-_form-cols: 4;
+      --xh-_form-columns: 4;
     }
   }
 

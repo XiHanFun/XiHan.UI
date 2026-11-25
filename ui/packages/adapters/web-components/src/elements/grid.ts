@@ -12,17 +12,17 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /** 断点对象形态的列数，从 GridProps 上取，不在这里另抄一份档位清单。 */
-type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
+type ColumnsByBreakpoint = Exclude<GridProps['columns'], GridColumnCount | undefined>
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 /**
- * 列数写整数就是各档同一个列数（`cols="3"`），写 JSON 对象就是逐档的列数
- * （`cols='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，
+ * 列数写整数就是各档同一个列数（`columns="3"`），写 JSON 对象就是逐档的列数
+ * （`columns='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，
  * 缺的那几档会安静地退回一列，而作者看不出是哪里写坏了。
  */
-const COLS_CONVERTER = {
-  fromAttribute: (v: string | null) => normalizeGridTier(v) as GridColumnCount | ColsByBreakpoint | undefined,
+const COLUMNS_CONVERTER = {
+  fromAttribute: (v: string | null) => normalizeGridTier(v) as GridColumnCount | ColumnsByBreakpoint | undefined,
 }
 
 /**
@@ -37,7 +37,7 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
 /**
  * `<xh-grid>`：Light-DOM 行为宿主，无状态机，把 connectGrid 产出接到 root 与各 item 角色节点。
  * 列数、间距档位与两条对齐轴原样写为 data-*，排布规则写在皮肤中。
- * 列数可以逐档书写：`cols='{"base":1,"md":3}'` 写为 data-cols 与 data-cols-md，
+ * 列数可以逐档书写：`columns='{"base":1,"md":3}'` 写为 data-columns 与 data-columns-md，
  * 窄视口分一列、达到 md 断点后分三列。
  *
  * 每一格的跨列、错列与跨行写在 item 角色节点自己的 `span` / `offset` / `row-span` 属性上：
@@ -48,7 +48,7 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * 根上不写 role：容器只做排布，其中放置的是列表还是一组卡片由作者自行声明。
  *
  * @customElement xh-grid
- * @attr {number|string} cols - 列数（1 至 12 的整数），未提供或超出范围按一列排列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl）
+ * @attr {number|string} columns - 列数（1 至 12 的整数），未提供或超出范围按一列排列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl）
  * @attr {number} rows - 行数（1 至 12 的整数），未提供时行数由内容撑出
  * @attr {'xs'|'sm'|'md'|'lg'} min-col-width - 每列的最小宽度；提供后列数改由容器宽度除以该下限得出
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 行列间距档位，逐档对应一个间距令牌
@@ -57,7 +57,7 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在所在格中的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在所在格中的行内对齐
  * @attr {boolean} ruled - 画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效
- * @csspart root - 排布容器，承载 data-cols（及逐档的 data-cols-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items / data-split
+ * @csspart root - 排布容器，承载 data-columns（及逐档的 data-columns-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items / data-split
  * @csspart item - 一格，承载声明的 data-span / data-offset / data-row-span（及各自逐档的 -sm/-md/-lg/-xl）
  */
 export class XhGridElement extends XhElement {
@@ -65,7 +65,7 @@ export class XhGridElement extends XhElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
-    cols: { converter: COLS_CONVERTER },
+    columns: { converter: COLUMNS_CONVERTER },
     rows: { converter: { fromAttribute: normalizeGridCount } },
     minColWidth: { converter: STRING_CONVERTER, attribute: 'min-col-width' },
     gap: { converter: STRING_CONVERTER },
@@ -76,7 +76,7 @@ export class XhGridElement extends XhElement {
     ruled: { converter: BOOLEAN_CONVERTER },
   }
 
-  declare cols?: GridColumnCount | ColsByBreakpoint
+  declare columns?: GridColumnCount | ColumnsByBreakpoint
   declare rows?: number
   declare minColWidth?: string
   declare gap?: string
@@ -89,7 +89,7 @@ export class XhGridElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectGrid({
-      cols: this.cols,
+      columns: this.columns,
       rows: this.rows as GridProps['rows'],
       minColWidth: this.minColWidth as GridProps['minColWidth'],
       gap: this.gap as GridProps['gap'],

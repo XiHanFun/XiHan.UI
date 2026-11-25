@@ -6,7 +6,7 @@
 // 提供 grid 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { GridApi, GridBreakpoint, GridCols, GridColsByBreakpoint, GridOffset, GridProps, GridRowSpan, GridSpan } from './grid.types'
+import type { GridApi, GridBreakpoint, GridColumns, GridColumnsByBreakpoint, GridOffset, GridProps, GridRowSpan, GridSpan } from './grid.types'
 import { dataAttr } from '@xihan-ui/core'
 import { gridAnatomy } from './grid.anatomy'
 
@@ -40,8 +40,8 @@ type Tiers = Record<'base' | GridBreakpoint, string | undefined>
  * 给断点对象时逐档取，没写的档是 undefined。
  * 属性名不由这里拼——它们是公开面，得在调用处按字面写着才盯得住改名。
  */
-function tiers(value: GridCols | GridSpan | GridOffset | GridRowSpan | undefined, max: number): Tiers {
-  const byTier: GridColsByBreakpoint = value != null && typeof value === 'object' ? value : { base: value }
+function tiers(value: GridColumns | GridSpan | GridOffset | GridRowSpan | undefined, max: number): Tiers {
+  const byTier: GridColumnsByBreakpoint = value != null && typeof value === 'object' ? value : { base: value }
   const out = { base: tier(byTier.base, max) } as Tiers
   for (const at of BREAKPOINTS)
     out[at] = tier(byTier[at], max)
@@ -49,7 +49,7 @@ function tiers(value: GridCols | GridSpan | GridOffset | GridRowSpan | undefined
 }
 
 // Grid 无状态机：二维排布不持有任何状态，列数、间距档位与两条对齐轴原样落成 data-*，
-// 换算成哪条 CSS 规则由皮肤定。列数按断点分档时也只是多落几个 data-cols-<档>，
+// 换算成哪条 CSS 规则由皮肤定。列数按断点分档时也只是多落几个 data-columns-<档>，
 // 哪一档在多宽的视口上接管由皮肤的媒体查询定，这里不量视口。
 // 根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。
 export function connectGrid<T extends PropTypes>(
@@ -58,15 +58,15 @@ export function connectGrid<T extends PropTypes>(
 ): GridApi<T> {
   return {
     getRootProps: () => {
-      const cols = tiers(props.cols, MAX_COLUMN_COUNT)
+      const columns = tiers(props.columns, MAX_COLUMN_COUNT)
       return normalize.element({
         ...parts.root.attrs,
         // 列数恒有值：不写就是一列，读一眼 DOM 就知道这一层分几列
-        'data-cols': cols.base ?? '1',
-        'data-cols-sm': cols.sm,
-        'data-cols-md': cols.md,
-        'data-cols-lg': cols.lg,
-        'data-cols-xl': cols.xl,
+        'data-columns': columns.base ?? '1',
+        'data-columns-sm': columns.sm,
+        'data-columns-md': columns.md,
+        'data-columns-lg': columns.lg,
+        'data-columns-xl': columns.xl,
         'data-rows': tier(props.rows, MAX_COLUMN_COUNT),
         'data-min-col': props.minColWidth,
         'data-gap': props.gap,

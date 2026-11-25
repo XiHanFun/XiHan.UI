@@ -7,7 +7,7 @@ const tall = { "--xh-demo-block-block-size": "auto" } as CSSProperties;
 
 export default function Demo(): ReactNode {
   return (
-    <XhGridRoot cols={3} gap="sm" style={{ inlineSize: "min(640px, 100%)" }}>
+    <XhGridRoot columns={3} gap="sm" style={{ inlineSize: "min(640px, 100%)" }}>
       <XhGridItem rowSpan={2} data-demo-block data-tone="brand" style={tall} />
       <XhGridItem data-demo-block data-tone="info" />
       <XhGridItem data-demo-block data-tone="success" />

@@ -4,7 +4,7 @@ import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhGridRoot :cols="4" ruled style="inline-size: min(640px, 100%)">
+  <XhGridRoot :columns="4" ruled style="inline-size: min(640px, 100%)">
     <XhGridItem>申请人</XhGridItem>
     <XhGridItem>王小明</XhGridItem>
     <XhGridItem>部门</XhGridItem>

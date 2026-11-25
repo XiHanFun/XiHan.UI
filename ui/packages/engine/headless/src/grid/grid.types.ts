@@ -32,7 +32,7 @@ export type GridRowCount = GridColumnCount
 export type GridMinColWidth = 'xs' | 'sm' | 'md' | 'lg'
 
 /** 逐档的列数：档与档之间自窄到宽依次接管，写了哪档就在哪档切换列数。 */
-export interface GridColsByBreakpoint {
+export interface GridColumnsByBreakpoint {
   /** 未达到任何断点时的列数，未提供时按一列排列。 */
   base?: GridColumnCount
   /** 视口宽度达到 sm 断点后的列数。 */
@@ -46,7 +46,7 @@ export interface GridColsByBreakpoint {
 }
 
 /** 列数：整数即各档同一个列数；断点对象则逐档取值。 */
-export type GridCols = GridColumnCount | GridColsByBreakpoint
+export type GridColumns = GridColumnCount | GridColumnsByBreakpoint
 
 /** 逐档的跨列，档位与列数同一套。 */
 export interface GridSpanByBreakpoint {
@@ -105,7 +105,7 @@ export interface GridProps {
    * 各列等宽，且每列的下限是 0，长内容不会把所在列撑宽。
    * 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。
    */
-  cols?: GridCols
+  columns?: GridColumns
   /**
    * 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。
    * 提供后把这几行排为显式轨道，超出的项落入隐式行。
@@ -113,7 +113,7 @@ export interface GridProps {
   rows?: GridRowCount
   /**
    * 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度
-   * 除以该下限得出（放得下几列即几列），`cols` 的轨道表不再生效。不接受裸像素值。
+   * 除以该下限得出（放得下几列即几列），`columns` 的轨道表不再生效。不接受裸像素值。
    */
   minColWidth?: GridMinColWidth
   /** 行列间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 */

@@ -4,7 +4,7 @@ import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhGridRoot :cols="3" gap="sm" style="inline-size: min(640px, 100%)">
+  <XhGridRoot :columns="3" gap="sm" style="inline-size: min(640px, 100%)">
     <XhGridItem :row-span="2" data-demo-block data-tone="brand" style="--xh-demo-block-block-size: auto" />
     <XhGridItem data-demo-block data-tone="info" />
     <XhGridItem data-demo-block data-tone="success" />

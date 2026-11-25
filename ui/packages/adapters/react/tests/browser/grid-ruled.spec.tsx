@@ -43,7 +43,7 @@ async function mount(props: Partial<GridProps>, dir?: 'rtl'): Promise<HTMLElemen
   const root = createRoot(host)
   await act(async () => {
     root.render(
-      <XhGridRoot cols={4} {...props}>
+      <XhGridRoot columns={4} {...props}>
         {CELLS.map(cell => <XhGridItem key={cell.text} span={cell.span as never} rowSpan={cell.rowSpan as never}>{cell.text}</XhGridItem>)}
       </XhGridRoot>,
     )

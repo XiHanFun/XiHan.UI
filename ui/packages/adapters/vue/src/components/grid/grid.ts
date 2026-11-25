@@ -13,7 +13,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { provideGrid, useGridContext } from './context'
 
 /** 断点对象形态的列数，从 GridProps 上取，不在这里另抄一份档位清单。 */
-type ColsByBreakpoint = Exclude<GridProps['cols'], GridColumnCount | undefined>
+type ColumnsByBreakpoint = Exclude<GridProps['columns'], GridColumnCount | undefined>
 /** 断点对象形态的跨列与错列，同样从类型上取。 */
 type SpanByBreakpoint = Exclude<GridItemProps['span'], GridColumnCount | undefined>
 type OffsetByBreakpoint = Exclude<GridItemProps['offset'], GridColumnOffset | undefined>
@@ -23,9 +23,9 @@ export const XhGridRoot = defineComponent({
   name: 'XhGridRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    // 列数由作者声明：兼收字符串以支持模板里写 cols="3"，收对象则是逐档的列数
-    cols: {
-      type: [Number, String, Object] as PropType<GridColumnCount | string | ColsByBreakpoint>,
+    // 列数由作者声明：兼收字符串以支持模板里写 columns="3"，收对象则是逐档的列数
+    columns: {
+      type: [Number, String, Object] as PropType<GridColumnCount | string | ColumnsByBreakpoint>,
     },
     rows: { type: [Number, String] as PropType<GridRowCount | string> },
     minColWidth: { type: String as PropType<GridProps['minColWidth']> },
@@ -38,7 +38,7 @@ export const XhGridRoot = defineComponent({
   },
   setup(props, { slots }) {
     const api = computed(() => connectGrid({
-      cols: normalizeGridTier(props.cols) as GridProps['cols'],
+      columns: normalizeGridTier(props.columns) as GridProps['columns'],
       rows: normalizeGridCount(props.rows) as GridRowCount | undefined,
       minColWidth: props.minColWidth,
       gap: props.gap,

@@ -111,11 +111,11 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `align` | `GridAlign` |  | 每一项在所在格中的块向对齐：start / center / end / stretch / baseline，未提供时铺满格高。 |
-| `cols` | `GridCols` |  | 列数：1 至 12 的整数，未提供时按一列排列；范围外的值也按一列排列。 各列等宽，且每列的下限是 0，长内容不会把所在列撑宽。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 |
 | `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；未提供时跟随 gap。 |
+| `columns` | `GridColumns` |  | 列数：1 至 12 的整数，未提供时按一列排列；范围外的值也按一列排列。 各列等宽，且每列的下限是 0，长内容不会把所在列撑宽。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 |
 | `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
 | `justifyItems` | `GridJustifyItems` |  | 每一项在所在格中的行内对齐：start / center / end / stretch，未提供时铺满格宽。 |
-| `minColWidth` | `GridMinColWidth` |  | 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度 除以该下限得出（放得下几列即几列），`cols` 的轨道表不再生效。不接受裸像素值。 |
+| `minColWidth` | `GridMinColWidth` |  | 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度 除以该下限得出（放得下几列即几列），`columns` 的轨道表不再生效。不接受裸像素值。 |
 | `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；未提供时跟随 gap。 |
 | `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。 提供后把这几行排为显式轨道，超出的项落入隐式行。 |
 | `ruled` | `boolean` |  | 画格线：外框加格与格之间的横竖线，写为 root 上的 data-split。每道线只画一次，跨行跨列的格子里不出线。 画格线时行列间距一律为 0，`gap` / `rowGap` / `columnGap` 不生效；格子要铺满，空着的位置没有线。 |
@@ -160,12 +160,12 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-align` | props.align |
-| `root` | `data-cols` | cols.base |
-| `root` | `data-cols-lg` | cols.lg |
-| `root` | `data-cols-md` | cols.md |
-| `root` | `data-cols-sm` | cols.sm |
-| `root` | `data-cols-xl` | cols.xl |
 | `root` | `data-column-gap` | props.columnGap |
+| `root` | `data-columns` | columns.base |
+| `root` | `data-columns-lg` | columns.lg |
+| `root` | `data-columns-md` | columns.md |
+| `root` | `data-columns-sm` | columns.sm |
+| `root` | `data-columns-xl` | columns.xl |
 | `root` | `data-gap` | props.gap |
 | `root` | `data-justify-items` | props.justifyItems |
 | `root` | `data-min-col` | props.minColWidth |
@@ -196,7 +196,7 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-grid-column-gap` | `root` | `column-gap` | `column-gap=lg`<br>`column-gap=md`<br>`column-gap=sm`<br>`column-gap=xl`<br>`column-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 column-gap 覆盖槽。 |
-| `--xh-grid-columns` | `root` | `grid-template-columns` | `default`<br>`min-col` | `--xh-_grid-col-min`<br>`--xh-_grid-cols` | grid 的 root 部件 grid-template-columns 覆盖槽。 |
+| `--xh-grid-columns` | `root` | `grid-template-columns` | `default`<br>`min-col` | `--xh-_grid-col-min`<br>`--xh-_grid-columns` | grid 的 root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-grid-divider` | `item`<br>`root` | `border`<br>`border-block-end`<br>`border-inline-end` | `split` | `--xh-border-default` | grid 的 item、root 部件 border、border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-grid-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | grid 的 root 部件 gap 覆盖槽。 |
 | `--xh-grid-row-gap` | `root` | `row-gap` | `row-gap=lg`<br>`row-gap=md`<br>`row-gap=sm`<br>`row-gap=xl`<br>`row-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 row-gap 覆盖槽。 |

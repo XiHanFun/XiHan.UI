@@ -41351,7 +41351,7 @@
       ],
       "defaultToken": [
         "--xh-_grid-col-min",
-        "--xh-_grid-cols"
+        "--xh-_grid-columns"
       ],
       "visibility": "public",
       "description": "grid 的 root 部件 grid-template-columns 覆盖槽。"

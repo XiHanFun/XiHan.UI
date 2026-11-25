@@ -36,7 +36,7 @@ async function mountAt(width: number, rowSpan: GridItemProps['rowSpan']): Promis
   const cell = (text: string, extra: Record<string, unknown> = {}) =>
     h(XhGridItem, extra, () => h('div', { style: 'block-size: 40px' }, text))
   app = createApp({
-    render: () => h(XhGridRoot, { cols: 2, gap: 'sm', style: 'inline-size: 300px' }, () => [
+    render: () => h(XhGridRoot, { columns: 2, gap: 'sm', style: 'inline-size: 300px' }, () => [
       cell('甲', { rowSpan }),
       cell('乙'),
       cell('丙'),

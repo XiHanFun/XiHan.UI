@@ -25,11 +25,11 @@ export const gridSuite: ConformanceSuite = {
         parts: {
           'root': {
             'role': null,
-            'data-cols': '1',
-            'data-cols-sm': null,
-            'data-cols-md': null,
-            'data-cols-lg': null,
-            'data-cols-xl': null,
+            'data-columns': '1',
+            'data-columns-sm': null,
+            'data-columns-md': null,
+            'data-columns-lg': null,
+            'data-columns-xl': null,
             'data-rows': null,
             'data-min-col': null,
             'data-gap': null,
@@ -50,53 +50,53 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '列数与间距档位如实落到根上，换算成哪个令牌归皮肤',
       spec: { apg: APG },
-      props: { cols: 3, gap: 'lg' },
+      props: { columns: 3, gap: 'lg' },
       initial: {
         parts: {
           root: {
-            'data-cols': '3',
+            'data-columns': '3',
             'data-gap': 'lg',
           },
         },
       },
     },
     {
-      name: '列数给整数：只落 data-cols，一个断点档都不输出',
+      name: '列数给整数：只落 data-columns，一个断点档都不输出',
       spec: { apg: APG },
-      props: { cols: 3 },
+      props: { columns: 3 },
       initial: {
         order: ['root', 'item[0]', 'item[1]', 'item[2]'],
         counts: { root: 1, item: 3 },
         parts: {
           root: {
-            'data-cols': '3',
-            'data-cols-sm': null,
-            'data-cols-md': null,
-            'data-cols-lg': null,
-            'data-cols-xl': null,
+            'data-columns': '3',
+            'data-columns-sm': null,
+            'data-columns-md': null,
+            'data-columns-lg': null,
+            'data-columns-xl': null,
           },
         },
       },
     },
     {
-      name: '列数给断点对象：base 落 data-cols，写了的档逐档落，没写的档不输出',
+      name: '列数给断点对象：base 落 data-columns，写了的档逐档落，没写的档不输出',
       spec: { apg: APG },
-      props: { cols: { base: 1, md: 2, xl: 4 } },
+      props: { columns: { base: 1, md: 2, xl: 4 } },
       initial: {
         order: ['root', 'item[0]', 'item[1]', 'item[2]'],
         counts: { root: 1, item: 3 },
         parts: {
           'root': {
-            'data-cols': '1',
-            'data-cols-sm': null,
-            'data-cols-md': '2',
-            'data-cols-lg': null,
-            'data-cols-xl': '4',
+            'data-columns': '1',
+            'data-columns-sm': null,
+            'data-columns-md': '2',
+            'data-columns-lg': null,
+            'data-columns-xl': '4',
           },
           // 逐档的列数是根一层的事，不落到格子上
           'item[0]': {
-            'data-cols': null,
-            'data-cols-md': null,
+            'data-columns': null,
+            'data-columns-md': null,
           },
         },
       },
@@ -104,15 +104,15 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '列数给断点对象但不写 base：base 仍按一列，其余各档如实落',
       spec: { apg: APG },
-      props: { cols: { sm: 2, lg: 3 } },
+      props: { columns: { sm: 2, lg: 3 } },
       initial: {
         parts: {
           root: {
-            'data-cols': '1',
-            'data-cols-sm': '2',
-            'data-cols-md': null,
-            'data-cols-lg': '3',
-            'data-cols-xl': null,
+            'data-columns': '1',
+            'data-columns-sm': '2',
+            'data-columns-md': null,
+            'data-columns-lg': '3',
+            'data-columns-xl': null,
           },
         },
       },
@@ -143,7 +143,7 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '跨列与错列给断点对象：base 落 data-span / data-offset，其余各档逐档落',
       spec: { apg: APG },
-      props: { cols: { base: 1, md: 4 } },
+      props: { columns: { base: 1, md: 4 } },
       fixture: (base): FixtureNode => ({
         ...base,
         children: [
@@ -184,7 +184,7 @@ export const gridSuite: ConformanceSuite = {
     {
       name: 'ruled 在根上写 data-split，与间距档位各落各的',
       spec: { apg: APG },
-      props: { cols: 2, ruled: true, gap: 'md' },
+      props: { columns: 2, ruled: true, gap: 'md' },
       initial: {
         parts: {
           root: {
@@ -197,7 +197,7 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '跨列与错列由每一格自报，落在自己身上、不落到根上',
       spec: { apg: APG },
-      props: { cols: 4 },
+      props: { columns: 4 },
       fixture: (base): FixtureNode => ({
         ...base,
         children: [
@@ -209,7 +209,7 @@ export const gridSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': {
-            'data-cols': '4',
+            'data-columns': '4',
             'data-span': null,
             'data-offset': null,
           },
@@ -231,15 +231,15 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '列数越界按没写算：超过 12、0、负数、小数都落回一列，断点档同理不输出',
       spec: { apg: APG },
-      props: { cols: { base: 16, sm: 0, md: -2, lg: 2.5, xl: 12 } },
+      props: { columns: { base: 16, sm: 0, md: -2, lg: 2.5, xl: 12 } },
       initial: {
         parts: {
           root: {
-            'data-cols': '1',
-            'data-cols-sm': null,
-            'data-cols-md': null,
-            'data-cols-lg': null,
-            'data-cols-xl': '12',
+            'data-columns': '1',
+            'data-columns-sm': null,
+            'data-columns-md': null,
+            'data-columns-lg': null,
+            'data-columns-xl': '12',
           },
         },
       },
@@ -247,7 +247,7 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '跨行由每一格自报：整数落 data-row-span，断点对象逐档落，越界按没写算',
       spec: { apg: APG },
-      props: { cols: 3 },
+      props: { columns: 3 },
       fixture: (base): FixtureNode => ({
         ...base,
         children: [
@@ -269,7 +269,7 @@ export const gridSuite: ConformanceSuite = {
     {
       name: '跨列与错列越界按没写算：span 收 1 至 12、offset 收 1 至 11，出界即不输出',
       spec: { apg: APG },
-      props: { cols: 4 },
+      props: { columns: 4 },
       fixture: (base): FixtureNode => ({
         ...base,
         children: [

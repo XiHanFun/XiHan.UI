@@ -120,7 +120,7 @@ describe('descriptions 逐档收列', () => {
     [6, 1, 2, 6],
   ]
 
-  it.each(TIERS)('cols=%i 逐档摆 %i / %i / %i 格', (columns, narrow, tablet, desktop) => {
+  it.each(TIERS)('columns=%i 逐档摆 %i / %i / %i 格', (columns, narrow, tablet, desktop) => {
     expect(perRow(mount(NARROW, descriptions(columns)))).toBe(narrow)
     expect(perRow(mount(TABLET, descriptions(columns)))).toBe(tablet)
     expect(perRow(mount(DESKTOP, descriptions(columns)))).toBe(desktop)
@@ -188,7 +188,7 @@ describe('descriptions 窄档标签在上', () => {
 })
 
 describe('descriptions 边线跟着实际摆位走', () => {
-  it.each([2, 3, 4, 5, 6])('cols=%i 三档的边线都对得上摆位', (columns) => {
+  it.each([2, 3, 4, 5, 6])('columns=%i 三档的边线都对得上摆位', (columns) => {
     for (const width of [300, NARROW, TABLET, DESKTOP, 1280])
       expect(lineMismatches(mount(width, descriptions(columns))), `${width}px`).toEqual([])
   })

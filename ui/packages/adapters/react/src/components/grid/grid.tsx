@@ -7,9 +7,9 @@
 
 import type {
   GridAlign,
-  GridColsByBreakpoint,
   GridColumnCount,
   GridColumnOffset,
+  GridColumnsByBreakpoint,
   GridGap,
   GridItemProps,
   GridJustifyItems,
@@ -28,7 +28,7 @@ import { GridProvider, useGridContext } from './context'
 
 export interface XhGridRootProps extends ComponentPropsWithRef<'div'> {
   /** 列数：1 至 12 的整数，或逐档写的断点对象；也接受字符串与 JSON 串。 */
-  cols?: GridColumnCount | string | GridColsByBreakpoint
+  columns?: GridColumnCount | string | GridColumnsByBreakpoint
   /** 行数：1 至 12 的整数；也接受字符串。 */
   rows?: GridRowCount | string
   /** 每列最少多宽：xs / sm / md / lg 四档。 */
@@ -49,7 +49,7 @@ export interface XhGridRootProps extends ComponentPropsWithRef<'div'> {
 
 /** 二维排布容器：列数、间距档位与两条对齐轴写为根上的 data-*，换算为哪条 CSS 规则由皮肤决定。 */
 export function XhGridRoot({
-  cols,
+  columns,
   rows,
   minColWidth,
   gap,
@@ -62,7 +62,7 @@ export function XhGridRoot({
   ...rest
 }: XhGridRootProps): ReactNode {
   const api = connectGrid({
-    cols: normalizeGridTier(cols) as GridProps['cols'],
+    columns: normalizeGridTier(columns) as GridProps['columns'],
     rows: normalizeGridCount(rows) as GridRowCount | undefined,
     minColWidth,
     gap,

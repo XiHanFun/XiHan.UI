@@ -4,7 +4,7 @@ import { XhGridItem, XhGridRoot } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhGridRoot cols={4} gap="sm" style={{ inlineSize: "min(640px, 100%)" }}>
+    <XhGridRoot columns={4} gap="sm" style={{ inlineSize: "min(640px, 100%)" }}>
       <XhGridItem span={3} data-demo-block data-tone="brand" />
       <XhGridItem data-demo-block data-tone="info" />
       <XhGridItem span={2} data-demo-block data-tone="success" />

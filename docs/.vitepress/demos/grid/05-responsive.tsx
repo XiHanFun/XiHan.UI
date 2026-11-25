@@ -11,7 +11,7 @@ const sections = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhGridRoot cols={{ base: 1, sm: 2, lg: 4 }} gap="sm" style={{ inlineSize: "min(720px, 100%)" }}>
+    <XhGridRoot columns={{ base: 1, sm: 2, lg: 4 }} gap="sm" style={{ inlineSize: "min(720px, 100%)" }}>
       {sections.map(section => <XhGridItem key={section.id} data-demo-block data-tone={section.tone} />)}
     </XhGridRoot>
   );

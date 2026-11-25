@@ -7,7 +7,7 @@ const blockStyle = { "--xh-demo-block-block-size": "96px" } as CSSProperties;
 
 export default function Demo(): ReactNode {
   return (
-    <XhGridRoot cols={3} gap="md" aria-label="三列等宽占位区块" style={{ inlineSize: "min(600px, 100%)" }}>
+    <XhGridRoot columns={3} gap="md" aria-label="三列等宽占位区块" style={{ inlineSize: "min(600px, 100%)" }}>
       {tones.map(tone => (
         <XhGridItem key={tone}>
           <span data-demo-block data-tone={tone} style={blockStyle} />

@@ -7204,264 +7204,264 @@
   display: grid;
   /* 各列等宽；下限写 0 而不是 auto，一段长文本才不会把自己那列撑宽 */
   /* 使用者槽位排在档位之前，写死一份轨道表即盖过所有列数档 */
-  grid-template-columns: var(--xh-grid-columns, repeat(var(--xh-_grid-cols), minmax(0, 1fr)));
+  grid-template-columns: var(--xh-grid-columns, repeat(var(--xh-_grid-columns), minmax(0, 1fr)));
   /* 不写 gap 档位就不留间距 */
   gap: var(--xh-grid-gap, var(--xh-space-0));
   /* 列数、行数与自适应列宽下限都收在根上这几个槽位里，换档只改这里；
      每一层都声明一遍，嵌套时内层不吃外层的值 */
-  --xh-_grid-cols: 1;
+  --xh-_grid-columns: 1;
   --xh-_grid-rows: 1;
   --xh-_grid-col-min: var(--xh-layout-col-min-md);
 }
 
 /* —— 列数 —— */
 /* 一列是上面的缺省，这里从两列起逐档写 */
-.xh-scope-grid[data-part='root'][data-cols='2'] {
-  --xh-_grid-cols: 2;
+.xh-scope-grid[data-part='root'][data-columns='2'] {
+  --xh-_grid-columns: 2;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='3'] {
-  --xh-_grid-cols: 3;
+.xh-scope-grid[data-part='root'][data-columns='3'] {
+  --xh-_grid-columns: 3;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='4'] {
-  --xh-_grid-cols: 4;
+.xh-scope-grid[data-part='root'][data-columns='4'] {
+  --xh-_grid-columns: 4;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='5'] {
-  --xh-_grid-cols: 5;
+.xh-scope-grid[data-part='root'][data-columns='5'] {
+  --xh-_grid-columns: 5;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='6'] {
-  --xh-_grid-cols: 6;
+.xh-scope-grid[data-part='root'][data-columns='6'] {
+  --xh-_grid-columns: 6;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='7'] {
-  --xh-_grid-cols: 7;
+.xh-scope-grid[data-part='root'][data-columns='7'] {
+  --xh-_grid-columns: 7;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='8'] {
-  --xh-_grid-cols: 8;
+.xh-scope-grid[data-part='root'][data-columns='8'] {
+  --xh-_grid-columns: 8;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='9'] {
-  --xh-_grid-cols: 9;
+.xh-scope-grid[data-part='root'][data-columns='9'] {
+  --xh-_grid-columns: 9;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='10'] {
-  --xh-_grid-cols: 10;
+.xh-scope-grid[data-part='root'][data-columns='10'] {
+  --xh-_grid-columns: 10;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='11'] {
-  --xh-_grid-cols: 11;
+.xh-scope-grid[data-part='root'][data-columns='11'] {
+  --xh-_grid-columns: 11;
 }
 
-.xh-scope-grid[data-part='root'][data-cols='12'] {
-  --xh-_grid-cols: 12;
+.xh-scope-grid[data-part='root'][data-columns='12'] {
+  --xh-_grid-columns: 12;
 }
 
 /* —— 逐档列数 —— */
-/* 移动优先：先按 data-cols 排定，视口每宽到一档就换成那一档的列数，没写的档沿用比它窄的那一档。
+/* 移动优先：先按 data-columns 排定，视口每宽到一档就换成那一档的列数，没写的档沿用比它窄的那一档。
    四档自窄到宽依次写，只用 min-width：媒体查询不改选择器权重，宽视口上同时命中好几档时由源码序决定谁生效。
    宽度写字面量：自定义属性在 @media 条件里不参与求值，令牌变量写在这里等于没写条件。
    每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档。 */
 @media (min-width: 640px) {
-  .xh-scope-grid[data-part='root'][data-cols-sm='1'] {
-    --xh-_grid-cols: 1;
+  .xh-scope-grid[data-part='root'][data-columns-sm='1'] {
+    --xh-_grid-columns: 1;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='2'] {
-    --xh-_grid-cols: 2;
+  .xh-scope-grid[data-part='root'][data-columns-sm='2'] {
+    --xh-_grid-columns: 2;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='3'] {
-    --xh-_grid-cols: 3;
+  .xh-scope-grid[data-part='root'][data-columns-sm='3'] {
+    --xh-_grid-columns: 3;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='4'] {
-    --xh-_grid-cols: 4;
+  .xh-scope-grid[data-part='root'][data-columns-sm='4'] {
+    --xh-_grid-columns: 4;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='5'] {
-    --xh-_grid-cols: 5;
+  .xh-scope-grid[data-part='root'][data-columns-sm='5'] {
+    --xh-_grid-columns: 5;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='6'] {
-    --xh-_grid-cols: 6;
+  .xh-scope-grid[data-part='root'][data-columns-sm='6'] {
+    --xh-_grid-columns: 6;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='7'] {
-    --xh-_grid-cols: 7;
+  .xh-scope-grid[data-part='root'][data-columns-sm='7'] {
+    --xh-_grid-columns: 7;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='8'] {
-    --xh-_grid-cols: 8;
+  .xh-scope-grid[data-part='root'][data-columns-sm='8'] {
+    --xh-_grid-columns: 8;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='9'] {
-    --xh-_grid-cols: 9;
+  .xh-scope-grid[data-part='root'][data-columns-sm='9'] {
+    --xh-_grid-columns: 9;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='10'] {
-    --xh-_grid-cols: 10;
+  .xh-scope-grid[data-part='root'][data-columns-sm='10'] {
+    --xh-_grid-columns: 10;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='11'] {
-    --xh-_grid-cols: 11;
+  .xh-scope-grid[data-part='root'][data-columns-sm='11'] {
+    --xh-_grid-columns: 11;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-sm='12'] {
-    --xh-_grid-cols: 12;
+  .xh-scope-grid[data-part='root'][data-columns-sm='12'] {
+    --xh-_grid-columns: 12;
   }
 }
 
 @media (min-width: 768px) {
-  .xh-scope-grid[data-part='root'][data-cols-md='1'] {
-    --xh-_grid-cols: 1;
+  .xh-scope-grid[data-part='root'][data-columns-md='1'] {
+    --xh-_grid-columns: 1;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='2'] {
-    --xh-_grid-cols: 2;
+  .xh-scope-grid[data-part='root'][data-columns-md='2'] {
+    --xh-_grid-columns: 2;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='3'] {
-    --xh-_grid-cols: 3;
+  .xh-scope-grid[data-part='root'][data-columns-md='3'] {
+    --xh-_grid-columns: 3;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='4'] {
-    --xh-_grid-cols: 4;
+  .xh-scope-grid[data-part='root'][data-columns-md='4'] {
+    --xh-_grid-columns: 4;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='5'] {
-    --xh-_grid-cols: 5;
+  .xh-scope-grid[data-part='root'][data-columns-md='5'] {
+    --xh-_grid-columns: 5;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='6'] {
-    --xh-_grid-cols: 6;
+  .xh-scope-grid[data-part='root'][data-columns-md='6'] {
+    --xh-_grid-columns: 6;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='7'] {
-    --xh-_grid-cols: 7;
+  .xh-scope-grid[data-part='root'][data-columns-md='7'] {
+    --xh-_grid-columns: 7;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='8'] {
-    --xh-_grid-cols: 8;
+  .xh-scope-grid[data-part='root'][data-columns-md='8'] {
+    --xh-_grid-columns: 8;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='9'] {
-    --xh-_grid-cols: 9;
+  .xh-scope-grid[data-part='root'][data-columns-md='9'] {
+    --xh-_grid-columns: 9;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='10'] {
-    --xh-_grid-cols: 10;
+  .xh-scope-grid[data-part='root'][data-columns-md='10'] {
+    --xh-_grid-columns: 10;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='11'] {
-    --xh-_grid-cols: 11;
+  .xh-scope-grid[data-part='root'][data-columns-md='11'] {
+    --xh-_grid-columns: 11;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-md='12'] {
-    --xh-_grid-cols: 12;
+  .xh-scope-grid[data-part='root'][data-columns-md='12'] {
+    --xh-_grid-columns: 12;
   }
 }
 
 @media (min-width: 1024px) {
-  .xh-scope-grid[data-part='root'][data-cols-lg='1'] {
-    --xh-_grid-cols: 1;
+  .xh-scope-grid[data-part='root'][data-columns-lg='1'] {
+    --xh-_grid-columns: 1;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='2'] {
-    --xh-_grid-cols: 2;
+  .xh-scope-grid[data-part='root'][data-columns-lg='2'] {
+    --xh-_grid-columns: 2;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='3'] {
-    --xh-_grid-cols: 3;
+  .xh-scope-grid[data-part='root'][data-columns-lg='3'] {
+    --xh-_grid-columns: 3;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='4'] {
-    --xh-_grid-cols: 4;
+  .xh-scope-grid[data-part='root'][data-columns-lg='4'] {
+    --xh-_grid-columns: 4;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='5'] {
-    --xh-_grid-cols: 5;
+  .xh-scope-grid[data-part='root'][data-columns-lg='5'] {
+    --xh-_grid-columns: 5;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='6'] {
-    --xh-_grid-cols: 6;
+  .xh-scope-grid[data-part='root'][data-columns-lg='6'] {
+    --xh-_grid-columns: 6;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='7'] {
-    --xh-_grid-cols: 7;
+  .xh-scope-grid[data-part='root'][data-columns-lg='7'] {
+    --xh-_grid-columns: 7;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='8'] {
-    --xh-_grid-cols: 8;
+  .xh-scope-grid[data-part='root'][data-columns-lg='8'] {
+    --xh-_grid-columns: 8;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='9'] {
-    --xh-_grid-cols: 9;
+  .xh-scope-grid[data-part='root'][data-columns-lg='9'] {
+    --xh-_grid-columns: 9;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='10'] {
-    --xh-_grid-cols: 10;
+  .xh-scope-grid[data-part='root'][data-columns-lg='10'] {
+    --xh-_grid-columns: 10;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='11'] {
-    --xh-_grid-cols: 11;
+  .xh-scope-grid[data-part='root'][data-columns-lg='11'] {
+    --xh-_grid-columns: 11;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-lg='12'] {
-    --xh-_grid-cols: 12;
+  .xh-scope-grid[data-part='root'][data-columns-lg='12'] {
+    --xh-_grid-columns: 12;
   }
 }
 
 @media (min-width: 1280px) {
-  .xh-scope-grid[data-part='root'][data-cols-xl='1'] {
-    --xh-_grid-cols: 1;
+  .xh-scope-grid[data-part='root'][data-columns-xl='1'] {
+    --xh-_grid-columns: 1;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='2'] {
-    --xh-_grid-cols: 2;
+  .xh-scope-grid[data-part='root'][data-columns-xl='2'] {
+    --xh-_grid-columns: 2;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='3'] {
-    --xh-_grid-cols: 3;
+  .xh-scope-grid[data-part='root'][data-columns-xl='3'] {
+    --xh-_grid-columns: 3;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='4'] {
-    --xh-_grid-cols: 4;
+  .xh-scope-grid[data-part='root'][data-columns-xl='4'] {
+    --xh-_grid-columns: 4;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='5'] {
-    --xh-_grid-cols: 5;
+  .xh-scope-grid[data-part='root'][data-columns-xl='5'] {
+    --xh-_grid-columns: 5;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='6'] {
-    --xh-_grid-cols: 6;
+  .xh-scope-grid[data-part='root'][data-columns-xl='6'] {
+    --xh-_grid-columns: 6;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='7'] {
-    --xh-_grid-cols: 7;
+  .xh-scope-grid[data-part='root'][data-columns-xl='7'] {
+    --xh-_grid-columns: 7;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='8'] {
-    --xh-_grid-cols: 8;
+  .xh-scope-grid[data-part='root'][data-columns-xl='8'] {
+    --xh-_grid-columns: 8;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='9'] {
-    --xh-_grid-cols: 9;
+  .xh-scope-grid[data-part='root'][data-columns-xl='9'] {
+    --xh-_grid-columns: 9;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='10'] {
-    --xh-_grid-cols: 10;
+  .xh-scope-grid[data-part='root'][data-columns-xl='10'] {
+    --xh-_grid-columns: 10;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='11'] {
-    --xh-_grid-cols: 11;
+  .xh-scope-grid[data-part='root'][data-columns-xl='11'] {
+    --xh-_grid-columns: 11;
   }
 
-  .xh-scope-grid[data-part='root'][data-cols-xl='12'] {
-    --xh-_grid-cols: 12;
+  .xh-scope-grid[data-part='root'][data-columns-xl='12'] {
+    --xh-_grid-columns: 12;
   }
 }
 
@@ -7518,7 +7518,7 @@
 }
 
 /* —— 自适应列宽 —— */
-/* 写了下限就按「放得下几列就几列」排，data-cols 那条轨道表让位；
+/* 写了下限就按「放得下几列就几列」排，data-columns 那条轨道表让位；
    下限只收档位名，四档各指一个令牌 */
 .xh-scope-grid[data-part='root'][data-min-col] {
   grid-template-columns: var(--xh-grid-columns, repeat(auto-fill, minmax(var(--xh-_grid-col-min), 1fr)));
@@ -33298,13 +33298,13 @@
 }
 
 /* 网格：字段排进等宽列，各列下限写 0，一段长文本不会把自己那列撑宽。
-   列数由 data-columns 逐档给，换档只改 --xh-_form-cols 这一个槽 */
+   列数由 data-columns 逐档给，换档只改 --xh-_form-columns 这一个槽 */
 .xh-scope-form[data-part='root'][data-layout='grid'] {
   display: grid;
-  grid-template-columns: repeat(var(--xh-_form-cols), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--xh-_form-columns), minmax(0, 1fr));
   column-gap: var(--xh-form-gap, var(--xh-space-5));
 
-  --xh-_form-cols: 1;
+  --xh-_form-columns: 1;
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -33331,15 +33331,15 @@
 
 /* 一列是网格档的缺省，这里从两列起逐档写 */
 .xh-scope-form[data-part='root'][data-columns='2'] {
-  --xh-_form-cols: 2;
+  --xh-_form-columns: 2;
 }
 
 .xh-scope-form[data-part='root'][data-columns='3'] {
-  --xh-_form-cols: 3;
+  --xh-_form-columns: 3;
 }
 
 .xh-scope-form[data-part='root'][data-columns='4'] {
-  --xh-_form-cols: 4;
+  --xh-_form-columns: 4;
 }
 
 /* 逐档列数：移动优先，先按 data-columns 排定，视口每宽到一档就换成那一档的列数，
@@ -33349,73 +33349,73 @@
    每档都从一列写起：base 分多列、某一档收回一列同样是合法的一档 */
 @media (min-width: 640px) {
   .xh-scope-form[data-part='root'][data-columns-sm='1'] {
-    --xh-_form-cols: 1;
+    --xh-_form-columns: 1;
   }
 
   .xh-scope-form[data-part='root'][data-columns-sm='2'] {
-    --xh-_form-cols: 2;
+    --xh-_form-columns: 2;
   }
 
   .xh-scope-form[data-part='root'][data-columns-sm='3'] {
-    --xh-_form-cols: 3;
+    --xh-_form-columns: 3;
   }
 
   .xh-scope-form[data-part='root'][data-columns-sm='4'] {
-    --xh-_form-cols: 4;
+    --xh-_form-columns: 4;
   }
 }
 
 @media (min-width: 768px) {
   .xh-scope-form[data-part='root'][data-columns-md='1'] {
-    --xh-_form-cols: 1;
+    --xh-_form-columns: 1;
   }
 
   .xh-scope-form[data-part='root'][data-columns-md='2'] {
-    --xh-_form-cols: 2;
+    --xh-_form-columns: 2;
   }
 
   .xh-scope-form[data-part='root'][data-columns-md='3'] {
-    --xh-_form-cols: 3;
+    --xh-_form-columns: 3;
   }
 
   .xh-scope-form[data-part='root'][data-columns-md='4'] {
-    --xh-_form-cols: 4;
+    --xh-_form-columns: 4;
   }
 }
 
 @media (min-width: 1024px) {
   .xh-scope-form[data-part='root'][data-columns-lg='1'] {
-    --xh-_form-cols: 1;
+    --xh-_form-columns: 1;
   }
 
   .xh-scope-form[data-part='root'][data-columns-lg='2'] {
-    --xh-_form-cols: 2;
+    --xh-_form-columns: 2;
   }
 
   .xh-scope-form[data-part='root'][data-columns-lg='3'] {
-    --xh-_form-cols: 3;
+    --xh-_form-columns: 3;
   }
 
   .xh-scope-form[data-part='root'][data-columns-lg='4'] {
-    --xh-_form-cols: 4;
+    --xh-_form-columns: 4;
   }
 }
 
 @media (min-width: 1280px) {
   .xh-scope-form[data-part='root'][data-columns-xl='1'] {
-    --xh-_form-cols: 1;
+    --xh-_form-columns: 1;
   }
 
   .xh-scope-form[data-part='root'][data-columns-xl='2'] {
-    --xh-_form-cols: 2;
+    --xh-_form-columns: 2;
   }
 
   .xh-scope-form[data-part='root'][data-columns-xl='3'] {
-    --xh-_form-cols: 3;
+    --xh-_form-columns: 3;
   }
 
   .xh-scope-form[data-part='root'][data-columns-xl='4'] {
-    --xh-_form-cols: 4;
+    --xh-_form-columns: 4;
   }
 }
 

@@ -39,7 +39,7 @@ async function mount(props: Partial<GridProps>, dir?: 'rtl'): Promise<HTMLElemen
   if (dir)
     host.dir = dir
   const grid = document.createElement('xh-grid')
-  grid.setAttribute('cols', '4')
+  grid.setAttribute('columns', '4')
   for (const [key, value] of Object.entries(props))
     grid.setAttribute(ATTRS[key]!, value === true ? '' : String(value))
   const root = document.createElement('div')

@@ -11,7 +11,7 @@ const sections = [
 </script>
 
 <template>
-  <XhGridRoot :cols="{ base: 1, sm: 2, lg: 4 }" gap="sm" style="inline-size: min(720px, 100%)">
+  <XhGridRoot :columns="{ base: 1, sm: 2, lg: 4 }" gap="sm" style="inline-size: min(720px, 100%)">
     <XhGridItem
       v-for="section in sections"
       :key="section.id"
