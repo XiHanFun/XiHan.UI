@@ -28,7 +28,7 @@ export const treeKeyboard: KeyboardTable = {
     { id: 'tree.kbd.press', keys: ['Enter', 'Space'], when: 'held on node, 树未禁用、未加载且节点未禁用', does: '按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担' },
     { id: 'tree.kbd.expand-siblings', keys: ['*'], when: 'focus in tree', does: '展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键' },
     { id: 'tree.kbd.typeahead', keys: ['单个可打印字符'], when: 'focus in tree, typeahead 未关', does: '连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支' },
-    { id: 'tree.kbd.node-move', keys: ['Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in tree, nodeDraggable 开启', does: '把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中' },
-    { id: 'tree.kbd.node-move-level', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in tree, nodeDraggable 开启', does: '改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬' },
+    { id: 'tree.kbd.node-move', keys: ['Alt+ArrowUp', 'Alt+ArrowDown'], when: 'focus in tree, nodeReorderable 开启', does: '把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowNodeDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中' },
+    { id: 'tree.kbd.node-move-level', keys: ['Alt+ArrowLeft', 'Alt+ArrowRight'], when: 'focus in tree, nodeReorderable 开启', does: '改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowNodeDrop 不许就不搬' },
   ],
 }

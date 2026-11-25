@@ -81589,7 +81589,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，\n元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`\n这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。\n因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。\n\n树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；\n落点校验 `allowDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。\n\n不写部件（或只写 root）时，元素照标准结构按 collection 生成标题（写了 label 属性时）与整棵树，\n展开、取回与重排后按值复用节点。要行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位时整棵手写。\n\n节点写 `hasChildren: true` 且不给 children 即为懒分支：首次展开时调 `loadChildren` 取子项，取回的子项由元素暂存。\n分支里的在途、失败说明、重试钮与空结果四种反馈由元素补齐，作者写了同名部件时用作者的。\n\n开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，\n为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。",
+          "description": "`<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，\n元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`\n这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。\n因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。\n\n树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；\n落点校验 `allowNodeDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。\n\n不写部件（或只写 root）时，元素照标准结构按 collection 生成标题（写了 label 属性时）与整棵树，\n展开、取回与重排后按值复用节点。要行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位时整棵手写。\n\n节点写 `hasChildren: true` 且不给 children 即为懒分支：首次展开时调 `loadChildren` 取子项，取回的子项由元素暂存。\n分支里的在途、失败说明、重试钮与空结果四种反馈由元素补齐，作者写了同名部件时用作者的。\n\n开启 node-reorderable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，\n为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。",
           "name": "XhTreeElement",
           "cssParts": [
             {
@@ -81942,16 +81942,16 @@
             },
             {
               "kind": "field",
-              "name": "nodeDraggable",
+              "name": "nodeReorderable",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "node-draggable"
+              "attribute": "node-reorderable"
             },
             {
               "kind": "field",
-              "name": "allowDrop",
+              "name": "allowNodeDrop",
               "privacy": "public",
               "type": {
                 "text": "(move: TreeNodeMoveDetails) => boolean | undefined"
@@ -82328,9 +82328,9 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "节点可以拖动移动，默认关闭；不命名为 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里",
-              "name": "node-draggable",
-              "fieldName": "nodeDraggable"
+              "description": "节点可以拖动重排，默认关闭；不写成 draggable：那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里",
+              "name": "node-reorderable",
+              "fieldName": "nodeReorderable"
             },
             {
               "name": "loading",

@@ -15796,7 +15796,7 @@
       "virtualizers"
     ],
     "tree": [
-      "allowDrop",
+      "allowNodeDrop",
       "cascade",
       "checkable",
       "checked",
@@ -15819,7 +15819,7 @@
       "loading",
       "loadingValue",
       "loop",
-      "nodeDraggable",
+      "nodeReorderable",
       "onBranchLoad",
       "onBranchLoadError",
       "onBranchLoadStart",
@@ -24783,7 +24783,7 @@
         "lines",
         "loading",
         "loop",
-        "node-draggable",
+        "node-reorderable",
         "selection-mode",
         "size",
         "typeahead",

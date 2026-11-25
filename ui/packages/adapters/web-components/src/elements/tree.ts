@@ -38,7 +38,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * 因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。
  *
  * 树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；
- * 落点校验 `allowDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。
+ * 落点校验 `allowNodeDrop`、取子项 `loadChildren`（函数）与读屏文案 `translations`（对象）同理。
  *
  * 不写部件（或只写 root）时，元素照标准结构按 collection 生成标题（写了 label 属性时）与整棵树，
  * 展开、取回与重排后按值复用节点。要行尾内容、自定义指示符、拖动把手与播报区、空态与在途占位时整棵手写。
@@ -46,7 +46,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * 节点写 `hasChildren: true` 且不给 children 即为懒分支：首次展开时调 `loadChildren` 取子项，取回的子项由元素暂存。
  * 分支里的在途、失败说明、重试钮与空结果四种反馈由元素补齐，作者写了同名部件时用作者的。
  *
- * 开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，
+ * 开启 node-reorderable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，
  * 只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，
  * 为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。
  * 键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。
@@ -73,7 +73,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
  * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
- * @attr {boolean} node-draggable - 节点可以拖动移动，默认关闭；不命名为 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里
+ * @attr {boolean} node-reorderable - 节点可以拖动重排，默认关闭；不写成 draggable：那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires checked-change - 勾选集合变化（checkable 下）；detail 为 `{ value: string[] }`
@@ -150,11 +150,10 @@ export class XhTreeElement extends XhElement {
     loop: { converter: BOOLEAN_CONVERTER },
     typeahead: { converter: BOOLEAN_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
-    // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够；
-    // 属性名让开 HTML 全局的 draggable，见类注释里的 @attr node-draggable
-    nodeDraggable: { converter: BOOLEAN_CONVERTER, attribute: 'node-draggable' },
+    // 缺席即关，没有第二种来路，用 Lit 自带的 Boolean 转换器就够
+    nodeReorderable: { converter: BOOLEAN_CONVERTER, attribute: 'node-reorderable' },
     // 函数与对象走不了属性，只作为 property 暴露
-    allowDrop: { attribute: false },
+    allowNodeDrop: { attribute: false },
     filterText: { converter: STRING_CONVERTER, attribute: 'filter-text' },
     filter: { attribute: false },
     translations: { attribute: false },
@@ -186,8 +185,8 @@ export class XhTreeElement extends XhElement {
   declare loop?: boolean
   declare typeahead?: boolean
   declare direction?: Direction
-  declare nodeDraggable?: boolean
-  declare allowDrop?: (move: TreeNodeMoveDetails) => boolean
+  declare nodeReorderable?: boolean
+  declare allowNodeDrop?: (move: TreeNodeMoveDetails) => boolean
   declare filterText?: string
   declare filter?: TreeSchema['props']['filter']
   declare translations?: Partial<TreeTranslations>
@@ -278,8 +277,8 @@ export class XhTreeElement extends XhElement {
       loop: this.loop,
       typeahead: this.typeahead,
       dir: this.direction,
-      nodeDraggable: this.nodeDraggable ?? false,
-      allowDrop: this.allowDrop,
+      nodeReorderable: this.nodeReorderable ?? false,
+      allowNodeDrop: this.allowNodeDrop,
       filterText: this.filterText,
       filter: this.filter,
       translations: this.translations,

@@ -106,9 +106,9 @@ export const XhTreeRoot = defineComponent({
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
     /** 节点可以拖动移动。整个节点都是拖动源，不另设把手。 */
-    nodeDraggable: Boolean,
+    nodeReorderable: Boolean,
     /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
-    allowDrop: { type: Function as PropType<TreeProps['allowDrop']> },
+    allowNodeDrop: { type: Function as PropType<TreeProps['allowNodeDrop']> },
     /** 检索词：非空即按 filter 把树裁到只剩命中的那几枝，祖先保留并自动展开；搜索视图的展开单独记，清空即回到原来的展开态。树自己不带输入框。 */
     filterText: { type: String },
     /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */

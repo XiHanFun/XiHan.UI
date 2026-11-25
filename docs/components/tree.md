@@ -74,7 +74,7 @@ multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾�
 
 ### 拖拽移动
 
-整个节点都是拖动源：按住拖到目标位置松手，也可以 Tab 进树后用 Alt + 上下键在同层移动、Alt + 左右键改变层级。三档落点（插在前 / 插在后 / 放进目录）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只需按库报告的 value、parent、index 调整数组，外加一条 allowDrop 决定本次是否允许
+整个节点都是拖动源：按住拖到目标位置松手，也可以 Tab 进树后用 Alt + 上下键在同层移动、Alt + 左右键改变层级。三档落点（插在前 / 插在后 / 放进目录）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只需按库报告的 value、parent、index 调整数组，外加一条 allowNodeDrop 决定本次是否允许
 
 <XhDemo src="tree/10-drag-move" />
 
@@ -161,7 +161,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 - 展开与选中分开：点行只选中，展开归箭头与左右方向键；`expandOnClick` 打开后点整行才顺带展开。
 - 节点可逐条声明语气，不向下传导；叶子行与分支行同样表达。
 - 节点可写副文本，第 2 行放一句解释，不进连打检索串。
-- 开着 `nodeDraggable` 时，节点数据写 `draggable: false` 的那一个拖不起来：指针按住、Alt + 方向键都不搬它，行上不写 `data-draggable`，它的拖拽把手报禁用；它照常能选、能展开，也照样是别的节点的落点。不向下传导，它的子节点各自照常可拖。大纲里的区域、页、页眉这类「能选能当容器、自己不能挪」的行用它，不必禁用。
+- 开着 `nodeReorderable` 时，节点数据写 `draggable: false` 的那一个拖不起来：指针按住、Alt + 方向键都不搬它，行上不写 `data-draggable`，它的拖拽把手报禁用；它照常能选、能展开，也照样是别的节点的落点。不向下传导，它的子节点各自照常可拖。大纲里的区域、页、页眉这类「能选能当容器、自己不能挪」的行用它，不必禁用。
 - 节点行尾留一格给作者（计数、徽标），排在对号之前；行首归展开箭头与拖拽把手，`multiple` 的勾选框紧随其后。
 - 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。在途分两种：还没有节点时在途占位露面，一枚加载环排在文案之前；已有节点时重新取数不换成占位，行保留上一帧淡下，取完再淡回。
 - `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
@@ -230,8 +230,8 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `translations` | `Partial<TreeTranslations>` |  |  |
-| `nodeDraggable` | `boolean` |  | 节点可以拖动移动。整个节点都是拖动源，不另设把手。 |
-| `allowDrop` | `(move: TreeMove) => boolean` |  | 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。 |
+| `nodeReorderable` | `boolean` |  | 节点可以拖动重排。整个节点都是拖动源，不另设把手。 |
+| `allowNodeDrop` | `(move: TreeMove) => boolean` |  | 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。 |
 | `filterText` | `string` |  | 检索词：trim 后非空即进入搜索视图——按 filter 把树裁到只剩命中的那几枝，命中的节点连同整棵子树留下， 祖先保留并自动展开。搜索视图里的展开单独记，不改写 expandedValue，清空检索词即回到原来的展开态。 树自己不带输入框，检索词由作者的输入框给。搜索时节点不可拖：裁剪后的位次不是数据里的位次。 |
 | `filter` | `TreeFilter` |  | 自定义匹配规则；缺省为标签大小写不敏感包含。 |
 | `onNodeMove` | `(move: TreeMove) => void` |  |  |
@@ -251,7 +251,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `value` | `string` | 是 |  |
 | `label` | `string` |  | 展示名，也是连打检索与分支可及名的取字来源；默认回退为 value。 |
 | `disabled` | `boolean` |  | 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 |
-| `draggable` | `boolean` |  | 写 false 时这一个节点拖不起来（nodeDraggable 开着时指针按住、Alt + 方向键都不搬它）， 照常能选、能展开、能当别的节点的落点。缺省可拖。不向下传导给子节点。 |
+| `draggable` | `boolean` |  | 写 false 时这一个节点拖不起来（nodeReorderable 开着时指针按住、Alt + 方向键都不搬它）， 照常能选、能展开、能当别的节点的落点。缺省可拖。不向下传导给子节点。 |
 | `tone` | `Tone` |  | 该节点自身的性质：已失效的写 danger、需要留意的写 warning。不写即与其余节点同档， 也不向下传导给子节点——每一层各自声明。只换字色与悬停 / 按下的面，不改字重与缩进， 也不表达选中或校验；选中的标记与禁用都压过它。彩字不是唯一通道，要紧的差别仍要配图标。 |
 | `description` | `string` |  | 副文本：叶子写入 item-description、分支写入 branch-description 部件；未提供时本条不铺该部件。 它是第 2 行的说明，跟着条目走 muted 档，不跟语气；放不下一行的解释才用它， 一句话能说清的写进 label。 |
 | `children` | `TreeNode[]` |  | 子节点。提供数组即判定为分支，空数组也计入：暂时没有子项的目录仍要报告 aria-expanded。 |
@@ -357,7 +357,7 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `getTreeProps` | `() => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 中、tree 的兄弟（role=tree 只允许拥有 treeitem 与 group）。 提供 collection 时由连接层按条数收放；节点手写时不写 hidden，是否显示由作者决定。 |
 | `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
-| `getNodeDragTriggerProps` | `(props: TreeNodeProps) => T['element']` | 节点拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：nodeDraggable 关闭或该节点禁用时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
+| `getNodeDragTriggerProps` | `(props: TreeNodeProps) => T['element']` | 节点拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：nodeReorderable 关闭或该节点禁用时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -397,8 +397,8 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `Enter` / `Space` | held on node, 树未禁用、未加载且节点未禁用 | 按住期间叶子行或分支行（branch-control）投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下。选中与展开语义照旧由这一次按键承担 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
-| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, nodeDraggable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, nodeDraggable 开启 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
+| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, nodeReorderable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowNodeDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, nodeReorderable 开启 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowNodeDrop 不许就不搬 |
 
 ### ARIA
 

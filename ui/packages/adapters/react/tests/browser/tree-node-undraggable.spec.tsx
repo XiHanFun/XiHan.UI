@@ -75,7 +75,7 @@ async function mount(): Promise<TreeMove[]> {
   document.body.append(host)
   root = createRoot(host)
   act(() => root!.render(
-    <XhTreeRoot collection={COLLECTION} nodeDraggable defaultExpandedValue={['inbox']} aria-label="文件夹" onNodeMove={move => moves.push(move)}>
+    <XhTreeRoot collection={COLLECTION} nodeReorderable defaultExpandedValue={['inbox']} aria-label="文件夹" onNodeMove={move => moves.push(move)}>
       <XhTreeTree>
         <XhTreeBranch value="inbox">
           <XhTreeBranchControl>

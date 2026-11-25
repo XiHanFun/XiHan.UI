@@ -99,7 +99,7 @@ async function mountTree(): Promise<void> {
       : h(XhTreeItem, { key: node.value, value: node.value }, () => h(XhTreeItemText, null, () => node.label))
     return () => h(XhTreeRoot, {
       collection: collection.value,
-      nodeDraggable: true,
+      nodeReorderable: true,
       defaultExpandedValue: ['dir'],
       onNodeMove: (move: { value: string, parent: string | null, index: number }) => {
         collection.value = applyMove(collection.value, move)

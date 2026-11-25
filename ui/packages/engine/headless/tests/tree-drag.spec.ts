@@ -90,7 +90,7 @@ describe('落点合不合法', () => {
     expect(isTreeDropAllowed(META, 'quote', { targetValue: 'ghost', position: 'inside' })).toBe(false)
   })
 
-  it('作者的 allowDrop 说了不行就不行，它收到的是折算好的搬家', () => {
+  it('作者的 allowNodeDrop 说了不行就不行，它收到的是折算好的搬家', () => {
     const seen: unknown[] = []
     const allow = (move: { value: string, parent: string | null, index: number }): boolean => {
       seen.push(move)
@@ -260,7 +260,7 @@ function mount(initial: Partial<Props> = {}) {
   const props: Partial<Props> = {
     collection: DRAG_COLLECTION,
     defaultExpandedValue: ['inbox', 'archive'],
-    nodeDraggable: true,
+    nodeReorderable: true,
     ...initial,
   }
   const runtime = createVanillaRuntime()
@@ -477,7 +477,7 @@ describe('节点拖拽 · 指针', () => {
     move(140)
     expect(h.dragging()).toBeNull()
 
-    const off = mount({ nodeDraggable: false })
+    const off = mount({ nodeReorderable: false })
     press(off, 'quote', 50)
     move(140)
     expect(off.dragging()).toBeNull()
@@ -493,8 +493,8 @@ describe('节点拖拽 · 指针', () => {
     expect(h.dragging()).toBeNull()
   })
 
-  it('allowDrop 说了不行，落点就不成立', () => {
-    const h = mount({ allowDrop: move => move.parent !== 'archive' })
+  it('allowNodeDrop 说了不行，落点就不成立', () => {
+    const h = mount({ allowNodeDrop: move => move.parent !== 'archive' })
     press(h, 'quote', 50)
     move(140)
     expect(h.drop()).toBeNull()
@@ -585,15 +585,15 @@ describe('节点拖拽 · 键盘命令', () => {
   })
 
   it('关掉 draggable 时 Alt + 方向键放行给页面', () => {
-    const h = mount({ nodeDraggable: false })
+    const h = mount({ nodeReorderable: false })
     h.service.send({ type: 'NODE.FOCUS', value: 'quote' })
     const { prevented } = key(h, 'ArrowDown', { altKey: true })
     expect(prevented).toBe(false)
   })
 
-  it('allowDrop 拦下的搬家不发事件，但要播报一句', () => {
+  it('allowNodeDrop 拦下的搬家不发事件，但要播报一句', () => {
     const onNodeMove = vi.fn()
-    const h = mount({ onNodeMove, allowDrop: () => false })
+    const h = mount({ onNodeMove, allowNodeDrop: () => false })
     h.service.send({ type: 'NODE.FOCUS', value: 'quote' })
     key(h, 'ArrowDown', { altKey: true })
     expect(onNodeMove).not.toHaveBeenCalled()
@@ -680,7 +680,7 @@ describe('节点拖拽 · 播报与属性', () => {
   })
 
   it('关掉 draggable 时一个节点都不报可拖', () => {
-    const h = mount({ nodeDraggable: false })
+    const h = mount({ nodeReorderable: false })
     expect((h.api().getItemProps({ value: 'quote' }) as Dict)['data-draggable']).toBeUndefined()
   })
 })
@@ -725,14 +725,14 @@ describe('节点拖动把手 · 触屏那一路唯一的入口', () => {
     expect(props['aria-hidden']).toBe(true)
   })
 
-  it('禁用的节点与关掉 nodeDraggable 时把手都拖不动', () => {
+  it('禁用的节点与关掉 nodeReorderable 时把手都拖不动', () => {
     const disabled = mount({
       collection: [{ value: 'a', disabled: true }, { value: 'b' }],
       defaultExpandedValue: [],
     })
     expect((disabled.api().getNodeDragTriggerProps({ value: 'a' }) as Dict)['data-disabled']).toBe('')
 
-    const off = mount({ nodeDraggable: false })
+    const off = mount({ nodeReorderable: false })
     pressHandle(off, 'quote', 50)
     expect(off.dragging()).toBeNull()
   })

@@ -75,7 +75,7 @@ async function mount(): Promise<TreeMove[]> {
   app = createApp({
     render: () => h(XhTreeRoot, {
       'collection': COLLECTION,
-      'nodeDraggable': true,
+      'nodeReorderable': true,
       'defaultExpandedValue': ['inbox'],
       'aria-label': '文件夹',
       'onNodeMove': (move: TreeMove) => moves.push(move),

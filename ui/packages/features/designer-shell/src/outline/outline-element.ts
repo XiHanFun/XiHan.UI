@@ -85,8 +85,8 @@ type OutlineTree = HTMLElement & {
   collection?: OutlineTreeNode[]
   selection?: string[]
   expandedValue?: string[]
-  nodeDraggable?: boolean
-  allowDrop?: (move: { value: string, parent: string | null, index: number }) => boolean
+  nodeReorderable?: boolean
+  allowNodeDrop?: (move: { value: string, parent: string | null, index: number }) => boolean
 }
 
 interface Parts {
@@ -255,7 +255,7 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
       return
     tree.selection = selection
     tree.expandedValue = query === '' ? branchIds(shown).filter(id => !this.#collapsed.has(id)) : branchIds(shown)
-    tree.nodeDraggable = this.allowMove !== undefined && this.readonly !== true && query === ''
+    tree.nodeReorderable = this.allowMove !== undefined && this.readonly !== true && query === ''
     if (reveal !== undefined)
       void this.updateComplete.then(() => this.#row(reveal)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }))
   }
@@ -320,7 +320,7 @@ export class XhDesignerOutlineElement extends XhReactiveElement {
       ]),
     ])
     tree.collection = treeNodes(nodes)
-    tree.allowDrop = (move) => {
+    tree.allowNodeDrop = (move) => {
       const found = this.#index.get(move.value)
       return found !== undefined && found.node.movable !== false && (this.allowMove?.({ id: move.value, parent: move.parent, index: move.index }) ?? false)
     }

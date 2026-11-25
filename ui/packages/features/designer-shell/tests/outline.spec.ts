@@ -41,7 +41,7 @@ async function mount(setup: (outline: Outline) => void = () => {}): Promise<Outl
   return outline
 }
 
-function tree(outline: Element): HTMLElement & { expandedValue?: string[], selection?: string[], nodeDraggable?: boolean, allowDrop?: (move: { value: string, parent: string | null, index: number }) => boolean } {
+function tree(outline: Element): HTMLElement & { expandedValue?: string[], selection?: string[], nodeReorderable?: boolean, allowNodeDrop?: (move: { value: string, parent: string | null, index: number }) => boolean } {
   return outline.querySelector('xh-tree')!
 }
 
@@ -246,7 +246,7 @@ describe('<xh-designer-outline>', () => {
     const deleted = record(outline, 'node-delete')
     key(treeitem(outline, 'logo'), 'Delete')
     expect(deleted).toEqual([])
-    expect(tree(outline).nodeDraggable).toBe(false)
+    expect(tree(outline).nodeReorderable).toBe(false)
     const selected = record(outline, 'node-select')
     row(outline, 'logo').click()
     expect(selected).toEqual([{ ids: ['logo'] }])
@@ -254,15 +254,15 @@ describe('<xh-designer-outline>', () => {
 
   it('拖动：给了 allowMove 才能拖；movable 为 false 的节点不许挪；树的 node-move 换成 node-move 事件', async () => {
     const outline = await mount()
-    expect(tree(outline).nodeDraggable).toBe(false)
+    expect(tree(outline).nodeReorderable).toBe(false)
     const asked: DesignerOutlineMove[] = []
     outline.allowMove = (move) => {
       asked.push(move)
       return move.parent !== 'header'
     }
     await outline.updateComplete
-    expect(tree(outline).nodeDraggable).toBe(true)
-    const allow = tree(outline).allowDrop!
+    expect(tree(outline).nodeReorderable).toBe(true)
+    const allow = tree(outline).allowNodeDrop!
     expect(allow({ value: 'phone', parent: 'col-2', index: 0 })).toBe(true)
     expect(allow({ value: 'phone', parent: 'header', index: 0 })).toBe(false)
     expect(allow({ value: 'col-1', parent: 'grid', index: 1 })).toBe(false)
@@ -279,14 +279,14 @@ describe('<xh-designer-outline>', () => {
     })
     await search(outline, 'PHONE')
     expect(Array.from(outline.querySelectorAll('[role="treeitem"]'), item => item.getAttribute('value'))).toEqual(['grid', 'col-1', 'phone'])
-    expect(tree(outline).nodeDraggable).toBe(false)
+    expect(tree(outline).nodeReorderable).toBe(false)
     await search(outline, '没有这个')
     expect(outline.querySelector('xh-tree')).toBeNull()
     const empty = outline.querySelector<HTMLElement>('[data-part="empty"]')!
     expect([empty.hidden, empty.textContent]).toEqual([false, 'No matching items'])
     await search(outline, '')
     expect(outline.querySelectorAll('[role="treeitem"]')).toHaveLength(7)
-    expect(tree(outline).nodeDraggable).toBe(true)
+    expect(tree(outline).nodeReorderable).toBe(true)
   })
 
   it('headless 时不画自己的标题，标题仍给树命名；元素自己的 translations 压在全局文案之上', async () => {

@@ -379,7 +379,7 @@ export const treeMachine = createMachine({
         const point = e.clientY - snapshotDrift(session.source, session.rects, session.value, 'y')
         // 只有分支收得下孩子；叶子上只有前后两档，没有「落进去」
         const hit = hitAlongNested(session.rects, point, value => !!meta.get(value)?.branch)
-        const ok = hit != null && isTreeDropAllowed(meta, session.value, hit, prop('allowDrop'))
+        const ok = hit != null && isTreeDropAllowed(meta, session.value, hit, prop('allowNodeDrop'))
         context.set('dropTarget', ok ? hit : null)
       },
 
@@ -409,7 +409,7 @@ export const treeMachine = createMachine({
         if (e.type !== 'NODE.MOVE_BY')
           return
         const meta = indexTree(treeCollection(prop, context))
-        if (!isTreeDropAllowed(meta, e.value, e.target, prop('allowDrop'))) {
+        if (!isTreeDropAllowed(meta, e.value, e.target, prop('allowNodeDrop'))) {
           announceNodeMove(context, prop, 'rejected', e.value)
           return
         }

@@ -35,7 +35,7 @@ async function mount(size?: 'sm' | 'md' | 'lg'): Promise<HTMLElement> {
   host.style.inlineSize = '320px'
   document.body.append(host)
   const app = createApp({
-    render: () => h(XhTreeRoot, { collection, size, nodeDraggable: true, defaultExpandedValue: ['src'], defaultSelection: ['index'] }, () => [
+    render: () => h(XhTreeRoot, { collection, size, nodeReorderable: true, defaultExpandedValue: ['src'], defaultSelection: ['index'] }, () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'src' }, () => [
           h(XhTreeBranchControl, null, () => [

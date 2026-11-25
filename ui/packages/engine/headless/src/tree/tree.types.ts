@@ -57,7 +57,7 @@ export interface TreeNode {
   /** 节点禁用：方向键与连打检索跳过它，但它仍可聚焦、仍是导航起点。不向下传导给子节点。 */
   disabled?: boolean
   /**
-   * 写 false 时这一个节点拖不起来（nodeDraggable 开着时指针按住、Alt + 方向键都不搬它），
+   * 写 false 时这一个节点拖不起来（nodeReorderable 开着时指针按住、Alt + 方向键都不搬它），
    * 照常能选、能展开、能当别的节点的落点。缺省可拖。不向下传导给子节点。
    */
   draggable?: boolean
@@ -282,14 +282,14 @@ export interface TreeSchema extends MachineSchema {
     dir?: Direction
     translations?: Partial<TreeTranslations>
     /**
-     * 节点可以拖动移动。整个节点都是拖动源，不另设把手。
+     * 节点可以拖动重排。整个节点都是拖动源，不另设把手。
      */
-    nodeDraggable?: boolean
+    nodeReorderable?: boolean
     /**
      * 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。
      * 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。
      */
-    allowDrop?: (move: TreeMove) => boolean
+    allowNodeDrop?: (move: TreeMove) => boolean
     /**
      * 检索词：trim 后非空即进入搜索视图——按 filter 把树裁到只剩命中的那几枝，命中的节点连同整棵子树留下，
      * 祖先保留并自动展开。搜索视图里的展开单独记，不改写 expandedValue，清空检索词即回到原来的展开态。
@@ -495,7 +495,7 @@ export interface TreeApi<T extends PropTypes = PropTypes> {
   /**
    * 节点拖动把手。触屏路径唯一的入口，不占 Tab 位。
    *
-   * 常驻即可：nodeDraggable 关闭或该节点禁用时它声明 data-disabled、也不再让出滚动，
+   * 常驻即可：nodeReorderable 关闭或该节点禁用时它声明 data-disabled、也不再让出滚动，
    * 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。
    */
   getNodeDragTriggerProps: (props: TreeNodeProps) => T['element']

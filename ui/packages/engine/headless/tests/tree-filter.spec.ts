@@ -128,9 +128,9 @@ describe('tree 的 filterText', () => {
   })
 
   it('搜索时节点不可拖：裁剪后的位次不是数据里的位次', () => {
-    const searching = mount({ collection: COLLECTION, nodeDraggable: true, filterText: 'math' }).api()
+    const searching = mount({ collection: COLLECTION, nodeReorderable: true, filterText: 'math' }).api()
     expect((searching.getItemProps({ value: 'math' }) as Dict)['data-draggable']).toBeUndefined()
-    const plain = mount({ collection: COLLECTION, nodeDraggable: true, defaultExpandedValue: ['src', 'utils'] }).api()
+    const plain = mount({ collection: COLLECTION, nodeReorderable: true, defaultExpandedValue: ['src', 'utils'] }).api()
     expect((plain.getItemProps({ value: 'math' }) as Dict)['data-draggable']).toBe('')
   })
 })

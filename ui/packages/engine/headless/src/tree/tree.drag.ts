@@ -33,13 +33,13 @@ export function isSelfOrDescendant(
  * 这个落点合不合法。
  *
  * 三条：不能落进自己或自己的后代（拖出一个环）、不能落在禁用的节点上、
- * 作者的 allowDrop 说了不行就不行。
+ * 作者的 allowNodeDrop 说了不行就不行。
  */
 export function isTreeDropAllowed(
   meta: ReadonlyMap<string, TreeNodeMeta>,
   dragged: string,
   target: DropTarget,
-  allowDrop?: (details: TreeMove) => boolean,
+  allowNodeDrop?: (details: TreeMove) => boolean,
 ): boolean {
   const targetMeta = meta.get(target.targetValue)
   if (!targetMeta)
@@ -54,7 +54,7 @@ export function isTreeDropAllowed(
   const move = treeMoveOf(meta, dragged, target)
   if (!move)
     return false
-  return allowDrop ? allowDrop(move) : true
+  return allowNodeDrop ? allowNodeDrop(move) : true
 }
 
 /**

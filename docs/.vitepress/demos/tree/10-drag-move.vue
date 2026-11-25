@@ -1,4 +1,4 @@
-<!-- 拖拽移动 | 整个节点都是拖动源：按住拖到目标位置松手，也可以 Tab 进树后用 Alt + 上下键在同层移动、Alt + 左右键改变层级。三档落点（插在前 / 插在后 / 放进目录）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只需按库报告的 value、parent、index 调整数组，外加一条 allowDrop 决定本次是否允许 -->
+<!-- 拖拽移动 | 整个节点都是拖动源：按住拖到目标位置松手，也可以 Tab 进树后用 Alt + 上下键在同层移动、Alt + 左右键改变层级。三档落点（插在前 / 插在后 / 放进目录）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只需按库报告的 value、parent、index 调整数组，外加一条 allowNodeDrop 决定本次是否允许 -->
 <script setup lang="ts">
 import { FileIcon } from "@xihan-ui/icons";
 import {
@@ -60,7 +60,7 @@ const log = ref("按住任意一行拖走，或 Tab 进树里按 Alt + 方向键
 
 const isFolder = (entry: Entry): entry is Folder => "children" in entry;
 
-// 目录只待在根层（下面那条 allowDrop 保证了这点），找目录就是在根层找
+// 目录只待在根层（下面那条 allowNodeDrop 保证了这点），找目录就是在根层找
 function folderOf(value: string): Folder | undefined {
   return collection.value.filter(isFolder).find(folder => folder.value === value);
 }
@@ -73,7 +73,7 @@ function levelOf(parent: string | null): Entry[] | undefined {
 // 这一次搬家许不许。库自己兜住的是「落进自己的后代」与「落在禁用节点上」，
 // 剩下的是这份数据的规矩：只有目录收得下东西，而且只收文件——
 // 目录因此永远待在根层，回收站也收不到整个目录。
-function allowDrop(move: Move): boolean {
+function allowNodeDrop(move: Move): boolean {
   if (move.parent == null)
     return true;
   return folderOf(move.parent) != null && folderOf(move.value) == null;
@@ -107,8 +107,8 @@ function onNodeMove(move: Move): void {
     <XhTreeRoot
       :collection="collection"
       :default-expanded-value="['inbox', 'archive', 'trash']"
-      :allow-drop="allowDrop"
-      node-draggable
+      :allow-drop="allowNodeDrop"
+      node-reorderable
       @node-move="onNodeMove"
     >
       <XhTreeLabel>邮箱目录</XhTreeLabel>

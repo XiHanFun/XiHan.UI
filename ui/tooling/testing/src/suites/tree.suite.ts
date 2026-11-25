@@ -330,7 +330,7 @@ export const treeSuite: ConformanceSuite = {
             // 把手不占 Tab 位、也不进可及树：键盘搬家由树上的 Alt + 方向键承担
             'aria-hidden': 'true',
             'tabindex': '-1',
-            // nodeDraggable 默认关：把手照样在场，只是报自己拖不动
+            // nodeReorderable 默认关：把手照样在场，只是报自己拖不动
             'data-disabled': '',
             'data-dragging': null,
           },
@@ -751,7 +751,7 @@ export const treeSuite: ConformanceSuite = {
       name: '节点换位：Alt + 上下键在同层兄弟里挪一位，只报事件不动 DOM；到同层首末不回绕，裸方向键仍是走行',
       spec: { apg: `${APG}#keyboardinteraction` },
       // 键盘那一路不碰把手：整个节点就是拖动源。开关只开在这个用例上
-      props: props({ nodeDraggable: true }),
+      props: props({ nodeReorderable: true }),
       covers: ['tree.kbd.node-move'],
       initial: {
         parts: {
@@ -804,7 +804,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '逐个节点不可拖动：写了 draggable: false 的节点不报可拖、Alt + 方向键搬不动它，仍能当落点',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: { collection: COLLECTION.map(node => (node.value === 'src' ? { ...node, draggable: false } : node)), nodeDraggable: true },
+      props: { collection: COLLECTION.map(node => (node.value === 'src' ? { ...node, draggable: false } : node)), nodeReorderable: true },
       initial: {
         parts: {
           'branch-control[0]': { 'data-draggable': null },
@@ -831,7 +831,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: '节点换位：Alt + 左右键改缩进层级——往里认上一个兄弟当父，往外变成父的下一个兄弟',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ nodeDraggable: true, defaultExpandedValue: ['src'] }),
+      props: props({ nodeReorderable: true, defaultExpandedValue: ['src'] }),
       covers: ['tree.kbd.node-move-level'],
       steps: [
         { kind: 'focus', part: 'item[0]', expect: { activeElement: { part: 'item[0]', exact: true } } },
@@ -865,7 +865,7 @@ export const treeSuite: ConformanceSuite = {
     {
       name: 'dir=rtl 把 Alt + 左右键整体对调：往里去的那个方向恒是缩进',
       spec: { apg: `${APG}#keyboardinteraction` },
-      props: props({ nodeDraggable: true, defaultExpandedValue: ['src'], dir: 'rtl' }),
+      props: props({ nodeReorderable: true, defaultExpandedValue: ['src'], dir: 'rtl' }),
       steps: [
         { kind: 'focus', part: 'branch[1]', expect: { activeElement: { part: 'branch[1]', exact: true } } },
         {

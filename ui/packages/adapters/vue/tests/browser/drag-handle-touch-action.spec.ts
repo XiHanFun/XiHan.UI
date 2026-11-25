@@ -91,7 +91,7 @@ describe('拖动把手真的让出了触屏手势', () => {
   it('树节点的把手解析成 none', async () => {
     const collection = [{ value: 'a', label: '甲' }]
     const root = mount(() => h('div', [
-      h(XhTreeRoot, { collection, nodeDraggable: true }, () => [
+      h(XhTreeRoot, { collection, nodeReorderable: true }, () => [
         h(XhTreeTree, null, () => [
           h(XhTreeItem, { value: 'a' }, () => [
             h(XhTreeNodeDragTrigger),

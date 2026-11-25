@@ -129,7 +129,7 @@ export function connectTree<T extends PropTypes>(
 
   const metaOf = (value: string): TreeNodeMeta | undefined => metaIndex.get(value)
   // 搜索时不可拖：裁剪后的位次不是数据里的位次，照它算出的落点会落错地方
-  const nodeDraggable = !!prop('nodeDraggable') && !searching
+  const nodeReorderable = !!prop('nodeReorderable') && !searching
   const draggingNode = context.get('draggingNode') ?? null
   // cell 初值是 undefined，这里连同收成 null：api 上写的是 | null
   const dropTarget = context.get('dropTarget') ?? null
@@ -162,8 +162,8 @@ export function connectTree<T extends PropTypes>(
     (checkable ? isChecked(value) : isSelected(value)) ? 'checked' : isIndeterminate(value) ? 'indeterminate' : 'unchecked'
   // 整棵树禁用向下传导到每个节点；节点也能在 collection 里单独禁用
   const isDisabled = (value: string): boolean => treeDisabled || !!metaOf(value)?.disabled
-  /** 这个节点能不能被拖起来：开着 nodeDraggable、没禁用、节点自己没写 draggable: false。 */
-  const canDrag = (value: string): boolean => nodeDraggable && !isDisabled(value) && metaOf(value)?.draggable !== false
+  /** 这个节点能不能被拖起来：开着 nodeReorderable、没禁用、节点自己没写 draggable: false。 */
+  const canDrag = (value: string): boolean => nodeReorderable && !isDisabled(value) && metaOf(value)?.draggable !== false
 
   /**
    * 节点语气：只认 collection 里这一层自己写的那族色，不从父节点继承。
