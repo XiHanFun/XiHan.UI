@@ -162,7 +162,6 @@ export interface LoadingBarServiceOptions extends ServiceHostOptions {
   /** error() 收尾使用的语气，默认 danger：出错的收尾要与正常收尾区分开。 */
   errorTone?: Tone
   height?: string | number
-  color?: string
   trickle?: boolean
   trickleSpeed?: number
   startValue?: number
