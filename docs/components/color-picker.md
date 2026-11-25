@@ -105,6 +105,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 - 多选的选中值在输入行里排成标签（与[选择器](./select)多选同一套库内[标签](./tag)），按加入先后：每枚标签前一个该颜色的色点，值文字收起，触发钮只剩一颗显示工作色的色块并成为键盘入口，在它上面按退格摘掉最后一个，点标签上的叉摘掉那一个；标签不截短、一行放不下就折行，超过 `maxTagCount`（默认 3）的折进 +N；表单一个选中值一份同名隐藏输入。
 - `inline` 是常驻形态：取色面直接铺在页面里，与浮层形态同一台机器、同一组部件，只是不写 `control` / `trigger` / `positioner`。取色面是静态内容面（surface 圆角、描边、不落影），不抢焦点、不入层栈，点外与 Escape 都不收起。
 - 最近使用色：一轮取色结束且颜色变了就记一笔，最新的在最前、同色只留一份、最多留 `maxRecentColors` 个（缺省 8）。浮层形态以收起为一轮，常驻形态以焦点离开取色面为一轮；只经 `setValue` 改的不记。`recentColors` 可受控，由宿主持久化；`recent-swatch-picker` 挂载点渲染它们，还没有时收起。
+- 浮层收起时 `onOpenChange` 带上关闭原因 `reason`：Escape 报 `esc`，点在浮层外或焦点移出浮层报 `interact-outside`，再点一次触发钮报 `close-trigger`，`setOpen(false)` 报 `programmatic`；展开时不带。选色、「添加」都不收起浮层，没有 `selection`；常驻形态不收起，也就不报。
 
 ### 组合
 
@@ -182,7 +183,7 @@ multiple 时浮层里调出的颜色是草稿，按「添加」收进值、浮�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `ColorPickerValueChangeDetails` | 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项 |
-| `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 | `recent-colors-change` | `ColorPickerRecentColorsChangeDetails` | 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }` |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。 |

@@ -64,9 +64,9 @@ function api(service: Service<ColorPickerSchema>) {
 }
 
 /** 真实退场资源用的最小 DOM 与行为层接线。 */
-function makePresenceService() {
+function makePresenceService(props: Props = {}) {
   const runtime = createVanillaRuntime()
-  const service = attachSliders(createService(colorPickerMachine, { props: () => ({}), runtime }), runtime)
+  const service = attachSliders(createService(colorPickerMachine, { props: () => props, runtime }), runtime)
   const root = document.createElement('div')
   const trigger = document.createElement('button')
   const positioner = document.createElement('div')
@@ -553,6 +553,54 @@ describe('colorPickerMachine 受控', () => {
     expect(onOpenChange).toHaveBeenCalledWith({ open: true })
     s.send({ type: 'CLOSE' })
     expect(s.state.matches('open')).toBe(false)
+  })
+})
+
+describe('colorPickerMachine 关闭原因', () => {
+  // 消解层回报的原因此前被丢掉，层外点击会被当成代码调用；这里走真实的消解层
+  const settle = () => new Promise(resolve => setTimeout(resolve, 0))
+  const closeReasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('escape 报 esc，点在浮层外报 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = makePresenceService({ onOpenChange })
+
+    api(h.service).setOpen(true)
+    // 本层参与者延后一枚微任务武装，免得打开那一下立刻关掉自己
+    await settle()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(h.service.state.matches('open')).toBe(false)
+
+    h.presence.update(false)
+    api(h.service).setOpen(true)
+    await settle()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(h.service.state.matches('open')).toBe(false)
+
+    expect(closeReasons(onOpenChange)).toEqual(['esc', 'interact-outside'])
+  })
+
+  it('再点一次触发钮报 close-trigger，setOpen(false) 报 programmatic，展开不带原因', () => {
+    const onOpenChange = vi.fn()
+    const s = makeService({ onOpenChange })
+    const clickTrigger = () => ((api(s).getTriggerProps() as Dict).onClick as () => void)()
+
+    clickTrigger()
+    clickTrigger()
+    clickTrigger()
+    api(s).setOpen(false)
+
+    expect(onOpenChange.mock.calls.map(c => c[0])).toEqual([
+      { open: true },
+      { open: false, reason: 'close-trigger' },
+      { open: true },
+      { open: false, reason: 'programmatic' },
+    ])
   })
 })
 

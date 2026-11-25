@@ -21,7 +21,7 @@ import { controlledOpenActions, controlledOpenGuards } from '../shared/controlle
 import { clearOpenedAtMount, openAtMount, openedAtMountCell } from '../shared/first-frame'
 import { resolveMaxSelected } from '../shared/max-selected'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
+import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
 import { trackSelectionTagMotion } from '../shared/selection-tags'
 import { resolveTranslations } from '../shared/translations'
 import { COLOR_PICKER_TAG_LIST_SELECTOR, colorPickerAnatomy } from './color-picker.anatomy'
@@ -526,7 +526,7 @@ export const colorPickerMachine = createMachine({
         !prop('disabled') && !prop('readOnly') && context.get('eyeDropperSupported'),
     },
     actions: {
-      ...controlledOpenActions<ColorPickerSchema>(),
+      ...controlledOpenActions<ColorPickerSchema>({ reason: true }),
       clearOpenedAtMount,
       markTagListTracked: ({ context }) => context.set('tagListTracked', true),
 
@@ -799,7 +799,7 @@ export const colorPickerMachine = createMachine({
             registerLayer: refs.get('registerLayer'),
             flush,
             active: () => state.matches('open'),
-            onDismiss: () => send({ type: 'CLOSE' }),
+            onDismiss: overlayCloseOnDismiss(send),
             focusScope: {
               // 展开即把焦点送进浮层；非模态，Tab 走得出去后由消解层判定是否收起
               container: () => refs.get('getContentEl')(),

@@ -5,7 +5,7 @@
 
 // 定义 color picker 类型契约。
 
-import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
+import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { ColorSliderApi, ColorSliderServices } from '../color-slider/color-slider.types'
 import type { ColorSwatchPickerApi, ColorSwatchPickerSchema } from '../color-swatch-picker/color-swatch-picker.types'
@@ -124,6 +124,12 @@ export interface ColorPickerValueChangeDetails {
 
 export interface ColorPickerOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * Escape 报 esc，点在浮层外或焦点移出浮层报 interact-outside，再点一次触发钮报 close-trigger，
+   * 代码调用（setOpen(false)）报 programmatic。选色不收起浮层，不会报 selection。
+   */
+  reason?: OverlayCloseReason
 }
 
 export interface ColorPickerRecentColorsChangeDetails {
@@ -298,7 +304,7 @@ export interface ColorPickerSchema extends MachineSchema {
   event:
     | { type: 'OPEN' }
     | { type: 'TOGGLE' }
-    | { type: 'CLOSE' }
+    | { type: 'CLOSE', src?: 'esc' | 'interact-outside' }
     // 受控回写：宿主改 open prop 后由 watch 派发，无条件跳转，不再通知
     | { type: 'CONTROLLED.OPEN' }
     | { type: 'CONTROLLED.CLOSE' }

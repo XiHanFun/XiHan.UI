@@ -114,7 +114,7 @@ const STRING_LIST_CONVERTER = {
  * @attr {string} name - 表单字段名；提供后 hidden-input 才带 name 并参与提交
  * @attr {string} placeholder - 单选未选时 value-text 显示的提示；缺省取 translations.placeholder
  * @fires value-change - 选中的颜色变化；detail 为 `{ value: string[] }`，单选恒为一项
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
  * @fires recent-colors-change - 一轮取色结束、颜色变了，最近使用色随之变化；detail 为 `{ recentColors: string[] }`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化（value 为空数组），再发它。程序化的 setValue([]) 不发。

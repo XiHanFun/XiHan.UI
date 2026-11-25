@@ -507,6 +507,33 @@ export const colorPickerSuite: ConformanceSuite = {
       ],
     },
     {
+      name: '收起原因：点在浮层外报 interact-outside，再点触发钮报 close-trigger——都是用户收的，不是代码调的',
+      spec: { apg: APG_DIALOG },
+      props: { defaultValue: '#3b82f6' },
+      steps: [
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'area-thumb' } },
+        {
+          kind: 'outside',
+          action: 'click',
+          expect: {
+            parts: { trigger: { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
+          },
+        },
+        { kind: 'click', part: 'trigger' },
+        { kind: 'settle', until: { activeElement: 'area-thumb' } },
+        {
+          kind: 'click',
+          part: 'trigger',
+          expect: {
+            parts: { trigger: { 'aria-expanded': 'false' } },
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
+          },
+        },
+      ],
+    },
+    {
       name: '最近使用色：一轮里换了色，收起那一刻记进最近使用色，挂载点随之露出',
       spec: { apg: `${APG_DIALOG}#keyboardinteraction` },
       fixture: withRecentMount,
@@ -530,7 +557,7 @@ export const colorPickerSuite: ConformanceSuite = {
             parts: { 'content': { hidden: '' }, 'recent-swatch-picker': { hidden: null } },
             events: [
               { type: 'recent-colors-change', detail: { recentColors: ['#ff0000'] } },
-              { type: 'open-change', detail: { open: false } },
+              { type: 'open-change', detail: { open: false, reason: 'esc' } },
             ],
           },
         },
