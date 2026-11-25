@@ -1209,6 +1209,7 @@ liquid 是导航层材质：浮在内容之上、内容会从它下面滚过、�
 - 开合统一 `open/onOpenChange`。悬停开合的延时统一 `openDelay / closeDelay`（毫秒），刚收起时指向另一处直接接替的窗口叫 `skipDelay`。
 - 布尔 prop 使用肯定命名：单词能说清的能力开关用 `-able`（`clearable`、`closable`、`reorderable`），需要宾语的用 `allowX`（`allowHalf`、`allowCustomValue`、`allowEmpty`），不用 `allowsX`、`disallowX`；关掉一项能力一律 `disabled`，不用正向的 `enabled`。
 - 时长与读数一律毫秒、不带单位后缀（`timeout`、`duration`、`interval`、`…Delay`）；与受控 `value` 同一读数的起止叫 `startValue / targetValue`（Timer）。
+- 可及名：交互控件与没有可见标题部件的容器用 `ariaLabel`；不可交互的图形件（Icon、BarCode、MatrixCode、ColorSwatch、Badge）用 `label`，它直接落成 `role="img"` / `status` 的名字，不写就按装饰处理或回退到值本身。
 - 画分隔线的布尔一律 `split`（Layout、List、PageHeader、Grid、Table、ButtonGroup、ToggleGroup），投影 `data-split`。
 - 上下限：数值的上下限用裸 `min / max`（NumberField、Slider、Progress、DateField）；条数的上下限用 `<min|max><对象>`：选中数 `minSelected / maxSelected`、行数 `minItems / maxItems`、标签数 `maxTags`、文件数 `maxFiles`、同时显示几条 `maxVisible`（Notification、AvatarGroup），折叠成计数的 `maxTagCount`。
 - 选中集合：单一选中集合的组件用 `value / onValueChange`；同时有选中、勾选、展开几套集合的数据视图（Table、Tree、Transfer）用 `selection / defaultSelection / onSelectionChange` 指选中那一套，Tree 的勾选集合叫 `checked / defaultChecked / onCheckedChange`。
