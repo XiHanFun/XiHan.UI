@@ -41,7 +41,7 @@ async function mount(): Promise<HTMLElement> {
   document.body.append(host)
   app = createApp({
     render: () => h(XhQuestionFlowRoot, {
-      questions: [{ id: 'lang', prompt: '用哪些语言？', type: 'multiple', maxSelected: 1, options: OPTIONS }],
+      questions: [{ id: 'lang', prompt: '用哪些语言？', selectMode: 'multiple', maxSelected: 1, options: OPTIONS }],
     }, () => h(XhQuestionFlowViewport, null, () => h(XhQuestionFlowTrack, null, () => h(XhQuestionFlowQuestion, { questionId: 'lang' }, () => [
       h(XhQuestionFlowPrompt, { questionId: 'lang' }, () => '用哪些语言？'),
       h(XhQuestionFlowDescription, { questionId: 'lang' }),

@@ -16,9 +16,9 @@ type Props = QuestionFlowSchema['props']
 type Dict = Record<string, unknown>
 
 const QUESTIONS: QuestionFlowQuestion[] = [
-  { id: 'a', prompt: '第一题', type: 'single', options: [{ value: 'a1' }, { value: 'a2' }] },
-  { id: 'b', prompt: '第二题', type: 'multiple', options: [{ value: 'b1' }, { value: 'b2' }] },
-  { id: 'c', prompt: '第三题', type: 'single', options: [{ value: 'c1' }, { value: 'c2' }] },
+  { id: 'a', prompt: '第一题', selectMode: 'single', options: [{ value: 'a1' }, { value: 'a2' }] },
+  { id: 'b', prompt: '第二题', selectMode: 'multiple', options: [{ value: 'b1' }, { value: 'b2' }] },
+  { id: 'c', prompt: '第三题', selectMode: 'single', options: [{ value: 'c1' }, { value: 'c2' }] },
 ]
 
 interface Rig {
@@ -171,7 +171,7 @@ describe('question-flow：下标与答案', () => {
 
   it('可跳过的题不答也走得下去', () => {
     const rig = mount({
-      questions: [{ id: 'a', type: 'single', optional: true, options: [{ value: 'a1' }] }],
+      questions: [{ id: 'a', selectMode: 'single', optional: true, options: [{ value: 'a1' }] }],
     })
     expect(rig.api().canAdvance).toBe(true)
   })
@@ -276,7 +276,7 @@ describe('question-flow：连接层', () => {
 
   it('漫游焦点的锚点：选中项认领，一个都没选时首个可停留项认领', () => {
     const rig = mount({
-      questions: [{ id: 'a', type: 'single', options: [{ value: 'a1', disabled: true }, { value: 'a2' }, { value: 'a3' }] }],
+      questions: [{ id: 'a', selectMode: 'single', options: [{ value: 'a1', disabled: true }, { value: 'a2' }, { value: 'a3' }] }],
     })
     const tabindexOf = (value: string): unknown =>
       (rig.api().getItemProps({ questionId: 'a', value }) as Dict).tabindex
@@ -298,7 +298,7 @@ describe('question-flow：连接层', () => {
 
   it('题干在场时由题干命名选项组，缺席时退到兜底文案', () => {
     const rig = mount({
-      questions: [{ id: 'a', prompt: '有题干', type: 'single', options: [{ value: 'a1' }] }, { id: 'b', type: 'single', options: [{ value: 'b1' }] }],
+      questions: [{ id: 'a', prompt: '有题干', selectMode: 'single', options: [{ value: 'a1' }] }, { id: 'b', selectMode: 'single', options: [{ value: 'b1' }] }],
     })
     const named = rig.api().getGroupProps({ id: 'a' }) as Dict
     const fallback = rig.api().getGroupProps({ id: 'b' }) as Dict
@@ -391,8 +391,8 @@ describe('question-flow：按压通道，Space / Enter 与触屏按住投影 dat
 
   it('边界与禁用不进：首题的上一题、末题的下一题、答不完整的提交、禁用选项、非当前题的选项、关掉的跳过', () => {
     const first = mount({ questions: [
-      { id: 'a', type: 'single', options: [{ value: 'a1' }, { value: 'a2', disabled: true }] },
-      { id: 'b', type: 'single', options: [{ value: 'b1' }] },
+      { id: 'a', selectMode: 'single', options: [{ value: 'a1' }, { value: 'a2', disabled: true }] },
+      { id: 'b', selectMode: 'single', options: [{ value: 'b1' }] },
     ], allowSkip: false })
     const touch = (props: Dict): void => {
       fire(props, 'onKeyDown', key(' '))
@@ -477,7 +477,7 @@ describe('question-flow：按压通道，Space / Enter 与触屏按住投影 dat
     const item = (): Dict => rewritten.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict
     fire(item(), 'onPointerDown', { pointerType: 'touch' })
     expect(item()['data-pressed']).toBe('')
-    rewritten.setProps({ questions: [{ id: 'a', type: 'single', options: [{ value: 'a3' }] }] })
+    rewritten.setProps({ questions: [{ id: 'a', selectMode: 'single', options: [{ value: 'a3' }] }] })
     expect(item()['data-pressed']).toBeUndefined()
 
     const skipping = mount()
@@ -495,7 +495,7 @@ describe('question-flow：多选的数量要求与说明', () => {
     {
       id: 'm',
       prompt: '选几个语言',
-      type: 'multiple',
+      selectMode: 'multiple',
       minSelected: 2,
       maxSelected: 3,
       options: [{ value: 'ts' }, { value: 'go' }, { value: 'rs' }, { value: 'py', description: '只用来写脚本' }],
@@ -553,8 +553,8 @@ describe('question-flow：多选的数量要求与说明', () => {
   it('非法的上下限按规则夹住：min 小于 1 按 1，max 小于 min 按 min，单选恒为一项', () => {
     const r = mount({
       questions: [
-        { id: 'a', type: 'multiple', minSelected: 0, maxSelected: Number.NaN, options: [] },
-        { id: 'b', type: 'multiple', minSelected: 3, maxSelected: 2, options: [] },
+        { id: 'a', selectMode: 'multiple', minSelected: 0, maxSelected: Number.NaN, options: [] },
+        { id: 'b', selectMode: 'multiple', minSelected: 3, maxSelected: 2, options: [] },
       ],
     })
     expect(r.api().selectionLimitsOf('a')).toEqual({ min: 1, max: undefined })

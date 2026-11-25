@@ -52,7 +52,7 @@ export function connectQuestionFlow<T extends PropTypes>(
   const descriptionId = (id: string): string => scope.partId(questionFlowAnatomy.name, `description:${encodeURIComponent(id)}`)
 
   const questionOf = (id: string): QuestionFlowQuestion | undefined => questions.find(q => q.id === id)
-  const typeOf = (id: string): 'single' | 'multiple' => questionOf(id)?.type ?? 'single'
+  const typeOf = (id: string): 'single' | 'multiple' => questionOf(id)?.selectMode ?? 'single'
   const answersOf = (id: string): readonly string[] => answers[id] ?? []
   const noteOf = (id: string): string => notes[id] ?? ''
   const isCurrent = (id: string): boolean => current?.id === id

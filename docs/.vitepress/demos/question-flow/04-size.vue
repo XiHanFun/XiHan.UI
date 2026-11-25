@@ -19,7 +19,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "scope",
     prompt: "这次改动动到哪一层？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "ui", label: "只改界面" },
       { value: "api", label: "改到接口" },

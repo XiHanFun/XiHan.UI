@@ -26,7 +26,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "scope",
     prompt: "这次改动动到哪一层？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "ui", label: "只改界面" },
       { value: "api", label: "改到接口" },
@@ -36,7 +36,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "checks",
     prompt: "要顺带补哪些检查？",
-    type: "multiple",
+    selectMode: "multiple",
     options: [
       { value: "unit", label: "单元测试" },
       { value: "e2e", label: "端到端" },
@@ -45,7 +45,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "branch",
     prompt: "落到哪条分支？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "main", label: "直接进主干" },
       { value: "feature", label: "先开一条特性分支" },

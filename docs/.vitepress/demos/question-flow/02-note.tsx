@@ -24,7 +24,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "tone",
     prompt: "文案用什么口吻？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "plain", label: "平铺直叙" },
       { value: "warm", label: "亲切一点" },
@@ -33,7 +33,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "length",
     prompt: "篇幅控制在多长？",
-    type: "single",
+    selectMode: "single",
     optional: true,
     options: [
       { value: "short", label: "一句话" },

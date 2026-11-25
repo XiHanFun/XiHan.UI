@@ -25,7 +25,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "target",
     prompt: "先修哪一处？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "crash", label: "崩溃" },
       { value: "slow", label: "卡顿" },
@@ -34,7 +34,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "when",
     prompt: "什么时候上线？",
-    type: "single",
+    selectMode: "single",
     options: [
       { value: "now", label: "今天" },
       { value: "week", label: "本周内" },

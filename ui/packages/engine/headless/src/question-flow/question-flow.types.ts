@@ -11,7 +11,7 @@ import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xiha
 export type QuestionFlowStatus = 'answering' | 'submitted'
 
 /** 题型：single 是互斥单选，multiple 是可多选。 */
-export type QuestionFlowType = 'single' | 'multiple'
+export type QuestionFlowSelectMode = 'single' | 'multiple'
 
 /** 一个可选项。 */
 export interface QuestionFlowOption {
@@ -32,7 +32,7 @@ export interface QuestionFlowQuestion {
   /** 题干。它同时是选项组的可访问名；未提供时回退为 translations 的兜底文案。 */
   prompt?: string
   /** single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 */
-  type?: QuestionFlowType
+  selectMode?: QuestionFlowSelectMode
   options: readonly QuestionFlowOption[]
   /** 允许不作答直接进入下一题。 */
   optional?: boolean
@@ -306,7 +306,7 @@ export interface QuestionFlowTranslations {
 
 /** 一道题的数量要求：单选恒为一项；多选按 minSelected / maxSelected 夹成合法值。 */
 export function questionSelectionLimits(question: QuestionFlowQuestion | undefined): QuestionFlowSelectionLimits {
-  if ((question?.type ?? 'single') === 'single')
+  if ((question?.selectMode ?? 'single') === 'single')
     return { min: 1, max: 1 }
   const rawMin = question!.minSelected
   const min = rawMin !== undefined && Number.isFinite(rawMin) && rawMin >= 1 ? Math.floor(rawMin) : 1

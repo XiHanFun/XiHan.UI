@@ -102,7 +102,7 @@ describe('自己画输入框的部件照字段外壳', () => {
 
   it('问答流备注：静息字段淡底，聚焦换承载面底 + 品牌描边、无环', async () => {
     await mount(() => h(XhQuestionFlowRoot, {
-      questions: [{ id: 'why', prompt: '为什么？', type: 'single', options: [{ value: 'a', label: '甲' }] }],
+      questions: [{ id: 'why', prompt: '为什么？', selectMode: 'single', options: [{ value: 'a', label: '甲' }] }],
     }, () => h(XhQuestionFlowViewport, null, () => h(XhQuestionFlowTrack, null, () =>
       h(XhQuestionFlowQuestion, { questionId: 'why' }, () => h(XhQuestionFlowNote, { questionId: 'why' }))))))
     const note = part('question-flow', 'note')

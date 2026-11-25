@@ -9,19 +9,19 @@ const QUESTIONS = [
   {
     id: 'scope',
     prompt: '这次改动动到哪一层？',
-    type: 'single' as const,
+    selectMode: 'single' as const,
     options: [{ value: 'ui', label: '界面' }, { value: 'api', label: '接口' }, { value: 'db', label: '数据' }],
   },
   {
     id: 'checks',
     prompt: '要顺带补哪些检查？',
-    type: 'multiple' as const,
+    selectMode: 'multiple' as const,
     options: [{ value: 'unit', label: '单元测试' }, { value: 'e2e', label: '端到端' }],
   },
   {
     id: 'branch',
     prompt: '落到哪条分支？',
-    type: 'single' as const,
+    selectMode: 'single' as const,
     options: [{ value: 'main', label: '主干' }, { value: 'feature', label: '特性分支' }],
   },
 ]

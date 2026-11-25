@@ -138,7 +138,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | --- | --- | --- | --- |
 | `id` | `string` | 是 |  |
 | `prompt` | `string` |  | 题干。它同时是选项组的可访问名；未提供时回退为 translations 的兜底文案。 |
-| `type` | `QuestionFlowType` |  | single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 |
+| `selectMode` | `QuestionFlowSelectMode` |  | single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 |
 | `options` | `readonly QuestionFlowOption[]` | 是 |  |
 | `optional` | `boolean` |  | 允许不作答直接进入下一题。 |
 | `description` | `string` |  | 题目的补充说明，写进 description 部件并成为选项组的描述；缺席时由多选的数量要求代填。 |

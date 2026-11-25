@@ -30,6 +30,6 @@ export type {
   QuestionFlowStatus,
   QuestionFlowSubmitDetails,
   QuestionFlowTranslations,
-  QuestionFlowType,
+  QuestionFlowSelectMode,
   QuestionFlowViewport,
 } from './question-flow.types'

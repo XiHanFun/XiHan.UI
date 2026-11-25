@@ -25,7 +25,7 @@ import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 const QUESTIONS = [
-  { id: 'a', prompt: '只有一题', type: 'single' as const, options: [{ value: 'a1', label: '甲' }] },
+  { id: 'a', prompt: '只有一题', selectMode: 'single' as const, options: [{ value: 'a1', label: '甲' }] },
 ]
 
 let app: App | null = null

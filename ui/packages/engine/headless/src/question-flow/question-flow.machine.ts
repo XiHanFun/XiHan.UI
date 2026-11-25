@@ -34,7 +34,7 @@ function questionsOf(questions: readonly QuestionFlowQuestion[] | undefined): re
  */
 function questionsKeyOf(questions: readonly QuestionFlowQuestion[] | undefined): string {
   return questionsOf(questions)
-    .map(q => `${q.id}\t${q.type ?? ''}\t${q.prompt ?? ''}\t${q.options.map(o => o.value).join('|')}`)
+    .map(q => `${q.id}\t${q.selectMode ?? ''}\t${q.prompt ?? ''}\t${q.options.map(o => o.value).join('|')}`)
     .join('\n')
 }
 
@@ -194,7 +194,7 @@ export const questionFlowMachine = createMachine({
           return false
         const { max } = questionSelectionLimits(question)
         const picked = context.get('answers')[e.questionId] ?? []
-        return (question.type ?? 'single') === 'single' || max === undefined || picked.includes(e.value) || picked.length < max
+        return (question.selectMode ?? 'single') === 'single' || max === undefined || picked.includes(e.value) || picked.length < max
       },
       // 部件自身的禁用（边界题翻页钮、答不完整的提交钮、禁用选项）只有 connect 知道，随 PRESS.START 带进来
       canPress: ({ event }) => {
@@ -210,7 +210,7 @@ export const questionFlowMachine = createMachine({
         const question = questionsOf(prop('questions')).find(q => q.id === e.questionId)
         if (!question)
           return
-        const single = (question.type ?? 'single') === 'single'
+        const single = (question.selectMode ?? 'single') === 'single'
         const picked = context.get('answers')[e.questionId] ?? []
         // 单选点已选中的那一项不取消：原生单选钮就是这样，取消会让"选了什么"变成三态
         const next = single ? [e.value] : toggleItemValue(picked, e.value)

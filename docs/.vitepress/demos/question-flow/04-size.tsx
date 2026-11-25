@@ -24,7 +24,7 @@ const questions: QuestionFlowQuestion[] = [
   {
     id: "scope",
     prompt: "这次改动动到哪一层？",
-    type: "single",
+    selectMode: "single",
     options,
   },
 ];

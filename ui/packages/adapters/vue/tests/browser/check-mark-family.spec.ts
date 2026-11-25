@@ -263,7 +263,7 @@ describe('勾选标记家族', () => {
   })
 
   it('question-flow：多选的记号同一份标记', async () => {
-    const questions = [{ id: 'q', prompt: '多选', type: 'multiple' as const, options: [{ value: 'x', label: '甲' }] }]
+    const questions = [{ id: 'q', prompt: '多选', selectMode: 'multiple' as const, options: [{ value: 'x', label: '甲' }] }]
     await mount(() => h(XhQuestionFlowRoot, { questions }, () => [
       h(XhQuestionFlowViewport, null, () => [h(XhQuestionFlowTrack, null, () => [
         h(XhQuestionFlowQuestion, { questionId: 'q' }, () => [h(XhQuestionFlowGroup, { questionId: 'q' }, () => [

@@ -11,11 +11,11 @@ import '@xihan-ui/styles'
 defineXhElements()
 
 const QUESTIONS = [
-  { id: 'a', prompt: '短的一题', type: 'single' as const, options: [{ value: 'a1', label: '甲' }] },
+  { id: 'a', prompt: '短的一题', selectMode: 'single' as const, options: [{ value: 'a1', label: '甲' }] },
   {
     id: 'b',
     prompt: '长一些的一题',
-    type: 'single' as const,
+    selectMode: 'single' as const,
     options: [{ value: 'b1', label: '甲' }, { value: 'b2', label: '乙' }, { value: 'b3', label: '丙' }],
   },
 ]

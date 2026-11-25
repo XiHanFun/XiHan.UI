@@ -64,7 +64,7 @@
       id: "cadence",
       prompt: "按什么节奏发布？",
       description: "会影响发布说明的写法。",
-      type: "single",
+      selectMode: "single",
       options: [
         { value: "weekly", label: "每周", description: "小步快跑，回滚成本低" },
         { value: "monthly", label: "每月", description: "攒一批再发，说明写得更完整" },
@@ -73,7 +73,7 @@
     {
       id: "checks",
       prompt: "上线前跑哪些检查？",
-      type: "multiple",
+      selectMode: "multiple",
       // 没写 description 时，数量要求代填成题目说明
       minSelected: 2,
       maxSelected: 3,
