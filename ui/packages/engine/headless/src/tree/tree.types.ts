@@ -125,7 +125,7 @@ export interface TreeVisibleNode extends TreeNodeMeta {
 }
 
 /** 移动：把某个节点放到某个父节点下的某个位次。父为 null 即根层。 */
-export interface TreeMove {
+export interface TreeNodeMoveDetails {
   /** 被移动的节点。 */
   value: string
   /** 移到的父节点；null 是根层。 */
@@ -289,7 +289,7 @@ export interface TreeSchema extends MachineSchema {
      * 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。
      * 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。
      */
-    allowNodeDrop?: (move: TreeMove) => boolean
+    allowNodeDrop?: (details: TreeNodeMoveDetails) => boolean
     /**
      * 检索词：trim 后非空即进入搜索视图——按 filter 把树裁到只剩命中的那几枝，命中的节点连同整棵子树留下，
      * 祖先保留并自动展开。搜索视图里的展开单独记，不改写 expandedValue，清空检索词即回到原来的展开态。
@@ -298,7 +298,7 @@ export interface TreeSchema extends MachineSchema {
     filterText?: string
     /** 自定义匹配规则；缺省为标签大小写不敏感包含。 */
     filter?: TreeFilter
-    onNodeMove?: (move: TreeMove) => void
+    onNodeMove?: (details: TreeNodeMoveDetails) => void
     onExpandedValueChange?: (details: TreeExpandedValueChangeDetails) => void
     onSelectionChange?: (details: TreeSelectionChangeDetails) => void
     /** 勾选集合变化（checkable 下点勾选框或按空格）。 */

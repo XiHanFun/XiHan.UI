@@ -6,7 +6,7 @@
 // 提供 tree 相关实现。
 
 import type { Direction, Orientation } from '@xihan-ui/core'
-import type { CollectionVirtualizer, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadStartDetails, TreeCheckedChangeDetails, TreeExpandedValueChangeDetails, TreeNode, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
+import type { CollectionVirtualizer, TreeBranchLoadDetails, TreeBranchLoadErrorDetails, TreeBranchLoadStartDetails, TreeCheckedChangeDetails, TreeExpandedValueChangeDetails, TreeNode, TreeNodeMoveDetails, TreeNodeProps, TreeSchema, TreeSelectionChangeDetails, TreeTranslations } from '@xihan-ui/headless'
 import type { ElementStructure } from '../element-base'
 import { ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectTree, treeAnatomy, treeMachine, treeMeta, treeStructure } from '@xihan-ui/headless'
@@ -18,9 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-
-/** 移动事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
-type TreeNodeMoveDetails = Parameters<NonNullable<TreeSchema['props']['onNodeMove']>>[0]
 
 /** 叶子一系的归属容器。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'

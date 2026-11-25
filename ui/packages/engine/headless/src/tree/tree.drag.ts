@@ -6,7 +6,7 @@
 // 节点拖拽的纯算法：落点合不合法、落点折算成「搬到哪个父的第几位」。
 // 不碰 DOM、不认识状态机——连接层在 render 期就要用到它们，此时 DOM 尚不存在。
 import type { DropTarget } from '../shared/drag'
-import type { TreeMove, TreeNodeMeta } from './tree.types'
+import type { TreeNodeMoveDetails, TreeNodeMeta } from './tree.types'
 
 /**
  * 目标是不是被拖节点自己或它的后代。
@@ -39,7 +39,7 @@ export function isTreeDropAllowed(
   meta: ReadonlyMap<string, TreeNodeMeta>,
   dragged: string,
   target: DropTarget,
-  allowNodeDrop?: (details: TreeMove) => boolean,
+  allowNodeDrop?: (details: TreeNodeMoveDetails) => boolean,
 ): boolean {
   const targetMeta = meta.get(target.targetValue)
   if (!targetMeta)
@@ -70,7 +70,7 @@ export function treeMoveOf(
   meta: ReadonlyMap<string, TreeNodeMeta>,
   dragged: string,
   target: DropTarget,
-): TreeMove | null {
+): TreeNodeMoveDetails | null {
   const draggedMeta = meta.get(dragged)
   const targetMeta = meta.get(target.targetValue)
   if (!draggedMeta || !targetMeta)

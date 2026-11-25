@@ -231,10 +231,10 @@ checkable 让勾选与选中各管一件事：行首勾选框与空格只改勾�
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `translations` | `Partial<TreeTranslations>` |  |  |
 | `nodeReorderable` | `boolean` |  | 节点可以拖动重排。整个节点都是拖动源，不另设把手。 |
-| `allowNodeDrop` | `(move: TreeMove) => boolean` |  | 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。 |
+| `allowNodeDrop` | `(details: TreeNodeMoveDetails) => boolean` |  | 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。 |
 | `filterText` | `string` |  | 检索词：trim 后非空即进入搜索视图——按 filter 把树裁到只剩命中的那几枝，命中的节点连同整棵子树留下， 祖先保留并自动展开。搜索视图里的展开单独记，不改写 expandedValue，清空检索词即回到原来的展开态。 树自己不带输入框，检索词由作者的输入框给。搜索时节点不可拖：裁剪后的位次不是数据里的位次。 |
 | `filter` | `TreeFilter` |  | 自定义匹配规则；缺省为标签大小写不敏感包含。 |
-| `onNodeMove` | `(move: TreeMove) => void` |  |  |
+| `onNodeMove` | `(details: TreeNodeMoveDetails) => void` |  |  |
 | `onExpandedValueChange` | `(details: TreeExpandedValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
 | `onCheckedChange` | `(details: TreeCheckedChangeDetails) => void` |  | 勾选集合变化（checkable 下点勾选框或按空格）。 |

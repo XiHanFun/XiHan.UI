@@ -8,7 +8,7 @@
 import type { ActionFn, Scope } from '@xihan-ui/core'
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { BranchLoadPort } from '../shared/lazy-branch'
-import type { TreeMove, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
+import type { TreeNodeMoveDetails, TreeNode, TreeNodeMeta, TreePressedPart, TreeSchema, TreeSelectionMode, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, ITEM_VALUE_ATTR, setup, trackReorder } from '@xihan-ui/core'
 import { createMultiPointerSession, resolveSessionDoc, shouldActivate } from '@xihan-ui/pointer'
 import { sameArray as sameValues, uniqueArray as unique } from '../shared/array'
@@ -652,7 +652,7 @@ function announceNodeMove(
   prop: <K extends keyof TreeSchema['props']>(k: K) => TreeSchema['props'][K],
   kind: DragAnnounceKind,
   value: string,
-  move?: TreeMove,
+  move?: TreeNodeMoveDetails,
 ): void {
   const meta = indexTree(treeCollection(prop, context))
   const self = meta.get(value)

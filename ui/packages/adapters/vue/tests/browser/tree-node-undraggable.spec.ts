@@ -1,6 +1,6 @@
 // 逐个节点不可拖动：收件箱写了 draggable: false。真实鼠标按住它拖到回收站上，不起拖、不报搬家；
 // 把回收站拖到收件箱那一行的中段，照样放进它里面——它自己拖不动，照样是落点。
-import type { TreeMove, TreeNode } from '@xihan-ui/headless'
+import type { TreeNodeMoveDetails, TreeNode } from '@xihan-ui/headless'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
@@ -67,8 +67,8 @@ function rowOf(value: string): HTMLElement {
   return branch ?? document.querySelector<HTMLElement>(`[data-scope='tree'][data-part='item'][data-value='${value}']`)!
 }
 
-async function mount(): Promise<TreeMove[]> {
-  const moves: TreeMove[] = []
+async function mount(): Promise<TreeNodeMoveDetails[]> {
+  const moves: TreeNodeMoveDetails[] = []
   host = document.createElement('div')
   host.style.inlineSize = '320px'
   document.body.append(host)
@@ -78,7 +78,7 @@ async function mount(): Promise<TreeMove[]> {
       'nodeReorderable': true,
       'defaultExpandedValue': ['inbox'],
       'aria-label': '文件夹',
-      'onNodeMove': (move: TreeMove) => moves.push(move),
+      'onNodeMove': (move: TreeNodeMoveDetails) => moves.push(move),
     }, () => [
       h(XhTreeTree, null, () => [
         h(XhTreeBranch, { value: 'inbox' }, () => [

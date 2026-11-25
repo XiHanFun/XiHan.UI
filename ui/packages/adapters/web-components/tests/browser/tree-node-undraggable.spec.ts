@@ -1,6 +1,6 @@
 // 逐个节点不可拖动：收件箱写了 draggable: false。真实鼠标按住它拖到回收站上，不起拖、不报搬家；
 // 把回收站拖到收件箱那一行的中段，照样放进它里面——它自己拖不动，照样是落点。
-import type { TreeMove, TreeNode } from '@xihan-ui/headless'
+import type { TreeNodeMoveDetails, TreeNode } from '@xihan-ui/headless'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
 import { defineXhElements } from '../../src/define'
@@ -61,13 +61,13 @@ function rowOf(value: string): HTMLElement {
   return branch ?? document.querySelector<HTMLElement>(`[data-scope='tree'][data-part='item'][data-value='${value}']`)!
 }
 
-async function mount(): Promise<TreeMove[]> {
-  const moves: TreeMove[] = []
+async function mount(): Promise<TreeNodeMoveDetails[]> {
+  const moves: TreeNodeMoveDetails[] = []
   document.body.innerHTML = '<div style="inline-size: 320px"><xh-tree node-reorderable aria-label="文件夹"><div data-xh-part="tree"><div data-xh-part="branch" value="inbox"><div data-xh-part="branch-control"><button data-xh-part="branch-trigger"></button><span data-xh-part="branch-text">收件箱</span></div><div data-xh-part="branch-content"><div data-xh-part="item" value="quote"><span data-xh-part="item-text">报价单</span></div></div></div><div data-xh-part="branch" value="archive"><div data-xh-part="branch-control"><button data-xh-part="branch-trigger"></button><span data-xh-part="branch-text">归档</span></div><div data-xh-part="branch-content"></div></div><div data-xh-part="item" value="trash"><span data-xh-part="item-text">回收站</span></div></div><div data-xh-part="live-region"></div></xh-tree></div>'
   const tree = document.querySelector('xh-tree') as HTMLElement & { collection: TreeNode[], defaultExpandedValue: string[], updateComplete: Promise<unknown> }
   tree.collection = COLLECTION
   tree.defaultExpandedValue = ['inbox']
-  tree.addEventListener('node-move', event => moves.push((event as CustomEvent<TreeMove>).detail))
+  tree.addEventListener('node-move', event => moves.push((event as CustomEvent<TreeNodeMoveDetails>).detail))
   await tree.updateComplete
   await frames()
   return moves
