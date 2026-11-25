@@ -90,7 +90,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 画外框与圆角，ghost 去掉外框只留行间横线，subtle 淡底；默认 outline
- * @attr {boolean} ruled - 列与列之间加竖分隔线
+ * @attr {boolean} split - 列与列之间加竖分隔线
  * @attr {number} footer-rows - 表尾行数：行号空间的最后几行留给表尾，aria-rowcount 也计入；多行表尾在每个表尾 row 上写 level
  * @attr {boolean} sticky-footer - 表尾吸底，只写 data-fixed（布尔），与 sticky-header 对称
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
@@ -211,7 +211,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
     stickyHeader: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-header' },
     striped: { converter: BOOLEAN_CONVERTER },
     variant: { converter: STRING_CONVERTER },
-    ruled: { converter: BOOLEAN_CONVERTER },
+    split: { converter: BOOLEAN_CONVERTER },
     footerRows: { converter: NUMBER_CONVERTER, attribute: 'footer-rows' },
     stickyFooter: { converter: BOOLEAN_CONVERTER, attribute: 'sticky-footer' },
     rowReorderable: { converter: BOOLEAN_CONVERTER, attribute: 'row-reorderable' },
@@ -261,7 +261,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
   declare stickyHeader?: boolean
   declare striped?: boolean
   declare variant?: ControlVariant
-  declare ruled?: boolean
+  declare split?: boolean
   declare footerRows?: number
   declare stickyFooter?: boolean
   declare rowReorderable?: boolean
@@ -407,7 +407,7 @@ export class XhTableElement<TRow extends object = TableRecord> extends XhElement
       stickyHeader: this.stickyHeader ?? false,
       striped: this.striped ?? false,
       variant: this.variant,
-      ruled: this.ruled ?? false,
+      split: this.split ?? false,
       footerRows: this.footerRows,
       stickyFooter: this.stickyFooter ?? false,
       rowReorderable: this.rowReorderable ?? false,

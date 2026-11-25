@@ -1,5 +1,5 @@
 // 栅格的格线：外框四边与格与格之间恰好一道线宽，每道线只归一格画，跨行跨列的格子里不出线；
-// 画格线时间距档位不生效、格子铺满所在格；RTL 镜像，强制色下线仍在，不写 ruled 时没有线。
+// 画格线时间距档位不生效、格子铺满所在格；RTL 镜像，强制色下线仍在，不写 split 时没有线。
 import type { GridProps } from '@xihan-ui/headless'
 import { act } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -85,8 +85,8 @@ function width(el: HTMLElement, side: 'Top' | 'Right' | 'Bottom' | 'Left'): numb
 }
 
 describe('栅格格线', () => {
-  it('ruled：外框四边各一道线宽，间距档位不生效，根按 clip 裁掉探出外框的线', async () => {
-    const root = await mount({ ruled: true, gap: 'md' })
+  it('split：外框四边各一道线宽，间距档位不生效，根按 clip 裁掉探出外框的线', async () => {
+    const root = await mount({ split: true, gap: 'md' })
     const line = strokeThin()
     const style = getComputedStyle(root)
     for (const side of ['Top', 'Right', 'Bottom', 'Left'] as const) {
@@ -100,7 +100,7 @@ describe('栅格格线', () => {
   })
 
   it('相邻格子之间恰好一道线：每格只画行尾与下方，边与边首尾相接，跨行跨列的格子按自己的盒子画', async () => {
-    const root = await mount({ ruled: true })
+    const root = await mount({ split: true })
     const line = strokeThin()
     const cells = items(root)
     for (const cell of cells) {
@@ -127,14 +127,14 @@ describe('栅格格线', () => {
   })
 
   it('align 写了 start 时格子照样铺满所在格，线够得着间隙', async () => {
-    const root = await mount({ ruled: true, align: 'start', justifyItems: 'start' })
+    const root = await mount({ split: true, align: 'start', justifyItems: 'start' })
     const r = items(root).map(cell => cell.getBoundingClientRect())
     expect(r[4]!.top).toBeCloseTo(r[0]!.bottom, 1)
     expect(r[1]!.left).toBeCloseTo(r[0]!.right, 1)
   })
 
   it('rTL 下行尾线落到左边', async () => {
-    const root = await mount({ ruled: true }, 'rtl')
+    const root = await mount({ split: true }, 'rtl')
     const line = strokeThin()
     const first = items(root)[0]!
     expect(width(first, 'Left')).toBe(line)
@@ -145,7 +145,7 @@ describe('栅格格线', () => {
 
   it('强制色下外框与格线仍在，颜色不透明', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { features: [{ name: 'forced-colors', value: 'active' }] })
-    const root = await mount({ ruled: true })
+    const root = await mount({ split: true })
     const line = strokeThin()
     const cell = items(root)[0]!
     expect(width(root, 'Top')).toBe(line)
@@ -154,7 +154,7 @@ describe('栅格格线', () => {
     expect(alpha(getComputedStyle(cell).borderBottomColor)).toBe(255)
   })
 
-  it('不写 ruled 时没有外框与格线，间距照档位走', async () => {
+  it('不写 split 时没有外框与格线，间距照档位走', async () => {
     const root = await mount({ gap: 'md' })
     expect(width(root, 'Top')).toBe(0)
     for (const cell of items(root)) {

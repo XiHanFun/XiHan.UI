@@ -130,7 +130,7 @@ export interface GridProps {
    * 画格线：外框加格与格之间的横竖线，写为 root 上的 data-split。每道线只画一次，跨行跨列的格子里不出线。
    * 画格线时行列间距一律为 0，`gap` / `rowGap` / `columnGap` 不生效；格子要铺满，空着的位置没有线。
    */
-  ruled?: boolean
+  split?: boolean
 }
 
 /** 每一格声明的占位。 */

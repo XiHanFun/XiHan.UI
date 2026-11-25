@@ -49,7 +49,7 @@ function cellSpan({ row, rowIndex, column }: TableCellSpanDetails): TableCellSpa
 
 <template>
   <div style="width: 100%; max-width: 560px">
-    <XhTableRoot :columns="columns" :rows="rows" :cell-span="cellSpan" ruled>
+    <XhTableRoot :columns="columns" :rows="rows" :cell-span="cellSpan" split>
       <XhTableCaption>季度交付单量</XhTableCaption>
       <XhTableHeader>
         <XhTableRow>

@@ -182,9 +182,9 @@ export const gridSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'ruled 在根上写 data-split，与间距档位各落各的',
+      name: 'split 在根上写 data-split，与间距档位各落各的',
       spec: { apg: APG },
-      props: { columns: 2, ruled: true, gap: 'md' },
+      props: { columns: 2, split: true, gap: 'md' },
       initial: {
         parts: {
           root: {

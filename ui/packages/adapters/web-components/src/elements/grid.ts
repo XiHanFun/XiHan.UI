@@ -56,7 +56,7 @@ function authorTier(el: HTMLElement, name: string): number | Record<string, numb
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} column-gap - 只改列间距，未提供时跟随 gap
  * @attr {'start'|'center'|'end'|'stretch'|'baseline'} align - 每一项在所在格中的块向对齐
  * @attr {'start'|'center'|'end'|'stretch'} justify-items - 每一项在所在格中的行内对齐
- * @attr {boolean} ruled - 画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效
+ * @attr {boolean} split - 画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效
  * @csspart root - 排布容器，承载 data-columns（及逐档的 data-columns-sm/-md/-lg/-xl）/ data-rows / data-min-col / data-gap / data-row-gap / data-column-gap / data-align / data-justify-items / data-split
  * @csspart item - 一格，承载声明的 data-span / data-offset / data-row-span（及各自逐档的 -sm/-md/-lg/-xl）
  */
@@ -73,7 +73,7 @@ export class XhGridElement extends XhElement {
     columnGap: { converter: STRING_CONVERTER, attribute: 'column-gap' },
     align: { converter: STRING_CONVERTER },
     justifyItems: { converter: STRING_CONVERTER, attribute: 'justify-items' },
-    ruled: { converter: BOOLEAN_CONVERTER },
+    split: { converter: BOOLEAN_CONVERTER },
   }
 
   declare columns?: GridColumnCount | ColumnsByBreakpoint
@@ -84,7 +84,7 @@ export class XhGridElement extends XhElement {
   declare columnGap?: string
   declare align?: string
   declare justifyItems?: string
-  declare ruled?: boolean
+  declare split?: boolean
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
@@ -97,7 +97,7 @@ export class XhGridElement extends XhElement {
       columnGap: this.columnGap as GridProps['columnGap'],
       align: this.align as GridProps['align'],
       justifyItems: this.justifyItems as GridProps['justifyItems'],
-      ruled: this.ruled,
+      split: this.split,
     } satisfies GridProps, wcNormalize)
 
     const root = this.getPart('root')

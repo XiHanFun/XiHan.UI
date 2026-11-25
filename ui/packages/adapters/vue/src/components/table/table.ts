@@ -200,7 +200,7 @@ const XhTableRootImpl = /* @__PURE__ */ defineComponent({
     stickyHeader: Boolean,
     striped: Boolean,
     variant: { type: String as PropType<ControlVariant> },
-    ruled: Boolean,
+    split: Boolean,
     /** 表尾行数：行号空间的最后几行留给表尾，每一行表尾写明 level。 */
     footerRows: { type: Number },
     /** 表尾吸底，与 stickyHeader 对称。 */

@@ -220,7 +220,7 @@ export interface XhTableRootProps<TRow extends object = TableRecord> extends Roo
   striped?: boolean
   /** 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 */
   variant?: ControlVariant
-  ruled?: boolean
+  split?: boolean
   /** 表尾行数：行号空间的最后几行留给表尾，每一行表尾写明 level。 */
   footerRows?: number
   /** 表尾吸底，与 stickyHeader 对称。 */
@@ -294,7 +294,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
   stickyHeader,
   striped,
   variant,
-  ruled,
+  split,
   footerRows,
   stickyFooter,
   rowReorderable,
@@ -353,7 +353,7 @@ export function XhTableRoot<TRow extends object = TableRecord>({
     stickyHeader,
     striped,
     variant,
-    ruled,
+    split,
     footerRows,
     stickyFooter,
     rowReorderable,

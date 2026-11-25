@@ -1021,7 +1021,7 @@ export function connectTable<T extends PropTypes>(
       'data-fixed': dataAttr(stickyHeader),
       'data-striped': dataAttr(!!prop('striped')),
       'data-variant': prop('variant') ?? 'outline',
-      'data-split': dataAttr(!!prop('ruled')),
+      'data-split': dataAttr(!!prop('split')),
       // 横向滚动贴着哪一端：皮肤据此只在确有内容被压住的那一侧画冻结列的边界。
       // 只在有冻结列时才跟踪，没有时恒报两端都贴着
       'data-at-min-horizontal': dataAttr(scrollEdges.atStart),

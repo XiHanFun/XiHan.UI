@@ -74,7 +74,7 @@ export function connectGrid<T extends PropTypes>(
         'data-column-gap': props.columnGap,
         'data-align': props.align,
         'data-justify-items': props.justifyItems,
-        'data-split': dataAttr(!!props.ruled),
+        'data-split': dataAttr(!!props.split),
       })
     },
 

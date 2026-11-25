@@ -1284,7 +1284,7 @@ describe('吸附列的偏移与外观开关', () => {
   })
 
   it('斑马纹 / 竖线两个开关与形态轴落到 root 上', () => {
-    const h = mount({ striped: true, variant: 'ghost', ruled: true })
+    const h = mount({ striped: true, variant: 'ghost', split: true })
     const root = h.api().getRootProps() as Record<string, unknown>
     expect(root['data-striped']).toBe('')
     // 形态如实落值：ghost 就是不画外框

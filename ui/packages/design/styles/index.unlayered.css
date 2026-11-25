@@ -8403,7 +8403,7 @@
   place-self: stretch;
   margin-block-end: calc(-1 * var(--xh-_grid-line));
   margin-inline-end: calc(-1 * var(--xh-_grid-line));
-  padding: var(--xh-grid-ruled-padding, var(--xh-space-1_5) var(--xh-space-5));
+  padding: var(--xh-grid-split-padding, var(--xh-space-1_5) var(--xh-space-5));
   border-block-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
   border-inline-end: var(--xh-_grid-line) solid var(--xh-grid-divider, var(--xh-border-default));
 }

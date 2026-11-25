@@ -1,4 +1,4 @@
-// 列与列之间的竖分隔线（ruled）不吃格子里放字的宽：开不开竖线，同一列宽里能放的字一样多。
+// 列与列之间的竖分隔线（split）不吃格子里放字的宽：开不开竖线，同一列宽里能放的字一样多。
 // 此前竖线是格子自己的末端描边，内衬照旧 16px，60px 的序号列开了竖线只剩 27.33px，
 // 「序号」两个字要 28px，差不到一个像素就出了省略号；关掉竖线又能放下。
 // 盒宽与文字是否溢出要按真实排版量，只有 Chromium 量得出来。
@@ -33,12 +33,12 @@ afterEach(() => {
   host = null
 })
 
-async function mount(ruled: boolean): Promise<void> {
+async function mount(split: boolean): Promise<void> {
   host = document.createElement('div')
   host.style.width = '480px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhTableRoot, { columns, rows, ruled }, () => [
+    render: () => h(XhTableRoot, { columns, rows, split }, () => [
       h(XhTableHeader, null, () => h(XhTableRow, null, () => columns.map(column =>
         h(XhTableColumnHeader, { key: column.id, value: column.id }, () => h(XhTableColumnLabel, null, () => column.label))))),
       h(XhTableBody, null, () => rows.map(row => h(XhTableRow, { key: row.id, value: row.id }, () =>

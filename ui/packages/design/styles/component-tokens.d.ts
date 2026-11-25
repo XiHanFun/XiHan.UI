@@ -2115,7 +2115,7 @@ export type ComponentTokenName
     | '--xh-grid-list-state-py'
     | '--xh-grid-row-gap'
     | '--xh-grid-rows'
-    | '--xh-grid-ruled-padding'
+    | '--xh-grid-split-padding'
     | '--xh-heatmap-bg'
     | '--xh-heatmap-block-gap'
     | '--xh-heatmap-block-inner-gap'

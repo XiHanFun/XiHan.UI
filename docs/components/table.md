@@ -322,7 +322,7 @@ navigation="cell" 照 treegrid 在格子之间走：Tab 进表体落在行上，
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
 | `variant` | `ControlVariant` |  | 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 |
-| `ruled` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
+| `split` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
 | `footerRows` | `number` |  | 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入； 每一行表尾经 getFooterRowProps 写明第几行（level）。 |
 | `stickyFooter` | `boolean` |  | 表尾吸底：只写 data-fixed（布尔），钉在滚动容器下沿的实现归皮肤，与 stickyHeader 对称。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |

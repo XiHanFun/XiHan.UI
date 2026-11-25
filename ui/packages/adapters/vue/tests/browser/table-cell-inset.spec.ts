@@ -32,12 +32,12 @@ afterEach(() => {
   host = null
 })
 
-async function mount(size: 'sm' | 'md' | 'lg', ruled = false): Promise<void> {
+async function mount(size: 'sm' | 'md' | 'lg', split = false): Promise<void> {
   host = document.createElement('div')
   host.style.width = '480px'
   document.body.append(host)
   app = createApp({
-    render: () => h(XhTableRoot, { columns, rows, size, ruled }, () => [
+    render: () => h(XhTableRoot, { columns, rows, size, split }, () => [
       h(XhTableHeader, null, () => h(XhTableRow, null, () => columns.map(column =>
         h(XhTableColumnHeader, { key: column.id, value: column.id }, () => h(XhTableColumnLabel, null, () => column.label))))),
       h(XhTableBody, null, () => rows.map(row => h(XhTableRow, { key: row.id, value: row.id }, () =>

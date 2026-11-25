@@ -49,7 +49,7 @@ function cellSpan({ row, rowIndex, column }: TableCellSpanDetails): TableCellSpa
 export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", maxWidth: 560 }}>
-      <XhTableRoot columns={columns} rows={rows} cellSpan={cellSpan} ruled>
+      <XhTableRoot columns={columns} rows={rows} cellSpan={cellSpan} split>
         <XhTableCaption>季度交付单量</XhTableCaption>
         <XhTableHeader>
           <XhTableRow>

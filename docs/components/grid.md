@@ -56,9 +56,9 @@ row-span 让一格占几条行轨道，常用来放一块比同行其余格子�
 
 ### 格线
 
-ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出线；画格线时间距档位不生效
+split 画外框与格与格之间的横竖线，跨行跨列的格子里不出线；画格线时间距档位不生效
 
-<XhDemo src="grid/07-ruled" />
+<XhDemo src="grid/07-split" />
 
 ## 设计指引
 
@@ -79,7 +79,7 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 - 支持统一或独立的行列间距。
 - 支持跨列、错列和格内对齐。
 - 每一格可用 `rowSpan` 跨 1 至 12 行，与跨列一样接受断点对象逐档书写；Web Components 写在 item 节点的 `row-span` 属性上。
-- `ruled` 画外框与格与格之间的横竖线，跨行跨列的格子里不出线，用来排带合并单元格的表格式布局。画格线时行列间距为 0、`gap` 档位不生效，格子铺满所在格、`align` 与 `justifyItems` 不生效；格子要铺满整行，空着的位置里没有格线。
+- `split` 画外框与格与格之间的横竖线，跨行跨列的格子里不出线，用来排带合并单元格的表格式布局。画格线时行列间距为 0、`gap` 档位不生效，格子铺满所在格、`align` 与 `justifyItems` 不生效；格子要铺满整行，空着的位置里没有格线。
 
 ### 组合
 
@@ -118,7 +118,7 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | `minColWidth` | `GridMinColWidth` |  | 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度 除以该下限得出（放得下几列即几列），`columns` 的轨道表不再生效。不接受裸像素值。 |
 | `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；未提供时跟随 gap。 |
 | `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。 提供后把这几行排为显式轨道，超出的项落入隐式行。 |
-| `ruled` | `boolean` |  | 画格线：外框加格与格之间的横竖线，写为 root 上的 data-split。每道线只画一次，跨行跨列的格子里不出线。 画格线时行列间距一律为 0，`gap` / `rowGap` / `columnGap` 不生效；格子要铺满，空着的位置没有线。 |
+| `split` | `boolean` |  | 画格线：外框加格与格之间的横竖线，写为 root 上的 data-split。每道线只画一次，跨行跨列的格子里不出线。 画格线时行列间距一律为 0，`gap` / `rowGap` / `columnGap` 不生效；格子要铺满，空着的位置没有线。 |
 
 ### React 适配器 props
 
@@ -201,7 +201,7 @@ ruled 画外框与格与格之间的横竖线，跨行跨列的格子里不出�
 | `--xh-grid-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | grid 的 root 部件 gap 覆盖槽。 |
 | `--xh-grid-row-gap` | `root` | `row-gap` | `row-gap=lg`<br>`row-gap=md`<br>`row-gap=sm`<br>`row-gap=xl`<br>`row-gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs` | grid 的 root 部件 row-gap 覆盖槽。 |
 | `--xh-grid-rows` | `root` | `grid-template-rows` | `rows` | `--xh-_grid-rows` | grid 的 root 部件 grid-template-rows 覆盖槽。 |
-| `--xh-grid-ruled-padding` | `item`<br>`root` | `padding` | `split` | `--xh-space-1_5` | grid 的 item、root 部件 padding 覆盖槽。 |
+| `--xh-grid-split-padding` | `item`<br>`root` | `padding` | `split` | `--xh-space-1_5` | grid 的 item、root 部件 padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

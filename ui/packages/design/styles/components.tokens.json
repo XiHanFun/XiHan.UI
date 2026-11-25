@@ -41450,7 +41450,7 @@
       "description": "grid 的 root 部件 grid-template-rows 覆盖槽。"
     },
     {
-      "name": "--xh-grid-ruled-padding",
+      "name": "--xh-grid-split-padding",
       "component": "grid",
       "part": [
         "item",

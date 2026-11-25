@@ -599,7 +599,7 @@ export interface TableSchema<TRow extends object = TableRecord> extends MachineS
     /** 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 */
     variant?: ControlVariant
     /** 列与列之间加竖分隔线，写为 root 上的 data-split。 */
-    ruled?: boolean
+    split?: boolean
     /**
      * 表尾行数，缺省 0。行号空间的最后几行留给它们，aria-rowcount 也把它们计入；
      * 每一行表尾经 getFooterRowProps 写明第几行（level）。

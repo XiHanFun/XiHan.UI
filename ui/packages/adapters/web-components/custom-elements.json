@@ -35708,12 +35708,12 @@
             },
             {
               "kind": "field",
-              "name": "ruled",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "ruled"
+              "attribute": "split"
             },
             {
               "kind": "method",
@@ -35796,8 +35796,8 @@
                 "text": "boolean | undefined"
               },
               "description": "画外框与格线（写为 root 上的 data-split）；画格线时行列间距为 0，gap 档位不生效",
-              "name": "ruled",
-              "fieldName": "ruled"
+              "name": "split",
+              "fieldName": "split"
             }
           ],
           "superclass": {
@@ -35826,7 +35826,7 @@
               "name": "--xh-grid-rows"
             },
             {
-              "name": "--xh-grid-ruled-padding"
+              "name": "--xh-grid-split-padding"
             }
           ]
         }
@@ -67781,12 +67781,12 @@
             },
             {
               "kind": "field",
-              "name": "ruled",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "ruled"
+              "attribute": "split"
             },
             {
               "kind": "field",
@@ -68463,8 +68463,8 @@
                 "text": "boolean | undefined"
               },
               "description": "列与列之间加竖分隔线",
-              "name": "ruled",
-              "fieldName": "ruled"
+              "name": "split",
+              "fieldName": "split"
             },
             {
               "type": {

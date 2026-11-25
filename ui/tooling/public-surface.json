@@ -14372,7 +14372,7 @@
       "minColWidth",
       "rowGap",
       "rows",
-      "ruled"
+      "split"
     ],
     "grid-list": [
       "actionOnClick",
@@ -15422,11 +15422,11 @@
       "rowKey",
       "rowReorderable",
       "rows",
-      "ruled",
       "selection",
       "selectionMode",
       "size",
       "sort",
+      "split",
       "stickyFooter",
       "stickyHeader",
       "striped",
@@ -19215,7 +19215,7 @@
     "--xh-grid-list-state-py",
     "--xh-grid-row-gap",
     "--xh-grid-rows",
-    "--xh-grid-ruled-padding",
+    "--xh-grid-split-padding",
     "--xh-heatmap-bg",
     "--xh-heatmap-block-gap",
     "--xh-heatmap-block-inner-gap",
@@ -23184,7 +23184,7 @@
         "min-col-width",
         "row-gap",
         "rows",
-        "ruled"
+        "split"
       ],
       "events": []
     },
@@ -24314,9 +24314,9 @@
         "page-size",
         "pagination",
         "row-reorderable",
-        "ruled",
         "selection-mode",
         "size",
+        "split",
         "sticky-footer",
         "sticky-header",
         "striped",
