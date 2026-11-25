@@ -6,6 +6,7 @@ import { dirname, join, posix, relative } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { stripFileHeader } from '../../../../tooling/file-header.mjs'
+import { collectTokenData, createTokenResolver } from '../../../design/tokens/build/token-modes.mjs'
 import { renderDesignMd } from './design-md.mjs'
 import { collectTokens } from './tokens.mjs'
 
@@ -30,6 +31,10 @@ execFileSync(process.execPath, [join(UI, 'scripts', 'gen-component-docs.mjs'), '
 const tokenData = await collectTokens(UI)
 const tokenValues = Object.fromEntries(tokenData.tokens.map(t => [t.name, t.value]))
 write('tokens.json', JSON.stringify(tokenData))
+/** 各环境档的取值：设计册的令牌表并排列出深色、紧凑、减弱动效那几档时用，与文档站同一份拆分。 */
+const modeTokens = createTokenResolver(collectTokenData(readFileSync(join(UI, 'packages/design/tokens/tokens.css'), 'utf8')))
+/** 令牌表列名里环境档的叫法，与文档站的表头一致。 */
+const MODE_LABELS = { dark: '深色', compact: 'compact', reduce: '减弱动效', more: '高对比' }
 
 // —— 示例源码 ——
 /** 去掉文件头与首行的「标题 | 说明」注释，它们在文档页里已经出现过。 */
@@ -113,6 +118,13 @@ function tokenValue(name) {
   return tokenData.tokens.find(t => t.name === name).resolved
 }
 
+/** 一个令牌在某一档的取值；resolve 时顺着别名展开到字面量，与文档站的 XhTokenTable / XhTokenValue 同一口径。 */
+function tokenIn(name, env, resolve) {
+  if (!(name in tokenValues))
+    throw new Error(`[build-data] 文档引用了不存在的令牌 ${name}`)
+  return modeTokens.value(name, env, resolve) ?? tokenValue(name)
+}
+
 /** 只给文档站看的组件写法压成纯 Markdown。 */
 function flattenSiteSyntax(text, pagePath) {
   return text
@@ -130,8 +142,26 @@ function flattenSiteSyntax(text, pagePath) {
     .replace(/<XhTokenTable\b([\s\S]*?)\/>/g, (_, attrs) => {
       const names = [...(/:names="\[([\s\S]*?)\]"/.exec(attrs)?.[1] ?? '').matchAll(/'(--xh-[\w-]+)'/g)].map(m => m[1])
       const notes = Object.fromEntries([...(/:notes="\{([\s\S]*?)\}"/.exec(attrs)?.[1] ?? '').matchAll(/'(--xh-[\w-]+)':\s*'([^']*)'/g)].map(m => [m[1], m[2]]))
-      const rows = names.map(name => `| \`${name}\` | \`${tokenValue(name).replace(/\|/g, '\\|')}\` | ${(notes[name] ?? '').replace(/\|/g, '\\|')} |`)
-      return ['| 令牌 | 缺省值 | 说明 |', '| --- | --- | --- |', ...rows].join('\n')
+      const resolve = /(?:^|\s)resolve(?=\s|$)/.test(attrs)
+      const modes = [...(/:modes="\[([^\]]*)\]"/.exec(attrs)?.[1] ?? '').matchAll(/'(\w+)'/g)].map(m => m[1])
+      const valueLabel = /value-label="([^"]+)"/.exec(attrs)?.[1] ?? '缺省值'
+      const cell = text => text.replace(/\|/g, '\\|')
+      const rows = names.map(name => [
+        `\`${name}\``,
+        `\`${cell(tokenIn(name, 'default', resolve))}\``,
+        ...modes.map(mode => `\`${cell(tokenIn(name, mode, resolve))}\``),
+        cell(notes[name] ?? ''),
+      ].join(' | '))
+      const head = ['令牌', valueLabel, ...modes.map(mode => MODE_LABELS[mode] ?? mode), '说明']
+      return [`| ${head.join(' | ')} |`, `| ${head.map(() => '---').join(' | ')} |`, ...rows.map(row => `| ${row} |`)].join('\n')
+    })
+    .replace(/<XhTokenValue\b([^>]*)\/>/g, (_, attrs) => {
+      const name = /name="(--xh-[\w-]+)"/.exec(attrs)?.[1]
+      if (!name)
+        throw new Error(`[build-data] ${pagePath} 的 XhTokenValue 缺 name`)
+      const value = tokenIn(name, 'default', !/:resolve="false"/.test(attrs))
+      const rem = /^(-?(?:\d+(?:\.\d+)?|\.\d+))rem$/.exec(value)
+      return /(?:^|\s)px(?=\s|$)/.test(attrs) && rem ? `${Number(rem[1]) * 16}px` : value
     })
     .replace(/<XhTokenSwatches\b([^>]*)\/>/g, (_, attrs) => {
       const prefix = /prefix="([^"]+)"/.exec(attrs)?.[1]
