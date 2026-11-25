@@ -71,6 +71,7 @@
       "./command.css",
       "./component-tokens",
       "./components.tokens.json",
+      "./container.css",
       "./context-menu.css",
       "./date-field.css",
       "./date-picker.css",
@@ -1154,6 +1155,8 @@
       "XhConfigProvider",
       "XhConfigProviderProps",
       "XhConfigSource",
+      "XhContainer",
+      "XhContainerProps",
       "XhContextMenuArrow",
       "XhContextMenuArrowProps",
       "XhContextMenuCheckboxItem",
@@ -4378,6 +4381,8 @@
       "XhCommandTrigger",
       "XhCommandTriggerProps",
       "XhConfig",
+      "XhContainer",
+      "XhContainerProps",
       "XhContextMenuArrow",
       "XhContextMenuArrowProps",
       "XhContextMenuCheckboxItem",
@@ -6806,6 +6811,7 @@
       "XhConfigControllerHost",
       "XhConfigElement",
       "XhConfigScope",
+      "XhContainerElement",
       "XhContextMenuElement",
       "XhDateFieldElement",
       "XhDatePickerElement",
@@ -8421,6 +8427,10 @@
       "ComponentMeta",
       "ConfirmErrorDetails",
       "ConfirmIntents",
+      "ContainerApi",
+      "ContainerMaxWidth",
+      "ContainerProps",
+      "ContainerTranslations",
       "ContextMenuAnyItemProps",
       "ContextMenuApi",
       "ContextMenuCheckboxItemProps",
@@ -10316,6 +10326,7 @@
       "connectColorSwatchPicker",
       "connectCombobox",
       "connectCommand",
+      "connectContainer",
       "connectContextMenu",
       "connectDateField",
       "connectDatePicker",
@@ -10429,6 +10440,9 @@
       "connectTypography",
       "connectVirtualizer",
       "connectWatermark",
+      "containerAnatomy",
+      "containerKeyboard",
+      "containerMeta",
       "contextMenuAnatomy",
       "contextMenuItemQuery",
       "contextMenuItemText",
@@ -13207,6 +13221,9 @@
       "positioner",
       "trigger"
     ],
+    "container": [
+      "root"
+    ],
     "context-menu": [
       "arrow",
       "content",
@@ -15079,6 +15096,9 @@
       "size",
       "translations",
       "variant"
+    ],
+    "container": [
+      "maxWidth"
     ],
     "context-menu": [
       "checkboxValue",
@@ -17318,6 +17338,7 @@
     "data-marked",
     "data-match",
     "data-max",
+    "data-max-width",
     "data-middle-text",
     "data-min-col",
     "data-mode",
@@ -19448,6 +19469,8 @@
     "--xh-command-positioner-px",
     "--xh-command-radius",
     "--xh-command-shadow",
+    "--xh-container-max-w",
+    "--xh-container-px",
     "--xh-context-menu-arrow-size",
     "--xh-context-menu-backdrop",
     "--xh-context-menu-border",
@@ -23854,6 +23877,12 @@
         "motion",
         "size",
         "transparency"
+      ],
+      "events": []
+    },
+    "xh-container": {
+      "attributes": [
+        "max-width"
       ],
       "events": []
     },

@@ -26,14 +26,15 @@
 
 <div class="xh-component-grid" data-category="layout">
 
+<XhComponentCard src="container" name="Container" label="容器" href="/components/container" />
 <XhComponentCard src="flex" name="Flex" label="弹性布局" href="/components/flex" />
 <XhComponentCard src="grid" name="Grid" label="栅格" href="/components/grid" />
 <XhComponentCard src="layout" name="Layout" label="布局" href="/components/layout" />
 <XhComponentCard src="masonry" name="Masonry" label="瀑布流" href="/components/masonry" />
+<XhComponentCard src="resizable" name="Resizable" label="可调容器" href="/components/resizable" />
 <XhComponentCard src="scroll-area" name="ScrollArea" label="滚动区域" href="/components/scroll-area" />
 <XhComponentCard src="separator" name="Separator" label="分隔线" href="/components/separator" />
 <XhComponentCard src="sortable" name="Sortable" label="排序" href="/components/sortable" />
-<XhComponentCard src="resizable" name="Resizable" label="可调容器" href="/components/resizable" />
 <XhComponentCard src="splitter" name="Splitter" label="分栏" href="/components/splitter" />
 
 </div>

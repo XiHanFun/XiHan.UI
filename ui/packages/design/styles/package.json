@@ -81,6 +81,7 @@
     "./color-swatch-picker.css": "./dist/css/color-swatch-picker.css",
     "./combobox.css": "./dist/css/combobox.css",
     "./command.css": "./dist/css/command.css",
+    "./container.css": "./dist/css/container.css",
     "./context-menu.css": "./dist/css/context-menu.css",
     "./date-field.css": "./dist/css/date-field.css",
     "./date-picker.css": "./dist/css/date-picker.css",

@@ -22206,6 +22206,42 @@
       "description": "command 的 content 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-container-max-w",
+      "component": "container",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "max-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_container-max-w"
+      ],
+      "visibility": "public",
+      "description": "container 的 root 部件 max-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-container-px",
+      "component": "container",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_container-px"
+      ],
+      "visibility": "public",
+      "description": "container 的 root 部件 padding-inline 覆盖槽。"
+    },
+    {
       "name": "--xh-context-menu-arrow-size",
       "component": "context-menu",
       "part": [

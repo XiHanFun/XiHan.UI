@@ -28031,6 +28031,73 @@
   }
 }
 
+/* styles/container.css */
+/* 定义 container 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  .xh-scope-container {
+    --xh-container-skin: 1;
+  }
+
+  /* Web Components 的宿主不占一层盒子：root 直接参与外层排布，与 Vue / React 直接渲染 root 一致。
+     宿主是行内盒，放进横排的弹性容器时会收到内容宽，root 的 100% 跟着落空。
+     零特指度，作者给宿主写的 display 照层叠胜出；带 hidden 的宿主不掀开 */
+  :where(xh-container:not([hidden])) {
+    display: contents;
+  }
+
+  /* 版心：铺满所在的行，宽到档位那一档就停下、左右留出相等的空白。
+     最大宽度含左右内衬（盒按 border-box 量），与断点同名的档就与断点同宽。
+     使用者槽排在档位之前：写死一个值即盖过所有档，内衬同理盖过各个视口档 */
+  .xh-scope-container[data-part='root'] {
+    --xh-_container-max-w: var(--xh-breakpoint-lg);
+    --xh-_container-px: var(--xh-space-4);
+
+    /* root 写成什么标签都按块排：作者在 Web Components 里自带的节点可能是行内的 */
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--xh-container-max-w, var(--xh-_container-max-w));
+    margin-inline: auto;
+    padding-inline: var(--xh-container-px, var(--xh-_container-px));
+  }
+
+  /* —— 最大宽度档 —— */
+  /* 四档与断点令牌同名同宽；lg 是缺省档，root 上那条已经给了 */
+  .xh-scope-container[data-part='root'][data-max-width='sm'] {
+    --xh-_container-max-w: var(--xh-breakpoint-sm);
+  }
+
+  .xh-scope-container[data-part='root'][data-max-width='md'] {
+    --xh-_container-max-w: var(--xh-breakpoint-md);
+  }
+
+  .xh-scope-container[data-part='root'][data-max-width='xl'] {
+    --xh-_container-max-w: var(--xh-breakpoint-xl);
+  }
+
+  /* 不限宽：铺满所在的行，只留左右内衬 */
+  .xh-scope-container[data-part='root'][data-max-width='full'] {
+    --xh-_container-max-w: none;
+  }
+
+  /* —— 左右内衬 —— */
+  /* 窄屏贴边只留一档 16px，视口宽到 sm 断点起放到 24px：两侧的空白跟着屏幕变宽。
+     移动优先只写 min-width；宽度写字面量：自定义属性在 @media 条件里不参与求值，
+     640px 与 --xh-breakpoint-sm 对得上（check-breakpoints 核对） */
+  @media (min-width: 640px) {
+    .xh-scope-container[data-part='root'] {
+      --xh-_container-px: var(--xh-space-6);
+    }
+  }
+
+  /* 上面声明了 display，会盖掉 UA 的 [hidden]{display:none}，收起态要在这里接回来。
+     写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
+  .xh-scope-container[data-part='root'][hidden] {
+    display: none;
+  }
+}
+
 /* styles/context-menu.css */
 /* 定义 context menu 样式。 */
 

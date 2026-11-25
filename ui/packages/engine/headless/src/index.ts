@@ -75,6 +75,8 @@ export type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, Com
 export { componentDefault, componentTranslations, DISABLED_IS_NOT_SCOPED, fillXhConfigDefaults, mergeTranslations, mergeXhConfig, SIZE_IS_NOT_AXIS, withXhConfigBase } from './config/config-merge'
 export type { XhComponentDefaults, XhConfigBase } from './config/config-merge'
 export type { XhTranslationOverrides } from './config/translations'
+export { connectContainer, containerAnatomy, containerKeyboard, containerMeta } from './container'
+export type { ContainerApi, ContainerMaxWidth, ContainerProps, ContainerTranslations } from './container'
 export { connectContextMenu, CONTEXT_MENU_DEFAULT_OFFSET, CONTEXT_MENU_DEFAULT_PLACEMENT, CONTEXT_MENU_LONG_PRESS_DELAY, CONTEXT_MENU_MOVE_TOLERANCE, contextMenuAnatomy, contextMenuItemQuery, contextMenuItemText, contextMenuKeyboard, contextMenuMachine, contextMenuMeta, contextMenuStructure } from './context-menu'
 export type { ContextMenuAnyItemProps, ContextMenuApi, ContextMenuCheckboxItemProps, ContextMenuCheckboxValueChangeDetails, ContextMenuFocusIntent, ContextMenuGroupProps, ContextMenuItemProps, ContextMenuItemSelectDetails, ContextMenuNode, ContextMenuNodeMeta, ContextMenuOpenChangeDetails, ContextMenuPoint, ContextMenuRadioItemProps, ContextMenuRadioValue, ContextMenuRadioValueChangeDetails, ContextMenuRefs, ContextMenuSchema, ContextMenuStructureOptions, ContextMenuTranslations } from './context-menu'
 export { connectDateField, DATE_FIELD_CLEAR_LABEL, DATE_FIELD_GRANULARITY, DATE_FIELD_LOCALE, DATE_FIELD_YEAR_MAX, DATE_FIELD_YEAR_MIN, DATE_FIELD_YEAR_PIVOT, dateFieldAnatomy, dateFieldKeyboard, dateFieldMachine, dateFieldMeta, dateFieldStructure } from './date-field'

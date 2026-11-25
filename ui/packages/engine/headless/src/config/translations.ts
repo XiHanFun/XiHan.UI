@@ -39,6 +39,7 @@ import type { ColorSwatchPickerTranslations } from '../color-swatch-picker/color
 import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { CommandTranslations } from '../command/command.types'
+import type { ContainerTranslations } from '../container/container.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
 import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
@@ -185,6 +186,7 @@ export interface XhTranslationOverrides {
   'color-swatch-picker'?: Partial<ColorSwatchPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>
   'command'?: Partial<CommandTranslations>
+  'container'?: Partial<ContainerTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>
   'date-field'?: Partial<DateFieldTranslations>
   'date-picker'?: Partial<DatePickerTranslations>

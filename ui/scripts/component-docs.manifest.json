@@ -65,6 +65,10 @@
       "description": "只分配空间、不承载内容语义的容器。",
       "components": [
         {
+          "id": "container",
+          "name": "容器"
+        },
+        {
           "id": "flex",
           "name": "弹性布局"
         },
@@ -81,6 +85,10 @@
           "name": "瀑布流"
         },
         {
+          "id": "resizable",
+          "name": "可调容器"
+        },
+        {
           "id": "scroll-area",
           "name": "滚动区域"
         },
@@ -91,10 +99,6 @@
         {
           "id": "sortable",
           "name": "排序"
-        },
-        {
-          "id": "resizable",
-          "name": "可调容器"
         },
         {
           "id": "splitter",

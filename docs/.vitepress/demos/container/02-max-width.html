@@ -1,0 +1,48 @@
+<!-- 最大宽度 | sm / md / lg / xl 四档与同名断点同宽，full 不限宽；轨道比舞台宽，各档的起止边线错开成台阶，横向滚动看全 -->
+<!-- 轨道取 xl 断点的 1.25 倍：比最宽的断点档还宽，full 与 xl 才分得开；每一档一行，档名在前，淡色占位块铺满版心剩下的宽度 -->
+<div data-xh-scroll role="region" tabindex="0" aria-label="最大宽度各档对照" style="inline-size: 100%; overflow-x: auto">
+  <xh-flex orientation="vertical" gap="sm" style="display: contents">
+    <div data-xh-part="root" style="inline-size: calc(var(--xh-breakpoint-xl) * 1.25)">
+      <xh-container max-width="sm">
+        <div data-xh-part="root">
+          <div style="display: flex; align-items: center; gap: var(--xh-space-2)">
+            <span style="min-inline-size: var(--xh-space-8); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">sm</span>
+            <div data-demo-block data-tone="brand" style="flex: 1"></div>
+          </div>
+        </div>
+      </xh-container>
+      <xh-container max-width="md">
+        <div data-xh-part="root">
+          <div style="display: flex; align-items: center; gap: var(--xh-space-2)">
+            <span style="min-inline-size: var(--xh-space-8); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">md</span>
+            <div data-demo-block data-tone="info" style="flex: 1"></div>
+          </div>
+        </div>
+      </xh-container>
+      <xh-container max-width="lg">
+        <div data-xh-part="root">
+          <div style="display: flex; align-items: center; gap: var(--xh-space-2)">
+            <span style="min-inline-size: var(--xh-space-8); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">lg</span>
+            <div data-demo-block data-tone="success" style="flex: 1"></div>
+          </div>
+        </div>
+      </xh-container>
+      <xh-container max-width="xl">
+        <div data-xh-part="root">
+          <div style="display: flex; align-items: center; gap: var(--xh-space-2)">
+            <span style="min-inline-size: var(--xh-space-8); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">xl</span>
+            <div data-demo-block data-tone="warning" style="flex: 1"></div>
+          </div>
+        </div>
+      </xh-container>
+      <xh-container max-width="full">
+        <div data-xh-part="root">
+          <div style="display: flex; align-items: center; gap: var(--xh-space-2)">
+            <span style="min-inline-size: var(--xh-space-8); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">full</span>
+            <div data-demo-block data-tone="neutral" style="flex: 1"></div>
+          </div>
+        </div>
+      </xh-container>
+    </div>
+  </xh-flex>
+</div>

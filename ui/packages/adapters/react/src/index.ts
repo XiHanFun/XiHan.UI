@@ -645,6 +645,8 @@ export {
 } from './components/command/context'
 export { useCommand } from './components/command/use-command'
 export type { CommandContext } from './components/command/use-command'
+export { XhContainer } from './components/container/container'
+export type { XhContainerProps } from './components/container/container'
 export {
   useContextMenuContext,
   useContextMenuGroupContext,

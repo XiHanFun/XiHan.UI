@@ -41,6 +41,7 @@ import { XhColorSwatchPickerElement } from './elements/color-swatch-picker'
 import { XhComboboxElement } from './elements/combobox'
 import { XhCommandElement } from './elements/command'
 import { XhConfigElement } from './elements/config'
+import { XhContainerElement } from './elements/container'
 import { XhContextMenuElement } from './elements/context-menu'
 import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
@@ -171,6 +172,7 @@ const XH_ELEMENTS = {
   'xh-color-swatch': XhColorSwatchElement,
   'xh-color-swatch-picker': XhColorSwatchPickerElement,
   'xh-command': XhCommandElement,
+  'xh-container': XhContainerElement,
   'xh-date-range-picker': XhDateRangePickerElement,
   'xh-descriptions': XhDescriptionsElement,
   'xh-diff-view': XhDiffViewElement,
@@ -391,6 +393,7 @@ export {
   XhComboboxElement,
   XhCommandElement,
   XhConfigElement,
+  XhContainerElement,
   XhContextMenuElement,
   XhDateFieldElement,
   XhDatePickerElement,

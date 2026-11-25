@@ -31,6 +31,7 @@ import { colorSwatchPickerSuite } from './color-swatch-picker.suite'
 import { colorSwatchSuite } from './color-swatch.suite'
 import { comboboxSuite } from './combobox.suite'
 import { commandSuite } from './command.suite'
+import { containerSuite } from './container.suite'
 import { contextMenuSuite } from './context-menu.suite'
 import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
@@ -290,4 +291,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   expressionInputSuite,
   formatInputSuite,
   filterBuilderSuite,
+  containerSuite,
 ]

@@ -1,0 +1,13 @@
+<!-- 基础用法 | 内容收进居中的版心：铺满所在的行，宽到最大宽度档就停下，左右留出内衬 -->
+<!-- 虚线只为看清版心的边界：outline 不占盒，量出来的宽度与内衬与不画时一致 -->
+<xh-container>
+  <div data-xh-part="root" style="outline: var(--xh-stroke-thin) dashed var(--xh-border-default); outline-offset: calc(var(--xh-stroke-thin) * -1)">
+    <xh-flex orientation="vertical" gap="sm" style="display: contents">
+      <div data-xh-part="root">
+        <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 40%"></span>
+        <span data-demo-block="line" data-tone="neutral"></span>
+        <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 72%"></span>
+      </div>
+    </xh-flex>
+  </div>
+</xh-container>

@@ -112,7 +112,7 @@ XiHan.UI 是一个 pnpm workspace。`packages/*/*` 是对外发布的库包（�
 | `@xihan-ui/vue` | `./backgrounds` `./behavior` `./locale` `./plugin`（全量注册与全局组件类型） `./resolver`（unplugin-vue-components 的组件解析器） `./sound` `./nuxt`（Nuxt 模块） |
 | `@xihan-ui/react` | `./backgrounds` `./behavior` `./locale` `./sound` |
 | `@xihan-ui/web-components` | `./define` `./backgrounds` `./locale` `./services` `./authoring`（第三方编写元素用的基类与辅助件） `./custom-elements.json` |
-| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 156 条（143 份组件皮肤 + 13 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口、`./global.css`（可选的全局入口）、`./vite`（按用到的组件自动注入皮肤的 Vite 插件）、`./component-tokens` 与 `./components.tokens.json`（组件覆盖槽的清单） |
+| `@xihan-ui/styles` | 每份皮肤一条 CSS，共 157 条（144 份组件皮肤 + 13 份共享层），另有 `./index.css`（主入口，生成的扁平有层文件，家族只内联一次）与 `./index.unlayered.css` 两个整包入口、`./global.css`（可选的全局入口）、`./vite`（按用到的组件自动注入皮肤的 Vite 插件）、`./component-tokens` 与 `./components.tokens.json`（组件覆盖槽的清单） |
 
 其余十二个包（`motion` / `pointer` / `position` / `code-highlight` / `animations` / `backgrounds` / `chat-stream` / `markdown` / `sound` / `cli` / `expression` / `xlsx`）只有主入口。
 

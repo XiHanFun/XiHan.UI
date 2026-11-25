@@ -1,0 +1,38 @@
+<!-- 放进页面骨架 | 页头、内容与页脚各放一个同档的版心，三段的内容对齐到同一条边线；通栏的底色与分隔线留在布局各段上 -->
+<xh-layout split style="display: contents">
+  <div data-xh-part="root" style="inline-size: 100%; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <div data-xh-part="header">
+      <xh-container max-width="sm">
+        <div data-xh-part="root">
+          <xh-flex justify="between" align="center" style="display: contents">
+            <div data-xh-part="root">
+              <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 24%"></span>
+              <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 32%"></span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-container>
+    </div>
+    <div data-xh-part="content">
+      <xh-container max-width="sm">
+        <div data-xh-part="root">
+          <xh-flex orientation="vertical" gap="sm" style="display: contents">
+            <div data-xh-part="root">
+              <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 48%"></span>
+              <span data-demo-block="line" data-tone="neutral"></span>
+              <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80%"></span>
+              <span data-demo-block data-tone="info"></span>
+            </div>
+          </xh-flex>
+        </div>
+      </xh-container>
+    </div>
+    <div data-xh-part="footer">
+      <xh-container max-width="sm">
+        <div data-xh-part="root">
+          <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 36%"></span>
+        </div>
+      </xh-container>
+    </div>
+  </div>
+</xh-layout>
