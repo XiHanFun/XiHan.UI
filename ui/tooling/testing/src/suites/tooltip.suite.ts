@@ -221,7 +221,7 @@ export const tooltipSuite: ConformanceSuite = {
               trigger: { 'aria-describedby': null, 'data-state': 'closed' },
               content: { 'data-state': 'closed', 'hidden': '' },
             },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'esc' } }],
           },
         },
       ],
@@ -238,7 +238,7 @@ export const tooltipSuite: ConformanceSuite = {
           run: dispatchOnTrigger('pointerdown'),
           expect: {
             parts: { content: { 'data-state': 'closed', 'hidden': '' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],
@@ -487,7 +487,7 @@ export const tooltipSuite: ConformanceSuite = {
           run: dispatchOnAnchor('undo', 'focusout'),
           expect: {
             parts: { content: { 'data-state': 'closed' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'interact-outside' } }],
           },
         },
       ],
@@ -509,7 +509,7 @@ export const tooltipSuite: ConformanceSuite = {
           },
           expect: {
             parts: { content: { 'data-state': 'closed' } },
-            events: [{ type: 'open-change', detail: { open: false } }],
+            events: [{ type: 'open-change', detail: { open: false, reason: 'close-trigger' } }],
           },
         },
       ],

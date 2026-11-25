@@ -155,3 +155,23 @@ describe('tooltip delay 与 hover 语义', () => {
     expect(service.state.get()).toBe('visible.open')
   })
 })
+
+describe('tooltip 的关闭原因随消解层的来源走', () => {
+  const closeReasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+
+  it('escape 报 esc，点在提示外报 interact-outside', async () => {
+    const h = tooltipHarness()
+    await tick()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(h.service.state.get()).toBe('closed')
+
+    h.presence.update(false)
+    h.api().setOpen(true)
+    h.presence.update(true)
+    await tick()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    expect(h.service.state.get()).toBe('closed')
+    expect(closeReasons(h.onOpenChange)).toEqual(['esc', 'interact-outside'])
+  })
+})

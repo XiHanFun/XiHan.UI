@@ -197,7 +197,19 @@ export const tooltipMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<TooltipSchema>(),
+      // 悬停型浮层的专有出口：指针移开等到点算 hover，失焦与消解层的层外聚焦同属层外交互，按下触发器是用户亲手收的
+      ...controlledOpenActions<TooltipSchema>({
+        reason: true,
+        extra: (event) => {
+          if (event.type === 'after.closeDelay')
+            return 'hover'
+          if (event.type === 'BLUR')
+            return 'interact-outside'
+          if (event.type === 'POINTER.DOWN')
+            return 'close-trigger'
+          return undefined
+        },
+      }),
       clearOpenedAtMount,
       markFocusOpened: ({ context }) => context.set('focusOpened', true),
       clearFocusOpened: ({ context }) => context.set('focusOpened', false),
@@ -306,7 +318,7 @@ export const tooltipMachine = createMachine({
         }
       },
       /** 露面即登记进所在组的热窗口：组里别的开着的提示随之收起；收起时撤下并记下收起时刻。 */
-      trackGroup: ({ scope, send, refs }) => groupOf(refs).join(scope.id, () => send({ type: 'CLOSE' })),
+      trackGroup: ({ scope, send, refs }) => groupOf(refs).join(scope.id, () => send({ type: 'CLOSE', src: 'hover' })),
       /** 浮层退场完成前保留原栈位；关闭后不再响应消解，不建焦点域、不锁滚动。 */
       trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
         presence: () => refs.get('presence'),
@@ -334,7 +346,7 @@ export const tooltipMachine = createMachine({
               },
               onDismiss: (reason) => {
                 if (state.matches('visible'))
-                  send({ type: reason === 'escape-key' ? 'ESCAPE' : 'CLOSE' })
+                  send(reason === 'escape-key' ? { type: 'ESCAPE' } : { type: 'CLOSE', src: 'interact-outside' })
               },
             })
             defer(() => dismiss.dispose())

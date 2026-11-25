@@ -55,7 +55,7 @@ const NUMBER_CONVERTER = {
  * @attr {'auto'|'mac'|'other'} platform - 委托模式下快捷键按哪个平台的写法显示，默认 auto：指向锚点时测一次
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @csspart trigger - 悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）；委托模式下是装着锚点的容器
  * @csspart positioner - 浮层定位容器（坐标写为内联样式，落定朝向在 data-placement）
  * @csspart content - role=tooltip 的提示内容（收起时 hidden）

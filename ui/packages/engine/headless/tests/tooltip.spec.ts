@@ -143,7 +143,7 @@ describe('tooltipMachine 悬停', () => {
     t.send('POINTER.LEAVE')
     vi.advanceTimersByTime(100)
     expect(t.state()).toBe('closed')
-    expect(t.changes).toEqual([{ open: true }, { open: false }])
+    expect(t.changes).toEqual([{ open: true }, { open: false, reason: 'hover' }])
 
     t.send('OPEN')
     t.send('POINTER.DOWN')
@@ -161,7 +161,7 @@ describe('tooltipMachine 焦点', () => {
     expect(t.state()).toBe('visible.open')
     t.send('BLUR')
     expect(t.state()).toBe('closed')
-    expect(t.changes).toEqual([{ open: true }, { open: false }])
+    expect(t.changes).toEqual([{ open: true }, { open: false, reason: 'interact-outside' }])
     t.stop()
   })
 
@@ -189,7 +189,7 @@ describe('connectTooltip 按下之后的聚焦', () => {
 
     on(t, 'onFocus')
     expect(t.state()).toBe('closed')
-    expect(t.changes).toEqual([{ open: true }, { open: false }])
+    expect(t.changes).toEqual([{ open: true }, { open: false, reason: 'close-trigger' }])
     t.stop()
   })
 
@@ -244,7 +244,7 @@ describe('tooltipMachine 受控', () => {
     t.send('POINTER.LEAVE')
     vi.advanceTimersByTime(50)
     expect(t.state()).toBe('visible.open')
-    expect(t.changes).toEqual([{ open: false }])
+    expect(t.changes).toEqual([{ open: false, reason: 'hover' }])
     t.stop()
   })
 })

@@ -111,6 +111,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
   - 提示文字与锚点的名字不同（写了 `data-xh-tooltip`）时，锚点的 `aria-describedby` 引用 `text`；相同就不引用，读屏不念两遍。快捷键只由锚点自己的 `aria-keyshortcuts` 报给读屏。
   - 原生禁用的按钮仍收得到指针事件，悬停照样出提示；键盘本来就停不到它。
 - 聚焦也能触发，键盘用户可以访问。
+- 收起时 `onOpenChange` 带上关闭原因 `reason`：指针移开、等过 `closeDelay` 与同组另一处提示露面把它顶掉报 `hover`；焦点离开、点在提示外报 `interact-outside`；按下触发器报 `close-trigger`；Escape 报 `esc`；`setOpen(false)` 报 `programmatic`。展开时不带。
 - 按下触发器即收起，让位给真正的操作；点击带来的那次聚焦不再把提示打开，指针移开再回来、或用键盘聚焦时照常出现。
 - 语气与尺寸两轴。
 - 默认与 Popover 同一副浮层面（compact 档 frosted）：底、字、边取 frosted 材质，两个主题都不反白，与 Popover 靠一行字的尺寸与控件圆角区分。写了 `tone` 换实心语气底配不透明文字，边界由 on 色 20% 的拼色描边承担（中性描边压在彩色底上看不见），这时面内成为墨色域。箭头和气泡同色同边，不画顶部高光；圆角取控件档。
@@ -176,7 +177,7 @@ delegate 让一个提示管一整排按钮：文字取按钮的 data-xh-tooltip 
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `TooltipOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `TooltipOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因 |
 
 ### 插槽
 

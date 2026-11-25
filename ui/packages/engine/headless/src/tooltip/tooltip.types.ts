@@ -5,13 +5,19 @@
 
 // 定义 tooltip 类型契约。
 
-import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { Cleanup, Direction, Layer, MachineSchema, OverlayCloseReason, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { KbdPlatform, KbdResolvedPlatform } from '@xihan-ui/core/hotkey'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { TooltipGroup } from './tooltip.group'
 
 export interface TooltipOpenChangeDetails {
   open: boolean
+  /**
+   * 本次关闭的原因；展开时不带。
+   * 指针移开、等过 closeDelay 与同组另一处提示露面把它顶掉报 hover；焦点离开、点在提示外报 interact-outside；
+   * 按下触发器报 close-trigger；Escape 报 esc；代码调用（setOpen(false)）报 programmatic。
+   */
+  reason?: OverlayCloseReason
 }
 
 /** 委托模式下当前锚点上读到的内容。 */
@@ -139,7 +145,8 @@ export interface TooltipSchema extends MachineSchema {
     | { type: 'BLUR' }
     | { type: 'ESCAPE' }
     | { type: 'OPEN' }
-    | { type: 'CLOSE' }
+    /** src 记收起的来源：消解层的层外交互、同组另一处提示露面；代码调的 setOpen(false) 不带。 */
+    | { type: 'CLOSE', src?: 'interact-outside' | 'hover' }
     // 定时器到点：名称与对应的 delay prop 同名
     | { type: 'after.openDelay' }
     | { type: 'after.closeDelay' }

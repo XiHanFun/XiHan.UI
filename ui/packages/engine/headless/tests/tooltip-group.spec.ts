@@ -199,3 +199,21 @@ describe('跟随鼠标', () => {
     expect(typeof (t.api().getTriggerProps() as Record<string, unknown>).onPointermove).toBe('function')
   })
 })
+
+describe('提示组的关闭原因', () => {
+  it('同组另一处提示露面把它顶掉报 hover：那是指针挪到了别处，不是代码调的', () => {
+    farClock()
+    const group = createTooltipGroup(() => ({ openDelay: 0, closeDelay: 0, skipDelay: 0 }))
+    const seen: Array<{ open: boolean, reason?: string }> = []
+    const first = inGroup(group, { onOpenChange: d => seen.push(d) })
+    const second = inGroup(group)
+    first.send({ type: 'OPEN' })
+    second.send({ type: 'OPEN' })
+    expect(first.open()).toBe(false)
+    expect(seen).toEqual([{ open: true }, { open: false, reason: 'hover' }])
+
+    first.api().setOpen(true)
+    first.api().setOpen(false)
+    expect(seen.slice(2)).toEqual([{ open: true }, { open: false, reason: 'programmatic' }])
+  })
+})
