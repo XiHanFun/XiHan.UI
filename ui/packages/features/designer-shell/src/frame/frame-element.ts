@@ -776,7 +776,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       const open = this.#narrow && this.#drawer === position && regions.length > 0
       if (drawer.element.open !== open)
         drawer.element.open = open
-      drawer.element.side = this.#sideOf(position)
+      drawer.element.placement = this.#sideOf(position)
       drawer.content.setAttribute('aria-label', regions.map(region => region.title ?? region.label ?? region.name).join('、'))
     }
     this.#watchMenubarCenter(rebuilt)
@@ -880,7 +880,7 @@ export class XhDesignerFrameElement extends XhReactiveElement {
       'modal': 'false',
       'close-on-interact-outside': 'false',
       'size': 'md',
-      'side': this.#sideOf(position),
+      'placement': this.#sideOf(position),
     }, [
       createAuthoredElement(doc, 'div', { 'data-xh-part': 'root' }, [
         createAuthoredElement(doc, 'div', { 'data-xh-part': 'positioner' }, [content]),
