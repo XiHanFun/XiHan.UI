@@ -105,7 +105,9 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     const bucket = this.opts.configName ?? machine.name
     // 放进表单字段组、自己又没给值的控件按字段名读写表单的值，也在这一处并进来，与 Vue / React 的 useMachine 对位
     const formModel = this.opts.formField === false ? undefined : formModelOf(machine.name)
-    this.props = () => bindFormModel(withXhConfigBase(bucket, rawProps(), this.config()), formModel, (host as Partial<FormModelHost>).formFieldModel)
+    // 布尔属性交给机器前多半收成了 false：宿主上这个属性从没给过值时仍算没写，组件级缺省照样落下来
+    const isSet = (key: string): boolean => Reflect.get(host, key) !== undefined
+    this.props = () => bindFormModel(withXhConfigBase(bucket, rawProps(), this.config(), isSet), formModel, (host as Partial<FormModelHost>).formFieldModel)
     host.addController(this)
     // 延到 hostConnected 再 build，构造期 attribute 尚未反射到 reactive property。
   }

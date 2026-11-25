@@ -18,7 +18,7 @@ import type {
   VisualEnvironmentPreference,
   VisualMotion,
 } from '@xihan-ui/core/visual-environment'
-import type { XhTranslationOverrides } from '@xihan-ui/headless'
+import type { XhComponentDefaults, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { XhConfig, XhConfigScope } from '../config'
 import type { PropertyValues } from '../reactive'
 import { logicalParentElement } from '@xihan-ui/core'
@@ -57,6 +57,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'default'|'reduce'|'system'} transparency - 透明材质偏好
  * @attr {'standard'|'liquid'} material - 材质档；liquid 下浮在内容之上的导航层部件换成液态面
  * @prop {XhTranslationOverrides} translations - 各组件内建文案的覆盖（对象只能通过 property 设置）
+ * @prop {XhComponentDefaults} defaults - 组件级缺省 props，按组件名分桶；元素上没写的属性取这里的值（对象只能通过 property 设置）
  * @prop {() => HTMLElement | null} scrollRoot - 实际滚动的元素，交给滚动锁（函数只能通过 property 设置）
  * @prop {() => Element | null} portalContainer - 子树内物理 Portal 的默认目标（函数只能通过 property 设置）
  */
@@ -75,6 +76,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
     material: { converter: STRING_CONVERTER },
     // 对象与函数只走 property
     translations: { attribute: false },
+    defaults: { attribute: false },
     scrollRoot: { attribute: false },
     portalContainer: { attribute: false },
   }
@@ -90,6 +92,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
   declare transparency?: Transparency | 'system'
   declare material?: Material
   declare translations?: XhTranslationOverrides
+  declare defaults?: XhComponentDefaults
   declare scrollRoot?: () => HTMLElement | null
   declare portalContainer?: () => Element | null
   private _visualEnvironmentController?: VisualEnvironmentController
@@ -104,6 +107,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
       locale: this.locale,
       size: this.size,
       translations: this.translations,
+      defaults: this.defaults,
       scrollRoot: this.scrollRoot,
       portalContainer: this.portalContainer,
     }

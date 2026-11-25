@@ -11,7 +11,7 @@ import type { XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { XhConfig } from './types'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
-import { componentTranslations, DISABLED_IS_NOT_SCOPED, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { componentDefault, componentTranslations, DISABLED_IS_NOT_SCOPED, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 import { createContext, useContext, useLayoutEffect, useMemo, useState } from 'react'
 import { mergeXhConfig } from './merge'
 
@@ -79,17 +79,28 @@ export function useXhConfig(): XhConfig {
  * 运行状态机的组件不必逐个调用它：useMachine 已经把 locale 与 size 合并进去；
  * 本函数负责两件那里无法覆盖的事：按组件名分桶的 translations，以及没有状态机的组件。
  */
-export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides, props: T): T {
+export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides | (string & {}), props: T): T {
   const config = useContext(XhConfigContext)
   if (!config)
     return props
 
-  /** 这三个键由本层接管；size 只在它是尺寸轴的组件上接管。 */
+  /** 组件级缺省登记了值的键。 */
+  const presets = Object.keys(config.config.defaults?.[component] ?? {})
+    .filter(key => componentDefault(component, key, config.config) !== undefined)
+
+  /** 这三个键与组件级缺省的键由本层接管；size 只在它是尺寸轴的组件上接管。 */
   const managed = (key: string | symbol): boolean =>
     key === 'translations' || key === 'locale' || (key === 'size' && !SIZE_IS_NOT_AXIS.has(component))
+    || (typeof key === 'string' && presets.includes(key))
 
   const read = (target: T, key: string | symbol, receiver?: unknown): unknown => {
     const value = Reflect.get(target, key, receiver)
+    // 实例没给的 prop 先取组件级缺省，再轮到下面 size / locale 的应用级缺省
+    if (typeof key === 'string' && value === undefined) {
+      const preset = componentDefault(component, key, config.config)
+      if (preset !== undefined)
+        return preset
+    }
     if (key === 'translations')
       return componentTranslations(component, value as object | undefined, config.config)
     if (key === 'locale')
@@ -105,7 +116,7 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
   return new Proxy(props, {
     get: (target, key, receiver) => read(target, key, receiver),
     has: (target, key) => managed(key) || Reflect.has(target, key),
-    // 接管的这三个键即使作者没写，也要算作自有键。
+    // 接管的键即使作者没写，也要算作自有键。
     //
     // React 的 props 只有作者真写了的那几个键，与 Vue 那种「声明了就一定在」不同：
     // 作者没写 translations 时它不是自有键，展开（useMachine 里那次 { ...props }）就带不走，
@@ -113,7 +124,7 @@ export function withXhConfig<T extends object>(component: keyof XhTranslationOve
     // 有人读得出来（get 陷阱还在），但没人读——机器拿到的是展开后的普通对象。
     ownKeys(target) {
       const keys = Reflect.ownKeys(target)
-      const extra = (['translations', 'locale', 'size'] as const)
+      const extra = [...new Set(['translations', 'locale', 'size', ...presets])]
         .filter(k => managed(k) && !keys.includes(k) && read(target, k) !== undefined)
       return [...keys, ...extra]
     },

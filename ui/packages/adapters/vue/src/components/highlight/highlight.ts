@@ -11,6 +11,7 @@ import type { PropType } from 'vue'
 import type { PropsOf } from '../../runtime/props-of'
 import { connectHighlight } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 
 /**
@@ -29,11 +30,13 @@ export const XhHighlight = defineComponent({
     tone: { type: String as PropType<Tone> },
   },
   setup(props) {
+    // 没有状态机，全局配置（组件级缺省）在这里并进来
+    const configured = withXhConfig('highlight', props)
     const api = computed(() => connectHighlight({
-      text: props.text,
-      keyword: props.keyword,
-      caseSensitive: props.caseSensitive,
-      tone: props.tone,
+      text: configured.text,
+      keyword: configured.keyword,
+      caseSensitive: configured.caseSensitive,
+      tone: configured.tone,
     } satisfies HighlightProps, vueNormalize))
 
     return () => {

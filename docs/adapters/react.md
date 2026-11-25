@@ -103,6 +103,16 @@ const { api, service } = useDialog({ open, onOpenChange });
 
 配置经代理提供给部件 props：作者未传的属性从配置中取，传了的以作者为准。代理实现了 `ownKeys` 与 `getOwnPropertyDescriptor`：`{ ...props }` 展开在 React 中很常见，只有 `get` 陷阱的代理一经展开就退化为空对象，配置默认值会静默消失。
 
+组件级缺省写在 `defaults` 里，按组件名分桶。实例没写的 prop 取这里的值，优先于应用级的 `size` 与 `locale`；嵌套的 Provider 按组件逐键合并，内层胜出：
+
+```tsx
+<XhConfigProvider config={{ defaults: { "text-field": { variant: "subtle", clearable: true }, "button": { tone: "neutral" } } }}>
+  <App />
+</XhConfigProvider>;
+```
+
+只收外观与行为开关：`value`、`default*` 初值、`on*` 回调与 `translations` 写在这里不生效（文案走 `translations`）。
+
 ## 状态机接入 React
 
 内部只有一层薄适配。`createReactRuntime()` 实现 `ReactiveRuntime` 的五个接口：

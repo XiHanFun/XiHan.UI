@@ -60,12 +60,13 @@ export class XhHighlightElement extends XhElement {
       return
 
     // 读响应式 property，不回读 DOM 特性
-    const api = connectHighlight({
+    // 没有状态机，全局配置（组件级缺省）在这里并进来
+    const api = connectHighlight(this.configured('highlight', {
       text: this.text,
       keyword: this.keyword,
       caseSensitive: this.caseSensitive,
       tone: this.tone,
-    } satisfies HighlightProps, wcNormalize)
+    } satisfies HighlightProps), wcNormalize)
 
     this.spreader.spread(root, api.getRootProps())
     this.#paint(root, api)

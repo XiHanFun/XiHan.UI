@@ -53,6 +53,17 @@ defineXhBackground();
 
 局部 `motion` 只降低该子树的 CSS 动效，不隐式调用全局 `setMotionOverride`。应用根需要同时驱动 JS 动画时，用 `setXhConfig({ visualEnvironment: { root, initial, motionSink } })` 显式绑定；详见[设计令牌与主题](../guide/theme)。
 
+组件级缺省是对象，只能通过 property 设置，按组件名分桶。元素上没写的属性取这里的值，优先于 `size` 与 `locale`；嵌套的 `<xh-config>` 按组件逐键合并，内层胜出：
+
+```js
+document.querySelector("xh-config").defaults = {
+  "text-field": { variant: "subtle", clearable: true },
+  "button": { tone: "neutral" },
+};
+```
+
+只收外观与行为开关：`value`、`default*` 初值、`on*` 回调与 `translations` 写在这里不生效（文案走 `translations`）。
+
 ## 结构由作者编写
 
 ```html

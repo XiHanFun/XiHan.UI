@@ -13,8 +13,9 @@ import type {
 import type { XhConfigBase, XhTranslationOverrides } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey, MaybeRefOrGetter } from 'vue'
 import { createVisualEnvironmentController } from '@xihan-ui/core/visual-environment'
-import { componentTranslations, DISABLED_IS_NOT_SCOPED, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
-import { computed, inject, onScopeDispose, provide, shallowRef, toValue, watch } from 'vue'
+import { componentDefault, componentTranslations, DISABLED_IS_NOT_SCOPED, mergeXhConfig as mergeBase, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
+import { computed, getCurrentInstance, inject, onScopeDispose, provide, shallowRef, toValue, watch } from 'vue'
+import { usePropIsSet } from '../runtime/prop-is-set'
 
 export type { XhTranslationOverrides }
 
@@ -105,13 +106,22 @@ export function useXhConfig(): ComputedRef<XhConfig> {
  * 运行状态机的组件不必逐个调用它：useMachine 已经把 locale 与 size 合并进去；
  * 本函数负责两件那里无法覆盖的事：按组件名分桶的 translations，以及没有状态机的组件。
  */
-export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides, props: T): T {
+export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides | (string & {}), props: T): T {
   const injected = inject(KEY, undefined)
   if (!injected)
     return props
+  const instance = getCurrentInstance()
+  // 这里拿到的是组件自己的 props：作者没写过的就交给组件级缺省，不看值——
+  // 裸 Boolean 没传是 false、声明了 default 的没传是那个缺省值，都算没给
+  const isSet = usePropIsSet()
   return new Proxy(props, {
     get(target, key, receiver) {
       const value = Reflect.get(target, key, receiver)
+      if (typeof key === 'string' && (instance ? !isSet(key) : value === undefined)) {
+        const preset = componentDefault(component, key, toValue(injected) ?? {})
+        if (preset !== undefined)
+          return preset
+      }
       if (key === 'translations')
         return componentTranslations(component, value as object | undefined, toValue(injected) ?? {})
       if (key === 'locale')

@@ -17,6 +17,7 @@ import { useOptionalFormField } from '../components/form/field-context'
 import { attachFormReset } from './attach-form-reset'
 import { applyXhConfigDefaults, useXhConfigDefaults } from './config-defaults'
 import { createVueRuntime } from './create-vue-runtime'
+import { usePropIsSet } from './prop-is-set'
 
 // 锁步版本检查只跑一次：第一个组件建机器时借路启动，之后的组件全走这个开关。
 // 生产构建里 isDev() 为 false，跳过。
@@ -56,6 +57,7 @@ export function useMachine<T extends MachineSchema>(
   // 全局配置在这一处并进来：所有跑机器的组件都从这里取 props，不必逐个接线。
   // 与 WC 侧 MachineController 里那一处对位，两个适配器的生效面因此一致
   const config = useXhConfigDefaults()
+  const isSet = usePropIsSet()
   // service 的 props() 调用极频繁：连接层每读一个 prop 就走一遍。放进 computed 里，
   // 响应式依赖没动时复用同一份展开结果（machine 的身份缓存跟着命中），
   // 依赖一动就产出新对象，身份缓存照旧失效。组件的 props、attrs、注入的上下文与全局配置
@@ -64,7 +66,7 @@ export function useMachine<T extends MachineSchema>(
   // 字段边界与浮层的 Portal 会断开字段组，组合节点里的实例与浮层里的控件因此不会接到外面的字段
   const formModel = options.formField === false ? undefined : formModelOf(machine.name)
   const field = formModel ? useOptionalFormField() : null
-  const props = computed(() => bindFormModel(applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config()), formModel, field?.model))
+  const props = computed(() => bindFormModel(applyXhConfigDefaults(machine.name, { ...toValue(userProps) }, config(), isSet), formModel, field?.model))
   const service = createService(machine, {
     props: () => props.value as never,
     runtime: createVueRuntime({ start: options.start }),

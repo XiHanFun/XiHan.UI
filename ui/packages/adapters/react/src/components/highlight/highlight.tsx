@@ -9,6 +9,7 @@ import type { Tone } from '@xihan-ui/core'
 import type { HighlightProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectHighlight } from '@xihan-ui/headless'
+import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 
@@ -29,7 +30,14 @@ export interface XhHighlightProps extends Omit<ComponentPropsWithRef<'span'>, 'c
  * 逐字符计算的，内容另有来源时无法对应。
  */
 export function XhHighlight({ text, keyword, caseSensitive, tone, ...rest }: XhHighlightProps): ReactNode {
-  const api = connectHighlight({ text, keyword, caseSensitive, tone } satisfies HighlightProps, reactNormalize)
+  // 没有状态机，全局配置（组件级缺省）在这里并进来
+  const configured = withXhConfig('highlight', { text, keyword, caseSensitive, tone })
+  const api = connectHighlight({
+    text: configured.text,
+    keyword: configured.keyword,
+    caseSensitive: configured.caseSensitive,
+    tone: configured.tone,
+  } satisfies HighlightProps, reactNormalize)
   const markProps = api.getMarkProps()
   return (
     <span {...mergeReactProps(api.getRootProps(), rest)}>

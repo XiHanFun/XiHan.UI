@@ -1,10 +1,14 @@
 import type { AdapterHarness, ConformanceSuite, FixtureNode, TestHooks } from './types'
 import { DISABLED_IS_NOT_SCOPED, SIZE_IS_NOT_AXIS } from '@xihan-ui/headless'
 
-/** 全局配置能替组件供给的 prop：经 provideXhConfig / XhConfigProvider / <xh-config> 给，与写在实例上等价。 */
-export type ConfigParityKey = 'size' | 'locale' | 'disabled' | 'translations'
+/**
+ * 全局配置能替组件供给的 prop：经 provideXhConfig / XhConfigProvider / <xh-config> 给，与写在实例上等价。
+ * tone 与 clearable 经组件级缺省 defaults 给：前者代表取值类的 prop，后者代表布尔开关——
+ * Vue 的裸 Boolean 没传是 false、Web Components 交给机器前收成 false，组件级缺省要认得出「没写过」才落得下来。
+ */
+export type ConfigParityKey = 'size' | 'locale' | 'disabled' | 'translations' | 'tone' | 'clearable'
 
-const KEYS: readonly ConfigParityKey[] = ['size', 'locale', 'disabled', 'translations']
+const KEYS: readonly ConfigParityKey[] = ['size', 'locale', 'disabled', 'translations', 'tone', 'clearable']
 
 export interface ConfigParityOptions {
   /** 组件名 → 根组件声明的 prop 名，取公开面基线的 componentProps：哪些键要比只认它。 */
@@ -37,6 +41,10 @@ function probe(key: ConfigParityKey, component: string, options: ConfigParityOpt
       return { instance: { locale: 'de-DE' }, config: { locale: 'de-DE' } }
     case 'disabled':
       return { instance: { disabled: true }, config: { disabled: true } }
+    case 'tone':
+      return { instance: { tone: 'danger' }, config: { defaults: { [component]: { tone: 'danger' } } } }
+    case 'clearable':
+      return { instance: { clearable: true }, config: { defaults: { [component]: { clearable: true } } } }
     case 'translations': {
       const markers = markerTranslations(bucketOf(options, component) ?? {})
       return { instance: { translations: markers }, config: { translations: { [component]: markers } } }

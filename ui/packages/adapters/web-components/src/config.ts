@@ -136,5 +136,7 @@ export function resolveXhConfig(node: Element | null | undefined): XhConfig {
  * host 是发起解析的元素，提供后沿它的祖先链查找 `<xh-config>`；未提供时只读取全局配置。
  */
 export function withXhConfig<T extends object>(component: string, props: T, host?: Element | null): T {
-  return withXhConfigBase(component, props, host === undefined ? current : resolveXhConfig(host))
+  // 布尔属性交给机器前多半收成了 false：宿主上这个属性从没给过值时仍算没写，组件级缺省照样落下来
+  const isSet = host ? (key: string): boolean => Reflect.get(host, key) !== undefined : undefined
+  return withXhConfigBase(component, props, host === undefined ? current : resolveXhConfig(host), isSet)
 }

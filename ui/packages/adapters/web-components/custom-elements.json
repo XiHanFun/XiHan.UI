@@ -17857,6 +17857,15 @@
             },
             {
               "kind": "field",
+              "name": "defaults",
+              "privacy": "public",
+              "type": {
+                "text": "XhComponentDefaults"
+              },
+              "description": "组件级缺省 props，按组件名分桶；元素上没写的属性取这里的值（对象只能通过 property 设置）"
+            },
+            {
+              "kind": "field",
               "name": "scrollRoot",
               "privacy": "public",
               "type": {

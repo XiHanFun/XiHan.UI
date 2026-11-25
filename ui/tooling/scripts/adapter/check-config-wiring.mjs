@@ -266,9 +266,11 @@ function configAliases(source) {
 
 /**
  * locale / size / translations 经 withXhConfig 统一垫进 props，不必逐字段点名；
- * disabled 是字段集压进子树的作用域禁用，在 fillXhConfigDefaults 里按「压过」合并，同样统一落到 props。
+ * disabled 是字段集压进子树的作用域禁用，在 fillXhConfigDefaults 里按「压过」合并，同样统一落到 props；
+ * defaults 是按组件名分桶的组件级缺省，也在 fillXhConfigDefaults 里垫进 props，
+ * Vue / React 的 withXhConfig 代理经 componentDefault 取同一份，三端的接线由 config parity 的 tone / clearable 两项比对守住。
  */
-const MERGED_BY_WITH = new Set(['locale', 'size', 'translations', 'disabled'])
+const MERGED_BY_WITH = new Set(['locale', 'size', 'translations', 'disabled', 'defaults'])
 const globalKeys = new Set(
   [...(mergeSource.match(/GLOBAL_KEYS = \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'(\w+)'/g)].map(m => m[1]),
 )

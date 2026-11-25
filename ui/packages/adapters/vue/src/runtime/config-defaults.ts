@@ -10,11 +10,11 @@ import { fillXhConfigDefaults } from '@xihan-ui/headless'
 import { useXhConfig } from '../config/config'
 
 /**
- * 把全局配置合入一份状态机 props：locale 与 size 在实例未提供时回落全局，
+ * 把全局配置合入一份状态机 props：组件级缺省、locale 与 size 在实例未提供时回落全局，
  * translations 按组件名分桶、仍经 withXhConfig。全部未填时原样返回。
  */
-export function applyXhConfigDefaults<T extends object>(machine: string, props: T, config: XhConfig): T {
-  return fillXhConfigDefaults(machine, props, config)
+export function applyXhConfigDefaults<T extends object>(machine: string, props: T, config: XhConfig, isSet?: (key: string) => boolean): T {
+  return fillXhConfigDefaults(machine, props, config, isSet)
 }
 
 /** 取当前作用域的配置读取器；只能在 setup 期调用。 */

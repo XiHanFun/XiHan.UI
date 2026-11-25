@@ -80,10 +80,10 @@ export const XhReasoningRoot = defineComponent({
         return props.endTime
       },
       get variant() {
-        return props.variant
+        return configured.variant
       },
       get tone() {
-        return props.tone
+        return configured.tone
       },
       get size() {
         return configured.size

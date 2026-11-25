@@ -32,6 +32,25 @@ export interface XhConfigBase {
    * （字段集的 legend 就这么恢复外层）。
    */
   disabled?: boolean
+  /**
+   * 组件级缺省 props，按组件名分桶，如 `{ 'text-field': { variant: 'subtle' }, button: { tone: 'neutral' } }`。
+   * 实例没给的 prop 取这里的值，优先于 size / locale 的应用级缺省；嵌套注入按组件逐键合并，内层胜出。
+   * 只收外观与行为开关：value、default* 初值、on* 回调与 translations 写在这里不生效。
+   */
+  defaults?: XhComponentDefaults
+}
+
+/** 组件级缺省：组件名 → 该组件的缺省 props。 */
+export type XhComponentDefaults = Readonly<Record<string, Readonly<Record<string, unknown>> | undefined>>
+
+/** 组件级缺省收不收这个键：值与初值归实例或表单，回调与文案另有去处。 */
+function isDefaultableKey(key: string): boolean {
+  return key !== 'translations' && key !== 'value' && !/^default[A-Z]/.test(key) && !/^on[A-Z]/.test(key)
+}
+
+/** 某组件某个 prop 的组件级缺省；没登记或这个键不收时为 undefined。 */
+export function componentDefault(component: string, key: string, config: XhConfigBase): unknown {
+  return isDefaultableKey(key) ? config.defaults?.[component]?.[key] : undefined
 }
 
 /**
@@ -48,11 +67,8 @@ export const SIZE_IS_NOT_AXIS: ReadonlySet<string> = new Set(['floating-panel', 
  */
 export const DISABLED_IS_NOT_SCOPED: ReadonlySet<string> = new Set(['scrollbar'])
 
-/** 逐组件合并文案：同名组件下按键并，内层胜出。 */
-export function mergeTranslations(
-  base: XhTranslationOverrides | undefined,
-  over: XhTranslationOverrides | undefined,
-): XhTranslationOverrides | undefined {
+/** 按组件名分桶的两层逐组件合并：同名组件下按键并，内层胜出。 */
+function mergeBuckets<T extends object>(base: T | undefined, over: T | undefined): T | undefined {
   if (!base)
     return over
   if (!over)
@@ -62,7 +78,15 @@ export function mergeTranslations(
     const inherited = out[component]
     out[component] = inherited && value ? { ...inherited, ...value } : (value ?? inherited)
   }
-  return out as XhTranslationOverrides
+  return out as T
+}
+
+/** 逐组件合并文案：同名组件下按键并，内层胜出。 */
+export function mergeTranslations(
+  base: XhTranslationOverrides | undefined,
+  over: XhTranslationOverrides | undefined,
+): XhTranslationOverrides | undefined {
+  return mergeBuckets(base, over)
 }
 
 /**
@@ -84,6 +108,9 @@ export function mergeXhConfig<T extends XhConfigBase>(base: T | undefined, over:
   const translations = mergeTranslations(base.translations, over.translations)
   if (translations)
     out.translations = translations
+  const defaults = mergeBuckets(base.defaults, over.defaults)
+  if (defaults)
+    out.defaults = defaults
   return out
 }
 
@@ -108,23 +135,40 @@ export function componentTranslations<T extends object>(
 const GLOBAL_KEYS = ['locale', 'size'] as const
 
 /**
- * 把全局配置垫进一份 props：键在、实例没给（undefined）才填。
+ * 把全局配置垫进一份 props：键在、实例没给才填。先填组件级缺省，再填 size / locale 的应用级缺省。
  *
  * 「键在」这条判据是精确的：Vue 的 props 对象为每个声明过的 prop 都留了键（没传即 undefined），
  * 各适配器交上来的对象字面量同理。所以没声明 size 的组件不会平白多出一个 size。
- * 一个都没填时原样返回，不新建对象。
+ *
+ * 「实例没给」是值为 undefined；适配器给了 isSet 时，值为 false 而作者没写过这个 prop 也算没给——
+ * Vue 的裸 Boolean 没传就是 false，Web Components 的布尔属性交给状态机前多半收成了 false，
+ * 不这样认，布尔开关的组件级缺省就落不下来。一个都没填时原样返回，不新建对象。
  */
 export function fillXhConfigDefaults<T extends object>(
   component: string,
   props: T,
   config: XhConfigBase,
+  isSet?: (key: string) => boolean,
 ): T {
   let out: T | undefined
+  const current = (): Record<string, unknown> => (out ?? props) as Record<string, unknown>
+  const own = config.defaults?.[component]
+  if (own) {
+    for (const [key, value] of Object.entries(own)) {
+      if (value === undefined || !isDefaultableKey(key) || !(key in props))
+        continue
+      const given = current()[key]
+      if (given !== undefined && !(given === false && isSet && !isSet(key)))
+        continue
+      out ??= { ...props }
+      ;(out as Record<string, unknown>)[key] = value
+    }
+  }
   for (const key of GLOBAL_KEYS) {
     if (key === 'size' && SIZE_IS_NOT_AXIS.has(component))
       continue
     const value = config[key]
-    if (value === undefined || !(key in props) || (props as Record<string, unknown>)[key] !== undefined)
+    if (value === undefined || !(key in props) || current()[key] !== undefined)
       continue
     out ??= { ...props }
     ;(out as Record<string, unknown>)[key] = value
@@ -141,8 +185,13 @@ export function fillXhConfigDefaults<T extends object>(
  * 一份 props 并上全局配置：translations 按组件名分桶、locale 与 size 回落。
  * 一处都没并到就原样返回。
  */
-export function withXhConfigBase<T extends object>(component: string, props: T, config: XhConfigBase): T {
-  const filled = fillXhConfigDefaults(component, props, config)
+export function withXhConfigBase<T extends object>(
+  component: string,
+  props: T,
+  config: XhConfigBase,
+  isSet?: (key: string) => boolean,
+): T {
+  const filled = fillXhConfigDefaults(component, props, config, isSet)
   const own = (props as { translations?: object }).translations
   const translations = componentTranslations(component, own, config)
   if (translations === own)

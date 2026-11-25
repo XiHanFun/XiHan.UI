@@ -80,6 +80,19 @@ provideXhConfig({
 
 物理 Portal 会由 Core 从该根桥接已解析八轴到实例壳，Vue 适配器不复制视觉状态。
 
+组件级缺省写在 `defaults` 里，按组件名分桶。实例没写的 prop 取这里的值，优先于应用级的 `size` 与 `locale`；嵌套 provide 按组件逐键合并，内层胜出。没在模板上写的布尔 prop 同样取得到缺省，不会被裸 `Boolean` 的 `false` 挡住：
+
+```ts
+provideXhConfig({
+  defaults: {
+    "text-field": { variant: "subtle", clearable: true },
+    "button": { tone: "neutral" },
+  },
+});
+```
+
+只收外观与行为开关：`value`、`default*` 初值、`on*` 回调与 `translations` 写在这里不生效（文案走 `translations`）。
+
 ## 事件与 v-model
 
 值类组件同时发两个事件：
