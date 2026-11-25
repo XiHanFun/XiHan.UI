@@ -6,7 +6,7 @@ import {
   XhClipboardIndicator,
   XhClipboardRoot,
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewPre,
   XhCodeViewRoot,
@@ -28,13 +28,13 @@ const sample = `export function createStore(reduce: Reducer, initial: State) {
   <XhCodeViewRoot
     :code="sample"
     lang="typescript"
-    filename="store.ts"
+    file-name="store.ts"
     complete
     style="inline-size: 100%;"
   >
     <XhCodeViewHeader>
       <!-- 文件名占满剩余宽度，复制按钮自然被推到头部条末端 -->
-      <XhCodeViewFilename />
+      <XhCodeViewFileName />
       <!-- 无边无底、矮一档、字号取脚注档：静息与悬停都不画描边，只换底色 -->
       <XhClipboardRoot
         :value="sample"

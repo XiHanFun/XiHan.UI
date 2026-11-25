@@ -18,7 +18,7 @@ import {
   XhAvatarFallback,
   XhAvatarRoot,
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewLangLabel,
   XhCodeViewPre,
@@ -143,9 +143,9 @@ function onSubmit({ value }: { value: string }): void {
                 <XhMarkdownStreamContent />
               </XhMarkdownStreamRoot>
 
-              <XhCodeViewRoot :code="patch" lang="typescript" filename="on-close.ts" complete>
+              <XhCodeViewRoot :code="patch" lang="typescript" file-name="on-close.ts" complete>
                 <XhCodeViewHeader>
-                  <XhCodeViewFilename />
+                  <XhCodeViewFileName />
                   <XhCodeViewLangLabel />
                 </XhCodeViewHeader>
                 <XhCodeViewPre>

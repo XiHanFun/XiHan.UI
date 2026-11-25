@@ -18,7 +18,7 @@ import { createAnatomy } from '@xihan-ui/core'
 export const codeViewAnatomy = createAnatomy('code-view', [
   'root',
   'header',
-  'filename',
+  'file-name',
   'lang-label',
   'pre',
   'code',

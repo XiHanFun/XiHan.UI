@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="code-view"`：**`root`** · `header` · `filename` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger` · `line-fold-trigger`
+`data-scope="code-view"`：**`root`** · `header` · `file-name` · `lang-label` · **`pre`** · **`code`** · `line` · `line-number` · `line-content` · `token` · `fold-trigger` · `line-fold-trigger`
 
 ## 示例
 
@@ -138,8 +138,8 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | --- | --- | --- | --- |
 | `code` | `string` | 是 |  |
 | `lang` | `string` |  | 围栏语言标注，空白一律落为 plaintext。 |
-| `filename` | `string` |  | 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 |
-| `labelled` | `boolean` |  | 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。 |
+| `fileName` | `string` |  | 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 |
+| `labelled` | `boolean` |  | 作者渲染了 file-name 部件时置真，由适配器统计而不是判断 fileName 是否有值。 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。 |
 | `complete` | `boolean` |  | 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 |
 | `wrap` | `boolean` |  | 长行自动换行，默认关闭（长行横向滚动）。 |
 | `lineNumbers` | `boolean` |  | 渲染行号槽。 |
@@ -182,7 +182,6 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | React 组件 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- | --- |
 | `XhCodeViewCode` | `children` | `SlotChildren<CodeViewLineSlotProps>` |  | 逐行接管该行的正文；未提供时按着色结果铺设。 |
-| `XhCodeViewFilename` | `filename` | `string` |  | 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 filename。 |
 | `XhCodeViewRoot` | `children` | `SlotChildren<CodeViewRootSlotProps>` |  |  |
 
 ### 状态
@@ -209,7 +208,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `lang` | `string` |  |
-| `filename` | `string \| undefined` | 文件名；filename 部件没写内容时显示它。 |
+| `fileName` | `string \| undefined` | 文件名；file-name 部件没写内容时显示它。 |
 | `lineCount` | `number` |  |
 | `lines` | `readonly CodeLine[]` | 逐行切分后的文本与记号片段。 |
 | `lineNumberAt` | `(index: number) => number` | 每行的行号，与 lines 同序。 |
@@ -224,7 +223,7 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `getLineFoldTriggerProps` | `(props: CodeViewLineProps) => T['button']` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHeaderProps` | `() => T['element']` |  |
-| `getFilenameProps` | `() => T['element']` |  |
+| `getFileNameProps` | `() => T['element']` |  |
 | `getLangLabelProps` | `() => T['element']` |  |
 | `getPreProps` | `() => T['element']` |  |
 | `getCodeProps` | `() => T['element']` |  |
@@ -332,14 +331,14 @@ block-folding 按缩进找出语法块，块头行首给一颗折叠钮；折叠
 | `--xh-code-view-border` | `root` | `border` | `default` | `--xh-border-default` | code-view 的 root 部件 border 覆盖槽。 |
 | `--xh-code-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-fg` | `root` | `color` | `default` | `--xh-fg-muted` | code-view 的 root 部件 color 覆盖槽。 |
-| `--xh-code-view-filename-fg` | `filename` | `color` | `default` | `--xh-fg-default` | code-view 的 filename 部件 color 覆盖槽。 |
+| `--xh-code-view-file-name-fg` | `file-name` | `color` | `default` | `--xh-fg-default` | code-view 的 file-name 部件 color 覆盖槽。 |
 | `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | code-view 的 fold-trigger 部件 background-color 覆盖槽。 |
 | `--xh-code-view-fold-col` | `line-content`<br>`line-fold-trigger`<br>`root` | `block-size`<br>`inline-size`<br>`min-block-size`<br>`min-inline-size`<br>`padding-inline-start` | `block-folding`<br>`line-numbers`<br>`not([data-line-numbers])`<br>`xh-action-profile=disclosure-trigger`<br>`xh-action-profile=icon` | `--xh-code-view-line-height` | code-view 的 line-content、line-fold-trigger、root 部件 block-size、inline-size、min-block-size、min-inline-size、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-fold-fg` | `fold-trigger` | `color` | `default` | `--xh-fg-muted` | code-view 的 fold-trigger 部件 color 覆盖槽。 |
 | `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-folded-fg` | `line-content` | `background-color` | `folded` | `--xh-fg-subtle` | code-view 的 line-content 部件 background-color 覆盖槽。 |
 | `--xh-code-view-folded-gap` | `line-content` | `margin-inline-start` | `folded` | `--xh-space-1` | code-view 的 line-content 部件 margin-inline-start 覆盖槽。 |
-| `--xh-code-view-font` | `code`<br>`filename`<br>`pre` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename、pre 部件 font-family 覆盖槽。 |
+| `--xh-code-view-font` | `code`<br>`file-name`<br>`pre` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、file-name、pre 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
 | `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-subtle` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
 | `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |

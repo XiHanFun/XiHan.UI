@@ -163,9 +163,9 @@ async function setup(inlineOptions, nuxt) {
 
   if (options.visualEnvironment) {
     const visual = options.visualEnvironment
-    for (const [filename, mode, render] of [[SERVER_PLUGIN, 'server', serverPluginTemplate], [CLIENT_PLUGIN, 'client', clientPluginTemplate]]) {
-      nuxt.options.build.templates.push({ filename, getContents: () => render(visual) })
-      nuxt.options.plugins.push({ src: join(nuxt.options.buildDir, filename), mode })
+    for (const [fileName, mode, render] of [[SERVER_PLUGIN, 'server', serverPluginTemplate], [CLIENT_PLUGIN, 'client', clientPluginTemplate]]) {
+      nuxt.options.build.templates.push({ fileName, getContents: () => render(visual) })
+      nuxt.options.plugins.push({ src: join(nuxt.options.buildDir, fileName), mode })
     }
     // useNuxtApp().$xhVisual 的类型：随包一份声明，只在 Nuxt 应用里引用（'#app' 由 Nuxt 生成）
     nuxt.hook('prepare:types', ({ references }) => {

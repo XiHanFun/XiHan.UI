@@ -35,7 +35,7 @@ export const XhCodeViewRoot = defineComponent({
   props: {
     code: { type: String, default: '' },
     lang: { type: String },
-    filename: { type: String },
+    fileName: { type: String },
     // 三态，undefined 与 false 同样不落 data-complete
     complete: { type: Boolean, default: undefined },
     wrap: Boolean,
@@ -78,8 +78,8 @@ export const XhCodeViewRoot = defineComponent({
       get lang() {
         return props.lang
       },
-      get filename() {
-        return props.filename
+      get fileName() {
+        return props.fileName
       },
       get complete() {
         return props.complete
@@ -159,25 +159,25 @@ export const XhCodeViewHeader = defineComponent({
   },
 })
 
-export const XhCodeViewFilename = defineComponent({
-  name: 'XhCodeViewFilename',
+export const XhCodeViewFileName = defineComponent({
+  name: 'XhCodeViewFileName',
   props: {
-    /** 未提供时取 XhCodeViewRoot 上的 filename。 */
-    filename: { type: String },
+    /** 未提供时取 XhCodeViewRoot 上的 fileName。 */
+    fileName: { type: String },
   },
   setup(props, { slots }) {
     const ctx = useCodeViewContext()
     // 渲出来了才登记：pre 的 aria-labelledby 只在这个节点真在场时才指过来
     onMounted(() => {
-      ctx.filenameCount.value++
+      ctx.fileNameCount.value++
     })
     onBeforeUnmount(() => {
-      ctx.filenameCount.value--
+      ctx.fileNameCount.value--
     })
     return () => h(
       'span',
-      ctx.api.value.getFilenameProps(),
-      slots.default?.() ?? props.filename ?? ctx.api.value.filename,
+      ctx.api.value.getFileNameProps(),
+      slots.default?.() ?? props.fileName ?? ctx.api.value.fileName,
     )
   },
 })

@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewPre,
   XhCodeViewRoot,
@@ -21,12 +21,12 @@ const sample = `export function clamp(n: number, min: number, max: number) {
       :size="size"
       :code="sample"
       lang="typescript"
-      :filename="`clamp.${size}.ts`"
+      :file-name="`clamp.${size}.ts`"
       complete
       style="inline-size: 100%"
     >
       <XhCodeViewHeader>
-        <XhCodeViewFilename />
+        <XhCodeViewFileName />
       </XhCodeViewHeader>
       <XhCodeViewPre>
         <XhCodeViewCode />

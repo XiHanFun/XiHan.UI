@@ -167,16 +167,16 @@ describe('属性投影', () => {
 
 describe('可访问名', () => {
   it('作者渲了文件名就指过去', () => {
-    const a = api({ code: 'a', filename: 'main.ts', labelled: true })
+    const a = api({ code: 'a', fileName: 'main.ts', labelled: true })
     const pre = a.getPreProps() as Dict
-    const filename = a.getFilenameProps() as Dict
-    expect(pre['aria-labelledby']).toBe(filename.id)
+    const fileName = a.getFileNameProps() as Dict
+    expect(pre['aria-labelledby']).toBe(fileName.id)
     expect(pre['aria-label']).toBeUndefined()
   })
 
   it('没渲文件名节点就用文案兜底：指向渲不出来的 id 会让读屏读空', () => {
-    // filename 有值但作者没写那个节点，这时不能发 aria-labelledby
-    const pre = api({ code: 'a', filename: 'main.ts' }).getPreProps() as Dict
+    // fileName 有值但作者没写那个节点，这时不能发 aria-labelledby
+    const pre = api({ code: 'a', fileName: 'main.ts' }).getPreProps() as Dict
     expect(pre['aria-labelledby']).toBeUndefined()
     expect(pre['aria-label']).toBe('Code')
   })

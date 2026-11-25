@@ -19,21 +19,21 @@ export interface CodeViewContext {
   api: ComputedRef<CodeViewApi>
   service: Service<CodeViewSchema>
   /**
-   * 作者渲染的 filename 部件数量，由 XhCodeViewFilename 自行登记。
-   * pre 的可访问名据此决定指向它还是使用文案兜底：只检查 filename 这个 prop 是否有值并不够，
+   * 作者渲染的 file-name 部件数量，由 XhCodeViewFileName 自行登记。
+   * pre 的可访问名据此决定指向它还是使用文案兜底：只检查 fileName 这个 prop 是否有值并不够，
    * 传了值却未写节点时 aria-labelledby 会指向一个不存在的 id。
    */
-  filenameCount: Ref<number>
+  fileNameCount: Ref<number>
 }
 
 // 机器只承载按压通道；实例级 scope 派生 part id，props 与登记数变了由 computed 重算属性
 export function useCodeView(props: CodeViewProps): CodeViewContext {
   const scope = createScope(null, createVueIdGenerator())
-  const filenameCount = ref(0)
+  const fileNameCount = ref(0)
   const service = useMachine(codeViewMachine, () => ({
     ...props,
-    labelled: filenameCount.value > 0,
+    labelled: fileNameCount.value > 0,
   }), scope)
   const api = computed(() => connectCodeView(service, vueNormalize))
-  return { api, service, filenameCount }
+  return { api, service, fileNameCount }
 }

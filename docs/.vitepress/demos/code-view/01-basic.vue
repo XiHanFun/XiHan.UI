@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewLangLabel,
   XhCodeViewPre,
@@ -27,12 +27,12 @@ const sample = `export function createTicker(intervalTime: number) {
   <XhCodeViewRoot
     :code="sample"
     lang="typescript"
-    filename="ticker.ts"
+    file-name="ticker.ts"
     complete
     style="inline-size: 100%;"
   >
     <XhCodeViewHeader>
-      <XhCodeViewFilename />
+      <XhCodeViewFileName />
       <XhCodeViewLangLabel />
     </XhCodeViewHeader>
     <XhCodeViewPre>

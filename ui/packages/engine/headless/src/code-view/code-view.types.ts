@@ -57,9 +57,9 @@ export interface CodeViewSchema extends MachineSchema {
     /** 围栏语言标注，空白一律落为 plaintext。 */
     lang?: string
     /** 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 */
-    filename?: string
+    fileName?: string
     /**
-     * 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。
+     * 作者渲染了 file-name 部件时置真，由适配器统计而不是判断 fileName 是否有值。
      * 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。
      */
     labelled?: boolean
@@ -145,8 +145,8 @@ export type CodeViewProps = CodeViewSchema['props']
 
 export interface CodeViewApi<T extends PropTypes = PropTypes> {
   lang: string
-  /** 文件名；filename 部件没写内容时显示它。 */
-  filename: string | undefined
+  /** 文件名；file-name 部件没写内容时显示它。 */
+  fileName: string | undefined
   lineCount: number
   /** 逐行切分后的文本与记号片段。 */
   lines: readonly CodeLine[]
@@ -170,7 +170,7 @@ export interface CodeViewApi<T extends PropTypes = PropTypes> {
   getLineFoldTriggerProps: (props: CodeViewLineProps) => T['button']
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
-  getFilenameProps: () => T['element']
+  getFileNameProps: () => T['element']
   getLangLabelProps: () => T['element']
   getPreProps: () => T['element']
   getCodeProps: () => T['element']

@@ -3,7 +3,7 @@
 import { DownloadIcon } from "@xihan-ui/icons";
 import {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewPre,
   XhCodeViewRoot,
@@ -11,7 +11,7 @@ import {
   XhIcon,
 } from "@xihan-ui/vue";
 
-const filename = "retry.ts";
+const fileName = "retry.ts";
 const sample = `export async function retry<T>(run: () => Promise<T>, times = 3): Promise<T> {
   let last: unknown
   for (let i = 0; i < times; i++) {
@@ -27,11 +27,11 @@ const sample = `export async function retry<T>(run: () => Promise<T>, times = 3)
 </script>
 
 <template>
-  <XhCodeViewRoot :code="sample" lang="typescript" :filename="filename" complete style="inline-size: 100%;">
+  <XhCodeViewRoot :code="sample" lang="typescript" :file-name="fileName" complete style="inline-size: 100%;">
     <XhCodeViewHeader>
       <!-- 文件名占满剩余宽度，下载按钮自然被推到头部条末端 -->
-      <XhCodeViewFilename />
-      <XhDownloadTrigger :data="sample" :file-name="filename" variant="ghost" size="sm">
+      <XhCodeViewFileName />
+      <XhDownloadTrigger :data="sample" :file-name="fileName" variant="ghost" size="sm">
         <XhIcon :icon="DownloadIcon" /> 下载
       </XhDownloadTrigger>
     </XhCodeViewHeader>

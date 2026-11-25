@@ -60,7 +60,7 @@ export function connectCodeView<T extends PropTypes>(
   const size = prop('size')
   // 空串与纯空白的语言标注一律落到 plaintext，保证 lang 非空
   const lang = prop('lang')?.trim() || CODE_VIEW_FALLBACK_LANG
-  const ids = scope.ids('code-view', 'pre', 'filename')
+  const ids = scope.ids('code-view', 'pre', 'file-name')
 
   // 未闭合的块默认不着色；着色实现返回 null 时同样退回纯文本
   const streaming = prop('complete') !== true
@@ -130,7 +130,7 @@ export function connectCodeView<T extends PropTypes>(
   ))
 
   const labelling = resolveLabelling({
-    labelId: ids.filename,
+    labelId: ids['file-name'],
     labelCount: prop('labelled') === true ? 1 : 0,
     descriptionCount: 0,
     ariaLabel: translations.code,
@@ -156,7 +156,7 @@ export function connectCodeView<T extends PropTypes>(
 
   return {
     lang,
-    filename: prop('filename'),
+    fileName: prop('fileName'),
     lineCount,
     lines,
     lineNumberAt,
@@ -186,9 +186,9 @@ export function connectCodeView<T extends PropTypes>(
     }),
 
     // 渲了它就是 pre 的可访问名，故要有 id
-    getFilenameProps: () => normalize.element({
-      ...parts.filename.attrs,
-      id: ids.filename,
+    getFileNameProps: () => normalize.element({
+      ...parts['file-name'].attrs,
+      id: ids['file-name'],
     }),
 
     // 纯装饰角标，对读屏隐藏

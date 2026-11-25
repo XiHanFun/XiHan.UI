@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewLangLabel,
   XhCodeViewPre,
@@ -27,12 +27,12 @@ export default function Demo(): ReactNode {
     <XhCodeViewRoot
       code={sample}
       lang="typescript"
-      filename="ticker.ts"
+      fileName="ticker.ts"
       complete
       style={{ inlineSize: "100%" }}
     >
       <XhCodeViewHeader>
-        <XhCodeViewFilename />
+        <XhCodeViewFileName />
         <XhCodeViewLangLabel />
       </XhCodeViewHeader>
       <XhCodeViewPre>

@@ -736,7 +736,7 @@ export type ComponentTokenName
     | '--xh-code-view-border'
     | '--xh-code-view-comment-fg'
     | '--xh-code-view-fg'
-    | '--xh-code-view-filename-fg'
+    | '--xh-code-view-file-name-fg'
     | '--xh-code-view-fold-bg-hover'
     | '--xh-code-view-fold-col'
     | '--xh-code-view-fold-fg'

@@ -14864,10 +14864,10 @@
       "description": "code-view 的 root 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-code-view-filename-fg",
+      "name": "--xh-code-view-file-name-fg",
       "component": "code-view",
       "part": [
-        "filename"
+        "file-name"
       ],
       "property": [
         "color"
@@ -14879,7 +14879,7 @@
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "code-view 的 filename 部件 color 覆盖槽。"
+      "description": "code-view 的 file-name 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-code-view-fold-bg-hover",
@@ -15008,7 +15008,7 @@
       "component": "code-view",
       "part": [
         "code",
-        "filename",
+        "file-name",
         "pre"
       ],
       "property": [
@@ -15021,7 +15021,7 @@
         "--xh-font-family-mono"
       ],
       "visibility": "public",
-      "description": "code-view 的 code、filename、pre 部件 font-family 覆盖槽。"
+      "description": "code-view 的 code、file-name、pre 部件 font-family 覆盖槽。"
     },
     {
       "name": "--xh-code-view-font-size",

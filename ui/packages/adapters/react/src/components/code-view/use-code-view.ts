@@ -28,11 +28,11 @@ export interface CodeViewContext {
   api: CodeViewApi
   service: Service<CodeViewSchema>
   /**
-   * 登记一份已渲染的 filename 部件，返回撤销登记的函数。
-   * pre 的可访问名据此决定指向它还是使用文案兜底：只检查 filename 这个 prop 是否有值并不够，
+   * 登记一份已渲染的 file-name 部件，返回撤销登记的函数。
+   * pre 的可访问名据此决定指向它还是使用文案兜底：只检查 fileName 这个 prop 是否有值并不够，
    * 传了值却未写节点时 aria-labelledby 会指向一个不存在的 id。
    */
-  registerFilename: () => () => void
+  registerFileName: () => () => void
 }
 
 /** 默认着色实现；模块到达后本组件重渲一次。显式实现或 null 不请求可选 peer。 */
@@ -50,12 +50,12 @@ export function useDefaultHighlighter(enabled: boolean): HighlighterPort | null 
 export function useCodeView(props: CodeViewProps): CodeViewContext {
   const scope = useReactScope()
   // 用状态而不是 ref：登记数要能把根重渲一次，connect 在渲染期求值
-  const [filenameCount, setFilenameCount] = useState(0)
-  const registerFilename = useCallback(() => {
-    setFilenameCount(n => n + 1)
-    return () => setFilenameCount(n => n - 1)
+  const [fileNameCount, setFileNameCount] = useState(0)
+  const registerFileName = useCallback(() => {
+    setFileNameCount(n => n + 1)
+    return () => setFileNameCount(n => n - 1)
   }, [])
-  const service = useMachine(codeViewMachine, () => ({ ...props, labelled: filenameCount > 0 }), { scope })
+  const service = useMachine(codeViewMachine, () => ({ ...props, labelled: fileNameCount > 0 }), { scope })
   const api = connectCodeView(service, reactNormalize)
-  return { api, service, registerFilename }
+  return { api, service, registerFileName }
 }

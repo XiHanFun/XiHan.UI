@@ -428,7 +428,7 @@ export { useClipboard } from './components/clipboard/use-clipboard'
 export type { ClipboardContext } from './components/clipboard/use-clipboard'
 export {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewFoldTrigger,
   XhCodeViewHeader,
   XhCodeViewLangLabel,
@@ -439,7 +439,7 @@ export type {
   CodeViewLineSlotProps,
   CodeViewRootSlotProps,
   XhCodeViewCodeProps,
-  XhCodeViewFilenameProps,
+  XhCodeViewFileNameProps,
   XhCodeViewFoldTriggerProps,
   XhCodeViewHeaderProps,
   XhCodeViewLangLabelProps,

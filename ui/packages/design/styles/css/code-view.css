@@ -52,17 +52,17 @@
   }
 
   /* 文件名占满剩余宽度并单行截断：长路径不该把语言角标挤出去 */
-  [data-scope='code-view'][data-part='filename'] {
+  [data-scope='code-view'][data-part='file-name'] {
     display: block;
     overflow: hidden;
     flex: 1 1 auto;
-    color: var(--xh-code-view-filename-fg, var(--xh-fg-default));
+    color: var(--xh-code-view-file-name-fg, var(--xh-fg-default));
     font-family: var(--xh-code-view-font, var(--xh-font-family-mono));
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  [data-scope='code-view'][data-part='filename'][hidden] {
+  [data-scope='code-view'][data-part='file-name'][hidden] {
     display: none;
   }
 

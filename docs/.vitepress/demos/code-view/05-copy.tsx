@@ -6,7 +6,7 @@ import {
   XhClipboardIndicator,
   XhClipboardRoot,
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewPre,
   XhCodeViewRoot,
@@ -38,13 +38,13 @@ export default function Demo(): ReactNode {
     <XhCodeViewRoot
       code={sample}
       lang="typescript"
-      filename="store.ts"
+      fileName="store.ts"
       complete
       style={{ inlineSize: "100%" }}
     >
       <XhCodeViewHeader>
         {/* 文件名占满剩余宽度，复制按钮自然被推到头部条末端 */}
-        <XhCodeViewFilename />
+        <XhCodeViewFileName />
         <XhClipboardRoot value={sample} timeout={1500} style={quietTrigger}>
           <XhClipboardCopyTrigger>
             <XhClipboardIndicator>

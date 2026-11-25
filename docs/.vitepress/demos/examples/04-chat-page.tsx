@@ -18,7 +18,7 @@ import {
   XhAvatarFallback,
   XhAvatarRoot,
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewLangLabel,
   XhCodeViewPre,
@@ -167,9 +167,9 @@ export default function Demo(): ReactNode {
                     <XhMarkdownStreamContent />
                   </XhMarkdownStreamRoot>
 
-                  <XhCodeViewRoot code={patch} lang="typescript" filename="on-close.ts" complete>
+                  <XhCodeViewRoot code={patch} lang="typescript" fileName="on-close.ts" complete>
                     <XhCodeViewHeader>
-                      <XhCodeViewFilename />
+                      <XhCodeViewFileName />
                       <XhCodeViewLangLabel />
                     </XhCodeViewHeader>
                     <XhCodeViewPre>

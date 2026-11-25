@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import {
   XhCodeViewCode,
-  XhCodeViewFilename,
+  XhCodeViewFileName,
   XhCodeViewHeader,
   XhCodeViewPre,
   XhCodeViewRoot,
@@ -23,12 +23,12 @@ export default function Demo(): ReactNode {
           size={size}
           code={sample}
           lang="typescript"
-          filename={`clamp.${size}.ts`}
+          fileName={`clamp.${size}.ts`}
           complete
           style={{ inlineSize: "100%" }}
         >
           <XhCodeViewHeader>
-            <XhCodeViewFilename />
+            <XhCodeViewFileName />
           </XhCodeViewHeader>
           <XhCodeViewPre>
             <XhCodeViewCode />

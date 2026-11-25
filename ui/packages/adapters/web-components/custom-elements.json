@@ -11181,8 +11181,8 @@
               "name": "header"
             },
             {
-              "description": "文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 filename 属性的值",
-              "name": "filename"
+              "description": "文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 fileName 属性的值",
+              "name": "file-name"
             },
             {
               "description": "语言角标，纯装饰且对读屏隐藏",
@@ -11251,12 +11251,12 @@
             },
             {
               "kind": "field",
-              "name": "filename",
+              "name": "fileName",
               "privacy": "public",
               "type": {
                 "text": "string | undefined"
               },
-              "attribute": "filename"
+              "attribute": "file-name"
             },
             {
               "kind": "field",
@@ -11435,12 +11435,12 @@
             },
             {
               "kind": "field",
-              "name": "#filenameText",
+              "name": "#fileNameText",
               "privacy": "private",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "元素替作者写进 filename 部件的文字；作者自己写了内容就不再碰它。"
+              "description": "元素替作者写进 file-name 部件的文字；作者自己写了内容就不再碰它。"
             },
             {
               "kind": "method",
@@ -11475,7 +11475,7 @@
             },
             {
               "kind": "method",
-              "name": "#fillFilename",
+              "name": "#fillFileName",
               "privacy": "private",
               "return": {
                 "type": {
@@ -11490,7 +11490,7 @@
                   }
                 }
               ],
-              "description": "filename 部件没写内容时写上 filename 属性的值，与另两端同一条规则：\npre 的可访问名指向这个节点，它空着读屏就读空。作者自己写了内容就不再碰它。"
+              "description": "file-name 部件没写内容时写上 fileName 属性的值，与另两端同一条规则：\npre 的可访问名指向这个节点，它空着读屏就读空。作者自己写了内容就不再碰它。"
             },
             {
               "kind": "method",
@@ -11568,9 +11568,9 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "文件名；作者写了 filename 角色节点时它即为 pre 的可访问名",
-              "name": "filename",
-              "fieldName": "filename"
+              "description": "文件名；作者写了 file-name 角色节点时它即为 pre 的可访问名",
+              "name": "file-name",
+              "fieldName": "fileName"
             },
             {
               "type": {
@@ -11689,7 +11689,7 @@
               "name": "--xh-code-view-fg"
             },
             {
-              "name": "--xh-code-view-filename-fg"
+              "name": "--xh-code-view-file-name-fg"
             },
             {
               "name": "--xh-code-view-fold-bg-hover"

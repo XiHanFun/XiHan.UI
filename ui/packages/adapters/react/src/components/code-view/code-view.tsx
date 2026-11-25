@@ -35,8 +35,8 @@ export interface XhCodeViewRootProps extends RootElementProps {
   code?: string
   /** 围栏语言标注，空白一律回落 plaintext。 */
   lang?: string
-  /** 文件名，渲染在 header 中；渲染 filename 部件后它就是 pre 的可访问名。 */
-  filename?: string
+  /** 文件名，渲染在 header 中；渲染 file-name 部件后它就是 pre 的可访问名。 */
+  fileName?: string
   /** 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 */
   complete?: boolean
   /** 长行自动换行，默认关闭（长行横向滚动）。 */
@@ -74,7 +74,7 @@ export interface XhCodeViewRootProps extends RootElementProps {
 export function XhCodeViewRoot({
   code,
   lang,
-  filename,
+  fileName,
   complete,
   wrap,
   lineNumbers,
@@ -97,7 +97,7 @@ export function XhCodeViewRoot({
   const configured = withXhConfig('code-view', {
     code,
     lang,
-    filename,
+    fileName,
     complete,
     wrap,
     lineNumbers,
@@ -145,18 +145,18 @@ export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): 
   return <div {...mergeReactProps(ctx.api.getHeaderProps(), rest)}>{children}</div>
 }
 
-export interface XhCodeViewFilenameProps extends ComponentPropsWithRef<'span'> {
-  /** 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 filename。 */
-  filename?: string
+export interface XhCodeViewFileNameProps extends ComponentPropsWithRef<'span'> {
+  /** 未写 children 时显示它；也没给时取 XhCodeViewRoot 上的 fileName。 */
+  fileName?: string
 }
-export function XhCodeViewFilename({ children, filename, ...rest }: XhCodeViewFilenameProps): ReactNode {
+export function XhCodeViewFileName({ children, fileName, ...rest }: XhCodeViewFileNameProps): ReactNode {
   const ctx = useCodeViewContext()
   // 渲出来了才登记：pre 的 aria-labelledby 只在这个节点真在场时才指过来
-  const { registerFilename } = ctx
-  useEffect(() => registerFilename(), [registerFilename])
+  const { registerFileName } = ctx
+  useEffect(() => registerFileName(), [registerFileName])
   return (
-    <span {...mergeReactProps(ctx.api.getFilenameProps(), rest)}>
-      {children ?? filename ?? ctx.api.filename}
+    <span {...mergeReactProps(ctx.api.getFileNameProps(), rest)}>
+      {children ?? fileName ?? ctx.api.fileName}
     </span>
   )
 }

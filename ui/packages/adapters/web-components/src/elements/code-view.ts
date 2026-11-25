@@ -43,7 +43,7 @@ const LINE_LIST_CONVERTER = {
  * @customElement xh-code-view
  * @attr {string} code - 代码原文
  * @attr {string} code-lang - 围栏语言标注，空白时按 plaintext 处理
- * @attr {string} filename - 文件名；作者写了 filename 角色节点时它即为 pre 的可访问名
+ * @attr {string} file-name - 文件名；作者写了 file-name 角色节点时它即为 pre 的可访问名
  * @attr {boolean} complete - 代码是否已闭合，未闭合默认不着色
  * @attr {boolean} wrap - 长行自动换行，默认关闭（长行横向滚动）
  * @attr {boolean} line-numbers - 显示行号槽
@@ -60,7 +60,7 @@ const LINE_LIST_CONVERTER = {
  * @fires folded-change - 语法块的折叠集合变化；detail 为 `{ folded: number[] }`
  * @csspart root - 外壳，承载 data-lang / data-complete / data-clamped / data-digits
  * @csspart header - 文件名与语言角标所在的行
- * @csspart filename - 文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 filename 属性的值
+ * @csspart file-name - 文件名，渲染后即为 pre 的可访问名；没写内容时元素写上 fileName 属性的值
  * @csspart lang-label - 语言角标，纯装饰且对读屏隐藏
  * @csspart pre - 横向滚动容器；tabindex=0，高度按行数写入内联样式
  * @csspart code - 全部行的容器，内容由本元素铺设
@@ -79,7 +79,7 @@ export class XhCodeViewElement extends XhElement {
   static override properties = {
     code: { converter: STRING_CONVERTER },
     codeLang: { converter: STRING_CONVERTER, attribute: 'code-lang' },
-    filename: { converter: STRING_CONVERTER },
+    fileName: { converter: STRING_CONVERTER, attribute: 'file-name' },
     complete: { converter: BOOLEAN_CONVERTER },
     wrap: { converter: BOOLEAN_CONVERTER },
     lineNumbers: { converter: BOOLEAN_CONVERTER, attribute: 'line-numbers' },
@@ -99,7 +99,7 @@ export class XhCodeViewElement extends XhElement {
 
   declare code?: string
   declare codeLang?: string
-  declare filename?: string
+  declare fileName?: string
   declare complete?: boolean
   declare wrap?: boolean
   declare lineNumbers?: boolean
@@ -127,8 +127,8 @@ export class XhCodeViewElement extends XhElement {
   /** 开了按块折叠时记下铺出来的各行，开合变了就地改属性。 */
   #folding: FoldingLine[] = []
   #releaseHighlighter?: () => void
-  /** 元素替作者写进 filename 部件的文字；作者自己写了内容就不再碰它。 */
-  #filenameText?: string
+  /** 元素替作者写进 file-name 部件的文字；作者自己写了内容就不再碰它。 */
+  #fileNameText?: string
 
   override connectedCallback(): void {
     super.connectedCallback()
@@ -157,9 +157,9 @@ export class XhCodeViewElement extends XhElement {
     return {
       code: this.code ?? '',
       lang: this.codeLang,
-      filename: this.filename,
-      // 作者写没写 filename 角色节点决定 pre 的可访问名指哪儿
-      labelled: this.getPart('filename') != null,
+      fileName: this.fileName,
+      // 作者写没写 file-name 角色节点决定 pre 的可访问名指哪儿
+      labelled: this.getPart('file-name') != null,
       complete: this.complete,
       wrap: this.wrap,
       lineNumbers: this.lineNumbers,
@@ -196,8 +196,8 @@ export class XhCodeViewElement extends XhElement {
     }
     put('root', api.getRootProps())
     put('header', api.getHeaderProps())
-    put('filename', api.getFilenameProps())
-    this.#fillFilename(api)
+    put('file-name', api.getFileNameProps())
+    this.#fillFileName(api)
     put('lang-label', api.getLangLabelProps())
     put('pre', api.getPreProps())
     put('code', api.getCodeProps())
@@ -207,20 +207,20 @@ export class XhCodeViewElement extends XhElement {
   }
 
   /**
-   * filename 部件没写内容时写上 filename 属性的值，与另两端同一条规则：
+   * file-name 部件没写内容时写上 fileName 属性的值，与另两端同一条规则：
    * pre 的可访问名指向这个节点，它空着读屏就读空。作者自己写了内容就不再碰它。
    */
-  #fillFilename(api: CodeViewApi): void {
-    const el = this.getPart('filename')
+  #fillFileName(api: CodeViewApi): void {
+    const el = this.getPart('file-name')
     if (!el)
       return
-    const ours = this.#filenameText
+    const ours = this.#fileNameText
     if (el.childNodes.length > 0 && (ours === undefined || el.textContent !== ours))
       return
-    const text = api.filename ?? ''
+    const text = api.fileName ?? ''
     if (el.textContent !== text)
       el.textContent = text
-    this.#filenameText = text
+    this.#fileNameText = text
   }
 
   /**

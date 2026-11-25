@@ -35,7 +35,7 @@ outline-width: 3px
 outline-offset: 0px
 outline-color: oklch(0.461 0.018 258)
 
-[filename]
+[file-name]
 padding-top: 0px
 padding-right: 0px
 padding-bottom: 0px

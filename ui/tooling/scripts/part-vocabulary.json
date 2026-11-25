@@ -577,7 +577,7 @@
       "form",
       "format-input"
     ],
-    "filename": [
+    "file-name": [
       "code-view"
     ],
     "first-trigger": [
@@ -2279,7 +2279,7 @@
     "extra": true,
     "fallback": true,
     "field": true,
-    "filename": true,
+    "file-name": true,
     "fill": true,
     "footer": true,
     "gap": true,

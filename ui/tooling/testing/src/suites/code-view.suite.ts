@@ -40,7 +40,7 @@ export const codeViewSuite: ConformanceSuite = {
   fixture: {
     part: 'root',
     children: [
-      { part: 'header', children: [{ part: 'filename' }, { part: 'lang-label' }] },
+      { part: 'header', children: [{ part: 'file-name' }, { part: 'lang-label' }] },
       // 用 pre 与 code 保留代码里的空白与换行
       { part: 'pre', tag: 'pre', children: [{ part: 'code', tag: 'code' }] },
       { part: 'fold-trigger', tag: 'button' },
@@ -123,7 +123,7 @@ export const codeViewSuite: ConformanceSuite = {
     {
       name: '作者渲了文件名节点：pre 的可访问名指过去，不再另发 aria-label',
       spec: { apg: WCAG },
-      props: { code: 'a', filename: 'main.ts' },
+      props: { code: 'a', fileName: 'main.ts' },
       initial: {
         parts: {
           pre: { 'aria-label': null },
@@ -132,15 +132,15 @@ export const codeViewSuite: ConformanceSuite = {
       steps: [
         {
           kind: 'raw',
-          why: '要核对的是 aria-labelledby 与 filename 节点的 id 相等，两个值都由实例级 scope 派生，写不成固定期望',
+          why: '要核对的是 aria-labelledby 与 fileName 节点的 id 相等，两个值都由实例级 scope 派生，写不成固定期望',
           run: ({ doc }: RawStepContext) => {
             const pre = doc.querySelector<HTMLElement>(PRE)
-            const filename = doc.querySelector<HTMLElement>('[data-scope="code-view"][data-part="filename"]')
-            if (!pre || !filename)
-              throw new Error('找不到 code-view 的 pre 或 filename 部件')
+            const fileName = doc.querySelector<HTMLElement>('[data-scope="code-view"][data-part="file-name"]')
+            if (!pre || !fileName)
+              throw new Error('找不到 code-view 的 pre 或 file-name 部件')
             const labelledby = pre.getAttribute('aria-labelledby')
-            if (!labelledby || labelledby !== filename.id)
-              throw new Error(`pre 的 aria-labelledby 应指向 filename 的 id，实际 ${labelledby} ≠ ${filename.id}`)
+            if (!labelledby || labelledby !== fileName.id)
+              throw new Error(`pre 的 aria-labelledby 应指向 fileName 的 id，实际 ${labelledby} ≠ ${fileName.id}`)
           },
         },
       ],
