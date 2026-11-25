@@ -23,14 +23,14 @@ afterEach(async () => {
   host = null
 })
 
-async function render(groupDisabled: boolean | undefined, separators?: boolean): Promise<void> {
+async function render(groupDisabled: boolean | undefined, split?: boolean): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)
   ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
   await act(async () => {
     root!.render(
-      <XhButtonGroup disabled={groupDisabled} separators={separators}>
+      <XhButtonGroup disabled={groupDisabled} split={split}>
         <XhButton>日</XhButton>
         <XhButton disabled>周</XhButton>
       </XhButtonGroup>,
@@ -67,7 +67,7 @@ describe('按钮组的禁用传到组内每一段', () => {
     expect(separator.getAttribute('data-disabled')).toBe('')
   })
 
-  it('separators=false：不生成分隔线', async () => {
+  it('split=false：不生成分隔线', async () => {
     await render(undefined, false)
     expect(document.querySelector('[data-xh-button-group-separator]')).toBeNull()
   })

@@ -12,7 +12,7 @@ describe('connectButtonGroup 缺省', () => {
     const api = connectButtonGroup({}, normalizeProps)
     expect(api.orientation).toBe('horizontal')
     expect(api.disabled).toBe(false)
-    expect(api.separators).toBe(true)
+    expect(api.split).toBe(true)
     // 组缺省中性淡底：只有 Button 单独一枚缺省品牌实心
     expect(api.variant).toBe('subtle')
     expect(api.tone).toBeUndefined()
@@ -58,9 +58,9 @@ describe('connectButtonGroup 三轴与状态', () => {
     })
   })
 
-  it('separators=false 关掉自动分隔线，只影响 api 不落 DOM', () => {
-    const api = connectButtonGroup({ separators: false }, normalizeProps)
-    expect(api.separators).toBe(false)
-    expect(root({ separators: false })['data-separators']).toBeUndefined()
+  it('split=false 关掉自动分隔线，只影响 api 不落 DOM', () => {
+    const api = connectButtonGroup({ split: false }, normalizeProps)
+    expect(api.split).toBe(false)
+    expect(root({ split: false })['data-split']).toBeUndefined()
   })
 })

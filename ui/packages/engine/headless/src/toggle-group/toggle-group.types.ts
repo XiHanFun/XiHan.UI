@@ -106,7 +106,7 @@ export interface ToggleGroupSchema<V = string> extends MachineSchema {
     /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
     fullWidth?: boolean
     /** 是否自动在相邻条目之间插入分隔线，默认 true。 */
-    separators?: boolean
+    split?: boolean
     /** 表单字段名。提供后隐藏输入才带 name 并参与提交。 */
     name?: string
     /** 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 */
@@ -177,7 +177,7 @@ export interface ToggleGroupApi<T extends PropTypes = PropTypes, V = string> {
   invalid: boolean
   required: boolean
   orientation: Orientation
-  separators: boolean
+  split: boolean
   isSelected: (value: V) => boolean
   /** 传单值 / 数组 / null 均可，内部按 multiple 归一。 */
   setValue: (next: ToggleGroupValue<V>) => void

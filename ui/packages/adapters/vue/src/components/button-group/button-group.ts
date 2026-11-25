@@ -33,7 +33,7 @@ function flattenChildren(children: readonly VNode[]): VNode[] {
 
 function renderChildren(children: readonly VNode[], api: VueButtonGroupApi): VNode[] {
   const nodes = flattenChildren(children)
-  if (!api.separators)
+  if (!api.split)
     return nodes
   return nodes.flatMap((node, index) => index === 0
     ? [node]
@@ -56,7 +56,7 @@ export const XhButtonGroup = defineComponent({
     size: { type: String as PropType<Size> },
     disabled: { type: Boolean, default: undefined },
     fullWidth: { type: Boolean, default: undefined },
-    separators: { type: Boolean, default: undefined },
+    split: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {
     const configured = withXhConfig('button-group', props) as ButtonGroupProps

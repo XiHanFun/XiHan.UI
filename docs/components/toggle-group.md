@@ -68,7 +68,7 @@
 
 ### 无分隔线
 
-separators 设为 false，段与段之间不画分隔线
+split 设为 false，段与段之间不画分隔线
 
 <XhDemo src="toggle-group/09-without-separator" />
 
@@ -90,7 +90,7 @@ separators 设为 false，段与段之间不画分隔线
 - 支持单选和多选模式。
 - 支持受控和非受控状态。
 - 支持水平、垂直、全宽和三种尺寸。
-- 默认在相邻条目之间显示分隔线，可通过 `separators=false` 关闭。
+- 默认在相邻条目之间显示分隔线，可通过 `split=false` 关闭。
 - 使用 roving tabindex 管理组内键盘导航。
 - `disallowEmpty` 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
@@ -144,7 +144,7 @@ separators 设为 false，段与段之间不画分隔线
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
-| `separators` | `boolean` |  | 是否自动在相邻条目之间插入分隔线，默认 true。 |
+| `split` | `boolean` |  | 是否自动在相邻条目之间插入分隔线，默认 true。 |
 | `name` | `string` |  | 表单字段名。提供后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
@@ -212,7 +212,7 @@ separators 设为 false，段与段之间不画分隔线
 | `invalid` | `boolean` |  |
 | `required` | `boolean` |  |
 | `orientation` | `Orientation` |  |
-| `separators` | `boolean` |  |
+| `split` | `boolean` |  |
 | `isSelected` | `(value: V) => boolean` |  |
 | `setValue` | `(next: ToggleGroupValue<V>) => void` | 传单值 / 数组 / null 均可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |

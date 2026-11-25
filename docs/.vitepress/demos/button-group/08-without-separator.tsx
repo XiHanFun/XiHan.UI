@@ -4,7 +4,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhButtonGroup separators={false}>
+    <XhButtonGroup split={false}>
       <XhButton>照片</XhButton>
       <XhButton>视频</XhButton>
       <XhButton>更多</XhButton>

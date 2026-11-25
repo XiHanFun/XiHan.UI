@@ -65,7 +65,7 @@ function connectToggleGroupKeys<T extends PropTypes>(
   const dir = prop('dir') ?? 'ltr'
   const loop = prop('loop') ?? true
   const rovingFocus = prop('rovingFocus') ?? true
-  const separators = prop('separators') ?? true
+  const split = prop('split') ?? true
 
   const isSelected = (target: string): boolean => value.includes(target)
   // 组禁用向下传导到每个条目；条目也能单独禁用：部件上写的优先，没写就回 collection 里查
@@ -137,7 +137,7 @@ function connectToggleGroupKeys<T extends PropTypes>(
     invalid,
     required,
     orientation,
-    separators,
+    split,
     isSelected,
     setValue: next => send({ type: 'VALUE.SET', value: next }),
 

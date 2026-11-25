@@ -261,7 +261,7 @@ describe('react Portal 的局部视觉环境', () => {
     )
 
     const group = document.querySelector<HTMLElement>('[data-scope="button-group"][data-part="root"]')!
-    // 组内建分隔线是 ButtonGroup 自己按段落摆的直接子项（separators 默认开启），不是 Portal marker：
+    // 组内建分隔线是 ButtonGroup 自己按段落摆的直接子项（split 默认开启），不是 Portal marker：
     // 两段之间只允许出现它，asChild 触发器不得再多出 template 锚点
     expect([...group.children].map(node => node.hasAttribute('data-xh-button-group-separator') ? 'separator' : node.getAttribute('data-scope')))
       .toEqual(['button', 'separator', 'button'])

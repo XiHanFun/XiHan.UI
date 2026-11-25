@@ -24,7 +24,7 @@ export interface ButtonGroupProps {
   /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
   fullWidth?: boolean
   /** 是否自动在相邻按钮之间插入分隔线，默认 true。 */
-  separators?: boolean
+  split?: boolean
 }
 
 export interface ButtonGroupApi<T extends PropTypes = PropTypes> {
@@ -32,7 +32,7 @@ export interface ButtonGroupApi<T extends PropTypes = PropTypes> {
   /** 整组是否禁用。适配器据此把禁用传给组内每一段：只写 data-* 是假禁用。 */
   disabled: boolean
   /** 适配器是否自动生成相邻按钮间的分隔线。 */
-  separators: boolean
+  split: boolean
   /** 组的变体（缺省 subtle）。适配器把它下发给未自写 variant 的每一段，段因此自带形态矩阵属性。 */
   variant: ActionVariant
   /** 组的颜色；未写时为 undefined，段沿用自己的。适配器下发给未自写 tone 的每一段。 */

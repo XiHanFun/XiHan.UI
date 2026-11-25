@@ -5,7 +5,7 @@ import { defineXhElements } from '../src/define'
 defineXhElements()
 
 interface UpdatableGroup extends HTMLElement {
-  separators?: boolean
+  split?: boolean
   updateComplete: Promise<unknown>
 }
 
@@ -63,11 +63,11 @@ describe('分组控件自动分隔线', () => {
     expect(generated.every(node => node.dataset.orientation === 'vertical')).toBe(true)
     expect(host.querySelector('[data-part="separator"]')).toBeNull()
 
-    host.separators = false
+    host.split = false
     await settle(host)
     expect(host.querySelector(selector)).toBeNull()
 
-    host.separators = true
+    host.split = true
     await settle(host)
     expect(host.querySelectorAll(selector)).toHaveLength(2)
   })

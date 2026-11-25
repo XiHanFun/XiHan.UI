@@ -90,7 +90,7 @@
 - 自动合并相邻边界，只保留首尾圆角。
 - 支持统一设置尺寸、变体、颜色、禁用状态和宽度：组的变体、颜色与尺寸下发到组内每一段，段自己写了的优先。
 - 组的缺省变体是中性淡底 `subtle`，不是单独一枚按钮的品牌实心。
-- 默认在相邻按钮之间显示分隔线，可通过 `separators=false` 关闭。
+- 默认在相邻按钮之间显示分隔线，可通过 `split=false` 关闭。
 - 按下按钮时不缩放，避免组内边界断开。
 
 ### 组合
@@ -128,8 +128,8 @@
 | `disabled` | `boolean` |  | 整组禁用：适配器把它落到组内每一段的原生 disabled 上，段自身声明禁用的仍然禁用。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  | 排布：horizontal / vertical，决定相邻两段在哪个轴上合并边缘。 |
-| `separators` | `boolean` |  | 是否自动在相邻按钮之间插入分隔线，默认 true。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，写入根上并下发给组内每一段；段自己写了的优先。 |
+| `split` | `boolean` |  | 是否自动在相邻按钮之间插入分隔线，默认 true。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，写入根上并下发给组内每一段；段自己写了的优先。 |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，默认 subtle（组缺省中性淡底）。 写入根上，并由适配器下发给组内每一段；段自己写了 variant 的优先。 |
 
@@ -141,7 +141,7 @@
 | --- | --- | --- |
 | `orientation` | `'horizontal' \| 'vertical'` |  |
 | `disabled` | `boolean` | 整组是否禁用。适配器据此把禁用传给组内每一段：只写 data-* 是假禁用。 |
-| `separators` | `boolean` | 适配器是否自动生成相邻按钮间的分隔线。 |
+| `split` | `boolean` | 适配器是否自动生成相邻按钮间的分隔线。 |
 | `variant` | `ActionVariant` | 组的变体（缺省 subtle）。适配器把它下发给未自写 variant 的每一段，段因此自带形态矩阵属性。 |
 | `tone` | `Tone \| undefined` | 组的颜色；未写时为 undefined，段沿用自己的。适配器下发给未自写 tone 的每一段。 |
 | `size` | `Size \| undefined` | 组的尺寸；未写时为 undefined，段沿用自己的。适配器下发给未自写 size 的每一段。 |

@@ -31,7 +31,7 @@ const GROUP_AXES: readonly GroupAxis[] = ['variant', 'tone', 'size']
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号；下发给未自写 size 的每一段
  * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自身声明禁用的仍然禁用
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
- * @attr {boolean} separators - 是否自动在相邻按钮之间生成分隔线，默认 true
+ * @attr {boolean} split - 是否自动在相邻按钮之间生成分隔线，默认 true
  * @csspart root - 组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size
  */
 export class XhButtonGroupElement extends XhElement {
@@ -45,7 +45,7 @@ export class XhButtonGroupElement extends XhElement {
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     disabled: { converter: BOOLEAN_CONVERTER },
     fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
-    separators: { converter: BOOLEAN_CONVERTER },
+    split: { converter: BOOLEAN_CONVERTER },
   }
 
   declare orientation?: string
@@ -54,7 +54,7 @@ export class XhButtonGroupElement extends XhElement {
   declare size?: Size
   declare disabled?: boolean
   declare fullWidth?: boolean
-  declare separators?: boolean
+  declare split?: boolean
 
   /**
    * 作者在标记里写的段禁用，按元素记住头一回见到的那一份。
@@ -90,7 +90,7 @@ export class XhButtonGroupElement extends XhElement {
       size: this.size,
       disabled: this.disabled,
       fullWidth: this.fullWidth,
-      separators: this.separators,
+      split: this.split,
     } satisfies ButtonGroupProps), wcNormalize)
 
     const root = this.getPart('root')
@@ -98,7 +98,7 @@ export class XhButtonGroupElement extends XhElement {
     if (root)
       this.spreader.spread(root, api.getRootProps())
 
-    const separators = root ? this.syncAutomaticSeparators(root, api.separators) : []
+    const separators = root ? this.syncAutomaticSeparators(root, api.split) : []
     for (const separator of separators) {
       separator.setAttribute('aria-hidden', 'true')
       separator.setAttribute('data-orientation', api.orientation === 'horizontal' ? 'vertical' : 'horizontal')

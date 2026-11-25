@@ -47,7 +47,7 @@ export interface XhToggleGroupRootProps<V = string, M extends boolean = false> e
   tone?: Tone
   size?: Size
   fullWidth?: boolean
-  separators?: boolean
+  split?: boolean
   name?: string
   orientation?: Orientation
   dir?: Direction
@@ -76,7 +76,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
   tone,
   size,
   fullWidth,
-  separators,
+  split,
   name,
   orientation,
   dir,
@@ -103,7 +103,7 @@ export function XhToggleGroupRoot<V = string, M extends boolean = false>({
     tone,
     size,
     fullWidth,
-    separators,
+    split,
     name,
     orientation,
     dir,
@@ -243,13 +243,13 @@ function flattenChildren(children: ReactNode): ReactNode[] {
 function renderChildren(children: ReactNode, api: {
   disabled: boolean
   orientation: Orientation
-  separators: boolean
+  split: boolean
 }): ReactNode[] {
   const result: ReactNode[] = []
   let itemCount = 0
   for (const child of flattenChildren(children)) {
     if (isValidElement(child) && child.type === XhToggleGroupItem) {
-      if (api.separators && itemCount > 0) {
+      if (api.split && itemCount > 0) {
         result.push(
           <span
             key={`separator-${itemCount}`}

@@ -1,11 +1,11 @@
-// 无分隔线 | separators 设为 false，段与段之间不画分隔线
+// 无分隔线 | split 设为 false，段与段之间不画分隔线
 import type { ReactNode } from "react";
 import { BoldIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhToggleGroupRoot defaultValue={["bold"]} separators={false} multiple>
+    <XhToggleGroupRoot defaultValue={["bold"]} split={false} multiple>
       <XhToggleGroupItem value="bold" aria-label="粗体">
         <XhIcon icon={BoldIcon} />
       </XhToggleGroupItem>

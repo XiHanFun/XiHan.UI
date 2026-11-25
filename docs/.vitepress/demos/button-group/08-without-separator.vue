@@ -4,7 +4,7 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhButtonGroup :separators="false">
+  <XhButtonGroup :split="false">
     <XhButton>照片</XhButton>
     <XhButton>视频</XhButton>
     <XhButton>更多</XhButton>

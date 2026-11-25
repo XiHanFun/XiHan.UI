@@ -3506,12 +3506,12 @@
             },
             {
               "kind": "field",
-              "name": "separators",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "separators"
+              "attribute": "split"
             },
             {
               "kind": "field",
@@ -3716,8 +3716,8 @@
                 "text": "boolean | undefined"
               },
               "description": "是否自动在相邻按钮之间生成分隔线，默认 true",
-              "name": "separators",
-              "fieldName": "separators"
+              "name": "split",
+              "fieldName": "split"
             }
           ],
           "superclass": {
@@ -76060,12 +76060,12 @@
             },
             {
               "kind": "field",
-              "name": "separators",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "separators"
+              "attribute": "split"
             },
             {
               "kind": "field",
@@ -76336,8 +76336,8 @@
                 "text": "boolean | undefined"
               },
               "description": "是否自动在相邻条目之间生成分隔线，默认 true",
-              "name": "separators",
-              "fieldName": "separators"
+              "name": "split",
+              "fieldName": "split"
             },
             {
               "type": {

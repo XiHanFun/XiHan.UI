@@ -21,7 +21,7 @@ export function connectButtonGroup<T extends PropTypes>(
 ): ButtonGroupApi<T> {
   const orientation = props.orientation ?? 'horizontal'
   const disabled = !!props.disabled
-  const separators = props.separators ?? true
+  const split = props.split ?? true
   // 组缺省中性淡底（只有 Button 单独一枚缺省品牌实心），显式落 subtle
   const variant = props.variant ?? 'subtle'
   const tone = props.tone
@@ -30,7 +30,7 @@ export function connectButtonGroup<T extends PropTypes>(
   return {
     orientation,
     disabled,
-    separators,
+    split,
     variant,
     tone,
     size,

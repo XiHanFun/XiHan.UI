@@ -49,7 +49,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
- * @attr {boolean} separators - 是否自动在相邻条目之间生成分隔线，默认 true
+ * @attr {boolean} split - 是否自动在相邻条目之间生成分隔线，默认 true
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；四个方向键恒响应，与它无关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
@@ -92,7 +92,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
     fullWidth: { converter: BOOLEAN_CONVERTER, attribute: 'full-width' },
-    separators: { converter: BOOLEAN_CONVERTER },
+    split: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     orientation: { converter: STRING_CONVERTER },
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
@@ -115,7 +115,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
   declare tone?: Tone
   declare size?: Size
   declare fullWidth?: boolean
-  declare separators?: boolean
+  declare split?: boolean
   declare name?: string
   declare orientation?: Orientation
   declare direction?: Direction
@@ -166,7 +166,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
       tone: this.tone,
       size: this.size,
       fullWidth: this.fullWidth,
-      separators: this.separators,
+      split: this.split,
       name: this.name,
       orientation: this.orientation,
       dir: this.direction,
@@ -215,7 +215,7 @@ export class XhToggleGroupElement<V = string> extends XhElement {
       this.declaredDisabled.commit(el)
     }
 
-    const separators = root ? this.syncAutomaticSeparators(root, api.separators) : []
+    const separators = root ? this.syncAutomaticSeparators(root, api.split) : []
     for (const separator of separators) {
       separator.setAttribute('aria-hidden', 'true')
       separator.setAttribute('data-orientation', api.orientation === 'horizontal' ? 'vertical' : 'horizontal')

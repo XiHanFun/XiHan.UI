@@ -56,7 +56,7 @@ const XhToggleGroupRootImpl = defineComponent({
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
     fullWidth: { type: Boolean, default: undefined },
-    separators: { type: Boolean, default: undefined },
+    split: { type: Boolean, default: undefined },
     name: { type: String },
     orientation: { type: String as PropType<Orientation> },
     dir: { type: String as PropType<Direction> },
@@ -160,13 +160,13 @@ export const XhToggleGroupItem = defineComponent({
 function renderChildren(children: readonly VNode[], props: {
   disabled: boolean
   orientation: Orientation
-  separators: boolean
+  split: boolean
 }): VNode[] {
   const result: VNode[] = []
   let itemCount = 0
   for (const child of flattenChildren(children)) {
     if (child.type === XhToggleGroupItem) {
-      if (props.separators && itemCount > 0) {
+      if (props.split && itemCount > 0) {
         result.push(h('span', {
           'key': `separator-${itemCount}`,
           'aria-hidden': true,

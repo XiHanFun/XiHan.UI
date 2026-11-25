@@ -112,8 +112,8 @@ describe('切换按钮组视觉', () => {
     expect(separator.getBoundingClientRect().height).toBeCloseTo(root.getBoundingClientRect().height / 2, 1)
   })
 
-  it('separators=false 时不生成分隔线', () => {
-    mount({ separators: false })
+  it('split=false 时不生成分隔线', () => {
+    mount({ split: false })
     expect(host!.querySelector('[data-xh-toggle-group-separator]')).toBeNull()
   })
 

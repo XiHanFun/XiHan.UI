@@ -26,7 +26,7 @@ export interface XhButtonGroupProps extends ComponentPropsWithRef<'div'> {
   /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
   fullWidth?: boolean
   /** 是否自动在相邻按钮之间插入分隔线，默认 true。 */
-  separators?: boolean
+  split?: boolean
 }
 
 function flattenChildren(children: ReactNode): ReactNode[] {
@@ -44,7 +44,7 @@ function flattenChildren(children: ReactNode): ReactNode[] {
 
 function renderChildren(children: ReactNode, api: ReturnType<typeof connectButtonGroup>): ReactNode[] {
   const nodes = flattenChildren(children)
-  if (!api.separators)
+  if (!api.split)
     return nodes
   return nodes.flatMap((node, index) => index === 0
     ? [node]
@@ -68,7 +68,7 @@ export function XhButtonGroup({
   size,
   disabled,
   fullWidth,
-  separators,
+  split,
   children,
   ...rest
 }: XhButtonGroupProps): ReactNode {
@@ -79,7 +79,7 @@ export function XhButtonGroup({
     size,
     disabled,
     fullWidth,
-    separators,
+    split,
   } as ButtonGroupProps)
   const api = connectButtonGroup(configured, reactNormalize)
   // 组内每一段收到的是真禁用；组的 variant / tone / size 走同一条路下发，段自己写了的优先
