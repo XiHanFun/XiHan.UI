@@ -7586,7 +7586,7 @@
       "LayoutBreakpoint",
       "LayoutRefs",
       "LayoutSchema",
-      "LayoutSiderBreakpointDetails",
+      "LayoutSiderBreakpointChangeDetails",
       "LayoutSiderCollapsedChangeDetails",
       "LayoutSiderPlacement",
       "LayoutSiderPresentation",
@@ -14584,7 +14584,7 @@
     "layout": [
       "defaultSiderCollapsed",
       "headerFixed",
-      "onSiderBreakpoint",
+      "onSiderBreakpointChange",
       "onSiderCollapsedChange",
       "siderBreakpoint",
       "siderCollapsed",
@@ -23413,7 +23413,7 @@
         "split"
       ],
       "events": [
-        "sider-breakpoint",
+        "sider-breakpoint-change",
         "sider-collapsed-change"
       ]
     },

@@ -138,7 +138,7 @@ export function trackSiderBreakpoint({ prop, context, send, scope, track }: Effe
       return
     }
     if (changed)
-      prop('onSiderBreakpoint')?.({ matched })
+      prop('onSiderBreakpointChange')?.({ matched })
     if (!isCurrent()) {
       pending = !disposed
       return

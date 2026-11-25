@@ -34,14 +34,14 @@ export const XhLayoutRoot = defineComponent({
   emits: {
     'sider-collapsed-change': (_details: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>) => true,
     'update:siderCollapsed': (_siderCollapsed: PayloadOf<LayoutProps, 'onSiderCollapsedChange'>['collapsed']) => true,
-    'sider-breakpoint': (_details: PayloadOf<LayoutProps, 'onSiderBreakpoint'>) => true,
+    'sider-breakpoint-change': (_details: PayloadOf<LayoutProps, 'onSiderBreakpointChange'>) => true,
   },
   setup(props, { slots, emit }) {
     const notify: LayoutProps['onSiderCollapsedChange'] = (details) => {
       emit('sider-collapsed-change', details)
       emit('update:siderCollapsed', details.collapsed)
     }
-    const notifyBreakpoint: LayoutProps['onSiderBreakpoint'] = details => emit('sider-breakpoint', details)
+    const notifyBreakpoint: LayoutProps['onSiderBreakpointChange'] = details => emit('sider-breakpoint-change', details)
     const ctx = useLayout(props as LayoutProps, notify, notifyBreakpoint)
     provideLayout(ctx)
     return () => h('div', ctx.api.value.getRootProps(), slots.default?.())

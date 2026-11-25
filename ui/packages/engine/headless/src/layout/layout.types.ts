@@ -20,7 +20,7 @@ export interface LayoutSiderCollapsedChangeDetails {
   collapsed: boolean
 }
 
-export interface LayoutSiderBreakpointDetails {
+export interface LayoutSiderBreakpointChangeDetails {
   /** 视口宽度是否已达到 siderBreakpoint 档；为假即窄屏，侧栏已按折叠宽显示。 */
   matched: boolean
 }
@@ -71,7 +71,7 @@ export interface LayoutSchema extends MachineSchema {
      * 跨过断点时发出一次，挂载或更换档位时也发出一次当前值。
      * 窄屏需要把侧栏换成抽屉时接入该回调：组件自身只切换宽度。
      */
-    onSiderBreakpoint?: (details: LayoutSiderBreakpointDetails) => void
+    onSiderBreakpointChange?: (details: LayoutSiderBreakpointChangeDetails) => void
   }
   context: {
     /** 视口是否窄于 siderBreakpoint 档；未提供断点时恒为 false。 */

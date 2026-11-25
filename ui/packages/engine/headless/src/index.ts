@@ -153,7 +153,7 @@ export type { JsonSearchResult, JsonViewerApi, JsonViewerCopyErrorDetails, JsonV
 export { connectKbd, isTypingTarget, kbdAnatomy, kbdKeyboard, kbdMeta } from './kbd'
 export type { KbdApi, KbdKeyProps, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from './kbd'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'
-export type { LayoutApi, LayoutBreakpoint, LayoutRefs, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation, LayoutTranslations } from './layout'
+export type { LayoutApi, LayoutBreakpoint, LayoutRefs, LayoutSchema, LayoutSiderBreakpointChangeDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation, LayoutTranslations } from './layout'
 export { connectList, listAnatomy, listKeyboard, listMeta } from './list'
 export type { ListApi, ListProps, ListTranslations } from './list'
 export { connectListbox, listboxAnatomy, listboxItemQuery, listboxItemText, listboxKeyboard, listboxMachine, listboxMeta, listboxStructure } from './listbox'

@@ -21,12 +21,12 @@ export interface LayoutContext {
 export function useLayout(
   props: LayoutSchema['props'],
   onSiderCollapsedChange?: LayoutSchema['props']['onSiderCollapsedChange'],
-  onSiderBreakpoint?: LayoutSchema['props']['onSiderBreakpoint'],
+  onSiderBreakpointChange?: LayoutSchema['props']['onSiderBreakpointChange'],
 ): LayoutContext {
   // 把手要用 aria-controls 指向侧栏，两者的 id 必须同源，所以显式建 scope
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
-  const service = useMachine(layoutMachine, () => ({ ...props, onSiderCollapsedChange, onSiderBreakpoint }), scope)
+  const service = useMachine(layoutMachine, () => ({ ...props, onSiderCollapsedChange, onSiderBreakpointChange }), scope)
   // 覆盖式侧栏与浮层必须读取同一运行时层栈；服务端没有 DOM，不挂 Escape 副作用。
   if (typeof document !== 'undefined')
     service.refs.set('config', createRuntimeConfig({ scope, idGenerator: idGen }))

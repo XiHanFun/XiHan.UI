@@ -57,7 +57,7 @@ describe('layout 动态断点', () => {
   it('添加、更换、移除断点后只保留当前查询，旧事件不能写回', () => {
     const v = viewport()
     const seen: boolean[] = []
-    const l = layout({ siderPresentation: 'sheet', onSiderBreakpoint: d => seen.push(d.matched) })
+    const l = layout({ siderPresentation: 'sheet', onSiderBreakpointChange: d => seen.push(d.matched) })
     l.start()
     l.set({ siderBreakpoint: 'md' })
     expect(v.queries).toHaveLength(1)
@@ -78,7 +78,7 @@ describe('layout 动态断点', () => {
   it('同档不重复绑定，inline 切到 sheet 立即应用当前断点且不重复报告', () => {
     const v = viewport()
     const notify = vi.fn()
-    const l = layout({ siderBreakpoint: 'lg', onSiderBreakpoint: notify })
+    const l = layout({ siderBreakpoint: 'lg', onSiderBreakpointChange: notify })
     l.start()
     expect(l.service.state.get()).toBe('expanded')
     l.set({ siderBreakpoint: 'lg' })
@@ -105,7 +105,7 @@ describe('layout 动态断点', () => {
     const changes: boolean[] = []
     const l = layout({ siderPresentation: 'sheet', siderCollapsed: false, onSiderCollapsedChange: d => changes.push(d.collapsed) })
     l.start()
-    l.set({ onSiderBreakpoint: () => l.set({ siderBreakpoint: 'md' }), siderBreakpoint: 'lg' })
+    l.set({ onSiderBreakpointChange: () => l.set({ siderBreakpoint: 'md' }), siderBreakpoint: 'lg' })
     expect(v.queries.map(q => q.listeners.size)).toEqual([0, 1])
     expect(l.service.context.get('siderNarrow')).toBe(false)
     expect(changes).toEqual([])
@@ -135,7 +135,7 @@ describe('layout 动态断点', () => {
   it('stop 后的旧查询回调不报告、不写 context', () => {
     const v = viewport()
     const notify = vi.fn()
-    const l = layout({ siderBreakpoint: 'md', onSiderBreakpoint: notify })
+    const l = layout({ siderBreakpoint: 'md', onSiderBreakpointChange: notify })
     l.start()
     const q = v.queries[0]!
     const late = [...q.listeners][0]!
@@ -193,7 +193,7 @@ describe('layout 动态断点', () => {
   it('旧查询释放抛错也会撤销新监听，迟到旧事件不再触发业务', () => {
     const v = viewport()
     const notify = vi.fn()
-    const l = layout({ siderBreakpoint: 'md', onSiderBreakpoint: notify })
+    const l = layout({ siderBreakpoint: 'md', onSiderBreakpointChange: notify })
     l.start()
     const old = v.queries[0]!
     const late = [...old.listeners][0]!
@@ -226,7 +226,7 @@ describe('layout 动态断点', () => {
     })
     let caught: unknown
     try {
-      l.set({ siderBreakpoint: 'md', onSiderBreakpoint: () => {
+      l.set({ siderBreakpoint: 'md', onSiderBreakpointChange: () => {
         throw primary
       } })
     }
@@ -241,7 +241,7 @@ describe('layout 动态断点', () => {
 
   it('初始化回调停机时不会留下迟到取得的监听', () => {
     const v = viewport()
-    const l = layout({ siderBreakpoint: 'lg', onSiderBreakpoint: () => l.stop() })
+    const l = layout({ siderBreakpoint: 'lg', onSiderBreakpointChange: () => l.stop() })
     l.start()
     expect(l.service.getStatus()).toBe('Stopped')
     expect(v.queries[0]!.listeners.size).toBe(0)

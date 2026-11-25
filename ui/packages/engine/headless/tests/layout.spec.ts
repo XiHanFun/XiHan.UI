@@ -385,7 +385,7 @@ describe('layout 覆盖档的消解', () => {
       siderPresentation: 'sheet',
       siderBreakpoint: 'md',
       siderCollapsed: false,
-      onSiderBreakpoint: details => breakpoints.push(details.matched),
+      onSiderBreakpointChange: details => breakpoints.push(details.matched),
       onSiderCollapsedChange: details => collapsed.push(details),
     })
     cleanups.push(l.stop)
@@ -492,7 +492,7 @@ describe('layout 断点与覆盖档', () => {
     expect(seen).toEqual([{ collapsed: true }, { collapsed: false }])
   })
 
-  it('只写断点不写覆盖档：跨档只发 onSiderBreakpoint，折叠态一动不动', () => {
+  it('只写断点不写覆盖档：跨档只发 onSiderBreakpointChange，折叠态一动不动', () => {
     const viewport = stubViewport(1024)
     cleanups.push(viewport.restore)
     cleanups.push(stubBreakpointToken('md', '768px'))
@@ -501,7 +501,7 @@ describe('layout 断点与覆盖档', () => {
     const collapsed: LayoutSiderCollapsedChangeDetails[] = []
     const l = makeLayout({
       siderBreakpoint: 'md',
-      onSiderBreakpoint: d => matched.push(d.matched),
+      onSiderBreakpointChange: d => matched.push(d.matched),
       onSiderCollapsedChange: d => collapsed.push(d),
     })
     cleanups.push(l.stop)

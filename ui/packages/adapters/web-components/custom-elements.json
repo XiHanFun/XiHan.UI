@@ -41837,9 +41837,9 @@
             },
             {
               "description": "跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }`",
-              "name": "sider-breakpoint",
+              "name": "sider-breakpoint-change",
               "type": {
-                "text": "LayoutSiderBreakpointDetails"
+                "text": "LayoutSiderBreakpointChangeDetails"
               }
             }
           ],

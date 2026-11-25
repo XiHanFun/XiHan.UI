@@ -35,7 +35,7 @@ export interface XhLayoutRootProps extends ComponentPropsWithRef<'div'> {
   /** 在头部、侧栏、脚部与内容之间绘制分隔线。 */
   split?: boolean
   onSiderCollapsedChange?: LayoutProps['onSiderCollapsedChange']
-  onSiderBreakpoint?: LayoutProps['onSiderBreakpoint']
+  onSiderBreakpointChange?: LayoutProps['onSiderBreakpointChange']
 }
 
 /** 各段一律渲染为 div：地标（banner / navigation / main / contentinfo）由作者自行标注。 */
@@ -48,7 +48,7 @@ export function XhLayoutRoot({ children, ...props }: XhLayoutRootProps): ReactNo
   )
 }
 
-XhLayoutRoot.xhEvents = ['sider-collapsed-change', 'sider-breakpoint'] as const
+XhLayoutRoot.xhEvents = ['sider-collapsed-change', 'sider-breakpoint-change'] as const
 
 export interface XhLayoutHeaderProps extends ComponentPropsWithRef<'div'> {}
 

@@ -6,7 +6,7 @@
 // 提供 layout 相关实现。
 
 import type { IdGenerator, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
+import type { LayoutBreakpoint, LayoutSchema, LayoutSiderBreakpointChangeDetails, LayoutSiderCollapsedChangeDetails, LayoutSiderPlacement, LayoutSiderPresentation } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
 import { connectLayout, layoutAnatomy, layoutMachine, layoutMeta } from '@xihan-ui/headless'
 import { BOOLEAN_CONVERTER } from '../dom/converters'
@@ -40,7 +40,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度
  * @attr {boolean} split - 在头部、侧栏、脚部与内容之间绘制分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
- * @fires sider-breakpoint - 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }`
+ * @fires sider-breakpoint-change - 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }`
  * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-split
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
  * @csspart sider-backdrop - 覆盖档铺在内容之上的遮罩，点击它收起侧栏；占位档下带 hidden。写在 sider 之前
@@ -93,8 +93,8 @@ export class XhLayoutElement extends XhElement {
     this.dispatchEvent(new CustomEvent('sider-collapsed-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyBreakpoint = (details: LayoutSiderBreakpointDetails): void => {
-    this.dispatchEvent(new CustomEvent('sider-breakpoint', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyBreakpoint = (details: LayoutSiderBreakpointChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('sider-breakpoint-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<LayoutSchema>(
@@ -127,7 +127,7 @@ export class XhLayoutElement extends XhElement {
       siderFixed: this.siderFixed ?? false,
       split: this.split ?? false,
       onSiderCollapsedChange: this.notify,
-      onSiderBreakpoint: this.notifyBreakpoint,
+      onSiderBreakpointChange: this.notifyBreakpoint,
     }
   }
 

@@ -105,7 +105,7 @@
 | `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度。只写标记，固定的实现归皮肤。 |
 | `split` | `boolean` |  | 在头部、侧栏、脚部与内容之间绘制分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
-| `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 跨过断点时发出一次，挂载或更换档位时也发出一次当前值。 窄屏需要把侧栏换成抽屉时接入该回调：组件自身只切换宽度。 |
+| `onSiderBreakpointChange` | `(details: LayoutSiderBreakpointChangeDetails) => void` |  | 跨过断点时发出一次，挂载或更换档位时也发出一次当前值。 窄屏需要把侧栏换成抽屉时接入该回调：组件自身只切换宽度。 |
 
 ### 事件
 
@@ -114,7 +114,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
-| `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }` |
+| `sider-breakpoint-change` | `LayoutSiderBreakpointChangeDetails` | 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }` |
 
 ### 状态
 
