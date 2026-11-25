@@ -484,6 +484,17 @@ export function createFocusScope(o: FocusScopeOptions): FocusScopeHandle {
     focusAttemptSettled(expected)
   }
 
+  /**
+   * 落点属于压在本层上面的某一层：本层暂停时只把焦点让给它们。
+   * 上面压着提示这类不拿焦点的层时，焦点其实还在本域里，Tab 走到边界照样要回绕、走出去照样要拉回；
+   * 只看「是不是栈顶」会在提示打开的那一刻整个松手，焦点就从末项走到区域外面去了。
+   */
+  function inLayerAbove(el: Element | null): boolean {
+    if (!el)
+      return false
+    return registry.elementsAbove(layer).some(node => contains(node, el))
+  }
+
   function onFocusIn(e: FocusEvent): void {
     if (disposed)
       return
@@ -501,18 +512,24 @@ export function createFocusScope(o: FocusScopeOptions): FocusScopeHandle {
       rememberFocus(target)
       return
     }
-    if (paused || !o.trapped())
+    if (!o.trapped())
+      return
+    // 暂停时让给上面的层；落到既不在本域、也不在上面那些层里的地方，照样拉回
+    if (paused && (target === null || inLayerAbove(target)))
       return
     pullBack()
   }
   function onFocusOut(e: FocusEvent): void {
-    if (disposed || paused || !o.trapped())
+    if (disposed || !o.trapped())
       return
     const related = e.relatedTarget as Element | null
     // relatedTarget 为 null 先让浏览器完成窗口切换或节点移除；后者由精确路径观察器延迟复核。
     if (related === null)
       return
     if (isInScope(related) || isScopeShadowHost(related))
+      return
+    // 暂停时焦点交给上面的层是正常交接
+    if (paused && inLayerAbove(related))
       return
     // closed shadow 会把 relatedTarget 重定向成 host；优先核对 Scope/branch 的真实活动元素。
     const activeInScope = activeFocusWithinScope()
@@ -526,7 +543,10 @@ export function createFocusScope(o: FocusScopeOptions): FocusScopeHandle {
   // —— Tab 边界回绕 ——
   function onKeyDown(e: KeyboardEvent): void {
     const loop = typeof o.loop === 'function' ? o.loop() : o.loop
-    if (disposed || paused || !loop || e.key !== 'Tab')
+    if (disposed || !loop || e.key !== 'Tab')
+      return
+    // 暂停只是把焦点让给上面的层：焦点还在本域里（上面只是一层提示）时，边界照样由本域回绕
+    if (paused && !activeFocusWithinScope())
       return
     const el2 = container()
     if (!el2)

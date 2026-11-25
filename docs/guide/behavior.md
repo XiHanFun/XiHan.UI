@@ -282,7 +282,7 @@ const scope = createFocusScope({
 
 挂载回调是同步表决点；要让 FocusScope 在 DOM 稳定后聚焦指定节点，使用 `initialFocus`，它会沿既定帧预算重试。回调取消后自行安排异步焦点时，调度与目标有效性由调用方负责。
 
-非栈顶的焦点域自动暂停：上方新开一层时，下层不再争抢焦点。
+非栈顶的焦点域自动暂停：上方新开一层时，下层不再争抢焦点。暂停只是把焦点让给上面那些层：焦点进到它们的节点、分支或表面里时下层不拉回；焦点还在本域里（上面只压着一层提示）时，Tab 走到边界照样由本域回绕；落到既不在本域、也不在上面那些层里的地方，陷焦点的域照样拉回。对话框或焦点圈定里最后一个控件带提示时，键盘 Tab 过去提示随聚焦打开，再按 Tab 仍回到第一个，不会走到外面。
 
 `focusSafely` 与 `focusFirst` 按候选节点所属的 Document/ShadowRoot 判断焦点是否真正落下；可选中文本控件通过严格 HTMLElement 身份与 HTML 节点名识别，不依赖可能因 `adoptNode` 改变的 owner realm 构造器。Shadow DOM 中 `document.activeElement` 只指向 host，不能拿它判断内部候选失败或重复聚焦。
 
