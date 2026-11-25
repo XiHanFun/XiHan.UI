@@ -24,17 +24,11 @@
 
 ## 示例
 
-### 变体
+### 形态、尺寸与状态
 
-设置整组外观
+variant 与 tone 设置整组外观，size 设置整组尺寸，disabled 禁用整组按钮
 
-<XhDemo src="button-group/02-variant" />
-
-### 尺寸
-
-设置整组尺寸
-
-<XhDemo src="button-group/03-size" />
+<XhDemo src="button-group/02-variant-size-state" />
 
 ### 方向
 
@@ -53,12 +47,6 @@
 按钮等分可用宽度
 
 <XhDemo src="button-group/06-full-width" />
-
-### 禁用
-
-禁用整组按钮
-
-<XhDemo src="button-group/07-disabled" />
 
 ### 无分隔线
 

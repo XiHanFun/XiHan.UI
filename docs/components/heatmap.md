@@ -24,35 +24,17 @@
 
 ## 示例
 
-### 语气换色
+### 语气、色板与尺寸
 
-tone 决定使用哪族颜色，色阶两端随之更换，格子的分档不变
+tone 按语气族换色，palette 直接按颜色指定、取基础色板同名色相的满档一端，两者都只换色阶两端、不改分档；size 改变格子边长与行首星期名的留白，一屏能放下的周数随之变化
 
-<XhDemo src="heatmap/02-tone" />
-
-### 色板换色
-
-palette 直接按颜色指定，取基础色板同名色相的满档一端；分档与空格底色都不变
-
-<XhDemo src="heatmap/03-palette" />
-
-### 尺寸
-
-size 改变格子边长与行首星期名的留白，一屏能放下的周数随之变化
-
-<XhDemo src="heatmap/04-size" />
+<XhDemo src="heatmap/02-tone-palette-size" />
 
 ### 档数
 
 levels 决定分几档，图例与格子共用同一条色阶
 
 <XhDemo src="heatmap/05-levels" />
-
-### 焦点明细
-
-悬停或焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细
-
-<XhDemo src="heatmap/06-focus" />
 
 ### 月历形态
 

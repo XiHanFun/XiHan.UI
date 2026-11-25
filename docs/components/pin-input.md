@@ -36,29 +36,11 @@ mask 把每格转为密码框，type 决定哪类字符可以输入，其余按�
 
 <XhDemo src="pin-input/03-mask" />
 
-### 禁用与校验失败
+### 形态、语气、尺寸与状态
 
-disabled 使每格都带原生 disabled 且不参与提交，invalid 只做标注、照常可以修改
+variant 只改变每格的颜色槽位，tone 决定使用哪族颜色、与 variant 正交，跳格与粘贴铺开的行为各档一致；每格的边长随 size 换档；disabled 使每格都带原生 disabled 且不参与提交，read-only 带原生 readonly、可聚焦可选中复制但不可修改，invalid 只做标注、照常可以修改
 
-<XhDemo src="pin-input/04-disabled" />
-
-### 变体
-
-variant 只改变每格的颜色槽位，跳格与粘贴铺开的行为三档一致
-
-<XhDemo src="pin-input/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
-
-<XhDemo src="pin-input/06-tone" />
-
-### 尺寸
-
-每格的边长随 size 换档，不传 size 即默认档
-
-<XhDemo src="pin-input/07-size" />
+<XhDemo src="pin-input/04-variant-tone-size-state" />
 
 ### 分组排布
 
@@ -71,12 +53,6 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 每格都有字符才算填满，作者据此启用提交按钮；重填一次清空整组
 
 <XhDemo src="pin-input/09-complete" />
-
-### 只读
-
-格子带上原生 readonly，值受控且宿主不回写：可聚焦、可选中复制，不可修改
-
-<XhDemo src="pin-input/10-readonly" />
 
 ### 自定义准入字符
 

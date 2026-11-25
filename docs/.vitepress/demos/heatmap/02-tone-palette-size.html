@@ -1,0 +1,87 @@
+<!-- 语气、色板与尺寸 | tone 按语气族换色，palette 直接按颜色指定、取基础色板同名色相的满档一端，两者都只换色阶两端、不改分档；size 改变格子边长与行首星期名的留白，一屏能放下的周数随之变化 -->
+<!-- 装着一整年网格的这一层是舞台的 flex 项：min-width: 0 让它收进舞台宽度，放不下的那一档才自己横着滚 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-8); min-width: 0">
+  <!-- 语气只换颜色族：档位怎么分由数据与 levels 决定，与它无关 -->
+  <div id="heatmap-tone-mount" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-5)"></div>
+
+  <!-- 只写 palette：色板管的只有满档实心底那一端，档位怎么分与它无关 -->
+  <div id="heatmap-palette-mount" style="display: flex; flex-wrap: wrap; gap: var(--xh-space-5)"></div>
+
+  <!-- 只写 root，一整年的结构由元素生成。宿主自己就是 grid 项，min-width: 0 写在它身上，放不下的那一档才在栏内横着滚 -->
+  <div id="heatmap-size-mount" style="display: grid; gap: var(--xh-space-4)">
+    <xh-heatmap start-date="2024-01-01" end-date="2024-12-31" size="sm" style="min-width: 0">
+      <div data-xh-part="root"></div>
+    </xh-heatmap>
+    <xh-heatmap start-date="2024-01-01" end-date="2024-12-31" size="lg" style="min-width: 0">
+      <div data-xh-part="root"></div>
+    </xh-heatmap>
+  </div>
+</div>
+
+<!-- 换色两行每格一样：只写 root，结构由元素生成 -->
+<template id="heatmap-color-template">
+  <div style="display: grid; gap: var(--xh-space-1)">
+    <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)"></span>
+    <xh-heatmap start-date="2024-01-01" end-date="2024-01-28">
+      <div data-xh-part="root"></div>
+    </xh-heatmap>
+  </div>
+</template>
+
+<script type="module">
+  // 换色两行用同一份四周数据各铺一遍，肉眼比的就只有颜色这一件事
+  const fourWeeks = [
+    { date: "2024-01-02", count: 1 },
+    { date: "2024-01-04", count: 3 },
+    { date: "2024-01-08", count: 6 },
+    { date: "2024-01-11", count: 2 },
+    { date: "2024-01-15", count: 9 },
+    { date: "2024-01-17", count: 4 },
+    { date: "2024-01-22", count: 12 },
+    { date: "2024-01-25", count: 7 },
+    { date: "2024-01-27", count: 2 },
+  ];
+
+  const template = document.getElementById("heatmap-color-template");
+
+  function mountEach(mount, attribute, values) {
+    for (const value of values) {
+      const fragment = template.content.cloneNode(true);
+      fragment.querySelector("span").textContent = value;
+      const heatmap = fragment.querySelector("xh-heatmap");
+      heatmap.setAttribute(attribute, value);
+      mount.append(fragment);
+      // 数据是数组，只走 property：HTML 属性装不下它
+      heatmap.value = fourWeeks;
+    }
+  }
+
+  mountEach(document.getElementById("heatmap-tone-mount"), "tone", ["brand", "neutral", "success", "warning", "danger", "info"]);
+  mountEach(document.getElementById("heatmap-palette-mount"), "palette", ["red", "orange", "amber", "yellow", "lime", "green", "teal", "cyan", "blue", "indigo", "purple", "pink", "gray"]);
+
+  const DAY_MS = 86400000;
+
+  // 尺寸一行与基础用法同一份年度数据：只换尺寸档，看同一年占多宽。
+  // sm 档格子最小，同样一整年 53 列只要 660px，md 档要 774px，lg 档要 880px
+  function buildYear(year) {
+    const days = [];
+    let index = 0;
+    for (let time = Date.UTC(year, 0, 1); time <= Date.UTC(year, 11, 31); time += DAY_MS) {
+      const at = new Date(time);
+      const noise = ((Math.imul(++index, 2654435761) >>> 8) % 1000) / 1000;
+      const month = at.getUTCMonth();
+      const peak = month === 2 || month === 9 ? 16 : month === 7 ? 3 : 8;
+      const weekend = at.getUTCDay() === 0 || at.getUTCDay() === 6;
+      const ceiling = weekend ? peak / 2 : peak;
+      days.push({
+        date: at.toISOString().slice(0, 10),
+        count: noise < 0.16 ? 0 : Math.round(noise * ceiling),
+      });
+    }
+    return days;
+  }
+
+  const activity = buildYear(2024);
+  for (const heatmap of document.getElementById("heatmap-size-mount").querySelectorAll("xh-heatmap"))
+    heatmap.value = activity;
+</script>

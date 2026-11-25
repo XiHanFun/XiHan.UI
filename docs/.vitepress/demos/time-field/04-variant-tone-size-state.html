@@ -1,0 +1,192 @@
+<!-- 形态、语气、尺寸与状态 | variant 只改变分段框的底色与描边用法，tone 与 variant 正交，size 让行高、内边距与字号连同标题一起换档，分段结构与键盘行为都不变；禁用整组退出 Tab 序列，越界只做标注，08:00 原样保留不被改写 -->
+<div style="display: grid; gap: var(--xh-space-8)">
+  <div style="display: grid; gap: var(--xh-space-4); justify-items: start">
+    <xh-time-field variant="outline" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="ghost" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-4)">
+    <xh-time-field variant="subtle" tone="brand" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" tone="neutral" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" tone="success" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" tone="warning" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" tone="danger" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field variant="subtle" tone="info" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--xh-space-4)">
+    <xh-time-field size="sm" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">sm</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">默认</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field size="lg" default-value="09:30">
+      <div data-xh-part="root">
+        <label data-xh-part="label">lg</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-4); justify-items: start">
+    <xh-time-field default-value="13:45" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+
+    <xh-time-field default-value="08:00" min="09:00" max="18:00">
+      <div data-xh-part="root">
+        <label data-xh-part="label">越界（09:00 – 18:00）</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" segment="hour"></span>
+            <span>:</span>
+            <span data-xh-part="segment" segment="minute"></span>
+          </div>
+        </div>
+      </div>
+    </xh-time-field>
+  </div>
+</div>

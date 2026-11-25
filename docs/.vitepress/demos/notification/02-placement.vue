@@ -1,4 +1,4 @@
-<!-- 落位 | placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 data-placement，队列本身不变 -->
+<!-- 落位 | notification 的 placement 决定堆叠缺省贴视口的哪个角，单条通知自带 placement 即覆盖它；placements 报告当前有条目的位置，一个位置一个堆叠 -->
 <script setup lang="ts">
 import {
   XhButton,
@@ -11,40 +11,47 @@ import {
   XhNotificationItemTitle,
   XhNotificationRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const placements = [
-  "top-start",
-  "top",
-  "top-end",
-  "bottom-start",
-  "bottom",
-  "bottom-end",
+type Create = (options: Record<string, unknown>) => string;
+
+const spots = [
+  { placement: "top-start", label: "左上" },
+  { placement: "bottom", label: "正下" },
 ] as const;
 
-const placement = ref<(typeof placements)[number]>("top-end");
 const itemTranslations = { close: "关闭" };
+
+function pop(create: Create, placement: string, label: string): void {
+  create({
+    placement,
+    title: `落在${label}`,
+    description: "每个位置各排各的队，互不挤占",
+  });
+}
 </script>
 
 <template>
-  <XhNotificationRoot v-slot="{ create, dismiss }" :placement="placement">
+  <XhNotificationRoot v-slot="{ create, dismiss, placements }" placement="top-end" :duration="8000">
     <XhButton
-      v-for="p in placements"
-      :key="p"
       size="sm"
-      :variant="p === placement ? 'solid' : 'outline'"
-      @click="placement = p"
+      variant="outline"
+      @click="create({ title: '落在缺省位', description: '没写 placement，取 notification 的 top-end' })"
     >
-      {{ p }}
+      按缺省落位
     </XhButton>
     <XhButton
-      variant="ghost"
-      @click="create({ title: '换个角看看', description: `现在贴在 ${placement}` })"
+      v-for="spot in spots"
+      :key="spot.placement"
+      size="sm"
+      variant="outline"
+      @click="pop(create, spot.placement, spot.label)"
     >
-      弹一条
+      弹到{{ spot.label }}
     </XhButton>
+    <span data-demo-output>眼下有条目的位置：{{ placements.join("、") || "（无）" }}</span>
 
-    <XhNotificationGroup>
+    <!-- 一个位置一摞，没有条目的位置不必渲染 -->
+    <XhNotificationGroup v-for="p in placements" :key="p" :placement="p">
       <template #default="{ item }">
         <XhNotificationItem
           :id="item.id"

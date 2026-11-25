@@ -54,11 +54,11 @@ sortKeys 使对象键按字典序排列，数组顺序不变；接口返回的�
 
 <XhDemo src="json-viewer/06-circular" />
 
-### 尺寸
+### 形态与尺寸
 
-size 三档只改变字号与层级缩进，行的结构与配色都不变
+variant 只换外框：outline 带描边与底色，subtle 淡底无描边，ghost 去掉外框与底色；size 三档只改变字号与层级缩进，行的结构与配色都不变
 
-<XhDemo src="json-viewer/07-size" />
+<XhDemo src="json-viewer/07-variant-size" />
 
 ### 原文视图
 
@@ -66,9 +66,9 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 <XhDemo src="json-viewer/08-text" />
 
-### 空态与形态
+### 空态
 
-一行都无法展开时显示空态格；variant="ghost" 去掉外框与底色
+一行都无法展开时显示空态格：上一份改写了空态文字，下一份不写即铺 translations.empty 那句话
 
 <XhDemo src="json-viewer/09-empty" />
 

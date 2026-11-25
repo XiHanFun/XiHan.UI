@@ -1,8 +1,8 @@
-<!-- 刷选 | brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据；点一下或按 Escape 清掉 -->
+<!-- 刷选 | brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据，统计跟着框走；点一下或按 Escape 清掉，回到全部门店 -->
 <div style="width: 100%">
-  <xh-cartesian-chart id="cartesian-chart-brush">
+  <xh-cartesian-chart id="cartesian-chart-brush" brush="xy">
     <figure data-xh-part="root">
-      <figcaption data-xh-part="caption">门店面积与月销售额</figcaption>
+      <figcaption data-xh-part="caption">门店面积与月销售额（拖动框选）</figcaption>
       <div data-xh-part="legend"></div>
       <div data-xh-part="viewport">
         <svg data-xh-part="plot"></svg>
@@ -11,18 +11,31 @@
       <div data-xh-part="tooltip"></div>
     </figure>
   </xh-cartesian-chart>
+  <p id="cartesian-chart-brush-stats" aria-live="polite" data-demo-output></p>
 </div>
 
 <script type="module">
   const chart = document.getElementById("cartesian-chart-brush");
+  const stats = document.getElementById("cartesian-chart-brush-stats");
   // 60 家门店的面积（m²）与月销售额（万元），由序号算出，每次打开都长一样
   const stores = Array.from({ length: 60 }, (_, i) => {
     const area = Math.round(40 + (Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1) * 160);
     const sales = Math.round((area * 0.9 + ((Math.abs(Math.sin(i * 78.233) * 12345.678) % 1) - 0.5) * 60) * 10) / 10;
     return { area, sales };
   });
-  const series = [{ mark: "scatter", x: "area", y: "sales", name: "门店" }];
   chart.data = stores;
-  chart.series = series;
-  chart.brush = "xy";
+  chart.series = [{ mark: "scatter", x: "area", y: "sales", name: "门店" }];
+
+  // 一组门店的家数与平均月销售额
+  function statsOf(rows) {
+    const average = rows.reduce((sum, row) => sum + row.sales, 0) / Math.max(1, rows.length);
+    return `${rows.length} 家门店，平均月销售额 ${average.toFixed(1)} 万元`;
+  }
+
+  // 框里的门店；清掉框时回到全部
+  chart.addEventListener("brush-selection-change", (event) => {
+    const { selection, data } = event.detail;
+    stats.textContent = selection ? `框选了 ${statsOf(data.map(item => item.datum))}` : `全部 ${statsOf(stores)}`;
+  });
+  stats.textContent = `全部 ${statsOf(stores)}`;
 </script>

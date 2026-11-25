@@ -30,17 +30,11 @@
 
 <XhDemo src="collapsible/02-controlled" />
 
-### 禁用
+### 语气、尺寸与状态
 
-disabled 把触发器整个关停，点击与键盘都不再改变开合，已展开的内容维持原样
+tone 落在触发按钮的展开态上，size 改变触发按钮的高度、内边距与字号；disabled 把触发器整个关停，点击与键盘都不再改变开合，已展开的内容维持原样
 
-<XhDemo src="collapsible/03-disabled" />
-
-### 尺寸
-
-size 改变触发按钮的高度、内边距与字号，三档并排对照
-
-<XhDemo src="collapsible/04-size" />
+<XhDemo src="collapsible/03-tone-size-state" />
 
 ### 自定义展开标记
 
@@ -53,12 +47,6 @@ size 改变触发按钮的高度、内边距与字号，三档并排对照
 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡即可平滑展开
 
 <XhDemo src="collapsible/06-transition" />
-
-### 颜色
-
-tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
-
-<XhDemo src="collapsible/07-tone" />
 
 ### 内容懒挂载
 

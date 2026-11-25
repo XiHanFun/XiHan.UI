@@ -30,11 +30,11 @@
 
 <XhDemo src="avatar/02-fallback" />
 
-### 尺寸
+### 语气与尺寸
 
-size 三档只改变直径，回退文字的字号随之缩放；默认档不输出 data-size
+tone 改变淡底与回退文字的配色组，不写即中性缺省；size 三档只改变直径，回退文字的字号随之缩放，默认档不输出 data-size
 
-<XhDemo src="avatar/03-size" />
+<XhDemo src="avatar/03-tone-size" />
 
 ### 形状
 
@@ -59,12 +59,6 @@ fallback 是普通插槽，放图标与放缩写文字一样；没有名字可�
 status-change 在状态落位时通知，过渡态 idle 不通知；未提供地址等同于无法获取，直接落为 error 由回退接管
 
 <XhDemo src="avatar/07-status" />
-
-### 颜色
-
-tone 改变淡底与回退文字的配色组；不写 tone 即中性默认，直径与字号都不受影响
-
-<XhDemo src="avatar/08-tone" />
 
 ## 设计指引
 

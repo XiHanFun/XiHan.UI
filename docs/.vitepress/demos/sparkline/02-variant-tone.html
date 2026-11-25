@@ -1,0 +1,28 @@
+<!-- 形态与语气 | variant 切换同一组数的画法：line 折线、area 折线下铺一层淡洗、bar 柱；颜色本身带好坏含义时写 tone，线与标记点整条取语气色，缺省 neutral 线取弱化色、末点取品牌色 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-6)">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-6)">
+    <xh-sparkline data-demo="sparkline-variant" variant="line">
+      <svg data-xh-part="root" aria-label="近 8 天订单数（line）"></svg>
+    </xh-sparkline>
+    <xh-sparkline data-demo="sparkline-variant" variant="area">
+      <svg data-xh-part="root" aria-label="近 8 天订单数（area）"></svg>
+    </xh-sparkline>
+    <xh-sparkline data-demo="sparkline-variant" variant="bar">
+      <svg data-xh-part="root" aria-label="近 8 天订单数（bar）"></svg>
+    </xh-sparkline>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-6)">
+    <xh-sparkline id="sparkline-tone" tone="danger">
+      <svg data-xh-part="root" aria-label="近 10 分钟错误率"></svg>
+    </xh-sparkline>
+  </div>
+</div>
+
+<script type="module">
+  for (const el of document.querySelectorAll("[data-demo='sparkline-variant']"))
+    el.data = [18, 24, 21, 30, 27, 35, 32, 41];
+
+  // 近 10 分钟的错误率（%）：越高越糟，取危险色
+  document.getElementById("sparkline-tone").data = [0.4, 0.5, 0.3, 0.6, 0.9, 1.4, 1.2, 1.8, 2.3, 2.1];
+</script>

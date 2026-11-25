@@ -24,11 +24,11 @@
 
 ## 示例
 
-### 逐条语气
+### 语气与尺寸
 
-tone 写在条目上，只为该条的圆点上色；不写 tone 的条目是中性圆点
+tone 写在条目上，只为该条的圆点上色，不写 tone 的条目是中性圆点；size 改变圆点直径、条目间距与字号，不传 size 即默认档
 
-<XhDemo src="timeline/02-tone" />
+<XhDemo src="timeline/02-tone-size" />
 
 ### 内容所在的一侧
 
@@ -41,12 +41,6 @@ placement 决定内容落在线的哪一侧；alternate 是逐条交替，线位
 orientation="horizontal" 把事件从左向右排列，连线随之转为横向
 
 <XhDemo src="timeline/04-horizontal" />
-
-### 尺寸
-
-size 改变圆点直径、条目间距与字号，不传 size 即默认档
-
-<XhDemo src="timeline/05-size" />
 
 ### 坐标列
 

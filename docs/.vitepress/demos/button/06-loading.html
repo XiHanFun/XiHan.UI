@@ -1,13 +1,16 @@
-<!-- 加载 | 保留按钮标签并阻止重复操作 -->
-<xh-button loading>
+<!-- 加载 | 点击后进入 loading：保留按钮标签，完成前阻止重复操作 -->
+<xh-button id="button-loading-trigger">
   <button data-xh-part="root">
     <span data-xh-part="indicator"></span>
-    <span data-xh-part="label">提交</span>
+    <span data-xh-part="label">保存</span>
   </button>
 </xh-button>
-<xh-button loading variant="subtle">
-  <button data-xh-part="root">
-    <span data-xh-part="indicator"></span>
-    <span data-xh-part="label">处理中</span>
-  </button>
-</xh-button>
+
+<script type="module">
+  const button = document.getElementById("button-loading-trigger");
+  button.addEventListener("click", async () => {
+    button.loading = true;
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    button.loading = false;
+  });
+</script>

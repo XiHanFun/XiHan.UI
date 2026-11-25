@@ -1,0 +1,67 @@
+<!-- 形态、尺寸与状态 | variant 设置整组外观，size 提供三种尺寸；状态落在单个选项上，禁用的那一项不可切换 -->
+<div style="display: grid; gap: var(--xh-space-6)">
+  <div style="display: grid; gap: var(--xh-space-3); justify-items: start">
+    <xh-toggle-group default-value="week" variant="solid">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+    <xh-toggle-group default-value="week" variant="subtle">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+    <xh-toggle-group default-value="week" variant="outline">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+    <xh-toggle-group default-value="week" variant="ghost">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-3)">
+    <xh-toggle-group default-value="day" size="sm">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+    <xh-toggle-group default-value="week">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+    <xh-toggle-group default-value="month" size="lg">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="day">日</button>
+        <button data-xh-part="item" value="week">周</button>
+        <button data-xh-part="item" value="month">月</button>
+      </div>
+    </xh-toggle-group>
+  </div>
+
+  <div style="display: flex">
+    <xh-toggle-group default-value="center">
+      <div data-xh-part="root">
+        <button data-xh-part="item" value="left">左对齐</button>
+        <button data-xh-part="item" value="center" aria-disabled="true">居中</button>
+        <button data-xh-part="item" value="right">右对齐</button>
+      </div>
+    </xh-toggle-group>
+  </div>
+</div>

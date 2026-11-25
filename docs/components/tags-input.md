@@ -24,9 +24,9 @@
 
 ## 示例
 
-### 上限与粘贴拆分
+### 断词符与上限
 
-add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 maxTags 后再输入再粘贴都不能加入
+delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号、分号都行；add-on-paste 使粘贴进来的一串照它们拆为多个标签，多行清单的换行也算；达到 maxTags 后再输入再粘贴都不能加入
 
 <XhDemo src="tags-input/02-max-paste" />
 
@@ -36,29 +36,11 @@ editable 开启后双击任一标签改写它：Enter 提交、Escape 撤销，�
 
 <XhDemo src="tags-input/03-editable" />
 
-### 禁用与只读
+### 形态、语气、尺寸与状态
 
-disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可聚焦浏览，但不能加入也不能删除，删除按钮留在原地不可按下、标签不置灰
+variant 只改变控件的颜色槽位，标签形态按控件的面派生（subtle 中是描边标签，其余是淡底标签）；tone 与 variant 正交；size 让控件高度、胶囊与输入文字一起换档；disabled 整个控件退出 Tab 序列、标签一起置灰，read-only 仍可聚焦浏览但不能加入也不能删除、标签不置灰
 
-<XhDemo src="tags-input/04-disabled-readonly" />
-
-### 变体
-
-variant 只改变控件的颜色槽位，标签的形态按控件的面派生：subtle 控件中是描边标签，其余是淡底标签；落下标签与删除标签的行为三档一致
-
-<XhDemo src="tags-input/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
-
-<XhDemo src="tags-input/06-tone" />
-
-### 尺寸
-
-控件高度、胶囊与输入文字一起换档，不传 size 即默认档
-
-<XhDemo src="tags-input/07-size" />
+<XhDemo src="tags-input/04-variant-tone-size-state" />
 
 ### 随表单提交
 
@@ -72,15 +54,9 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 <XhDemo src="tags-input/09-normalize" />
 
-### 候选词一键添加
-
-根插槽给出 addValue 与 atMax：输入框之外再开一条添加标签的路径，上限同样受控
-
-<XhDemo src="tags-input/10-suggest" />
-
 ### 外部触发的输入会话
 
-输入部件平时收起，按添加后才显示并聚焦；输入时提供候选，选中即落下标签，失焦按 blur-behavior 收尾
+输入部件平时收起，按添加后才显示并聚焦；输入时提供候选，点选经根插槽的 addValue 落下标签，到 atMax 时添加按钮转为禁用，失焦按 blur-behavior 收尾
 
 <XhDemo src="tags-input/11-custom-input" />
 
@@ -95,12 +71,6 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 validate 逐个判定新标签，返回拒绝码即拒收：这一次提交整体不生效、文本留在框里改；tag-reject 报告拒收的标签与原因，重复的照常消费但也会报
 
 <XhDemo src="tags-input/13-validate" />
-
-### 一组断词符
-
-delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号、分号都行，粘贴多行清单时换行也算；随表单提交的整串用第一个拼接
-
-<XhDemo src="tags-input/14-delimiters" />
 
 ## 设计指引
 

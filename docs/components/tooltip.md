@@ -36,23 +36,11 @@ openDelay 默认 150ms 用于防误触，closeDelay 默认 100ms 留出指针移
 
 <XhDemo src="tooltip/03-delay" />
 
-### 禁用
+### 语气、尺寸与状态
 
-disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚焦
+六种语气更换浮层实心底与其上的文字色，箭头一并随之变化；size 三档只改变浮层的内边距，字号不变，不写即默认档；disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚焦。把指针停在触发器上（或用 Tab 聚焦）查看差别
 
-<XhDemo src="tooltip/04-disabled" />
-
-### 颜色
-
-六种语气更换浮层实心底与其上的文字色，箭头一并随之变化；把指针停在触发器上（或用 Tab 聚焦）查看差别
-
-<XhDemo src="tooltip/05-tone" />
-
-### 尺寸
-
-三档只改变浮层的内边距，字号不变，不写 size 即默认档；把指针停在触发器上（或用 Tab 聚焦）查看差别
-
-<XhDemo src="tooltip/06-size" />
+<XhDemo src="tooltip/04-tone-size-state" />
 
 ### 受控
 

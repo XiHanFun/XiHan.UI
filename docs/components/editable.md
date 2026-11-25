@@ -30,17 +30,11 @@
 
 <XhDemo src="editable/02-submit-mode" />
 
-### 状态
+### 形态与状态
 
-禁用、只读与空值
+variant 设置编辑框外观；禁用、只读与空值占位各是一种状态
 
-<XhDemo src="editable/03-disabled" />
-
-### 变体
-
-设置编辑框外观
-
-<XhDemo src="editable/04-variant-tone" />
+<XhDemo src="editable/03-variant-state" />
 
 ## 设计指引
 

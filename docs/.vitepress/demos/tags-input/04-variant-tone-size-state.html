@@ -1,0 +1,321 @@
+<!-- 形态、语气、尺寸与状态 | variant 只改变控件的颜色槽位，标签形态按控件的面派生（subtle 中是描边标签，其余是淡底标签）；tone 与 variant 正交；size 让控件高度、胶囊与输入文字一起换档；disabled 整个控件退出 Tab 序列、标签一起置灰，read-only 仍可聚焦浏览但不能加入也不能删除、标签不置灰 -->
+<div style="display: grid; gap: var(--xh-space-8)">
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-5); max-inline-size: 420px">
+    <xh-tags-input
+      variant="outline"
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="subtle"
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="ghost"
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-4); grid-template-columns: repeat(2, minmax(0, 1fr))">
+    <xh-tags-input
+      variant="outline"
+      tone="brand"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="outline"
+      tone="neutral"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="outline"
+      tone="success"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="outline"
+      tone="warning"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="outline"
+      tone="danger"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      variant="outline"
+      tone="info"
+      default-value="标签"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="标签">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">标签</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-5); max-inline-size: 420px">
+    <xh-tags-input
+      size="sm"
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">小</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">默认</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input
+      size="lg"
+      default-value="Vue,TypeScript"
+      placeholder="回车落一个"
+    >
+      <div data-xh-part="root">
+        <label data-xh-part="label">大</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="TypeScript">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">TypeScript</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: var(--xh-space-5); max-inline-size: 420px">
+    <xh-tags-input default-value="Vue,Vite" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="Vite">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vite</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+
+    <xh-tags-input default-value="Vue,Vite" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <div data-xh-part="item" value="Vue">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vue</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <div data-xh-part="item" value="Vite">
+            <div data-xh-part="item-preview">
+              <span data-xh-part="item-text">Vite</span>
+              <button data-xh-part="item-delete-trigger"></button>
+            </div>
+          </div>
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-tags-input>
+  </div>
+</div>

@@ -1,6 +1,8 @@
-// 刷选 | brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据；点一下或按 Escape 清掉
+// 刷选 | brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据，统计跟着框走；点一下或按 Escape 清掉，回到全部门店
+import type { CartesianBrushSelectionChangeDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhCartesianChartRoot } from "@xihan-ui/react";
+import { useState } from "react";
 
 // 60 家门店的面积（m²）与月销售额（万元），由序号算出，每次打开都长一样
 const stores = Array.from({ length: 60 }, (_, i) => {
@@ -11,13 +13,32 @@ const stores = Array.from({ length: 60 }, (_, i) => {
 
 const series = [{ mark: "scatter", x: "area", y: "sales", name: "门店" }] as const;
 
+// 一组门店的家数与平均月销售额
+function statsOf(rows: readonly { sales: number }[]): string {
+  const average = rows.reduce((sum, row) => sum + row.sales, 0) / Math.max(1, rows.length);
+  return `${rows.length} 家门店，平均月销售额 ${average.toFixed(1)} 万元`;
+}
+
 export default function Demo(): ReactNode {
+  // 框里的门店；没有框时是全部
+  const [picked, setPicked] = useState<readonly { area: number; sales: number }[] | null>(null);
+
+  function pick(details: CartesianBrushSelectionChangeDetails): void {
+    setPicked(details.selection ? details.data.map(item => item.datum as { area: number; sales: number }) : null);
+  }
+
   return (
-    <XhCartesianChartRoot
-      data={stores}
-      series={series}
-      brush="xy"
-      caption="门店面积与月销售额"
-    />
+    <div style={{ width: "100%" }}>
+      <XhCartesianChartRoot
+        data={stores}
+        series={series}
+        brush="xy"
+        onBrushSelectionChange={pick}
+        caption="门店面积与月销售额（拖动框选）"
+      />
+      <p aria-live="polite" data-demo-output>
+        {picked ? `框选了 ${statsOf(picked)}` : `全部 ${statsOf(stores)}`}
+      </p>
+    </div>
   );
 }

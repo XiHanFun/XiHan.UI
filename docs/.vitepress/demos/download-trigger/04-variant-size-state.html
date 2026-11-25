@@ -1,0 +1,17 @@
+<!-- 形态、尺寸与状态 | variant 设置触发器外观，size 取小、中、大三档，disabled 禁止触发下载 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-4)">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="solid"><button data-xh-part="root">实心</button></xh-download-trigger>
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="subtle"><button data-xh-part="root">浅色</button></xh-download-trigger>
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="outline"><button data-xh-part="root">线框</button></xh-download-trigger>
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="ghost"><button data-xh-part="root">幽灵</button></xh-download-trigger>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="sm"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="md"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+    <xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="lg"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-download-trigger disabled data="XiHan.UI" file-name="xihan-ui.txt"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+  </div>
+</div>

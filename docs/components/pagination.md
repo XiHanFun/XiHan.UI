@@ -24,11 +24,11 @@
 
 ## 示例
 
-### 尺寸
+### 尺寸与状态
 
-适配不同的界面密度
+size 适配不同的界面密度；disabled 让数据加载期间整组不可操作，当前页仍标得出
 
-<XhDemo src="pagination/02-size" />
+<XhDemo src="pagination/02-size-state" />
 
 ### 简洁模式
 
@@ -59,12 +59,6 @@
 页数很多时一步跳到头
 
 <XhDemo src="pagination/07-edges" />
-
-### 整组禁用
-
-数据加载期间整组不可操作，当前页仍标得出
-
-<XhDemo src="pagination/08-disabled" />
 
 ## 设计指引
 

@@ -1,0 +1,319 @@
+<!-- 形态、语气与尺寸 | 形态只改变与页面分开的方式：ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；tone 落在展开态的标题上；size 改变标题栏的高度、内边距与字号 -->
+<div style="display: grid; gap: var(--xh-space-6); width: 100%">
+  <div
+    id="accordion-variants"
+    style="
+      display: grid;
+      gap: var(--xh-space-4);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    "
+  >
+    <xh-accordion variant="ghost">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="shipping">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>配送方式</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">下单后 48 小时内发出。</div>
+        </div>
+        <div data-xh-part="item" value="refund">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>退换政策</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">签收 7 天内可申请退换。</div>
+        </div>
+      </div>
+    </xh-accordion>
+
+    <xh-accordion variant="outline">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="shipping">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>配送方式</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">下单后 48 小时内发出。</div>
+        </div>
+        <div data-xh-part="item" value="refund">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>退换政策</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">签收 7 天内可申请退换。</div>
+        </div>
+      </div>
+    </xh-accordion>
+
+    <xh-accordion variant="subtle">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="shipping">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>配送方式</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">下单后 48 小时内发出。</div>
+        </div>
+        <div data-xh-part="item" value="refund">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>退换政策</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">签收 7 天内可申请退换。</div>
+        </div>
+      </div>
+    </xh-accordion>
+  </div>
+
+  <div
+    id="accordion-tones"
+    style="
+      display: grid;
+      gap: var(--xh-space-4);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    "
+  >
+    <xh-accordion tone="brand">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>品牌（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="brand"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>品牌（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+    <xh-accordion tone="neutral">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>中性（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="neutral"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>中性（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+    <xh-accordion tone="success">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>成功（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="success"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>成功（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+    <xh-accordion tone="warning">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>警告（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="warning"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>警告（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+    <xh-accordion tone="danger">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>危险（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="danger"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>危险（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+    <xh-accordion tone="info">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="open">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>信息（展开）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">tone="info"</div>
+        </div>
+        <div data-xh-part="item" value="closed">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>信息（收起）</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">收起态标题保持默认颜色。</div>
+        </div>
+      </div>
+    </xh-accordion>
+  </div>
+
+  <div
+    id="accordion-sizes"
+    style="
+      display: grid;
+      gap: var(--xh-space-4);
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      align-items: start;
+    "
+  >
+    <xh-accordion size="sm">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="a">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>小号 sm</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">标题栏最矮，字号也最小。</div>
+        </div>
+        <div data-xh-part="item" value="b">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>另一项</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">同一档内所有标题一致。</div>
+        </div>
+      </div>
+    </xh-accordion>
+
+    <!-- 中间一档不写 size -->
+    <xh-accordion>
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="a">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>缺省档</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">不写 size 就是这一档。</div>
+        </div>
+        <div data-xh-part="item" value="b">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>另一项</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">同一档内所有标题一致。</div>
+        </div>
+      </div>
+    </xh-accordion>
+
+    <xh-accordion size="lg">
+      <div data-xh-part="root">
+        <div data-xh-part="item" value="a">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>大号 lg</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">标题栏最高，字号也最大。</div>
+        </div>
+        <div data-xh-part="item" value="b">
+          <h3 data-xh-part="header">
+            <button data-xh-part="trigger">
+              <span>另一项</span>
+              <span data-xh-part="indicator"></span>
+            </button>
+          </h3>
+          <div data-xh-part="content">同一档内所有标题一致。</div>
+        </div>
+      </div>
+    </xh-accordion>
+  </div>
+</div>
+
+<script type="module">
+  // 展开集合是数组，只走 property：逐组设初值、每次变更写回
+  const rows = [
+    ["accordion-variants", ["shipping"]],
+    ["accordion-tones", ["open"]],
+    ["accordion-sizes", ["a"]],
+  ];
+  for (const [id, initial] of rows) {
+    for (const accordion of document.getElementById(id).querySelectorAll("xh-accordion")) {
+      accordion.value = [...initial];
+      accordion.addEventListener("value-change", (event) => {
+        accordion.value = event.detail.value;
+      });
+    }
+  }
+</script>

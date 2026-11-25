@@ -1,0 +1,28 @@
+<!-- 滚动方向 | orientation 决定组件管理哪条轴：缺省 both 两个方向都能滚，两条滚动条交会处由 corner 补齐；horizontal 只启用横向滚动 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-6)">
+  <xh-scroll-area reveal-mode="always" aria-label="双轴滚动占位区块" style="display: contents">
+    <div data-xh-part="root" style="block-size: 160px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" style="padding: 12px 16px">
+          <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="danger" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+          <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 560px; margin-block: 14px"></span>
+        </div>
+      </div>
+      <div data-xh-part="scrollbar" orientation="vertical"><div data-xh-part="track"><div data-xh-part="thumb"></div></div><div data-xh-part="corner"></div></div>
+      <div data-xh-part="scrollbar" orientation="horizontal"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>
+    </div>
+  </xh-scroll-area>
+
+  <xh-scroll-area id="scroll-area-horizontal" orientation="horizontal" reveal-mode="always" style="display: contents">
+    <div data-xh-part="root" style="block-size: 110px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface)">
+      <div data-xh-part="viewport"><div data-xh-part="content" style="display: flex; gap: 10px; padding: 10px 12px"><div data-demo-block data-tone="brand" style="flex: none; inline-size: 96px; block-size: 64px"></div><div data-demo-block data-tone="info" style="flex: none; inline-size: 96px; block-size: 64px"></div><div data-demo-block data-tone="success" style="flex: none; inline-size: 96px; block-size: 64px"></div><div data-demo-block data-tone="warning" style="flex: none; inline-size: 96px; block-size: 64px"></div><div data-demo-block data-tone="danger" style="flex: none; inline-size: 96px; block-size: 64px"></div><div data-demo-block data-tone="neutral" style="flex: none; inline-size: 96px; block-size: 64px"></div></div></div>
+      <div data-xh-part="scrollbar" orientation="horizontal"><div data-xh-part="track"><div data-xh-part="thumb"></div></div></div>
+    </div>
+  </xh-scroll-area>
+</div>

@@ -1,0 +1,102 @@
+<!-- 形态与状态 | variant 设置输入框外观；禁用、只读与校验失败各是一种状态 -->
+<div style="display: grid; gap: var(--xh-space-6); justify-items: start">
+  <div style="display: grid; gap: var(--xh-space-4); justify-items: start">
+    <xh-date-field variant="outline" default-value="2026-07-28" locale="zh-CN">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+
+    <xh-date-field variant="subtle" default-value="2026-07-28" locale="zh-CN">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+
+    <xh-date-field variant="ghost" default-value="2026-07-28" locale="zh-CN">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-4); justify-items: start">
+    <xh-date-field default-value="2026-07-28" locale="zh-CN" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+
+    <xh-date-field default-value="2026-07-28" locale="zh-CN" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+
+    <xh-date-field default-value="2026-07-28" locale="zh-CN" invalid>
+      <div data-xh-part="root">
+        <label data-xh-part="label">校验失败</label>
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group">
+            <span data-xh-part="segment" index="0"></span>
+            <span>年</span>
+            <span data-xh-part="segment" index="1"></span>
+            <span>月</span>
+            <span data-xh-part="segment" index="2"></span>
+            <span>日</span>
+          </div>
+        </div>
+      </div>
+    </xh-date-field>
+  </div>
+</div>

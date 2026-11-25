@@ -26,9 +26,9 @@
 
 ### 变体
 
-variant 切换同一组数的画法：line 折线、area 折线下铺一层淡洗、bar 柱
+variant 切换同一组数的画法：line 折线、area 折线下铺一层淡洗、bar 柱；颜色本身带好坏含义时写 tone，线与标记点整条取语气色，缺省 neutral 线取弱化色、末点取品牌色
 
-<XhDemo src="sparkline/02-variant" />
+<XhDemo src="sparkline/02-variant-tone" />
 
 ### 盈亏
 
@@ -47,12 +47,6 @@ markers="extremes" 在末点之外再标出最高与最低点；markers="none" �
 band 把正常区间画成一条淡底，一眼看出哪几次越界；纵向范围会扩到把它包进来
 
 <XhDemo src="sparkline/05-band" />
-
-### 颜色
-
-颜色本身带好坏含义时写 tone：线与标记点整条取语气色；缺省 neutral 线取弱化色、末点取品牌色
-
-<XhDemo src="sparkline/06-tone" />
 
 ### 随文
 

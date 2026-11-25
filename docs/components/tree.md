@@ -26,13 +26,13 @@ collection 是层级元信息的唯一事实源；不写结构时组件照它铺
 
 ### 多选
 
-选择模式缺省是单选，写 multiple 后点击与确认键都变为切换，选中集合形状不变仍是数组
+选择模式缺省是单选，写 multiple 后点击与确认键都变为切换，选中集合形状不变仍是数组；按住 Shift 点击某一项选中锚点到它的一段，按可见序取值，折叠的子节点不会被选入
 
 <XhDemo src="tree/02-multiple" />
 
 ### 受控
 
-传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化
+传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化；这里分支的选中意图不写回，选中集合里只有叶子
 
 <XhDemo src="tree/03-controlled" />
 
@@ -60,12 +60,6 @@ filter-text 给检索词：树按它裁到只剩命中的那几枝，祖先保�
 
 <XhDemo src="tree/07-prefix-suffix" />
 
-### 只让叶子进入选中集合
-
-选中受控后由宿主决定：分支的值直接不写回，点击目录只剩展开收起这一个效果
-
-<XhDemo src="tree/08-leaf-only" />
-
 ### 级联勾选
 
 multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选框排在行首，半选在方框里画横杠，两态都由组件报告
@@ -84,17 +78,11 @@ leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪
 
 <XhDemo src="tree/11-orientation" />
 
-### 范围选择
+### 形态与尺寸
 
-按住 Shift 点击某一项，选中锚点到它的一段；按可见序取值，折叠的子节点不会被选入
+缺省 ghost 不带外框与底色，树直接落在页面上，variant="outline" 换成带框的外观；size 写到 root 的 data-size，行高、字号、展开箭头与对号盒、层级缩进一起随档，缺省即 md
 
-<XhDemo src="tree/12-range-selection" />
-
-### 变体
-
-缺省 ghost 不带外框与底色，树直接落在页面上；variant="outline" 换成带框的外观
-
-<XhDemo src="tree/13-variant" />
+<XhDemo src="tree/13-variant-size" />
 
 ### 大树虚拟化
 
@@ -107,12 +95,6 @@ leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪
 lines 从父节点的展开箭头引出竖线，每个子节点横出一段接到行首、最后一个子节点拐成直角收住，层级深的时候一眼看得出谁挂在谁下面；只是外观，不改结构与键盘
 
 <XhDemo src="tree/15-lines" />
-
-### 尺寸
-
-size 写到 root 的 data-size：行高、字号、展开箭头与对号盒、层级缩进一起随档；三档并排，缺省即 md
-
-<XhDemo src="tree/16-size" />
 
 ### 条目说明
 

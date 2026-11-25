@@ -36,29 +36,11 @@ root 持有状态，control 是视觉盒；不传 value 与 revealed 即为非�
 
 <XhDemo src="password-input/03-caps-lock" />
 
-### 禁用与校验态
+### 形态、语气、尺寸与状态
 
-disabled 连明暗切换一起停止，read-only 只锁定值、明暗照常切换，invalid 只标注不拦截输入
+variant 决定底色与描边的绘制方式（密码框没有实心档），tone 决定使用哪族颜色、与 variant 正交；size 只改变高度、内边距与字号，标签、切换按钮与大写锁定提示一起换档；disabled 连明暗切换一起停止，read-only 只锁定值、明暗照常切换，invalid 只标注不拦截输入
 
-<XhDemo src="password-input/04-states" />
-
-### 变体
-
-variant 决定底色与描边的绘制方式：描边、淡色填底、无框；密码框没有实心档
-
-<XhDemo src="password-input/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦即可看到
-
-<XhDemo src="password-input/06-tone" />
-
-### 尺寸
-
-size 只改变高度、内边距与字号，标签、切换按钮与大写锁定提示一起换档；不写即默认档
-
-<XhDemo src="password-input/07-size" />
+<XhDemo src="password-input/04-variant-tone-size-state" />
 
 ### 注册表单
 

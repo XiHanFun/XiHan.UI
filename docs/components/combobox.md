@@ -42,17 +42,11 @@
 
 <XhDemo src="combobox/04-group" />
 
-### 变体
+### 形态与状态
 
-设置输入框外观
+variant 设置输入框外观，invalid 标记无效输入
 
-<XhDemo src="combobox/05-variant" />
-
-### 校验状态
-
-标记无效输入
-
-<XhDemo src="combobox/06-invalid" />
+<XhDemo src="combobox/05-variant-state" />
 
 ### 异步候选
 

@@ -30,17 +30,11 @@ prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一�
 
 <XhDemo src="statistic/02-affix" />
 
-### 尺寸
+### 语气与尺寸
 
-size 改变标签、数值与前后缀的字号，不传 size 即默认档
+tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景；size 改变标签、数值与前后缀的字号，不传 size 即默认档
 
-<XhDemo src="statistic/03-size" />
-
-### 颜色
-
-tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景
-
-<XhDemo src="statistic/04-tone" />
+<XhDemo src="statistic/03-tone-size" />
 
 ### 等宽数字
 

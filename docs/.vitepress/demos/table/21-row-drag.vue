@@ -1,4 +1,4 @@
-<!-- 拖拽调整行位 | 整行都是拖动源，按住拖到目标位置松手；也可以 Tab 进表体后按 Alt + 上下键移动。库只报告新行序，写回归使用者 -->
+<!-- 拖拽调整行位 | 整行都是拖动源，鼠标或笔按住拖到目标位置松手；触屏要按住行首的把手才能拖动，代价是该小块区域不再随表格滚动；也可以 Tab 进表体后按 Alt + 上下键移动。库只报告新行序，写回归使用者 -->
 <script setup lang="ts">
 import {
   XhTableBody,
@@ -9,6 +9,7 @@ import {
   XhTableHeader,
   XhTableRoot,
   XhTableRow,
+  XhTableRowDragTrigger,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
@@ -40,21 +41,20 @@ function onRowMove(details: {
   const byId = new Map(steps.value.map(s => [s.id, s]));
   steps.value = details.ids.flatMap(id => byId.get(id) ?? []);
 }
+
+// 表头没有把手，补一块同宽的空位，列标题才和下面的格子对得上
+const spacerStyle = "flex: none; inline-size: var(--xh-table-row-drag-size, var(--xh-control-indicator-size))";
 </script>
 
 <template>
   <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
-    <XhTableRoot
-      :columns="columns"
-      :rows="rows"
-      row-reorderable
-      @row-move="onRowMove"
-    >
+    <XhTableRoot :columns="columns" :rows="rows" row-reorderable @row-move="onRowMove">
       <XhTableCaption>
-        按住任意一行拖动换位，落点画在两行之间；也可以 Tab 进表体，用 Alt + 上下键挪
+        鼠标按住任意一行拖动换位，手机上按住行首的抓手拖；也可以 Tab 进表体，用 Alt + 上下键挪
       </XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
+          <span aria-hidden="true" :style="spacerStyle" />
           <XhTableColumnHeader value="step"><XhTableColumnLabel>序号</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="name"><XhTableColumnLabel>环节</XhTableColumnLabel></XhTableColumnHeader>
           <XhTableColumnHeader value="owner"><XhTableColumnLabel>负责人</XhTableColumnLabel></XhTableColumnHeader>
@@ -62,6 +62,8 @@ function onRowMove(details: {
       </XhTableHeader>
       <XhTableBody>
         <XhTableRow v-for="(s, i) in steps" :key="s.id" :value="s.id">
+          <!-- 把手排在所有格子之前；它对读屏隐藏也不占 Tab 位，键盘换位走表体上的 Alt + 上下键 -->
+          <XhTableRowDragTrigger />
           <XhTableCell value="step">{{ i + 1 }}</XhTableCell>
           <XhTableCell value="name">{{ s.name }}</XhTableCell>
           <XhTableCell value="owner">{{ s.owner }}</XhTableCell>

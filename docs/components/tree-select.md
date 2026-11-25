@@ -36,29 +36,11 @@ multiple 下已选项在触发器里排成标签，确认键是切换、浮层�
 
 <XhDemo src="tree-select/03-multiple" />
 
-### 变体
+### 形态、语气、尺寸与状态
 
-variant 只更换触发框的描边与底色，浮层与树的外观不随之变化
+variant 只更换触发框的描边与底色，浮层与树的外观不随之变化；tone 与 variant 正交，这里统一使用 subtle 形态；size 更换行高、内边距与字号，不写即默认档；disabled 连键盘入口都没有，readOnly 照常展开浏览但值不可修改也不可清空，invalid 只报告校验态，交互一切照常
 
-<XhDemo src="tree-select/04-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交，这里统一使用 subtle 形态
-
-<XhDemo src="tree-select/05-tone" />
-
-### 尺寸
-
-size 更换行高、内边距与字号，不写即默认档
-
-<XhDemo src="tree-select/06-size" />
-
-### 禁用、只读与校验失败
-
-disabled 连键盘入口都没有；readOnly 照常展开浏览但值不可修改也不可清空；invalid 只报告校验态，交互一切照常
-
-<XhDemo src="tree-select/07-state" />
+<XhDemo src="tree-select/04-variant-tone-size-state" />
 
 ### 首次全量加载与空集合
 

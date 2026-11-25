@@ -1,4 +1,4 @@
-<!-- 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化 -->
+<!-- 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化；这里分支的选中意图不写回，选中集合里只有叶子 -->
 <div style="width: 100%; max-width: 320px; display: grid; gap: 12px">
   <div style="display: flex; gap: 8px">
     <xh-button id="tree-controlled-expand" variant="outline" size="sm">
@@ -56,7 +56,7 @@
   const expandedOut = document.getElementById("tree-controlled-expanded");
   const selectedOut = document.getElementById("tree-controlled-selected");
 
-  tree.collection = [
+  const collection = [
     {
       value: "api",
       label: "接口",
@@ -71,6 +71,7 @@
       children: [{ value: "start", label: "快速开始" }],
     },
   ];
+  tree.collection = collection;
 
   // 两份集合都由这段脚本持有：组件只发意图，写回才真的改
   function setExpanded(value) {
@@ -87,7 +88,12 @@
   setSelected([]);
 
   tree.addEventListener("expanded-value-change", (event) => setExpanded(event.detail.value));
-  tree.addEventListener("selection-change", (event) => setSelected(event.detail.value));
+  // 只有叶子进选中集合：带上分支的那次意图整个不写回，选中照旧
+  const leaves = new Set(collection.flatMap((group) => group.children.map((item) => item.value)));
+  tree.addEventListener("selection-change", (event) => {
+    if (event.detail.value.some((value) => !leaves.has(value))) return;
+    setSelected(event.detail.value);
+  });
 
   const button = (id) =>
     document.getElementById(id).querySelector('[data-xh-part="root"]');

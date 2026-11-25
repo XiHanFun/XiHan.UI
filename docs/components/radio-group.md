@@ -36,29 +36,11 @@ orientation 只影响排版与 aria-orientation，方向键四个方向照样都
 
 <XhDemo src="radio-group/03-horizontal" />
 
-### 禁用
+### 语气、尺寸与状态
 
-单项禁用后不可点击，方向键也跳过它；整组禁用则每一项都随之禁用
+tone 决定选中圆点使用哪族颜色；size 改变条目间距与字号，不写即默认中档；单项禁用后不可点击、方向键也跳过它，整组禁用则每一项都随之禁用
 
-<XhDemo src="radio-group/04-disabled" />
-
-### 颜色
-
-tone 决定选中圆点使用哪族颜色，六种语气各一组
-
-<XhDemo src="radio-group/05-tone" />
-
-### 尺寸
-
-size 改变条目间距与字号，不写即默认中档
-
-<XhDemo src="radio-group/06-size" />
-
-### 数据驱动
-
-数据字段的命名由数据决定，映射为条目的值、文本与禁用即可
-
-<XhDemo src="radio-group/07-options" />
+<XhDemo src="radio-group/04-tone-size-state" />
 
 ### 卡片
 
@@ -68,15 +50,9 @@ variant="card" 把每个选项画成一张可点的卡，文案下方用说明�
 
 ### 分段形态
 
-variant="segmented" 把一排短选项画成一条轨道，选中段由滑块标出，换段时滑块滑过去；缺省横排
+variant="segmented" 把一排短选项画成一条轨道，选中段由滑块标出，换段时滑块滑过去；缺省横排；加 fullWidth 使整组占满一行，各段等分剩余空间，长短不一的文字也能对齐
 
 <XhDemo src="radio-group/09-segmented" />
-
-### 撑满行宽
-
-segmented 形态加 fullWidth 使整组占满一行，各段等分剩余空间，长短不一的文字也能对齐
-
-<XhDemo src="radio-group/10-block" />
 
 ### 图标
 

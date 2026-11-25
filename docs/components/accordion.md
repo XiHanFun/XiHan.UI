@@ -42,17 +42,11 @@ indicator 的朝向由 data-state 驱动，禁用项不可点击、方向键也�
 
 <XhDemo src="accordion/04-indicator" />
 
-### 颜色
+### 形态、语气与尺寸
 
-tone 落在展开态的标题上，六种颜色各预置一项展开做对照
+形态只改变与页面分开的方式：ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；tone 落在展开态的标题上；size 改变标题栏的高度、内边距与字号
 
-<XhDemo src="accordion/05-tone" />
-
-### 尺寸
-
-size 改变标题栏的高度、内边距与字号，三档并排对照
-
-<XhDemo src="accordion/06-size" />
+<XhDemo src="accordion/05-variant-tone-size" />
 
 ### 嵌套
 
@@ -83,12 +77,6 @@ trigger 只包住指示器，标题文字留在 header 里，点标题不再展�
 indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自行绘制
 
 <XhDemo src="accordion/11-custom-icon" />
-
-### 变体
-
-ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档只改变与页面分开的方式
-
-<XhDemo src="accordion/12-variant" />
 
 ### 内容懒挂载
 

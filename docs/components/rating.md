@@ -36,23 +36,11 @@ count 决定几颗星，星星按 1..count 逐颗写出
 
 <XhDemo src="rating/03-count" />
 
-### 只读与禁用
+### 语气、尺寸与状态
 
-read-only 仍进入 Tab 序列、读屏可朗读但不可修改；disabled 整条退出 Tab 序列
+tone 决定点亮的星使用哪族颜色，不写时沿用警示色；size 改变星的大小与间距，不写即默认中档；read-only 仍进入 Tab 序列、读屏可朗读但不可修改，disabled 整条退出 Tab 序列
 
-<XhDemo src="rating/04-readonly-disabled" />
-
-### 颜色
-
-tone 决定点亮的星使用哪族颜色，不写时沿用警示色
-
-<XhDemo src="rating/05-tone" />
-
-### 尺寸
-
-size 改变星的大小与间距，不写即默认中档
-
-<XhDemo src="rating/06-size" />
+<XhDemo src="rating/04-tone-size-state" />
 
 ### 自定义图标
 

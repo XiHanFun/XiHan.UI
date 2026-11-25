@@ -26,11 +26,11 @@
 
 ## 示例
 
-### 尺寸
+### 语气与尺寸
 
-size 只改变留白与字号，语义不变；不传即 md
+tone 为图标区上语气色，与全库同一根轴，绘制什么图标仍由作者放置；size 只改变留白与字号，语义不变，不传即 md
 
-<XhDemo src="empty-state/02-size" />
+<XhDemo src="empty-state/02-tone-size" />
 
 ### 播报方式
 
@@ -49,12 +49,6 @@ size 只改变留白与字号，语义不变；不传即 md
 图标槽中放置一个带 tone 的图标，着色落在图标自身上，不经过根上的 tone
 
 <XhDemo src="empty-state/05-tone-icon" />
-
-### 颜色
-
-tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由作者放置
-
-<XhDemo src="empty-state/06-tone" />
 
 ## 设计指引
 

@@ -1,7 +1,23 @@
-<!-- 底框 | 用 frame 给图标套一层圆形底框 -->
-<div style="display: flex; align-items: center; gap: 12px">
-  <xh-icon frame="solid"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
-  <xh-icon frame="subtle"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
-  <xh-icon frame="outline"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
-  <xh-icon frame="ghost"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
+<!-- 底框 | 用 frame 给图标套一层圆形底框：四种底框形态之外，tone 同时决定底框与图标的配色，sm、md、lg 三档底框与头像同档 -->
+<div style="display: grid; gap: var(--xh-space-4)">
+  <div style="display: flex; align-items: center; gap: var(--xh-space-3)">
+    <xh-icon frame="solid"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
+    <xh-icon frame="subtle"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
+    <xh-icon frame="outline"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
+    <xh-icon frame="ghost"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-3)">
+    <xh-icon frame="subtle" tone="brand"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+    <xh-icon frame="subtle" tone="success"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+    <xh-icon frame="subtle" tone="warning"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+    <xh-icon frame="subtle" tone="danger"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+    <xh-icon frame="subtle" tone="info"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-3)">
+    <xh-icon size="sm" frame="subtle" tone="brand"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon>
+    <xh-icon size="md" frame="subtle" tone="brand"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon>
+    <xh-icon size="lg" frame="subtle" tone="brand"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon>
+  </div>
 </div>

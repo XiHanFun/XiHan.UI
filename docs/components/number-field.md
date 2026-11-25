@@ -36,29 +36,11 @@
 
 <XhDemo src="number-field/03-controlled" />
 
-### 禁用与只读
+### 形态、语气、尺寸与状态
 
-两者都不可修改值，禁用还会把加减按钮一并关闭、值也不再随表单提交
+variant 只改变皮肤使用颜色的方式，tone 决定使用哪族颜色，两者正交，加减与键盘行为各档一致；size 让输入框高度与加减按钮一起换档；禁用与只读都不可修改值，禁用还会把加减按钮一并关闭、值也不再随表单提交
 
-<XhDemo src="number-field/04-disabled" />
-
-### 变体
-
-variant 只改变皮肤使用颜色的方式，加减与键盘行为三档完全一致
-
-<XhDemo src="number-field/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
-
-<XhDemo src="number-field/06-tone" />
-
-### 尺寸
-
-输入框高度与加减按钮一起换档，不传 size 即默认档
-
-<XhDemo src="number-field/07-size" />
+<XhDemo src="number-field/04-variant-tone-size-state" />
 
 ### 只用输入框
 

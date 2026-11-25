@@ -1,7 +1,8 @@
-<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位 -->
+<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
 <script setup lang="ts">
 import {
   XhTableBody,
+  XhTableCaption,
   XhTableCell,
   XhTableColumnHeader,
   XhTableColumnLabel,
@@ -24,14 +25,18 @@ const members = [
   { id: "u2", name: "钱二", dept: "前端体验" },
   { id: "u3", name: "孙三", dept: "基础架构" },
   { id: "u4", name: "李四（禁用）", dept: "质量保障" },
+  { id: "u5", name: "周五", dept: "平台研发" },
+  { id: "u6", name: "吴六", dept: "前端体验" },
 ];
 
-// 禁用行选不动，也不算进全选的基数
+// 禁用行选不动，也不算进全选的基数；Shift 选一段时它占着位置但被跳过
 const rows = [
   { id: "u1" },
   { id: "u2" },
   { id: "u3" },
   { id: "u4", disabled: true },
+  { id: "u5" },
+  { id: "u6" },
 ];
 
 const selection = ref<string[] | "all">(["u2"]);
@@ -45,6 +50,9 @@ const selection = ref<string[] | "all">(["u2"]);
       :rows="rows"
       selection-mode="multiple"
     >
+      <XhTableCaption>
+        点一行的勾选框，再按住 Shift 点另一行，中间整段一起选上；焦点在表体里按 Ctrl/Cmd + A 全选
+      </XhTableCaption>
       <XhTableHeader>
         <XhTableRow>
           <XhTableColumnHeader value="select">

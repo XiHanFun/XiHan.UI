@@ -30,17 +30,11 @@
 
 <XhDemo src="float-button/02-hover" />
 
-### 变体
+### 形态与尺寸
 
-设置浮动按钮的表面
+variant 设置浮动按钮的表面，size 取小、中、大三档
 
-<XhDemo src="float-button/03-variant" />
-
-### 尺寸
-
-使用小、中、大三档尺寸
-
-<XhDemo src="float-button/04-size" />
+<XhDemo src="float-button/03-variant-size" />
 
 ### 拖动与贴边
 

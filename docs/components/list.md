@@ -30,23 +30,17 @@ split 在条目之间绘制一条线，第一条上方不绘制
 
 <XhDemo src="list/02-split" />
 
-### 外框与悬停
+### 形态与尺寸
 
-variant="outline" 为整份列表绘制一圈描边，hoverable 使条目在指针悬停时更换底色
+variant 决定整份列表的外框：ghost 不画壳（缺省），outline 绘制一圈描边，subtle 用淡底；hoverable 使条目在指针悬停时更换底色；size 改变条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
 
-<XhDemo src="list/03-outline-hoverable" />
+<XhDemo src="list/03-variant-size" />
 
 ### 媒体位与操作位
 
 条目最完整的形态：媒体、标题、说明、操作四个位都放置
 
 <XhDemo src="list/04-media-action" />
-
-### 尺寸
-
-size 改变条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
-
-<XhDemo src="list/05-size" />
 
 ### 分页
 

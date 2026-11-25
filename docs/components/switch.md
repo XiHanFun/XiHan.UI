@@ -30,23 +30,11 @@
 
 <XhDemo src="switch/02-controlled" />
 
-### 禁用
+### 语气、尺寸与状态
 
-disabled 同时阻止指针与键盘，状态机收不到 TOGGLE
+tone 决定选中态轨道使用哪族颜色，因此这一行都设为开；size 同时缩放轨道与滑块，不写即默认档；disabled 同时阻止指针与键盘，状态机收不到 TOGGLE
 
-<XhDemo src="switch/03-disabled" />
-
-### 颜色
-
-tone 决定选中态轨道使用哪族颜色，因此这里都设为开
-
-<XhDemo src="switch/04-tone" />
-
-### 尺寸
-
-size 同时缩放轨道与滑块，不写即默认档
-
-<XhDemo src="switch/05-size" />
+<XhDemo src="switch/03-tone-size-state" />
 
 ### 事件
 

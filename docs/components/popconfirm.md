@@ -30,17 +30,11 @@ placement 是首选位，空间不足时引擎自行避让，实际落点写在 
 
 <XhDemo src="popconfirm/02-placement" />
 
-### 尺寸
+### 语气与尺寸
 
-size 改变面板的内边距与最大宽度，三个档位落在 content 上
+在 content 上写 data-tone，确认按钮随之换色，语气是共享的一层，不是本组件的 prop；size 改变面板的内边距与最大宽度，三个档位落在 content 上
 
-<XhDemo src="popconfirm/03-size" />
-
-### 颜色
-
-在 content 上写 data-tone，确认按钮随之换色；语气是共享的一层，不是本组件的 prop
-
-<XhDemo src="popconfirm/04-tone" />
+<XhDemo src="popconfirm/03-tone-size" />
 
 ### 异步确认
 

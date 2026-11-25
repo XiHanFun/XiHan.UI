@@ -36,17 +36,11 @@
 
 <XhDemo src="checkbox-group/03-horizontal" />
 
-### 禁用与只读
+### 尺寸与状态
 
-禁用项不可操作，只读项仍可聚焦
+size 决定方框与条目文字的几何档位，组标题不随档；禁用项不可操作，只读项仍可聚焦
 
-<XhDemo src="checkbox-group/04-disabled" />
-
-### 尺寸
-
-size 决定方框与条目文字的几何档位，组标题不随档
-
-<XhDemo src="checkbox-group/05-size" />
+<XhDemo src="checkbox-group/04-size-state" />
 
 ### 卡片
 

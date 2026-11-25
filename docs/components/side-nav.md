@@ -30,17 +30,11 @@
 
 <XhDemo src="side-nav/02-accordion-collapsed" />
 
-### 尺寸
+### 尺寸与状态
 
-适配不同密度的应用侧栏
+size 适配不同密度的应用侧栏；禁用的入口保留位置与说明，方向键跳过它，点也不落值
 
-<XhDemo src="side-nav/03-tone-size" />
-
-### 禁用项
-
-保留不可用入口的位置与说明
-
-<XhDemo src="side-nav/04-controlled-expand" />
+<XhDemo src="side-nav/03-size-state" />
 
 ### 搜索过滤
 

@@ -1,0 +1,166 @@
+<!-- 形态、语气、尺寸与状态 | variant 只改变皮肤使用颜色的方式，tone 决定使用哪族颜色，两者正交，加减与键盘行为各档一致；size 让输入框高度与加减按钮一起换档；禁用与只读都不可修改值，禁用还会把加减按钮一并关闭、值也不再随表单提交 -->
+<div style="display: grid; gap: var(--xh-space-4)">
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-4)">
+    <xh-number-field variant="outline" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="subtle" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="ghost" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+  </div>
+
+  <!-- 语气这一行固定 outline，只看语气的差别 -->
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-4)">
+    <xh-number-field variant="outline" tone="brand" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="outline" tone="neutral" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="outline" tone="success" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="outline" tone="warning" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="outline" tone="danger" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field variant="outline" tone="info" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--xh-space-4)">
+    <xh-number-field size="sm" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">小</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <!-- 中间一档不写 size -->
+    <xh-number-field default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">默认</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field size="lg" default-value="1">
+      <div data-xh-part="root">
+        <label data-xh-part="label">大</label>
+        <div data-xh-part="control">
+          <button data-xh-part="decrement-trigger"></button>
+          <input data-xh-part="input" />
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-4)">
+    <xh-number-field default-value="5" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="decrement-trigger"></button>
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+
+    <xh-number-field default-value="5" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="decrement-trigger"></button>
+          <button data-xh-part="increment-trigger"></button>
+        </div>
+      </div>
+    </xh-number-field>
+  </div>
+</div>

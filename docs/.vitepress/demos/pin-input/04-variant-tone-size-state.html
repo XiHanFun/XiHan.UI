@@ -1,0 +1,193 @@
+<!-- 形态、语气、尺寸与状态 | variant 只改变每格的颜色槽位，tone 决定使用哪族颜色、与 variant 正交，跳格与粘贴铺开的行为各档一致；每格的边长随 size 换档；disabled 使每格都带原生 disabled 且不参与提交，read-only 带原生 readonly、可聚焦可选中复制但不可修改，invalid 只做标注、照常可以修改 -->
+<div style="display: grid; gap: var(--xh-space-4)">
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-5)">
+    <xh-pin-input variant="outline" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <!-- 格间距长在格子自己身上，这层包裹只负责排成一行 -->
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="subtle" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="ghost" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+  </div>
+
+  <!-- 语气这一行固定 outline，只看语气的差别 -->
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-5)">
+    <xh-pin-input variant="outline" tone="brand" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="outline" tone="neutral" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="outline" tone="success" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="outline" tone="warning" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="outline" tone="danger" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input variant="outline" tone="info" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--xh-space-5)">
+    <xh-pin-input size="sm" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">小</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <!-- 中间一档不写 size -->
+    <xh-pin-input length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">默认</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input size="lg" length="4" placeholder="·">
+      <div data-xh-part="root">
+        <label data-xh-part="label">大</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-5)">
+    <xh-pin-input length="4" default-value="1234" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input length="4" default-value="8192" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+
+    <xh-pin-input length="4" default-value="1234" invalid>
+      <div data-xh-part="root">
+        <label data-xh-part="label">校验失败</label>
+        <div style="display: flex">
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-pin-input>
+  </div>
+</div>

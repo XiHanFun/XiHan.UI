@@ -42,11 +42,11 @@ granularity 同时决定输入行显示几段、浮层中排几列
 
 <XhDemo src="time-picker/04-granularity" />
 
-### 禁用 / 只读 / 校验失败
+### 形态、语气、尺寸与状态
 
-禁用整条退出 Tab 序列，只读仍能展开浏览只是不可修改值，invalid 只改变标注
+variant 决定描边与底色的绘制方式、tone 决定使用哪族颜色、size 切换几何档，三者只落在 root，浮层中的格子一并随之变化；禁用整条退出 Tab 序列，只读仍能展开浏览只是不可修改值，invalid 只改变标注
 
-<XhDemo src="time-picker/05-state" />
+<XhDemo src="time-picker/05-variant-tone-size-state" />
 
 ### 可选时段
 
@@ -65,12 +65,6 @@ min / max 直接把界外的格从列中裁掉；分列还会随已选的小时�
 列中渲染哪几格由作者决定，午休两格整段移除；手动输入段位的小时被吸附到下一个可约小时
 
 <XhDemo src="time-picker/08-predicate" />
-
-### 三轴
-
-variant 决定描边与底色的绘制方式、tone 决定使用哪族颜色、size 切换几何档；三者只落在 root，浮层中的格子一并随之变化
-
-<XhDemo src="time-picker/09-axes" />
 
 ### 可选的触发按钮
 

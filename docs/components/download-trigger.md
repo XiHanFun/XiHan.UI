@@ -36,23 +36,11 @@
 
 <XhDemo src="download-trigger/03-blob" />
 
-### 变体
+### 形态、尺寸与状态
 
-设置触发器外观
+variant 设置触发器外观，size 取小、中、大三档，disabled 禁止触发下载
 
-<XhDemo src="download-trigger/04-variant" />
-
-### 尺寸
-
-使用小、中、大三档尺寸
-
-<XhDemo src="download-trigger/05-size" />
-
-### 禁用
-
-禁止触发下载
-
-<XhDemo src="download-trigger/06-disabled" />
+<XhDemo src="download-trigger/04-variant-size-state" />
 
 ## 设计指引
 

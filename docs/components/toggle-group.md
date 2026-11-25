@@ -30,17 +30,11 @@
 
 <XhDemo src="toggle-group/02-controlled" />
 
-### 多选
+### 形态、尺寸与状态
 
-同时选择多个格式
+variant 设置整组外观，size 提供三种尺寸；状态落在单个选项上，禁用的那一项不可切换
 
-<XhDemo src="toggle-group/03-multiple" />
-
-### 禁用
-
-禁用单个选项
-
-<XhDemo src="toggle-group/04-disabled" />
+<XhDemo src="toggle-group/04-variant-size-state" />
 
 ### 方向
 
@@ -53,18 +47,6 @@
 选项等分可用宽度
 
 <XhDemo src="toggle-group/06-full-width" />
-
-### 尺寸
-
-提供三种尺寸
-
-<XhDemo src="toggle-group/07-size" />
-
-### 变体
-
-设置整组外观
-
-<XhDemo src="toggle-group/08-variant" />
 
 ### 无分隔线
 

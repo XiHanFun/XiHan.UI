@@ -30,29 +30,11 @@ value 与 max 共同决定百分比
 
 <XhDemo src="progress/02-labelled" />
 
-### 自定义量程
+### 语气与尺寸
 
-max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场景
+tone 决定进度段用哪族颜色，不写时沿用品牌色；size 只改变轨道厚度，不写即默认中档
 
-<XhDemo src="progress/03-max" />
-
-### 颜色
-
-tone 决定进度段用哪族颜色，不写时沿用品牌色
-
-<XhDemo src="progress/04-tone" />
-
-### 尺寸
-
-size 只改变轨道厚度，不写即默认中档
-
-<XhDemo src="progress/05-size" />
-
-### 自定义外观
-
-轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都可以使用
-
-<XhDemo src="progress/06-custom-appearance" />
+<XhDemo src="progress/04-tone-size" />
 
 ### 环形
 
@@ -72,11 +54,11 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 <XhDemo src="progress/09-circle-label" />
 
-### 环的外观
+### 自定义外观
 
-直径、颜色与端点经令牌，线宽经 strokeWidth：它改变的是几何，半径随之向内收缩
+轨道色、进度段色、轨道厚度与环的直径、端点各是一个组件令牌，纯色与渐变都可以使用；环的线宽经 strokeWidth：它改变的是几何，半径随之向内收缩
 
-<XhDemo src="progress/10-circle-appearance" />
+<XhDemo src="progress/10-custom-appearance" />
 
 ### 仪表盘
 

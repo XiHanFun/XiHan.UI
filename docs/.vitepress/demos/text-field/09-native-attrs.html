@@ -1,5 +1,10 @@
-<!-- 原生属性 | 写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定 -->
-<xh-text-field placeholder="you@example.com">
+<!-- 原生输入框 | input 部件就是一个原生 input：写在它上面的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定；聚焦失焦等原生事件也写在它上面，值的变化另经组件的 value-change；取得它的节点即可聚焦、全选、把光标移到末尾 -->
+<xh-text-field
+  id="text-field-native"
+  default-value="hi@xihan.dev"
+  placeholder="you@example.com"
+  clearable
+>
   <div data-xh-part="root">
     <label data-xh-part="label">邮箱</label>
     <div data-xh-part="control">
@@ -10,19 +15,49 @@
         spellcheck="false"
       />
     </div>
-  </div>
-</xh-text-field>
-
-<xh-text-field placeholder="11 位手机号" max-length="11">
-  <div data-xh-part="root">
-    <label data-xh-part="label">手机号</label>
-    <div data-xh-part="control">
-      <input
-        data-xh-part="input"
-        autocomplete="tel"
-        inputmode="numeric"
-        enterkeyhint="done"
-      />
+    <div style="display: flex; gap: var(--xh-space-2)">
+      <xh-button id="text-field-native-focus" variant="outline" size="sm">
+        <button data-xh-part="root">聚焦</button>
+      </xh-button>
+      <xh-button id="text-field-native-select" variant="outline" size="sm">
+        <button data-xh-part="root">全选</button>
+      </xh-button>
+      <xh-button id="text-field-native-caret" variant="outline" size="sm">
+        <button data-xh-part="root">光标移到末尾</button>
+      </xh-button>
     </div>
   </div>
 </xh-text-field>
+
+<span id="text-field-native-log" data-demo-output>还没有事件</span>
+
+<script type="module">
+  const field = document.getElementById("text-field-native");
+  const input = field.querySelector('[data-xh-part="input"]');
+  const readout = document.getElementById("text-field-native-log");
+  let log = [];
+
+  // 新的排在最前，只留最近三条
+  function push(text) {
+    log = [text, ...log].slice(0, 3);
+    readout.textContent = log.join(" · ");
+  }
+
+  field.addEventListener("value-change", (event) => {
+    push(`value-change：${event.detail.value || "（空）"}`);
+  });
+  input.addEventListener("focus", () => push("focus"));
+  input.addEventListener("blur", () => push("blur"));
+
+  document.getElementById("text-field-native-focus").addEventListener("click", () => {
+    input.focus();
+  });
+  document.getElementById("text-field-native-select").addEventListener("click", () => {
+    input.focus();
+    input.select();
+  });
+  document.getElementById("text-field-native-caret").addEventListener("click", () => {
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  });
+</script>

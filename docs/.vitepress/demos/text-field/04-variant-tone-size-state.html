@@ -1,0 +1,151 @@
+<!-- 形态、语气、尺寸与状态 | variant 决定底色与描边的绘制方式（描边、淡色填底、无框，没有实心档）；tone 与 variant 正交，固定 subtle 时底色差别不必聚焦即可看到；size 只改变高度、内边距与字号，标签与清空按钮一起换档；disabled 与 readOnly 都不可修改值，invalid 只标注 aria-invalid、不拦截输入 -->
+<div style="display: grid; gap: var(--xh-space-6); inline-size: 100%">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--xh-space-3)">
+    <xh-text-field variant="outline" placeholder="请输入内容">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" placeholder="请输入内容">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <!-- 无框档平时只看得见字，把指针移上去或聚焦才浮出边界 -->
+    <xh-text-field variant="ghost" placeholder="请输入内容">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--xh-space-3)">
+    <!-- 正文颜色不归语气管，语气只落在底色、悬停描边与聚焦环上 -->
+    <xh-text-field variant="subtle" tone="brand" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" tone="neutral" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" tone="success" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" tone="warning" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" tone="danger" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="subtle" tone="info" placeholder="点进来看聚焦环">
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--xh-space-3)">
+    <!-- 固定 outline 形态，只看档位的差别 -->
+    <xh-text-field variant="outline" size="sm" default-value="小" clearable>
+      <div data-xh-part="root">
+        <label data-xh-part="label">sm</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="clear-trigger"></button>
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="outline" default-value="缺省" clearable>
+      <div data-xh-part="root">
+        <label data-xh-part="label">缺省</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="clear-trigger"></button>
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field variant="outline" size="lg" default-value="大" clearable>
+      <div data-xh-part="root">
+        <label data-xh-part="label">lg</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="clear-trigger"></button>
+        </div>
+      </div>
+    </xh-text-field>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--xh-space-3)">
+    <xh-text-field default-value="改不动" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field default-value="只能看" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+
+    <xh-text-field default-value="格式不对" invalid>
+      <div data-xh-part="root">
+        <label data-xh-part="label">校验失败</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+        </div>
+      </div>
+    </xh-text-field>
+  </div>
+</div>

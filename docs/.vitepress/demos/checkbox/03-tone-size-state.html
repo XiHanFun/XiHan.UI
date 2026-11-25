@@ -1,0 +1,80 @@
+<!-- 语气、尺寸与状态 | tone 决定勾中后方框使用哪族颜色，因此这一行都设为勾中；size 适配不同的界面密度；disabled、readOnly 与 invalid 分别标出不可用、不可修改与必须处理 -->
+<div style="display: grid; gap: var(--xh-space-6)">
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4); flex-wrap: wrap">
+    <xh-checkbox tone="brand" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">brand</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox tone="neutral" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">neutral</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox tone="success" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">success</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox tone="warning" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">warning</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox tone="danger" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">danger</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox tone="info" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">info</span>
+      </label>
+    </xh-checkbox>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4)">
+    <xh-checkbox size="sm" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">小</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">中</span>
+      </label>
+    </xh-checkbox>
+    <xh-checkbox size="lg" default-checked>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">大</span>
+      </label>
+    </xh-checkbox>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4); flex-wrap: wrap">
+    <xh-checkbox disabled>
+      <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">禁用</span></label>
+    </xh-checkbox>
+    <xh-checkbox default-checked disabled>
+      <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">已选中且禁用</span></label>
+    </xh-checkbox>
+    <xh-checkbox default-checked read-only>
+      <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">只读</span></label>
+    </xh-checkbox>
+    <xh-checkbox invalid required>
+      <label data-xh-part="label">
+        <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+        <span data-xh-part="text">我同意服务条款</span>
+      </label>
+    </xh-checkbox>
+  </div>
+</div>

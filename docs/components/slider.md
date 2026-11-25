@@ -36,23 +36,11 @@ orientation 换为 vertical 后整条控件收为一块，键盘与拖动的方�
 
 <XhDemo src="slider/03-vertical" />
 
-### 禁用与只读
+### 语气、尺寸与状态
 
-禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是不可推动
+tone 决定已填轨道与滑块使用哪族颜色，不写时沿用品牌色；size 改变轨道厚度与滑块直径，不写即默认中档；禁用的拇指退出 Tab 序列、值也不再随表单提交，只读仍可聚焦与朗读，只是不可推动
 
-<XhDemo src="slider/04-disabled" />
-
-### 颜色
-
-tone 决定已填轨道与滑块使用哪族颜色，不写时沿用品牌色
-
-<XhDemo src="slider/05-tone" />
-
-### 尺寸
-
-size 改变轨道厚度与滑块直径，不写即默认中档
-
-<XhDemo src="slider/06-size" />
+<XhDemo src="slider/04-tone-size-state" />
 
 ### 文字方向
 
@@ -62,7 +50,7 @@ dir 换为 rtl 后轨道从右向左填充，左右两键的语义随之对调�
 
 ### 滑块中的内容
 
-thumb 是一个普通容器，放置什么由作者决定；容纳空间依靠 --xh-slider-thumb-size 撑开直径
+thumb 是一个普通容器，放置什么由作者决定，容纳空间依靠 --xh-slider-thumb-size 撑开直径；value-text 挂在 thumb 中即随之移动，推动时由皮肤显示成值气泡，文字取自作者的格式化函数
 
 <XhDemo src="slider/08-thumb-content" />
 
@@ -71,12 +59,6 @@ thumb 是一个普通容器，放置什么由作者决定；容纳空间依靠 -
 刻度分圆点与文案两层：圆点固定在轨道上、文案排在下方且点击跳转到该值，落入已选区间的刻度分段上色；snapToMarks 使拖动/点击/键盘只落在刻度上
 
 <XhDemo src="slider/09-marks" />
-
-### 拖动时的值气泡
-
-value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气泡中的文字取自作者的格式化函数
-
-<XhDemo src="slider/10-value-bubble" />
 
 ### 离散档位
 

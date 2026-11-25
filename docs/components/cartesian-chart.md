@@ -176,7 +176,7 @@ zoom 打开自变量轴的缩放：按住 Ctrl（⌘）滚轮以指针为中心�
 
 ### 刷选
 
-brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据；点一下或按 Escape 清掉
+brush 打开刷选：在绘图区里拖动框出一块，框外的点淡出，松手派发一次范围与框里的数据，统计跟着框走；点一下或按 Escape 清掉，回到全部门店
 
 <XhDemo src="cartesian-chart/27-brush" />
 
@@ -203,12 +203,6 @@ loading 表示正在取数：首次还没有数据时空态写「加载中」并
 onDatumPress 接住点下的那根柱（Enter / Space 同样）：换成这个地区按月的数据，旁边放一个按钮回到全部地区
 
 <XhDemo src="cartesian-chart/31-drill-down" />
-
-### 刷选联动
-
-onBrushSelectionChange 交出框里的数据：旁边的统计跟着框走，清掉框就回到全部门店
-
-<XhDemo src="cartesian-chart/32-brush-linked" />
 
 ### 画布渲染
 

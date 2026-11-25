@@ -1,0 +1,162 @@
+<!-- 形态、语气、尺寸与状态 | variant 决定底色与描边的绘制方式（密码框没有实心档），tone 决定使用哪族颜色、与 variant 正交；size 只改变高度、内边距与字号，标签、切换按钮与大写锁定提示一起换档；disabled 连明暗切换一起停止，read-only 只锁定值、明暗照常切换，invalid 只标注不拦截输入 -->
+<div style="display: grid; gap: var(--xh-space-4)">
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-3)">
+    <xh-password-input variant="outline" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">outline</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">subtle</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="ghost" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">ghost</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+  </div>
+
+  <!-- 语气这一行固定 subtle，底色差别不必聚焦即可看到；框里的字不归语气管，语气只落在底色、悬停描边与聚焦描边上，聚焦环恒用同一族色 -->
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-3)">
+    <xh-password-input variant="subtle" tone="brand" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" tone="neutral" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" tone="success" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" tone="warning" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" tone="danger" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input variant="subtle" tone="info" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--xh-space-3)">
+    <xh-password-input size="sm" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">sm</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <!-- 中间一档不写 size -->
+    <xh-password-input default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">缺省</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input size="lg" default-value="hunter2">
+      <div data-xh-part="root">
+        <label data-xh-part="label">lg</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: var(--xh-space-3)">
+    <xh-password-input default-value="hunter2" disabled>
+      <div data-xh-part="root">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input default-value="hunter2" read-only>
+      <div data-xh-part="root">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+
+    <xh-password-input default-value="123" invalid>
+      <div data-xh-part="root">
+        <label data-xh-part="label">校验失败</label>
+        <div data-xh-part="control">
+          <input data-xh-part="input" />
+          <button data-xh-part="visibility-trigger"></button>
+        </div>
+      </div>
+    </xh-password-input>
+  </div>
+</div>

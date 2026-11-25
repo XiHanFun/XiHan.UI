@@ -24,29 +24,17 @@
 
 ## 示例
 
-### 变体
+### 形态、尺寸与状态
 
-默认与幽灵外观
+variant 在默认与幽灵两种外观之间切换；size 提供三种尺寸，仅图标的按钮一起换档；禁用保留禁用前的按下状态
 
-<XhDemo src="toggle/02-variant" />
+<XhDemo src="toggle/02-variant-size-state" />
 
 ### 仅图标
 
 为每个图标按钮提供可访问名称
 
 <XhDemo src="toggle/03-icon-only" />
-
-### 尺寸
-
-提供三种尺寸
-
-<XhDemo src="toggle/04-size" />
-
-### 禁用
-
-保留禁用前的状态
-
-<XhDemo src="toggle/05-disabled" />
 
 ### 受控状态
 

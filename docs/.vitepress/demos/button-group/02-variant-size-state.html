@@ -1,0 +1,87 @@
+<!-- 形态、尺寸与状态 | variant 与 tone 设置整组外观，size 设置整组尺寸，disabled 禁用整组按钮 -->
+<div style="display: grid; gap: var(--xh-space-6); justify-items: start">
+  <div style="display: grid; gap: var(--xh-space-3); justify-items: start">
+    <div style="display: grid; gap: var(--xh-space-2)"><span>主要</span><xh-button-group variant="solid" tone="brand"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+    <div style="display: grid; gap: var(--xh-space-2)"><span>次要</span><xh-button-group variant="subtle" tone="brand"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+    <div style="display: grid; gap: var(--xh-space-2)"><span>第三</span><xh-button-group variant="subtle" tone="neutral"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+    <div style="display: grid; gap: var(--xh-space-2)"><span>线框</span><xh-button-group variant="outline"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+    <div style="display: grid; gap: var(--xh-space-2)"><span>幽灵</span><xh-button-group variant="ghost"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+    <div style="display: grid; gap: var(--xh-space-2)"><span>危险</span><xh-button-group variant="solid" tone="danger"><div data-xh-part="root">
+      <xh-button><button data-xh-part="root">日</button></xh-button>
+      <xh-button><button data-xh-part="root">周</button></xh-button>
+      <xh-button><button data-xh-part="root">月</button></xh-button>
+    </div></xh-button-group></div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4)">
+    <xh-button-group size="sm">
+      <div data-xh-part="root">
+        <xh-button>
+          <button data-xh-part="root">日</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">周</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">月</button>
+        </xh-button>
+      </div>
+    </xh-button-group>
+
+    <xh-button-group size="md">
+      <div data-xh-part="root">
+        <xh-button>
+          <button data-xh-part="root">日</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">周</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">月</button>
+        </xh-button>
+      </div>
+    </xh-button-group>
+
+    <xh-button-group size="lg">
+      <div data-xh-part="root">
+        <xh-button>
+          <button data-xh-part="root">日</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">周</button>
+        </xh-button>
+        <xh-button>
+          <button data-xh-part="root">月</button>
+        </xh-button>
+      </div>
+    </xh-button-group>
+  </div>
+
+  <xh-button-group disabled>
+    <div data-xh-part="root">
+      <xh-button><button data-xh-part="root">照片</button></xh-button>
+      <xh-button><button data-xh-part="root">视频</button></xh-button>
+      <xh-button><button data-xh-part="root">更多</button></xh-button>
+    </div>
+  </xh-button-group>
+</div>

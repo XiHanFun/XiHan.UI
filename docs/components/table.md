@@ -32,7 +32,7 @@ columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一�
 
 ### 多选
 
-selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位
+selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入
 
 <XhDemo src="table/03-selection" />
 
@@ -126,12 +126,6 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 <XhDemo src="table/18-prefix-columns" />
 
-### 范围选择
-
-按住 Shift 点击勾选框选中一段；焦点落在表体中按 Ctrl/Cmd + A 全选。禁用行占据顺序位置但不被选入
-
-<XhDemo src="table/19-range-selection" />
-
 ### 拖拽调整列位
 
 列上标注 reorderable 才识别拖拽把手；也可以 Tab 到它用方向键移动，Home / End 到两端
@@ -140,15 +134,9 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 ### 拖拽调整行位
 
-整行都是拖动源，按住拖到目标位置松手；也可以 Tab 进表体后按 Alt + 上下键移动。库只报告新行序，写回归使用者
+整行都是拖动源，鼠标或笔按住拖到目标位置松手；触屏要按住行首的把手才能拖动，代价是该小块区域不再随表格滚动；也可以 Tab 进表体后按 Alt + 上下键移动。库只报告新行序，写回归使用者
 
 <XhDemo src="table/21-row-drag" />
-
-### 触屏拖动把手
-
-整行拖动只识别鼠标与笔；触屏要按住行首的把手才能拖动，代价是该小块区域不再随表格滚动。键盘路径照常：Tab 进表体后 Alt + 上下键
-
-<XhDemo src="table/22-row-drag-handle" />
 
 ### 树形表拖拽
 

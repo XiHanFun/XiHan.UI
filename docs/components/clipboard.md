@@ -30,17 +30,11 @@
 
 <XhDemo src="clipboard/02-trigger-only" />
 
-### 变体
+### 形态与尺寸
 
-设置复制按钮的外观
+variant 设置复制按钮的外观，size 分小、中、大三档
 
-<XhDemo src="clipboard/03-variant" />
-
-### 尺寸
-
-使用小、中、大三档尺寸
-
-<XhDemo src="clipboard/04-size" />
+<XhDemo src="clipboard/03-variant-size" />
 
 ## 设计指引
 

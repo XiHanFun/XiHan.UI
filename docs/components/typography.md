@@ -30,23 +30,11 @@
 
 <XhDemo src="typography/02-heading-level" />
 
-### 文本变体
+### 形态、语气与尺寸
 
-设置正文、辅助、强调、代码和链接样式
+variant 设置正文、辅助、强调与代码样式，链接另用 link 部件；tone 使用语义颜色；size 设置正文大小
 
-<XhDemo src="typography/03-text" />
-
-### 颜色
-
-使用语义颜色
-
-<XhDemo src="typography/04-tone" />
-
-### 尺寸
-
-设置正文大小
-
-<XhDemo src="typography/05-size" />
+<XhDemo src="typography/03-variant-tone-size" />
 
 ### 富文本
 
@@ -62,15 +50,9 @@
 
 ### 渐变字
 
-为标题里的关键词铺品牌渐变
+为标题里的关键词铺品牌渐变；tone 换成语气色板，覆盖槽改写两端颜色与走向
 
 <XhDemo src="typography/07-gradient" />
-
-### 渐变字配色
-
-tone 换成语气色板，覆盖槽改写两端颜色与走向
-
-<XhDemo src="typography/08-gradient-colors" />
 
 ## 设计指引
 

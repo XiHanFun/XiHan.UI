@@ -1,0 +1,94 @@
+<!-- 语气、尺寸与状态 | tone 决定选中态轨道使用哪族颜色，因此这一行都设为开；size 同时缩放轨道与滑块，不写即默认档；disabled 同时阻止指针与键盘，状态机收不到 TOGGLE -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-6)">
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4); flex-wrap: wrap">
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="brand" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>brand</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="neutral" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>neutral</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="success" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>success</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="warning" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>warning</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="danger" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>danger</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch tone="info" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>info</span>
+    </span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4)">
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch size="sm" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>小</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>缺省</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: var(--xh-space-2)">
+      <xh-switch size="lg" default-checked>
+        <button data-xh-part="root">
+          <span data-xh-part="thumb"></span>
+        </button>
+      </xh-switch>
+      <span>大</span>
+    </span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--xh-space-4)">
+    <xh-switch disabled>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+    </xh-switch>
+
+    <xh-switch disabled default-checked>
+      <button data-xh-part="root">
+        <span data-xh-part="thumb"></span>
+      </button>
+    </xh-switch>
+  </div>
+</div>

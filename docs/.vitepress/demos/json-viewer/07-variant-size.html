@@ -1,0 +1,45 @@
+<!-- 形态与尺寸 | variant 只换外框：outline 带描边与底色，subtle 淡底无描边，ghost 去掉外框与底色；size 三档只改变字号与层级缩进，行的结构与配色都不变 -->
+<div style="display: grid; gap: var(--xh-space-4); inline-size: 100%; max-inline-size: 420px">
+  <div style="display: grid; gap: var(--xh-space-3)">
+    <xh-json-viewer id="json-variant-outline" default-expanded-depth="2" variant="outline">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+
+    <xh-json-viewer id="json-variant-subtle" default-expanded-depth="2" variant="subtle">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+
+    <xh-json-viewer id="json-variant-ghost" default-expanded-depth="2" variant="ghost">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-3)">
+    <xh-json-viewer id="json-size-sm" default-expanded-depth="2" size="sm">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+
+    <xh-json-viewer id="json-size-md" default-expanded-depth="2" size="md">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+
+    <xh-json-viewer id="json-size-lg" default-expanded-depth="2" size="lg">
+      <div data-xh-part="root"></div>
+    </xh-json-viewer>
+  </div>
+</div>
+
+<script type="module">
+  const payload = { id: 7, label: "曦寒", nested: { ok: true } };
+  const ids = [
+    "json-variant-outline",
+    "json-variant-subtle",
+    "json-variant-ghost",
+    "json-size-sm",
+    "json-size-md",
+    "json-size-lg",
+  ];
+  for (const id of ids) {
+    document.getElementById(id).value = payload;
+  }
+</script>

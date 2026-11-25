@@ -1,6 +1,7 @@
-<!-- 受控 | 由 value 和 value-change 控制 -->
+<!-- 受控 | 由 value 和 value-change 控制；外部按钮经插槽状态的 setOpen 与 setValue 开合与清空，改值同样经 value-change 回到宿主 -->
 <script setup lang="ts">
 import {
+  XhButton,
   XhSelectContent,
   XhSelectControl,
   XhSelectIndicator,
@@ -33,7 +34,12 @@ function onValueChange(details: { value: string[] }) {
 </script>
 
 <template>
-  <XhSelectRoot :value="value" placeholder="请选择" @value-change="onValueChange">
+  <XhSelectRoot
+    v-slot="{ open, setOpen, setValue }"
+    :value="value"
+    placeholder="请选择"
+    @value-change="onValueChange"
+  >
     <XhSelectLabel>水果</XhSelectLabel>
     <XhSelectControl>
       <XhSelectTrigger>
@@ -51,6 +57,14 @@ function onValueChange(details: { value: string[] }) {
         </XhSelectList>
       </XhSelectContent>
     </XhSelectPositioner>
+    <div style="display: flex; gap: var(--xh-space-2); margin-block-start: var(--xh-space-2)">
+      <XhButton variant="outline" size="sm" @click="setOpen(!open)">
+        {{ open ? "收起" : "展开" }}
+      </XhButton>
+      <XhButton variant="ghost" size="sm" :disabled="value.length === 0" @click="setValue([])">
+        清空
+      </XhButton>
+    </div>
   </XhSelectRoot>
-  <p data-demo-output>宿主持有的值：{{ value.join("、") }}{{ rejected ? " · 上一次选择被拒绝" : "" }}</p>
+  <p data-demo-output>宿主持有的值：{{ value.join("、") || "（空）" }}{{ rejected ? " · 上一次选择被拒绝" : "" }}</p>
 </template>

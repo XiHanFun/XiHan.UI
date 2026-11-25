@@ -1,4 +1,4 @@
-// 上限与粘贴拆分 | add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 maxTags 后再输入再粘贴都不能加入
+// 断词符与上限 | delimiter 给一组时其中任何一个都断词：半角逗号、全角逗号、分号都行；add-on-paste 使粘贴进来的一串照它们拆为多个标签，多行清单的换行也算；达到 maxTags 后再输入再粘贴都不能加入
 import type { ReactNode } from "react";
 import {
   XhTagsInputClearTrigger,
@@ -13,6 +13,9 @@ import {
 } from "@xihan-ui/react";
 import { useState } from "react";
 
+// 任何一个都断词；随表单提交的整串用第一个拼接
+const delimiters = [",", "，", ";", "\n"];
+
 export default function Demo(): ReactNode {
   const [tags, setTags] = useState<string[]>(["Vue"]);
 
@@ -22,8 +25,8 @@ export default function Demo(): ReactNode {
       onValueChange={details => setTags(details.value)}
       maxTags={4}
       addOnPaste
-      delimiter=","
-      placeholder="试试粘贴 React,Svelte,Solid"
+      delimiter={delimiters}
+      placeholder="试试粘贴 React，Svelte;Solid"
     >
       {({ value, count, atMax }) => (
         <>

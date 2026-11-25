@@ -30,29 +30,11 @@
 
 <XhDemo src="checkbox/02-indeterminate" />
 
-### 颜色
+### 语气、尺寸与状态
 
-tone 决定勾中后方框使用哪族颜色，因此这里都设为勾中
+tone 决定勾中后方框使用哪族颜色，因此这一行都设为勾中；size 适配不同的界面密度；disabled、readOnly 与 invalid 分别标出不可用、不可修改与必须处理
 
-<XhDemo src="checkbox/03-tone" />
-
-### 尺寸
-
-适配不同的界面密度
-
-<XhDemo src="checkbox/04-size" />
-
-### 禁用与只读
-
-区分不可用与不可修改状态
-
-<XhDemo src="checkbox/05-event" />
-
-### 校验状态
-
-标记必须处理的选项
-
-<XhDemo src="checkbox/06-value-mapping" />
+<XhDemo src="checkbox/03-tone-size-state" />
 
 ## 设计指引
 

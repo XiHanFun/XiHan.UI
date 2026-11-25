@@ -1,7 +1,10 @@
-<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位 -->
+<!-- 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位。按住 Shift 点击勾选框选中一段，焦点落在表体中按 Ctrl/Cmd + A 全选，禁用行占据顺序位置但不被选入 -->
 <div style="width: 100%; max-width: 560px; display: grid; gap: 12px">
   <xh-table id="table-selection" selection-mode="multiple">
     <div data-xh-part="root">
+      <div data-xh-part="caption">
+        点一行的勾选框，再按住 Shift 点另一行，中间整段一起选上；焦点在表体里按 Ctrl/Cmd + A 全选
+      </div>
       <div data-xh-part="header">
         <div data-xh-part="row">
           <div data-xh-part="column-header" value="select">
@@ -41,6 +44,20 @@
           <div data-xh-part="cell" value="name">李四（禁用）</div>
           <div data-xh-part="cell" value="dept">质量保障</div>
         </div>
+        <div data-xh-part="row" value="u5">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">周五</div>
+          <div data-xh-part="cell" value="dept">平台研发</div>
+        </div>
+        <div data-xh-part="row" value="u6">
+          <div data-xh-part="cell" value="select">
+            <span data-xh-part="row-select-trigger"></span>
+          </div>
+          <div data-xh-part="cell" value="name">吴六</div>
+          <div data-xh-part="cell" value="dept">前端体验</div>
+        </div>
       </div>
     </div>
   </xh-table>
@@ -56,12 +73,14 @@
     { id: "name", label: "姓名", width: "8rem" },
     { id: "dept", label: "部门" },
   ];
-  // 禁用行选不动，也不算进全选的基数
+  // 禁用行选不动，也不算进全选的基数；Shift 选一段时它占着位置但被跳过
   table.rows = [
     { id: "u1" },
     { id: "u2" },
     { id: "u3" },
     { id: "u4", disabled: true },
+    { id: "u5" },
+    { id: "u6" },
   ];
 
   function apply(selection) {

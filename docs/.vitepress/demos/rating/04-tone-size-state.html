@@ -1,0 +1,151 @@
+<!-- 语气、尺寸与状态 | tone 决定点亮的星使用哪族颜色，不写时沿用警示色；size 改变星的大小与间距，不写即默认中档；read-only 仍进入 Tab 序列、读屏可朗读但不可修改，disabled 整条退出 Tab 序列 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-6)">
+  <div style="display: flex; gap: var(--xh-space-8); flex-wrap: wrap">
+    <xh-rating tone="brand" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">brand</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating tone="neutral" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">neutral</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating tone="success" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">success</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating tone="warning" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">warning</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating tone="danger" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">danger</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating tone="info" default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">info</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+  </div>
+
+  <div style="display: flex; gap: var(--xh-space-8); flex-wrap: wrap; align-items: flex-start">
+    <xh-rating default-value="3" size="sm">
+      <div data-xh-part="root">
+        <span data-xh-part="label">sm</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating default-value="3">
+      <div data-xh-part="root">
+        <span data-xh-part="label">缺省</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating default-value="3" size="lg">
+      <div data-xh-part="root">
+        <span data-xh-part="label">lg</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+  </div>
+
+  <div style="display: flex; gap: var(--xh-space-8); flex-wrap: wrap">
+    <xh-rating default-value="4" read-only>
+      <div data-xh-part="root">
+        <span data-xh-part="label">只读（4 星）</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+
+    <xh-rating default-value="2" disabled>
+      <div data-xh-part="root">
+        <span data-xh-part="label">禁用（2 星）</span>
+        <div data-xh-part="control">
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
+        </div>
+      </div>
+    </xh-rating>
+  </div>
+</div>

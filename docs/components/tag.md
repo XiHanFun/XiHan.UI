@@ -24,41 +24,17 @@
 
 ## 示例
 
-### 变体
+### 形态、语气、尺寸与状态
 
-variant 决定颜色的使用方式：实心填底、淡色填底、只描边
+variant 决定颜色的使用方式，tone 只更换色相，size 改变内边距、字号与行框（有无关闭按钮同高）；readOnly 只锁关闭按钮、标签不置灰，disabled 连标签一起置灰，关闭按钮都留在原地，宽度不跳变
 
-<XhDemo src="tag/02-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色；语气只更换色相，形态与尺寸不受影响
-
-<XhDemo src="tag/03-tone" />
+<XhDemo src="tag/02-variant-tone-size-state" />
 
 ### 可关闭
 
 closable 提供关闭按钮；open 受控时去留由宿主决定，可访问名逐个带上标签文字，移除一个后焦点交给下一个
 
 <XhDemo src="tag/04-closable" />
-
-### 禁用
-
-disabled 使标签留在原地但不可移除：关闭按钮仍占据位置，标签宽度不因禁用跳变
-
-<XhDemo src="tag/05-disabled" />
-
-### 尺寸
-
-size 改变内边距、间距、字号与行框，不写即默认档；同一档有无关闭按钮高度相同，关闭按钮三档同一个尺寸
-
-<XhDemo src="tag/06-size" />
-
-### 只读
-
-readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
-
-<XhDemo src="tag/07-read-only" />
 
 ### 自定义色相
 

@@ -24,11 +24,11 @@
 
 ## 示例
 
-### 尺寸与描边
+### 语气、尺寸与描边
 
-设置图标大小和描边粗细
+tone 使用语义颜色；size 设置图标大小，weight 设置描边粗细
 
-<XhDemo src="icon/02-size-weight" />
+<XhDemo src="icon/02-tone-size-weight" />
 
 ### 可访问名称
 
@@ -42,12 +42,6 @@
 
 <XhDemo src="icon/04-custom-glyph" />
 
-### 颜色
-
-使用语义颜色
-
-<XhDemo src="icon/05-tone" />
-
 ### 旋转与翻转
 
 改变图标方向
@@ -56,21 +50,9 @@
 
 ### 底框
 
-用 frame 给图标套一层圆形底框
+用 frame 给图标套一层圆形底框：四种底框形态之外，tone 同时决定底框与图标的配色，sm、md、lg 三档底框与头像同档
 
 <XhDemo src="icon/07-frame" />
-
-### 底框颜色
-
-tone 同时决定底框与图标的配色
-
-<XhDemo src="icon/08-frame-tone" />
-
-### 底框尺寸
-
-sm、md、lg 三档底框与头像同档
-
-<XhDemo src="icon/09-frame-size" />
 
 ## 设计指引
 

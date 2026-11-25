@@ -36,29 +36,11 @@ granularity=second 使秒段显示并参与值，空段按上下键从该段边�
 
 <XhDemo src="time-field/03-granularity" />
 
-### 禁用与越界
+### 形态、语气、尺寸与状态
 
-禁用整组退出 Tab 序列；越界只做标注，08:00 原样保留不被改写
+variant 只改变分段框的底色与描边用法，tone 与 variant 正交，size 让行高、内边距与字号连同标题一起换档，分段结构与键盘行为都不变；禁用整组退出 Tab 序列，越界只做标注，08:00 原样保留不被改写
 
-<XhDemo src="time-field/04-state" />
-
-### 变体
-
-variant 只改变分段框的底色与描边用法，分段结构与键盘行为都不变
-
-<XhDemo src="time-field/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，只查看语气这一轴
-
-<XhDemo src="time-field/06-tone" />
-
-### 尺寸
-
-不传 size 即默认档；行高、内边距与字号一起换档，标题也随之变化
-
-<XhDemo src="time-field/07-size" />
+<XhDemo src="time-field/04-variant-tone-size-state" />
 
 ### 外部写值与清空
 

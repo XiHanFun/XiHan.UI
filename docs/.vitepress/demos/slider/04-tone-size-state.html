@@ -1,0 +1,162 @@
+<!-- 语气、尺寸与状态 | tone 决定已填轨道与滑块使用哪族颜色，不写时沿用品牌色；size 改变轨道厚度与滑块直径，不写即默认中档；禁用的拇指退出 Tab 序列、值也不再随表单提交，只读仍可聚焦与朗读，只是不可推动 -->
+<div style="display: flex; flex-direction: column; gap: var(--xh-space-8)">
+  <div style="display: grid; gap: var(--xh-space-4)">
+    <xh-slider tone="brand" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">brand</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider tone="neutral" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">neutral</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider tone="success" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">success</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider tone="warning" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">warning</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider tone="danger" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">danger</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider tone="info" default-value="60">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">info</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-5)">
+    <xh-slider default-value="50" size="sm">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">sm</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider default-value="50">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">缺省</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider default-value="50" size="lg">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">lg</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+  </div>
+
+  <div style="display: grid; gap: var(--xh-space-4)">
+    <xh-slider default-value="60" disabled name="brightness">
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">禁用</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+
+    <xh-slider default-value="60" read-only>
+      <div data-xh-part="root" style="inline-size: 280px">
+        <label data-xh-part="label">只读</label>
+        <div data-xh-part="control">
+          <div data-xh-part="track">
+            <div data-xh-part="range"></div>
+          </div>
+          <div data-xh-part="thumb">
+            <input data-xh-part="hidden-input" />
+          </div>
+        </div>
+      </div>
+    </xh-slider>
+  </div>
+</div>

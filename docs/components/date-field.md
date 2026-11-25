@@ -36,17 +36,11 @@
 
 <XhDemo src="date-field/03-range" />
 
-### 状态
+### 形态与状态
 
-禁用、只读与校验失败
+variant 设置输入框外观；禁用、只读与校验失败各是一种状态
 
-<XhDemo src="date-field/04-state" />
-
-### 变体
-
-设置输入框外观
-
-<XhDemo src="date-field/05-variant" />
+<XhDemo src="date-field/04-variant-state" />
 
 ### 日期与时间
 

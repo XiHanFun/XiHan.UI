@@ -20,15 +20,15 @@ root 是 role=status 的活区，旋转图形由皮肤绘制在伪元素上；la
 
 加粗的是必需部件。
 
-`data-scope="spinner"`：**`root`** · `label`
+`data-scope="spinner"`：**`root`** · `label` · `container` · `content` · `mask`
 
 ## 示例
 
-### 尺寸
+### 形态、语气与尺寸
 
-size 只改变直径，默认档 md 不输出 data-size
+默认渐隐弧，另有 ring 整圈与 dots 三点；tone 只更换圆环起始边一段的颜色，轨道保持中性描边，旋转时才能看出差别；size 只改变直径，默认档 md 不输出 data-size
 
-<XhDemo src="spinner/02-size" />
+<XhDemo src="spinner/02-variant-tone-size" />
 
 ### 可见文案
 
@@ -36,23 +36,11 @@ label 部件未写内容时显示解析后的 label，屏幕上看到的与读�
 
 <XhDemo src="spinner/03-label" />
 
-### 颜色
+### 遮罩形态
 
-tone 只更换圆环起始边一段的颜色，轨道保持中性描边，旋转时才能看出差别
-
-<XhDemo src="spinner/04-tone" />
-
-### 覆盖等待中的内容
-
-旋转指示浮在内容上方，容器同时报告 aria-busy，可见的与可朗读的是同一件事
+overlay 包住一块内容：等待时盖一层遮罩、转圈居中，内容报 aria-busy 且点不到；loading 改成 false 即撤下
 
 <XhDemo src="spinner/05-overlay" />
-
-### 变体
-
-默认渐隐弧，另有 ring 整圈与 dots 三点
-
-<XhDemo src="spinner/06-variant" />
 
 ### 延迟露面
 
@@ -85,10 +73,13 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 - 默认使用渐隐弧；也可显式选择整圈轨道或三点。转圈取品牌色，环档是一段 270° 的弧、不画轨道。
 - 配文取品牌色正文字号、中等字重；`orientation="vertical"` 时转圈在上、配文在下居中，适合整块区域的等待。
 - `delay` 让转圈挂载后等一段时间才露面：请求在这之前回来、转圈被卸掉时它从头到尾不出现，快请求不再闪一下。等待期间整块藏起但保留位置，读屏也读不到。
+- `loading` 缺省为真；改成 false 时转圈藏起，改回 true 时重新计 `delay`。
+- 打上 `overlay` 即遮罩形态：包住一块内容，等待时在内容上盖一层承载面色的遮罩、转圈居中且缺省竖排；内容报 `aria-busy`，遮罩露面后点不到也聚焦不到。`loading` 改成 false 撤掉遮罩，`delay` 同样作用于遮罩。写了 `label` 时转圈下方显示这段文案。
+- `fullscreen` 让遮罩盖满视口，层级与模态层相同；它只挡住指针，页面其余部分的焦点不锁。
 
 ### 组合
 
-- 放入[按钮](./button)的 `indicator` 部件；覆盖[卡片](./card)或[表格](./table)。
+- 放入[按钮](./button)的 `indicator` 部件；用遮罩形态包住[卡片](./card)或[表格](./table)。
 
 ### 最佳实践
 
@@ -116,8 +107,11 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `delay` | `number` |  | 挂载后等多少毫秒才露面，默认 0 即刻露面。等待期间 root 投影 data-state="hidden"， 皮肤按它把整块藏起、仍占着位置，读屏也读不到；加载在这之前结束、转圈被卸掉时它从头到尾不出现。 露面之后不再回到等待。 |
+| `fullscreen` | `boolean` |  | 遮罩形态下盖住整个视口，而不只是 container 里的内容。 |
 | `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
-| `orientation` | `Orientation` |  | 转圈与配文的排布，默认 horizontal：horizontal 并排、适合随文与行内； vertical 转圈在上、配文在下居中，适合整块区域的等待。 |
+| `loading` | `boolean` |  | 是否在等待，默认 true。单独使用时 false 把转圈藏起、位置照留；遮罩形态下 false 撤掉遮罩， 被包住的内容恢复可交互。由 false 变回 true 时重新计 delay。 |
+| `orientation` | `Orientation` |  | 转圈与配文的排布：horizontal 并排、适合随文与行内；vertical 转圈在上、配文在下居中，适合整块区域的等待。 缺省单独使用时是 horizontal，遮罩形态下是 vertical。 |
+| `overlay` | `boolean` |  | 遮罩形态：包住一块内容，等待时在内容上盖一层遮罩、转圈居中，内容报忙且不可交互。 结构是 container 包住 content 与 mask，root 放在 mask 里。不写时是单独一枚转圈。 |
 | `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
@@ -130,10 +124,17 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'visible' \| 'hidden' |
+| `container` | 'visible' \| 'hidden' |
+| `content` | 'visible' \| 'hidden' |
+| `mask` | 'visible' \| 'hidden' |
 
 以下名称仅用于内部状态机。
 
-**状态**：`waiting` · `visible`
+**状态**：`idle` · `waiting` · `visible`
+
+**事件**：`REVEAL` · `START` · `STOP`
+
+**判据**：`hasDelay`
 
 ### connect API
 
@@ -142,9 +143,13 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `label` | `string` | 解析后的文案：label → translations.label → en-US 语言包。 |
-| `visible` | `boolean` | 已经露面；等待 delay 期间为 false。 |
+| `loading` | `boolean` | 是否在等待：loading 不为 false。 |
+| `visible` | `boolean` | 已经露面；等待 delay 期间与 loading 为 false 时为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
+| `getContainerProps` | `() => T['element']` | 遮罩形态的外框：包住内容与遮罩，作为遮罩的定位参照。 |
+| `getContentProps` | `() => T['element']` | 被包住的内容：等待期间报 aria-busy，遮罩露面后不可交互。 |
+| `getMaskProps` | `() => T['element']` | 盖在内容上的遮罩，转圈放在它里面居中。 |
 
 ## 无障碍
 
@@ -163,6 +168,7 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | `root` | `aria-label` | resolveLabel(props) |
 | `root` | `aria-live` | 'polite' |
 | `root` | `role` | 'status' |
+| `content` | `aria-busy` | 'true' \| undefined |
 
 ## 样式参考
 
@@ -183,6 +189,11 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | `root` | `data-state` | 'visible' \| 'hidden' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `container` | `data-fullscreen` | ''（条件成立时才出现） |
+| `container` | `data-state` | 'visible' \| 'hidden' |
+| `content` | `data-state` | 'visible' \| 'hidden' |
+| `mask` | `data-fullscreen` | ''（条件成立时才出现） |
+| `mask` | `data-state` | 'visible' \| 'hidden' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -197,6 +208,9 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-brand` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-font-weight` | `label` | `font-weight` | `default` | `--xh-font-weight-medium` | spinner 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-body-size` | spinner 的 label 部件 font-size 覆盖槽。 |
+| `--xh-spinner-layer` | `mask` | `z-index` | `fullscreen` | `--xh-_layer` | spinner 的 mask 部件 z-index 覆盖槽。 |
+| `--xh-spinner-mask-bg` | `mask` | `background` | `default` | `--xh-bg-surface` | spinner 的 mask 部件 background 覆盖槽。 |
+| `--xh-spinner-mask-p` | `mask` | `padding` | `default`<br>`fullscreen` | `--xh-space-4` | spinner 的 mask 部件 padding 覆盖槽。 |
 | `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`tone`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
@@ -209,7 +223,7 @@ orientation="vertical" 时转圈在上、配文在下居中，适合整块区域
 
 可覆盖的动效槽：`--xh-spinner-duration`。
 
-关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-spinner-dots` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-spin` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

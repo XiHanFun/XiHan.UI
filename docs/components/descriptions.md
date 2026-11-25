@@ -36,17 +36,11 @@ placement 决定标签在上还是在左，不传即在上
 
 <XhDemo src="descriptions/03-placement" />
 
-### 外框
+### 形态与尺寸
 
-variant="outline" 绘制一圈描边，并在格与格之间补上网格线
+ghost 不画壳，subtle 铺一层淡底，outline 绘制一圈描边并在格与格之间补上网格线；size 改变每格的内边距、组与组的间距与整体字号，不传即默认档
 
-<XhDemo src="descriptions/04-outline" />
-
-### 尺寸
-
-size 改变每格的内边距、组与组的间距与整体字号，不传 size 即默认档
-
-<XhDemo src="descriptions/05-size" />
+<XhDemo src="descriptions/04-variant-size" />
 
 ### 跨列
 

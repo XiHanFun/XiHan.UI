@@ -1,5 +1,5 @@
-<!-- 受控 | 由 value 和 value-change 控制 -->
-<xh-select id="select-controlled" value="banana" placeholder="请选择">
+<!-- 受控 | 由 value 和 value-change 控制；外部按钮经插槽状态的 setOpen 与 setValue 开合与清空，改值同样经 value-change 回到宿主 -->
+<xh-select id="select-controlled" value="banana" open="false" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">水果</span>
     <div data-xh-part="control">
@@ -26,22 +26,59 @@
         </div>
       </div>
     </div>
+    <div style="display: flex; gap: var(--xh-space-2); margin-block-start: var(--xh-space-2)">
+      <xh-button variant="outline" size="sm" id="select-controlled-toggle">
+        <button data-xh-part="root">展开</button>
+      </xh-button>
+      <xh-button variant="ghost" size="sm" id="select-controlled-clear">
+        <button data-xh-part="root">清空</button>
+      </xh-button>
+    </div>
   </div>
 </xh-select>
 <p data-demo-output>宿主持有的值：<span id="select-controlled-value">banana</span></p>
 
 <script type="module">
-  // 只有通过校验的值才写回，未写回则界面停在原值
+  // Web Components 没有插槽状态：开合与值都由宿主持有，按钮直接改宿主那一份再写回元素
   const select = document.getElementById("select-controlled");
   const readout = document.getElementById("select-controlled-value");
-  let value = ["banana"];
+  const toggle = document.getElementById("select-controlled-toggle");
+  const toggleLabel = toggle.querySelector('[data-xh-part="root"]');
+  const clear = document.getElementById("select-controlled-clear");
 
-  select.addEventListener("value-change", (event) => {
-    const rejected = event.detail.value.includes("cherry");
-    if (!rejected) {
-      value = event.detail.value;
-      select.value = value;
-    }
-    readout.textContent = value.join("、") + (rejected ? " · 上一次选择被拒绝" : "");
+  let open = false;
+  let value = ["banana"];
+  let rejected = false;
+
+  function apply() {
+    select.open = open;
+    select.value = value;
+    toggleLabel.textContent = open ? "收起" : "展开";
+    clear.disabled = value.length === 0;
+    readout.textContent = (value.join("、") || "（空）") + (rejected ? " · 上一次选择被拒绝" : "");
+  }
+
+  select.addEventListener("open-change", (event) => {
+    open = event.detail.open;
+    apply();
   });
+  // 只有通过校验的值才写回，未写回则界面停在原值
+  select.addEventListener("value-change", (event) => {
+    rejected = event.detail.value.includes("cherry");
+    if (!rejected)
+      value = event.detail.value;
+    apply();
+  });
+
+  toggle.addEventListener("click", () => {
+    open = !open;
+    apply();
+  });
+  clear.addEventListener("click", () => {
+    rejected = false;
+    value = [];
+    apply();
+  });
+
+  apply();
 </script>

@@ -26,7 +26,7 @@ create 入队并返回 id，队列中的每条由作者渲染为一条通知；�
 
 ### 落位
 
-placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 data-placement，队列本身不变
+notification 的 placement 决定堆叠缺省贴视口的哪个角，单条通知自带 placement 即覆盖它；placements 报告当前有条目的位置，一个位置一个堆叠
 
 <XhDemo src="notification/02-placement" />
 
@@ -47,12 +47,6 @@ maxVisible 限制每个位置同时显示几条，最新的那一条一定留下
 create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不等卡片自己的退场，画面上由替身在原处淡出
 
 <XhDemo src="notification/05-manual-dismiss" />
-
-### 逐条落位
-
-单条通知自带 placement 即覆盖 notification 的默认落位；placements 报告当前有条目的位置，一个位置一个堆叠
-
-<XhDemo src="notification/06-per-item-placement" />
 
 ### 轻提示预设
 

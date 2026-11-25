@@ -1,0 +1,130 @@
+<!-- 语气与尺寸 | tone 写在条目上，只为该条的圆点上色，不写 tone 的条目是中性圆点；size 改变圆点直径、条目间距与字号，不传 size 即默认档 -->
+<div style="display: grid; gap: var(--xh-space-8)">
+  <div style="display: grid">
+    <xh-timeline>
+      <ol data-xh-part="root" style="max-inline-size: 360px">
+        <!-- 第一条不写 tone -->
+        <li data-xh-part="item">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <time data-xh-part="time">09:12</time>
+            <div data-xh-part="title">收到请求</div>
+            <div data-xh-part="description">队列长度 3</div>
+          </div>
+        </li>
+        <li data-xh-part="item" tone="info">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <time data-xh-part="time">09:13</time>
+            <div data-xh-part="title">开始构建</div>
+            <div data-xh-part="description">拉取依赖</div>
+          </div>
+        </li>
+        <li data-xh-part="item" tone="warning">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <time data-xh-part="time">09:21</time>
+            <div data-xh-part="title">两条依赖有告警</div>
+            <div data-xh-part="description">已按锁文件继续</div>
+          </div>
+        </li>
+        <li data-xh-part="item" tone="danger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <time data-xh-part="time">09:26</time>
+            <div data-xh-part="title">单元测试失败</div>
+            <div data-xh-part="description">3 个用例未通过</div>
+          </div>
+        </li>
+        <li data-xh-part="item" tone="success">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="connector"></span>
+          <div data-xh-part="content">
+            <time data-xh-part="time">09:41</time>
+            <div data-xh-part="title">重跑后通过</div>
+            <div data-xh-part="description">产物已上传</div>
+          </div>
+        </li>
+      </ol>
+    </xh-timeline>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--xh-space-6)">
+    <div style="inline-size: 200px">
+      <div style="margin-block-end: var(--xh-space-2); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">小</div>
+      <xh-timeline size="sm">
+        <ol data-xh-part="root">
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">提交</div>
+              <div data-xh-part="description">12 个文件</div>
+            </div>
+          </li>
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">合并</div>
+              <div data-xh-part="description">两条评审意见</div>
+            </div>
+          </li>
+        </ol>
+      </xh-timeline>
+    </div>
+
+    <div style="inline-size: 200px">
+      <div style="margin-block-end: var(--xh-space-2); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">默认</div>
+      <!-- 这一档不写 size -->
+      <xh-timeline>
+        <ol data-xh-part="root">
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">提交</div>
+              <div data-xh-part="description">12 个文件</div>
+            </div>
+          </li>
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">合并</div>
+              <div data-xh-part="description">两条评审意见</div>
+            </div>
+          </li>
+        </ol>
+      </xh-timeline>
+    </div>
+
+    <div style="inline-size: 200px">
+      <div style="margin-block-end: var(--xh-space-2); color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">大</div>
+      <xh-timeline size="lg">
+        <ol data-xh-part="root">
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">提交</div>
+              <div data-xh-part="description">12 个文件</div>
+            </div>
+          </li>
+          <li data-xh-part="item">
+            <span data-xh-part="indicator"></span>
+            <span data-xh-part="connector"></span>
+            <div data-xh-part="content">
+              <div data-xh-part="title">合并</div>
+              <div data-xh-part="description">两条评审意见</div>
+            </div>
+          </li>
+        </ol>
+      </xh-timeline>
+    </div>
+  </div>
+</div>

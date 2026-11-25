@@ -36,29 +36,11 @@ Control 把输入框与清空按钮圈进同一个框，clearable 使清空按�
 
 <XhDemo src="text-field/03-clearable" />
 
-### 禁用与校验态
+### 形态、语气、尺寸与状态
 
-disabled 与 readOnly 都不可修改值，invalid 只标注 aria-invalid、不拦截输入
+variant 决定底色与描边的绘制方式（描边、淡色填底、无框，没有实心档）；tone 与 variant 正交，固定 subtle 时底色差别不必聚焦即可看到；size 只改变高度、内边距与字号，标签与清空按钮一起换档；disabled 与 readOnly 都不可修改值，invalid 只标注 aria-invalid、不拦截输入
 
-<XhDemo src="text-field/04-states" />
-
-### 变体
-
-variant 决定底色与描边的绘制方式：描边、淡色填底、无框；输入框没有实心档
-
-<XhDemo src="text-field/05-variant" />
-
-### 颜色
-
-tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦即可看到
-
-<XhDemo src="text-field/06-tone" />
-
-### 尺寸
-
-size 只改变高度、内边距与字号，标签与清空按钮一起换档；不写即默认档
-
-<XhDemo src="text-field/07-size" />
+<XhDemo src="text-field/04-variant-tone-size-state" />
 
 ### 程序化改值
 
@@ -66,17 +48,11 @@ setValue 直接写值，只受禁用、只读与字数上限约束；clear 执�
 
 <XhDemo src="text-field/08-programmatic" />
 
-### 原生属性
+### 原生输入框
 
-写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定
+input 部件就是一个原生 input：写在它上面的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定；聚焦失焦等原生事件也写在它上面，值的变化另经组件的 value-change；取得它的节点即可聚焦、全选、把光标移到末尾
 
 <XhDemo src="text-field/09-native-attrs" />
-
-### 事件
-
-值的变化经组件的 value-change，聚焦失焦等原生事件直接写在 input 部件上
-
-<XhDemo src="text-field/10-events" />
 
 ### 框内前后缀
 
@@ -84,23 +60,17 @@ setValue 直接写值，只受禁用、只读与字数上限约束；clear 执�
 
 <XhDemo src="text-field/11-affix" />
 
-### 密码与明暗切换
-
-写在 input 部件上的 type 覆盖默认的 text，明暗由宿主的一个布尔切换
-
-<XhDemo src="text-field/12-password" />
-
 ### 限制可输入的字符
 
 beforeinput 直接写在 input 部件上，非法字符无法进入框，值与框中的内容始终一致
 
 <XhDemo src="text-field/13-filter" />
 
-### 聚焦与选区
+### 掩码
 
-input 部件就是一个原生 input，取得它的节点即可聚焦、全选、把光标移到末尾
+mask 把输入排成固定格式：9 收数字、a 收字母，分隔符按到那一位时自动补上；值含分隔符，value-change 另带去掉分隔符的 unmaskedValue
 
-<XhDemo src="text-field/14-focus" />
+<XhDemo src="text-field/14-mask" />
 
 ### 输入组
 
@@ -143,8 +113,9 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 - 开启 `clearable` 后，清空按钮在空值时收起；有值且可编辑时，指针落在字段盒上或焦点在盒内才显出（触屏上常显），圆形钮、静息字形半透明；字段聚焦边界平滑过渡。
 - `showCount` 显示字数部件，数字取 `count` 与 `maxLength`，达到上限时换色。
 - 字数与 `maxLength` 都按字素计：组合 emoji、国旗与带变音符的字母各算一个字。上限不投影成按 UTF-16 码元计的原生 `maxlength`；一次编辑超出时截掉的是这次新插入的文本里放不下的那一截，光标落在保留下来的文本之后；输入法组合期间不截，落定时再按上限收住。
+- `mask` 按掩码排值：`9` 收数字、`a` 收字母、`*` 收字母或数字，其余字符是分隔符，按到那一位时自动补上；在 9 / a / * / \ 前面写 `\` 即当分隔符原样写出。值是排好的串（含分隔符），`onValueChange` 另带去掉分隔符的 `unmaskedValue`，`maskComplete` 说明是否填满。光标落在排好之后的位置；删掉一个分隔符时光标退到它前面，再删一次才删到字符。只收数字的掩码请移动端弹数字键盘。非受控初值按掩码排一遍，受控值按原样显示。
 - 放在 FormFieldGroup 内时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 从最近的 Field 或 Form 继承；实例显式写 `false` 时以实例为准。Field 的标签、说明和错误描述链保持挂到 input。
-- 输入组、限制可输入字符由作者组合，组件不预设。
+- 输入组由作者组合，组件不预设；固定格式的输入用 `mask`。
 
 ### 组合
 
@@ -188,6 +159,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后才参与提交。 |
 | `maxLength` | `number` |  | 字数上限，按字素计（组合 emoji、国旗、带变音符的字母都算一个），与 count 同一口径。 原生 maxlength 按 UTF-16 码元计，会把一个 emoji 算成两个以上，因此不投影； 超出的部分由连接层从这次新插入的文本里截掉（与原生 maxlength 同样的做法），输入法组合期间不截、落定时再截。 |
+| `mask` | `string` |  | 掩码：`9` 收数字，`a` 收字母，`*` 收字母或数字，其余字符是分隔符、按到那一位时自动补上； 在 9 / a / * / \ 前面写 `\` 即当分隔符原样写出。例如手机号 `999 9999 9999`。 值是排好的串（含分隔符）；非受控初值按它排一遍，受控值按原样显示。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
 | `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高，顶到上限后在 textarea 内部滚动；对象形态固定行数上下限。 |
@@ -204,7 +176,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string, unmaskedValue?: string }`，写了 mask 时带去掉分隔符的值 |
 | `clear` | `` | 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。 |
 
 ### 插槽
@@ -255,6 +227,8 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `count` | `number` | 当前字数，按字素计（一个组合 emoji 算一个）。作者用它渲染 count 部件中的数字。 |
 | `maxLength` | `number \| undefined` | 字数上限的原样透传；未设上限时为 undefined，此时只渲染当前字数。 |
 | `showCount` | `boolean` | 字数部件当前是否显示（开启了 showCount）。 |
+| `unmaskedValue` | `string` | 写了 mask 时去掉分隔符的值；没写 mask 时与 value 相同。 |
+| `maskComplete` | `boolean` | 写了 mask 且每个占位符都填上了；没写 mask 时为 false。 |
 | `canClear` | `boolean` | 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 与 maxLength 约束，与 clearable 无关。 |
 | `clear` | `() => void` | 发起清空意图，受 canClear 约束；无条件清空使用 setValue('')。 |

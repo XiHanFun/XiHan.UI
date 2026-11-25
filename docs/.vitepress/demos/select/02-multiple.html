@@ -1,16 +1,12 @@
-<!-- 多选 | 已选项在触发器里排成标签 -->
-<xh-select
-  id="select-multiple"
-  multiple
-  default-value="apple"
-  placeholder="请选择"
->
+<!-- 多选 | 已选项在触发器里排成标签，超出 max-tag-count 的合并为 +N；按钮不能套按钮，带删除钮的标签只能排在触发器外 -->
+<xh-select id="select-multiple" multiple max-tag-count="2" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">水果（多选）</span>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
+        <!-- 占位文字与标签行同时写着：有选中时标签行露面、占位让位，无选中时反过来 -->
         <span data-xh-part="value-text"></span>
-        <!-- 标签行：可见的几枚由脚本按 tags 渲染，+N 那一枚常挂、由元素填字；触发器里的标签只作展示 -->
+        <!-- 触发器里的标签只作展示：按钮不能套按钮，这里不放删除钮；tag / overflow-tag 接的都是 tag 的 root，只有文字的由元素包一层 label，+N 那一枚由元素填字 -->
         <span data-xh-part="tag-list">
           <span data-xh-part="overflow-tag"></span>
         </span>
@@ -39,41 +35,70 @@
         </div>
       </div>
     </div>
+    <!-- 触发器外的可删标签行：删除钮只能放在这里 -->
+    <div
+      id="select-multiple-row"
+      style="display: flex; flex-wrap: wrap; gap: var(--xh-space-1); margin-block-start: var(--xh-space-2)"
+    ></div>
   </div>
 </xh-select>
-<p data-demo-output>已选：<span id="select-multiple-value">apple</span></p>
+<p data-demo-output>已选：<span id="select-multiple-value">apple、banana、blueberry</span></p>
 
 <script type="module">
   const select = document.getElementById("select-multiple");
   const overflow = select.querySelector('[data-xh-part="overflow-tag"]');
+  const row = document.getElementById("select-multiple-row");
   const readout = document.getElementById("select-multiple-value");
 
-  // 摆得下几枚由组件按 max-tag-count 算好：按值复用已有的节点，只增删变了的那几枚
-  function renderTags() {
-    const current = new Map(
-      [...select.querySelectorAll('[data-xh-part="tag-list"] > [data-xh-part="tag"]')].map((el) => [el.getAttribute("value"), el]),
-    );
-    const next = select.tags.map((tag) => {
-      if (current.has(tag.value))
-        return current.get(tag.value);
-      const el = document.createElement("span");
-      el.setAttribute("data-xh-part", "tag");
-      el.setAttribute("value", tag.value);
-      el.textContent = tag.label;
-      return el;
-    });
-    for (const el of current.values()) {
-      if (!next.includes(el))
-        el.remove();
+  const fruits = [
+    { value: "apple", label: "苹果" },
+    { value: "banana", label: "香蕉" },
+    { value: "blueberry", label: "蓝莓" },
+    { value: "durian", label: "榴莲" },
+  ];
+  select.collection = fruits;
+
+  let picked = ["apple", "banana", "blueberry"];
+
+  // 一枚标签：带删除钮的那一份放在触发器外面
+  function tagOf(value, label, deletable) {
+    const tag = document.createElement("span");
+    tag.setAttribute("data-xh-part", "tag");
+    tag.setAttribute("value", value);
+    tag.textContent = label;
+    if (deletable) {
+      const remove = document.createElement("button");
+      remove.setAttribute("data-xh-part", "item-delete-trigger");
+      tag.append(remove);
     }
-    overflow.before(...next);
+    return tag;
   }
 
-  // 选中集合回显在标签行与下面那行文字里；等元素把这一轮更新落定再按 tags 重排
-  select.addEventListener("value-change", async (event) => {
-    readout.textContent = event.detail.value.join("、") || "（无）";
-    await select.updateComplete;
-    renderTags();
+  function render() {
+    select.value = picked;
+    readout.textContent = picked.join("、") || "（无）";
+
+    // 摆得下几枚由组件按 max-tag-count 算好；标签行里 +N 那一枚常挂，标签插在它前面
+    for (const stale of select.querySelectorAll('[data-xh-part="tag-list"] [data-xh-part="tag"]'))
+      stale.remove();
+    overflow.before(...select.tags.map((tag) => tagOf(tag.value, tag.label, false)));
+
+    // 外面这一行不截断，逐个都摆出来，标签文字回自己那份数据里查
+    row.replaceChildren(
+      ...picked.map((value) =>
+        tagOf(
+          value,
+          fruits.find((fruit) => fruit.value === value)?.label ?? value,
+          true,
+        ),
+      ),
+    );
+  }
+
+  select.addEventListener("value-change", (event) => {
+    picked = event.detail.value;
+    render();
   });
-  select.updateComplete.then(renderTags);
+
+  render();
 </script>

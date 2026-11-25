@@ -1,0 +1,110 @@
+<!-- 形态、语气、尺寸与状态 | variant 决定颜色的使用方式，tone 只更换色相，size 改变内边距、字号与行框（有无关闭按钮同高）；readOnly 只锁关闭按钮、标签不置灰，disabled 连标签一起置灰，关闭按钮都留在原地，宽度不跳变 -->
+<div style="display: grid; gap: var(--xh-space-4)">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-tag variant="solid" tone="brand">
+      <span data-xh-part="root">
+        <span data-xh-part="label">solid</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="brand">
+      <span data-xh-part="root">
+        <span data-xh-part="label">subtle</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="outline" tone="brand">
+      <span data-xh-part="root">
+        <span data-xh-part="label">outline</span>
+      </span>
+    </xh-tag>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-tag variant="subtle" tone="brand">
+      <span data-xh-part="root">
+        <span data-xh-part="label">品牌</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="neutral">
+      <span data-xh-part="root">
+        <span data-xh-part="label">中性</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="success">
+      <span data-xh-part="root">
+        <span data-xh-part="label">成功</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="warning">
+      <span data-xh-part="root">
+        <span data-xh-part="label">警告</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="danger">
+      <span data-xh-part="root">
+        <span data-xh-part="label">危险</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="info">
+      <span data-xh-part="root">
+        <span data-xh-part="label">信息</span>
+      </span>
+    </xh-tag>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-tag variant="subtle" size="sm">
+      <span data-xh-part="root">
+        <span data-xh-part="label">小</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" size="sm" closable>
+      <span data-xh-part="root">
+        <span data-xh-part="label">小</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle">
+      <span data-xh-part="root">
+        <span data-xh-part="label">缺省</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" closable>
+      <span data-xh-part="root">
+        <span data-xh-part="label">缺省</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" size="lg">
+      <span data-xh-part="root">
+        <span data-xh-part="label">大</span>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" size="lg" closable>
+      <span data-xh-part="root">
+        <span data-xh-part="label">大</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--xh-space-2)">
+    <xh-tag variant="subtle" tone="brand" closable>
+      <span data-xh-part="root">
+        <span data-xh-part="label">可摘掉</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="brand" closable read-only>
+      <span data-xh-part="root">
+        <span data-xh-part="label">只读</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+    <xh-tag variant="subtle" tone="brand" closable disabled>
+      <span data-xh-part="root">
+        <span data-xh-part="label">禁用</span>
+        <button data-xh-part="close-trigger"></button>
+      </span>
+    </xh-tag>
+  </div>
+</div>

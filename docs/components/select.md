@@ -26,39 +26,21 @@
 
 ### 多选
 
-已选项在触发器里排成标签
+已选项在触发器里排成标签，超出 max-tag-count 的合并为 +N；按钮不能套按钮，带删除钮的标签只能排在触发器外
 
 <XhDemo src="select/02-multiple" />
 
 ### 受控
 
-由 value 和 value-change 控制
+由 value 和 value-change 控制；外部按钮经插槽状态的 setOpen 与 setValue 开合与清空，改值同样经 value-change 回到宿主
 
 <XhDemo src="select/03-controlled" />
 
-### 禁用
+### 形态、语气、尺寸与状态
 
-禁止展开和聚焦
+形态有 outline、subtle 和 ghost；tone 六种语气；size 小、中、大三档；disabled 禁止展开和聚焦
 
-<XhDemo src="select/04-disabled" />
-
-### 变体
-
-outline、subtle 和 ghost
-
-<XhDemo src="select/05-variant" />
-
-### 颜色
-
-六种语气
-
-<XhDemo src="select/06-tone" />
-
-### 尺寸
-
-小、中、大三档
-
-<XhDemo src="select/07-size" />
+<XhDemo src="select/04-variant-tone-size-state" />
 
 ### 异步加载
 
@@ -78,12 +60,6 @@ outline、subtle 和 ghost
 
 <XhDemo src="select/10-custom-content" />
 
-### 操作入口
-
-通过插槽状态控制开合和值
-
-<XhDemo src="select/11-actions" />
-
 ### 大量选项
 
 列表内部滚动并支持连打检索
@@ -95,12 +71,6 @@ outline、subtle 和 ghost
 跨分组保持键盘导航
 
 <XhDemo src="select/13-group" />
-
-### 多选标签
-
-超出数量合并为 +N
-
-<XhDemo src="select/14-tags" />
 
 ### 校验
 
@@ -114,12 +84,6 @@ outline、subtle 和 ghost
 
 <XhDemo src="select/16-scroll-load" />
 
-### 命令式聚焦
-
-聚焦触发器
-
-<XhDemo src="select/17-focus" />
-
 ### 清空
 
 有值时显示清空按钮
@@ -131,12 +95,6 @@ outline、subtle 和 ghost
 固定在滚动列表下方
 
 <XhDemo src="select/19-footer" />
-
-### Popover + Listbox
-
-不参与表单的选择
-
-<XhDemo src="select/20-listbox-popover" />
 
 ### 选项副文本
 

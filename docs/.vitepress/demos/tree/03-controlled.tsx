@@ -1,4 +1,4 @@
-// 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化
+// 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化；这里分支的选中意图不写回，选中集合里只有叶子
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -32,6 +32,9 @@ const collection = [
   },
 ];
 
+// 只有叶子进选中集合：带上分支的那次意图整个不写回，选中照旧
+const leaves = new Set(collection.flatMap(group => group.children.map(item => item.value)));
+
 export default function Demo(): ReactNode {
   const [expanded, setExpanded] = useState<string[]>(["api"]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -41,6 +44,8 @@ export default function Demo(): ReactNode {
   }
 
   function onSelectionChange(details: { value: string[] }): void {
+    if (details.value.some(value => !leaves.has(value)))
+      return;
     setSelected(details.value);
   }
 

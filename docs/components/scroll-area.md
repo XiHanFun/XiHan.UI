@@ -24,17 +24,11 @@
 
 ## 示例
 
-### 双轴滚动
+### 滚动方向
 
-同时显示横向和纵向滚动条
+orientation 决定组件管理哪条轴：缺省 both 两个方向都能滚，两条滚动条交会处由 corner 补齐；horizontal 只启用横向滚动
 
-<XhDemo src="scroll-area/02-both-axes" />
-
-### 横向滚动
-
-只启用横向滚动
-
-<XhDemo src="scroll-area/03-orientation" />
+<XhDemo src="scroll-area/02-orientation" />
 
 ### 边缘渐隐
 

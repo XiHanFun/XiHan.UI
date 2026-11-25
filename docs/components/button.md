@@ -24,17 +24,11 @@
 
 ## 示例
 
-### 变体
+### 形态、尺寸与状态
 
-设置按钮外观
+variant 设置按钮外观，size 分小、中、大三档，disabled 标出暂时不可执行的操作
 
-<XhDemo src="button/02-variant" />
-
-### 尺寸
-
-小、中、大三档
-
-<XhDemo src="button/03-size" />
+<XhDemo src="button/02-variant-size-state" />
 
 ### 图标
 
@@ -50,27 +44,15 @@
 
 ### 加载
 
-保留按钮标签并阻止重复操作
+点击后进入 loading：保留按钮标签，完成前阻止重复操作
 
 <XhDemo src="button/06-loading" />
-
-### 异步操作
-
-点击后显示加载状态
-
-<XhDemo src="button/07-loading-triggered" />
 
 ### 全宽
 
 占满容器宽度
 
 <XhDemo src="button/08-full-width" />
-
-### 禁用
-
-暂时不可执行的操作
-
-<XhDemo src="button/09-disabled" />
 
 ### 链接
 

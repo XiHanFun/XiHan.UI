@@ -1,0 +1,38 @@
+<!-- 形态与状态 | variant 设置输入框外观，invalid 标记无效输入 -->
+<script setup lang="ts">
+import { XhComboboxRoot } from "@xihan-ui/vue";
+
+const variants = ["outline", "subtle", "ghost"] as const;
+
+const fruits = [
+  { value: "apple", label: "苹果" },
+  { value: "banana", label: "香蕉" },
+  { value: "cherry", label: "樱桃" },
+];
+</script>
+
+<template>
+  <div style="display: grid; gap: var(--xh-space-6); justify-items: start">
+    <div style="display: grid; gap: var(--xh-space-4); justify-items: start">
+      <XhComboboxRoot
+        v-for="v in variants"
+        :key="v"
+        :variant="v"
+        :collection="fruits"
+        clearable
+        :label="v"
+        open-on-click
+        placeholder="选择水果"
+        style="width: 240px"
+      />
+    </div>
+    <XhComboboxRoot
+      :collection="fruits"
+      invalid
+      label="invalid"
+      open-on-click
+      placeholder="选择水果"
+      style="width: 240px"
+    />
+  </div>
+</template>

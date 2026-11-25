@@ -30,23 +30,17 @@
 
 <XhDemo src="tabs/02-vertical" />
 
-### 分段变体
+### 形态与状态
 
-使用浅色标签带与浮起的选中面
+分段形态使用浅色标签带与浮起的选中面；禁用的标签留在原位，保留暂不可用的内容入口
 
-<XhDemo src="tabs/03-variant" />
+<XhDemo src="tabs/03-variant-state" />
 
 ### 图标标签
 
 图标辅助识别内容类别
 
 <XhDemo src="tabs/04-prefix-suffix" />
-
-### 禁用标签
-
-保留暂不可用的内容入口
-
-<XhDemo src="tabs/05-guard" />
 
 ### 分隔线
 

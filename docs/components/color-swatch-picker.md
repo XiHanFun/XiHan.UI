@@ -30,17 +30,11 @@
 
 <XhDemo src="color-swatch-picker/02-items" />
 
-### 状态
+### 语气、尺寸与状态
 
-禁用整组置灰、只读只阻止落值不阻止焦点、无效把描边转为警示色
+tone 决定选中描边与选中徽标用哪族颜色，格子边长随控件行高分三档；禁用整组置灰，只读只阻止落值不阻止焦点，无效把描边转为警示色
 
-<XhDemo src="color-swatch-picker/03-states" />
-
-### 尺寸与语气
-
-格子边长跟随控件行高分三档；tone 决定选中描边与选中徽标使用哪族颜色
-
-<XhDemo src="color-swatch-picker/04-size-tone" />
+<XhDemo src="color-swatch-picker/03-tone-size-state" />
 
 ## 设计指引
 
