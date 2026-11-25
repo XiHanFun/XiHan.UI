@@ -510,7 +510,7 @@ describe('开合与受控', () => {
     click(h.trigger)
     expect(h.state()).toBe('closed')
     expect(h.content.hasAttribute('hidden')).toBe(true)
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'close-trigger' })
   })
 
   it('受控 open：点 trigger 只发意图不自改状态，宿主写回后才转移', () => {
@@ -785,7 +785,7 @@ describe('closeOnSelect', () => {
     const days = h.rendered()
     pickRange(h, days[10]!, days[14]!)
     expect(h.state()).toBe('open')
-    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false })
+    expect(onOpenChange).toHaveBeenLastCalledWith({ open: false, reason: 'selection' })
     // 值这一路不受 open 受控影响，照落不误
     expect(h.value()).toHaveLength(2)
   })
@@ -2123,5 +2123,51 @@ describe('dateRangePickerStructure', () => {
     const nodes = dateRangePickerStructure(mount().api())
     expect(parts(nodes)).toEqual(['control', 'hidden-input', 'hidden-input', 'positioner'])
     expect(parts((nodes.at(-1)!.children![0] as StructureNode).children!)).toEqual(['calendar'])
+  })
+})
+
+describe('dateRangePickerMachine 关闭原因', () => {
+  // 收起意图带上这一次是怎么关的：取消（esc / 层外）常要回滚草稿，选完与「我填完了」不用
+  const reasons = (fn: ReturnType<typeof vi.fn>) =>
+    fn.mock.calls.map(c => c[0] as { open: boolean, reason?: string }).filter(d => !d.open).map(d => d.reason)
+
+  it('escape 报 esc，层外按下报 interact-outside', async () => {
+    const onOpenChange = vi.fn()
+    const h = await open({ onOpenChange })
+    press(active(), 'Escape')
+    expect(h.state()).toBe('closed')
+    click(h.trigger)
+    await settle()
+    await tick()
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+    await tick()
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['esc', 'interact-outside'])
+  })
+
+  it('再点日历钮、再点输入行、段位上按 Enter、按确认钮都报 close-trigger', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange, showTime: true })
+    click(h.trigger)
+    click(h.trigger)
+    click(h.trigger)
+    click(h.control)
+    click(h.trigger)
+    press(h.segmentsEnd()[0]!, 'Enter')
+    click(h.trigger)
+    ;(h.api().getConfirmTriggerProps() as { onClick: () => void }).onClick()
+    expect(h.state()).toBe('closed')
+    expect(reasons(onOpenChange)).toEqual(['close-trigger', 'close-trigger', 'close-trigger', 'close-trigger'])
+  })
+
+  it('落下终点随之收起报 selection，setOpen(false) 报 programmatic，展开不带原因', () => {
+    const onOpenChange = vi.fn()
+    const h = mount({ onOpenChange, defaultOpen: true })
+    const days = h.rendered()
+    pickRange(h, days[10]!, days[14]!)
+    h.api().setOpen(true)
+    h.api().setOpen(false)
+    expect(reasons(onOpenChange)).toEqual(['selection', 'programmatic'])
+    expect(onOpenChange.mock.calls.map(c => c[0]).filter(d => d.open)).toEqual([{ open: true }])
   })
 })

@@ -167,7 +167,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {'0'|'1'} active-index - 受控：当前编辑哪一端；未提供时每次展开按入口重定（从终点那组段位展开为 1）
  * @fires value-change - 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]`
  * @fires clear - 用户按清空钮（clear-trigger）清掉了值；先发值变化，再发它。程序化的 clear() 不发。
- * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
+ * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: OverlayCloseReason }`，收起时带关闭原因
  * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
  * @fires active-view-change - 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重绘网格
  * @fires active-index-change - 当前编辑的一端变化；detail 为 `{ activeIndex: 0 | 1 }`

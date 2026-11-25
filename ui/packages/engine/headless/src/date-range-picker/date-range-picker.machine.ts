@@ -460,7 +460,7 @@ export const dateRangePickerMachine = createMachine({
       },
     },
     actions: {
-      ...controlledOpenActions<DateRangePickerSchema>(),
+      ...controlledOpenActions<DateRangePickerSchema>({ reason: true }),
       followColumnSelection: (params) => {
         if (params.state.matches('open'))
           followColumnSelection(columnScrollTarget(params))
