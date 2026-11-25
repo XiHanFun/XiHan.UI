@@ -12,7 +12,7 @@ XiHan.UI 是一套框架无关的组件库：状态机与无障碍逻辑位于�
 | --- | --- | --- |
 | 适配器 | `@xihan-ui/vue`、`@xihan-ui/react`、`@xihan-ui/web-components` | 将同一份属性和行为接到各自宿主 |
 | 无头内核 | `@xihan-ui/headless` | 解剖、状态机与 `connect` |
-| 原语 | `@xihan-ui/core`、`position`、`motion`、`pointer` | 运行时、定位、动效与指针会话 |
+| 原语 | `@xihan-ui/core`、`position`、`motion`、`pointer`、`viz`、`expression` | 运行时、定位、动效、指针会话、图表引擎与受限表达式 |
 | 表现 | `@xihan-ui/tokens`、`@xihan-ui/styles` | 共享令牌与纯 CSS 皮肤 |
 
 由此带来四条可验证的性质：

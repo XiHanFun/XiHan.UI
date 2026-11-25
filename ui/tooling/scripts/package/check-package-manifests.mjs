@@ -143,17 +143,10 @@ const MANIFESTS = [
     },
   },
   {
-    file: 'ui/README.md',
-    how: '包表里的 `@xihan-ui/*` 行',
+    file: 'docs/npm-package-dependency.md',
+    how: '「全部库包」表里的 `@xihan-ui/*` 行（包的职责、依赖与分层只在这张表里写一份）',
     async names() {
-      return [...(await readUi('README.md')).matchAll(/^\| `@xihan-ui\/([a-z0-9-]+)` \|/gm)].map(m => m[1])
-    },
-  },
-  {
-    file: 'ui/README_cn.md',
-    how: '包表里的 `@xihan-ui/*` 行',
-    async names() {
-      return [...(await readUi('README_cn.md')).matchAll(/^\| `@xihan-ui\/([a-z0-9-]+)` \|/gm)].map(m => m[1])
+      return [...(await readRepo('docs/npm-package-dependency.md')).matchAll(/^\| `@xihan-ui\/([a-z0-9-]+)` \|/gm)].map(m => m[1])
     },
   },
   ...['.github/ISSUE_TEMPLATE/bug_report.yml', '.github/ISSUE_TEMPLATE/feature_request.yml', '.gitee/ISSUE_TEMPLATE/bug.yml', '.gitee/ISSUE_TEMPLATE/feature.yml'].map(file => ({

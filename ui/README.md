@@ -8,35 +8,11 @@ Framework-agnostic component library. State machines and accessibility live in a
 
 Every component ships a headless core, Vue and React components, a custom element, and a default skin.
 
-> The public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to six recorded entries (the shared table’s `tag`, `select` and `combobox` disabled-tag contrast, `file-upload`’s disabled item text contrast and `prompt-input`’s author-owned accessible name, plus the WC-side `steps` required-children), plus one replay exemption for `breadcrumb`.
+> The public packages are released in lockstep and published to npm; the documentation site is at https://ui.docs.xihanfun.com. Accessibility is scanned in real Chromium; the backlog is down to six recorded entries, plus one replay exemption for `breadcrumb`.
 
 ## Packages
 
-| Package | Responsibility |
-| --- | --- |
-| `@xihan-ui/core` | Runtime base: anatomy, `mergeProps`, `normalizeProps`, scope, ids; the `createMachine` state machine runtime; dismissable layer, focus scope, scroll lock, presence, collection, typeahead |
-| `@xihan-ui/motion` | Motion primitives: easing single source, tweening, frame loop, reduced-motion preference, closed-form springs, Web Animations wrapper |
-| `@xihan-ui/headless` | Every component as anatomy + machine + `connect` — no styles, no framework |
-| `@xihan-ui/vue` | Vue adapter |
-| `@xihan-ui/react` | React adapter |
-| `@xihan-ui/web-components` | Web Components adapter (own reactive base, no third-party runtime dep) |
-| `@xihan-ui/styles` | Default skins, layered CSS |
-| `@xihan-ui/tokens` | Design tokens (from DTCG sources) + theme runtime (color scheme / brand / density / contrast / direction) |
-| `@xihan-ui/position` | Floating layer positioning — self-implemented, no third-party runtime dependency |
-| `@xihan-ui/pointer` | Pointer session: one pointer from press to release — tracking, filtering, teardown; self-implemented, zero dependencies |
-| `@xihan-ui/viz` | Visualization engine: scales, ticks, shapes, axis layout, picking and sampling as pure functions; self-implemented, zero dependencies |
-| `@xihan-ui/chat-stream` | AI protocol core: SSE reading → protocol normalization → parts reduction → thread store (no DOM, no framework) |
-| `@xihan-ui/code-highlight` | Code highlighting — self-implemented coarse tokenizer, no third-party runtime dependency; an optional peer of the adapters |
-| `@xihan-ui/markdown` | Streaming markdown renderer: incremental block splitting, stable keys, sanitization (CommonMark subset, 489/652) |
-| `@xihan-ui/backgrounds` | Background layer: WebGL2 effects and data-driven particle clouds, framework agnostic |
-| `@xihan-ui/sound` | Procedural UI sounds synthesized with the Web Audio API — zero audio files, framework agnostic |
-| `@xihan-ui/animations` | Animation layer: serializable motion recipes, built-in enter and attention effects, stagger, text splitting |
-| `@xihan-ui/expression` | Restricted expression language: parse to a serializable AST, static checks, deterministic evaluation with exact decimals and time-zone-free dates, no `eval` |
-| `@xihan-ui/designer-kit` | Designer kit for canvas editors: undo/redo history, path-based edit operations, viewport pan and zoom, snapping guides, alignment, distribution, marquee selection and document-unique ids |
-| `@xihan-ui/designer-shell` | Web Components parts shared by canvas designers: property panel, rulers and guides, transform overlay, palette drag and drop, issue list, minimap and frame |
-| `@xihan-ui/xlsx` | Zero-dependency xlsx writer: typed text, number, date and boolean cells, number and date formats, bold and alignment, merged cells and frozen panes |
-| `@xihan-ui/icons` | First-party icon set: structured `IconRecord` data, rendered node by node, no runtime SVG string parsing |
-| `@xihan-ui/cli` | CLI and MCP server: offline component API, docs, demos, design tokens and design.md for AI coding agents |
+The public packages fall into five groups — core, components and adapters, presentation, content and effects, and developer tools. What each package does, what it depends on and which layer it sits in is listed on the documentation site under [Packages and dependencies](https://ui.docs.xihanfun.com/npm-package-dependency).
 
 `tooling/*` holds internal build, lint, tsconfig, testing and script packages; they are never published.
 

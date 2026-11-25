@@ -82,55 +82,13 @@ service.send({ type: 'TRIGGER.CLICK' })            （core）
 
 ## 包一览
 
-按职责分四组。详细依赖关系见[包与依赖关系](./npm-package-dependency)。
+公开包按职责分五组，各包做什么、依赖谁、在第几层见[包与依赖关系](./npm-package-dependency)。
 
-**内核与原语**
-
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/core` | 运行时底座：解剖、`mergeProps`、`normalizeProps`、Scope、层栈、诊断通道；薄状态机运行时（`createMachine`、解释器契约、受控值绑定）；交互行为原语（消隐层、焦点域、滚动锁、进出场、集合导航、typeahead） |
-| `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧 |
-| `@xihan-ui/position` | 浮层定位引擎，自研，零第三方依赖 |
-| `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
-| `@xihan-ui/viz` | 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数，自研，零依赖 |
-| `@xihan-ui/expression` | 受限表达式语言：公式与条件解析成可序列化的语法树，按十进制确定性求值，见[受限表达式](/runtime/expression) |
-
-**组件与适配器**
-
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/headless` | 全部组件的解剖 + 状态机 + `connect`，无样式、无框架 |
-| `@xihan-ui/vue` | Vue 适配器 |
-| `@xihan-ui/react` | React 适配器 |
-| `@xihan-ui/web-components` | Web Components 适配器，自研响应式基类 |
-
-**表现**
-
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/tokens` | 设计令牌（DTCG 源）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
-| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的纯 CSS |
-| `@xihan-ui/icons` | 图标集 |
-
-**内容与效果**
-
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store |
-| `@xihan-ui/markdown` | 流式 Markdown 渲染内核，增量切块 + 稳定 key |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器；适配器的可选 peer，未安装时渲染纯文本 |
-| `@xihan-ui/backgrounds` | WebGL2 背景效果与数据驱动粒子点云 |
-| `@xihan-ui/sound` | 纯 Web Audio 程序化 UI 音效，零音频文件 |
-| `@xihan-ui/animations` | 现成的进场与注意动效、错开起播、文字拆分 |
-| `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id，见[设计器内核](/runtime/designer-kit) |
-| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图、外框与设置对话框，见[设计器零件](/runtime/designer-shell) |
-| `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：带类型的单元格、数字与日期格式、合并单元格与冻结窗格，见[表格导出](/runtime/xlsx) |
-
-**开发工具**
-
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、令牌与 design.md 的离线知识库，见 [AI 辅助开发](/ai/agents) |
+- **内核与原语**：`core`、`motion`、`position`、`pointer`、`viz`、`expression`
+- **组件与适配器**：`headless`、`vue`、`react`、`web-components`
+- **表现**：`tokens`、`styles`、`icons`
+- **内容与效果**：`chat-stream`、`markdown`、`code-highlight`、`backgrounds`、`sound`、`animations`、`designer-kit`、`designer-shell`、`xlsx`
+- **开发工具**：`cli`
 
 `tooling/*` 下的构建、lint、tsconfig、测试与门禁脚本等内部包一律不发布。
 

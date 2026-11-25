@@ -1319,14 +1319,10 @@ const TABLE = [
   // 仓库两份 README 的开头段：版本号、无障碍存量、一致率、本地开发的 Node/pnpm 下限
   ['ui/README.md', /backlog is down to (\w+) recorded entries/, 'a11y存量违规条数'],
   ['ui/README.md', /plus (\w+) replay exemption/, 'a11y重放豁免条数'],
-  ['ui/README.md', /CommonMark subset, (\d+)\/\d+/, 'CommonMark通过数'],
-  ['ui/README.md', /CommonMark subset, \d+\/(\d+)/, 'CommonMark用例总数'],
   ['ui/README.md', /Requires Node ≥ (\d+) and pnpm ≥ \d+/, '开发期Node主版本下限'],
   ['ui/README.md', /Requires Node ≥ \d+ and pnpm ≥ (\d+)/, '开发期pnpm主版本下限'],
   ['ui/README_cn.md', /存量违规登记表只剩([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
   ['ui/README_cn.md', /另有([\d一二三四五六七八九十两]+)条 breadcrumb 的步骤重放豁免/, 'a11y重放豁免条数'],
-  ['ui/README_cn.md', /一致率 (\d+)\/\d+）/, 'CommonMark通过数'],
-  ['ui/README_cn.md', /一致率 \d+\/(\d+)）/, 'CommonMark用例总数'],
   ['ui/README_cn.md', /要求 Node ≥ (\d+)、pnpm ≥ \d+/, '开发期Node主版本下限'],
   ['ui/README_cn.md', /要求 Node ≥ \d+、pnpm ≥ (\d+)/, '开发期pnpm主版本下限'],
 

@@ -8,35 +8,11 @@
 
 每个组件都有 headless 内核、Vue 与 React 组件、自定义元素和默认皮肤。
 
-> 公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩六条（共用表里 tag、select 与 combobox 的禁用标签对比度、file-upload 禁用条目文字的对比度、prompt-input 归作者的可访问名、WC 侧 steps 的必需子节点），另有一条 breadcrumb 的步骤重放豁免。
+> 公开包锁步发版，全部发布在 npm，文档站在 https://ui.docs.xihanfun.com。无障碍扫描跑在真实 Chromium 上，存量违规登记表只剩六条，另有一条 breadcrumb 的步骤重放豁免。
 
 ## 包一览
 
-| 包 | 职责 |
-| --- | --- |
-| `@xihan-ui/core` | 运行时底座：anatomy、`mergeProps`、`normalizeProps`、Scope、id；`createMachine` 状态机运行时；dismissable layer、焦点域、滚动锁、进出场、集合、typeahead |
-| `@xihan-ui/motion` | 动效原语：缓动单一真源、纯补间、帧循环、减弱动效偏好、解析解弹簧、Web Animations 薄封装 |
-| `@xihan-ui/pointer` | 指针会话：一根指针从按下到抬起的跟手、过滤与收尾，自研，零依赖 |
-| `@xihan-ui/viz` | 图表引擎：比例尺、刻度、形状、坐标轴布局、拾取与降采样，全部是纯函数，自研，零依赖 |
-| `@xihan-ui/headless` | 全部组件的 anatomy + machine + `connect`，无样式、无框架 |
-| `@xihan-ui/vue` | Vue 适配器 |
-| `@xihan-ui/react` | React 适配器 |
-| `@xihan-ui/web-components` | Web Components 适配器（自研响应式基类，无第三方运行时依赖） |
-| `@xihan-ui/styles` | 默认皮肤，按 `@layer` 分层的 CSS |
-| `@xihan-ui/tokens` | 设计令牌（源自 DTCG）与主题运行时（明暗 / 品牌 / 密度 / 对比度 / 书写方向） |
-| `@xihan-ui/position` | 浮层定位，自研实现，无第三方运行时依赖 |
-| `@xihan-ui/chat-stream` | AI 协议内核：SSE 读取 → 协议归一 → parts 归约 → 会话 store（零 DOM、零框架） |
-| `@xihan-ui/code-highlight` | 代码着色，自研粗粒度词法器，无第三方运行时依赖；适配器的可选 peer |
-| `@xihan-ui/markdown` | 流式 Markdown 渲染内核：增量切块 + 稳定 key + 消毒（CommonMark 子集，一致率 489/652） |
-| `@xihan-ui/backgrounds` | 背景层：WebGL2 效果与数据驱动的粒子云，框架无关 |
-| `@xihan-ui/sound` | 声音层：纯 Web Audio 程序化 UI 音效，零音频文件，框架无关 |
-| `@xihan-ui/animations` | 动画层：可序列化的动效配方、内置进场与注意动效、错开起播、文字拆分 |
-| `@xihan-ui/expression` | 受限表达式语言：解析成可序列化的语法树、静态检查、十进制精确与不带时区日期的确定性求值，不用 `eval` |
-| `@xihan-ui/designer-kit` | 画布式设计器的内核：撤销重做历史栈、按路径的编辑操作、视口平移缩放、对齐吸附与参考线、对齐分布与框选、文档内唯一 id |
-| `@xihan-ui/designer-shell` | 画布式设计器共用的界面零件，只出 Web Components：属性面板、标尺与参考线、变换覆盖层、物料面板与拖放、问题列表、小地图与外框 |
-| `@xihan-ui/xlsx` | 零依赖的 xlsx 写出：文本、数字、日期、布尔四类单元格，数字与日期格式、粗体与对齐、合并单元格与冻结窗格 |
-| `@xihan-ui/icons` | 首方图标集：`IconRecord` 结构化记录，渲染端逐节点建元素，运行期不解析 SVG 字符串 |
-| `@xihan-ui/cli` | 命令行与 MCP 服务端：组件 API、文档、示例、设计令牌与 design.md 的离线知识库，供 AI 编程工具查询 |
+公开包分内核、组件与适配器、表现、内容与效果、开发工具五组，各包的职责、依赖与分层见文档站的[包与依赖关系](https://ui.docs.xihanfun.com/npm-package-dependency)。
 
 `tooling/*` 放构建、lint、tsconfig、测试与脚本等内部包，不对外发布。
 
