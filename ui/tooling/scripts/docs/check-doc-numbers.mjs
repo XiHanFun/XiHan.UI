@@ -1178,27 +1178,6 @@ function parseCount(text) {
 
 // —— 动效规范页与停留时长页的数字：令牌与源码常量逐条对账 ——
 
-/** 令牌源里一支取值换算成数：{duration.x} 查原语，calc(… * n) / (… / n) 照算，带 ms / px 的去单位。 */
-async function motionValue(raw) {
-  const text = String(raw)
-  const ref = /^\{(\w+)\.([\w-]+)\}$/.exec(text)
-  if (ref)
-    return motionValue((await tokenSet('primitive'))[ref[1]][ref[2]].$value)
-  const scaled = /^calc\((.+) ([*/]) (\d+(?:\.\d+)?)\)$/.exec(text)
-  if (scaled) {
-    const base = await motionValue(scaled[1])
-    return scaled[2] === '*' ? base * Number(scaled[3]) : base / Number(scaled[3])
-  }
-  return Number.parseFloat(text)
-}
-
-/** 语义层动效令牌的基线值与减弱档取值（减弱档没覆盖的与基线相同）。 */
-async function motionToken(name, reduced) {
-  const base = (await tokenSet('semantic.base')).motion[name]
-  const reduce = (await tokenSet('semantic.reduce')).motion[name]
-  return motionValue((reduced && reduce ? reduce : base).$value)
-}
-
 /** 源码里一个模块级数值常量的值。 */
 async function constantIn(path, name) {
   const src = await read(path)
@@ -1207,18 +1186,6 @@ async function constantIn(path, name) {
     throw new Error(`${path} 里找不到常量 ${name}`)
   return Number(hit[1].replaceAll('_', ''))
 }
-
-const MOTION_DURATIONS = ['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'press', 'release', 'attention', 'reveal', 'morph']
-for (const name of MOTION_DURATIONS) {
-  truth[`动效时长:${name}`] = { how: `semantic.base.json 的 motion.duration-${name}（毫秒）`, value: () => motionToken(`duration-${name}`, false) }
-  truth[`动效时长减弱档:${name}`] = { how: `semantic.reduce.json 的 motion.duration-${name}，没覆盖取基线（毫秒）`, value: () => motionToken(`duration-${name}`, true) }
-}
-truth['动效错开步长'] = { how: 'semantic.base.json 的 motion.stagger-step（毫秒）', value: () => motionToken('stagger-step', false) }
-truth['动效错开步长减弱档'] = { how: 'semantic.reduce.json 的 motion.stagger-step（毫秒）', value: () => motionToken('stagger-step', true) }
-for (const name of ['sm', 'md', 'lg'])
-  truth[`动效位移:${name}`] = { how: `semantic.base.json 的 motion.distance-${name} 解到原语的 px`, value: () => motionToken(`distance-${name}`, false) }
-for (const name of ['enter', 'exit', 'press', 'drag', 'stack', 'squash', 'breathe', 'halo'])
-  truth[`动效缩放:${name}`] = { how: `semantic.base.json 的 motion.scale-${name}`, value: async () => String(await motionToken(`scale-${name}`, false)) }
 
 const DWELL = {
   'Tooltip 打开延迟': ['packages/engine/headless/src/tooltip/tooltip.machine.ts', 'OPEN_DELAY'],
@@ -1469,28 +1436,6 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` 的 CSS 子路径 \| (\d+) \|/, 'styles子路径键数'],
   ['docs/guide/versioning.md', /，与 (\d+) 条 `\.css`：/, '皮肤份数'],
   ['docs/guide/versioning.md', /条 `\.css`：(\d+) 份组件皮肤加/, '组件皮肤份数'],
-
-  // 动效规范页：时长、减弱档、错开步长、位移与缩放
-  ...['micro', 'enter', 'exit', 'move', 'expand', 'collapse', 'slide', 'nudge', 'attention', 'reveal', 'morph'].flatMap(name => [
-    ['docs/design/motion.md', new RegExp(`\\| \`--xh-motion-duration-${name}\` \\| (\\d+)ms \\|`), `动效时长:${name}`],
-    ['docs/design/motion.md', new RegExp(`\\| \`--xh-motion-duration-${name}\` \\| \\d+ms \\| (\\d+)ms`), `动效时长减弱档:${name}`],
-  ]),
-  ['docs/design/motion.md', /\| `--xh-motion-duration-press` \/ `-release` \| (\d+) \/ \d+ms/, '动效时长:press'],
-  ['docs/design/motion.md', /\| `--xh-motion-duration-press` \/ `-release` \| \d+ \/ (\d+)ms/, '动效时长:release'],
-  ['docs/design/motion.md', /\| `--xh-motion-duration-press` \/ `-release` \| \d+ \/ \d+ms \| (\d+)ms/, '动效时长减弱档:press'],
-  ['docs/design/motion.md', /\| `--xh-motion-stagger-step` \| (\d+)ms/, '动效错开步长'],
-  ['docs/design/motion.md', /\| `--xh-motion-stagger-step` \| \d+ms \| (\d+)ms/, '动效错开步长减弱档'],
-  ['docs/design/motion.md', /\| `--xh-motion-distance-sm` \/ `-md` \| (\d+) \/ \d+px/, '动效位移:sm'],
-  ['docs/design/motion.md', /\| `--xh-motion-distance-sm` \/ `-md` \| \d+ \/ (\d+)px/, '动效位移:md'],
-  ['docs/design/motion.md', /\| `--xh-motion-distance-lg` \| (\d+)px/, '动效位移:lg'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-enter` \/ `-exit` \| ([\d.]+) \/ [\d.]+/, '动效缩放:enter'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-enter` \/ `-exit` \| [\d.]+ \/ ([\d.]+)/, '动效缩放:exit'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-press` \| ([\d.]+)/, '动效缩放:press'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-drag` \| ([\d.]+)/, '动效缩放:drag'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-stack` \| ([\d.]+)/, '动效缩放:stack'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-squash` \| ([\d.]+)/, '动效缩放:squash'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-breathe` \/ `-halo` \| ([\d.]+) \/ [\d.]+/, '动效缩放:breathe'],
-  ['docs/design/motion.md', /\| `--xh-motion-scale-breathe` \/ `-halo` \| [\d.]+ \/ ([\d.]+)/, '动效缩放:halo'],
 
   // 停留时长页：缺省值与源码常量逐条对账
   ['docs/design/dwell.md', /\| Tooltip \| `openDelay` \/ `closeDelay` \| (\d+) \/ \d+ms/, '停留:Tooltip 打开延迟'],

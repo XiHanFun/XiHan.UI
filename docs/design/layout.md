@@ -26,10 +26,12 @@
 
 ## 控件高度与密度
 
-| 密度 | sm | md | lg |
-| --- | ---: | ---: | ---: |
-| comfortable（缺省） | 28px | 32px | 36px |
-| compact | 24px | 28px | 32px |
+<XhTokenTable
+  :names="['--xh-control-h-sm', '--xh-control-h-md', '--xh-control-h-lg']"
+  resolve
+  value-label="comfortable（缺省）"
+  :modes="['compact']"
+/>
 
 - md 是缺省尺寸；同一 `size` 不随断点自动改变高度。
 - 图标按钮的视觉盒遵循同一高度；粗指针命中区至少 44×44px，用伪元素扩展，不改布局盒。日历网格的格子首尾相接，外扩会压到相邻格：粗指针下行距与列宽下限加到 44，格子本身就是 44×44 的触摸盒，日期钮仍是 24 的圆。

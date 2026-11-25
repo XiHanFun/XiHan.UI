@@ -7,6 +7,7 @@ import XhThemeDesigner from "./XhThemeDesigner.vue";
 import XhTokenBrowser from "./XhTokenBrowser.vue";
 import XhTokenSwatches from "./XhTokenSwatches.vue";
 import XhTokenTable from "./XhTokenTable.vue";
+import XhTokenValue from "./XhTokenValue.vue";
 // 示例舞台隔离必须排在皮肤之前：两者选择器同权，同权时后来者胜，皮肤在后才盖得住隔离。
 import "./demo-isolation.css";
 // 组件默认皮肤：用无层版本。VitePress 自带无层的 button 重置，CSS 级联里无层
@@ -33,6 +34,7 @@ export default defineXiHanTheme({
     // 设计一册的色板与令牌表直接读令牌产物，页面里只写前缀或名字
     ctx.app.component("XhTokenSwatches", XhTokenSwatches);
     ctx.app.component("XhTokenTable", XhTokenTable);
+    ctx.app.component("XhTokenValue", XhTokenValue);
     // 主题设计器页挂整台工作台
     ctx.app.component("XhThemeDesigner", XhThemeDesigner);
     // 令牌浏览器页挂整张令牌表

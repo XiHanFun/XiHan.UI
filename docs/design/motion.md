@@ -40,21 +40,27 @@
 
 ### 时长
 
-| 令牌 | 取值 | 减弱动效 | 角色 |
-| --- | ---: | ---: | --- |
-| `--xh-motion-duration-micro` | 150ms | 150ms | 状态 |
-| `--xh-motion-duration-enter` | 200ms | 150ms | 出现、列表加入 |
-| `--xh-motion-duration-exit` | 150ms | 150ms | 出现、列表移除、导航出 |
-| `--xh-motion-duration-move` | 200ms | 1ms | 指示、列表重排、数值 |
-| `--xh-motion-duration-expand` | 200ms | 1ms | 披露展开 |
-| `--xh-motion-duration-collapse` | 200ms | 1ms | 披露收起 |
-| `--xh-motion-duration-slide` | 320ms | 1ms | 导航进 |
-| `--xh-motion-duration-nudge` | 200ms | 1ms | 切换、跟手让位 |
-| `--xh-motion-duration-press` / `-release` | 150 / 200ms | 1ms | 按压 |
-| `--xh-motion-duration-attention` | 640ms | 1ms（预设不播） | 注意 |
-| `--xh-motion-duration-reveal` | 960ms | 1ms | 数据首次出现 |
-| `--xh-motion-duration-morph` | 400ms | 1ms | 数据更新 |
-| `--xh-motion-stagger-step` | 40ms | 0ms | 错开步长 |
+<XhTokenTable
+  :names="['--xh-motion-duration-micro', '--xh-motion-duration-enter', '--xh-motion-duration-exit', '--xh-motion-duration-move', '--xh-motion-duration-expand', '--xh-motion-duration-collapse', '--xh-motion-duration-slide', '--xh-motion-duration-nudge', '--xh-motion-duration-press', '--xh-motion-duration-release', '--xh-motion-duration-attention', '--xh-motion-duration-reveal', '--xh-motion-duration-morph', '--xh-motion-stagger-step']"
+  resolve
+  :modes="['reduce']"
+  :notes="{
+    '--xh-motion-duration-micro': '状态',
+    '--xh-motion-duration-enter': '出现、列表加入',
+    '--xh-motion-duration-exit': '出现、列表移除、导航出',
+    '--xh-motion-duration-move': '指示、列表重排、数值',
+    '--xh-motion-duration-expand': '披露展开',
+    '--xh-motion-duration-collapse': '披露收起',
+    '--xh-motion-duration-slide': '导航进',
+    '--xh-motion-duration-nudge': '切换、跟手让位',
+    '--xh-motion-duration-press': '按压：按下',
+    '--xh-motion-duration-release': '按压：释放',
+    '--xh-motion-duration-attention': '注意；减弱动效下预设不播',
+    '--xh-motion-duration-reveal': '数据首次出现',
+    '--xh-motion-duration-morph': '数据更新',
+    '--xh-motion-stagger-step': '错开步长',
+  }"
+/>
 
 几何类在减弱动效下取 1ms 而不是 0：动画名照常变化、`animationend` 照常派发，进出场的时序不分叉。
 
@@ -72,20 +78,24 @@
 
 ### 缓动
 
-| 令牌 | 原语 | 用途 |
-| --- | --- | --- |
-| `--xh-motion-ease-continuous` | `standard` | 在屏内被推到新位置：指示器、重排、数值 |
-| `--xh-motion-ease-loop` | `linear` | 匀速的无限循环 |
-| `--xh-motion-ease-enter` | `out` | 淡入与换色 |
-| `--xh-motion-ease-enter-strong` | `out-strong` | 带位移的入场、原地形变 |
-| `--xh-motion-ease-exit` | `in` | 退场 |
-| `--xh-motion-ease-disclosure` | `in-out` | 面级内容的展开与收起，正文与指示器同用 |
-| `--xh-motion-ease-slide` | `out-fluid` | 整幅位移：抽屉推入、轮播换页 |
-| `--xh-motion-ease-sweep` | `in-out` | 往返型循环的折返 |
-| `--xh-motion-ease-press` / `-release` | `standard` / `out-strong` | 按压时间线 |
-| `--xh-motion-ease-settle` | `out-back` | 短边不超过 32px 的小件过冲落位 |
-| `--xh-motion-ease-breathe` | `sine-in-out` | 呼吸 |
-| `--xh-motion-ease-emphasis` | `emphasized` | `@xihan-ui/animations` 的表现性进场，组件皮肤不用 |
+<XhTokenTable
+  :names="['--xh-motion-ease-continuous', '--xh-motion-ease-loop', '--xh-motion-ease-enter', '--xh-motion-ease-enter-strong', '--xh-motion-ease-exit', '--xh-motion-ease-disclosure', '--xh-motion-ease-slide', '--xh-motion-ease-sweep', '--xh-motion-ease-press', '--xh-motion-ease-release', '--xh-motion-ease-settle', '--xh-motion-ease-breathe', '--xh-motion-ease-emphasis']"
+  :notes="{
+    '--xh-motion-ease-continuous': '在屏内被推到新位置：指示器、重排、数值',
+    '--xh-motion-ease-loop': '匀速的无限循环',
+    '--xh-motion-ease-enter': '淡入与换色',
+    '--xh-motion-ease-enter-strong': '带位移的入场、原地形变',
+    '--xh-motion-ease-exit': '退场',
+    '--xh-motion-ease-disclosure': '面级内容的展开与收起，正文与指示器同用',
+    '--xh-motion-ease-slide': '整幅位移：抽屉推入、轮播换页',
+    '--xh-motion-ease-sweep': '往返型循环的折返',
+    '--xh-motion-ease-press': '按压时间线：按下',
+    '--xh-motion-ease-release': '按压时间线：释放',
+    '--xh-motion-ease-settle': '短边不超过 32px 的小件过冲落位',
+    '--xh-motion-ease-breathe': '呼吸',
+    '--xh-motion-ease-emphasis': '@xihan-ui/animations 的表现性进场，组件皮肤不用',
+  }"
+/>
 
 缓动不降级：曲线形状不引起前庭不适，减弱动效靠时长与幅度收敛。原语：
 
@@ -95,18 +105,26 @@
 
 ### 幅度
 
-| 令牌 | 取值 | 减弱动效 | 用途 |
-| --- | ---: | ---: | --- |
-| `--xh-motion-distance-sm` / `-md` | 4 / 8px | 0 | 浮层滑入、面板与列表条目入场 |
-| `--xh-motion-distance-lg` | 16px | 0 | `@xihan-ui/animations` 的表现性进场 |
-| `--xh-motion-travel` | 100% | 0 | 整幅位移：抽屉、叠放的通知 |
-| `--xh-motion-travel-opacity` | 1 | 0 | 整幅位移两端的不透明度：减弱动效下位移归零，改由淡变表达 |
-| `--xh-motion-scale-enter` / `-exit` | 0.96 / 0.98 | 1 | 出现 |
-| `--xh-motion-scale-press` | 1 | 1 | 按压：缺省只换面不缩放；主题把它写回 0.97 即恢复按下回弹 |
-| `--xh-motion-scale-drag` | 1.12 | 1 | 拖起 |
-| `--xh-motion-scale-stack` | 0.95 | 1 | 通知叠放（轻提示预设的缺省）每往后一层的收拢比例 |
-| `--xh-motion-scale-squash` | 0.86 | 1 | liquid 档指示器拉长时另一向的压扁下限 |
-| `--xh-motion-scale-breathe` / `-halo` | 0.82 / 2.6 | 1 | 呼吸的吸气最小值与光环外扩 |
+<XhTokenTable
+  :names="['--xh-motion-distance-sm', '--xh-motion-distance-md', '--xh-motion-distance-lg', '--xh-motion-travel', '--xh-motion-travel-opacity', '--xh-motion-scale-enter', '--xh-motion-scale-exit', '--xh-motion-scale-press', '--xh-motion-scale-drag', '--xh-motion-scale-stack', '--xh-motion-scale-squash', '--xh-motion-scale-breathe', '--xh-motion-scale-halo']"
+  resolve
+  :modes="['reduce']"
+  :notes="{
+    '--xh-motion-distance-sm': '浮层滑入、面板与列表条目入场',
+    '--xh-motion-distance-md': '浮层滑入、面板与列表条目入场',
+    '--xh-motion-distance-lg': '@xihan-ui/animations 的表现性进场',
+    '--xh-motion-travel': '整幅位移：抽屉、叠放的通知',
+    '--xh-motion-travel-opacity': '整幅位移两端的不透明度：减弱动效下位移归零，改由淡变表达',
+    '--xh-motion-scale-enter': '出现：进场起点',
+    '--xh-motion-scale-exit': '出现：退场终点',
+    '--xh-motion-scale-press': '按压：缺省只换面不缩放；主题把它写回 0.97 即恢复按下回弹',
+    '--xh-motion-scale-drag': '拖起',
+    '--xh-motion-scale-stack': '通知叠放（轻提示预设的缺省）每往后一层的收拢比例',
+    '--xh-motion-scale-squash': 'liquid 档指示器拉长时另一向的压扁下限',
+    '--xh-motion-scale-breathe': '呼吸的吸气最小值',
+    '--xh-motion-scale-halo': '呼吸的光环外扩',
+  }"
+/>
 
 组件不自设缩放与位移的字面量。JS 侧 `@xihan-ui/motion` 的 `motionDurations`、`motionEasings`、`motionDistances`、`motionStaggerStep` 与弹簧预设和令牌逐条对账（门禁 `check-motion-source`）；读得到计算样式时以 `readMotion(el)` 为准，作者对组件槽的覆盖与容器上的 `data-motion` 同时生效。
 
@@ -127,8 +145,8 @@
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
-| 按下 | 150ms（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
-| 释放 | 200ms（`--xh-motion-duration-release`） | 底、描边、字色按 150ms（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
+| 按下 | <XhTokenValue name="--xh-motion-duration-press" />（`--xh-motion-duration-press`） | 底进入 active；scale 1 → `--xh-motion-scale-press`（缺省 1） | `--xh-motion-ease-press` |
+| 释放 | <XhTokenValue name="--xh-motion-duration-release" />（`--xh-motion-duration-release`） | 底、描边、字色按 <XhTokenValue name="--xh-motion-duration-micro" />（`--xh-motion-duration-micro`）回到 hover / rest；scale 回到 1 | `--xh-motion-ease-release` |
 
 - transform origin 固定居中；指针 `:active`、键盘 Space / Enter 与 Headless 投影的 `data-pressed` 三者一致。
 - 行级条目与 disclosure trigger（菜单项、树节点、表格行、手风琴标题）只换面，不缩放整个条目；不允许零反馈。

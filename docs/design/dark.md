@@ -24,19 +24,24 @@
 
 ## 语义角色怎么翻
 
-| 角色 | 浅色 | 深色 | 为什么这样 |
-| --- | --- | --- | --- |
-| `--xh-bg-page` | neutral 100 | neutral 950 | 页面底始终比面低一档：浅色是冷灰底上放白面 |
-| `--xh-bg-surface` | neutral 0 | neutral 900 | 面 |
-| `--xh-bg-surface-raised` | neutral 0 | neutral 750 | 深色档取半档 750，与淡底差一道明度，抬起面上取淡底的部件静态时才有身形 |
-| `--xh-bg-subtle` → `-hover` → `-active` | 墨色 4.7% → 10.2% → 16.9% | 墨色 6.2% → 17.4% → 20.7% | 墨色浅色档是纯黑、深色档是纯白，交互阶梯在深色档自然往亮端走 |
-| `--xh-bg-brand` → `-hover` → `-active` | brand 600 → 700 → 800 | brand 500 → 400 → 300 | 深底上品牌往亮端走才有对比 |
-| `--xh-bg-brand-subtle` | 12% 品牌兑 surface | 12% 品牌兑 surface（neutral 900） | 兑 canvas（950）只得 L 0.202，比面还暗；兑面才比面亮一档 |
-| `--xh-fg-default` / `-muted` / `-subtle` / `-disabled` | 900 / 600 / 550 / 400 | 50 / 400 / 450 / 600 | 层级同向，比值逐条核 |
-| `--xh-fg-on-brand` | neutral 0 | neutral 950 | 深色档品牌实心底是 brand 500，白字够不着 4.5:1，改深字 |
-| `--xh-border-default` / `-subtle` / `-strong` | 墨色 10.2% / 4.7% / 16.9% | 墨色 22% / 11.5% / 31.9% | 深色档描边按最深的页面底（neutral 950）求比例，压在哪种面上都不比原中性色淡 |
-| `--xh-border-control` | = default | = default | 控件边界与装饰边同一条规则 |
-| `--xh-ring-focus` | brand 600 | brand 400 | 对画布、面、淡底都 ≥ 3:1 |
+<XhTokenTable
+  :names="['--xh-bg-page', '--xh-bg-surface', '--xh-bg-surface-raised', '--xh-bg-subtle', '--xh-bg-subtle-hover', '--xh-bg-subtle-active', '--xh-bg-brand', '--xh-bg-brand-hover', '--xh-bg-brand-active', '--xh-bg-brand-subtle', '--xh-fg-default', '--xh-fg-muted', '--xh-fg-subtle', '--xh-fg-disabled', '--xh-fg-on-brand', '--xh-border-default', '--xh-border-subtle', '--xh-border-strong', '--xh-border-control', '--xh-ring-focus']"
+  value-label="浅色"
+  :modes="['dark']"
+  :notes="{
+    '--xh-bg-page': '页面底始终比面低一档：浅色是冷灰底上放白面',
+    '--xh-bg-surface': '面',
+    '--xh-bg-surface-raised': '深色档取半档 750，与淡底差一道明度，抬起面上取淡底的部件静态时才有身形',
+    '--xh-bg-subtle': '墨色浅色档是纯黑、深色档是纯白，交互阶梯在深色档自然往亮端走',
+    '--xh-bg-brand': '深底上品牌往亮端走才有对比',
+    '--xh-bg-brand-subtle': '兑 canvas（950）只得 L 0.202，比面还暗；兑面才比面亮一档',
+    '--xh-fg-default': '层级同向，比值逐条核',
+    '--xh-fg-on-brand': '深色档品牌实心底是 brand 500，白字够不着 4.5:1，改深字',
+    '--xh-border-default': '深色档描边按最深的页面底（neutral 950）求比例，压在哪种面上都不比原中性色淡',
+    '--xh-border-control': '控件边界与装饰边同一条规则',
+    '--xh-ring-focus': '对画布、面、淡底都 ≥ 3:1',
+  }"
+/>
 
 下面这几块画的是当前主题的取值，切换文档站右上角的明暗看它们翻转：
 
