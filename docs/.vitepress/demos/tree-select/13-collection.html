@@ -1,64 +1,17 @@
-<!-- 只提供数据自动渲染 | Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报告 value -->
+<!-- 只提供数据自动渲染 | 不写部件时按 collection 铺开整套结构：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 只写一个空的 root -->
 <xh-tree-select
   id="tree-select-collection"
   default-value="guide"
+  label="文档"
   placeholder="选一个文件"
+  clearable
 >
-  <div data-xh-part="root">
-    <span data-xh-part="label">文档</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-      <button data-xh-part="clear-trigger"></button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="tree">
-          <div data-xh-part="branch" value="docs">
-            <div data-xh-part="branch-control">
-              <span data-xh-part="branch-trigger"></span>
-              <span data-xh-part="branch-text">docs</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="branch-content">
-              <div data-xh-part="item" value="guide">
-                <span data-xh-part="item-indicator"></span>
-                <span data-xh-part="item-text">guide.md</span>
-              </div>
-              <div data-xh-part="item" value="api">
-                <span data-xh-part="item-indicator"></span>
-                <span data-xh-part="item-text">api.md</span>
-              </div>
-            </div>
-          </div>
-          <div data-xh-part="branch" value="assets">
-            <div data-xh-part="branch-control">
-              <span data-xh-part="branch-trigger"></span>
-              <span data-xh-part="branch-text">assets</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="branch-content">
-              <div data-xh-part="item" value="logo">
-                <span data-xh-part="item-indicator"></span>
-                <span data-xh-part="item-text">logo.svg</span>
-              </div>
-            </div>
-          </div>
-          <div data-xh-part="item" value="readme">
-            <span data-xh-part="item-indicator"></span>
-            <span data-xh-part="item-text">README.md</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div data-xh-part="root"></div>
 </xh-tree-select>
 <p data-demo-output>已选：<span id="tree-select-collection-value">guide</span></p>
 
 <script type="module">
-  // 层级、显示文本与节点禁用都查这份树数据，标记只管长相
+  // 只写 root：标题、触发器、清空按钮与浮层里的整棵树都照 collection 铺；层级、显示文本与节点禁用都查这份数据
   const treeSelect = document.getElementById("tree-select-collection");
   treeSelect.collection = [
     {

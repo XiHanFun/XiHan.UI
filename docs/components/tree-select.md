@@ -74,7 +74,7 @@ searchable 在浮层顶部放一个搜索框，展开即落焦；输入即把树
 
 ### 只提供数据自动渲染
 
-Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报告 value
+不写部件时按 collection 铺开整套结构：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 只写一个空的 root
 
 <XhDemo src="tree-select/13-collection" />
 
